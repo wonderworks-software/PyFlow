@@ -1,7 +1,7 @@
 from Settings import *
 from PySide import QtGui
 from PySide import QtCore
-from Port import EllipseWidget
+from Port import Port
 
 
 class NodeName(QtGui.QGraphicsTextItem, Colors):
@@ -105,7 +105,7 @@ class Node(QtGui.QGraphicsItem, Colors):
 
     def add_port(self, port_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 
-        cn = EllipseWidget(name, 10, 10, color)
+        cn = Port(name, 10, 10, color)
         cn.port_type = port_type
         cn.owned_node = self
         connector_name = QtGui.QGraphicsProxyWidget()

@@ -5,7 +5,7 @@ import weakref
 from Edge import Edge
 
 
-class EllipseWidget(QtGui.QGraphicsWidget, Colors):
+class Port(QtGui.QGraphicsWidget, Colors):
 
     def __init__(self, name, width, height, color=Colors.kConnectors):
 
@@ -86,6 +86,7 @@ class EllipseWidget(QtGui.QGraphicsWidget, Colors):
         if target.port_type == self.port_type:
             print 'same types can not be connected'
             return
+        print
         edge = Edge(self, target)
         self.scene().addItem(edge)
         self.edgeList.append(edge)

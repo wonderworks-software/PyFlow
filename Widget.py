@@ -1,6 +1,7 @@
 from PySide import QtCore
 from PySide import QtGui
 import math
+from Node import Node
 
 
 class GraphWidget(QtGui.QGraphicsView):
@@ -42,7 +43,7 @@ class GraphWidget(QtGui.QGraphicsView):
             self.scale_view(1 / 1.2)
         elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_Enter:
             for item in self.scene().items():
-                if isinstance(item, ConnectorItem):
+                if isinstance(item, Node):
                     item.setPos(-150 + QtCore.qrand() % 300, -150 + QtCore.qrand() % 300)
         else:
             QtGui.QGraphicsView.keyPressEvent(self, event)
@@ -61,19 +62,19 @@ class GraphWidget(QtGui.QGraphicsView):
 
     def timerEvent(self, event):
 
-        nodes = [item for item in self.scene().items() if isinstance(item, ConnectorItem)]
+        nodes = [item for item in self.scene().items() if isinstance(item, Node)]
 
         for node in nodes:
-            node.calculate_forces()
+            node.update()
 
-        itemsMoved = False
-        for node in nodes:
-            if node.advance():
-                itemsMoved = True
-
-        if not itemsMoved:
-            self.killTimer(self.timerId)
-            self.timerId = 0
+        # items_moved = False
+        # for node in nodes:
+        #     if node.advance():
+        #         items_moved = True
+        #
+        # if not items_moved:
+        #     self.killTimer(self.timerId)
+        #     self.timerId = 0
 
     def wheelEvent(self, event):
 
