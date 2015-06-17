@@ -8,6 +8,7 @@ class NodeName(QtGui.QGraphicsTextItem, Colors):
     def __init__(self, name, parent):
         QtGui.QGraphicsTextItem.__init__(self)
         self.name = name
+        self.parent = parent
         self.setPlainText(self.name)
         self.setParentItem(parent)
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
@@ -28,6 +29,24 @@ class NodeName(QtGui.QGraphicsTextItem, Colors):
 
         # paint the normal TextItem with the default 'paint' method
         super(NodeName, self).paint(painter, option, widget)
+
+    def focusOutEvent(self, event):
+        new_name = self.parent.name = self.toPlainText()
+        print 'OLD NAME: ', self.name
+        for i in self.parent.get_input_edges().iterkeys():
+            if self.name == i.connection['From'].split('.')[0]:
+                i.connection['From'] = i.connection['From'].replace(self.name, new_name)
+            if self.name == i.connection['To'].split('.')[0]:
+                i.connection['To'] = i.connection['To'].replace(self.name, new_name)
+        for i in self.parent.get_output_edges().iterkeys():
+            if self.name == i.connection['From'].split('.')[0]:
+                i.connection['From'] = i.connection['From'].replace(self.name, new_name)
+            if self.name == i.connection['To'].split('.')[0]:
+                i.connection['To'] = i.connection['To'].replace(self.name, new_name)
+            # for v in i.connection.itervalues():
+            #     print v
+        self.name = new_name
+        super(NodeName, self).focusOutEvent(event)
 
 
 class Node(QtGui.QGraphicsItem, Colors):
@@ -83,20 +102,26 @@ class Node(QtGui.QGraphicsItem, Colors):
                                 self.sizes[2], self.v_form.boundingRect().bottomRight().y()+3,
                                 self.sizes[4], self.sizes[5])
 
+    def get_input_edges(self):
+        out = {}
+        for i in [i.edgeList for i in self.inputs]:
+            if not i.__len__() == 0:
+                out[i[0]] = [a.connection for a in i]
+        return out
+
+    def get_output_edges(self):
+        out = {}
+        for i in [i.edgeList for i in self.outputs]:
+            if not i.__len__() == 0:
+                out[i[0]] = [a.connection for a in i]
+        return out
+
     def mousePressEvent(self, event):
 
         self.update()
         QtGui.QGraphicsItem.mousePressEvent(self, event)
-        # print 'inputs', [i.name for i in self.inputs]
-        # print 'outputs', [i.name for i in self.outputs]
-        print 'inputs'
-        for i in [i.edgeList for i in self.inputs]:
-            if not i.__len__() == 0:
-                print i
-        print 'outputs'
-        for i in [i.edgeList for i in self.outputs]:
-            if not i.__len__() == 0:
-                print i
+        print [i for i in self.get_input_edges().itervalues()]
+        print [i for i in self.get_output_edges().itervalues()]
 
     def mouseReleaseEvent(self, event):
 

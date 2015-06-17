@@ -1,5 +1,3 @@
-# from PySide import QtGui
-
 import sys
 from Node import Node
 from Widget import GraphWidget

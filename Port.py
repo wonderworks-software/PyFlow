@@ -86,7 +86,15 @@ class Port(QtGui.QGraphicsWidget, Colors):
         if target.port_type == self.port_type:
             print 'same types can not be connected'
             return
-        print
+        From = ''.join([self.owned_node.label.name, '.', self.name])
+        To = ''.join([target.owned_node.label.name, '.', target.name])
+        connection = {'From': From, 'To': To}
+        target_node_connections = target.owned_node.get_input_edges()
+        for i in target_node_connections.itervalues():
+            for c in i:
+                if c['From'] == connection['From'] and c['To'] == connection['To']:
+                    print 'already connected. skipped'
+                    return
         edge = Edge(self, target)
         self.scene().addItem(edge)
         self.edgeList.append(edge)

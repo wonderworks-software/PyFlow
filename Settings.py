@@ -1,5 +1,3 @@
-__author__ = 'iLunin'
-
 from PySide import QtGui
 
 

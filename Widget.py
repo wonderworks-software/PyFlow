@@ -17,16 +17,15 @@ class GraphWidget(QtGui.QGraphicsView):
 
         self.scene_widget = QtGui.QGraphicsScene(self)
         self.scene_widget.setItemIndexMethod(QtGui.QGraphicsScene.NoIndex)
-        self.scene_widget.setSceneRect(-400, -400, 800, 800)
+        self.scene_widget.setSceneRect(-500, -500, 1000, 1000)
         self.setScene(self.scene_widget)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
-
-        self.scale(0.8, 0.8)
+        self.scale(2.0, 2.0)
         self.setMinimumSize(400, 400)
-        self.setWindowTitle(self.tr("Elastic Nodes"))
+        self.setWindowTitle(self.tr("Nodes"))
 
     def itemMoved(self):
 
