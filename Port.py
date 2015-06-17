@@ -13,6 +13,7 @@ class Port(QtGui.QGraphicsWidget, Colors):
         self.edgeList = []
         self.port_type = None
         self.owned_node = None
+        self.setZValue(1)
         self.newPos = QtCore.QPointF()
         self.setFlag(QtGui.QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
@@ -26,29 +27,6 @@ class Port(QtGui.QGraphicsWidget, Colors):
 
         self.startPos = None
         self.endPos = None
-
-    def add_edge(self, edge):
-
-        self.edgeList.append(weakref.ref(edge))
-        edge.adjust()
-
-    def edges(self):
-
-        return self.edgeList
-
-    def calculate_forces(self):
-
-        if not self.scene() or self.scene().mouseGrabberItem() is self:
-            self.newPos = self.pos()
-            return
-
-    def advance(self):
-
-        if self.newPos == self.pos():
-            return False
-
-        self.setPos(self.newPos)
-        return True
 
     def boundingRect(self):
 
@@ -88,17 +66,27 @@ class Port(QtGui.QGraphicsWidget, Colors):
             return
         From = ''.join([self.owned_node.label.name, '.', self.name])
         To = ''.join([target.owned_node.label.name, '.', target.name])
-        connection = {'From': From, 'To': To}
-        target_node_connections = target.owned_node.get_input_edges()
+        if self.port_type == PortTypes.kOutput:
+            connection = {'From': From, 'To': To}
+            target_node_connections = target.owned_node.get_input_edges()
+        else:
+            connection = {'From': To, 'To': From}
+            target_node_connections = self.owned_node.get_input_edges()
+        print 'THIS CONNECTION ', connection
         for i in target_node_connections.itervalues():
             for c in i:
                 if c['From'] == connection['From'] and c['To'] == connection['To']:
-                    print 'already connected. skipped'
+                    print connection, 'already connected'
                     return
-        edge = Edge(self, target)
+
+        if self.port_type == PortTypes.kOutput:
+            edge = Edge(self, target)
+        else:
+            edge = Edge(target, self)
         self.scene().addItem(edge)
         self.edgeList.append(edge)
         target.edgeList.append(edge)
+        edge.connection = connection
 
     def hoverEnterEvent(self, *args, **kwargs):
 

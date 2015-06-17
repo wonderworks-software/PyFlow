@@ -13,7 +13,7 @@ class Edge(QtGui.QGraphicsItem, Colors):
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
         self.source = source_node
         self.destination = dest_node
-        self.setZValue(-1)
+        self.setZValue(0)
         self.connection = {'From': self.source.owned_node.label.name+'.'+self.source.name,
                            'To': self.destination.owned_node.label.name+'.'+self.destination.name}
         self.setToolTip(self.connection['From']+'>>>'+self.connection['To'])

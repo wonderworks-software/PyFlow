@@ -9,6 +9,7 @@ class NodeName(QtGui.QGraphicsTextItem, Colors):
         QtGui.QGraphicsTextItem.__init__(self)
         self.name = name
         self.parent = parent
+        self.setEnabled(False)
         self.setPlainText(self.name)
         self.setParentItem(parent)
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
