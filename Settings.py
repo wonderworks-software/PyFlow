@@ -22,6 +22,8 @@ class Spacings(object):
 class Colors(object):
 
     kNodeBackgrounds = QtGui.QColor(45, 45, 45, 100)
+    kSceneBackground = QtGui.QColor(65, 65, 65)
+    kGridColor = QtGui.QColor(100, 100, 100, 100)
     kConnectors = QtGui.QColor(0, 100, 0, 255)
     kPortLinesA = QtGui.QColor(0, 90, 0, 50)
     kPortLinesB = QtGui.QColor(0, 0, 90, 50)

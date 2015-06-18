@@ -21,6 +21,7 @@ if __name__ == '__main__':
 
     widget.scene_widget.addItem(node1)
     widget.scene_widget.addItem(node2)
+
     # widget.scene_widget.addItem(node3)
 
     widget.show()

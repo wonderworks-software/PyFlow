@@ -2,6 +2,7 @@ from Settings import *
 from PySide import QtGui
 from PySide import QtCore
 from Port import Port
+import random
 
 
 class NodeName(QtGui.QGraphicsTextItem, Colors):
@@ -79,6 +80,8 @@ class Node(QtGui.QGraphicsItem, Colors):
         self.add_port(PortTypes.kInput, 'in')
         self.add_port(PortTypes.kOutput, 'out')
 
+        self.setPos(self.graph.mapToScene(random.randint(50, 100), random.randint(50, 100)))
+
     def boundingRect(self):
 
         pen_width = 1.0
@@ -107,22 +110,20 @@ class Node(QtGui.QGraphicsItem, Colors):
         out = {}
         for i in [i.edgeList for i in self.inputs]:
             if not i.__len__() == 0:
-                out[i[0]] = [a.connection for a in i]
+                out[i[0]] = [e.connection for e in i]
         return out
 
     def get_output_edges(self):
         out = {}
         for i in [i.edgeList for i in self.outputs]:
             if not i.__len__() == 0:
-                out[i[0]] = [a.connection for a in i]
+                out[i[0]] = [e.connection for e in i]
         return out
 
     def mousePressEvent(self, event):
 
         self.update()
         QtGui.QGraphicsItem.mousePressEvent(self, event)
-        print [i for i in self.get_input_edges().itervalues()]
-        print [i for i in self.get_output_edges().itervalues()]
 
     def mouseReleaseEvent(self, event):
 

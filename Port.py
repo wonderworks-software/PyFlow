@@ -13,7 +13,6 @@ class Port(QtGui.QGraphicsWidget, Colors):
         self.edgeList = []
         self.port_type = None
         self.owned_node = None
-        self.setZValue(1)
         self.newPos = QtCore.QPointF()
         self.setFlag(QtGui.QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
@@ -53,7 +52,7 @@ class Port(QtGui.QGraphicsWidget, Colors):
 
     def mousePressEvent(self, event):
 
-        pass
+        self.scene().pressed_port = self
 
     def mouseReleaseEvent(self, event):
 

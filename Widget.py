@@ -2,9 +2,21 @@ from PySide import QtCore
 from PySide import QtGui
 import math
 from Node import Node
+from Settings import Colors
 
 
-class GraphWidget(QtGui.QGraphicsView):
+class SceneClass(QtGui.QGraphicsScene):
+    def __init__(self, parent):
+        super(SceneClass, self).__init__(parent)
+        self.setItemIndexMethod(self.NoIndex)
+        self.setParent(parent)
+        self.pressed_port = None
+
+    def mouseMoveEvent(self, event):
+        super(SceneClass, self).mouseMoveEvent(event)
+
+
+class GraphWidget(QtGui.QGraphicsView, Colors):
 
     def __init__(self):
         QtGui.QGraphicsView.__init__(self)
@@ -15,16 +27,15 @@ class GraphWidget(QtGui.QGraphicsView):
         self.timerId = 0
         self.setViewportUpdateMode(self.FullViewportUpdate)
 
-        self.scene_widget = QtGui.QGraphicsScene(self)
-        self.scene_widget.setItemIndexMethod(QtGui.QGraphicsScene.NoIndex)
-        self.scene_widget.setSceneRect(-500, -500, 1000, 1000)
+        self.scene_widget = SceneClass(self)
+        self.scene_widget.setSceneRect(self.viewport().rect())
         self.setScene(self.scene_widget)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
         self.scale(2.0, 2.0)
-        self.setMinimumSize(400, 400)
+        self.setMinimumSize(800, 600)
         self.setWindowTitle(self.tr("Nodes"))
 
     def itemMoved(self):
@@ -66,15 +77,6 @@ class GraphWidget(QtGui.QGraphicsView):
         for node in nodes:
             node.update()
 
-        # items_moved = False
-        # for node in nodes:
-        #     if node.advance():
-        #         items_moved = True
-        #
-        # if not items_moved:
-        #     self.killTimer(self.timerId)
-        #     self.timerId = 0
-
     def wheelEvent(self, event):
 
         self.scale_view(math.pow(2.0, event.delta() / 240.0))
@@ -84,16 +86,16 @@ class GraphWidget(QtGui.QGraphicsView):
         # Shadow.
         scene_rect = self.sceneRect()
         # Fill.
-        gradient = QtGui.QColor(65, 65, 65)
+        gradient = self.kSceneBackground
         painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(gradient))
-        painter.setBrush(QtCore.Qt.NoBrush)
+        painter.setPen(QtGui.QPen())
         painter.drawRect(scene_rect)
 
     def scale_view(self, scale_factor):
 
         factor = self.matrix().scale(scale_factor, scale_factor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
 
-        if factor < 0.07 or factor > 100:
+        if factor < 0.5 or factor > 10:
             return
 
         self.scale(scale_factor, scale_factor)
