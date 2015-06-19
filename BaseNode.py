@@ -54,12 +54,13 @@ class NodeName(QtGui.QGraphicsTextItem):
 
 class Node(QtGui.QGraphicsItem):
     def __init__(self, name, graph_widget, w=120, colors=Colors, spacings=Spacings, port_types=PortTypes):
+        QtGui.QGraphicsItem.__init__(self)
         self.Type = 'NODE'
         self.color_idx = 1
         self.colors = colors
+        self.height_offset = 3
         self.spacings = spacings
         self.port_types = port_types
-        QtGui.QGraphicsItem.__init__(self)
         self.v_form = QtGui.QGraphicsWidget()
         self.w = w
         self.h = 40
@@ -85,8 +86,6 @@ class Node(QtGui.QGraphicsItem):
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.v_form.setLayout(self.layout)
         self.v_form.setX(self.v_form.x()-self.spacings.kPortOffset/2)
-        self.add_port(self.port_types.kInput, 'in')
-        self.add_port(self.port_types.kOutput, 'out')
 
         self.setPos(self.graph.mapToScene(random.randint(50, 100), random.randint(50, 100)))
 
@@ -94,14 +93,14 @@ class Node(QtGui.QGraphicsItem):
 
         pen_width = 1.0
         return QtCore.QRectF(self.sizes[0] - pen_width / 2, self.sizes[1] - pen_width / 2,
-                             self.sizes[2] + pen_width, self.v_form.boundingRect().bottomRight().y() + pen_width + 3)
+                             self.sizes[2] + pen_width, self.v_form.boundingRect().bottomRight().y() + pen_width + self.height_offset)
 
     def paint(self, painter, option, widget):
 
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtCore.Qt.darkGray)
         painter.drawRoundedRect(self.sizes[0], self.sizes[1],
-                                self.sizes[2], self.v_form.boundingRect().bottomRight().y()+3,
+                                self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
                                 self.sizes[4], self.sizes[5])
 
         color = self.colors.kNodeBackgrounds
@@ -111,7 +110,7 @@ class Node(QtGui.QGraphicsItem):
         painter.setBrush(QtGui.QBrush(color))
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 0))
         painter.drawRoundedRect(self.sizes[0], self.sizes[1],
-                                self.sizes[2], self.v_form.boundingRect().bottomRight().y()+3,
+                                self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
                                 self.sizes[4], self.sizes[5])
 
     def get_input_edges(self):
@@ -147,7 +146,7 @@ class Node(QtGui.QGraphicsItem):
         lbl = QtGui.QLabel(name)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         connector_name.setWidget(lbl)
-        lyt = QtGui.QGraphicsLinearLayout()
+        self.lyt = QtGui.QGraphicsLinearLayout()
         form = QtGui.QGraphicsWidget()
         # set color
         palette = form.palette()
@@ -159,20 +158,20 @@ class Node(QtGui.QGraphicsItem):
             self.color_idx *= -1
         form.setPalette(palette)
 
-        lyt.setSpacing(self.spacings.kPortSpacing)
+        self.lyt.setSpacing(self.spacings.kPortSpacing)
         if port_type == self.port_types.kInput:
             lbl.setAlignment(QtCore.Qt.AlignLeft)
-            lyt.addItem(cn)
-            lyt.addItem(connector_name)
+            self.lyt.addItem(cn)
+            self.lyt.addItem(connector_name)
             self.inputs.append(cn)
         elif port_type == self.port_types.kOutput:
             lbl.setAlignment(QtCore.Qt.AlignRight)
-            lyt.addItem(connector_name)
-            lyt.addItem(cn)
+            self.lyt.addItem(connector_name)
+            self.lyt.addItem(cn)
             self.outputs.append(cn)
-        lyt.setContentsMargins(1, 1, 1, 1)
-        lyt.setMaximumHeight(self.spacings.kPortOffset)
-        form.setLayout(lyt)
+        self.lyt.setContentsMargins(1, 1, 1, 1)
+        self.lyt.setMaximumHeight(self.spacings.kPortOffset)
+        form.setLayout(self.lyt)
         form.setZValue(1)
         form.setAutoFillBackground(True)
         form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))

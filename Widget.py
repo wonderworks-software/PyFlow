@@ -1,7 +1,7 @@
 from PySide import QtCore
 from PySide import QtGui
 import math
-from Node import Node
+from BaseNode import Node
 from Settings import Colors
 
 
@@ -48,14 +48,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors):
 
     def keyPressEvent(self, event):
 
-        key = event.key()
+        # key = event.key()
 
-        if key == QtCore.Qt.Key_Plus:
-            self.scale_view(1.2)
-        elif key == QtCore.Qt.Key_Minus:
-            self.scale_view(1 / 1.2)
-        else:
-            QtGui.QGraphicsView.keyPressEvent(self, event)
+        # if key == QtCore.Qt.Key_Plus:
+        #     self.scale_view(1.2)
+        # elif key == QtCore.Qt.Key_Minus:
+        #     self.scale_view(1 / 1.2)
+        # else:
+        QtGui.QGraphicsView.keyPressEvent(self, event)
 
     def mousePressEvent(self,  event):
 

@@ -1,5 +1,6 @@
 import sys
-from Node import Node
+from BaseNode import Node
+from IntNode import IntNode
 from Widget import GraphWidget
 from Settings import *
 
@@ -8,20 +9,16 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     widget = GraphWidget('test')
 
-    custom_colors = Colors()
-    custom_colors.kNodeBackgrounds = QtGui.QColor(80, 0, 0, 100)
-    node1 = Node('A', widget, 180, custom_colors)
-    node2 = Node('B', widget)
-    # node3 = Node('C', widget, 120, 40)
+    node1 = Node('BaseNodeA', widget)
+    int_node1 = IntNode('IntNode', widget)
+    int_node2 = IntNode('IntNode2', widget)
 
-    node1.add_port(PortTypes.kOutput, '1', Colors.kBlue)
-    node1.add_port(PortTypes.kOutput, '2')
-
-    node2.add_port(PortTypes.kInput, '1')
-    node2.add_port(PortTypes.kInput, '2')
+    node1.add_port(PortTypes.kInput, 'in1')
+    node1.add_port(PortTypes.kInput, 'in2')
 
     widget.scene_widget.addItem(node1)
-    widget.scene_widget.addItem(node2)
+    widget.scene_widget.addItem(int_node1)
+    widget.scene_widget.addItem(int_node2)
 
     # widget.scene_widget.addItem(node3)
 
