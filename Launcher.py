@@ -1,16 +1,17 @@
 import sys
 from Node import Node
 from Widget import GraphWidget
-from PySide import QtGui
 from Settings import *
 
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    widget = GraphWidget()
+    widget = GraphWidget('test')
 
-    node1 = Node('A', widget, 120, 40)
-    node2 = Node('B', widget, 120, 40)
+    custom_colors = Colors()
+    custom_colors.kNodeBackgrounds = QtGui.QColor(80, 0, 0, 100)
+    node1 = Node('A', widget, 180, custom_colors)
+    node2 = Node('B', widget)
     # node3 = Node('C', widget, 120, 40)
 
     node1.add_port(PortTypes.kOutput, '1', Colors.kBlue)

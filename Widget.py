@@ -8,6 +8,7 @@ from Settings import Colors
 class SceneClass(QtGui.QGraphicsScene):
     def __init__(self, parent):
         super(SceneClass, self).__init__(parent)
+        self.Type = 'SCENE'
         self.setItemIndexMethod(self.NoIndex)
         self.setParent(parent)
         self.pressed_port = None
@@ -18,13 +19,14 @@ class SceneClass(QtGui.QGraphicsScene):
 
 class GraphWidget(QtGui.QGraphicsView, Colors):
 
-    def __init__(self):
+    def __init__(self, name):
         QtGui.QGraphicsView.__init__(self)
-
+        self.Type = 'VIEW'
         self.last_cursor_item = None
         self._isPanning = False
         self._mousePressed = False
         self.timerId = 0
+        self.scale(2.0, 2.0)
         self.setViewportUpdateMode(self.FullViewportUpdate)
 
         self.scene_widget = SceneClass(self)
@@ -34,9 +36,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors):
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
-        self.scale(2.0, 2.0)
+        self.factor = 1
+        self.scale(self.factor, self.factor)
         self.setMinimumSize(800, 600)
-        self.setWindowTitle(self.tr("Nodes"))
+        self.setWindowTitle(self.tr(name))
 
     def itemMoved(self):
 
@@ -51,10 +54,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors):
             self.scale_view(1.2)
         elif key == QtCore.Qt.Key_Minus:
             self.scale_view(1 / 1.2)
-        elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_Enter:
-            for item in self.scene().items():
-                if isinstance(item, Node):
-                    item.setPos(-150 + QtCore.qrand() % 300, -150 + QtCore.qrand() % 300)
         else:
             QtGui.QGraphicsView.keyPressEvent(self, event)
 
@@ -93,9 +92,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors):
 
     def scale_view(self, scale_factor):
 
-        factor = self.matrix().scale(scale_factor, scale_factor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
+        self.factor = self.matrix().scale(scale_factor, scale_factor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
 
-        if factor < 0.5 or factor > 10:
+        if self.factor < 0.3 or self.factor > 5:
             return
 
         self.scale(scale_factor, scale_factor)
