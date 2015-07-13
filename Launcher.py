@@ -1,26 +1,35 @@
-import sys
-from BaseNode import Node
-from IntNode import IntNode
-from Widget import GraphWidget
-from Settings import *
+from AbstractGraph import *
 
+G = Graph()
 
-if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
-    widget = GraphWidget('test')
+intNode1 = AGIntNode('intNode1')
+intNode1.set_data(3, False)
 
-    node1 = Node('BaseNodeA', widget)
-    int_node1 = IntNode('IntNode', widget)
-    int_node2 = IntNode('IntNode2', widget)
+intNode2 = AGIntNode('intNode2')
+intNode2.set_data(5, False)
 
-    node1.add_port(PortTypes.kInput, 'in1')
-    node1.add_port(PortTypes.kInput, 'in2')
+intNode3 = AGIntNode('intNode3')
+intNode3.set_data(7, False)
 
-    widget.scene_widget.addItem(node1)
-    widget.scene_widget.addItem(int_node1)
-    widget.scene_widget.addItem(int_node2)
+sumNode1 = AGSumNode('SumNode1')
+sumNode2 = AGSumNode('SumNode2')
 
-    # widget.scene_widget.addItem(node3)
+G.add_node(intNode1)
+G.add_node(intNode2)
+G.add_node(intNode3)
+G.add_node(sumNode1)
+G.add_node(sumNode2)
 
-    widget.show()
-    sys.exit(app.exec_())
+G.add_edge(intNode1.output, sumNode1.inputA)
+G.add_edge(intNode2.output, sumNode1.inputB)
+G.add_edge(sumNode1.output, sumNode2.inputA)
+G.add_edge(intNode3.output, sumNode2.inputB)
+
+# G.plot()
+# print 'changing input data\n'
+# intNode1.set_data(5, True)
+print 'request value\n'
+print sumNode2.output.get_data()
+print 'changing int3 value to 8\n'
+intNode3.set_data(8)
+print sumNode2.output.get_data()
