@@ -20,6 +20,17 @@ def push(start_from):
         pass
 
 
+class AGObjectTypes(object):
+
+    tPort = 'port_object'
+    tEdge = 'edge_object'
+    tNode = 'node_object'
+    tGraph = 'graph_object'
+
+    def __init__(self):
+        super(AGObjectTypes, self).__init__()
+
+
 class AGPortTypes(object):
 
     kInput = 'input_port'
@@ -29,12 +40,13 @@ class AGPortTypes(object):
         super(AGPortTypes, self).__init__()
 
 
-class Edge(object):
+class AGEdge(object):
 
     def __init__(self, source, destination):
-        super(Edge, self).__init__()
+        super(AGEdge, self).__init__()
         self.source = source
         self.destination = destination
+        self.object_type = AGObjectTypes.tEdge
 
     def __str__(self):
         return self.source.parent.name + '.' + self.source.name + \
@@ -47,6 +59,7 @@ class AGPort(object):
         super(AGPort, self).__init__()
         self.name = name
         self.type = None
+        self.object_type = AGObjectTypes.tPort
         self.dirty = False
         self._data = None
         self.parent = parent
@@ -58,7 +71,7 @@ class AGPort(object):
 
         if self.type == AGPortTypes.kOutput:
             if self.dirty:
-                print self.parent.name, '.', self.name, 'dirty. requesting compute'
+                # print self.parent.name, '.', self.name, 'dirty. requesting compute'
                 self.parent.compute()
                 self.dirty = False
                 return self._data
@@ -66,12 +79,15 @@ class AGPort(object):
                 return self._data
         if self.type == AGPortTypes.kInput:
             if self.dirty:
-                out = [i for i in self.affected_by if i.type == AGPortTypes.kOutput][0]
-                out.parent.compute()
-                print out.parent.name, '.', out.name, 'dirty. requesting compute'
-                self.dirty = False
-                out.dirty = False
-                return out._data
+                out = [i for i in self.affected_by if i.type == AGPortTypes.kOutput]
+                if not out == []:
+                    out[0].parent.compute()
+                    # print out.parent.name, '.', out.name, 'dirty. requesting compute'
+                    self.dirty = False
+                    out[0].dirty = False
+                    return out[0]._data
+                else:
+                    return self._data
             else:
                 return self._data
 
@@ -81,11 +97,21 @@ class AGPort(object):
         if dirty_propagate:
             push(self)
 
+    def connected(self):
+        # calls when new conection
+        return
+
+    def disconnected(self):
+        # calls when connection broken
+        return
+
 
 class AGNode(object):
     def __init__(self, name):
         super(AGNode, self).__init__()
         self.name = name
+        self.object_type = AGObjectTypes.tNode
+        self.selected = False
         self.inputs = []
         self.outputs = []
 
@@ -114,6 +140,14 @@ class AGNode(object):
         # do stuff
 
         # write data to outputs
+        return
+
+    def connected(self):
+        # connected code
+        return
+
+    def disconnected(self):
+        # disconncted code
         return
 
 
@@ -150,9 +184,11 @@ class AGIntNode(AGNode):
 
 class Graph(object):
 
-    def __init__(self):
+    def __init__(self, name):
 
         super(Graph, self).__init__()
+        self.object_type = AGObjectTypes.tGraph
+        self.name = name
         self.nodes = []
         self.edges = []
 
@@ -180,15 +216,27 @@ class Graph(object):
         if src.type == dst.type:
             print 'same types can not be connected'
             return
+        if src.parent == dst.parent:
+            print 'can not connect to self'
+            return
 
         portAffects(src, dst)
-        e = Edge(src, dst)
+        e = AGEdge(src, dst)
         self.edges.append(e)
         src.edge_list.append(e)
         dst.edge_list.append(e)
         dst.set_data(src.get_data())
         dst.dirty = True
+        dst.parent.connected()
         return e
+
+    def remove_edge(self, edge):
+
+        edge.destination.affected_by.remove(edge.source)
+        edge.source.affects.remove(edge.destination)
+        edge.destination.edge_list.remove(edge)
+        edge.source.edge_list.remove(edge)
+        edge.destination.parent.disconnected()
 
     def plot(self):
         for n in self.nodes:

@@ -1,6 +1,7 @@
+from time import sleep
 from AbstractGraph import *
 
-G = Graph()
+G = Graph('TEST_GRAPH')
 
 intNode1 = AGIntNode('intNode1')
 intNode1.set_data(3, False)
@@ -25,11 +26,7 @@ G.add_edge(intNode2.output, sumNode1.inputB)
 G.add_edge(sumNode1.output, sumNode2.inputA)
 G.add_edge(intNode3.output, sumNode2.inputB)
 
-# G.plot()
-# print 'changing input data\n'
-# intNode1.set_data(5, True)
-print 'request value\n'
 print sumNode2.output.get_data()
-print 'changing int3 value to 8\n'
-intNode3.set_data(8)
+intNode1.set_data(9)
 print sumNode2.output.get_data()
+# G.remove_edge(sumNode2.output.edge_list[0])
