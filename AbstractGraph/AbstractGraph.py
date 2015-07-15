@@ -151,42 +151,11 @@ class AGNode(object):
         return
 
 
-class AGSumNode(AGNode):
-    def __init__(self, name):
-        super(AGSumNode, self).__init__(name)
-        self.name = name
-        self.inputA = self.add_port('inpA', AGPortTypes.kInput)
-        self.inputB = self.add_port('inpB', AGPortTypes.kInput)
-        self.output = self.add_port('out', AGPortTypes.kOutput)
-        portAffects(self.inputA, self.output)
-        portAffects(self.inputB, self.output)
-
-    def compute(self):
-
-        inpA_data = self.inputA.get_data()
-        inpB_data = self.inputB.get_data()
-
-        result = inpA_data + inpB_data
-
-        self.output.set_data(result, False)
-
-
-class AGIntNode(AGNode):
-    def __init__(self, name):
-        super(AGIntNode, self).__init__(name)
-        self.name = name
-        self.output = self.add_port('out', AGPortTypes.kOutput)
-        self.set_data(0, False)
-
-    def set_data(self, data, dirty_propagate=True):
-        self.output.set_data(data, dirty_propagate)
-
-
-class Graph(object):
+class AGraph(object):
 
     def __init__(self, name):
 
-        super(Graph, self).__init__()
+        super(AGraph, self).__init__()
         self.object_type = AGObjectTypes.tGraph
         self.name = name
         self.nodes = []
