@@ -98,6 +98,7 @@ class AGPort(object):
 class AGNode(object):
     def __init__(self, name):
         super(AGNode, self).__init__()
+        self.graph = None
         self.name = name
         self.object_type = AGObjectTypes.tNode
         self.selected = False
@@ -142,6 +143,48 @@ class AGraph(object):
         self.nodes = []
         self.edges = []
 
+    def get_evaluation_order(self, node, dirty_only=True):
+
+        order = {0: [node]}
+        def foo(n):
+            next_layer_nodes = self.get_next_layer_nodes(n, AGPortTypes.kInput, dirty_only)
+            layer_idx = max(order.iterkeys()) + 1
+            for n in next_layer_nodes:
+                if layer_idx not in order:
+                    order[layer_idx] = []
+                order[layer_idx].append(n)
+            if not next_layer_nodes == []:
+                for i in next_layer_nodes:
+                    foo(i)
+        foo(node)
+        return order
+
+    @staticmethod
+    def get_next_layer_nodes(node, direction=AGPortTypes.kInput, dirty_only=False):
+        nodes = []
+        if direction == AGPortTypes.kInput:
+            if not node.inputs == []:
+                for i in node.inputs:
+                    if not i.affected_by == []:
+                        for a in i.affected_by:
+                            if not dirty_only:
+                                nodes.append(a.parent)
+                            else:
+                                if a.dirty:
+                                    nodes.append(a.parent)
+            return nodes
+        if direction == AGPortTypes.kOutput:
+            if not node.outputs == []:
+                for i in node.outputs:
+                    if not i.affects == []:
+                        for p in i.affects:
+                            if not dirty_only:
+                                nodes.append(p.parent)
+                            else:
+                                if not [dout for dout in p.affects if dout.dirty] == []:
+                                    nodes.append(p.parent)
+            return nodes
+
     def nodes(self):
 
         return self.nodes
@@ -149,6 +192,7 @@ class AGraph(object):
     def add_node(self, node):
 
         self.nodes.append(node)
+        node.graph = self
 
     def remove_node_by_name(self, name):
 
@@ -193,9 +237,9 @@ class AGraph(object):
         for n in self.nodes:
             print n.name
             for inp in n.inputs:
-                print '|---', inp.name, 'data - {0}'.format(inp._data),\
-                    'affects on', [i.name for i in inp.affects],\
-                    'affected_by ', [p.name for p in inp.affected_by],\
+                print '|---', inp.name, 'data - {0}'.format(inp._data), \
+                    'affects on', [i.name for i in inp.affects], \
+                    'affected_by ', [p.name for p in inp.affected_by], \
                     'DIRTY ', inp.dirty
                 for e in inp.edge_list:
                     print '\t|---', e.__str__()
