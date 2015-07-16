@@ -11,9 +11,9 @@ def push(start_from):
 
     if not start_from.affects == []:
         # print start_from.parent.name, start_from.name, '|DIRTY|>',
-        start_from.dirty = True
+        start_from.set_dirty()
         for i in start_from.affects:
-            i.dirty = True
+            i.set_dirty()
             push(i)
 
 
@@ -64,33 +64,54 @@ class AGPort(object):
         self.affected_by = []
         self.edge_list = []
 
+    def set_clean(self):
+
+        self.dirty = False
+
+    def set_dirty(self):
+
+        self.dirty = True
+        for i in self.affects:
+            i.dirty = True
+
     def get_data(self):
 
         if self.type == AGPortTypes.kOutput:
             if self.dirty:
-                # print self.parent.name, '.', self.name, 'dirty. requesting compute'
-                self.parent.compute()
+                compute_order = self.parent.graph.get_evaluation_order(self.parent)
+                for i in reversed(compute_order.keys()):
+                    for n in compute_order[i]:
+                        print n.name, 'calling compute'
+                        n.compute()
                 self.dirty = False
                 return self._data
             else:
                 return self._data
         if self.type == AGPortTypes.kInput:
             if self.dirty:
-                out = [i for i in self.affected_by if i.type == AGPortTypes.kOutput]
+                out = [i for i in self.affected_by]
                 if not out == []:
-                    # print out[0].parent.name, '.', out[0].name, 'dirty. requesting compute'
-                    out[0].parent.compute()
+                    compute_order = out[0].parent.graph.get_evaluation_order(out[0].parent)
+                    for i in reversed(compute_order.keys()):
+                        for n in compute_order[i]:
+                            print n.name, 'calling compute'
+                            n.compute()
                     self.dirty = False
                     out[0].dirty = False
                     return out[0]._data
-                else:
-                    return self._data
             else:
                 return self._data
+        else:
+            return self._data
 
     def set_data(self, data, dirty_propagate=True):
 
         self._data = data
+        self.set_clean()
+        if self.type == AGPortTypes.kOutput:
+            for i in self.affects:
+                i._data = data
+                i.set_clean()
         if dirty_propagate:
             push(self)
 
@@ -221,7 +242,7 @@ class AGraph(object):
         dst.edge_list.append(e)
         dst.dirty = True
         src.dirty = True
-        dst.set_data(src._data, False)
+        dst._data = src._data
         return e
 
     @staticmethod
