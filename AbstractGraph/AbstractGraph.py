@@ -1,3 +1,6 @@
+from threading import Thread
+
+
 def portAffects(affects_port, affected_port):
     '''
     this function for establish dependencies bitween ports,
@@ -5,6 +8,24 @@ def portAffects(affects_port, affected_port):
     '''
     affects_port.affects.append(affected_port)
     affected_port.affected_by.append(affects_port)
+
+
+def calc_multithreaded(ls):
+    print 'START', [n.name for n in ls]
+    def compute_executor():
+        for n in ls:
+            n.compute()
+    threads = []
+    for n in ls:
+        t = Thread(target=compute_executor, name='{0}_thread'.format(n.name))
+        threads.append(t)
+        t.start()
+        print n.name, 'started in', t.name
+
+    print '_WAITING FOR ALL LAYER NODES TO FINISH'
+    [t.join() for t in threads]
+
+    print 'DONE', [n.name for n in ls], '\n'
 
 
 def push(start_from):
@@ -64,6 +85,10 @@ class AGPort(object):
         self.affected_by = []
         self.edge_list = []
 
+    def current_value(self):
+
+        return self._data
+
     def set_clean(self):
 
         self.dirty = False
@@ -79,10 +104,14 @@ class AGPort(object):
         if self.type == AGPortTypes.kOutput:
             if self.dirty:
                 compute_order = self.parent.graph.get_evaluation_order(self.parent)
-                for i in reversed(compute_order.keys()):
-                    for n in compute_order[i]:
-                        print n.name, 'calling compute'
-                        n.compute()
+                for i in reversed(sorted([i for i in compute_order.keys()])):
+                    if not self.parent.graph.is_multithreaded():
+                        for n in compute_order[i]:
+                            print n.name, 'calling compute'
+                            n.compute()
+                    else:
+                        print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
+                        calc_multithreaded(compute_order[i])
                 self.dirty = False
                 return self._data
             else:
@@ -92,10 +121,14 @@ class AGPort(object):
                 out = [i for i in self.affected_by]
                 if not out == []:
                     compute_order = out[0].parent.graph.get_evaluation_order(out[0].parent)
-                    for i in reversed(compute_order.keys()):
-                        for n in compute_order[i]:
-                            print n.name, 'calling compute'
-                            n.compute()
+                    for i in reversed(sorted([i for i in compute_order.keys()])):
+                        if not self.parent.graph.is_multithreaded():
+                            for n in compute_order[i]:
+                                print n.name, 'calling compute'
+                                n.compute()
+                        else:
+                            print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
+                            calc_multithreaded(compute_order[i])
                     self.dirty = False
                     out[0].dirty = False
                     return out[0]._data
@@ -160,13 +193,23 @@ class AGraph(object):
 
         super(AGraph, self).__init__()
         self.object_type = AGObjectTypes.tGraph
+        self._multithreaded = False
         self.name = name
         self.nodes = []
         self.edges = []
 
+    def is_multithreaded(self):
+
+        return self._multithreaded
+
+    def set_multithreaded(self, state):
+
+        self._multithreaded = state
+
     def get_evaluation_order(self, node, dirty_only=True):
 
         order = {0: [node]}
+
         def foo(n):
             next_layer_nodes = self.get_next_layer_nodes(n, AGPortTypes.kInput, dirty_only)
             layer_idx = max(order.iterkeys()) + 1
@@ -178,6 +221,12 @@ class AGraph(object):
                 for i in next_layer_nodes:
                     foo(i)
         foo(node)
+        # make sure no copies of nodes in higher layers (non directional cycles)
+        for i in reversed(sorted([i for i in order.iterkeys()])):
+            for iD in range(i-1, -1, -1):
+                for check_node in order[i]:
+                    if check_node in order[iD]:
+                        order[iD].remove(check_node)
         return order
 
     @staticmethod
@@ -240,8 +289,7 @@ class AGraph(object):
         self.edges.append(e)
         src.edge_list.append(e)
         dst.edge_list.append(e)
-        dst.dirty = True
-        src.dirty = True
+        src.set_dirty()
         dst._data = src._data
         return e
 
