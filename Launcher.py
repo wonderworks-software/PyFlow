@@ -23,12 +23,13 @@ G.add_node(sumNode1)
 G.add_node(sumNode2)
 
 G.add_edge(intNode1.output, sumNode1.inputA)
+G.add_edge(intNode1.output, sumNode2.inputA)
 G.add_edge(intNode2.output, sumNode1.inputB)
-G.add_edge(sumNode1.output, sumNode2.inputA)
-G.add_edge(intNode3.output, sumNode2.inputB)
+G.add_edge(sumNode1.output, sumNode2.inputB)
+# G.add_edge(intNode3.output, sumNode2.inputB)
 
-print sumNode2.output.get_data()
-intNode2.set_data(4)
-G.plot()
+order = G.get_evaluation_order(sumNode2, AGPortTypes.kInput)
+for layer, nodes in order.iteritems():
+    print layer, [n.name for n in nodes]
 # print sumNode2.output.get_data()
 # intNode1.set_data(4)
