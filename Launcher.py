@@ -29,7 +29,7 @@ G.add_edge(sumNode1.output, sumNode2.inputB)
 # G.add_edge(intNode3.output, sumNode2.inputB)
 
 order = G.get_evaluation_order(sumNode2, AGPortTypes.kInput)
-for layer, nodes in order.iteritems():
-    print layer, [n.name for n in nodes]
-# print sumNode2.output.get_data()
-# intNode1.set_data(4)
+for i in reversed(sorted([i for i in order.iterkeys()])):
+    print i, [n.name for n in order[i]]
+    for iD in range(i-1, -1, -1):
+        print '\t', iD
