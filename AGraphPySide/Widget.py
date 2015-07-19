@@ -3,6 +3,8 @@ from PySide import QtGui
 import math
 from BaseNode import Node
 from Settings import Colors
+from AbstractGraph import *
+from Edge import Edge
 
 
 class SceneClass(QtGui.QGraphicsScene):
@@ -17,12 +19,17 @@ class SceneClass(QtGui.QGraphicsScene):
         super(SceneClass, self).mouseMoveEvent(event)
 
 
-class GraphWidget(QtGui.QGraphicsView, Colors):
+class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def __init__(self, name):
         QtGui.QGraphicsView.__init__(self)
-        self.Type = 'VIEW'
-        self.last_cursor_item = None
+        AGraph.__init__(self, name)
+        self.nodes = []
+        self.edges = []
+        self.object_type = AGObjectTypes.tGraph
+        self.name = name
+        self.pressed_item = None
+        self.released_item = None
         self._isPanning = False
         self._mousePressed = False
         self.timerId = 0
@@ -43,22 +50,15 @@ class GraphWidget(QtGui.QGraphicsView, Colors):
 
     def itemMoved(self):
 
-        if not self.timerId:
-            self.timerId = self.startTimer(1000 / 25)
+        pass
 
     def keyPressEvent(self, event):
 
-        # key = event.key()
-
-        # if key == QtCore.Qt.Key_Plus:
-        #     self.scale_view(1.2)
-        # elif key == QtCore.Qt.Key_Minus:
-        #     self.scale_view(1 / 1.2)
-        # else:
         QtGui.QGraphicsView.keyPressEvent(self, event)
 
     def mousePressEvent(self,  event):
 
+        self.pressed_item = self.itemAt(event.pos())
         if event.button() == QtCore.Qt.LeftButton:
             self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
         super(GraphWidget, self).mousePressEvent(event)
@@ -66,7 +66,23 @@ class GraphWidget(QtGui.QGraphicsView, Colors):
     def mouseReleaseEvent(self, event):
 
         self.setDragMode(QtGui.QGraphicsView.NoDrag)
-        self.last_cursor_item = self.itemAt(event.pos())
+        self.released_item = self.itemAt(event.pos())
+        p_itm = self.pressed_item
+        r_itm = self.released_item
+        do_connect = True
+        for i in [p_itm, r_itm]:
+            if not i:
+                do_connect = False
+                break
+            if not hasattr(i, 'object_type'):
+                do_connect = False
+                break
+            if not i.object_type == AGObjectTypes.tPort:
+                do_connect = False
+                break
+        if do_connect:
+            self.add_edge(p_itm, r_itm)
+
         super(GraphWidget, self).mouseReleaseEvent(event)
 
     def timerEvent(self, event):
@@ -89,6 +105,57 @@ class GraphWidget(QtGui.QGraphicsView, Colors):
         painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(gradient))
         painter.setPen(QtGui.QPen())
         painter.drawRect(scene_rect)
+
+    def add_node(self, node):
+
+        self.nodes.append(node)
+        node.graph = self
+        self.scene_widget.addItem(node)
+
+    def add_edge(self, p1, p2):
+
+        debug = self.is_debug()
+        if p1.type == AGPortTypes.kInput:
+            src = p2
+            dst = p1
+        else:
+            src = p1
+            dst = p2
+
+        if src in dst.affected_by:
+            if debug:
+                print 'already connected. skipped'
+            return
+        if src.type == dst.type:
+            if debug:
+                print 'same types can not be connected'
+            return
+        if src.parent == dst.parent:
+            if debug:
+                print 'can not connect to self'
+            return
+
+        edge = Edge(src, dst)
+        portAffects(src, dst)
+
+        self.edges.append(edge)
+        src._data = dst._data
+
+        self.scene().addItem(edge)
+        self.edges.append(edge)
+        src.edge_list.append(edge)
+        dst.edge_list.append(edge)
+        src.set_dirty()
+        return edge
+
+    def remove_edge(self, edge):
+
+        edge.destination.affected_by.remove(edge.source)
+        edge.source.affects.remove(edge.destination)
+        edge.destination.edge_list.remove(edge)
+        edge.source.edge_list.remove(edge)
+        self.edges.remove(edge)
+        self.scene().removeItem(edge)
 
     def scale_view(self, scale_factor):
 

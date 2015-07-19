@@ -1,34 +1,35 @@
-from AbstractGraph import *
+from PySide import QtGui
+from AGraphPySide import Widget
+from AGraphPySide import IntNode
+from AGraphPySide import SumNode
+# from AGraphPySide import Edge
 
 
-G = AGraph('TEST_GRAPH')
-G.set_multithreaded(True)
+if __name__ == '__main__':
+    import sys
 
-intNode1 = AGIntNode('intNode1')
-intNode1.set_data(3, False)
+    app = QtGui.QApplication(sys.argv)
 
-intNode2 = AGIntNode('intNode2')
-intNode2.set_data(5, False)
+    G = Widget.GraphWidget('TEST_GRAPH')
+    G.set_debug(True)
+    G.set_multithreaded(True)
 
-# intNode3 = AGIntNode('intNode3')
-# intNode3.set_data(7, False)
+    intNode1 = IntNode.IntNode('int1', G)
+    intNode2 = IntNode.IntNode('int2', G)
 
+    sumNode1 = SumNode.SumNode('sumNode1', G)
+    sumNode2 = SumNode.SumNode('sumNode2', G)
 
-sumNode1 = AGSumNode('SumNode1')
-sumNode2 = AGSumNode('SumNode2')
+    G.add_node(intNode1)
+    G.add_node(intNode2)
+    G.add_node(sumNode1)
+    G.add_node(sumNode2)
 
-G.add_node(intNode1)
-G.add_node(intNode2)
-# G.add_node(intNode3)
-G.add_node(sumNode1)
-G.add_node(sumNode2)
+    G.add_edge(intNode1.output, sumNode1.inputA)
+    G.add_edge(intNode1.output, sumNode2.inputA)
+    G.add_edge(intNode2.output, sumNode1.inputB)
+    G.add_edge(sumNode1.output, sumNode2.inputB)
 
-G.add_edge(intNode1.output, sumNode1.inputA)
-G.add_edge(intNode2.output, sumNode1.inputB)
-G.add_edge(intNode1.output, sumNode2.inputA)
-G.add_edge(sumNode1.output, sumNode2.inputB)
-# G.add_edge(intNode3.output, sumNode2.inputB)
-
-print sumNode2.output.get_data()
-# intNode1.set_data(4)
-# print sumNode2.output.get_data()
+    G.show()
+    # G.plot()
+    sys.exit(app.exec_())

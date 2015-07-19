@@ -2,17 +2,28 @@ import BaseNode
 from Settings import *
 from Port import *
 from PySide import QtCore
+from AbstractGraph import *
 
 
-class IntNode(BaseNode.Node):
-    def __init__(self, name, graph_widget):
-        super(IntNode, self).__init__(name, graph_widget, w=120, colors=Colors, spacings=Spacings, port_types=PortTypes)
-        self.data = 5
-        self.port_types = PortTypes
+class SBox(QtGui.QSpinBox):
+    """docstring for SBox"""
+    def __init__(self, foo):
+        super(SBox, self).__init__()
+        self.foo = foo
+        self.valueChanged.connect(self.foo)
+
+
+class IntNode(BaseNode.Node, AGNode):
+    def __init__(self, name, graph):
+        super(IntNode, self).__init__(name, graph, w=120, colors=Colors, spacings=Spacings)
+        AGNode.__init__(self, name)
+        self.spin_box = SBox(self.set_data)
+        self.graph = graph
         self.spacings = Spacings
         # self.height_offset = 15
         self.colors = Colors
-        self.add_port(self.port_types.kOutput, 'out', self.colors.kInteger)
+        self.output = self._add_port(AGPortTypes.kOutput, 'out')
+        self.compute()
 
     def paint(self, painter, option, widget):
         painter.setPen(QtCore.Qt.NoPen)
@@ -31,26 +42,21 @@ class IntNode(BaseNode.Node):
                                 self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
                                 self.sizes[4], self.sizes[5])
 
-    def get_data(self):
+    def _add_port(self, port_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 
-        return self.data
-
-    def add_port(self, port_type, name, color=QtGui.QColor(0, 100, 0, 255)):
-
-        cn = Port(name, 10, 10, color)
-        cn.port_type = port_type
-        cn.owned_node = self
+        cn = Port(name, self, 10, 10, color)
+        cn.type = port_type
+        cn.parent = self
         connector_name = QtGui.QGraphicsProxyWidget()
         spin_box_proxy = QtGui.QGraphicsProxyWidget()
         spin_box_proxy.setScale(0.5)
         lbl = QtGui.QLabel(name)
-        spin_box = QtGui.QSpinBox()
-        spin_box.setMaximum(999999999)
-        spin_box.setMinimum(-999999999)
-        spin_box.setAlignment(QtCore.Qt.AlignRight)
+        self.spin_box.setMaximum(999999999)
+        self.spin_box.setMinimum(-999999999)
+        self.spin_box.setAlignment(QtCore.Qt.AlignRight)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         connector_name.setWidget(lbl)
-        spin_box_proxy.setWidget(spin_box)
+        spin_box_proxy.setWidget(self.spin_box)
         lyt = QtGui.QGraphicsLinearLayout()
         form = QtGui.QGraphicsWidget()
         # set color
@@ -83,3 +89,12 @@ class IntNode(BaseNode.Node):
         form.setAutoFillBackground(True)
         form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))
         self.layout.addItem(form)
+        return cn
+
+    def set_data(self):
+
+        self.output.set_data(self.spin_box.value(), True)
+
+    def compute(self):
+
+        self.output.set_data(self.spin_box.value(), False)

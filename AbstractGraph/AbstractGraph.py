@@ -10,8 +10,9 @@ def portAffects(affects_port, affected_port):
     affected_port.affected_by.append(affects_port)
 
 
-def calc_multithreaded(ls):
-    print 'START', [n.name for n in ls]
+def calc_multithreaded(ls, debug=False):
+    if debug:
+        print 'START', [n.name for n in ls]
     def compute_executor():
         for n in ls:
             n.compute()
@@ -20,22 +21,31 @@ def calc_multithreaded(ls):
         t = Thread(target=compute_executor, name='{0}_thread'.format(n.name))
         threads.append(t)
         t.start()
-        print n.name, 'started in', t.name
+        if debug:
+            print n.name, 'started in', t.name
 
-    print '_WAITING FOR ALL LAYER NODES TO FINISH'
+    if debug:
+        print '_WAITING FOR ALL LAYER NODES TO FINISH'
     [t.join() for t in threads]
 
-    print 'DONE', [n.name for n in ls], '\n'
+    if debug:
+        print 'DONE', [n.name for n in ls], '\n'
 
 
-def push(start_from):
+def push(start_from, update=False):
 
     if not start_from.affects == []:
-        # print start_from.parent.name, start_from.name, '|DIRTY|>',
+        if update:
+            start_from.update()
         start_from.set_dirty()
         for i in start_from.affects:
             i.set_dirty()
-            push(i)
+            if update:
+                i.update()
+            if update:
+                push(i, True)
+            else:
+                push(i)
 
 
 class AGObjectTypes(object):
@@ -101,34 +111,39 @@ class AGPort(object):
 
     def get_data(self):
 
+        debug = self.parent.graph.is_debug()
         if self.type == AGPortTypes.kOutput:
             if self.dirty:
                 compute_order = self.parent.graph.get_evaluation_order(self.parent)
                 for i in reversed(sorted([i for i in compute_order.keys()])):
                     if not self.parent.graph.is_multithreaded():
                         for n in compute_order[i]:
-                            print n.name, 'calling compute'
+                            if debug:
+                                print n.name, 'calling compute'
                             n.compute()
                     else:
-                        print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
-                        calc_multithreaded(compute_order[i])
+                        if debug:
+                            print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
+                        calc_multithreaded(compute_order[i], debug)
                 self.dirty = False
                 return self._data
             else:
                 return self._data
         if self.type == AGPortTypes.kInput:
             if self.dirty:
-                out = [i for i in self.affected_by]
+                out = [i for i in self.affected_by if i.type == AGPortTypes.kOutput]
                 if not out == []:
                     compute_order = out[0].parent.graph.get_evaluation_order(out[0].parent)
                     for i in reversed(sorted([i for i in compute_order.keys()])):
                         if not self.parent.graph.is_multithreaded():
                             for n in compute_order[i]:
-                                print n.name, 'calling compute'
+                                if debug:
+                                    print n.name, 'calling compute'
                                 n.compute()
                         else:
-                            print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
-                            calc_multithreaded(compute_order[i])
+                            if debug:
+                                print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
+                            calc_multithreaded(compute_order[i], debug)
                     self.dirty = False
                     out[0].dirty = False
                     return out[0]._data
@@ -159,16 +174,17 @@ class AGNode(object):
         self.inputs = []
         self.outputs = []
 
-    def add_port(self, port_name, port_type):
+    def add_input_port(self, port_name):
         p = AGPort(port_name, self)
-        if port_type == AGPortTypes.kInput:
-            self.inputs.append(p)
-            p.type = AGPortTypes.kInput
-            return p
-        else:
-            self.outputs.append(p)
-            p.type = AGPortTypes.kOutput
-            return p
+        self.inputs.append(p)
+        p.type = AGPortTypes.kInput
+        return p
+
+    def add_output_port(self, port_name):
+        p = AGPort(port_name, self)
+        self.outputs.append(p)
+        p.type = AGPortTypes.kOutput
+        return p
 
     def get_port_by_name(self, name):
         for p in self.inputs + self.outputs:
@@ -193,10 +209,21 @@ class AGraph(object):
 
         super(AGraph, self).__init__()
         self.object_type = AGObjectTypes.tGraph
+        self._debug = False
         self._multithreaded = False
         self.name = name
         self.nodes = []
         self.edges = []
+
+    def is_debug(self):
+
+        return self._debug
+
+    def set_debug(self, state):
+        if not isinstance(state, bool):
+            print 'bool expected. skipped'
+            return
+        self._debug = state
 
     def is_multithreaded(self):
 
@@ -255,9 +282,6 @@ class AGraph(object):
                                     nodes.append(p.parent)
             return nodes
 
-    def nodes(self):
-
-        return self.nodes
 
     def add_node(self, node):
 
@@ -274,18 +298,26 @@ class AGraph(object):
 
     def add_edge(self, src, dst):
 
+        debug = self.is_debug()
         if src in dst.affected_by:
-            print 'already connected. skipped'
+            if debug:
+                print 'already connected. skipped'
             return
         if src.type == dst.type:
-            print 'same types can not be connected'
+            if debug:
+                print 'same types can not be connected'
             return
         if src.parent == dst.parent:
-            print 'can not connect to self'
+            if debug:
+                print 'can not connect to self'
             return
 
-        portAffects(src, dst)
-        e = AGEdge(src, dst)
+        if src.type == AGPortTypes.kInput:
+            portAffects(dst, src)
+            e = AGEdge(dst, src)
+        else:
+            portAffects(src, dst)
+            e = AGEdge(src, dst)
         self.edges.append(e)
         src.edge_list.append(e)
         dst.edge_list.append(e)

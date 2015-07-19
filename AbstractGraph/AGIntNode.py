@@ -5,7 +5,7 @@ class AGIntNode(AGNode):
     def __init__(self, name):
         super(AGIntNode, self).__init__(name)
         self.name = name
-        self.output = self.add_port('out', AGPortTypes.kOutput)
+        self.output = self.add_output_port('out')
         self.set_data(0)
         self.val = 0
 

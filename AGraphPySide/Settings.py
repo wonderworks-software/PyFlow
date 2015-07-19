@@ -1,15 +1,6 @@
 from PySide import QtGui
 
 
-class PortTypes(object):
-
-    kInput = 'input'
-    kOutput = 'output'
-
-    def __init__(self):
-        super(PortTypes, self).__init__()
-
-
 class Spacings(object):
 
     kPortSpacing = 4
@@ -35,6 +26,7 @@ class Colors(object):
     kBlue = QtGui.QColor(0, 0, 255, 255)
     kBlack = QtGui.QColor(255, 255, 255, 255)
     kConnectionLines = QtGui.QColor(255, 255, 255, 90)
+    kDirtyPen = QtGui.QColor(250, 250, 250, 200)
 
     def __init__(self):
         super(Colors, self).__init__()

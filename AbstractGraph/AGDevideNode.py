@@ -5,9 +5,9 @@ class AGMultNode(AGNode):
     def __init__(self, name):
         super(AGMultNode, self).__init__(name)
         self.name = name
-        self.inputA = self.add_port('inpA', AGPortTypes.kInput)
-        self.inputB = self.add_port('inpB', AGPortTypes.kInput)
-        self.output = self.add_port('out', AGPortTypes.kOutput)
+        self.inputA = self.add_input_port('inpA')
+        self.inputB = self.add_input_port('inpB')
+        self.output = self.add_output_port('out')
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)
 

@@ -3,6 +3,7 @@ from PySide import QtGui
 from PySide import QtCore
 from Port import Port
 import random
+from AbstractGraph import *
 
 
 class NodeName(QtGui.QGraphicsTextItem):
@@ -52,10 +53,11 @@ class NodeName(QtGui.QGraphicsTextItem):
         super(NodeName, self).focusOutEvent(event)
 
 
-class Node(QtGui.QGraphicsItem):
-    def __init__(self, name, graph_widget, w=120, colors=Colors, spacings=Spacings, port_types=PortTypes):
+class Node(QtGui.QGraphicsItem, AGNode):
+    def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes):
         QtGui.QGraphicsItem.__init__(self)
-        self.Type = 'NODE'
+        AGNode.__init__(self, name)
+        self.object_type = AGObjectTypes.tNode
         self.color_idx = 1
         self.colors = colors
         self.height_offset = 3
@@ -69,7 +71,7 @@ class Node(QtGui.QGraphicsItem):
         self.inputs = []
         self.outputs = []
 
-        self.graph = graph_widget
+        self.graph = graph
         self.setFlag(self.ItemIsMovable)
         # set node name
         self.name = name
@@ -95,6 +97,10 @@ class Node(QtGui.QGraphicsItem):
         return QtCore.QRectF(self.sizes[0] - pen_width / 2, self.sizes[1] - pen_width / 2,
                              self.sizes[2] + pen_width, self.v_form.boundingRect().bottomRight().y() + pen_width + self.height_offset)
 
+    def update_ports(self):
+        [i.update() for i in self.inputs]
+        [i.update() for i in self.outputs]
+
     def paint(self, painter, option, widget):
 
         painter.setPen(QtCore.Qt.NoPen)
@@ -115,14 +121,14 @@ class Node(QtGui.QGraphicsItem):
 
     def get_input_edges(self):
         out = {}
-        for i in [i.edgeList for i in self.inputs]:
+        for i in [i.edge_list for i in self.inputs]:
             if not i.__len__() == 0:
                 out[i[0]] = [e.connection for e in i]
         return out
 
     def get_output_edges(self):
         out = {}
-        for i in [i.edgeList for i in self.outputs]:
+        for i in [i.edge_list for i in self.outputs]:
             if not i.__len__() == 0:
                 out[i[0]] = [e.connection for e in i]
         return out
@@ -137,11 +143,21 @@ class Node(QtGui.QGraphicsItem):
         self.update()
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def add_port(self, port_type, name, color=QtGui.QColor(0, 100, 0, 255)):
+    def add_input_port(self, port_name):
 
-        cn = Port(name, 10, 10, color)
-        cn.port_type = port_type
-        cn.owned_node = self
+        p = self._add_port(AGPortTypes.kInput, port_name)
+        return p
+
+    def add_output_port(self, port_name):
+
+        p = self._add_port(AGPortTypes.kOutput, port_name)
+        return p
+
+    def _add_port(self, port_type, name, color=QtGui.QColor(0, 100, 0, 255)):
+
+        cn = Port(name, self, 10, 10, color)
+        cn.type = port_type
+        cn.parent = self
         connector_name = QtGui.QGraphicsProxyWidget()
         lbl = QtGui.QLabel(name)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -176,3 +192,4 @@ class Node(QtGui.QGraphicsItem):
         form.setAutoFillBackground(True)
         form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))
         self.layout.addItem(form)
+        return cn
