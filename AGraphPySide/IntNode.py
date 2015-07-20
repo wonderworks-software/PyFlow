@@ -1,12 +1,10 @@
 import BaseNode
-from Settings import *
 from Port import *
 from PySide import QtCore
 from AbstractGraph import *
 
 
 class SBox(QtGui.QSpinBox):
-    """docstring for SBox"""
     def __init__(self, foo):
         super(SBox, self).__init__()
         self.foo = foo
@@ -16,7 +14,7 @@ class SBox(QtGui.QSpinBox):
 class IntNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super(IntNode, self).__init__(name, graph, w=120, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name)
+        AGNode.__init__(self, name, graph)
         self.spin_box = SBox(self.set_data)
         self.graph = graph
         self.spacings = Spacings
@@ -34,7 +32,7 @@ class IntNode(BaseNode.Node, AGNode):
 
         color = self.colors.kNodeBackgrounds
         if option.state & QtGui.QStyle.State_Sunken:
-            color = color.lighter(160)
+            color.lighter(160)
 
         painter.setBrush(QtGui.QBrush(self.colors.kIntNodeBackground))
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 0))

@@ -1,9 +1,7 @@
-# from shutil import destinsrc
 from PySide import QtCore
 from PySide import QtGui
 from Settings import Colors
 from AbstractGraph import *
-
 
 
 class Edge(QtGui.QGraphicsLineItem, Colors, AGEdge):
@@ -11,12 +9,9 @@ class Edge(QtGui.QGraphicsLineItem, Colors, AGEdge):
     def __init__(self, source, destination, arrow_size=5.0, color=Colors.kConnectionLines):
         QtGui.QGraphicsLineItem.__init__(self)
         AGEdge.__init__(self, source, destination)
-        self.object_type = AGObjectTypes.tEdge
         self.arrow_size = arrow_size
         self.color = color
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
-        self.source = source
-        self.destination = destination
 
         self.setZValue(-1)
         self.connection = {'From': self.source.parent.label.name+'.'+self.source.name,

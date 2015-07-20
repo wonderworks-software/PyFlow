@@ -5,16 +5,15 @@ from AbstractGraph import *
 from Settings import *
 
 
-
 class Port(QtGui.QGraphicsWidget, AGPort):
 
     def __init__(self, name, parent, width, height, color=Colors.kConnectors):
 
         QtGui.QGraphicsWidget.__init__(self)
         AGPort.__init__(self, name, parent)
-        self.object_type = AGObjectTypes.tPort
-        self.type = None
-        self.parent = parent
+        # self.object_type = AGObjectTypes.tPort
+        # self.type = None
+        # self.parent = parent
         self.menu = QtGui.QMenu()
 
         self.disconnected = self.menu.addAction('Disconnect all')
@@ -25,7 +24,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.plot_action.triggered.connect(self.parent.graph.plot)
 
         # this list holds Edge objects
-        self.edge_list = []
+        # self.edge_list = []
 
         # self.type = None
         # self.parent = parent

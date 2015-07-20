@@ -24,10 +24,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def __init__(self, name):
         QtGui.QGraphicsView.__init__(self)
         AGraph.__init__(self, name)
-        self.nodes = []
-        self.edges = []
-        self.object_type = AGObjectTypes.tGraph
-        self.name = name
         self.pressed_item = None
         self.released_item = None
         self._isPanning = False
@@ -35,7 +31,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.timerId = 0
         self.scale(2.0, 2.0)
         self.setViewportUpdateMode(self.FullViewportUpdate)
-
         self.scene_widget = SceneClass(self)
         self.scene_widget.setSceneRect(self.viewport().rect())
         self.setScene(self.scene_widget)
@@ -108,8 +103,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def add_node(self, node):
 
-        self.nodes.append(node)
-        node.graph = self
+        AGraph.add_node(self, node)
         self.scene_widget.addItem(node)
 
     def add_edge(self, p1, p2):

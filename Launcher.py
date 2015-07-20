@@ -2,7 +2,6 @@ from PySide import QtGui
 from AGraphPySide import Widget
 from AGraphPySide import IntNode
 from AGraphPySide import SumNode
-# from AGraphPySide import Edge
 
 
 if __name__ == '__main__':
@@ -11,8 +10,8 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
 
     G = Widget.GraphWidget('TEST_GRAPH')
-    G.set_debug(True)
-    G.set_multithreaded(True)
+    # G.set_debug(True)
+    # G.set_multithreaded(True)
 
     intNode1 = IntNode.IntNode('int1', G)
     intNode2 = IntNode.IntNode('int2', G)

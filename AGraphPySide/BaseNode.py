@@ -56,7 +56,7 @@ class NodeName(QtGui.QGraphicsTextItem):
 class Node(QtGui.QGraphicsItem, AGNode):
     def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes):
         QtGui.QGraphicsItem.__init__(self)
-        AGNode.__init__(self, name)
+        AGNode.__init__(self, name, graph)
         self.object_type = AGObjectTypes.tNode
         self.color_idx = 1
         self.colors = colors

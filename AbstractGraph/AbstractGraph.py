@@ -165,9 +165,9 @@ class AGPort(object):
 
 
 class AGNode(object):
-    def __init__(self, name):
+    def __init__(self, name, graph):
         super(AGNode, self).__init__()
-        self.graph = None
+        self.graph = graph
         self.name = name
         self.object_type = AGObjectTypes.tNode
         self.selected = False
@@ -281,7 +281,6 @@ class AGraph(object):
                                 if not [dout for dout in p.affects if dout.dirty] == []:
                                     nodes.append(p.parent)
             return nodes
-
 
     def add_node(self, node):
 
