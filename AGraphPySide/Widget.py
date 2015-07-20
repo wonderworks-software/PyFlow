@@ -132,7 +132,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         edge = Edge(src, dst)
         portAffects(src, dst)
 
-        self.edges.append(edge)
         src._data = dst._data
 
         self.scene().addItem(edge)

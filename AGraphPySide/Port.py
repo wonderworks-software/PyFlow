@@ -70,17 +70,16 @@ class Port(QtGui.QGraphicsWidget, AGPort):
                 for e in self.edge_list:
                     if e in i.edge_list:
                         i.edge_list.remove(e)
-                        self.parent.graph.remove_edge(e)
+                        print e, [i for i in self.parent.graph.edges]
             [self.scene().removeItem(i) for i in self.scene().items() if i in self.edge_list]
         else:
             for i in self.get_source_connected_ports():
                 for e in self.edge_list:
                     if e in i.edge_list:
                         i.edge_list.remove(e)
-                        self.parent.graph.remove_edge(e)
+                        print e, [i for i in self.parent.graph.edges]
             [self.scene().removeItem(i) for i in self.scene().items() if i in self.edge_list]
         self.edge_list = []
-        self.disconnected_user_function()
 
     def shape(self):
 
@@ -102,14 +101,6 @@ class Port(QtGui.QGraphicsWidget, AGPort):
     def mousePressEvent(self, event):
 
         pass
-
-    def disconnected_user_function(self):
-
-        print 'DISCONNECTED CODE'
-
-    def connected_user_function(self):
-
-        print 'SUCCESS CONNECTION CODE'
 
     def contextMenuEvent(self, event):
 
