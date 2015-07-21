@@ -32,35 +32,58 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.scale(2.0, 2.0)
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.scene_widget = SceneClass(self)
-        self.scene_widget.setSceneRect(self.viewport().rect())
         self.setScene(self.scene_widget)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
+        self.scene_widget.setSceneRect(QtCore.QRect(-2500, -2500, 2500, 2500))
         self.factor = 1
         self.scale(self.factor, self.factor)
-        self.setMinimumSize(800, 600)
         self.setWindowTitle(self.tr(name))
-
-    def itemMoved(self):
-
-        pass
+        self._alt_key = False
+        self._ctrl_key = False
 
     def keyPressEvent(self, event):
 
+        if event.key() == QtCore.Qt.Key_Alt:
+            self._alt_key = True
+        if event.key() == QtCore.Qt.Key_Control:
+            self._ctrl_key = True
+
         QtGui.QGraphicsView.keyPressEvent(self, event)
+
+    def keyReleaseEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Alt:
+            self._alt_key = False
+        if event.key() == QtCore.Qt.Key_Control:
+            self._ctrl_key = False
+        QtGui.QGraphicsView.keyReleaseEvent(self, event)
 
     def mousePressEvent(self,  event):
 
         self.pressed_item = self.itemAt(event.pos())
-        if event.button() == QtCore.Qt.LeftButton:
-            self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
+        self.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemShape)
+        if self.pressed_item:
+            self.pressed_item.setSelected(True)
+        if event.button() == QtCore.Qt.LeftButton and self._alt_key:
+            self.setDragMode(self.ScrollHandDrag)
+        if event.button() == QtCore.Qt.LeftButton and self._ctrl_key:
+            self.setDragMode(self.RubberBandDrag)
         super(GraphWidget, self).mousePressEvent(event)
+
+    def clear_selection(self):
+        print 'clear selection'
+        for n in self.nodes:
+            n.setSelected(False)
+
+    def mouseMoveEvent(self, event):
+
+        super(GraphWidget, self).mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
 
-        self.setDragMode(QtGui.QGraphicsView.NoDrag)
+        self.setDragMode(self.NoDrag)
         self.released_item = self.itemAt(event.pos())
         p_itm = self.pressed_item
         r_itm = self.released_item
@@ -77,15 +100,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 break
         if do_connect:
             self.add_edge(p_itm, r_itm)
-
         super(GraphWidget, self).mouseReleaseEvent(event)
-
-    def timerEvent(self, event):
-
-        nodes = [item for item in self.scene().items() if isinstance(item, Node)]
-
-        for node in nodes:
-            node.update()
 
     def wheelEvent(self, event):
 
@@ -96,8 +111,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         # Shadow.
         scene_rect = self.sceneRect()
         # Fill.
-        gradient = self.kSceneBackground
-        painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(gradient))
+        painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(self.kSceneBackground))
         painter.setPen(QtGui.QPen())
         painter.drawRect(scene_rect)
 
@@ -143,18 +157,17 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def remove_edge(self, edge):
 
-        edge.destination.affected_by.remove(edge.source)
-        edge.source.affects.remove(edge.destination)
-        edge.destination.edge_list.remove(edge)
-        edge.source.edge_list.remove(edge)
+        AGraph.remove_edge(edge)
         self.edges.remove(edge)
         self.scene().removeItem(edge)
+
+    def plot(self):
+        for i in self.nodes:
+            print i.name, i.isSelected()
 
     def scale_view(self, scale_factor):
 
         self.factor = self.matrix().scale(scale_factor, scale_factor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
-
-        if self.factor < 0.3 or self.factor > 5:
+        if self.factor < 1 or self.factor > 5:
             return
-
         self.scale(scale_factor, scale_factor)

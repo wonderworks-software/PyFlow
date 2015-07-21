@@ -57,7 +57,6 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes):
         QtGui.QGraphicsItem.__init__(self)
         AGNode.__init__(self, name, graph)
-        self.object_type = AGObjectTypes.tNode
         self.color_idx = 1
         self.colors = colors
         self.height_offset = 3
@@ -67,29 +66,28 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.w = w
         self.h = 40
         self.sizes = [0, 0, self.w, self.h, 2, 2]
-        # this lists holds Port objects
-        self.inputs = []
-        self.outputs = []
-
-        self.graph = graph
         self.setFlag(self.ItemIsMovable)
+        self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable)
+        self.setFlag(self.ItemIsSelectable)
         # set node name
-        self.name = name
         self.label = NodeName(self.name, self)
         # set node layout
-
         self.v_form.setMaximumWidth(self.boundingRect().width()+self.spacings.kPortOffset)
         self.v_form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset, self.h))
         self.v_form.setParentItem(self)
-        # self.v_form.setAutoFillBackground(True)
         self.layout = QtGui.QGraphicsLinearLayout()
         self.layout.setOrientation(QtCore.Qt.Vertical)
         self.layout.setSpacing(self.spacings.kPortSpacing)
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.v_form.setLayout(self.layout)
         self.v_form.setX(self.v_form.x()-self.spacings.kPortOffset/2)
-
         self.setPos(self.graph.mapToScene(random.randint(50, 100), random.randint(50, 100)))
+        effect = QtGui.QGraphicsDropShadowEffect()
+        effect.setColor(Colors.kShadow)
+        effect.setParent(self.graph)
+        effect.setBlurRadius(3)
+        effect.setOffset(-30, 20)
+        self.setGraphicsEffect(effect)
 
     def boundingRect(self):
 
@@ -110,11 +108,15 @@ class Node(QtGui.QGraphicsItem, AGNode):
                                 self.sizes[4], self.sizes[5])
 
         color = self.colors.kNodeBackgrounds
-        if option.state & QtGui.QStyle.State_Sunken:
+        if self.isSelected():
             color = color.lighter(160)
 
         painter.setBrush(QtGui.QBrush(color))
-        painter.setPen(QtGui.QPen(QtCore.Qt.black, 0))
+        pen = QtGui.QPen(QtCore.Qt.black, 0)
+        if option.state & QtGui.QStyle.State_Selected:
+            pen.setColor(Colors.kWhite)
+            pen.setStyle(QtCore.Qt.DotLine)
+        painter.setPen(pen)
         painter.drawRoundedRect(self.sizes[0], self.sizes[1],
                                 self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
                                 self.sizes[4], self.sizes[5])

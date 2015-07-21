@@ -24,18 +24,23 @@ class IntNode(BaseNode.Node, AGNode):
         self.compute()
 
     def paint(self, painter, option, widget):
+
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtCore.Qt.darkGray)
         painter.drawRoundedRect(self.sizes[0], self.sizes[1],
                                 self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
                                 self.sizes[4], self.sizes[5])
 
-        color = self.colors.kNodeBackgrounds
-        if option.state & QtGui.QStyle.State_Sunken:
-            color.lighter(160)
+        color = self.colors.kInteger
+        if self.isSelected():
+            color = color.lighter(160)
 
-        painter.setBrush(QtGui.QBrush(self.colors.kIntNodeBackground))
-        painter.setPen(QtGui.QPen(QtCore.Qt.black, 0))
+        painter.setBrush(QtGui.QBrush(color))
+        pen = QtGui.QPen(QtCore.Qt.black, 0)
+        if option.state & QtGui.QStyle.State_Selected:
+            pen.setColor(Colors.kWhite)
+            pen.setStyle(QtCore.Qt.DotLine)
+        painter.setPen(pen)
         painter.drawRoundedRect(self.sizes[0], self.sizes[1],
                                 self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
                                 self.sizes[4], self.sizes[5])
@@ -83,7 +88,7 @@ class IntNode(BaseNode.Node, AGNode):
         lyt.setContentsMargins(1, 1, 1, 1)
         lyt.setMaximumHeight(self.spacings.kPortOffset)
         form.setLayout(lyt)
-        form.setZValue(1)
+        # form.setZValue(1)
         form.setAutoFillBackground(True)
         form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))
         self.layout.addItem(form)

@@ -13,7 +13,7 @@ class Edge(QtGui.QGraphicsLineItem, Colors, AGEdge):
         self.color = color
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
 
-        self.setZValue(-1)
+        self.setZValue(1)
         self.connection = {'From': self.source.parent.label.name+'.'+self.source.name,
                            'To': self.destination.parent.label.name+'.'+self.destination.name}
 
@@ -23,9 +23,19 @@ class Edge(QtGui.QGraphicsLineItem, Colors, AGEdge):
         painter.setPen(QtGui.QPen(self.kConnectionLines, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
         offset = self.source.boundingRect().width()/2
 
-        p1 = self.source.sceneTransform().map(QtCore.QPointF(offset, offset))
-        p2 = self.destination.sceneTransform().map(QtCore.QPointF(offset, offset))
-        painter.drawLine(p1, p2)
+        p1 = self.source.sceneTransform().map(QtCore.QPointF(offset*2, offset))
+        p2 = self.destination.sceneTransform().map(QtCore.QPointF(0, offset))
+
+        distance = p2.x() - p1.x()
+        mult = 3
+        path = QtGui.QPainterPath()
+        path.moveTo(p1)
+        if distance < 0:
+            path.cubicTo(QtCore.QPoint(p1.x()+distance/-mult, p1.y()), QtCore.QPoint(p2.x()-distance/-mult, p2.y()), p2)
+        else:
+            path.cubicTo(QtCore.QPoint(p1.x()+distance/mult, p1.y()), QtCore.QPoint(p2.x()-distance/2, p2.y()), p2)
+
+        painter.drawPath(path)
 
     def boundingRect(self):
         return QtCore.QRectF(self.source.scenePos(), self.destination.scenePos())

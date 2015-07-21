@@ -170,7 +170,6 @@ class AGNode(object):
         self.graph = graph
         self.name = name
         self.object_type = AGObjectTypes.tNode
-        self.selected = False
         self.inputs = []
         self.outputs = []
 

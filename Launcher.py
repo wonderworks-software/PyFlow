@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
     G = Widget.GraphWidget('TEST_GRAPH')
     G.set_debug(True)
-    G.set_multithreaded(True)
+    # G.set_multithreaded(True)
 
     intNode1 = IntNode.IntNode('int1', G)
     intNode2 = IntNode.IntNode('int2', G)

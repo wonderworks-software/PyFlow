@@ -12,8 +12,9 @@ class Spacings(object):
 
 class Colors(object):
 
-    kNodeBackgrounds = QtGui.QColor(45, 45, 45, 100)
-    kSceneBackground = QtGui.QColor(65, 65, 65)
+    kNodeBackgrounds = QtGui.QColor(45, 45, 45, 120)
+    kWhite = QtGui.QColor(255, 255, 255, 200)
+    kSceneBackground = QtGui.QColor(55, 55, 55)
     kInteger = QtGui.QColor(45, 48, 99, 255)
     kIntNodeBackground = QtGui.QColor(0, 0, 170, 100)
     kGridColor = QtGui.QColor(100, 100, 100, 100)
@@ -27,6 +28,7 @@ class Colors(object):
     kBlack = QtGui.QColor(255, 255, 255, 255)
     kConnectionLines = QtGui.QColor(255, 255, 255, 90)
     kDirtyPen = QtGui.QColor(250, 250, 250, 200)
+    kShadow = QtGui.QColor(20, 20, 20, 150)
 
     def __init__(self):
         super(Colors, self).__init__()

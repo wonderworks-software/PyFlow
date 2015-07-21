@@ -1,6 +1,4 @@
 from PySide import QtCore
-from PySide import QtGui
-from Settings import *
 from AbstractGraph import *
 from Settings import *
 
@@ -8,37 +6,23 @@ from Settings import *
 class Port(QtGui.QGraphicsWidget, AGPort):
 
     def __init__(self, name, parent, width, height, color=Colors.kConnectors):
-
         QtGui.QGraphicsWidget.__init__(self)
         AGPort.__init__(self, name, parent)
-        # self.object_type = AGObjectTypes.tPort
-        # self.type = None
-        # self.parent = parent
         self.menu = QtGui.QMenu()
-
         self.disconnected = self.menu.addAction('Disconnect all')
         self.get_data_action = self.menu.addAction('GET_DATA')
         self.plot_action = self.menu.addAction('PLOT')
         self.disconnected.triggered.connect(self.disconnect_all)
         self.get_data_action.triggered.connect(self.get_data)
         self.plot_action.triggered.connect(self.parent.graph.plot)
-
-        # this list holds Edge objects
-        # self.edge_list = []
-
-        # self.type = None
-        # self.parent = parent
         self.newPos = QtCore.QPointF()
         self.setFlag(QtGui.QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
-
         self.setAcceptHoverEvents(True)
         self.color = color
-        # self.name = name
         self.__width = width+1
         self.__height = height+1
         self.hovered = False
-
         self.startPos = None
         self.endPos = None
         self._dirty_pen = QtGui.QPen(Colors.kDirtyPen, 1, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
@@ -51,34 +35,14 @@ class Port(QtGui.QGraphicsWidget, AGPort):
 
         return QtCore.QSizeF(self.__width, self.__height)
 
-    def connection_name(self):
+    def port_name(self):
 
         return self.parent.name+'.'+self.name
 
-    def get_destination_connected_ports(self):
-
-        return [i.destination for i in self.edge_list]
-
-    def get_source_connected_ports(self):
-
-        return [i.source for i in self.edge_list]
-
     def disconnect_all(self):
 
-        if self.type == AGPortTypes.kOutput:
-            for i in self.get_destination_connected_ports():
-                for e in self.edge_list:
-                    if e in i.edge_list:
-                        i.edge_list.remove(e)
-                        print e, [i for i in self.parent.graph.edges]
-            [self.scene().removeItem(i) for i in self.scene().items() if i in self.edge_list]
-        else:
-            for i in self.get_source_connected_ports():
-                for e in self.edge_list:
-                    if e in i.edge_list:
-                        i.edge_list.remove(e)
-                        print e, [i for i in self.parent.graph.edges]
-            [self.scene().removeItem(i) for i in self.scene().items() if i in self.edge_list]
+        for e in self.edge_list:
+            self.parent.graph.remove_edge(e)
         self.edge_list = []
 
     def shape(self):
