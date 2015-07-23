@@ -1,4 +1,5 @@
 from threading import Thread
+from inspect import stack
 
 
 def portAffects(affects_port, affected_port):
@@ -32,20 +33,13 @@ def calc_multithreaded(ls, debug=False):
         print 'DONE', [n.name for n in ls], '\n'
 
 
-def push(start_from, update=False):
+def push(start_from):
 
     if not start_from.affects == []:
-        if update:
-            start_from.update()
         start_from.set_dirty()
         for i in start_from.affects:
             i.set_dirty()
-            if update:
-                i.update()
-            if update:
-                push(i, True)
-            else:
-                push(i)
+            push(i)
 
 
 class AGObjectTypes(object):
@@ -115,6 +109,9 @@ class AGPort(object):
         if self.type == AGPortTypes.kOutput:
             if self.dirty:
                 compute_order = self.parent.graph.get_evaluation_order(self.parent)
+                if debug:
+                    for i in reversed(sorted([i for i in compute_order.keys()])):
+                        print i, [n.name for n in compute_order[i]]
                 for i in reversed(sorted([i for i in compute_order.keys()])):
                     if not self.parent.graph.is_multithreaded():
                         for n in compute_order[i]:
@@ -134,6 +131,9 @@ class AGPort(object):
                 out = [i for i in self.affected_by if i.type == AGPortTypes.kOutput]
                 if not out == []:
                     compute_order = out[0].parent.graph.get_evaluation_order(out[0].parent)
+                    if debug:
+                        for i in reversed(sorted([i for i in compute_order.keys()])):
+                            print i, [n.name for n in compute_order[i]]
                     for i in reversed(sorted([i for i in compute_order.keys()])):
                         if not self.parent.graph.is_multithreaded():
                             for n in compute_order[i]:
@@ -160,6 +160,8 @@ class AGPort(object):
             for i in self.affects:
                 i._data = data
                 i.set_clean()
+        if stack()[1][3] == 'compute':
+            dirty_propagate = False
         if dirty_propagate:
             push(self)
 
@@ -299,25 +301,30 @@ class AGraph(object):
     def add_edge(self, src, dst):
 
         debug = self.is_debug()
+        if src.type == AGPortTypes.kOutput:
+            src, dst = dst, src
+
         if src in dst.affected_by:
             if debug:
                 print 'already connected. skipped'
-            return
+            return False
+        if len([i for i in dst.edge_list]):
+            if debug:
+                print len(dst.edge_list)
+                print 'already has connected edges'
+            return False
         if src.type == dst.type:
             if debug:
                 print 'same types can not be connected'
-            return
+            return False
         if src.parent == dst.parent:
             if debug:
                 print 'can not connect to self'
-            return
+            return False
 
-        if src.type == AGPortTypes.kInput:
-            portAffects(dst, src)
-            e = AGEdge(dst, src)
-        else:
-            portAffects(src, dst)
-            e = AGEdge(src, dst)
+        portAffects(src, dst)
+        e = AGEdge(src, dst)
+
         self.edges.append(e)
         src.edge_list.append(e)
         dst.edge_list.append(e)
@@ -327,10 +334,10 @@ class AGraph(object):
 
     def remove_edge(self, edge):
 
-        edge.destination.affected_by.remove(edge.source)
         edge.source.affects.remove(edge.destination)
-        edge.destination.edge_list.remove(edge)
         edge.source.edge_list.remove(edge)
+        edge.destination.affected_by.remove(edge.source)
+        edge.destination.edge_list.remove(edge)
 
     def plot(self):
         print self.name+'\n----------\n'

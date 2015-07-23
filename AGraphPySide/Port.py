@@ -3,6 +3,15 @@ from AbstractGraph import *
 from Settings import *
 
 
+def update_ports(start_from):
+
+    if not start_from.affects == []:
+        start_from.update()
+        for i in start_from.affects:
+            i.update()
+            update_ports(i)
+
+
 class Port(QtGui.QGraphicsWidget, AGPort):
 
     def __init__(self, name, parent, width, height, color=Colors.kConnectors):
@@ -10,8 +19,8 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         AGPort.__init__(self, name, parent)
         self.menu = QtGui.QMenu()
         self.disconnected = self.menu.addAction('Disconnect all')
-        self.get_data_action = self.menu.addAction('GET_DATA')
-        self.plot_action = self.menu.addAction('PLOT')
+        self.get_data_action = self.menu.addAction('GET')
+        self.plot_action = self.menu.addAction('PLOT GRAPH')
         self.disconnected.triggered.connect(self.disconnect_all)
         self.get_data_action.triggered.connect(self.get_data)
         self.plot_action.triggered.connect(self.parent.graph.plot)
@@ -40,10 +49,14 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         return self.parent.name+'.'+self.name
 
     def disconnect_all(self):
-
+        if self.parent.graph.is_debug():
+            print self.edge_list
         for e in self.edge_list:
+            if self.parent.graph.is_debug():
+                print e, 'killed'
             self.parent.graph.remove_edge(e)
-        self.edge_list = []
+        if len(self.edge_list):
+            self.disconnect_all()
 
     def shape(self):
 
@@ -62,10 +75,6 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             painter.setBrush(QtGui.QBrush(self.color))
         painter.drawEllipse(background_rect)
 
-    def mousePressEvent(self, event):
-
-        pass
-
     def contextMenuEvent(self, event):
 
         self.menu.exec_(event.screenPos())
@@ -82,60 +91,6 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.update()
         self.hovered = False
 
-    def get_data(self):
-
-        debug = self.parent.graph.is_debug()
-        if self.type == AGPortTypes.kOutput:
-            if self.dirty:
-                compute_order = self.parent.graph.get_evaluation_order(self.parent)
-                for i in reversed(sorted([i for i in compute_order.keys()])):
-                    if not self.parent.graph.is_multithreaded():
-                        for n in compute_order[i]:
-                            if debug:
-                                print n.name, 'calling compute'
-                            n.compute()
-                            n.update_ports()
-                    else:
-                        if debug:
-                            print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
-                        calc_multithreaded(compute_order[i], debug)
-                        [i.update_ports() for i in compute_order[i]]
-                self.dirty = False
-                return self._data
-            else:
-                return self._data
-        if self.type == AGPortTypes.kInput:
-            if self.dirty:
-                out = [i for i in self.affected_by if i.type == AGPortTypes.kOutput]
-                if not out == []:
-                    compute_order = out[0].parent.graph.get_evaluation_order(out[0].parent)
-                    for i in reversed(sorted([i for i in compute_order.keys()])):
-                        if not self.parent.graph.is_multithreaded():
-                            for n in compute_order[i]:
-                                if debug:
-                                    print n.name, 'calling compute'
-                                n.compute()
-                                n.update_ports()
-                        else:
-                            if debug:
-                                print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
-                            calc_multithreaded(compute_order[i], debug)
-                            [i.update_ports() for i in compute_order[i]]
-                    self.dirty = False
-                    out[0].dirty = False
-                    return out[0]._data
-            else:
-                return self._data
-        else:
-            return self._data
-
     def set_data(self, data, dirty_propagate=True):
-
-        self._data = data
-        self.set_clean()
-        if self.type == AGPortTypes.kOutput:
-            for i in self.affects:
-                i._data = data
-                i.set_clean()
-        if dirty_propagate:
-            push(self, True)
+        AGPort.set_data(self, data, dirty_propagate)
+        update_ports(self)
