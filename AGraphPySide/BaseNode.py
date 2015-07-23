@@ -86,7 +86,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         effect.setColor(Colors.kShadow)
         effect.setParent(self.graph)
         effect.setBlurRadius(3)
-        effect.setOffset(-30, 20)
+        effect.setOffset(-30, -20)
         self.setGraphicsEffect(effect)
 
     def boundingRect(self):

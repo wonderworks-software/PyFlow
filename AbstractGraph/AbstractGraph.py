@@ -168,6 +168,8 @@ class AGNode(object):
     def __init__(self, name, graph):
         super(AGNode, self).__init__()
         self.graph = graph
+        self.x = 0
+        self.y = 0
         self.name = name
         self.object_type = AGObjectTypes.tNode
         self.inputs = []
@@ -281,7 +283,7 @@ class AGraph(object):
                                     nodes.append(p.parent)
             return nodes
 
-    def add_node(self, node):
+    def add_node(self, node, x, y):
 
         self.nodes.append(node)
         node.graph = self
@@ -323,8 +325,7 @@ class AGraph(object):
         dst._data = src._data
         return e
 
-    @staticmethod
-    def remove_edge(edge):
+    def remove_edge(self, edge):
 
         edge.destination.affected_by.remove(edge.source)
         edge.source.affects.remove(edge.destination)

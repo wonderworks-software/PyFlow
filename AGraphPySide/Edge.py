@@ -6,10 +6,9 @@ from AbstractGraph import *
 
 class Edge(QtGui.QGraphicsLineItem, Colors, AGEdge):
 
-    def __init__(self, source, destination, arrow_size=5.0, color=Colors.kConnectionLines):
+    def __init__(self, source, destination, color=Colors.kConnectionLines):
         QtGui.QGraphicsLineItem.__init__(self)
         AGEdge.__init__(self, source, destination)
-        self.arrow_size = arrow_size
         self.color = color
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
 
@@ -38,4 +37,28 @@ class Edge(QtGui.QGraphicsLineItem, Colors, AGEdge):
         painter.drawPath(path)
 
     def boundingRect(self):
+
         return QtCore.QRectF(self.source.scenePos(), self.destination.scenePos())
+
+
+class RealTimeLine(QtGui.QGraphicsLineItem, Colors):
+    def __init__(self, graph):
+        super(RealTimeLine, self).__init__()
+        self.p1 = QtCore.QPointF(0, 0)
+        self.p2 = QtCore.QPointF(50, 50)
+        self.graph = graph
+        self.offset = 0
+        self.setZValue(1)
+
+    def paint(self, painter, option, widget):
+
+        painter.setPen(QtGui.QPen(self.kBlack, 1, QtCore.Qt.SolidLine))
+        if self.graph.pressed_item and hasattr(self.graph.pressed_item, 'object_type'):
+            if self.graph.pressed_item.object_type == AGObjectTypes.tPort:
+                self.offset = self.graph.pressed_item.boundingRect().width()/2
+                painter.drawLine(self.mapToParent(QtCore.QPointF(self.p1.x()+self.offset,
+                                                                 self.p1.y()+self.offset)),
+                                 self.p2)
+
+    def boundingRect(self):
+        return QtCore.QRectF(self.p1, self.p2)

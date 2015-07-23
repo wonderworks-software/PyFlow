@@ -19,10 +19,10 @@ if __name__ == '__main__':
     sumNode1 = SumNode.SumNode('sumNode1', G)
     sumNode2 = SumNode.SumNode('sumNode2', G)
 
-    G.add_node(intNode1)
-    G.add_node(intNode2)
-    G.add_node(sumNode1)
-    G.add_node(sumNode2)
+    G.add_node(intNode1, 100, 80)
+    G.add_node(intNode2, 50, 200)
+    G.add_node(sumNode1, 300, 300)
+    G.add_node(sumNode2, 500, 50)
 
     G.add_edge(intNode1.output, sumNode1.inputA)
     G.add_edge(intNode1.output, sumNode2.inputA)

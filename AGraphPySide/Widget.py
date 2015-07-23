@@ -1,7 +1,6 @@
 from PySide import QtCore
 from PySide import QtGui
 import math
-from BaseNode import Node
 from Settings import Colors
 from AbstractGraph import *
 from Edge import Edge
@@ -29,7 +28,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._isPanning = False
         self._mousePressed = False
         self.timerId = 0
-        self.scale(2.0, 2.0)
+        # self.scale(1.0, 1.0)
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.scene_widget = SceneClass(self)
         self.setScene(self.scene_widget)
@@ -37,12 +36,19 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
-        self.scene_widget.setSceneRect(QtCore.QRect(-2500, -2500, 2500, 2500))
+        self.scene_widget.setSceneRect(QtCore.QRect(0, 0, 2000, 2000))
         self.factor = 1
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
         self._alt_key = False
         self._ctrl_key = False
+        self.rubber_rect = QtGui.QGraphicsRectItem()
+        self.rubber_rect.setZValue(1)
+        self.rubber_rect.setPen(QtGui.QPen(self.kWhite, 1, QtCore.Qt.DotLine))
+        self.cursor_pressed_pos = None
+        self.current_cursor_pose = None
+        self._right_button = False
+        self._is_rubber_band_selection = False
 
     def keyPressEvent(self, event):
 
@@ -63,27 +69,48 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def mousePressEvent(self,  event):
 
         self.pressed_item = self.itemAt(event.pos())
-        self.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemShape)
+        self.cursor_pressed_pos = event.pos()
         if self.pressed_item:
             self.pressed_item.setSelected(True)
-        if event.button() == QtCore.Qt.LeftButton and self._alt_key:
+        if event.button() == QtCore.Qt.RightButton:
+            self._right_button = True
+        else:
+            self._right_button = False
+        if all([event.button() == QtCore.Qt.LeftButton, self._alt_key]):
             self.setDragMode(self.ScrollHandDrag)
-        if event.button() == QtCore.Qt.LeftButton and self._ctrl_key:
-            self.setDragMode(self.RubberBandDrag)
+        if all([event.button() == QtCore.Qt.LeftButton, not self.pressed_item, not self._alt_key]):
+            self._is_rubber_band_selection = True
         super(GraphWidget, self).mousePressEvent(event)
 
     def clear_selection(self):
-        print 'clear selection'
+
         for n in self.nodes:
             n.setSelected(False)
 
     def mouseMoveEvent(self, event):
-
+        self.current_cursor_pose = self.mapToScene(event.pos())
+        if self._is_rubber_band_selection:
+            if self.rubber_rect not in self.scene().items():
+                self.scene().addItem(self.rubber_rect)
+            v_bar_val = self.verticalScrollBar().value()
+            h_bar_val = self.horizontalScrollBar().value()
+            c_pose = self.current_cursor_pose
+            r = QtCore.QRectF(self.cursor_pressed_pos.x()+h_bar_val,
+                              self.cursor_pressed_pos.y()+v_bar_val,
+                              c_pose.x()-self.cursor_pressed_pos.x()-h_bar_val,
+                              c_pose.y()-self.cursor_pressed_pos.y()-v_bar_val)
+            self.rubber_rect.setRect(r)
         super(GraphWidget, self).mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
 
         self.setDragMode(self.NoDrag)
+        if self._is_rubber_band_selection:
+            self._is_rubber_band_selection = False
+            [i.setSelected(True) for i in self.rubber_rect.collidingItems()]
+            self.scene().removeItem(self.rubber_rect)
+        if event.button() == QtCore.Qt.RightButton:
+            self._right_button = False
         self.released_item = self.itemAt(event.pos())
         p_itm = self.pressed_item
         r_itm = self.released_item
@@ -115,10 +142,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         painter.setPen(QtGui.QPen())
         painter.drawRect(scene_rect)
 
-    def add_node(self, node):
+    def add_node(self, node, x, y):
 
-        AGraph.add_node(self, node)
+        AGraph.add_node(self, node, x, y)
         self.scene_widget.addItem(node)
+        node.setPos(QtCore.QPointF(x, y))
 
     def add_edge(self, p1, p2):
 
