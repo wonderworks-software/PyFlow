@@ -85,8 +85,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if self.pressed_item:
             if hasattr(self.pressed_item, 'object_type'):
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
-                    print 'deselect', self.pressed_item.parent.name
-                    self.pressed_item.parent.setSelected(False)
+                    self.pressed_item.parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
+            else:
                 self.pressed_item.setSelected(True)
         self.cursor_pressed_pos = self.mapToScene(event.pos())
         if self.pressed_item and event.button() == QtCore.Qt.LeftButton:
@@ -128,6 +128,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def mouseReleaseEvent(self, event):
 
         self.setDragMode(self.NoDrag)
+        for n in self.nodes:
+            n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = False
         if self._draw_real_time_line:
