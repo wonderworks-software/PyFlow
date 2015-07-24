@@ -28,12 +28,12 @@ if __name__ == '__main__':
     G.add_node(sumNode2, 500, 50)
     G.add_node(sumNode3, 800, 150)
 
-    G.add_edge(intNode1.output, sumNode1.inputA)
-    G.add_edge(intNode1.output, sumNode2.inputA)
-    G.add_edge(intNode2.output, sumNode1.inputB)
-    G.add_edge(sumNode1.output, sumNode2.inputB)
-    G.add_edge(sumNode2.output, sumNode3.inputA)
-    G.add_edge(intNode3.output, sumNode3.inputB)
+    # G.add_edge(intNode1.output, sumNode1.inputA)
+    # G.add_edge(intNode1.output, sumNode2.inputA)
+    # G.add_edge(intNode2.output, sumNode1.inputB)
+    # G.add_edge(sumNode1.output, sumNode2.inputB)
+    # G.add_edge(sumNode2.output, sumNode3.inputA)
+    # G.add_edge(intNode3.output, sumNode3.inputB)
 
     G.show()
     # G.plot()

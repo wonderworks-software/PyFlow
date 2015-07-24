@@ -36,7 +36,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._isPanning = False
         self._mousePressed = False
         self.timerId = 0
-        # self.scale(1.0, 1.0)
+        self.scale(1.5, 1.5)
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.setScene(SceneClass(self))
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
@@ -54,7 +54,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.real_time_line = QtGui.QGraphicsLineItem(0, 0, 0, 0)
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.setZValue(-1)
-        self.real_time_line.setPen(QtGui.QPen(self.kWhite, 1, QtCore.Qt.DotLine))
+        self.real_time_line.setPen(QtGui.QPen(self.kWhite, 0.5, QtCore.Qt.DotLine))
 
         self.cursor_pressed_pos = None
         self.current_cursor_pose = None
@@ -82,15 +82,17 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def mousePressEvent(self,  event):
 
         self.pressed_item = self.itemAt(event.pos())
-
+        if self.pressed_item:
+            if hasattr(self.pressed_item, 'object_type'):
+                if self.pressed_item.object_type == AGObjectTypes.tPort:
+                    print 'deselect', self.pressed_item.parent.name
+                    self.pressed_item.parent.setSelected(False)
+                self.pressed_item.setSelected(True)
         self.cursor_pressed_pos = self.mapToScene(event.pos())
         if self.pressed_item and event.button() == QtCore.Qt.LeftButton:
             if hasattr(self.pressed_item, 'object_type'):
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
                     self._draw_real_time_line = True
-                    print 'line add', self._draw_real_time_line
-        if self.pressed_item:
-            self.pressed_item.setSelected(True)
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = True
         if all([event.button() == QtCore.Qt.LeftButton, self._alt_key]):
@@ -101,16 +103,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def mouseMoveEvent(self, event):
         self.current_cursor_pose = self.mapToScene(event.pos())
-        v_bar_val = self.verticalScrollBar().value()
-        h_bar_val = self.horizontalScrollBar().value()
         if self._draw_real_time_line:
             if self.real_time_line not in self.scene().items():
                 self.scene().addItem(self.real_time_line)
-            x1 = self.cursor_pressed_pos.x()+h_bar_val
-            x2 = self.cursor_pressed_pos.y()+v_bar_val
-            y1 = self.current_cursor_pose.x()
-            y2 = self.current_cursor_pose.y()
-            self.real_time_line.setLine(x1, x2, y1, y2)
+            self.real_time_line.setLine(self.cursor_pressed_pos.x(),
+                                        self.cursor_pressed_pos.y(),
+                                        self.current_cursor_pose.x(),
+                                        self.current_cursor_pose.y())
         if self._is_rubber_band_selection:
             if self.rubber_rect not in self.scene().items():
                 self.scene().addItem(self.rubber_rect)
@@ -135,7 +134,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self._draw_real_time_line = False
             if self.real_time_line in self.scene().items():
                 self.remove_item_by_name('RealTimeLine')
-                print 'remove line'
         if self._is_rubber_band_selection:
             self._is_rubber_band_selection = False
             [i.setSelected(True) for i in self.rubber_rect.collidingItems()]

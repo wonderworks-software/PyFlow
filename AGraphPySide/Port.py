@@ -29,6 +29,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.setCacheMode(self.DeviceCoordinateCache)
         self.setAcceptHoverEvents(True)
         self.color = color
+        self.setZValue(2)
         self.__width = width+1
         self.__height = height+1
         self.hovered = False
