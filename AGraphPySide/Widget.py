@@ -82,7 +82,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def mousePressEvent(self,  event):
 
         self.pressed_item = self.itemAt(event.pos())
-        self.cursor_pressed_pos = event.pos()
+
+        self.cursor_pressed_pos = self.mapToScene(event.pos())
         if self.pressed_item and event.button() == QtCore.Qt.LeftButton:
             if hasattr(self.pressed_item, 'object_type'):
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
@@ -115,18 +116,15 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.scene().addItem(self.rubber_rect)
             if not self.rubber_rect.isVisible():
                 self.rubber_rect.setVisible(True)
-            r = QtCore.QRectF(self.cursor_pressed_pos.x()+h_bar_val,
-                              self.cursor_pressed_pos.y()+v_bar_val,
-                              self.current_cursor_pose.x()-self.cursor_pressed_pos.x()-h_bar_val,
-                              self.current_cursor_pose.y()-self.cursor_pressed_pos.y()-v_bar_val)
-            self.rubber_rect.setRect(r)
+            r = QtCore.QRectF(self.cursor_pressed_pos.x(),
+                              self.cursor_pressed_pos.y(),
+                              self.current_cursor_pose.x()-self.cursor_pressed_pos.x(),
+                              self.current_cursor_pose.y()-self.cursor_pressed_pos.y())
+            self.rubber_rect.setRect(r.normalized())
         super(GraphWidget, self).mouseMoveEvent(event)
 
     def remove_item_by_name(self, name):
-        print [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
-
-    def update_items(self):
-        print 'update items'
+        [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
 
@@ -234,6 +232,3 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if self.factor < 1 or self.factor > 5:
             return
         self.scale(scale_factor, scale_factor)
-
-    def plot(self):
-        print self.scene()
