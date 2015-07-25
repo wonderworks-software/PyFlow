@@ -2,10 +2,11 @@ from AbstractGraph import *
 
 
 class AGIntNode(AGNode):
-    def __init__(self, name):
-        super(AGIntNode, self).__init__(name)
+    def __init__(self, name, graph):
+        super(AGIntNode, self).__init__(name, graph)
+        self.graph = graph
         self.name = name
-        self.output = self.add_output_port('out')
+        self.output = self.add_output_port('out', AGPortDataTypes.tNumeric)
         self.set_data(0)
         self.val = 0
 

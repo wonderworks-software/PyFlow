@@ -57,7 +57,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes):
         QtGui.QGraphicsItem.__init__(self)
         AGNode.__init__(self, name, graph)
-        self.color_idx = 1
+        self._color_idx = 1
         self.colors = colors
         self.height_offset = 3
         self.spacings = spacings
@@ -81,13 +81,12 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.v_form.setLayout(self.layout)
         self.v_form.setX(self.v_form.x()-self.spacings.kPortOffset/2)
-        self.setPos(self.graph.mapToScene(random.randint(50, 100), random.randint(50, 100)))
-        effect = QtGui.QGraphicsDropShadowEffect()
-        effect.setColor(Colors.kShadow)
-        effect.setParent(self.graph)
-        effect.setBlurRadius(3)
-        effect.setOffset(-30, -20)
-        self.setGraphicsEffect(effect)
+        # effect = QtGui.QGraphicsDropShadowEffect()
+        # effect.setColor(Colors.kShadow)
+        # effect.setParent(self.graph)
+        # effect.setBlurRadius(3)
+        # effect.setOffset(-30, -20)
+        # self.setGraphicsEffect(effect)
 
     def boundingRect(self):
 
@@ -145,21 +144,21 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.update()
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def add_input_port(self, port_name):
+    def add_input_port(self, port_name, data_type):
 
-        p = self._add_port(AGPortTypes.kInput, port_name)
+        p = self._add_port(AGPortTypes.kInput, data_type, port_name)
         return p
 
-    def add_output_port(self, port_name):
+    def add_output_port(self, port_name, data_type):
 
-        p = self._add_port(AGPortTypes.kOutput, port_name)
+        p = self._add_port(AGPortTypes.kOutput, data_type, port_name)
         return p
 
-    def _add_port(self, port_type, name, color=QtGui.QColor(0, 100, 0, 255)):
+    def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 
-        cn = Port(name, self, 10, 10, color)
-        cn.type = port_type
-        cn.parent = self
+        p = Port(name, self, data_type, 10, 10, color)
+        p.type = port_type
+        p.parent = self
         connector_name = QtGui.QGraphicsProxyWidget()
         lbl = QtGui.QLabel(name)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -168,25 +167,25 @@ class Node(QtGui.QGraphicsItem, AGNode):
         form = QtGui.QGraphicsWidget()
         # set color
         palette = form.palette()
-        if self.color_idx > 0:
+        if self._color_idx > 0:
             palette.setColor(palette.Window, self.colors.kPortLinesA)
-            self.color_idx *= -1
+            self._color_idx *= -1
         else:
             palette.setColor(palette.Window, self.colors.kPortLinesB)
-            self.color_idx *= -1
+            self._color_idx *= -1
         form.setPalette(palette)
 
         self.lyt.setSpacing(self.spacings.kPortSpacing)
         if port_type == self.port_types.kInput:
             lbl.setAlignment(QtCore.Qt.AlignLeft)
-            self.lyt.addItem(cn)
+            self.lyt.addItem(p)
             self.lyt.addItem(connector_name)
-            self.inputs.append(cn)
+            self.inputs.append(p)
         elif port_type == self.port_types.kOutput:
             lbl.setAlignment(QtCore.Qt.AlignRight)
             self.lyt.addItem(connector_name)
-            self.lyt.addItem(cn)
-            self.outputs.append(cn)
+            self.lyt.addItem(p)
+            self.outputs.append(p)
         self.lyt.setContentsMargins(1, 1, 1, 1)
         self.lyt.setMaximumHeight(self.spacings.kPortOffset)
         form.setLayout(self.lyt)
@@ -194,4 +193,4 @@ class Node(QtGui.QGraphicsItem, AGNode):
         form.setAutoFillBackground(True)
         form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))
         self.layout.addItem(form)
-        return cn
+        return p

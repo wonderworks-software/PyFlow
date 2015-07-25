@@ -20,7 +20,7 @@ class IntNode(BaseNode.Node, AGNode):
         self.spacings = Spacings
         # self.height_offset = 15
         self.colors = Colors
-        self.output = self._add_port(AGPortTypes.kOutput, 'out')
+        self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tNumeric, 'out')
         self.compute()
 
     def paint(self, painter, option, widget):
@@ -45,9 +45,9 @@ class IntNode(BaseNode.Node, AGNode):
                                 self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
                                 self.sizes[4], self.sizes[5])
 
-    def _add_port(self, port_type, name, color=QtGui.QColor(0, 100, 0, 255)):
+    def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 
-        cn = Port(name, self, 10, 10, color)
+        cn = Port(name, self, data_type, 10, 10, color)
         cn.type = port_type
         cn.parent = self
         connector_name = QtGui.QGraphicsProxyWidget()
@@ -64,12 +64,12 @@ class IntNode(BaseNode.Node, AGNode):
         form = QtGui.QGraphicsWidget()
         # set color
         palette = form.palette()
-        if self.color_idx > 0:
+        if self._color_idx > 0:
             palette.setColor(palette.Window, self.colors.kPortLinesA)
-            self.color_idx *= -1
+            self._color_idx *= -1
         else:
             palette.setColor(palette.Window, self.colors.kPortLinesB)
-            self.color_idx *= -1
+            self._color_idx *= -1
         form.setPalette(palette)
 
         lyt.setSpacing(self.spacings.kPortSpacing)

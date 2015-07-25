@@ -14,9 +14,9 @@ def update_ports(start_from):
 
 class Port(QtGui.QGraphicsWidget, AGPort):
 
-    def __init__(self, name, parent, width, height, color=Colors.kConnectors):
+    def __init__(self, name, parent, data_type, width, height, color=Colors.kConnectors):
         QtGui.QGraphicsWidget.__init__(self)
-        AGPort.__init__(self, name, parent)
+        AGPort.__init__(self, name, parent, data_type)
         self.menu = QtGui.QMenu()
         self.disconnected = self.menu.addAction('Disconnect all')
         self.get_data_action = self.menu.addAction('GET')
@@ -93,5 +93,6 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.hovered = False
 
     def set_data(self, data, dirty_propagate=True):
+
         AGPort.set_data(self, data, dirty_propagate)
         update_ports(self)

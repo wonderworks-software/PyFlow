@@ -42,10 +42,18 @@ def push(start_from):
             push(i)
 
 
+class AGPortDataTypes(object):
+
+    tNumeric = 'numeric_data'
+    tString = 'string_data'
+
+    def __init__(self):
+        super(AGPortDataTypes, self).__init__()        
+
+
 class AGObjectTypes(object):
 
     tPort = 'port_object'
-    tEdge = 'edge_object'
     tNode = 'node_object'
     tGraph = 'graph_object'
 
@@ -62,32 +70,20 @@ class AGPortTypes(object):
         super(AGPortTypes, self).__init__()
 
 
-class AGEdge(object):
-
-    def __init__(self, source, destination):
-        super(AGEdge, self).__init__()
-        self.source = source
-        self.destination = destination
-        self.object_type = AGObjectTypes.tEdge
-
-    def __str__(self):
-        return self.source.parent.name + '.' + self.source.name + \
-        ' >>> ' + self.destination.parent.name + '.' + self.destination.name
-
-
 class AGPort(object):
 
-    def __init__(self, name, parent):
+    def __init__(self, name, parent, data_type):
         super(AGPort, self).__init__()
         self.name = name
-        self.type = None
-        self.object_type = AGObjectTypes.tPort
-        self.dirty = True
-        self._data = None
         self.parent = parent
+        self.object_type = AGObjectTypes.tPort
+        self.data_type = data_type
         self.affects = []
         self.affected_by = []
         self.edge_list = []
+        self.type = None
+        self.dirty = True
+        self._data = None
 
     def current_value(self):
 
@@ -170,21 +166,21 @@ class AGNode(object):
     def __init__(self, name, graph):
         super(AGNode, self).__init__()
         self.graph = graph
-        self.x = 0
-        self.y = 0
+        # self.x = 0
+        # self.y = 0
         self.name = name
         self.object_type = AGObjectTypes.tNode
         self.inputs = []
         self.outputs = []
 
-    def add_input_port(self, port_name):
-        p = AGPort(port_name, self)
+    def add_input_port(self, port_name, data_type):
+        p = AGPort(port_name, self, data_type)
         self.inputs.append(p)
         p.type = AGPortTypes.kInput
         return p
 
-    def add_output_port(self, port_name):
-        p = AGPort(port_name, self)
+    def add_output_port(self, port_name, data_type):
+        p = AGPort(port_name, self, data_type)
         self.outputs.append(p)
         p.type = AGPortTypes.kOutput
         return p
@@ -288,6 +284,8 @@ class AGraph(object):
     def add_node(self, node, x, y):
 
         self.nodes.append(node)
+        node.x = x
+        node.y = y
         node.graph = self
 
     def remove_node_by_name(self, name):
@@ -301,17 +299,16 @@ class AGraph(object):
     def add_edge(self, src, dst):
 
         debug = self.is_debug()
-        if src.type == AGPortTypes.kOutput:
+        if src.type == AGPortTypes.kInput:
             src, dst = dst, src
 
+        if not src.data_type == dst.data_type:
+            print 'data types error'
+            print dst.data_type, src.data_type
+            return
         if src in dst.affected_by:
             if debug:
                 print 'already connected. skipped'
-            return False
-        if len([i for i in dst.edge_list]):
-            if debug:
-                print len(dst.edge_list)
-                print 'already has connected edges'
             return False
         if src.type == dst.type:
             if debug:
@@ -323,14 +320,9 @@ class AGraph(object):
             return False
 
         portAffects(src, dst)
-        e = AGEdge(src, dst)
-
-        self.edges.append(e)
-        src.edge_list.append(e)
-        dst.edge_list.append(e)
         src.set_dirty()
         dst._data = src._data
-        return e
+        return True
 
     def remove_edge(self, edge):
 
@@ -351,10 +343,9 @@ class AGraph(object):
                 for e in inp.edge_list:
                     print '\t|---', e.__str__()
             for out in n.outputs:
-                print '|---' + out.name, 'data - {0}'.format(out._data),
-                if out.affects:
-                    print 'affects on', [i.name for i in out.affects],
-                print 'affected_by ', [p.name for p in out.affected_by],
-                print 'DIRTY', out.dirty
+                print '|---' + out.name, 'data - {0}'.format(out._data), \
+                    'affects on', [i.name for i in out.affects], \
+                    'affected_by ', [p.name for p in out.affected_by], \
+                    'DIRTY', out.dirty
                 for e in out.edge_list:
                     print '\t|---', e.__str__()

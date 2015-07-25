@@ -4,11 +4,12 @@ from Settings import Colors
 from AbstractGraph import *
 
 
-class Edge(QtGui.QGraphicsLineItem, Colors, AGEdge):
+class Edge(QtGui.QGraphicsLineItem, Colors):
 
     def __init__(self, source, destination, color=Colors.kConnectionLines):
         QtGui.QGraphicsLineItem.__init__(self)
-        AGEdge.__init__(self, source, destination)
+        self.source = source
+        self.destination = destination
         self.color = color
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
 
@@ -17,6 +18,12 @@ class Edge(QtGui.QGraphicsLineItem, Colors, AGEdge):
                            'To': self.destination.parent.label.name+'.'+self.destination.name}
 
         self.setToolTip(self.connection['From']+'>>>'+self.connection['To'])
+
+    def __str__(self):
+        return '{0}.{1} >>> {2}.{3}'.format(self.source.parent.name,
+                                            self.source.name,
+                                            self.destination.parent.name,
+                                            self.destination.name)
 
     def paint(self, painter, option, widget):
         painter.setPen(QtGui.QPen(self.kConnectionLines, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))

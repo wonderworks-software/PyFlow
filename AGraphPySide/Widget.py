@@ -123,6 +123,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         super(GraphWidget, self).mouseMoveEvent(event)
 
     def remove_item_by_name(self, name):
+
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
@@ -181,44 +182,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def add_edge(self, src, dst):
 
-        debug = self.is_debug()
-        if src.type == AGPortTypes.kInput:
-            src, dst = dst, src
-
-        if src == dst:
-            if debug:
-                print 'can not connect to self'
-            return
-
-        if src in dst.affected_by:
-            if debug:
-                print 'already connected. skipped'
-            return False
-        if len([i for i in dst.edge_list]):
-            if debug:
-                print len(dst.edge_list)
-                print 'already has connected edges'
-            return False
-        if src.type == dst.type:
-            if debug:
-                print 'same types can not be connected'
-            return False
-        if src.parent == dst.parent:
-            if debug:
-                print 'can not connect to self'
-            return False
-
-        edge = Edge(src, dst)
-        portAffects(src, dst)
-
-        src._data = dst._data
-
-        self.scene().addItem(edge)
-        self.edges.append(edge)
-        src.edge_list.append(edge)
-        dst.edge_list.append(edge)
-        src.set_dirty()
-        return edge
+        result = AGraph.add_edge(self, src, dst)
+        if result:
+            edge = Edge(src, dst)
+            src.edge_list.append(edge)
+            dst.edge_list.append(edge)
+            self.scene().addItem(edge)
+            self.edges.append(edge)
+            return edge
 
     def remove_edge(self, edge):
 
