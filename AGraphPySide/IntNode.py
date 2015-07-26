@@ -13,46 +13,27 @@ class SBox(QtGui.QSpinBox):
 
 class IntNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(IntNode, self).__init__(name, graph, w=120, colors=Colors, spacings=Spacings)
+        super(IntNode, self).__init__(name, graph,
+                                      w=120, colors=Colors,
+                                      spacings=Spacings)
         AGNode.__init__(self, name, graph)
         self.spin_box = SBox(self.set_data)
         self.graph = graph
         self.spacings = Spacings
-        # self.height_offset = 15
+        self.height_offset = 15
         self.colors = Colors
         self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tNumeric, 'out')
         self.compute()
 
-    def paint(self, painter, option, widget):
-
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(QtCore.Qt.darkGray)
-        painter.drawRoundedRect(self.sizes[0], self.sizes[1],
-                                self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
-                                self.sizes[4], self.sizes[5])
-
-        color = self.colors.kInteger
-        if self.isSelected():
-            color = color.lighter(160)
-
-        painter.setBrush(QtGui.QBrush(color))
-        pen = QtGui.QPen(QtCore.Qt.black, 0)
-        if option.state & QtGui.QStyle.State_Selected:
-            pen.setColor(Colors.kWhite)
-            pen.setStyle(QtCore.Qt.DotLine)
-        painter.setPen(pen)
-        painter.drawRoundedRect(self.sizes[0], self.sizes[1],
-                                self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
-                                self.sizes[4], self.sizes[5])
-
     def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 
         cn = Port(name, self, data_type, 10, 10, color)
+        cn.allowed_data_types = [data_type]
         cn.type = port_type
         cn.parent = self
         connector_name = QtGui.QGraphicsProxyWidget()
         spin_box_proxy = QtGui.QGraphicsProxyWidget()
-        spin_box_proxy.setScale(0.5)
+        # spin_box_proxy.setScale(0.7)
         lbl = QtGui.QLabel(name)
         self.spin_box.setMaximum(999999999)
         self.spin_box.setMinimum(-999999999)

@@ -2,7 +2,6 @@ from Settings import *
 from PySide import QtGui
 from PySide import QtCore
 from Port import Port
-import random
 from AbstractGraph import *
 
 
@@ -14,11 +13,10 @@ class NodeName(QtGui.QGraphicsTextItem):
         self.name = name
         self.color = color
         self.parent = parent
-        # self.setEnabled(False)
         self.setPlainText(self.name)
         self.setParentItem(parent)
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
-        self.setPos(parent.sizes[0], parent.sizes[1]-self.boundingRect().height())
+        self.setPos(self.parent.sizes[0], self.parent.sizes[1]-self.boundingRect().height())
 
     def keyPressEvent(self, event):
         key = event.key()

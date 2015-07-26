@@ -21,6 +21,7 @@ def calc_multithreaded(ls, debug=False):
     for n in ls:
         t = Thread(target=compute_executor, name='{0}_thread'.format(n.name))
         threads.append(t)
+        # t.setDaemon(True)
         t.start()
         if debug:
             print n.name, 'started in', t.name
@@ -46,9 +47,11 @@ class AGPortDataTypes(object):
 
     tNumeric = 'numeric_data'
     tString = 'string_data'
+    tBool = 'boolean_data'
+    tAny = 'all'
 
     def __init__(self):
-        super(AGPortDataTypes, self).__init__()        
+        super(AGPortDataTypes, self).__init__()
 
 
 class AGObjectTypes(object):
@@ -78,12 +81,21 @@ class AGPort(object):
         self.parent = parent
         self.object_type = AGObjectTypes.tPort
         self.data_type = data_type
+        self.allowed_data_types = [data_type]
         self.affects = []
         self.affected_by = []
         self.edge_list = []
         self.type = None
         self.dirty = True
         self._data = None
+
+    def port_connected(self):
+
+        pass
+
+    def port_disconnected(self):
+
+        pass
 
     def current_value(self):
 
@@ -301,11 +313,11 @@ class AGraph(object):
         debug = self.is_debug()
         if src.type == AGPortTypes.kInput:
             src, dst = dst, src
-
-        if not src.data_type == dst.data_type:
-            print 'data types error'
-            print dst.data_type, src.data_type
-            return
+        if not dst.data_type == AGPortDataTypes.tAny:
+            if src.data_type not in dst.allowed_data_types:
+                print 'data types error'
+                print dst.data_type, src.data_type
+                return
         if src in dst.affected_by:
             if debug:
                 print 'already connected. skipped'
@@ -322,6 +334,8 @@ class AGraph(object):
         portAffects(src, dst)
         src.set_dirty()
         dst._data = src._data
+        dst.port_connected()
+        push(dst)
         return True
 
     def remove_edge(self, edge):
@@ -330,6 +344,7 @@ class AGraph(object):
         edge.source.edge_list.remove(edge)
         edge.destination.affected_by.remove(edge.source)
         edge.destination.edge_list.remove(edge)
+        edge.destination.port_disconnected()
 
     def plot(self):
         print self.name+'\n----------\n'

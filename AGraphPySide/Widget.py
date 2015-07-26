@@ -54,7 +54,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.real_time_line = QtGui.QGraphicsLineItem(0, 0, 0, 0)
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.setZValue(-1)
-        self.real_time_line.setPen(QtGui.QPen(self.kWhite, 0.5, QtCore.Qt.DotLine))
+        self.real_time_line.setPen(QtGui.QPen(self.kWhite,
+                                              0.5,
+                                              QtCore.Qt.DotLine))
 
         self.cursor_pressed_pos = None
         self.current_cursor_pose = None
@@ -184,6 +186,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         result = AGraph.add_edge(self, src, dst)
         if result:
+            if src.type == AGPortTypes.kInput:
+                src, dst = dst, src
             edge = Edge(src, dst)
             src.edge_list.append(edge)
             dst.edge_list.append(edge)
