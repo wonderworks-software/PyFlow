@@ -89,6 +89,10 @@ class AGPort(object):
         self.dirty = True
         self._data = None
 
+    def current_data(self):
+
+        return self._data
+
     def port_connected(self):
 
         pass
@@ -295,6 +299,9 @@ class AGraph(object):
 
     def add_node(self, node, x, y):
 
+        dup_names = [n.name for n in self.nodes if node.name in n.name]
+        if not len(dup_names) == 0:
+            node.name = node.name+str(len(dup_names))
         self.nodes.append(node)
         node.x = x
         node.y = y
@@ -318,6 +325,10 @@ class AGraph(object):
                 print 'data types error'
                 print dst.data_type, src.data_type
                 return
+        if len(dst.affected_by) >= 1:
+            if debug:
+                print 'already has connection'
+            return False
         if src in dst.affected_by:
             if debug:
                 print 'already connected. skipped'

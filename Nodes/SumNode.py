@@ -1,4 +1,4 @@
-import BaseNode
+from AGraphPySide import BaseNode
 from AbstractGraph import *
 
 

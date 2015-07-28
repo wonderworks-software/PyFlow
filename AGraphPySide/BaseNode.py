@@ -109,7 +109,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
             color = color.lighter(160)
 
         painter.setBrush(QtGui.QBrush(color))
-        pen = QtGui.QPen(QtCore.Qt.black, 0)
+        pen = QtGui.QPen(QtCore.Qt.black, 1)
         if option.state & QtGui.QStyle.State_Selected:
             pen.setColor(Colors.kWhite)
             pen.setStyle(QtCore.Qt.DotLine)
@@ -152,17 +152,17 @@ class Node(QtGui.QGraphicsItem, AGNode):
         p = self._add_port(AGPortTypes.kOutput, data_type, port_name)
         return p
 
-    def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
+    def add_layout(self):
 
-        p = Port(name, self, data_type, 10, 10, color)
-        p.type = port_type
-        p.parent = self
-        connector_name = QtGui.QGraphicsProxyWidget()
-        lbl = QtGui.QLabel(name)
-        lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        connector_name.setWidget(lbl)
-        self.lyt = QtGui.QGraphicsLinearLayout()
         form = QtGui.QGraphicsWidget()
+        lyt = QtGui.QGraphicsLinearLayout()
+        lyt.setSpacing(self.spacings.kPortSpacing)
+        lyt.setContentsMargins(1, 1, 1, 1)
+        lyt.setMaximumHeight(self.spacings.kPortOffset)
+        form.setLayout(lyt)
+        form.setZValue(1)
+        form.setAutoFillBackground(True)
+        form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))
         # set color
         palette = form.palette()
         if self._color_idx > 0:
@@ -172,23 +172,27 @@ class Node(QtGui.QGraphicsItem, AGNode):
             palette.setColor(palette.Window, self.colors.kPortLinesB)
             self._color_idx *= -1
         form.setPalette(palette)
+        self.layout.addItem(form)
+        return lyt
 
-        self.lyt.setSpacing(self.spacings.kPortSpacing)
+    def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
+
+        p = Port(name, self, data_type, 10, 10, color)
+        p.type = port_type
+        p.parent = self
+        connector_name = QtGui.QGraphicsProxyWidget()
+        lbl = QtGui.QLabel(name)
+        lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        connector_name.setWidget(lbl)
+        lyt = self.add_layout()
         if port_type == self.port_types.kInput:
             lbl.setAlignment(QtCore.Qt.AlignLeft)
-            self.lyt.addItem(p)
-            self.lyt.addItem(connector_name)
+            lyt.addItem(p)
+            lyt.addItem(connector_name)
             self.inputs.append(p)
         elif port_type == self.port_types.kOutput:
             lbl.setAlignment(QtCore.Qt.AlignRight)
-            self.lyt.addItem(connector_name)
-            self.lyt.addItem(p)
+            lyt.addItem(connector_name)
+            lyt.addItem(p)
             self.outputs.append(p)
-        self.lyt.setContentsMargins(1, 1, 1, 1)
-        self.lyt.setMaximumHeight(self.spacings.kPortOffset)
-        form.setLayout(self.lyt)
-        form.setZValue(1)
-        form.setAutoFillBackground(True)
-        form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))
-        self.layout.addItem(form)
         return p

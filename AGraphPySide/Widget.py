@@ -4,6 +4,12 @@ import math
 from Settings import Colors
 from AbstractGraph import *
 from Edge import Edge
+from os import listdir, path
+import sys
+nodes_path = path.abspath('.')+'\\Nodes'
+if nodes_path not in sys.path:
+    sys.path.append(nodes_path)
+import Nodes
 
 
 class SceneClass(QtGui.QGraphicsScene):
@@ -16,6 +22,111 @@ class SceneClass(QtGui.QGraphicsScene):
 
     def mouseMoveEvent(self, event):
         super(SceneClass, self).mouseMoveEvent(event)
+
+
+class NodesBoxListWidget(QtGui.QListWidget):
+    def __init__(self, parent):
+        super(NodesBoxListWidget, self).__init__(parent)
+        self.parent_item = parent
+        style = "background-color: rgb(80, 80, 80);" +\
+                "selection-background-color: rgb(150, 150, 150);" +\
+                "selection-color: yellow;" +\
+                "border-radius: 3px;" +\
+                "font-size: 8px;" +\
+                "border-color: black; border-style: outset; border-width: 1px;"
+        self.setStyleSheet(style)
+        self.setParent(parent)
+        self.setFrameShape(QtGui.QFrame.NoFrame)
+        self.setFrameShadow(QtGui.QFrame.Sunken)
+        self.setObjectName("lw_nodes")
+        self.setSortingEnabled(True)
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Return:
+            self.parent_item.create_node()
+        if event.key() == QtCore.Qt.Key_Escape:
+            self.parent_item.hide()
+            self.clear()
+        super(NodesBoxListWidget, self).keyPressEvent(event)
+
+
+class NodeBoxLineEdit(QtGui.QLineEdit):
+    def __init__(self, parent):
+        super(NodeBoxLineEdit, self).__init__(parent)
+        self.setParent(parent)
+        self.parent = parent
+        self.setLocale(QtCore.QLocale(QtCore.QLocale.English,
+                       QtCore.QLocale.UnitedStates))
+        self.setObjectName("le_nodes")
+        style = "background-color: rgb(80, 80, 80);" +\
+                "border-radius: 3px;" +\
+                "font-size: 8px;" +\
+                "border-color: black; border-style: outset; border-width: 1px;"
+        self.setStyleSheet(style)
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Escape:
+            self.parent.hide()
+            self.parent.listWidget.clear()
+        super(NodeBoxLineEdit, self).keyPressEvent(event)
+
+
+class NodesBox(QtGui.QWidget):
+    def __init__(self, graph):
+        super(NodesBox, self).__init__()
+        self.graph = graph
+        self.setObjectName("nodes_box_form")
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.resize(80, 100)
+        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.name = 'NODE_BOX'
+        self.verticalLayout = QtGui.QVBoxLayout(self)
+        self.verticalLayout.setSpacing(1)
+        self.verticalLayout.setContentsMargins(1, 1, 1, 1)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.le_nodes = NodeBoxLineEdit(self)
+        self.le_nodes.textChanged.connect(self.le_text_changed)
+        self.verticalLayout.addWidget(self.le_nodes)
+        self.listWidget = NodesBoxListWidget(self)
+        self.verticalLayout.addWidget(self.listWidget)
+        self.setVisible(False)
+
+    def get_node(self, module, name):
+
+        if hasattr(module, name):
+            try:
+                mod = getattr(module, name)
+                mod = mod(name, self.graph)
+                return mod
+            except Exception, e:
+                print e
+                return
+
+    def refresh_list(self, pattern):
+
+        self.listWidget.clear()
+        words = [i[:-3] for i in listdir(path.abspath('.')+'\\Nodes') if i.endswith('.py') and '__init__' not in i]
+        self.listWidget.addItems([i for i in words if pattern.lower() in i.lower()])
+        item = self.listWidget.itemAt(0, 0)
+        if item and not item.isSelected():
+            item.setSelected(True)
+
+    def create_node(self):
+        items = self.listWidget.selectedItems()
+        if not len(items) == 0:
+            name = items[0].text()
+            node = self.get_node(Nodes, name)
+            self.graph.add_node(node, self.graph.current_cursor_pose.x(),
+                                       self.graph.current_cursor_pose.y())
+            self.hide()
+            # self.listWidget.clear()
+
+    def le_text_changed(self):
+        if self.le_nodes.text() == '':
+            self.le_nodes.setPlaceholderText("enter node name..")
+            self.listWidget.clear()
+            return
+        self.refresh_list(self.le_nodes.text())
 
 
 class RubberRect(QtGui.QGraphicsRectItem, Colors):
@@ -64,6 +175,15 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._is_rubber_band_selection = False
         self._draw_real_time_line = False
         self._update_items = False
+        self.box = QtGui.QGraphicsProxyWidget()
+        self.box.setScale(2)
+        self.box.setZValue(2)
+        self.box.name = 'NODE_BOX'
+        self.box.setFlag(self.box.ItemIgnoresTransformations)
+        self.node_box = NodesBox(self)
+        self.box.setWidget(self.node_box)
+        self.scene().addItem(self.box)
+        self.box_pos = None
 
     def keyPressEvent(self, event):
 
@@ -71,7 +191,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self._alt_key = True
         if event.key() == QtCore.Qt.Key_Control:
             self._ctrl_key = True
-
+        if event.key() == QtCore.Qt.Key_Tab:
+            if self.current_cursor_pose:
+                if not self.box.isVisible():
+                    self.box.setVisible(True)
+                    self.node_box.le_nodes.clear()
+                    self.box_pos = self.box.pos()
+                self.box.setPos(self.current_cursor_pose)
         QtGui.QGraphicsView.keyPressEvent(self, event)
 
     def keyReleaseEvent(self, event):
@@ -84,6 +210,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def mousePressEvent(self,  event):
 
         self.pressed_item = self.itemAt(event.pos())
+        if not self.pressed_item:
+            self.box.setVisible(False)
         if self.pressed_item:
             if hasattr(self.pressed_item, 'object_type'):
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
@@ -179,6 +307,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def add_node(self, node, x, y):
 
         AGraph.add_node(self, node, x, y)
+        node.label.setPlainText(node.name)
         self.scene().addItem(node)
         node.setPos(QtCore.QPointF(x, y))
 

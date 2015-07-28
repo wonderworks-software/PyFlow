@@ -1,7 +1,8 @@
-import BaseNode
-from Port import *
+from AGraphPySide.Port import *
 from PySide import QtCore
 from AbstractGraph import *
+from AGraphPySide.Settings import *
+from AGraphPySide import BaseNode
 
 
 class SBox(QtGui.QSpinBox):
@@ -33,7 +34,7 @@ class IntNode(BaseNode.Node, AGNode):
         cn.parent = self
         connector_name = QtGui.QGraphicsProxyWidget()
         spin_box_proxy = QtGui.QGraphicsProxyWidget()
-        # spin_box_proxy.setScale(0.7)
+
         lbl = QtGui.QLabel(name)
         self.spin_box.setMaximum(999999999)
         self.spin_box.setMinimum(-999999999)
@@ -41,19 +42,9 @@ class IntNode(BaseNode.Node, AGNode):
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         connector_name.setWidget(lbl)
         spin_box_proxy.setWidget(self.spin_box)
-        lyt = QtGui.QGraphicsLinearLayout()
-        form = QtGui.QGraphicsWidget()
-        # set color
-        palette = form.palette()
-        if self._color_idx > 0:
-            palette.setColor(palette.Window, self.colors.kPortLinesA)
-            self._color_idx *= -1
-        else:
-            palette.setColor(palette.Window, self.colors.kPortLinesB)
-            self._color_idx *= -1
-        form.setPalette(palette)
+        lyt = self.add_layout()
+        lyt.addItem(spin_box_proxy)
 
-        lyt.setSpacing(self.spacings.kPortSpacing)
         if port_type == self.port_types.kInput:
             lbl.setAlignment(QtCore.Qt.AlignLeft)
             lyt.addItem(cn)
@@ -66,13 +57,6 @@ class IntNode(BaseNode.Node, AGNode):
             lyt.addItem(connector_name)
             lyt.addItem(cn)
             self.outputs.append(cn)
-        lyt.setContentsMargins(1, 1, 1, 1)
-        lyt.setMaximumHeight(self.spacings.kPortOffset)
-        form.setLayout(lyt)
-        # form.setZValue(1)
-        form.setAutoFillBackground(True)
-        form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))
-        self.layout.addItem(form)
         return cn
 
     def set_data(self):
