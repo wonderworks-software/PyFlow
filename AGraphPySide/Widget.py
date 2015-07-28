@@ -25,14 +25,15 @@ class SceneClass(QtGui.QGraphicsScene):
 
 
 class NodesBoxListWidget(QtGui.QListWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, events=True):
         super(NodesBoxListWidget, self).__init__(parent)
         self.parent_item = parent
+        self._events = events
         style = "background-color: rgb(80, 80, 80);" +\
                 "selection-background-color: rgb(150, 150, 150);" +\
                 "selection-color: yellow;" +\
-                "border-radius: 3px;" +\
-                "font-size: 8px;" +\
+                "border-radius: 2px;" +\
+                "font-size: 14px;" +\
                 "border-color: black; border-style: outset; border-width: 1px;"
         self.setStyleSheet(style)
         self.setParent(parent)
@@ -44,30 +45,33 @@ class NodesBoxListWidget(QtGui.QListWidget):
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return:
             self.parent_item.create_node()
-        if event.key() == QtCore.Qt.Key_Escape:
-            self.parent_item.hide()
-            self.clear()
+        if self._events:
+            if event.key() == QtCore.Qt.Key_Escape:
+                self.parent_item.close()
+                self.clear()
         super(NodesBoxListWidget, self).keyPressEvent(event)
 
 
 class NodeBoxLineEdit(QtGui.QLineEdit):
-    def __init__(self, parent):
+    def __init__(self, parent, events=True):
         super(NodeBoxLineEdit, self).__init__(parent)
         self.setParent(parent)
+        self._events = events
         self.parent = parent
         self.setLocale(QtCore.QLocale(QtCore.QLocale.English,
                        QtCore.QLocale.UnitedStates))
         self.setObjectName("le_nodes")
         style = "background-color: rgb(80, 80, 80);" +\
-                "border-radius: 3px;" +\
-                "font-size: 8px;" +\
+                "border-radius: 2px;" +\
+                "font-size: 14px;" +\
                 "border-color: black; border-style: outset; border-width: 1px;"
         self.setStyleSheet(style)
 
     def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Escape:
-            self.parent.hide()
-            self.parent.listWidget.clear()
+        if self._events:
+            if event.key() == QtCore.Qt.Key_Escape:
+                self.parent.close()
+                self.parent.listWidget.clear()
         super(NodeBoxLineEdit, self).keyPressEvent(event)
 
 
@@ -77,7 +81,7 @@ class NodesBox(QtGui.QWidget):
         self.graph = graph
         self.setObjectName("nodes_box_form")
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.resize(80, 100)
+        self.resize(100, 200)
         self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         self.name = 'NODE_BOX'
         self.verticalLayout = QtGui.QVBoxLayout(self)
@@ -118,8 +122,9 @@ class NodesBox(QtGui.QWidget):
             node = self.get_node(Nodes, name)
             self.graph.add_node(node, self.graph.current_cursor_pose.x(),
                                        self.graph.current_cursor_pose.y())
-            self.hide()
-            # self.listWidget.clear()
+            if self.listWidget._events:
+                self.close()
+                self.listWidget.clear()
 
     def le_text_changed(self):
         if self.le_nodes.text() == '':
@@ -146,7 +151,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.released_item = None
         self._isPanning = False
         self._mousePressed = False
-        self.timerId = 0
         self.scale(1.5, 1.5)
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.setScene(SceneClass(self))
@@ -175,15 +179,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._is_rubber_band_selection = False
         self._draw_real_time_line = False
         self._update_items = False
-        self.box = QtGui.QGraphicsProxyWidget()
-        self.box.setScale(2)
-        self.box.setZValue(2)
-        self.box.name = 'NODE_BOX'
-        self.box.setFlag(self.box.ItemIgnoresTransformations)
         self.node_box = NodesBox(self)
-        self.box.setWidget(self.node_box)
-        self.scene().addItem(self.box)
-        self.box_pos = None
 
     def keyPressEvent(self, event):
 
@@ -191,13 +187,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self._alt_key = True
         if event.key() == QtCore.Qt.Key_Control:
             self._ctrl_key = True
-        if event.key() == QtCore.Qt.Key_Tab:
-            if self.current_cursor_pose:
-                if not self.box.isVisible():
-                    self.box.setVisible(True)
-                    self.node_box.le_nodes.clear()
-                    self.box_pos = self.box.pos()
-                self.box.setPos(self.current_cursor_pose)
+        if self.node_box.listWidget._events:
+            if event.key() == QtCore.Qt.Key_Tab:
+                pos = self.mapToGlobal(self.current_cursor_pose.toPoint())
+                self.node_box.move(pos.x(), pos.y())
+                self.node_box.le_nodes.clear()
+                self.node_box.show()
         QtGui.QGraphicsView.keyPressEvent(self, event)
 
     def keyReleaseEvent(self, event):
@@ -211,7 +206,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         self.pressed_item = self.itemAt(event.pos())
         if not self.pressed_item:
-            self.box.setVisible(False)
+            self.node_box.close()
+            self.node_box.le_nodes.clear()
         if self.pressed_item:
             if hasattr(self.pressed_item, 'object_type'):
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
