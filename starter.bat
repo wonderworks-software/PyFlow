@@ -1,1 +1,1 @@
-python "C:/GIT/GraphModel/Launcher.py"
+python "%cd%/Launcher.py"

@@ -65,4 +65,10 @@ if __name__ == '__main__':
     instance = W()
     instance.show()
 
-    sys.exit(app.exec_())
+    # G = GraphWidget('TEST_GRAPH')
+    # G.show()
+
+    try:
+        sys.exit(app.exec_())
+    except Exception, e:
+        print e
