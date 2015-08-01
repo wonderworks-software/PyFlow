@@ -21,7 +21,9 @@ G.add_node(sumNode1, 0, 0)
 G.add_edge(sumNode1.inputA, intNode1.output)
 G.add_edge(intNode2.output, sumNode1.inputB)
 
-print sumNode1.output.get_data()
+intNode1.kill()
+
+G.plot()
 # G.plot()
 # intNode2.set_data(5, dirty_propagate=True)
 # print sumNode3.output.get_data()

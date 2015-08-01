@@ -182,12 +182,16 @@ class AGNode(object):
     def __init__(self, name, graph):
         super(AGNode, self).__init__()
         self.graph = graph
-        # self.x = 0
-        # self.y = 0
         self.name = name
         self.object_type = AGObjectTypes.tNode
         self.inputs = []
         self.outputs = []
+
+    def kill(self):
+        for p in self.inputs + self.outputs:
+            for e in p.edge_list:
+                self.graph.remove_edge(e)
+        self.graph.nodes.remove(self)
 
     def add_input_port(self, port_name, data_type):
         p = AGPort(port_name, self, data_type)
@@ -306,6 +310,10 @@ class AGraph(object):
         node.x = x
         node.y = y
         node.graph = self
+
+    def remove_node(self, node):
+
+        node.kill()
 
     def remove_node_by_name(self, name):
 

@@ -175,6 +175,13 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.layout.addItem(form)
         return lyt
 
+    # def kill(self):
+
+    #     # self.prepareGeometryChange()
+    #     # self.label.prepareGeometryChange()
+    #     AGNode.kill(self)
+    #     # self.scene().removeItem(self)
+
     def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 
         p = Port(name, self, data_type, 10, 10, color)

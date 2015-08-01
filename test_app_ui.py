@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:/GIT/GraphModel/test_app_ui.ui'
 #
-# Created: Tue Jul 28 23:05:36 2015
+# Created: Sat Aug 01 18:17:33 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,17 +25,11 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.pushButton_2 = QtGui.QPushButton(self.verticalLayoutWidget)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.verticalLayout.addWidget(self.pushButton_2)
         self.gridLayoutWidget = QtGui.QWidget(self.splitter)
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-        self.pushButton = QtGui.QPushButton(self.gridLayoutWidget)
-        self.pushButton.setObjectName("pushButton")
-        self.gridLayout.addWidget(self.pushButton, 0, 1, 1, 1)
         self.gridLayout_2.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtGui.QStatusBar(MainWindow)
@@ -44,17 +38,31 @@ class Ui_MainWindow(object):
         self.menuBar = QtGui.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 444, 18))
         self.menuBar.setObjectName("menuBar")
+        self.menuEdit = QtGui.QMenu(self.menuBar)
+        self.menuEdit.setObjectName("menuEdit")
+        self.menuView = QtGui.QMenu(self.menuBar)
+        self.menuView.setObjectName("menuView")
+        self.menuFile = QtGui.QMenu(self.menuBar)
+        self.menuFile.setObjectName("menuFile")
         MainWindow.setMenuBar(self.menuBar)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
+        self.actionDelete = QtGui.QAction(MainWindow)
+        self.actionDelete.setObjectName("actionDelete")
+        self.menuEdit.addAction(self.actionDelete)
+        self.menuBar.addAction(self.menuFile.menuAction())
+        self.menuBar.addAction(self.menuEdit.menuAction())
+        self.menuBar.addAction(self.menuView.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton_2.setText(QtGui.QApplication.translate("MainWindow", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("MainWindow", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDelete.setText(QtGui.QApplication.translate("MainWindow", "Delete", None, QtGui.QApplication.UnicodeUTF8))
 

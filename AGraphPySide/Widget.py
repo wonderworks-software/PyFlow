@@ -94,6 +94,7 @@ class NodesBox(QtGui.QWidget):
         self.listWidget = NodesBoxListWidget(self)
         self.verticalLayout.addWidget(self.listWidget)
         self.setVisible(False)
+        self.refresh_list('')
 
     def get_node(self, module, name):
 
@@ -129,7 +130,7 @@ class NodesBox(QtGui.QWidget):
     def le_text_changed(self):
         if self.le_nodes.text() == '':
             self.le_nodes.setPlaceholderText("enter node name..")
-            self.listWidget.clear()
+            self.refresh_list('')
             return
         self.refresh_list(self.le_nodes.text())
 
@@ -153,12 +154,15 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._mousePressed = False
         self.scale(1.5, 1.5)
         self.setViewportUpdateMode(self.FullViewportUpdate)
-        self.setScene(SceneClass(self))
+        self.scene_widget = SceneClass(self)
+        self.setScene(self.scene_widget)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
-        self.scene().setSceneRect(QtCore.QRect(0, 0, 2000, 2000))
+        self.scene_widget.setSceneRect(QtCore.QRect(0, 0, 2000, 2000))
+        self._grid_spacing = 50
+        self.draw_grid()
         self.factor = 1
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
@@ -173,18 +177,47 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                                               0.5,
                                               QtCore.Qt.DotLine))
 
-        self.cursor_pressed_pos = None
-        self.current_cursor_pose = None
+        self.cursor_pressed_pos = QtCore.QPoint(0, 0)
+        self.current_cursor_pose = QtCore.QPoint(0, 0)
         self._right_button = False
         self._is_rubber_band_selection = False
         self._draw_real_time_line = False
         self._update_items = False
         self.node_box = NodesBox(self)
 
+    def draw_grid(self):
+        rect = self.scene().sceneRect()
+        # draw hirizontal
+        for i in xrange(int(rect.x()), int(rect.width()), self._grid_spacing):
+            self.scene().addLine(rect.x(), rect.y()+i,
+                                 rect.width(), rect.y()+i,
+                                 QtGui.QPen(self.kGridColor, 0.5,
+                                            QtCore.Qt.DotLine))
+        # draw vertical
+        for i in xrange(int(rect.y()), int(rect.height()), self._grid_spacing):
+            self.scene().addLine(rect.x()+i, rect.y(),
+                                 rect.x()+i, rect.height(),
+                                 QtGui.QPen(self.kGridColor, 0.5,
+                                            QtCore.Qt.DotLine))
+
+    def kill_selected_nodes(self):
+
+        for i in self.nodes:
+            if i.isSelected() and i in self.nodes and i in self.scene().items():
+                for p in i.inputs + i.outputs:
+                    for e in p.edge_list:
+                        self.remove_edge(e)
+                    p.prepareGeometryChange()
+                i.prepareGeometryChange()
+                self.nodes.remove(i)
+                self.remove_item_by_name(i.name)
+
     def keyPressEvent(self, event):
 
         if event.key() == QtCore.Qt.Key_Alt:
             self._alt_key = True
+        if event.key() == QtCore.Qt.Key_Delete:
+            self.kill_selected_nodes()
         if event.key() == QtCore.Qt.Key_Control:
             self._ctrl_key = True
         if self.node_box.listWidget._events:
@@ -250,7 +283,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def remove_item_by_name(self, name):
 
-        [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
+        # [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
+        [self.scene_widget.removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
 
@@ -304,7 +338,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         AGraph.add_node(self, node, x, y)
         node.label.setPlainText(node.name)
-        self.scene().addItem(node)
+        # self.scene().addItem(node)
+        self.scene_widget.addItem(node)
         node.setPos(QtCore.QPointF(x, y))
 
     def add_edge(self, src, dst):
@@ -316,15 +351,18 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             edge = Edge(src, dst)
             src.edge_list.append(edge)
             dst.edge_list.append(edge)
-            self.scene().addItem(edge)
+            # self.scene().addItem(edge)
+            self.scene_widget.addItem(edge)
             self.edges.append(edge)
             return edge
 
     def remove_edge(self, edge):
 
+        edge.prepareGeometryChange()
         AGraph.remove_edge(self, edge)
         self.edges.remove(edge)
-        self.scene().removeItem(edge)
+        # self.scene().removeItem(edge)
+        self.scene_widget.removeItem(edge)
 
     def scale_view(self, scale_factor):
 

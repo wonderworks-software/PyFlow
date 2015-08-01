@@ -14,7 +14,7 @@ class Colors(object):
 
     kNodeBackgrounds = QtGui.QColor(45, 45, 45, 120)
     kWhite = QtGui.QColor(255, 255, 255, 200)
-    kSceneBackground = QtGui.QColor(55, 55, 55)
+    kSceneBackground = QtGui.QColor(25, 25, 25)
     kInteger = QtGui.QColor(45, 48, 99, 255)
     kIntNodeBackground = QtGui.QColor(0, 0, 170, 100)
     kGridColor = QtGui.QColor(100, 100, 100, 100)
