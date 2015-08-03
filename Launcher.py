@@ -20,8 +20,7 @@ if __name__ == '__main__':
             self.verticalLayout.addWidget(node_box)
             self.actionDelete.triggered.connect(self.nodes_instances)
         def nodes_instances(self):
-            for n in self.G.nodes:
-                print n
+            self.G.scene_widget.clear()
 
 
     instance = W()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>451</width>
-    <height>421</height>
+    <width>327</width>
+    <height>457</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,16 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <property name="leftMargin">
-     <number>1</number>
-    </property>
-    <property name="topMargin">
-     <number>1</number>
-    </property>
-    <property name="rightMargin">
-     <number>1</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>1</number>
     </property>
     <item row="0" column="0">
@@ -37,16 +28,7 @@
         <string>Nodes</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
-        <property name="leftMargin">
-         <number>2</number>
-        </property>
-        <property name="topMargin">
-         <number>2</number>
-        </property>
-        <property name="rightMargin">
-         <number>2</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>2</number>
         </property>
         <item row="0" column="0">
@@ -79,16 +61,7 @@
           <item row="0" column="1">
            <widget class="QWidget" name="baseColorWidget" native="true">
             <layout class="QGridLayout" name="gridLayout_3">
-             <property name="leftMargin">
-              <number>1</number>
-             </property>
-             <property name="topMargin">
-              <number>1</number>
-             </property>
-             <property name="rightMargin">
-              <number>1</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>1</number>
              </property>
              <item row="0" column="0">
@@ -135,16 +108,7 @@
           <item row="6" column="1">
            <widget class="QWidget" name="portColorAWidget" native="true">
             <layout class="QGridLayout" name="gridLayout_4">
-             <property name="leftMargin">
-              <number>1</number>
-             </property>
-             <property name="topMargin">
-              <number>1</number>
-             </property>
-             <property name="rightMargin">
-              <number>1</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>1</number>
              </property>
              <item row="0" column="0">
@@ -167,16 +131,7 @@
           <item row="7" column="1">
            <widget class="QWidget" name="portColorBWidget" native="true">
             <layout class="QGridLayout" name="gridLayout_5">
-             <property name="leftMargin">
-              <number>1</number>
-             </property>
-             <property name="topMargin">
-              <number>1</number>
-             </property>
-             <property name="rightMargin">
-              <number>1</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>1</number>
              </property>
              <item row="0" column="0">
@@ -199,16 +154,7 @@
           <item row="8" column="1">
            <widget class="QWidget" name="portColorWidget" native="true">
             <layout class="QGridLayout" name="gridLayout_6">
-             <property name="leftMargin">
-              <number>1</number>
-             </property>
-             <property name="topMargin">
-              <number>1</number>
-             </property>
-             <property name="rightMargin">
-              <number>1</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>1</number>
              </property>
              <item row="0" column="0">
@@ -231,16 +177,7 @@
           <item row="9" column="1">
            <widget class="QWidget" name="portColorHoveredWidget" native="true">
             <layout class="QGridLayout" name="gridLayout_7">
-             <property name="leftMargin">
-              <number>1</number>
-             </property>
-             <property name="topMargin">
-              <number>1</number>
-             </property>
-             <property name="rightMargin">
-              <number>1</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>1</number>
              </property>
              <item row="0" column="0">
@@ -263,16 +200,7 @@
           <item row="10" column="1">
            <widget class="QWidget" name="portDirtyColorWidget" native="true">
             <layout class="QGridLayout" name="gridLayout_8">
-             <property name="leftMargin">
-              <number>1</number>
-             </property>
-             <property name="topMargin">
-              <number>1</number>
-             </property>
-             <property name="rightMargin">
-              <number>1</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>1</number>
              </property>
              <item row="0" column="0">
@@ -359,8 +287,8 @@
                  <family>Arial</family>
                 </font>
                </property>
-               <property name="currentText">
-                <string>Arial</string>
+               <property name="currentText" stdset="0">
+                <string>MS Shell Dlg 2</string>
                </property>
               </widget>
              </item>
@@ -376,6 +304,12 @@
           </item>
           <item row="16" column="1">
            <widget class="QSpinBox" name="portFontSizeSpinBox">
+            <property name="minimum">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <number>40</number>
+            </property>
             <property name="value">
              <number>10</number>
             </property>
@@ -384,16 +318,7 @@
           <item row="17" column="1">
            <widget class="QWidget" name="nodeLabelBackgroundColorWidget" native="true">
             <layout class="QGridLayout" name="gridLayout_11">
-             <property name="leftMargin">
-              <number>1</number>
-             </property>
-             <property name="topMargin">
-              <number>1</number>
-             </property>
-             <property name="rightMargin">
-              <number>1</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>1</number>
              </property>
             </layout>
@@ -431,11 +356,24 @@
            </widget>
           </item>
           <item row="5" column="1">
-           <widget class="QSpinBox" name="nodeLabelFontSizeSpinBox"/>
+           <widget class="QSpinBox" name="nodeLabelFontSizeSpinBox">
+            <property name="minimum">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <number>40</number>
+            </property>
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>14</number>
+            </property>
+           </widget>
           </item>
           <item row="4" column="1">
            <widget class="QFontComboBox" name="fontComboBox_2">
-            <property name="currentText">
+            <property name="currentText" stdset="0">
              <string>Arial</string>
             </property>
             <property name="currentFont">
@@ -455,6 +393,142 @@
        <attribute name="title">
         <string>Scene</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout_12">
+        <property name="margin">
+         <number>2</number>
+        </property>
+        <item row="0" column="0">
+         <layout class="QFormLayout" name="formLayout_2">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+          </property>
+          <property name="verticalSpacing">
+           <number>2</number>
+          </property>
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="topMargin">
+           <number>10</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <property name="bottomMargin">
+           <number>5</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="bacgroundColorLabel">
+            <property name="text">
+             <string>Bacground color</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QWidget" name="bacgroundColorWidget" native="true">
+            <layout class="QGridLayout" name="gridLayout_13">
+             <property name="margin">
+              <number>1</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QPushButton" name="pushButton_10">
+               <property name="text">
+                <string>...</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="gridColorLabel">
+            <property name="text">
+             <string>Grid color</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QWidget" name="gridColorWidget" native="true">
+            <layout class="QGridLayout" name="gridLayout_14">
+             <property name="margin">
+              <number>1</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QPushButton" name="pushButton_11">
+               <property name="text">
+                <string>...</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="gridLinesTypeLabel">
+            <property name="text">
+             <string>Grid lines type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="gridLinesTypeComboBox"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="edgeColorLabel">
+            <property name="text">
+             <string>Edge color</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QWidget" name="edgeColorWidget" native="true">
+            <layout class="QGridLayout" name="gridLayout_15">
+             <property name="margin">
+              <number>1</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QPushButton" name="pushButton_12">
+               <property name="text">
+                <string>...</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="edgeLineTypeLabel">
+            <property name="text">
+             <string>Edge line type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QComboBox" name="edgeLineTypeComboBox"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="edgeLineThicknessLabel">
+            <property name="text">
+             <string>Edge line thickness</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QDoubleSpinBox" name="edgeLineThicknessDoubleSpinBox">
+            <property name="minimum">
+             <double>0.200000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.500000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -465,7 +539,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>451</width>
+     <width>327</width>
      <height>18</height>
     </rect>
    </property>

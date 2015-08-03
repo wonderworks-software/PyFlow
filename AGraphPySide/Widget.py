@@ -21,22 +21,25 @@ class SceneClass(QtGui.QGraphicsScene):
         self.pressed_port = None
 
     def dragEnterEvent(self, event):
-        data = event.mimeData().data('application/x-qabstractitemmodeldatalist')
-        if event.mimeData().hasText():
-            print 'Enter event accepted'
-            print data
-            even.accept()
+        if event.mimeData().hasFormat('text/plain'):
+            event.accept()
         else:
-            print 'Enter event ignored'
             event.ignore()
 
     def dragMoveEvent(self, event):
-
-        super(GraphWidget, self).dragMoveEvent(event)
+        if event.mimeData().hasFormat('text/plain'):
+            event.setDropAction(QtCore.Qt.MoveAction)
+            event.accept()
+        else:
+            event.ignore()
 
     def dropEvent(self, event):
-        print 'DROP'
-        print event.mimeData()
+        if event.mimeData().hasFormat('text/plain'):
+            node_name = event.mimeData().text()
+            node = self.parent().node_box.get_node(Nodes, node_name)
+            self.parent().add_node(node, event.scenePos().x(), event.scenePos().y())
+        else:
+            super(SceneClass, self).dropEvent(event)
 
 
 class NodesBoxListWidget(QtGui.QListWidget):
@@ -56,8 +59,17 @@ class NodesBoxListWidget(QtGui.QListWidget):
         self.setFrameShadow(QtGui.QFrame.Sunken)
         self.setObjectName("lw_nodes")
         self.setSortingEnabled(True)
-        # self.setDragEnabled(True)
-        # self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
+        self.setDragEnabled(True)
+        self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
+
+    def mousePressEvent(self, event):
+        super(NodesBoxListWidget, self).mousePressEvent(event)
+        pressed_text = self.selectedItems()[0].text()
+        drag = QtGui.QDrag(self)
+        mime_data = QtCore.QMimeData()
+        mime_data.setText(pressed_text)
+        drag.setMimeData(mime_data)
+        drag.exec_()
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return:
@@ -220,16 +232,18 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                                             QtCore.Qt.DotLine))
 
     def kill_selected_nodes(self):
-
+        trash = []
         for i in self.nodes:
             if i.isSelected() and i in self.nodes and i in self.scene().items():
                 for p in i.inputs + i.outputs:
                     for e in p.edge_list:
                         self.remove_edge(e)
                 i.prepareGeometryChange()
-                self.scene().removeItem(i)
-                self.nodes = self.get_nodes()
-                # self.nodes.remove(i)
+                # self.scene().removeItem(i)        # this causes a crash on exit
+                i.setVisible(False)
+                trash.append(i)
+        for n in trash:
+            self.nodes.remove(n)
 
     def get_nodes(self):
         ls = []
@@ -392,6 +406,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def scale_view(self, scale_factor):
 
         self.factor = self.matrix().scale(scale_factor, scale_factor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
-        if self.factor < 0.5 or self.factor > 5:
+        if self.factor < 1 or self.factor > 5:
             return
         self.scale(scale_factor, scale_factor)
