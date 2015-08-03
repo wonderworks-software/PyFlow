@@ -30,6 +30,9 @@ class Colors(object):
     kDirtyPen = QtGui.QColor(250, 250, 250, 200)
     kShadow = QtGui.QColor(20, 20, 20, 150)
     kRubberRect = QtGui.QColor(255, 255, 255, 50)
+    kGroupObjectBrush = QtGui.QColor(100, 100, 100, 40)
+    kGroupObjectPen = QtGui.QColor(0, 0, 0, 100)
+    kGroupObjectrResizer = QtGui.QColor(255, 255, 255, 20)
 
     def __init__(self):
         super(Colors, self).__init__()

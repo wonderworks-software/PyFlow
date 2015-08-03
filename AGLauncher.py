@@ -14,14 +14,18 @@ intNode2.set_data(6, False)
 
 sumNode1 = AGSumNode('SumNode1', G)
 
+group_node = AGGroupNode('GroupNode1', G)
+group_node.add_node(intNode1)
+
 G.add_node(intNode1, 0, 0)
 G.add_node(intNode2, 0, 0)
 G.add_node(sumNode1, 0, 0)
+G.add_node(group_node, 0, 0)
 
 G.add_edge(sumNode1.inputA, intNode1.output)
 G.add_edge(intNode2.output, sumNode1.inputB)
 
-# G.plot()
+G.plot()
 # intNode2.set_data(5, dirty_propagate=True)
 # print sumNode3.output.get_data()
 # intNode1.set_data(4)
