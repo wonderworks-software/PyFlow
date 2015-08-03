@@ -26,9 +26,10 @@ class Colors(object):
     kGreen = QtGui.QColor(0, 255, 0, 255)
     kBlue = QtGui.QColor(0, 0, 255, 255)
     kBlack = QtGui.QColor(50, 50, 50, 255)
-    kConnectionLines = QtGui.QColor(255, 255, 255, 90)
+    kConnectionLines = QtGui.QColor(255, 255, 255, 255)
     kDirtyPen = QtGui.QColor(250, 250, 250, 200)
     kShadow = QtGui.QColor(20, 20, 20, 150)
+    kRubberRect = QtGui.QColor(255, 255, 255, 50)
 
     def __init__(self):
         super(Colors, self).__init__()

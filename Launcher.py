@@ -2,6 +2,7 @@ from PySide import QtGui, QtCore
 from AGraphPySide import *
 import test_app_ui
 
+
 if __name__ == '__main__':
     import sys
 
@@ -17,7 +18,10 @@ if __name__ == '__main__':
             node_box.le_nodes._events = False
             self.gridLayout.addWidget(self.G)
             self.verticalLayout.addWidget(node_box)
-            self.actionDelete.triggered.connect(self.G.kill_selected_nodes)
+            self.actionDelete.triggered.connect(self.nodes_instances)
+        def nodes_instances(self):
+            for n in self.G.nodes:
+                print n
 
 
     instance = W()

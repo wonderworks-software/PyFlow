@@ -301,11 +301,21 @@ class AGraph(object):
                                     nodes.append(p.parent)
             return nodes
 
-    def add_node(self, node, x, y):
+    def get_nodes(self):
+        return
 
-        dup_names = [n.name for n in self.nodes if node.name in n.name]
-        if not len(dup_names) == 0:
-            node.name = node.name+str(len(dup_names))
+    def add_node(self, node, x, y):
+        # generate unic name
+        if node.name in [n.name for n in self.nodes]:
+            indexes = []
+            for i in self.nodes:
+                idx = ''.join([i for i in i.name if i.isdigit()])
+                if not idx == '':
+                    indexes.append(idx)
+                else:
+                    indexes.append('0')
+            node.name = node.name+str(max([int(idx) for idx in indexes])+1)
+        # add node
         self.nodes.append(node)
         node.x = x
         node.y = y

@@ -20,8 +20,23 @@ class SceneClass(QtGui.QGraphicsScene):
         self.setParent(parent)
         self.pressed_port = None
 
-    def mouseMoveEvent(self, event):
-        super(SceneClass, self).mouseMoveEvent(event)
+    def dragEnterEvent(self, event):
+        data = event.mimeData().data('application/x-qabstractitemmodeldatalist')
+        if event.mimeData().hasText():
+            print 'Enter event accepted'
+            print data
+            even.accept()
+        else:
+            print 'Enter event ignored'
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+
+        super(GraphWidget, self).dragMoveEvent(event)
+
+    def dropEvent(self, event):
+        print 'DROP'
+        print event.mimeData()
 
 
 class NodesBoxListWidget(QtGui.QListWidget):
@@ -41,6 +56,8 @@ class NodesBoxListWidget(QtGui.QListWidget):
         self.setFrameShadow(QtGui.QFrame.Sunken)
         self.setObjectName("lw_nodes")
         self.setSortingEnabled(True)
+        # self.setDragEnabled(True)
+        # self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return:
@@ -140,7 +157,8 @@ class RubberRect(QtGui.QGraphicsRectItem, Colors):
         super(RubberRect, self).__init__()
         self.name = name
         self.setZValue(1)
-        self.setPen(QtGui.QPen(self.kWhite, 1, QtCore.Qt.DotLine))
+        self.setPen(QtGui.QPen(self.kRubberRect, 0.5, QtCore.Qt.SolidLine))
+        self.setBrush(QtGui.QBrush(self.kRubberRect))
 
 
 class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
@@ -159,6 +177,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
+        self.setAcceptDrops(True)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
         self.scene_widget.setSceneRect(QtCore.QRect(0, 0, 2000, 2000))
         self._grid_spacing = 50
@@ -207,10 +226,18 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 for p in i.inputs + i.outputs:
                     for e in p.edge_list:
                         self.remove_edge(e)
-                    p.prepareGeometryChange()
                 i.prepareGeometryChange()
-                self.nodes.remove(i)
-                self.remove_item_by_name(i.name)
+                self.scene().removeItem(i)
+                self.nodes = self.get_nodes()
+                # self.nodes.remove(i)
+
+    def get_nodes(self):
+        ls = []
+        for n in self.scene_widget.items():
+            if hasattr(n, 'object_type'):
+                if n.object_type == AGObjectTypes.tNode:
+                    ls.append(n)
+        return ls
 
     def keyPressEvent(self, event):
 
@@ -338,7 +365,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         AGraph.add_node(self, node, x, y)
         node.label.setPlainText(node.name)
-        # self.scene().addItem(node)
         self.scene_widget.addItem(node)
         node.setPos(QtCore.QPointF(x, y))
 
@@ -358,15 +384,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def remove_edge(self, edge):
 
-        edge.prepareGeometryChange()
         AGraph.remove_edge(self, edge)
         self.edges.remove(edge)
-        # self.scene().removeItem(edge)
+        edge.prepareGeometryChange()
         self.scene_widget.removeItem(edge)
 
     def scale_view(self, scale_factor):
 
         self.factor = self.matrix().scale(scale_factor, scale_factor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
-        if self.factor < 1 or self.factor > 5:
+        if self.factor < 0.5 or self.factor > 5:
             return
         self.scale(scale_factor, scale_factor)

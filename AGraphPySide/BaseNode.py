@@ -109,7 +109,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
             color = color.lighter(160)
 
         painter.setBrush(QtGui.QBrush(color))
-        pen = QtGui.QPen(QtCore.Qt.black, 1)
+        pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QtGui.QStyle.State_Selected:
             pen.setColor(Colors.kWhite)
             pen.setStyle(QtCore.Qt.DotLine)

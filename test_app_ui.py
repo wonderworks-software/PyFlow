@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:/GIT/GraphModel/test_app_ui.ui'
 #
-# Created: Sat Aug 01 18:17:33 2015
+# Created: Mon Aug 03 12:10:47 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -50,7 +50,25 @@ class Ui_MainWindow(object):
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.actionDelete = QtGui.QAction(MainWindow)
         self.actionDelete.setObjectName("actionDelete")
+        self.actionOptions = QtGui.QAction(MainWindow)
+        self.actionOptions.setObjectName("actionOptions")
+        self.actionNode_box = QtGui.QAction(MainWindow)
+        self.actionNode_box.setObjectName("actionNode_box")
+        self.actionSave = QtGui.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
+        self.actionLoad = QtGui.QAction(MainWindow)
+        self.actionLoad.setObjectName("actionLoad")
+        self.actionSave_as = QtGui.QAction(MainWindow)
+        self.actionSave_as.setObjectName("actionSave_as")
+        self.actionConsole = QtGui.QAction(MainWindow)
+        self.actionConsole.setObjectName("actionConsole")
         self.menuEdit.addAction(self.actionDelete)
+        self.menuEdit.addAction(self.actionOptions)
+        self.menuView.addAction(self.actionNode_box)
+        self.menuView.addAction(self.actionConsole)
+        self.menuFile.addAction(self.actionSave)
+        self.menuFile.addAction(self.actionLoad)
+        self.menuFile.addAction(self.actionSave_as)
         self.menuBar.addAction(self.menuFile.menuAction())
         self.menuBar.addAction(self.menuEdit.menuAction())
         self.menuBar.addAction(self.menuView.menuAction())
@@ -65,4 +83,10 @@ class Ui_MainWindow(object):
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDelete.setText(QtGui.QApplication.translate("MainWindow", "Delete", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOptions.setText(QtGui.QApplication.translate("MainWindow", "Options", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNode_box.setText(QtGui.QApplication.translate("MainWindow", "Node box", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "Load", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave_as.setText(QtGui.QApplication.translate("MainWindow", "Save as", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionConsole.setText(QtGui.QApplication.translate("MainWindow", "Console", None, QtGui.QApplication.UnicodeUTF8))
 
