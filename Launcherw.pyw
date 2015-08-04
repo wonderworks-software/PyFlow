@@ -19,13 +19,6 @@ if __name__ == '__main__':
             self.gridLayout.addWidget(self.G)
             self.verticalLayout.addWidget(node_box)
             self.actionPlot_graph.triggered.connect(self.G.plot)
-            self.actionDelete.triggered.connect(self.z)
-
-        def z(self):
-            for i in self.G.nodes:
-                print i.name, i.zValue()
-            for i in self.G.groupers:
-                print i.zValue()
 
 
     instance = W()

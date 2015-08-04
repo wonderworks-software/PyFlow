@@ -59,6 +59,10 @@ class AGObjectTypes(object):
     tPort = 'port_object'
     tNode = 'node_object'
     tGraph = 'graph_object'
+    tGrouper = 'group_object'
+    tConnectionLine = 'connection_line_object'
+    tGridLine = 'grid_line_object'
+    tNodeName = 'node_name_object'
 
     def __init__(self):
         super(AGObjectTypes, self).__init__()

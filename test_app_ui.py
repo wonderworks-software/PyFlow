@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:/GIT/GraphModel/test_app_ui.ui'
+# Form implementation generated from reading ui file 'd:\GIT\Nodes\test_app_ui.ui'
 #
-# Created: Mon Aug 03 12:10:47 2015
-#      by: pyside-uic 0.2.15 running on PySide 1.2.2
+# Created: Tue Aug 04 18:10:21 2015
+#      by: pyside-uic 0.2.14 running on PySide 1.1.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(444, 362)
+        MainWindow.resize(461, 423)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_2 = QtGui.QGridLayout(self.centralwidget)
@@ -30,13 +30,28 @@ class Ui_MainWindow(object):
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-        self.gridLayout_2.addWidget(self.splitter, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.splitter, 2, 0, 1, 1)
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.cb_multithreaded = QtGui.QCheckBox(self.centralwidget)
+        self.cb_multithreaded.setObjectName("cb_multithreaded")
+        self.horizontalLayout.addWidget(self.cb_multithreaded)
+        self.cb_shadows = QtGui.QCheckBox(self.centralwidget)
+        self.cb_shadows.setObjectName("cb_shadows")
+        self.horizontalLayout.addWidget(self.cb_shadows)
+        self.cb_debug = QtGui.QCheckBox(self.centralwidget)
+        self.cb_debug.setObjectName("cb_debug")
+        self.horizontalLayout.addWidget(self.cb_debug)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.gridLayout_2.addLayout(self.horizontalLayout, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 444, 18))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 461, 18))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")
@@ -62,10 +77,16 @@ class Ui_MainWindow(object):
         self.actionSave_as.setObjectName("actionSave_as")
         self.actionConsole = QtGui.QAction(MainWindow)
         self.actionConsole.setObjectName("actionConsole")
+        self.actionPlot_graph = QtGui.QAction(MainWindow)
+        self.actionPlot_graph.setObjectName("actionPlot_graph")
+        self.actionGroup_selected = QtGui.QAction(MainWindow)
+        self.actionGroup_selected.setObjectName("actionGroup_selected")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addAction(self.actionOptions)
+        self.menuEdit.addAction(self.actionGroup_selected)
         self.menuView.addAction(self.actionNode_box)
         self.menuView.addAction(self.actionConsole)
+        self.menuView.addAction(self.actionPlot_graph)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionSave_as)
@@ -78,6 +99,9 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
+        self.cb_multithreaded.setText(QtGui.QApplication.translate("MainWindow", "Multithreaded", None, QtGui.QApplication.UnicodeUTF8))
+        self.cb_shadows.setText(QtGui.QApplication.translate("MainWindow", "Nodes shadows", None, QtGui.QApplication.UnicodeUTF8))
+        self.cb_debug.setText(QtGui.QApplication.translate("MainWindow", "Debug", None, QtGui.QApplication.UnicodeUTF8))
         self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
@@ -89,4 +113,6 @@ class Ui_MainWindow(object):
         self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "Load", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave_as.setText(QtGui.QApplication.translate("MainWindow", "Save as", None, QtGui.QApplication.UnicodeUTF8))
         self.actionConsole.setText(QtGui.QApplication.translate("MainWindow", "Console", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlot_graph.setText(QtGui.QApplication.translate("MainWindow", "Plot graph", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionGroup_selected.setText(QtGui.QApplication.translate("MainWindow", "Group selected", None, QtGui.QApplication.UnicodeUTF8))
 

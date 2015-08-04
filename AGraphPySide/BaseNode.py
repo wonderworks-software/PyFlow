@@ -9,7 +9,7 @@ class NodeName(QtGui.QGraphicsTextItem):
 
     def __init__(self, name, parent, color=Colors.kNodeNameRect):
         QtGui.QGraphicsTextItem.__init__(self)
-        self.Type = 'NODE_NAME'
+        self.object_type = AGObjectTypes.tNodeName
         self.name = name
         self.color = color
         self.parent = parent
@@ -79,8 +79,9 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.v_form.setLayout(self.layout)
         self.v_form.setX(self.v_form.x()-self.spacings.kPortOffset/2)
+        self.setZValue(1)
         # effect = QtGui.QGraphicsDropShadowEffect()
-        # effect.setColor(Colors.kShadow)
+        # effect.setColor(Colors.kSceneBackground.lighter(50))
         # effect.setParent(self.graph)
         # effect.setBlurRadius(3)
         # effect.setOffset(-30, -20)
@@ -140,6 +141,17 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def mouseReleaseEvent(self, event):
 
         self.update()
+        selected_nodes = [n for n in self.graph.nodes if n.isSelected()]
+        groupers = [i for i in self.graph.groupers if i.object_type == AGObjectTypes.tGrouper]
+        grouper = [g for g in groupers if self in g.collidingItems()]
+        if len(grouper) == 1:
+            grouper[0].add_from_iterable(selected_nodes)
+        else:
+            parent = self.parentItem()
+            if parent and parent.object_type == AGObjectTypes.tGrouper:
+                if self in parent.nodes:
+                    parent.remove_from_iterable(selected_nodes)
+                    self.setZValue(1)
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 
     def add_input_port(self, port_name, data_type):

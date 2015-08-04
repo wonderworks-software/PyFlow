@@ -31,6 +31,7 @@ class Colors(object):
     kShadow = QtGui.QColor(20, 20, 20, 150)
     kRubberRect = QtGui.QColor(255, 255, 255, 50)
     kGroupObjectBrush = QtGui.QColor(100, 100, 100, 40)
+    kGroupObjectNameBackground = QtGui.QColor(100, 100, 100, 40)
     kGroupObjectPen = QtGui.QColor(0, 0, 0, 100)
     kGroupObjectrResizer = QtGui.QColor(255, 255, 255, 20)
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>444</width>
-    <height>362</height>
+    <width>461</width>
+    <height>423</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
+    <item row="2" column="0">
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -28,6 +28,47 @@
       </widget>
      </widget>
     </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMinimumSize</enum>
+      </property>
+      <item>
+       <widget class="QCheckBox" name="cb_multithreaded">
+        <property name="text">
+         <string>Multithreaded</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="cb_shadows">
+        <property name="text">
+         <string>Nodes shadows</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="cb_debug">
+        <property name="text">
+         <string>Debug</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -36,7 +77,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>444</width>
+     <width>461</width>
      <height>18</height>
     </rect>
    </property>
@@ -46,6 +87,7 @@
     </property>
     <addaction name="actionDelete"/>
     <addaction name="actionOptions"/>
+    <addaction name="actionGroup_selected"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -53,6 +95,7 @@
     </property>
     <addaction name="actionNode_box"/>
     <addaction name="actionConsole"/>
+    <addaction name="actionPlot_graph"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -110,6 +153,16 @@
   <action name="actionConsole">
    <property name="text">
     <string>Console</string>
+   </property>
+  </action>
+  <action name="actionPlot_graph">
+   <property name="text">
+    <string>Plot graph</string>
+   </property>
+  </action>
+  <action name="actionGroup_selected">
+   <property name="text">
+    <string>Group selected</string>
    </property>
   </action>
  </widget>
