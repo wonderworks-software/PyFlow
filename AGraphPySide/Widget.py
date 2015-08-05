@@ -289,8 +289,8 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
 
         r = QtCore.QRectF(self.rect().topLeft().x(),
                           self.rect().topLeft().y(),
-                          point.x()-self.scenePos().x()+25,
-                          point.y()-self.scenePos().y()+25
+                          point.x()-self.mapToScene(self.rect().topLeft()).x()+25,
+                          point.y()-self.mapToScene(self.rect().topLeft()).y()+25
                           )
         self.setRect(r.normalized())
         self.update()
@@ -534,8 +534,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self._ctrl_key = True
         if self.node_box.listWidget._events:
             if event.key() == QtCore.Qt.Key_Tab:
-                pos = self.mapToGlobal(self.current_cursor_pose.toPoint())
-                self.node_box.move(pos.x(), pos.y())
+                pos = self.current_cursor_pose
+                self.node_box.move(self.mapFromScene(pos.toPoint()).x()+self.pos().x(),
+                                   self.mapFromScene(pos.toPoint()).y()+self.pos().y()
+                                   )
                 self.node_box.refresh_list('')
                 self.node_box.show()
         QtGui.QGraphicsView.keyPressEvent(self, event)
