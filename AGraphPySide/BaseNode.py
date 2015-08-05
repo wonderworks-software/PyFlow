@@ -152,6 +152,11 @@ class Node(QtGui.QGraphicsItem, AGNode):
                 if self in parent.nodes:
                     parent.remove_from_iterable(selected_nodes)
                     self.setZValue(1)
+        p_item = self.parentItem()
+        if p_item and hasattr(p_item, 'object_type'):
+            if p_item.object_type == AGObjectTypes.tGrouper:
+                if p_item.auto_fit_content:
+                    p_item.fit_content()
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 
     def add_input_port(self, port_name, data_type):

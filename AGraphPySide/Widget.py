@@ -221,8 +221,8 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         self._minimum_width = 50
         self._minimum_height = 50
         self.setZValue(2)
-        # self.setFlag(self.ItemIsSelectable)
-        self.setFlag(self.ItemIsFocusable)
+        self.auto_fit_content = False
+        # self.setFlag(self.ItemIsFocusable)
         self.setPen(QtGui.QPen(self.kGroupObjectPen, 1, QtCore.Qt.SolidLine))
         self.setBrush(QtGui.QBrush(self.kGroupObjectBrush))
         self.label = GroupObjectName(self)
@@ -264,6 +264,37 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
     def minimum_width(self, data):
         self._minimum_width = abs(data)
 
+    def get_nodes_rect(self):
+        rectangles = []
+        for n in self.nodes:
+            scene_pos = n.scenePos()
+            n_rect = QtCore.QRectF(scene_pos,
+                                   QtCore.QPointF(scene_pos.x()+float(n.w),
+                                                  scene_pos.y()+float(n.h)
+                                                  )
+                                   )
+            rectangles.append([n_rect.topLeft().x(),
+                               n_rect.topLeft().y(),
+                               n_rect.bottomRight().x(),
+                               n_rect.bottomRight().y()]
+                              )
+        min_x = min([i[0] for i in rectangles])
+        max_x = max([i[2] for i in rectangles])
+        min_y = min([i[1] for i in rectangles])
+        max_y = max([i[3] for i in rectangles])
+
+        return QtCore.QRectF(QtCore.QPointF(min_x, min_y), QtCore.QPointF(max_x, max_y))
+
+    def set_bottom_right(self, point):
+
+        r = QtCore.QRectF(self.rect().topLeft().x(),
+                          self.rect().topLeft().y(),
+                          point.x()-self.scenePos().x()+25,
+                          point.y()-self.scenePos().y()+25
+                          )
+        self.setRect(r.normalized())
+        self.update()
+
     def hoverEnterEvent(self, event):
 
         self.setBrush(self.brush().color().lighter(130))
@@ -284,11 +315,14 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
                                                                          self.resize_item.boundingRect().height()))
 
     def has_nodes(self):
+
         return False if len(self.nodes) == 0 else True
 
     def fit_content(self):
         if self.has_nodes():
-            print 'fit'
+            nodes_rect = self.get_nodes_rect()
+            nodes_bottom_right = nodes_rect.bottomRight()
+            self.set_bottom_right(nodes_bottom_right)
         else:
             print 'empty'
 
@@ -359,6 +393,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._isPanning = False
         self._mousePressed = False
         self.scale(1.5, 1.5)
+        self.minimum_scale = 0.2
+        self.maximum_scale = 5
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.scene_widget = SceneClass(self)
         self.setScene(self.scene_widget)
@@ -397,6 +433,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum()/2)
 
     def frame(self):
+
         polygon = self.mapToScene(self.viewport().rect())
         rect = QtCore.QRectF(polygon[0], polygon[2])
         mid_points = []
@@ -410,26 +447,31 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             return
         nodes_rect = self.get_nodes_rect()
         if not rect.contains(nodes_rect):
-            # move bars
             by_x = mp[0]/self.sceneRect().width()
             by_y = mp[1]/self.sceneRect().height()
             self.horizontalScrollBar().setValue(float(self.horizontalScrollBar().maximum()*by_x))
             self.verticalScrollBar().setValue(float(self.verticalScrollBar().maximum()*by_y))
-            # scale
-            print 'scale'
 
+    def get_nodes_rect(self, selected=False):
 
-    def get_nodes_rect(self):
         rectangles = []
-        for n in self.nodes:
-            n_rect = QtCore.QRectF(n.scenePos(),
-                                   QtCore.QPointF(n.scenePos().x()+float(n.w),
-                                                  n.scenePos().y()+float(n.h)))
-            rectangles.append([n_rect.x(), n_rect.y(), n_rect.bottomRight().x(), n_rect.bottomRight().y()])
+        if selected:
+            for n in [n for n in self.nodes if n.isSelected()]:
+                n_rect = QtCore.QRectF(n.scenePos(),
+                                       QtCore.QPointF(n.scenePos().x()+float(n.w),
+                                                      n.scenePos().y()+float(n.h)))
+                rectangles.append([n_rect.x(), n_rect.y(), n_rect.bottomRight().x(), n_rect.bottomRight().y()])
+        else:
+            for n in self.nodes:
+                n_rect = QtCore.QRectF(n.scenePos(),
+                                       QtCore.QPointF(n.scenePos().x()+float(n.w),
+                                                      n.scenePos().y()+float(n.h)))
+                rectangles.append([n_rect.x(), n_rect.y(), n_rect.bottomRight().x(), n_rect.bottomRight().y()])
         min_x = min([i[0] for i in rectangles])
         max_x = max([i[2] for i in rectangles])
         min_y = min([i[1] for i in rectangles])
         max_y = max([i[3] for i in rectangles])
+
         return QtCore.QRectF(QtCore.QPointF(min_x, min_y), QtCore.QPointF(max_x, max_y))
 
     def draw_grid(self):
@@ -466,6 +508,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 i.setVisible(False)
                 trash.append(i)
         for n in trash:
+            if n.parentItem() and isinstance(n.parentItem(), GroupObject):
+                n.parentItem().remove_node(n)
             self.nodes.remove(n)
 
     def get_nodes(self):
@@ -539,8 +583,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if self._resize_group_mode:
             grp = self.pressed_item.parentItem()
 
-            end_pos = self.current_cursor_pose-grp.pos()
-
             x = max([self.current_cursor_pose.x()-grp.pos().x(),
                      grp.rect().topLeft().x()+grp.minimum_width])
             y = max([self.current_cursor_pose.y()-grp.pos().y(),
@@ -586,8 +628,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         else:
             if self.pressed_item and not hasattr(self.pressed_item, 'non_selectable'):
                 parent = self.pressed_item.parentItem()
-                if parent and parent.object_type == AGObjectTypes.tGrouper:
-                    parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
+                if parent and hasattr(parent, 'object_type'):
+                    if parent.object_type == AGObjectTypes.tGrouper:
+                        parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
         for n in self.nodes:
             n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
         if event.button() == QtCore.Qt.RightButton:
@@ -657,7 +700,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if result:
             if src.type == AGPortTypes.kInput:
                 src, dst = dst, src
-            edge = Edge(src, dst)
+            edge = Edge(src, dst, self)
             src.edge_list.append(edge)
             dst.edge_list.append(edge)
             # self.scene().addItem(edge)
@@ -673,7 +716,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.scene_widget.removeItem(edge)
 
     def scale_view(self, scale_factor):
+
         self.factor = self.matrix().scale(scale_factor, scale_factor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
-        if self.factor < 0.2 or self.factor > 5:
+        if self.factor < self.minimum_scale or self.factor > self.maximum_scale:
             return
         self.scale(scale_factor, scale_factor)

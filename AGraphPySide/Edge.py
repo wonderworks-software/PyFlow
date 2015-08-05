@@ -6,12 +6,13 @@ from AbstractGraph import *
 
 class Edge(QtGui.QGraphicsLineItem, Colors):
 
-    def __init__(self, source, destination, color=Colors.kConnectionLines):
+    def __init__(self, source, destination, graph):
         QtGui.QGraphicsLineItem.__init__(self)
         self.source = source
+        self.graph = graph
         self.destination = destination
-        self.color = color
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
+        self.setFlag(self.ItemIsSelectable)
 
         self.setZValue(1)
         self.connection = {'From': self.source.parent.label.name+'.'+self.source.name,
@@ -26,21 +27,22 @@ class Edge(QtGui.QGraphicsLineItem, Colors):
                                             self.destination.name)
 
     def paint(self, painter, option, widget):
-        painter.setPen(QtGui.QPen(self.kConnectionLines, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+
+        pen = QtGui.QPen(self.kConnectionLines, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
         offset = self.source.boundingRect().width()/2
 
         p1 = self.source.sceneTransform().map(QtCore.QPointF(offset*2, offset))
         p2 = self.destination.sceneTransform().map(QtCore.QPointF(0, offset))
 
         distance = p2.x() - p1.x()
-        mult = 3
+        multiply = 3
         path = QtGui.QPainterPath()
         path.moveTo(p1)
         if distance < 0:
-            path.cubicTo(QtCore.QPoint(p1.x()+distance/-mult, p1.y()), QtCore.QPoint(p2.x()-distance/-mult, p2.y()), p2)
+            path.cubicTo(QtCore.QPoint(p1.x()+distance/-multiply, p1.y()), QtCore.QPoint(p2.x()-distance/-multiply, p2.y()), p2)
         else:
-            path.cubicTo(QtCore.QPoint(p1.x()+distance/mult, p1.y()), QtCore.QPoint(p2.x()-distance/2, p2.y()), p2)
-
+            path.cubicTo(QtCore.QPoint(p1.x()+distance/multiply, p1.y()), QtCore.QPoint(p2.x()-distance/2, p2.y()), p2)
+        painter.setPen(pen)
         painter.drawPath(path)
 
     def boundingRect(self):
