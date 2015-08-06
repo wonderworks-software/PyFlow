@@ -369,17 +369,19 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
 
     def add_node(self, node):
         if node.object_type == AGObjectTypes.tNode and node not in self.nodes:
-            node.setZValue(self.zValue()+0.5)
-            node.setParentItem(self)
-            node.setPos(node.pos()-self.scenePos())
-            self.nodes.append(node)
-            self.update_count_label()
+            if not node.parentItem():
+                node.setZValue(self.zValue()+0.5)
+                node.setParentItem(self)
+                node.setPos(node.pos()-self.scenePos())
+                self.nodes.append(node)
+                self.update_count_label()
 
     def remove_node(self, node):
-        self.nodes.remove(node)
-        node.setParentItem(self.parentItem())
-        node.setPos(self.mapToScene(node.pos()))
-        self.update_count_label()
+        if node in self.nodes:
+            self.nodes.remove(node)
+            node.setParentItem(self.parentItem())
+            node.setPos(self.mapToScene(node.pos()))
+            self.update_count_label()
 
 
 class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):

@@ -145,13 +145,19 @@ class Node(QtGui.QGraphicsItem, AGNode):
         groupers = [i for i in self.graph.groupers if i.object_type == AGObjectTypes.tGrouper]
         grouper = [g for g in groupers if self in g.collidingItems()]
         if len(grouper) == 1:
-            grouper[0].add_from_iterable(selected_nodes)
+            if not self.graph._ctrl_key:
+                grouper[0].add_from_iterable(selected_nodes)
         else:
             parent = self.parentItem()
             if parent and parent.object_type == AGObjectTypes.tGrouper:
                 if self in parent.nodes:
                     parent.remove_from_iterable(selected_nodes)
                     self.setZValue(1)
+                    for n in selected_nodes:
+                        if n.parentItem():
+                            if hasattr(n.parentItem(), 'object_type'):
+                                if n.parentItem().object_type == AGObjectTypes.tGrouper:
+                                    n.parentItem().remove_node(n)
         p_item = self.parentItem()
         if p_item and hasattr(p_item, 'object_type'):
             if p_item.object_type == AGObjectTypes.tGrouper:
