@@ -10,6 +10,7 @@ nodes_path = path.abspath('.')+'\\Nodes'
 if nodes_path not in sys.path:
     sys.path.append(nodes_path)
 import Nodes
+from time import ctime
 
 
 def get_mid_point(args):
@@ -186,6 +187,7 @@ class GroupObjectName(QtGui.QGraphicsTextItem, Colors):
         self.setParentItem(parent)
         self.setPlainText('enter comment')
         self.setDefaultTextColor(self.kWhite)
+        self.setCursor(QtCore.Qt.IBeamCursor)
 
     def update_pos(self):
 
@@ -231,6 +233,7 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         self.count_label.setFont(QtGui.QFont("Courier New", 8))
         self.count_label.setPlainText(str(len(self.nodes)))
         self.resize_item = QtGui.QGraphicsPolygonItem(parent=self)
+        self.resize_item.setCursor(QtCore.Qt.SizeFDiagCursor)
         self.resize_item.setFlag(self.ItemIsMovable, False)
         self.resize_item.mark = 'resize_object'
         self.resize_item.setPolygon(QtGui.QPolygonF([QtCore.QPointF(0.0, 10.0),
@@ -238,7 +241,8 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
                                                      QtCore.QPointF(10.0, 0.0),
                                                      QtCore.QPointF(0.0, 10.0)
                                                      ]))
-        self.resize_item.setBrush(self.kGroupObjectrResizer)
+        self.resize_item.setBrush(self.kGroupObjectResizer)
+        self.set_bottom_right(QtCore.QPointF(self.minimum_width, self.minimum_height))
 
     @property
     def minimum_height(self):
@@ -319,12 +323,12 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         return False if len(self.nodes) == 0 else True
 
     def fit_content(self):
+
         if self.has_nodes():
             nodes_rect = self.get_nodes_rect()
             nodes_bottom_right = nodes_rect.bottomRight()
             self.set_bottom_right(nodes_bottom_right)
-        else:
-            print 'empty'
+            self.setFlag(self.ItemIsMovable)
 
     def get_rect(self):
 
@@ -386,14 +390,19 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
 
 class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
-    def __init__(self, name):
+    def __init__(self, name, parent=None):
         QtGui.QGraphicsView.__init__(self)
         AGraph.__init__(self, name)
+        self.parent = parent
+        self.menu = QtGui.QMenu(self)
+        self.add_actions()
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.pressed_item = None
         self.released_item = None
         self.groupers = []
         self._isPanning = False
         self._mousePressed = False
+        self._shadows = False
         self.scale(1.5, 1.5)
         self.minimum_scale = 0.2
         self.maximum_scale = 5
@@ -411,15 +420,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.factor = 1
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
-        self._alt_key = False
-        self._ctrl_key = False
-        self._shift_key = False
         self.rubber_rect = RubberRect('RubberRect')
 
         self.real_time_line = QtGui.QGraphicsLineItem(0, 0, 0, 0)
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.object_type = AGObjectTypes.tConnectionLine
-        self.real_time_line.setZValue(-1)
+        # self.real_time_line.setZValue(1)
         self.real_time_line.setPen(QtGui.QPen(self.kWhite,
                                               0.5,
                                               QtCore.Qt.DotLine))
@@ -433,6 +439,35 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.node_box = NodesBox(self)
         self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum()/2)
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum()/2)
+
+    def add_actions(self):
+        save_action = QtGui.QAction(self)
+        save_action.setText('Save')
+        save_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
+
+        load_action = QtGui.QAction(self)
+        load_action.setText('Load')
+        load_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogOpenButton))
+
+        save_as_action = QtGui.QAction(self)
+        save_as_action.setText('Save as')
+        save_as_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
+
+        self.menu.addAction(save_action)
+        self.menu.addAction(load_action)
+        self.menu.addAction(save_as_action)
+
+    def contextMenuEvent(self, event):
+
+        if not self.pressed_item:
+            self.menu.exec_(event.globalPos())
+        super(GraphWidget, self).contextMenuEvent(event)
+
+    def set_shadows_enabled(self, state):
+
+        for n in self.nodes:
+            n.set_shadows_enabled(state)
+        self._shadows = state
 
     def frame(self):
 
@@ -499,20 +534,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             i.setEnabled(False)
 
     def kill_selected_nodes(self):
-        trash = []
+
+        selected = [i for i in self.nodes if i.isSelected()]
         for i in self.nodes:
             if i.isSelected() and i in self.nodes and i in self.scene().items():
-                for p in i.inputs + i.outputs:
-                    for e in p.edge_list:
-                        self.remove_edge(e)
-                i.prepareGeometryChange()
-                # self.scene().removeItem(i)        # this causes a crash on exit
-                i.setVisible(False)
-                trash.append(i)
-        for n in trash:
-            if n.parentItem() and isinstance(n.parentItem(), GroupObject):
-                n.parentItem().remove_node(n)
-            self.nodes.remove(n)
+                i.kill()
+        if not len(selected) == 0:
+            self.kill_selected_nodes()
 
     def get_nodes(self):
         ls = []
@@ -524,16 +552,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def keyPressEvent(self, event):
 
-        if event.key() == QtCore.Qt.Key_Alt:
-            self._alt_key = True
         if event.key() == QtCore.Qt.Key_F:
             self.frame()
-        if event.key() == QtCore.Qt.Key_Shift:
-            self._shift_key = True
         if event.key() == QtCore.Qt.Key_Delete:
             self.kill_selected_nodes()
-        if event.key() == QtCore.Qt.Key_Control:
-            self._ctrl_key = True
         if self.node_box.listWidget._events:
             if event.key() == QtCore.Qt.Key_Tab:
                 pos = self.current_cursor_pose
@@ -545,16 +567,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         QtGui.QGraphicsView.keyPressEvent(self, event)
 
     def keyReleaseEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Alt:
-            self._alt_key = False
-        if event.key() == QtCore.Qt.Key_Control:
-            self._ctrl_key = False
-        if event.key() == QtCore.Qt.Key_Shift:
-            self._shift_key = False
         QtGui.QGraphicsView.keyReleaseEvent(self, event)
 
     def mousePressEvent(self,  event):
 
+        modifiers = event.modifiers()
         self.pressed_item = self.itemAt(event.pos())
         if self.pressed_item and hasattr(self.pressed_item, 'mark'):
             self._resize_group_mode = True
@@ -572,12 +589,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if self.pressed_item and event.button() == QtCore.Qt.LeftButton:
             if hasattr(self.pressed_item, 'object_type'):
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
+                    self.pressed_item.parent.setSelected(False)
                     self._draw_real_time_line = True
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = True
-        if all([event.button() == QtCore.Qt.LeftButton, self._alt_key, not self._shift_key, not self._ctrl_key]):
+        if all([event.button() == QtCore.Qt.LeftButton, modifiers == QtCore.Qt.AltModifier]):
             self.setDragMode(self.ScrollHandDrag)
-        if all([event.button() == QtCore.Qt.LeftButton, not self._alt_key, not self._shift_key, not self._ctrl_key]):
+        if all([event.button() == QtCore.Qt.LeftButton,
+                modifiers == QtCore.Qt.NoModifier or modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             if not self.pressed_item or hasattr(self.pressed_item, 'non_selectable'):
                 self._is_rubber_band_selection = True
         super(GraphWidget, self).mousePressEvent(event)
@@ -586,7 +605,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.current_cursor_pose = self.mapToScene(event.pos())
         if self._resize_group_mode:
             grp = self.pressed_item.parentItem()
-
+            self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
             x = max([self.current_cursor_pose.x()-grp.pos().x(),
                      grp.rect().topLeft().x()+grp.minimum_width])
             y = max([self.current_cursor_pose.y()-grp.pos().y(),
@@ -598,6 +617,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                                                                            grp.resize_item.boundingRect().height()))
 
         if self._draw_real_time_line:
+            if self.pressed_item.parent.isSelected():
+                self.pressed_item.parent.setSelected(False)
             if self.real_time_line not in self.scene().items():
                 self.scene().addItem(self.real_time_line)
             self.real_time_line.setLine(self.cursor_pressed_pos.x(),
@@ -626,6 +647,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.released_item = self.itemAt(event.pos())
         self.setDragMode(self.NoDrag)
         self._resize_group_mode = False
+        self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+        modifiers = event.modifiers()
         if self.released_item and not hasattr(self.released_item, 'non_selectable'):
             if isinstance(self.released_item, GroupObject):
                 self.released_item.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
@@ -649,7 +672,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.remove_item_by_name(self.rubber_rect.name)
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = False
-        if all([event.button() == QtCore.Qt.LeftButton, self._ctrl_key, not self._alt_key, self._shift_key]):
+        if all([event.button() == QtCore.Qt.LeftButton,
+                modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             grp = GroupObject(self)
             self.groupers.append(grp)
             grp.setRect(self.rubber_rect.rect().x()-self.cursor_pressed_pos.x(),
@@ -697,6 +721,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         node.label.setPlainText(node.name)
         self.scene_widget.addItem(node)
         node.setPos(QtCore.QPointF(x, y))
+        node.set_shadows_enabled(self._shadows)
 
     def add_edge(self, src, dst):
 
@@ -718,6 +743,26 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.edges.remove(edge)
         edge.prepareGeometryChange()
         self.scene_widget.removeItem(edge)
+
+    def write_to_console(self, data):
+
+        if self.parent:
+            console = self.parent.console
+            console.appendPlainText(str(data))
+
+    def plot(self):
+        AGraph.plot(self)
+        self.write_to_console('>>>>>>> {0} <<<<<<<\n{1}\n'.format(self.name, ctime()))
+        if self.parent:
+            for n in self.nodes:
+                self.write_to_console(n.name)
+                for i in n.inputs+n.outputs:
+                    self.write_to_console('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}'.format(i.port_name(),
+                                          i.current_data(),
+                                          [p.port_name() for p in i.affects],
+                                          [p.port_name() for p in i.affected_by],
+                                          i.dirty))
+
 
     def scale_view(self, scale_factor):
 

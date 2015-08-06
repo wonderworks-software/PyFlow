@@ -41,16 +41,13 @@ class Port(QtGui.QGraphicsWidget, AGPort):
 
         return QtCore.QSizeF(self.__width, self.__height)
 
-    def port_name(self):
-
-        return self.parent.name+'.'+self.name
-
     def disconnect_all(self):
         if self.parent.graph.is_debug():
             print self.edge_list
         for e in self.edge_list:
             if self.parent.graph.is_debug():
                 print e, 'killed'
+                self.parent.graph.write_to_console('{0} killed'.format(e.__str__()))
             self.parent.graph.remove_edge(e)
         if len(self.edge_list):
             self.disconnect_all()
@@ -76,12 +73,18 @@ class Port(QtGui.QGraphicsWidget, AGPort):
 
         self.menu.exec_(event.screenPos())
 
+    def write_to_console(self, data):
+        p = self.parent.graph.parent
+        if p:
+            p.console.appendPlainText(str(self._data))
+
     def hoverEnterEvent(self, *args, **kwargs):
 
         self.update()
         self.hovered = True
         if self.parent.graph.is_debug():
             print 'data -', self._data
+            self.write_to_console(self._data)
 
     def hoverLeaveEvent(self, *args, **kwargs):
 

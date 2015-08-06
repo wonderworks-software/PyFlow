@@ -93,6 +93,10 @@ class AGPort(object):
         self.dirty = True
         self._data = None
 
+    def port_name(self):
+
+        return self.parent.name+'.'+self.name
+
     def current_data(self):
 
         return self._data
@@ -104,10 +108,6 @@ class AGPort(object):
     def port_disconnected(self):
 
         pass
-
-    def current_value(self):
-
-        return self._data
 
     def set_clean(self):
 
@@ -306,7 +306,8 @@ class AGraph(object):
             return nodes
 
     def get_nodes(self):
-        return
+
+        return self.nodes
 
     def add_node(self, node, x, y):
         # generate unic name
@@ -346,7 +347,7 @@ class AGraph(object):
             if src.data_type not in dst.allowed_data_types:
                 print 'data types error'
                 print dst.data_type, src.data_type
-                return
+                return False
         if len(dst.affected_by) >= 1:
             if debug:
                 print 'already has connection'

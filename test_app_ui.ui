@@ -6,30 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
-    <height>423</height>
+    <width>774</width>
+    <height>564</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="2" column="0">
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QWidget" name="verticalLayoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout"/>
-      </widget>
-      <widget class="QWidget" name="gridLayoutWidget">
-       <layout class="QGridLayout" name="gridLayout"/>
-      </widget>
-     </widget>
-    </item>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="ModesLayout">
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
@@ -69,15 +59,86 @@
       </item>
      </layout>
     </item>
+    <item row="1" column="0">
+     <widget class="QSplitter" name="vertical_splitter">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QSplitter" name="horizontal_splitter">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <widget class="QWidget" name="NodeBoxWidget" native="true">
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <property name="margin">
+          <number>1</number>
+         </property>
+         <item row="0" column="0">
+          <layout class="QVBoxLayout" name="NodeBoxLayout">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMaximumSize</enum>
+           </property>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="SceneWidget" native="true">
+        <layout class="QGridLayout" name="gridLayout">
+         <property name="margin">
+          <number>1</number>
+         </property>
+         <item row="0" column="0">
+          <layout class="QGridLayout" name="SceneLayout">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMaximumSize</enum>
+           </property>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QPlainTextEdit" name="console">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+      </widget>
+     </widget>
+    </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>461</width>
+     <width>774</width>
      <height>18</height>
     </rect>
    </property>
@@ -87,7 +148,7 @@
     </property>
     <addaction name="actionDelete"/>
     <addaction name="actionOptions"/>
-    <addaction name="actionGroup_selected"/>
+    <addaction name="actionClear_scene"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -163,6 +224,11 @@
   <action name="actionGroup_selected">
    <property name="text">
     <string>Group selected</string>
+   </property>
+  </action>
+  <action name="actionClear_scene">
+   <property name="text">
+    <string>Clear scene</string>
    </property>
   </action>
  </widget>

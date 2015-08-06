@@ -25,5 +25,8 @@ class GetterNode(BaseNode.Node, AGNode):
         if self.input.dirty:
             data = self.input.get_data()
             print(str(data))
+            self.graph.write_to_console(data)
+
         else:
             print(str(self.input.current_data()))
+            self.graph.write_to_console(self.input.current_data())

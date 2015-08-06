@@ -5,6 +5,7 @@ class Spacings(object):
 
     kPortSpacing = 4
     kPortOffset = 12
+    kSplitterHandleWidth = 5
 
     def __init__(self):
         super(Spacings, self).__init__()
@@ -33,7 +34,8 @@ class Colors(object):
     kGroupObjectBrush = QtGui.QColor(100, 100, 100, 40)
     kGroupObjectNameBackground = QtGui.QColor(100, 100, 100, 40)
     kGroupObjectPen = QtGui.QColor(0, 0, 0, 100)
-    kGroupObjectrResizer = QtGui.QColor(255, 255, 255, 20)
+    kGroupObjectResizer = QtGui.QColor(255, 255, 255, 20)
+    kSplitterHandleColor = QtGui.QColor(255, 255, 255, 20)
 
     def __init__(self):
         super(Colors, self).__init__()

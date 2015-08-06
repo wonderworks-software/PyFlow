@@ -17,6 +17,7 @@ class NodeName(QtGui.QGraphicsTextItem):
         self.setParentItem(parent)
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.setPos(self.parent.sizes[0], self.parent.sizes[1]-self.boundingRect().height())
+        self.setCursor(QtCore.Qt.IBeamCursor)
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -80,18 +81,25 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.v_form.setLayout(self.layout)
         self.v_form.setX(self.v_form.x()-self.spacings.kPortOffset/2)
         self.setZValue(1)
-        # effect = QtGui.QGraphicsDropShadowEffect()
-        # effect.setColor(Colors.kSceneBackground.lighter(50))
-        # effect.setParent(self.graph)
-        # effect.setBlurRadius(3)
-        # effect.setOffset(-30, -20)
-        # self.setGraphicsEffect(effect)
+        self.setCursor(QtCore.Qt.OpenHandCursor)
+        self.head = self.add_layout(True)
+        self.effect = QtGui.QGraphicsDropShadowEffect()
+        self.effect.setColor(Colors.kSceneBackground.lighter(50))
+        self.effect.setParent(self.graph)
+        self.effect.setBlurRadius(3)
+        self.effect.setOffset(-30, -20)
+        self.effect.setEnabled(False)
+        self.setGraphicsEffect(self.effect)
 
     def boundingRect(self):
 
         pen_width = 1.0
         return QtCore.QRectF(self.sizes[0] - pen_width / 2, self.sizes[1] - pen_width / 2,
                              self.sizes[2] + pen_width, self.v_form.boundingRect().bottomRight().y() + pen_width + self.height_offset)
+
+    def set_shadows_enabled(self, state):
+
+        self.effect.setEnabled(state)
 
     def update_ports(self):
         [i.update() for i in self.inputs]
@@ -136,16 +144,19 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def mousePressEvent(self, event):
 
         self.update()
+        self.setCursor(QtCore.Qt.ClosedHandCursor)
         QtGui.QGraphicsItem.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
 
         self.update()
+        self.setCursor(QtCore.Qt.OpenHandCursor)
+        modifiers = event.modifiers()
         selected_nodes = [n for n in self.graph.nodes if n.isSelected()]
         groupers = [i for i in self.graph.groupers if i.object_type == AGObjectTypes.tGrouper]
         grouper = [g for g in groupers if self in g.collidingItems()]
         if len(grouper) == 1:
-            if not self.graph._ctrl_key:
+            if not modifiers == QtCore.Qt.ControlModifier:
                 grouper[0].add_from_iterable(selected_nodes)
         else:
             parent = self.parentItem()
@@ -175,7 +186,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         p = self._add_port(AGPortTypes.kOutput, data_type, port_name)
         return p
 
-    def add_layout(self):
+    def add_layout(self, head=False):
 
         form = QtGui.QGraphicsWidget()
         lyt = QtGui.QGraphicsLinearLayout()
@@ -184,26 +195,31 @@ class Node(QtGui.QGraphicsItem, AGNode):
         lyt.setMaximumHeight(self.spacings.kPortOffset)
         form.setLayout(lyt)
         form.setZValue(1)
-        form.setAutoFillBackground(True)
         form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))
         # set color
-        palette = form.palette()
-        if self._color_idx > 0:
-            palette.setColor(palette.Window, self.colors.kPortLinesA)
-            self._color_idx *= -1
+        if not head:
+            form.setAutoFillBackground(True)
+            palette = form.palette()
+            if self._color_idx > 0:
+                palette.setColor(palette.Window, self.colors.kPortLinesA)
+                self._color_idx *= -1
+            else:
+                palette.setColor(palette.Window, self.colors.kPortLinesB)
+                self._color_idx *= -1
+            form.setPalette(palette)
         else:
-            palette.setColor(palette.Window, self.colors.kPortLinesB)
-            self._color_idx *= -1
-        form.setPalette(palette)
+            form.setMinimumHeight(20)
+            self.h += form.size().height()
         self.layout.addItem(form)
         return lyt
 
-    # def kill(self):
+    def kill(self):
 
-    #     # self.prepareGeometryChange()
-    #     # self.label.prepareGeometryChange()
-    #     AGNode.kill(self)
-    #     # self.scene().removeItem(self)
+        AGNode.kill(self)
+        self.setVisible(False)
+        if self.parentItem() and hasattr(self.parentItem(), 'object_type'):
+            if self.parentItem().object_type == AGObjectTypes.tGrouper:
+                self.parentItem().remove_node(self)
 
     def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 
