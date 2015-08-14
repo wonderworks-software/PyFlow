@@ -2,6 +2,7 @@ from PySide import QtCore
 from PySide import QtGui
 import math
 from Settings import Colors
+from Settings import LineTypes
 from AbstractGraph import *
 from Edge import Edge
 from os import listdir, path
@@ -11,6 +12,8 @@ if nodes_path not in sys.path:
     sys.path.append(nodes_path)
 import Nodes
 from time import ctime
+import OptionsWindow_ui
+import rgba_color_picker_ui
 
 
 def get_mid_point(args):
@@ -388,6 +391,154 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
             self.update_count_label()
 
 
+class RGBAColorPicker(QtGui.QWidget, rgba_color_picker_ui.Ui_rgba_color_picker_ui):
+    def __init__(self, button):
+        super(RGBAColorPicker, self).__init__()
+        self.button = button
+        self.setupUi(self)
+        self.set_button_background(self.button.color)
+        self.pb_color.color = self.button.color
+        self.pb_color.clicked.connect(self.get_rgb)
+        self.pb_apply.clicked.connect(self.apply)
+        self.hs_alpha.valueChanged.connect(self.tweak_alpha)
+
+    def set_button_background(self, color):
+        self.pb_color.setStyleSheet("background-color: rgb({0}, {1}, {2}, {3});".format(
+            color.red(),
+            color.green(),
+            color.blue(),
+            color.alpha()
+        ))
+
+    def showEvent(self, event):
+        self.set_button_background(self.button.color)
+        self.hs_alpha.setValue(self.button.color.alpha())
+        super(RGBAColorPicker, self).showEvent(event)
+
+    def get_rgb(self):
+        color = QtGui.QColorDialog.getColor()
+        if color:
+            self.pb_color.color = color
+            color.setAlpha(self.hs_alpha.value())
+            self.set_button_background(color)
+
+    def tweak_alpha(self):
+        self.pb_color.color.setAlpha(self.hs_alpha.value())
+        self.set_button_background(self.pb_color.color)
+
+    def apply(self):
+        self.button.color = self.pb_color.color
+        self.button.setStyleSheet("background-color: rgb({0}, {1}, {2}, {3});".format(
+            self.pb_color.color.red(),
+            self.pb_color.color.green(),
+            self.pb_color.color.blue(),
+            self.pb_color.color.alpha()
+        ))
+        self.close()
+
+
+class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
+    def __init__(self):
+        super(OptionsClass, self).__init__()
+        self.setupUi(self)
+        self.connect_ui()
+        self.picker = None
+        self.settings_path = path.dirname(__file__)+'\\config.ini'
+        self.settings_class = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat, self)
+        if not path.isfile(self.settings_path):
+            self.create_default_config()
+        else:
+            self.pb_scene_bg_color.color = QtGui.QColor(self.settings_class.value('SCENE/Scene bg color'))
+            self.set_button_background(self.pb_scene_bg_color, self.pb_scene_bg_color.color)
+            self.pb_grid_color.color = QtGui.QColor(self.settings_class.value('SCENE/Grid color'))
+            self.set_button_background(self.pb_grid_color, self.pb_grid_color.color)
+            self.pb_edge_color.color = QtGui.QColor(self.settings_class.value('SCENE/Edge color'))
+            self.set_button_background(self.pb_edge_color, self.pb_edge_color.color)
+            self.pb_node_base_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes base color'))
+            self.set_button_background(self.pb_node_base_color, self.pb_node_base_color.color)
+            self.pb_node_selected_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes selected pen color'))
+            self.set_button_background(self.pb_node_selected_pen_color, self.pb_node_selected_pen_color.color)
+            self.pb_node_label_bg_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes label bg color'))
+            self.set_button_background(self.pb_node_label_bg_color, self.pb_node_label_bg_color.color)
+            self.pb_lyt_a_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt A color'))
+            self.set_button_background(self.pb_lyt_a_color, self.pb_lyt_a_color.color)
+            self.pb_lyt_b_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt B color'))
+            self.set_button_background(self.pb_lyt_b_color, self.pb_lyt_b_color.color)
+            self.pb_port_color.color = QtGui.QColor(self.settings_class.value('NODES/Port color'))
+            self.set_button_background(self.pb_port_color, self.pb_port_color.color)
+            self.pb_port_label_color.color = QtGui.QColor(self.settings_class.value('NODES/Port label color'))
+            self.set_button_background(self.pb_port_label_color, self.pb_port_label_color.color)
+            self.pb_port_dirty_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Port dirty color'))
+            self.set_button_background(self.pb_port_dirty_pen_color, self.pb_port_dirty_pen_color.color)
+
+
+    @staticmethod
+    def set_button_background(button, color):
+        button.setStyleSheet("background-color: rgb({0}, {1}, {2}, {3});".format(
+            color.red(),
+            color.green(),
+            color.blue(),
+            color.alpha()
+        ))
+
+    def set_color(self, button):
+        self.picker = RGBAColorPicker(button)
+        self.picker.move(self.geometry().topRight().x(), self.geometry().topRight().y())
+        self.picker.show()
+
+    def connect_ui(self):
+
+        self.pb_scene_bg_color.clicked.connect(lambda: self.set_color(self.pb_scene_bg_color))
+        self.pb_grid_color.clicked.connect(lambda: self.set_color(self.pb_grid_color))
+        self.pb_edge_color.clicked.connect(lambda: self.set_color(self.pb_edge_color))
+        self.pb_node_base_color.clicked.connect(lambda: self.set_color(self.pb_node_base_color))
+        self.pb_node_selected_pen_color.clicked.connect(lambda: self.set_color(self.pb_node_selected_pen_color))
+        self.pb_node_label_bg_color.clicked.connect(lambda: self.set_color(self.pb_node_label_bg_color))
+        self.pb_lyt_a_color.clicked.connect(lambda: self.set_color(self.pb_lyt_a_color))
+        self.pb_lyt_b_color.clicked.connect(lambda: self.set_color(self.pb_lyt_b_color))
+        self.pb_port_color.clicked.connect(lambda: self.set_color(self.pb_port_color))
+        self.pb_port_label_color.clicked.connect(lambda: self.set_color(self.pb_port_label_color))
+        self.pb_port_dirty_pen_color.clicked.connect(lambda: self.set_color(self.pb_port_dirty_pen_color))
+
+    def create_default_config(self):
+        print('create default config file')
+        self.settings_class.beginGroup('NODES')
+        self.settings_class.setValue('Nodes base color', Colors.kNodeBackgrounds)
+        self.pb_node_base_color.color = Colors.kNodeBackgrounds
+        self.settings_class.setValue('Nodes selected pen color', Colors.kNodeSelectedPenColor)
+        self.pb_node_selected_pen_color.color = Colors.kNodeSelectedPenColor
+        self.settings_class.setValue('Nodes selected pen type', LineTypes.lDotLine)
+        self.settings_class.setValue('Nodes label bg color', Colors.kNodeNameRect)
+        self.pb_node_label_bg_color.color = Colors.kNodeNameRect
+        self.settings_class.setValue('Nodes label font', QtGui.QFont('Arial'))
+        self.settings_class.setValue('Nodes label font size', 8)
+        self.settings_class.setValue('Nodes lyt A color', Colors.kPortLinesA)
+        self.pb_lyt_a_color.color = Colors.kPortLinesA
+        self.settings_class.setValue('Nodes lyt B color', Colors.kPortLinesB)
+        self.pb_lyt_b_color.color = Colors.kPortLinesB
+        self.settings_class.setValue('Port color', Colors.kConnectors)
+        self.pb_port_color.color = Colors.kConnectors
+        self.settings_class.setValue('Port dirty color', Colors.kDirtyPen)
+        self.pb_port_dirty_pen_color.color = Colors.kDirtyPen
+        self.settings_class.setValue('Port dirty type', LineTypes.lDotLine)
+        self.settings_class.setValue('Port label color', Colors.kPortNameColor)
+        self.pb_port_label_color.color = Colors.kPortNameColor
+        self.settings_class.setValue('Port label font', QtGui.QFont('Arial'))
+        self.settings_class.setValue('Port label size', 8)
+        self.settings_class.endGroup()
+        self.settings_class.beginGroup('SCENE')
+        self.settings_class.setValue('Scene bg color', Colors.kSceneBackground)
+        self.pb_scene_bg_color.color = Colors.kSceneBackground
+        self.settings_class.setValue('Grid color', Colors.kGridColor)
+        self.pb_grid_color.color = Colors.kGridColor
+        self.settings_class.setValue('Grid lines type', LineTypes.lDotLine)
+        self.settings_class.setValue('Edge color', Colors.kConnectionLines)
+        self.pb_edge_color.color = Colors.kConnectionLines
+        self.settings_class.setValue('Edge pen type', LineTypes.lSolid)
+        self.settings_class.setValue('Edge line thickness', 1)
+        self.settings_class.endGroup()
+
+
 class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def __init__(self, name, parent=None):
@@ -396,6 +547,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.parent = parent
         self.menu = QtGui.QMenu(self)
         self.add_actions()
+        self.options_widget = OptionsClass()
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.pressed_item = None
         self.released_item = None
@@ -440,22 +592,62 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum()/2)
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum()/2)
 
+    def get_settings(self):
+        if path.isfile(self.options_widget.settings_path):
+            settings = QtCore.QSettings(self.options_widget.settings_path, QtCore.QSettings.IniFormat)
+            return settings
+
     def add_actions(self):
+        resources_folder = path.abspath('.').replace('\\', '/') + '/'
         save_action = QtGui.QAction(self)
         save_action.setText('Save')
-        save_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
+        if path.isfile(resources_folder+'resources/save_icon.png'):
+            save_action.setIcon(QtGui.QIcon(resources_folder+'resources/save_icon.png'))
+        else:
+            save_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
+        save_action.triggered.connect(self.save)
 
         load_action = QtGui.QAction(self)
         load_action.setText('Load')
-        load_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogOpenButton))
+        if path.isfile(resources_folder+'resources/folder_open_icon.png'):
+            load_action.setIcon(QtGui.QIcon(resources_folder+'resources/folder_open_icon.png'))
+        else:
+            load_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogOpenButton))
+        load_action.triggered.connect(self.load)
 
         save_as_action = QtGui.QAction(self)
         save_as_action.setText('Save as')
-        save_as_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
+        if path.isfile(resources_folder+'resources/save_as_icon.png'):
+            save_as_action.setIcon(QtGui.QIcon(resources_folder+'resources/save_as_icon.png'))
+        else:
+            save_as_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
+        save_as_action.triggered.connect(self.save_as)
+
+        options_action = QtGui.QAction(self)
+        options_action.setText('Options')
+        if path.isfile(resources_folder+'resources/options_icon.png'):
+            options_action.setIcon(QtGui.QIcon(resources_folder+'resources/options_icon.png'))
+        else:
+            options_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
+        options_action.triggered.connect(self.options)
 
         self.menu.addAction(save_action)
         self.menu.addAction(load_action)
         self.menu.addAction(save_as_action)
+        self.menu.addAction(options_action)
+
+    def save(self):
+        print 'save graph'
+
+    def save_as(self):
+        print 'save graph as'
+
+    def load(self):
+        print 'load graph'
+
+    def options(self):
+        print 'show options'
+        self.options_widget.show()
 
     def contextMenuEvent(self, event):
 
@@ -713,7 +905,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         # Shadow.
         scene_rect = self.sceneRect()
         # Fill.
-        painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(self.kSceneBackground))
+        settings = self.get_settings()
+        if settings:
+            color = QtGui.QColor(settings.value('SCENE/Scene bg color'))
+        else:
+            color = self.kSceneBackground
+        painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(color))
 
     def add_node(self, node, x, y):
 

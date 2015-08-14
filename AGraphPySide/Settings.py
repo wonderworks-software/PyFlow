@@ -1,4 +1,4 @@
-from PySide import QtGui
+from PySide import QtGui, QtCore
 
 
 class Spacings(object):
@@ -11,9 +11,22 @@ class Spacings(object):
         super(Spacings, self).__init__()
 
 
+class LineTypes(object):
+
+    lSolid = QtCore.Qt.SolidLine
+    lDotLine = QtCore.Qt.DotLine
+    lDashLine = QtCore.Qt.DashLine
+    lDashDotDotLine = QtCore.Qt.DashDotDotLine
+    lDashDotLine = QtCore.Qt.DashDotLine
+
+    def __init__(self):
+        super(LineTypes, self).__init__()
+
+
 class Colors(object):
 
     kNodeBackgrounds = QtGui.QColor(45, 45, 45, 120)
+    kNodeSelectedPenColor = QtGui.QColor(255, 255, 255, 255)
     kWhite = QtGui.QColor(255, 255, 255, 200)
     kSceneBackground = QtGui.QColor(25, 25, 25)
     kInteger = QtGui.QColor(45, 48, 99, 255)
@@ -36,6 +49,7 @@ class Colors(object):
     kGroupObjectPen = QtGui.QColor(0, 0, 0, 100)
     kGroupObjectResizer = QtGui.QColor(255, 255, 255, 20)
     kSplitterHandleColor = QtGui.QColor(255, 255, 255, 20)
+    kPortNameColor = QtGui.QColor(255, 255, 255, 255)
 
     def __init__(self):
         super(Colors, self).__init__()
