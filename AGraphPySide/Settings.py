@@ -13,14 +13,28 @@ class Spacings(object):
 
 class LineTypes(object):
 
-    lSolid = QtCore.Qt.SolidLine
-    lDotLine = QtCore.Qt.DotLine
-    lDashLine = QtCore.Qt.DashLine
-    lDashDotDotLine = QtCore.Qt.DashDotDotLine
-    lDashDotLine = QtCore.Qt.DashDotLine
+    lDotLine = 'lDotLine'
+    lSolid = 'lSolid'
+    lDashLine = 'lDashLine'
+    lDashDotDotLine = 'lDashDotDotLine'
+    lDashDotLine = 'lDashDotLine'
 
     def __init__(self):
         super(LineTypes, self).__init__()
+
+
+def get_line_type(name):
+    if name == 'lDotLine':
+        opt_pen_selected_type = QtCore.Qt.DotLine
+    elif name == 'lSolidLine':
+        opt_pen_selected_type = QtCore.Qt.SolidLine
+    elif name == 'lDashLine':
+        opt_pen_selected_type = QtCore.Qt.DashLine
+    elif name == 'lDashDotDotLine':
+        opt_pen_selected_type = QtCore.Qt.DashDotDotLine
+    else:
+        opt_pen_selected_type = QtCore.Qt.DashDotLine
+    return opt_pen_selected_type
 
 
 class Colors(object):

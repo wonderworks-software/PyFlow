@@ -3,6 +3,7 @@ from PySide import QtGui
 import math
 from Settings import Colors
 from Settings import LineTypes
+from Settings import get_line_type
 from AbstractGraph import *
 from Edge import Edge
 from os import listdir, path
@@ -442,35 +443,48 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         super(OptionsClass, self).__init__()
         self.setupUi(self)
         self.connect_ui()
+        self.populate_ui()
         self.picker = None
         self.settings_path = path.dirname(__file__)+'\\config.ini'
         self.settings_class = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat, self)
         if not path.isfile(self.settings_path):
-            self.create_default_config()
-        else:
-            self.pb_scene_bg_color.color = QtGui.QColor(self.settings_class.value('SCENE/Scene bg color'))
-            self.set_button_background(self.pb_scene_bg_color, self.pb_scene_bg_color.color)
-            self.pb_grid_color.color = QtGui.QColor(self.settings_class.value('SCENE/Grid color'))
-            self.set_button_background(self.pb_grid_color, self.pb_grid_color.color)
-            self.pb_edge_color.color = QtGui.QColor(self.settings_class.value('SCENE/Edge color'))
-            self.set_button_background(self.pb_edge_color, self.pb_edge_color.color)
-            self.pb_node_base_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes base color'))
-            self.set_button_background(self.pb_node_base_color, self.pb_node_base_color.color)
-            self.pb_node_selected_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes selected pen color'))
-            self.set_button_background(self.pb_node_selected_pen_color, self.pb_node_selected_pen_color.color)
-            self.pb_node_label_bg_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes label bg color'))
-            self.set_button_background(self.pb_node_label_bg_color, self.pb_node_label_bg_color.color)
-            self.pb_lyt_a_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt A color'))
-            self.set_button_background(self.pb_lyt_a_color, self.pb_lyt_a_color.color)
-            self.pb_lyt_b_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt B color'))
-            self.set_button_background(self.pb_lyt_b_color, self.pb_lyt_b_color.color)
-            self.pb_port_color.color = QtGui.QColor(self.settings_class.value('NODES/Port color'))
-            self.set_button_background(self.pb_port_color, self.pb_port_color.color)
-            self.pb_port_label_color.color = QtGui.QColor(self.settings_class.value('NODES/Port label color'))
-            self.set_button_background(self.pb_port_label_color, self.pb_port_label_color.color)
-            self.pb_port_dirty_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Port dirty color'))
-            self.set_button_background(self.pb_port_dirty_pen_color, self.pb_port_dirty_pen_color.color)
+            self.write_default_config()
+        self.pb_scene_bg_color.color = QtGui.QColor(self.settings_class.value('SCENE/Scene bg color'))
+        self.set_button_background(self.pb_scene_bg_color, self.pb_scene_bg_color.color)
+        self.pb_grid_color.color = QtGui.QColor(self.settings_class.value('SCENE/Grid color'))
+        self.set_button_background(self.pb_grid_color, self.pb_grid_color.color)
+        self.pb_edge_color.color = QtGui.QColor(self.settings_class.value('SCENE/Edge color'))
+        self.set_button_background(self.pb_edge_color, self.pb_edge_color.color)
+        self.pb_node_base_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes base color'))
+        self.set_button_background(self.pb_node_base_color, self.pb_node_base_color.color)
+        self.pb_node_selected_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes selected pen color'))
+        self.set_button_background(self.pb_node_selected_pen_color, self.pb_node_selected_pen_color.color)
+        self.pb_node_label_bg_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes label bg color'))
+        self.set_button_background(self.pb_node_label_bg_color, self.pb_node_label_bg_color.color)
+        self.pb_lyt_a_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt A color'))
+        self.set_button_background(self.pb_lyt_a_color, self.pb_lyt_a_color.color)
+        self.pb_lyt_b_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt B color'))
+        self.set_button_background(self.pb_lyt_b_color, self.pb_lyt_b_color.color)
+        self.pb_port_color.color = QtGui.QColor(self.settings_class.value('NODES/Port color'))
+        self.set_button_background(self.pb_port_color, self.pb_port_color.color)
+        self.pb_port_label_color.color = QtGui.QColor(self.settings_class.value('NODES/Port label color'))
+        self.set_button_background(self.pb_port_label_color, self.pb_port_label_color.color)
+        self.pb_port_dirty_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Port dirty color'))
+        self.set_button_background(self.pb_port_dirty_pen_color, self.pb_port_dirty_pen_color.color)
+        self.sb_node_label_font_size.setValue(int(self.settings_class.value('NODES/Nodes label font size')))
+        self.fb_node_label_font.setCurrentFont(QtGui.QFont(self.settings_class.value('NODES/Nodes label font')))
+        self.fb_port_label_font.setCurrentFont(QtGui.QFont(self.settings_class.value('NODES/Port label font')))
+        self.sb_port_font_size.setValue(int(self.settings_class.value('NODES/Port label size')))
+        self.sb_edge_thickness.setValue(float(self.settings_class.value('SCENE/Edge line thickness')))
 
+        idx = self.cb_grid_lines_type.findText(str(self.settings_class.value('SCENE/Grid lines type')))
+        self.cb_grid_lines_type.setCurrentIndex(idx)
+        idx = self.cb_edge_pen_type.findText(str(self.settings_class.value('SCENE/Edge pen type')))
+        self.cb_edge_pen_type.setCurrentIndex(idx)
+        idx = self.cb_node_selected_line_type.findText(str(self.settings_class.value('NODES/Nodes selected pen type')))
+        self.cb_node_selected_line_type.setCurrentIndex(idx)
+        idx = self.cb_port_dirty_pen_type.findText(str(self.settings_class.value('NODES/Port dirty type')))
+        self.cb_port_dirty_pen_type.setCurrentIndex(idx)
 
     @staticmethod
     def set_button_background(button, color):
@@ -486,7 +500,16 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.picker.move(self.geometry().topRight().x(), self.geometry().topRight().y())
         self.picker.show()
 
+    def populate_ui(self):
+        line_types = [str(i) for i in dir(LineTypes) if i[0] == 'l']
+        self.cb_node_selected_line_type.addItems(line_types)
+        self.cb_port_dirty_pen_type.addItems(line_types)
+        self.cb_grid_lines_type.addItems(line_types)
+        self.cb_edge_pen_type.addItems(line_types)
+
     def connect_ui(self):
+
+        self.actionSave.triggered.connect(self.save_options)
 
         self.pb_scene_bg_color.clicked.connect(lambda: self.set_color(self.pb_scene_bg_color))
         self.pb_grid_color.clicked.connect(lambda: self.set_color(self.pb_grid_color))
@@ -500,7 +523,44 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.pb_port_label_color.clicked.connect(lambda: self.set_color(self.pb_port_label_color))
         self.pb_port_dirty_pen_color.clicked.connect(lambda: self.set_color(self.pb_port_dirty_pen_color))
 
-    def create_default_config(self):
+    def save_options(self):
+
+        print 'save options', self.settings_path
+        self.write_config()
+        self.close()
+        try:
+            self.picker.close()
+        except:
+            pass
+
+    def write_config(self):
+        self.settings_class.beginGroup('NODES')
+        self.settings_class.setValue('Nodes base color', self.pb_node_base_color.color)
+        self.settings_class.setValue('Nodes selected pen color', self.pb_node_selected_pen_color.color)
+        self.settings_class.setValue('Nodes selected pen type', self.cb_node_selected_line_type.currentText())
+        self.settings_class.setValue('Nodes label bg color', self.pb_node_label_bg_color.color)
+        self.settings_class.setValue('Nodes label font', self.fb_node_label_font.currentFont())
+        self.settings_class.setValue('Nodes label font size', self.sb_node_label_font_size.value())
+        self.settings_class.setValue('Nodes lyt A color', self.pb_lyt_a_color.color)
+        self.settings_class.setValue('Nodes lyt B color', self.pb_lyt_b_color.color)
+        self.settings_class.setValue('Port color', self.pb_port_color.color)
+        self.settings_class.setValue('Port dirty color', self.pb_port_dirty_pen_color.color)
+        self.settings_class.setValue('Port dirty type', self.cb_port_dirty_pen_type.currentText())
+        self.settings_class.setValue('Port label color', self.pb_port_label_color.color)
+        self.settings_class.setValue('Port label font', self.fb_port_label_font.currentFont())
+        self.settings_class.setValue('Port label size', self.sb_port_font_size.value())
+        self.settings_class.endGroup()
+        self.settings_class.beginGroup('SCENE')
+        self.settings_class.setValue('Scene bg color', self.pb_scene_bg_color.color)
+        self.settings_class.setValue('Grid color', self.pb_grid_color.color)
+        self.settings_class.setValue('Grid lines type', self.cb_grid_lines_type.currentText())
+        self.settings_class.setValue('Edge color', self.pb_edge_color.color)
+        self.settings_class.setValue('Edge pen type', self.cb_edge_pen_type.currentText())
+        self.settings_class.setValue('Edge line thickness', self.sb_edge_thickness.value())
+        self.settings_class.endGroup()
+
+
+    def write_default_config(self):
         print('create default config file')
         self.settings_class.beginGroup('NODES')
         self.settings_class.setValue('Nodes base color', Colors.kNodeBackgrounds)
@@ -637,15 +697,19 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.menu.addAction(options_action)
 
     def save(self):
+
         print 'save graph'
 
     def save_as(self):
+
         print 'save graph as'
 
     def load(self):
+
         print 'load graph'
 
     def options(self):
+
         print 'show options'
         self.options_widget.show()
 
@@ -706,17 +770,24 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def draw_grid(self):
         rect = self.scene().sceneRect()
         # draw horizontal
+        settings = self.get_settings()
+        if settings:
+            color = QtGui.QColor(settings.value('SCENE/Grid color'))
+            line_type = get_line_type(settings.value('SCENE/Grid lines type'))
+        else:
+            color = self.kGridColor
+            line_type = QtCore.Qt.SolidLine
         for i in xrange(int(rect.x()), int(rect.width()), self._grid_spacing):
             self.scene().addLine(rect.x(), rect.y()+i,
                                  rect.width(), rect.y()+i,
-                                 QtGui.QPen(self.kGridColor, 0.2,
-                                            QtCore.Qt.SolidLine))
+                                 QtGui.QPen(color, 0.2,
+                                 line_type))
         # draw vertical
         for i in xrange(int(rect.y()), int(rect.height()), self._grid_spacing):
             self.scene().addLine(rect.x()+i, rect.y(),
                                  rect.x()+i, rect.height(),
-                                 QtGui.QPen(self.kGridColor, 0.2,
-                                            QtCore.Qt.SolidLine))
+                                 QtGui.QPen(color, 0.2,
+                                 line_type))
         for i in self.scene_widget.items():
             i.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
             i.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, False)

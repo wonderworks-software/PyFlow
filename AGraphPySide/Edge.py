@@ -1,6 +1,7 @@
 from PySide import QtCore
 from PySide import QtGui
 from Settings import Colors
+from Settings import get_line_type
 from AbstractGraph import *
 
 
@@ -19,6 +20,11 @@ class Edge(QtGui.QGraphicsLineItem, Colors):
                            'To': self.destination.parent.label.name+'.'+self.destination.name}
 
         self.setToolTip(self.connection['From']+'>>>'+self.connection['To'])
+        self.settings = self.graph.get_settings()
+        if self.settings:
+            self.color = QtGui.QColor(self.settings.value('SCENE/Edge color'))
+            self.lineType = get_line_type(self.settings.value('SCENE/Edge pen type'))
+            self.thikness = float(self.settings.value('SCENE/Edge line thickness'))
 
     def __str__(self):
         return '{0}.{1} >>> {2}.{3}'.format(self.source.parent.name,
@@ -27,8 +33,10 @@ class Edge(QtGui.QGraphicsLineItem, Colors):
                                             self.destination.name)
 
     def paint(self, painter, option, widget):
-
-        pen = QtGui.QPen(self.kConnectionLines, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        if self.settings:
+            pen = QtGui.QPen(self.color, self.thikness, self.lineType, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        else:
+            pen = QtGui.QPen(self.kConnectionLines, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
         offset = self.source.boundingRect().width()/2
 
         p1 = self.source.sceneTransform().map(QtCore.QPointF(offset*2, offset))

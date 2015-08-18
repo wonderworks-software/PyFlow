@@ -24,14 +24,31 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.setFlag(QtGui.QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
         self.setAcceptHoverEvents(True)
-        self.color = color
         self.setZValue(2)
         self.__width = width+1
         self.__height = height+1
         self.hovered = False
         self.startPos = None
         self.endPos = None
-        self._dirty_pen = QtGui.QPen(Colors.kDirtyPen, 1, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        self.options = self.parent.graph.get_settings()
+        if self.options:
+            self.color = QtGui.QColor(self.options.value('NODES/Port color'))
+            opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))
+            opt_dirty_type_name = QtGui.QColor(self.options.value('NODES/Port dirty type'))
+            if opt_dirty_type_name == 'dot':
+                opt_port_dirty_pen_type = QtCore.Qt.DotLine
+            elif opt_dirty_type_name == 'solid':
+                opt_port_dirty_pen_type = QtCore.Qt.SolidLine
+            elif opt_dirty_type_name == 'dash':
+                opt_port_dirty_pen_type = QtCore.Qt.DashLine
+            elif opt_dirty_type_name == 'dashdotdot':
+                opt_port_dirty_pen_type = QtCore.Qt.DashDotDotLine
+            else:
+                opt_port_dirty_pen_type = QtCore.Qt.DashDotLine
+            self._dirty_pen = QtGui.QPen(opt_dirty_pen, 1, opt_port_dirty_pen_type, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        else:
+            self.color = color
+            self._dirty_pen = QtGui.QPen(Colors.kDirtyPen, 1, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
     def boundingRect(self):
 

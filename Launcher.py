@@ -32,6 +32,7 @@ if __name__ == '__main__':
                                        'font: 8pt "Consolas";'+\
                                        'color: rgb(200, 200, 200);'
                                        )
+            self.console.hide()
 
         def toggle_node_box(self):
 

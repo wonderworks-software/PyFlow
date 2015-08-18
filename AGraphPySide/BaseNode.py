@@ -16,8 +16,17 @@ class NodeName(QtGui.QGraphicsTextItem):
         self.setPlainText(self.name)
         self.setParentItem(parent)
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
-        self.setPos(self.parent.sizes[0], self.parent.sizes[1]-self.boundingRect().height())
         self.setCursor(QtCore.Qt.IBeamCursor)
+        self.options = self.parent.graph.get_settings()
+        if self.options:
+            self.opt_bg_color = QtGui.QColor(self.options.value('NODES/Nodes label bg color'))
+            self.text_color = QtGui.QColor(self.options.value('NODES/Port label color'))
+            self.setDefaultTextColor(self.text_color)
+            self.opt_font = QtGui.QFont(self.options.value('NODES/Nodes label font'))
+            self.opt_font_size = int(self.options.value('NODES/Nodes label font size'))
+            self.opt_font.setPointSize(self.opt_font_size)
+            self.setFont(self.opt_font)
+        self.setPos(0, -self.boundingRect().height())
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -29,15 +38,15 @@ class NodeName(QtGui.QGraphicsTextItem):
             QtGui.QGraphicsTextItem.keyPressEvent(self, event)
 
     def paint(self, painter, option, widget):
-        # paint the background
-        painter.fillRect(option.rect, QtGui.QColor(self.color))
-
-        # paint the normal TextItem with the default 'paint' method
+        if self.options:
+            painter.fillRect(option.rect, QtGui.QColor(self.opt_bg_color))
+        else:
+            painter.fillRect(option.rect, QtGui.QColor(self.color))
         super(NodeName, self).paint(painter, option, widget)
 
     def focusOutEvent(self, event):
         new_name = self.parent.name = self.toPlainText()
-        print 'OLD NAME: ', self.name
+        # print 'OLD NAME: ', self.name
         for i in self.parent.get_input_edges().iterkeys():
             if self.name == i.connection['From'].split('.')[0]:
                 i.connection['From'] = i.connection['From'].replace(self.name, new_name)
@@ -90,6 +99,14 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.effect.setOffset(-30, -20)
         self.effect.setEnabled(False)
         self.setGraphicsEffect(self.effect)
+        self.options = self.graph.get_settings()
+        if self.options:
+            self.opt_node_base_color = QtGui.QColor(self.options.value('NODES/Nodes base color'))
+            self.opt_selected_pen_color = QtGui.QColor(self.options.value('NODES/Nodes selected pen color'))
+            self.opt_lyt_a_color = QtGui.QColor(self.options.value('NODES/Nodes lyt A color'))
+            self.opt_lyt_b_color = QtGui.QColor(self.options.value('NODES/Nodes lyt B color'))
+            opt_pen_selected_type_name = QtGui.QColor(self.options.value('NODES/Nodes selected pen type'))
+            self.opt_pen_selected_type = get_line_type(opt_pen_selected_type_name)
 
     def boundingRect(self):
 
@@ -112,16 +129,22 @@ class Node(QtGui.QGraphicsItem, AGNode):
         painter.drawRoundedRect(self.sizes[0], self.sizes[1],
                                 self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
                                 self.sizes[4], self.sizes[5])
-
-        color = self.colors.kNodeBackgrounds
+        if self.options:
+            color = self.opt_node_base_color
+        else:
+            color = self.colors.kNodeBackgrounds
         if self.isSelected():
-            color = color.lighter(160)
+            color = color.lighter(150)
 
         painter.setBrush(QtGui.QBrush(color))
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QtGui.QStyle.State_Selected:
-            pen.setColor(Colors.kWhite)
-            pen.setStyle(QtCore.Qt.DotLine)
+            if self.options:
+                pen.setColor(self.opt_selected_pen_color)
+                pen.setStyle(self.opt_pen_selected_type)
+            else:
+                pen.setColor(Colors.kWhite)
+                pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)
         painter.drawRoundedRect(self.sizes[0], self.sizes[1],
                                 self.sizes[2], self.v_form.boundingRect().bottomRight().y()+self.height_offset,
@@ -192,7 +215,6 @@ class Node(QtGui.QGraphicsItem, AGNode):
         lyt = QtGui.QGraphicsLinearLayout()
         lyt.setSpacing(self.spacings.kPortSpacing)
         lyt.setContentsMargins(1, 1, 1, 1)
-        lyt.setMaximumHeight(self.spacings.kPortOffset)
         form.setLayout(lyt)
         form.setZValue(1)
         form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset+3, self.h))
@@ -201,10 +223,16 @@ class Node(QtGui.QGraphicsItem, AGNode):
             form.setAutoFillBackground(True)
             palette = form.palette()
             if self._color_idx > 0:
-                palette.setColor(palette.Window, self.colors.kPortLinesA)
+                if self.options:
+                    palette.setColor(palette.Window, self.opt_lyt_a_color)
+                else:
+                    palette.setColor(palette.Window, self.colors.kPortLinesA)
                 self._color_idx *= -1
             else:
-                palette.setColor(palette.Window, self.colors.kPortLinesB)
+                if self.options:
+                    palette.setColor(palette.Window, self.opt_lyt_b_color)
+                else:
+                    palette.setColor(palette.Window, self.colors.kPortLinesB)
                 self._color_idx *= -1
             form.setPalette(palette)
         else:
@@ -229,6 +257,18 @@ class Node(QtGui.QGraphicsItem, AGNode):
         connector_name = QtGui.QGraphicsProxyWidget()
         lbl = QtGui.QLabel(name)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        if self.options:
+            font = QtGui.QFont(self.options.value('NODES/Port label font'))
+            color = QtGui.QColor(self.options.value('NODES/Port label color'))
+            font.setPointSize(int(self.options.value('NODES/Port label size')))
+            lbl.setFont(font)
+            style = 'color: rgb({0}, {1}, {2}, {3});'.format(
+                color.red(),
+                color.green(),
+                color.blue(),
+                color.alpha()
+                )
+            lbl.setStyleSheet(style)
         connector_name.setWidget(lbl)
         lyt = self.add_layout()
         if port_type == self.port_types.kInput:

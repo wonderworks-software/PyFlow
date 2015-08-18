@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'D:\GIT\Nodes\OptionsWindow_ui.ui'
-#
-# Created: Fri Aug 14 15:34:26 2015
-#      by: pyside-uic 0.2.14 running on PySide 1.1.2
-#
-# WARNING! All changes made in this file will be lost!
-
 from PySide import QtCore, QtGui
 
 class Ui_OptionsUI(object):
@@ -271,13 +262,10 @@ class Ui_OptionsUI(object):
         self.menuFile = QtGui.QMenu(self.menuBar)
         self.menuFile.setObjectName("menuFile")
         OptionsUI.setMenuBar(self.menuBar)
-        self.actionLoad_options = QtGui.QAction(OptionsUI)
-        self.actionLoad_options.setObjectName("actionLoad_options")
         self.actionSave = QtGui.QAction(OptionsUI)
         self.actionSave.setObjectName("actionSave")
         self.actionSave_as = QtGui.QAction(OptionsUI)
         self.actionSave_as.setObjectName("actionSave_as")
-        self.menuFile.addAction(self.actionLoad_options)
         self.menuFile.addAction(self.actionSave)
         self.menuBar.addAction(self.menuFile.menuAction())
 
@@ -323,7 +311,6 @@ class Ui_OptionsUI(object):
         self.edgeLineThicknessLabel.setText(QtGui.QApplication.translate("OptionsUI", "Edge line thickness", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SceneTab), QtGui.QApplication.translate("OptionsUI", "Scene", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("OptionsUI", "File", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLoad_options.setText(QtGui.QApplication.translate("OptionsUI", "Load", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setText(QtGui.QApplication.translate("OptionsUI", "Save", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave_as.setText(QtGui.QApplication.translate("OptionsUI", "Save as", None, QtGui.QApplication.UnicodeUTF8))
 
