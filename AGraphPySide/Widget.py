@@ -15,6 +15,7 @@ import Nodes
 from time import ctime
 import OptionsWindow_ui
 import rgba_color_picker_ui
+import json
 
 
 def get_mid_point(args):
@@ -632,6 +633,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.factor = 1
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
+        self._current_file_name = ['Untitled']
+        self._file_name_label = QtGui.QGraphicsTextItem()
+        self._file_name_label.setZValue(5)
+        self._file_name_label.setEnabled(False)
+        self._file_name_label.setFlag(QtGui.QGraphicsTextItem.ItemIgnoresTransformations)
+        self._file_name_label.setDefaultTextColor(self.kWhite)
+        self._file_name_label.setPlainText(self._current_file_name[0])
+        self.scene_widget.addItem(self._file_name_label)
         self.rubber_rect = RubberRect('RubberRect')
 
         self.real_time_line = QtGui.QGraphicsLineItem(0, 0, 0, 0)
@@ -681,7 +690,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             save_as_action.setIcon(QtGui.QIcon(resources_folder+'resources/save_as_icon.png'))
         else:
             save_as_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
-        save_as_action.triggered.connect(self.save_as)
+        save_as_action.triggered.connect(lambda: self.save(True))
 
         options_action = QtGui.QAction(self)
         options_action.setText('Options')
@@ -696,17 +705,125 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.menu.addAction(save_as_action)
         self.menu.addAction(options_action)
 
-    def save(self):
+    def save(self, save_as=False):
 
-        print 'save graph'
+        if save_as:
+            name_filter = "Graph files (*.graph)"
+            pth = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
+            if not pth[0] == '':
+                self._current_file_name = pth[0] 
+        else:
+            if not path.isfile(self._current_file_name[0]):
+                name_filter = "Graph files (*.graph)"
+                self._current_file_name = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
+
+        data = {'edges': [], 'nodes': [], 'groupers': []}
+        for g in self.groupers:
+            data['groupers'].append(
+                    {
+                        'x': g.scenePos().x(),
+                        'y': g.scenePos().y(),
+                        'brX': g.rect().width(),
+                        'brY': g.rect().height(),
+                        'nodes': [i.name for i in g.nodes],
+                        'comment': g.label.toPlainText()
+                    }
+                )
+        for n in self.nodes:
+            data['nodes'].append(
+                {'x': n.pos().x(),
+                 'y': n.pos().y(),
+                 'node_type': n.__class__.__name__,
+                 'ports_data': None,
+                 'name': n.name
+                }
+            )
+            ports_data = {'inputs': {}, 'outputs': {}}
+            for p in n.inputs:
+                ports_data['inputs'][p.name] = p.current_data()
+            for p in n.outputs:
+                ports_data['outputs'][p.name] = p.current_data()
+            for x in data['nodes']:
+                if x['name'] == n.name:
+                    x['ports_data'] = ports_data
+        
+        for e in self.edges:
+            data['edges'].append(e.connection)
+
+        if not self._current_file_name[0] == '':
+            with open(self._current_file_name[0], 'wb') as f:
+                json.dump(data, f)
+            self._file_name_label.setPlainText(self._current_file_name[0])
+            print 'saved', self._current_file_name[0]
 
     def save_as(self):
 
-        print 'save graph as'
+        self.save(True)
+
+    def new_file(self):
+
+        self._current_file_name = 'Untitled'
+        self._file_name_label.setPlainText('Untitled')
+        for n in self.nodes:
+            n.kill()
+        for g in self.groupers:
+            g.delete()
 
     def load(self):
 
-        print 'load graph'
+        name_filter = "Graph files (*.graph)"
+        fpath = QtGui.QFileDialog.getOpenFileName(filter=name_filter)
+        if not fpath[0] == '':
+            # if path.isfile(self._current_file_name[0]):
+            #     self.save()
+            with open(fpath[0], 'r') as f:
+                data = json.load(f)
+            self.new_file()
+            #create nodes
+            for i in data['nodes']:
+                node = self.node_box.get_node(Nodes, i['node_type'])
+                node.set_name(i['name'])
+                self.add_node(node, i['x'], i['y'])
+                for p in node.inputs:
+                    if p.name in i['ports_data']['inputs']:
+                        p.set_data(i['ports_data']['inputs'][p.name])
+                for p in node.outputs:
+                    if p.name in i['ports_data']['outputs']:
+                        p.set_data(i['ports_data']['outputs'][p.name])
+
+
+            # create edges
+            for e in data['edges']:
+                src = self.get_port_by_full_name(e['From'])
+                dst = self.get_port_by_full_name(e['To'])
+                if src and dst:
+                    self.add_edge(src, dst)
+
+            #create groupers
+            for g in data['groupers']:
+                grouper = GroupObject(self)
+                grouper.label.setPlainText(g['comment'])
+                self.scene_widget.addItem(grouper)
+                self.groupers.append(grouper)
+                grouper.setPos(QtCore.QPointF(g['x'], g['y']))
+                grouper.setRect(grouper.rect().x(), grouper.rect().y(), g['brX'], g['brY'])
+                grouper.update()
+                for n in g['nodes']:
+                    node = self.get_node_by_name(n)
+                    grouper.add_node(node)
+                    node.setPos(node.pos()+grouper.scenePos())
+            self._current_file_name = fpath
+            self._file_name_label.setPlainText(fpath[0])
+
+    def get_port_by_full_name(self, full_name):
+
+        node_name = full_name.split('.')[0]
+        port_name = full_name.split('.')[1]
+        node = self.get_node_by_name(node_name)
+        if node:
+            port = node.get_port_by_name(port_name)
+            if port:
+                return port
 
     def options(self):
 
@@ -815,6 +932,15 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def keyPressEvent(self, event):
 
+        modifiers = event.modifiers()
+        if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
+            self.new_file()
+        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
+            self.save()
+        if all([event.key() == QtCore.Qt.Key_O, modifiers == QtCore.Qt.ControlModifier]):
+            self.load()
+        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.save_as()
         if event.key() == QtCore.Qt.Key_F:
             self.frame()
         if event.key() == QtCore.Qt.Key_Delete:
@@ -973,7 +1099,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def drawBackground(self, painter, rect):
         super(GraphWidget, self).drawBackground(painter, rect)
-        # Shadow.
+
+        polygon = self.mapToScene(self.viewport().rect())
+        self._file_name_label.setPos(polygon[0])
         scene_rect = self.sceneRect()
         # Fill.
         settings = self.get_settings()
@@ -985,7 +1113,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def add_node(self, node, x, y):
 
-        AGraph.add_node(self, node, x, y)
+        AGraph.add_node(self, node)
         node.label.setPlainText(node.name)
         self.scene_widget.addItem(node)
         node.setPos(QtCore.QPointF(x, y))

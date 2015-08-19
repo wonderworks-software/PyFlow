@@ -210,6 +210,7 @@ class AGNode(object):
         return p
 
     def get_port_by_name(self, name):
+
         for p in self.inputs + self.outputs:
             if p.name == name:
                 return p
@@ -309,7 +310,13 @@ class AGraph(object):
 
         return self.nodes
 
-    def add_node(self, node, x, y):
+    def get_node_by_name(self, name):
+
+        for i in self.nodes:
+            if i.name == name:
+                return i
+
+    def add_node(self, node):
         # generate unic name
         if node.name in [n.name for n in self.nodes]:
             indexes = []
@@ -322,8 +329,6 @@ class AGraph(object):
             node.name = node.name+str(max([int(idx) for idx in indexes])+1)
         # add node
         self.nodes.append(node)
-        node.x = x
-        node.y = y
         node.graph = self
 
     def remove_node(self, node):

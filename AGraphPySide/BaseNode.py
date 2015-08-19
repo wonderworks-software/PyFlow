@@ -77,7 +77,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.setFlag(self.ItemIsMovable)
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable)
         self.setFlag(self.ItemIsSelectable)
-        # set node name
+        # node name
         self.label = NodeName(self.name, self)
         # set node layout
         self.v_form.setMaximumWidth(self.boundingRect().width()+self.spacings.kPortOffset)
@@ -113,6 +113,10 @@ class Node(QtGui.QGraphicsItem, AGNode):
         pen_width = 1.0
         return QtCore.QRectF(self.sizes[0] - pen_width / 2, self.sizes[1] - pen_width / 2,
                              self.sizes[2] + pen_width, self.v_form.boundingRect().bottomRight().y() + pen_width + self.height_offset)
+
+    def set_name(self, name):
+        self.name = name
+        self.label.setPlainText(name)
 
     def set_shadows_enabled(self, state):
 

@@ -112,3 +112,5 @@ class Port(QtGui.QGraphicsWidget, AGPort):
 
         AGPort.set_data(self, data, dirty_propagate)
         update_ports(self)
+        if hasattr(self.parent, 'spin_box'):
+            self.parent.spin_box.setValue(data)

@@ -16,8 +16,8 @@ class Edge(QtGui.QGraphicsLineItem, Colors):
         self.setFlag(self.ItemIsSelectable)
 
         self.setZValue(1)
-        self.connection = {'From': self.source.parent.label.name+'.'+self.source.name,
-                           'To': self.destination.parent.label.name+'.'+self.destination.name}
+        self.connection = {'From': self.source.port_name(),
+                           'To': self.destination.port_name()}
 
         self.setToolTip(self.connection['From']+'>>>'+self.connection['To'])
         self.settings = self.graph.get_settings()
