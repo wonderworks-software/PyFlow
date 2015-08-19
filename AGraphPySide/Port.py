@@ -34,17 +34,8 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         if self.options:
             self.color = QtGui.QColor(self.options.value('NODES/Port color'))
             opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))
-            opt_dirty_type_name = QtGui.QColor(self.options.value('NODES/Port dirty type'))
-            if opt_dirty_type_name == 'dot':
-                opt_port_dirty_pen_type = QtCore.Qt.DotLine
-            elif opt_dirty_type_name == 'solid':
-                opt_port_dirty_pen_type = QtCore.Qt.SolidLine
-            elif opt_dirty_type_name == 'dash':
-                opt_port_dirty_pen_type = QtCore.Qt.DashLine
-            elif opt_dirty_type_name == 'dashdotdot':
-                opt_port_dirty_pen_type = QtCore.Qt.DashDotDotLine
-            else:
-                opt_port_dirty_pen_type = QtCore.Qt.DashDotLine
+            opt_dirty_type_name = self.options.value('NODES/Port dirty type')
+            opt_port_dirty_pen_type = get_line_type(opt_dirty_type_name)
             self._dirty_pen = QtGui.QPen(opt_dirty_pen, 1, opt_port_dirty_pen_type, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
         else:
             self.color = color

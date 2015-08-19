@@ -14,7 +14,7 @@ class Spacings(object):
 class LineTypes(object):
 
     lDotLine = 'lDotLine'
-    lSolid = 'lSolid'
+    lSolidLine = 'lSolidLine'
     lDashLine = 'lDashLine'
     lDashDotDotLine = 'lDashDotDotLine'
     lDashDotLine = 'lDashDotLine'
