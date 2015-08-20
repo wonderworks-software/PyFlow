@@ -23,11 +23,16 @@ class IntNode(BaseNode.Node, AGNode):
         self.height_offset = 13
         self.colors = Colors
         self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tNumeric, 'out')
+        self.output.port_disconnected = self.disconnected
         lyt_head = self.add_layout()
         spin_box_proxy = QtGui.QGraphicsProxyWidget()
         spin_box_proxy.setWidget(self.spin_box)
         lyt_head.addItem(spin_box_proxy)
         self.compute()
+
+    def disconnected(self):
+
+        print self.output.port_name(), 'disconnected'
 
     def set_data(self):
 

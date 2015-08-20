@@ -20,7 +20,7 @@ class NodeName(QtGui.QGraphicsTextItem):
         self.options = self.parent.graph.get_settings()
         if self.options:
             self.opt_bg_color = QtGui.QColor(self.options.value('NODES/Nodes label bg color'))
-            self.text_color = QtGui.QColor(self.options.value('NODES/Port label color'))
+            self.text_color = QtGui.QColor(self.options.value('NODES/Nodes label font color'))
             self.setDefaultTextColor(self.text_color)
             self.opt_font = QtGui.QFont(self.options.value('NODES/Nodes label font'))
             self.opt_font_size = int(self.options.value('NODES/Nodes label font size'))
@@ -45,8 +45,11 @@ class NodeName(QtGui.QGraphicsTextItem):
         super(NodeName, self).paint(painter, option, widget)
 
     def focusOutEvent(self, event):
-        new_name = self.parent.name = self.toPlainText()
+        new_name = self.toPlainText()
         # print 'OLD NAME: ', self.name
+        self.name = new_name
+        self.parent.label.setPlainText(new_name)
+
         for i in self.parent.get_input_edges().iterkeys():
             if self.name == i.connection['From'].split('.')[0]:
                 i.connection['From'] = i.connection['From'].replace(self.name, new_name)
@@ -57,7 +60,7 @@ class NodeName(QtGui.QGraphicsTextItem):
                 i.connection['From'] = i.connection['From'].replace(self.name, new_name)
             if self.name == i.connection['To'].split('.')[0]:
                 i.connection['To'] = i.connection['To'].replace(self.name, new_name)
-        self.name = new_name
+        self.parent.set_name(new_name)
         super(NodeName, self).focusOutEvent(event)
 
 
@@ -245,9 +248,9 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.layout.addItem(form)
         return lyt
 
-    def kill(self):
+    def kill(self, call_connection_functions=False):
 
-        AGNode.kill(self)
+        AGNode.kill(self, call_connection_functions)
         self.setVisible(False)
         if self.parentItem() and hasattr(self.parentItem(), 'object_type'):
             if self.parentItem().object_type == AGObjectTypes.tGrouper:

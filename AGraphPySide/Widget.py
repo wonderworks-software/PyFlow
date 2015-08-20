@@ -20,8 +20,6 @@ import rgba_color_picker_ui
 import json
 
 
-
-
 def get_mid_point(args):
 
     return [sum(i)/len(i) for i in zip(*args)]
@@ -32,7 +30,6 @@ class SceneClass(QtGui.QGraphicsScene):
         super(SceneClass, self).__init__(parent)
         self.Type = 'SCENE'
         self.setItemIndexMethod(self.NoIndex)
-        # self.setParent(parent)
         self.pressed_port = None
 
     def dragEnterEvent(self, event):
@@ -123,9 +120,11 @@ class NodesBox(QtGui.QWidget):
     def __init__(self, graph):
         super(NodesBox, self).__init__()
         self.graph = graph
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.CustomizeWindowHint)
         self.setObjectName("nodes_box_form")
+        self.setWindowTitle('Node box - {0}'.format(self.graph.name))
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.resize(100, 200)
+        self.resize(160, 200)
         self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         self.name = 'NODE_BOX'
         self.verticalLayout = QtGui.QVBoxLayout(self)
@@ -242,7 +241,6 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         self._minimum_height = 50
         self.setZValue(2)
         self.auto_fit_content = False
-        # self.setFlag(self.ItemIsFocusable)
         self.setPen(QtGui.QPen(self.kGroupObjectPen, 1, QtCore.Qt.SolidLine))
         self.setBrush(QtGui.QBrush(self.kGroupObjectBrush))
         self.label = GroupObjectName(self)
@@ -367,12 +365,12 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         if not len(self.nodes) == 0:
             self.unpack()
 
-    def delete(self):
+    def delete(self, call_connection_functions=False):
         for i in self.scene().items():
             i.setSelected(False)
         for n in self.nodes:
             n.setSelected(True)
-        self.graph.kill_selected_nodes()
+        self.graph.kill_selected_nodes(call_connection_functions)
         self.scene().removeItem(self)
         self.graph.groupers.remove(self)
         del self
@@ -475,6 +473,8 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.set_button_background(self.pb_node_selected_pen_color, self.pb_node_selected_pen_color.color)
         self.pb_node_label_bg_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes label bg color'))
         self.set_button_background(self.pb_node_label_bg_color, self.pb_node_label_bg_color.color)
+        self.pb_node_label_font_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes label font color'))
+        self.set_button_background(self.pb_node_label_font_color, self.pb_node_label_font_color.color)
         self.pb_lyt_a_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt A color'))
         self.set_button_background(self.pb_lyt_a_color, self.pb_lyt_a_color.color)
         self.pb_lyt_b_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt B color'))
@@ -495,8 +495,6 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.cb_grid_lines_type.setCurrentIndex(idx)
         idx = self.cb_edge_pen_type.findText(str(self.settings_class.value('SCENE/Edge pen type')))
         self.cb_edge_pen_type.setCurrentIndex(idx)
-        idx = self.cb_node_selected_line_type.findText(str(self.settings_class.value('NODES/Nodes selected pen type')))
-        self.cb_node_selected_line_type.setCurrentIndex(idx)
         idx = self.cb_port_dirty_pen_type.findText(str(self.settings_class.value('NODES/Port dirty type')))
         self.cb_port_dirty_pen_type.setCurrentIndex(idx)
 
@@ -516,7 +514,6 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
 
     def populate_ui(self):
         line_types = [str(i) for i in dir(LineTypes) if i[0] == 'l']
-        self.cb_node_selected_line_type.addItems(line_types)
         self.cb_port_dirty_pen_type.addItems(line_types)
         self.cb_grid_lines_type.addItems(line_types)
         self.cb_edge_pen_type.addItems(line_types)
@@ -529,6 +526,8 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.pb_grid_color.clicked.connect(lambda: self.set_color(self.pb_grid_color))
         self.pb_edge_color.clicked.connect(lambda: self.set_color(self.pb_edge_color))
         self.pb_node_base_color.clicked.connect(lambda: self.set_color(self.pb_node_base_color))
+        self.pb_node_label_font_color.clicked.connect(lambda: self.set_color(self.pb_node_label_font_color))
+
         self.pb_node_selected_pen_color.clicked.connect(lambda: self.set_color(self.pb_node_selected_pen_color))
         self.pb_node_label_bg_color.clicked.connect(lambda: self.set_color(self.pb_node_label_bg_color))
         self.pb_lyt_a_color.clicked.connect(lambda: self.set_color(self.pb_lyt_a_color))
@@ -551,9 +550,9 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.settings_class.beginGroup('NODES')
         self.settings_class.setValue('Nodes base color', self.pb_node_base_color.color)
         self.settings_class.setValue('Nodes selected pen color', self.pb_node_selected_pen_color.color)
-        self.settings_class.setValue('Nodes selected pen type', self.cb_node_selected_line_type.currentText())
         self.settings_class.setValue('Nodes label bg color', self.pb_node_label_bg_color.color)
         self.settings_class.setValue('Nodes label font', self.fb_node_label_font.currentFont())
+        self.settings_class.setValue('Nodes label font color', self.pb_node_label_font_color.color)
         self.settings_class.setValue('Nodes label font size', self.sb_node_label_font_size.value())
         self.settings_class.setValue('Nodes lyt A color', self.pb_lyt_a_color.color)
         self.settings_class.setValue('Nodes lyt B color', self.pb_lyt_b_color.color)
@@ -585,6 +584,7 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.settings_class.setValue('Nodes label bg color', Colors.kNodeNameRect)
         self.pb_node_label_bg_color.color = Colors.kNodeNameRect
         self.settings_class.setValue('Nodes label font', QtGui.QFont('Arial'))
+        self.settings_class.setValue('Nodes label font color', Colors.kWhite)
         self.settings_class.setValue('Nodes label font size', 8)
         self.settings_class.setValue('Nodes lyt A color', Colors.kPortLinesA)
         self.pb_lyt_a_color.color = Colors.kPortLinesA
@@ -661,7 +661,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.real_time_line = QtGui.QGraphicsLineItem(0, 0, 0, 0)
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.object_type = AGObjectTypes.tConnectionLine
-        # self.real_time_line.setZValue(1)
         self.real_time_line.setPen(QtGui.QPen(self.kWhite,
                                               0.5,
                                               QtCore.Qt.DotLine))
@@ -674,6 +673,15 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._resize_group_mode = False
         self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum()/2)
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum()/2)
+
+    def get_nodes(self):
+
+        ls = []
+        for i in self.scene_widget.items():
+            if hasattr(i, 'object_type'):
+                if i.object_type == AGObjectTypes.tNode:
+                    ls.append(i)
+        return ls
 
     def get_settings(self):
         if path.isfile(self.options_widget.settings_path):
@@ -746,7 +754,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             name_filter = "Graph files (*.graph)"
             pth = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
             if not pth[0] == '':
-                self._current_file_name = pth[0] 
+                self._current_file_name = pth[0]
         else:
             if not path.isfile(self._current_file_name[0]):
                 name_filter = "Graph files (*.graph)"
@@ -783,7 +791,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                     x['ports_data'] = ports_data
         
         for e in self.edges:
-            data['edges'].append(e.connection)
+            data['edges'].append({'From': e.source_port_name(), 'To': e.destination_port_name()})
 
         if not self._current_file_name[0] == '':
             with open(self._current_file_name[0], 'wb') as f:
@@ -800,7 +808,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._current_file_name = 'Untitled'
         self._file_name_label.setPlainText('Untitled')
         for n in self.nodes:
-            n.kill()
+            n.kill(False)
         for g in self.groupers:
             g.delete()
         if len(self.nodes) > 0:
@@ -811,23 +819,20 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         name_filter = "Graph files (*.graph)"
         fpath = QtGui.QFileDialog.getOpenFileName(filter=name_filter)
         if not fpath[0] == '':
-            # if path.isfile(self._current_file_name[0]):
-            #     self.save()
             with open(fpath[0], 'r') as f:
                 data = json.load(f)
             self.new_file()
             #create nodes
             for i in data['nodes']:
                 node = self.node_box.get_node(Nodes, i['node_type'])
-                node.set_name(i['name'])
                 self.add_node(node, i['x'], i['y'])
+                node.set_name(i['name'])
                 for p in node.inputs:
                     if p.name in i['ports_data']['inputs']:
                         p.set_data(i['ports_data']['inputs'][p.name])
                 for p in node.outputs:
                     if p.name in i['ports_data']['outputs']:
                         p.set_data(i['ports_data']['outputs'][p.name])
-
 
             # create edges
             for e in data['edges']:
@@ -950,22 +955,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             i.object_type = AGObjectTypes.tGridLine
             i.setEnabled(False)
 
-    def kill_selected_nodes(self):
+    def kill_selected_nodes(self, call_connection_functions=False):
 
         selected = [i for i in self.nodes if i.isSelected()]
         for i in self.nodes:
             if i.isSelected() and i in self.nodes and i in self.scene().items():
-                i.kill()
+                i.kill(call_connection_functions)
         if not len(selected) == 0:
-            self.kill_selected_nodes()
-
-    def get_nodes(self):
-        ls = []
-        for n in self.scene_widget.items():
-            if hasattr(n, 'object_type'):
-                if n.object_type == AGObjectTypes.tNode:
-                    ls.append(n)
-        return ls
+            self.kill_selected_nodes(call_connection_functions)
 
     def keyPressEvent(self, event):
 
@@ -981,7 +978,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if event.key() == QtCore.Qt.Key_F:
             self.frame()
         if event.key() == QtCore.Qt.Key_Delete:
-            self.kill_selected_nodes()
+            self.kill_selected_nodes(False)
         if self.node_box.listWidget._events:
             if event.key() == QtCore.Qt.Key_Tab:
                 self.node_box.set_visible()
@@ -1060,7 +1057,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def remove_item_by_name(self, name):
 
-        # [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
         [self.scene_widget.removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
@@ -1160,14 +1156,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             edge = Edge(src, dst, self)
             src.edge_list.append(edge)
             dst.edge_list.append(edge)
-            # self.scene().addItem(edge)
             self.scene_widget.addItem(edge)
             self.edges.append(edge)
             return edge
 
-    def remove_edge(self, edge):
+    def remove_edge(self, edge, call_connection_functions=True):
 
-        AGraph.remove_edge(self, edge)
+        AGraph.remove_edge(self, edge, call_connection_functions)
         self.edges.remove(edge)
         edge.prepareGeometryChange()
         self.scene_widget.removeItem(edge)

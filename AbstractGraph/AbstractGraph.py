@@ -191,10 +191,10 @@ class AGNode(object):
         self.inputs = []
         self.outputs = []
 
-    def kill(self):
+    def kill(self, call_connection_functions=False):
         for p in self.inputs + self.outputs:
             for e in p.edge_list:
-                self.graph.remove_edge(e)
+                self.graph.remove_edge(e, call_connection_functions)
         self.graph.nodes.remove(self)
 
     def add_input_port(self, port_name, data_type):
@@ -377,13 +377,15 @@ class AGraph(object):
         push(dst)
         return True
 
-    def remove_edge(self, edge):
+    def remove_edge(self, edge, call_connection_functions=True):
 
         edge.source.affects.remove(edge.destination)
         edge.source.edge_list.remove(edge)
         edge.destination.affected_by.remove(edge.source)
         edge.destination.edge_list.remove(edge)
-        edge.destination.port_disconnected()
+        if call_connection_functions:
+            edge.destination.port_disconnected()
+            edge.source.port_disconnected()
 
     def plot(self):
         print self.name+'\n----------\n'

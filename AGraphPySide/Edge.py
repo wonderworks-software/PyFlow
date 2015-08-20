@@ -32,6 +32,14 @@ class Edge(QtGui.QGraphicsLineItem, Colors):
                                             self.destination.parent.name,
                                             self.destination.name)
 
+    def source_port_name(self):
+
+        return self.source.port_name()
+
+    def destination_port_name(self):
+
+        return self.destination.port_name()
+
     def paint(self, painter, option, widget):
         if self.settings:
             pen = QtGui.QPen(self.color, self.thikness, self.lineType, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
