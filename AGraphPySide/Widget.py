@@ -160,6 +160,15 @@ class NodesBox(QtGui.QWidget):
         if item and not item.isSelected():
             item.setSelected(True)
 
+    def set_visible(self):
+
+        pos = self.graph.current_cursor_pose
+        self.move(self.graph.mapFromScene(pos.toPoint()).x()+self.graph.pos().x(),
+                  self.graph.mapFromScene(pos.toPoint()).y()+self.graph.pos().y()
+                  )
+        self.refresh_list('')
+        self.show()
+
     def create_node(self):
         items = self.listWidget.selectedItems()
         if not len(items) == 0:
@@ -611,6 +620,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         AGraph.__init__(self, name)
         self.parent = parent
         self.menu = QtGui.QMenu(self)
+        self.node_box = NodesBox(self)
+        self.scene_widget = SceneClass(self)
         self.add_actions()
         self.options_widget = OptionsClass()
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -624,7 +635,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.minimum_scale = 0.2
         self.maximum_scale = 5
         self.setViewportUpdateMode(self.FullViewportUpdate)
-        self.scene_widget = SceneClass(self)
         self.setScene(self.scene_widget)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -662,7 +672,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._draw_real_time_line = False
         self._update_items = False
         self._resize_group_mode = False
-        self.node_box = NodesBox(self)
         self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum()/2)
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum()/2)
 
@@ -704,10 +713,32 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             options_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         options_action.triggered.connect(self.options)
 
-        self.menu.addAction(save_action)
+        new_file_action = QtGui.QAction(self)
+        new_file_action.setText('New')
+        if path.isfile(_mod_folder+'resources/new_file_icon.png'):
+            new_file_action.setIcon(QtGui.QIcon(_mod_folder+'resources/new_file_icon.png'))
+        else:
+            new_file_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
+        new_file_action.triggered.connect(self.new_file)
+
+        node_box_action = QtGui.QAction(self)
+        node_box_action.setText('Node box')
+        if path.isfile(_mod_folder+'resources/node_box_icon.png'):
+            node_box_action.setIcon(QtGui.QIcon(_mod_folder+'resources/node_box_icon.png'))
+        else:
+            node_box_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
+        node_box_action.triggered.connect(self.node_box.set_visible)
+
+        separator = QtGui.QAction(self)
+        separator.setSeparator(True)
+
+        self.menu.addAction(new_file_action)
         self.menu.addAction(load_action)
+        self.menu.addAction(save_action)
         self.menu.addAction(save_as_action)
+        self.menu.addAction(separator)
         self.menu.addAction(options_action)
+        self.menu.addAction(node_box_action)
 
     def save(self, save_as=False):
 
@@ -953,12 +984,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.kill_selected_nodes()
         if self.node_box.listWidget._events:
             if event.key() == QtCore.Qt.Key_Tab:
-                pos = self.current_cursor_pose
-                self.node_box.move(self.mapFromScene(pos.toPoint()).x()+self.pos().x(),
-                                   self.mapFromScene(pos.toPoint()).y()+self.pos().y()
-                                   )
-                self.node_box.refresh_list('')
-                self.node_box.show()
+                self.node_box.set_visible()
         QtGui.QGraphicsView.keyPressEvent(self, event)
 
     def keyReleaseEvent(self, event):

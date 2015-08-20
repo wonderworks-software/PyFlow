@@ -1,5 +1,3 @@
-from AGraphPySide.Port import *
-from PySide import QtCore
 from AbstractGraph import *
 from AGraphPySide.Settings import *
 from AGraphPySide import BaseNode
@@ -9,6 +7,7 @@ class DSBox(QtGui.QDoubleSpinBox):
     def __init__(self, foo):
         super(DSBox, self).__init__()
         self.foo = foo
+        self.setRange(-999999999.99, 999999999.99)
         self.valueChanged.connect(self.foo)
 
 
