@@ -8,7 +8,9 @@ from AbstractGraph import *
 from Edge import Edge
 from os import listdir, path
 import sys
-nodes_path = path.abspath('.')+'\\Nodes'
+_file_folder = path.dirname(__file__)
+_mod_folder = _file_folder.replace(_file_folder.rsplit('\\')[-1], '')
+nodes_path = _mod_folder+'\\Nodes'
 if nodes_path not in sys.path:
     sys.path.append(nodes_path)
 import Nodes
@@ -16,6 +18,8 @@ from time import ctime
 import OptionsWindow_ui
 import rgba_color_picker_ui
 import json
+
+
 
 
 def get_mid_point(args):
@@ -28,7 +32,7 @@ class SceneClass(QtGui.QGraphicsScene):
         super(SceneClass, self).__init__(parent)
         self.Type = 'SCENE'
         self.setItemIndexMethod(self.NoIndex)
-        self.setParent(parent)
+        # self.setParent(parent)
         self.pressed_port = None
 
     def dragEnterEvent(self, event):
@@ -150,7 +154,7 @@ class NodesBox(QtGui.QWidget):
     def refresh_list(self, pattern):
 
         self.listWidget.clear()
-        words = [i[:-3] for i in listdir(path.abspath('.')+'\\Nodes') if i.endswith('.py') and '__init__' not in i]
+        words = [i[:-3] for i in listdir(_mod_folder+'\\Nodes') if i.endswith('.py') and '__init__' not in i]
         self.listWidget.addItems([i for i in words if pattern.lower() in i.lower()])
         item = self.listWidget.itemAt(0, 0)
         if item and not item.isSelected():
@@ -595,15 +599,15 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.settings_class.setValue('Grid lines type', LineTypes.lDotLine)
         self.settings_class.setValue('Edge color', Colors.kConnectionLines)
         self.pb_edge_color.color = Colors.kConnectionLines
-        self.settings_class.setValue('Edge pen type', LineTypes.lSolid)
-        self.settings_class.setValue('Edge line thickness', 1)
+        self.settings_class.setValue('Edge pen type', LineTypes.lSolidLine)
+        self.settings_class.setValue('Edge line thickness', 1.0)
         self.settings_class.endGroup()
 
 
 class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def __init__(self, name, parent=None):
-        QtGui.QGraphicsView.__init__(self)
+        super(GraphWidget, self).__init__()
         AGraph.__init__(self, name)
         self.parent = parent
         self.menu = QtGui.QMenu(self)
@@ -633,6 +637,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.factor = 1
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
+
         self._current_file_name = ['Untitled']
         self._file_name_label = QtGui.QGraphicsTextItem()
         self._file_name_label.setZValue(5)
@@ -667,35 +672,34 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             return settings
 
     def add_actions(self):
-        resources_folder = path.abspath('.').replace('\\', '/') + '/'
         save_action = QtGui.QAction(self)
         save_action.setText('Save')
-        if path.isfile(resources_folder+'resources/save_icon.png'):
-            save_action.setIcon(QtGui.QIcon(resources_folder+'resources/save_icon.png'))
+        if path.isfile(_mod_folder+'resources/save_icon.png'):
+            save_action.setIcon(QtGui.QIcon(_mod_folder+'resources/save_icon.png'))
         else:
             save_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         save_action.triggered.connect(self.save)
 
         load_action = QtGui.QAction(self)
         load_action.setText('Load')
-        if path.isfile(resources_folder+'resources/folder_open_icon.png'):
-            load_action.setIcon(QtGui.QIcon(resources_folder+'resources/folder_open_icon.png'))
+        if path.isfile(_mod_folder+'resources/folder_open_icon.png'):
+            load_action.setIcon(QtGui.QIcon(_mod_folder+'resources/folder_open_icon.png'))
         else:
             load_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogOpenButton))
         load_action.triggered.connect(self.load)
 
         save_as_action = QtGui.QAction(self)
         save_as_action.setText('Save as')
-        if path.isfile(resources_folder+'resources/save_as_icon.png'):
-            save_as_action.setIcon(QtGui.QIcon(resources_folder+'resources/save_as_icon.png'))
+        if path.isfile(_mod_folder+'resources/save_as_icon.png'):
+            save_as_action.setIcon(QtGui.QIcon(_mod_folder+'resources/save_as_icon.png'))
         else:
             save_as_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         save_as_action.triggered.connect(lambda: self.save(True))
 
         options_action = QtGui.QAction(self)
         options_action.setText('Options')
-        if path.isfile(resources_folder+'resources/options_icon.png'):
-            options_action.setIcon(QtGui.QIcon(resources_folder+'resources/options_icon.png'))
+        if path.isfile(_mod_folder+'resources/options_icon.png'):
+            options_action.setIcon(QtGui.QIcon(_mod_folder+'resources/options_icon.png'))
         else:
             options_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         options_action.triggered.connect(self.options)
@@ -768,6 +772,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             n.kill()
         for g in self.groupers:
             g.delete()
+        if len(self.nodes) > 0:
+            self.new_file()
 
     def load(self):
 

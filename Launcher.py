@@ -1,9 +1,9 @@
 from AGraphPySide import *
 import test_app_ui
+import sys
 
 
 if __name__ == '__main__':
-    import sys
 
     app = QtGui.QApplication(sys.argv)
     class W(QtGui.QMainWindow, test_app_ui.Ui_MainWindow):
@@ -12,11 +12,11 @@ if __name__ == '__main__':
             self.setupUi(self)
             self.G = GraphWidget('TEST_GRAPH', self)
             self.node_box = Widget.NodesBox(self.G)
-            self.node_box.setVisible(True)
             self.node_box.listWidget._events = False
             self.node_box.le_nodes._events = False
             self.SceneLayout.addWidget(self.G)
             self.NodeBoxLayout.addWidget(self.node_box)
+            self.node_box.setVisible(True)
             self.actionPlot_graph.triggered.connect(self.G.plot)
             self.actionDelete.triggered.connect(self.z)
             self.cb_multithreaded.toggled.connect(self.toggle_multithreaded)
