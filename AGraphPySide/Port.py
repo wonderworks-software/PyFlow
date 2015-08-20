@@ -57,7 +57,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
                 print e, 'killed'
                 self.parent.graph.write_to_console('{0} killed'.format(e.__str__()))
             self.parent.graph.remove_edge(e)
-        if len(self.edge_list):
+        if not len(self.edge_list) == 0:
             self.disconnect_all()
 
     def shape(self):
