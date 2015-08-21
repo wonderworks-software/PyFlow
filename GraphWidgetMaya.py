@@ -18,7 +18,7 @@ WIN_NAME = 'GRAPH_WIN_NAME'
 AREA = 'left'
 
 MAYA_MAIN_WINDOW = shiboken.wrapInstance(long(omui.MQtUtil.mainWindow()), QtGui.QWidget)
-w = AGraphPySide.Widget.GraphWidget('in maya')
+w = AGraphPySide.Widget.GraphWidget('maya graph')
 
 if pm.window(WIN_NAME, ex=1):
     pm.deleteUI(WIN_NAME)
