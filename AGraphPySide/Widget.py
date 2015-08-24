@@ -754,7 +754,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             name_filter = "Graph files (*.graph)"
             pth = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
             if not pth[0] == '':
-                self._current_file_name = pth[0]
+                self._current_file_name = pth
         else:
             if not path.isfile(self._current_file_name[0]):
                 name_filter = "Graph files (*.graph)"
