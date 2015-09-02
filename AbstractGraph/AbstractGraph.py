@@ -21,7 +21,6 @@ def calc_multithreaded(ls, debug=False):
     for n in ls:
         t = Thread(target=compute_executor, name='{0}_thread'.format(n.name))
         threads.append(t)
-        # t.setDaemon(True)
         t.start()
         if debug:
             print n.name, 'started in', t.name
@@ -32,6 +31,19 @@ def calc_multithreaded(ls, debug=False):
 
     if debug:
         print 'DONE', [n.name for n in ls], '\n'
+
+
+def cycle_check(src, dst):
+
+    if src.type == AGPortTypes.kInput:
+        src, dst = dst, src
+    start = src
+    if src in dst.affects:
+        return True
+    for i in dst.affects:
+        if cycle_check(start, i):
+            return True
+    return False
 
 
 def push(start_from):
@@ -255,7 +267,9 @@ class AGraph(object):
         return self._multithreaded
 
     def set_multithreaded(self, state):
-
+        if not isinstance(state, bool):
+            print 'bool expected. skipped'
+            return
         self._multithreaded = state
 
     def get_evaluation_order(self, node, dirty_only=True):
@@ -370,6 +384,10 @@ class AGraph(object):
             if debug:
                 print 'can not connect to self'
             return False
+        if cycle_check(src, dst):
+            if debug:
+                print 'cycles are not allowed'
+            return False
 
         portAffects(src, dst)
         src.set_dirty()
@@ -393,14 +411,14 @@ class AGraph(object):
         for n in self.nodes:
             print n.name
             for inp in n.inputs:
-                print '|---', inp.name, 'data - {0}'.format(inp._data), \
+                print '|---', inp.name, 'data - {0}'.format(inp.current_data()), \
                     'affects on', [i.name for i in inp.affects], \
                     'affected_by ', [p.name for p in inp.affected_by], \
                     'DIRTY ', inp.dirty
                 for e in inp.edge_list:
                     print '\t|---', e.__str__()
             for out in n.outputs:
-                print '|---' + out.name, 'data - {0}'.format(out._data), \
+                print '|---' + out.name, 'data - {0}'.format(out.current_data()), \
                     'affects on', [i.name for i in out.affects], \
                     'affected_by ', [p.name for p in out.affected_by], \
                     'DIRTY', out.dirty

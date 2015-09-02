@@ -6,3 +6,4 @@ from DevideNode import *
 from FloatNode import *
 from PowNode import *
 from SubstractNode import *
+from DiscriminantNode import *

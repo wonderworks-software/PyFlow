@@ -67,11 +67,11 @@ if __name__ == '__main__':
                 print i.zValue()
 
 
-    instance = W()
-    instance.show()
+    # instance = W()
+    # instance.show()
 
-    # G = GraphWidget('TEST_GRAPH')
-    # G.show()
+    G = GraphWidget('TEST_GRAPH')
+    G.show()
 
     try:
         sys.exit(app.exec_())

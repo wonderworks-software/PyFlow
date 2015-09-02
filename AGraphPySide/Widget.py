@@ -1117,6 +1117,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             if not i.object_type == AGObjectTypes.tPort:
                 do_connect = False
                 break
+        if p_itm and r_itm:
+            if hasattr(p_itm, 'object_type') and hasattr(r_itm, 'object_type'):
+                if all([p_itm.object_type == AGObjectTypes.tPort, r_itm.object_type == AGObjectTypes.tPort]):
+                    if cycle_check(p_itm, r_itm):
+                        if self.is_debug():
+                            print 'cycles are not allowed'
+                        do_connect = False
+
         if do_connect:
             self.add_edge(p_itm, r_itm)
         super(GraphWidget, self).mouseReleaseEvent(event)
