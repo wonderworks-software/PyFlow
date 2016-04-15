@@ -1,0 +1,152 @@
+# IDLE reads several config files to determine user preferences.  This
+# file is the default config file for idle highlight theme settings.
+
+[IDLE Classic]
+normal-foreground= #000000
+normal-background= #ffffff
+keyword-foreground= #ff7700
+keyword-background= #ffffff
+builtin-foreground= #900090
+builtin-background= #ffffff
+comment-foreground= #dd0000
+comment-background= #ffffff
+string-foreground= #00aa00
+string-background= #ffffff
+definition-foreground= #0000ff
+definition-background= #ffffff
+hilite-foreground= #000000
+hilite-background= gray
+break-foreground= black
+break-background= #ffff55
+hit-foreground= #ffffff
+hit-background= #000000
+error-foreground= #000000
+error-background= #ff7777
+#cursor (only foreground can be set, restart IDLE)
+cursor-foreground= black
+#shell window
+stdout-foreground= blue
+stdout-background= #ffffff
+stderr-foreground= red
+stderr-background= #ffffff
+console-foreground= #770000
+console-background= #ffffff
+
+[IDLE New]
+normal-foreground= #000000
+normal-background= #ffffff
+keyword-foreground= #ff7700
+keyword-background= #ffffff
+builtin-foreground= #900090
+builtin-background= #ffffff
+comment-foreground= #dd0000
+comment-background= #ffffff
+string-foreground= #00aa00
+string-background= #ffffff
+definition-foreground= #0000ff
+definition-background= #ffffff
+hilite-foreground= #000000
+hilite-background= gray
+break-foreground= black
+break-background= #ffff55
+hit-foreground= #ffffff
+hit-background= #000000
+error-foreground= #000000
+error-background= #ff7777
+#cursor (only foreground can be set, restart IDLE)
+cursor-foreground= black
+#shell window
+stdout-foreground= blue
+stdout-background= #ffffff
+stderr-foreground= red
+stderr-background= #ffffff
+console-foreground= #770000
+console-background= #ffffff
+
+[tango]
+definition-foreground = #fce94f
+error-foreground = #fa8072
+string-background = #2e3436
+keyword-foreground = #8cc4ff
+normal-foreground = #ffffff
+comment-background = #2e3436
+hit-foreground = #ffffff
+break-foreground = #000000
+builtin-background = #2e3436
+stdout-foreground = #eeeeec
+cursor-foreground = #fce94f
+hit-background = #2e3436
+comment-foreground = #73d216
+hilite-background = #edd400
+definition-background = #2e3436
+stderr-background = #2e3436
+break-background = #2e3436
+console-foreground = #87ceeb
+normal-background = #2e3436
+builtin-foreground = #ad7fa8
+stdout-background = #2e3436
+console-background = #2e3436
+stderr-foreground = #ff3e40
+keyword-background = #2e3436
+string-foreground = #e9b96e
+hilite-foreground = #2e3436
+error-background = #2e3436
+
+[desert]
+definition-foreground = #98fb98
+error-foreground = #ff0000
+string-background = #333333
+keyword-foreground = #cc6600
+normal-foreground = #f0e68c
+comment-background = #333333
+hit-foreground = #ffffff
+break-foreground = black
+builtin-background = #333333
+stdout-foreground = #eeeeee
+cursor-foreground = #ffcc00
+hit-background = #333333
+comment-foreground = #87ceeb
+hilite-background = gray
+definition-background = #333333
+stderr-background = #333333
+break-background = #ffff55
+console-foreground = #87ceeb
+normal-background = #333333
+builtin-foreground = #519e51
+stdout-background = #333333
+console-background = #333333
+stderr-foreground = #ff3e40
+keyword-background = #333333
+string-foreground = #ffa0a0
+hilite-foreground = #000000
+error-background = #000000
+
+[Obsidian]
+definition-foreground = #678CB1
+error-foreground = #FF0000
+string-background = #293134
+keyword-foreground = #93C763
+normal-foreground = #E0E2E4
+comment-background = #293134
+hit-foreground = #E0E2E4
+builtin-background = #293134
+stdout-foreground = #678CB1
+cursor-foreground = #E0E2E4
+break-background = #293134
+comment-foreground = #66747B
+hilite-background = #2F393C
+hilite-foreground = #E0E2E4
+definition-background = #293134
+stderr-background = #293134
+hit-background = #000000
+console-foreground = #E0E2E4
+normal-background = #293134
+builtin-foreground = #E0E2E4
+stdout-background = #293134
+console-background = #293134
+stderr-foreground = #FB0000
+keyword-background = #293134
+string-foreground = #EC7600
+break-foreground = #E0E2E4
+error-background = #293134
+
