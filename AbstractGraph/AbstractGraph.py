@@ -5,7 +5,7 @@ from inspect import stack
 def portAffects(affects_port, affected_port):
     '''
     this function for establish dependencies bitween ports,
-    for simulating maya's dirty propogation
+    for simulating dirty propogation
     '''
     affects_port.affects.append(affected_port)
     affected_port.affected_by.append(affects_port)
@@ -47,7 +47,6 @@ def cycle_check(src, dst):
 
 
 def push(start_from):
-
     if not start_from.affects == []:
         start_from.set_dirty()
         for i in start_from.affects:
@@ -105,6 +104,9 @@ class AGPort(object):
         self.dirty = True
         self._data = None
 
+    def set_data_overload(self, data, dirty_propagate=True):
+        pass
+
     def port_name(self):
 
         return self.parent.name+'.'+self.name
@@ -150,7 +152,6 @@ class AGPort(object):
                         if debug:
                             print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
                         calc_multithreaded(compute_order[i], debug)
-                self.dirty = False
                 return self._data
             else:
                 return self._data
@@ -172,8 +173,6 @@ class AGPort(object):
                             if debug:
                                 print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
                             calc_multithreaded(compute_order[i], debug)
-                    self.dirty = False
-                    out[0].dirty = False
                     return out[0]._data
             else:
                 return self._data
@@ -188,10 +187,9 @@ class AGPort(object):
             for i in self.affects:
                 i._data = data
                 i.set_clean()
-        if stack()[1][3] == 'compute':
-            dirty_propagate = False
         if dirty_propagate:
             push(self)
+        self.set_data_overload(data, dirty_propagate)
 
 
 class AGNode(object):
@@ -333,6 +331,8 @@ class AGraph(object):
 
     def add_node(self, node):
         # generate unic name
+        if not node:
+            return False
         if node.name in [n.name for n in self.nodes]:
             indexes = []
             for i in self.nodes:

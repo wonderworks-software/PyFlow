@@ -9,6 +9,7 @@ class DSBox(QtGui.QDoubleSpinBox):
         self.foo = foo
         self.setRange(-999999999.99, 999999999.99)
         self.valueChanged.connect(self.foo)
+        self.setMaximumWidth(80)
 
 
 class FloatNode(BaseNode.Node, AGNode):
@@ -20,14 +21,16 @@ class FloatNode(BaseNode.Node, AGNode):
         self.spin_box = DSBox(self.set_data)
         self.graph = graph
         self.layout.setSpacing(3)
-        self.height_offset = 13
-        self.colors = Colors()
-        self.colors.kNodeBackgrounds = QtGui.QColor(45, 45, 95, 120)
         self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tNumeric, 'out')
-        lyt_head = self.add_layout()
+
+        # hack! overload the output's port 'set_data' method to update lineEdit
+        def set_data_overloads(data, dirty_propagate=True):
+            self.spin_box.setValue(data)
+        self.output.set_data_overload = set_data_overloads
+
         spin_box_proxy = QtGui.QGraphicsProxyWidget()
         spin_box_proxy.setWidget(self.spin_box)
-        lyt_head.addItem(spin_box_proxy)
+        self.output.getLayout().insertItem(0, spin_box_proxy)
         self.compute()    
 
     def set_data(self):

@@ -32,7 +32,8 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.endPos = None
         self.options = self.parent.graph.get_settings()
         if self.options:
-            self.color = QtGui.QColor(self.options.value('NODES/Port color'))
+            # self.color = QtGui.QColor(self.options.value('NODES/Port color'))
+            self.color = color
             opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))
             opt_dirty_type_name = self.options.value('NODES/Port dirty type')
             opt_port_dirty_pen_type = get_line_type(opt_dirty_type_name)
@@ -86,6 +87,9 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         if p:
             p.console.appendPlainText(str(self._data))
 
+    def getLayout(self):
+        return self.parentItem().layout()
+
     def hoverEnterEvent(self, *args, **kwargs):
 
         self.update()
@@ -103,5 +107,3 @@ class Port(QtGui.QGraphicsWidget, AGPort):
 
         AGPort.set_data(self, data, dirty_propagate)
         update_ports(self)
-        if hasattr(self.parent, 'spin_box'):
-            self.parent.spin_box.setValue(data)

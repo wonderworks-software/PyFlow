@@ -80,6 +80,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.setFlag(self.ItemIsMovable)
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable)
         self.setFlag(self.ItemIsSelectable)
+        self.custom_widget_data = {}
         # node name
         self.label = NodeName(self.name, self)
         # set node layout
@@ -258,7 +259,21 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
     def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 
-        p = Port(name, self, data_type, 10, 10, color)
+        newColor = color
+
+        if data_type == AGPortDataTypes.tNumeric:
+            # set colot for numeric ports
+            newColor = QtGui.QColor(0, 100, 0, 255)
+        elif data_type == AGPortDataTypes.tString:
+            # set colot for string ports
+            newColor = QtGui.QColor(50, 0, 50, 255)
+        elif data_type == AGPortDataTypes.tBool:
+            # set colot for bool ports
+            newColor = QtGui.QColor(100, 0, 0, 255)
+        else:
+            newColor = QtGui.QColor(255, 255, 30, 255)
+
+        p = Port(name, self, data_type, 10, 10, newColor)
         p.type = port_type
         p.parent = self
         connector_name = QtGui.QGraphicsProxyWidget()

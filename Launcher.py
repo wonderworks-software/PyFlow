@@ -1,7 +1,7 @@
 from AGraphPySide import *
 import test_app_ui
 import sys
-
+print sys.executable
 
 if __name__ == '__main__':
 

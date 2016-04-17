@@ -147,7 +147,7 @@ class NodesBox(QtGui.QWidget):
                 mod = mod(name, self.graph)
                 return mod
             except Exception, e:
-                print e
+                print "ERROR node creation!!", e
                 return
 
     def refresh_list(self, pattern):
@@ -173,6 +173,7 @@ class NodesBox(QtGui.QWidget):
         if not len(items) == 0:
             name = items[0].text()
             node = self.get_node(Nodes, name)
+            print node.name, 'created'
             self.graph.add_node(node, self.graph.current_cursor_pose.x(),
                                        self.graph.current_cursor_pose.y())
             if self.listWidget._events:
@@ -230,8 +231,6 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         self.nodes = []
         self.menu = QtGui.QMenu()
         self.setAcceptHoverEvents(True)
-        self.action_unpack = self.menu.addAction('unpack')
-        self.action_unpack.triggered.connect(self.unpack)
         self.action_delete = self.menu.addAction('delete')
         self.action_delete.triggered.connect(self.delete)
         self.action_fit = self.menu.addAction('fit contents')
@@ -366,6 +365,7 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
             self.unpack()
 
     def delete(self, call_connection_functions=False):
+        self.unpack()
         for i in self.scene().items():
             i.setSelected(False)
         for n in self.nodes:
@@ -643,7 +643,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
         self.scene_widget.setSceneRect(QtCore.QRect(0, 0, 10000, 10000))
         self._grid_spacing = 50
-        self.draw_grid()
+        # self.draw_grid()
         self.factor = 1
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
@@ -760,7 +760,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 name_filter = "Graph files (*.graph)"
                 self._current_file_name = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
 
-        data = {'edges': [], 'nodes': [], 'groupers': []}
+        data = {'edges': [], 'nodes': [], 'groupers': [], 'request_nodes': {}}
         for g in self.groupers:
             data['groupers'].append(
                     {
@@ -773,6 +773,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                     }
                 )
         for n in self.nodes:
+            if n.__class__.__name__ == "RequestNode":
+                data['request_nodes'][n.name] = {'delta_time': n.spin_box.value(), 'eval_state': n.cb.isChecked()}
             data['nodes'].append(
                 {'x': n.pos().x(),
                  'y': n.pos().y(),
@@ -781,6 +783,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                  'name': n.name
                 }
             )
+
             ports_data = {'inputs': {}, 'outputs': {}}
             for p in n.inputs:
                 ports_data['inputs'][p.name] = p.current_data()
@@ -833,6 +836,16 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 for p in node.outputs:
                     if p.name in i['ports_data']['outputs']:
                         p.set_data(i['ports_data']['outputs'][p.name])
+                # restore request nodes data
+                if node.__class__.__name__ == "RequestNode":
+                    if node.name in data['request_nodes']:
+                        node.spin_box.setValue(data['request_nodes'][node.name]['delta_time'])
+                        state = QtCore.Qt.Unchecked
+                        if bool(data['request_nodes'][node.name]['eval_state']) == True:
+                            state = QtCore.Qt.Checked
+                        node.cb.setCheckState(state)
+                    else:
+                        print data['request_nodes'][node.name]
 
             # create edges
             for e in data['edges']:
@@ -925,35 +938,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         max_y = max([i[3] for i in rectangles])
 
         return QtCore.QRectF(QtCore.QPointF(min_x, min_y), QtCore.QPointF(max_x, max_y))
-
-    def draw_grid(self):
-        rect = self.scene().sceneRect()
-        # draw horizontal
-        settings = self.get_settings()
-        if settings:
-            color = QtGui.QColor(settings.value('SCENE/Grid color'))
-            line_type = get_line_type(settings.value('SCENE/Grid lines type'))
-        else:
-            color = self.kGridColor
-            line_type = QtCore.Qt.SolidLine
-        for i in xrange(int(rect.x()), int(rect.width()), self._grid_spacing):
-            self.scene().addLine(rect.x(), rect.y()+i,
-                                 rect.width(), rect.y()+i,
-                                 QtGui.QPen(color, 0.2,
-                                 line_type))
-        # draw vertical
-        for i in xrange(int(rect.y()), int(rect.height()), self._grid_spacing):
-            self.scene().addLine(rect.x()+i, rect.y(),
-                                 rect.x()+i, rect.height(),
-                                 QtGui.QPen(color, 0.2,
-                                 line_type))
-        for i in self.scene_widget.items():
-            i.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
-            i.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, False)
-            i.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, False)
-            i.non_selectable = None
-            i.object_type = AGObjectTypes.tGridLine
-            i.setEnabled(False)
 
     def kill_selected_nodes(self, call_connection_functions=False):
 
@@ -1139,7 +1123,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         polygon = self.mapToScene(self.viewport().rect())
         self._file_name_label.setPos(polygon[0])
         scene_rect = self.sceneRect()
-        # Fill.
+        # Fill
         settings = self.get_settings()
         if settings:
             color = QtGui.QColor(settings.value('SCENE/Scene bg color'))
@@ -1147,13 +1131,33 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             color = self.kSceneBackground
         painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(color))
 
+        grid_size = int(50)
+
+        left = int(scene_rect.left()) - (int(scene_rect.left()) % grid_size)
+        top = int(scene_rect.top()) - (int(scene_rect.top()) % grid_size)
+
+        painter.setPen(QtGui.QPen(self.kGridColor, 0.5, QtCore.Qt.SolidLine))
+
+        # draw grid vertical lines
+        for x in xrange(left, int(scene_rect.right()), grid_size):
+            painter.drawLine(x, scene_rect.top() ,x, scene_rect.bottom())
+
+        # draw grid horizontal lines
+        for y in xrange(top, int(scene_rect.bottom()), grid_size):
+            painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
+
+
     def add_node(self, node, x, y):
 
         AGraph.add_node(self, node)
-        node.label.setPlainText(node.name)
-        self.scene_widget.addItem(node)
-        node.setPos(QtCore.QPointF(x, y))
-        node.set_shadows_enabled(self._shadows)
+        if node:
+            node.label.setPlainText(node.name)
+            self.scene_widget.addItem(node)
+            node.setPos(QtCore.QPointF(x, y))
+            node.set_shadows_enabled(self._shadows)
+        else:
+            print '[add_node()] error node creation'
+
 
     def add_edge(self, src, dst):
 
