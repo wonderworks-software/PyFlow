@@ -1,3 +1,7 @@
+from Len import *
+from ArrayAppend import *
+from MakeArray import *
+from StringContains import *
 from RequestNode import *
 from IntNode import *
 from SumNode import *
@@ -18,3 +22,7 @@ from StringToInt import *
 from IsGreaterThan import *
 from IsLessThan import *
 from ToString import *
+from StringToFloat import *
+from StringUpper import *
+from StringLower import *
+from StringCapitalize import *
