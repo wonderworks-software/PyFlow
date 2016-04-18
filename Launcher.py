@@ -24,22 +24,23 @@ if __name__ == '__main__':
             self.cb_shadows.toggled.connect(self.toggle_shadows)
             self.actionConsole.triggered.connect(self.toggle_console)
             self.actionNode_box.triggered.connect(self.toggle_node_box)
-            self.vertical_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
             self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
-            self.vertical_splitter.setSizes([self.width(), self.height()/10])
             self.console.setReadOnly(True)
             self.console.setStyleSheet('background-color: rgb(49, 49, 49);'+\
                                        'font: 8pt "Consolas";'+\
                                        'color: rgb(200, 200, 200);'
                                        )
-            self.console.hide()
+            self.clearConsoleAction = QtGui.QAction('Clear', self)
+            self.clearConsoleAction.triggered.connect(lambda: self.console.clear())
+            self.console.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+            self.console.addAction(self.clearConsoleAction)
 
         def toggle_node_box(self):
 
             if self.node_box.isVisible():
-                self.NodeBoxWidget.hide()
+                self.dockWidgetNodeBox.hide()
             else:
-                self.NodeBoxWidget.show()
+                self.dockWidgetNodeBox.show()
 
         def toggle_multithreaded(self):
 
@@ -47,10 +48,10 @@ if __name__ == '__main__':
 
         def toggle_console(self):
 
-            if self.console.isVisible():
-                self.console.hide()
+            if self.dockWidgetConsole.isVisible():
+                self.dockWidgetConsole.hide()
             else:
-                self.console.show()
+                self.dockWidgetConsole.show()
 
         def toggle_debug(self):
 

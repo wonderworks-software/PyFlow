@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
-    <height>453</height>
+    <width>901</width>
+    <height>844</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -495,116 +495,30 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
     <locale language="English" country="UnitedStates"/>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
+    <property name="margin">
+     <number>1</number>
+    </property>
     <item row="0" column="0">
-     <layout class="QHBoxLayout" name="ModesLayout">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetMinimumSize</enum>
-      </property>
-      <item>
-       <widget class="QCheckBox" name="cb_multithreaded">
-        <property name="text">
-         <string>Multithreaded</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="cb_shadows">
-        <property name="text">
-         <string>Nodes shadows</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="cb_debug">
-        <property name="text">
-         <string>Debug</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item row="1" column="0">
-     <widget class="QSplitter" name="vertical_splitter">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QSplitter" name="horizontal_splitter">
+      <property name="styleSheet">
+       <string notr="true"/>
       </property>
       <property name="orientation">
-       <enum>Qt::Vertical</enum>
+       <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QSplitter" name="horizontal_splitter">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <widget class="QWidget" name="NodeBoxWidget" native="true">
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>16777215</height>
-         </size>
+      <widget class="QWidget" name="SceneWidget" native="true">
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="margin">
+         <number>1</number>
         </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <property name="margin">
-          <number>1</number>
-         </property>
-         <item row="0" column="0">
-          <layout class="QVBoxLayout" name="NodeBoxLayout">
-           <property name="sizeConstraint">
-            <enum>QLayout::SetMaximumSize</enum>
-           </property>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="SceneWidget" native="true">
-        <layout class="QGridLayout" name="gridLayout">
-         <property name="margin">
-          <number>1</number>
-         </property>
-         <item row="0" column="0">
-          <layout class="QGridLayout" name="SceneLayout">
-           <property name="sizeConstraint">
-            <enum>QLayout::SetMaximumSize</enum>
-           </property>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-      <widget class="QPlainTextEdit" name="console">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="SceneLayout">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -615,8 +529,8 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>523</width>
-     <height>18</height>
+     <width>901</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -655,8 +569,119 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
+   <addaction name="actionDelete"/>
+   <addaction name="actionOptions"/>
+   <addaction name="actionNode_box"/>
+   <addaction name="actionConsole"/>
+   <addaction name="actionPlot_graph"/>
+   <addaction name="actionGroup_selected"/>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetConsole">
+   <property name="windowTitle">
+    <string>Console Output</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <property name="margin">
+      <number>1</number>
+     </property>
+     <item row="1" column="0">
+      <widget class="QPlainTextEdit" name="console">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetNodeBox">
+   <property name="windowTitle">
+    <string>Node Box</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <layout class="QGridLayout" name="gridLayout_5">
+     <property name="margin">
+      <number>1</number>
+     </property>
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="NodeBoxLayout"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_2">
+   <property name="windowTitle">
+    <string>Editor Modes</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="ModesLayout">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
+       </property>
+       <item>
+        <widget class="QCheckBox" name="cb_multithreaded">
+         <property name="text">
+          <string>Multithreaded</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cb_shadows">
+         <property name="text">
+          <string>Nodes shadows</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cb_debug">
+         <property name="text">
+          <string>Debug</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionDelete">
    <property name="text">
