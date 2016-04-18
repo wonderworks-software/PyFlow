@@ -1,6 +1,25 @@
-1) операции со стрингами(append+, replace+, upper+, lower+, capitalize+, string contains+)
-2) ноды конверторы(num to string+, string to int+, string to float+)
-3) массивы, операции с массивами(MakeArray+, ArrayAppend+, ArrayRemoveElement, IsInArray, ArrayGetElement, IsArray, ArrayInsert, ClearArray)
+1) операции со стрингами(
+	append+,
+	replace+,
+	upper+,
+	lower+,
+	capitalize+,
+	string contains+)
+2) ноды конверторы(
+	num to string+,
+	string to int+,
+	string to float+
+	)
+3) массивы, операции с массивами(
+	MakeArray+,
+	ArrayAppend+,
+	ArrayRemoveElement,
+	IsInArray,
+	ArrayGetElement,
+	IsArray,
+	ArrayInsert,
+	ClearArray
+	)
 
 встроенные функции питона (max, min, any, all)
 нода перемешивающая массив (random.shuffle)
