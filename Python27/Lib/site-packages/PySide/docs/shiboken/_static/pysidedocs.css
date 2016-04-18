@@ -1,0 +1,475 @@
+* {
+    font: 100% Verdana, Arial, Helvetica, sans-serif;
+    font-size:12px;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #EBEBEB;
+    height: 100%;
+    color: #333;
+}
+
+strong {
+    font-weight:bold;
+}
+
+.document {
+    padding-bottom: 90px;
+}
+
+#container {
+    position: relative;
+    min-height: 100%;
+    background-image: url(fakebar.png);
+    background-repeat: repeat-y;
+    background-color: white;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0px;
+    margin-top: 50px;
+    text-align:center;
+    background-color: white;
+    border-top: 2px solid #e0e0e0;
+    white-space: nowrap;
+    height: 90px;
+    width: 100%;
+}
+
+.footer img {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.sphinxsidebar {
+    float: left;
+    width: 250px;
+    padding: 0px 10px 0px 10px;
+    text-align: left;
+}
+
+.sphinxsidebar ul {
+    padding: 0px;
+    margin: 0px;
+    list-style-position: inside;
+}
+
+.sphinxsidebar > ul {
+    padding: 0px;
+    margin: 0px;
+}
+
+.sphinxsidebar ul li {
+    margin-left: 10px;
+    padding: 0px;
+}
+
+.sphinxsidebar h3, .sphinxsidebar h3 a {
+    font-weight: bold;
+    color: #333;
+}
+
+.documentwrapper {
+    margin-left: 270px;
+    text-align: left;
+    background-color: #ffffff;
+    border-left: 1px solid #989898;
+    font-size:18px;
+    padding: 10px 50px 15px 50px;
+    height: 100%;
+}
+
+h1 {
+    font-size:18px;
+    padding-left: 50px;
+    padding-bottom: 15px;
+    padding-top: 15px;
+    border-bottom: 1px solid #c2c2c2;
+    margin-right: -100px;
+    position: relative;
+    left: -50px;
+    top: -10px;
+}
+
+h2 {
+    font-size:12px;
+    font-weight:bold;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 2px;
+    border-style: solid;
+    border-left-color: #b1b1b1;
+    border-right-color: #b1b1b1;
+    border-top-color: #b1b1b1;
+    border-bottom-color: #009491;
+    background-color: #e0e0e0;
+    padding:5px;
+    margin-top: 20px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    -khtml-border-radius:5px;
+}
+
+h3, h4 {
+    font-weight: bolder;
+}
+
+pre {
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    padding: 5px;
+    font: 100% monospace;
+    overflow: auto;
+}
+
+pre * {
+    font: 100% monospace;
+}
+
+.pre {
+    font: 100% monospace;
+}
+
+.headerlink {
+    font-size: 100%;
+    color: inherit;
+    float: right;
+    visibility: Hidden
+}
+
+h1 .headerlink {
+    padding-right: 50px;
+}
+
+h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink {
+    visibility: Visible;
+}
+
+a, a:visited {
+    color: #009491;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* -- admonitions ----------------------------------------------------------- */
+
+div.admonition {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 7px;
+}
+
+div.admonition dt {
+    font-weight: bold;
+}
+
+div.admonition dl {
+    margin-bottom: 0;
+}
+
+p.admonition-title {
+    margin: 0px 10px 5px 0px;
+    font-weight: bold;
+}
+
+div.body p.centered {
+    text-align: center;
+    margin-top: 25px;
+}
+
+div.warning {
+    background-color: #ffe4e4;
+    border: 1px solid #f66;
+}
+
+div.seealso {
+    background-color: #ffffcc;
+    border: 1px solid #ffff66;
+}
+
+div.note {
+    border: 1px solid #e3e3e3;
+}
+
+table.docutils {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    border: none;
+}
+
+table.docutils td {
+    border: none;
+}
+
+table.docutils th {
+    border: none;
+    font-weight: bold;
+    vertical-align: top;
+}
+
+h2 em {
+    float: right;
+    font-size: 10px;
+    position: relative;
+    top: -20px;
+}
+
+/* Table of pymaemo components */
+
+#development table.docutils td {
+    border-bottom: 1px solid #EBEBEB;
+}
+
+#development th {
+    background-color: #EBEBEB;
+    color: #FC7E00;
+    padding: 5px;
+}
+
+#development th:first-child {
+    -moz-border-radius: 20px 0px 0px 0px;
+    -webkit-border-radius: 20px 0px 0px 0px;
+    -khtml-border-radius: 20px 0px 0px 0px;
+    padding-left: 10px;
+}
+#development th:last-child {
+    -moz-border-radius: 0px 20px 0px 0px;
+    -webkit-border-radius: 0px 20px 0px 0px;
+    -khtml-border-radius: 0px 20px 0px 0px;
+    padding-right: 10px;
+    width: 100px;
+}
+
+hr {
+    border: none;
+    border-bottom: 1px dashed #EBEBEB;
+    width: 70%
+}
+
+.oldnews {
+    text-align: right;
+}
+
+/******************* TOPO *****************************/
+.header {
+    background-image: url(bg_topo.jpg);
+    background-repeat: repeat-x;
+    height: 147px;
+}
+
+.header_container {
+    background-image: url(bg_header.png);
+    background-repeat: no-repeat;
+    background-position: 100px 0px;
+}
+
+.logo {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+#searchbox {
+    border-top: 1px solid #989898;
+    padding-top: 10px;
+    margin-left: -10px;
+    margin-right: -10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#search_button {
+    border: 1px solid #3A393A;
+    background-color: #3A393A;
+    color: white;
+    cursor: pointer;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+
+}
+
+form {
+    margin: 0px;
+    padding: 0px;
+}
+
+/* search field */
+form #q {
+    width: 136px;
+/*     height: 22px; */
+    border: none;
+    margin: 0px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    margin-top: 2px;
+    padding: 4px;
+    line-height: 22px
+}
+
+#search-results h2 {
+    display: none;
+}
+
+#search-results h2 {
+    display: none;
+}
+
+#search-results ul.search {
+    margin: 0px;
+    padding: 0px;
+}
+
+ul.search div.context {
+    padding-left: 40px;
+}
+
+#installation td {
+    text-align: center;
+    font-weight: bold;
+}
+
+em {
+    color: inherit;
+    font-style:italic;
+}
+
+/********   REL bar     *********/
+
+.related {
+    display: inline;
+}
+
+.related ul {
+    padding: 0px 0px 0px 10px;
+    margin: 0px;
+    text-align: left;
+    background-image: url(relbar_bg.png);
+}
+
+.related li {
+    display: inline;
+    color: white;
+    font-weight: bold;
+}
+
+.related li a {
+    color: inherit;
+    line-height: 35px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.related li.right {
+    float: right;
+    margin-right: 5px;
+}
+
+.related h3 {
+    display: none;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.contentstable {
+    width: 100%;
+}
+
+.contentstable td {
+    padding-left: 30px;
+    vertical-align: top;
+}
+
+p.biglink a {
+    font-size: 20px;
+}
+
+dt:target, .highlight {
+    background-color: #fbe54e;
+}
+
+img {
+    border: 0px;
+}
+
+.figure .caption {
+    font-style:italic;
+}
+
+table.footnote {
+    margin: 0px;
+}
+
+#synopsis table, table.field-list {
+    margin: 0px;
+}
+
+tt.descname {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+#functions ul, #virtual-functions ul, #slots ul, #signals ul, #static-functions ul {
+    list-style: none;
+    margin: 0px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f4f4f4;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
+}
+
+#synopsis span.pre {
+    color: #009491;
+    font-weight: bolder;
+}
+
+#detailed-description .class dt, #detailed-description .method dt, #detailed-description .attribute dt, #detailed-description .function dt  {
+    margin: 0px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f4f4f4;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    -khtml-border-radius:10px;
+}
+
+.pysidetoc ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.pysidetoc em {
+    font-style: normal;
+}
+
+.pysidetoc strong {
+    display: block;
+    padding: 5px;
+    border: 1px solid #ddd;
+    background-color: #f4f4f4;
+    -moz-border-radius:6px;
+    -webkit-border-radius:6px;
+    -khtml-border-radius:6px;
+}
+
+.hide {
+    display: none;
+}

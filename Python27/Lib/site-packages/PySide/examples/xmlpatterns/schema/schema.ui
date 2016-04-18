@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SchemaMainWindow</class>
+ <widget class="QMainWindow" name="SchemaMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>417</width>
+    <height>594</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>XML Schema Validation</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="schemaLabel">
+      <property name="text">
+       <string>XML Schema Document:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2" colspan="2">
+     <widget class="QComboBox" name="schemaSelection"/>
+    </item>
+    <item row="1" column="0" colspan="4">
+     <widget class="QTextBrowser" name="schemaView"/>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QLabel" name="instanceLabel">
+      <property name="text">
+       <string>XML Instance Document:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2" colspan="2">
+     <widget class="QComboBox" name="instanceSelection"/>
+    </item>
+    <item row="3" column="0" colspan="4">
+     <widget class="QTextEdit" name="instanceEdit"/>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Status:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1" colspan="2">
+     <widget class="QLabel" name="validationStatus">
+      <property name="text">
+       <string>not validated</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3">
+     <widget class="QPushButton" name="validateButton">
+      <property name="text">
+       <string>Validate</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

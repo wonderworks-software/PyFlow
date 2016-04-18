@@ -1,0 +1,25 @@
+PyQt is equipped with a range of capable tool classes, from containers and
+iterators to classes for string handling and manipulation.
+
+Other classes provide application infrastructure support, handling plugin
+loading and managing configuration files.
+
+The example launcher provided with PyQt can be used to explore each of the
+examples in this directory.
+
+Documentation for these examples can be found via the Tutorial and Examples
+link in the main Qt documentation.
+
+
+Finding the PyQt Examples and Demos launcher
+============================================
+
+On Windows:
+
+The launcher can be accessed via the Windows Start menu. Select the menu
+entry entitled "Examples and Demos" entry in the submenu containing PySide.
+
+On all platforms:
+
+The source code for the launcher can be found in the examples/tools/qtdemo
+directory in the PyQt package.

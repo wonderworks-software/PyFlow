@@ -1,0 +1,128 @@
+<ui version="4.0" >
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>573</width>
+    <height>468</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Editable Tree Model</string>
+  </property>
+  <widget class="QWidget" name="centralwidget" >
+   <layout class="QVBoxLayout" >
+    <property name="margin" >
+     <number>0</number>
+    </property>
+    <property name="spacing" >
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QTreeView" name="view" >
+      <property name="alternatingRowColors" >
+       <bool>true</bool>
+      </property>
+      <property name="selectionBehavior" >
+       <enum>QAbstractItemView::SelectItems</enum>
+      </property>
+      <property name="horizontalScrollMode" >
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
+      </property>
+      <property name="animated" >
+       <bool>false</bool>
+      </property>
+      <property name="allColumnsShowFocus" >
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>573</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="fileMenu" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <addaction name="exitAction" />
+   </widget>
+   <widget class="QMenu" name="actionsMenu" >
+    <property name="title" >
+     <string>&amp;Actions</string>
+    </property>
+    <addaction name="insertRowAction" />
+    <addaction name="insertColumnAction" />
+    <addaction name="separator" />
+    <addaction name="removeRowAction" />
+    <addaction name="removeColumnAction" />
+    <addaction name="separator" />
+    <addaction name="insertChildAction" />
+   </widget>
+   <addaction name="fileMenu" />
+   <addaction name="actionsMenu" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" />
+  <action name="exitAction" >
+   <property name="text" >
+    <string>E&amp;xit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="insertRowAction" >
+   <property name="text" >
+    <string>Insert Row</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I, R</string>
+   </property>
+  </action>
+  <action name="removeRowAction" >
+   <property name="text" >
+    <string>Remove Row</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+R, R</string>
+   </property>
+  </action>
+  <action name="insertColumnAction" >
+   <property name="text" >
+    <string>Insert Column</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I, C</string>
+   </property>
+  </action>
+  <action name="removeColumnAction" >
+   <property name="text" >
+    <string>Remove Column</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+R, C</string>
+   </property>
+  </action>
+  <action name="insertChildAction" >
+   <property name="text" >
+    <string>Insert Child</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="editabletreemodel.qrc" />
+ </resources>
+ <connections/>
+</ui>

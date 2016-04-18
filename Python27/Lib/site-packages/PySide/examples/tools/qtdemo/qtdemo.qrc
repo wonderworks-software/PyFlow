@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+   <file>demos.xml</file>
+   <file>examples.xml</file>
+   <file>images/qt4-logo.png</file>
+   <file>images/rb-logo.png</file>
+</qresource>
+</RCC>

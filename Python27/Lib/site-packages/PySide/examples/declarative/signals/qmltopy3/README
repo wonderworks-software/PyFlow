@@ -1,0 +1,6 @@
+This example illustrates connecting signals to from QML to Python in
+Python using a top-level QML signal.
+
+When the button is held depressed, the button turns upside down. The
+text rotation angle is printed out on the console. Also, a notification
+text about the button having been clicked is displayed.

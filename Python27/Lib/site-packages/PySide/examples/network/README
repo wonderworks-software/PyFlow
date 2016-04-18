@@ -1,0 +1,26 @@
+PySide is provided with an extensive set of network classes to support both
+client-based and server side network programming.
+
+These examples demonstrate the fundamental aspects of network programming
+with PySide.
+
+
+The example launcher provided with PySide can be used to explore each of the
+examples in this directory.
+
+Documentation for these examples can be found via the Tutorial and Examples
+link in the main Side documentation.
+
+
+Finding the PySide Examples and Demos launcher
+==============================================
+
+On Windows:
+
+The launcher can be accessed via the Windows Start menu. Select the menu
+entry entitled "Examples and Demos" entry in the submenu containing PySide.
+
+On all platforms:
+
+The source code for the launcher can be found in the examples/demos/qtdemo
+directory in the PySide package.

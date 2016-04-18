@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. Generator Overview &mdash; Shiboken 1.2.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pysidedocs.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Shiboken 1.2.4 documentation" href="contents.html" />
+    <link rel="next" title="3. Command line options" href="commandlineoptions.html" />
+    <link rel="prev" title="1. Frequently Asked Questions" href="faq.html" /> 
+  </head>
+  <body role="document">
+<div id="container">
+<div class="header">
+    <div class="header_container">
+        <div class="logo"><a href="http://www.pyside.org"><img alt="PySide" src="_static/pysidelogo.png" width="199" height="102" /></a></div>
+  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="commandlineoptions.html" title="3. Command line options"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="faq.html" title="1. Frequently Asked Questions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">Shiboken 1.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. Generator Overview</a><ul>
+<li><a class="reference internal" href="#creating-new-bindings">2.1. Creating new bindings</a></li>
+<li><a class="reference internal" href="#handwritten-inputs">2.2. Handwritten inputs</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="faq.html"
+                        title="previous chapter">1. Frequently Asked Questions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="commandlineoptions.html"
+                        title="next chapter">3. Command line options</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" id="q" size="18" />
+      <input type="submit" value="Go" id="search_button" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="generator-overview">
+<span id="gen-overview"></span><h1>2. Generator Overview<a class="headerlink" href="#generator-overview" title="Permalink to this headline">¶</a></h1>
+<p>In a few words, the Generator is a utility that parses a collection of header and
+typesystem files, generating other files (code, documentation, etc.) as result.</p>
+<div class="section" id="creating-new-bindings">
+<h2>2.1. Creating new bindings<a class="headerlink" href="#creating-new-bindings" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/bindinggen-development.png"><img alt="_images/bindinggen-development.png" src="_images/bindinggen-development.png" /></a>
+<p class="caption"><span class="caption-text">Creating new bindings</span></p>
+</div>
+<p>Each module of the generator system has an specific role.</p>
+<ol class="arabic simple">
+<li>Provide enough data about the classes and functions.</li>
+<li>Generate valid code, with modifications from typesystems and injected codes.</li>
+<li>Modify the API to expose the objects in a way that fits you target language best.</li>
+<li>Insert customizations where handwritten code is needed.</li>
+</ol>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="_images/boostqtarch.png"><img alt="_images/boostqtarch.png" src="_images/boostqtarch.png" /></a>
+<p class="caption"><span class="caption-text">Runtime architecture</span></p>
+</div>
+<p>The newly created binding will run on top of Boost.Python library which takes
+care of interfacing Python and the underlying C++ library.</p>
+</div>
+<div class="section" id="handwritten-inputs">
+<h2>2.2. Handwritten inputs<a class="headerlink" href="#handwritten-inputs" title="Permalink to this headline">¶</a></h2>
+<p>Creating new bindings involves creating two pieces of &#8220;code&#8221;: the typesystem and
+the inject code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">typesystem:</th><td class="field-body">XML files that provides the developer with a tool to customize the
+way that the generators will see the classes and functions. For
+example, functions can be renamed, have its signature changed and
+many other actions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">inject code:</th><td class="field-body">allows the developer to insert handwritten code where the generated
+code is not suitable or needs some customization.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+    <a href="http://www.qt-project.org/"><img src="_static/logo_qt.png" alt="Qt" border="0" /></a>
+    <a href="http://www.python.org"><img src="_static/logo_python.jpg" alt="Python" border="0" /></a>
+    </div>
+</div>
+  </body>
+</html>

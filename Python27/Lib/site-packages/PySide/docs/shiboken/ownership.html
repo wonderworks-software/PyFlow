@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>9. Object ownership &mdash; Shiboken 1.2.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pysidedocs.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Shiboken 1.2.4 documentation" href="contents.html" />
+    <link rel="next" title="10. Words of Advice" href="wordsofadvice.html" />
+    <link rel="prev" title="8. Sequence Protocol" href="sequenceprotocol.html" /> 
+  </head>
+  <body role="document">
+<div id="container">
+<div class="header">
+    <div class="header_container">
+        <div class="logo"><a href="http://www.pyside.org"><img alt="PySide" src="_static/pysidelogo.png" width="199" height="102" /></a></div>
+  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="wordsofadvice.html" title="10. Words of Advice"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="sequenceprotocol.html" title="8. Sequence Protocol"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">Shiboken 1.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">9. Object ownership</a><ul>
+<li><a class="reference internal" href="#ownership-basics">9.1. Ownership basics</a></li>
+<li><a class="reference internal" href="#invalidating-objects">9.2. Invalidating objects</a><ul>
+<li><a class="reference internal" href="#c-taking-ownership">9.2.1. C++ taking ownership</a></li>
+<li><a class="reference internal" href="#invalidate-after-use">9.2.2. Invalidate after use</a></li>
+<li><a class="reference internal" href="#objects-with-virtual-methods">9.2.3. Objects with virtual methods</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#parent-child-relationship">9.3. Parent-child relationship</a><ul>
+<li><a class="reference internal" href="#parentship-heuristics">9.3.1. Parentship heuristics</a></li>
+<li><a class="reference internal" href="#return-value-heuristics">9.3.2. Return value heuristics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#common-pitfalls">9.4. Common pitfalls</a><ul>
+<li><a class="reference internal" href="#not-saving-unowned-objects-references">9.4.1. Not saving unowned objects references</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="sequenceprotocol.html"
+                        title="previous chapter">8. Sequence Protocol</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="wordsofadvice.html"
+                        title="next chapter">10. Words of Advice</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" id="q" size="18" />
+      <input type="submit" value="Go" id="search_button" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="object-ownership">
+<h1>9. Object ownership<a class="headerlink" href="#object-ownership" title="Permalink to this headline">¶</a></h1>
+<p>One of the main things a binding developer should have in mind is
+how the C++ instances lives will cope with Python&#8217;s reference count.
+The last thing you want is to crash a program due to a segfault
+when your C++ instance was deleted and the
+wrapper object tries to access the invalid memory there.</p>
+<p>In this section we&#8217;ll show how Shiboken deals with object ownership
+and parentship, taking advantage of the information provided by the
+APIExtractor.</p>
+<div class="section" id="ownership-basics">
+<h2>9.1. Ownership basics<a class="headerlink" href="#ownership-basics" title="Permalink to this headline">¶</a></h2>
+<p>As any python binding, Shiboken-based bindings uses reference counting
+to handle the life of the wrapper object (the Python object that contains the
+C++ object, do not confuse with the <em>wrapped</em> C++ object).
+When a reference count reaches zero, the wrapper is deleted by Python garbage
+collector and tries to delete the wrapped instance, but sometimes the wrapped
+C++ object is already deleted, or maybe the C++ object should not be freed after
+the Python wrapper go out of scope and die, because C++ is already taking care of
+the wrapped instance.</p>
+<p>In order to handle this, you should tell the
+generator whether the instance&#8217;s ownership belongs to the binding or
+to the C++ Library. When belonging to the binding, we are sure that the C++ object
+won&#8217;t be deleted by C++ code and we can call the C++ destructor when the refcount
+reaches 0. Otherwise, instances owned by C++ code can be destroyed arbitrarily,
+without notifying the Python wrapper of its destruction.</p>
+</div>
+<div class="section" id="invalidating-objects">
+<h2>9.2. Invalidating objects<a class="headerlink" href="#invalidating-objects" title="Permalink to this headline">¶</a></h2>
+<p>To prevent segfaults and double frees, the wrapper objects are invalidated.
+An invalidated can&#8217;t be passed as argument or have an attributte or method accessed.
+Trying to do this will raise RuntimeError.</p>
+<p>The following situations can invalidate an object:</p>
+<div class="section" id="c-taking-ownership">
+<h3>9.2.1. C++ taking ownership<a class="headerlink" href="#c-taking-ownership" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>When an object is passed to a function or method that takes ownership of it, the wrapper
+is invalidated as we can&#8217;t be sure of when the object is destroyed, unless it has a
+<a class="reference internal" href="#ownership-virt-method"><span>virtual destructor</span></a> or the transfer is due to the special case
+of <a class="reference internal" href="#ownership-parent"><span>parent ownership</span></a>.</p>
+<p>Besides being passed as argument, the callee object can have its ownership changed, like
+the <cite>setParent</cite> method in Qt&#8217;s <cite>QObject</cite>.</p>
+</div></blockquote>
+</div>
+<div class="section" id="invalidate-after-use">
+<h3>9.2.2. Invalidate after use<a class="headerlink" href="#invalidate-after-use" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Objects marked with <em>invalidate-after-use</em> in the type system description always are
+virtual method arguments provided by a C++ originated call. They should be
+invalidated right after the Python function returns.</div></blockquote>
+</div>
+<div class="section" id="objects-with-virtual-methods">
+<span id="ownership-virt-method"></span><h3>9.2.3. Objects with virtual methods<a class="headerlink" href="#objects-with-virtual-methods" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>A little bit of implementation details:
+virtual methods are supported by creating a C++ class, the <strong>shell</strong>, that inherits
+from the class with virtual methods, the native one, and override those methods to check if
+any derived class in Python also override it.</p>
+<p>If the class has a virtual destructor (and C++ classes with virtual methods should have), this
+C++ instance invalidates the wrapper only when the overriden destructor is called.</p>
+<p>One exception to this rule is when the object is created in C++, like in a
+factory method. This way the wrapped object is a C++ instance of the native
+class, not the shell one, and we cannot know when it is destroyed.</p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="parent-child-relationship">
+<span id="ownership-parent"></span><h2>9.3. Parent-child relationship<a class="headerlink" href="#parent-child-relationship" title="Permalink to this headline">¶</a></h2>
+<p>One special type of ownership is the parent-child relationship.
+Being a child of an object means that when the object&#8217;s parent dies,
+the C++ instance also dies, so the Python references will be invalidated.
+Qt&#8217;s QObject system, for example, implements this behavior, but this is valid
+for any C++ library with similar behavior.</p>
+<div class="section" id="parentship-heuristics">
+<span id="ownership-parent-heuristics"></span><h3>9.3.1. Parentship heuristics<a class="headerlink" href="#parentship-heuristics" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>As the parent-child relationship is very common, Shiboken tries to automatically
+infer what methods falls into the parent-child scheme, adding the extra
+directives related to ownership.</p>
+<p>This heuristic will be triggered when generating code for a method and:</p>
+<ul class="simple">
+<li>The function is a constructor.</li>
+<li>The argument name is <cite>parent</cite>.</li>
+<li>The argument type is a pointer to an object.</li>
+</ul>
+<p>When triggered, the heuristic will set the argument named &#8220;parent&#8221;
+as the parent of the object being created by the constructor.</p>
+<p>The main focus of this process was to remove a lot of hand written code from
+type system when binding Qt libraries. For Qt, this heuristic works in all cases,
+but be aware that it might not when binding your own libraries.</p>
+<p>To activate this heuristic, use the <a class="reference internal" href="commandlineoptions.html#parent-heuristic"><span>&#8211;enable-parent-ctor-heuristic</span></a>
+command line switch.</p>
+</div></blockquote>
+</div>
+<div class="section" id="return-value-heuristics">
+<span id="id1"></span><h3>9.3.2. Return value heuristics<a class="headerlink" href="#return-value-heuristics" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>When enabled, object returned as pointer in C++ will become child of the object on which the method
+was called.</p>
+<p>To activate this heuristic, use the <a class="reference internal" href="commandlineoptions.html#return-heuristic"><span>&#8211;enable-return-value-heuristic</span></a></p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="common-pitfalls">
+<h2>9.4. Common pitfalls<a class="headerlink" href="#common-pitfalls" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="not-saving-unowned-objects-references">
+<h3>9.4.1. Not saving unowned objects references<a class="headerlink" href="#not-saving-unowned-objects-references" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sometimes when you pass an instance as argument to a method and the receiving
+instance will need that object to live indifinitely, but will not take ownership
+of the argument instance. In this case, you should hold a reference to the argument
+instance.</p>
+<p>For example, let&#8217;s say that you have a renderer class that will use a source class
+in a setSource method but will not take ownership of it. The following code is wrong,
+because when <cite>render</cite> is called the <cite>Source</cite> object created during the call to <cite>setSource</cite>
+is already destroyed.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">renderer</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">Source</span><span class="p">())</span>
+<span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To solve this, you should hold a reference to the source object, like in</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">source</span> <span class="o">=</span> <span class="n">Source</span><span class="p">()</span>
+<span class="n">renderer</span><span class="o">.</span><span class="n">setSource</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+    <a href="http://www.qt-project.org/"><img src="_static/logo_qt.png" alt="Qt" border="0" /></a>
+    <a href="http://www.python.org"><img src="_static/logo_python.jpg" alt="Python" border="0" /></a>
+    </div>
+</div>
+  </body>
+</html>

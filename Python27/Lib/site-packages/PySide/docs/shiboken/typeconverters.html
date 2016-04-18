@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6. User Defined Type Conversion &mdash; Shiboken 1.2.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pysidedocs.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Shiboken 1.2.4 documentation" href="contents.html" />
+    <link rel="next" title="7. Code Injection Semantics" href="codeinjectionsemantics.html" />
+    <link rel="prev" title="5. Type System Variables" href="typesystemvariables.html" /> 
+  </head>
+  <body role="document">
+<div id="container">
+<div class="header">
+    <div class="header_container">
+        <div class="logo"><a href="http://www.pyside.org"><img alt="PySide" src="_static/pysidelogo.png" width="199" height="102" /></a></div>
+  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="codeinjectionsemantics.html" title="7. Code Injection Semantics"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="typesystemvariables.html" title="5. Type System Variables"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">Shiboken 1.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">6. User Defined Type Conversion</a><ul>
+<li><a class="reference internal" href="#container-conversions">6.1. Container Conversions</a></li>
+<li><a class="reference internal" href="#variables-functions">6.2. Variables &amp; Functions</a></li>
+<li><a class="reference internal" href="#converting-the-old-converters">6.3. Converting The Old Converters</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="typesystemvariables.html"
+                        title="previous chapter">5. Type System Variables</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="codeinjectionsemantics.html"
+                        title="next chapter">7. Code Injection Semantics</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" id="q" size="18" />
+      <input type="submit" value="Go" id="search_button" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="user-defined-type-conversion">
+<h1>6. User Defined Type Conversion<a class="headerlink" href="#user-defined-type-conversion" title="Permalink to this headline">¶</a></h1>
+<p>In the process of creating Python bindings of a C++ library, most of the C++ classes will have wrappers representing them in Python land. But there may be other classes that are very simple and/or have a Python type as a direct counter part. (Example: a &#8220;Complex&#8221; class, that represents complex numbers, has a Python equivalent in the &#8220;complex&#8221; type.) Such classes, instead of getting a Python wrapper, normally have conversions rules, from Python to C++ and vice-versa.</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="c1">// C++ class</span>
+<span class="k">struct</span> <span class="n">Complex</span> <span class="p">{</span>
+    <span class="n">Complex</span><span class="p">(</span><span class="kt">double</span> <span class="n">real</span><span class="p">,</span> <span class="kt">double</span> <span class="n">imag</span><span class="p">);</span>
+    <span class="kt">double</span> <span class="n">real</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">imag</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// Converting from C++ to Python using the CPython API:</span>
+<span class="n">PyObject</span><span class="o">*</span> <span class="n">pyCpxObj</span> <span class="o">=</span> <span class="n">PyComplex_FromDoubles</span><span class="p">(</span><span class="n">complex</span><span class="p">.</span><span class="n">real</span><span class="p">(),</span> <span class="n">complex</span><span class="p">.</span><span class="n">imag</span><span class="p">());</span>
+
+<span class="c1">// Converting from Python to C++:</span>
+<span class="kt">double</span> <span class="n">real</span> <span class="o">=</span> <span class="n">PyComplex_RealAsDouble</span><span class="p">(</span><span class="n">pyCpxObj</span><span class="p">);</span>
+<span class="kt">double</span> <span class="n">imag</span> <span class="o">=</span> <span class="n">PyComplex_ImagAsDouble</span><span class="p">(</span><span class="n">pyCpxObj</span><span class="p">);</span>
+<span class="n">Complex</span> <span class="nf">cpx</span><span class="p">(</span><span class="n">real</span><span class="p">,</span> <span class="n">imag</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>For the user defined conversion code to be inserted in the proper places, the &#8220;&lt;conversion-rule&gt;&#8221; tag must be used.</p>
+<blockquote>
+<div><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;primitive-type</span> <span class="na">name=</span><span class="s">&quot;Complex&quot;</span> <span class="na">target-lang-api-name=</span><span class="s">&quot;PyComplex&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;include</span> <span class="na">file-name=</span><span class="s">&quot;complex.h&quot;</span> <span class="na">location=</span><span class="s">&quot;global&quot;</span><span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;conversion-rule&gt;</span>
+
+    <span class="nt">&lt;native-to-target&gt;</span>
+    return PyComplex_FromDoubles(%in.real(), %in.imag());
+    <span class="nt">&lt;/native-to-target&gt;</span>
+
+    <span class="nt">&lt;target-to-native&gt;</span>
+      <span class="c">&lt;!-- The &#39;check&#39; attribute can be derived from the &#39;type&#39; attribute,</span>
+<span class="c">           it is defined here to test the CHECKTYPE type system variable. --&gt;</span>
+      <span class="nt">&lt;add-conversion</span> <span class="na">type=</span><span class="s">&quot;PyComplex&quot;</span> <span class="na">check=</span><span class="s">&quot;%CHECKTYPE[Complex](%in)&quot;</span><span class="nt">&gt;</span>
+      double real = PyComplex_RealAsDouble(%in);
+      double imag = PyComplex_ImagAsDouble(%in);
+      %out = %OUTTYPE(real, imag);
+      <span class="nt">&lt;/add-conversion&gt;</span>
+    <span class="nt">&lt;/target-to-native&gt;</span>
+
+  <span class="nt">&lt;/conversion-rule&gt;</span>
+
+<span class="nt">&lt;/primitive-type&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The details will be given later, but the gist of it are the tags
+<a class="reference external" href="http://www.pyside.org/docs/apiextractor/typesystem_conversionrule.html#native-to-target">&lt;native-to-target&gt;</a>,
+which has only one conversion from C++ to Python, and
+<a class="reference external" href="http://www.pyside.org/docs/apiextractor/typesystem_conversionrule.html#target-to-native">&lt;target-to-native&gt;</a>,
+that may define the conversion of multiple Python types to C++&#8217;s &#8220;Complex&#8221; type.</p>
+<a class="reference internal image-reference" href="_images/converter.png"><img alt="_images/converter.png" class="align-center" src="_images/converter.png" style="height: 240px;" /></a>
+<p>Shiboken expects the code for <a class="reference external" href="http://www.pyside.org/docs/apiextractor/typesystem_conversionrule.html#native-to-target">&lt;native-to-target&gt;</a>,
+to directly return the Python result of the conversion, and the added conversions inside the
+<a class="reference external" href="http://www.pyside.org/docs/apiextractor/typesystem_conversionrule.html#target-to-native">&lt;target-to-native&gt;</a>
+must attribute the Python to C++ conversion result to the <a class="reference internal" href="#out"><span>%out</span></a> variable.</p>
+<p>Expanding on the last example, if the binding developer want a Python 2-tuple of numbers to be accepted
+by wrapped C++ functions with &#8220;Complex&#8221; arguments, an
+<a class="reference external" href="http://www.pyside.org/docs/apiextractor/typesystem_conversionrule.html#add-conversion">&lt;add-conversion&gt;</a>
+tag and a custom check must be added. Here&#8217;s how to do it:</p>
+<blockquote>
+<div><div class="highlight-xml"><div class="highlight"><pre><span class="c">&lt;!-- Code injection at module level. --&gt;</span>
+<span class="nt">&lt;inject-code</span> <span class="na">class=</span><span class="s">&quot;native&quot;</span> <span class="na">position=</span><span class="s">&quot;beginning&quot;</span><span class="nt">&gt;</span>
+static bool Check2TupleOfNumbers(PyObject* pyIn) {
+    if (!PySequence_Check(pyIn) || !(PySequence_Size(pyIn) == 2))
+        return false;
+    Shiboken::AutoDecRef pyReal(PySequence_GetItem(pyIn, 0));
+    if (!SbkNumber_Check(pyReal))
+        return false;
+    Shiboken::AutoDecRef pyImag(PySequence_GetItem(pyIn, 1));
+    if (!SbkNumber_Check(pyImag))
+        return false;
+    return true;
+}
+<span class="nt">&lt;/inject-code&gt;</span>
+
+<span class="nt">&lt;primitive-type</span> <span class="na">name=</span><span class="s">&quot;Complex&quot;</span> <span class="na">target-lang-api-name=</span><span class="s">&quot;PyComplex&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;include</span> <span class="na">file-name=</span><span class="s">&quot;complex.h&quot;</span> <span class="na">location=</span><span class="s">&quot;global&quot;</span><span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;conversion-rule&gt;</span>
+
+    <span class="nt">&lt;native-to-target&gt;</span>
+    return PyComplex_FromDoubles(%in.real(), %in.imag());
+    <span class="nt">&lt;/native-to-target&gt;</span>
+
+    <span class="nt">&lt;target-to-native&gt;</span>
+
+      <span class="nt">&lt;add-conversion</span> <span class="na">type=</span><span class="s">&quot;PyComplex&quot;</span><span class="nt">&gt;</span>
+      double real = PyComplex_RealAsDouble(%in);
+      double imag = PyComplex_ImagAsDouble(%in);
+      %out = %OUTTYPE(real, imag);
+      <span class="nt">&lt;/add-conversion&gt;</span>
+
+      <span class="nt">&lt;add-conversion</span> <span class="na">type=</span><span class="s">&quot;PySequence&quot;</span> <span class="na">check=</span><span class="s">&quot;Check2TupleOfNumbers(%in)&quot;</span><span class="nt">&gt;</span>
+      Shiboken::AutoDecRef pyReal(PySequence_GetItem(%in, 0));
+      Shiboken::AutoDecRef pyImag(PySequence_GetItem(%in, 1));
+      double real = %CONVERTTOCPP[double](pyReal);
+      double imag  = %CONVERTTOCPP[double](pyImag);
+      %out = %OUTTYPE(real, imag);
+      <span class="nt">&lt;/add-conversion&gt;</span>
+
+    <span class="nt">&lt;/target-to-native&gt;</span>
+
+  <span class="nt">&lt;/conversion-rule&gt;</span>
+
+<span class="nt">&lt;/primitive-type&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<div class="section" id="container-conversions">
+<span id="id3"></span><h2>6.1. Container Conversions<a class="headerlink" href="#container-conversions" title="Permalink to this headline">¶</a></h2>
+<p>Converters for
+<a class="reference external" href="http://www.pyside.org/docs/apiextractor/typesystem_specifying_types.html#container-type">&lt;container-type&gt;</a>
+are pretty much the same as for other type, except that they make use of the type system variables
+<a class="reference internal" href="#intype-n"><span>%INTYPE_#</span></a> and <a class="reference internal" href="#outtype-n"><span>%OUTTYPE_#</span></a>. Shiboken combines the conversion code for
+containers with the conversion defined (or automatically generated) for the containees.</p>
+<blockquote>
+<div><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;container-type</span> <span class="na">name=</span><span class="s">&quot;std::map&quot;</span> <span class="na">type=</span><span class="s">&quot;map&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;include</span> <span class="na">file-name=</span><span class="s">&quot;map&quot;</span> <span class="na">location=</span><span class="s">&quot;global&quot;</span><span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;conversion-rule&gt;</span>
+
+    <span class="nt">&lt;native-to-target&gt;</span>
+    PyObject* %out = PyDict_New();
+    %INTYPE::const_iterator it = %in.begin();
+    for (; it != %in.end(); ++it) {
+      %INTYPE_0 key = it-&gt;first;
+      %INTYPE_1 value = it-&gt;second;
+              PyDict_SetItem(%out,
+                     %CONVERTTOPYTHON[%INTYPE_0](key),
+             %CONVERTTOPYTHON[%INTYPE_1](value));
+    }
+    return %out;
+    <span class="nt">&lt;/native-to-target&gt;</span>
+
+    <span class="nt">&lt;target-to-native&gt;</span>
+
+      <span class="nt">&lt;add-conversion</span> <span class="na">type=</span><span class="s">&quot;PyDict&quot;</span><span class="nt">&gt;</span>
+      PyObject* key;
+      PyObject* value;
+      Py_ssize_t pos = 0;
+      while (PyDict_Next(%in, <span class="ni">&amp;amp;</span>pos, <span class="ni">&amp;amp;</span>key, <span class="ni">&amp;amp;</span>value)) {
+          %OUTTYPE_0 cppKey = %CONVERTTOCPP[%OUTTYPE_0](key);
+          %OUTTYPE_1 cppValue = %CONVERTTOCPP[%OUTTYPE_1](value);
+          %out.insert(%OUTTYPE::value_type(cppKey, cppValue));
+      }
+      <span class="nt">&lt;/add-conversion&gt;</span>
+
+    <span class="nt">&lt;/target-to-native&gt;</span>
+  <span class="nt">&lt;/conversion-rule&gt;</span>
+<span class="nt">&lt;/container-type&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="variables-functions">
+<span id="variables-and-functions"></span><h2>6.2. Variables &amp; Functions<a class="headerlink" href="#variables-functions" title="Permalink to this headline">¶</a></h2>
+<p id="in"><strong>%in</strong></p>
+<blockquote>
+<div>Variable replaced by the C++ input variable.</div></blockquote>
+<p id="out"><strong>%out</strong></p>
+<blockquote>
+<div>Variable replaced by the C++ output variable. Needed to convey the
+result of a Python to C++ conversion.</div></blockquote>
+<p id="intype"><strong>%INTYPE</strong></p>
+<blockquote>
+<div>Used in Python to C++ conversions. It is replaced by the name of type for
+which the conversion is being defined. Don&#8217;t use the type&#8217;s name directly.</div></blockquote>
+<p id="intype-n"><strong>%INTYPE_#</strong></p>
+<blockquote>
+<div>Replaced by the name of the #th type used in a container.</div></blockquote>
+<p id="outtype"><strong>%OUTTYPE</strong></p>
+<blockquote>
+<div>Used in Python to C++ conversions. It is replaced by the name of type for
+which the conversion is being defined. Don&#8217;t use the type&#8217;s name directly.</div></blockquote>
+<p id="outtype-n"><strong>%OUTTYPE_#</strong></p>
+<blockquote>
+<div>Replaced by the name of the #th type used in a container.</div></blockquote>
+<p id="checktype"><strong>%CHECKTYPE[CPPTYPE]</strong></p>
+<blockquote>
+<div>Replaced by a Shiboken type checking function for a Python variable.
+The C++ type is indicated by <code class="docutils literal"><span class="pre">CPPTYPE</span></code>.</div></blockquote>
+</div>
+<div class="section" id="converting-the-old-converters">
+<span id="oldconverters"></span><h2>6.3. Converting The Old Converters<a class="headerlink" href="#converting-the-old-converters" title="Permalink to this headline">¶</a></h2>
+<p>If you use Shiboken for your bindings, and has defined some type conversions
+using the <code class="docutils literal"><span class="pre">Shiboken::Converter</span></code> template, then you must update your converters
+to the new scheme.</p>
+<p>Previously your conversion rules were declared in one line, like this:</p>
+<blockquote>
+<div><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;primitive-type</span> <span class="na">name=</span><span class="s">&quot;Complex&quot;</span> <span class="na">target-lang-api-name=</span><span class="s">&quot;PyComplex&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;include</span> <span class="na">file-name=</span><span class="s">&quot;complex.h&quot;</span> <span class="na">location=</span><span class="s">&quot;global&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;conversion-rule</span> <span class="na">file=</span><span class="s">&quot;complex_conversions.h&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/primitive-type&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>And implemented in a separate C++ file, like this:</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">Shiboken</span> <span class="p">{</span>
+<span class="k">template</span><span class="o">&lt;&gt;</span> <span class="k">struct</span> <span class="n">Converter</span><span class="o">&lt;</span><span class="n">Complex</span><span class="o">&gt;</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kr">inline</span> <span class="kt">bool</span> <span class="n">checkType</span><span class="p">(</span><span class="n">PyObject</span><span class="o">*</span> <span class="n">pyObj</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">PyComplex_Check</span><span class="p">(</span><span class="n">pyObj</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="kr">inline</span> <span class="kt">bool</span> <span class="n">isConvertible</span><span class="p">(</span><span class="n">PyObject</span><span class="o">*</span> <span class="n">pyObj</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">PyComplex_Check</span><span class="p">(</span><span class="n">pyObj</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="kr">inline</span> <span class="n">PyObject</span><span class="o">*</span> <span class="n">toPython</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">cppobj</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">toPython</span><span class="p">(</span><span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">Complex</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">cppobj</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="kr">inline</span> <span class="n">PyObject</span><span class="o">*</span> <span class="n">toPython</span><span class="p">(</span><span class="k">const</span> <span class="n">Complex</span><span class="o">&amp;</span> <span class="n">cpx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">PyComplex_FromDoubles</span><span class="p">(</span><span class="n">cpx</span><span class="p">.</span><span class="n">real</span><span class="p">(),</span> <span class="n">cpx</span><span class="p">.</span><span class="n">imag</span><span class="p">());</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="kr">inline</span> <span class="n">Complex</span> <span class="n">toCpp</span><span class="p">(</span><span class="n">PyObject</span><span class="o">*</span> <span class="n">pyobj</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">real</span> <span class="o">=</span>  <span class="n">PyComplex_RealAsDouble</span><span class="p">(</span><span class="n">pyobj</span><span class="p">);</span>
+        <span class="kt">double</span> <span class="n">imag</span> <span class="o">=</span>  <span class="n">PyComplex_ImagAsDouble</span><span class="p">(</span><span class="n">pyobj</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nf">Complex</span><span class="p">(</span><span class="n">real</span><span class="p">,</span> <span class="n">imag</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In this case, the parts of the implementation that will be used in the new conversion-rule
+are the ones in the two last method <code class="docutils literal"><span class="pre">static</span> <span class="pre">inline</span> <span class="pre">PyObject*</span> <span class="pre">toPython(const</span> <span class="pre">Complex&amp;</span> <span class="pre">cpx)</span></code>
+and <code class="docutils literal"><span class="pre">static</span> <span class="pre">inline</span> <span class="pre">Complex</span> <span class="pre">toCpp(PyObject*</span> <span class="pre">pyobj)</span></code>. The <code class="docutils literal"><span class="pre">isConvertible</span></code> method is gone,
+and the <code class="docutils literal"><span class="pre">checkType</span></code> is now an attribute of the
+<a class="reference external" href="http://www.pyside.org/docs/apiextractor/typesystem_conversionrule.html#add-conversion">&lt;add-conversion&gt;</a>
+tag. Refer back to the first example in this page and you will be able to correlate the above template
+with the new scheme of conversion rule definition.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+    <a href="http://www.qt-project.org/"><img src="_static/logo_qt.png" alt="Qt" border="0" /></a>
+    <a href="http://www.python.org"><img src="_static/logo_python.jpg" alt="Python" border="0" /></a>
+    </div>
+</div>
+  </body>
+</html>

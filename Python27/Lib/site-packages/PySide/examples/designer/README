@@ -1,0 +1,17 @@
+Qt Designer is a capable graphical user interface designer that lets you
+create and configure forms without writing code. GUIs created with
+Qt Designer can be converted to Python code or created at run-time.
+
+
+Finding the PyQt Examples and Demos launcher
+============================================
+
+On Windows:
+
+The launcher can be accessed via the Windows Start menu. Select the menu
+entry entitled "Examples and Demos" entry in the submenu containing PySide.
+
+On all platforms:
+
+The source code for the launcher can be found in the examples/tools/qtdemo
+directory in the PyQt package.

@@ -1,0 +1,5 @@
+This example illustrates exposing a Python object to QML and explicitly calling
+a Python function from QML.
+
+When the button is clicked, a few strings and doubles are printed on the
+console.

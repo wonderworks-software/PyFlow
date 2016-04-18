@@ -1,0 +1,24 @@
+These demonstrations are intended to highlight PyQt's capabilities in different
+application areas, and provide examples that are more advanced than other
+examples.
+
+Beginners to PyQt may wish to try out the PyQt tutorial and some of the other
+examples before examining the demonstrations in detail.
+
+The examples and demos launcher can be used to explore the different categories
+available.  It provides an overview of each example, lets you view the
+documentation in Qt Assistant, and is able to launch the examples and demos.
+
+
+Finding the PyQt Examples and Demos launcher
+============================================
+
+On Windows:
+
+The launcher can be accessed via the Windows Start menu. Select the menu
+entry entitled "Examples and Demos" entry in the submenu containing PyQt4.
+
+On all platforms:
+
+The source code for the launcher can be found in the examples/demos/qtdemo
+directory in the PyQt package.

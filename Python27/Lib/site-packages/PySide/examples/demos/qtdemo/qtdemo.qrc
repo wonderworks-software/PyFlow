@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+   <file>xml/examples.xml</file>
+   <file>images/qtlogo_small.png</file>
+   <file>images/trolltech-logo.png</file>
+   <file>images/demobg.png</file>
+</qresource>
+</RCC>

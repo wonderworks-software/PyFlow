@@ -1,0 +1,20 @@
+PySide comes with a plenty of example applications, illustrating the
+usage and functionality of different Qt functionality and concepts from
+Python.
+
+The examples are organized into topical subdirectories within the
+current directory. To browse and run the examples, change to the
+relevant directory and run the example there, either on the command line
+or by using your favourite file manager.
+
+The majority of the examples have been ported as-is from PyQt, in which
+case the original boilerplates have been retained. Hence, although
+PySide itself is licensed under LGPLv2.1, most of the examples are
+licensed under GPLv2.
+
+We have tried to ensure that every example works with PySide. If you
+experience unexpected results when running any of the examples, PLEASE
+report the issue at PySide Bugzilla [1]. This will greatly help us
+improve the quality of PySide future releases.
+
+[1] http://bugs.openbossa.org/

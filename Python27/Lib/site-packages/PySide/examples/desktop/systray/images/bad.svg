@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg viewBox="-10 -10 178 178" height="177.523" id="svg1" inkscape:version="0.40" sodipodi:docbase="/mnt/donnees/09-Mes_images/Travaux/Travaux vectoriel/pictogrammes/sécu SVG/produits chimiques" sodipodi:docname="XiIrritant.svg" sodipodi:version="0.32" width="155.932" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:xlink="http://www.w3.org/1999/xlink">
+<metadata>
+<rdf:RDF xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<cc:Work rdf:about="">
+<dc:title>Irritant</dc:title>
+<dc:description>produit chimique</dc:description>
+<dc:subject>
+<rdf:Bag>
+<rdf:li></rdf:li>
+<rdf:li>symbol</rdf:li>
+<rdf:li>signs_and_symbols</rdf:li>
+</rdf:Bag>
+</dc:subject>
+<dc:publisher>
+<cc:Agent rdf:about="http://www.openclipart.org">
+<dc:title>yves GUILLOU</dc:title>
+</cc:Agent>
+</dc:publisher>
+<dc:creator>
+<cc:Agent>
+<dc:title>yves GUILLOU</dc:title>
+</cc:Agent>
+</dc:creator>
+<dc:rights>
+<cc:Agent>
+<dc:title>yves GUILLOU</dc:title>
+</cc:Agent>
+</dc:rights>
+<dc:date></dc:date>
+<dc:format>image/svg+xml</dc:format>
+<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+<cc:license rdf:resource="http://web.resource.org/cc/PublicDomain"/>
+<dc:language>en</dc:language>
+</cc:Work>
+<cc:License rdf:about="http://web.resource.org/cc/PublicDomain">
+<cc:permits rdf:resource="http://web.resource.org/cc/Reproduction"/>
+<cc:permits rdf:resource="http://web.resource.org/cc/Distribution"/>
+<cc:permits rdf:resource="http://web.resource.org/cc/DerivativeWorks"/>
+</cc:License>
+</rdf:RDF>
+</metadata>
+<sodipodi:namedview bordercolor="#666666" borderopacity="1.0" id="base" inkscape:current-layer="svg1" inkscape:cx="62.372805" inkscape:cy="34.864537" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:window-height="1121" inkscape:window-width="1590" inkscape:window-x="200" inkscape:window-y="0" inkscape:zoom="6.6399849" pagecolor="#ffffff"/>
+<defs id="defs2">
+<marker id="ArrowEnd" markerHeight="3" markerUnits="strokeWidth" markerWidth="4" orient="auto" refX="0" refY="5" viewBox="0 0 10 10">
+<path d="M 0 0 L 10 5 L 0 10 z" id="path4"/>
+</marker>
+<marker id="ArrowStart" markerHeight="3" markerUnits="strokeWidth" markerWidth="4" orient="auto" refX="10" refY="5" viewBox="0 0 10 10">
+<path d="M 10 0 L 0 5 L 10 10 z" id="path6"/>
+</marker>
+</defs>
+<g id="g7">
+<g id="g8">
+<path d="M 155.932 155.932L 155.932 0L 0 0L 0 155.932L 155.932 155.932z" id="path9" style="stroke:none; fill:#000000"/>
+<path d="M 150.83 150.83L 150.83 5.1011L 5.1011 5.1011L 5.1011 150.83L 150.83 150.83z" id="path10" style="stroke:none; fill:#ff9900"/>
+</g>
+<g id="g11">
+<path d="M 140.823 111.783L 44.3677 14.0771L 15.1084 44.1489L 111.564 141.854L 140.823 111.783z" id="path12" style="stroke:none; fill:#000000"/>
+<path d="M 111.783 15.1084L 14.0771 111.564L 44.1489 140.823L 141.855 44.3677L 111.783 15.1084z" id="path13" style="stroke:none; fill:#000000"/>
+</g>
+</g>
+</svg>

@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>11. Shiboken module &mdash; Shiboken 1.2.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pysidedocs.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Shiboken 1.2.4 documentation" href="contents.html" />
+    <link rel="prev" title="10. Words of Advice" href="wordsofadvice.html" /> 
+  </head>
+  <body role="document">
+<div id="container">
+<div class="header">
+    <div class="header_container">
+        <div class="logo"><a href="http://www.pyside.org"><img alt="PySide" src="_static/pysidelogo.png" width="199" height="102" /></a></div>
+  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="wordsofadvice.html" title="10. Words of Advice"
+             accesskey="P">previous</a></li>
+        <li class="nav-item nav-item-0"><a href="contents.html">Shiboken 1.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">11. Shiboken module</a><ul>
+<li><a class="reference internal" href="#functions">11.1. Functions</a></li>
+<li><a class="reference internal" href="#detailed-description">11.2. Detailed description</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="wordsofadvice.html"
+                        title="previous chapter">10. Words of Advice</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" id="q" size="18" />
+      <input type="submit" value="Go" id="search_button" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <span class="target" id="module-shiboken"></span><div class="section" id="shiboken-module">
+<h1>11. Shiboken module<a class="headerlink" href="#shiboken-module" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="functions">
+<h2>11.1. Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<div class="function-list container">
+<ul class="simple">
+<li>def <a class="reference internal" href="#shiboken.isValid" title="shiboken.isValid"><code class="xref py py-meth docutils literal"><span class="pre">isValid</span></code></a> (obj)</li>
+<li>def <a class="reference internal" href="#shiboken.wrapInstance" title="shiboken.wrapInstance"><code class="xref py py-meth docutils literal"><span class="pre">wrapInstance</span></code></a> (address, type)</li>
+<li>def <a class="reference internal" href="#shiboken.getCppPointer" title="shiboken.getCppPointer"><code class="xref py py-meth docutils literal"><span class="pre">getCppPointer</span></code></a> (obj)</li>
+<li>def <a class="reference internal" href="#shiboken.delete" title="shiboken.delete"><code class="xref py py-meth docutils literal"><span class="pre">delete</span></code></a> (obj)</li>
+<li>def <a class="reference internal" href="#shiboken.isOwnedByPython" title="shiboken.isOwnedByPython"><code class="xref py py-meth docutils literal"><span class="pre">isOwnedByPython</span></code></a> (obj)</li>
+<li>def <a class="reference internal" href="#shiboken.wasCreatedByPython" title="shiboken.wasCreatedByPython"><code class="xref py py-meth docutils literal"><span class="pre">wasCreatedByPython</span></code></a> (obj)</li>
+<li>def <a class="reference internal" href="#shiboken.dump" title="shiboken.dump"><code class="xref py py-meth docutils literal"><span class="pre">dump</span></code></a> (obj)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="detailed-description">
+<h2>11.2. Detailed description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
+<p>This Python module can be used to access internal information related to our
+binding technology. Access to this internal information is required to e.g.:
+integrate PySide with Qt based programs that offer Python scripting like Maya™
+or just for debug purposes.</p>
+<p>Some function description refer to &#8220;Shiboken based objects&#8221;, wich means
+Python objects instances of any Python Type created using Shiboken.</p>
+<dl class="function">
+<dt id="shiboken.isValid">
+<code class="descclassname">shiboken.</code><code class="descname">isValid</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#shiboken.isValid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a Python object, returns True if the object methods can be called
+without an exception being thrown. A Python wrapper becomes invalid when
+the underlying C++ object is destroyed or unreachable.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="shiboken.wrapInstance">
+<code class="descclassname">shiboken.</code><code class="descname">wrapInstance</code><span class="sig-paren">(</span><em>address</em>, <em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#shiboken.wrapInstance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Python wrapper for a C++ object instantiated at a given memory
+address - the returned object type will be the same given by the user.</p>
+<p>The type must be a Shiboken type, the C++ object will not be
+destroyed when the returned Python object reach zero references.</p>
+<p>If the address is invalid or doesn&#8217;t point to a C++ object of given type
+the behavior is undefined.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="shiboken.getCppPointer">
+<code class="descclassname">shiboken.</code><code class="descname">getCppPointer</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#shiboken.getCppPointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple of longs that contain the memory addresses of the
+C++ instances wrapped by the given object.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="shiboken.delete">
+<code class="descclassname">shiboken.</code><code class="descname">delete</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#shiboken.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the C++ object wrapped by the given Python object.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="shiboken.isOwnedByPython">
+<code class="descclassname">shiboken.</code><code class="descname">isOwnedByPython</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#shiboken.isOwnedByPython" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a Python object, returns True if Python is responsible for deleting
+the underlying C++ object, False otherwise.</p>
+<p>If the object was not a Shiboken based object, a TypeError is
+thrown.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="shiboken.wasCreatedByPython">
+<code class="descclassname">shiboken.</code><code class="descname">wasCreatedByPython</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#shiboken.wasCreatedByPython" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the given Python object was created by Python.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="shiboken.dump">
+<code class="descclassname">shiboken.</code><code class="descname">dump</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#shiboken.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string with implementation-defined information about the
+object.
+This method should be used <strong>only</strong> for debug purposes by developers
+creating their own bindings as no guarantee is provided that
+the string format will be the same across different versions.</p>
+<p>If the object is not a Shiboken based object, a TypeError is thrown.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+    <a href="http://www.qt-project.org/"><img src="_static/logo_qt.png" alt="Qt" border="0" /></a>
+    <a href="http://www.python.org"><img src="_static/logo_python.jpg" alt="Python" border="0" /></a>
+    </div>
+</div>
+  </body>
+</html>

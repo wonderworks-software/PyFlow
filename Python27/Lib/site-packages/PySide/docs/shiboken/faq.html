@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Frequently Asked Questions &mdash; Shiboken 1.2.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pysidedocs.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Shiboken 1.2.4 documentation" href="contents.html" />
+    <link rel="next" title="2. Generator Overview" href="overview.html" />
+    <link rel="prev" title="Table of contents" href="contents.html" /> 
+  </head>
+  <body role="document">
+<div id="container">
+<div class="header">
+    <div class="header_container">
+        <div class="logo"><a href="http://www.pyside.org"><img alt="PySide" src="_static/pysidelogo.png" width="199" height="102" /></a></div>
+  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="overview.html" title="2. Generator Overview"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="contents.html" title="Table of contents"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">Shiboken 1.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Frequently Asked Questions</a><ul>
+<li><a class="reference internal" href="#general">1.1. General</a><ul>
+<li><a class="reference internal" href="#what-is-shiboken">1.1.1. What is Shiboken?</a></li>
+<li><a class="reference internal" href="#why-did-you-switch-from-boost-python-to-shiboken">1.1.2. Why did you switch from Boost.Python to Shiboken?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#creating-bindings">1.2. Creating bindings</a><ul>
+<li><a class="reference internal" href="#can-i-wrap-non-qt-libraries">1.2.1. Can I wrap non-Qt libraries?</a></li>
+<li><a class="reference internal" href="#is-there-any-runtime-dependency-on-the-generated-binding">1.2.2. Is there any runtime dependency on the generated binding?</a></li>
+<li><a class="reference internal" href="#what-do-i-have-to-do-to-create-my-bindings">1.2.3. What do I have to do to create my bindings?</a></li>
+<li><a class="reference internal" href="#is-there-any-recommended-build-system">1.2.4. Is there any recommended build system?</a></li>
+<li><a class="reference internal" href="#can-i-write-closed-source-bindings-with-the-generator">1.2.5. Can I write closed-source bindings with the generator?</a></li>
+<li><a class="reference internal" href="#what-is-inject-code">1.2.6. What is &#8216;inject code&#8217;?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="contents.html"
+                        title="previous chapter">Table of contents</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="next chapter">2. Generator Overview</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" id="q" size="18" />
+      <input type="submit" value="Go" id="search_button" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="frequently-asked-questions">
+<h1>1. Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h1>
+<p>This is a list of Frequently Asked Questions about Shiboken.  Feel free to
+suggest new entries!</p>
+<div class="section" id="general">
+<h2>1.1. General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="what-is-shiboken">
+<h3>1.1.1. What is Shiboken?<a class="headerlink" href="#what-is-shiboken" title="Permalink to this headline">¶</a></h3>
+<p>Shiboken is a <a class="reference external" href="http://www.pyside.org/home-binding/binding-generator">GeneratorRunner</a>
+plugin that outputs C++ code for CPython extensions. The first version of PySide
+had source code based on Boost templates. It was easier to produce code but a
+paradigm change was needed, as the next question explains.</p>
+</div>
+<div class="section" id="why-did-you-switch-from-boost-python-to-shiboken">
+<h3>1.1.2. Why did you switch from Boost.Python to Shiboken?<a class="headerlink" href="#why-did-you-switch-from-boost-python-to-shiboken" title="Permalink to this headline">¶</a></h3>
+<p>The main reason was the size reduction. Boost.Python makes excessive use of templates
+resulting in a significant increase of the binaries size. On the other hand, as Shiboken
+generates CPython code, the resulting binaries are smaller.</p>
+</div>
+</div>
+<div class="section" id="creating-bindings">
+<h2>1.2. Creating bindings<a class="headerlink" href="#creating-bindings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="can-i-wrap-non-qt-libraries">
+<h3>1.2.1. Can I wrap non-Qt libraries?<a class="headerlink" href="#can-i-wrap-non-qt-libraries" title="Permalink to this headline">¶</a></h3>
+<p>Yes. Check Shiboken source code for an example (libsample).</p>
+</div>
+<div class="section" id="is-there-any-runtime-dependency-on-the-generated-binding">
+<h3>1.2.2. Is there any runtime dependency on the generated binding?<a class="headerlink" href="#is-there-any-runtime-dependency-on-the-generated-binding" title="Permalink to this headline">¶</a></h3>
+<p>Yes. Only libshiboken, and the obvious Python interpreter
+and the C++ library that is being wrapped.</p>
+</div>
+<div class="section" id="what-do-i-have-to-do-to-create-my-bindings">
+<h3>1.2.3. What do I have to do to create my bindings?<a class="headerlink" href="#what-do-i-have-to-do-to-create-my-bindings" title="Permalink to this headline">¶</a></h3>
+<p>Most of the work is already done by the API Extractor. The developer creates
+a <a class="reference external" href="http://www.pyside.org/docs/apiextractor/typesystem.html">typesystem</a> file
+with any customization wanted in the generated code, like removing classes or
+changing method signatures. The generator will output the .h and .cpp files
+with the CPython code that will wrap the target library for python.</p>
+</div>
+<div class="section" id="is-there-any-recommended-build-system">
+<h3>1.2.4. Is there any recommended build system?<a class="headerlink" href="#is-there-any-recommended-build-system" title="Permalink to this headline">¶</a></h3>
+<p>Both API Extractor and generator uses and recommends the CMake build system.</p>
+</div>
+<div class="section" id="can-i-write-closed-source-bindings-with-the-generator">
+<h3>1.2.5. Can I write closed-source bindings with the generator?<a class="headerlink" href="#can-i-write-closed-source-bindings-with-the-generator" title="Permalink to this headline">¶</a></h3>
+<p>Yes, as long as you use a LGPL version of Qt, due to runtime requirements.</p>
+</div>
+<div class="section" id="what-is-inject-code">
+<h3>1.2.6. What is &#8216;inject code&#8217;?<a class="headerlink" href="#what-is-inject-code" title="Permalink to this headline">¶</a></h3>
+<p>That&#8217;s how we call customized code that will be <em>injected</em> into the
+generated at specific locations. They are specified inside the typesytem.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+    <a href="http://www.qt-project.org/"><img src="_static/logo_qt.png" alt="Qt" border="0" /></a>
+    <a href="http://www.python.org"><img src="_static/logo_python.jpg" alt="Python" border="0" /></a>
+    </div>
+</div>
+  </body>
+</html>

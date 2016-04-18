@@ -1,0 +1,27 @@
+PyQt provides features to enable applications to integrate with the user's
+preferred desktop environment.
+
+Features such as system tray icons, access to the desktop widget, and
+support for desktop services can be used to improve the appearance of
+applications and take advantage of underlying desktop facilities.
+
+
+The example launcher provided with PyQt can be used to explore each of the
+examples in this directory.
+
+Documentation for these examples can be found via the Tutorial and Examples
+link in the main Qt documentation.
+
+
+Finding the PyQt Examples and Demos launcher
+============================================
+
+On Windows:
+
+The launcher can be accessed via the Windows Start menu. Select the menu
+entry entitled "Examples and Demos" entry in the submenu containing PyQt4.
+
+On all platforms:
+
+The source code for the launcher can be found in the examples/demos/qtdemo
+directory in the PyQt package.

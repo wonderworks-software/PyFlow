@@ -1,0 +1,5 @@
+This example illustrates connecting a signal from a specific QML item to
+Python.
+
+When the button is clicked, a notification text is printed out on the
+console.

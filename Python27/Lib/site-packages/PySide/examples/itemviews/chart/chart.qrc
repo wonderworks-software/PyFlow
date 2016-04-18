@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/Charts" >
+   <file>qtdata.cht</file>
+</qresource>
+</RCC>

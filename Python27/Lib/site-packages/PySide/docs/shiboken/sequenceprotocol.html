@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>8. Sequence Protocol &mdash; Shiboken 1.2.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pysidedocs.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Shiboken 1.2.4 documentation" href="contents.html" />
+    <link rel="next" title="9. Object ownership" href="ownership.html" />
+    <link rel="prev" title="7. Code Injection Semantics" href="codeinjectionsemantics.html" /> 
+  </head>
+  <body role="document">
+<div id="container">
+<div class="header">
+    <div class="header_container">
+        <div class="logo"><a href="http://www.pyside.org"><img alt="PySide" src="_static/pysidelogo.png" width="199" height="102" /></a></div>
+  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="ownership.html" title="9. Object ownership"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="codeinjectionsemantics.html" title="7. Code Injection Semantics"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">Shiboken 1.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="codeinjectionsemantics.html"
+                        title="previous chapter">7. Code Injection Semantics</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ownership.html"
+                        title="next chapter">9. Object ownership</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" id="q" size="18" />
+      <input type="submit" value="Go" id="search_button" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sequence-protocol">
+<h1>8. Sequence Protocol<a class="headerlink" href="#sequence-protocol" title="Permalink to this headline">¶</a></h1>
+<p>Support for the sequence protocol is achieved adding functions with special names, this is done using the add-function tag.</p>
+<p>The special function names are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="47%" />
+<col width="20%" />
+<col width="19%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Function name</th>
+<th class="head">Parameters</th>
+<th class="head">Return type</th>
+<th class="head">CPython equivalent</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>__len__</td>
+<td>PyObject* self</td>
+<td>Py_ssize_t</td>
+<td>PySequence_Size</td>
+</tr>
+<tr class="row-odd"><td>__getitem__</td>
+<td>PyObject* self, Py_ssize_t _i</td>
+<td>PyObject*</td>
+<td>PySequence_GetItem</td>
+</tr>
+<tr class="row-even"><td>__setitem__</td>
+<td>PyObject* self, Py_ssize_t _i, PyObject* _value</td>
+<td>int</td>
+<td>PySequence_SetItem</td>
+</tr>
+<tr class="row-odd"><td>__contains__</td>
+<td>PyObject* self, PyObject* _value</td>
+<td>int</td>
+<td>PySequence_Contains</td>
+</tr>
+<tr class="row-even"><td>__concat__</td>
+<td>PyObject* self, PyObject* _other</td>
+<td>PyObject*</td>
+<td>PySequence_Concat</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>You just need to inform the function name to the add-function tag, without any parameter or return type information, when you do it, Shiboken will create a C function with parameters and return type definied by the table above.</p>
+<p>The function needs to follow the same semantics of the <em>CPython equivalent</em> function, the only way to do it is using the <a class="reference internal" href="codeinjectionsemantics.html"><em>inject-code</em></a> tag.</p>
+<p>A concrete exemple how to add sequence protocol support to a class can be found on shiboken tests, more precisely in the definition of the Str class in <code class="docutils literal"><span class="pre">tests/samplebinding/typesystem_sample.xml</span></code>.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+    <a href="http://www.qt-project.org/"><img src="_static/logo_qt.png" alt="Qt" border="0" /></a>
+    <a href="http://www.python.org"><img src="_static/logo_python.jpg" alt="Python" border="0" /></a>
+    </div>
+</div>
+  </body>
+</html>
