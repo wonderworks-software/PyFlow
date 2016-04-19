@@ -76,7 +76,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.v_form = QtGui.QGraphicsWidget()
         self.w = w
         self.h = 40
-        self.sizes = [0, 0, self.w, self.h, 2, 2]
+        self.sizes = [0, 0, self.w, self.h, 1, 1]
         self.setFlag(self.ItemIsMovable)
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable)
         self.setFlag(self.ItemIsSelectable)

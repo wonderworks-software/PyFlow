@@ -15,7 +15,7 @@ class Edge(QtGui.QGraphicsLineItem, Colors):
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
         self.setFlag(self.ItemIsSelectable)
 
-        self.setZValue(1)
+        self.setZValue(1.5)
         self.connection = {'From': self.source.port_name(),
                            'To': self.destination.port_name()}
 
