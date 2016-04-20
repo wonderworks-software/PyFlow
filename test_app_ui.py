@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:/GIT/nodes/test_app_ui.ui'
 #
-# Created: Mon Apr 18 18:43:39 2016
+# Created: Wed Apr 20 17:38:15 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,11 +18,15 @@ class Ui_MainWindow(object):
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("QToolTip\n"
 "{\n"
-"     border: 1px solid black;\n"
-"     background-color: #ffa02f;\n"
-"     padding: 1px;\n"
-"     border-radius: 3px;\n"
+"     \n"
+"    border:2px;\n"
+"    border-color: rgb(0, 0, 0);\n"
+"    color: rgb(0, 0, 0);\n"
+"    background-color: rgb(255, 170, 0);\n"
+"     padding: 0px;\n"
+"     border-radius: 1px;\n"
 "     opacity: 100;\n"
+"\n"
 "}\n"
 "\n"
 "QWidget\n"
@@ -518,7 +522,6 @@ class Ui_MainWindow(object):
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
-        MainWindow.insertToolBarBreak(self.toolBar)
         self.dockWidgetConsole = QtGui.QDockWidget(MainWindow)
         self.dockWidgetConsole.setObjectName("dockWidgetConsole")
         self.dockWidgetContents_2 = QtGui.QWidget()

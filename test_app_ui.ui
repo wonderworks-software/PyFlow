@@ -20,11 +20,15 @@
   <property name="styleSheet">
    <string notr="true">QToolTip
 {
-     border: 1px solid black;
-     background-color: #ffa02f;
-     padding: 1px;
-     border-radius: 3px;
+     
+	border:2px;
+	border-color: rgb(0, 0, 0);
+	color: rgb(0, 0, 0);
+	background-color: rgb(255, 170, 0);
+     padding: 0px;
+     border-radius: 1px;
      opacity: 100;
+
 }
 
 QWidget
@@ -569,7 +573,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionDelete"/>
    <addaction name="actionOptions"/>
