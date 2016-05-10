@@ -126,9 +126,7 @@ class RealTimeLine(QtGui.QGraphicsLineItem, Colors):
         if self.graph.pressed_item and hasattr(self.graph.pressed_item, 'object_type'):
             if self.graph.pressed_item.object_type == AGObjectTypes.tPort:
                 self.offset = self.graph.pressed_item.boundingRect().width()/2
-                painter.drawLine(self.mapToParent(QtCore.QPointF(self.p1.x()+self.offset,
-                                                                 self.p1.y()+self.offset)),
-                                 self.p2)
+                painter.drawLine(self.mapToParent(QtCore.QPointF(self.p1.x()+self.offset, self.p1.y()+self.offset)), self.p2)
 
     def boundingRect(self):
         return QtCore.QRectF(self.p1, self.p2)

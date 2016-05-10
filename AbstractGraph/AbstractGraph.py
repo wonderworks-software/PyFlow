@@ -255,13 +255,6 @@ class AGraph(object):
         self.nodes = []
         self.edges = []
 
-    def executeCommand(self, command):
-        if command == "plot":
-            print "plotting"
-            self.plot()
-        else:
-            print command[0], "plot"
-
     def is_debug(self):
 
         return self._debug
@@ -342,7 +335,7 @@ class AGraph(object):
                 return i
 
     def add_node(self, node, x=0.0, y=0.0):
-        # generate unic name
+        # generate uniq name
         if not node:
             return False
         if node.name in [n.name for n in self.nodes]:

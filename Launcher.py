@@ -8,22 +8,23 @@ class ConsoleInput(QtGui.QLineEdit):
     def __init__(self, parent, graph):
         super(ConsoleInput, self).__init__(parent)
         self.graph = graph
-        self.model = QtGui.QStringListModel()
         self.returnPressed.connect(self.OnReturnPressed)
-        self.executedCommands = []
+        self.model = QtGui.QStringListModel()
+        self.executedCommands = ["plot", "help", "createNode", "load", "save"]
+        self.completer = QtGui.QCompleter(self)
         self.model.setStringList(self.executedCommands)
-        self.completer = QtGui.QCompleter(self.model)
+        self.completer.setModel(self.model)
         self.completer.setCompletionMode(self.completer.PopupCompletion)
         self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
         self.setCompleter(self.completer)
 
     def OnReturnPressed(self):
         line = self.text()
-        self.executedCommands.append(line)
+        if line not in self.executedCommands:
+            self.executedCommands.append(line)
         self.model.setStringList(self.executedCommands)
         self.graph.executeCommand(line)
         self.clear()
-        print self.executedCommands
 
 
 if __name__ == '__main__':

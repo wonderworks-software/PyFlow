@@ -5,7 +5,7 @@ from Settings import Colors
 from Settings import LineTypes
 from Settings import get_line_type
 from AbstractGraph import *
-from Edge import Edge
+from Edge import Edge, RealTimeLine
 from os import listdir, path
 import sys
 _file_folder = path.dirname(__file__)
@@ -643,7 +643,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
         self.scene_widget.setSceneRect(QtCore.QRect(0, 0, 10000, 10000))
         self._grid_spacing = 50
-        # self.draw_grid()
         self.factor = 1
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
@@ -658,12 +657,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.scene_widget.addItem(self._file_name_label)
         self.rubber_rect = RubberRect('RubberRect')
 
-        self.real_time_line = QtGui.QGraphicsLineItem(0, 0, 0, 0)
+        self.real_time_line = QtGui.QGraphicsPathItem(None, self.scene())
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.object_type = AGObjectTypes.tConnectionLine
-        self.real_time_line.setPen(QtGui.QPen(self.kWhite,
-                                              0.5,
-                                              QtCore.Qt.DotLine))
+        self.real_time_line.setPen(QtGui.QPen(self.kGreen, 1.0, QtCore.Qt.DashLine))
         self.cursor_pressed_pos = QtCore.QPoint(0, 0)
         self.current_cursor_pose = QtCore.QPoint(0, 0)
         self._right_button = False
@@ -969,6 +966,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         QtGui.QGraphicsView.keyPressEvent(self, event)
 
     def keyReleaseEvent(self, event):
+
         QtGui.QGraphicsView.keyReleaseEvent(self, event)
 
     def mousePressEvent(self,  event):
@@ -1023,10 +1021,17 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.pressed_item.parent.setSelected(False)
             if self.real_time_line not in self.scene().items():
                 self.scene().addItem(self.real_time_line)
-            self.real_time_line.setLine(self.cursor_pressed_pos.x(),
-                                        self.cursor_pressed_pos.y(),
-                                        self.current_cursor_pose.x(),
-                                        self.current_cursor_pose.y())
+
+            p1 = self.pressed_item.scenePos() + QtCore.QPointF(self.pressed_item.boundingRect().width()/2, self.pressed_item.boundingRect().height()/2)
+            p2 = self.current_cursor_pose
+
+            distance = p2.x() - p1.x()
+            multiply = 3
+            path = QtGui.QPainterPath()
+            path.moveTo(p1)
+            path.cubicTo(QtCore.QPoint(p1.x()+distance/multiply, p1.y()), QtCore.QPoint(p2.x()-distance/2, p2.y()), p2)
+            self.real_time_line.setPath(path)
+
         if self._is_rubber_band_selection:
             if self.rubber_rect not in self.scene().items():
                 self.scene().addItem(self.rubber_rect)
@@ -1146,6 +1151,51 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         for y in xrange(top, int(scene_rect.bottom()), grid_size):
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
+    def console_help(self):
+
+        msg = """///// AVAILABLE NODES LIST /////\n\n"""
+
+        for f in listdir(path.dirname(Nodes.__file__)):
+            if f.endswith(".py") and "init" not in f:
+                msg += "{0}\n".format(f.split(".")[0])
+
+        msg += "\n"
+
+        msg += """///// AVAILABLE COMMANDS /////\n\n"""
+
+        for c in self.parent.consoleInput.executedCommands:
+            msg += (c+"\n")
+
+        self.write_to_console(msg)
+
+    def create_node(self, className, x, y, name):
+
+        node_class = self.node_box.get_node(Nodes, className)
+        node_class.set_name(name)
+        self.add_node(node_class, x, y)
+
+    def executeCommand(self, command):
+
+        commandLine = command.split(" ")
+
+        if commandLine[0] == "plot":
+            self.plot()
+
+        if commandLine[0] == "load":
+            self.load()
+
+        if commandLine[0] == "save":
+            self.save()
+
+        if commandLine[0] == "createNode":
+            if not len(commandLine) == 5:
+                self.write_to_console("[USAGE] createNode className x y name")
+                return
+            self.create_node(commandLine[1], float(commandLine[2]), float(commandLine[3]), commandLine[4])
+
+
+        if commandLine[0] == "help":
+            self.console_help()
 
     def add_node(self, node, x, y):
 
@@ -1156,7 +1206,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             node.set_shadows_enabled(self._shadows)
         else:
             print '[add_node()] error node creation'
-
 
     def add_edge(self, src, dst):
 

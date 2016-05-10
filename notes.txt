@@ -5,7 +5,6 @@
 /// working 
 !!! - Написать метод виджета CreateNode. Потом использовать для фомата хранения графов
         CreateNode(className, x, y, name)
-    - Интерфейс командной строки
 ///
 
 1) операции со стрингами(append+, replace+, upper+, lower+, capitalize+, string contains+)
