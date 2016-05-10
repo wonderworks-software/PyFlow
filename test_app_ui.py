@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:/GIT/nodes/test_app_ui.ui'
+# Form implementation generated from reading ui file 'c:/GIT/nodes/test_app_ui.ui'
 #
-# Created: Wed Apr 20 17:38:15 2016
+# Created: Tue May 10 11:46:30 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -501,16 +501,16 @@ class Ui_MainWindow(object):
         self.SceneWidget.setObjectName("SceneWidget")
         self.gridLayout = QtGui.QGridLayout(self.SceneWidget)
         self.gridLayout.setContentsMargins(1, 1, 1, 1)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
         self.SceneLayout = QtGui.QGridLayout()
         self.SceneLayout.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
+        self.SceneLayout.setContentsMargins(0, 0, 0, 0)
         self.SceneLayout.setObjectName("SceneLayout")
         self.gridLayout.addLayout(self.SceneLayout, 0, 0, 1, 1)
         self.gridLayout_3.addWidget(self.horizontal_splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 901, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 901, 18))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")

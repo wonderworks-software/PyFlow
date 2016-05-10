@@ -1149,11 +1149,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def add_node(self, node, x, y):
 
-        AGraph.add_node(self, node)
+        AGraph.add_node(self, node, x, y)
         if node:
             node.label.setPlainText(node.name)
             self.scene_widget.addItem(node)
-            node.setPos(QtCore.QPointF(x, y))
             node.set_shadows_enabled(self._shadows)
         else:
             print '[add_node()] error node creation'

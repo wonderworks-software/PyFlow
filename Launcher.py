@@ -3,9 +3,34 @@ import test_app_ui
 import sys
 print sys.executable
 
+
+class ConsoleInput(QtGui.QLineEdit):
+    def __init__(self, parent, graph):
+        super(ConsoleInput, self).__init__(parent)
+        self.graph = graph
+        self.model = QtGui.QStringListModel()
+        self.returnPressed.connect(self.OnReturnPressed)
+        self.executedCommands = []
+        self.model.setStringList(self.executedCommands)
+        self.completer = QtGui.QCompleter(self.model)
+        self.completer.setCompletionMode(self.completer.PopupCompletion)
+        self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+        self.setCompleter(self.completer)
+
+    def OnReturnPressed(self):
+        line = self.text()
+        self.executedCommands.append(line)
+        self.model.setStringList(self.executedCommands)
+        self.graph.executeCommand(line)
+        self.clear()
+        print self.executedCommands
+
+
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
+
+
     class W(QtGui.QMainWindow, test_app_ui.Ui_MainWindow):
         def __init__(self):
             super(W, self).__init__()
@@ -34,6 +59,8 @@ if __name__ == '__main__':
             self.clearConsoleAction.triggered.connect(lambda: self.console.clear())
             self.console.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
             self.console.addAction(self.clearConsoleAction)
+            self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)
+            self.gridLayout_2.addWidget(self.consoleInput, 2, 0, 1, 1)
 
         def toggle_node_box(self):
 

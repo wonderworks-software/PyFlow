@@ -1,25 +1,16 @@
-1) операции со стрингами(
-	append+,
-	replace+,
-	upper+,
-	lower+,
-	capitalize+,
-	string contains+)
-2) ноды конверторы(
-	num to string+,
-	string to int+,
-	string to float+
-	)
-3) массивы, операции с массивами(
-	MakeArray+,
-	ArrayAppend+,
-	ArrayRemoveElement,
-	IsInArray,
-	ArrayGetElement,
-	IsArray,
-	ArrayInsert,
-	ClearArray
-	)
+!!! - автоматически генерировать виджет ноды на основе абстрактного класса, отказ от написания виджетов нод индивидуально
+!!! - property view для ноды. По выделению обновлять вид. Вид - член класса виджет, и он один единственый
+
+
+/// working 
+!!! - Написать метод виджета CreateNode. Потом использовать для фомата хранения графов
+        CreateNode(className, x, y, name)
+    - Интерфейс командной строки
+///
+
+1) операции со стрингами(append+, replace+, upper+, lower+, capitalize+, string contains+)
+2) ноды конверторы(num to string+, string to int+, string to float+)
+3) массивы, операции с массивами(MakeArray+, ArrayAppend+, ArrayRemoveElement, IsInArray, ArrayGetElement, IsArray, ArrayInsert, ClearArray)
 
 встроенные функции питона (max, min, any, all)
 нода перемешивающая массив (random.shuffle)
@@ -29,5 +20,3 @@
 4) 3d вьюпорт для визуализации
 6) написать нод визард
 7) скриншот сцены
-8) Edge to QGraphicsPathItem
-9) несколько графов. таб виджет как в майке

@@ -1,5 +1,4 @@
 from threading import Thread
-from inspect import stack
 
 
 def portAffects(affects_port, affected_port):
@@ -200,6 +199,12 @@ class AGNode(object):
         self.object_type = AGObjectTypes.tNode
         self.inputs = []
         self.outputs = []
+        self.x = 0.0
+        self.y = 0.0
+
+    def set_pos(self, x, y):
+        self.x = x
+        self.y = y
 
     def kill(self, call_connection_functions=False):
         for p in self.inputs + self.outputs:
@@ -249,6 +254,13 @@ class AGraph(object):
         self.name = name
         self.nodes = []
         self.edges = []
+
+    def executeCommand(self, command):
+        if command == "plot":
+            print "plotting"
+            self.plot()
+        else:
+            print command[0], "plot"
 
     def is_debug(self):
 
@@ -329,7 +341,7 @@ class AGraph(object):
             if i.name == name:
                 return i
 
-    def add_node(self, node):
+    def add_node(self, node, x=0.0, y=0.0):
         # generate unic name
         if not node:
             return False
@@ -344,6 +356,7 @@ class AGraph(object):
             node.name = node.name+str(max([int(idx) for idx in indexes])+1)
         # add node
         self.nodes.append(node)
+        node.set_pos(x, y)
         node.graph = self
 
     def remove_node(self, node):

@@ -257,6 +257,11 @@ class Node(QtGui.QGraphicsItem, AGNode):
             if self.parentItem().object_type == AGObjectTypes.tGrouper:
                 self.parentItem().remove_node(self)
 
+    def set_pos(self, x, y):
+        AGNode.set_pos(self, x, y)
+        self.setPos(QtCore.QPointF(x, y))
+
+
     def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 
         newColor = color
