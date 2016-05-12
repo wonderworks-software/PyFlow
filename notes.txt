@@ -2,10 +2,9 @@
 !!! - property view для ноды. По выделению обновлять вид. Вид - член класса виджет, и он один единственый
 
 
-/// working 
-!!! - Написать метод виджета CreateNode. Потом использовать для фомата хранения графов
-        CreateNode(className, x, y, name)
-///
+!!! - Написать метод виджета CreateNode. Потом использовать для фомата хранения графов +++
+
+!!! - Напистаь метод connect attr
 
 1) операции со стрингами(append+, replace+, upper+, lower+, capitalize+, string contains+)
 2) ноды конверторы(num to string+, string to int+, string to float+)
@@ -19,3 +18,18 @@
 4) 3d вьюпорт для визуализации
 6) написать нод визард
 7) скриншот сцены
+
+
+
+Console commands:
+                createNode className x y name +++
+                killNode nodeName +++
+                move nodeName x y +++
+                select nodeName +++
+                connectAttr srd dst +++
+                disconnectAttr AttrName +++
+                setAttr +++
+                commentSelected +++
+    createComment
+    copy
+    paste

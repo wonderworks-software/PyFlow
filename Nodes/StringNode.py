@@ -7,7 +7,7 @@ class LEdit(QtGui.QLineEdit):
     def __init__(self, foo):
         super(LEdit, self).__init__()
         self.foo = foo
-        self.textChanged.connect(self.foo)
+        self.returnPressed.connect(self.foo)
 
 
 

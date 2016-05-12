@@ -47,8 +47,8 @@ class SceneClass(QtGui.QGraphicsScene):
 
     def dropEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
-            node_name = event.mimeData().text()
-            node = self.parent().node_box.get_node(Nodes, node_name)
+            className = event.mimeData().text()
+            node = self.parent().node_box.get_node(Nodes, className)
             self.parent().add_node(node, event.scenePos().x(), event.scenePos().y())
         else:
             super(SceneClass, self).dropEvent(event)
@@ -236,8 +236,8 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         self.action_fit = self.menu.addAction('fit contents')
         self.action_fit.triggered.connect(self.fit_content)
         self.setFlag(self.ItemIsMovable)
-        self._minimum_width = 50
-        self._minimum_height = 50
+        self._minimum_width = 250
+        self._minimum_height = 100
         self.setZValue(2)
         self.auto_fit_content = False
         self.setPen(QtGui.QPen(self.kGroupObjectPen, 1, QtCore.Qt.SolidLine))
@@ -287,15 +287,11 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         rectangles = []
         for n in self.nodes:
             scene_pos = n.scenePos()
-            n_rect = QtCore.QRectF(scene_pos,
-                                   QtCore.QPointF(scene_pos.x()+float(n.w),
-                                                  scene_pos.y()+float(n.h)
-                                                  )
-                                   )
+            n_rect = QtCore.QRectF(scene_pos, QtCore.QPointF(scene_pos.x()+float(n.w), scene_pos.y()+float(n.h)))
             rectangles.append([n_rect.topLeft().x(),
                                n_rect.topLeft().y(),
-                               n_rect.bottomRight().x(),
-                               n_rect.bottomRight().y()]
+                               n_rect.bottomRight().x()+25,
+                               n_rect.bottomRight().y()+25]
                               )
         min_x = min([i[0] for i in rectangles])
         max_x = max([i[2] for i in rectangles])
@@ -633,7 +629,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._shadows = False
         self.scale(1.5, 1.5)
         self.minimum_scale = 0.2
-        self.maximum_scale = 5
+        self.maximum_scale = 2
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.setScene(self.scene_widget)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
@@ -679,6 +675,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 if i.object_type == AGObjectTypes.tNode:
                     ls.append(i)
         return ls
+
+    def findPort(self, port_name):
+        node = self.get_node_by_name(port_name.split(".")[0])
+        if node:
+            attr = node.get_port_by_name(port_name.split(".")[1])
+            return attr
+        return None
 
     def get_settings(self):
         if path.isfile(self.options_widget.settings_path):
@@ -747,57 +750,81 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def save(self, save_as=False):
 
-        if save_as:
-            name_filter = "Graph files (*.graph)"
-            pth = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
-            if not pth[0] == '':
-                self._current_file_name = pth
-        else:
-            if not path.isfile(self._current_file_name[0]):
-                name_filter = "Graph files (*.graph)"
-                self._current_file_name = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
+        print "SAVE SCENE SCRIPT\n\n"
 
-        data = {'edges': [], 'nodes': [], 'groupers': [], 'request_nodes': {}}
-        for g in self.groupers:
-            data['groupers'].append(
-                    {
-                        'x': g.scenePos().x(),
-                        'y': g.scenePos().y(),
-                        'brX': g.rect().width(),
-                        'brY': g.rect().height(),
-                        'nodes': [i.name for i in g.nodes],
-                        'comment': g.label.toPlainText()
-                    }
-                )
-        for n in self.nodes:
-            if n.__class__.__name__ == "RequestNode":
-                data['request_nodes'][n.name] = {'delta_time': n.spin_box.value(), 'eval_state': n.cb.isChecked()}
-            data['nodes'].append(
-                {'x': n.pos().x(),
-                 'y': n.pos().y(),
-                 'node_type': n.__class__.__name__,
-                 'ports_data': None,
-                 'name': n.name
-                }
-            )
-
-            ports_data = {'inputs': {}, 'outputs': {}}
-            for p in n.inputs:
-                ports_data['inputs'][p.name] = p.current_data()
-            for p in n.outputs:
-                ports_data['outputs'][p.name] = p.current_data()
-            for x in data['nodes']:
-                if x['name'] == n.name:
-                    x['ports_data'] = ports_data
-        
+            # create all nodes and set attributes
+        for n in self.get_nodes():
+            print "createNode {0} {1} {2} {3}".format(n.__class__.__name__, n.scenePos().x(), n.scenePos().y(), n.name)
+            for inp in n.inputs:
+                print "setAttr", inp.port_name(), inp.current_data()
+            for out in n.outputs:
+                print "setAttr", out.port_name(), out.current_data()
+            # connect all attributes
         for e in self.edges:
-            data['edges'].append({'From': e.source_port_name(), 'To': e.destination_port_name()})
+            port_names = e.__str__().split(" >>> ")
+            print "connectAttr {0} {1}".format(port_names[0], port_names[1])
+            # comment nodes
 
-        if not self._current_file_name[0] == '':
-            with open(self._current_file_name[0], 'wb') as f:
-                json.dump(data, f)
-            self._file_name_label.setPlainText(self._current_file_name[0])
-            print 'saved', self._current_file_name[0]
+        for c in self.groupers:
+            nodes = ""
+            for n in c.nodes:
+                nodes += "'{0}' ".format(n.name)
+            cmd = "comment '{0}' -names {1}".format(c.label.toPlainText(), nodes)
+            self.write_to_console(cmd)
+
+    # def save(self, save_as=False):
+
+    #     if save_as:
+    #         name_filter = "Graph files (*.graph)"
+    #         pth = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
+    #         if not pth[0] == '':
+    #             self._current_file_name = pth
+    #     else:
+    #         if not path.isfile(self._current_file_name[0]):
+    #             name_filter = "Graph files (*.graph)"
+    #             self._current_file_name = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
+
+    #     data = {'edges': [], 'nodes': [], 'groupers': [], 'request_nodes': {}}
+    #     for g in self.groupers:
+    #         data['groupers'].append(
+    #                 {
+    #                     'x': g.scenePos().x(),
+    #                     'y': g.scenePos().y(),
+    #                     'brX': g.rect().width(),
+    #                     'brY': g.rect().height(),
+    #                     'nodes': [i.name for i in g.nodes],
+    #                     'comment': g.label.toPlainText()
+    #                 }
+    #             )
+    #     for n in self.nodes:
+    #         if n.__class__.__name__ == "RequestNode":
+    #             data['request_nodes'][n.name] = {'delta_time': n.spin_box.value(), 'eval_state': n.cb.isChecked()}
+    #         data['nodes'].append(
+    #             {'x': n.pos().x(),
+    #              'y': n.pos().y(),
+    #              'node_type': n.__class__.__name__,
+    #              'ports_data': None,
+    #              'name': n.name
+    #             }
+    #         )
+
+    #         ports_data = {'inputs': {}, 'outputs': {}}
+    #         for p in n.inputs:
+    #             ports_data['inputs'][p.name] = p.current_data()
+    #         for p in n.outputs:
+    #             ports_data['outputs'][p.name] = p.current_data()
+    #         for x in data['nodes']:
+    #             if x['name'] == n.name:
+    #                 x['ports_data'] = ports_data
+        
+    #     for e in self.edges:
+    #         data['edges'].append({'From': e.source_port_name(), 'To': e.destination_port_name()})
+
+    #     if not self._current_file_name[0] == '':
+    #         with open(self._current_file_name[0], 'wb') as f:
+    #             json.dump(data, f)
+    #         self._file_name_label.setPlainText(self._current_file_name[0])
+    #         print 'saved', self._current_file_name[0]
 
     def save_as(self):
 
@@ -934,7 +961,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         min_y = min([i[1] for i in rectangles])
         max_y = max([i[3] for i in rectangles])
 
-        return QtCore.QRectF(QtCore.QPointF(min_x, min_y), QtCore.QPointF(max_x, max_y))
+        return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
 
     def kill_selected_nodes(self, call_connection_functions=False):
 
@@ -958,6 +985,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.save_as()
         if event.key() == QtCore.Qt.Key_F:
             self.frame()
+        if event.key() == QtCore.Qt.Key_C:
+            self.commentSelectedNodes()
         if event.key() == QtCore.Qt.Key_Delete:
             self.kill_selected_nodes(False)
         if self.node_box.listWidget._events:
@@ -1044,6 +1073,49 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.rubber_rect.setRect(r.normalized())
         super(GraphWidget, self).mouseMoveEvent(event)
 
+    def createComment(self, x1, y1, x2, y2, name):
+
+        grp = GroupObject(self)
+        self.groupers.append(grp)
+        grp.setPos(QtCore.QPoint(int(x1), int(y1)))
+        grp.set_bottom_right(QtCore.QPoint(int(x2), int(y2)))
+        grp.label.setPlainText(name)
+        self.scene_widget.addItem(grp)
+
+    def commentSelectedNodes(self, comment = "enter comment"):
+        selected_nodes = []
+        for n in self.get_nodes():
+            if n.isSelected():
+                selected_nodes.append(n.name)
+        if len(selected_nodes) == 0:
+            self.createComment(self.current_cursor_pose.x(), self.current_cursor_pose.y(), self.current_cursor_pose.x()+250, self.current_cursor_pose.y()+100,  comment)
+            return
+
+        r = self.get_nodes_rect(True)
+        grp = GroupObject(self)
+        grp.label.setPlainText(comment)
+        self.groupers.append(grp)
+        grp.setRect(r.x() - (r.topLeft().x()+50),
+                    r.y() - (r.topLeft().y()+50),
+                    r.width() + 150,
+                    r.height() + 150)
+        grp.update()
+        grp.setPos(r.topLeft())
+        self.scene_widget.addItem(grp)
+        selected_nodes = []
+        for n in self.get_nodes():
+            if n.isSelected():
+                if n in self.nodes and not n.parentItem():
+                    n.setSelected(False)
+                    grp.add_node(n)
+                    selected_nodes.append(n.name)
+        grp.fit_content()
+        # print console command
+        cmd = "comment"
+        for i in selected_nodes:
+            cmd += " " + i
+        self.write_to_console(cmd)
+
     def remove_item_by_name(self, name):
 
         [self.scene_widget.removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
@@ -1080,19 +1152,20 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self._right_button = False
         if all([event.button() == QtCore.Qt.LeftButton,
                 modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            grp = GroupObject(self)
-            self.groupers.append(grp)
-            grp.setRect(self.rubber_rect.rect().x()-self.cursor_pressed_pos.x(),
-                        self.rubber_rect.rect().y()-self.cursor_pressed_pos.y(),
-                        self.rubber_rect.rect().width(),
-                        self.rubber_rect.rect().height())
-            grp.update()
-            grp.setPos(self.cursor_pressed_pos)
-            self.scene_widget.addItem(grp)
-            for n in grp.collidingItems():
-                if n in self.nodes and not n.parentItem():
-                    n.setSelected(False)
-                    grp.add_node(n)
+            # grp = GroupObject(self)
+            # self.groupers.append(grp)
+            # grp.setRect(self.rubber_rect.rect().x()-self.cursor_pressed_pos.x(),
+            #             self.rubber_rect.rect().y()-self.cursor_pressed_pos.y(),
+            #             self.rubber_rect.rect().width(),
+            #             self.rubber_rect.rect().height())
+            # grp.update()
+            # grp.setPos(self.cursor_pressed_pos)
+            # self.scene_widget.addItem(grp)
+            # for n in grp.collidingItems():
+            #     if n in self.nodes and not n.parentItem():
+            #         n.setSelected(False)
+            #         grp.add_node(n)
+            pass
         p_itm = self.pressed_item
         r_itm = self.released_item
         do_connect = True
@@ -1163,7 +1236,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         msg += """///// AVAILABLE COMMANDS /////\n\n"""
 
-        for c in self.parent.consoleInput.executedCommands:
+        for c in self.parent.consoleInput.builtinCommands:
             msg += (c+"\n")
 
         self.write_to_console(msg)
@@ -1179,22 +1252,144 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         commandLine = command.split(" ")
 
         if commandLine[0] == "plot":
+            self.write_to_console(command)
             self.plot()
 
         if commandLine[0] == "load":
+            self.write_to_console(command)
             self.load()
 
         if commandLine[0] == "save":
+            self.write_to_console(command)
             self.save()
 
         if commandLine[0] == "createNode":
-            if not len(commandLine) == 5:
+            if len(commandLine) == 5:
+                try:
+                    self.create_node(commandLine[1], float(commandLine[2]), float(commandLine[3]), commandLine[4])
+                except Exception, e:
+                    self.write_to_console("[ERROR] {0}".format(e))
+                    self.write_to_console("[USAGE] createNode className x y name")
+            else:
                 self.write_to_console("[USAGE] createNode className x y name")
-                return
-            self.create_node(commandLine[1], float(commandLine[2]), float(commandLine[3]), commandLine[4])
 
+        if commandLine[0] == "comment":
+            if len(commandLine) in [1, 2]:
+                self.write_to_console("[USAGE]>>>\ncomment selected text\ncomment text -names name1 name2 ...\ncomment empty x1 y1 x2 y2 text")
+                return
+            if len(commandLine) == 3:
+                if commandLine[1] == "selected":
+                    self.commentSelectedNodes(comment = commandLine[2])
+                    return
+            if len(commandLine) >= 7:
+                if commandLine[1] == "empty":
+                    try:
+                        text = command.split("-c ")[1]
+                        self.createComment(commandLine[2], commandLine[3], commandLine[4], commandLine[5], text)
+                        self.write_to_console(command)
+                    except Exception, e:
+                        self.write_to_console("[ERROR] {0}".format(e))
+                    return
+            if commandLine[2] == "-names":
+                print "-names"
+                for n in self.get_nodes():
+                    n.setSelected(False)
+                for i in xrange(3, len(commandLine)):
+                    node = self.get_node_by_name(commandLine[i])
+                    if node:
+                        node.setSelected(True)
+                self.commentSelectedNodes(comment = commandLine[1])
+
+        if commandLine[0] == "killNode":
+            if len(commandLine) == 2:
+                node = self.get_node_by_name(commandLine[1])
+                if node:
+                    node.kill()
+                    self.write_to_console(command)
+                else:
+                    self.write_to_console("[WARNING] node {0} not found".format(commandLine[1]))
+            else:
+                self.write_to_console("[USAGE] killNode nodeName")
+
+        if commandLine[0] == "setAttr":
+            if len(commandLine) == 3:
+                nodeName = commandLine[1].split('.')[0]
+                attrName = commandLine[1].split('.')[1]
+                node = self.get_node_by_name(nodeName)
+                if node:
+                    attr = node.get_port_by_name(attrName)
+                    if attr:
+                        try:
+                            attr.set_data(commandLine[2])
+                            self.write_to_console(command)
+                        except Exception, e:
+                            self.write_to_console("[ERROR] {0}".format(e))
+            else:
+                self.write_to_console("[USAGE] setAttr nodeName.attrName value")
+
+        if commandLine[0] == "connectAttr":
+            if len(commandLine) == 3:
+                # find ports
+                nodeSrcName = commandLine[1].split('.')[0]
+                portSrcName = commandLine[1].split('.')[1]
+                nodeDstName = commandLine[2].split('.')[0]
+                portDstName = commandLine[2].split('.')[1]
+
+                nodeSrc = self.get_node_by_name(nodeSrcName)
+                nodeDst = self.get_node_by_name(nodeDstName)
+                if nodeSrc and nodeDst:
+                    src = nodeSrc.get_port_by_name(portSrcName)
+                    dst = nodeDst.get_port_by_name(portDstName)
+                    if src and dst:
+                        self.add_edge(src, dst)
+            else:
+                self.write_to_console("[USAGE] connectAttr nodeName.srcAttrName nodeName.dstAttrName")
+
+        if commandLine[0] == "disconnectAttr":
+            if len(commandLine) == 2:
+                nodeName = commandLine[1].split('.')[0]
+                attrName = commandLine[1].split('.')[1]
+                node = self.get_node_by_name(nodeName)
+                if node:
+                    attr = node.get_port_by_name(attrName)
+                    if attr:
+                        attr.disconnect_all()
+                        self.write_to_console(command)
+            else:
+                self.write_to_console("[USAGE] connectAttr nodeName.attrname")
+
+        if commandLine[0] == "select":
+            if len(commandLine) > 1:
+                if commandLine[1] == "none":
+                    self.write_to_console(command)
+                    for n in self.get_nodes():
+                        n.setSelected(False)
+                else:
+                    self.write_to_console(command)
+                    for i in xrange(1, len(commandLine)):
+                        node = self.get_node_by_name(commandLine[i])
+                        if node:
+                            node.setSelected(True)
+            if len(commandLine) == 1:
+                self.write_to_console("[USAGE]\nselect nodeName1 nodeName2 ...\n'select none' - to deselect all")
+
+        if commandLine[0] == "move":
+            if len(commandLine) == 4:
+                node = self.get_node_by_name(commandLine[1])
+                if node:
+                    try:
+                        node.set_pos(float(commandLine[2]), float(commandLine[3]))
+                        self.write_to_console(command)
+                    except Exception, e:
+                        self.write_to_console("[ERROR] {0}".format(e))
+                        self.write_to_console("[USAGE] move nodeName x y")
+                else:
+                    self.write_to_console("[WARNING] node {0} not found".format(commandLine[0]))
+            else:
+                self.write_to_console("[USAGE] move nodeName x y")
 
         if commandLine[0] == "help":
+            self.write_to_console(command)
             self.console_help()
 
     def add_node(self, node, x, y):
@@ -1203,6 +1398,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if node:
             node.label.setPlainText(node.name)
             self.scene_widget.addItem(node)
+            # write command to console
+            self.write_to_console("createNode {0} {1} {2} {3}".format(node.__class__.__name__, x, y, node.name))
             node.set_shadows_enabled(self._shadows)
         else:
             print '[add_node()] error node creation'
@@ -1218,6 +1415,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             dst.edge_list.append(edge)
             self.scene_widget.addItem(edge)
             self.edges.append(edge)
+            self.write_to_console("connectAttr {0} {1}".format(src.port_name(), dst.port_name()))
             return edge
 
     def remove_edge(self, edge, call_connection_functions=True):
@@ -1229,6 +1427,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def write_to_console(self, data):
 
+        print data
         if self.parent:
             console = self.parent.console
             console.appendPlainText(str(data))
@@ -1245,7 +1444,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                                           [p.port_name() for p in i.affects],
                                           [p.port_name() for p in i.affected_by],
                                           i.dirty))
-
 
     def scale_view(self, scale_factor):
 

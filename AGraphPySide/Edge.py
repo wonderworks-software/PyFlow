@@ -19,7 +19,6 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.connection = {'From': self.source.port_name(),
                            'To': self.destination.port_name()}
 
-        self.setToolTip(self.connection['From']+'>>>'+self.connection['To'])
         self.settings = self.graph.get_settings()
         if self.settings:
             self.color = QtGui.QColor(self.settings.value('SCENE/Edge color'))
@@ -47,6 +46,8 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.pen.setWidthF(self.thikness+(self.thikness/1.5))
         self.setZValue(2.0)
         self.update()
+        if self.graph.is_debug():
+            print self.__str__()
 
     def getEndPoints(self):
         offset = self.source.boundingRect().width()/2
@@ -67,9 +68,12 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
             return
         event.accept()
 
+    def kill(self):
+
+        self.graph.remove_edge(self)
+
     def mouseReleaseEvent(self, event):
         super(Edge, self).mouseReleaseEvent(event)
-        print 'release'
         event.accept()
 
     def mouseMoveEvent(self, event):

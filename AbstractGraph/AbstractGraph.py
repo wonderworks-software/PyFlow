@@ -102,6 +102,15 @@ class AGPort(object):
         self.type = None
         self.dirty = True
         self._data = None
+        # set default values
+        if self.data_type == AGPortDataTypes.tNumeric:
+            self._data = 0.0
+        if self.data_type == AGPortDataTypes.tString:
+            self._data = ""
+        if self.data_type == AGPortDataTypes.tBool:
+            self._data = False
+        if self.data_type == AGPortDataTypes.tAny:
+            self._data = None
 
     def set_data_overload(self, data, dirty_propagate=True):
         pass
@@ -125,6 +134,13 @@ class AGPort(object):
     def set_clean(self):
 
         self.dirty = False
+
+    def hasConnections(self):
+
+        if len(self.edge_list) == 0:
+            return False
+        else:
+            return True
 
     def set_dirty(self):
 
@@ -180,7 +196,15 @@ class AGPort(object):
 
     def set_data(self, data, dirty_propagate=True):
 
-        self._data = data
+        if self.data_type == AGPortDataTypes.tNumeric:
+            self._data = float(data)
+        if self.data_type == AGPortDataTypes.tString:
+            self._data = str(data)
+        if self.data_type == AGPortDataTypes.tBool:
+            self._data = bool(data)
+        if self.data_type == AGPortDataTypes.tAny:
+            self._data = data
+
         self.set_clean()
         if self.type == AGPortTypes.kOutput:
             for i in self.affects:
@@ -374,10 +398,6 @@ class AGraph(object):
                 print 'data types error'
                 print dst.data_type, src.data_type
                 return False
-        if len(dst.affected_by) >= 1:
-            if debug:
-                print 'already has connection'
-            return False
         if src in dst.affected_by:
             if debug:
                 print 'already connected. skipped'
@@ -394,6 +414,11 @@ class AGraph(object):
             if debug:
                 print 'cycles are not allowed'
             return False
+        if len(dst.affected_by) >= 1:
+            if debug:
+                print 'already has connection'
+            for e in dst.edge_list:
+                self.remove_edge(e)
 
         portAffects(src, dst)
         src.set_dirty()

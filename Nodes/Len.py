@@ -9,7 +9,7 @@ class Len(BaseNode.Node, AGNode):
                                       w=120, colors=Colors,
                                       spacings=Spacings)
         AGNode.__init__(self, name, graph)
-        self.in_arr = self.add_input_port('in iterable', AGPortDataTypes.tAny)
+        self.in_arr = self.add_input_port('iterable', AGPortDataTypes.tAny)
         self.out_len = self.add_output_port('len', AGPortDataTypes.tNumeric)
         self.out_result = self.add_output_port('result', AGPortDataTypes.tBool)
         portAffects(self.in_arr, self.out_result)

@@ -68,6 +68,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes):
         QtGui.QGraphicsItem.__init__(self)
         AGNode.__init__(self, name, graph)
+        self.object_type = AGObjectTypes.tNode
         self._color_idx = 1
         self.colors = colors
         self.height_offset = 3
@@ -144,7 +145,11 @@ class Node(QtGui.QGraphicsItem, AGNode):
         if self.isSelected():
             color = color.lighter(150)
 
-        painter.setBrush(QtGui.QBrush(color))
+        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(40, 40), 300)
+        linearGrad.setColorAt(0, color)
+        linearGrad.setColorAt(1, color.lighter(180))
+        br = QtGui.QBrush(linearGrad)
+        painter.setBrush(br)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QtGui.QStyle.State_Selected:
             if self.options:
@@ -251,16 +256,24 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
     def kill(self, call_connection_functions=False):
 
+        for i in self.inputs:
+            if i.hasConnections():
+                i.disconnect_all()
+        for i in self.outputs:
+            if i.hasConnections():
+                i.disconnect_all()
+
         AGNode.kill(self, call_connection_functions)
         self.setVisible(False)
         if self.parentItem() and hasattr(self.parentItem(), 'object_type'):
             if self.parentItem().object_type == AGObjectTypes.tGrouper:
                 self.parentItem().remove_node(self)
+        self.graph.write_to_console("killNode {0}".format(self.name))
 
     def set_pos(self, x, y):
+
         AGNode.set_pos(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
-
 
     def _add_port(self, port_type, data_type, name, color=QtGui.QColor(0, 100, 0, 255)):
 

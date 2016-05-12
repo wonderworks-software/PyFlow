@@ -11,8 +11,8 @@ class ConditionalValue(BaseNode.Node, AGNode):
         AGNode.__init__(self, name, graph)
         self.graph = graph
         self.condition = self.add_input_port('condition', AGPortDataTypes.tBool)
-        self.trueValue = self.add_input_port(' value If True', AGPortDataTypes.tAny)
-        self.falseValue = self.add_input_port(' value If False', AGPortDataTypes.tAny)
+        self.trueValue = self.add_input_port('ifTrue', AGPortDataTypes.tAny)
+        self.falseValue = self.add_input_port('ifFalse', AGPortDataTypes.tAny)
         self.output = self.add_output_port('out', AGPortDataTypes.tAny)
         portAffects(self.condition, self.output)
         portAffects(self.trueValue, self.output)

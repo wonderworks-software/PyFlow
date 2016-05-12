@@ -10,7 +10,19 @@ class ConsoleInput(QtGui.QLineEdit):
         self.graph = graph
         self.returnPressed.connect(self.OnReturnPressed)
         self.model = QtGui.QStringListModel()
-        self.executedCommands = ["plot", "help", "createNode", "load", "save"]
+        self.executedCommands = ["plot",
+        "help",
+        "createNode",
+        "load",
+        "save",
+        "killNode",
+        "move",
+        "select",
+        "connectAttr",
+        "disconnectAttr",
+        "setAttr",
+        "comment"]
+        self.builtinCommands = [] + self.executedCommands
         self.completer = QtGui.QCompleter(self)
         self.model.setStringList(self.executedCommands)
         self.completer.setModel(self.model)
@@ -94,7 +106,6 @@ if __name__ == '__main__':
                 print i.name, i.zValue()
             for i in self.G.groupers:
                 print i.zValue()
-
 
     instance = W()
     instance.show()
