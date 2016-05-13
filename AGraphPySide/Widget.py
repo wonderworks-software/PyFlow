@@ -18,11 +18,34 @@ from time import ctime
 import OptionsWindow_ui
 import rgba_color_picker_ui
 import json
+import re
 
 
 def get_mid_point(args):
 
     return [sum(i)/len(i) for i in zip(*args)]
+
+
+def parse(line):
+    '''
+    returns - {'cmd': command, 'flags': {-x1: 50, -x2: 100}}
+    '''
+    out = {}
+    dashes = [m.start() for m in re.finditer('-', line)]
+    if len(dashes) == 0:
+        out["cmd"] = line
+        return out
+    out = {"flags": {}}
+    cmd = line.split(" ")[0]
+    out["cmd"] = cmd
+    for i in xrange(len(dashes)-1):
+        newLine =  line[dashes[i]:]
+        newLineDashes = [m.start() for m in re.finditer('-', newLine)]
+        flag = newLine[:newLineDashes[1]-1].split(" ", 1) # flag + value
+        out["flags"][flag[0]] = flag[1]
+    flag = line[dashes[-1]:].split(" ", 1) # last flag + value
+    out["flags"][flag[0]] = flag[1]
+    return out
 
 
 class SceneClass(QtGui.QGraphicsScene):
@@ -1248,85 +1271,86 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.add_node(node_class, x, y)
 
     def executeCommand(self, command):
+        commandLine = parse(command)
+        print commandLine
+        # commandLine = command.split(" ")
 
-        commandLine = command.split(" ")
-
-        if commandLine[0] == "plot":
+        if commandLine['cmd'] == "plot":
             self.write_to_console(command)
             self.plot()
 
-        if commandLine[0] == "load":
+        if commandLine['cmd'] == "load":
             self.write_to_console(command)
             self.load()
 
-        if commandLine[0] == "save":
+        if commandLine['cmd'] == "save":
             self.write_to_console(command)
             self.save()
 
-        if commandLine[0] == "createNode":
-            if len(commandLine) == 5:
-                try:
-                    self.create_node(commandLine[1], float(commandLine[2]), float(commandLine[3]), commandLine[4])
-                except Exception, e:
-                    self.write_to_console("[ERROR] {0}".format(e))
-                    self.write_to_console("[USAGE] createNode className x y name")
-            else:
-                self.write_to_console("[USAGE] createNode className x y name")
-
-        if commandLine[0] == "comment":
-            if len(commandLine) in [1, 2]:
-                self.write_to_console("[USAGE]>>>\ncomment selected text\ncomment text -names name1 name2 ...\ncomment empty x1 y1 x2 y2 text")
+        if commandLine['cmd'] == "createNode":
+            try:
+                self.create_node(commandLine['flags']['-type'], float(commandLine['flags']['-x']), float(commandLine['flags']['-y']), commandLine['flags']['-n'])
                 return
-            if len(commandLine) == 3:
-                if commandLine[1] == "selected":
-                    self.commentSelectedNodes(comment = commandLine[2])
-                    return
-            if len(commandLine) >= 7:
-                if commandLine[1] == "empty":
+            except Exception, e:
+                self.write_to_console("[ERROR] {0}".format(e))
+                self.write_to_console("[USAGE] createNode -type className -x float -y float -n str")
+
+        if commandLine['cmd'] == "comment":
+            try:
+                if commandLine['flags']["-mode"] == "selected":
+                    self.commentSelectedNodes(comment = commandLine['flags']["-text"])
+                if commandLine['flags']["-mode"] == "empty":
                     try:
-                        text = command.split("-c ")[1]
-                        self.createComment(commandLine[2], commandLine[3], commandLine[4], commandLine[5], text)
+                        self.createComment(commandLine['flags']["-x1"], commandLine['flags']["-y1"], commandLine['flags']["-x2"], commandLine['flags']["-y2"], commandLine['flags']["-text"])
                         self.write_to_console(command)
+                        return
                     except Exception, e:
                         self.write_to_console("[ERROR] {0}".format(e))
                     return
-            if commandLine[2] == "-names":
-                print "-names"
-                for n in self.get_nodes():
-                    n.setSelected(False)
-                for i in xrange(3, len(commandLine)):
-                    node = self.get_node_by_name(commandLine[i])
+                if commandLine['flags']["-mode"] == "names":
+                    for n in self.get_nodes():
+                        n.setSelected(False)
+                    for i in commandLine["flags"]["-nl"].split(" "):
+                        node = self.get_node_by_name(i)
+                        if node:
+                            node.setSelected(True)
+                    self.commentSelectedNodes(comment = commandLine["flags"]["-text"])
+                    return
+            except Exception, e:
+                self.write_to_console("[ERROR] {0}".format(e))
+                self.write_to_console("[USAGE]>>>\ncomment -mode selected -text str\ncomment -mode names -text str -nl name1 name2 ...\ncomment -mode empty -x1 float -y1 float -x2 float -y2 float -text str")
+
+        if commandLine["cmd"] == "killNode":
+            try:
+                nodeNames = commandLine["flags"]["-nl"].split(" ")
+                for n in nodeNames:
+                    node = self.get_node_by_name(n)
                     if node:
-                        node.setSelected(True)
-                self.commentSelectedNodes(comment = commandLine[1])
+                        node.kill()
+                    else:
+                        self.write_to_console("[WARNING] node {0} not found".format(n))
+                self.write_to_console(command)
+                return
+            except Exception, e:
+                self.write_to_console("[ERROR] {0}".format(e))
+                self.write_to_console("[USAGE] killNode -nl nodeName1 nodeName2 ...")
 
-        if commandLine[0] == "killNode":
-            if len(commandLine) == 2:
-                node = self.get_node_by_name(commandLine[1])
-                if node:
-                    node.kill()
-                    self.write_to_console(command)
-                else:
-                    self.write_to_console("[WARNING] node {0} not found".format(commandLine[1]))
-            else:
-                self.write_to_console("[USAGE] killNode nodeName")
-
-        if commandLine[0] == "setAttr":
-            if len(commandLine) == 3:
-                nodeName = commandLine[1].split('.')[0]
-                attrName = commandLine[1].split('.')[1]
+        if commandLine["cmd"] == "setAttr":
+            try:
+                nodeName = commandLine["flags"]["-an"].split('.')[0]
+                attrName = commandLine["flags"]["-an"].split('.')[1]
                 node = self.get_node_by_name(nodeName)
                 if node:
                     attr = node.get_port_by_name(attrName)
                     if attr:
                         try:
-                            attr.set_data(commandLine[2])
-                            self.write_to_console(command)
+                            attr.set_data(commandLine["flags"]["-v"])
+                            return
                         except Exception, e:
                             self.write_to_console("[ERROR] {0}".format(e))
-            else:
-                self.write_to_console("[USAGE] setAttr nodeName.attrName value")
-
+            except Exception, e:
+                self.write_to_console("[USAGE] setAttr -an nodeName.attrName -v value")
+        return
         if commandLine[0] == "connectAttr":
             if len(commandLine) == 3:
                 # find ports

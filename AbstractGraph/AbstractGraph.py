@@ -1,4 +1,5 @@
 from threading import Thread
+import ast
 
 
 def portAffects(affects_port, affected_port):
@@ -194,6 +195,10 @@ class AGPort(object):
         else:
             return self._data
 
+    @staticmethod
+    def str2bool(v):
+        return v.lower() in ("yes", "true", "t", "1")
+
     def set_data(self, data, dirty_propagate=True):
 
         if self.data_type == AGPortDataTypes.tNumeric:
@@ -201,7 +206,10 @@ class AGPort(object):
         if self.data_type == AGPortDataTypes.tString:
             self._data = str(data)
         if self.data_type == AGPortDataTypes.tBool:
-            self._data = bool(data)
+            if type(data) != bool().__class__:
+                self._data = self.str2bool(data)
+            else:
+                self._data = bool(data)
         if self.data_type == AGPortDataTypes.tAny:
             self._data = data
 
