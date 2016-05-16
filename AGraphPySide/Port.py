@@ -16,6 +16,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
 
     def __init__(self, name, parent, data_type, width, height, color=Colors.kConnectors):
         QtGui.QGraphicsWidget.__init__(self)
+        name = name.replace(" ", "_")       # spaces are not allowed
         AGPort.__init__(self, name, parent, data_type)
         self.menu = QtGui.QMenu()
         self.disconnected = self.menu.addAction('Disconnect all')
@@ -54,13 +55,11 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         if self.parent.graph.is_debug():
             print self.edge_list
         for e in self.edge_list:
-            if self.parent.graph.is_debug():
-                print e, 'killed'
-                self.parent.graph.write_to_console('{0} killed'.format(e.__str__()))
+            self.parent.graph.write_to_console('{0} killed'.format(e.__str__()))
             e.kill()
         if not len(self.edge_list) == 0:
             self.disconnect_all()
-        self.parent.graph.write_to_console("disconnectAttr {0}".format(self.port_name()))
+        self.parent.graph.write_to_console("disconnectAttr /an {0}".format(self.port_name()))
 
     def shape(self):
 
@@ -77,16 +76,20 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             painter.setBrush(QtGui.QBrush(self.color.lighter(160)))
         else:
             painter.setBrush(QtGui.QBrush(self.color))
-        painter.drawEllipse(background_rect)
+        if self.data_type == AGPortDataTypes.tArray:
+            painter.drawRect(background_rect)
+        else:
+            painter.drawEllipse(background_rect)
+
 
     def contextMenuEvent(self, event):
 
         self.menu.exec_(event.screenPos())
 
     def write_to_console(self, data):
-        p = self.parent.graph.parent
-        if p:
-            p.console.appendPlainText("setAttr -an {0} -v {1}".format(self.port_name(), self._data))
+        g = self.parent.graph
+        if g:
+            g.write_to_console("setAttr /an {0} /v {1}".format(self.port_name(), self._data))
 
     def getLayout(self):
         return self.parentItem().layout()
@@ -107,6 +110,5 @@ class Port(QtGui.QGraphicsWidget, AGPort):
     def set_data(self, data, dirty_propagate=True):
 
         AGPort.set_data(self, data, dirty_propagate)
-        self.write_to_console("setAttr -an {0} -v {1}".format(self.port_name(), data))
-        print "setAttr -an {0} -v {1}".format(self.port_name(), data)
+        self.write_to_console("setAttr /an {0} /v {1}".format(self.port_name(), data))
         update_ports(self)

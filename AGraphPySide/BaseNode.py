@@ -45,8 +45,10 @@ class NodeName(QtGui.QGraphicsTextItem):
         super(NodeName, self).paint(painter, option, widget)
 
     def focusOutEvent(self, event):
-        new_name = self.toPlainText()
-        # print 'OLD NAME: ', self.name
+        if self.parent.name == self.toPlainText():
+            super(NodeName, self).focusOutEvent(event)
+            return
+        new_name = self.parent.graph.get_uniq_node_name(self.toPlainText())
         self.name = new_name
         self.parent.label.setPlainText(new_name)
 
@@ -60,6 +62,7 @@ class NodeName(QtGui.QGraphicsTextItem):
                 i.connection['From'] = i.connection['From'].replace(self.name, new_name)
             if self.name == i.connection['To'].split('.')[0]:
                 i.connection['To'] = i.connection['To'].replace(self.name, new_name)
+        new_name = new_name.replace(" ", "_")
         self.parent.set_name(new_name)
         super(NodeName, self).focusOutEvent(event)
 
@@ -120,8 +123,8 @@ class Node(QtGui.QGraphicsItem, AGNode):
                              self.sizes[2] + pen_width, self.v_form.boundingRect().bottomRight().y() + pen_width + self.height_offset)
 
     def set_name(self, name):
-        self.name = name
-        self.label.setPlainText(name)
+        AGNode.set_name(self, name)
+        self.label.setPlainText(self.name)
 
     def set_shadows_enabled(self, state):
 
@@ -268,7 +271,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         if self.parentItem() and hasattr(self.parentItem(), 'object_type'):
             if self.parentItem().object_type == AGObjectTypes.tGrouper:
                 self.parentItem().remove_node(self)
-        self.graph.write_to_console("killNode {0}".format(self.name))
+        self.graph.write_to_console("killNode -nl {0}".format(self.name))
 
     def set_pos(self, x, y):
 
@@ -288,6 +291,9 @@ class Node(QtGui.QGraphicsItem, AGNode):
         elif data_type == AGPortDataTypes.tBool:
             # set colot for bool ports
             newColor = QtGui.QColor(100, 0, 0, 255)
+        elif data_type == AGPortDataTypes.tArray:
+            # set colot for bool ports
+            newColor = QtGui.QColor(0, 0, 0, 255)
         else:
             newColor = QtGui.QColor(255, 255, 30, 255)
 
@@ -295,7 +301,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         p.type = port_type
         p.parent = self
         connector_name = QtGui.QGraphicsProxyWidget()
-        lbl = QtGui.QLabel(name)
+        lbl = QtGui.QLabel(p.name)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         if self.options:
             font = QtGui.QFont(self.options.value('NODES/Port label font'))

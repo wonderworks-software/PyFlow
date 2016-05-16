@@ -14,6 +14,8 @@ class BoolNode(BaseNode.Node, AGNode):
         self.output = self.add_output_port('out', AGPortDataTypes.tBool)
 
         def set_data_overloads(data, dirty_propagate=True):
+            if type(data) != bool().__class__:
+                data = data.lower() in ["true", "1"]
             if data:
                 self.cb.setCheckState(QtCore.Qt.Checked)
             else:
@@ -29,4 +31,4 @@ class BoolNode(BaseNode.Node, AGNode):
 
     def compute(self):
 
-        self.output.set_data(self.cb.isChecked(), False)
+        self.output.set_data(self.cb.isChecked(), True)

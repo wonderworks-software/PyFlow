@@ -9,8 +9,8 @@ class MakeArray(BaseNode.Node, AGNode):
                                       w=120, colors=Colors,
                                       spacings=Spacings)
         AGNode.__init__(self, name, graph)
-        self.out_arr = self.add_output_port('out', AGPortDataTypes.tAny)
+        self.out_arr = self.add_output_port('out', AGPortDataTypes.tArray)
 
     def compute(self):
 
-        self.out_arr.set_data(list(), False)
+        self.out_arr.set_data(list(), True)

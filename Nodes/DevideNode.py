@@ -41,6 +41,6 @@ class DevideNode(BaseNode.Node, AGNode):
         devider = self.devider.get_data()
         try:
             result = number / float(devider)
-            self.output.set_data(result, False)
+            self.output.set_data(result, True)
         except Exception, e:
             print e

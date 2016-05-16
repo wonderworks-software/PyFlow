@@ -37,7 +37,7 @@ class StringNode(BaseNode.Node, AGNode):
 
     def set_data(self):
 
-        self.output.set_data(self.line_edit.text(), True)
+        self.output.set_data(self.line_edit.text().replace("/", "|"), True)
 
     def compute(self):
 

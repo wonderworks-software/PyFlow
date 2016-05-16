@@ -18,6 +18,6 @@ class StringContains(BaseNode.Node, AGNode):
         second_str = self.second.get_data()
         try:
             result = second_str in first_str
-            self.output.set_data(result, False)
+            self.output.set_data(result, True)
         except Exception, e:
             print e

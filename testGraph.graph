@@ -1,0 +1,6 @@
+SAVE GRAPH SCRIPT
+createNode /type Len /x 4963.33333333 /y 4969.33333333 /n Len
+setAttr /an Len.iterable /v None
+setAttr /an Len.len /v 0.0
+setAttr /an Len.result /v False
+comment /mode names /text enter comment\ntest /nl Len 

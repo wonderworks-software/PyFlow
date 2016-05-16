@@ -17,6 +17,6 @@ class StringLower(BaseNode.Node, AGNode):
 
         str_data = self.in_str.get_data()
         try:
-            self.out_str.set_data(str_data.lower(), False)
+            self.out_str.set_data(str_data.lower(), True)
         except Exception, e:
             print e

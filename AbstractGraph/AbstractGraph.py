@@ -59,6 +59,7 @@ class AGPortDataTypes(object):
     tNumeric = 'numeric_data'
     tString = 'string_data'
     tBool = 'boolean_data'
+    tArray = 'array_data'
     tAny = 'all'
 
     def __init__(self):
@@ -92,7 +93,7 @@ class AGPort(object):
 
     def __init__(self, name, parent, data_type):
         super(AGPort, self).__init__()
-        self.name = name
+        self.name = name.replace(" ", "_")
         self.parent = parent
         self.object_type = AGObjectTypes.tPort
         self.data_type = data_type
@@ -110,6 +111,8 @@ class AGPort(object):
             self._data = ""
         if self.data_type == AGPortDataTypes.tBool:
             self._data = False
+        if self.data_type == AGPortDataTypes.tArray:
+            self._data = list()
         if self.data_type == AGPortDataTypes.tAny:
             self._data = None
 
@@ -197,7 +200,7 @@ class AGPort(object):
 
     @staticmethod
     def str2bool(v):
-        return v.lower() in ("yes", "true", "t", "1")
+        return v.lower() in ("true", "1")
 
     def set_data(self, data, dirty_propagate=True):
 
@@ -205,6 +208,8 @@ class AGPort(object):
             self._data = float(data)
         if self.data_type == AGPortDataTypes.tString:
             self._data = str(data)
+        if self.data_type == AGPortDataTypes.tArray:
+            self._data = data
         if self.data_type == AGPortDataTypes.tBool:
             if type(data) != bool().__class__:
                 self._data = self.str2bool(data)
@@ -237,6 +242,10 @@ class AGNode(object):
     def set_pos(self, x, y):
         self.x = x
         self.y = y
+
+    def set_name(self, name):
+
+        self.name = self.graph.get_uniq_node_name(name)
 
     def kill(self, call_connection_functions=False):
         for p in self.inputs + self.outputs:
@@ -286,6 +295,18 @@ class AGraph(object):
         self.name = name
         self.nodes = []
         self.edges = []
+
+    def get_uniq_node_name(self, name):
+
+        nodes = [n.name for n in self.nodes]
+        if name not in nodes:
+            return name
+        idx = 0
+        tmp = name
+        while tmp in nodes:
+            idx += 1
+            tmp = name + str(idx)
+        return name + str(idx)
 
     def is_debug(self):
 
@@ -370,16 +391,7 @@ class AGraph(object):
         # generate uniq name
         if not node:
             return False
-        if node.name in [n.name for n in self.nodes]:
-            indexes = []
-            for i in self.nodes:
-                idx = ''.join([i for i in i.name if i.isdigit()])
-                if not idx == '':
-                    indexes.append(idx)
-                else:
-                    indexes.append('0')
-            node.name = node.name+str(max([int(idx) for idx in indexes])+1)
-        # add node
+        node.set_name(node.name)
         self.nodes.append(node)
         node.set_pos(x, y)
         node.graph = self

@@ -19,9 +19,9 @@ class IsEqual(BaseNode.Node, AGNode):
         try:
             print 'compare', inp_a_data, inp_b_data
             if inp_a_data == inp_b_data:
-                self.output.set_data(True, False)
+                self.output.set_data(True, True)
             else:
-                self.output.set_data(False, False)
+                self.output.set_data(False, True)
         except Exception, e:
             print e
-            self.output.set_data(False, False)
+            self.output.set_data(False, True)

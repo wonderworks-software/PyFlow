@@ -24,7 +24,7 @@ class IntNode(BaseNode.Node, AGNode):
 
         # hack! overload the output's port 'set_data' method to update lineEdit
         def set_data_overloads(data, dirty_propagate=True):
-            self.spin_box.setValue(int(data))
+            self.spin_box.setValue(int(float(data)))
         self.output.set_data_overload = set_data_overloads
 
         spin_box_proxy = QtGui.QGraphicsProxyWidget()
@@ -38,4 +38,4 @@ class IntNode(BaseNode.Node, AGNode):
 
     def compute(self):
 
-        self.output.set_data(self.spin_box.value(), False)
+        self.output.set_data(self.spin_box.value(), True)

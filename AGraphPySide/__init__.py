@@ -6,12 +6,14 @@ p = os.path.abspath('..')
 if p not in sys.path:
     sys.path.append(p)
 from Nodes import *
+from Commands import *
 from AbstractGraph import *
 from Settings import *
 from Port import *
 from BaseNode import *
 from Edge import *
 from Widget import *
-from Nodes.RequestNode import *
-from Nodes.IntNode import *
-from Nodes.SumNode import *
+# from Nodes.RequestNode import *
+# from Nodes.IntNode import *
+# from Nodes.SumNode import *
+

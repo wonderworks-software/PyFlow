@@ -6,7 +6,7 @@ from Settings import LineTypes
 from Settings import get_line_type
 from AbstractGraph import *
 from Edge import Edge, RealTimeLine
-from os import listdir, path
+from os import listdir, path, startfile
 import sys
 _file_folder = path.dirname(__file__)
 _mod_folder = _file_folder.replace(_file_folder.rsplit('\\')[-1], '')
@@ -14,6 +14,7 @@ nodes_path = _mod_folder+'\\Nodes'
 if nodes_path not in sys.path:
     sys.path.append(nodes_path)
 import Nodes
+import Commands
 from time import ctime
 import OptionsWindow_ui
 import rgba_color_picker_ui
@@ -26,12 +27,99 @@ def get_mid_point(args):
     return [sum(i)/len(i) for i in zip(*args)]
 
 
+class PluginType:
+    pNode = 0
+    pCommand = 1
+
+
+def _implementPlugin(name, console_out_foo, pluginType):
+    base_command_code = """from AGraphPySide import Command
+
+
+class {0}(Command.Command):
+
+    def __init__(self, graph):
+        super({0}, self).__init__(graph)
+
+    def usage(self):
+
+        return "[USAGE] usage string"
+
+    def execute(self, line):
+        commandLine = self.parse(line)
+        try:
+            self.graph.write_to_console(commandLine["-text"])
+        except Exception, e:
+            print self.usage()
+""".format(name)
+
+    base_node_code = """from AbstractGraph import *
+from AGraphPySide.Settings import *
+from AGraphPySide import BaseNode
+
+
+class {0}(BaseNode.Node, AGNode):
+    def __init__(self, name, graph):
+        super({0}, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
+        AGNode.__init__(self, name, graph)
+        self.in_str = self.add_input_port('str', AGPortDataTypes.tString)
+        self.out_str = self.add_output_port('upper str', AGPortDataTypes.tString)
+        portAffects(self.in_str, self.out_str)
+
+    def compute(self):
+
+        str_data = self.in_str.get_data()
+        try:
+            self.out_str.set_data(str_data.upper(), False)
+        except Exception, e:
+            print e
+""".format(name)
+
+    if pluginType == PluginType.pNode:
+        file_path = "{0}/{1}.py".format(Nodes.__path__[0], name)
+        existing_nodes = [n.split(".")[0] for n in listdir(Nodes.__path__[0]) if n.endswith(".py") and "__init__" not in n]
+        if name in existing_nodes:
+            console_out_foo("[ERROR] Node {0} already exists".format(name))
+            return
+        # write to file. delete older if needed
+        with open(file_path, "wb") as f:
+            f.write(base_node_code)
+        console_out_foo("[INFO] Node {0} been created.\nIn order to appear in node box, restart application.".format(name))
+        startfile(file_path)
+
+    else:
+        file_path = "{0}/{1}.py".format(Commands.__path__[0], name)
+        existing_commands = [c.split(".")[0] for c in listdir(Commands.__path__[0]) if c.endswith(".py") and "__init__" not in c]
+        if name in existing_commands:
+            console_out_foo("[ERROR] Command {0} already exists".format(name))
+            return
+        # write to file. delete older if needed
+        with open(file_path, "wb") as f:
+            f.write(base_command_code)
+        console_out_foo("[INFO] Command {0} been created.\n Restart application.".format(name))
+        startfile(file_path)
+    # sys.exit()
+
+
+def import_by_name(module, name):
+
+    if hasattr(module, name):
+        try:
+            mod = getattr(module, name)
+            return mod
+        except Exception, e:
+            print e
+            return
+    else:
+        print "error", name
+
+
 def parse(line):
     '''
     returns - {'cmd': command, 'flags': {-x1: 50, -x2: 100}}
     '''
     out = {}
-    dashes = [m.start() for m in re.finditer('-', line)]
+    dashes = [m.start() for m in re.finditer('/', line)]
     if len(dashes) == 0:
         out["cmd"] = line
         return out
@@ -40,7 +128,7 @@ def parse(line):
     out["cmd"] = cmd
     for i in xrange(len(dashes)-1):
         newLine =  line[dashes[i]:]
-        newLineDashes = [m.start() for m in re.finditer('-', newLine)]
+        newLineDashes = [m.start() for m in re.finditer('/', newLine)]
         flag = newLine[:newLineDashes[1]-1].split(" ", 1) # flag + value
         out["flags"][flag[0]] = flag[1]
     flag = line[dashes[-1]:].split(" ", 1) # last flag + value
@@ -54,6 +142,7 @@ class SceneClass(QtGui.QGraphicsScene):
         self.Type = 'SCENE'
         self.setItemIndexMethod(self.NoIndex)
         self.pressed_port = None
+        self.selectionChanged.connect(self.OnSelectionChanged)
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
@@ -68,11 +157,25 @@ class SceneClass(QtGui.QGraphicsScene):
         else:
             event.ignore()
 
+    def OnSelectionChanged(self):
+        selected_nodes = []
+        for n in self.parent().get_nodes():
+            if n.isSelected():
+                selected_nodes.append(n.name)
+        if len(selected_nodes) == 0:
+            self.parent().write_to_console("select /nl none")
+            return
+        cmd = "select /nl "
+        for n in selected_nodes:
+            cmd += n
+            cmd += " "
+        self.parent().write_to_console(cmd[:-1])
+
     def dropEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
             className = event.mimeData().text()
-            node = self.parent().node_box.get_node(Nodes, className)
-            self.parent().add_node(node, event.scenePos().x(), event.scenePos().y())
+            name = self.parent().get_uniq_node_name(className)
+            self.parent().executeCommand("createNode /type {0} /x {1} /y {2} /n {3}".format(className, event.scenePos().x(), event.scenePos().y(), name))
         else:
             super(SceneClass, self).dropEvent(event)
 
@@ -226,7 +329,7 @@ class GroupObjectName(QtGui.QGraphicsTextItem, Colors):
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.parent = parent
         self.setParentItem(parent)
-        self.setPlainText('enter comment')
+        self.setPlainText('...')
         self.setDefaultTextColor(self.kWhite)
         self.setCursor(QtCore.Qt.IBeamCursor)
 
@@ -259,8 +362,8 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         self.action_fit = self.menu.addAction('fit contents')
         self.action_fit.triggered.connect(self.fit_content)
         self.setFlag(self.ItemIsMovable)
-        self._minimum_width = 250
-        self._minimum_height = 100
+        self._minimum_width = 150
+        self._minimum_height = 150
         self.setZValue(2)
         self.auto_fit_content = False
         self.setPen(QtGui.QPen(self.kGroupObjectPen, 1, QtCore.Qt.SolidLine))
@@ -364,9 +467,9 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
             self.set_bottom_right(nodes_bottom_right)
             self.setFlag(self.ItemIsMovable)
 
-    def get_rect(self):
+    # def get_rect(self):
 
-        print self.rect()
+    #     print self.rect()
 
     def mousePressEvent(self, event):
 
@@ -689,6 +792,19 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._resize_group_mode = False
         self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum()/2)
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum()/2)
+        self.registeredCommands = {}
+        self.registerCommands()
+
+    def registerCommands(self):
+
+        for d in listdir(Commands.__path__[0]):
+            if d.endswith(".py") and "__init__" not in d:
+                cmd = import_by_name(Commands, d.split(".")[0])
+                if cmd:
+                    cmd = cmd(self)
+                    self.registeredCommands[cmd.__class__.__name__] = cmd
+                else:
+                    print "command not imported", d.split(".")[0]
 
     def get_nodes(self):
 
@@ -696,7 +812,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         for i in self.scene_widget.items():
             if hasattr(i, 'object_type'):
                 if i.object_type == AGObjectTypes.tNode:
-                    ls.append(i)
+                    if i.isVisible():
+                        ls.append(i)
         return ls
 
     def findPort(self, port_name):
@@ -773,81 +890,47 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def save(self, save_as=False):
 
-        print "SAVE SCENE SCRIPT\n\n"
+        if save_as:
+            name_filter = "Graph files (*.graph)"
+            pth = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
+            if not pth[0] == '':
+                self._current_file_name = pth
+        else:
+            if not path.isfile(self._current_file_name[0]):
+                name_filter = "Graph files (*.graph)"
+                self._current_file_name = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
 
+        graph = "SAVE GRAPH SCRIPT\n"   #  add some scene info. version, user, date, etc.
             # create all nodes and set attributes
         for n in self.get_nodes():
-            print "createNode {0} {1} {2} {3}".format(n.__class__.__name__, n.scenePos().x(), n.scenePos().y(), n.name)
+            line = "createNode /type {0} /x {1} /y {2} /n {3}\n".format(n.__class__.__name__, n.scenePos().x(), n.scenePos().y(), n.name)
+            graph += line
             for inp in n.inputs:
-                print "setAttr", inp.port_name(), inp.current_data()
+                line = "setAttr /an {0} /v {1}\n".format(inp.port_name(), inp.current_data())
+                graph += line
             for out in n.outputs:
-                print "setAttr", out.port_name(), out.current_data()
+                line = "setAttr /an {0} /v {1}\n".format(out.port_name(), out.current_data())
+                graph += line
             # connect all attributes
         for e in self.edges:
             port_names = e.__str__().split(" >>> ")
-            print "connectAttr {0} {1}".format(port_names[0], port_names[1])
-            # comment nodes
+            line = "connectAttr /src {0} /dst {1}\n".format(port_names[0], port_names[1])
+            graph += line
 
+            # comment nodes
         for c in self.groupers:
             nodes = ""
             for n in c.nodes:
-                nodes += "'{0}' ".format(n.name)
-            cmd = "comment '{0}' -names {1}".format(c.label.toPlainText(), nodes)
-            self.write_to_console(cmd)
+                nodes += "{0} ".format(n.name)
+            line = "comment /mode names /text {0} /nl {1}\n".format(c.label.toPlainText().replace("\n", "\\n"), nodes)
+            graph += line
+        self.write_to_console(graph)
 
-    # def save(self, save_as=False):
-
-    #     if save_as:
-    #         name_filter = "Graph files (*.graph)"
-    #         pth = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
-    #         if not pth[0] == '':
-    #             self._current_file_name = pth
-    #     else:
-    #         if not path.isfile(self._current_file_name[0]):
-    #             name_filter = "Graph files (*.graph)"
-    #             self._current_file_name = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
-
-    #     data = {'edges': [], 'nodes': [], 'groupers': [], 'request_nodes': {}}
-    #     for g in self.groupers:
-    #         data['groupers'].append(
-    #                 {
-    #                     'x': g.scenePos().x(),
-    #                     'y': g.scenePos().y(),
-    #                     'brX': g.rect().width(),
-    #                     'brY': g.rect().height(),
-    #                     'nodes': [i.name for i in g.nodes],
-    #                     'comment': g.label.toPlainText()
-    #                 }
-    #             )
-    #     for n in self.nodes:
-    #         if n.__class__.__name__ == "RequestNode":
-    #             data['request_nodes'][n.name] = {'delta_time': n.spin_box.value(), 'eval_state': n.cb.isChecked()}
-    #         data['nodes'].append(
-    #             {'x': n.pos().x(),
-    #              'y': n.pos().y(),
-    #              'node_type': n.__class__.__name__,
-    #              'ports_data': None,
-    #              'name': n.name
-    #             }
-    #         )
-
-    #         ports_data = {'inputs': {}, 'outputs': {}}
-    #         for p in n.inputs:
-    #             ports_data['inputs'][p.name] = p.current_data()
-    #         for p in n.outputs:
-    #             ports_data['outputs'][p.name] = p.current_data()
-    #         for x in data['nodes']:
-    #             if x['name'] == n.name:
-    #                 x['ports_data'] = ports_data
-        
-    #     for e in self.edges:
-    #         data['edges'].append({'From': e.source_port_name(), 'To': e.destination_port_name()})
-
-    #     if not self._current_file_name[0] == '':
-    #         with open(self._current_file_name[0], 'wb') as f:
-    #             json.dump(data, f)
-    #         self._file_name_label.setPlainText(self._current_file_name[0])
-    #         print 'saved', self._current_file_name[0]
+        if not self._current_file_name[0] == '':
+            with open(self._current_file_name[0], 'wb') as f:
+                f.write(graph)
+            self._file_name_label.setPlainText(self._current_file_name[0])
+            print 'saved', self._current_file_name[0]
 
     def save_as(self):
 
@@ -870,52 +953,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         fpath = QtGui.QFileDialog.getOpenFileName(filter=name_filter)
         if not fpath[0] == '':
             with open(fpath[0], 'r') as f:
-                data = json.load(f)
+                data = f.readlines()
             self.new_file()
-            #create nodes
-            for i in data['nodes']:
-                node = self.node_box.get_node(Nodes, i['node_type'])
-                self.add_node(node, i['x'], i['y'])
-                node.set_name(i['name'])
-                for p in node.inputs:
-                    if p.name in i['ports_data']['inputs']:
-                        p.set_data(i['ports_data']['inputs'][p.name])
-                for p in node.outputs:
-                    if p.name in i['ports_data']['outputs']:
-                        p.set_data(i['ports_data']['outputs'][p.name])
-                # restore request nodes data
-                if node.__class__.__name__ == "RequestNode":
-                    if node.name in data['request_nodes']:
-                        node.spin_box.setValue(data['request_nodes'][node.name]['delta_time'])
-                        state = QtCore.Qt.Unchecked
-                        if bool(data['request_nodes'][node.name]['eval_state']) == True:
-                            state = QtCore.Qt.Checked
-                        node.cb.setCheckState(state)
-                    else:
-                        print data['request_nodes'][node.name]
-
-            # create edges
-            for e in data['edges']:
-                src = self.get_port_by_full_name(e['From'])
-                dst = self.get_port_by_full_name(e['To'])
-                if src and dst:
-                    self.add_edge(src, dst)
-
-            #create groupers
-            for g in data['groupers']:
-                grouper = GroupObject(self)
-                grouper.label.setPlainText(g['comment'])
-                self.scene_widget.addItem(grouper)
-                self.groupers.append(grouper)
-                grouper.setPos(QtCore.QPointF(g['x'], g['y']))
-                grouper.setRect(grouper.rect().x(), grouper.rect().y(), g['brX'], g['brY'])
-                grouper.update()
-                for n in g['nodes']:
-                    node = self.get_node_by_name(n)
-                    grouper.add_node(node)
-                    node.setPos(node.pos()+grouper.scenePos())
-            self._current_file_name = fpath
-            self._file_name_label.setPlainText(fpath[0])
+            for l in data[1:]:
+                cmd = l.replace("\n", "")
+                self.executeCommand(cmd)
+        self._current_file_name = fpath[0]
+        self._file_name_label.setPlainText(self._current_file_name)
 
     def get_port_by_full_name(self, full_name):
 
@@ -1006,10 +1050,20 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.load()
         if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             self.save_as()
-        if event.key() == QtCore.Qt.Key_F:
+        if all([event.key() == QtCore.Qt.Key_F, modifiers == QtCore.Qt.ControlModifier]):
             self.frame()
-        if event.key() == QtCore.Qt.Key_C:
+        if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.parent.toggle_node_box()
+        if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier]):
             self.commentSelectedNodes()
+        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
+            self.parent.toggle_shadows()
+        if all([event.key() == QtCore.Qt.Key_M, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
+            self.parent.toggle_multithreaded()
+        if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
+            self.parent.toggle_debug()
+        if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.parent.toggle_console()
         if event.key() == QtCore.Qt.Key_Delete:
             self.kill_selected_nodes(False)
         if self.node_box.listWidget._events:
@@ -1173,22 +1227,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.remove_item_by_name(self.rubber_rect.name)
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = False
-        if all([event.button() == QtCore.Qt.LeftButton,
-                modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            # grp = GroupObject(self)
-            # self.groupers.append(grp)
-            # grp.setRect(self.rubber_rect.rect().x()-self.cursor_pressed_pos.x(),
-            #             self.rubber_rect.rect().y()-self.cursor_pressed_pos.y(),
-            #             self.rubber_rect.rect().width(),
-            #             self.rubber_rect.rect().height())
-            # grp.update()
-            # grp.setPos(self.cursor_pressed_pos)
-            # self.scene_widget.addItem(grp)
-            # for n in grp.collidingItems():
-            #     if n in self.nodes and not n.parentItem():
-            #         n.setSelected(False)
-            #         grp.add_node(n)
-            pass
         p_itm = self.pressed_item
         r_itm = self.released_item
         do_connect = True
@@ -1206,8 +1244,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             if hasattr(p_itm, 'object_type') and hasattr(r_itm, 'object_type'):
                 if all([p_itm.object_type == AGObjectTypes.tPort, r_itm.object_type == AGObjectTypes.tPort]):
                     if cycle_check(p_itm, r_itm):
-                        if self.is_debug():
-                            print 'cycles are not allowed'
+                        self.write_to_console('cycles are not allowed')
                         do_connect = False
 
         if do_connect:
@@ -1257,10 +1294,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         msg += "\n"
 
-        msg += """///// AVAILABLE COMMANDS /////\n\n"""
-
+        msg += """///// AVAILABLE COMMANDS /////\n"""
+        msg += "\t<<< Builtin >>>\n"
         for c in self.parent.consoleInput.builtinCommands:
             msg += (c+"\n")
+        msg += "\t<<< Plugins >>>\n"
+        for c in self.registeredCommands:
+            msg += (c+" - {0}\n".format(self.registeredCommands[c].usage()))
 
         self.write_to_console(msg)
 
@@ -1269,95 +1309,145 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         node_class = self.node_box.get_node(Nodes, className)
         node_class.set_name(name)
         self.add_node(node_class, x, y)
+        return node_class
 
     def executeCommand(self, command):
+
         commandLine = parse(command)
-        print commandLine
-        # commandLine = command.split(" ")
+
+        # execute custom command
+        if not commandLine["cmd"] in self.parent.consoleInput.builtinCommands:
+
+            cmdObject = None
+            try:
+                cmdObject = self.registeredCommands[commandLine['cmd']]
+            except:
+                self.parent.console.appendPlainText("[ERROR] command '{0}' not found".format(commandLine['cmd']))
+                return
+
+            try:
+                args = command.split(" ", 1)
+                if len(args) == 1:
+                    args = None
+                else:
+                    args = args[1]
+                self.parent.console.appendPlainText(command)
+                cmdObject.execute(args)
+            except:
+                self.parent.console.appendPlainText(cmdObject.usage())
+                return
+            return
+
+        # execute builtins
+
+        if commandLine['cmd'] == "renameNode":
+            self.parent.console.appendPlainText(command)
+            try:
+                node = self.get_node_by_name(commandLine["flags"]["/name"])
+                if node:
+                    newName = self.get_uniq_node_name(commandLine["flags"]["/newName"])
+                    node.set_name(newName)
+                return
+            except Exception, e:
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE] renameNode /name str /newName str")
+            return
 
         if commandLine['cmd'] == "plot":
-            self.write_to_console(command)
+            self.parent.console.appendPlainText(command)
             self.plot()
+            return
 
         if commandLine['cmd'] == "load":
-            self.write_to_console(command)
+            self.parent.console.appendPlainText(command)
             self.load()
+            return
 
         if commandLine['cmd'] == "save":
-            self.write_to_console(command)
+            self.parent.console.appendPlainText(command)
             self.save()
+            return
 
         if commandLine['cmd'] == "createNode":
             try:
-                self.create_node(commandLine['flags']['-type'], float(commandLine['flags']['-x']), float(commandLine['flags']['-y']), commandLine['flags']['-n'])
+                self.parent.console.appendPlainText(command)
+                self.create_node(commandLine['flags']['/type'], float(commandLine['flags']['/x']), float(commandLine['flags']['/y']), commandLine['flags']['/n'])
                 return
             except Exception, e:
-                self.write_to_console("[ERROR] {0}".format(e))
-                self.write_to_console("[USAGE] createNode -type className -x float -y float -n str")
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE] createNode /type className /x float /y float /n str")
 
         if commandLine['cmd'] == "comment":
             try:
-                if commandLine['flags']["-mode"] == "selected":
-                    self.commentSelectedNodes(comment = commandLine['flags']["-text"])
-                if commandLine['flags']["-mode"] == "empty":
+                if commandLine['flags']["/mode"] == "selected":
+                    self.commentSelectedNodes(comment = commandLine['flags']["/text"])
+                if commandLine['flags']["/mode"] == "empty":
                     try:
-                        self.createComment(commandLine['flags']["-x1"], commandLine['flags']["-y1"], commandLine['flags']["-x2"], commandLine['flags']["-y2"], commandLine['flags']["-text"])
-                        self.write_to_console(command)
+                        self.parent.console.appendPlainText(command)
+                        self.createComment(commandLine['flags']["/x1"], commandLine['flags']["/y1"], commandLine['flags']["/x2"], commandLine['flags']["/y2"], commandLine['flags']["/text"])
                         return
                     except Exception, e:
-                        self.write_to_console("[ERROR] {0}".format(e))
+                        self.parent.console.appendPlainText("[ERROR] {0}".format(e))
                     return
-                if commandLine['flags']["-mode"] == "names":
+                if commandLine['flags']["/mode"] == "names":
                     for n in self.get_nodes():
                         n.setSelected(False)
-                    for i in commandLine["flags"]["-nl"].split(" "):
+                    for i in commandLine["flags"]["/nl"].split(" "):
                         node = self.get_node_by_name(i)
                         if node:
                             node.setSelected(True)
-                    self.commentSelectedNodes(comment = commandLine["flags"]["-text"])
+                    self.commentSelectedNodes(comment = commandLine["flags"]["/text"])
                     return
             except Exception, e:
-                self.write_to_console("[ERROR] {0}".format(e))
-                self.write_to_console("[USAGE]>>>\ncomment -mode selected -text str\ncomment -mode names -text str -nl name1 name2 ...\ncomment -mode empty -x1 float -y1 float -x2 float -y2 float -text str")
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE]>>>\ncomment /mode selected /text str\ncomment /mode names /text str /nl name1 name2 ...\ncomment /mode empty /x1 float /y1 float /x2 float /y2 float /text str")
+
+        if commandLine["cmd"] == "pluginWizard":
+            try:
+                mode = commandLine["flags"]["/mode"]
+                if mode == "implementNode":
+                    _implementPlugin(str(commandLine["flags"]["/n"]), self.parent.console.appendPlainText, PluginType.pNode)
+                if mode == "implementCommand":
+                    _implementPlugin(str(commandLine["flags"]["/n"]), self.parent.console.appendPlainText, PluginType.pCommand)
+            except Exception, e:
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE]>>>pluginWizard /mode [implementNode|implementCommand] /n name")
 
         if commandLine["cmd"] == "killNode":
             try:
-                nodeNames = commandLine["flags"]["-nl"].split(" ")
+                nodeNames = commandLine["flags"]["/nl"].split(" ")
                 for n in nodeNames:
                     node = self.get_node_by_name(n)
                     if node:
                         node.kill()
                     else:
-                        self.write_to_console("[WARNING] node {0} not found".format(n))
-                self.write_to_console(command)
+                        self.parent.console.appendPlainText("[WARNING] node {0} not found".format(n))
+                self.parent.console.appendPlainText(command)
                 return
             except Exception, e:
-                self.write_to_console("[ERROR] {0}".format(e))
-                self.write_to_console("[USAGE] killNode -nl nodeName1 nodeName2 ...")
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE] killNode /nl nodeName1 nodeName2 ...")
 
         if commandLine["cmd"] == "setAttr":
             try:
-                nodeName = commandLine["flags"]["-an"].split('.')[0]
-                attrName = commandLine["flags"]["-an"].split('.')[1]
+                nodeName = commandLine["flags"]["/an"].split('.')[0]
+                attrName = commandLine["flags"]["/an"].split('.')[1]
                 node = self.get_node_by_name(nodeName)
                 if node:
                     attr = node.get_port_by_name(attrName)
                     if attr:
-                        try:
-                            attr.set_data(commandLine["flags"]["-v"])
-                            return
-                        except Exception, e:
-                            self.write_to_console("[ERROR] {0}".format(e))
+                        attr.set_data(commandLine["flags"]["/v"])
             except Exception, e:
-                self.write_to_console("[USAGE] setAttr -an nodeName.attrName -v value")
-        return
-        if commandLine[0] == "connectAttr":
-            if len(commandLine) == 3:
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE] setAttr /an nodeName.attrName /v value")
+
+        if commandLine["cmd"] == "connectAttr":
+            try:
                 # find ports
-                nodeSrcName = commandLine[1].split('.')[0]
-                portSrcName = commandLine[1].split('.')[1]
-                nodeDstName = commandLine[2].split('.')[0]
-                portDstName = commandLine[2].split('.')[1]
+                nodeSrcName = commandLine["flags"]["/src"].split('.')[0]
+                portSrcName = commandLine["flags"]["/src"].split('.')[1]
+                nodeDstName = commandLine["flags"]["/dst"].split('.')[0]
+                portDstName = commandLine["flags"]["/dst"].split('.')[1]
 
                 nodeSrc = self.get_node_by_name(nodeSrcName)
                 nodeDst = self.get_node_by_name(nodeDstName)
@@ -1366,54 +1456,54 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                     dst = nodeDst.get_port_by_name(portDstName)
                     if src and dst:
                         self.add_edge(src, dst)
-            else:
-                self.write_to_console("[USAGE] connectAttr nodeName.srcAttrName nodeName.dstAttrName")
+            except Exception, e:
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE] connectAttr /src nodeName.srcAttrName /dst nodeName.dstAttrName")
 
-        if commandLine[0] == "disconnectAttr":
-            if len(commandLine) == 2:
-                nodeName = commandLine[1].split('.')[0]
-                attrName = commandLine[1].split('.')[1]
+        if commandLine["cmd"] == "disconnectAttr":
+            try:
+                nodeName = commandLine["flags"]["/an"].split('.')[0]
+                attrName = commandLine["flags"]["/an"].split('.')[1]
                 node = self.get_node_by_name(nodeName)
                 if node:
                     attr = node.get_port_by_name(attrName)
                     if attr:
                         attr.disconnect_all()
-                        self.write_to_console(command)
-            else:
-                self.write_to_console("[USAGE] connectAttr nodeName.attrname")
+                        self.parent.console.appendPlainText(command)
+            except Exception, e:
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE] disconnectAttr /an nodeName.attrname")
 
-        if commandLine[0] == "select":
-            if len(commandLine) > 1:
-                if commandLine[1] == "none":
-                    self.write_to_console(command)
+        if commandLine["cmd"] == "select":
+            try:
+                if commandLine["flags"]["/nl"] == "none":
                     for n in self.get_nodes():
                         n.setSelected(False)
+                    self.parent.console.appendPlainText(command)
                 else:
-                    self.write_to_console(command)
-                    for i in xrange(1, len(commandLine)):
-                        node = self.get_node_by_name(commandLine[i])
+                    for i in commandLine["flags"]["/nl"].split(" "):
+                        node = self.get_node_by_name(i)
                         if node:
                             node.setSelected(True)
-            if len(commandLine) == 1:
-                self.write_to_console("[USAGE]\nselect nodeName1 nodeName2 ...\n'select none' - to deselect all")
+                    self.parent.console.appendPlainText(command)
+            except Exception, e:
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE]\nselect /nl nodeName1 nodeName2 ...\n'select /nl none' - to deselect all")
 
-        if commandLine[0] == "move":
-            if len(commandLine) == 4:
-                node = self.get_node_by_name(commandLine[1])
+        if commandLine["cmd"] == "move":
+            try:
+                node = self.get_node_by_name(commandLine["flags"]["/n"])
                 if node:
-                    try:
-                        node.set_pos(float(commandLine[2]), float(commandLine[3]))
-                        self.write_to_console(command)
-                    except Exception, e:
-                        self.write_to_console("[ERROR] {0}".format(e))
-                        self.write_to_console("[USAGE] move nodeName x y")
+                    node.set_pos(float(commandLine["flags"]["/x"]), float(commandLine["flags"]["/y"]))
+                    self.parent.console.appendPlainText(command)
                 else:
-                    self.write_to_console("[WARNING] node {0} not found".format(commandLine[0]))
-            else:
-                self.write_to_console("[USAGE] move nodeName x y")
+                    self.parent.console.appendPlainText("[WARNING] node {0} not found".format(commandLine["flags"]["/n"]))
+            except Exception, e:
+                self.parent.console.appendPlainText("[ERROR] {0}".format(e))
+                self.parent.console.appendPlainText("[USAGE] move /n nodeName /x float /y float")
 
-        if commandLine[0] == "help":
-            self.write_to_console(command)
+        if commandLine["cmd"] == "help":
+            self.parent.console.appendPlainText(command)
             self.console_help()
 
     def add_node(self, node, x, y):
@@ -1422,8 +1512,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if node:
             node.label.setPlainText(node.name)
             self.scene_widget.addItem(node)
-            # write command to console
-            self.write_to_console("createNode {0} {1} {2} {3}".format(node.__class__.__name__, x, y, node.name))
             node.set_shadows_enabled(self._shadows)
         else:
             print '[add_node()] error node creation'
@@ -1439,7 +1527,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             dst.edge_list.append(edge)
             self.scene_widget.addItem(edge)
             self.edges.append(edge)
-            self.write_to_console("connectAttr {0} {1}".format(src.port_name(), dst.port_name()))
+            self.write_to_console("connectAttr -src {0} -dst {1}".format(src.port_name(), dst.port_name()))
             return edge
 
     def remove_edge(self, edge, call_connection_functions=True):
@@ -1450,7 +1538,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.scene_widget.removeItem(edge)
 
     def write_to_console(self, data):
-
+        if not self.is_debug():
+            return
         print data
         if self.parent:
             console = self.parent.console
@@ -1458,12 +1547,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def plot(self):
         AGraph.plot(self)
-        self.write_to_console('>>>>>>> {0} <<<<<<<\n{1}\n'.format(self.name, ctime()))
+        self.parent.console.appendPlainText('>>>>>>> {0} <<<<<<<\n{1}\n'.format(self.name, ctime()))
         if self.parent:
             for n in self.nodes:
-                self.write_to_console(n.name)
+                self.parent.console.appendPlainText(n.name)
                 for i in n.inputs+n.outputs:
-                    self.write_to_console('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}'.format(i.port_name(),
+                    self.parent.console.appendPlainText('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}'.format(i.port_name(),
                                           i.current_data(),
                                           [p.port_name() for p in i.affects],
                                           [p.port_name() for p in i.affected_by],

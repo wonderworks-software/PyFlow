@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'c:/GIT/nodes/test_app_ui.ui'
+# Form implementation generated from reading ui file 'c:/GIT/nodes/GraphEditor_ui.ui'
 #
-# Created: Tue May 10 11:46:30 2016
+# Created: Sat May 14 23:37:27 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(901, 844)
+        MainWindow.resize(785, 497)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("AGraphPySide/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -106,11 +106,11 @@ class Ui_MainWindow(object):
 "\n"
 "QLineEdit\n"
 "{\n"
-"    background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4d4d4d, stop: 0 #646464, stop: 1 #5d5d5d);\n"
+"    background-color: rgb(40, 40, 40);\n"
 "    padding: 1px;\n"
 "    border-style: solid;\n"
 "    border: 1px solid #1e1e1e;\n"
-"    border-radius: 5;\n"
+"    border-radius: 2;\n"
 "}\n"
 "\n"
 "QPushButton\n"
@@ -138,7 +138,7 @@ class Ui_MainWindow(object):
 "    background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #565656, stop: 0.1 #525252, stop: 0.5 #4e4e4e, stop: 0.9 #4a4a4a, stop: 1 #464646);\n"
 "    border-style: solid;\n"
 "    border: 1px solid #1e1e1e;\n"
-"    border-radius: 5;\n"
+"    border-radius: 2;\n"
 "}\n"
 "\n"
 "QComboBox:hover,QPushButton:hover\n"
@@ -174,10 +174,6 @@ class Ui_MainWindow(object):
 "     border-bottom-right-radius: 3px;\n"
 " }\n"
 "\n"
-"QComboBox::down-arrow\n"
-"{\n"
-"     image: url(:/down_arrow.png);\n"
-"}\n"
 "\n"
 "QGroupBox:focus\n"
 "{\n"
@@ -501,16 +497,16 @@ class Ui_MainWindow(object):
         self.SceneWidget.setObjectName("SceneWidget")
         self.gridLayout = QtGui.QGridLayout(self.SceneWidget)
         self.gridLayout.setContentsMargins(1, 1, 1, 1)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
         self.SceneLayout = QtGui.QGridLayout()
         self.SceneLayout.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
-        self.SceneLayout.setContentsMargins(0, 0, 0, 0)
         self.SceneLayout.setObjectName("SceneLayout")
         self.gridLayout.addLayout(self.SceneLayout, 0, 0, 1, 1)
         self.gridLayout_3.addWidget(self.horizontal_splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 901, 18))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 785, 18))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")
@@ -523,6 +519,7 @@ class Ui_MainWindow(object):
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.dockWidgetConsole = QtGui.QDockWidget(MainWindow)
+        self.dockWidgetConsole.setFeatures(QtGui.QDockWidget.DockWidgetFeatureMask)
         self.dockWidgetConsole.setObjectName("dockWidgetConsole")
         self.dockWidgetContents_2 = QtGui.QWidget()
         self.dockWidgetContents_2.setObjectName("dockWidgetContents_2")
@@ -537,11 +534,14 @@ class Ui_MainWindow(object):
         self.console.setSizePolicy(sizePolicy)
         self.console.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.console.setStyleSheet("")
+        self.console.setReadOnly(True)
         self.console.setObjectName("console")
-        self.gridLayout_2.addWidget(self.console, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.console, 0, 0, 1, 1)
         self.dockWidgetConsole.setWidget(self.dockWidgetContents_2)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.dockWidgetConsole)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetConsole)
         self.dockWidgetNodeBox = QtGui.QDockWidget(MainWindow)
+        self.dockWidgetNodeBox.setFloating(False)
+        self.dockWidgetNodeBox.setFeatures(QtGui.QDockWidget.DockWidgetFeatureMask)
         self.dockWidgetNodeBox.setObjectName("dockWidgetNodeBox")
         self.dockWidgetContents_5 = QtGui.QWidget()
         self.dockWidgetContents_5.setObjectName("dockWidgetContents_5")
@@ -552,30 +552,7 @@ class Ui_MainWindow(object):
         self.NodeBoxLayout.setObjectName("NodeBoxLayout")
         self.gridLayout_5.addLayout(self.NodeBoxLayout, 0, 0, 1, 1)
         self.dockWidgetNodeBox.setWidget(self.dockWidgetContents_5)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetNodeBox)
-        self.dockWidget_2 = QtGui.QDockWidget(MainWindow)
-        self.dockWidget_2.setObjectName("dockWidget_2")
-        self.dockWidgetContents = QtGui.QWidget()
-        self.dockWidgetContents.setObjectName("dockWidgetContents")
-        self.gridLayout_4 = QtGui.QGridLayout(self.dockWidgetContents)
-        self.gridLayout_4.setObjectName("gridLayout_4")
-        self.ModesLayout = QtGui.QHBoxLayout()
-        self.ModesLayout.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
-        self.ModesLayout.setObjectName("ModesLayout")
-        self.cb_multithreaded = QtGui.QCheckBox(self.dockWidgetContents)
-        self.cb_multithreaded.setObjectName("cb_multithreaded")
-        self.ModesLayout.addWidget(self.cb_multithreaded)
-        self.cb_shadows = QtGui.QCheckBox(self.dockWidgetContents)
-        self.cb_shadows.setObjectName("cb_shadows")
-        self.ModesLayout.addWidget(self.cb_shadows)
-        self.cb_debug = QtGui.QCheckBox(self.dockWidgetContents)
-        self.cb_debug.setObjectName("cb_debug")
-        self.ModesLayout.addWidget(self.cb_debug)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.ModesLayout.addItem(spacerItem)
-        self.gridLayout_4.addLayout(self.ModesLayout, 0, 0, 1, 1)
-        self.dockWidget_2.setWidget(self.dockWidgetContents)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(4), self.dockWidget_2)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetNodeBox)
         self.actionDelete = QtGui.QAction(MainWindow)
         self.actionDelete.setObjectName("actionDelete")
         self.actionOptions = QtGui.QAction(MainWindow)
@@ -624,12 +601,8 @@ class Ui_MainWindow(object):
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
-        self.dockWidgetConsole.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Console Output", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidgetConsole.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Console", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetNodeBox.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Node Box", None, QtGui.QApplication.UnicodeUTF8))
-        self.dockWidget_2.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Editor Modes", None, QtGui.QApplication.UnicodeUTF8))
-        self.cb_multithreaded.setText(QtGui.QApplication.translate("MainWindow", "Multithreaded", None, QtGui.QApplication.UnicodeUTF8))
-        self.cb_shadows.setText(QtGui.QApplication.translate("MainWindow", "Nodes shadows", None, QtGui.QApplication.UnicodeUTF8))
-        self.cb_debug.setText(QtGui.QApplication.translate("MainWindow", "Debug", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDelete.setText(QtGui.QApplication.translate("MainWindow", "Delete", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOptions.setText(QtGui.QApplication.translate("MainWindow", "Options", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNode_box.setText(QtGui.QApplication.translate("MainWindow", "Node box", None, QtGui.QApplication.UnicodeUTF8))

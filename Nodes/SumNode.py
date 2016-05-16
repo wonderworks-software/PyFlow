@@ -18,6 +18,6 @@ class SumNode(BaseNode.Node, AGNode):
         inp_b_data = self.inputB.get_data()
         try:
             result = inp_a_data + inp_b_data
-            self.output.set_data(result, False)
+            self.output.set_data(result, True)
         except Exception, e:
             print e

@@ -1,27 +1,30 @@
+
+многострочный комментарий в группировщике не загружается (хранить текст в хтмл и заменить знак флага на ~)
+
+Callable нода отличается от pure только тем что оставляет выходной порт грязным. Этот порт можно отмечать, например рисовать его треугольником
+
+
 !!! - автоматически генерировать виджет ноды на основе абстрактного класса, отказ от написания виджетов нод индивидуально
+!!! - script editor
+
 !!! - property view для ноды. По выделению обновлять вид. Вид - член класса виджет, и он один единственый
+!!! - подсветка синтаксиса для коммандной строки и автокомплит имен нод и атрибутов
 
-
-!!! - Написать метод виджета CreateNode. Потом использовать для фомата хранения графов +++
-
-!!! - Напистаь метод connect attr
-
+/// ноды
 1) операции со стрингами(append+, replace+, upper+, lower+, capitalize+, string contains+)
-2) ноды конверторы(num to string+, string to int+, string to float+)
-3) массивы, операции с массивами(MakeArray+, ArrayAppend+, ArrayRemoveElement, IsInArray, ArrayGetElement, IsArray, ArrayInsert, ClearArray)
+2) ноды конверторы(num to string+, string to int+, string to float+, ToInt+, ToFloat)
+3) массивы, операции с массивами(MakeArray+, ArrayAppend+, ArrayConcat+, ArrayRemoveElement, Index+, IsIn, ArrayGetElement, IsArray+, ArrayInsert, ClearArray, ArraySlice)
 
 встроенные функции питона (max, min, any, all)
 нода перемешивающая массив (random.shuffle)
 
 5) прокачать nodebox, категории
 9) привязка к сетке
-4) 3d вьюпорт для визуализации
-6) написать нод визард
+4) 3d/2d вьюпорт для визуализации
+6) плагин визард +++
 7) скриншот сцены
 
-
-
-Console commands:
+Console commands builtins:
                 createNode className x y name +++
                 killNode nodeName +++
                 move nodeName x y +++
@@ -30,6 +33,9 @@ Console commands:
                 disconnectAttr AttrName +++
                 setAttr +++
                 commentSelected +++
-    createComment
+                createComment +++
+                save +++
+                load +++
+                renameNode +++
     copy
     paste

@@ -51,11 +51,5 @@ class RequestNode(BaseNode.Node, AGNode):
 
     def compute(self):
 
-        if self.input.dirty:
-            data = self.input.get_data()
-            print(str(data))
-            self.graph.write_to_console(data)
-
-        else:
-            print(str(self.input.current_data()))
-            self.graph.write_to_console(self.input.current_data())
+        data = self.input.get_data()
+        self.graph.parent.console.appendPlainText(str(data))

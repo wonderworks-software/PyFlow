@@ -1,7 +1,7 @@
 from AGraphPySide import *
-import test_app_ui
+import GraphEditor_ui
 import sys
-print sys.executable
+
 
 
 class ConsoleInput(QtGui.QLineEdit):
@@ -10,25 +10,17 @@ class ConsoleInput(QtGui.QLineEdit):
         self.graph = graph
         self.returnPressed.connect(self.OnReturnPressed)
         self.model = QtGui.QStringListModel()
-        self.executedCommands = ["plot",
-        "help",
-        "createNode",
-        "load",
-        "save",
-        "killNode",
-        "move",
-        "select",
-        "connectAttr",
-        "disconnectAttr",
-        "setAttr",
-        "comment"]
-        self.builtinCommands = [] + self.executedCommands
+        cmd_list = ["renameNode", "plot", "help", "createNode", "save", "load", "comment", "killNode", "setAttr", "connectAttr", "disconectAttr", "select", "move", "pluginWizard"]
+        self.executedCommands = [i for i in self.graph.registeredCommands.iterkeys()] + cmd_list
+        self.builtinCommands = cmd_list
         self.completer = QtGui.QCompleter(self)
         self.model.setStringList(self.executedCommands)
         self.completer.setModel(self.model)
         self.completer.setCompletionMode(self.completer.PopupCompletion)
         self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
         self.setCompleter(self.completer)
+        font = QtGui.QFont("Consolas", 9, QtGui.QFont.Bold, False)
+        self.setFont(font)
 
     def OnReturnPressed(self):
         line = self.text()
@@ -44,7 +36,7 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
 
 
-    class W(QtGui.QMainWindow, test_app_ui.Ui_MainWindow):
+    class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         def __init__(self):
             super(W, self).__init__()
             self.setupUi(self)
@@ -57,9 +49,6 @@ if __name__ == '__main__':
             self.node_box.setVisible(True)
             self.actionPlot_graph.triggered.connect(self.G.plot)
             self.actionDelete.triggered.connect(self.z)
-            self.cb_multithreaded.toggled.connect(self.toggle_multithreaded)
-            self.cb_debug.toggled.connect(self.toggle_debug)
-            self.cb_shadows.toggled.connect(self.toggle_shadows)
             self.actionConsole.triggered.connect(self.toggle_console)
             self.actionNode_box.triggered.connect(self.toggle_node_box)
             self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
@@ -74,6 +63,14 @@ if __name__ == '__main__':
             self.console.addAction(self.clearConsoleAction)
             self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)
             self.gridLayout_2.addWidget(self.consoleInput, 2, 0, 1, 1)
+
+        def closeEvent(self, event):
+            question = "Shure?"
+            reply = QtGui.QMessageBox.question(self, 'Exit', question, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+            if reply == QtGui.QMessageBox.Yes:
+                event.accept()
+            else:
+                event.ignore()
 
         def toggle_node_box(self):
 
