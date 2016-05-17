@@ -82,7 +82,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
     def hoverLeaveEvent(self, event):
         super(Edge, self).hoverLeaveEvent(event)
-        self.setZValue(0.0)
+        self.setZValue(0)
         self.pen.setWidthF(self.thikness)
         self.update()
 

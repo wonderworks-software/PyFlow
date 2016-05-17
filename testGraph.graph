@@ -1,6 +1,37 @@
 SAVE GRAPH SCRIPT
-createNode /type Len /x 4963.33333333 /y 4969.33333333 /n Len
-setAttr /an Len.iterable /v None
-setAttr /an Len.len /v 0.0
-setAttr /an Len.result /v False
-comment /mode names /text enter comment\ntest /nl Len 
+createNode /type MakeArray /x 4758.17325642 /y 4856.3905243 /n MakeArray
+setAttr /an MakeArray.out /v [10.0, 10.0]
+createNode /type ArrayAppend /x 4992.0 /y 4862.0 /n ArrayAppend
+setAttr /an ArrayAppend.inArray /v [10.0, 10.0]
+setAttr /an ArrayAppend.element /v 10
+setAttr /an ArrayAppend.out /v [10.0, 10.0]
+setAttr /an ArrayAppend.result /v True
+createNode /type RandInt /x 4729.50658975 /y 4970.39052429 /n RandInt
+setAttr /an RandInt.from /v 5
+setAttr /an RandInt.to /v 10
+setAttr /an RandInt.out /v 10.0
+createNode /type IntNode /x 4448.00673418 /y 5065.05045678 /n IntNode
+setAttr /an IntNode.out /v 5.0
+createNode /type IntNode /x 4437.34006751 /y 5167.05045678 /n IntNode1
+setAttr /an IntNode1.out /v 10.0
+createNode /type RequestNode /x 5432.04401146 /y 4874.96243388 /n RequestNode
+setAttr /an RequestNode.input /v [10.0, 10.0]
+createNode /type ArrayAppend /x 5163.4808495 /y 4956.88792038 /n ArrayAppend1
+setAttr /an ArrayAppend1.inArray /v [10.0, 10.0]
+setAttr /an ArrayAppend1.element /v 10
+setAttr /an ArrayAppend1.out /v [10.0, 10.0]
+setAttr /an ArrayAppend1.result /v True
+createNode /type RandInt /x 4968.0 /y 5084.0 /n RandInt1
+setAttr /an RandInt1.from /v 5
+setAttr /an RandInt1.to /v 10
+setAttr /an RandInt1.out /v 10.0
+connectAttr /src RandInt.out /dst ArrayAppend.element
+connectAttr /src IntNode.out /dst RandInt.from
+connectAttr /src IntNode1.out /dst RandInt.to
+connectAttr /src MakeArray.out /dst ArrayAppend.inArray
+connectAttr /src RandInt1.out /dst ArrayAppend1.element
+connectAttr /src ArrayAppend.out /dst ArrayAppend1.inArray
+connectAttr /src ArrayAppend1.out /dst RequestNode.input
+connectAttr /src IntNode.out /dst RandInt1.from
+connectAttr /src IntNode1.out /dst RandInt1.to
+comment /mode names /text enter comment /nl IntNode IntNode1 
