@@ -21,6 +21,6 @@ class StringReplace(BaseNode.Node, AGNode):
         new_ptn = self.new_ptn.get_data()
         try:
             result = first_str.replace(old_ptn, new_ptn)
-            self.output.set_data(result, True)
+            self.output.set_data(result, False)
         except Exception, e:
             print e

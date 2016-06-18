@@ -18,9 +18,9 @@ class IsGreaterThan(BaseNode.Node, AGNode):
         inp_b_data = self.inputB.get_data()
         try:
             if inp_a_data > inp_b_data:
-                self.output.set_data(True, True)
+                self.output.set_data(True, False)
             else:
-                self.output.set_data(False, True)
+                self.output.set_data(False, False)
         except Exception, e:
             print e
-            self.output.set_data(False, True)
+            self.output.set_data(False, False)

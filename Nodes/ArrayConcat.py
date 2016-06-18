@@ -19,6 +19,6 @@ class ArrayConcat(BaseNode.Node, AGNode):
         secont = self.arrayB.get_data()
         try:
             res_arr = first + secont
-            self.result.set_data(res_arr)
+            self.result.set_data(res_arr, False)
         except Exception, e:
             print e

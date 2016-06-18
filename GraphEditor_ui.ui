@@ -594,7 +594,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
       <number>1</number>
      </property>
      <item row="0" column="0">
-      <widget class="QPlainTextEdit" name="console">
+      <widget class="QTextEdit" name="console">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -609,9 +609,6 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
        </property>
        <property name="styleSheet">
         <string notr="true"/>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
        </property>
       </widget>
      </item>

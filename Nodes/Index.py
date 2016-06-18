@@ -20,8 +20,8 @@ class Index(BaseNode.Node, AGNode):
         value = self.value.get_data()
         try:
             idx = ls.index(value)
-            self.index.set_data(int(idx), True)
-            self.success.set_data(True)
+            self.index.set_data(int(idx), False)
+            self.success.set_data(True, False)
         except Exception, e:
-            self.success.set_data(False)
+            self.success.set_data(False, False)
             self.graph.write_to_console("[ERROR] {0}. {1}".format(self.__class__.__name__, e))

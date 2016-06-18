@@ -20,7 +20,7 @@ class Len(BaseNode.Node, AGNode):
         in_arr = self.in_arr.get_data()
         try:
             self.out_len.set_data(len(in_arr), False)
-            self.out_result.set_data(True, True)
+            self.out_result.set_data(True, False)
         except Exception, e:
-            self.out_result.set_data(False, True)
+            self.out_result.set_data(False, False)
             print e

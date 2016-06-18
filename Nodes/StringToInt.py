@@ -17,6 +17,6 @@ class StringToInt(BaseNode.Node, AGNode):
 
         str_data = self.in_str.get_data()
         try:
-            self.out_int.set_data(int(str_data), True)
+            self.out_int.set_data(int(str_data), False)
         except Exception, e:
             print e

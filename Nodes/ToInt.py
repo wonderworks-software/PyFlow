@@ -15,6 +15,6 @@ class ToInt(BaseNode.Node, AGNode):
 
         data = self.inp.get_data()
         try:
-            self.out.set_data(int(data))
+            self.out.set_data(int(data), False)
         except Exception, e:
             self.graph.write_to_console("[ERROR] {0}".format(e))

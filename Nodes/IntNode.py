@@ -38,4 +38,4 @@ class IntNode(BaseNode.Node, AGNode):
 
     def compute(self):
 
-        self.output.set_data(self.spin_box.value(), True)
+        self.output.set_data(self.spin_box.value(), False)

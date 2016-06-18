@@ -23,9 +23,12 @@ class ArrayAppend(BaseNode.Node, AGNode):
         try:
             in_arr = self.in_arr.get_data()
             element = self.element.get_data()
-            in_arr.append(element)
-            self.out_arr.set_data(in_arr, True)
-            self.out_result.set_data(True, True)
+            out_arr = [] + in_arr
+            del in_arr[:]
+            del in_arr
+            out_arr.append(element)
+            self.out_arr.set_data(out_arr, False)
+            self.out_result.set_data(True, False)
         except Exception, e:
-            self.out_result.set_data(False, True)
+            self.out_result.set_data(False, False)
             print e

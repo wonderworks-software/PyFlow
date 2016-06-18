@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'c:/GIT/nodes/GraphEditor_ui.ui'
 #
-# Created: Sat May 14 23:37:27 2016
+# Created: Sat Jun 18 10:40:28 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -526,7 +526,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2 = QtGui.QGridLayout(self.dockWidgetContents_2)
         self.gridLayout_2.setContentsMargins(1, 1, 1, 1)
         self.gridLayout_2.setObjectName("gridLayout_2")
-        self.console = QtGui.QPlainTextEdit(self.dockWidgetContents_2)
+        self.console = QtGui.QTextEdit(self.dockWidgetContents_2)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -534,7 +534,6 @@ class Ui_MainWindow(object):
         self.console.setSizePolicy(sizePolicy)
         self.console.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.console.setStyleSheet("")
-        self.console.setReadOnly(True)
         self.console.setObjectName("console")
         self.gridLayout_2.addWidget(self.console, 0, 0, 1, 1)
         self.dockWidgetConsole.setWidget(self.dockWidgetContents_2)

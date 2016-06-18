@@ -8,7 +8,7 @@ class helloWorld(Command.Command):
 
     def usage(self):
 
-        msg = """[USAGE] {0} -text str""".format(self.__class__.__name__)
+        msg = """[USAGE] {0} /text str""".format(self.__class__.__name__)
         return msg
 
     def execute(self, line):

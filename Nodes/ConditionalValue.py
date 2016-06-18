@@ -25,8 +25,8 @@ class ConditionalValue(BaseNode.Node, AGNode):
         fVal = self.falseValue.get_data()
         try:
             if condition:
-                self.output.set_data(tVal, True)
+                self.output.set_data(tVal, False)
             else:
-                self.output.set_data(fVal, True)
+                self.output.set_data(fVal, False)
         except Exception, e:
             print e

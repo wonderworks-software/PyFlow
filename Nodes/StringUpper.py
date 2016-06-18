@@ -17,6 +17,6 @@ class StringUpper(BaseNode.Node, AGNode):
 
         str_data = self.in_str.get_data()
         try:
-            self.out_str.set_data(str_data.upper(), True)
+            self.out_str.set_data(str_data.upper(), False)
         except Exception, e:
             print e

@@ -17,6 +17,6 @@ class ToString(BaseNode.Node, AGNode):
 
         out_data = self.in_data.get_data()
         try:
-            self.out_data.set_data(str(out_data), True)
+            self.out_data.set_data(str(out_data), False)
         except Exception, e:
             print e

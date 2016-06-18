@@ -18,6 +18,6 @@ class PowNode(BaseNode.Node, AGNode):
         power_data = self.power.get_data()
         try:
             result = pow(base_data, power_data)
-            self.output.set_data(result, True)
+            self.output.set_data(result, False)
         except Exception, e:
             print e

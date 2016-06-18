@@ -13,4 +13,4 @@ class MakeArray(BaseNode.Node, AGNode):
 
     def compute(self):
 
-        self.out_arr.set_data(list(), True)
+        self.out_arr.set_data(list(), False)

@@ -17,6 +17,6 @@ class StringCapitalize(BaseNode.Node, AGNode):
 
         str_data = self.in_str.get_data()
         try:
-            self.out_str.set_data(str_data.capitalize(), True)
+            self.out_str.set_data(str_data.capitalize(), False)
         except Exception, e:
             print e

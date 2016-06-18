@@ -3,6 +3,85 @@ import GraphEditor_ui
 import sys
 
 
+class Highlighter(QtGui.QSyntaxHighlighter):
+    def __init__(self, parent=None, commandNameList= [], nodes_names = []):
+        super(Highlighter, self).__init__(parent)
+
+        # nodeNamePatterns = nodes_names
+        # nodeNameFormat = QtGui.QTextCharFormat()
+        # nodeNameFormat.setForeground(QtCore.Qt.green)
+        # nodeNameFormat.setFontWeight(QtGui.QFont.Bold)
+
+        # self.highlightingRules = [(QtCore.QRegExp(pattern), nodeNameFormat)
+        #         for pattern in nodeNamePatterns]
+
+        comandPatterns = commandNameList
+        commandNameFormat = QtGui.QTextCharFormat()
+        commandNameFormat.setForeground(QtCore.Qt.cyan)
+        commandNameFormat.setFontWeight(QtGui.QFont.Bold)
+
+
+        self.highlightingRules = [(QtCore.QRegExp(pattern), commandNameFormat)
+                for pattern in comandPatterns]
+
+        singleLineCommentFormat = QtGui.QTextCharFormat()
+        singleLineCommentFormat.setForeground(QtCore.Qt.darkYellow)
+        self.highlightingRules.append((QtCore.QRegExp("//[^\n]*"),
+                singleLineCommentFormat))
+
+        flagFormat = QtGui.QTextCharFormat()
+        flagFormat.setForeground(QtCore.Qt.darkCyan)
+        # flagFormat.setFontWeight(QtGui.QFont.Bold)
+        self.highlightingRules.append((QtCore.QRegExp("/\w+"),
+                flagFormat))
+
+
+        self.multiLineCommentFormat = QtGui.QTextCharFormat()
+        self.multiLineCommentFormat.setForeground(QtCore.Qt.red)
+
+        quotationFormat = QtGui.QTextCharFormat()
+        quotationFormat.setForeground(QtCore.Qt.yellow)
+        self.highlightingRules.append((QtCore.QRegExp("\'.*\'"),
+                quotationFormat))
+
+        functionFormat = QtGui.QTextCharFormat()
+        functionFormat.setFontItalic(True)
+        functionFormat.setForeground(QtCore.Qt.blue)
+        self.highlightingRules.append((QtCore.QRegExp("\\b[A-Za-z0-9_]+(?=\\()"),
+                functionFormat))
+
+        self.commentStartExpression = QtCore.QRegExp("/\\*")
+        self.commentEndExpression = QtCore.QRegExp("\\*/")
+
+    def highlightBlock(self, text):
+        for pattern, format in self.highlightingRules:
+            expression = QtCore.QRegExp(pattern)
+            index = expression.indexIn(text)
+            while index >= 0:
+                length = expression.matchedLength()
+                self.setFormat(index, length, format)
+                index = expression.indexIn(text, index + length)
+
+        self.setCurrentBlockState(0)
+
+        startIndex = 0
+        if self.previousBlockState() != 1:
+            startIndex = self.commentStartExpression.indexIn(text)
+
+        while startIndex >= 0:
+            endIndex = self.commentEndExpression.indexIn(text, startIndex)
+
+            if endIndex == -1:
+                self.setCurrentBlockState(1)
+                commentLength = len(text) - startIndex
+            else:
+                commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
+
+            self.setFormat(startIndex, commentLength,
+                    self.multiLineCommentFormat)
+            startIndex = self.commentStartExpression.indexIn(text,
+                    startIndex + commentLength);
+
 
 class ConsoleInput(QtGui.QLineEdit):
     def __init__(self, parent, graph):
@@ -10,9 +89,9 @@ class ConsoleInput(QtGui.QLineEdit):
         self.graph = graph
         self.returnPressed.connect(self.OnReturnPressed)
         self.model = QtGui.QStringListModel()
-        cmd_list = ["renameNode", "plot", "help", "createNode", "save", "load", "comment", "killNode", "setAttr", "connectAttr", "disconectAttr", "select", "move", "pluginWizard"]
-        self.executedCommands = [i for i in self.graph.registeredCommands.iterkeys()] + cmd_list
-        self.builtinCommands = cmd_list
+        self.cmd_list = ["renameNode", "plot", "help", "createNode", "save", "load", "comment", "killNode", "setAttr", "connectAttr", "disconectAttr", "select", "move", "pluginWizard"]
+        self.executedCommands = [i for i in self.graph.registeredCommands.iterkeys()] + self.cmd_list
+        self.builtinCommands = self.cmd_list
         self.completer = QtGui.QCompleter(self)
         self.model.setStringList(self.executedCommands)
         self.completer.setModel(self.model)
@@ -52,6 +131,7 @@ if __name__ == '__main__':
             self.actionConsole.triggered.connect(self.toggle_console)
             self.actionNode_box.triggered.connect(self.toggle_node_box)
             self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
+            self.console.setLineWrapMode(QtGui.QTextEdit.NoWrap)
             self.console.setReadOnly(True)
             self.console.setStyleSheet('background-color: rgb(49, 49, 49);'+\
                                        'font: 8pt "Consolas";'+\
@@ -62,6 +142,11 @@ if __name__ == '__main__':
             self.console.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
             self.console.addAction(self.clearConsoleAction)
             self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)
+            commands_names = [i for i in self.G.registeredCommands.iterkeys()] + self.consoleInput.cmd_list
+            self.highlighter_inst = Highlighter(self.console.document(),
+                commands_names,
+                self.node_box.get_nodes_file_names()
+                )
             self.gridLayout_2.addWidget(self.consoleInput, 2, 0, 1, 1)
 
         def closeEvent(self, event):

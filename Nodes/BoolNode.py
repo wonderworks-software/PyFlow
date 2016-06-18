@@ -31,4 +31,4 @@ class BoolNode(BaseNode.Node, AGNode):
 
     def compute(self):
 
-        self.output.set_data(self.cb.isChecked(), True)
+        self.output.set_data(self.cb.isChecked(), False)

@@ -18,6 +18,6 @@ class StringAppend(BaseNode.Node, AGNode):
         second_str = self.second.get_data()
         try:
             result = first_str + second_str
-            self.output.set_data(result, True)
+            self.output.set_data(result, False)
         except Exception, e:
             print e

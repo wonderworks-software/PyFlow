@@ -17,6 +17,6 @@ class StringToFloat(BaseNode.Node, AGNode):
 
         str_data = self.in_str.get_data()
         try:
-            self.out_flt.set_data(float(str_data), True)
+            self.out_flt.set_data(float(str_data), False)
         except Exception, e:
             print e
