@@ -115,6 +115,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
         super(Edge, self).paint(painter, option, widget)
 
+
 class RealTimeLine(QtGui.QGraphicsLineItem, Colors):
     def __init__(self, graph):
         super(RealTimeLine, self).__init__()

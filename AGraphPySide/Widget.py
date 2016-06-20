@@ -322,7 +322,7 @@ class RubberRect(QtGui.QGraphicsRectItem, Colors):
     def __init__(self, name):
         super(RubberRect, self).__init__()
         self.name = name
-        self.setZValue(1)
+        self.setZValue(2)
         self.setPen(QtGui.QPen(self.kRubberRect, 0.5, QtCore.Qt.SolidLine))
         self.setBrush(QtGui.QBrush(self.kRubberRect))
 

@@ -3,39 +3,52 @@ createNode /type MakeArray /x 4742.57527667 /y 4841.30557963 /n MakeArray
 setAttr /an MakeArray.out /v []
 createNode /type ArrayAppend /x 5027.5228475 /y 4821.163444 /n ArrayAppend
 setAttr /an ArrayAppend.inArray /v []
-setAttr /an ArrayAppend.element /v 22.2
+setAttr /an ArrayAppend.element /v 24.2
 setAttr /an ArrayAppend.out /v []
 setAttr /an ArrayAppend.result /v True
-createNode /type ArrayAppend /x 5203.65685425 /y 4943.87748921 /n ArrayAppend1
+createNode /type ArrayAppend /x 5197.65685425 /y 4947.21082254 /n ArrayAppend1
 setAttr /an ArrayAppend1.inArray /v []
 setAttr /an ArrayAppend1.element /v Test bitch
-setAttr /an ArrayAppend1.out /v [22.2, u'Test bitch']
+setAttr /an ArrayAppend1.out /v [u'Test bitch']
 setAttr /an ArrayAppend1.result /v True
 createNode /type FloatNode /x 4837.33333334 /y 4968.66666667 /n FloatNode
-setAttr /an FloatNode.out /v 22.2
-createNode /type RequestNode /x 6186.2079836 /y 4968.99831646 /n RequestNode
-setAttr /an RequestNode.input /v 2 ~ len
-createNode /type StringNode /x 4997.61822333 /y 5083.26021454 /n StringNode
+setAttr /an FloatNode.out /v 24.2
+createNode /type RequestNode /x 6155.54131693 /y 5020.33164979 /n RequestNode
+setAttr /an RequestNode.input /v 2 ~ len [u'Test bitch']
+createNode /type StringNode /x 4991.61822333 /y 5086.59354787 /n StringNode
 setAttr /an StringNode.out /v Test bitch
-createNode /type Len /x 5371.2108636 /y 4882.37825239 /n Len
-setAttr /an Len.iterable /v [22.2, u'Test bitch']
+createNode /type Len /x 5376.54419693 /y 4930.37825239 /n Len
+setAttr /an Len.iterable /v [u'Test bitch']
 setAttr /an Len.len /v 2.0
 setAttr /an Len.result /v True
-createNode /type ToString /x 5563.51615437 /y 5029.88623684 /n ToString
+createNode /type ToString /x 5562.8494877 /y 5027.88623684 /n ToString
 setAttr /an ToString.in /v 2
 setAttr /an ToString.out /v 2
-createNode /type StringAppend /x 5814.30335944 /y 5108.13938729 /n StringAppend
+createNode /type StringAppend /x 5790.30335944 /y 5098.13938729 /n StringAppend
 setAttr /an StringAppend.first /v 2
 setAttr /an StringAppend.second /v  ~ len
 setAttr /an StringAppend.output /v 2 ~ len
-createNode /type StringAppend /x 5571.05862671 /y 5208.0771457 /n StringAppend1
+createNode /type StringAppend /x 5301.72529338 /y 5480.0771457 /n StringAppend1
 setAttr /an StringAppend1.first /v  ~ 
 setAttr /an StringAppend1.second /v len
 setAttr /an StringAppend1.output /v  ~ len
-createNode /type StringNode /x 5341.01322056 /y 5115.68185962 /n StringNode1
+createNode /type StringNode /x 5071.67988723 /y 5387.68185962 /n StringNode1
 setAttr /an StringNode1.out /v  ~ 
-createNode /type StringNode /x 5333.47074823 /y 5238.24703503 /n StringNode2
+createNode /type StringNode /x 5064.1374149 /y 5510.24703503 /n StringNode2
 setAttr /an StringNode2.out /v len
+createNode /type StringAppend /x 5950.0 /y 4983.33333333 /n StringAppend2
+setAttr /an StringAppend2.first /v 2 ~ len
+setAttr /an StringAppend2.second /v  [u'Test bitch']
+setAttr /an StringAppend2.output /v 2 ~ len [u'Test bitch']
+createNode /type ToString /x 5683.25766444 /y 5387.33337439 /n ToString1
+setAttr /an ToString1.in /v [u'Test bitch']
+setAttr /an ToString1.out /v [u'Test bitch']
+createNode /type StringNode /x 5681.2102859 /y 5278.49205661 /n StringNode3
+setAttr /an StringNode3.out /v  
+createNode /type StringAppend /x 5978.35213267 /y 5192.04939199 /n StringAppend3
+setAttr /an StringAppend3.first /v  
+setAttr /an StringAppend3.second /v [u'Test bitch']
+setAttr /an StringAppend3.output /v  [u'Test bitch']
 connectAttr /src FloatNode.out /dst ArrayAppend.element
 connectAttr /src MakeArray.out /dst ArrayAppend.inArray
 connectAttr /src ArrayAppend.out /dst ArrayAppend1.inArray
@@ -43,8 +56,12 @@ connectAttr /src StringNode.out /dst ArrayAppend1.element
 connectAttr /src ArrayAppend1.out /dst Len.iterable
 connectAttr /src Len.len /dst ToString.in
 connectAttr /src ToString.out /dst StringAppend.first
-connectAttr /src StringAppend.output /dst RequestNode.input
 connectAttr /src StringAppend1.output /dst StringAppend.second
 connectAttr /src StringNode1.out /dst StringAppend1.first
 connectAttr /src StringNode2.out /dst StringAppend1.second
-comment /mode names /text result /nl RequestNode 
+connectAttr /src StringAppend.output /dst StringAppend2.first
+connectAttr /src StringAppend2.output /dst RequestNode.input
+connectAttr /src ArrayAppend1.out /dst ToString1.in
+connectAttr /src StringNode3.out /dst StringAppend3.first
+connectAttr /src ToString1.out /dst StringAppend3.second
+connectAttr /src StringAppend3.output /dst StringAppend2.second

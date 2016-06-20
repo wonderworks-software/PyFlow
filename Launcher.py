@@ -114,6 +114,28 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
 
+    app.setStyle(QtGui.QStyleFactory.create("Cleanlooks"));
+
+    darkPalette = QtGui.QPalette()
+    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(53,53,53))
+    darkPalette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
+    darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(25,25,25))
+    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53,53,53))
+    darkPalette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
+    darkPalette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
+    darkPalette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
+    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(53,53,53))
+    darkPalette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
+    darkPalette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
+    darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+
+    darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+    darkPalette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
+
+    app.setPalette(darkPalette)
+
+    app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+
 
     class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         def __init__(self):
