@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\GIT\nodes\GraphEditor_ui.ui'
+# Form implementation generated from reading ui file 'D:\GIT\NodesRepo\GraphEditor_ui.ui'
 #
-# Created: Mon Jun 20 22:17:34 2016
-#      by: pyside-uic 0.2.15 running on PySide 1.2.2
+# Created: Mon Aug 22 16:59:35 2016
+#      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(798, 511)
+        MainWindow.resize(1133, 758)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("AGraphPySide/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -32,16 +32,16 @@ class Ui_MainWindow(object):
         self.SceneWidget.setObjectName("SceneWidget")
         self.gridLayout = QtGui.QGridLayout(self.SceneWidget)
         self.gridLayout.setContentsMargins(1, 1, 1, 1)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
         self.SceneLayout = QtGui.QGridLayout()
         self.SceneLayout.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
+        self.SceneLayout.setContentsMargins(0, 0, 0, 0)
         self.SceneLayout.setObjectName("SceneLayout")
         self.gridLayout.addLayout(self.SceneLayout, 0, 0, 1, 1)
         self.gridLayout_3.addWidget(self.horizontal_splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 798, 18))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1133, 21))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")
@@ -52,8 +52,9 @@ class Ui_MainWindow(object):
         MainWindow.setMenuBar(self.menuBar)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
-        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
+        MainWindow.addToolBar(QtCore.Qt.BottomToolBarArea, self.toolBar)
         self.dockWidgetConsole = QtGui.QDockWidget(MainWindow)
+        self.dockWidgetConsole.setEnabled(True)
         self.dockWidgetConsole.setFeatures(QtGui.QDockWidget.DockWidgetFeatureMask)
         self.dockWidgetConsole.setObjectName("dockWidgetConsole")
         self.dockWidgetContents_2 = QtGui.QWidget()
@@ -107,9 +108,22 @@ class Ui_MainWindow(object):
         self.actionGroup_selected.setObjectName("actionGroup_selected")
         self.actionClear_scene = QtGui.QAction(MainWindow)
         self.actionClear_scene.setObjectName("actionClear_scene")
+        self.actionNode = QtGui.QAction(MainWindow)
+        self.actionNode.setObjectName("actionNode")
+        self.actionCommand = QtGui.QAction(MainWindow)
+        self.actionCommand.setObjectName("actionCommand")
+        self.actionShadows = QtGui.QAction(MainWindow)
+        self.actionShadows.setObjectName("actionShadows")
+        self.actionMultithreaded = QtGui.QAction(MainWindow)
+        self.actionMultithreaded.setObjectName("actionMultithreaded")
+        self.actionDebug = QtGui.QAction(MainWindow)
+        self.actionDebug.setObjectName("actionDebug")
+        self.actionScreenshot = QtGui.QAction(MainWindow)
+        self.actionScreenshot.setObjectName("actionScreenshot")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addAction(self.actionOptions)
         self.menuEdit.addAction(self.actionClear_scene)
+        self.menuEdit.addSeparator()
         self.menuView.addAction(self.actionNode_box)
         self.menuView.addAction(self.actionConsole)
         self.menuView.addAction(self.actionPlot_graph)
@@ -119,12 +133,16 @@ class Ui_MainWindow(object):
         self.menuBar.addAction(self.menuFile.menuAction())
         self.menuBar.addAction(self.menuEdit.menuAction())
         self.menuBar.addAction(self.menuView.menuAction())
-        self.toolBar.addAction(self.actionDelete)
-        self.toolBar.addAction(self.actionOptions)
         self.toolBar.addAction(self.actionNode_box)
         self.toolBar.addAction(self.actionConsole)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.actionShadows)
+        self.toolBar.addAction(self.actionMultithreaded)
+        self.toolBar.addAction(self.actionDebug)
+        self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionPlot_graph)
         self.toolBar.addAction(self.actionGroup_selected)
+        self.toolBar.addAction(self.actionScreenshot)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -147,4 +165,10 @@ class Ui_MainWindow(object):
         self.actionPlot_graph.setText(QtGui.QApplication.translate("MainWindow", "Plot graph", None, QtGui.QApplication.UnicodeUTF8))
         self.actionGroup_selected.setText(QtGui.QApplication.translate("MainWindow", "Group selected", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClear_scene.setText(QtGui.QApplication.translate("MainWindow", "Clear scene", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNode.setText(QtGui.QApplication.translate("MainWindow", "Node", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCommand.setText(QtGui.QApplication.translate("MainWindow", "Console command", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShadows.setText(QtGui.QApplication.translate("MainWindow", "Shadows", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMultithreaded.setText(QtGui.QApplication.translate("MainWindow", "Multithreaded", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDebug.setText(QtGui.QApplication.translate("MainWindow", "Debug", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionScreenshot.setText(QtGui.QApplication.translate("MainWindow", "Screenshot", None, QtGui.QApplication.UnicodeUTF8))
 

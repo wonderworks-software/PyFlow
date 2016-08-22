@@ -810,6 +810,16 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 else:
                     print "command not imported", d.split(".")[0]
 
+    def screen_shot(self):
+
+        name_filter = "Image (*.png)"
+        fName = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
+        if not fName[0] == '':
+            self.write_to_console("save screen to {0}".format(fName[0]))
+            img = QtGui.QPixmap.grabWidget(self)
+            img.save(fName[0], quality = 100)
+
+
     def get_nodes(self):
 
         ls = []
@@ -1068,9 +1078,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.frame()
         if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             self.parent.toggle_node_box()
-        if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier]):
+        if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.AltModifier]):
             self.commentSelectedNodes()
-        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
+        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.AltModifier]):
             self.parent.toggle_shadows()
         if all([event.key() == QtCore.Qt.Key_M, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
             self.parent.toggle_multithreaded()

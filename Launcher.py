@@ -3,113 +3,6 @@ import GraphEditor_ui
 import sys
 
 
-class Highlighter(QtGui.QSyntaxHighlighter):
-    def __init__(self, parent=None, commandNameList= [], nodes_names = []):
-        super(Highlighter, self).__init__(parent)
-
-        # nodeNamePatterns = nodes_names
-        # nodeNameFormat = QtGui.QTextCharFormat()
-        # nodeNameFormat.setForeground(QtCore.Qt.green)
-        # nodeNameFormat.setFontWeight(QtGui.QFont.Bold)
-
-        # self.highlightingRules = [(QtCore.QRegExp(pattern), nodeNameFormat)
-        #         for pattern in nodeNamePatterns]
-
-        comandPatterns = commandNameList
-        commandNameFormat = QtGui.QTextCharFormat()
-        commandNameFormat.setForeground(QtCore.Qt.cyan)
-        commandNameFormat.setFontWeight(QtGui.QFont.Bold)
-
-
-        self.highlightingRules = [(QtCore.QRegExp(pattern), commandNameFormat)
-                for pattern in comandPatterns]
-
-        singleLineCommentFormat = QtGui.QTextCharFormat()
-        singleLineCommentFormat.setForeground(QtCore.Qt.darkYellow)
-        self.highlightingRules.append((QtCore.QRegExp("//[^\n]*"),
-                singleLineCommentFormat))
-
-        flagFormat = QtGui.QTextCharFormat()
-        flagFormat.setForeground(QtCore.Qt.darkCyan)
-        # flagFormat.setFontWeight(QtGui.QFont.Bold)
-        self.highlightingRules.append((QtCore.QRegExp("/\w+"),
-                flagFormat))
-
-
-        self.multiLineCommentFormat = QtGui.QTextCharFormat()
-        self.multiLineCommentFormat.setForeground(QtCore.Qt.red)
-
-        quotationFormat = QtGui.QTextCharFormat()
-        quotationFormat.setForeground(QtCore.Qt.yellow)
-        self.highlightingRules.append((QtCore.QRegExp("\'.*\'"),
-                quotationFormat))
-
-        functionFormat = QtGui.QTextCharFormat()
-        functionFormat.setFontItalic(True)
-        functionFormat.setForeground(QtCore.Qt.blue)
-        self.highlightingRules.append((QtCore.QRegExp("\\b[A-Za-z0-9_]+(?=\\()"),
-                functionFormat))
-
-        self.commentStartExpression = QtCore.QRegExp("/\\*")
-        self.commentEndExpression = QtCore.QRegExp("\\*/")
-
-    def highlightBlock(self, text):
-        for pattern, format in self.highlightingRules:
-            expression = QtCore.QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, format)
-                index = expression.indexIn(text, index + length)
-
-        self.setCurrentBlockState(0)
-
-        startIndex = 0
-        if self.previousBlockState() != 1:
-            startIndex = self.commentStartExpression.indexIn(text)
-
-        while startIndex >= 0:
-            endIndex = self.commentEndExpression.indexIn(text, startIndex)
-
-            if endIndex == -1:
-                self.setCurrentBlockState(1)
-                commentLength = len(text) - startIndex
-            else:
-                commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
-
-            self.setFormat(startIndex, commentLength,
-                    self.multiLineCommentFormat)
-            startIndex = self.commentStartExpression.indexIn(text,
-                    startIndex + commentLength);
-
-
-class ConsoleInput(QtGui.QLineEdit):
-    def __init__(self, parent, graph):
-        super(ConsoleInput, self).__init__(parent)
-        self.graph = graph
-        self.returnPressed.connect(self.OnReturnPressed)
-        self.model = QtGui.QStringListModel()
-        self.cmd_list = ["renameNode", "plot", "help", "createNode", "save", "load", "comment", "killNode", "setAttr", "connectAttr", "disconectAttr", "select", "move", "pluginWizard"]
-        self.executedCommands = [i for i in self.graph.registeredCommands.iterkeys()] + self.cmd_list
-        self.builtinCommands = self.cmd_list
-        self.completer = QtGui.QCompleter(self)
-        self.model.setStringList(self.executedCommands)
-        self.completer.setModel(self.model)
-        self.completer.setCompletionMode(self.completer.PopupCompletion)
-        self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
-        self.setCompleter(self.completer)
-        font = QtGui.QFont("Consolas", 9, QtGui.QFont.Bold, False)
-        self.setFont(font)
-
-    def OnReturnPressed(self):
-        line = self.text()
-        if line not in self.executedCommands:
-            self.executedCommands.append(line)
-        self.model.setStringList(self.executedCommands)
-        self.graph.executeCommand(line)
-        self.clear()
-
-
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
@@ -148,10 +41,16 @@ if __name__ == '__main__':
             self.SceneLayout.addWidget(self.G)
             self.NodeBoxLayout.addWidget(self.node_box)
             self.node_box.setVisible(True)
+
             self.actionPlot_graph.triggered.connect(self.G.plot)
-            self.actionDelete.triggered.connect(self.z)
+            self.actionDelete.triggered.connect(self.on_delete)
             self.actionConsole.triggered.connect(self.toggle_console)
             self.actionNode_box.triggered.connect(self.toggle_node_box)
+            self.actionMultithreaded.triggered.connect(self.toggle_multithreaded)
+            self.actionDebug.triggered.connect(self.toggle_debug)
+            self.actionShadows.triggered.connect(self.toggle_shadows)
+            self.actionScreenshot.triggered.connect(self.G.screen_shot)
+
             self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
             self.console.setLineWrapMode(QtGui.QTextEdit.NoWrap)
             self.console.setReadOnly(True)
@@ -170,6 +69,8 @@ if __name__ == '__main__':
                 self.node_box.get_nodes_file_names()
                 )
             self.gridLayout_2.addWidget(self.consoleInput, 2, 0, 1, 1)
+            self.dockWidgetConsole.hide()
+            self.dockWidgetNodeBox.hide()
 
         def closeEvent(self, event):
             question = "Shure?"
@@ -205,11 +106,8 @@ if __name__ == '__main__':
 
             self.G.set_shadows_enabled(not self.G._shadows)
 
-        def z(self):
-            for i in self.G.nodes:
-                print i.name, i.zValue()
-            for i in self.G.groupers:
-                print i.zValue()
+        def on_delete(self):
+            self.G.kill_selected_nodes(True)
 
     instance = W()
     instance.show()

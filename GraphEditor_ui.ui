@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>798</width>
-    <height>511</height>
+    <width>1133</width>
+    <height>758</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,16 @@
     <locale language="English" country="UnitedStates"/>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>1</number>
+    </property>
+    <property name="topMargin">
+     <number>1</number>
+    </property>
+    <property name="rightMargin">
+     <number>1</number>
+    </property>
+    <property name="bottomMargin">
      <number>1</number>
     </property>
     <item row="0" column="0">
@@ -41,7 +50,16 @@
       </property>
       <widget class="QWidget" name="SceneWidget" native="true">
        <layout class="QGridLayout" name="gridLayout">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
          <number>1</number>
         </property>
         <item row="0" column="0">
@@ -62,8 +80,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>798</width>
-     <height>18</height>
+     <width>1133</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -73,6 +91,7 @@
     <addaction name="actionDelete"/>
     <addaction name="actionOptions"/>
     <addaction name="actionClear_scene"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -99,19 +118,26 @@
     <string>toolBar</string>
    </property>
    <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
+    <enum>BottomToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionDelete"/>
-   <addaction name="actionOptions"/>
    <addaction name="actionNode_box"/>
    <addaction name="actionConsole"/>
+   <addaction name="separator"/>
+   <addaction name="actionShadows"/>
+   <addaction name="actionMultithreaded"/>
+   <addaction name="actionDebug"/>
+   <addaction name="separator"/>
    <addaction name="actionPlot_graph"/>
    <addaction name="actionGroup_selected"/>
+   <addaction name="actionScreenshot"/>
   </widget>
   <widget class="QDockWidget" name="dockWidgetConsole">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="features">
     <set>QDockWidget::DockWidgetFeatureMask</set>
    </property>
@@ -123,7 +149,16 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QGridLayout" name="gridLayout_2">
-     <property name="margin">
+     <property name="leftMargin">
+      <number>1</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="rightMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
       <number>1</number>
      </property>
      <item row="0" column="0">
@@ -163,7 +198,16 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_5">
     <layout class="QGridLayout" name="gridLayout_5">
-     <property name="margin">
+     <property name="leftMargin">
+      <number>1</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="rightMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
       <number>1</number>
      </property>
      <item row="0" column="0">
@@ -220,6 +264,36 @@
   <action name="actionClear_scene">
    <property name="text">
     <string>Clear scene</string>
+   </property>
+  </action>
+  <action name="actionNode">
+   <property name="text">
+    <string>Node</string>
+   </property>
+  </action>
+  <action name="actionCommand">
+   <property name="text">
+    <string>Console command</string>
+   </property>
+  </action>
+  <action name="actionShadows">
+   <property name="text">
+    <string>Shadows</string>
+   </property>
+  </action>
+  <action name="actionMultithreaded">
+   <property name="text">
+    <string>Multithreaded</string>
+   </property>
+  </action>
+  <action name="actionDebug">
+   <property name="text">
+    <string>Debug</string>
+   </property>
+  </action>
+  <action name="actionScreenshot">
+   <property name="text">
+    <string>Screenshot</string>
    </property>
   </action>
  </widget>

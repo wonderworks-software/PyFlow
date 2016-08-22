@@ -13,7 +13,5 @@ from Port import *
 from BaseNode import *
 from Edge import *
 from Widget import *
-# from Nodes.RequestNode import *
-# from Nodes.IntNode import *
-# from Nodes.SumNode import *
-
+from SyntaxHighlighter import Highlighter
+from ConsoleInputWidget import ConsoleInput
