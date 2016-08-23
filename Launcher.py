@@ -50,6 +50,10 @@ if __name__ == '__main__':
             self.actionDebug.triggered.connect(self.toggle_debug)
             self.actionShadows.triggered.connect(self.toggle_shadows)
             self.actionScreenshot.triggered.connect(self.G.screen_shot)
+            self.actionClear_scene.triggered.connect(self.on_clear_scene)
+            self.actionShortcuts.triggered.connect(self.shortcuts_info)
+            self.actionOptions.triggered.connect(self.G.options)
+
 
             self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
             self.console.setLineWrapMode(QtGui.QTextEdit.NoWrap)
@@ -87,6 +91,23 @@ if __name__ == '__main__':
             else:
                 self.dockWidgetNodeBox.show()
 
+        def shortcuts_info(self):
+
+            data = "Ctrl+Shift+N - togle node box\n"
+            data += "Ctrl+Shift+C - togle console\n"
+            data += "Ctrl+N - new file\n"
+            data += "Ctrl+S - save\n"
+            data += "Ctrl+Shift+S - save as\n"
+            data += "Ctrl+O - open file\n"
+            data += "Ctrl+F - frame\n"
+            data += "Ctrl+Shift+Alt+C - comment selected nodes\n"
+            data += "Ctrl+Shift+Alt+S - toggle nodes shadows\n"
+            data += "Ctrl+Alt+M - toggle multithreaded\n"
+            data += "Ctrl+Alt+D - toggle debug\n"
+            data += "Delete - kill selected nodes\n"
+
+            QtGui.QMessageBox.information(self, "Shortcuts", data)
+
         def toggle_multithreaded(self):
 
             self.G.set_multithreaded(not self.G.is_multithreaded())
@@ -97,6 +118,10 @@ if __name__ == '__main__':
                 self.dockWidgetConsole.hide()
             else:
                 self.dockWidgetConsole.show()
+
+        def on_clear_scene(self):
+            for n in self.G.get_nodes():
+                n.kill()
 
         def toggle_debug(self):
 

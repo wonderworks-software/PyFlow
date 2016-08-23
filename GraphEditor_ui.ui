@@ -109,9 +109,16 @@
     <addaction name="actionLoad"/>
     <addaction name="actionSave_as"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionShortcuts"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -217,86 +224,143 @@
    </widget>
   </widget>
   <action name="actionDelete">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/delete_icon.png</normaloff>:/icons/delete_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Delete</string>
    </property>
   </action>
   <action name="actionOptions">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/colors_icon.png</normaloff>:/icons/colors_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Options</string>
    </property>
   </action>
   <action name="actionNode_box">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/node_box_icon.png</normaloff>:/icons/node_box_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Node box</string>
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/save_icon.png</normaloff>:/icons/save_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
   </action>
   <action name="actionLoad">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/folder_open_icon.png</normaloff>:/icons/folder_open_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Load</string>
    </property>
   </action>
   <action name="actionSave_as">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/save_as_icon.png</normaloff>:/icons/save_as_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Save as</string>
    </property>
   </action>
   <action name="actionConsole">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/console_icon.png</normaloff>:/icons/console_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Console</string>
    </property>
   </action>
   <action name="actionPlot_graph">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/plot_icon.png</normaloff>:/icons/plot_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Plot graph</string>
    </property>
   </action>
   <action name="actionGroup_selected">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/comment_selected_icon.png</normaloff>:/icons/comment_selected_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Group selected</string>
    </property>
   </action>
   <action name="actionClear_scene">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/clear_icon.png</normaloff>:/icons/clear_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Clear scene</string>
    </property>
   </action>
-  <action name="actionNode">
-   <property name="text">
-    <string>Node</string>
-   </property>
-  </action>
-  <action name="actionCommand">
-   <property name="text">
-    <string>Console command</string>
-   </property>
-  </action>
   <action name="actionShadows">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/shadow_icon.png</normaloff>:/icons/shadow_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Shadows</string>
    </property>
   </action>
   <action name="actionMultithreaded">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/multithreaded_icon.png</normaloff>:/icons/multithreaded_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Multithreaded</string>
    </property>
   </action>
   <action name="actionDebug">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/debug_icon.png</normaloff>:/icons/debug_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Debug</string>
    </property>
   </action>
   <action name="actionScreenshot">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/screenshot_icon.png</normaloff>:/icons/screenshot_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Screenshot</string>
    </property>
   </action>
+  <action name="actionShortcuts">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/shortcuts_icon.png</normaloff>:/icons/shortcuts_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Shortcuts</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources/nodes_res.qrc"/>
+ </resources>
  <connections/>
 </ui>

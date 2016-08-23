@@ -233,6 +233,7 @@ class NodeBoxLineEdit(QtGui.QLineEdit):
                 "font-size: 14px;" +\
                 "border-color: black; border-style: outset; border-width: 1px;"
         self.setStyleSheet(style)
+        self.setPlaceholderText("enter node name..")
 
     def keyPressEvent(self, event):
         if self._events:
@@ -342,8 +343,11 @@ class GroupObjectName(QtGui.QGraphicsTextItem, Colors):
         self.setPos(self.parent.rect().topLeft())
         self.setY(self.parent.rect().topLeft().y() - self.boundingRect().height())
 
-    def focusOutEvent(self, event):
+    def focusInEvent(self):
+        print "grpouper lock events"
 
+    def focusOutEvent(self, event):
+        print "grpouper unlock events"
         self.update_pos()
         super(GroupObjectName, self).focusOutEvent(event)
 
@@ -798,6 +802,34 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum()/2)
         self.registeredCommands = {}
         self.registerCommands()
+        self._sortcuts_enabled = True
+
+    def notify(self, message, duration):
+
+        # notify /text hello /duration 3000
+
+        # get visible scene rect
+        polygon = self.mapToScene(self.viewport().rect())
+        rect = QtCore.QRectF(polygon[0], polygon[2])
+
+        # construct message box
+        notification_box = QtGui.QGraphicsTextItem(None, self.scene_widget)
+        notification_box.setPos(rect.bottomLeft().x(), rect.bottomLeft().y()-(notification_box.document().size().height()))
+        notification_box.setDefaultTextColor(QtGui.QColor(30, 30, 30))
+        notification_box.setHtml('<div style="background:#999999;">{0}</p>'.format(message))
+
+        # constrct animation
+        timer = QtCore.QTimeLine(duration)
+        timer.setFrameRange(0, 100)
+        timer.finished.connect(lambda: self.scene().removeItem(notification_box))
+        animation = QtGui.QGraphicsItemAnimation()
+        animation.setItem(notification_box)
+        animation.setTimeLine(timer)
+
+        for i in range(200):
+            animation.setPosAt(i / 200.0, QtCore.QPointF(i, i))
+
+        timer.start()
 
     def registerCommands(self):
 
@@ -819,6 +851,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             img = QtGui.QPixmap.grabWidget(self)
             img.save(fName[0], quality = 100)
 
+    def is_sortcuts_enabled(self):
+        return self._sortcuts_enabled
+
+    def disable_sortcuts(self):
+        self._sortcuts_enabled = False
+
+    def enable_sortcuts(self):
+        self._sortcuts_enabled = True
 
     def get_nodes(self):
 
@@ -869,8 +909,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         options_action = QtGui.QAction(self)
         options_action.setText('Options')
-        if path.isfile(_mod_folder+'resources/options_icon.png'):
-            options_action.setIcon(QtGui.QIcon(_mod_folder+'resources/options_icon.png'))
+        if path.isfile(_mod_folder+'resources/colors_icon.png'):
+            options_action.setIcon(QtGui.QIcon(_mod_folder+'resources/colors_icon.png'))
         else:
             options_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         options_action.triggered.connect(self.options)
@@ -1064,6 +1104,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.kill_selected_nodes(call_connection_functions)
 
     def keyPressEvent(self, event):
+
+        if not self.is_sortcuts_enabled():
+            QtGui.QGraphicsView.keyPressEvent(self, event)
+            return
 
         modifiers = event.modifiers()
         if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):

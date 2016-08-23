@@ -44,7 +44,12 @@ class NodeName(QtGui.QGraphicsTextItem):
             painter.fillRect(option.rect, QtGui.QColor(self.color))
         super(NodeName, self).paint(painter, option, widget)
 
+    def focusInEvent(self, event):
+        self.parentItem().graph.disable_sortcuts()
+
     def focusOutEvent(self, event):
+        self.parentItem().graph.enable_sortcuts()
+
         if self.parent.name == self.toPlainText():
             super(NodeName, self).focusOutEvent(event)
             return
