@@ -184,7 +184,7 @@ class TestsWithSourceFile(unittest.TestCase):
         for f in (TESTFN2, TemporaryFile(), StringIO()):
             self.zip_random_open_test(f, zipfile.ZIP_STORED)
 
-    def test_univeral_readaheads(self):
+    def test_universal_readaheads(self):
         f = StringIO()
 
         data = 'a\r\n' * 16 * 1024
@@ -778,6 +778,13 @@ class PyZipFileTests(unittest.TestCase):
     def requiresWriteAccess(self, path):
         if not os.access(path, os.W_OK):
             self.skipTest('requires write access to the installed location')
+        filename = os.path.join(path, 'test_zipfile.try')
+        try:
+            fd = os.open(filename, os.O_WRONLY | os.O_CREAT)
+            os.close(fd)
+        except Exception:
+            self.skipTest('requires write access to the installed location')
+        unlink(filename)
 
     def test_write_pyfile(self):
         self.requiresWriteAccess(os.path.dirname(__file__))
@@ -1449,11 +1456,12 @@ class TestsWithMultipleOpens(unittest.TestCase):
         # multiple open() calls can be made without interfering with each other.
         self.make_test_archive(TESTFN2)
         with zipfile.ZipFile(TESTFN2, mode="r") as zipf:
-            with zipf.open('ones') as zopen1, zipf.open('twos') as zopen2:
+            with zipf.open('ones') as zopen1:
                 data1 = zopen1.read(500)
-                data2 = zopen2.read(500)
-                data1 += zopen1.read()
-                data2 += zopen2.read()
+                with zipf.open('twos') as zopen2:
+                    data2 = zopen2.read(500)
+                    data1 += zopen1.read()
+                    data2 += zopen2.read()
             self.assertEqual(data1, self.data1)
             self.assertEqual(data2, self.data2)
 

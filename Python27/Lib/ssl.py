@@ -141,6 +141,7 @@ from socket import socket, AF_INET, SOCK_STREAM, create_connection
 from socket import SOL_SOCKET, SO_TYPE
 import base64        # for DER-to-PEM translation
 import errno
+import warnings
 
 if _ssl.HAS_TLS_UNIQUE:
     CHANNEL_BINDING_TYPES = ['tls-unique']
@@ -375,12 +376,16 @@ class SSLContext(_SSLContext):
 
     def _load_windows_store_certs(self, storename, purpose):
         certs = bytearray()
-        for cert, encoding, trust in enum_certificates(storename):
-            # CA certs are never PKCS#7 encoded
-            if encoding == "x509_asn":
-                if trust is True or purpose.oid in trust:
-                    certs.extend(cert)
-        self.load_verify_locations(cadata=certs)
+        try:
+            for cert, encoding, trust in enum_certificates(storename):
+                # CA certs are never PKCS#7 encoded
+                if encoding == "x509_asn":
+                    if trust is True or purpose.oid in trust:
+                        certs.extend(cert)
+        except OSError:
+            warnings.warn("unable to enumerate Windows certificate store")
+        if certs:
+            self.load_verify_locations(cadata=certs)
         return certs
 
     def load_default_certs(self, purpose=Purpose.SERVER_AUTH):
@@ -481,12 +486,29 @@ def _create_unverified_context(protocol=PROTOCOL_SSLv23, cert_reqs=None,
 
     return context
 
-# Used by http.client if no context is explicitly passed.
-_create_default_https_context = create_default_context
-
-
 # Backwards compatibility alias, even though it's not a public name.
 _create_stdlib_context = _create_unverified_context
+
+# PEP 493: Verify HTTPS by default, but allow envvar to override that
+_https_verify_envvar = 'PYTHONHTTPSVERIFY'
+
+def _get_https_context_factory():
+    if not sys.flags.ignore_environment:
+        config_setting = os.environ.get(_https_verify_envvar)
+        if config_setting == '0':
+            return _create_unverified_context
+    return create_default_context
+
+_create_default_https_context = _get_https_context_factory()
+
+# PEP 493: "private" API to configure HTTPS defaults without monkeypatching
+def _https_verify_certificates(enable=True):
+    """Verify server HTTPS certificates by default?"""
+    global _create_default_https_context
+    if enable:
+        _create_default_https_context = create_default_context
+    else:
+        _create_default_https_context = _create_unverified_context
 
 
 class SSLSocket(socket):
@@ -607,7 +629,7 @@ class SSLSocket(socket):
             # EAGAIN.
             self.getpeername()
 
-    def read(self, len=0, buffer=None):
+    def read(self, len=1024, buffer=None):
         """Read up to LEN bytes and return them.
         Return zero-length string on EOF."""
 
@@ -618,7 +640,7 @@ class SSLSocket(socket):
             if buffer is not None:
                 v = self._sslobj.read(len, buffer)
             else:
-                v = self._sslobj.read(len or 1024)
+                v = self._sslobj.read(len)
             return v
         except SSLError as x:
             if x.args[0] == SSL_ERROR_EOF and self.suppress_ragged_eofs:

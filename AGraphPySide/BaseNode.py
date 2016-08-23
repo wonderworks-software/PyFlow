@@ -276,7 +276,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         if self.parentItem() and hasattr(self.parentItem(), 'object_type'):
             if self.parentItem().object_type == AGObjectTypes.tGrouper:
                 self.parentItem().remove_node(self)
-        self.graph.write_to_console("killNode /nl {0}".format(self.name))
+        self.graph.write_to_console("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
 
     def set_pos(self, x, y):
 

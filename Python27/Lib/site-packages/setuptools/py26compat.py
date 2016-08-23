@@ -4,7 +4,10 @@ Compatibility Support for Python 2.6 and earlier
 
 import sys
 
-from setuptools.compat import splittag
+try:
+	from urllib.parse import splittag
+except ImportError:
+	from urllib import splittag
 
 def strip_fragment(url):
 	"""

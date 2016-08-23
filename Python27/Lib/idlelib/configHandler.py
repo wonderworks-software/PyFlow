@@ -23,6 +23,8 @@ import os
 import sys
 
 from ConfigParser import ConfigParser
+from Tkinter import TkVersion
+from tkFont import Font, nametofont
 
 class InvalidConfigType(Exception): pass
 class InvalidConfigSet(Exception): pass
@@ -371,8 +373,32 @@ class IdleConf:
         return theme
 
     def CurrentTheme(self):
-        "Return the name of the currently active theme."
-        return self.GetOption('main', 'Theme', 'name', default='')
+        """Return the name of the currently active text color theme.
+
+        idlelib.config-main.def includes this section
+        [Theme]
+        default= 1
+        name= IDLE Classic
+        name2=
+        # name2 set in user config-main.cfg for themes added after 2015 Oct 1
+
+        Item name2 is needed because setting name to a new builtin
+        causes older IDLEs to display multiple error messages or quit.
+        See https://bugs.python.org/issue25313.
+        When default = True, name2 takes precedence over name,
+        while older IDLEs will just use name.
+        """
+        default = self.GetOption('main', 'Theme', 'default',
+                                 type='bool', default=True)
+        if default:
+            theme = self.GetOption('main', 'Theme', 'name2', default='')
+        if default and not theme or not default:
+            theme = self.GetOption('main', 'Theme', 'name', default='')
+        source = self.defaultCfg if default else self.userCfg
+        if source['highlight'].has_section(theme):
+            return theme
+        else:
+            return "IDLE Classic"
 
     def CurrentKeys(self):
         "Return the name of the currently active key set."
@@ -670,6 +696,35 @@ class IdleConf:
         allHelpSources = (self.GetExtraHelpSourceList('default') +
                 self.GetExtraHelpSourceList('user') )
         return allHelpSources
+
+    def GetFont(self, root, configType, section):
+        """Retrieve a font from configuration (font, font-size, font-bold)
+        Intercept the special value 'TkFixedFont' and substitute
+        the actual font, factoring in some tweaks if needed for
+        appearance sakes.
+
+        The 'root' parameter can normally be any valid Tkinter widget.
+
+        Return a tuple (family, size, weight) suitable for passing
+        to tkinter.Font
+        """
+        family = self.GetOption(configType, section, 'font', default='courier')
+        size = self.GetOption(configType, section, 'font-size', type='int',
+                              default='10')
+        bold = self.GetOption(configType, section, 'font-bold', default=0,
+                              type='bool')
+        if (family == 'TkFixedFont'):
+            if TkVersion < 8.5:
+                family = 'Courier'
+            else:
+                f = Font(name='TkFixedFont', exists=True, root=root)
+                actualFont = Font.actual(f)
+                family = actualFont['family']
+                size = actualFont['size']
+                if size <= 0:
+                    size = 10  # if font in pixels, ignore actual size
+                bold = actualFont['weight']=='bold'
+        return (family, size, 'bold' if bold else 'normal')
 
     def LoadCfgFiles(self):
         "Load all configuration files."

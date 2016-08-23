@@ -1,4 +1,7 @@
+import copy
+import pickle
 import unittest
+import collections
 from test import test_support
 
 class DictSetTest(unittest.TestCase):
@@ -95,6 +98,7 @@ class DictSetTest(unittest.TestCase):
         self.assertEqual(d1.viewkeys() & set(d1.viewkeys()), {'a', 'b'})
         self.assertEqual(d1.viewkeys() & set(d2.viewkeys()), {'b'})
         self.assertEqual(d1.viewkeys() & set(d3.viewkeys()), set())
+        self.assertEqual(d1.viewkeys() & tuple(d1.viewkeys()), {'a', 'b'})
 
         self.assertEqual(d1.viewkeys() | d1.viewkeys(), {'a', 'b'})
         self.assertEqual(d1.viewkeys() | d2.viewkeys(), {'a', 'b', 'c'})
@@ -103,6 +107,7 @@ class DictSetTest(unittest.TestCase):
         self.assertEqual(d1.viewkeys() | set(d2.viewkeys()), {'a', 'b', 'c'})
         self.assertEqual(d1.viewkeys() | set(d3.viewkeys()),
                          {'a', 'b', 'd', 'e'})
+        self.assertEqual(d1.viewkeys() | (1, 2), {'a', 'b', 1, 2})
 
         self.assertEqual(d1.viewkeys() ^ d1.viewkeys(), set())
         self.assertEqual(d1.viewkeys() ^ d2.viewkeys(), {'a', 'c'})
@@ -111,6 +116,7 @@ class DictSetTest(unittest.TestCase):
         self.assertEqual(d1.viewkeys() ^ set(d2.viewkeys()), {'a', 'c'})
         self.assertEqual(d1.viewkeys() ^ set(d3.viewkeys()),
                          {'a', 'b', 'd', 'e'})
+        self.assertEqual(d1.viewkeys() ^ tuple(d2.keys()), {'a', 'c'})
 
         self.assertEqual(d1.viewkeys() - d1.viewkeys(), set())
         self.assertEqual(d1.viewkeys() - d2.viewkeys(), {'a'})
@@ -118,6 +124,7 @@ class DictSetTest(unittest.TestCase):
         self.assertEqual(d1.viewkeys() - set(d1.viewkeys()), set())
         self.assertEqual(d1.viewkeys() - set(d2.viewkeys()), {'a'})
         self.assertEqual(d1.viewkeys() - set(d3.viewkeys()), {'a', 'b'})
+        self.assertEqual(d1.viewkeys() - (0, 1), {'a', 'b'})
 
     def test_items_set_operations(self):
         d1 = {'a': 1, 'b': 2}
@@ -164,7 +171,42 @@ class DictSetTest(unittest.TestCase):
         d[42] = d.viewvalues()
         self.assertRaises(RuntimeError, repr, d)
 
+    def test_abc_registry(self):
+        d = dict(a=1)
 
+        self.assertIsInstance(d.viewkeys(), collections.KeysView)
+        self.assertIsInstance(d.viewkeys(), collections.MappingView)
+        self.assertIsInstance(d.viewkeys(), collections.Set)
+        self.assertIsInstance(d.viewkeys(), collections.Sized)
+        self.assertIsInstance(d.viewkeys(), collections.Iterable)
+        self.assertIsInstance(d.viewkeys(), collections.Container)
+
+        self.assertIsInstance(d.viewvalues(), collections.ValuesView)
+        self.assertIsInstance(d.viewvalues(), collections.MappingView)
+        self.assertIsInstance(d.viewvalues(), collections.Sized)
+
+        self.assertIsInstance(d.viewitems(), collections.ItemsView)
+        self.assertIsInstance(d.viewitems(), collections.MappingView)
+        self.assertIsInstance(d.viewitems(), collections.Set)
+        self.assertIsInstance(d.viewitems(), collections.Sized)
+        self.assertIsInstance(d.viewitems(), collections.Iterable)
+        self.assertIsInstance(d.viewitems(), collections.Container)
+
+    def test_copy(self):
+        d = {1: 10, "a": "ABC"}
+        self.assertRaises(TypeError, copy.copy, d.viewkeys())
+        self.assertRaises(TypeError, copy.copy, d.viewvalues())
+        self.assertRaises(TypeError, copy.copy, d.viewitems())
+
+    def test_pickle(self):
+        d = {1: 10, "a": "ABC"}
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            self.assertRaises((TypeError, pickle.PicklingError),
+                pickle.dumps, d.viewkeys(), proto)
+            self.assertRaises((TypeError, pickle.PicklingError),
+                pickle.dumps, d.viewvalues(), proto)
+            self.assertRaises((TypeError, pickle.PicklingError),
+                pickle.dumps, d.viewitems(), proto)
 
 
 def test_main():

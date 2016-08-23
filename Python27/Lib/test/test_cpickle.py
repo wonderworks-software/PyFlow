@@ -1,8 +1,10 @@
 import cPickle
 import cStringIO
 import io
+import functools
 import unittest
-from test.pickletester import (AbstractPickleTests,
+from test.pickletester import (AbstractUnpickleTests,
+                               AbstractPickleTests,
                                AbstractPickleModuleTests,
                                AbstractPicklerUnpicklerObjectTests,
                                BigmemPickleTests)
@@ -40,7 +42,8 @@ class FileIOMixin:
         test_support.unlink(test_support.TESTFN)
 
 
-class cPickleTests(AbstractPickleTests, AbstractPickleModuleTests):
+class cPickleTests(AbstractUnpickleTests, AbstractPickleTests,
+                   AbstractPickleModuleTests):
 
     def setUp(self):
         self.dumps = cPickle.dumps
@@ -48,6 +51,36 @@ class cPickleTests(AbstractPickleTests, AbstractPickleModuleTests):
 
     error = cPickle.BadPickleGet
     module = cPickle
+    bad_stack_errors = (cPickle.UnpicklingError,)
+    bad_mark_errors = (EOFError,)
+    truncated_errors = (cPickle.UnpicklingError, EOFError,
+                        AttributeError, ValueError)
+
+class cPickleUnpicklerTests(AbstractUnpickleTests):
+
+    def loads(self, buf):
+        f = self.input(buf)
+        try:
+            p = cPickle.Unpickler(f)
+            return p.load()
+        finally:
+            self.close(f)
+
+    error = cPickle.BadPickleGet
+    bad_stack_errors = (cPickle.UnpicklingError,)
+    bad_mark_errors = (EOFError,)
+    truncated_errors = (cPickle.UnpicklingError, EOFError,
+                        AttributeError, ValueError)
+
+class cStringIOCUnpicklerTests(cStringIOMixin, cPickleUnpicklerTests):
+    pass
+
+class BytesIOCUnpicklerTests(BytesIOMixin, cPickleUnpicklerTests):
+    pass
+
+class FileIOCUnpicklerTests(FileIOMixin, cPickleUnpicklerTests):
+    pass
+
 
 class cPicklePicklerTests(AbstractPickleTests):
 
@@ -68,8 +101,6 @@ class cPicklePicklerTests(AbstractPickleTests):
             return p.load()
         finally:
             self.close(f)
-
-    error = cPickle.BadPickleGet
 
 class cStringIOCPicklerTests(cStringIOMixin, cPicklePicklerTests):
     pass
@@ -129,33 +160,6 @@ class cPickleFastPicklerTests(AbstractPickleTests):
         finally:
             self.close(f)
 
-    error = cPickle.BadPickleGet
-
-    def test_recursive_list(self):
-        self.assertRaises(ValueError,
-                          AbstractPickleTests.test_recursive_list,
-                          self)
-
-    def test_recursive_tuple(self):
-        self.assertRaises(ValueError,
-                          AbstractPickleTests.test_recursive_tuple,
-                          self)
-
-    def test_recursive_inst(self):
-        self.assertRaises(ValueError,
-                          AbstractPickleTests.test_recursive_inst,
-                          self)
-
-    def test_recursive_dict(self):
-        self.assertRaises(ValueError,
-                          AbstractPickleTests.test_recursive_dict,
-                          self)
-
-    def test_recursive_multi(self):
-        self.assertRaises(ValueError,
-                          AbstractPickleTests.test_recursive_multi,
-                          self)
-
     def test_nonrecursive_deep(self):
         # If it's not cyclic, it should pickle OK even if the nesting
         # depth exceeds PY_CPICKLE_FAST_LIMIT.  That happens to be
@@ -166,6 +170,19 @@ class cPickleFastPicklerTests(AbstractPickleTests):
             a = [a]
         b = self.loads(self.dumps(a))
         self.assertEqual(a, b)
+
+for name in dir(AbstractPickleTests):
+    if name.startswith('test_recursive_'):
+        func = getattr(AbstractPickleTests, name)
+        if '_subclass' in name and '_and_inst' not in name:
+            assert_args = RuntimeError, 'maximum recursion depth exceeded'
+        else:
+            assert_args = ValueError, "can't pickle cyclic objects"
+        def wrapper(self, func=func, assert_args=assert_args):
+            with self.assertRaisesRegexp(*assert_args):
+                func(self)
+        functools.update_wrapper(wrapper, func)
+        setattr(cPickleFastPicklerTests, name, wrapper)
 
 class cStringIOCPicklerFastTests(cStringIOMixin, cPickleFastPicklerTests):
     pass
@@ -219,6 +236,9 @@ class cPickleDeepRecursive(unittest.TestCase):
 def test_main():
     test_support.run_unittest(
         cPickleTests,
+        cStringIOCUnpicklerTests,
+        BytesIOCUnpicklerTests,
+        FileIOCUnpicklerTests,
         cStringIOCPicklerTests,
         BytesIOCPicklerTests,
         FileIOCPicklerTests,

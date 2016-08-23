@@ -3,9 +3,10 @@ import socket
 import atexit
 import re
 
+from setuptools.extern.six.moves import urllib, http_client, map
+
 import pkg_resources
 from pkg_resources import ResolutionError, ExtractionError
-from setuptools.compat import urllib2
 
 try:
     import ssl
@@ -24,20 +25,15 @@ cert_paths = """
 /usr/local/share/certs/ca-root.crt
 /etc/ssl/cert.pem
 /System/Library/OpenSSL/certs/cert.pem
+/usr/local/share/certs/ca-root-nss.crt
 """.strip().split()
 
 
-HTTPSHandler = HTTPSConnection = object
-
-for what, where in (
-    ('HTTPSHandler', ['urllib2','urllib.request']),
-    ('HTTPSConnection', ['httplib', 'http.client']),
-):
-    for module in where:
-        try:
-            exec("from %s import %s" % (module, what))
-        except ImportError:
-            pass
+try:
+    HTTPSHandler = urllib.request.HTTPSHandler
+    HTTPSConnection = http_client.HTTPSConnection
+except AttributeError:
+    HTTPSHandler = HTTPSConnection = object
 
 is_available = ssl is not None and object not in (HTTPSHandler, HTTPSConnection)
 
@@ -198,7 +194,7 @@ class VerifyingHTTPSConn(HTTPSConnection):
 
 def opener_for(ca_bundle=None):
     """Get a urlopen() replacement that uses ca_bundle for verification"""
-    return urllib2.build_opener(
+    return urllib.request.build_opener(
         VerifyingHTTPSHandler(ca_bundle or find_ca_bundle())
     ).open
 
@@ -222,6 +218,12 @@ def get_win_certfile():
                 self.addstore(store)
             self.addcerts(certs)
             atexit.register(self.close)
+
+        def close(self):
+            try:
+                super(MyCertFile, self).close()
+            except OSError:
+                pass
 
     _wincerts = MyCertFile(stores=['CA', 'ROOT'])
     return _wincerts.name

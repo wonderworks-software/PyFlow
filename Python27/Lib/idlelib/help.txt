@@ -1,7 +1,8 @@
-[See the end of this file for ** TIPS ** on using IDLE !!]
+This file, idlelib/help.txt is out-of-date and no longer used by Idle.
+It is deprecated and will be removed in the future, possibly in 3.6
+----------------------------------------------------------------------
 
-Click on the dotted line at the top of a menu to "tear it off": a
-separate window containing the menu is created.
+[See the end of this file for ** TIPS ** on using IDLE !!]
 
 File Menu:
 
@@ -90,10 +91,9 @@ Options Menu:
 	Configure IDLE -- Open a configuration dialog.  Fonts, indentation,
                           keybindings, and color themes may be altered.
                           Startup Preferences may be set, and Additional Help
-                          Sources can be specified.
-			  
-			  On OS X this menu is not present, use
-			  menu 'IDLE -> Preferences...' instead.
+                          Sources can be specified.  On OS X, open the
+                          configuration dialog by selecting Preferences
+                          in the application menu.
 	---
 	Code Context --	  Open a pane at the top of the edit window which
 			  shows the block context of the section of code

@@ -1,15 +1,18 @@
 import pickle
+import struct
 from cStringIO import StringIO
 
 from test import test_support
 
-from test.pickletester import (AbstractPickleTests,
+from test.pickletester import (AbstractUnpickleTests,
+                               AbstractPickleTests,
                                AbstractPickleModuleTests,
                                AbstractPersistentPicklerTests,
                                AbstractPicklerUnpicklerObjectTests,
                                BigmemPickleTests)
 
-class PickleTests(AbstractPickleTests, AbstractPickleModuleTests):
+class PickleTests(AbstractUnpickleTests, AbstractPickleTests,
+                  AbstractPickleModuleTests):
 
     def dumps(self, arg, proto=0, fast=0):
         # Ignore fast
@@ -21,10 +24,31 @@ class PickleTests(AbstractPickleTests, AbstractPickleModuleTests):
 
     module = pickle
     error = KeyError
+    bad_stack_errors = (IndexError,)
+    bad_mark_errors = (IndexError, pickle.UnpicklingError,
+                       TypeError, AttributeError, EOFError)
+    truncated_errors = (pickle.UnpicklingError, EOFError,
+                        AttributeError, ValueError,
+                        struct.error, IndexError, ImportError,
+                        TypeError, KeyError)
 
-class PicklerTests(AbstractPickleTests):
+class UnpicklerTests(AbstractUnpickleTests):
 
     error = KeyError
+    bad_stack_errors = (IndexError,)
+    bad_mark_errors = (IndexError, pickle.UnpicklingError,
+                       TypeError, AttributeError, EOFError)
+    truncated_errors = (pickle.UnpicklingError, EOFError,
+                        AttributeError, ValueError,
+                        struct.error, IndexError, ImportError,
+                        TypeError, KeyError)
+
+    def loads(self, buf):
+        f = StringIO(buf)
+        u = pickle.Unpickler(f)
+        return u.load()
+
+class PicklerTests(AbstractPickleTests):
 
     def dumps(self, arg, proto=0, fast=0):
         f = StringIO()
@@ -81,6 +105,7 @@ class PickleBigmemPickleTests(BigmemPickleTests):
 def test_main():
     test_support.run_unittest(
         PickleTests,
+        UnpicklerTests,
         PicklerTests,
         PersPicklerTests,
         PicklerUnpicklerObjectTests,

@@ -1,8 +1,8 @@
-This is Python version 2.7.10
+This is Python version 2.7.12
 =============================
 
 Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
-2012, 2013, 2014, 2015 Python Software Foundation.  All rights reserved.
+2012, 2013, 2014, 2015, 2016 Python Software Foundation.  All rights reserved.
 
 Copyright (c) 2000 BeOpen.com.
 All rights reserved.
@@ -173,6 +173,11 @@ rebuilt.  In this case, you may have to run make again to correctly
 build your desired target.  The interpreter executable is built in the
 top level directory.
 
+If you need an optimized version of Python, you type "make profile-opt"
+in the top level directory. This will rebuild the interpreter executable
+using Profile Guided Optimization (PGO). For more details, see the
+section below.
+
 Once you have built a Python interpreter, see the subsections below on
 testing and installation.  If you run into trouble, see the next
 section.
@@ -183,6 +188,30 @@ and manual configuration is still supported, it is rarely needed any
 more: almost all modules are automatically built as appropriate under
 guidance of the setup.py script, which is run by Make after the
 interpreter has been built.
+
+
+Profile Guided Optimization
+---------------------------
+
+PGO takes advantage of recent versions of the GCC or Clang compilers.
+If ran, the "profile-opt" rule will do several steps.
+
+First, the entire Python directory is cleaned of temporary files that
+may have resulted in a previous compilation.
+
+Then, an instrumented version of the interpreter is built, using suitable
+compiler flags for each flavour. Note that this is just an intermediary
+step and the binary resulted after this step is not good for real life
+workloads, as it has profiling instructions embedded inside.
+
+After this instrumented version of the interpreter is built, the Makefile
+will automatically run a training workload. This is necessary in order to
+profile the interpreter execution. Note also that any output, both stdout
+and stderr, that may appear at this step is supressed.
+
+Finally, the last step is to rebuild the interpreter, using the information
+collected in the previous one. The end result will be a Python binary
+that is optimized and suitable for distribution or production installation.
 
 
 Troubleshooting

@@ -111,6 +111,10 @@ if __name__ == '__main__':
         def toggle_multithreaded(self):
 
             self.G.set_multithreaded(not self.G.is_multithreaded())
+            if self.G.is_multithreaded():
+                self.G.notify("Multithreaded mode enabled", 3000)
+            else:
+                self.G.notify("Multithreaded mode disabled", 3000)
 
         def toggle_console(self):
 
@@ -126,6 +130,10 @@ if __name__ == '__main__':
         def toggle_debug(self):
 
             self.G.set_debug(not self.G.is_debug())
+            if self.G.is_debug():
+                self.G.notify("Debug mode enabled", 3000)
+            else:
+                self.G.notify("Debug mode disabled", 3000)
 
         def toggle_shadows(self):
 

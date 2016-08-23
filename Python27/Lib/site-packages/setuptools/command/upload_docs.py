@@ -8,25 +8,26 @@ PyPI's pythonhosted.org).
 from base64 import standard_b64encode
 from distutils import log
 from distutils.errors import DistutilsOptionError
-from distutils.command.upload import upload
 import os
 import socket
 import zipfile
 import tempfile
-import sys
 import shutil
 
-from setuptools.compat import httplib, urlparse, unicode, iteritems, PY3
+from setuptools.extern import six
+from setuptools.extern.six.moves import http_client, urllib
+
 from pkg_resources import iter_entry_points
+from .upload import upload
 
 
-errors = 'surrogateescape' if PY3 else 'strict'
+errors = 'surrogateescape' if six.PY3 else 'strict'
 
 
 # This is not just a replacement for byte literals
 # but works as a general purpose encoder
 def b(s, encoding='utf-8'):
-    if isinstance(s, unicode):
+    if isinstance(s, six.text_type):
         return s.encode(encoding, errors)
     return s
 
@@ -113,7 +114,7 @@ class upload_docs(upload):
         # set up the authentication
         credentials = b(self.username + ':' + self.password)
         credentials = standard_b64encode(credentials)
-        if PY3:
+        if six.PY3:
             credentials = credentials.decode('ascii')
         auth = "Basic " + credentials
 
@@ -122,7 +123,7 @@ class upload_docs(upload):
         sep_boundary = b('\n--') + b(boundary)
         end_boundary = sep_boundary + b('--')
         body = []
-        for key, values in iteritems(data):
+        for key, values in six.iteritems(data):
             title = '\nContent-Disposition: form-data; name="%s"' % key
             # handle multiple entries for the same name
             if not isinstance(values, list):
@@ -150,12 +151,12 @@ class upload_docs(upload):
         # We can't use urllib2 since we need to send the Basic
         # auth right with the first request
         schema, netloc, url, params, query, fragments = \
-            urlparse(self.repository)
+            urllib.parse.urlparse(self.repository)
         assert not params and not query and not fragments
         if schema == 'http':
-            conn = httplib.HTTPConnection(netloc)
+            conn = http_client.HTTPConnection(netloc)
         elif schema == 'https':
-            conn = httplib.HTTPSConnection(netloc)
+            conn = http_client.HTTPSConnection(netloc)
         else:
             raise AssertionError("unsupported schema " + schema)
 

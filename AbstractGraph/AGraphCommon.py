@@ -3,6 +3,9 @@ common defines, functions and structures
 '''
 
 
+FLAG_SYMBOL = "~"
+
+
 def portAffects(affects_port, affected_port):
     '''
     this function for establish dependencies bitween ports,

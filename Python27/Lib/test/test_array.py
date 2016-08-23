@@ -18,7 +18,9 @@ class ArraySubclassWithKwargs(array.array):
         array.array.__init__(self, typecode)
 
 tests = [] # list to accumulate all tests
-typecodes = "cubBhHiIlLfd"
+typecodes = "cbBhHiIlLfd"
+if test_support.have_unicode:
+    typecodes += "u"
 
 class BadConstructorTest(unittest.TestCase):
 
@@ -245,6 +247,7 @@ class BaseTest(unittest.TestCase):
         self.assertRaises(TypeError, a.tostring, 42)
         self.assertRaises(TypeError, b.fromstring)
         self.assertRaises(TypeError, b.fromstring, 42)
+        self.assertRaises(ValueError, a.fromstring, a)
         b.fromstring(a.tostring())
         self.assertEqual(a, b)
         if a.itemsize>1:
@@ -837,6 +840,7 @@ class CharacterTest(StringTest):
         self.assertEqual(s.color, "red")
         self.assertEqual(s.__dict__.keys(), ["color"])
 
+    @test_support.requires_unicode
     def test_nounicode(self):
         a = array.array(self.typecode, self.example)
         self.assertRaises(ValueError, a.fromunicode, unicode(''))

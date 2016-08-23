@@ -3,6 +3,9 @@ import unittest
 import sys
 import _ast
 from test import test_support
+from test import script_helper
+import os
+import tempfile
 import textwrap
 
 class TestSpecifics(unittest.TestCase):
@@ -555,6 +558,33 @@ if 1:
         ast.body = [_ast.BoolOp()]
         self.assertRaises(TypeError, compile, ast, '<ast>', 'exec')
 
+    def test_yet_more_evil_still_undecodable(self):
+        # Issue #25388
+        src = b"#\x00\n#\xfd\n"
+        tmpd = tempfile.mkdtemp()
+        try:
+            fn = os.path.join(tmpd, "bad.py")
+            with open(fn, "wb") as fp:
+                fp.write(src)
+            rc, out, err = script_helper.assert_python_failure(fn)
+        finally:
+            test_support.rmtree(tmpd)
+        self.assertIn(b"Non-ASCII", err)
+
+    def test_null_terminated(self):
+        # The source code is null-terminated internally, but bytes-like
+        # objects are accepted, which could be not terminated.
+        with self.assertRaisesRegexp(TypeError, "without null bytes"):
+            compile(u"123\x00", "<dummy>", "eval")
+        with test_support.check_py3k_warnings():
+            with self.assertRaisesRegexp(TypeError, "without null bytes"):
+                compile(buffer("123\x00"), "<dummy>", "eval")
+            code = compile(buffer("123\x00", 1, 2), "<dummy>", "eval")
+            self.assertEqual(eval(code), 23)
+            code = compile(buffer("1234", 1, 2), "<dummy>", "eval")
+            self.assertEqual(eval(code), 23)
+            code = compile(buffer("$23$", 1, 2), "<dummy>", "eval")
+            self.assertEqual(eval(code), 23)
 
 class TestStackSize(unittest.TestCase):
     # These tests check that the computed stack size for a code object
@@ -592,6 +622,65 @@ class TestStackSize(unittest.TestCase):
         code = "def f(x):\n"
         code += "   x and x\n" * self.N
         self.check_stack_size(code)
+
+    def check_constant(self, func, expected):
+        for const in func.__code__.co_consts:
+            if repr(const) == repr(expected):
+                break
+        else:
+            self.fail("unable to find constant %r in %r"
+                      % (expected, func.__code__.co_consts))
+
+    # Merging equal constants is not a strict requirement for the Python
+    # semantics, it's a more an implementation detail.
+    @test_support.cpython_only
+    def test_merge_constants(self):
+        # Issue #25843: compile() must merge constants which are equal
+        # and have the same type.
+
+        def check_same_constant(const):
+            ns = {}
+            code = "f1, f2 = lambda: %r, lambda: %r" % (const, const)
+            exec(code, ns)
+            f1 = ns['f1']
+            f2 = ns['f2']
+            self.assertIs(f1.__code__, f2.__code__)
+            self.check_constant(f1, const)
+            self.assertEqual(repr(f1()), repr(const))
+
+        check_same_constant(None)
+        check_same_constant(0)
+        check_same_constant(0.0)
+        check_same_constant(b'abc')
+        check_same_constant('abc')
+
+    def test_dont_merge_constants(self):
+        # Issue #25843: compile() must not merge constants which are equal
+        # but have a different type.
+
+        def check_different_constants(const1, const2):
+            ns = {}
+            exec("f1, f2 = lambda: %r, lambda: %r" % (const1, const2), ns)
+            f1 = ns['f1']
+            f2 = ns['f2']
+            self.assertIsNot(f1.__code__, f2.__code__)
+            self.check_constant(f1, const1)
+            self.check_constant(f2, const2)
+            self.assertEqual(repr(f1()), repr(const1))
+            self.assertEqual(repr(f2()), repr(const2))
+
+        check_different_constants(0, 0.0)
+        check_different_constants(+0.0, -0.0)
+        check_different_constants((0,), (0.0,))
+
+        # check_different_constants() cannot be used because repr(-0j) is
+        # '(-0-0j)', but when '(-0-0j)' is evaluated to 0j: we loose the sign.
+        f1, f2 = lambda: +0.0j, lambda: -0.0j
+        self.assertIsNot(f1.__code__, f2.__code__)
+        self.check_constant(f1, +0.0j)
+        self.check_constant(f2, -0.0j)
+        self.assertEqual(repr(f1()), repr(+0.0j))
+        self.assertEqual(repr(f2()), repr(-0.0j))
 
 
 def test_main():

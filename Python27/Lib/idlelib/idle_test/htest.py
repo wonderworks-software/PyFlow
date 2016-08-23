@@ -93,15 +93,6 @@ _class_browser_spec = {
            "Double clicking on items prints a traceback for an exception "
            "that is ignored."
     }
-ConfigExtensionsDialog_spec = {
-    'file': 'configDialog',
-    'kwds': {'title': 'Test Extension Configuration',
-             '_htest': True,},
-    'msg': "IDLE extensions dialog.\n"
-           "\n[Ok] to close the dialog.[Apply] to apply the settings and "
-           "and [Cancel] to revert all changes.\nRe-run the test to ensure "
-           "changes made have persisted."
-    }
 
 _color_delegator_spec = {
     'file': 'ColorDelegator',
@@ -121,7 +112,8 @@ ConfigDialog_spec = {
            "font face of the text in the area below it.\nIn the "
            "'Highlighting' tab, try different color schemes. Clicking "
            "items in the sample program should update the choices above it."
-           "\nIn the 'Keys' and 'General' tab, test settings of interest."
+           "\nIn the 'Keys', 'General' and 'Extensions' tabs, test settings"
+           "of interest."
            "\n[Ok] to close the dialog.[Apply] to apply the settings and "
            "and [Cancel] to revert all changes.\nRe-run the test to ensure "
            "changes made have persisted."
@@ -194,19 +186,17 @@ _grep_dialog_spec = {
            "should open that file \nin a new EditorWindow."
     }
 
-_help_dialog_spec = {
-    'file': 'EditorWindow',
-    'kwds': {},
-    'msg': "If the help text displays, this works.\n"
-           "Text is selectable. Window is scrollable."
-    }
-
 _io_binding_spec = {
     'file': 'IOBinding',
     'kwds': {},
-    'msg': "Test the following bindings\n"
-           "<Control-o> to display open window from file dialog.\n"
-           "<Control-s> to save the file\n"
+    'msg': "Test the following bindings.\n"
+           "<Control-o> to open file from dialog.\n"
+           "Edit the file.\n"
+           "<Control-p> to print the file.\n"
+           "<Control-s> to save the file.\n"
+           "<Alt-s> to save-as another file.\n"
+           "<Control-c> to save-copy-as another file.\n"
+           "Check that changes were saved by opening the file elsewhere."
     }
 
 _multi_call_spec = {
@@ -277,6 +267,13 @@ _scrolled_list_spec = {
            "Selecting (clicking) or double clicking an item "
            "prints the name to the console or Idle shell.\n"
            "Right clicking an item will display a popup."
+    }
+
+show_idlehelp_spec = {
+    'file': 'help',
+    'kwds': {},
+    'msg': "If the help text displays, this works.\n"
+           "Text is selectable. Window is scrollable."
     }
 
 _stack_viewer_spec = {

@@ -18,7 +18,9 @@ from idlelib.keybindingDialog import GetKeysDialog
 from idlelib.configSectionNameDialog import GetCfgSectionNameDialog
 from idlelib.configHelpSourceEdit import GetHelpSourceDialog
 from idlelib.tabbedpages import TabbedPageSet
+from idlelib.textView import view_text
 from idlelib import macosxSupport
+
 class ConfigDialog(Toplevel):
 
     def __init__(self, parent, title='', _htest=False, _utest=False):
@@ -41,19 +43,20 @@ class ConfigDialog(Toplevel):
         #The first value of the tuple is the sample area tag name.
         #The second value is the display name list sort index.
         self.themeElements={
-            'Normal Text':('normal', '00'),
-            'Python Keywords':('keyword', '01'),
-            'Python Definitions':('definition', '02'),
-            'Python Builtins':('builtin', '03'),
-            'Python Comments':('comment', '04'),
-            'Python Strings':('string', '05'),
-            'Selected Text':('hilite', '06'),
-            'Found Text':('hit', '07'),
-            'Cursor':('cursor', '08'),
-            'Error Text':('error', '09'),
-            'Shell Normal Text':('console', '10'),
-            'Shell Stdout Text':('stdout', '11'),
-            'Shell Stderr Text':('stderr', '12'),
+            'Normal Text': ('normal', '00'),
+            'Python Keywords': ('keyword', '01'),
+            'Python Definitions': ('definition', '02'),
+            'Python Builtins': ('builtin', '03'),
+            'Python Comments': ('comment', '04'),
+            'Python Strings': ('string', '05'),
+            'Selected Text': ('hilite', '06'),
+            'Found Text': ('hit', '07'),
+            'Cursor': ('cursor', '08'),
+            'Editor Breakpoint': ('break', '09'),
+            'Shell Normal Text': ('console', '10'),
+            'Shell Error Text': ('error', '11'),
+            'Shell Stdout Text': ('stdout', '12'),
+            'Shell Stderr Text': ('stderr', '13'),
             }
         self.ResetChangedItems() #load initial values in changed items dict
         self.CreateWidgets()
@@ -75,13 +78,16 @@ class ConfigDialog(Toplevel):
 
     def CreateWidgets(self):
         self.tabPages = TabbedPageSet(self,
-                page_names=['Fonts/Tabs', 'Highlighting', 'Keys', 'General'])
+                page_names=['Fonts/Tabs', 'Highlighting', 'Keys', 'General',
+                            'Extensions'])
         self.tabPages.pack(side=TOP, expand=TRUE, fill=BOTH)
         self.CreatePageFontTab()
         self.CreatePageHighlight()
         self.CreatePageKeys()
         self.CreatePageGeneral()
+        self.CreatePageExtensions()
         self.create_action_buttons().pack(side=BOTTOM)
+
     def create_action_buttons(self):
         if macosxSupport.isAquaTk():
             # Changing the default padding on OSX results in unreadable
@@ -91,28 +97,18 @@ class ConfigDialog(Toplevel):
             paddingArgs = {'padx':6, 'pady':3}
         outer = Frame(self, pady=2)
         buttons = Frame(outer, pady=2)
-        self.buttonOk = Button(
-                buttons, text='Ok', command=self.Ok,
-                takefocus=FALSE, **paddingArgs)
-        self.buttonApply = Button(
-                buttons, text='Apply', command=self.Apply,
-                takefocus=FALSE, **paddingArgs)
-        self.buttonCancel = Button(
-                buttons, text='Cancel', command=self.Cancel,
-                takefocus=FALSE, **paddingArgs)
-        self.buttonOk.pack(side=LEFT, padx=5)
-        self.buttonApply.pack(side=LEFT, padx=5)
-        self.buttonCancel.pack(side=LEFT, padx=5)
-# Comment out Help button creation and packing until implement self.Help
-##        self.buttonHelp = Button(
-##                buttons, text='Help', command=self.Help,
-##                takefocus=FALSE, **paddingArgs)
-##        self.buttonHelp.pack(side=RIGHT, padx=5)
-
+        for txt, cmd in (
+            ('Ok', self.Ok),
+            ('Apply', self.Apply),
+            ('Cancel', self.Cancel),
+            ('Help', self.Help)):
+            Button(buttons, text=txt, command=cmd, takefocus=FALSE,
+                   **paddingArgs).pack(side=LEFT, padx=5)
         # add space above buttons
         Frame(outer, height=2, borderwidth=0).pack(side=TOP)
         buttons.pack(side=BOTTOM)
         return outer
+
     def CreatePageFontTab(self):
         parent = self.parent
         self.fontSize = StringVar(parent)
@@ -217,7 +213,8 @@ class ConfigDialog(Toplevel):
             ("'selected'", 'hilite'), ('\n  var2 = ', 'normal'),
             ("'found'", 'hit'), ('\n  var3 = ', 'normal'),
             ('list', 'builtin'), ('(', 'normal'),
-            ('None', 'builtin'), (')\n\n', 'normal'),
+            ('None', 'builtin'), (')\n', 'normal'),
+            ('  breakpoint("line")', 'break'), ('\n\n', 'normal'),
             (' error ', 'error'), (' ', 'normal'),
             ('cursor |', 'cursor'), ('\n ', 'normal'),
             ('shell', 'console'), (' ', 'normal'),
@@ -264,6 +261,7 @@ class ConfigDialog(Toplevel):
         self.buttonDeleteCustomTheme=Button(
                 frameTheme, text='Delete Custom Theme',
                 command=self.DeleteCustomTheme)
+        self.new_custom_theme = Label(frameTheme, bd=2)
 
         ##widget packing
         #body
@@ -287,6 +285,7 @@ class ConfigDialog(Toplevel):
         self.optMenuThemeBuiltin.pack(side=TOP, fill=X, padx=5, pady=5)
         self.optMenuThemeCustom.pack(side=TOP, fill=X, anchor=W, padx=5, pady=5)
         self.buttonDeleteCustomTheme.pack(side=TOP, fill=X, padx=5, pady=5)
+        self.new_custom_theme.pack(side=TOP, fill=X, pady=5)
         return frame
 
     def CreatePageKeys(self):
@@ -482,9 +481,9 @@ class ConfigDialog(Toplevel):
         return frame
 
     def AttachVarCallbacks(self):
-        self.fontSize.trace_variable('w', self.VarChanged_fontSize)
-        self.fontName.trace_variable('w', self.VarChanged_fontName)
-        self.fontBold.trace_variable('w', self.VarChanged_fontBold)
+        self.fontSize.trace_variable('w', self.VarChanged_font)
+        self.fontName.trace_variable('w', self.VarChanged_font)
+        self.fontBold.trace_variable('w', self.VarChanged_font)
         self.spaceNum.trace_variable('w', self.VarChanged_spaceNum)
         self.colour.trace_variable('w', self.VarChanged_colour)
         self.builtinTheme.trace_variable('w', self.VarChanged_builtinTheme)
@@ -501,15 +500,25 @@ class ConfigDialog(Toplevel):
         self.autoSave.trace_variable('w', self.VarChanged_autoSave)
         self.encoding.trace_variable('w', self.VarChanged_encoding)
 
-    def VarChanged_fontSize(self, *params):
-        value = self.fontSize.get()
-        self.AddChangedItem('main', 'EditorWindow', 'font-size', value)
+    def remove_var_callbacks(self):
+        for var in (
+                self.fontSize, self.fontName, self.fontBold,
+                self.spaceNum, self.colour, self.builtinTheme,
+                self.customTheme, self.themeIsBuiltin, self.highlightTarget,
+                self.keyBinding, self.builtinKeys, self.customKeys,
+                self.keysAreBuiltin, self.winWidth, self.winHeight,
+                self.startupEdit, self.autoSave, self.encoding,):
+            var.trace_vdelete('w', var.trace_vinfo()[0][1])
 
-    def VarChanged_fontName(self, *params):
+    def VarChanged_font(self, *params):
+        '''When one font attribute changes, save them all, as they are
+        not independent from each other. In particular, when we are
+        overriding the default font, we need to write out everything.
+        '''
         value = self.fontName.get()
         self.AddChangedItem('main', 'EditorWindow', 'font', value)
-
-    def VarChanged_fontBold(self, *params):
+        value = self.fontSize.get()
+        self.AddChangedItem('main', 'EditorWindow', 'font-size', value)
         value = self.fontBold.get()
         self.AddChangedItem('main', 'EditorWindow', 'font-bold', value)
 
@@ -522,7 +531,16 @@ class ConfigDialog(Toplevel):
 
     def VarChanged_builtinTheme(self, *params):
         value = self.builtinTheme.get()
-        self.AddChangedItem('main', 'Theme', 'name', value)
+        if value == 'IDLE Dark':
+            if idleConf.GetOption('main', 'Theme', 'name') != 'IDLE New':
+                self.AddChangedItem('main', 'Theme', 'name', 'IDLE Classic')
+            self.AddChangedItem('main', 'Theme', 'name2', value)
+            self.new_custom_theme.config(text='New theme, see Help',
+                                         fg='#500000')
+        else:
+            self.AddChangedItem('main', 'Theme', 'name', value)
+            self.AddChangedItem('main', 'Theme', 'name2', '')
+            self.new_custom_theme.config(text='', fg='black')
         self.PaintThemeSample()
 
     def VarChanged_customTheme(self, *params):
@@ -975,24 +993,24 @@ class ConfigDialog(Toplevel):
         fonts.sort()
         for font in fonts:
             self.listFontName.insert(END, font)
-        configuredFont = idleConf.GetOption(
-                'main', 'EditorWindow', 'font', default='courier')
-        lc_configuredFont = configuredFont.lower()
-        self.fontName.set(lc_configuredFont)
+        configuredFont = idleConf.GetFont(self, 'main', 'EditorWindow')
+        fontName = configuredFont[0].lower()
+        fontSize = configuredFont[1]
+        fontBold  = configuredFont[2]=='bold'
+        self.fontName.set(fontName)
         lc_fonts = [s.lower() for s in fonts]
-        if lc_configuredFont in lc_fonts:
-            currentFontIndex = lc_fonts.index(lc_configuredFont)
+        try:
+            currentFontIndex = lc_fonts.index(fontName)
             self.listFontName.see(currentFontIndex)
             self.listFontName.select_set(currentFontIndex)
             self.listFontName.select_anchor(currentFontIndex)
+        except ValueError:
+            pass
         ##font size dropdown
-        fontSize = idleConf.GetOption(
-                'main', 'EditorWindow', 'font-size', type='int', default='10')
         self.optMenuFontSize.SetMenu(('7', '8', '9', '10', '11', '12', '13',
                                       '14', '16', '18', '20', '22'), fontSize )
         ##fontWeight
-        self.fontBold.set(idleConf.GetOption(
-                'main', 'EditorWindow', 'font-bold', default=0, type='bool'))
+        self.fontBold.set(fontBold)
         ##font sample
         self.SetFontSample()
 
@@ -1100,6 +1118,7 @@ class ConfigDialog(Toplevel):
         self.LoadKeyCfg()
         ### general page
         self.LoadGeneralCfg()
+        # note: extension page handled separately
 
     def SaveNewKeySet(self, keySetName, keySet):
         """
@@ -1153,6 +1172,7 @@ class ConfigDialog(Toplevel):
             # save these even if unchanged!
             idleConf.userCfg[configType].Save()
         self.ResetChangedItems() #clear the changed items dict
+        self.save_all_changed_extensions()  # uses a different mechanism
 
     def DeactivateCurrentConfig(self):
         #Before a config is saved, some cleanup of current
@@ -1184,7 +1204,200 @@ class ConfigDialog(Toplevel):
         self.ActivateConfigChanges()
 
     def Help(self):
-        pass
+        page = self.tabPages._current_page
+        view_text(self, title='Help for IDLE preferences',
+                 text=help_common+help_pages.get(page, ''))
+
+    def CreatePageExtensions(self):
+        """Part of the config dialog used for configuring IDLE extensions.
+
+        This code is generic - it works for any and all IDLE extensions.
+
+        IDLE extensions save their configuration options using idleConf.
+        This code reads the current configuration using idleConf, supplies a
+        GUI interface to change the configuration values, and saves the
+        changes using idleConf.
+
+        Not all changes take effect immediately - some may require restarting IDLE.
+        This depends on each extension's implementation.
+
+        All values are treated as text, and it is up to the user to supply
+        reasonable values. The only exception to this are the 'enable*' options,
+        which are boolean, and can be toggled with a True/False button.
+        """
+        parent = self.parent
+        frame = self.tabPages.pages['Extensions'].frame
+        self.ext_defaultCfg = idleConf.defaultCfg['extensions']
+        self.ext_userCfg = idleConf.userCfg['extensions']
+        self.is_int = self.register(is_int)
+        self.load_extensions()
+        # create widgets - a listbox shows all available extensions, with the
+        # controls for the extension selected in the listbox to the right
+        self.extension_names = StringVar(self)
+        frame.rowconfigure(0, weight=1)
+        frame.columnconfigure(2, weight=1)
+        self.extension_list = Listbox(frame, listvariable=self.extension_names,
+                                      selectmode='browse')
+        self.extension_list.bind('<<ListboxSelect>>', self.extension_selected)
+        scroll = Scrollbar(frame, command=self.extension_list.yview)
+        self.extension_list.yscrollcommand=scroll.set
+        self.details_frame = LabelFrame(frame, width=250, height=250)
+        self.extension_list.grid(column=0, row=0, sticky='nws')
+        scroll.grid(column=1, row=0, sticky='ns')
+        self.details_frame.grid(column=2, row=0, sticky='nsew', padx=[10, 0])
+        frame.configure(padx=10, pady=10)
+        self.config_frame = {}
+        self.current_extension = None
+
+        self.outerframe = self                      # TEMPORARY
+        self.tabbed_page_set = self.extension_list  # TEMPORARY
+
+        # create the frame holding controls for each extension
+        ext_names = ''
+        for ext_name in sorted(self.extensions):
+            self.create_extension_frame(ext_name)
+            ext_names = ext_names + '{' + ext_name + '} '
+        self.extension_names.set(ext_names)
+        self.extension_list.selection_set(0)
+        self.extension_selected(None)
+
+    def load_extensions(self):
+        "Fill self.extensions with data from the default and user configs."
+        self.extensions = {}
+        for ext_name in idleConf.GetExtensions(active_only=False):
+            self.extensions[ext_name] = []
+
+        for ext_name in self.extensions:
+            opt_list = sorted(self.ext_defaultCfg.GetOptionList(ext_name))
+
+            # bring 'enable' options to the beginning of the list
+            enables = [opt_name for opt_name in opt_list
+                       if opt_name.startswith('enable')]
+            for opt_name in enables:
+                opt_list.remove(opt_name)
+            opt_list = enables + opt_list
+
+            for opt_name in opt_list:
+                def_str = self.ext_defaultCfg.Get(
+                        ext_name, opt_name, raw=True)
+                try:
+                    def_obj = {'True':True, 'False':False}[def_str]
+                    opt_type = 'bool'
+                except KeyError:
+                    try:
+                        def_obj = int(def_str)
+                        opt_type = 'int'
+                    except ValueError:
+                        def_obj = def_str
+                        opt_type = None
+                try:
+                    value = self.ext_userCfg.Get(
+                            ext_name, opt_name, type=opt_type, raw=True,
+                            default=def_obj)
+                except ValueError:  # Need this until .Get fixed
+                    value = def_obj  # bad values overwritten by entry
+                var = StringVar(self)
+                var.set(str(value))
+
+                self.extensions[ext_name].append({'name': opt_name,
+                                                  'type': opt_type,
+                                                  'default': def_str,
+                                                  'value': value,
+                                                  'var': var,
+                                                 })
+
+    def extension_selected(self, event):
+        newsel = self.extension_list.curselection()
+        if newsel:
+            newsel = self.extension_list.get(newsel)
+        if newsel is None or newsel != self.current_extension:
+            if self.current_extension:
+                self.details_frame.config(text='')
+                self.config_frame[self.current_extension].grid_forget()
+                self.current_extension = None
+        if newsel:
+            self.details_frame.config(text=newsel)
+            self.config_frame[newsel].grid(column=0, row=0, sticky='nsew')
+            self.current_extension = newsel
+
+    def create_extension_frame(self, ext_name):
+        """Create a frame holding the widgets to configure one extension"""
+        f = VerticalScrolledFrame(self.details_frame, height=250, width=250)
+        self.config_frame[ext_name] = f
+        entry_area = f.interior
+        # create an entry for each configuration option
+        for row, opt in enumerate(self.extensions[ext_name]):
+            # create a row with a label and entry/checkbutton
+            label = Label(entry_area, text=opt['name'])
+            label.grid(row=row, column=0, sticky=NW)
+            var = opt['var']
+            if opt['type'] == 'bool':
+                Checkbutton(entry_area, textvariable=var, variable=var,
+                            onvalue='True', offvalue='False',
+                            indicatoron=FALSE, selectcolor='', width=8
+                            ).grid(row=row, column=1, sticky=W, padx=7)
+            elif opt['type'] == 'int':
+                Entry(entry_area, textvariable=var, validate='key',
+                      validatecommand=(self.is_int, '%P')
+                      ).grid(row=row, column=1, sticky=NSEW, padx=7)
+
+            else:
+                Entry(entry_area, textvariable=var
+                      ).grid(row=row, column=1, sticky=NSEW, padx=7)
+        return
+
+    def set_extension_value(self, section, opt):
+        name = opt['name']
+        default = opt['default']
+        value = opt['var'].get().strip() or default
+        opt['var'].set(value)
+        # if self.defaultCfg.has_section(section):
+        # Currently, always true; if not, indent to return
+        if (value == default):
+            return self.ext_userCfg.RemoveOption(section, name)
+        # set the option
+        return self.ext_userCfg.SetOption(section, name, value)
+
+    def save_all_changed_extensions(self):
+        """Save configuration changes to the user config file."""
+        has_changes = False
+        for ext_name in self.extensions:
+            options = self.extensions[ext_name]
+            for opt in options:
+                if self.set_extension_value(ext_name, opt):
+                    has_changes = True
+        if has_changes:
+            self.ext_userCfg.Save()
+
+
+help_common = '''\
+When you click either the Apply or Ok buttons, settings in this
+dialog that are different from IDLE's default are saved in
+a .idlerc directory in your home directory. Except as noted,
+these changes apply to all versions of IDLE installed on this
+machine. Some do not take affect until IDLE is restarted.
+[Cancel] only cancels changes made since the last save.
+'''
+help_pages = {
+    'Highlighting':'''
+Highlighting:
+The IDLE Dark color theme is new in October 2015.  It can only
+be used with older IDLE releases if it is saved as a custom
+theme, with a different name.
+'''
+}
+
+
+def is_int(s):
+    "Return 's is blank or represents an int'"
+    if not s:
+        return True
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
 
 class VerticalScrolledFrame(Frame):
     """A pure Tkinter vertically scrollable frame.
@@ -1200,7 +1413,7 @@ class VerticalScrolledFrame(Frame):
         vscrollbar = Scrollbar(self, orient=VERTICAL)
         vscrollbar.pack(fill=Y, side=RIGHT, expand=FALSE)
         canvas = Canvas(self, bd=0, highlightthickness=0,
-                        yscrollcommand=vscrollbar.set)
+                        yscrollcommand=vscrollbar.set, width=240)
         canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)
         vscrollbar.config(command=canvas.yview)
 
@@ -1218,9 +1431,6 @@ class VerticalScrolledFrame(Frame):
             # update the scrollbars to match the size of the inner frame
             size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
             canvas.config(scrollregion="0 0 %s %s" % size)
-            if interior.winfo_reqwidth() != canvas.winfo_width():
-                # update the canvas's width to fit the inner frame
-                canvas.config(width=interior.winfo_reqwidth())
         interior.bind('<Configure>', _configure_interior)
 
         def _configure_canvas(event):
@@ -1231,207 +1441,10 @@ class VerticalScrolledFrame(Frame):
 
         return
 
-def is_int(s):
-    "Return 's is blank or represents an int'"
-    if not s:
-        return True
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
-
-# TODO:
-# * Revert to default(s)? Per option or per extension?
-# * List options in their original order (possible??)
-class ConfigExtensionsDialog(Toplevel):
-    """A dialog for configuring IDLE extensions.
-
-    This dialog is generic - it works for any and all IDLE extensions.
-
-    IDLE extensions save their configuration options using idleConf.
-    ConfigExtensionsDialog reads the current configuration using idleConf,
-    supplies a GUI interface to change the configuration values, and saves the
-    changes using idleConf.
-
-    Not all changes take effect immediately - some may require restarting IDLE.
-    This depends on each extension's implementation.
-
-    All values are treated as text, and it is up to the user to supply
-    reasonable values. The only exception to this are the 'enable*' options,
-    which are boolean, and can be toggled with an True/False button.
-    """
-    def __init__(self, parent, title=None, _htest=False):
-        Toplevel.__init__(self, parent)
-        self.wm_withdraw()
-
-        self.configure(borderwidth=5)
-        self.geometry(
-                "+%d+%d" % (parent.winfo_rootx() + 20,
-                parent.winfo_rooty() + (30 if not _htest else 150)))
-        self.wm_title(title or 'IDLE Extensions Configuration')
-
-        self.defaultCfg = idleConf.defaultCfg['extensions']
-        self.userCfg = idleConf.userCfg['extensions']
-        self.is_int = self.register(is_int)
-        self.load_extensions()
-        self.create_widgets()
-
-        self.resizable(height=FALSE, width=FALSE) # don't allow resizing yet
-        self.transient(parent)
-        self.protocol("WM_DELETE_WINDOW", self.Cancel)
-        self.tabbed_page_set.focus_set()
-        # wait for window to be generated
-        self.update()
-        # set current width as the minimum width
-        self.wm_minsize(self.winfo_width(), 1)
-        # now allow resizing
-        self.resizable(height=TRUE, width=TRUE)
-
-        self.wm_deiconify()
-        if not _htest:
-            self.grab_set()
-            self.wait_window()
-
-    def load_extensions(self):
-        "Fill self.extensions with data from the default and user configs."
-        self.extensions = {}
-        for ext_name in idleConf.GetExtensions(active_only=False):
-            self.extensions[ext_name] = []
-
-        for ext_name in self.extensions:
-            opt_list = sorted(self.defaultCfg.GetOptionList(ext_name))
-
-            # bring 'enable' options to the beginning of the list
-            enables = [opt_name for opt_name in opt_list
-                       if opt_name.startswith('enable')]
-            for opt_name in enables:
-                opt_list.remove(opt_name)
-            opt_list = enables + opt_list
-
-            for opt_name in opt_list:
-                def_str = self.defaultCfg.Get(
-                        ext_name, opt_name, raw=True)
-                try:
-                    def_obj = {'True':True, 'False':False}[def_str]
-                    opt_type = 'bool'
-                except KeyError:
-                    try:
-                        def_obj = int(def_str)
-                        opt_type = 'int'
-                    except ValueError:
-                        def_obj = def_str
-                        opt_type = None
-                try:
-                    value = self.userCfg.Get(
-                            ext_name, opt_name, type=opt_type, raw=True,
-                            default=def_obj)
-                except ValueError:  # Need this until .Get fixed
-                    value = def_obj  # bad values overwritten by entry
-                var = StringVar(self)
-                var.set(str(value))
-
-                self.extensions[ext_name].append({'name': opt_name,
-                                                  'type': opt_type,
-                                                  'default': def_str,
-                                                  'value': value,
-                                                  'var': var,
-                                                 })
-
-    def create_widgets(self):
-        """Create the dialog's widgets."""
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=0)
-        self.columnconfigure(0, weight=1)
-
-        # create the tabbed pages
-        self.tabbed_page_set = TabbedPageSet(
-                self, page_names=self.extensions.keys(),
-                n_rows=None, max_tabs_per_row=5,
-                page_class=TabbedPageSet.PageRemove)
-        self.tabbed_page_set.grid(row=0, column=0, sticky=NSEW)
-        for ext_name in self.extensions:
-            self.create_tab_page(ext_name)
-
-        self.create_action_buttons().grid(row=1)
-
-    create_action_buttons = ConfigDialog.create_action_buttons.im_func
-
-    def create_tab_page(self, ext_name):
-        """Create the page for an extension."""
-
-        page = LabelFrame(self.tabbed_page_set.pages[ext_name].frame,
-                          border=2, padx=2, relief=GROOVE,
-                          text=' %s ' % ext_name)
-        page.pack(fill=BOTH, expand=True, padx=12, pady=2)
-
-        # create the scrollable frame which will contain the entries
-        scrolled_frame = VerticalScrolledFrame(page, pady=2, height=250)
-        scrolled_frame.pack(side=BOTTOM, fill=BOTH, expand=TRUE)
-        entry_area = scrolled_frame.interior
-        entry_area.columnconfigure(0, weight=0)
-        entry_area.columnconfigure(1, weight=1)
-
-        # create an entry for each configuration option
-        for row, opt in enumerate(self.extensions[ext_name]):
-            # create a row with a label and entry/checkbutton
-            label = Label(entry_area, text=opt['name'])
-            label.grid(row=row, column=0, sticky=NW)
-            var = opt['var']
-            if opt['type'] == 'bool':
-                Checkbutton(entry_area, textvariable=var, variable=var,
-                            onvalue='True', offvalue='False',
-                            indicatoron=FALSE, selectcolor='', width=8
-                    ).grid(row=row, column=1, sticky=W, padx=7)
-            elif opt['type'] == 'int':
-                Entry(entry_area, textvariable=var, validate='key',
-                    validatecommand=(self.is_int, '%P')
-                    ).grid(row=row, column=1, sticky=NSEW, padx=7)
-
-            else:
-                Entry(entry_area, textvariable=var
-                    ).grid(row=row, column=1, sticky=NSEW, padx=7)
-        return
-
-
-    Ok = ConfigDialog.Ok.im_func
-
-    def Apply(self):
-        self.save_all_changed_configs()
-        pass
-
-    Cancel = ConfigDialog.Cancel.im_func
-
-    def Help(self):
-        pass
-
-    def set_user_value(self, section, opt):
-        name = opt['name']
-        default = opt['default']
-        value = opt['var'].get().strip() or default
-        opt['var'].set(value)
-        # if self.defaultCfg.has_section(section):
-        # Currently, always true; if not, indent to return
-        if (value == default):
-            return self.userCfg.RemoveOption(section, name)
-        # set the option
-        return self.userCfg.SetOption(section, name, value)
-
-    def save_all_changed_configs(self):
-        """Save configuration changes to the user config file."""
-        has_changes = False
-        for ext_name in self.extensions:
-            options = self.extensions[ext_name]
-            for opt in options:
-                if self.set_user_value(ext_name, opt):
-                    has_changes = True
-        if has_changes:
-            self.userCfg.Save()
-
 
 if __name__ == '__main__':
     import unittest
     unittest.main('idlelib.idle_test.test_configdialog',
                   verbosity=2, exit=False)
     from idlelib.idle_test.htest import run
-    run(ConfigDialog, ConfigExtensionsDialog)
+    run(ConfigDialog)

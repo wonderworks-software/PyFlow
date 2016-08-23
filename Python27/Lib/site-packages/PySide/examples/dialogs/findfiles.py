@@ -83,14 +83,14 @@ class Window(QtGui.QDialog):
         progressDialog = QtGui.QProgressDialog(self)
 
         progressDialog.setCancelButtonText("&Cancel")
-        progressDialog.setRange(0, files.count())
+        progressDialog.setRange(0, len(files))
         progressDialog.setWindowTitle("Find Files")
 
         foundFiles = []
 
-        for i in range(files.count()):
+        for i in range(len(files)):
             progressDialog.setValue(i)
-            progressDialog.setLabelText("Searching file number %d of %d..." % (i, files.count()))
+            progressDialog.setLabelText("Searching file number %d of %d..." % (i, len(files)))
             QtGui.qApp.processEvents()
 
             if progressDialog.wasCanceled():

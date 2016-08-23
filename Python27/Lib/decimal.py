@@ -224,7 +224,7 @@ class InvalidOperation(DecimalException):
 class ConversionSyntax(InvalidOperation):
     """Trying to convert badly formed string.
 
-    This occurs and signals invalid-operation if an string is being
+    This occurs and signals invalid-operation if a string is being
     converted to a number and it does not conform to the numeric string
     syntax.  The result is [0,qNaN].
     """
@@ -1082,7 +1082,7 @@ class Decimal(object):
     def __pos__(self, context=None):
         """Returns a copy, unless it is a sNaN.
 
-        Rounds the number (if more then precision digits)
+        Rounds the number (if more than precision digits)
         """
         if self._is_special:
             ans = self._check_nans(context=context)

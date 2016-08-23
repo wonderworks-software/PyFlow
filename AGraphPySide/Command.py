@@ -3,7 +3,7 @@ base class for all commands. Use this to implement your own
 """
 
 import re
-
+from AbstractGraph import FLAG_SYMBOL
 
 class Command(object):
 
@@ -16,10 +16,10 @@ class Command(object):
         returns - {'cmd': command, 'flags': {-x1: 50, -x2: 100}}
         '''
         flags = {}
-        dashes = [m.start() for m in re.finditer('/', line)]
+        dashes = [m.start() for m in re.finditer(FLAG_SYMBOL, line)]
         for i in xrange(len(dashes)-1):
             newLine =  line[dashes[i]:]
-            newLineDashes = [m.start() for m in re.finditer('/', newLine)]
+            newLineDashes = [m.start() for m in re.finditer(FLAG_SYMBOL, newLine)]
             flag = newLine[:newLineDashes[1]-1].split(" ", 1) # flag + value
             flags[flag[0]] = flag[1]
         flag = line[dashes[-1]:].split(" ", 1) # last flag + value

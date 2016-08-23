@@ -11,9 +11,10 @@ import os
 import marshal
 import textwrap
 
+from setuptools.extern import six
+
 from pkg_resources import get_build_platform, Distribution, ensure_directory
 from pkg_resources import EntryPoint
-from setuptools.compat import basestring
 from setuptools.extension import Library
 from setuptools import Command
 
@@ -413,7 +414,7 @@ def iter_symbols(code):
     for name in code.co_names:
         yield name
     for const in code.co_consts:
-        if isinstance(const, basestring):
+        if isinstance(const, six.string_types):
             yield const
         elif isinstance(const, CodeType):
             for name in iter_symbols(const):

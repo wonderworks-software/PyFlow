@@ -25,7 +25,7 @@ from ..fixer_util import Name, syms, Node, Leaf
 
 def has_metaclass(parent):
     """ we have to check the cls_node without changing it.
-        There are two possiblities:
+        There are two possibilities:
           1)  clsdef => suite => simple_stmt => expr_stmt => Leaf('__meta')
           2)  clsdef => simple_stmt => expr_stmt => Leaf('__meta')
     """
@@ -114,7 +114,7 @@ def find_metas(cls_node):
                 left_node = expr_node.children[0]
                 if isinstance(left_node, Leaf) and \
                         left_node.value == u'__metaclass__':
-                    # We found a assignment to __metaclass__.
+                    # We found an assignment to __metaclass__.
                     fixup_simple_stmt(node, i, simple_node)
                     remove_trailing_newline(simple_node)
                     yield (node, i, simple_node)

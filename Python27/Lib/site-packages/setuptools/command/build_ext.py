@@ -11,8 +11,8 @@ import itertools
 from setuptools.extension import Library
 
 try:
-    # Attempt to use Pyrex for building extensions, if available
-    from Pyrex.Distutils.build_ext import build_ext as _build_ext
+    # Attempt to use Cython for building extensions, if available
+    from Cython.Distutils.build_ext import build_ext as _build_ext
 except ImportError:
     _build_ext = _du_build_ext
 
@@ -41,7 +41,6 @@ elif os.name != 'nt':
 
 
 if_dl = lambda s: s if have_rtld else ''
-
 
 class build_ext(_build_ext):
     def run(self):
@@ -73,15 +72,6 @@ class build_ext(_build_ext):
             )
             if ext._needs_stub:
                 self.write_stub(package_dir or os.curdir, ext, True)
-
-    if _build_ext is not _du_build_ext and not hasattr(_build_ext,
-                                                       'pyrex_sources'):
-        # Workaround for problems using some Pyrex versions w/SWIG and/or 2.4
-        def swig_sources(self, sources, *otherargs):
-            # first do any Pyrex processing
-            sources = _build_ext.swig_sources(self, sources) or sources
-            # Then do any actual SWIG stuff on the remainder
-            return _du_build_ext.swig_sources(self, sources, *otherargs)
 
     def get_ext_filename(self, fullname):
         filename = _build_ext.get_ext_filename(self, fullname)
@@ -176,6 +166,7 @@ class build_ext(_build_ext):
         return _build_ext.get_export_symbols(self, ext)
 
     def build_extension(self, ext):
+        ext._convert_pyx_sources_to_lang()
         _compiler = self.compiler
         try:
             if isinstance(ext, Library):

@@ -1,0 +1,31 @@
+SAVE GRAPH SCRIPT
+createNode ~type FloatNode ~x 4320.85002435 ~y 5187.20606076 ~n SphereRadius
+setAttr ~an SphereRadius.out ~v 3.55
+createNode ~type FloatNode ~x 4641.2528616 ~y 5005.43958638 ~n Pi
+setAttr ~an Pi.out ~v 3.14
+createNode ~type MultNode ~x 4824.58619494 ~y 4926.10625304 ~n MultNode
+setAttr ~an MultNode.inputA ~v 4
+setAttr ~an MultNode.inputB ~v 3.14
+setAttr ~an MultNode.output ~v 12.56
+createNode ~type IntNode ~x 4586.58619494 ~y 4887.43958638 ~n IntNode
+setAttr ~an IntNode.out ~v 4.0
+createNode ~type PowNode ~x 4864.99158228 ~y 5130.68152972 ~n PowNode
+setAttr ~an PowNode.base ~v 3.55
+setAttr ~an PowNode.power ~v 2
+setAttr ~an PowNode.output ~v 12.6025
+createNode ~type IntNode ~x 4639.9980276 ~y 5244.66190488 ~n IntNode1
+setAttr ~an IntNode1.out ~v 2.0
+createNode ~type MultNode ~x 5115.91952827 ~y 5000.77291971 ~n MultNode1
+setAttr ~an MultNode1.inputA ~v 12.56
+setAttr ~an MultNode1.inputB ~v 12.6025
+setAttr ~an MultNode1.output ~v 158.2874
+createNode ~type RequestNode ~x 5401.33333333 ~y 5057.33333333 ~n RequestNode
+setAttr ~an RequestNode.input ~v 158.2874
+connectAttr ~src IntNode.out ~dst MultNode.inputA
+connectAttr ~src Pi.out ~dst MultNode.inputB
+connectAttr ~src SphereRadius.out ~dst PowNode.base
+connectAttr ~src IntNode1.out ~dst PowNode.power
+connectAttr ~src MultNode.output ~dst MultNode1.inputA
+connectAttr ~src PowNode.output ~dst MultNode1.inputB
+connectAttr ~src MultNode1.output ~dst RequestNode.input
+comment ~mode names ~text <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"><html><head><meta name="qrichtext" content="1" /><style type="text/css">p, li { white-space: pre-wrap; }</style></head><body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;"><p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">private calculations of sphere</p><p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">surface area</p></body></html> ~nl Pi MultNode IntNode PowNode IntNode1 MultNode1 

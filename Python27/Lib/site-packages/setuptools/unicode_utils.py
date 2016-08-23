@@ -1,11 +1,11 @@
 import unicodedata
 import sys
-from setuptools.compat import unicode as decoded_string
 
+from setuptools.extern import six
 
 # HFS Plus uses decomposed UTF-8
 def decompose(path):
-    if isinstance(path, decoded_string):
+    if isinstance(path, six.text_type):
         return unicodedata.normalize('NFD', path)
     try:
         path = path.decode('utf-8')
@@ -22,11 +22,13 @@ def filesys_decode(path):
     NONE when no expected encoding works
     """
 
-    fs_enc = sys.getfilesystemencoding()
-    if isinstance(path, decoded_string):
+    if isinstance(path, six.text_type):
         return path
 
-    for enc in (fs_enc, "utf-8"):
+    fs_enc = sys.getfilesystemencoding() or 'utf-8'
+    candidates = fs_enc, 'utf-8'
+
+    for enc in candidates:
         try:
             return path.decode(enc)
         except UnicodeDecodeError:

@@ -5,20 +5,19 @@
 #     end-of-line conventions, instead of relying on the standard library,
 #     which will only understand the local convention.
 
+import codecs
+from codecs import BOM_UTF8
 import os
 import pipes
+import re
 import sys
-import codecs
 import tempfile
+
 import tkFileDialog
 import tkMessageBox
-import re
-from Tkinter import *
 from SimpleDialog import SimpleDialog
 
 from idlelib.configHandler import idleConf
-
-from codecs import BOM_UTF8
 
 # Try setting the locale, so that we can find out
 # what encoding to use
@@ -66,7 +65,7 @@ else:
 
 encoding = encoding.lower()
 
-coding_re = re.compile(r'^[ \t\f]*#.*coding[:=][ \t]*([-\w.]+)')
+coding_re = re.compile(r'^[ \t\f]*#.*?coding[:=][ \t]*([-\w.]+)')
 blank_re = re.compile(r'^[ \t\f]*(?:[#\r\n]|$)')
 
 class EncodingMessage(SimpleDialog):
@@ -139,7 +138,6 @@ def coding_spec(str):
         # The standard encoding error does not indicate the encoding
         raise LookupError, "Unknown encoding "+name
     return name
-
 
 class IOBinding:
 
@@ -250,7 +248,7 @@ class IOBinding:
             with open(filename, 'rb') as f:
                 chars = f.read()
         except IOError as msg:
-            tkMessageBox.showerror("I/O Error", str(msg), master=self.text)
+            tkMessageBox.showerror("I/O Error", str(msg), parent=self.text)
             return False
 
         chars = self.decode(chars)
@@ -297,7 +295,7 @@ class IOBinding:
                 title="Error loading the file",
                 message="The encoding '%s' is not known to this Python "\
                 "installation. The file may not display correctly" % name,
-                master = self.text)
+                parent = self.text)
             enc = None
         if enc:
             try:
@@ -327,7 +325,7 @@ class IOBinding:
                   title="Save On Close",
                   message=message,
                   default=tkMessageBox.YES,
-                  master=self.text)
+                  parent=self.text)
         if confirm:
             reply = "yes"
             self.save(None)
@@ -386,7 +384,7 @@ class IOBinding:
             return True
         except IOError as msg:
             tkMessageBox.showerror("I/O Error", str(msg),
-                                   master=self.text)
+                                   parent=self.text)
             return False
 
     def encode(self, chars):
@@ -416,7 +414,7 @@ class IOBinding:
             tkMessageBox.showerror(
                 "I/O Error",
                 "%s. Saving as UTF-8" % failed,
-                master = self.text)
+                parent = self.text)
         # If there was a UTF-8 signature, use that. This should not fail
         if self.fileencoding == BOM_UTF8 or failed:
             return BOM_UTF8 + chars.encode("utf-8")
@@ -429,7 +427,7 @@ class IOBinding:
                     "I/O Error",
                     "Cannot save this as '%s' anymore. Saving as UTF-8" \
                     % self.fileencoding,
-                    master = self.text)
+                    parent = self.text)
                 return BOM_UTF8 + chars.encode("utf-8")
         # Nothing was declared, and we had not determined an encoding
         # on loading. Recommend an encoding line.
@@ -473,7 +471,7 @@ class IOBinding:
                   title="Print",
                   message="Print to Default Printer",
                   default=tkMessageBox.OK,
-                  master=self.text)
+                  parent=self.text)
         if not confirm:
             self.text.focus_set()
             return "break"
@@ -510,10 +508,10 @@ class IOBinding:
                          status + output
             if output:
                 output = "Printing command: %s\n" % repr(command) + output
-                tkMessageBox.showerror("Print status", output, master=self.text)
+                tkMessageBox.showerror("Print status", output, parent=self.text)
         else:  #no printing for this platform
             message = "Printing is not enabled for this platform: %s" % platform
-            tkMessageBox.showinfo("Print status", message, master=self.text)
+            tkMessageBox.showinfo("Print status", message, parent=self.text)
         if tempfilename:
             os.unlink(tempfilename)
         return "break"
@@ -532,7 +530,7 @@ class IOBinding:
     def askopenfile(self):
         dir, base = self.defaultfilename("open")
         if not self.opendialog:
-            self.opendialog = tkFileDialog.Open(master=self.text,
+            self.opendialog = tkFileDialog.Open(parent=self.text,
                                                 filetypes=self.filetypes)
         filename = self.opendialog.show(initialdir=dir, initialfile=base)
         if isinstance(filename, unicode):
@@ -555,7 +553,7 @@ class IOBinding:
         dir, base = self.defaultfilename("save")
         if not self.savedialog:
             self.savedialog = tkFileDialog.SaveAs(
-                    master=self.text,
+                    parent=self.text,
                     filetypes=self.filetypes,
                     defaultextension=self.defaultextension)
         filename = self.savedialog.show(initialdir=dir, initialfile=base)
@@ -567,8 +565,11 @@ class IOBinding:
         "Update recent file list on all editor windows"
         self.editwin.update_recent_files_list(filename)
 
+
 def _io_binding(parent):  # htest #
-    root = Tk()
+    from Tkinter import Toplevel, Text
+
+    root = Toplevel(parent)
     root.title("Test IOBinding")
     width, height, x, y = list(map(int, re.split('[x+]', parent.geometry())))
     root.geometry("+%d+%d"%(x, y + 150))
@@ -577,14 +578,24 @@ def _io_binding(parent):  # htest #
             self.text = text
             self.flist = None
             self.text.bind("<Control-o>", self.open)
+            self.text.bind('<Control-p>', self.printer)
             self.text.bind("<Control-s>", self.save)
+            self.text.bind("<Alt-s>", self.saveas)
+            self.text.bind('<Control-c>', self.savecopy)
         def get_saved(self): return 0
         def set_saved(self, flag): pass
         def reset_undo(self): pass
+        def update_recent_files_list(self, filename): pass
         def open(self, event):
             self.text.event_generate("<<open-window-from-file>>")
+        def printer(self, event):
+            self.text.event_generate("<<print-window>>")
         def save(self, event):
             self.text.event_generate("<<save-window>>")
+        def saveas(self, event):
+            self.text.event_generate("<<save-window-as-file>>")
+        def savecopy(self, event):
+            self.text.event_generate("<<save-copy-of-window-as-file>>")
 
     text = Text(root)
     text.pack()

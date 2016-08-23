@@ -273,7 +273,7 @@ class PiecesModel(QtCore.QAbstractListModel):
 
         while not stream.atEnd():
             pixmap = QtGui.QPixmap()
-            location = QtGui.QPoint()
+            location = QtCore.QPoint()
             stream >> pixmap >> location
 
             self.beginInsertRows(QtCore.QModelIndex(), endRow, endRow)

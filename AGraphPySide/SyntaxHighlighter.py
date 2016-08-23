@@ -1,4 +1,5 @@
 from PySide import QtGui, QtCore
+from AbstractGraph import FLAG_SYMBOL
 
 
 class Highlighter(QtGui.QSyntaxHighlighter):
@@ -22,7 +23,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         flagFormat = QtGui.QTextCharFormat()
         flagFormat.setForeground(QtCore.Qt.darkCyan)
         # flagFormat.setFontWeight(QtGui.QFont.Bold)
-        self.highlightingRules.append((QtCore.QRegExp("/\w+"),
+        self.highlightingRules.append((QtCore.QRegExp("{0}\w+".format(FLAG_SYMBOL)),
                 flagFormat))
 
 

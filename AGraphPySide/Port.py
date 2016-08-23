@@ -59,7 +59,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             e.kill()
         if not len(self.edge_list) == 0:
             self.disconnect_all()
-        self.parent.graph.write_to_console("disconnectAttr /an {0}".format(self.port_name()))
+        self.parent.graph.write_to_console("disconnectAttr {1}an {0}".format(self.port_name(), FLAG_SYMBOL))
 
     def shape(self):
 
@@ -89,7 +89,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
     def write_to_console(self, data):
         g = self.parent.graph
         if g:
-            g.write_to_console("setAttr /an {0} /v {1}".format(self.port_name(), self._data))
+            g.write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), self._data, FLAG_SYMBOL))
 
     def getLayout(self):
         return self.parentItem().layout()
@@ -110,5 +110,5 @@ class Port(QtGui.QGraphicsWidget, AGPort):
     def set_data(self, data, dirty_propagate=True):
 
         AGPort.set_data(self, data, dirty_propagate)
-        self.write_to_console("setAttr /an {0} /v {1}".format(self.port_name(), data))
+        self.write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), data, FLAG_SYMBOL))
         update_ports(self)

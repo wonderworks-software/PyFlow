@@ -493,6 +493,16 @@ class TestMiscellaneous(unittest.TestCase):
         # longer accept unicode strings.
         self.assertEqual(locale.normalize(u'en_US'), 'en_US.ISO8859-1')
 
+    def test_setlocale_unicode(self):
+        oldlocale = locale.getlocale()
+        self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
+
+        user_locale = locale.setlocale(locale.LC_CTYPE, '')
+        unicode_locale = user_locale.decode('utf-8')
+
+        user_locale2 = locale.setlocale(locale.LC_CTYPE, unicode_locale)
+        self.assertEqual(user_locale, user_locale2)
+
 
 def test_main():
     tests = [

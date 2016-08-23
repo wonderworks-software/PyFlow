@@ -1,3 +1,4 @@
+from __future__ import print_function
 from Tkinter import TclError
 
 class WidgetRedirector:
@@ -67,7 +68,7 @@ class WidgetRedirector:
         '''Return OriginalCommand(operation) after registering function.
 
         Registration adds an operation: function pair to ._operations.
-        It also adds an widget function attribute that masks the Tkinter
+        It also adds a widget function attribute that masks the Tkinter
         class instance method.  Method masking operates independently
         from command dispatch.
 
@@ -161,7 +162,7 @@ def _widget_redirector(parent):  # htest #
     text.focus_set()
     redir = WidgetRedirector(text)
     def my_insert(*args):
-        print "insert", args
+        print("insert", args)
         original_insert(*args)
     original_insert = redir.register("insert", my_insert)
     root.mainloop()

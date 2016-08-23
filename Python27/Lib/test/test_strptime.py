@@ -4,8 +4,9 @@ import unittest
 import time
 import locale
 import re
+import os
 import sys
-from test import test_support
+from test import test_support as support
 from datetime import date as datetime_date
 
 import _strptime
@@ -189,7 +190,7 @@ class TimeRETests(unittest.TestCase):
 
     def test_whitespace_substitution(self):
         # When pattern contains whitespace, make sure it is taken into account
-        # so as to not allow to subpatterns to end up next to each other and
+        # so as to not allow subpatterns to end up next to each other and
         # "steal" characters from each other.
         pattern = self.time_re.pattern('%j %H')
         self.assertFalse(re.match(pattern, "180"))
@@ -314,9 +315,10 @@ class StrptimeTests(unittest.TestCase):
         tz_name = time.tzname[0]
         if tz_name.upper() in ("UTC", "GMT"):
             self.skipTest('need non-UTC/GMT timezone')
-        try:
-            original_tzname = time.tzname
-            original_daylight = time.daylight
+
+        with support.swap_attr(time, 'tzname', (tz_name, tz_name)), \
+             support.swap_attr(time, 'daylight', 1), \
+             support.swap_attr(time, 'tzset', lambda: None):
             time.tzname = (tz_name, tz_name)
             time.daylight = 1
             tz_value = _strptime._strptime_time(tz_name, "%Z")[8]
@@ -324,9 +326,6 @@ class StrptimeTests(unittest.TestCase):
                     "%s lead to a timezone value of %s instead of -1 when "
                     "time.daylight set to %s and passing in %s" %
                     (time.tzname, tz_value, time.daylight, tz_name))
-        finally:
-            time.tzname = original_tzname
-            time.daylight = original_daylight
 
     def test_date_time(self):
         # Test %c directive
@@ -487,14 +486,14 @@ class CalculationTests(unittest.TestCase):
     def test_week_0(self):
         def check(value, format, *expected):
             self.assertEqual(_strptime._strptime_time(value, format)[:-1], expected)
-        check('2015 0 0', '%Y %U %w', 2014, 12, 28, 0, 0, 0, 6, -3)
+        check('2015 0 0', '%Y %U %w', 2014, 12, 28, 0, 0, 0, 6, 362)
         check('2015 0 0', '%Y %W %w', 2015, 1, 4, 0, 0, 0, 6, 4)
-        check('2015 0 1', '%Y %U %w', 2014, 12, 29, 0, 0, 0, 0, -2)
-        check('2015 0 1', '%Y %W %w', 2014, 12, 29, 0, 0, 0, 0, -2)
-        check('2015 0 2', '%Y %U %w', 2014, 12, 30, 0, 0, 0, 1, -1)
-        check('2015 0 2', '%Y %W %w', 2014, 12, 30, 0, 0, 0, 1, -1)
-        check('2015 0 3', '%Y %U %w', 2014, 12, 31, 0, 0, 0, 2, 0)
-        check('2015 0 3', '%Y %W %w', 2014, 12, 31, 0, 0, 0, 2, 0)
+        check('2015 0 1', '%Y %U %w', 2014, 12, 29, 0, 0, 0, 0, 363)
+        check('2015 0 1', '%Y %W %w', 2014, 12, 29, 0, 0, 0, 0, 363)
+        check('2015 0 2', '%Y %U %w', 2014, 12, 30, 0, 0, 0, 1, 364)
+        check('2015 0 2', '%Y %W %w', 2014, 12, 30, 0, 0, 0, 1, 364)
+        check('2015 0 3', '%Y %U %w', 2014, 12, 31, 0, 0, 0, 2, 365)
+        check('2015 0 3', '%Y %W %w', 2014, 12, 31, 0, 0, 0, 2, 365)
         check('2015 0 4', '%Y %U %w', 2015, 1, 1, 0, 0, 0, 3, 1)
         check('2015 0 4', '%Y %W %w', 2015, 1, 1, 0, 0, 0, 3, 1)
         check('2015 0 5', '%Y %U %w', 2015, 1, 2, 0, 0, 0, 4, 2)
@@ -502,6 +501,20 @@ class CalculationTests(unittest.TestCase):
         check('2015 0 6', '%Y %U %w', 2015, 1, 3, 0, 0, 0, 5, 3)
         check('2015 0 6', '%Y %W %w', 2015, 1, 3, 0, 0, 0, 5, 3)
 
+        check('2009 0 0', '%Y %U %w', 2008, 12, 28, 0, 0, 0, 6, 363)
+        check('2009 0 0', '%Y %W %w', 2009, 1, 4, 0, 0, 0, 6, 4)
+        check('2009 0 1', '%Y %U %w', 2008, 12, 29, 0, 0, 0, 0, 364)
+        check('2009 0 1', '%Y %W %w', 2008, 12, 29, 0, 0, 0, 0, 364)
+        check('2009 0 2', '%Y %U %w', 2008, 12, 30, 0, 0, 0, 1, 365)
+        check('2009 0 2', '%Y %W %w', 2008, 12, 30, 0, 0, 0, 1, 365)
+        check('2009 0 3', '%Y %U %w', 2008, 12, 31, 0, 0, 0, 2, 366)
+        check('2009 0 3', '%Y %W %w', 2008, 12, 31, 0, 0, 0, 2, 366)
+        check('2009 0 4', '%Y %U %w', 2009, 1, 1, 0, 0, 0, 3, 1)
+        check('2009 0 4', '%Y %W %w', 2009, 1, 1, 0, 0, 0, 3, 1)
+        check('2009 0 5', '%Y %U %w', 2009, 1, 2, 0, 0, 0, 4, 2)
+        check('2009 0 5', '%Y %W %w', 2009, 1, 2, 0, 0, 0, 4, 2)
+        check('2009 0 6', '%Y %U %w', 2009, 1, 3, 0, 0, 0, 5, 3)
+        check('2009 0 6', '%Y %W %w', 2009, 1, 3, 0, 0, 0, 5, 3)
 
 class CacheTests(unittest.TestCase):
     """Test that caching works properly."""
@@ -538,7 +551,7 @@ class CacheTests(unittest.TestCase):
         _strptime._strptime_time("10", "%d")
         self.assertIsNot(locale_time_id, _strptime._TimeRE_cache.locale_time)
 
-    def test_TimeRE_recreation(self):
+    def test_TimeRE_recreation_locale(self):
         # The TimeRE instance should be recreated upon changing the locale.
         locale_info = locale.getlocale(locale.LC_TIME)
         try:
@@ -567,9 +580,36 @@ class CacheTests(unittest.TestCase):
         finally:
             locale.setlocale(locale.LC_TIME, locale_info)
 
+    @support.run_with_tz('STD-1DST')
+    def test_TimeRE_recreation_timezone(self):
+        # The TimeRE instance should be recreated upon changing the timezone.
+        oldtzname = time.tzname
+        tm = _strptime._strptime_time(time.tzname[0], '%Z')
+        self.assertEqual(tm.tm_isdst, 0)
+        tm = _strptime._strptime_time(time.tzname[1], '%Z')
+        self.assertEqual(tm.tm_isdst, 1)
+        # Get id of current cache object.
+        first_time_re = _strptime._TimeRE_cache
+        # Change the timezone and force a recreation of the cache.
+        os.environ['TZ'] = 'EST+05EDT,M3.2.0,M11.1.0'
+        time.tzset()
+        tm = _strptime._strptime_time(time.tzname[0], '%Z')
+        self.assertEqual(tm.tm_isdst, 0)
+        tm = _strptime._strptime_time(time.tzname[1], '%Z')
+        self.assertEqual(tm.tm_isdst, 1)
+        # Get the new cache object's id.
+        second_time_re = _strptime._TimeRE_cache
+        # They should not be equal.
+        self.assertIsNot(first_time_re, second_time_re)
+        # Make sure old names no longer accepted.
+        with self.assertRaises(ValueError):
+            _strptime._strptime_time(oldtzname[0], '%Z')
+        with self.assertRaises(ValueError):
+            _strptime._strptime_time(oldtzname[1], '%Z')
+
 
 def test_main():
-    test_support.run_unittest(
+    support.run_unittest(
         getlang_Tests,
         LocaleTime_Tests,
         TimeRETests,

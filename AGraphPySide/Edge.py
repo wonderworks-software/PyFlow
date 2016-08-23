@@ -15,7 +15,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 
-        self.setZValue(0)
+        self.setZValue(1.0)
         self.connection = {'From': self.source.port_name(),
                            'To': self.destination.port_name()}
 
@@ -44,7 +44,6 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
     def hoverEnterEvent(self, event):
         super(Edge, self).hoverEnterEvent(event)
         self.pen.setWidthF(self.thikness+(self.thikness/1.5))
-        self.setZValue(2.0)
         self.update()
         if self.graph.is_debug():
             print self.__str__()
@@ -82,7 +81,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
     def hoverLeaveEvent(self, event):
         super(Edge, self).hoverLeaveEvent(event)
-        self.setZValue(0.0)
+        # self.setZValue(0.0)
         self.pen.setWidthF(self.thikness)
         self.update()
 

@@ -2,7 +2,8 @@
 
 import unittest
 from test.test_support import run_unittest, TESTFN, unlink, have_unicode, \
-                              check_py3k_warnings, cpython_only
+                              check_py3k_warnings, cpython_only, \
+                              check_free_after_iterating
 
 # Test result of triple loop (too big to inline)
 TRIPLETS = [(0, 0, 0), (0, 0, 1), (0, 0, 2),
@@ -120,6 +121,17 @@ class TestCase(unittest.TestCase):
     # Test iter() on a sequence class without __iter__
     def test_seq_class_iter(self):
         self.check_iterator(iter(SequenceClass(10)), range(10))
+
+    def test_mutating_seq_class_exhausted_iter(self):
+        a = SequenceClass(5)
+        exhit = iter(a)
+        empit = iter(a)
+        for x in exhit:  # exhaust the iterator
+            next(empit)  # not exhausted
+        a.n = 7
+        self.assertEqual(list(exhit), [])
+        self.assertEqual(list(empit), [5, 6])
+        self.assertEqual(list(a), [0, 1, 2, 3, 4, 5, 6])
 
     # Test a new_style class with __iter__ but no next() method
     def test_new_style_iter_class(self):
@@ -920,6 +932,9 @@ class TestCase(unittest.TestCase):
             lst.pop(0)
         lst.extend(gen())
         self.assertEqual(len(lst), 760)
+
+    def test_free_after_iterating(self):
+        check_free_after_iterating(self, iter, SequenceClass, (0,))
 
 
 def test_main():

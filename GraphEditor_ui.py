@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\GIT\NodesRepo\GraphEditor_ui.ui'
 #
-# Created: Tue Aug 23 12:44:08 2016
+# Created: Tue Aug 23 15:50:16 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -54,7 +54,7 @@ class Ui_MainWindow(object):
         MainWindow.setMenuBar(self.menuBar)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
-        MainWindow.addToolBar(QtCore.Qt.BottomToolBarArea, self.toolBar)
+        MainWindow.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
         self.dockWidgetConsole = QtGui.QDockWidget(MainWindow)
         self.dockWidgetConsole.setEnabled(True)
         self.dockWidgetConsole.setFeatures(QtGui.QDockWidget.DockWidgetFeatureMask)
@@ -75,7 +75,7 @@ class Ui_MainWindow(object):
         self.console.setObjectName("console")
         self.gridLayout_2.addWidget(self.console, 0, 0, 1, 1)
         self.dockWidgetConsole.setWidget(self.dockWidgetContents_2)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetConsole)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.dockWidgetConsole)
         self.dockWidgetNodeBox = QtGui.QDockWidget(MainWindow)
         self.dockWidgetNodeBox.setFloating(False)
         self.dockWidgetNodeBox.setFeatures(QtGui.QDockWidget.DockWidgetFeatureMask)
@@ -90,6 +90,9 @@ class Ui_MainWindow(object):
         self.gridLayout_5.addLayout(self.NodeBoxLayout, 0, 0, 1, 1)
         self.dockWidgetNodeBox.setWidget(self.dockWidgetContents_5)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetNodeBox)
+        self.statusBar = QtGui.QStatusBar(MainWindow)
+        self.statusBar.setObjectName("statusBar")
+        MainWindow.setStatusBar(self.statusBar)
         self.actionDelete = QtGui.QAction(MainWindow)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(":/icons/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)

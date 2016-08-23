@@ -498,7 +498,6 @@ def _args_from_interpreter_flags():
         'ignore_environment': 'E',
         'verbose': 'v',
         'bytes_warning': 'b',
-        'hash_randomization': 'R',
         'py3k_warning': '3',
     }
     args = []
@@ -506,6 +505,8 @@ def _args_from_interpreter_flags():
         v = getattr(sys.flags, flag)
         if v > 0:
             args.append('-' + opt * v)
+    if getattr(sys.flags, 'hash_randomization') != 0:
+        args.append('-R')
     for opt in sys.warnoptions:
         args.append('-W' + opt)
     return args
@@ -1141,7 +1142,10 @@ class Popen(object):
                 errread, errwrite = self.pipe_cloexec()
                 to_close.update((errread, errwrite))
             elif stderr == STDOUT:
-                errwrite = c2pwrite
+                if c2pwrite is not None:
+                    errwrite = c2pwrite
+                else: # child's stdout is not set, use parent's stdout
+                    errwrite = sys.__stdout__.fileno()
             elif isinstance(stderr, int):
                 errwrite = stderr
             else:
@@ -1312,8 +1316,12 @@ class Popen(object):
                     os.close(errpipe_write)
 
                 # Wait for exec to fail or succeed; possibly raising exception
-                # Exception limited to 1M
                 data = _eintr_retry_call(os.read, errpipe_read, 1048576)
+                pickle_bits = []
+                while data:
+                    pickle_bits.append(data)
+                    data = _eintr_retry_call(os.read, errpipe_read, 1048576)
+                data = "".join(pickle_bits)
             finally:
                 if p2cread is not None and p2cwrite is not None:
                     _close_in_parent(p2cread)

@@ -119,19 +119,19 @@ def parse(line):
     returns - {'cmd': command, 'flags': {-x1: 50, -x2: 100}}
     '''
     out = {}
-    dashes = [m.start() for m in re.finditer('/', line)]
-    if len(dashes) == 0:
+    flag_sep = [m.start() for m in re.finditer(FLAG_SYMBOL, line)]
+    if len(flag_sep) == 0:
         out["cmd"] = line
         return out
     out = {"flags": {}}
     cmd = line.split(" ")[0]
     out["cmd"] = cmd
-    for i in xrange(len(dashes)-1):
-        newLine =  line[dashes[i]:]
-        newLineDashes = [m.start() for m in re.finditer('/', newLine)]
+    for i in xrange(len(flag_sep)-1):
+        newLine =  line[flag_sep[i]:]
+        newLineDashes = [m.start() for m in re.finditer(FLAG_SYMBOL, newLine)]
         flag = newLine[:newLineDashes[1]-1].split(" ", 1) # flag + value
         out["flags"][flag[0]] = flag[1]
-    flag = line[dashes[-1]:].split(" ", 1) # last flag + value
+    flag = line[flag_sep[-1]:].split(" ", 1) # last flag + value
     out["flags"][flag[0]] = flag[1]
     return out
 
@@ -163,7 +163,7 @@ class SceneClass(QtGui.QGraphicsScene):
             if n.isSelected():
                 selected_nodes.append(n.name)
         if len(selected_nodes) == 0:
-            self.parent().write_to_console("select /nl none")
+            self.parent().write_to_console("select {0}nl none".format(FLAG_SYMBOL))
             return
         cmd = "select /nl "
         for n in selected_nodes:
@@ -175,7 +175,7 @@ class SceneClass(QtGui.QGraphicsScene):
         if event.mimeData().hasFormat('text/plain'):
             className = event.mimeData().text()
             name = self.parent().get_uniq_node_name(className)
-            self.parent().executeCommand("createNode /type {0} /x {1} /y {2} /n {3}".format(className, event.scenePos().x(), event.scenePos().y(), name))
+            self.parent().executeCommand("createNode {4}type {0} {4}x {1} {4}y {2} {4}n {3}".format(className, event.scenePos().x(), event.scenePos().y(), name, FLAG_SYMBOL))
         else:
             super(SceneClass, self).dropEvent(event)
 
@@ -343,11 +343,12 @@ class GroupObjectName(QtGui.QGraphicsTextItem, Colors):
         self.setPos(self.parent.rect().topLeft())
         self.setY(self.parent.rect().topLeft().y() - self.boundingRect().height())
 
-    def focusInEvent(self):
-        print "grpouper lock events"
+    def focusInEvent(self, event):
+        self.parentItem().graph.disable_sortcuts()
+        super(GroupObjectName, self).focusInEvent(event)
 
     def focusOutEvent(self, event):
-        print "grpouper unlock events"
+        self.parentItem().graph.enable_sortcuts()
         self.update_pos()
         super(GroupObjectName, self).focusOutEvent(event)
 
@@ -372,7 +373,7 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         self.setFlag(self.ItemIsMovable)
         self._minimum_width = 150
         self._minimum_height = 150
-        self.setZValue(2)
+        # self.setZValue(0.0)
         self.auto_fit_content = False
         self.setPen(QtGui.QPen(self.kGroupObjectPen, 1, QtCore.Qt.SolidLine))
         self.setBrush(QtGui.QBrush(self.kGroupObjectBrush))
@@ -475,10 +476,6 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
             self.set_bottom_right(nodes_bottom_right)
             self.setFlag(self.ItemIsMovable)
 
-    # def get_rect(self):
-
-    #     print self.rect()
-
     def mousePressEvent(self, event):
 
         for i in self.nodes+self.graph.nodes:
@@ -516,6 +513,9 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
     def remove_from_iterable(self, iterable):
         for i in iterable:
             self.remove_node(i)
+
+    def set_label_from_html(self, html):
+        self.label.setHtml(html)
 
     def add_node(self, node):
         if node.object_type == AGObjectTypes.tNode and node not in self.nodes:
@@ -800,36 +800,34 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._resize_group_mode = False
         self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum()/2)
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum()/2)
+        self._tick_functions = []
         self.registeredCommands = {}
         self.registerCommands()
         self._sortcuts_enabled = True
+        self._notifications = [] # notifications list currently in scene
+        self.tick_timer = QtCore.QTimer() # this timer executes all functions in '_tick_functions'
+        self.tick_timer.timeout.connect(self._tick_executor)
+        self.tick_timer.start(20)
 
-    def notify(self, message, duration):
+    def __del__(self):
+        self.tick_timer.stop()
 
-        # notify /text hello /duration 3000
+    def _tick_executor(self):
+        for foo in self._tick_functions:
+            foo()
 
-        # get visible scene rect
+    def _notifications_y_updater(self):
         polygon = self.mapToScene(self.viewport().rect())
         rect = QtCore.QRectF(polygon[0], polygon[2])
 
-        # construct message box
-        notification_box = QtGui.QGraphicsTextItem(None, self.scene_widget)
-        notification_box.setPos(rect.bottomLeft().x(), rect.bottomLeft().y()-(notification_box.document().size().height()))
-        notification_box.setDefaultTextColor(QtGui.QColor(30, 30, 30))
-        notification_box.setHtml('<div style="background:#999999;">{0}</p>'.format(message))
+        y = rect.bottomLeft().y()-21
 
-        # constrct animation
-        timer = QtCore.QTimeLine(duration)
-        timer.setFrameRange(0, 100)
-        timer.finished.connect(lambda: self.scene().removeItem(notification_box))
-        animation = QtGui.QGraphicsItemAnimation()
-        animation.setItem(notification_box)
-        animation.setTimeLine(timer)
+        for n in self._notifications:
+            n.setPos(n.pos().x(), y)
 
-        for i in range(200):
-            animation.setPosAt(i / 200.0, QtCore.QPointF(i, i))
-
-        timer.start()
+    def notify(self, message, duration):
+        self.parent.statusBar.showMessage(message, duration)
+        self.write_to_console(message)
 
     def registerCommands(self):
 
@@ -966,18 +964,18 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         graph = "SAVE GRAPH SCRIPT\n"   #  add some scene info. version, user, date, etc.
             # create all nodes and set attributes
         for n in self.get_nodes():
-            line = "createNode /type {0} /x {1} /y {2} /n {3}\n".format(n.__class__.__name__, n.scenePos().x(), n.scenePos().y(), n.name)
+            line = "createNode {4}type {0} {4}x {1} {4}y {2} {4}n {3}\n".format(n.__class__.__name__, n.scenePos().x(), n.scenePos().y(), n.name, FLAG_SYMBOL)
             graph += line
             for inp in n.inputs:
-                line = "setAttr /an {0} /v {1}\n".format(inp.port_name(), inp.current_data())
+                line = "setAttr {2}an {0} {2}v {1}\n".format(inp.port_name(), inp.current_data(), FLAG_SYMBOL)
                 graph += line
             for out in n.outputs:
-                line = "setAttr /an {0} /v {1}\n".format(out.port_name(), out.current_data())
+                line = "setAttr {2}an {0} {2}v {1}\n".format(out.port_name(), out.current_data(), FLAG_SYMBOL)
                 graph += line
             # connect all attributes
         for e in self.edges:
             port_names = e.__str__().split(" >>> ")
-            line = "connectAttr /src {0} /dst {1}\n".format(port_names[0], port_names[1])
+            line = "connectAttr {2}src {0} {2}dst {1}\n".format(port_names[0], port_names[1], FLAG_SYMBOL)
             graph += line
 
             # comment nodes
@@ -985,7 +983,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             nodes = ""
             for n in c.nodes:
                 nodes += "{0} ".format(n.name)
-            line = "comment /mode names /text {0} /nl {1}\n".format(c.label.toPlainText().replace("\n", "\\n"), nodes)
+            line = "comment {2}mode names {2}text {0} {2}nl {1}\n".format(c.label.toHtml().replace("\n", ""), nodes, FLAG_SYMBOL)
             graph += line
         self.write_to_console(graph)
 
@@ -1224,7 +1222,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.groupers.append(grp)
         grp.setPos(QtCore.QPoint(int(x1), int(y1)))
         grp.set_bottom_right(QtCore.QPoint(int(x2), int(y2)))
-        grp.label.setPlainText(name)
+        grp.label.setHtml(name)
+        # grp.label.setPlainText(name)
         self.scene_widget.addItem(grp)
 
     def commentSelectedNodes(self, comment = "enter comment"):
@@ -1238,7 +1237,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         r = self.get_nodes_rect(True)
         grp = GroupObject(self)
-        grp.label.setPlainText(comment)
+        grp.label.setHtml(comment)
+        # grp.label.setPlainText(comment)
         self.groupers.append(grp)
         grp.setRect(r.x() - (r.topLeft().x()+50),
                     r.y() - (r.topLeft().y()+50),
@@ -1352,6 +1352,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         for y in xrange(top, int(scene_rect.bottom()), grid_size):
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
+        self._notifications_y_updater()
+
     def console_help(self):
 
         msg = """///// AVAILABLE NODES LIST /////\n\n"""
@@ -1412,14 +1414,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if commandLine['cmd'] == "renameNode":
             self.parent.console.append(command)
             try:
-                node = self.get_node_by_name(commandLine["flags"]["/name"])
+                node = self.get_node_by_name(commandLine["flags"]["{0}name".format(FLAG_SYMBOL)])
                 if node:
-                    newName = self.get_uniq_node_name(commandLine["flags"]["/newName"])
+                    newName = self.get_uniq_node_name(commandLine["flags"]["{0}newName".format(FLAG_SYMBOL)])
                     node.set_name(newName)
                 return
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] renameNode /name str /newName str")
+                self.parent.console.append("[USAGE] renameNode {0}name str {0}newName str".format(FLAG_SYMBOL))
             return
 
         if commandLine['cmd'] == "plot":
@@ -1440,51 +1442,51 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if commandLine['cmd'] == "createNode":
             try:
                 self.parent.console.append(command)
-                self.create_node(commandLine['flags']['/type'], float(commandLine['flags']['/x']), float(commandLine['flags']['/y']), commandLine['flags']['/n'])
+                self.create_node(commandLine['flags']['{0}type'.format(FLAG_SYMBOL)], float(commandLine['flags']['{0}x'.format(FLAG_SYMBOL)]), float(commandLine['flags']['{0}y'.format(FLAG_SYMBOL)]), commandLine['flags']['{0}n'.format(FLAG_SYMBOL)])
                 return
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] createNode /type className /x float /y float /n str")
+                self.parent.console.append("[USAGE] createNode {0}type className {0}x float {0}y float {0}n str".format(FLAG_SYMBOL))
 
         if commandLine['cmd'] == "comment":
             try:
-                if commandLine['flags']["/mode"] == "selected":
-                    self.commentSelectedNodes(comment = commandLine['flags']["/text"])
-                if commandLine['flags']["/mode"] == "empty":
+                if commandLine['flags']["{0}mode".format(FLAG_SYMBOL)] == "selected":
+                    self.commentSelectedNodes(comment = commandLine['flags']["{0}text".format(FLAG_SYMBOL)])
+                if commandLine['flags']["{0}mode".format(FLAG_SYMBOL)] == "empty":
                     try:
                         self.parent.console.append(command)
-                        self.createComment(commandLine['flags']["/x1"], commandLine['flags']["/y1"], commandLine['flags']["/x2"], commandLine['flags']["/y2"], commandLine['flags']["/text"])
+                        self.createComment(commandLine['flags']["{0}x1".format(FLAG_SYMBOL)], commandLine['flags']["{0}y1".format(FLAG_SYMBOL)], commandLine['flags']["{0}x2".format(FLAG_SYMBOL)], commandLine['flags']["{0}y2".format(FLAG_SYMBOL)], commandLine['flags']["{0}text".format(FLAG_SYMBOL)])
                         return
                     except Exception, e:
                         self.parent.console.append("[ERROR] {0}".format(e))
                     return
-                if commandLine['flags']["/mode"] == "names":
+                if commandLine['flags']["{0}mode".format(FLAG_SYMBOL)] == "names":
                     for n in self.get_nodes():
                         n.setSelected(False)
-                    for i in commandLine["flags"]["/nl"].split(" "):
+                    for i in commandLine["flags"]["{0}nl".format(FLAG_SYMBOL)].split(" "):
                         node = self.get_node_by_name(i)
                         if node:
                             node.setSelected(True)
-                    self.commentSelectedNodes(comment = commandLine["flags"]["/text"])
+                    self.commentSelectedNodes(comment = commandLine["flags"]["{0}text".format(FLAG_SYMBOL)])
                     return
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE]>>>\ncomment /mode selected /text str\ncomment /mode names /text str /nl name1 name2 ...\ncomment /mode empty /x1 float /y1 float /x2 float /y2 float /text str")
+                self.parent.console.append("[USAGE]>>>\ncomment {0}mode selected {0}text str\ncomment {0}mode names {0}text str {0}nl name1 name2 ...\ncomment {0}mode empty {0}x1 float {0}y1 float {0}x2 float {0}y2 float {0}text str".format(FLAG_SYMBOL))
 
         if commandLine["cmd"] == "pluginWizard":
             try:
-                mode = commandLine["flags"]["/mode"]
+                mode = commandLine["flags"]["{0}mode".format(FLAG_SYMBOL)]
                 if mode == "implementNode":
-                    _implementPlugin(str(commandLine["flags"]["/n"]), self.parent.console.append, PluginType.pNode)
+                    _implementPlugin(str(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]), self.parent.console.append, PluginType.pNode)
                 if mode == "implementCommand":
-                    _implementPlugin(str(commandLine["flags"]["/n"]), self.parent.console.append, PluginType.pCommand)
+                    _implementPlugin(str(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]), self.parent.console.append, PluginType.pCommand)
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE]>>>pluginWizard /mode [implementNode|implementCommand] /n name")
+                self.parent.console.append("[USAGE]>>>pluginWizard {0}mode [implementNode|implementCommand] {0}n name".format(FLAG_SYMBOL))
 
         if commandLine["cmd"] == "killNode":
             try:
-                nodeNames = commandLine["flags"]["/nl"].split(" ")
+                nodeNames = commandLine["flags"]["{0}nl".format(FLAG_SYMBOL)].split(" ")
                 for n in nodeNames:
                     node = self.get_node_by_name(n)
                     if node:
@@ -1495,28 +1497,28 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 return
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] killNode /nl nodeName1 nodeName2 ...")
+                self.parent.console.append("[USAGE] killNode {0}nl nodeName1 nodeName2 ...".format(FLAG_SYMBOL))
 
         if commandLine["cmd"] == "setAttr":
             try:
-                nodeName = commandLine["flags"]["/an"].split('.')[0]
-                attrName = commandLine["flags"]["/an"].split('.')[1]
+                nodeName = commandLine["flags"]["{0}an".format(FLAG_SYMBOL)].split('.')[0]
+                attrName = commandLine["flags"]["{0}an".format(FLAG_SYMBOL)].split('.')[1]
                 node = self.get_node_by_name(nodeName)
                 if node:
                     attr = node.get_port_by_name(attrName)
                     if attr:
-                        attr.set_data(commandLine["flags"]["/v"])
+                        attr.set_data(commandLine["flags"]["{0}v".format(FLAG_SYMBOL)])
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] setAttr /an nodeName.attrName /v value")
+                self.parent.console.append("[USAGE] setAttr {0}an nodeName.attrName {0}v value".format(FLAG_SYMBOL))
 
         if commandLine["cmd"] == "connectAttr":
             try:
                 # find ports
-                nodeSrcName = commandLine["flags"]["/src"].split('.')[0]
-                portSrcName = commandLine["flags"]["/src"].split('.')[1]
-                nodeDstName = commandLine["flags"]["/dst"].split('.')[0]
-                portDstName = commandLine["flags"]["/dst"].split('.')[1]
+                nodeSrcName = commandLine["flags"]["{0}src".format(FLAG_SYMBOL)].split('.')[0]
+                portSrcName = commandLine["flags"]["{0}src".format(FLAG_SYMBOL)].split('.')[1]
+                nodeDstName = commandLine["flags"]["{0}dst".format(FLAG_SYMBOL)].split('.')[0]
+                portDstName = commandLine["flags"]["{0}dst".format(FLAG_SYMBOL)].split('.')[1]
 
                 nodeSrc = self.get_node_by_name(nodeSrcName)
                 nodeDst = self.get_node_by_name(nodeDstName)
@@ -1527,12 +1529,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                         self.add_edge(src, dst)
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] connectAttr /src nodeName.srcAttrName /dst nodeName.dstAttrName")
+                self.parent.console.append("[USAGE] connectAttr {0}src nodeName.srcAttrName {0}dst nodeName.dstAttrName".format(FLAG_SYMBOL))
 
         if commandLine["cmd"] == "disconnectAttr":
             try:
-                nodeName = commandLine["flags"]["/an"].split('.')[0]
-                attrName = commandLine["flags"]["/an"].split('.')[1]
+                nodeName = commandLine["flags"]["{0}an".format(FLAG_SYMBOL)].split('.')[0]
+                attrName = commandLine["flags"]["{0}an".format(FLAG_SYMBOL)].split('.')[1]
                 node = self.get_node_by_name(nodeName)
                 if node:
                     attr = node.get_port_by_name(attrName)
@@ -1541,35 +1543,35 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                         self.parent.console.append(command)
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] disconnectAttr /an nodeName.attrname")
+                self.parent.console.append("[USAGE] disconnectAttr {0}an nodeName.attrname".format(FLAG_SYMBOL))
 
         if commandLine["cmd"] == "select":
             try:
-                if commandLine["flags"]["/nl"] == "none":
+                if commandLine["flags"]["{0}nl".format(FLAG_SYMBOL)] == "none":
                     for n in self.get_nodes():
                         n.setSelected(False)
                     self.parent.console.append(command)
                 else:
-                    for i in commandLine["flags"]["/nl"].split(" "):
+                    for i in commandLine["flags"]["{0}nl".format(FLAG_SYMBOL)].split(" "):
                         node = self.get_node_by_name(i)
                         if node:
                             node.setSelected(True)
                     self.parent.console.append(command)
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE]\nselect /nl nodeName1 nodeName2 ...\n'select /nl none' - to deselect all")
+                self.parent.console.append("[USAGE]\nselect {0}nl nodeName1 nodeName2 ...\n'select {0}nl none' - to deselect all".format(FLAG_SYMBOL))
 
         if commandLine["cmd"] == "move":
             try:
-                node = self.get_node_by_name(commandLine["flags"]["/n"])
+                node = self.get_node_by_name(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)])
                 if node:
-                    node.set_pos(float(commandLine["flags"]["/x"]), float(commandLine["flags"]["/y"]))
+                    node.set_pos(float(commandLine["flags"]["{0}x".format(FLAG_SYMBOL)]), float(commandLine["flags"]["{0}y".format(FLAG_SYMBOL)]))
                     self.parent.console.append(command)
                 else:
-                    self.parent.console.append("[WARNING] node {0} not found".format(commandLine["flags"]["/n"]))
+                    self.parent.console.append("[WARNING] node {0} not found".format(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]))
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] move /n nodeName /x float /y float")
+                self.parent.console.append("[USAGE] move {0}n nodeName {0}x float {0}y float".format(FLAG_SYMBOL))
 
         if commandLine["cmd"] == "help":
             self.parent.console.append(command)
@@ -1609,7 +1611,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def write_to_console(self, data):
         if not self.is_debug():
             return
-        print data
         if self.parent:
             self.parent.console.append(str(data))
 

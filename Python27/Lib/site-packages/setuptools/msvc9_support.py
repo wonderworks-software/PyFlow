@@ -1,6 +1,6 @@
 try:
     import distutils.msvc9compiler
-except ImportError:
+except Exception:
     pass
 
 unpatched = dict()

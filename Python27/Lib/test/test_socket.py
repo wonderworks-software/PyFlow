@@ -86,7 +86,7 @@ class ThreadableTest:
         clientTearDown ()
 
     Any new test functions within the class must then define
-    tests in pairs, where the test name is preceeded with a
+    tests in pairs, where the test name is preceded with a
     '_' to indicate the client portion of the test. Ex:
 
         def testFoo(self):
@@ -708,7 +708,7 @@ class GeneralModuleTests(unittest.TestCase):
                 pass
 
     def check_sendall_interrupted(self, with_timeout):
-        # socketpair() is not stricly required, but it makes things easier.
+        # socketpair() is not strictly required, but it makes things easier.
         if not hasattr(signal, 'alarm') or not hasattr(socket, 'socketpair'):
             self.skipTest("signal.alarm and socket.socketpair required for this test")
         # Our signal handlers clobber the C errno by calling a math function
@@ -827,7 +827,7 @@ class BasicTCPTest(SocketConnectedTest):
         self.serv_conn.sendall(big_chunk)
 
     @unittest.skipUnless(hasattr(socket, 'fromfd'),
-                         'socket.fromfd not availble')
+                         'socket.fromfd not available')
     def testFromFd(self):
         # Testing fromfd()
         fd = self.cli_conn.fileno()
@@ -1755,7 +1755,7 @@ class TIPCThreadableTest(unittest.TestCase, ThreadableTest):
         self.conn, self.connaddr = self.srv.accept()
 
     def clientSetUp(self):
-        # The is a hittable race between serverExplicitReady() and the
+        # There is a hittable race between serverExplicitReady() and the
         # accept() call; sleep a little while to avoid it, otherwise
         # we could get an exception
         time.sleep(0.1)

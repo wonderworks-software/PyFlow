@@ -3,10 +3,12 @@ from distutils import log
 from distutils.errors import DistutilsError, DistutilsOptionError
 import os
 import glob
+import io
+
+from setuptools.extern import six
 
 from pkg_resources import Distribution, PathMetadata, normalize_path
 from setuptools.command.easy_install import easy_install
-from setuptools.compat import PY3
 import setuptools
 
 
@@ -53,8 +55,8 @@ class develop(easy_install):
         # pick up setup-dir .egg files only: no .egg-info
         self.package_index.scan(glob.glob('*.egg'))
 
-        self.egg_link = os.path.join(self.install_dir, ei.egg_name +
-                                     '.egg-link')
+        egg_link_fn = ei.egg_name + '.egg-link'
+        self.egg_link = os.path.join(self.install_dir, egg_link_fn)
         self.egg_base = ei.egg_base
         if self.egg_path is None:
             self.egg_path = os.path.abspath(ei.egg_base)
@@ -86,7 +88,7 @@ class develop(easy_install):
                 " installation directory", p, normalize_path(os.curdir))
 
     def install_for_development(self):
-        if PY3 and getattr(self.distribution, 'use_2to3', False):
+        if six.PY3 and getattr(self.distribution, 'use_2to3', False):
             # If we run 2to3 we can not do this inplace:
 
             # Ensure metadata is up-to-date
@@ -124,9 +126,8 @@ class develop(easy_install):
         # create an .egg-link in the installation dir, pointing to our egg
         log.info("Creating %s (link to %s)", self.egg_link, self.egg_base)
         if not self.dry_run:
-            f = open(self.egg_link, "w")
-            f.write(self.egg_path + "\n" + self.setup_path)
-            f.close()
+            with open(self.egg_link, "w") as f:
+                f.write(self.egg_path + "\n" + self.setup_path)
         # postprocess the installed distro, fixing up .pth, installing scripts,
         # and handling requirements
         self.process_distribution(None, self.dist, not self.no_deps)
@@ -163,7 +164,33 @@ class develop(easy_install):
         for script_name in self.distribution.scripts or []:
             script_path = os.path.abspath(convert_path(script_name))
             script_name = os.path.basename(script_path)
-            f = open(script_path, 'rU')
-            script_text = f.read()
-            f.close()
+            with io.open(script_path) as strm:
+                script_text = strm.read()
             self.install_script(dist, script_name, script_text, script_path)
+
+    def install_wrapper_scripts(self, dist):
+        dist = VersionlessRequirement(dist)
+        return easy_install.install_wrapper_scripts(self, dist)
+
+
+class VersionlessRequirement(object):
+    """
+    Adapt a pkg_resources.Distribution to simply return the project
+    name as the 'requirement' so that scripts will work across
+    multiple versions.
+
+    >>> dist = Distribution(project_name='foo', version='1.0')
+    >>> str(dist.as_requirement())
+    'foo==1.0'
+    >>> adapted_dist = VersionlessRequirement(dist)
+    >>> str(adapted_dist.as_requirement())
+    'foo'
+    """
+    def __init__(self, dist):
+        self.__dist = dist
+
+    def __getattr__(self, name):
+        return getattr(self.__dist, name)
+
+    def as_requirement(self):
+        return self.project_name

@@ -291,7 +291,7 @@ def _val_or_dict(tk, options, *args):
     """Format options then call Tk command with args and options and return
     the appropriate result.
 
-    If no option is specified, a dict is returned. If a option is
+    If no option is specified, a dict is returned. If an option is
     specified with the None value, the value for that option is returned.
     Otherwise, the function just sets the passed options and the caller
     shouldn't be expecting a return value anyway."""
@@ -1014,7 +1014,7 @@ class Progressbar(Widget):
         """Begin autoincrement mode: schedules a recurring timer event
         that calls method step every interval milliseconds.
 
-        interval defaults to 50 milliseconds (20 steps/second) if ommited."""
+        interval defaults to 50 milliseconds (20 steps/second) if omitted."""
         self.tk.call(self._w, "start", interval)
 
 
@@ -1476,7 +1476,7 @@ class LabeledScale(Frame, object):
     can be accessed through instance.label"""
 
     def __init__(self, master=None, variable=None, from_=0, to=10, **kw):
-        """Construct an horizontal LabeledScale with parent master, a
+        """Construct a horizontal LabeledScale with parent master, a
         variable to be associated with the Ttk Scale widget and its range.
         If variable is not specified, a Tkinter.IntVar is created.
 

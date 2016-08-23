@@ -3,7 +3,8 @@ import imp
 import marshal
 from imp import PKG_DIRECTORY, PY_COMPILED, PY_SOURCE, PY_FROZEN
 from distutils.version import StrictVersion
-from setuptools import compat
+
+from setuptools.extern import six
 
 __all__ = [
     'Require', 'find_module', 'get_module_constant', 'extract_constant'
@@ -99,7 +100,8 @@ def _iter_code(code):
             ptr += 3
 
             if op==EXTENDED_ARG:
-                extended_arg = arg * compat.long_type(65536)
+                long_type = six.integer_types[-1]
+                extended_arg = arg * long_type(65536)
                 continue
 
         else:

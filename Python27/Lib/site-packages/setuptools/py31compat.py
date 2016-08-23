@@ -20,7 +20,7 @@ except ImportError:
     import shutil
     import tempfile
     class TemporaryDirectory(object):
-        """"
+        """
         Very simple temporary directory context manager.
         Will try to delete afterward, but will also ignore OS and similar
         errors on deletion.

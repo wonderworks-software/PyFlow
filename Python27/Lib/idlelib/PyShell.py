@@ -158,7 +158,7 @@ class PyShellEditorWindow(EditorWindow):
             # possible due to update in restore_file_breaks
             return
         if color:
-            theme = idleConf.GetOption('main','Theme','name')
+            theme = idleConf.CurrentTheme()
             cfg = idleConf.GetHighlight(theme, "break")
         else:
             cfg = {'foreground': '', 'background': ''}
@@ -343,7 +343,7 @@ class ModifiedColorDelegator(ColorDelegator):
 
     def LoadTagDefs(self):
         ColorDelegator.LoadTagDefs(self)
-        theme = idleConf.GetOption('main','Theme','name')
+        theme = idleConf.CurrentTheme()
         self.tagdefs.update({
             "stdin": {'background':None,'foreground':None},
             "stdout": idleConf.GetHighlight(theme, "stdout"),
@@ -472,7 +472,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
         self.poll_subprocess()
         return self.rpcclt
 
-    def restart_subprocess(self, with_cwd=False):
+    def restart_subprocess(self, with_cwd=False, filename=''):
         if self.restarting:
             return self.rpcclt
         self.restarting = True
@@ -500,14 +500,13 @@ class ModifiedInterpreter(InteractiveInterpreter):
         console.stop_readline()
         # annotate restart in shell window and mark it
         console.text.delete("iomark", "end-1c")
-        if was_executing:
-            console.write('\n')
-            console.showprompt()
-        halfbar = ((int(console.width) - 16) // 2) * '='
-        console.write(halfbar + ' RESTART ' + halfbar)
+        tag = 'RESTART: ' + (filename if filename else 'Shell')
+        halfbar = ((int(console.width) -len(tag) - 4) // 2) * '='
+        console.write("\n{0} {1} {0}".format(halfbar, tag))
         console.text.mark_set("restart", "end-1c")
         console.text.mark_gravity("restart", "left")
-        console.showprompt()
+        if not filename:
+            console.showprompt()
         # restart subprocess debugger
         if debug:
             # Restarted debugger connects to current instance of debug GUI
@@ -632,7 +631,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
         item = RemoteObjectBrowser.StubObjectTreeItem(self.rpcclt, oid)
         from idlelib.TreeWidget import ScrolledCanvas, TreeNode
         top = Toplevel(self.tkconsole.root)
-        theme = idleConf.GetOption('main','Theme','name')
+        theme = idleConf.CurrentTheme()
         background = idleConf.GetHighlight(theme, 'normal')['background']
         sc = ScrolledCanvas(top, bg=background, highlightthickness=0)
         sc.frame.pack(expand=1, fill="both")
@@ -800,7 +799,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
                     "Exit?",
                     "Do you want to exit altogether?",
                     default="yes",
-                    master=self.tkconsole.text):
+                    parent=self.tkconsole.text):
                     raise
                 else:
                     self.showtraceback()
@@ -838,7 +837,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
             "Run IDLE with the -n command line switch to start without a "
             "subprocess and refer to Help/IDLE Help 'Running without a "
             "subprocess' for further details.",
-            master=self.tkconsole.text)
+            parent=self.tkconsole.text)
 
     def display_no_subprocess_error(self):
         tkMessageBox.showerror(
@@ -846,14 +845,14 @@ class ModifiedInterpreter(InteractiveInterpreter):
             "IDLE's subprocess didn't make connection.  Either IDLE can't "
             "start a subprocess or personal firewall software is blocking "
             "the connection.",
-            master=self.tkconsole.text)
+            parent=self.tkconsole.text)
 
     def display_executing_dialog(self):
         tkMessageBox.showerror(
             "Already executing",
             "The Python Shell window is already executing a command; "
             "please wait until it is finished.",
-            master=self.tkconsole.text)
+            parent=self.tkconsole.text)
 
 
 class PyShell(OutputWindow):
@@ -949,7 +948,7 @@ class PyShell(OutputWindow):
         if self.executing:
             tkMessageBox.showerror("Don't debug now",
                 "You can only toggle the debugger when idle",
-                master=self.text)
+                parent=self.text)
             self.set_debugger_indicator()
             return "break"
         else:
@@ -1007,7 +1006,7 @@ class PyShell(OutputWindow):
         if self.executing:
             response = tkMessageBox.askokcancel(
                 "Kill?",
-                "The program is still running!\n Do you want to kill it?",
+                "Your program is still running!\n Do you want to kill it?",
                 default="ok",
                 parent=self.text)
             if response is False:
@@ -1055,6 +1054,7 @@ class PyShell(OutputWindow):
             nosub = "==== No Subprocess ===="
         self.write("Python %s on %s\n%s\n%s" %
                    (sys.version, sys.platform, self.COPYRIGHT, nosub))
+        self.text.focus_force()
         self.showprompt()
         import Tkinter
         Tkinter._default_root = None # 03Jan04 KBK What's this?
@@ -1256,7 +1256,7 @@ class PyShell(OutputWindow):
             tkMessageBox.showerror("No stack trace",
                 "There is no stack trace yet.\n"
                 "(sys.last_traceback is not defined)",
-                master=self.text)
+                parent=self.text)
             return
         from idlelib.StackViewer import StackBrowser
         StackBrowser(self.root, self.flist)
@@ -1408,6 +1408,17 @@ class PseudoInputFile(PseudoFile):
         self.shell.close()
 
 
+def fix_x11_paste(root):
+    "Make paste replace selection on x11.  See issue #5124."
+    if root._windowingsystem == 'x11':
+        for cls in 'Text', 'Entry', 'Spinbox':
+            root.bind_class(
+                cls,
+                '<<Paste>>',
+                'catch {%W delete sel.first sel.last}\n' +
+                        root.bind_class(cls, '<<Paste>>'))
+
+
 usage_msg = """\
 
 USAGE: idle  [-deins] [-t title] [file]*
@@ -1537,8 +1548,10 @@ def main():
                                     'editor-on-startup', type='bool')
     enable_edit = enable_edit or edit_start
     enable_shell = enable_shell or not enable_edit
+
     # start editor and/or shell windows:
     root = Tk(className="Idle")
+    root.withdraw()
 
     # set application icon
     icondir = os.path.join(os.path.dirname(__file__), 'Icons')
@@ -1553,9 +1566,17 @@ def main():
         root.tk.call('wm', 'iconphoto', str(root), "-default", *icons)
 
     fixwordbreaks(root)
-    root.withdraw()
+    fix_x11_paste(root)
     flist = PyShellFileList(root)
     macosxSupport.setupApp(root, flist)
+
+    if macosxSupport.isAquaTk():
+        # There are some screwed up <2> class bindings for text
+        # widgets defined in Tk which we need to do away with.
+        # See issue #24801.
+        root.unbind_class('Text', '<B2>')
+        root.unbind_class('Text', '<B2-Motion>')
+        root.unbind_class('Text', '<<PasteSelection>>')
 
     if enable_edit:
         if not (cmd or script):

@@ -1,7 +1,171 @@
+What's New in IDLE 2.7.12?
+==========================
+*Release date: 2015-06-30?*
+
+- Issue #5124: Paste with text selected now replaces the selection on X11.
+  This matches how paste works on Windows, Mac, most modern Linux apps,
+  and ttk widgets.  Original patch by Serhiy Storchaka.
+
+- Issue #24759: Make clear in idlelib.idle_test.__init__ that the directory
+  is a private implementation of test.test_idle and tool for maintainers.
+
+- Issue #26673: When tk reports font size as 0, change to size 10.
+  Such fonts on Linux prevented the configuration dialog from opening.
+
+- Issue #27044: Add ConfigDialog.remove_var_callbacks to stop memory leaks.
+
+- In the 'IDLE-console differences' section of the IDLE doc, clarify
+  how running with IDLE affects sys.modules and the standard streams.
+
+- Issue #25507: fix incorrect change in IOBinding that prevented printing.
+  Change also prevented saving shell window with non-ascii characters.
+  Augment IOBinding htest to include all major IOBinding functions.
+
+- Issue #25905: Revert unwanted conversion of ' to ’ RIGHT SINGLE QUOTATION
+  MARK in README.txt and open this and NEWS.txt with 'ascii'.
+  Re-encode CREDITS.txt to utf-8 and open it with 'utf-8'.
+
+- Issue #26417: Prevent spurious errors and incorrect defaults when
+  installing IDLE 2.7 on OS X: default configuration settings are
+  no longer installed from OS X specific copies.
+
+
+What's New in IDLE 2.7.11?
+==========================
+*Release date: 2015-12-06*
+
+- Issue 15348: Stop the debugger engine (normally in a user process)
+  before closing the debugger window (running in the IDLE process).
+  This prevents the RuntimeErrors that were being caught and ignored.
+
+- Issue #24455: Prevent IDLE from hanging when a) closing the shell while the
+  debugger is active (15347); b) closing the debugger with the [X] button
+  (15348); and c) activating the debugger when already active (24455).
+  The patch by Mark Roseman does this by making two changes.
+  1. Suspend and resume the gui.interaction method with the tcl vwait
+  mechanism intended for this purpose (instead of root.mainloop & .quit).
+  2. In gui.run, allow any existing interaction to terminate first.
+
+- Change 'The program' to 'Your program' in an IDLE 'kill program?' message
+  to make it clearer that the program referred to is the currently running
+  user program, not IDLE itself.
+
+- Issue #24750: Improve the appearance of the IDLE editor window status bar.
+  Patch by Mark Roseman.
+
+- Issue #25313: Change the handling of new built-in text color themes to better
+  address the compatibility problem introduced by the addition of IDLE Dark.
+  Consistently use the revised idleConf.CurrentTheme everywhere in idlelib.
+
+- Issue #24782: Extension configuration is now a tab in the IDLE Preferences
+  dialog rather than a separate dialog.   The former tabs are now a sorted
+  list.  Patch by Mark Roseman.
+
+- Issue #22726: Re-activate the config dialog help button with some content
+  about the other buttons and the new IDLE Dark theme.
+
+- Issue #24820: IDLE now has an 'IDLE Dark' built-in text color theme.
+  It is more or less IDLE Classic inverted, with a cobalt blue background.
+  Strings, comments, keywords, ... are still green, red, orange, ... .
+  To use it with IDLEs released before November 2015, hit the
+  'Save as New Custom Theme' button and enter a new name,
+  such as 'Custom Dark'.  The custom theme will work with any IDLE
+  release, and can be modified.
+
+- Issue #25224: README.txt is now an idlelib index for IDLE developers and
+  curious users.  The previous user content is now in the IDLE doc chapter.
+  'IDLE' now means 'Integrated Development and Learning Environment'.
+
+- Issue #24820: Users can now set breakpoint colors in
+  Settings -> Custom Highlighting.  Original patch by Mark Roseman.
+
+- Issue #24972: Inactive selection background now matches active selection
+  background, as configured by users, on all systems.  Found items are now
+  always highlighted on Windows.  Initial patch by Mark Roseman.
+
+- Issue #24570: Idle: make calltip and completion boxes appear on Macs
+  affected by a tk regression.  Initial patch by Mark Roseman.
+
+- Issue #24988: Idle ScrolledList context menus (used in debugger)
+  now work on Mac Aqua.  Patch by Mark Roseman.
+
+- Issue #24801: Make right-click for context menu work on Mac Aqua.
+  Patch by Mark Roseman.
+
+- Issue #25173: Associate tkinter messageboxes with a specific widget.
+  For Mac OSX, make them a 'sheet'.  Patch by Mark Roseman.
+
+- Issue #25198: Enhance the initial html viewer now used for Idle Help.
+  * Properly indent fixed-pitch text (patch by Mark Roseman).
+  * Give code snippet a very Sphinx-like light blueish-gray background.
+  * Re-use initial width and height set by users for shell and editor.
+  * When the Table of Contents (TOC) menu is used, put the section header
+  at the top of the screen.
+
+- Issue #25225: Condense and rewrite Idle doc section on text colors.
+
+- Issue #21995: Explain some differences between IDLE and console Python.
+
+- Issue #22820: Explain need for *print* when running file from Idle editor.
+
+- Issue #25224: Doc: augment Idle feature list and no-subprocess section.
+
+- Issue #25219: Update doc for Idle command line options.
+  Some were missing and notes were not correct.
+
+- Issue #24861: Most of idlelib is private and subject to change.
+  Use idleib.idle.* to start Idle. See idlelib.__init__.__doc__.
+
+- Issue #25199: Idle: add synchronization comments for future maintainers.
+
+- Issue #16893: Replace help.txt with help.html for Idle doc display.
+  The new idlelib/help.html is rstripped Doc/build/html/library/idle.html.
+  It looks better than help.txt and will better document Idle as released.
+  The tkinter html viewer that works for this file was written by Mark Roseman.
+  The now unused EditorWindow.HelpDialog class and helt.txt file are deprecated.
+
+- Issue #24199: Deprecate unused idlelib.idlever with possible removal in 3.6.
+
+- Issue #24790: Remove extraneous code (which also create 2 & 3 conflicts).
+
+- Issue #23672: Allow Idle to edit and run files with astral chars in name.
+  Patch by Mohd Sanad Zaki Rizvi.
+
+- Issue 24745: Idle editor default font. Switch from Courier to
+  platform-sensitive TkFixedFont.  This should not affect current customized
+  font selections.  If there is a problem, edit $HOME/.idlerc/config-main.cfg
+  and remove 'fontxxx' entries from [Editor Window].  Patch by Mark Roseman.
+
+- Issue #21192: Idle editor. When a file is run, put its name in the restart bar.
+  Do not print false prompts. Original patch by Adnan Umer.
+
+- Issue #13884: Idle menus. Remove tearoff lines. Patch by Roger Serwy.
+
+- Issue #15809: IDLE shell now uses locale encoding instead of Latin1 for
+  decoding unicode literals.
+
+
+What's New in IDLE 2.7.10?
+=========================
+*Release date: 2015-05-23*
+
+- Issue #23583: Fixed writing unicode to standard output stream in IDLE.
+
+- Issue #20577: Configuration of the max line length for the FormatParagraph
+  extension has been moved from the General tab of the Idle preferences dialog
+  to the FormatParagraph tab of the Config Extensions dialog.
+  Patch by Tal Einat.
+
+- Issue #16893: Update Idle doc chapter to match current Idle and add new
+  information.
+
+- Issue #23180: Rename IDLE "Windows" menu item to "Window".
+  Patch by Al Sweigart.
+
+
 What's New in IDLE 2.7.9?
 =========================
-
-*Release data: 2014-12-07* (projected)
+*Release date: 2014-12-10*
 
 - Issue #16893: Update Idle doc chapter to match current Idle and add new
   information.
@@ -30,12 +194,11 @@ What's New in IDLE 2.7.9?
   move version to end.
 
 - Issue #14105: Idle debugger breakpoints no longer disappear
-  when inseting or deleting lines.
+  when inserting or deleting lines.
 
 
 What's New in IDLE 2.7.8?
 =========================
-
 *Release date: 2014-06-29*
 
 - Issue #21940: Add unittest for WidgetRedirector. Initial patch by Saimadhav
@@ -63,7 +226,6 @@ What's New in IDLE 2.7.8?
 
 What's New in IDLE 2.7.7?
 =========================
-
 *Release date: 2014-05-31*
 
 - Issue #18104: Add idlelib/idle_test/htest.py with a few sample tests to begin
@@ -101,7 +263,6 @@ What's New in IDLE 2.7.7?
 
 What's New in IDLE 2.7.6?
 =========================
-
 *Release date: 2013-11-10*
 
 - Issue #19426: Fixed the opening of Python source file with specified encoding.
@@ -149,7 +310,6 @@ What's New in IDLE 2.7.6?
 
 What's New in IDLE 2.7.5?
 =========================
-
 *Release date: 2013-05-12*
 
 - Issue #17838: Allow sys.stdin to be reassigned.
@@ -184,7 +344,6 @@ What's New in IDLE 2.7.5?
 
 What's New in IDLE 2.7.4?
 =========================
-
 *Release date: 2013-04-06*
 
 - Issue #17625: In IDLE, close the replace dialog after it is used.
@@ -255,7 +414,6 @@ What's New in IDLE 2.7.4?
 
 What's New in IDLE 2.7.3?
 =========================
-
 *Release date: 2012-04-09*
 
 - Issue #964437 Make IDLE help window non-modal.
@@ -288,7 +446,6 @@ What's New in IDLE 2.7.3?
 
 What's New in IDLE 2.7.2?
 =========================
-
 *Release date: 2011-06-11*
 
 - Issue #11718: IDLE's open module dialog couldn't find the __init__.py
@@ -333,7 +490,6 @@ What's New in IDLE 2.7.2?
 
 What's New in Python 2.7.1?
 ===========================
-
 *Release date: 2010-11-27*
 
 - Issue #6378: idle.bat now runs with the appropriate Python version rather than
@@ -342,7 +498,6 @@ What's New in Python 2.7.1?
 
 What's New in IDLE 2.7?
 =======================
-
 *Release date: 2010-07-03*
 
 - Issue #5150: IDLE's format menu now has an option to strip trailing
@@ -374,7 +529,6 @@ What's New in IDLE 2.7?
 
 What's New in IDLE 2.6?
 =======================
-
 *Release date: 01-Oct-2008*
 
 - Issue #2665: On Windows, an IDLE installation upgraded from an old version
@@ -387,11 +541,6 @@ What's New in IDLE 2.6?
 
 - Autocompletion of filenames now support alternate separators, e.g. the
   '/' char on Windows.  Patch 2061 Tal Einat.
-
-What's New in IDLE 2.6a1?
-=========================
-
-*Release date: 29-Feb-2008*
 
 - Configured selection highlighting colors were ignored; updating highlighting
   in the config dialog would cause non-Python files to be colored as if they
@@ -464,14 +613,7 @@ What's New in IDLE 2.6a1?
 
 What's New in IDLE 1.2?
 =======================
-
 *Release date: 19-SEP-2006*
-
-
-What's New in IDLE 1.2c1?
-=========================
-
-*Release date: 17-AUG-2006*
 
 - File menu hotkeys: there were three 'p' assignments.  Reassign the
   'Save Copy As' and 'Print' hotkeys to 'y' and 't'.  Change the
@@ -492,11 +634,6 @@ What's New in IDLE 1.2c1?
 
 - When used w/o subprocess, all exceptions were preceded by an error
   message claiming they were IDLE internal errors (since 1.2a1).
-
-What's New in IDLE 1.2b3?
-=========================
-
-*Release date: 03-AUG-2006*
 
 - Bug #1525817: Don't truncate short lines in IDLE's tool tips.
 
@@ -520,26 +657,6 @@ What's New in IDLE 1.2b3?
 - Colorizer now handles #<builtin> correctly, also unicode strings and
   'as' keyword in comment directly following import command. Closes 1325071.
   Patch 1479219 Tal Einat
-
-What's New in IDLE 1.2b2?
-=========================
-
-*Release date: 11-JUL-2006*
-
-What's New in IDLE 1.2b1?
-=========================
-
-*Release date: 20-JUN-2006*
-
-What's New in IDLE 1.2a2?
-=========================
-
-*Release date: 27-APR-2006*
-
-What's New in IDLE 1.2a1?
-=========================
-
-*Release date: 05-APR-2006*
 
 - Patch #1162825: Support non-ASCII characters in IDLE window titles.
 
@@ -620,18 +737,13 @@ What's New in IDLE 1.2a1?
 - The remote procedure call module rpc.py can now access data attributes of
   remote registered objects.  Changes to these attributes are local, however.
 
+
 What's New in IDLE 1.1?
 =======================
-
 *Release date: 30-NOV-2004*
 
 - On OpenBSD, terminating IDLE with ctrl-c from the command line caused a
   stuck subprocess MainThread because only the SocketThread was exiting.
-
-What's New in IDLE 1.1b3/rc1?
-=============================
-
-*Release date: 18-NOV-2004*
 
 - Saving a Keyset w/o making changes (by using the "Save as New Custom Key Set"
   button) caused IDLE to fail on restart (no new keyset was created in
@@ -640,27 +752,11 @@ What's New in IDLE 1.1b3/rc1?
 - A change to the linecache.py API caused IDLE to exit when an exception was
   raised while running without the subprocess (-n switch).  Python Bug 1063840.
 
-What's New in IDLE 1.1b2?
-=========================
-
-*Release date: 03-NOV-2004*
-
 - When paragraph reformat width was made configurable, a bug was
   introduced that caused reformatting of comment blocks to ignore how
   far the block was indented, effectively adding the indentation width
   to the reformat width.  This has been repaired, and the reformat
   width is again a bound on the total width of reformatted lines.
-
-What's New in IDLE 1.1b1?
-=========================
-
-*Release date: 15-OCT-2004*
-
-
-What's New in IDLE 1.1a3?
-=========================
-
-*Release date: 02-SEP-2004*
 
 - Improve keyboard focus binding, especially in Windows menu.  Improve
   window raising, especially in the Windows menu and in the debugger.
@@ -669,23 +765,11 @@ What's New in IDLE 1.1a3?
 - If user passes a non-existent filename on the commandline, just
   open a new file, don't raise a dialog.  IDLEfork 854928.
 
-
-What's New in IDLE 1.1a2?
-=========================
-
-*Release date: 05-AUG-2004*
-
 - EditorWindow.py was not finding the .chm help file on Windows.  Typo
   at Rev 1.54.  Python Bug 990954
 
 - checking sys.platform for substring 'win' was breaking IDLE docs on Mac
   (darwin).  Also, Mac Safari browser requires full file:// URIs.  SF 900580.
-
-
-What's New in IDLE 1.1a1?
-=========================
-
-*Release date: 08-JUL-2004*
 
 - Redirect the warning stream to the shell during the ScriptBinding check of
   user code and format the warning similarly to an exception for both that
@@ -749,25 +833,9 @@ What's New in IDLE 1.1a1?
 
 What's New in IDLE 1.0?
 =======================
-
 *Release date: 29-Jul-2003*
 
-- Added a banner to the shell discussing warnings possibly raised by personal
-  firewall software.  Added same comment to README.txt.
-
-
-What's New in IDLE 1.0 release candidate 2?
-===========================================
-
-*Release date: 24-Jul-2003*
-
 - Calltip error when docstring was None  Python Bug 775541
-
-
-What's New in IDLE 1.0 release candidate 1?
-===========================================
-
-*Release date: 18-Jul-2003*
 
 - Updated extend.txt, help.txt, and config-extensions.def to correctly
   reflect the current status of the configuration system.  Python Bug 768469
@@ -783,12 +851,6 @@ What's New in IDLE 1.0 release candidate 1?
 - Convert Unicode strings from readline to IOBinding.encoding.  Also set
   sys.std{in|out|err}.encoding, for both the local and the subprocess case.
   SF IDLEfork patch 682347.
-
-
-What's New in IDLE 1.0b2?
-=========================
-
-*Release date: 29-Jun-2003*
 
 - Extend AboutDialog.ViewFile() to support file encodings.  Make the CREDITS
   file Latin-1.
@@ -828,7 +890,6 @@ What's New in IDLE 1.0b2?
 
 What's New in IDLEfork 0.9b1?
 =============================
-
 *Release date: 02-Jun-2003*
 
 - The current working directory of the execution environment (and shell
@@ -930,10 +991,8 @@ What's New in IDLEfork 0.9b1?
   exception formatting to the subprocess.
 
 
-
 What's New in IDLEfork 0.9 Alpha 2?
 ===================================
-
 *Release date: 27-Jan-2003*
 
 - Updated INSTALL.txt to claify use of the python2 rpm.
@@ -1037,7 +1096,6 @@ What's New in IDLEfork 0.9 Alpha 2?
 
 What's New in IDLEfork 0.9 Alpha 1?
 ===================================
-
 *Release date: 31-Dec-2002*
 
 - First release of major new functionality.  For further details refer to

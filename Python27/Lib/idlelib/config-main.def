@@ -53,7 +53,7 @@ delete-exitfunc= 1
 [EditorWindow]
 width= 80
 height= 40
-font= courier
+font= TkFixedFont
 font-size= 10
 font-bold= 0
 encoding= none
@@ -65,6 +65,8 @@ num-spaces= 4
 [Theme]
 default= 1
 name= IDLE Classic
+name2=
+# name2 set in user config-main.cfg for themes added after 2015 Oct 1
 
 [Keys]
 default= 1
