@@ -4,20 +4,15 @@ This README would normally document whatever steps are necessary to get your app
 
 ### What is this repository for? ###
 
-* Quick summary\n
-Node based calc
-* Version
-1.0
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* Node based multithreaded extendable editor. For this moment this is just a calc
+* Version 1.0
 
 ### How do I get set up? ###
 
 * Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+To start:
+
+download repo and double click QtNodes.vbs script
 
 ### Contribution guidelines ###
 
