@@ -3,6 +3,9 @@
 ![nodes.PNG](https://bitbucket.org/repo/Radzbd/images/1686754309-nodes.PNG)
 
 
+[Watch video](https://www.youtube.com/watch?v=HEP5E84O0mo)
+
+
 ### Description and features ###
 
 * Node based multithreaded extendable editor. For this moment this is just a calc.
