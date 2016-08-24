@@ -1,29 +1,33 @@
-# README #
+# Qt node editor #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+![nodes.PNG](https://bitbucket.org/repo/Radzbd/images/1686754309-nodes.PNG)
 
-### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+[Watch video](https://www.youtube.com/watch?v=HEP5E84O0mo)
 
-### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+### Description and features ###
 
-### Contribution guidelines ###
+* Node based multithreaded extendable editor. For this moment this is just a calc.
+* UI implemented using PySide, and you can start the editor under any Qt application that uses **Python** as ascripting language.( **Autodesk Maya**, **MotionBuilder**, **Houdini** etc.)
+* The logic and ui are separated.
+* Custom extendable cmd like scripting language
+* Own file format.
 
-* Writing tests
-* Code review
-* Other guidelines
+To extend functionality use console command 
+```
+#!bash
 
-### Who do I talk to? ###
+pluginWizard ~mode [implementNode|implementCommand] ~n name
+```
+as a result code template  with your *.py associated application will be opened. For examples, see existing nodes/commands source code. No extra work, new nodes/commands will be hooked up with restart automatically.
 
-* Repo owner or admin
-* Other community or team contact
+To get existing command list use **help** command. Call command with no parameters to get description.
+
+This is my learning project of Qt and applicatoin developement. Use this as you wish.
+
+[Detailed description here (russian language)](http://ilgarlunin.blogspot.ru/2015/09/blog-post.html)
+
+### Install and run ###
+
+Download repo and double click **QtNodes.vbs** script. Or execute **Launcher.py** with python interpreter
