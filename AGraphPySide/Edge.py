@@ -56,15 +56,15 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
     def mousePressEvent(self, event):
         super(Edge, self).mousePressEvent(event)
-        w = self.source.boundingRect().width()
-        sourceDiff = self.source.scenePos() - event.scenePos()
-        dstDiff = self.destination.scenePos() - event.scenePos()
-        if abs(sourceDiff.x()) <= w*2:
-            print 'disconnect source'
-            return
-        if dstDiff.x() <= w*2:
-            print 'disconnect dst'
-            return
+        # w = self.source.boundingRect().width()
+        # sourceDiff = self.source.scenePos() - event.scenePos()
+        # dstDiff = self.destination.scenePos() - event.scenePos()
+        # if abs(sourceDiff.x()) <= w*2:
+        #     print 'disconnect source'
+        #     return
+        # if dstDiff.x() <= w*2:
+        #     print 'disconnect dst'
+        #     return
         event.accept()
 
     def kill(self):

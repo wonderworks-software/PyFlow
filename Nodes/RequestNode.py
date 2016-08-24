@@ -52,4 +52,5 @@ class RequestNode(BaseNode.Node, AGNode):
     def compute(self):
 
         data = self.input.get_data()
+        print data
         self.graph.parent.console.append(str(data))

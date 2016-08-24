@@ -1119,11 +1119,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if all([event.key() == QtCore.Qt.Key_F, modifiers == QtCore.Qt.ControlModifier]):
             self.frame()
         if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            self.parent.toggle_node_box()
+            if self.parent:
+                self.parent.toggle_node_box()
         if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.AltModifier]):
             self.commentSelectedNodes()
         if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.AltModifier]):
-            self.parent.toggle_shadows()
+            self.set_shadows_enabled(not self._shadows)
         if all([event.key() == QtCore.Qt.Key_M, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
             self.parent.toggle_multithreaded()
         if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):

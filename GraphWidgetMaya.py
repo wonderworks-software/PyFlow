@@ -1,6 +1,6 @@
 import sys
 from PySide import QtGui, QtCore
-path = r'd:\Ilgar\GIT\GraphModel'
+path = r'd:\GIT\NodesRepo'
 import pymel.core as pm
 if path not in sys.path:
     sys.path.append(path)
@@ -11,6 +11,7 @@ else:
 import maya.OpenMayaUI as omui
 import AGraphPySide
 reload(AGraphPySide)
+from Launcher import W
 
 DOCK_NAME = 'GRAPH_DOCK'
 LYT_NAME = 'GRAPH_LYT_NAME'
@@ -18,7 +19,8 @@ WIN_NAME = 'GRAPH_WIN_NAME'
 AREA = 'left'
 
 MAYA_MAIN_WINDOW = shiboken.wrapInstance(long(omui.MQtUtil.mainWindow()), QtGui.QWidget)
-w = AGraphPySide.Widget.GraphWidget('maya graph')
+# w = AGraphPySide.Widget.GraphWidget('maya graph')
+w = W()
 
 if pm.window(WIN_NAME, ex=1):
     pm.deleteUI(WIN_NAME)

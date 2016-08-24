@@ -4,17 +4,18 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import shiboken
 import sys
-path = r'd:\Ilgar\GIT\GraphModel'
+path = r'd:\GIT\NodesRepo'
 if path not in sys.path:
     sys.path.append(path)
 import AGraphPySide
 reload(AGraphPySide)
-
+from Launcher import W
 
 class NativeWidgetHolder(FBWidgetHolder):
 
     def WidgetCreate(self, pWidgetParent):
-        self.mNativeQtWidget = AGraphPySide.Widget.GraphWidget('in mobu')
+        # self.mNativeQtWidget = AGraphPySide.Widget.GraphWidget('in mobu')
+        self.mNativeQtWidget = W()
         return shiboken.getCppPointer(self.mNativeQtWidget)[0]
 
 
