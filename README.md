@@ -1,27 +1,19 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+### Description ###
 
-### What is this repository for? ###
+Node based multithreaded extendable editor. For this moment this is just a calc.
 
-* Node based multithreaded extendable editor. For this moment this is just a calc
-* Version 1.0
+UI implemented using PySide, and you can start the editor under any Qt application that uses **Python** as ascripting language.( **Autodesk Maya**, **MotionBuilder**, **Houdini** etc.)
 
-### How do I get set up? ###
+Since that logic and ui are separated you can use no ui classes for your own gui implementations.
 
-* Summary of set up
+This is my learning project of Qt and applicatoin developement. Use this as you wish.
 
-To start:
+### Detailed description ###
 
-Download repo and double click QtNodes.vbs script
 
-### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+### Install and run ###
 
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+Download repo and double click **QtNodes.vbs** script. Or execute **Launcher.py** with python interpreter
