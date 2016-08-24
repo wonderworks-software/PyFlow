@@ -10,9 +10,10 @@ This README would normally document whatever steps are necessary to get your app
 ### How do I get set up? ###
 
 * Summary of set up
+
 To start:
 
-download repo and double click QtNodes.vbs script
+Download repo and double click QtNodes.vbs script
 
 ### Contribution guidelines ###
 
