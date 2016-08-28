@@ -9,7 +9,7 @@
 ### Description and features ###
 
 * Node based multithreaded extendable editor. For this moment this is just a calc.
-* UI implemented using PySide, and you can start the editor under any Qt application that uses **Python** as ascripting language.( **Autodesk Maya**, **MotionBuilder**, **Houdini** etc.)
+* UI implemented using PySide, and you can start the editor under any application that uses **Python** as ascripting language.( **Autodesk Maya**, **MotionBuilder**, **Houdini** etc.)
 * The logic and ui are separated.
 * Custom extendable cmd like scripting language
 * Own file format.
