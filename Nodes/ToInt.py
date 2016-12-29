@@ -11,6 +11,10 @@ class ToInt(BaseNode.Node, AGNode):
         self.out = self.add_output_port('int', AGPortDataTypes.tNumeric)
         portAffects(self.inp, self.out)
 
+    @staticmethod
+    def get_category():
+        return 'Convert'
+
     def compute(self):
 
         data = self.inp.get_data()

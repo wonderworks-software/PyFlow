@@ -35,6 +35,10 @@ class StringNode(BaseNode.Node, AGNode):
         lyt_head.addItem(line_edit_proxy)
         self.compute()
 
+    @staticmethod
+    def get_category():
+        return 'GenericTypes'
+
     def set_data(self):
 
         self.output.set_data(self.line_edit.text().replace("/", "|"), True)

@@ -12,6 +12,10 @@ class IsEqual(BaseNode.Node, AGNode):
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)
 
+    @staticmethod
+    def get_category():
+        return 'Conditions'
+
     def compute(self):
 
         inp_a_data = self.inputA.get_data()

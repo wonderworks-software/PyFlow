@@ -23,6 +23,10 @@ class DevideNode(BaseNode.Node, AGNode):
 
         print self.number.port_name(), 'connected'
 
+    @staticmethod
+    def get_category():
+        return 'Math'
+
     def number_port_disconnected(self):
 
         print self.number.port_name(), 'disconnected'

@@ -225,6 +225,10 @@ class Node(QtGui.QGraphicsItem, AGNode):
         p = self._add_port(AGPortTypes.kInput, data_type, port_name)
         return p
 
+    @staticmethod
+    def get_category():
+        return "Default"
+
     def add_output_port(self, port_name, data_type):
 
         p = self._add_port(AGPortTypes.kOutput, data_type, port_name)

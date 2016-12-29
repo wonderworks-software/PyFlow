@@ -26,6 +26,10 @@ class BoolNode(BaseNode.Node, AGNode):
         prx_cb.setWidget(self.cb)
         self.output.getLayout().insertItem(0, prx_cb)
 
+    @staticmethod
+    def get_category():
+        return 'GenericTypes'
+
     def on_set_cb_state(self, state):
         self.output.set_data(state, True)
 

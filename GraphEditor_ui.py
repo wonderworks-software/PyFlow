@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\GIT\NodesRepo\GraphEditor_ui.ui'
+# Form implementation generated from reading ui file 'D:\GIT\nodes\GraphEditor_ui.ui'
 #
-# Created: Tue Aug 23 15:50:16 2016
+# Created: Thu Dec 29 17:27:54 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1133, 758)
+        MainWindow.resize(1037, 675)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("AGraphPySide/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.horizontal_splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1133, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1037, 21))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")
@@ -54,7 +54,7 @@ class Ui_MainWindow(object):
         MainWindow.setMenuBar(self.menuBar)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
-        MainWindow.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
+        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.dockWidgetConsole = QtGui.QDockWidget(MainWindow)
         self.dockWidgetConsole.setEnabled(True)
         self.dockWidgetConsole.setFeatures(QtGui.QDockWidget.DockWidgetFeatureMask)
@@ -89,7 +89,7 @@ class Ui_MainWindow(object):
         self.NodeBoxLayout.setObjectName("NodeBoxLayout")
         self.gridLayout_5.addLayout(self.NodeBoxLayout, 0, 0, 1, 1)
         self.dockWidgetNodeBox.setWidget(self.dockWidgetContents_5)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetNodeBox)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetNodeBox)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setObjectName("statusBar")
         MainWindow.setStatusBar(self.statusBar)
@@ -221,4 +221,3 @@ class Ui_MainWindow(object):
         self.actionDebug.setText(QtGui.QApplication.translate("MainWindow", "Debug", None, QtGui.QApplication.UnicodeUTF8))
         self.actionScreenshot.setText(QtGui.QApplication.translate("MainWindow", "Screenshot", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShortcuts.setText(QtGui.QApplication.translate("MainWindow", "Shortcuts", None, QtGui.QApplication.UnicodeUTF8))
-

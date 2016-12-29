@@ -32,6 +32,10 @@ class IntNode(BaseNode.Node, AGNode):
         self.output.getLayout().insertItem(0, spin_box_proxy)
         self.compute()
 
+    @staticmethod
+    def get_category():
+        return 'GenericTypes'
+
     def set_data(self):
 
         self.output.set_data(self.spin_box.value(), True)

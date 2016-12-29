@@ -13,6 +13,10 @@ class StringCapitalize(BaseNode.Node, AGNode):
         self.out_str = self.add_output_port('capitalized str', AGPortDataTypes.tString)
         portAffects(self.in_str, self.out_str)
 
+    @staticmethod
+    def get_category():
+        return 'StringUtils'
+
     def compute(self):
 
         str_data = self.in_str.get_data()

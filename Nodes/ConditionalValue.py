@@ -18,6 +18,10 @@ class ConditionalValue(BaseNode.Node, AGNode):
         portAffects(self.trueValue, self.output)
         portAffects(self.falseValue, self.output)
 
+    @staticmethod
+    def get_category():
+        return 'FlowControl'
+
     def compute(self):
 
         condition = self.condition.get_data()

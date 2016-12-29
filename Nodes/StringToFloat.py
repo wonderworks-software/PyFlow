@@ -13,6 +13,10 @@ class StringToFloat(BaseNode.Node, AGNode):
         self.out_flt = self.add_output_port('float', AGPortDataTypes.tNumeric)
         portAffects(self.in_str, self.out_flt)
 
+    @staticmethod
+    def get_category():
+        return 'Convert'
+
     def compute(self):
 
         str_data = self.in_str.get_data()

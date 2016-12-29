@@ -13,6 +13,10 @@ class ToString(BaseNode.Node, AGNode):
         self.out_data = self.add_output_port('out', AGPortDataTypes.tString)
         portAffects(self.in_data, self.out_data)
 
+    @staticmethod
+    def get_category():
+        return 'Convert'
+
     def compute(self):
 
         out_data = self.in_data.get_data()

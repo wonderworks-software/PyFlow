@@ -11,6 +11,10 @@ class IsArray(BaseNode.Node, AGNode):
         self.out = self.add_output_port('out', AGPortDataTypes.tBool)
         portAffects(self.inp, self.out)
 
+    @staticmethod
+    def get_category():
+        return 'Conditions'
+
     def compute(self):
 
         data = self.inp.get_data()

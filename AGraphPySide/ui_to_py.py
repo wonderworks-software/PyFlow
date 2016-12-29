@@ -27,6 +27,5 @@ def rcc_to_py(rcc_exe, py_path, qrc_path):
     call([rcc_exe, "-o", py_path, qrc_path])
     print "{0} converted".format(py_path.upper())
 
-
-ui_to_py(r"D:\GIT\NodesRepo\GraphEditor_ui.ui")
-rcc_to_py(r"C:\Python27\Lib\site-packages\PySide\pyside-rcc.exe", rcc_py_path, r"D:\GIT\NodesRepo\resources\nodes_res.qrc")
+ui_to_py(r"D:\GIT\nodes\GraphEditor_ui.ui")
+# rcc_to_py(r"C:\Python27\Lib\site-packages\PySide\pyside-rcc.exe", rcc_py_path, r"D:\GIT\NodesRepo\resources\nodes_res.qrc")

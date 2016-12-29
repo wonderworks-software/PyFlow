@@ -14,6 +14,10 @@ class DiscriminantNode(BaseNode.Node, AGNode):
         portAffects(self.inputB, self.output)
         portAffects(self.inputC, self.output)
 
+    @staticmethod
+    def get_category():
+        return 'Math'
+
     def compute(self):
 
         inpA_data = self.inputA.get_data()

@@ -12,6 +12,10 @@ class StringContains(BaseNode.Node, AGNode):
         portAffects(self.first, self.output)
         portAffects(self.second, self.output)
 
+    @staticmethod
+    def get_category():
+        return 'StringUtils'
+
     def compute(self):
 
         first_str = self.first.get_data()

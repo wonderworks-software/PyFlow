@@ -52,6 +52,7 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.gridLayout_2.addWidget(self.consoleInput, 2, 0, 1, 1)
         self.dockWidgetConsole.hide()
         self.dockWidgetNodeBox.hide()
+        self.setMouseTracking(True)
 
     def closeEvent(self, event):
         question = "Shure?"
@@ -144,10 +145,14 @@ if __name__ == '__main__':
 
     app.setPalette(darkPalette)
 
-    app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+    app.setStyleSheet("QToolTip { color: #ffffff; background-color: + \
+        #2a82da; border: 1px solid white;}\
+        QWidget:focus {border:1 inset black;}\
+        QListWidget:focus {border:1 inset black;}\
+        QTreeWidget:focus {border:1 inset black;}\
+        QDockidget:focus {border:1 inset black;}\
+        ")
 
-
-    
 
     instance = W()
     instance.show()
@@ -155,5 +160,5 @@ if __name__ == '__main__':
 
     try:
         sys.exit(app.exec_())
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)

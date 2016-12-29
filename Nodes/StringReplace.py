@@ -14,6 +14,10 @@ class StringReplace(BaseNode.Node, AGNode):
         portAffects(self.old_ptn, self.output)
         portAffects(self.new_ptn, self.output)
 
+    @staticmethod
+    def get_category():
+        return 'StringUtils'
+
     def compute(self):
 
         first_str = self.first.get_data()

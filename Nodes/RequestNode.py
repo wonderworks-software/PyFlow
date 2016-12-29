@@ -38,6 +38,10 @@ class RequestNode(BaseNode.Node, AGNode):
         lyt.addItem(prx_sb_delta_time)
         lyt.setAlignment(lyt.itemAt(0), QtCore.Qt.AlignCenter)
 
+    @staticmethod
+    def get_category():
+        return 'Util'
+
     def startEval(self, deltatime):
         if self.cb.isChecked():
             self.looper.start(deltatime)

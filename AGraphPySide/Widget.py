@@ -1,6 +1,7 @@
 from PySide import QtCore
 from PySide import QtGui
 import math
+import random
 from Settings import Colors
 from Settings import LineTypes
 from Settings import get_line_type
@@ -27,12 +28,29 @@ def get_mid_point(args):
     return [sum(i)/len(i) for i in zip(*args)]
 
 
+def get_nodes_file_names():
+
+    return [i[:-3] for i in listdir(nodes_path) if i.endswith('.py') and '__init__' not in i]
+
+
+def get_node(module, name, graph):
+
+    if hasattr(module, name):
+        try:
+            mod = getattr(module, name)
+            mod = mod(name, graph)
+            return mod
+        except Exception as e:
+            print("ERROR node creation!!", e)
+            return
+
+
 class PluginType:
     pNode = 0
     pCommand = 1
 
 
-def _implementPlugin(name, console_out_foo, pluginType):
+def _implementPlugin(name, console_out_foo, pluginType, graph):
     base_command_code = """from AGraphPySide import Command
 
 
@@ -66,6 +84,10 @@ class {0}(BaseNode.Node, AGNode):
         self.out_str = self.add_output_port('upper str', AGPortDataTypes.tString)
         portAffects(self.in_str, self.out_str)
 
+    @staticmethod
+    def get_category():
+        return 'Default'
+
     def compute(self):
 
         str_data = self.in_str.get_data()
@@ -78,9 +100,15 @@ class {0}(BaseNode.Node, AGNode):
     if pluginType == PluginType.pNode:
         file_path = "{0}/{1}.py".format(Nodes.__path__[0], name)
         existing_nodes = [n.split(".")[0] for n in listdir(Nodes.__path__[0]) if n.endswith(".py") and "__init__" not in n]
+        category_names = graph.node_box.tree_widget.categories.keys()
         if name in existing_nodes:
             console_out_foo("[ERROR] Node {0} already exists".format(name))
             return
+
+        if name.lower() in [n.lower() for n in category_names]:
+            console_out_foo("[ERROR] Category with this name ( {0} ) already exists. Please, choose another name".format(name))
+            return
+
         # write to file. delete older if needed
         with open(file_path, "wb") as f:
             f.write(base_node_code)
@@ -199,6 +227,7 @@ class NodesBoxListWidget(QtGui.QListWidget):
         self.setSortingEnabled(True)
         self.setDragEnabled(True)
         self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
     def mousePressEvent(self, event):
         super(NodesBoxListWidget, self).mousePressEvent(event)
@@ -211,7 +240,9 @@ class NodesBoxListWidget(QtGui.QListWidget):
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return:
-            self.parent_item.create_node()
+            point = self.parent_item.graph.findGoodPlaceForNewNode()
+            name = self.currentItem().text()
+            self.parent_item.graph.create_node(name, point.x(), point.y(), name)
         if self._events:
             if event.key() == QtCore.Qt.Key_Escape:
                 self.parent_item.close()
@@ -234,6 +265,7 @@ class NodeBoxLineEdit(QtGui.QLineEdit):
                 "border-color: black; border-style: outset; border-width: 1px;"
         self.setStyleSheet(style)
         self.setPlaceholderText("enter node name..")
+        self.setVisible(False)
 
     def keyPressEvent(self, event):
         if self._events:
@@ -243,6 +275,66 @@ class NodeBoxLineEdit(QtGui.QLineEdit):
         super(NodeBoxLineEdit, self).keyPressEvent(event)
 
 
+class NodeBoxTreeWidget(QtGui.QTreeWidget):
+    def __init__(self, parent):
+        super(NodeBoxTreeWidget, self).__init__(parent)
+        style = "background-color: rgb(80, 80, 80);" +\
+                "selection-background-color: rgb(150, 150, 150);" +\
+                "selection-color: yellow;" +\
+                "border-radius: 2px;" +\
+                "font-size: 14px;" +\
+                "border-color: black; border-style: outset; border-width: 1px;"
+        self.graph = parent
+        self.setStyleSheet(style)
+        self.setParent(parent)
+        self.setFrameShape(QtGui.QFrame.NoFrame)
+        self.setFrameShadow(QtGui.QFrame.Sunken)
+        self.setObjectName("tree_nodes")
+        self.setSortingEnabled(True)
+        self.setDragEnabled(True)
+        self.setColumnCount(1)
+        self.setHeaderHidden(True)
+        self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
+        self.categories = {}
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+
+    def refresh(self):
+        self.clear()
+        for node_file_name in get_nodes_file_names():
+            node_class = getattr(Nodes, node_file_name)
+            category_name = node_class.get_category()
+            if not category_name in self.categories:
+                CatItem = QtGui.QTreeWidgetItem(self)
+                CatItem.setText(0, category_name)
+                self.categories[category_name] = CatItem
+            NodeItem = QtGui.QTreeWidgetItem(self.categories[category_name])
+            NodeItem.setText(0, node_file_name)
+
+    def keyPressEvent(self, event):
+        super(NodeBoxTreeWidget, self).keyPressEvent(event)
+        if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
+            point = self.graph.findGoodPlaceForNewNode()
+            name = self.currentItem().text(0)
+            self.graph.create_node(name, point.x(), point.y(), name)
+
+    def mousePressEvent(self, event):
+        super(NodeBoxTreeWidget, self).mousePressEvent(event)
+        item_clicked = self.currentItem()
+        if not item_clicked:
+            event.ignore()
+            return
+        pressed_text = item_clicked.text(0)
+
+        if pressed_text in self.categories.keys():
+            event.ignore()
+            return
+        drag = QtGui.QDrag(self)
+        mime_data = QtCore.QMimeData()
+        mime_data.setText(pressed_text)
+        drag.setMimeData(mime_data)
+        drag.exec_()
+
+
 class NodesBox(QtGui.QWidget):
     def __init__(self, graph):
         super(NodesBox, self).__init__()
@@ -250,45 +342,59 @@ class NodesBox(QtGui.QWidget):
         self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.CustomizeWindowHint)
         self.setObjectName("nodes_box_form")
         self.setWindowTitle('Node box - {0}'.format(self.graph.name))
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        # self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.resize(160, 200)
         self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         self.name = 'NODE_BOX'
+
+        self.switch_button = QtGui.QPushButton("go to list mode")
+        self.switch_button.clicked.connect(self.swap_appearance)
+
         self.verticalLayout = QtGui.QVBoxLayout(self)
-        self.verticalLayout.setSpacing(1)
-        self.verticalLayout.setContentsMargins(1, 1, 1, 1)
+        self.verticalLayout.setSpacing(2)
+        self.verticalLayout.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout.setObjectName("verticalLayout")
         self.le_nodes = NodeBoxLineEdit(self)
         self.le_nodes.textChanged.connect(self.le_text_changed)
+        self.verticalLayout.addWidget(self.switch_button)
         self.verticalLayout.addWidget(self.le_nodes)
         self.listWidget = NodesBoxListWidget(self)
         self.verticalLayout.addWidget(self.listWidget)
+        self.listWidget.setVisible(False)
         self.setVisible(False)
         self.refresh_list('')
+        self.tree_widget = NodeBoxTreeWidget(self.graph)
+        self.verticalLayout.addWidget(self.tree_widget)
+        self.tree_widget.refresh()
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.setStyleSheet("border:1 inset white")
 
-    def get_node(self, module, name):
+    def keyPressEvent(self, event):
+        modifiers = event.modifiers()
+        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
+            self.swap_appearance()
+        super(NodesBox, self).keyPressEvent(event)
 
-        if hasattr(module, name):
-            try:
-                mod = getattr(module, name)
-                mod = mod(name, self.graph)
-                return mod
-            except Exception, e:
-                print "ERROR node creation!!", e
-                return
-
-    def get_nodes_file_names(self):
-
-        return [i[:-3] for i in listdir(_mod_folder+'\\Nodes') if i.endswith('.py') and '__init__' not in i]
+    def swap_appearance(self):
+        self.listWidget.setVisible(not self.listWidget.isVisible())
+        self.tree_widget.setVisible(not self.tree_widget.isVisible())
+        self.le_nodes.setVisible(not self.le_nodes.isVisible())
+        if self.tree_widget.isVisible():
+            self.switch_button.setText("go to list mode")
+        else:
+            self.switch_button.setText("go to category mode")
 
     def refresh_list(self, pattern):
 
         self.listWidget.clear()
-        words = self.get_nodes_file_names()
-        self.listWidget.addItems([i for i in words if pattern.lower() in i.lower()])
+        node_file_names = get_nodes_file_names()
+        self.listWidget.addItems([i for i in node_file_names if pattern.lower() in i.lower()])
         item = self.listWidget.itemAt(0, 0)
         if item and not item.isSelected():
             item.setSelected(True)
+
+    def get_nodes_file_names(self):
+        return get_nodes_file_names()
 
     def set_visible(self):
 
@@ -303,7 +409,7 @@ class NodesBox(QtGui.QWidget):
         items = self.listWidget.selectedItems()
         if not len(items) == 0:
             name = items[0].text()
-            node = self.get_node(Nodes, name)
+            node = get_node(Nodes, name, self.graph)
             print node.name, 'created'
             self.graph.add_node(node, self.graph.current_cursor_pose.x(),
                                        self.graph.current_cursor_pose.y())
@@ -774,6 +880,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.scene_widget.setSceneRect(QtCore.QRect(0, 0, 10000, 10000))
         self._grid_spacing = 50
         self.factor = 1
+        self.factor_diff = 0
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
 
@@ -808,6 +915,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.tick_timer = QtCore.QTimer() # this timer executes all functions in '_tick_functions'
         self.tick_timer.timeout.connect(self._tick_executor)
         self.tick_timer.start(20)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+
 
     def __del__(self):
         self.tick_timer.stop()
@@ -1092,9 +1201,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
 
+    def selected_nodes(self):
+        return [i for i in self.nodes if i.isSelected()]
+
     def kill_selected_nodes(self, call_connection_functions=False):
 
-        selected = [i for i in self.nodes if i.isSelected()]
+        selected = self.selected_nodes()
         for i in self.nodes:
             if i.isSelected() and i in self.nodes and i in self.scene().items():
                 i.kill(call_connection_functions)
@@ -1110,6 +1222,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         modifiers = event.modifiers()
         if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
             self.new_file()
+        if all([event.key() == QtCore.Qt.Key_Equal, modifiers == QtCore.Qt.ControlModifier]):
+            self.scale_step(True, 1.1)
+        if all([event.key() == QtCore.Qt.Key_Minus, modifiers == QtCore.Qt.ControlModifier]):
+            self.scale_step(False, 0.9)
+        if all([event.key() == QtCore.Qt.Key_R, modifiers == QtCore.Qt.ControlModifier]):
+            self.reset_scale()
         if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
             self.save()
         if all([event.key() == QtCore.Qt.Key_O, modifiers == QtCore.Qt.ControlModifier]):
@@ -1127,6 +1245,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.set_shadows_enabled(not self._shadows)
         if all([event.key() == QtCore.Qt.Key_M, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
             self.parent.toggle_multithreaded()
+        if all([event.key() == QtCore.Qt.Key_A, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.align_selected_nodes(True)
+        if all([event.key() == QtCore.Qt.Key_Q, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.align_selected_nodes(False)
         if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
             self.parent.toggle_debug()
         if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
@@ -1136,7 +1258,43 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if self.node_box.listWidget._events:
             if event.key() == QtCore.Qt.Key_Tab:
                 self.node_box.set_visible()
+        if all([event.key() == QtCore.Qt.Key_W, modifiers == QtCore.Qt.ControlModifier]):
+            self.duplicate_node()
         QtGui.QGraphicsView.keyPressEvent(self, event)
+
+    def duplicate_node(self):
+        for n in [i for i in self.nodes if i.isSelected()]:
+            print(n.get_name())
+
+
+    def align_selected_nodes(self, direction):
+        poses = []
+        selected_nodes = self.selected_nodes()
+        for n in selected_nodes:
+            poses.append(n.scenePos())
+
+        x = (min([p.x() for p in poses]))
+        y = (min([p.y() for p in poses]))
+        if direction:
+            # align X
+            for n in selected_nodes:
+                n.setPos(x, n.scenePos().y())
+        else:
+            # align Y
+            for n in selected_nodes:
+                n.setPos(n.scenePos().x(), y)
+
+
+
+    def findGoodPlaceForNewNode(self):
+        polygon = self.mapToScene(self.viewport().rect())
+        ls = polygon.toList()
+        point = QtCore.QPointF((ls[1].x() - ls[0].x())/2, (ls[3].y() - ls[2].y())/2)
+        point += ls[0]
+        point.setY(point.y()+polygon.boundingRect().height()/3)
+        point += QtCore.QPointF(float(random.randint(50, 200)), float(random.randint(50, 200)))
+        return point
+
 
     def keyReleaseEvent(self, event):
 
@@ -1378,7 +1536,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def create_node(self, className, x, y, name):
 
-        node_class = self.node_box.get_node(Nodes, className)
+        node_class = get_node(Nodes, className, self)
         node_class.set_name(name)
         self.add_node(node_class, x, y)
         return node_class
@@ -1478,9 +1636,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             try:
                 mode = commandLine["flags"]["{0}mode".format(FLAG_SYMBOL)]
                 if mode == "implementNode":
-                    _implementPlugin(str(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]), self.parent.console.append, PluginType.pNode)
+                    _implementPlugin(str(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]), self.parent.console.append, PluginType.pNode, self)
                 if mode == "implementCommand":
-                    _implementPlugin(str(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]), self.parent.console.append, PluginType.pCommand)
+                    _implementPlugin(str(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]), self.parent.console.append, PluginType.pCommand, self)
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
                 self.parent.console.append("[USAGE]>>>pluginWizard {0}mode [implementNode|implementCommand] {0}n name".format(FLAG_SYMBOL))
@@ -1627,6 +1785,27 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                                           [p.port_name() for p in i.affects],
                                           [p.port_name() for p in i.affected_by],
                                           i.dirty))
+
+    def scale_step(self, direction, step_size):
+        current_factor = self.factor
+
+        if direction:
+            self.factor += (step_size-1)
+            self.factor_diff += self.factor-current_factor
+            # if self.factor_diff >= self.maximum_scale:
+            #     self.factor_diff = self.maximum_scale-0.01
+            #     return
+            self.scale(step_size, step_size)
+        else:
+            self.factor -= (1-step_size)
+            self.factor_diff += self.factor-current_factor
+            # if self.factor_diff <= self.minimum_scale:
+            #     self.factor_diff = self.minimum_scale+0.01
+            #     return
+            self.scale(step_size, step_size)
+
+    def reset_scale(self):
+        self.resetMatrix()
 
     def scale_view(self, scale_factor):
 

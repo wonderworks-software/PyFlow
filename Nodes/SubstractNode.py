@@ -12,6 +12,10 @@ class SubstractNode(BaseNode.Node, AGNode):
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)
 
+    @staticmethod
+    def get_category():
+        return 'Math'
+
     def compute(self):
 
         inp_a_data = self.inputA.get_data()

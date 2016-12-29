@@ -18,6 +18,10 @@ class ArrayAppend(BaseNode.Node, AGNode):
         portAffects(self.in_arr, self.out_arr)
         portAffects(self.element, self.out_arr)
 
+    @staticmethod
+    def get_category():
+        return 'Array'
+
     def compute(self):
 
         try:

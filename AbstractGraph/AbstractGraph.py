@@ -156,6 +156,10 @@ class AGNode(object):
         self.x = x
         self.y = y
 
+    def get_name(self):
+
+        return self.name
+
     def set_name(self, name):
 
         self.name = self.graph.get_uniq_node_name(name)

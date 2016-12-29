@@ -13,6 +13,11 @@ class ArrayConcat(BaseNode.Node, AGNode):
         portAffects(self.arrayA, self.result)
         portAffects(self.arrayB, self.result)
 
+
+    @staticmethod
+    def get_category():
+        return 'Array'
+
     def compute(self):
 
         first = self.arrayA.get_data()

@@ -12,6 +12,10 @@ class PowNode(BaseNode.Node, AGNode):
         portAffects(self.base, self.output)
         portAffects(self.power, self.output)
 
+    @staticmethod
+    def get_category():
+        return 'Math'
+
     def compute(self):
 
         base_data = self.base.get_data()

@@ -14,6 +14,10 @@ class Index(BaseNode.Node, AGNode):
         portAffects(self.inArray, self.index)
         portAffects(self.value, self.index)
 
+    @staticmethod
+    def get_category():
+        return 'Array'
+
     def compute(self):
 
         ls = self.inArray.get_data()

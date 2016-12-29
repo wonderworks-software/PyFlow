@@ -15,6 +15,10 @@ class Len(BaseNode.Node, AGNode):
         portAffects(self.in_arr, self.out_result)
         portAffects(self.in_arr, self.out_len)
 
+    @staticmethod
+    def get_category():
+        return 'Array'
+
     def compute(self):
 
         in_arr = self.in_arr.get_data()

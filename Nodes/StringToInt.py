@@ -13,6 +13,10 @@ class StringToInt(BaseNode.Node, AGNode):
         self.out_int = self.add_output_port('int', AGPortDataTypes.tNumeric)
         portAffects(self.in_str, self.out_int)
 
+    @staticmethod
+    def get_category():
+        return 'Convert'
+
     def compute(self):
 
         str_data = self.in_str.get_data()
