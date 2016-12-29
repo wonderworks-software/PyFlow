@@ -434,9 +434,9 @@ class RubberRect(QtGui.QGraphicsRectItem, Colors):
         self.setBrush(QtGui.QBrush(self.kRubberRect))
 
 
-class GroupObjectName(QtGui.QGraphicsTextItem, Colors):
+class CommentNodeName(QtGui.QGraphicsTextItem, Colors):
     def __init__(self, parent):
-        super(GroupObjectName, self).__init__()
+        super(CommentNodeName, self).__init__()
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.parent = parent
         self.setParentItem(parent)
@@ -451,22 +451,22 @@ class GroupObjectName(QtGui.QGraphicsTextItem, Colors):
 
     def focusInEvent(self, event):
         self.parentItem().graph.disable_sortcuts()
-        super(GroupObjectName, self).focusInEvent(event)
+        super(CommentNodeName, self).focusInEvent(event)
 
     def focusOutEvent(self, event):
         self.parentItem().graph.enable_sortcuts()
         self.update_pos()
-        super(GroupObjectName, self).focusOutEvent(event)
+        super(CommentNodeName, self).focusOutEvent(event)
 
     def paint(self, painter, option, widget):
 
-        painter.fillRect(option.rect, QtGui.QColor(self.kGroupObjectNameBackground))
-        super(GroupObjectName, self).paint(painter, option, widget)
+        painter.fillRect(option.rect, QtGui.QColor(self.kCommentNodeNameBackground))
+        super(CommentNodeName, self).paint(painter, option, widget)
 
 
-class GroupObject(QtGui.QGraphicsRectItem, Colors):
+class CommentNode(QtGui.QGraphicsRectItem, Colors):
     def __init__(self, graph):
-        super(GroupObject, self).__init__()
+        super(CommentNode, self).__init__()
         self.object_type = AGObjectTypes.tGrouper
         self.graph = graph
         self.nodes = []
@@ -481,9 +481,9 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
         self._minimum_height = 150
         # self.setZValue(0.0)
         self.auto_fit_content = False
-        self.setPen(QtGui.QPen(self.kGroupObjectPen, 1, QtCore.Qt.SolidLine))
-        self.setBrush(QtGui.QBrush(self.kGroupObjectBrush))
-        self.label = GroupObjectName(self)
+        self.setPen(QtGui.QPen(self.kCommentNodePen, 1, QtCore.Qt.SolidLine))
+        self.setBrush(QtGui.QBrush(self.kCommentNodeBrush))
+        self.label = CommentNodeName(self)
         self.count_label = QtGui.QGraphicsTextItem(parent=self)
         self.count_label.setDefaultTextColor(self.kWhite)
         self.count_label.setFont(QtGui.QFont("Courier New", 8))
@@ -497,7 +497,7 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
                                                      QtCore.QPointF(10.0, 0.0),
                                                      QtCore.QPointF(0.0, 10.0)
                                                      ]))
-        self.resize_item.setBrush(self.kGroupObjectResizer)
+        self.resize_item.setBrush(self.kCommentNodeResizer)
         self.set_bottom_right(QtCore.QPointF(self.minimum_width, self.minimum_height))
 
     @property
@@ -557,7 +557,7 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
 
     def hoverLeaveEvent(self, event):
 
-        self.setBrush(self.kGroupObjectBrush)
+        self.setBrush(self.kCommentNodeBrush)
 
     def update_count_label(self):
 
@@ -586,7 +586,7 @@ class GroupObject(QtGui.QGraphicsRectItem, Colors):
 
         for i in self.nodes+self.graph.nodes:
             i.setSelected(False)
-        super(GroupObject, self).mousePressEvent(event)
+        super(CommentNode, self).mousePressEvent(event)
 
     def unpack(self):
 
@@ -1268,22 +1268,41 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
 
     def align_selected_nodes(self, direction):
-        poses = []
-        selected_nodes = self.selected_nodes()
-        for n in selected_nodes:
-            poses.append(n.scenePos())
+        print("align")
+        scene_poses = []
+        relative_poses = []
+        scene_nodes_selected = [n for n in self.nodes if n.isSelected() and not isinstance(n.parentItem(), CommentNode)]
+        commented_nodes = [n for n in self.nodes if n.isSelected() and isinstance(n.parentItem(), CommentNode)]
 
-        x = (min([p.x() for p in poses]))
-        y = (min([p.y() for p in poses]))
-        if direction:
-            # align X
-            for n in selected_nodes:
-                n.setPos(x, n.scenePos().y())
-        else:
-            # align Y
-            for n in selected_nodes:
-                n.setPos(n.scenePos().x(), y)
+        if len(scene_nodes_selected) > 0:
+            for n in scene_nodes_selected:
+                scene_poses.append(n.scenePos())
 
+            x = (min([p.x() for p in scene_poses]))
+            y = (min([p.y() for p in scene_poses]))
+
+            if direction:
+                # align X
+                for n in scene_nodes_selected:
+                    n.setX(x)
+            else:
+                # align Y
+                for n in scene_nodes_selected:
+                    n.setY(y)
+        if len(commented_nodes) > 0:
+            for rn in commented_nodes:
+                relative_poses.append(rn.pos())
+
+            rx = (min([p.x() for p in relative_poses]))
+            ry = (min([p.y() for p in relative_poses]))
+            if direction:
+                # align X
+                for rn in commented_nodes:
+                    rn.setX(rx)
+            else:
+                # align Y
+                for rn in commented_nodes:
+                    rn.setY(ry)
 
 
     def findGoodPlaceForNewNode(self):
@@ -1377,7 +1396,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def createComment(self, x1, y1, x2, y2, name):
 
-        grp = GroupObject(self)
+        grp = CommentNode(self)
         self.groupers.append(grp)
         grp.setPos(QtCore.QPoint(int(x1), int(y1)))
         grp.set_bottom_right(QtCore.QPoint(int(x2), int(y2)))
@@ -1395,7 +1414,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             return
 
         r = self.get_nodes_rect(True)
-        grp = GroupObject(self)
+        grp = CommentNode(self)
         grp.label.setHtml(comment)
         # grp.label.setPlainText(comment)
         self.groupers.append(grp)
@@ -1432,7 +1451,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         modifiers = event.modifiers()
         if self.released_item and not hasattr(self.released_item, 'non_selectable'):
-            if isinstance(self.released_item, GroupObject):
+            if isinstance(self.released_item, CommentNode):
                 self.released_item.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
         else:
             if self.pressed_item and not hasattr(self.pressed_item, 'non_selectable'):

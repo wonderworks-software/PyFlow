@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\GIT\nodes\GraphEditor_ui.ui'
 #
-# Created: Thu Dec 29 17:27:54 2016
+# Created: Thu Dec 29 22:17:22 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1037, 675)
+        MainWindow.resize(1084, 669)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("AGraphPySide/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.horizontal_splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1037, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1084, 26))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")
@@ -57,7 +57,7 @@ class Ui_MainWindow(object):
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.dockWidgetConsole = QtGui.QDockWidget(MainWindow)
         self.dockWidgetConsole.setEnabled(True)
-        self.dockWidgetConsole.setFeatures(QtGui.QDockWidget.DockWidgetFeatureMask)
+        self.dockWidgetConsole.setFeatures(QtGui.QDockWidget.AllDockWidgetFeatures)
         self.dockWidgetConsole.setObjectName("dockWidgetConsole")
         self.dockWidgetContents_2 = QtGui.QWidget()
         self.dockWidgetContents_2.setObjectName("dockWidgetContents_2")
@@ -78,7 +78,7 @@ class Ui_MainWindow(object):
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.dockWidgetConsole)
         self.dockWidgetNodeBox = QtGui.QDockWidget(MainWindow)
         self.dockWidgetNodeBox.setFloating(False)
-        self.dockWidgetNodeBox.setFeatures(QtGui.QDockWidget.DockWidgetFeatureMask)
+        self.dockWidgetNodeBox.setFeatures(QtGui.QDockWidget.AllDockWidgetFeatures)
         self.dockWidgetNodeBox.setObjectName("dockWidgetNodeBox")
         self.dockWidgetContents_5 = QtGui.QWidget()
         self.dockWidgetContents_5.setObjectName("dockWidgetContents_5")
@@ -93,6 +93,18 @@ class Ui_MainWindow(object):
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setObjectName("statusBar")
         MainWindow.setStatusBar(self.statusBar)
+        self.dockWidgetNodeView = QtGui.QDockWidget(MainWindow)
+        self.dockWidgetNodeView.setObjectName("dockWidgetNodeView")
+        self.dockWidgetContents = QtGui.QWidget()
+        self.dockWidgetContents.setObjectName("dockWidgetContents")
+        self.gridLayout_4 = QtGui.QGridLayout(self.dockWidgetContents)
+        self.gridLayout_4.setContentsMargins(1, 1, 1, 1)
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.PropertyViewLayout = QtGui.QGridLayout()
+        self.PropertyViewLayout.setObjectName("PropertyViewLayout")
+        self.gridLayout_4.addLayout(self.PropertyViewLayout, 0, 0, 1, 1)
+        self.dockWidgetNodeView.setWidget(self.dockWidgetContents)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetNodeView)
         self.actionDelete = QtGui.QAction(MainWindow)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(":/icons/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -168,6 +180,16 @@ class Ui_MainWindow(object):
         icon15.addPixmap(QtGui.QPixmap(":/icons/shortcuts_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionShortcuts.setIcon(icon15)
         self.actionShortcuts.setObjectName("actionShortcuts")
+        self.actionAlignLeft = QtGui.QAction(MainWindow)
+        icon16 = QtGui.QIcon()
+        icon16.addPixmap(QtGui.QPixmap(":/icons/alignLeft.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionAlignLeft.setIcon(icon16)
+        self.actionAlignLeft.setObjectName("actionAlignLeft")
+        self.actionAlignUp = QtGui.QAction(MainWindow)
+        icon17 = QtGui.QIcon()
+        icon17.addPixmap(QtGui.QPixmap(":/icons/alignright.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionAlignUp.setIcon(icon17)
+        self.actionAlignUp.setObjectName("actionAlignUp")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addAction(self.actionOptions)
         self.menuEdit.addAction(self.actionClear_scene)
@@ -193,6 +215,9 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionPlot_graph)
         self.toolBar.addAction(self.actionGroup_selected)
         self.toolBar.addAction(self.actionScreenshot)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.actionAlignLeft)
+        self.toolBar.addAction(self.actionAlignUp)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -206,6 +231,7 @@ class Ui_MainWindow(object):
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetConsole.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Console", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetNodeBox.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Node Box", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidgetNodeView.setWindowTitle(QtGui.QApplication.translate("MainWindow", "PropertyView", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDelete.setText(QtGui.QApplication.translate("MainWindow", "Delete", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOptions.setText(QtGui.QApplication.translate("MainWindow", "Options", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNode_box.setText(QtGui.QApplication.translate("MainWindow", "Node box", None, QtGui.QApplication.UnicodeUTF8))
@@ -221,3 +247,8 @@ class Ui_MainWindow(object):
         self.actionDebug.setText(QtGui.QApplication.translate("MainWindow", "Debug", None, QtGui.QApplication.UnicodeUTF8))
         self.actionScreenshot.setText(QtGui.QApplication.translate("MainWindow", "Screenshot", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShortcuts.setText(QtGui.QApplication.translate("MainWindow", "Shortcuts", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAlignLeft.setText(QtGui.QApplication.translate("MainWindow", "AlignLeft", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAlignLeft.setToolTip(QtGui.QApplication.translate("MainWindow", "Align selected nodes by the left most", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAlignUp.setText(QtGui.QApplication.translate("MainWindow", "AlignUp", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAlignUp.setToolTip(QtGui.QApplication.translate("MainWindow", "Align selected nodes by the up most", None, QtGui.QApplication.UnicodeUTF8))
+

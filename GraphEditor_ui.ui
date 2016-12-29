@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1037</width>
-    <height>675</height>
+    <width>1084</width>
+    <height>669</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,8 +80,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1037</width>
-     <height>21</height>
+     <width>1084</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -140,13 +140,16 @@
    <addaction name="actionPlot_graph"/>
    <addaction name="actionGroup_selected"/>
    <addaction name="actionScreenshot"/>
+   <addaction name="separator"/>
+   <addaction name="actionAlignLeft"/>
+   <addaction name="actionAlignUp"/>
   </widget>
   <widget class="QDockWidget" name="dockWidgetConsole">
    <property name="enabled">
     <bool>true</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFeatureMask</set>
+    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
     <string>Console</string>
@@ -195,7 +198,7 @@
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFeatureMask</set>
+    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
     <string>Node Box</string>
@@ -224,6 +227,33 @@
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="dockWidgetNodeView">
+   <property name="windowTitle">
+    <string>PropertyView</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <property name="leftMargin">
+      <number>1</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="rightMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
+      <number>1</number>
+     </property>
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="PropertyViewLayout"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionDelete">
    <property name="icon">
     <iconset resource="resources/nodes_res.qrc">
@@ -357,6 +387,30 @@
    </property>
    <property name="text">
     <string>Shortcuts</string>
+   </property>
+  </action>
+  <action name="actionAlignLeft">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/alignLeft.png</normaloff>:/icons/alignLeft.png</iconset>
+   </property>
+   <property name="text">
+    <string>AlignLeft</string>
+   </property>
+   <property name="toolTip">
+    <string>Align selected nodes by the left most</string>
+   </property>
+  </action>
+  <action name="actionAlignUp">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/alignright.png</normaloff>:/icons/alignright.png</iconset>
+   </property>
+   <property name="text">
+    <string>AlignUp</string>
+   </property>
+   <property name="toolTip">
+    <string>Align selected nodes by the up most</string>
    </property>
   </action>
  </widget>

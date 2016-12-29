@@ -30,6 +30,8 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionSave.triggered.connect(self.G.save)
         self.actionLoad.triggered.connect(self.G.load)
         self.actionSave_as.triggered.connect(self.G.save_as)
+        self.actionAlignLeft.triggered.connect(lambda: self.G.align_selected_nodes(True))
+        self.actionAlignUp.triggered.connect(lambda: self.G.align_selected_nodes(False))
 
 
         self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
@@ -147,10 +149,7 @@ if __name__ == '__main__':
 
     app.setStyleSheet("QToolTip { color: #ffffff; background-color: + \
         #2a82da; border: 1px solid white;}\
-        QWidget:focus {border:1 inset black;}\
-        QListWidget:focus {border:1 inset black;}\
-        QTreeWidget:focus {border:1 inset black;}\
-        QDockidget:focus {border:1 inset black;}\
+        QWidget:focus {border:2 inset black;}\
         ")
 
 
