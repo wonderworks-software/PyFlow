@@ -73,16 +73,16 @@ class AGPort(object):
                 compute_order = self.parent.graph.get_evaluation_order(self.parent)
                 if debug:
                     for i in reversed(sorted([i for i in compute_order.keys()])):
-                        print i, [n.name for n in compute_order[i]]
+                        print(i, [n.name for n in compute_order[i]])
                 for i in reversed(sorted([i for i in compute_order.keys()])):
                     if not self.parent.graph.is_multithreaded():
                         for n in compute_order[i]:
                             if debug:
-                                print n.name, 'calling compute'
+                                print(n.name, 'calling compute')
                             n.compute()
                     else:
                         if debug:
-                            print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
+                            print('multithreaded calc of layer', [n.name for n in compute_order[i]])
                         calc_multithreaded(compute_order[i], debug)
                 return self._data
             else:
@@ -94,16 +94,16 @@ class AGPort(object):
                     compute_order = out[0].parent.graph.get_evaluation_order(out[0].parent)
                     if debug:
                         for i in reversed(sorted([i for i in compute_order.keys()])):
-                            print i, [n.name for n in compute_order[i]]
+                            print(i, [n.name for n in compute_order[i]])
                     for i in reversed(sorted([i for i in compute_order.keys()])):
                         if not self.parent.graph.is_multithreaded():
                             for n in compute_order[i]:
                                 if debug:
-                                    print n.name, 'calling compute'
+                                    print(n.name, 'calling compute')
                                 n.compute()
                         else:
                             if debug:
-                                print 'multithreaded calc of layer', [n.name for n in compute_order[i]]
+                                print('multithreaded calc of layer', [n.name for n in compute_order[i]])
                             calc_multithreaded(compute_order[i], debug)
                     return out[0]._data
             else:

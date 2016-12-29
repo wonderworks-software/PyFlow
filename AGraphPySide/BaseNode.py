@@ -135,6 +135,22 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
         self.effect.setEnabled(state)
 
+    def clone(self):
+        x = 0.0
+        y = 0.0
+        if self.parentItem() == None:
+            x = self.pos().x() + self.boundingRect().width()
+            y = self.pos().y() + self.boundingRect().height()
+            new_node = self.graph.create_node(self.__class__.__name__, x, y, self.get_name())
+            return new_node
+        else:
+            x = self.pos().x() + self.boundingRect().width() + self.parentItem().scenePos().x()
+            y = self.pos().y() + self.boundingRect().height() + self.parentItem().scenePos().y()
+            new_node = self.graph.create_node(self.__class__.__name__, x, y, self.get_name())
+            self.parentItem().add_node(new_node)
+            self.parentItem().fit_content()
+            return new_node
+
     def update_ports(self):
         [i.update() for i in self.inputs]
         [i.update() for i in self.outputs]

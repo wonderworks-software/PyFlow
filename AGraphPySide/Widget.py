@@ -1263,8 +1263,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         QtGui.QGraphicsView.keyPressEvent(self, event)
 
     def duplicate_node(self):
+        new_nodes = []
         for n in [i for i in self.nodes if i.isSelected()]:
-            print(n.get_name())
+            new_nodes.append(n.clone())
+            n.setSelected(False)
+        for n in new_nodes:
+            n.setSelected(True)
 
 
     def align_selected_nodes(self, direction):

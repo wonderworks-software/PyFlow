@@ -31,7 +31,7 @@ class FloatNode(BaseNode.Node, AGNode):
         spin_box_proxy = QtGui.QGraphicsProxyWidget()
         spin_box_proxy.setWidget(self.spin_box)
         self.output.getLayout().insertItem(0, spin_box_proxy)
-        self.compute()    
+        self.compute()
 
     @staticmethod
     def get_category():

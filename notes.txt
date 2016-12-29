@@ -1,36 +1,6 @@
 
-многострочный комментарий в группировщике не загружается (хранить текст в хтмл и заменить знак флага на ~)
-
-
-!!! - автоматически генерировать виджет ноды на основе абстрактного класса, отказ от написания виджетов нод индивидуально
-
-!!! - property view для ноды. По выделению обновлять вид. Вид - член класса виджет, и он один единственый
-
-/// ноды
-
-3) массивы, операции с массивами(MakeArray+, ArrayAppend+, ArrayConcat+, ArrayRemoveElement, Index+, IsIn, ArrayGetElement, IsArray+, ArrayInsert, ClearArray, ArraySlice)
-
-встроенные функции питона (max, min, any, all)
-нода перемешивающая массив (random.shuffle)
-
-// 5) прокачать nodebox, категории
-9) привязка к сетке
-// 4) 3d/2d вьюпорт для визуализации
-6) плагин визард +++
-7) скриншот сцены +++
-
-Console commands builtins:
-                createNode className x y name +++
-                killNode nodeName +++
-                move nodeName x y +++
-                select nodeName +++
-                connectAttr srd dst +++
-                disconnectAttr AttrName +++
-                setAttr +++
-                commentSelected +++
-                createComment +++
-                save +++
-                load +++
-                renameNode +++
-    copy
-    paste
+0) smooth zoom
+1) property view
+2) new nodes
+3) python built-in functions
+4) grid snapping
