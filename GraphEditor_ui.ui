@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1084</width>
+    <width>1086</width>
     <height>669</height>
    </rect>
   </property>
@@ -80,8 +80,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1084</width>
-     <height>26</height>
+     <width>1086</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -132,6 +132,7 @@
    </attribute>
    <addaction name="actionNode_box"/>
    <addaction name="actionConsole"/>
+   <addaction name="actionPropertyView"/>
    <addaction name="separator"/>
    <addaction name="actionShadows"/>
    <addaction name="actionMultithreaded"/>
@@ -228,6 +229,15 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidgetNodeView">
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>100</height>
+    </size>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
    <property name="windowTitle">
     <string>PropertyView</string>
    </property>
@@ -249,7 +259,20 @@
       <number>1</number>
      </property>
      <item row="0" column="0">
-      <layout class="QGridLayout" name="PropertyViewLayout"/>
+      <layout class="QFormLayout" name="PropertiesformLayout">
+       <property name="leftMargin">
+        <number>2</number>
+       </property>
+       <property name="topMargin">
+        <number>2</number>
+       </property>
+       <property name="rightMargin">
+        <number>2</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+      </layout>
      </item>
     </layout>
    </widget>
@@ -411,6 +434,18 @@
    </property>
    <property name="toolTip">
     <string>Align selected nodes by the up most</string>
+   </property>
+  </action>
+  <action name="actionPropertyView">
+   <property name="icon">
+    <iconset resource="resources/nodes_res.qrc">
+     <normaloff>:/icons/property_icon.png</normaloff>:/icons/property_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>PropertyView</string>
+   </property>
+   <property name="toolTip">
+    <string>toggle property view</string>
    </property>
   </action>
  </widget>

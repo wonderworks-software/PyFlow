@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\GIT\nodes\GraphEditor_ui.ui'
 #
-# Created: Thu Dec 29 22:17:22 2016
+# Created: Fri Dec 30 15:04:43 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1084, 669)
+        MainWindow.resize(1086, 669)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("AGraphPySide/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.horizontal_splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1084, 26))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1086, 21))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")
@@ -94,15 +94,18 @@ class Ui_MainWindow(object):
         self.statusBar.setObjectName("statusBar")
         MainWindow.setStatusBar(self.statusBar)
         self.dockWidgetNodeView = QtGui.QDockWidget(MainWindow)
+        self.dockWidgetNodeView.setMinimumSize(QtCore.QSize(200, 100))
+        self.dockWidgetNodeView.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
         self.dockWidgetNodeView.setObjectName("dockWidgetNodeView")
         self.dockWidgetContents = QtGui.QWidget()
         self.dockWidgetContents.setObjectName("dockWidgetContents")
         self.gridLayout_4 = QtGui.QGridLayout(self.dockWidgetContents)
         self.gridLayout_4.setContentsMargins(1, 1, 1, 1)
         self.gridLayout_4.setObjectName("gridLayout_4")
-        self.PropertyViewLayout = QtGui.QGridLayout()
-        self.PropertyViewLayout.setObjectName("PropertyViewLayout")
-        self.gridLayout_4.addLayout(self.PropertyViewLayout, 0, 0, 1, 1)
+        self.PropertiesformLayout = QtGui.QFormLayout()
+        self.PropertiesformLayout.setContentsMargins(2, 2, 2, 2)
+        self.PropertiesformLayout.setObjectName("PropertiesformLayout")
+        self.gridLayout_4.addLayout(self.PropertiesformLayout, 0, 0, 1, 1)
         self.dockWidgetNodeView.setWidget(self.dockWidgetContents)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetNodeView)
         self.actionDelete = QtGui.QAction(MainWindow)
@@ -190,6 +193,11 @@ class Ui_MainWindow(object):
         icon17.addPixmap(QtGui.QPixmap(":/icons/alignright.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionAlignUp.setIcon(icon17)
         self.actionAlignUp.setObjectName("actionAlignUp")
+        self.actionPropertyView = QtGui.QAction(MainWindow)
+        icon18 = QtGui.QIcon()
+        icon18.addPixmap(QtGui.QPixmap(":/icons/property_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionPropertyView.setIcon(icon18)
+        self.actionPropertyView.setObjectName("actionPropertyView")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addAction(self.actionOptions)
         self.menuEdit.addAction(self.actionClear_scene)
@@ -207,6 +215,7 @@ class Ui_MainWindow(object):
         self.menuBar.addAction(self.menuHelp.menuAction())
         self.toolBar.addAction(self.actionNode_box)
         self.toolBar.addAction(self.actionConsole)
+        self.toolBar.addAction(self.actionPropertyView)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionShadows)
         self.toolBar.addAction(self.actionMultithreaded)
@@ -251,4 +260,5 @@ class Ui_MainWindow(object):
         self.actionAlignLeft.setToolTip(QtGui.QApplication.translate("MainWindow", "Align selected nodes by the left most", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAlignUp.setText(QtGui.QApplication.translate("MainWindow", "AlignUp", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAlignUp.setToolTip(QtGui.QApplication.translate("MainWindow", "Align selected nodes by the up most", None, QtGui.QApplication.UnicodeUTF8))
-
+        self.actionPropertyView.setText(QtGui.QApplication.translate("MainWindow", "PropertyView", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPropertyView.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle property view", None, QtGui.QApplication.UnicodeUTF8))

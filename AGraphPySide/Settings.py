@@ -39,7 +39,7 @@ def get_line_type(name):
 
 class Colors(object):
 
-    kNodeBackgrounds = QtGui.QColor(40, 40, 40, 255)
+    kNodeBackgrounds = QtGui.QColor(20, 20, 20, 255)
     kNodeSelectedPenColor = QtGui.QColor(255, 255, 255, 255)
     kWhite = QtGui.QColor(255, 255, 255, 200)
     kSceneBackground = QtGui.QColor(35, 35, 35)

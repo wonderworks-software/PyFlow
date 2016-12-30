@@ -1,0 +1,39 @@
+SAVE GRAPH SCRIPT
+createNode ~type MakeArray ~count 2 ~x 4744.07224509 ~y 4705.95336076 ~n MakeArray
+setAttr ~an MakeArray.0 ~v True
+setAttr ~an MakeArray.1 ~v False
+setAttr ~an MakeArray.out ~v [True, False]
+createNode ~type Not ~x 4501.31138546 ~y 4871.30132602 ~n Not
+setAttr ~an Not.in ~v True
+setAttr ~an Not.out ~v False
+createNode ~type Min ~x 4951.1650663 ~y 4780.49108367 ~n Min
+setAttr ~an Min.in ~v [True, False]
+setAttr ~an Min.min ~v False
+createNode ~type Max ~x 4990.10882487 ~y 5226.03200732 ~n Max
+setAttr ~an Max.in ~v [True, False]
+setAttr ~an Max.out ~v True
+createNode ~type RequestNode ~x 5196.46364883 ~y 4781.54915409 ~n RequestNode
+setAttr ~an RequestNode.input ~v False
+createNode ~type BoolNode ~x 4314.86785551 ~y 4746.77091906 ~n BoolNode
+setAttr ~an BoolNode.out ~v True
+createNode ~type MakeArray ~count 2 ~x 4822.44215821 ~y 5180.03200731 ~n MakeArray1
+setAttr ~an MakeArray1.0 ~v True
+setAttr ~an MakeArray1.1 ~v False
+setAttr ~an MakeArray1.out ~v [True, False]
+createNode ~type Not ~x 4600.57110197 ~y 5284.70598994 ~n Not1
+setAttr ~an Not1.in ~v True
+setAttr ~an Not1.out ~v False
+createNode ~type BoolNode ~x 4405.08413352 ~y 5190.90900777 ~n BoolNode1
+setAttr ~an BoolNode1.out ~v True
+createNode ~type RequestNode ~x 5227.77549154 ~y 5198.69867398 ~n RequestNode1
+setAttr ~an RequestNode1.input ~v True
+connectAttr ~src BoolNode.out ~dst MakeArray.0
+connectAttr ~src BoolNode.out ~dst Not.in
+connectAttr ~src Not.out ~dst MakeArray.1
+connectAttr ~src MakeArray.out ~dst Min.in
+connectAttr ~src Min.min ~dst RequestNode.input
+connectAttr ~src BoolNode1.out ~dst Not1.in
+connectAttr ~src BoolNode1.out ~dst MakeArray1.0
+connectAttr ~src Not1.out ~dst MakeArray1.1
+connectAttr ~src MakeArray1.out ~dst Max.in
+connectAttr ~src Max.out ~dst RequestNode1.input

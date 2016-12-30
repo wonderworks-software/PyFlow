@@ -1,6 +1,6 @@
 
-0) smooth zoom
-1) property view
-2) new nodes
-3) python built-in functions
-4) grid snapping
+comment node
+smooth zoom
+new nodes. python built-in functions
+grid snapping
+

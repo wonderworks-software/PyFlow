@@ -6,7 +6,6 @@ from AbstractGraph import *
 
 
 class NodeName(QtGui.QGraphicsTextItem):
-
     def __init__(self, name, parent, color=Colors.kNodeNameRect):
         QtGui.QGraphicsTextItem.__init__(self)
         self.object_type = AGObjectTypes.tNodeName
@@ -73,6 +72,9 @@ class NodeName(QtGui.QGraphicsTextItem):
 
 
 class Node(QtGui.QGraphicsItem, AGNode):
+    """
+    Default node description
+    """
     def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes):
         QtGui.QGraphicsItem.__init__(self)
         AGNode.__init__(self, name, graph)
@@ -126,6 +128,19 @@ class Node(QtGui.QGraphicsItem, AGNode):
         pen_width = 1.0
         return QtCore.QRectF(self.sizes[0] - pen_width / 2, self.sizes[1] - pen_width / 2,
                              self.sizes[2] + pen_width, self.v_form.boundingRect().bottomRight().y() + pen_width + self.height_offset)
+
+    @staticmethod
+    def description():
+        return "Default node description"
+
+    def post_create(self):
+        pass
+
+    def save_command(self):
+        return "createNode ~type {0} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name)
+
+    def property_view(self):
+        return self.graph.parent.dockWidgetNodeView
 
     def set_name(self, name):
         AGNode.set_name(self, name)

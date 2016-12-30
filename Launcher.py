@@ -19,6 +19,7 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionConsole.triggered.connect(self.toggle_console)
         self.actionNode_box.triggered.connect(self.toggle_node_box)
+        self.actionPropertyView.triggered.connect(self.toggle_property_view)
         self.actionMultithreaded.triggered.connect(self.toggle_multithreaded)
         self.actionDebug.triggered.connect(self.toggle_debug)
         self.actionShadows.triggered.connect(self.toggle_shadows)
@@ -32,7 +33,6 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionSave_as.triggered.connect(self.G.save_as)
         self.actionAlignLeft.triggered.connect(lambda: self.G.align_selected_nodes(True))
         self.actionAlignUp.triggered.connect(lambda: self.G.align_selected_nodes(False))
-
 
         self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
         self.console.setLineWrapMode(QtGui.QTextEdit.NoWrap)
@@ -55,6 +55,9 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.dockWidgetConsole.hide()
         self.dockWidgetNodeBox.hide()
         self.setMouseTracking(True)
+        self.toggle_console()
+        self.toggle_node_box()
+        self.toggle_shadows()
 
     def closeEvent(self, event):
         question = "Shure?"
@@ -63,6 +66,12 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
             event.accept()
         else:
             event.ignore()
+
+    def toggle_property_view(self):
+        if self.dockWidgetNodeView.isVisible():
+            self.dockWidgetNodeView.setVisible(False)
+        else:
+            self.dockWidgetNodeView.setVisible(True)
 
     def toggle_node_box(self):
 
@@ -85,6 +94,8 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         data += "Ctrl+Alt+M - toggle multithreaded\n"
         data += "Ctrl+Alt+D - toggle debug\n"
         data += "Delete - kill selected nodes\n"
+        data += "Ctrl+Shift+A - Align left\n"
+        data += "Ctrl+Shift+Q - Align Up\n"
 
         QtGui.QMessageBox.information(self, "Shortcuts", data)
 
@@ -147,8 +158,8 @@ if __name__ == '__main__':
 
     app.setPalette(darkPalette)
 
-    app.setStyleSheet("QToolTip { color: #ffffff; background-color: + \
-        #2a82da; border: 1px solid white;}\
+    app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da;+ \
+        border: 1px solid white;}\
         QWidget:focus {border:2 inset black;}\
         ")
 

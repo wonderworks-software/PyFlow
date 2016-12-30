@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>property_icon.png</file>
     <file>alignLeft.png</file>
     <file>alignright.png</file>
     <file>delete_icon.png</file>

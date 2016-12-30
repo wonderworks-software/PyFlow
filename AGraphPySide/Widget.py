@@ -33,6 +33,15 @@ def get_nodes_file_names():
     return [i[:-3] for i in listdir(nodes_path) if i.endswith('.py') and '__init__' not in i]
 
 
+def clearLayout(layout):
+    while layout.count():
+        child = layout.takeAt(0)
+        if child.widget() is not None:
+            child.widget().deleteLater()
+        elif child.layout() is not None:
+            clearLayout(child.layout())
+
+
 def get_node(module, name, graph):
 
     if hasattr(module, name):
@@ -67,34 +76,40 @@ class {0}(Command.Command):
         commandLine = self.parse(line)
         try:
             self.graph.write_to_console(commandLine["-text"])
-        except Exception, e:
-            print self.usage()
+        except Exception as e:
+            print(self.usage())
 """.format(name)
 
     base_node_code = """from AbstractGraph import *
 from AGraphPySide.Settings import *
 from AGraphPySide import BaseNode
 
+DESC = '''node desc
+'''
 
 class {0}(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super({0}, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
         AGNode.__init__(self, name, graph)
-        self.in_str = self.add_input_port('str', AGPortDataTypes.tString)
-        self.out_str = self.add_output_port('upper str', AGPortDataTypes.tString)
-        portAffects(self.in_str, self.out_str)
+        self.inp0 = self.add_input_port('in0', AGPortDataTypes.tAny)
+        self.out0 = self.add_output_port('out0', AGPortDataTypes.tAny)
+        portAffects(self.inp0, self.out0)
 
     @staticmethod
     def get_category():
-        return 'Default'
+        return 'Common'
+
+    @staticmethod
+    def description():
+        return DESC
 
     def compute(self):
 
-        str_data = self.in_str.get_data()
+        str_data = self.inp0.get_data()
         try:
-            self.out_str.set_data(str_data.upper(), False)
-        except Exception, e:
-            print e
+            self.out0.set_data(str_data.upper(), False)
+        except Exception as e:
+            print(e)
 """.format(name)
 
     if pluginType == PluginType.pNode:
@@ -193,7 +208,7 @@ class SceneClass(QtGui.QGraphicsScene):
         if len(selected_nodes) == 0:
             self.parent().write_to_console("select {0}nl none".format(FLAG_SYMBOL))
             return
-        cmd = "select /nl "
+        cmd = "select {0}nl ".format(FLAG_SYMBOL)
         for n in selected_nodes:
             cmd += n
             cmd += " "
@@ -203,7 +218,10 @@ class SceneClass(QtGui.QGraphicsScene):
         if event.mimeData().hasFormat('text/plain'):
             className = event.mimeData().text()
             name = self.parent().get_uniq_node_name(className)
-            self.parent().executeCommand("createNode {4}type {0} {4}x {1} {4}y {2} {4}n {3}".format(className, event.scenePos().x(), event.scenePos().y(), name, FLAG_SYMBOL))
+            if className == "MakeArray":
+                self.parent().executeCommand("createNode ~type MakeArray ~count {3} ~x {0} ~y {1} ~n {2}\n".format(event.scenePos().x(), event.scenePos().y(), name, 0))
+            else:
+                self.parent().executeCommand("createNode {4}type {0} {4}x {1} {4}y {2} {4}n {3}".format(className, event.scenePos().x(), event.scenePos().y(), name, FLAG_SYMBOL))
         else:
             super(SceneClass, self).dropEvent(event)
 
@@ -463,7 +481,7 @@ class CommentNodeName(QtGui.QGraphicsTextItem, Colors):
         painter.fillRect(option.rect, QtGui.QColor(self.kCommentNodeNameBackground))
         super(CommentNodeName, self).paint(painter, option, widget)
 
-
+ 
 class CommentNode(QtGui.QGraphicsRectItem, Colors):
     def __init__(self, graph):
         super(CommentNode, self).__init__()
@@ -476,7 +494,7 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
         self.action_delete.triggered.connect(self.delete)
         self.action_fit = self.menu.addAction('fit contents')
         self.action_fit.triggered.connect(self.fit_content)
-        self.setFlag(self.ItemIsMovable)
+        # self.setFlag(self.ItemIsMovable)
         self._minimum_width = 150
         self._minimum_height = 150
         # self.setZValue(0.0)
@@ -491,6 +509,7 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
         self.resize_item = QtGui.QGraphicsPolygonItem(parent=self)
         self.resize_item.setCursor(QtCore.Qt.SizeFDiagCursor)
         self.resize_item.setFlag(self.ItemIsMovable, False)
+        self.setFlag(self.ItemIsSelectable, False)
         self.resize_item.mark = 'resize_object'
         self.resize_item.setPolygon(QtGui.QPolygonF([QtCore.QPointF(0.0, 10.0),
                                                      QtCore.QPointF(10.0, 10.0),
@@ -580,12 +599,12 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
             nodes_rect = self.get_nodes_rect()
             nodes_bottom_right = nodes_rect.bottomRight()
             self.set_bottom_right(nodes_bottom_right)
-            self.setFlag(self.ItemIsMovable)
+            # self.setFlag(self.ItemIsMovable)
 
     def mousePressEvent(self, event):
 
-        for i in self.nodes+self.graph.nodes:
-            i.setSelected(False)
+        # for i in self.nodes+self.graph.nodes:
+        #     i.setSelected(False)
         super(CommentNode, self).mousePressEvent(event)
 
     def unpack(self):
@@ -917,6 +936,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.tick_timer.start(20)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
+    def redraw_nodes(self):
+        for n in self.nodes:
+            n.update_ports()
 
     def __del__(self):
         self.tick_timer.stop()
@@ -1073,7 +1095,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         graph = "SAVE GRAPH SCRIPT\n"   #  add some scene info. version, user, date, etc.
             # create all nodes and set attributes
         for n in self.get_nodes():
-            line = "createNode {4}type {0} {4}x {1} {4}y {2} {4}n {3}\n".format(n.__class__.__name__, n.scenePos().x(), n.scenePos().y(), n.name, FLAG_SYMBOL)
+            # process nodes with customized behavior
+            line = n.save_command()
             graph += line
             for inp in n.inputs:
                 line = "setAttr {2}an {0} {2}v {1}\n".format(inp.port_name(), inp.current_data(), FLAG_SYMBOL)
@@ -1121,7 +1144,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def load(self):
 
         name_filter = "Graph files (*.graph)"
-        fpath = QtGui.QFileDialog.getOpenFileName(filter=name_filter)
+        fpath = QtGui.QFileDialog.getOpenFileName(filter=name_filter, dir="./Examples")
         if not fpath[0] == '':
             with open(fpath[0], 'r') as f:
                 data = f.readlines()
@@ -1213,6 +1236,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if not len(selected) == 0:
             self.kill_selected_nodes(call_connection_functions)
 
+        clearLayout(self.parent.PropertiesformLayout)
+
     def keyPressEvent(self, event):
 
         if not self.is_sortcuts_enabled():
@@ -1253,6 +1278,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.parent.toggle_debug()
         if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             self.parent.toggle_console()
+        if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.parent.toggle_property_view()
         if event.key() == QtCore.Qt.Key_Delete:
             self.kill_selected_nodes(False)
         if self.node_box.listWidget._events:
@@ -1323,7 +1350,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         QtGui.QGraphicsView.keyReleaseEvent(self, event)
 
-    def mousePressEvent(self,  event):
+    def mousePressEvent(self, event):
 
         modifiers = event.modifiers()
         self.pressed_item = self.itemAt(event.pos())
@@ -1402,11 +1429,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         grp = CommentNode(self)
         self.groupers.append(grp)
+        self.scene_widget.addItem(grp)
         grp.setPos(QtCore.QPoint(int(x1), int(y1)))
         grp.set_bottom_right(QtCore.QPoint(int(x2), int(y2)))
         grp.label.setHtml(name)
         # grp.label.setPlainText(name)
-        self.scene_widget.addItem(grp)
 
     def commentSelectedNodes(self, comment = "enter comment"):
         selected_nodes = []
@@ -1414,7 +1441,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             if n.isSelected():
                 selected_nodes.append(n.name)
         if len(selected_nodes) == 0:
-            self.createComment(self.current_cursor_pose.x(), self.current_cursor_pose.y(), self.current_cursor_pose.x()+250, self.current_cursor_pose.y()+100,  comment)
+            self.createComment(self.current_cursor_pose.x(), self.current_cursor_pose.y(), self.current_cursor_pose.x()+250, self.current_cursor_pose.y()+100, comment)
             return
 
         r = self.get_nodes_rect(True)
@@ -1456,13 +1483,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         modifiers = event.modifiers()
         if self.released_item and not hasattr(self.released_item, 'non_selectable'):
             if isinstance(self.released_item, CommentNode):
-                self.released_item.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
+                # self.released_item.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
+                pass
         else:
             if self.pressed_item and not hasattr(self.pressed_item, 'non_selectable'):
                 parent = self.pressed_item.parentItem()
-                if parent and hasattr(parent, 'object_type'):
-                    if parent.object_type == AGObjectTypes.tGrouper:
-                        parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
+                # if parent and hasattr(parent, 'object_type'):
+                #     if parent.object_type == AGObjectTypes.tGrouper:
+                #         parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
         for n in self.nodes:
             n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
         if event.button() == QtCore.Qt.RightButton:
@@ -1499,7 +1527,52 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         if do_connect:
             self.add_edge(p_itm, r_itm)
+        selected_nodes = self.selected_nodes()
+        if len(selected_nodes) != 0:
+            self.update_property_view(selected_nodes[0])
+        else:
+            clearLayout(self.parent.PropertiesformLayout)
+
         super(GraphWidget, self).mouseReleaseEvent(event)
+
+    def update_property_view(self, node):
+        root = self.parent.dockWidgetNodeView
+        layout = self.parent.PropertiesformLayout
+        root.owned_node = node
+        clearLayout(layout)
+
+        # label
+        le_name = QtGui.QLineEdit(node.get_name())
+        le_name.returnPressed.connect(lambda: node.set_name(le_name.text()))
+        layout.addRow("Name", le_name)
+
+        # inputs
+        if len(node.inputs) != 0:
+            sep_inputs = QtGui.QLabel()
+            sep_inputs.setStyleSheet("background-color: black;")
+            sep_inputs.setText("INPUTS")
+            layout.addRow("", sep_inputs)
+            for inp in node.inputs:
+                le = QtGui.QLineEdit(str(inp.current_data()))
+                le.setReadOnly(True)
+                layout.addRow(inp.name, le)
+
+        # outputs
+        if len(node.outputs) != 0:
+            sep_outputs = QtGui.QLabel()
+            sep_outputs.setStyleSheet("background-color: black;")
+            sep_outputs.setText("OUTPUTS")
+            layout.addRow("", sep_outputs)
+            for out in node.outputs:
+                le = QtGui.QLineEdit(str(out.current_data()))
+                le.setReadOnly(True)
+                layout.addRow(out.name, le)
+
+        doc_lb = QtGui.QLabel()
+        doc_lb.setStyleSheet("background-color: black;")
+        doc_lb.setText("Description")
+        layout.addRow("", doc_lb)
+        layout.addRow("", QtGui.QLabel(node.description()))
 
     def wheelEvent(self, event):
 
@@ -1624,7 +1697,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if commandLine['cmd'] == "createNode":
             try:
                 self.parent.console.append(command)
-                self.create_node(commandLine['flags']['{0}type'.format(FLAG_SYMBOL)], float(commandLine['flags']['{0}x'.format(FLAG_SYMBOL)]), float(commandLine['flags']['{0}y'.format(FLAG_SYMBOL)]), commandLine['flags']['{0}n'.format(FLAG_SYMBOL)])
+                if commandLine['flags']['~type'] == "MakeArray":
+                    mArrayMod = getattr(Nodes, "MakeArray")
+                    node_class = mArrayMod(commandLine["flags"]["~n"], self, int(commandLine["flags"]["~count"]))
+                    node_class.set_name("MakeArray")
+                    self.add_node(node_class, float(commandLine["flags"]["~x"]), float(commandLine["flags"]["~y"]))
+                else:
+                    self.create_node(commandLine['flags']['~type'], float(commandLine['flags']['~x']), float(commandLine['flags']['~y']), commandLine['flags']['~n'])
                 return
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
@@ -1766,6 +1845,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             node.label.setPlainText(node.name)
             self.scene_widget.addItem(node)
             node.set_shadows_enabled(self._shadows)
+            node.post_create()
         else:
             print '[add_node()] error node creation'
 

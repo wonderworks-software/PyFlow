@@ -2,6 +2,8 @@ from AbstractGraph import *
 from AGraphPySide.Settings import *
 from AGraphPySide import BaseNode
 
+DESC = """Generic type node.
+Boolean type."""
 
 class BoolNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
@@ -25,6 +27,10 @@ class BoolNode(BaseNode.Node, AGNode):
         prx_cb = QtGui.QGraphicsProxyWidget()
         prx_cb.setWidget(self.cb)
         self.output.getLayout().insertItem(0, prx_cb)
+
+    @staticmethod
+    def description():
+        return DESC
 
     @staticmethod
     def get_category():
