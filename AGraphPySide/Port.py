@@ -53,7 +53,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
 
     def disconnect_all(self):
         if self.parent.graph.is_debug():
-            print self.edge_list
+            print(self.edge_list)
         for e in self.edge_list:
             self.parent.graph.write_to_console('{0} killed'.format(e.__str__()))
             e.kill()
@@ -99,7 +99,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.update()
         self.hovered = True
         if self.parent.graph.is_debug():
-            print 'data -', self._data
+            print('data -', self._data)
             self.write_to_console(self._data)
 
     def hoverLeaveEvent(self, *args, **kwargs):

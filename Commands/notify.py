@@ -8,15 +8,16 @@ class notify(Command.Command):
 
     def usage(self):
 
-        msg = """[USAGE] {0} /text str /duration int""".format(self.__class__.__name__)
+        msg = """[USAGE] {0} ~text str ~duration int""".format(self.__class__.__name__)
         return msg
 
     def execute(self, line):
         commandLine = self.parse(line)
         try:
-            text = commandLine["/text"]
-            duration = int(commandLine["/duration"])
+            text = commandLine["~text"]
+            duration = int(commandLine["~duration"])
             self.graph.notify(text, duration)
-        except Exception, e:
-            print "[ERROR] {0}".format(e)
-            print self.usage()
+        except Exception as e:
+            print("[ERROR] {0}".format(e))
+            print(self.usage())
+            self.graph.write_to_console(self.usage(), True)

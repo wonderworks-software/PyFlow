@@ -3,4 +3,4 @@ comment node
 smooth zoom
 new nodes. python built-in functions
 grid snapping
-
+store application settings

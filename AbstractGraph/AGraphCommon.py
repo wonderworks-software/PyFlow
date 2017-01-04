@@ -17,7 +17,7 @@ def portAffects(affects_port, affected_port):
 
 def calc_multithreaded(ls, debug=False):
     if debug:
-        print 'START', [n.name for n in ls]
+        print('START', [n.name for n in ls])
     def compute_executor():
         for n in ls:
             n.compute()
@@ -27,14 +27,14 @@ def calc_multithreaded(ls, debug=False):
         threads.append(t)
         t.start()
         if debug:
-            print n.name, 'started in', t.name
+            print(n.name, 'started in', t.name)
 
     if debug:
-        print '_WAITING FOR ALL LAYER NODES TO FINISH'
+        print('_WAITING FOR ALL LAYER NODES TO FINISH')
     [t.join() for t in threads]
 
     if debug:
-        print 'DONE', [n.name for n in ls], '\n'
+        print('DONE', [n.name for n in ls], '\n')
 
 
 def cycle_check(src, dst):
@@ -48,6 +48,19 @@ def cycle_check(src, dst):
         if cycle_check(start, i):
             return True
     return False
+
+
+def find_ports_behind(start_from):
+    out = []
+    def foo(start_from):
+        if not start_from.affected_by == []:
+            for p in start_from.affected_by:
+                # if p.dirty == True:
+                #     push(p)
+                out.append(p)
+                foo(p)
+    foo(start_from)
+    return out
 
 
 def push(start_from):

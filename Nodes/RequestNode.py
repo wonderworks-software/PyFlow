@@ -55,6 +55,20 @@ class RequestNode(BaseNode.Node, AGNode):
 
     def compute(self):
 
+
+
+        # check if any dirty nodes before connected port.
+        # randint for example
+        # if so push forward and recompute
+
+        behind_dirty_ports = [p for p in find_ports_behind(self.input) if p.dirty == True]
+        shouldRecalc = (not len(behind_dirty_ports) == 0)
+        if shouldRecalc:
+            # push from dirty ports
+            # request data
+            for p in behind_dirty_ports:
+                push(p)
+
         data = self.input.get_data()
-        print data
-        self.graph.parent.console.append(str(data))
+        print(data)
+        self.graph.write_to_console(str(data), True)

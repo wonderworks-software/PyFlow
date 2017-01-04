@@ -1,6 +1,7 @@
 from PySide import QtCore
 from PySide import QtGui
 import math
+import platform
 import random
 from Settings import Colors
 from Settings import LineTypes
@@ -21,6 +22,7 @@ import OptionsWindow_ui
 import rgba_color_picker_ui
 import json
 import re
+import winsound
 
 
 def get_mid_point(args):
@@ -936,12 +938,20 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.tick_timer.start(20)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
+        if (path.isfile(_mod_folder+'resources/sounds/startup.wav') and platform.system() == "Windows"):
+            GraphWidget.play_sound_win(_mod_folder+'resources/sounds/startup.wav')
+
     def redraw_nodes(self):
         for n in self.nodes:
             n.update_ports()
 
     def __del__(self):
         self.tick_timer.stop()
+
+    @staticmethod
+    def play_sound_win(file_name):
+        t = Thread(target=lambda: winsound.PlaySound(file_name, winsound.SND_FILENAME))
+        t.start()
 
     def _tick_executor(self):
         for foo in self._tick_functions:
@@ -1870,11 +1880,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         edge.prepareGeometryChange()
         self.scene_widget.removeItem(edge)
 
-    def write_to_console(self, data):
-        if not self.is_debug():
-            return
-        if self.parent:
-            self.parent.console.append(str(data))
+    def write_to_console(self, data, force=False):
+        if not force:
+            if not self.is_debug():
+                return
+        else:
+            if self.parent:
+                self.parent.console.append(str(data))
 
     def plot(self):
         AGraph.plot(self)
