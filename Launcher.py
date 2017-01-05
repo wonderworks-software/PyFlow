@@ -1,6 +1,10 @@
 from AGraphPySide import *
 import GraphEditor_ui
 import sys
+from os import path
+
+
+FILE_DIR = path.dirname(__file__)
 
 
 class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
@@ -60,12 +64,12 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.toggle_shadows()
 
     def closeEvent(self, event):
-        # question = "Shure?"
-        # reply = QtGui.QMessageBox.question(self, 'Exit', question, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
-        # if reply == QtGui.QMessageBox.Yes:
-        #     event.accept()
-        # else:
-        #     event.ignore()
+        question = "Shure?"
+        reply = QtGui.QMessageBox.question(self, 'Exit', question, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+        if reply == QtGui.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
         pass
 
     def toggle_property_view(self):

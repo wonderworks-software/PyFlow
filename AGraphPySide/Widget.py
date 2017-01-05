@@ -152,11 +152,11 @@ def import_by_name(module, name):
         try:
             mod = getattr(module, name)
             return mod
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             return
     else:
-        print "error", name
+        print("error", name)
 
 
 def parse(line):
@@ -829,7 +829,6 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.settings_class.setValue('Edge line thickness', self.sb_edge_thickness.value())
         self.settings_class.endGroup()
 
-
     def write_default_config(self):
         print('create default config file')
         self.settings_class.beginGroup('NODES')
@@ -940,6 +939,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         if (path.isfile(_mod_folder+'resources/sounds/startup.wav') and platform.system() == "Windows"):
             GraphWidget.play_sound_win(_mod_folder+'resources/sounds/startup.wav')
+
+    def set_scrollbars_positions(self, horizontal, vertical):
+        try:
+            self.horizontalScrollBar().setValue(horizontal)
+            self.verticalScrollBar().setValue(vertical)
+        except Exception as e:
+            print(e)
+            self.write_to_console(e, True)
 
     def redraw_nodes(self):
         for n in self.nodes:
@@ -1103,7 +1110,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             return
 
         graph = "SAVE GRAPH SCRIPT\n"   #  add some scene info. version, user, date, etc.
-            # create all nodes and set attributes
+        # slider positions
+        graph += "setHorizontalScrollBar ~h {0}\n".format(self.horizontalScrollBar().value())
+        graph += "setVerticalScrollBar ~v {0}\n".format(self.verticalScrollBar().value())
+        # tools visibility
+        graph += "setNodeBoxVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeBox.isVisible()))
+        graph += "setConsoleVisible ~v {0}\n".format(int(self.parent.dockWidgetConsole.isVisible()))
+        graph += "setPropertiesVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeView.isVisible()))
+        # create all nodes and set attributes
         for n in self.get_nodes():
             # process nodes with customized behavior
             line = n.save_command()
@@ -1703,6 +1717,82 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.parent.console.append(command)
             self.save()
             return
+
+        if commandLine['cmd'] == "setScrollbars":
+            try:
+                self.parent.console.append(command)
+                h = commandLine['flags']['~h']
+                v = commandLine['flags']['~v']
+                self.set_scrollbars_positions(int(h), int(v))
+            except Exception as e:
+                print(e)
+                self.write_to_console(e, True)
+                self.write_to_console("[USAGE] setScrollbars ~h int ~v int")
+                return
+
+        if commandLine['cmd'] == "setHorizontalScrollBar":
+            try:
+                self.parent.console.append(command)
+                h = commandLine['flags']['~h']
+                self.set_scrollbars_positions(int(h), self.verticalScrollBar().value())
+            except Exception as e:
+                print(e)
+                self.write_to_console(e, True)
+                self.write_to_console("[USAGE] setHorizontalScrollBar ~h int")
+                return
+
+        if commandLine['cmd'] == "setVerticalScrollBar":
+            try:
+                self.parent.console.append(command)
+                v = commandLine['flags']['~v']
+                self.set_scrollbars_positions(self.horizontalScrollBar().value(), int(v))
+            except Exception as e:
+                print(e)
+                self.write_to_console(e, True)
+                self.write_to_console("[USAGE] setVerticalScrollBar ~v int")
+                return
+
+        if commandLine['cmd'] == "setConsoleVisible":
+            try:
+                self.parent.console.append(command)
+                v = commandLine['flags']['~v']
+                if int(v) == 1:
+                    self.parent.dockWidgetConsole.show()
+                else:
+                    self.parent.dockWidgetConsole.hide()
+            except Exception as e:
+                print(e)
+                self.write_to_console(e, True)
+                self.write_to_console("[USAGE] setConsoleVisible ~v int")
+                return
+
+        if commandLine['cmd'] == "setNodeBoxVisible":
+            try:
+                self.parent.console.append(command)
+                v = commandLine['flags']['~v']
+                if int(v) == 1:
+                    self.parent.dockWidgetNodeBox.show()
+                else:
+                    self.parent.dockWidgetNodeBox.hide()
+            except Exception as e:
+                print(e)
+                self.write_to_console(e, True)
+                self.write_to_console("[USAGE] setNodeBoxVisible ~v int")
+                return
+
+        if commandLine['cmd'] == "setPropertiesVisible":
+            try:
+                self.parent.console.append(command)
+                v = commandLine['flags']['~v']
+                if int(v) == 1:
+                    self.parent.dockWidgetNodeView.show()
+                else:
+                    self.parent.dockWidgetNodeView.hide()
+            except Exception as e:
+                print(e)
+                self.write_to_console(e, True)
+                self.write_to_console("[USAGE] setPropertiesVisible ~v int")
+                return
 
         if commandLine['cmd'] == "createNode":
             try:

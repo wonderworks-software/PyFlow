@@ -1,6 +1,6 @@
 
-comment node
+comment node SUCKS!!!
 smooth zoom
 new nodes. python built-in functions
 grid snapping
-store application settings
+execution pins

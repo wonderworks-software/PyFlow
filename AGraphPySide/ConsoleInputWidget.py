@@ -6,7 +6,7 @@ class ConsoleInput(QtGui.QLineEdit):
         self.graph = graph
         self.returnPressed.connect(self.OnReturnPressed)
         self.model = QtGui.QStringListModel()
-        self.cmd_list = ["renameNode", "plot", "help", "createNode", "save", "load", "comment", "killNode", "setAttr", "connectAttr", "disconectAttr", "select", "move", "pluginWizard"]
+        self.cmd_list = ["renameNode", "setPropertiesVisible", "setNodeBoxVisible", "setConsoleVisible", "plot", "setVerticalScrollBar", "setHorizontalScrollBar", "setScrollbars", "help", "createNode", "save", "load", "comment", "killNode", "setAttr", "connectAttr", "disconectAttr", "select", "move", "pluginWizard"]
         self.executedCommands = [i for i in self.graph.registeredCommands.iterkeys()] + self.cmd_list
         self.builtinCommands = self.cmd_list
         self.completer = QtGui.QCompleter(self)

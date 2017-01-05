@@ -1,4 +1,9 @@
 SAVE GRAPH SCRIPT
+setHorizontalScrollBar ~h 6420
+setVerticalScrollBar ~v 6905
+setNodeBoxVisible ~v 0
+setConsoleVisible ~v 0
+setPropertiesVisible ~v 1
 createNode ~type MakeArray ~count 2 ~x 4744.07224509 ~y 4705.95336076 ~n MakeArray
 setAttr ~an MakeArray.0 ~v True
 setAttr ~an MakeArray.1 ~v False
