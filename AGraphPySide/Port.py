@@ -32,6 +32,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.startPos = None
         self.endPos = None
         self.options = self.parent.graph.get_settings()
+        self.reroutes = []
         if self.options:
             # self.color = QtGui.QColor(self.options.value('NODES/Port color'))
             self.color = color
@@ -59,6 +60,12 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             e.kill()
         if not len(self.edge_list) == 0:
             self.disconnect_all()
+
+        self.kill_reroutes()
+        if self.type == AGPortTypes.kInput:
+            for p in self.affected_by:
+                p.kill_reroutes()
+
         self.parent.graph.write_to_console("disconnectAttr {1}an {0}".format(self.port_name(), FLAG_SYMBOL))
 
     def shape(self):
@@ -66,6 +73,10 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
         return path
+
+    def kill_reroutes(self):
+        for r in self.reroutes:
+            r.kill()
 
     def paint(self, painter, option, widget):
 

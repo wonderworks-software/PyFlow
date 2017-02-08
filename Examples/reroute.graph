@@ -1,0 +1,19 @@
+SAVE GRAPH SCRIPT
+setHorizontalScrollBar ~h 0
+setVerticalScrollBar ~v 0
+setNodeBoxVisible ~v 1
+setConsoleVisible ~v 0
+setPropertiesVisible ~v 1
+createNode ~type IntNode ~x 79.3333333334 ~y 90.0 ~n IntNode
+setAttr ~an IntNode.out ~v 1.0
+createNode ~type SumNode ~x 471.333333333 ~y 90.6666666667 ~n SumNode
+setAttr ~an SumNode.inputA ~v 1.0
+setAttr ~an SumNode.inputB ~v 1.0
+setAttr ~an SumNode.output ~v 2.0
+createNode ~type RequestNode ~x 687.333333333 ~y 90.6666666667 ~n RequestNode
+setAttr ~an RequestNode.input ~v 2.0
+createNode ~type IntNode ~x 79.3333333334 ~y 196.0 ~n IntNode1
+setAttr ~an IntNode1.out ~v 1.0
+connectAttr ~src IntNode.out ~dst SumNode.inputA
+connectAttr ~src SumNode.output ~dst RequestNode.input
+connectAttr ~src IntNode1.out ~dst SumNode.inputB

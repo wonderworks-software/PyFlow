@@ -3,6 +3,7 @@ from PySide import QtGui
 from Settings import Colors
 from Settings import get_line_type
 from AbstractGraph import *
+from RerouteNode import RerouteNode
 
 
 class Edge(QtGui.QGraphicsPathItem, Colors):
@@ -11,6 +12,8 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         QtGui.QGraphicsPathItem.__init__(self)
         self.source = source
         self.graph = graph
+        self.source_pos_object = source
+        self.destination_pos_object = destination
         self.destination = destination
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
@@ -48,27 +51,46 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         if self.graph.is_debug():
             print self.__str__()
 
+    def split(self, pos):
+
+        size = 10.0
+
+        # create reroute
+        node = RerouteNode(0, 0, size, size, self, None, self.graph)
+        self.source.reroutes.append(node)
+        self.destination.reroutes.append(node)
+
+        node.left_edge = self
+        node.setPos(pos.x()-size/2, pos.y()-size/2)
+
+        # create new edge
+        edge = Edge(self.source, self.destination, self.graph)
+        self.graph.scene_widget.addItem(edge)
+
+        # set reroute as src pos object on newly created edge
+        edge.source_pos_object = node
+
+        # set dst pos object from clicked edge
+        edge.destination_pos_object = self.destination_pos_object
+        self.graph.edges.append(edge)
+        node.right_edge = edge
+
+        # set created node as dst pos object on clicked edge
+        self.destination_pos_object = node
+        # store
+        self.graph.reroutes.append(node)
+
     def getEndPoints(self):
-        offset = self.source.boundingRect().width()/2
-        p1 = self.source.sceneTransform().map(QtCore.QPointF(offset*2, offset))
-        p2 = self.destination.sceneTransform().map(QtCore.QPointF(0, offset))
+        offset = self.source_pos_object.boundingRect().width() / 2
+        p1 = self.source_pos_object.sceneTransform().map(QtCore.QPointF(offset * 2, offset))
+        p2 = self.destination_pos_object.sceneTransform().map(QtCore.QPointF(0, offset))
         return p1, p2
 
     def mousePressEvent(self, event):
         super(Edge, self).mousePressEvent(event)
-        # w = self.source.boundingRect().width()
-        # sourceDiff = self.source.scenePos() - event.scenePos()
-        # dstDiff = self.destination.scenePos() - event.scenePos()
-        # if abs(sourceDiff.x()) <= w*2:
-        #     print 'disconnect source'
-        #     return
-        # if dstDiff.x() <= w*2:
-        #     print 'disconnect dst'
-        #     return
         event.accept()
 
     def kill(self):
-
         self.graph.remove_edge(self)
 
     def mouseReleaseEvent(self, event):
@@ -90,15 +112,16 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         return self.source.port_name()
 
     def updateCurve(self, p1, p2):
-
         distance = p2.x() - p1.x()
         multiply = 3
         path = QtGui.QPainterPath()
+
         path.moveTo(p1)
         if distance < 0:
             path.cubicTo(QtCore.QPoint(p1.x()+distance/-multiply, p1.y()), QtCore.QPoint(p2.x()-distance/-multiply, p2.y()), p2)
         else:
             path.cubicTo(QtCore.QPoint(p1.x()+distance/multiply, p1.y()), QtCore.QPoint(p2.x()-distance/2, p2.y()), p2)
+
         self.setPath(path)
 
     def destination_port_name(self):

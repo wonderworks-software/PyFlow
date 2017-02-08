@@ -1,6 +1,8 @@
 
+reroute nodes
+grid snapping
+
 comment node SUCKS!!!
 smooth zoom
 new nodes. python built-in functions
-grid snapping
 execution pins

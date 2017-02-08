@@ -23,6 +23,7 @@ import rgba_color_picker_ui
 import json
 import re
 import winsound
+from RerouteNode import RerouteNode
 
 
 def get_mid_point(args):
@@ -188,6 +189,10 @@ class SceneClass(QtGui.QGraphicsScene):
         self.setItemIndexMethod(self.NoIndex)
         self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
+
+    def mouseDoubleClickEvent(self, event):
+        self.parent().OnDoubleClick(event.scenePos())
+        event.accept()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
@@ -884,6 +889,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.pressed_item = None
         self.released_item = None
         self.groupers = []
+        self.reroutes = []
         self._isPanning = False
         self._mousePressed = False
         self._shadows = False
@@ -948,6 +954,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             print(e)
             self.write_to_console(e, True)
 
+    def OnDoubleClick(self, pos):
+        if self.pressed_item:
+            if isinstance(self.pressed_item, Edge):
+                self.pressed_item.split(pos)
+
     def redraw_nodes(self):
         for n in self.nodes:
             n.update_ports()
@@ -963,15 +974,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def _tick_executor(self):
         for foo in self._tick_functions:
             foo()
-
-    def _notifications_y_updater(self):
-        polygon = self.mapToScene(self.viewport().rect())
-        rect = QtCore.QRectF(polygon[0], polygon[2])
-
-        y = rect.bottomLeft().y()-21
-
-        for n in self._notifications:
-            n.setPos(n.pos().x(), y)
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
@@ -1616,7 +1618,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             color = self.kSceneBackground
         painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(color))
 
-        grid_size = int(50)
+        grid_size = int(25)
 
         left = int(scene_rect.left()) - (int(scene_rect.left()) % grid_size)
         top = int(scene_rect.top()) - (int(scene_rect.top()) % grid_size)
@@ -1624,14 +1626,22 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         painter.setPen(QtGui.QPen(self.kGridColor, 0.5, QtCore.Qt.SolidLine))
 
         # draw grid vertical lines
-        for x in xrange(left, int(scene_rect.right()), grid_size):
-            painter.drawLine(x, scene_rect.top() ,x, scene_rect.bottom())
+        for x in xrange(left, int(scene_rect.right()), grid_size): 
+            painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
         for y in xrange(top, int(scene_rect.bottom()), grid_size):
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
-        self._notifications_y_updater()
+        painter.setPen(QtGui.QPen(self.kGridColor, 1.0, QtCore.Qt.SolidLine))
+
+        # draw grid vertical lines
+        for x in xrange(left, int(scene_rect.right()), grid_size*4):
+            painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
+
+        # draw grid horizontal lines
+        for y in xrange(top, int(scene_rect.bottom()), grid_size*4):
+            painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
     def console_help(self):
 
@@ -1960,7 +1970,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             dst.edge_list.append(edge)
             self.scene_widget.addItem(edge)
             self.edges.append(edge)
-            self.write_to_console("connectAttr -src {0} -dst {1}".format(src.port_name(), dst.port_name()))
+            self.write_to_console("connectAttr ~src {0} ~dst {1}".format(src.port_name(), dst.port_name()))
             return edge
 
     def remove_edge(self, edge, call_connection_functions=True):
@@ -1969,6 +1979,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.edges.remove(edge)
         edge.prepareGeometryChange()
         self.scene_widget.removeItem(edge)
+
+
 
     def write_to_console(self, data, force=False):
         if not force:
