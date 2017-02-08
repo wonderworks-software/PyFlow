@@ -1,7 +1,7 @@
 # Qt node editor #
 
-![nodes.PNG](https://bitbucket.org/repo/Radzbd/images/1686754309-nodes.PNG)
 
+![Capture.PNG](https://bitbucket.org/repo/Radzbd/images/1417082001-Capture.PNG)
 
 [Watch video](https://www.youtube.com/watch?v=HEP5E84O0mo)
 
