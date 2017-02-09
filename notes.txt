@@ -4,3 +4,5 @@ smooth zoom
 new nodes. python built-in functions
 grid snapping
 execution pins
+nested nodes
+variables?
