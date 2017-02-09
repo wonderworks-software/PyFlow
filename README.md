@@ -1,19 +1,20 @@
 # Qt node editor #
 
 
-![Capture.PNG](https://bitbucket.org/repo/Radzbd/images/1417082001-Capture.PNG)
+![Capture.PNG](https://bitbucket.org/repo/Radzbd/images/4008374530-Capture.PNG)
 
 [Watch video](https://www.youtube.com/watch?v=HEP5E84O0mo)
 
 
 ### Description and features ###
 
-* Node based multithreaded extendable editor. For this moment this is just a calc.
+* Node based multithreaded extendable editor. For this moment this is just a calc
 * UI implemented using PySide, and you can start the editor under any application that uses **Python** as ascripting language.( **Autodesk Maya**, **MotionBuilder**, **Houdini** etc.)
-* The logic and ui are separated.
+* The logic and ui are separated
 * Custom extendable cmd like scripting language
-* Own file format.
+* Own file format
 * Reroute nodes
+* Grid snapping
 
 To extend functionality use console command 
 ```
