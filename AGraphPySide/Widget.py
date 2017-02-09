@@ -799,7 +799,7 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
 
     def save_options(self):
 
-        print 'save options', self.settings_path
+        print('save options', self.settings_path)
         self.write_config()
         self.close()
         try:
@@ -893,8 +893,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._mousePressed = False
         self._shadows = False
         self.scale(1.5, 1.5)
-        self.minimum_scale = 0.2
-        self.maximum_scale = 2
+        self.minimum_scale = 0.5
+        self.maximum_scale = 3
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.setScene(self.scene_widget)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
@@ -936,11 +936,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.registeredCommands = {}
         self.registerCommands()
         self._sortcuts_enabled = True
-        self._notifications = [] # notifications list currently in scene
         self.tick_timer = QtCore.QTimer() # this timer executes all functions in '_tick_functions'
         self.tick_timer.timeout.connect(self._tick_executor)
-        self.tick_timer.start(20)
+        self.tick_timer.start(50)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.grid_size = 10
+        self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
 
         if (path.isfile(_mod_folder+'resources/sounds/startup.wav') and platform.system() == "Windows"):
             GraphWidget.play_sound_win(_mod_folder+'resources/sounds/startup.wav')
@@ -1420,6 +1421,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def mouseMoveEvent(self, event):
         self.current_cursor_pose = self.mapToScene(event.pos())
+
         if self._resize_group_mode:
             grp = self.pressed_item.parentItem()
             self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
@@ -1527,8 +1529,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 # if parent and hasattr(parent, 'object_type'):
                 #     if parent.object_type == AGObjectTypes.tGrouper:
                 #         parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
-        for n in self.nodes:
-            n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
+
+        # for n in self.nodes:
+        #     n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
+
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = False
         if self._draw_real_time_line:
@@ -1628,29 +1632,27 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             color = self.kSceneBackground
         painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(color))
 
-        grid_size = int(10)
-
-        left = int(scene_rect.left()) - (int(scene_rect.left()) % grid_size)
-        top = int(scene_rect.top()) - (int(scene_rect.top()) % grid_size)
+        left = int(scene_rect.left()) - (int(scene_rect.left()) % self.grid_size)
+        top = int(scene_rect.top()) - (int(scene_rect.top()) % self.grid_size)
 
         painter.setPen(QtGui.QPen(self.kGridColor, 0.5, QtCore.Qt.SolidLine))
 
         # draw grid vertical lines
-        for x in xrange(left, int(scene_rect.right()), grid_size): 
+        for x in xrange(left, int(scene_rect.right()), self.grid_size): 
             painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
-        for y in xrange(top, int(scene_rect.bottom()), grid_size):
+        for y in xrange(top, int(scene_rect.bottom()), self.grid_size):
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
         painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0, QtCore.Qt.SolidLine))
 
         # draw grid vertical lines
-        for x in xrange(left, int(scene_rect.right()), grid_size*10):
+        for x in xrange(left, int(scene_rect.right()), self.grid_size*10):
             painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
-        for y in xrange(top, int(scene_rect.bottom()), grid_size*10):
+        for y in xrange(top, int(scene_rect.bottom()), self.grid_size*10):
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
     def console_help(self):

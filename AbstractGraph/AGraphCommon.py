@@ -1,9 +1,14 @@
 '''
 common defines, functions and structures
 '''
+import math
 
 
 FLAG_SYMBOL = "~"
+
+
+def roundup(x, to):
+    return int(math.ceil(x / to)) * to
 
 
 def portAffects(affects_port, affected_port):

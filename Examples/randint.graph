@@ -4,12 +4,13 @@ setVerticalScrollBar ~v 6854
 setNodeBoxVisible ~v 1
 setConsoleVisible ~v 1
 setPropertiesVisible ~v 1
-createNode ~type RequestNode ~x 5099.33333334 ~y 4748.66666667 ~n RequestNode
-setAttr ~an RequestNode.input ~v [2.0, 0.0]
-createNode ~type MakeArray ~count 2 ~x 4857.33333333 ~y 4753.33333334 ~n MakeArray
-setAttr ~an MakeArray.0 ~v 0
-setAttr ~an MakeArray.1 ~v 0
-setAttr ~an MakeArray.out ~v [2.0, 0.0]
+enableShadows ~state 1
+createNode ~type RequestNode ~x 5188.00000001 ~y 4748.0 ~n RequestNode
+setAttr ~an RequestNode.input ~v [6.0, 2.0, 10]
+createNode ~type MakeArray ~count 2 ~x 4811.33333333 ~y 4746.00000001 ~n MakeArray
+setAttr ~an MakeArray.0 ~v 2
+setAttr ~an MakeArray.1 ~v 2
+setAttr ~an MakeArray.out ~v [6.0, 2.0]
 createNode ~type IntNode ~x 4383.0 ~y 4738.66666666 ~n IntNode
 setAttr ~an IntNode.out ~v 0.0
 createNode ~type IntNode ~x 4383.66666667 ~y 4843.33333333 ~n IntNode1
@@ -17,9 +18,23 @@ setAttr ~an IntNode1.out ~v 10.0
 createNode ~type RandInt ~x 4589.33333334 ~y 4768.0 ~n RandInt
 setAttr ~an RandInt.from ~v 0
 setAttr ~an RandInt.to ~v 10
-setAttr ~an RandInt.out ~v 0.0
-connectAttr ~src MakeArray.out ~dst RequestNode.input
+setAttr ~an RandInt.out ~v 2.0
+createNode ~type ArrayConcat ~x 4998.0 ~y 4792.0 ~n ArrayConcat
+setAttr ~an ArrayConcat.first ~v [6.0, 2.0]
+setAttr ~an ArrayConcat.second ~v [10]
+setAttr ~an ArrayConcat.out ~v [6.0, 2.0, 10]
+createNode ~type MakeArray ~count 1 ~x 4820.66666666 ~y 4906.0 ~n MakeArray1
+setAttr ~an MakeArray1.0 ~v None
+setAttr ~an MakeArray1.out ~v [10]
+createNode ~type Reroute ~x 4569.33333333 ~y 4978.33333333 ~n Reroute
+setAttr ~an Reroute.in ~v 10.0
+setAttr ~an Reroute.out ~v None
 connectAttr ~src IntNode.out ~dst RandInt.from
 connectAttr ~src IntNode1.out ~dst RandInt.to
 connectAttr ~src RandInt.out ~dst MakeArray.0
 connectAttr ~src RandInt.out ~dst MakeArray.1
+connectAttr ~src MakeArray.out ~dst ArrayConcat.first
+connectAttr ~src ArrayConcat.out ~dst RequestNode.input
+connectAttr ~src MakeArray1.out ~dst ArrayConcat.second
+connectAttr ~src IntNode1.out ~dst Reroute.in
+connectAttr ~src Reroute.out ~dst MakeArray1.0

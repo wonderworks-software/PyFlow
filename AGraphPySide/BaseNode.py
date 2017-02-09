@@ -91,6 +91,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.setFlag(self.ItemIsMovable)
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable)
         self.setFlag(self.ItemIsSelectable)
+        self.setFlag(self.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
         self.label = NodeName(self.name, self)
@@ -111,7 +112,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.effect = QtGui.QGraphicsDropShadowEffect()
         self.effect.setColor(Colors.kSceneBackground.lighter(50))
         self.effect.setParent(self.graph)
-        self.effect.setBlurRadius(3)
+        self.effect.setBlurRadius(20)
         self.effect.setOffset(5, 10)
         self.effect.setEnabled(False)
         self.setGraphicsEffect(self.effect)
@@ -129,6 +130,14 @@ class Node(QtGui.QGraphicsItem, AGNode):
         pen_width = 1.0
         return QtCore.QRectF(self.sizes[0] - pen_width / 2, self.sizes[1] - pen_width / 2,
                              self.sizes[2] + pen_width, self.v_form.boundingRect().bottomRight().y() + pen_width + self.height_offset)
+
+    def itemChange(self, change, value):
+        if change == self.ItemPositionChange:
+            # grid snapping
+            value.setX(roundup(value.x() - self.graph.grid_size, self.graph.grid_size))
+            value.setY(roundup(value.y() - self.graph.grid_size, self.graph.grid_size))
+            return value
+        return QtGui.QGraphicsItem.itemChange(self, change, value)
 
     @staticmethod
     def description():
