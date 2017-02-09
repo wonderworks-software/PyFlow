@@ -2,7 +2,7 @@ from AbstractGraph import *
 from AGraphPySide.Settings import *
 from AGraphPySide import BaseNode
 
-DESC = '''node desc
+DESC = '''This node's purpose is change flow of edges
 '''
 
 class Reroute(BaseNode.Node, AGNode):

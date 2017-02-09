@@ -1586,6 +1586,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         le_name.returnPressed.connect(lambda: node.set_name(le_name.text()))
         layout.addRow("Name", le_name)
 
+        # pos
+        le_pos = QtGui.QLineEdit("{0} x {1}".format(node.pos().x(), node.pos().y()))
+        layout.addRow("Pos", le_pos)
+
         # inputs
         if len(node.inputs) != 0:
             sep_inputs = QtGui.QLabel()

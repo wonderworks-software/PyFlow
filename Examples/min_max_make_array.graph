@@ -1,36 +1,37 @@
 SAVE GRAPH SCRIPT
-setHorizontalScrollBar ~h 6420
-setVerticalScrollBar ~v 6905
+setHorizontalScrollBar ~h 6393
+setVerticalScrollBar ~v 7264
 setNodeBoxVisible ~v 0
-setConsoleVisible ~v 0
+setConsoleVisible ~v 1
 setPropertiesVisible ~v 1
-createNode ~type MakeArray ~count 2 ~x 4744.07224509 ~y 4705.95336076 ~n MakeArray
+enableShadows ~state 0
+createNode ~type MakeArray ~count 2 ~x 4720.0 ~y 4680.0 ~n MakeArray
 setAttr ~an MakeArray.0 ~v True
 setAttr ~an MakeArray.1 ~v False
 setAttr ~an MakeArray.out ~v [True, False]
-createNode ~type Not ~x 4501.31138546 ~y 4871.30132602 ~n Not
+createNode ~type Not ~x 4490.0 ~y 4860.0 ~n Not
 setAttr ~an Not.in ~v True
 setAttr ~an Not.out ~v False
-createNode ~type Min ~x 4951.1650663 ~y 4780.49108367 ~n Min
+createNode ~type Min ~x 4930.0 ~y 4710.0 ~n Min
 setAttr ~an Min.in ~v [True, False]
 setAttr ~an Min.min ~v False
-createNode ~type Max ~x 4990.10882487 ~y 5226.03200732 ~n Max
+createNode ~type Max ~x 4980.0 ~y 5140.0 ~n Max
 setAttr ~an Max.in ~v [True, False]
 setAttr ~an Max.out ~v True
-createNode ~type RequestNode ~x 5196.46364883 ~y 4781.54915409 ~n RequestNode
+createNode ~type RequestNode ~x 5170.0 ~y 4730.0 ~n RequestNode
 setAttr ~an RequestNode.input ~v False
-createNode ~type BoolNode ~x 4314.86785551 ~y 4746.77091906 ~n BoolNode
+createNode ~type BoolNode ~x 4300.0 ~y 4730.0 ~n BoolNode
 setAttr ~an BoolNode.out ~v True
-createNode ~type MakeArray ~count 2 ~x 4822.44215821 ~y 5180.03200731 ~n MakeArray1
+createNode ~type MakeArray ~count 2 ~x 4800.0 ~y 5110.0 ~n MakeArray1
 setAttr ~an MakeArray1.0 ~v True
 setAttr ~an MakeArray1.1 ~v False
 setAttr ~an MakeArray1.out ~v [True, False]
-createNode ~type Not ~x 4600.57110197 ~y 5284.70598994 ~n Not1
+createNode ~type Not ~x 4580.0 ~y 5270.0 ~n Not1
 setAttr ~an Not1.in ~v True
 setAttr ~an Not1.out ~v False
-createNode ~type BoolNode ~x 4405.08413352 ~y 5190.90900777 ~n BoolNode1
+createNode ~type BoolNode ~x 4380.0 ~y 5160.0 ~n BoolNode1
 setAttr ~an BoolNode1.out ~v True
-createNode ~type RequestNode ~x 5227.77549154 ~y 5198.69867398 ~n RequestNode1
+createNode ~type RequestNode ~x 5200.0 ~y 5160.0 ~n RequestNode1
 setAttr ~an RequestNode1.input ~v True
 connectAttr ~src BoolNode.out ~dst MakeArray.0
 connectAttr ~src BoolNode.out ~dst Not.in
