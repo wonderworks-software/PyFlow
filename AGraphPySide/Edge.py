@@ -3,7 +3,6 @@ from PySide import QtGui
 from Settings import Colors
 from Settings import get_line_type
 from AbstractGraph import *
-from RerouteNode import RerouteNode
 
 
 class Edge(QtGui.QGraphicsPathItem, Colors):
@@ -46,39 +45,10 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
     def hoverEnterEvent(self, event):
         super(Edge, self).hoverEnterEvent(event)
-        self.pen.setWidthF(self.thikness+(self.thikness/1.5))
+        self.pen.setWidthF(self.thikness + (self.thikness / 1.5))
         self.update()
         if self.graph.is_debug():
-            print self.__str__()
-
-    def split(self, pos):
-
-        size = 10.0
-
-        # create reroute
-        node = RerouteNode(0, 0, size, size, self, None, self.graph)
-        self.source.reroutes.append(node)
-        self.destination.reroutes.append(node)
-
-        node.left_edge = self
-        node.setPos(pos.x()-size/2, pos.y()-size/2)
-
-        # create new edge
-        edge = Edge(self.source, self.destination, self.graph)
-        self.graph.scene_widget.addItem(edge)
-
-        # set reroute as src pos object on newly created edge
-        edge.source_pos_object = node
-
-        # set dst pos object from clicked edge
-        edge.destination_pos_object = self.destination_pos_object
-        self.graph.edges.append(edge)
-        node.right_edge = edge
-
-        # set created node as dst pos object on clicked edge
-        self.destination_pos_object = node
-        # store
-        self.graph.reroutes.append(node)
+            print(self.__str__())
 
     def getEndPoints(self):
         offset = self.source_pos_object.boundingRect().width() / 2

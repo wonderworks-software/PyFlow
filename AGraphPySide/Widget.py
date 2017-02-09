@@ -23,7 +23,6 @@ import rgba_color_picker_ui
 import json
 import re
 import winsound
-from RerouteNode import RerouteNode
 
 
 def get_mid_point(args):
@@ -435,7 +434,7 @@ class NodesBox(QtGui.QWidget):
         if not len(items) == 0:
             name = items[0].text()
             node = get_node(Nodes, name, self.graph)
-            print node.name, 'created'
+            print(node.name, 'created')
             self.graph.add_node(node, self.graph.current_cursor_pose.x(),
                                        self.graph.current_cursor_pose.y())
             if self.listWidget._events:
@@ -957,7 +956,17 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def OnDoubleClick(self, pos):
         if self.pressed_item:
             if isinstance(self.pressed_item, Edge):
-                self.pressed_item.split(pos)
+                # store neighbors
+                src = self.pressed_item.source_pos_object
+                dst = self.pressed_item.destination_pos_object
+                # create rerout node
+                node = self.create_node("Reroute", pos.x(), pos.y() - 5.0, "Reroute")
+                # kill pressed edge
+                self.pressed_item.kill()
+                # reconnect neighbors
+                self.add_edge(src, node.inp0)
+                self.add_edge(node.out0, dst)
+
 
     def redraw_nodes(self):
         for n in self.nodes:
@@ -1119,6 +1128,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         graph += "setNodeBoxVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeBox.isVisible()))
         graph += "setConsoleVisible ~v {0}\n".format(int(self.parent.dockWidgetConsole.isVisible()))
         graph += "setPropertiesVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeView.isVisible()))
+        graph += "enableShadows ~state {0}\n".format(int(self._shadows))
         # create all nodes and set attributes
         for n in self.get_nodes():
             # process nodes with customized behavior
@@ -1618,7 +1628,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             color = self.kSceneBackground
         painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(color))
 
-        grid_size = int(25)
+        grid_size = int(10)
 
         left = int(scene_rect.left()) - (int(scene_rect.left()) % grid_size)
         top = int(scene_rect.top()) - (int(scene_rect.top()) % grid_size)
@@ -1633,14 +1643,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         for y in xrange(top, int(scene_rect.bottom()), grid_size):
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
-        painter.setPen(QtGui.QPen(self.kGridColor, 1.0, QtCore.Qt.SolidLine))
+        painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0, QtCore.Qt.SolidLine))
 
         # draw grid vertical lines
-        for x in xrange(left, int(scene_rect.right()), grid_size*4):
+        for x in xrange(left, int(scene_rect.right()), grid_size*10):
             painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
-        for y in xrange(top, int(scene_rect.bottom()), grid_size*4):
+        for y in xrange(top, int(scene_rect.bottom()), grid_size*10):
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
     def console_help(self):

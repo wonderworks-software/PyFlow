@@ -75,7 +75,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
     """
     Default node description
     """
-    def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes):
+    def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes, addHeader=True):
         QtGui.QGraphicsItem.__init__(self)
         AGNode.__init__(self, name, graph)
         self.object_type = AGObjectTypes.tNode
@@ -106,12 +106,13 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.v_form.setX(self.v_form.x()-self.spacings.kPortOffset/2)
         self.setZValue(1)
         self.setCursor(QtCore.Qt.OpenHandCursor)
-        self.head = self.add_layout(True)
+        if addHeader:
+            self.head = self.add_layout(True)
         self.effect = QtGui.QGraphicsDropShadowEffect()
         self.effect.setColor(Colors.kSceneBackground.lighter(50))
         self.effect.setParent(self.graph)
         self.effect.setBlurRadius(3)
-        self.effect.setOffset(-30, -20)
+        self.effect.setOffset(5, 10)
         self.effect.setEnabled(False)
         self.setGraphicsEffect(self.effect)
         self.options = self.graph.get_settings()

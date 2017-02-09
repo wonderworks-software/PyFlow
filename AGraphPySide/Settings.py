@@ -46,6 +46,7 @@ class Colors(object):
     kInteger = QtGui.QColor(45, 48, 99, 255)
     kIntNodeBackground = QtGui.QColor(0, 0, 170, 100)
     kGridColor = QtGui.QColor(100, 100, 100, 100)
+    kGridColorDarker = QtGui.QColor(20, 20, 20)
     kConnectors = QtGui.QColor(0, 100, 0, 255)
     kPortLinesA = QtGui.QColor(0, 90, 0, 0)
     kPortLinesB = QtGui.QColor(0, 0, 90, 0)

@@ -28,6 +28,8 @@ class AGPort(object):
             self._data = list()
         if self.data_type == AGPortDataTypes.tAny:
             self._data = None
+        if self.data_type == AGPortDataTypes.tReroute:
+            self._data = None
 
     def set_data_overload(self, data, dirty_propagate=True):
         pass
@@ -332,30 +334,30 @@ class AGraph(object):
         debug = self.is_debug()
         if src.type == AGPortTypes.kInput:
             src, dst = dst, src
-        if not dst.data_type == AGPortDataTypes.tAny:
-            if src.data_type not in dst.allowed_data_types:
-                print 'data types error'
-                print dst.data_type, src.data_type
+        if not dst.data_type in [AGPortDataTypes.tAny, AGPortDataTypes.tReroute]:
+            if src.data_type not in dst.allowed_data_types + [AGPortDataTypes.tReroute]:
+                print('data types error')
+                print(src.data_type, dst.data_type)
                 return False
         if src in dst.affected_by:
             if debug:
-                print 'already connected. skipped'
+                print('already connected. skipped')
             return False
         if src.type == dst.type:
             if debug:
-                print 'same types can not be connected'
+                print('same types can not be connected')
             return False
         if src.parent == dst.parent:
             if debug:
-                print 'can not connect to self'
+                print('can not connect to self')
             return False
         if cycle_check(src, dst):
             if debug:
-                print 'cycles are not allowed'
+                print('cycles are not allowed')
             return False
         if len(dst.affected_by) >= 1:
             if debug:
-                print 'already has connection'
+                print('already has connection')
             for e in dst.edge_list:
                 self.remove_edge(e)
 

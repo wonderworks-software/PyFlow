@@ -1,5 +1,3 @@
-
-reroute nodes
 grid snapping
 
 comment node SUCKS!!!
