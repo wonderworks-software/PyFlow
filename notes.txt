@@ -1,8 +1,8 @@
 grid snapping
+execution pins
 
 comment node SUCKS!!!
 smooth zoom
 new nodes. python built-in functions
-execution pins
 nested nodes
 variables?

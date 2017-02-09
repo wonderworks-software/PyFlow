@@ -79,6 +79,7 @@ class AGPortDataTypes(object):
     tArray = 'array_data'
     tAny = 'all'
     tReroute = 'reroute'
+    tExec = 'exec'
 
     def __init__(self):
         super(AGPortDataTypes, self).__init__()
