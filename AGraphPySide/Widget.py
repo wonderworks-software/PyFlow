@@ -1530,8 +1530,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 #     if parent.object_type == AGObjectTypes.tGrouper:
                 #         parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
 
-        # for n in self.nodes:
-        #     n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
+        for n in self.nodes:
+            n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
 
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = False
@@ -1596,10 +1596,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             sep_inputs.setStyleSheet("background-color: black;")
             sep_inputs.setText("INPUTS")
             layout.addRow("", sep_inputs)
+
+            def tmp(le):
+                print(le.text())
+
             for inp in node.inputs:
                 le = QtGui.QLineEdit(str(inp.current_data()))
-                le.setReadOnly(True)
                 layout.addRow(inp.name, le)
+                le.setReadOnly(True)
 
         # outputs
         if len(node.outputs) != 0:
@@ -1616,7 +1620,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         doc_lb.setStyleSheet("background-color: black;")
         doc_lb.setText("Description")
         layout.addRow("", doc_lb)
-        layout.addRow("", QtGui.QLabel(node.description()))
+        doc = QtGui.QLabel(node.description())
+        doc.setWordWrap(True)
+        layout.addRow("", doc)
 
     def wheelEvent(self, event):
 

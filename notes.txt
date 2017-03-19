@@ -1,5 +1,8 @@
+refactoring
+
 execution pins
 undo / redo
+client app for using graphs as scripts.
 
 comment node SUCKS!!!
 smooth zoom
