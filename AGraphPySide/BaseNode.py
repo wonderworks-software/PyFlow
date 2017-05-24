@@ -124,6 +124,12 @@ class Node(QtGui.QGraphicsItem, AGNode):
             self.opt_lyt_b_color = QtGui.QColor(self.options.value('NODES/Nodes lyt B color'))
             opt_pen_selected_type_name = QtGui.QColor(self.options.value('NODES/Nodes selected pen type'))
             self.opt_pen_selected_type = get_line_type(opt_pen_selected_type_name)
+        self.tweakPosition()
+
+    def tweakPosition(self):
+        value = self.scenePos()
+        self.setX(roundup(value.x() - self.graph.grid_size, self.graph.grid_size))
+        self.setY(roundup(value.y() - self.graph.grid_size, self.graph.grid_size))
 
     def boundingRect(self):
 
@@ -134,8 +140,8 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def itemChange(self, change, value):
         if change == self.ItemPositionChange:
             # grid snapping
-            value.setX(roundup(value.x() - self.graph.grid_size, self.graph.grid_size))
-            value.setY(roundup(value.y() - self.graph.grid_size, self.graph.grid_size))
+            value.setX(roundup(value.x() - self.graph.grid_size + self.graph.grid_size/3.0, self.graph.grid_size))
+            value.setY(roundup(value.y() - self.graph.grid_size + self.graph.grid_size/3.0, self.graph.grid_size))
             return value
         return QtGui.QGraphicsItem.itemChange(self, change, value)
 

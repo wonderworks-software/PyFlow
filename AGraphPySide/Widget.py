@@ -1336,41 +1336,20 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
 
     def align_selected_nodes(self, direction):
-        print("align")
         scene_poses = []
         relative_poses = []
         scene_nodes_selected = [n for n in self.nodes if n.isSelected() and not isinstance(n.parentItem(), CommentNode)]
         commented_nodes = [n for n in self.nodes if n.isSelected() and isinstance(n.parentItem(), CommentNode)]
 
-        if len(scene_nodes_selected) > 0:
-            for n in scene_nodes_selected:
-                scene_poses.append(n.scenePos())
+        x_min = min(([p.scenePos().x() for p in scene_nodes_selected]))
+        y_min = min(([p.scenePos().y() for p in scene_nodes_selected]))
 
-            x = (min([p.x() for p in scene_poses]))
-            y = (min([p.y() for p in scene_poses]))
-
+        for n in scene_nodes_selected:
             if direction:
-                # align X
-                for n in scene_nodes_selected:
-                    n.setX(x)
+                n.setX(x_min)
             else:
-                # align Y
-                for n in scene_nodes_selected:
-                    n.setY(y)
-        if len(commented_nodes) > 0:
-            for rn in commented_nodes:
-                relative_poses.append(rn.pos())
+                n.setY(y_min)
 
-            rx = (min([p.x() for p in relative_poses]))
-            ry = (min([p.y() for p in relative_poses]))
-            if direction:
-                # align X
-                for rn in commented_nodes:
-                    rn.setX(rx)
-            else:
-                # align Y
-                for rn in commented_nodes:
-                    rn.setY(ry)
 
 
     def findGoodPlaceForNewNode(self):
