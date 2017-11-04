@@ -3,25 +3,24 @@ from PySide import QtGui
 from Settings import Colors
 from Settings import get_line_type
 from AbstractGraph import *
+import weakref
 
 
 class Edge(QtGui.QGraphicsPathItem, Colors):
 
     def __init__(self, source, destination, graph):
         QtGui.QGraphicsPathItem.__init__(self)
-        self.source = source
-        self.graph = graph
-        self.source_pos_object = source
-        self.destination_pos_object = destination
-        self.destination = destination
+        self.graph = weakref.ref(graph)
+        self.source = weakref.ref(source)
+        self.destination = weakref.ref(destination)
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 
         self.setZValue(1.0)
-        self.connection = {'From': self.source.port_name(),
-                           'To': self.destination.port_name()}
+        self.connection = {'From': self.source().port_name(),
+                           'To': self.destination().port_name()}
 
-        self.settings = self.graph.get_settings()
+        self.settings = self.graph().get_settings()
         if self.settings:
             self.color = QtGui.QColor(self.settings.value('SCENE/Edge color'))
             self.lineType = get_line_type(self.settings.value('SCENE/Edge pen type'))
@@ -38,22 +37,22 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.updateCurve(points[0], points[1])
 
     def __str__(self):
-        return '{0}.{1} >>> {2}.{3}'.format(self.source.parent.name,
-                                            self.source.name,
-                                            self.destination.parent.name,
-                                            self.destination.name)
+        return '{0}.{1} >>> {2}.{3}'.format(self.source().parent.name,
+                                            self.source().name,
+                                            self.destination().parent.name,
+                                            self.destination().name)
 
     def hoverEnterEvent(self, event):
         super(Edge, self).hoverEnterEvent(event)
         self.pen.setWidthF(self.thikness + (self.thikness / 1.5))
         self.update()
-        if self.graph.is_debug():
+        if self.graph().is_debug():
             print(self.__str__())
 
     def getEndPoints(self):
-        offset = self.source_pos_object.boundingRect().width() / 2
-        p1 = self.source_pos_object.sceneTransform().map(QtCore.QPointF(offset * 2, offset))
-        p2 = self.destination_pos_object.sceneTransform().map(QtCore.QPointF(0, offset))
+        offset = self.source().boundingRect().width() / 2
+        p1 = self.source().sceneTransform().map(QtCore.QPointF(offset * 2, offset))
+        p2 = self.destination().sceneTransform().map(QtCore.QPointF(0, offset))
         return p1, p2
 
     def mousePressEvent(self, event):
@@ -61,7 +60,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         event.accept()
 
     def kill(self):
-        self.graph.remove_edge(self)
+        self.graph().remove_edge(self)
 
     def mouseReleaseEvent(self, event):
         super(Edge, self).mouseReleaseEvent(event)
@@ -79,7 +78,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
     def source_port_name(self):
 
-        return self.source.port_name()
+        return self.source().port_name()
 
     def updateCurve(self, p1, p2):
         distance = p2.x() - p1.x()
@@ -96,7 +95,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
     def destination_port_name(self):
 
-        return self.destination.port_name()
+        return self.destination().port_name()
 
     def paint(self, painter, option, widget):
 
@@ -120,9 +119,9 @@ class RealTimeLine(QtGui.QGraphicsLineItem, Colors):
     def paint(self, painter, option, widget):
 
         painter.setPen(QtGui.QPen(self.kBlack, 1, QtCore.Qt.SolidLine))
-        if self.graph.pressed_item and hasattr(self.graph.pressed_item, 'object_type'):
-            if self.graph.pressed_item.object_type == AGObjectTypes.tPort:
-                self.offset = self.graph.pressed_item.boundingRect().width()/2
+        if self.graph().pressed_item and hasattr(self.graph().pressed_item, 'object_type'):
+            if self.graph().pressed_item.object_type == AGObjectTypes.tPort:
+                self.offset = self.graph().pressed_item.boundingRect().width()/2
                 painter.drawLine(self.mapToParent(QtCore.QPointF(self.p1.x()+self.offset, self.p1.y()+self.offset)), self.p2)
 
     def boundingRect(self):

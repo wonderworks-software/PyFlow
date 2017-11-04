@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:/GIT/GraphModel/AGraphPySide/nodes_box_ui.ui'
+# Form implementation generated from reading ui file 'd:/GIT/nodes/AGraphPySide\nodes_box_ui.ui'
 #
-# Created: Tue Jul 28 10:41:25 2015
-#      by: pyside-uic 0.2.15 running on PySide 1.2.2
+# Created: Sat Nov 04 09:50:08 2017
+#      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
 

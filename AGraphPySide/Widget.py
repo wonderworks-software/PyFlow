@@ -487,7 +487,7 @@ class CommentNodeName(QtGui.QGraphicsTextItem, Colors):
         painter.fillRect(option.rect, QtGui.QColor(self.kCommentNodeNameBackground))
         super(CommentNodeName, self).paint(painter, option, widget)
 
- 
+
 class CommentNode(QtGui.QGraphicsRectItem, Colors):
     def __init__(self, graph):
         super(CommentNode, self).__init__()
@@ -881,7 +881,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.parent = parent
         self.menu = QtGui.QMenu(self)
         self.node_box = NodesBox(self)
-        self.scene_widget = SceneClass(self)
+        self.setScene(SceneClass(self))
         self.add_actions()
         self.options_widget = OptionsClass()
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -896,18 +896,19 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.minimum_scale = 0.5
         self.maximum_scale = 3
         self.setViewportUpdateMode(self.FullViewportUpdate)
-        self.setScene(self.scene_widget)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.setAcceptDrops(True)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
-        self.scene_widget.setSceneRect(QtCore.QRect(0, 0, 10000, 10000))
+        self.scene().setSceneRect(QtCore.QRect(0, 0, 10000, 10000))
         self._grid_spacing = 50
         self.factor = 1
         self.factor_diff = 0
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
+
+        self.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemShape)
 
         self._current_file_name = 'Untitled'
         self._file_name_label = QtGui.QGraphicsTextItem()
@@ -916,15 +917,15 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._file_name_label.setFlag(QtGui.QGraphicsTextItem.ItemIgnoresTransformations)
         self._file_name_label.setDefaultTextColor(self.kWhite)
         self._file_name_label.setPlainText(self._current_file_name)
-        self.scene_widget.addItem(self._file_name_label)
+        self.scene().addItem(self._file_name_label)
         self.rubber_rect = RubberRect('RubberRect')
 
         self.real_time_line = QtGui.QGraphicsPathItem(None, self.scene())
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.object_type = AGObjectTypes.tConnectionLine
         self.real_time_line.setPen(QtGui.QPen(self.kGreen, 1.0, QtCore.Qt.DashLine))
-        self.cursor_pressed_pos = QtCore.QPoint(0, 0)
-        self.current_cursor_pose = QtCore.QPoint(0, 0)
+        self.mousePressPose = QtCore.QPointF(0, 0)
+        self.mousePos = QtCore.QPointF(0, 0)
         self._right_button = False
         self._is_rubber_band_selection = False
         self._draw_real_time_line = False
@@ -945,6 +946,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         if (path.isfile(_mod_folder+'resources/sounds/startup.wav') and platform.system() == "Windows"):
             GraphWidget.play_sound_win(_mod_folder+'resources/sounds/startup.wav')
+
+    def shoutDown(self):
+        self.scene().clear()
 
     def set_scrollbars_positions(self, horizontal, vertical):
         try:
@@ -967,7 +971,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 # reconnect neighbors
                 self.add_edge(src, node.inp0)
                 self.add_edge(node.out0, dst)
-
 
     def redraw_nodes(self):
         for n in self.nodes:
@@ -1021,7 +1024,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def get_nodes(self):
 
         ls = []
-        for i in self.scene_widget.items():
+        for i in self.scene().items():
             if hasattr(i, 'object_type'):
                 if i.object_type == AGObjectTypes.tNode:
                     if i.isVisible():
@@ -1361,7 +1364,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         point += QtCore.QPointF(float(random.randint(50, 200)), float(random.randint(50, 200)))
         return point
 
-
     def keyReleaseEvent(self, event):
 
         QtGui.QGraphicsView.keyReleaseEvent(self, event)
@@ -1382,7 +1384,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                     self.pressed_item.parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
             else:
                 self.pressed_item.setSelected(True)
-        self.cursor_pressed_pos = self.mapToScene(event.pos())
+        self.mousePressPose = self.mapToScene(event.pos())
         if self.pressed_item and event.button() == QtCore.Qt.LeftButton:
             if hasattr(self.pressed_item, 'object_type'):
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
@@ -1399,14 +1401,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         super(GraphWidget, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        self.current_cursor_pose = self.mapToScene(event.pos())
+        self.mousePos = self.mapToScene(event.pos())
 
         if self._resize_group_mode:
             grp = self.pressed_item.parentItem()
             self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
-            x = max([self.current_cursor_pose.x()-grp.pos().x(),
+            x = max([self.mousePos.x()-grp.pos().x(),
                      grp.rect().topLeft().x()+grp.minimum_width])
-            y = max([self.current_cursor_pose.y()-grp.pos().y(),
+            y = max([self.mousePos.y()-grp.pos().y(),
                      grp.rect().topLeft().y()+grp.minimum_height])
 
             r = QtCore.QRectF(grp.rect().topLeft(), QtCore.QPointF(x, y))
@@ -1421,7 +1423,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.scene().addItem(self.real_time_line)
 
             p1 = self.pressed_item.scenePos() + QtCore.QPointF(self.pressed_item.boundingRect().width()/2, self.pressed_item.boundingRect().height()/2)
-            p2 = self.current_cursor_pose
+            p2 = self.mousePos
 
             distance = p2.x() - p1.x()
             multiply = 3
@@ -1435,30 +1437,31 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.scene().addItem(self.rubber_rect)
             if not self.rubber_rect.isVisible():
                 self.rubber_rect.setVisible(True)
-            r = QtCore.QRectF(self.cursor_pressed_pos.x(),
-                              self.cursor_pressed_pos.y(),
-                              self.current_cursor_pose.x()-self.cursor_pressed_pos.x(),
-                              self.current_cursor_pose.y()-self.cursor_pressed_pos.y())
+            r = QtCore.QRectF(self.mousePressPose.x(),
+                              self.mousePressPose.y(),
+                              self.mousePos.x()-self.mousePressPose.x(),
+                              self.mousePos.y()-self.mousePressPose.y())
             self.rubber_rect.setRect(r.normalized())
+
         super(GraphWidget, self).mouseMoveEvent(event)
 
     def createComment(self, x1, y1, x2, y2, name):
 
         grp = CommentNode(self)
         self.groupers.append(grp)
-        self.scene_widget.addItem(grp)
+        self.scene().addItem(grp)
         grp.setPos(QtCore.QPoint(int(x1), int(y1)))
         grp.set_bottom_right(QtCore.QPoint(int(x2), int(y2)))
         grp.label.setHtml(name)
         # grp.label.setPlainText(name)
 
-    def commentSelectedNodes(self, comment = "enter comment"):
+    def commentSelectedNodes(self, comment="enter comment"):
         selected_nodes = []
         for n in self.get_nodes():
             if n.isSelected():
                 selected_nodes.append(n.name)
         if len(selected_nodes) == 0:
-            self.createComment(self.current_cursor_pose.x(), self.current_cursor_pose.y(), self.current_cursor_pose.x()+250, self.current_cursor_pose.y()+100, comment)
+            self.createComment(self.mousePos.x(), self.mousePos.y(), self.mousePos.x()+250, self.mousePos.y()+100, comment)
             return
 
         r = self.get_nodes_rect(True)
@@ -1472,7 +1475,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                     r.height() + 150)
         grp.update()
         grp.setPos(r.topLeft())
-        self.scene_widget.addItem(grp)
+        self.scene().addItem(grp)
         selected_nodes = []
         for n in self.get_nodes():
             if n.isSelected():
@@ -1489,7 +1492,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def remove_item_by_name(self, name):
 
-        [self.scene_widget.removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
+        [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
 
@@ -1954,7 +1957,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         AGraph.add_node(self, node, x, y)
         if node:
             node.label.setPlainText(node.name)
-            self.scene_widget.addItem(node)
+            self.scene().addItem(node)
             node.set_shadows_enabled(self._shadows)
             node.post_create()
         else:
@@ -1969,7 +1972,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             edge = Edge(src, dst, self)
             src.edge_list.append(edge)
             dst.edge_list.append(edge)
-            self.scene_widget.addItem(edge)
+            self.scene().addItem(edge)
             self.edges.append(edge)
             self.write_to_console("connectAttr ~src {0} ~dst {1}".format(src.port_name(), dst.port_name()))
             return edge
@@ -1979,9 +1982,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         AGraph.remove_edge(self, edge, call_connection_functions)
         self.edges.remove(edge)
         edge.prepareGeometryChange()
-        self.scene_widget.removeItem(edge)
-
-
+        self.scene().removeItem(edge)
 
     def write_to_console(self, data, force=False):
         if not force:

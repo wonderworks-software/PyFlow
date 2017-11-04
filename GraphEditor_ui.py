@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\GIT\nodes\GraphEditor_ui.ui'
+# Form implementation generated from reading ui file 'd:/GIT/nodes/GraphEditor_ui.ui'
 #
-# Created: Fri Dec 30 15:04:43 2016
+# Created: Sat Nov 04 15:27:56 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -262,3 +262,4 @@ class Ui_MainWindow(object):
         self.actionAlignUp.setToolTip(QtGui.QApplication.translate("MainWindow", "Align selected nodes by the up most", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPropertyView.setText(QtGui.QApplication.translate("MainWindow", "PropertyView", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPropertyView.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle property view", None, QtGui.QApplication.UnicodeUTF8))
+

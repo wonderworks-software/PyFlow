@@ -1,5 +1,6 @@
 from threading import Thread
 from AGraphCommon import *
+import weakref
 
 
 class AGPort(object):
@@ -36,7 +37,7 @@ class AGPort(object):
 
     def port_name(self):
 
-        return self.parent.name+'.'+self.name
+        return self.parent.name + '.' + self.name
 
     def current_data(self):
 
@@ -67,9 +68,8 @@ class AGPort(object):
         for i in self.affects:
             i.dirty = True
 
-    def get_data(self):
+    def get_data(self, debug=False):
 
-        debug = self.parent.graph.is_debug()
         if self.type == AGPortTypes.kOutput:
             if self.dirty:
                 compute_order = self.parent.graph.get_evaluation_order(self.parent)
@@ -264,7 +264,7 @@ class AGraph(object):
         foo(node)
         # make sure no copies of nodes in higher layers (non directional cycles)
         for i in reversed(sorted([i for i in order.iterkeys()])):
-            for iD in range(i-1, -1, -1):
+            for iD in range(i - 1, -1, -1):
                 for check_node in order[i]:
                     if check_node in order[iD]:
                         order[iD].remove(check_node)
@@ -334,7 +334,7 @@ class AGraph(object):
         debug = self.is_debug()
         if src.type == AGPortTypes.kInput:
             src, dst = dst, src
-        if not dst.data_type in [AGPortDataTypes.tAny, AGPortDataTypes.tReroute]:
+        if dst.data_type not in [AGPortDataTypes.tAny, AGPortDataTypes.tReroute]:
             if src.data_type not in dst.allowed_data_types + [AGPortDataTypes.tReroute]:
                 print('data types error')
                 print(src.data_type, dst.data_type)
@@ -379,7 +379,7 @@ class AGraph(object):
             edge.source.port_disconnected()
 
     def plot(self):
-        print self.name+'\n----------\n'
+        print self.name + '\n----------\n'
         for n in self.nodes:
             print n.name
             for inp in n.inputs:

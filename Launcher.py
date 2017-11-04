@@ -67,10 +67,10 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         question = "Shure?"
         reply = QtGui.QMessageBox.question(self, 'Exit', question, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
         if reply == QtGui.QMessageBox.Yes:
+            self.G.shoutDown()
             event.accept()
         else:
             event.ignore()
-        pass
 
     def toggle_property_view(self):
         if self.dockWidgetNodeView.isVisible():

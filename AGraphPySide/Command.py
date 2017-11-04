@@ -5,6 +5,7 @@ base class for all commands. Use this to implement your own
 import re
 from AbstractGraph import FLAG_SYMBOL
 
+
 class Command(object):
 
     def __init__(self, graph):
@@ -17,12 +18,12 @@ class Command(object):
         '''
         flags = {}
         dashes = [m.start() for m in re.finditer(FLAG_SYMBOL, line)]
-        for i in xrange(len(dashes)-1):
-            newLine =  line[dashes[i]:]
+        for i in xrange(len(dashes) - 1):
+            newLine = line[dashes[i]:]
             newLineDashes = [m.start() for m in re.finditer(FLAG_SYMBOL, newLine)]
-            flag = newLine[:newLineDashes[1]-1].split(" ", 1) # flag + value
+            flag = newLine[:newLineDashes[1] - 1].split(" ", 1)  # flag + value
             flags[flag[0]] = flag[1]
-        flag = line[dashes[-1]:].split(" ", 1) # last flag + value
+        flag = line[dashes[-1]:].split(" ", 1)  # last flag + value
         flags[flag[0]] = flag[1]
         return flags
 
@@ -33,4 +34,3 @@ class Command(object):
 
     def execute(self, line):
         pass
-

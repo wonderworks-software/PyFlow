@@ -26,15 +26,14 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.setCacheMode(self.DeviceCoordinateCache)
         self.setAcceptHoverEvents(True)
         self.setZValue(2)
-        self.__width = width+1
-        self.__height = height+1
+        self.__width = width + 1
+        self.__height = height + 1
         self.hovered = False
         self.startPos = None
         self.endPos = None
         self.options = self.parent.graph.get_settings()
         self.reroutes = []
         if self.options:
-            # self.color = QtGui.QColor(self.options.value('NODES/Port color'))
             self.color = color
             opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))
             opt_dirty_type_name = self.options.value('NODES/Port dirty type')
@@ -53,10 +52,10 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         return QtCore.QSizeF(self.__width, self.__height)
 
     def disconnect_all(self):
-        if self.parent.graph.is_debug():
+        if self.parentItem().graph.is_debug():
             print(self.edge_list)
         for e in self.edge_list:
-            self.parent.graph.write_to_console('{0} killed'.format(e.__str__()))
+            self.parentItem().graph.write_to_console('{0} killed'.format(e.__str__()))
             e.kill()
         if not len(self.edge_list) == 0:
             self.disconnect_all()
@@ -66,7 +65,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             for p in self.affected_by:
                 p.kill_reroutes()
 
-        self.parent.graph.write_to_console("disconnectAttr {1}an {0}".format(self.port_name(), FLAG_SYMBOL))
+        self.parentItem().graph.write_to_console("disconnectAttr {1}an {0}".format(self.port_name(), FLAG_SYMBOL))
 
     def shape(self):
 
@@ -92,15 +91,13 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         else:
             painter.drawEllipse(background_rect)
 
-
     def contextMenuEvent(self, event):
 
         self.menu.exec_(event.screenPos())
 
     def write_to_console(self, data):
-        g = self.parent.graph
-        if g:
-            g.write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), self._data, FLAG_SYMBOL))
+        if self.parent.graph:
+            self.parent.graph.write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), self._data, FLAG_SYMBOL))
 
     def getLayout(self):
         return self.parentItem().layout()

@@ -5,6 +5,7 @@ from AGraphPySide import BaseNode
 DESC = '''Return the absolute value of a number. The argument may be a plain or long integer or a floating point number. If the argument is a complex number, its magnitude is returned.
 '''
 
+
 class Abs(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super(Abs, self).__init__(name, graph, w=50, colors=Colors, spacings=Spacings)

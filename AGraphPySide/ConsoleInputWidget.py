@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 
+
 class ConsoleInput(QtGui.QLineEdit):
     def __init__(self, parent, graph):
         super(ConsoleInput, self).__init__(parent)

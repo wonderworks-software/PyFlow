@@ -16,8 +16,8 @@ class RequestNode(BaseNode.Node, AGNode):
         pb = QtGui.QPushButton('request')
         self.looper.timeout.connect(self.compute)
 
-        lyt = self.add_layout()
-        lyt2 = self.add_layout()
+        lyt = self.AddPortLayout(AGPortTypes.kInput)
+        lyt2 = self.AddPortLayout(AGPortTypes.kInput)
 
         self.spin_box.setMinimum(1)
         self.spin_box.setMaximum(5000)
@@ -70,5 +70,4 @@ class RequestNode(BaseNode.Node, AGNode):
                 push(p)
 
         data = self.input.get_data()
-        print(data)
         self.graph.write_to_console(str(data), True)
