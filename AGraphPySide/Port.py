@@ -45,11 +45,9 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             self._dirty_pen = QtGui.QPen(Colors.kDirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
     def boundingRect(self):
-
         return QtCore.QRectF(0, -0.5, self.__width * 1.5, self.__height)
 
     def sizeHint(self, which, constraint):
-
         return QtCore.QSizeF(self.__width, self.__height)
 
     def disconnect_all(self):

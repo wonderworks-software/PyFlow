@@ -1377,17 +1377,16 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.node_box.close()
             self.node_box.le_nodes.clear()
         if self.pressed_item:
-            if hasattr(self.pressed_item, 'object_type') and not hasattr(self.pressed_item, 'non_selectable'):
+            if hasattr(self.pressed_item, 'object_type') and event.button() == QtCore.Qt.LeftButton:
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
-                    self.pressed_item.parentItem().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
+                    self.pressed_item.parent().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
+                    self.pressed_item.parent().setFlag(QtGui.QGraphicsItem.ItemIsSelectable, False)
+                    self._draw_real_time_line = True
+                if self.pressed_item.object_type == AGObjectTypes.tNodeName:
+                    self.pressed_item.parentItem().setSelected(True)
             else:
                 self.pressed_item.setSelected(True)
         self.mousePressPose = self.mapToScene(event.pos())
-        if self.pressed_item and event.button() == QtCore.Qt.LeftButton:
-            if hasattr(self.pressed_item, 'object_type'):
-                if self.pressed_item.object_type == AGObjectTypes.tPort:
-                    self.pressed_item.parentItem().setSelected(False)
-                    self._draw_real_time_line = True
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = True
         if all([event.button() == QtCore.Qt.LeftButton, modifiers == QtCore.Qt.AltModifier]):
@@ -1400,6 +1399,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def mouseMoveEvent(self, event):
         self.mousePos = self.mapToScene(event.pos())
+
+        print(self.pressed_item)
 
         if self._resize_group_mode:
             grp = self.pressed_item.parentItem()
@@ -1490,11 +1491,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.write_to_console(cmd)
 
     def remove_item_by_name(self, name):
-
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
-
         self.released_item = self.itemAt(event.pos())
         self.setDragMode(self.NoDrag)
         self._resize_group_mode = False
@@ -1512,6 +1511,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         for n in self.nodes:
             n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
+            n.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
 
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = False

@@ -18,8 +18,7 @@ class IntNode(BaseNode.Node, AGNode):
                                       w=120, colors=Colors,
                                       spacings=Spacings)
         self.spin_box = SBox(self.set_data)
-        # self.graph = graph
-        self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tNumeric, '')
+        self.output = self.add_output_port(AGPortTypes.kOutput, AGPortDataTypes.tNumeric)
 
         # hack! overload the output's port 'set_data' method to update lineEdit
         def set_data_overloads(data, dirty_propagate=True):

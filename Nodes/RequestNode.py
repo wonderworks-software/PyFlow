@@ -9,15 +9,14 @@ class RequestNode(BaseNode.Node, AGNode):
         super(RequestNode, self).__init__(name, graph)
         AGNode.__init__(self, name, graph)
         self.input = self.add_input_port('input', AGPortDataTypes.tAny)
-        self.colors = colors
         self.looper = QtCore.QTimer()
         self.spin_box = QtGui.QSpinBox()
         self.cb = QtGui.QCheckBox()
         pb = QtGui.QPushButton('request')
         self.looper.timeout.connect(self.compute)
 
-        lyt = self.add_layout(AGPortTypes.kInput)
-        lyt2 = self.add_layout(AGPortTypes.kInput)
+        con = self.add_container(AGPortTypes.kOutput)
+        con2 = self.add_container(AGPortTypes.kOutput)
 
         self.spin_box.setMinimum(1)
         self.spin_box.setMaximum(5000)
@@ -33,10 +32,9 @@ class RequestNode(BaseNode.Node, AGNode):
         prx_cb = QtGui.QGraphicsProxyWidget()
         prx_cb.setWidget(self.cb)
 
-        lyt2.addItem(prx_cb)
-        lyt2.addItem(prx_btn)
-        lyt.addItem(prx_sb_delta_time)
-        lyt.setAlignment(lyt.itemAt(0), QtCore.Qt.AlignCenter)
+        con2.layout().addItem(prx_cb)
+        con2.layout().addItem(prx_btn)
+        con.layout().addItem(prx_sb_delta_time)
 
     @staticmethod
     def get_category():
