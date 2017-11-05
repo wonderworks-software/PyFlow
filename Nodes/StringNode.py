@@ -10,17 +10,14 @@ class LEdit(QtGui.QLineEdit):
         self.textEdited.connect(self.foo)
 
 
-
 class StringNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super(StringNode, self).__init__(name, graph,
-                                      w=150, colors=Colors,
-                                      spacings=Spacings)
+                                         w=150, colors=Colors,
+                                         spacings=Spacings)
         AGNode.__init__(self, name, graph)
-        lyt_head = self.add_layout()
-        self.output = self.add_output_port('out',  AGPortDataTypes.tString)
-
-        self.layout.setSpacing(3)
+        lyt_head = self.add_layout(AGPortTypes.kInput)
+        self.output = self.add_output_port('out', AGPortDataTypes.tString)
 
         self.line_edit = LEdit(self.set_data)
         self.line_edit.setText("None")
@@ -40,9 +37,7 @@ class StringNode(BaseNode.Node, AGNode):
         return 'GenericTypes'
 
     def set_data(self):
-
         self.output.set_data(self.line_edit.text().replace("/", "|"), True)
 
     def compute(self):
-
         self.output.set_data(self.line_edit.text(), False)

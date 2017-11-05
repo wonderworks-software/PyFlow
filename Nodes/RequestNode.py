@@ -16,8 +16,8 @@ class RequestNode(BaseNode.Node, AGNode):
         pb = QtGui.QPushButton('request')
         self.looper.timeout.connect(self.compute)
 
-        lyt = self.AddPortLayout(AGPortTypes.kInput)
-        lyt2 = self.AddPortLayout(AGPortTypes.kInput)
+        lyt = self.add_layout(AGPortTypes.kInput)
+        lyt2 = self.add_layout(AGPortTypes.kInput)
 
         self.spin_box.setMinimum(1)
         self.spin_box.setMaximum(5000)
@@ -54,14 +54,11 @@ class RequestNode(BaseNode.Node, AGNode):
             self.looper.stop()
 
     def compute(self):
-
-
-
         # check if any dirty nodes before connected port.
         # randint for example
         # if so push forward and recompute
 
-        behind_dirty_ports = [p for p in find_ports_behind(self.input) if p.dirty == True]
+        behind_dirty_ports = [p for p in find_ports_behind(self.input) if p.dirty is True]
         shouldRecalc = (not len(behind_dirty_ports) == 0)
         if shouldRecalc:
             # push from dirty ports
@@ -70,4 +67,4 @@ class RequestNode(BaseNode.Node, AGNode):
                 push(p)
 
         data = self.input.get_data()
-        self.graph.write_to_console(str(data), True)
+        self.graph().write_to_console(str(data), True)

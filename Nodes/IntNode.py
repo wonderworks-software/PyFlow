@@ -17,10 +17,9 @@ class IntNode(BaseNode.Node, AGNode):
         super(IntNode, self).__init__(name, graph,
                                       w=120, colors=Colors,
                                       spacings=Spacings)
-        AGNode.__init__(self, name, graph)
         self.spin_box = SBox(self.set_data)
-        self.graph = graph
-        self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tNumeric, 'out')
+        # self.graph = graph
+        self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tNumeric, '')
 
         # hack! overload the output's port 'set_data' method to update lineEdit
         def set_data_overloads(data, dirty_propagate=True):
@@ -29,7 +28,7 @@ class IntNode(BaseNode.Node, AGNode):
 
         spin_box_proxy = QtGui.QGraphicsProxyWidget()
         spin_box_proxy.setWidget(self.spin_box)
-        self.output.getLayout().insertItem(0, spin_box_proxy)
+        self.inputsLayout.insertItem(0, spin_box_proxy)
         self.compute()
 
     @staticmethod

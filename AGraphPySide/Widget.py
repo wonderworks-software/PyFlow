@@ -12,7 +12,7 @@ from os import listdir, path, startfile
 import sys
 _file_folder = path.dirname(__file__)
 _mod_folder = _file_folder.replace(_file_folder.rsplit('\\')[-1], '')
-nodes_path = _mod_folder+'\\Nodes'
+nodes_path = _mod_folder + '\\Nodes'
 if nodes_path not in sys.path:
     sys.path.append(nodes_path)
 import Nodes
@@ -27,7 +27,7 @@ import winsound
 
 def get_mid_point(args):
 
-    return [sum(i)/len(i) for i in zip(*args)]
+    return [sum(i) / len(i) for i in zip(*args)]
 
 
 def get_nodes_file_names():
@@ -171,12 +171,12 @@ def parse(line):
     out = {"flags": {}}
     cmd = line.split(" ")[0]
     out["cmd"] = cmd
-    for i in xrange(len(flag_sep)-1):
-        newLine =  line[flag_sep[i]:]
+    for i in xrange(len(flag_sep) - 1):
+        newLine = line[flag_sep[i]:]
         newLineDashes = [m.start() for m in re.finditer(FLAG_SYMBOL, newLine)]
-        flag = newLine[:newLineDashes[1]-1].split(" ", 1) # flag + value
+        flag = newLine[:newLineDashes[1] - 1].split(" ", 1)  # flag + value
         out["flags"][flag[0]] = flag[1]
-    flag = line[flag_sep[-1]:].split(" ", 1) # last flag + value
+    flag = line[flag_sep[-1]:].split(" ", 1)  # last flag + value
     out["flags"][flag[0]] = flag[1]
     return out
 
@@ -235,7 +235,7 @@ class SceneClass(QtGui.QGraphicsScene):
 class NodesBoxListWidget(QtGui.QListWidget):
     def __init__(self, parent, events=True):
         super(NodesBoxListWidget, self).__init__(parent)
-        self.parent_item = parent
+        self.parent_item = weakref.ref(parent)
         self._events = events
         style = "background-color: rgb(80, 80, 80);" +\
                 "selection-background-color: rgb(150, 150, 150);" +\
@@ -264,12 +264,12 @@ class NodesBoxListWidget(QtGui.QListWidget):
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return:
-            point = self.parent_item.graph.findGoodPlaceForNewNode()
+            point = self.parent_item().graph().findGoodPlaceForNewNode()
             name = self.currentItem().text()
-            self.parent_item.graph.create_node(name, point.x(), point.y(), name)
+            self.parent_item().graph().create_node(name, point.x(), point.y(), name)
         if self._events:
             if event.key() == QtCore.Qt.Key_Escape:
-                self.parent_item.close()
+                self.parent_item().close()
                 self.clear()
         super(NodesBoxListWidget, self).keyPressEvent(event)
 
@@ -308,7 +308,7 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
                 "border-radius: 2px;" +\
                 "font-size: 14px;" +\
                 "border-color: black; border-style: outset; border-width: 1px;"
-        self.graph = parent
+        self.graph = weakref.ref(parent)
         self.setStyleSheet(style)
         self.setParent(parent)
         self.setFrameShape(QtGui.QFrame.NoFrame)
@@ -327,7 +327,7 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
         for node_file_name in get_nodes_file_names():
             node_class = getattr(Nodes, node_file_name)
             category_name = node_class.get_category()
-            if not category_name in self.categories:
+            if category_name not in self.categories:
                 CatItem = QtGui.QTreeWidgetItem(self)
                 CatItem.setText(0, category_name)
                 self.categories[category_name] = CatItem
@@ -337,9 +337,9 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
         if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
-            point = self.graph.findGoodPlaceForNewNode()
+            point = self.graph().findGoodPlaceForNewNode()
             name = self.currentItem().text(0)
-            self.graph.create_node(name, point.x(), point.y(), name)
+            self.graph().create_node(name, point.x(), point.y(), name)
 
     def mousePressEvent(self, event):
         super(NodeBoxTreeWidget, self).mousePressEvent(event)
@@ -361,11 +361,11 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
 
 class NodesBox(QtGui.QWidget):
     def __init__(self, graph):
-        super(NodesBox, self).__init__()
-        self.graph = graph
+        super(NodesBox, self).__init__(graph)
+        self.graph = weakref.ref(graph)
         self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.CustomizeWindowHint)
         self.setObjectName("nodes_box_form")
-        self.setWindowTitle('Node box - {0}'.format(self.graph.name))
+        self.setWindowTitle('Node box - {0}'.format(self.graph().name))
         # self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.resize(160, 200)
         self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
@@ -387,7 +387,7 @@ class NodesBox(QtGui.QWidget):
         self.listWidget.setVisible(False)
         self.setVisible(False)
         self.refresh_list('')
-        self.tree_widget = NodeBoxTreeWidget(self.graph)
+        self.tree_widget = NodeBoxTreeWidget(self.graph())
         self.verticalLayout.addWidget(self.tree_widget)
         self.tree_widget.refresh()
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -422,9 +422,9 @@ class NodesBox(QtGui.QWidget):
 
     def set_visible(self):
 
-        pos = self.graph.current_cursor_pose
-        self.move(self.graph.mapFromScene(pos.toPoint()).x()+self.graph.pos().x(),
-                  self.graph.mapFromScene(pos.toPoint()).y()+self.graph.pos().y()
+        pos = self.graph().current_cursor_pose
+        self.move(self.graph().mapFromScene(pos.toPoint()).x() + self.graph().pos().x(),
+                  self.graph().mapFromScene(pos.toPoint()).y() + self.graph().pos().y()
                   )
         self.refresh_list('')
         self.show()
@@ -433,10 +433,10 @@ class NodesBox(QtGui.QWidget):
         items = self.listWidget.selectedItems()
         if not len(items) == 0:
             name = items[0].text()
-            node = get_node(Nodes, name, self.graph)
-            print(node.name, 'created')
-            self.graph.add_node(node, self.graph.current_cursor_pose.x(),
-                                       self.graph.current_cursor_pose.y())
+            node = get_node(Nodes, name, self)
+            # print(node.name, 'created')
+            self.graph().add_node(node, self.graph().current_cursor_pose.x(),
+                                  self.graph().current_cursor_pose.y())
             if self.listWidget._events:
                 self.close()
                 self.listWidget.clear()
@@ -462,7 +462,7 @@ class CommentNodeName(QtGui.QGraphicsTextItem, Colors):
     def __init__(self, parent):
         super(CommentNodeName, self).__init__()
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
-        self.parent = parent
+        # self.parent = parent
         self.setParentItem(parent)
         self.setPlainText('...')
         self.setDefaultTextColor(self.kWhite)
@@ -470,15 +470,15 @@ class CommentNodeName(QtGui.QGraphicsTextItem, Colors):
 
     def update_pos(self):
 
-        self.setPos(self.parent.rect().topLeft())
-        self.setY(self.parent.rect().topLeft().y() - self.boundingRect().height())
+        self.setPos(self.parentItem().rect().topLeft())
+        self.setY(self.parentItem().rect().topLeft().y() - self.boundingRect().height())
 
     def focusInEvent(self, event):
-        self.parentItem().graph.disable_sortcuts()
+        self.parentItem().graph().disable_sortcuts()
         super(CommentNodeName, self).focusInEvent(event)
 
     def focusOutEvent(self, event):
-        self.parentItem().graph.enable_sortcuts()
+        self.parentItem().graph().enable_sortcuts()
         self.update_pos()
         super(CommentNodeName, self).focusOutEvent(event)
 
@@ -492,7 +492,7 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
     def __init__(self, graph):
         super(CommentNode, self).__init__()
         self.object_type = AGObjectTypes.tGrouper
-        self.graph = graph
+        self.graph = weakref.ref(graph)
         self.nodes = []
         self.menu = QtGui.QMenu()
         self.setAcceptHoverEvents(True)
@@ -553,11 +553,11 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
         rectangles = []
         for n in self.nodes:
             scene_pos = n.scenePos()
-            n_rect = QtCore.QRectF(scene_pos, QtCore.QPointF(scene_pos.x()+float(n.w), scene_pos.y()+float(n.h)))
+            n_rect = QtCore.QRectF(scene_pos, QtCore.QPointF(scene_pos.x() + float(n.w), scene_pos.y() + float(n.h)))
             rectangles.append([n_rect.topLeft().x(),
                                n_rect.topLeft().y(),
-                               n_rect.bottomRight().x()+25,
-                               n_rect.bottomRight().y()+25]
+                               n_rect.bottomRight().x() + 25,
+                               n_rect.bottomRight().y() + 25]
                               )
         min_x = min([i[0] for i in rectangles])
         max_x = max([i[2] for i in rectangles])
@@ -570,8 +570,8 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
 
         r = QtCore.QRectF(self.rect().topLeft().x(),
                           self.rect().topLeft().y(),
-                          point.x()-self.mapToScene(self.rect().topLeft()).x()+25,
-                          point.y()-self.mapToScene(self.rect().topLeft()).y()+25
+                          point.x() - self.mapToScene(self.rect().topLeft()).x() + 25,
+                          point.y() - self.mapToScene(self.rect().topLeft()).y() + 25
                           )
         self.setRect(r.normalized())
         self.update()
@@ -591,9 +591,9 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
     def update(self):
 
         self.label.update_pos()
-        self.count_label.setPos(self.rect().topLeft()-QtCore.QPointF(self.count_label.boundingRect().width(), 0))
-        self.resize_item.setPos(self.rect().bottomRight()-QtCore.QPointF(self.resize_item.boundingRect().width(),
-                                                                         self.resize_item.boundingRect().height()))
+        self.count_label.setPos(self.rect().topLeft() - QtCore.QPointF(self.count_label.boundingRect().width(), 0))
+        self.resize_item.setPos(self.rect().bottomRight() - QtCore.QPointF(self.resize_item.boundingRect().width(),
+                                                                           self.resize_item.boundingRect().height()))
 
     def has_nodes(self):
 
@@ -628,9 +628,9 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
             i.setSelected(False)
         for n in self.nodes:
             n.setSelected(True)
-        self.graph.kill_selected_nodes(call_connection_functions)
+        self.graph().kill_selected_nodes(call_connection_functions)
         self.scene().removeItem(self)
-        self.graph.groupers.remove(self)
+        self.graph().groupers.remove(self)
         del self
 
     def contextMenuEvent(self, event):
@@ -651,9 +651,9 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
     def add_node(self, node):
         if node.object_type == AGObjectTypes.tNode and node not in self.nodes:
             if not node.parentItem():
-                node.setZValue(self.zValue()+0.5)
+                node.setZValue(self.zValue() + 0.5)
                 node.setParentItem(self)
-                node.setPos(node.pos()-self.scenePos())
+                node.setPos(node.pos() - self.scenePos())
                 self.nodes.append(node)
                 self.update_count_label()
 
@@ -718,7 +718,7 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.connect_ui()
         self.populate_ui()
         self.picker = None
-        self.settings_path = path.dirname(__file__)+'\\config.ini'
+        self.settings_path = path.dirname(__file__) + '\\config.ini'
         self.settings_class = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat, self)
         if not path.isfile(self.settings_path):
             self.write_default_config()
@@ -894,7 +894,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._shadows = False
         self.scale(1.5, 1.5)
         self.minimum_scale = 0.5
-        self.maximum_scale = 3
+        self.maximum_scale = 10
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -931,21 +931,21 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._draw_real_time_line = False
         self._update_items = False
         self._resize_group_mode = False
-        self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum()/2)
-        self.verticalScrollBar().setValue(self.verticalScrollBar().maximum()/2)
+        self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum() / 2)
+        self.verticalScrollBar().setValue(self.verticalScrollBar().maximum() / 2)
         self._tick_functions = []
         self.registeredCommands = {}
         self.registerCommands()
         self._sortcuts_enabled = True
-        self.tick_timer = QtCore.QTimer() # this timer executes all functions in '_tick_functions'
+        self.tick_timer = QtCore.QTimer()  # this timer executes all functions in '_tick_functions'
         self.tick_timer.timeout.connect(self._tick_executor)
         self.tick_timer.start(50)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid_size = 10
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
 
-        if (path.isfile(_mod_folder+'resources/sounds/startup.wav') and platform.system() == "Windows"):
-            GraphWidget.play_sound_win(_mod_folder+'resources/sounds/startup.wav')
+        if (path.isfile(_mod_folder + 'resources/sounds/startup.wav') and platform.system() == "Windows"):
+            GraphWidget.play_sound_win(_mod_folder + 'resources/sounds/startup.wav')
 
     def shoutDown(self):
         self.scene().clear()
@@ -1010,7 +1010,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if not fName[0] == '':
             self.write_to_console("save screen to {0}".format(fName[0]))
             img = QtGui.QPixmap.grabWidget(self)
-            img.save(fName[0], quality = 100)
+            img.save(fName[0], quality=100)
 
     def is_sortcuts_enabled(self):
         return self._sortcuts_enabled
@@ -1046,48 +1046,48 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def add_actions(self):
         save_action = QtGui.QAction(self)
         save_action.setText('Save')
-        if path.isfile(_mod_folder+'resources/save_icon.png'):
-            save_action.setIcon(QtGui.QIcon(_mod_folder+'resources/save_icon.png'))
+        if path.isfile(_mod_folder + 'resources/save_icon.png'):
+            save_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/save_icon.png'))
         else:
             save_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         save_action.triggered.connect(self.save)
 
         load_action = QtGui.QAction(self)
         load_action.setText('Load')
-        if path.isfile(_mod_folder+'resources/folder_open_icon.png'):
-            load_action.setIcon(QtGui.QIcon(_mod_folder+'resources/folder_open_icon.png'))
+        if path.isfile(_mod_folder + 'resources/folder_open_icon.png'):
+            load_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/folder_open_icon.png'))
         else:
             load_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogOpenButton))
         load_action.triggered.connect(self.load)
 
         save_as_action = QtGui.QAction(self)
         save_as_action.setText('Save as')
-        if path.isfile(_mod_folder+'resources/save_as_icon.png'):
-            save_as_action.setIcon(QtGui.QIcon(_mod_folder+'resources/save_as_icon.png'))
+        if path.isfile(_mod_folder + 'resources/save_as_icon.png'):
+            save_as_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/save_as_icon.png'))
         else:
             save_as_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         save_as_action.triggered.connect(lambda: self.save(True))
 
         options_action = QtGui.QAction(self)
         options_action.setText('Options')
-        if path.isfile(_mod_folder+'resources/colors_icon.png'):
-            options_action.setIcon(QtGui.QIcon(_mod_folder+'resources/colors_icon.png'))
+        if path.isfile(_mod_folder + 'resources/colors_icon.png'):
+            options_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/colors_icon.png'))
         else:
             options_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         options_action.triggered.connect(self.options)
 
         new_file_action = QtGui.QAction(self)
         new_file_action.setText('New')
-        if path.isfile(_mod_folder+'resources/new_file_icon.png'):
-            new_file_action.setIcon(QtGui.QIcon(_mod_folder+'resources/new_file_icon.png'))
+        if path.isfile(_mod_folder + 'resources/new_file_icon.png'):
+            new_file_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/new_file_icon.png'))
         else:
             new_file_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
         new_file_action.triggered.connect(self.new_file)
 
         node_box_action = QtGui.QAction(self)
         node_box_action.setText('Node box')
-        if path.isfile(_mod_folder+'resources/node_box_icon.png'):
-            node_box_action.setIcon(QtGui.QIcon(_mod_folder+'resources/node_box_icon.png'))
+        if path.isfile(_mod_folder + 'resources/node_box_icon.png'):
+            node_box_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/node_box_icon.png'))
         else:
             node_box_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
         node_box_action.triggered.connect(self.node_box.set_visible)
@@ -1124,7 +1124,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if self._current_file_name in ["", "Untitled"]:
             return
 
-        graph = "SAVE GRAPH SCRIPT\n"   #  add some scene info. version, user, date, etc.
+        graph = "SAVE GRAPH SCRIPT\n"  # add some scene info. version, user, date, etc.
         # slider positions
         graph += "setHorizontalScrollBar ~h {0}\n".format(self.horizontalScrollBar().value())
         graph += "setVerticalScrollBar ~v {0}\n".format(self.verticalScrollBar().value())
@@ -1229,18 +1229,18 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         mid_points = []
         for n in self.nodes:
             n_rect = QtCore.QRectF(n.scenePos(),
-                                   QtCore.QPointF(n.scenePos().x()+float(n.w),
-                                                  n.scenePos().y()+float(n.h)))
+                                   QtCore.QPointF(n.scenePos().x() + float(n.w),
+                                                  n.scenePos().y() + float(n.h)))
             mid_points.append(((n_rect.center().x()), n_rect.center().y()))
         mp = get_mid_point(mid_points)
         if len(mp) == 0:
             return
         nodes_rect = self.get_nodes_rect()
         if not rect.contains(nodes_rect):
-            by_x = mp[0]/self.sceneRect().width()
-            by_y = mp[1]/self.sceneRect().height()
-            self.horizontalScrollBar().setValue(float(self.horizontalScrollBar().maximum()*by_x))
-            self.verticalScrollBar().setValue(float(self.verticalScrollBar().maximum()*by_y))
+            by_x = mp[0] / self.sceneRect().width()
+            by_y = mp[1] / self.sceneRect().height()
+            self.horizontalScrollBar().setValue(float(self.horizontalScrollBar().maximum() * by_x))
+            self.verticalScrollBar().setValue(float(self.verticalScrollBar().maximum() * by_y))
 
     def get_nodes_rect(self, selected=False):
 
@@ -1248,14 +1248,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if selected:
             for n in [n for n in self.nodes if n.isSelected()]:
                 n_rect = QtCore.QRectF(n.scenePos(),
-                                       QtCore.QPointF(n.scenePos().x()+float(n.w),
-                                                      n.scenePos().y()+float(n.h)))
+                                       QtCore.QPointF(n.scenePos().x() + float(n.w),
+                                                      n.scenePos().y() + float(n.h)))
                 rectangles.append([n_rect.x(), n_rect.y(), n_rect.bottomRight().x(), n_rect.bottomRight().y()])
         else:
             for n in self.nodes:
                 n_rect = QtCore.QRectF(n.scenePos(),
-                                       QtCore.QPointF(n.scenePos().x()+float(n.w),
-                                                      n.scenePos().y()+float(n.h)))
+                                       QtCore.QPointF(n.scenePos().x() + float(n.w),
+                                                      n.scenePos().y() + float(n.h)))
                 rectangles.append([n_rect.x(), n_rect.y(), n_rect.bottomRight().x(), n_rect.bottomRight().y()])
         min_x = min([i[0] for i in rectangles])
         max_x = max([i[2] for i in rectangles])
@@ -1270,12 +1270,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def kill_selected_nodes(self, call_connection_functions=False):
 
         selected = self.selected_nodes()
-        for i in self.nodes:
+        for i in selected:
             if i.isSelected() and i in self.nodes and i in self.scene().items():
                 i.kill(call_connection_functions)
+                # replace to unused list. This will be deleted later by qt
+                self.nodesPendingKill.append(self.nodes.pop(self.nodes.index(i)))
         if not len(selected) == 0:
             self.kill_selected_nodes(call_connection_functions)
-
         clearLayout(self.parent.PropertiesformLayout)
 
     def keyPressEvent(self, event):
@@ -1337,7 +1338,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         for n in new_nodes:
             n.setSelected(True)
 
-
     def align_selected_nodes(self, direction):
         scene_poses = []
         relative_poses = []
@@ -1353,14 +1353,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             else:
                 n.setY(y_min)
 
-
-
     def findGoodPlaceForNewNode(self):
         polygon = self.mapToScene(self.viewport().rect())
         ls = polygon.toList()
-        point = QtCore.QPointF((ls[1].x() - ls[0].x())/2, (ls[3].y() - ls[2].y())/2)
+        point = QtCore.QPointF((ls[1].x() - ls[0].x()) / 2, (ls[3].y() - ls[2].y()) / 2)
         point += ls[0]
-        point.setY(point.y()+polygon.boundingRect().height()/3)
+        point.setY(point.y() + polygon.boundingRect().height() / 3)
         point += QtCore.QPointF(float(random.randint(50, 200)), float(random.randint(50, 200)))
         return point
 
@@ -1374,21 +1372,21 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.pressed_item = self.itemAt(event.pos())
         if self.pressed_item and hasattr(self.pressed_item, 'mark'):
             self._resize_group_mode = True
-            self.pressed_item.parentItem().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
+            self.pressed_item.parentItem().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)  # move to comment node
         if not self.pressed_item:
             self.node_box.close()
             self.node_box.le_nodes.clear()
         if self.pressed_item:
             if hasattr(self.pressed_item, 'object_type') and not hasattr(self.pressed_item, 'non_selectable'):
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
-                    self.pressed_item.parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
+                    self.pressed_item.parentItem().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
             else:
                 self.pressed_item.setSelected(True)
         self.mousePressPose = self.mapToScene(event.pos())
         if self.pressed_item and event.button() == QtCore.Qt.LeftButton:
             if hasattr(self.pressed_item, 'object_type'):
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
-                    self.pressed_item.parent.setSelected(False)
+                    self.pressed_item.parentItem().setSelected(False)
                     self._draw_real_time_line = True
         if event.button() == QtCore.Qt.RightButton:
             self._right_button = True
@@ -1406,30 +1404,31 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if self._resize_group_mode:
             grp = self.pressed_item.parentItem()
             self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
-            x = max([self.mousePos.x()-grp.pos().x(),
-                     grp.rect().topLeft().x()+grp.minimum_width])
-            y = max([self.mousePos.y()-grp.pos().y(),
-                     grp.rect().topLeft().y()+grp.minimum_height])
+            x = max([self.mousePos.x() - grp.pos().x(),
+                     grp.rect().topLeft().x() + grp.minimum_width])
+            y = max([self.mousePos.y() - grp.pos().y(),
+                     grp.rect().topLeft().y() + grp.minimum_height])
 
             r = QtCore.QRectF(grp.rect().topLeft(), QtCore.QPointF(x, y))
             grp.setRect(r.normalized())
-            grp.resize_item.setPos(grp.rect().bottomRight()-QtCore.QPointF(grp.resize_item.boundingRect().width(),
-                                                                           grp.resize_item.boundingRect().height()))
+            grp.resize_item.setPos(grp.rect().bottomRight() - QtCore.QPointF(grp.resize_item.boundingRect().width(),
+                                                                             grp.resize_item.boundingRect().height()))
 
         if self._draw_real_time_line:
-            if self.pressed_item.parent.isSelected():
-                self.pressed_item.parent.setSelected(False)
+            if self.pressed_item.parentItem().isSelected():
+                self.pressed_item.parentItem().setSelected(False)
             if self.real_time_line not in self.scene().items():
                 self.scene().addItem(self.real_time_line)
 
-            p1 = self.pressed_item.scenePos() + QtCore.QPointF(self.pressed_item.boundingRect().width()/2, self.pressed_item.boundingRect().height()/2)
+            p1 = self.pressed_item.scenePos() + QtCore.QPointF(self.pressed_item.boundingRect().width() / 2,
+                                                               self.pressed_item.boundingRect().height() / 2)
             p2 = self.mousePos
 
             distance = p2.x() - p1.x()
             multiply = 3
             path = QtGui.QPainterPath()
             path.moveTo(p1)
-            path.cubicTo(QtCore.QPoint(p1.x()+distance/multiply, p1.y()), QtCore.QPoint(p2.x()-distance/2, p2.y()), p2)
+            path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()), QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
             self.real_time_line.setPath(path)
 
         if self._is_rubber_band_selection:
@@ -1439,8 +1438,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.rubber_rect.setVisible(True)
             r = QtCore.QRectF(self.mousePressPose.x(),
                               self.mousePressPose.y(),
-                              self.mousePos.x()-self.mousePressPose.x(),
-                              self.mousePos.y()-self.mousePressPose.y())
+                              self.mousePos.x() - self.mousePressPose.x(),
+                              self.mousePos.y() - self.mousePressPose.y())
             self.rubber_rect.setRect(r.normalized())
 
         super(GraphWidget, self).mouseMoveEvent(event)
@@ -1461,7 +1460,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             if n.isSelected():
                 selected_nodes.append(n.name)
         if len(selected_nodes) == 0:
-            self.createComment(self.mousePos.x(), self.mousePos.y(), self.mousePos.x()+250, self.mousePos.y()+100, comment)
+            self.createComment(self.mousePos.x(), self.mousePos.y(), self.mousePos.x() + 250, self.mousePos.y() + 100, comment)
             return
 
         r = self.get_nodes_rect(True)
@@ -1469,8 +1468,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         grp.label.setHtml(comment)
         # grp.label.setPlainText(comment)
         self.groupers.append(grp)
-        grp.setRect(r.x() - (r.topLeft().x()+50),
-                    r.y() - (r.topLeft().y()+50),
+        grp.setRect(r.x() - (r.topLeft().x() + 50),
+                    r.y() - (r.topLeft().y() + 50),
                     r.width() + 150,
                     r.height() + 150)
         grp.update()
@@ -1503,14 +1502,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         modifiers = event.modifiers()
         if self.released_item and not hasattr(self.released_item, 'non_selectable'):
             if isinstance(self.released_item, CommentNode):
-                # self.released_item.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
-                pass
+                self.released_item.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
         else:
             if self.pressed_item and not hasattr(self.pressed_item, 'non_selectable'):
                 parent = self.pressed_item.parentItem()
-                # if parent and hasattr(parent, 'object_type'):
-                #     if parent.object_type == AGObjectTypes.tGrouper:
-                #         parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
+                if parent and hasattr(parent, 'object_type'):
+                    if parent.object_type == AGObjectTypes.tGrouper:
+                        parent.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
 
         for n in self.nodes:
             n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
@@ -1630,7 +1628,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         painter.setPen(QtGui.QPen(self.kGridColor, 0.5, QtCore.Qt.SolidLine))
 
         # draw grid vertical lines
-        for x in xrange(left, int(scene_rect.right()), self.grid_size): 
+        for x in xrange(left, int(scene_rect.right()), self.grid_size):
             painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
@@ -1640,11 +1638,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0, QtCore.Qt.SolidLine))
 
         # draw grid vertical lines
-        for x in xrange(left, int(scene_rect.right()), self.grid_size*10):
+        for x in xrange(left, int(scene_rect.right()), self.grid_size * 10):
             painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
-        for y in xrange(top, int(scene_rect.bottom()), self.grid_size*10):
+        for y in xrange(top, int(scene_rect.bottom()), self.grid_size * 10):
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
     def console_help(self):
@@ -1660,10 +1658,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         msg += """///// AVAILABLE COMMANDS /////\n"""
         msg += "\t<<< Builtin >>>\n"
         for c in self.parent.consoleInput.builtinCommands:
-            msg += (c+"\n")
+            msg += (c + "\n")
         msg += "\t<<< Plugins >>>\n"
         for c in self.registeredCommands:
-            msg += (c+" - {0}\n".format(self.registeredCommands[c].usage()))
+            msg += (c + " - {0}\n".format(self.registeredCommands[c].usage()))
 
         if self.parent:
             self.parent.console.append(msg)
@@ -1826,7 +1824,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if commandLine['cmd'] == "comment":
             try:
                 if commandLine['flags']["{0}mode".format(FLAG_SYMBOL)] == "selected":
-                    self.commentSelectedNodes(comment = commandLine['flags']["{0}text".format(FLAG_SYMBOL)])
+                    self.commentSelectedNodes(comment=commandLine['flags']["{0}text".format(FLAG_SYMBOL)])
                 if commandLine['flags']["{0}mode".format(FLAG_SYMBOL)] == "empty":
                     try:
                         self.parent.console.append(command)
@@ -1842,7 +1840,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                         node = self.get_node_by_name(i)
                         if node:
                             node.setSelected(True)
-                    self.commentSelectedNodes(comment = commandLine["flags"]["{0}text".format(FLAG_SYMBOL)])
+                    self.commentSelectedNodes(comment=commandLine["flags"]["{0}text".format(FLAG_SYMBOL)])
                     return
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
@@ -1979,10 +1977,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def remove_edge(self, edge, call_connection_functions=True):
 
-        AGraph.remove_edge(self, edge, call_connection_functions)
         self.edges.remove(edge)
         edge.prepareGeometryChange()
         self.scene().removeItem(edge)
+
+        AGraph.remove_edge(self, edge, call_connection_functions)
 
     def write_to_console(self, data, force=False):
         if not force:
@@ -1998,26 +1997,26 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if self.parent:
             for n in self.nodes:
                 self.parent.console.append(n.name)
-                for i in n.inputs+n.outputs:
+                for i in n.inputs + n.outputs:
                     self.parent.console.append('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}'.format(i.port_name(),
-                                          i.current_data(),
-                                          [p.port_name() for p in i.affects],
-                                          [p.port_name() for p in i.affected_by],
-                                          i.dirty))
+                                               i.current_data(),
+                                               [p.port_name() for p in i.affects],
+                                               [p.port_name() for p in i.affected_by],
+                                               i.dirty))
 
     def scale_step(self, direction, step_size):
         current_factor = self.factor
 
         if direction:
-            self.factor += (step_size-1)
-            self.factor_diff += self.factor-current_factor
+            self.factor += (step_size - 1)
+            self.factor_diff += self.factor - current_factor
             # if self.factor_diff >= self.maximum_scale:
             #     self.factor_diff = self.maximum_scale-0.01
             #     return
             self.scale(step_size, step_size)
         else:
-            self.factor -= (1-step_size)
-            self.factor_diff += self.factor-current_factor
+            self.factor -= (1 - step_size)
+            self.factor_diff += self.factor - current_factor
             # if self.factor_diff <= self.minimum_scale:
             #     self.factor_diff = self.minimum_scale+0.01
             #     return

@@ -4,8 +4,7 @@ from AbstractGraph import *
 
 class StringReplace(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(StringReplace, self).__init__(name, graph)
-        AGNode.__init__(self, name, graph)
+        BaseNode.Node.__init__(self, name, graph)
         self.first = self.add_input_port('source', AGPortDataTypes.tString)
         self.old_ptn = self.add_input_port('old pattern', AGPortDataTypes.tString)
         self.new_ptn = self.add_input_port('new pattern', AGPortDataTypes.tString)

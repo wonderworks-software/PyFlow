@@ -8,7 +8,7 @@ class AGPort(object):
     def __init__(self, name, parent, data_type):
         super(AGPort, self).__init__()
         self.name = name.replace(" ", "_")
-        self.parent = parent
+        self.parent = weakref.ref(parent)
         self.object_type = AGObjectTypes.tPort
         self.data_type = data_type
         self.allowed_data_types = [data_type]
@@ -17,67 +17,67 @@ class AGPort(object):
         self.edge_list = []
         self.type = None
         self.dirty = True
-        self._data = None
         # set default values
+        self._data = self.getDefaultDataValue()
+
+    def getDefaultDataValue(self):
         if self.data_type == AGPortDataTypes.tNumeric:
-            self._data = 0.0
+            return 0.0
         if self.data_type == AGPortDataTypes.tString:
-            self._data = ""
+            return ""
         if self.data_type == AGPortDataTypes.tBool:
-            self._data = False
+            return False
         if self.data_type == AGPortDataTypes.tArray:
-            self._data = list()
+            return []
         if self.data_type == AGPortDataTypes.tAny:
-            self._data = None
+            return None
         if self.data_type == AGPortDataTypes.tReroute:
-            self._data = None
+            return None
 
     def set_data_overload(self, data, dirty_propagate=True):
         pass
 
     def port_name(self):
-
-        return self.parent.name + '.' + self.name
+        return self.parent().name + '.' + self.name
 
     def current_data(self):
-
+        if self._data is None:
+            return self.getDefaultDataValue()
         return self._data
 
     def port_connected(self):
-
         pass
 
     def port_disconnected(self):
-
         pass
 
     def set_clean(self):
-
         self.dirty = False
 
     def hasConnections(self):
-
         if len(self.edge_list) == 0:
             return False
         else:
             return True
 
     def set_dirty(self):
-
         self.dirty = True
         for i in self.affects:
             i.dirty = True
 
     def get_data(self, debug=False):
+        # if not connected - return data
+        if not self.hasConnections():
+            return self.getDefaultDataValue()
 
         if self.type == AGPortTypes.kOutput:
             if self.dirty:
-                compute_order = self.parent.graph.get_evaluation_order(self.parent)
+                compute_order = self.parent().graph().get_evaluation_order(self.parent())
                 if debug:
                     for i in reversed(sorted([i for i in compute_order.keys()])):
                         print(i, [n.name for n in compute_order[i]])
                 for i in reversed(sorted([i for i in compute_order.keys()])):
-                    if not self.parent.graph.is_multithreaded():
+                    if not self.parent().graph().is_multithreaded():
                         for n in compute_order[i]:
                             if debug:
                                 print(n.name, 'calling compute')
@@ -93,12 +93,12 @@ class AGPort(object):
             if self.dirty:
                 out = [i for i in self.affected_by if i.type == AGPortTypes.kOutput]
                 if not out == []:
-                    compute_order = out[0].parent.graph.get_evaluation_order(out[0].parent)
+                    compute_order = out[0].parent().graph().get_evaluation_order(out[0].parent())
                     if debug:
                         for i in reversed(sorted([i for i in compute_order.keys()])):
                             print(i, [n.name for n in compute_order[i]])
                     for i in reversed(sorted([i for i in compute_order.keys()])):
-                        if not self.parent.graph.is_multithreaded():
+                        if not self.parent().graph().is_multithreaded():
                             for n in compute_order[i]:
                                 if debug:
                                     print(n.name, 'calling compute')
@@ -118,7 +118,6 @@ class AGPort(object):
         return v.lower() in ("true", "1")
 
     def set_data(self, data, dirty_propagate=True):
-
         if self.data_type == AGPortDataTypes.tNumeric:
             self._data = float(data)
         if self.data_type == AGPortDataTypes.tString:
@@ -146,7 +145,7 @@ class AGPort(object):
 class AGNode(object):
     def __init__(self, name, graph):
         super(AGNode, self).__init__()
-        self.graph = graph
+        self.graph = weakref.ref(graph)
         self.name = name
         self.object_type = AGObjectTypes.tNode
         self.inputs = []
@@ -159,19 +158,10 @@ class AGNode(object):
         self.y = y
 
     def get_name(self):
-
         return self.name
 
     def set_name(self, name):
-
-        self.name = self.graph.get_uniq_node_name(name)
-
-    def kill(self, call_connection_functions=False):
-        for p in self.inputs + self.outputs:
-            while not len(p.edge_list) == 0:
-                for e in p.edge_list:
-                    self.graph.remove_edge(e, call_connection_functions)
-        self.graph.nodes.remove(self)
+        self.name = self.graph().get_uniq_node_name(name)
 
     def add_input_port(self, port_name, data_type):
         p = AGPort(port_name, self, data_type)
@@ -213,6 +203,7 @@ class AGraph(object):
         self._multithreaded = False
         self.name = name
         self.nodes = []
+        self.nodesPendingKill = []
         self.edges = []
 
     def get_uniq_node_name(self, name):
@@ -279,10 +270,10 @@ class AGraph(object):
                     if not i.affected_by == []:
                         for a in i.affected_by:
                             if not dirty_only:
-                                nodes.append(a.parent)
+                                nodes.append(a.parent())
                             else:
                                 if a.dirty:
-                                    nodes.append(a.parent)
+                                    nodes.append(a.parent())
             return nodes
         if direction == AGPortTypes.kOutput:
             if not node.outputs == []:
@@ -290,10 +281,10 @@ class AGraph(object):
                     if not i.affects == []:
                         for p in i.affects:
                             if not dirty_only:
-                                nodes.append(p.parent)
+                                nodes.append(p.parent())
                             else:
                                 if not [dout for dout in p.affects if dout.dirty] == []:
-                                    nodes.append(p.parent)
+                                    nodes.append(p.parent())
             return nodes
 
     def get_nodes(self):
@@ -314,7 +305,7 @@ class AGraph(object):
         node.set_name(node.name)
         self.nodes.append(node)
         node.set_pos(x, y)
-        node.graph = self
+        # node.graph = self
         return True
 
     def remove_node(self, node):
@@ -370,13 +361,12 @@ class AGraph(object):
 
     def remove_edge(self, edge, call_connection_functions=True):
 
-        edge.source.affects.remove(edge.destination)
-        edge.source.edge_list.remove(edge)
-        edge.destination.affected_by.remove(edge.source)
-        edge.destination.edge_list.remove(edge)
-        if call_connection_functions:
-            edge.destination.port_disconnected()
-            edge.source.port_disconnected()
+        edge.source().affects.remove(edge.destination())
+        edge.source().edge_list.remove(edge)
+        edge.destination().affected_by.remove(edge.source())
+        edge.destination().edge_list.remove(edge)
+        edge.destination().port_disconnected()
+        edge.source().port_disconnected()
 
     def plot(self):
         print self.name + '\n----------\n'

@@ -41,8 +41,8 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
         self.console.setLineWrapMode(QtGui.QTextEdit.NoWrap)
         self.console.setReadOnly(True)
-        self.console.setStyleSheet('background-color: rgb(49, 49, 49);'+\
-                                   'font: 8pt "Consolas";'+\
+        self.console.setStyleSheet('background-color: rgb(49, 49, 49);' +
+                                   'font: 8pt "Consolas";' +
                                    'color: rgb(200, 200, 200);'
                                    )
         self.clearConsoleAction = QtGui.QAction('Clear', self)
@@ -52,9 +52,8 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)
         commands_names = [i for i in self.G.registeredCommands.iterkeys()] + self.consoleInput.cmd_list
         self.highlighter_inst = Highlighter(self.console.document(),
-            commands_names,
-            self.node_box.get_nodes_file_names()
-            )
+                                            commands_names,
+                                            self.node_box.get_nodes_file_names())
         self.gridLayout_2.addWidget(self.consoleInput, 2, 0, 1, 1)
         self.dockWidgetConsole.hide()
         self.dockWidgetNodeBox.hide()
@@ -146,14 +145,14 @@ if __name__ == '__main__':
     app.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
     darkPalette = QtGui.QPalette()
-    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(53,53,53))
+    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
     darkPalette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
-    darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(25,25,25))
-    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53,53,53))
+    darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
+    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53, 53, 53))
     darkPalette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
     darkPalette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
     darkPalette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
-    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(53,53,53))
+    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
     darkPalette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
     darkPalette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
     darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
@@ -168,10 +167,8 @@ if __name__ == '__main__':
         QWidget:focus {border:2 inset black;}\
         ")
 
-
     instance = W()
     instance.show()
-
 
     try:
         sys.exit(app.exec_())

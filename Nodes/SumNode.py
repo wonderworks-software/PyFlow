@@ -5,8 +5,8 @@ from AbstractGraph import *
 class SumNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         BaseNode.Node.__init__(self, name, graph)
-        self.inputA = self.add_input_port('inputA', AGPortDataTypes.tNumeric)
         self.inputB = self.add_input_port('inputB', AGPortDataTypes.tNumeric)
+        self.inputA = self.add_input_port('inputA', AGPortDataTypes.tNumeric)
         self.output = self.add_output_port('output', AGPortDataTypes.tNumeric)
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)

@@ -15,7 +15,7 @@ class NodeName(QtGui.QGraphicsTextItem):
         self.setParentItem(parent)
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.setCursor(QtCore.Qt.IBeamCursor)
-        self.options = self.parentItem().graph.get_settings()
+        self.options = self.parentItem().graph().get_settings()
         if self.options:
             self.opt_bg_color = QtGui.QColor(self.options.value('NODES/Nodes label bg color'))
             self.text_color = QtGui.QColor(self.options.value('NODES/Nodes label font color'))
@@ -77,7 +77,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes, addHeader=True):
         AGNode.__init__(self, name, graph)
         QtGui.QGraphicsItem.__init__(self)
-        self.options = self.graph.get_settings()
+        self.options = self.graph().get_settings()
         if self.options:
             self.opt_node_base_color = QtGui.QColor(self.options.value('NODES/Nodes base color'))
             self.opt_selected_pen_color = QtGui.QColor(self.options.value('NODES/Nodes selected pen color'))
@@ -87,6 +87,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
             self.opt_pen_selected_type = get_line_type(opt_pen_selected_type_name)
         self.object_type = AGObjectTypes.tNode
         self._color_idx = 1
+        self._left_stretch = 0
         self.colors = colors
         self.height_offset = 3
         self.spacings = spacings
@@ -103,24 +104,19 @@ class Node(QtGui.QGraphicsItem, AGNode):
         # node name
         self.label = NodeName(self.name, self)
         # set node layouts
-        self.nodeMainGWidget.setMaximumWidth(self.boundingRect().width() + self.spacings.kPortOffset)
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.h))
         self.nodeMainGWidget.setParentItem(self)
         # main
         self.portsMainLayout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Horizontal)
-        self.portsMainLayout.setSpacing(self.spacings.kPortSpacing)
         self.portsMainLayout.setContentsMargins(1, 1, 1, 1)
         self.nodeMainGWidget.setLayout(self.portsMainLayout)
-        self.nodeMainGWidget.setX(self.nodeMainGWidget.x() - self.spacings.kPortOffset / 2)
+        self.nodeMainGWidget.setX(self.nodeMainGWidget.x())
         # inputs layout
         self.inputsLayout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.inputsLayout.setSpacing(self.spacings.kPortSpacing)
         self.inputsLayout.setContentsMargins(1, 1, 1, 1)
         self.portsMainLayout.addItem(self.inputsLayout)
 
         # outputs layout
         self.outputsLayout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.outputsLayout.setSpacing(self.spacings.kPortSpacing)
         self.outputsLayout.setContentsMargins(1, 1, 1, 1)
         self.portsMainLayout.addItem(self.outputsLayout)
 
@@ -130,7 +126,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
             self.head = self.add_layout(True)
         self.effect = QtGui.QGraphicsDropShadowEffect()
         self.effect.setColor(Colors.kSceneBackground.lighter(50))
-        self.effect.setParent(self.graph)
+        self.effect.setParent(self.graph())
         self.effect.setBlurRadius(20)
         self.effect.setOffset(5, 10)
         self.effect.setEnabled(False)
@@ -139,20 +135,17 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
     def tweakPosition(self):
         value = self.scenePos()
-        self.setX(roundup(value.x() - self.graph.grid_size, self.graph.grid_size))
-        self.setY(roundup(value.y() - self.graph.grid_size, self.graph.grid_size))
+        self.setX(roundup(value.x() - self.graph().grid_size, self.graph().grid_size))
+        self.setY(roundup(value.y() - self.graph().grid_size, self.graph().grid_size))
 
     def boundingRect(self):
-
-        pen_width = 1.0
-        return QtCore.QRectF(self.sizes[0] - pen_width / 2, self.sizes[1] - pen_width / 2,
-                             self.w + pen_width, self.nodeMainGWidget.boundingRect().bottomRight().y() + pen_width + self.height_offset)
+        return self.childrenBoundingRect()
 
     def itemChange(self, change, value):
         if change == self.ItemPositionChange:
             # grid snapping
-            value.setX(roundup(value.x() - self.graph.grid_size + self.graph.grid_size / 3.0, self.graph.grid_size))
-            value.setY(roundup(value.y() - self.graph.grid_size + self.graph.grid_size / 3.0, self.graph.grid_size))
+            value.setX(roundup(value.x() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
+            value.setY(roundup(value.y() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
             return value
         return QtGui.QGraphicsItem.itemChange(self, change, value)
 
@@ -161,13 +154,15 @@ class Node(QtGui.QGraphicsItem, AGNode):
         return "Default node description"
 
     def post_create(self):
-        self.w = self.nodeMainGWidget.boundingRect().width() + self.spacings.kPortSpacing
+        self.w = self.childrenBoundingRect().width() + self.spacings.kPortSpacing
+        self.nodeMainGWidget.setMaximumWidth(self.childrenBoundingRect().width() + self.spacings.kPortOffset)
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.h))
 
     def save_command(self):
         return "createNode ~type {0} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name)
 
     def property_view(self):
-        return self.graph.parent.dockWidgetNodeView
+        return self.graph().parent.dockWidgetNodeView
 
     def set_name(self, name):
         AGNode.set_name(self, name)
@@ -183,12 +178,12 @@ class Node(QtGui.QGraphicsItem, AGNode):
         if self.parentItem() is None:
             x = self.pos().x() + self.boundingRect().width()
             y = self.pos().y() + self.boundingRect().height()
-            new_node = self.graph.create_node(self.__class__.__name__, x, y, self.get_name())
+            new_node = self.graph().create_node(self.__class__.__name__, x, y, self.get_name())
             return new_node
         else:
             x = self.pos().x() + self.boundingRect().width() + self.parentItem().scenePos().x()
             y = self.pos().y() + self.boundingRect().height() + self.parentItem().scenePos().y()
-            new_node = self.graph.create_node(self.__class__.__name__, x, y, self.get_name())
+            new_node = self.graph().create_node(self.__class__.__name__, x, y, self.get_name())
             self.parentItem().add_node(new_node)
             self.parentItem().fit_content()
             return new_node
@@ -201,9 +196,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtCore.Qt.darkGray)
-        painter.drawRoundedRect(self.sizes[0], self.sizes[1],
-                                self.w, self.nodeMainGWidget.boundingRect().bottomRight().y() + self.height_offset,
-                                self.sizes[4], self.sizes[5])
+
         if self.options:
             color = self.opt_node_base_color
         else:
@@ -226,7 +219,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
                 pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)
         painter.drawRoundedRect(self.sizes[0], self.sizes[1],
-                                self.w, self.nodeMainGWidget.boundingRect().bottomRight().y() + self.height_offset,
+                                self.childrenBoundingRect().width(), self.nodeMainGWidget.boundingRect().height(),
                                 self.sizes[4], self.sizes[5])
 
     def get_input_edges(self):
@@ -254,8 +247,8 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.update()
         self.setCursor(QtCore.Qt.OpenHandCursor)
         modifiers = event.modifiers()
-        selected_nodes = [n for n in self.graph.nodes if n.isSelected()]
-        groupers = [i for i in self.graph.groupers if i.object_type == AGObjectTypes.tGrouper]
+        selected_nodes = [n for n in self.graph().nodes if n.isSelected()]
+        groupers = [i for i in self.graph().groupers if i.object_type == AGObjectTypes.tGrouper]
         grouper = [g for g in groupers if self in g.collidingItems()]
         if len(grouper) == 1:
             if not modifiers == QtCore.Qt.ControlModifier:
@@ -295,32 +288,13 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def add_layout(self, portType, head=False):
 
         form = QtGui.QGraphicsWidget()
-        form.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset + 3, self.h))
         lyt = QtGui.QGraphicsLinearLayout()
-        lyt.setSpacing(self.spacings.kPortSpacing)
+        lyt.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         lyt.setContentsMargins(1, 1, 1, 1)
         form.setLayout(lyt)
-        form.setZValue(1)
-        # set color
-        if not head:
-            form.setAutoFillBackground(True)
-            palette = form.palette()
-            if self._color_idx > 0:
-                if self.options:
-                    palette.setColor(palette.Window, self.opt_lyt_a_color)
-                else:
-                    palette.setColor(palette.Window, self.colors.kPortLinesA)
-                self._color_idx *= -1
-            else:
-                if self.options:
-                    palette.setColor(palette.Window, self.opt_lyt_b_color)
-                else:
-                    palette.setColor(palette.Window, self.colors.kPortLinesB)
-                self._color_idx *= -1
-            form.setPalette(palette)
-        else:
-            form.setMinimumHeight(20)
-            self.h += form.size().height()
+        form.setAutoFillBackground(True)
+        form.setPalette(QtGui.QPalette(QtCore.Qt.gray))
+
         if portType == AGPortTypes.kInput:
             self.inputsLayout.addItem(form)
         else:
@@ -329,19 +303,17 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
     def kill(self, call_connection_functions=False):
 
-        for i in self.inputs:
-            if i.hasConnections():
-                i.disconnect_all()
-        for i in self.outputs:
+        for i in self.inputs + self.outputs:
             if i.hasConnections():
                 i.disconnect_all()
 
-        AGNode.kill(self, call_connection_functions)
         self.setVisible(False)
         if self.parentItem() and hasattr(self.parentItem(), 'object_type'):
             if self.parentItem().object_type == AGObjectTypes.tGrouper:
                 self.parentItem().remove_node(self)
-        self.graph.write_to_console("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
+        # AGNode.kill(self, call_connection_functions)
+        self.graph().write_to_console("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
+        self.scene().removeItem(self)
 
     def set_pos(self, x, y):
 
@@ -369,9 +341,9 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
         p = Port(name, self, data_type, 10, 10, newColor)
         p.type = port_type
-        # p.parent = self
         connector_name = QtGui.QGraphicsProxyWidget()
         lbl = QtGui.QLabel(p.name)
+        lbl.setAlignment(QtCore.Qt.AlignVCenter)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         if self.options:
             font = QtGui.QFont(self.options.value('NODES/Port label font'))
@@ -391,12 +363,12 @@ class Node(QtGui.QGraphicsItem, AGNode):
             inPortLyt.addItem(p)
             inPortLyt.addItem(connector_name)
             self.inputs.append(p)
-            self.inputsLayout.addItem(inPortLyt)
+            self.inputsLayout.insertItem(1, inPortLyt)
         elif port_type == self.port_types.kOutput:
             outPortLyt = self.add_layout(port_type)
             lbl.setAlignment(QtCore.Qt.AlignRight)
             outPortLyt.addItem(connector_name)
             outPortLyt.addItem(p)
             self.outputs.append(p)
-            self.outputsLayout.addItem(outPortLyt)
+            self.outputsLayout.insertItem(1, outPortLyt)
         return p

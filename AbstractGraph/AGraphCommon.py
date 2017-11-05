@@ -23,6 +23,7 @@ def portAffects(affects_port, affected_port):
 def calc_multithreaded(ls, debug=False):
     if debug:
         print('START', [n.name for n in ls])
+
     def compute_executor():
         for n in ls:
             n.compute()
@@ -57,11 +58,10 @@ def cycle_check(src, dst):
 
 def find_ports_behind(start_from):
     out = []
+
     def foo(start_from):
         if not start_from.affected_by == []:
             for p in start_from.affected_by:
-                # if p.dirty == True:
-                #     push(p)
                 out.append(p)
                 foo(p)
     foo(start_from)

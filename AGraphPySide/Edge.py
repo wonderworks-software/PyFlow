@@ -37,9 +37,9 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.updateCurve(points[0], points[1])
 
     def __str__(self):
-        return '{0}.{1} >>> {2}.{3}'.format(self.source().parent.name,
+        return '{0}.{1} >>> {2}.{3}'.format(self.source().parent().name,
                                             self.source().name,
-                                            self.destination().parent.name,
+                                            self.destination().parent().name,
                                             self.destination().name)
 
     def hoverEnterEvent(self, event):
@@ -87,9 +87,9 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
         path.moveTo(p1)
         if distance < 0:
-            path.cubicTo(QtCore.QPoint(p1.x()+distance/-multiply, p1.y()), QtCore.QPoint(p2.x()-distance/-multiply, p2.y()), p2)
+            path.cubicTo(QtCore.QPoint(p1.x() + distance / -multiply, p1.y()), QtCore.QPoint(p2.x() - distance / -multiply, p2.y()), p2)
         else:
-            path.cubicTo(QtCore.QPoint(p1.x()+distance/multiply, p1.y()), QtCore.QPoint(p2.x()-distance/2, p2.y()), p2)
+            path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()), QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
 
         self.setPath(path)
 
@@ -122,7 +122,7 @@ class RealTimeLine(QtGui.QGraphicsLineItem, Colors):
         if self.graph().pressed_item and hasattr(self.graph().pressed_item, 'object_type'):
             if self.graph().pressed_item.object_type == AGObjectTypes.tPort:
                 self.offset = self.graph().pressed_item.boundingRect().width()/2
-                painter.drawLine(self.mapToParent(QtCore.QPointF(self.p1.x()+self.offset, self.p1.y()+self.offset)), self.p2)
+                painter.drawLine(self.mapToParent(QtCore.QPointF(self.p1.x() + self.offset, self.p1.y() + self.offset)), self.p2)
 
     def boundingRect(self):
         return QtCore.QRectF(self.p1, self.p2)
