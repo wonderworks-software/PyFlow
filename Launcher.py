@@ -26,7 +26,6 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionPropertyView.triggered.connect(self.toggle_property_view)
         self.actionMultithreaded.triggered.connect(self.toggle_multithreaded)
         self.actionDebug.triggered.connect(self.toggle_debug)
-        self.actionShadows.triggered.connect(self.toggle_shadows)
         self.actionScreenshot.triggered.connect(self.G.screen_shot)
         self.actionClear_scene.triggered.connect(self.on_clear_scene)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
@@ -60,7 +59,8 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.setMouseTracking(True)
         self.toggle_console()
         self.toggle_node_box()
-        self.toggle_shadows()
+
+        # self.toggle_debug()
 
     def closeEvent(self, event):
         question = "Shure?"
@@ -94,7 +94,6 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         data += "Ctrl+O - open file\n"
         data += "Ctrl+F - frame\n"
         data += "Ctrl+Shift+Alt+C - comment selected nodes\n"
-        data += "Ctrl+Shift+Alt+S - toggle nodes shadows\n"
         data += "Ctrl+Alt+M - toggle multithreaded\n"
         data += "Ctrl+Alt+D - toggle debug\n"
         data += "Delete - kill selected nodes\n"
@@ -130,10 +129,6 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         else:
             self.G.notify("Debug mode disabled", 3000)
 
-    def toggle_shadows(self):
-
-        self.G.set_shadows_enabled(not self.G._shadows)
-
     def on_delete(self):
         self.G.kill_selected_nodes(True)
 
@@ -145,14 +140,14 @@ if __name__ == '__main__':
     app.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
     darkPalette = QtGui.QPalette()
-    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
+    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(35, 35, 35))
     darkPalette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
     darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
-    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53, 53, 53))
+    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(35, 35, 35))
     darkPalette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
     darkPalette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
     darkPalette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
-    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
+    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(35, 35, 35))
     darkPalette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
     darkPalette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
     darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))

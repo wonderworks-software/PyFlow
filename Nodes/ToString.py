@@ -5,10 +5,7 @@ from AGraphPySide import BaseNode
 
 class ToString(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(ToString, self).__init__(name, graph,
-                                      w=150, colors=Colors,
-                                      spacings=Spacings)
-        AGNode.__init__(self, name, graph)
+        super(ToString, self).__init__(name, graph, spacings=Spacings)
         self.in_data = self.add_input_port('in', AGPortDataTypes.tAny)
         self.out_data = self.add_output_port('out', AGPortDataTypes.tString)
         portAffects(self.in_data, self.out_data)

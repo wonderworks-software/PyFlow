@@ -6,13 +6,13 @@ from random import randint
 DESC = '''Generates randint from range
 '''
 
+
 class RandInt(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(RandInt, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
-        self.rangeStart = self.add_input_port('from', AGPortDataTypes.tNumeric)
-        self.rangeEnd = self.add_input_port('to', AGPortDataTypes.tNumeric)
-        self.result = self.add_output_port('out', AGPortDataTypes.tNumeric)
+        super(RandInt, self).__init__(name, graph, spacings=Spacings)
+        self.rangeStart = self.add_input_port('from', AGPortDataTypes.tInt)
+        self.rangeEnd = self.add_input_port('to', AGPortDataTypes.tInt)
+        self.result = self.add_output_port('out', AGPortDataTypes.tInt)
         portAffects(self.rangeStart, self.result)
         portAffects(self.rangeEnd, self.result)
 

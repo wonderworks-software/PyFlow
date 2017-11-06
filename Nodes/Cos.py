@@ -6,12 +6,12 @@ import math
 DESC = '''in radians
 '''
 
+
 class Cos(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(Cos, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
-        self.inp0 = self.add_input_port('in', AGPortDataTypes.tNumeric)
-        self.out0 = self.add_output_port('out', AGPortDataTypes.tNumeric)
+        super(Cos, self).__init__(name, graph, spacings=Spacings)
+        self.inp0 = self.add_input_port('in', AGPortDataTypes.tFloat)
+        self.out0 = self.add_output_port('out', AGPortDataTypes.tFloat)
         portAffects(self.inp0, self.out0)
 
     @staticmethod

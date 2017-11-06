@@ -5,9 +5,8 @@ from AGraphPySide import BaseNode
 
 
 class RequestNode(BaseNode.Node, AGNode):
-    def __init__(self, name, graph, colors=Colors):
+    def __init__(self, name, graph):
         super(RequestNode, self).__init__(name, graph)
-        AGNode.__init__(self, name, graph)
         self.input = self.add_input_port('input', AGPortDataTypes.tAny)
         self.looper = QtCore.QTimer()
         self.spin_box = QtGui.QSpinBox()

@@ -39,8 +39,8 @@ def get_line_type(name):
 
 class Colors(object):
 
-    kNodeBackgrounds = QtGui.QColor(20, 20, 20, 150)
-    kNodeSelectedPenColor = QtGui.QColor(255, 255, 255, 255)
+    kNodeBackgrounds = QtGui.QColor(30, 30, 30, 150)
+    kNodeSelectedPenColor = QtGui.QColor(255, 105, 0, 100)
     kWhite = QtGui.QColor(255, 255, 255, 200)
     kSceneBackground = QtGui.QColor(35, 35, 35)
     kInteger = QtGui.QColor(45, 48, 99, 255)
@@ -50,7 +50,7 @@ class Colors(object):
     kConnectors = QtGui.QColor(0, 100, 0, 255)
     kPortLinesA = QtGui.QColor(0, 90, 0, 0)
     kPortLinesB = QtGui.QColor(0, 0, 90, 0)
-    kNodeNameRect = QtGui.QColor(100, 100, 100, 100)
+    kNodeNameRect = QtGui.QColor(80, 80, 100, 100)
     kRed = QtGui.QColor(255, 0, 0, 255)
     kGreen = QtGui.QColor(0, 255, 0, 255)
     kBlue = QtGui.QColor(0, 0, 255, 255)
@@ -65,6 +65,18 @@ class Colors(object):
     kCommentNodeResizer = QtGui.QColor(255, 255, 255, 20)
     kSplitterHandleColor = QtGui.QColor(255, 255, 255, 20)
     kPortNameColor = QtGui.QColor(255, 255, 255, 255)
+    kPink = QtGui.QColor(255, 8, 127)
+    kYellow = QtGui.QColor(255, 211, 25)
+    kGray = QtGui.QColor(110, 110, 110)
+    kDarkGray = QtGui.QColor(60, 60, 60)
+
+    kNumeric = kGreen
+    kAny = kYellow
+    kArray = kGray
+    kBool = kRed
+    kExec = kWhite
+    kReroute = kDarkGray
+    kString = kPink
 
     def __init__(self):
         super(Colors, self).__init__()

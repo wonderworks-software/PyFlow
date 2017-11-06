@@ -5,10 +5,9 @@ from AbstractGraph import *
 class PowNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super(PowNode, self).__init__(name, graph)
-        AGNode.__init__(self, name, graph)
-        self.base = self.add_input_port('base', AGPortDataTypes.tNumeric)
-        self.power = self.add_input_port('power', AGPortDataTypes.tNumeric)
-        self.output = self.add_output_port('output', AGPortDataTypes.tNumeric)
+        self.base = self.add_input_port('base', AGPortDataTypes.tFloat)
+        self.power = self.add_input_port('power', AGPortDataTypes.tFloat)
+        self.output = self.add_output_port('output', AGPortDataTypes.tFloat)
         portAffects(self.base, self.output)
         portAffects(self.power, self.output)
 

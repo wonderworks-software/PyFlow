@@ -8,10 +8,9 @@ DESC = '''Return the absolute value of a number. The argument may be a plain or 
 
 class Abs(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(Abs, self).__init__(name, graph, w=50, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
-        self.inp0 = self.add_input_port('in', AGPortDataTypes.tNumeric)
-        self.out0 = self.add_output_port('out', AGPortDataTypes.tNumeric)
+        super(Abs, self).__init__(name, graph, w=50, spacings=Spacings)
+        self.inp0 = self.add_input_port('in', AGPortDataTypes.tFloat)
+        self.out0 = self.add_output_port('out', AGPortDataTypes.tFloat)
         portAffects(self.inp0, self.out0)
 
     @staticmethod

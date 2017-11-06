@@ -12,6 +12,23 @@ def update_ports(start_from):
             update_ports(i)
 
 
+def getPortColorByType(t):
+    if t == AGPortDataTypes.tAny:
+        return Colors.kAny
+    if t in [AGPortDataTypes.tFloat, AGPortDataTypes.tInt]:
+        return Colors.kNumeric
+    if t == AGPortDataTypes.tArray:
+        return Colors.kArray
+    if t == AGPortDataTypes.tBool:
+        return Colors.kBool
+    if t == AGPortDataTypes.tExec:
+        return Colors.kExec
+    if t == AGPortDataTypes.tReroute:
+        return Colors.kReroute
+    if t == AGPortDataTypes.tString:
+        return Colors.kString
+
+
 class Port(QtGui.QGraphicsWidget, AGPort):
 
     def __init__(self, name, parent, data_type, width, height, color=Colors.kConnectors):
@@ -34,15 +51,18 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.endPos = None
         self.options = self.parent().graph().get_settings()
         self.reroutes = []
+        self._container = None
+        self.color = getPortColorByType(data_type)
         if self.options:
-            self.color = color
             opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))
             opt_dirty_type_name = self.options.value('NODES/Port dirty type')
             opt_port_dirty_pen_type = get_line_type(opt_dirty_type_name)
             self._dirty_pen = QtGui.QPen(opt_dirty_pen, 0.5, opt_port_dirty_pen_type, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
         else:
-            self.color = color
             self._dirty_pen = QtGui.QPen(Colors.kDirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+
+    def get_container(self):
+        return self._container
 
     def boundingRect(self):
         return QtCore.QRectF(0, -0.5, self.__width * 1.5, self.__height)

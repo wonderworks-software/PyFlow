@@ -4,11 +4,10 @@ from AbstractGraph import *
 
 class MultNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(MultNode, self).__init__(name, graph)
-        AGNode.__init__(self, name, graph)
-        self.inputA = self.add_input_port('inputA', AGPortDataTypes.tNumeric)
-        self.inputB = self.add_input_port('inputB', AGPortDataTypes.tNumeric)
-        self.output = self.add_output_port('output', AGPortDataTypes.tNumeric)
+        super(MultNode, self).__init__(name, graph, color=BaseNode.getPortColorByType(AGPortDataTypes.tInt))
+        self.inputA = self.add_input_port('inputA', AGPortDataTypes.tFloat)
+        self.inputB = self.add_input_port('inputB', AGPortDataTypes.tFloat)
+        self.output = self.add_output_port('output', AGPortDataTypes.tFloat)
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)
 

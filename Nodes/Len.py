@@ -5,12 +5,9 @@ from AGraphPySide import BaseNode
 
 class Len(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(Len, self).__init__(name, graph,
-                                      w=120, colors=Colors,
-                                      spacings=Spacings)
-        AGNode.__init__(self, name, graph)
+        super(Len, self).__init__(name, graph, spacings=Spacings)
         self.in_arr = self.add_input_port('iterable', AGPortDataTypes.tAny)
-        self.out_len = self.add_output_port('len', AGPortDataTypes.tNumeric)
+        self.out_len = self.add_output_port('len', AGPortDataTypes.tFloat)
         self.out_result = self.add_output_port('result', AGPortDataTypes.tBool)
         portAffects(self.in_arr, self.out_result)
         portAffects(self.in_arr, self.out_len)

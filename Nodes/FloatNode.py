@@ -14,11 +14,9 @@ class DSBox(QtGui.QDoubleSpinBox):
 
 class FloatNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(FloatNode, self).__init__(name, graph,
-                                        w=120, colors=Colors,
-                                        spacings=Spacings)
+        super(FloatNode, self).__init__(name, graph, spacings=Spacings)
         self.spin_box = DSBox(self.set_data)
-        self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tNumeric, 'out')
+        self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tFloat, 'out')
 
         # hack! overload the output's port 'set_data' method to update lineEdit
         def set_data_overloads(data, dirty_propagate=True):

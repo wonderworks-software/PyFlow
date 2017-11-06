@@ -5,13 +5,12 @@ from AGraphPySide import BaseNode
 DESC = """Generic type node.
 Boolean type."""
 
+
 class BoolNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(BoolNode, self).__init__(name, graph,
-                                      w=120, colors=Colors,
-                                      spacings=Spacings)
-        AGNode.__init__(self, name, graph)
+        super(BoolNode, self).__init__(name, graph, spacings=Spacings)
         self.cb = QtGui.QCheckBox()
+        self.cb.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         self.cb.stateChanged.connect(lambda: self.on_set_cb_state(self.cb.isChecked()))
         self.output = self.add_output_port('out', AGPortDataTypes.tBool)
 
@@ -25,8 +24,9 @@ class BoolNode(BaseNode.Node, AGNode):
         self.output.set_data_overload = set_data_overloads
 
         prx_cb = QtGui.QGraphicsProxyWidget()
+        prx_cb.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         prx_cb.setWidget(self.cb)
-        self.output.getLayout().insertItem(0, prx_cb)
+        self.output.get_container().layout().insertItem(0, prx_cb)
 
     @staticmethod
     def description():
@@ -40,5 +40,4 @@ class BoolNode(BaseNode.Node, AGNode):
         self.output.set_data(state, True)
 
     def compute(self):
-
         self.output.set_data(self.cb.isChecked(), False)

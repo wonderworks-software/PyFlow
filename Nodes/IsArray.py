@@ -5,8 +5,7 @@ from AGraphPySide import BaseNode
 
 class IsArray(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(IsArray, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
+        super(IsArray, self).__init__(name, graph, spacings=Spacings)
         self.inp = self.add_input_port('obj', AGPortDataTypes.tAny)
         self.out = self.add_output_port('out', AGPortDataTypes.tBool)
         portAffects(self.inp, self.out)

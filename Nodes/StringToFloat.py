@@ -5,12 +5,9 @@ from AGraphPySide import BaseNode
 
 class StringToFloat(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(StringToFloat, self).__init__(name, graph,
-                                      w=150, colors=Colors,
-                                      spacings=Spacings)
-        AGNode.__init__(self, name, graph)
+        super(StringToFloat, self).__init__(name, graph, spacings=Spacings)
         self.in_str = self.add_input_port('str', AGPortDataTypes.tString)
-        self.out_flt = self.add_output_port('float', AGPortDataTypes.tNumeric)
+        self.out_flt = self.add_output_port('float', AGPortDataTypes.tFloat)
         portAffects(self.in_str, self.out_flt)
 
     @staticmethod

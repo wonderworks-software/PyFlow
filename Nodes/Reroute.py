@@ -5,14 +5,14 @@ from AGraphPySide import BaseNode
 DESC = '''This node's purpose is change flow of edges
 '''
 
+
 class Reroute(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(Reroute, self).__init__(name, graph, w=20, colors=Colors, spacings=Spacings, addHeader=False)
-        AGNode.__init__(self, name, graph)
+        super(Reroute, self).__init__(name, graph, spacings=Spacings)
         self.h = 25
         self.sizes[4] = self.h
-        self.v_form.setGeometry(QtCore.QRectF(0, 0, self.w+self.spacings.kPortOffset, self.h))
-        self.label.setVisible(False)
+        # self.v_form.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.h))
+        self.label.hide()
 
         newColor = QtGui.QColor(25, 25, 25, 255)
 
@@ -33,6 +33,15 @@ class Reroute(BaseNode.Node, AGNode):
     @staticmethod
     def get_category():
         return 'Common'
+
+    def boundingRect(self):
+        return QtCore.QRectF(0, 0, 20, 20)
+
+    def paint(self, painter, option, widget):
+        # painter.setPen(QtCore.Qt.NoPen)
+        # painter.setBrush(QtCore.Qt.darkGray)
+        # painter.drawRect(self.boundingRect())
+        pass
 
     @staticmethod
     def description():

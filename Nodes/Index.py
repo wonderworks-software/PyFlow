@@ -5,11 +5,10 @@ from AGraphPySide import BaseNode
 
 class Index(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(Index, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
+        super(Index, self).__init__(name, graph, spacings=Spacings)
         self.inArray = self.add_input_port('iterable', AGPortDataTypes.tAny)
         self.value = self.add_input_port('value', AGPortDataTypes.tAny)
-        self.index = self.add_output_port('idx', AGPortDataTypes.tNumeric)
+        self.index = self.add_output_port('idx', AGPortDataTypes.tFloat)
         self.success = self.add_output_port('success', AGPortDataTypes.tBool)
         portAffects(self.inArray, self.index)
         portAffects(self.value, self.index)

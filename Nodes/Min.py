@@ -6,10 +6,10 @@ DESC = '''returns minimum element
 of iterable object.
 '''
 
+
 class Min(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(Min, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
+        super(Min, self).__init__(name, graph, spacings=Spacings)
         self.inp = self.add_input_port('in', AGPortDataTypes.tAny)
         self.out = self.add_output_port('min', AGPortDataTypes.tAny)
         portAffects(self.inp, self.out)

@@ -5,7 +5,6 @@ from AbstractGraph import *
 class StringContains(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super(StringContains, self).__init__(name, graph)
-        AGNode.__init__(self, name, graph)
         self.first = self.add_input_port('source', AGPortDataTypes.tString)
         self.second = self.add_input_port('pattern', AGPortDataTypes.tString)
         self.output = self.add_output_port('out', AGPortDataTypes.tBool)

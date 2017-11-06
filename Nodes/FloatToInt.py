@@ -5,10 +5,9 @@ from AGraphPySide import BaseNode
 
 class FloatToInt(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(FloatToInt, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
-        self.inp = self.add_input_port('float', AGPortDataTypes.tNumeric)
-        self.out = self.add_output_port('int', AGPortDataTypes.tNumeric)
+        super(FloatToInt, self).__init__(name, graph, spacings=Spacings)
+        self.inp = self.add_input_port('float', AGPortDataTypes.tFloat)
+        self.out = self.add_output_port('int', AGPortDataTypes.tFloat)
         portAffects(self.inp, self.out)
 
     @staticmethod

@@ -26,12 +26,10 @@ import winsound
 
 
 def get_mid_point(args):
-
     return [sum(i) / len(i) for i in zip(*args)]
 
 
 def get_nodes_file_names():
-
     return [i[:-3] for i in listdir(nodes_path) if i.endswith('.py') and '__init__' not in i]
 
 
@@ -45,7 +43,6 @@ def clearLayout(layout):
 
 
 def get_node(module, name, graph):
-
     if hasattr(module, name):
         try:
             mod = getattr(module, name)
@@ -143,7 +140,6 @@ class {0}(BaseNode.Node, AGNode):
             f.write(base_command_code)
         console_out_foo("[INFO] Command {0} been created.\n Restart application.".format(name))
         startfile(file_path)
-    # sys.exit()
 
 
 def import_by_name(module, name):
@@ -189,10 +185,6 @@ class SceneClass(QtGui.QGraphicsScene):
         self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
 
-    def mouseDoubleClickEvent(self, event):
-        self.parent().OnDoubleClick(event.scenePos())
-        event.accept()
-
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
             event.accept()
@@ -205,6 +197,10 @@ class SceneClass(QtGui.QGraphicsScene):
             event.accept()
         else:
             event.ignore()
+
+    def clearSelection(self):
+        for n in self.selectedItems():
+            n.setSelected(False)
 
     def OnSelectionChanged(self):
         selected_nodes = []
@@ -633,10 +629,6 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
         self.graph().groupers.remove(self)
         del self
 
-    def contextMenuEvent(self, event):
-
-        self.menu.exec_(event.screenPos())
-
     def add_from_iterable(self, iterable):
         for i in iterable:
             self.add_node(i)
@@ -840,7 +832,7 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.pb_node_base_color.color = Colors.kNodeBackgrounds
         self.settings_class.setValue('Nodes selected pen color', Colors.kNodeSelectedPenColor)
         self.pb_node_selected_pen_color.color = Colors.kNodeSelectedPenColor
-        self.settings_class.setValue('Nodes selected pen type', LineTypes.lDotLine)
+        self.settings_class.setValue('Nodes selected pen type', LineTypes.lSolidLine)
         self.settings_class.setValue('Nodes label bg color', Colors.kNodeNameRect)
         self.pb_node_label_bg_color.color = Colors.kNodeNameRect
         self.settings_class.setValue('Nodes label font', QtGui.QFont('Arial'))
@@ -944,8 +936,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.grid_size = 10
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
 
-        if (path.isfile(_mod_folder + 'resources/sounds/startup.wav') and platform.system() == "Windows"):
-            GraphWidget.play_sound_win(_mod_folder + 'resources/sounds/startup.wav')
+        # if (path.isfile(_mod_folder + 'resources/sounds/startup.wav') and platform.system() == "Windows"):
+        #     GraphWidget.play_sound_win(_mod_folder + 'resources/sounds/startup.wav')
 
     def shoutDown(self):
         self.scene().clear()
@@ -958,12 +950,16 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             print(e)
             self.write_to_console(e, True)
 
+    def mouseDoubleClickEvent(self, event):
+        self.OnDoubleClick(self.mapToScene(event.pos()))
+        event.accept()
+
     def OnDoubleClick(self, pos):
         if self.pressed_item:
             if isinstance(self.pressed_item, Edge):
                 # store neighbors
-                src = self.pressed_item.source_pos_object
-                dst = self.pressed_item.destination_pos_object
+                src = self.pressed_item.source()
+                dst = self.pressed_item.destination()
                 # create rerout node
                 node = self.create_node("Reroute", pos.x(), pos.y() - 5.0, "Reroute")
                 # kill pressed edge
@@ -1206,21 +1202,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 return port
 
     def options(self):
-
-        print 'show options'
         self.options_widget.show()
 
-    def contextMenuEvent(self, event):
+    # def set_shadows_enabled(self, state):
 
-        if not self.pressed_item:
-            self.menu.exec_(event.globalPos())
-        super(GraphWidget, self).contextMenuEvent(event)
-
-    def set_shadows_enabled(self, state):
-
-        for n in self.nodes:
-            n.set_shadows_enabled(state)
-        self._shadows = state
+    #     for n in self.nodes:
+    #         n.set_shadows_enabled(state)
+    #     self._shadows = state
 
     def frame(self):
 
@@ -1307,8 +1295,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.parent.toggle_node_box()
         if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.AltModifier]):
             self.commentSelectedNodes()
-        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.AltModifier]):
-            self.set_shadows_enabled(not self._shadows)
+        # if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier | QtCore.Qt.AltModifier]):
+        #     self.set_shadows_enabled(not self._shadows)
         if all([event.key() == QtCore.Qt.Key_M, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
             self.parent.toggle_multithreaded()
         if all([event.key() == QtCore.Qt.Key_A, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
@@ -1363,20 +1351,16 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         return point
 
     def keyReleaseEvent(self, event):
-
         QtGui.QGraphicsView.keyReleaseEvent(self, event)
 
     def mousePressEvent(self, event):
-
-        modifiers = event.modifiers()
         self.pressed_item = self.itemAt(event.pos())
-        if self.pressed_item and hasattr(self.pressed_item, 'mark'):
-            self._resize_group_mode = True
-            self.pressed_item.parentItem().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)  # move to comment node
-        if not self.pressed_item:
-            self.node_box.close()
-            self.node_box.le_nodes.clear()
+        self.mousePressPose = self.mapToScene(event.pos())
+
         if self.pressed_item:
+            if hasattr(self.pressed_item, 'mark'):
+                self._resize_group_mode = True
+                self.pressed_item.parentItem().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)  # move to comment node
             if hasattr(self.pressed_item, 'object_type') and event.button() == QtCore.Qt.LeftButton:
                 if self.pressed_item.object_type == AGObjectTypes.tPort:
                     self.pressed_item.parent().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
@@ -1386,15 +1370,15 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                     self.pressed_item.parentItem().setSelected(True)
             else:
                 self.pressed_item.setSelected(True)
-        self.mousePressPose = self.mapToScene(event.pos())
-        if event.button() == QtCore.Qt.RightButton:
-            self._right_button = True
-        if all([event.button() == QtCore.Qt.LeftButton, modifiers == QtCore.Qt.AltModifier]):
-            self.setDragMode(self.ScrollHandDrag)
-        if all([event.button() == QtCore.Qt.LeftButton,
-                modifiers == QtCore.Qt.NoModifier or modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            if not self.pressed_item or hasattr(self.pressed_item, 'non_selectable'):
+
+        if not self.pressed_item:
+            if event.button() == QtCore.Qt.RightButton:
                 self._is_rubber_band_selection = True
+            if event.button() == QtCore.Qt.LeftButton:
+                self.setDragMode(self.ScrollHandDrag)
+            self.node_box.close()
+            self.node_box.le_nodes.clear()
+
         super(GraphWidget, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
@@ -1451,7 +1435,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         grp.setPos(QtCore.QPoint(int(x1), int(y1)))
         grp.set_bottom_right(QtCore.QPoint(int(x2), int(y2)))
         grp.label.setHtml(name)
-        # grp.label.setPlainText(name)
 
     def commentSelectedNodes(self, comment="enter comment"):
         selected_nodes = []
@@ -1496,6 +1479,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.setDragMode(self.NoDrag)
         self._resize_group_mode = False
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+
         modifiers = event.modifiers()
         if self.released_item and not hasattr(self.released_item, 'non_selectable'):
             if isinstance(self.released_item, CommentNode):
@@ -1511,8 +1495,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             n.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
             n.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
 
-        if event.button() == QtCore.Qt.RightButton:
-            self._right_button = False
         if self._draw_real_time_line:
             self._draw_real_time_line = False
             if self.real_time_line in self.scene().items():
@@ -1522,6 +1504,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             [i.setSelected(True) for i in self.rubber_rect.collidingItems()]
             self.remove_item_by_name(self.rubber_rect.name)
         if event.button() == QtCore.Qt.RightButton:
+            # call context menu only if drag is small
+            dragDiff = self.mousePressPose - self.mapToScene(event.pos())
+            if all([abs(i) < 0.1 for i in [dragDiff.x(), dragDiff.y()]]):
+                if isinstance(self.pressed_item, CommentNode):
+                    self.pressed_item.menu.exec_(QtGui.QCursor.pos())
+                if self.pressed_item is None:
+                    self.menu.exec_(QtGui.QCursor.pos())
+
             self._right_button = False
         p_itm = self.pressed_item
         r_itm = self.released_item
@@ -1550,7 +1540,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.update_property_view(selected_nodes[0])
         else:
             clearLayout(self.parent.PropertiesformLayout)
-
         super(GraphWidget, self).mouseReleaseEvent(event)
 
     def update_property_view(self, node):
@@ -1954,7 +1943,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if node:
             node.label.setPlainText(node.name)
             self.scene().addItem(node)
-            node.set_shadows_enabled(self._shadows)
+            # node.set_shadows_enabled(self._shadows)
             node.post_create()
         else:
             print '[add_node()] error node creation'

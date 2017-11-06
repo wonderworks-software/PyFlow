@@ -1,12 +1,12 @@
 from Settings import *
 from PySide import QtGui
 from PySide import QtCore
-from Port import Port
+from Port import Port, getPortColorByType
 from AbstractGraph import *
 
 
 class NodeName(QtGui.QGraphicsTextItem):
-    def __init__(self, name, parent, color=Colors.kNodeNameRect):
+    def __init__(self, name, parent, color=Colors.kBlue):
         QtGui.QGraphicsTextItem.__init__(self)
         self.object_type = AGObjectTypes.tNodeName
         self.name = name
@@ -18,7 +18,7 @@ class NodeName(QtGui.QGraphicsTextItem):
         self.setFlags(QtGui.QGraphicsItem.ItemIsFocusable)
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         if self.options:
-            self.opt_bg_color = QtGui.QColor(self.options.value('NODES/Nodes label bg color'))
+            # self.opt_bg_color = QtGui.QColor(self.options.value('NODES/Nodes label bg color'))
             self.text_color = QtGui.QColor(self.options.value('NODES/Nodes label font color'))
             self.setDefaultTextColor(self.text_color)
             self.opt_font = QtGui.QFont(self.options.value('NODES/Nodes label font'))
@@ -37,23 +37,21 @@ class NodeName(QtGui.QGraphicsTextItem):
             QtGui.QGraphicsTextItem.keyPressEvent(self, event)
 
     def paint(self, painter, option, widget):
-        if self.options:
-            r = option.rect
-            r.setWidth(self.parentItem().childrenBoundingRect().width())
-            b = QtGui.QLinearGradient(0, 0, 0, r.height())
-            b.setColorAt(0, QtGui.QColor(0, 0, 0, 0))
-            b.setColorAt(0.2, self.opt_bg_color)
-            # b.setColorAt(0.7, self.opt_bg_color)
-            b.setColorAt(1, QtGui.QColor(0, 0, 0, 0))
-            painter.fillRect(r, QtGui.QBrush(b))
-            # painter.fillRect(r, QtGui.QColor(self.opt_bg_color))
-        else:
-            r = option.rect
-            r.setWidth(self.parentItem().childrenBoundingRect().width())
-            painter.fillRect(r, QtGui.QColor(self.color))
+        # if self.options:
+        r = option.rect
+        r.setWidth(self.parentItem().childrenBoundingRect().width())
+        b = QtGui.QLinearGradient(0, 0, 0, r.height())
+        b.setColorAt(0, QtGui.QColor(0, 0, 0, 0))
+        b.setColorAt(0.2, self.color)
+        b.setColorAt(1, QtGui.QColor(0, 0, 0, 0))
+        painter.fillRect(r, QtGui.QBrush(b))
+        # else:
+        #     r = option.rect
+        #     painter.fillRect(r, QtGui.QColor(self.color))
         super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):
+        self.scene().clearSelection()
         self.parentItem().graph().disable_sortcuts()
 
     def focusOutEvent(self, event):
@@ -89,7 +87,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
     """
     Default node description
     """
-    def __init__(self, name, graph, w=120, colors=Colors, spacings=Spacings, port_types=AGPortTypes):
+    def __init__(self, name, graph, w=120, color=Colors.kNodeBackgrounds, spacings=Spacings, port_types=AGPortTypes, headColor=Colors.kNodeNameRect):
         AGNode.__init__(self, name, graph)
         QtGui.QGraphicsItem.__init__(self)
         self.options = self.graph().get_settings()
@@ -101,9 +99,8 @@ class Node(QtGui.QGraphicsItem, AGNode):
             opt_pen_selected_type_name = QtGui.QColor(self.options.value('NODES/Nodes selected pen type'))
             self.opt_pen_selected_type = get_line_type(opt_pen_selected_type_name)
         self.object_type = AGObjectTypes.tNode
-        self._color_idx = 1
         self._left_stretch = 0
-        self.colors = colors
+        self.color = color
         self.height_offset = 3
         self.spacings = spacings
         self.port_types = port_types
@@ -117,37 +114,30 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.setFlag(self.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
-        self.label = NodeName(self.name, self)
+        self.label = NodeName(self.name, self, color=headColor)
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
         # main
         self.portsMainLayout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Horizontal)
-        self.portsMainLayout.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.portsMainLayout.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         self.portsMainLayout.setContentsMargins(1, 1, 1, 1)
         self.nodeMainGWidget.setLayout(self.portsMainLayout)
         self.nodeMainGWidget.setX(self.nodeMainGWidget.x())
         # inputs layout
         self.inputsLayout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.inputsLayout.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.inputsLayout.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
         self.inputsLayout.setContentsMargins(1, 1, 1, 1)
         self.portsMainLayout.addItem(self.inputsLayout)
 
         # outputs layout
         self.outputsLayout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.outputsLayout.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.outputsLayout.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
         self.outputsLayout.setContentsMargins(1, 1, 1, 1)
         self.portsMainLayout.addItem(self.outputsLayout)
 
         self.setZValue(1)
         self.setCursor(QtCore.Qt.OpenHandCursor)
 
-        self.effect = QtGui.QGraphicsDropShadowEffect()
-        self.effect.setColor(Colors.kSceneBackground.lighter(50))
-        self.effect.setParent(self.graph())
-        self.effect.setBlurRadius(20)
-        self.effect.setOffset(5, 10)
-        self.effect.setEnabled(False)
-        self.setGraphicsEffect(self.effect)
         self.tweakPosition()
 
     def tweakPosition(self):
@@ -163,6 +153,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
             # grid snapping
             value.setX(roundup(value.x() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
             value.setY(roundup(value.y() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
+            value.setY(value.y() - 2)
             return value
         return QtGui.QGraphicsItem.itemChange(self, change, value)
 
@@ -198,9 +189,6 @@ class Node(QtGui.QGraphicsItem, AGNode):
         AGNode.set_name(self, name)
         self.label.setPlainText(self.name)
 
-    def set_shadows_enabled(self, state):
-        self.effect.setEnabled(state)
-
     def clone(self):
         x = 0.0
         y = 0.0
@@ -229,7 +217,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         if self.options:
             color = self.opt_node_base_color
         else:
-            color = self.colors.kNodeBackgrounds
+            color = Colors.kNodeBackgrounds
         if self.isSelected():
             color = color.lighter(150)
 
@@ -238,23 +226,17 @@ class Node(QtGui.QGraphicsItem, AGNode):
         linearGrad.setColorAt(1, color.lighter(180))
         br = QtGui.QBrush(linearGrad)
         painter.setBrush(br)
-        painter.setOpacity(0.65)
+        painter.setOpacity(0.85)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QtGui.QStyle.State_Selected:
             if self.options:
                 pen.setColor(self.opt_selected_pen_color)
                 pen.setStyle(self.opt_pen_selected_type)
             else:
-                pen.setColor(Colors.kWhite)
-                pen.setStyle(QtCore.Qt.SolidLine)
+                pen.setColor(opt_selected_pen_color)
+                pen.setStyle(self.opt_pen_selected_type)
         painter.setPen(pen)
-        # painter.drawRoundedRect(self.childrenBoundingRect().topLeft().x(), self.childrenBoundingRect().topLeft().y(),
-        #                         self.childrenBoundingRect().width(), self.nodeMainGWidget.boundingRect().height(),
-        #                         self.sizes[4], self.sizes[5])
-        r = self.childrenBoundingRect()
-        r.setHeight(r.height() - 5)
-        painter.drawRoundedRect(r,
-                                self.sizes[4], self.sizes[5])
+        painter.drawRoundedRect(self.childrenBoundingRect(), self.sizes[4], self.sizes[5])
 
     def get_input_edges(self):
         out = {}
@@ -271,13 +253,11 @@ class Node(QtGui.QGraphicsItem, AGNode):
         return out
 
     def mousePressEvent(self, event):
-
         self.update()
         self.setCursor(QtCore.Qt.ClosedHandCursor)
         QtGui.QGraphicsItem.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
-
         self.update()
         self.setCursor(QtCore.Qt.OpenHandCursor)
         modifiers = event.modifiers()
@@ -306,8 +286,11 @@ class Node(QtGui.QGraphicsItem, AGNode):
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 
     def add_input_port(self, port_name, data_type):
-
         p = self._add_port(AGPortTypes.kInput, data_type, port_name)
+        if data_type in [AGPortDataTypes.tFloat, AGPortDataTypes.tInt]:
+            for i in [AGPortDataTypes.tFloat, AGPortDataTypes.tInt]:
+                if i not in p.allowed_data_types:
+                    p.allowed_data_types.append(i)
         return p
 
     @staticmethod
@@ -315,19 +298,20 @@ class Node(QtGui.QGraphicsItem, AGNode):
         return "Default"
 
     def add_output_port(self, port_name, data_type):
-
         p = self._add_port(AGPortTypes.kOutput, data_type, port_name)
         return p
 
     def add_container(self, portType, head=False):
         container = QtGui.QGraphicsWidget()  # for set background color
-        container.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        container.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Maximum)
+        container.sizeHint(QtCore.Qt.MinimumSize, QtCore.QSizeF(50.0, 10.0))
 
-        # container.setAutoFillBackground(True)
-        # container.setPalette(QtGui.QPalette(QtCore.Qt.gray))
+        if self.graph().is_debug():
+            container.setAutoFillBackground(True)
+            container.setPalette(QtGui.QPalette(QtCore.Qt.gray))
 
         lyt = QtGui.QGraphicsLinearLayout()
-        lyt.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        lyt.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         lyt.setContentsMargins(1, 1, 1, 1)
         container.setLayout(lyt)
         if portType == AGPortTypes.kInput:
@@ -355,11 +339,11 @@ class Node(QtGui.QGraphicsItem, AGNode):
         AGNode.set_pos(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
 
-    def _add_port(self, port_type, data_type, name='default', color=QtGui.QColor(0, 100, 0, 255)):
+    def _add_port(self, port_type, data_type, name='', color=QtGui.QColor(0, 100, 0, 255)):
 
         newColor = color
 
-        if data_type == AGPortDataTypes.tNumeric:
+        if data_type == AGPortDataTypes.tInt or AGPortDataTypes.tFloat:
             # set colot for numeric ports
             newColor = QtGui.QColor(0, 100, 0, 255)
         elif data_type == AGPortDataTypes.tString:
@@ -378,7 +362,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         p.type = port_type
         connector_name = QtGui.QGraphicsProxyWidget()
         connector_name.setContentsMargins(0, 0, 0, 0)
-        lbl = QtGui.QLabel(p.name)
+        lbl = QtGui.QLabel(name)
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         if self.options:
@@ -397,15 +381,19 @@ class Node(QtGui.QGraphicsItem, AGNode):
             container = self.add_container(port_type)
             lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
             container.layout().addItem(p)
+            p._container = container
             container.layout().addItem(connector_name)
             self.inputs.append(p)
-            self.inputsLayout.insertItem(1, container)
+            self.inputsLayout.insertItem(-1, container)
+            container.adjustSize()
         elif port_type == self.port_types.kOutput:
             container = self.add_container(port_type)
             lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
+            p._container = container
             self.outputs.append(p)
-            self.outputsLayout.insertItem(1, container)
-        p.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+            self.outputsLayout.insertItem(-1, container)
+            container.adjustSize()
+        p.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         return p

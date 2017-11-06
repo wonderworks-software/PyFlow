@@ -9,8 +9,7 @@ DESC = """flifs boolean
 
 class Not(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(Not, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
+        super(Not, self).__init__(name, graph, spacings=Spacings)
         self.in_bool = self.add_input_port('in', AGPortDataTypes.tBool)
         self.out_bool = self.add_output_port('out', AGPortDataTypes.tBool)
         portAffects(self.in_bool, self.out_bool)

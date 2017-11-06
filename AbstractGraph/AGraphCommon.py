@@ -78,7 +78,8 @@ def push(start_from):
 
 class AGPortDataTypes(object):
 
-    tNumeric = 'numeric_data'
+    tFloat = 'numeric_data'
+    tInt = 'numeric_data_int'
     tString = 'string_data'
     tBool = 'boolean_data'
     tArray = 'array_data'

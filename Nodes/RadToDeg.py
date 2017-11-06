@@ -7,12 +7,12 @@ DESC = '''Radians to
 degrees
 '''
 
+
 class RadToDeg(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(RadToDeg, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
-        self.inp0 = self.add_input_port('radians', AGPortDataTypes.tNumeric)
-        self.out0 = self.add_output_port('degrees', AGPortDataTypes.tNumeric)
+        super(RadToDeg, self).__init__(name, graph, spacings=Spacings)
+        self.inp0 = self.add_input_port('rad', AGPortDataTypes.tFloat)
+        self.out0 = self.add_output_port('deg', AGPortDataTypes.tFloat)
         portAffects(self.inp0, self.out0)
 
     @staticmethod

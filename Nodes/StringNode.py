@@ -12,14 +12,11 @@ class LEdit(QtGui.QLineEdit):
 
 class StringNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
-        super(StringNode, self).__init__(name, graph,
-                                         w=150, colors=Colors,
-                                         spacings=Spacings)
-        AGNode.__init__(self, name, graph)
-        lyt_head = self.add_layout(AGPortTypes.kInput)
+        super(StringNode, self).__init__(name, graph, spacings=Spacings)
         self.output = self.add_output_port('out', AGPortDataTypes.tString)
 
         self.line_edit = LEdit(self.set_data)
+        self.line_edit.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         self.line_edit.setText("None")
 
         # hack! overload the output's port 'set_data' method to update lineEdit
@@ -29,7 +26,7 @@ class StringNode(BaseNode.Node, AGNode):
 
         line_edit_proxy = QtGui.QGraphicsProxyWidget()
         line_edit_proxy.setWidget(self.line_edit)
-        lyt_head.addItem(line_edit_proxy)
+        self.output.get_container().layout().insertItem(0, line_edit_proxy)
         self.compute()
 
     @staticmethod

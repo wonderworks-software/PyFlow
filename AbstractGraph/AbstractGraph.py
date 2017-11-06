@@ -21,12 +21,14 @@ class AGPort(object):
         self._data = self.getDefaultDataValue()
 
     def getDefaultDataValue(self):
-        if self.data_type == AGPortDataTypes.tNumeric:
-            return 0.0
+        if self.data_type == AGPortDataTypes.tFloat:
+            return float()
+        if self.data_type == AGPortDataTypes.tFloat:
+            return int()
         if self.data_type == AGPortDataTypes.tString:
-            return ""
+            return str()
         if self.data_type == AGPortDataTypes.tBool:
-            return False
+            return bool()
         if self.data_type == AGPortDataTypes.tArray:
             return []
         if self.data_type == AGPortDataTypes.tAny:
@@ -118,8 +120,10 @@ class AGPort(object):
         return v.lower() in ("true", "1")
 
     def set_data(self, data, dirty_propagate=True):
-        if self.data_type == AGPortDataTypes.tNumeric:
+        if self.data_type == AGPortDataTypes.tFloat:
             self._data = float(data)
+        if self.data_type == AGPortDataTypes.tInt:
+            self._data = int(data)
         if self.data_type == AGPortDataTypes.tString:
             self._data = str(data)
         if self.data_type == AGPortDataTypes.tArray:
@@ -219,7 +223,6 @@ class AGraph(object):
         return name + str(idx)
 
     def is_debug(self):
-
         return self._debug
 
     def set_debug(self, state):

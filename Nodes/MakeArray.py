@@ -5,20 +5,18 @@ from AGraphPySide import BaseNode
 
 class MakeArray(BaseNode.Node, AGNode):
     def __init__(self, name, graph, ports_number=0):
-        super(MakeArray, self).__init__(name, graph,
-                                      w=120, colors=Colors,
-                                      spacings=Spacings)
-        AGNode.__init__(self, name, graph)
+        super(MakeArray, self).__init__(name, graph, spacings=Spacings)
         self.ports_number = ports_number
         self.id = 0
 
-        lyt = self.add_layout()
+        con = self.add_container(AGPortTypes.kOutput)
 
         pb = QtGui.QPushButton('+')
+        pb.setMaximumWidth(30)
         pb.clicked.connect(self.addInPort)
         prx_btn = QtGui.QGraphicsProxyWidget()
         prx_btn.setWidget(pb)
-        lyt.addItem(prx_btn)
+        con.layout().addItem(prx_btn)
 
         self.height_step = pb.size().height()
 
@@ -35,11 +33,11 @@ class MakeArray(BaseNode.Node, AGNode):
 
     def addInPort(self):
         port = self.add_input_port(str(self.id), AGPortDataTypes.tAny)
-        self.h += self.height_step
+        # self.h += self.height_step
         portAffects(port, self.out_arr)
         self.id += 1
         push(self.out_arr)
-        self.graph.redraw_nodes()
+        self.graph().redraw_nodes()
 
     @staticmethod
     def get_category():
@@ -47,4 +45,3 @@ class MakeArray(BaseNode.Node, AGNode):
 
     def compute(self):
         self.out_arr.set_data(list([i.get_data() for i in self.inputs]), False)
-
