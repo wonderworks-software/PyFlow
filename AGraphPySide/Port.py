@@ -105,8 +105,8 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         h = background_rect.height() / 2 - 0.5
 
         linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.__width / 2.5)
-        linearGrad.setColorAt(0, self.color.darker(400))
-        linearGrad.setColorAt(0.5, self.color.darker(400))
+        linearGrad.setColorAt(0, self.color.darker(200))
+        linearGrad.setColorAt(0.5, self.color.darker(200))
         linearGrad.setColorAt(0.65, self.color.lighter(130))
         linearGrad.setColorAt(1, self.color.lighter(70))
 

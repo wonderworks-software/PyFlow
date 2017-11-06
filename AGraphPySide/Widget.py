@@ -89,7 +89,6 @@ DESC = '''node desc
 class {0}(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super({0}, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        AGNode.__init__(self, name, graph)
         self.inp0 = self.add_input_port('in0', AGPortDataTypes.tAny)
         self.out0 = self.add_output_port('out0', AGPortDataTypes.tAny)
         portAffects(self.inp0, self.out0)

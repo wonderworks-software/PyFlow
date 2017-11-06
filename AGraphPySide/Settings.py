@@ -39,18 +39,17 @@ def get_line_type(name):
 
 class Colors(object):
 
-    kNodeBackgrounds = QtGui.QColor(30, 30, 30, 150)
-    kNodeSelectedPenColor = QtGui.QColor(255, 105, 0, 100)
+    kNodeBackgrounds = QtGui.QColor(30, 30, 30, 200)
+    kNodeSelectedPenColor = QtGui.QColor(200, 200, 200, 150)
     kWhite = QtGui.QColor(255, 255, 255, 200)
     kSceneBackground = QtGui.QColor(35, 35, 35)
     kInteger = QtGui.QColor(45, 48, 99, 255)
-    kIntNodeBackground = QtGui.QColor(0, 0, 170, 100)
     kGridColor = QtGui.QColor(100, 100, 100, 100)
     kGridColorDarker = QtGui.QColor(20, 20, 20)
     kConnectors = QtGui.QColor(0, 100, 0, 255)
     kPortLinesA = QtGui.QColor(0, 90, 0, 0)
     kPortLinesB = QtGui.QColor(0, 0, 90, 0)
-    kNodeNameRect = QtGui.QColor(80, 80, 100, 100)
+    kNodeNameRect = QtGui.QColor(80, 80, 100, 200)
     kRed = QtGui.QColor(255, 0, 0, 255)
     kGreen = QtGui.QColor(0, 255, 0, 255)
     kBlue = QtGui.QColor(0, 0, 255, 255)

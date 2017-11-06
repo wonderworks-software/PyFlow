@@ -96,8 +96,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
             self.opt_selected_pen_color = QtGui.QColor(self.options.value('NODES/Nodes selected pen color'))
             self.opt_lyt_a_color = QtGui.QColor(self.options.value('NODES/Nodes lyt A color'))
             self.opt_lyt_b_color = QtGui.QColor(self.options.value('NODES/Nodes lyt B color'))
-            opt_pen_selected_type_name = QtGui.QColor(self.options.value('NODES/Nodes selected pen type'))
-            self.opt_pen_selected_type = get_line_type(opt_pen_selected_type_name)
+            self.opt_pen_selected_type = QtCore.Qt.SolidLine
         self.object_type = AGObjectTypes.tNode
         self._left_stretch = 0
         self.color = color
@@ -226,7 +225,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         linearGrad.setColorAt(1, color.lighter(180))
         br = QtGui.QBrush(linearGrad)
         painter.setBrush(br)
-        painter.setOpacity(0.85)
+        # painter.setOpacity(0.95)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QtGui.QStyle.State_Selected:
             if self.options:
