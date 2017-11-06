@@ -82,15 +82,17 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         background_rect.setWidth(self.__width)
 
         w = background_rect.width() / 2
-        h = background_rect.height() / 2
+        h = background_rect.height() / 2 - 0.5
 
-        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.__width / 2)
-        linearGrad.setColorAt(0, self.color)
-        linearGrad.setColorAt(0.2, self.color)
-        linearGrad.setColorAt(1, self.color.lighter(150))
+        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.__width / 2.5)
+        linearGrad.setColorAt(0, self.color.darker(400))
+        linearGrad.setColorAt(0.5, self.color.darker(400))
+        linearGrad.setColorAt(0.65, self.color.lighter(130))
+        linearGrad.setColorAt(1, self.color.lighter(70))
 
-        if self.dirty:
-            painter.setPen(self._dirty_pen)
+        # if self.dirty:
+        #     painter.setPen(self._dirty_pen)  # move to callback and use in debug mode
+
         if self.hovered:
             linearGrad.setColorAt(1, self.color.lighter(200))
         else:

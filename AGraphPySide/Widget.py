@@ -1400,8 +1400,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def mouseMoveEvent(self, event):
         self.mousePos = self.mapToScene(event.pos())
 
-        print(self.pressed_item)
-
         if self._resize_group_mode:
             grp = self.pressed_item.parentItem()
             self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)

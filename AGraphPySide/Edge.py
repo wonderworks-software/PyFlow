@@ -16,13 +16,14 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 
-        self.setZValue(1.0)
+        self.setZValue(-1)
         self.connection = {'From': self.source().port_name(),
                            'To': self.destination().port_name()}
 
         self.settings = self.graph().get_settings()
         if self.settings:
-            self.color = QtGui.QColor(self.settings.value('SCENE/Edge color'))
+            # self.color = QtGui.QColor(self.settings.value('SCENE/Edge color'))
+            self.color = QtGui.QColor(self.destination().color.lighter(200))
             self.lineType = get_line_type(self.settings.value('SCENE/Edge pen type'))
             self.thikness = float(self.settings.value('SCENE/Edge line thickness'))
 
@@ -50,7 +51,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
             print(self.__str__())
 
     def getEndPoints(self):
-        offset = self.source().boundingRect().width() / 2
+        offset = self.source().boundingRect().width() / 3.25
         p1 = self.source().sceneTransform().map(QtCore.QPointF(offset * 2, offset))
         p2 = self.destination().sceneTransform().map(QtCore.QPointF(0, offset))
         return p1, p2
@@ -114,7 +115,7 @@ class RealTimeLine(QtGui.QGraphicsLineItem, Colors):
         self.p2 = QtCore.QPointF(50, 50)
         self.graph = graph
         self.offset = 0
-        self.setZValue(1)
+        self.setZValue(-1)
 
     def paint(self, painter, option, widget):
 
