@@ -15,8 +15,10 @@ def update_ports(start_from):
 def getPortColorByType(t):
     if t == AGPortDataTypes.tAny:
         return Colors.kAny
-    if t in [AGPortDataTypes.tFloat, AGPortDataTypes.tInt]:
-        return Colors.kNumeric
+    if t == AGPortDataTypes.tFloat:
+        return Colors.kFloat
+    if t == AGPortDataTypes.tInt:
+        return Colors.kInt
     if t == AGPortDataTypes.tArray:
         return Colors.kArray
     if t == AGPortDataTypes.tBool:
@@ -105,8 +107,8 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         h = background_rect.height() / 2 - 0.5
 
         linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.__width / 2.5)
-        linearGrad.setColorAt(0, self.color.darker(200))
-        linearGrad.setColorAt(0.5, self.color.darker(200))
+        linearGrad.setColorAt(0, self.color.darker(280))
+        linearGrad.setColorAt(0.5, self.color.darker(280))
         linearGrad.setColorAt(0.65, self.color.lighter(130))
         linearGrad.setColorAt(1, self.color.lighter(70))
 

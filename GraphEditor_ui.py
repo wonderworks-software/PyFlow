@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/GraphEditor_ui.ui'
 #
-# Created: Sat Nov 04 15:27:56 2017
+# Created: Tue Nov 07 11:52:07 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -217,7 +217,6 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionConsole)
         self.toolBar.addAction(self.actionPropertyView)
         self.toolBar.addSeparator()
-        self.toolBar.addAction(self.actionShadows)
         self.toolBar.addAction(self.actionMultithreaded)
         self.toolBar.addAction(self.actionDebug)
         self.toolBar.addSeparator()
@@ -262,4 +261,5 @@ class Ui_MainWindow(object):
         self.actionAlignUp.setToolTip(QtGui.QApplication.translate("MainWindow", "Align selected nodes by the up most", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPropertyView.setText(QtGui.QApplication.translate("MainWindow", "PropertyView", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPropertyView.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle property view", None, QtGui.QApplication.UnicodeUTF8))
+
 

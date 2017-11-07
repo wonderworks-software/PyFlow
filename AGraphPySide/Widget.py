@@ -417,7 +417,7 @@ class NodesBox(QtGui.QWidget):
 
     def set_visible(self):
 
-        pos = self.graph().current_cursor_pose
+        pos = self.graph().mousePos
         self.move(self.graph().mapFromScene(pos.toPoint()).x() + self.graph().pos().x(),
                   self.graph().mapFromScene(pos.toPoint()).y() + self.graph().pos().y()
                   )
@@ -430,8 +430,8 @@ class NodesBox(QtGui.QWidget):
             name = items[0].text()
             node = get_node(Nodes, name, self)
             # print(node.name, 'created')
-            self.graph().add_node(node, self.graph().current_cursor_pose.x(),
-                                  self.graph().current_cursor_pose.y())
+            self.graph().add_node(node, self.graph().mousePos.x(),
+                                  self.graph().mousePos.y())
             if self.listWidget._events:
                 self.close()
                 self.listWidget.clear()
@@ -871,7 +871,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         AGraph.__init__(self, name)
         self.parent = parent
         self.menu = QtGui.QMenu(self)
-        self.node_box = NodesBox(self)
+        self.node_box = weakref.ref(NodesBox(self))
         self.setScene(SceneClass(self))
         self.add_actions()
         self.options_widget = OptionsClass()
@@ -924,13 +924,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._resize_group_mode = False
         self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum() / 2)
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum() / 2)
-        self._tick_functions = []
+        # self._tick_functions = []
         self.registeredCommands = {}
         self.registerCommands()
         self._sortcuts_enabled = True
-        self.tick_timer = QtCore.QTimer()  # this timer executes all functions in '_tick_functions'
-        self.tick_timer.timeout.connect(self._tick_executor)
-        self.tick_timer.start(50)
+        # self.tick_timer = QtCore.QTimer()  # this timer executes all functions in '_tick_functions'
+        # self.tick_timer.timeout.connect(self._tick_executor)
+        # self.tick_timer.start(50)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid_size = 10
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
@@ -979,9 +979,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         t = Thread(target=lambda: winsound.PlaySound(file_name, winsound.SND_FILENAME))
         t.start()
 
-    def _tick_executor(self):
-        for foo in self._tick_functions:
-            foo()
+    # def _tick_executor(self):
+    #     for foo in self._tick_functions:
+    #         foo()
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
@@ -1085,7 +1085,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             node_box_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/node_box_icon.png'))
         else:
             node_box_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
-        node_box_action.triggered.connect(self.node_box.set_visible)
+        node_box_action.triggered.connect(self.node_box().set_visible)
 
         separator = QtGui.QAction(self)
         separator.setSeparator(True)
@@ -1310,9 +1310,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.parent.toggle_property_view()
         if event.key() == QtCore.Qt.Key_Delete:
             self.kill_selected_nodes(False)
-        if self.node_box.listWidget._events:
+        if self.node_box().listWidget._events:
             if event.key() == QtCore.Qt.Key_Tab:
-                self.node_box.set_visible()
+                self.node_box().set_visible()
         if all([event.key() == QtCore.Qt.Key_W, modifiers == QtCore.Qt.ControlModifier]):
             self.duplicate_node()
         QtGui.QGraphicsView.keyPressEvent(self, event)
@@ -1375,8 +1375,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self._is_rubber_band_selection = True
             if event.button() == QtCore.Qt.LeftButton:
                 self.setDragMode(self.ScrollHandDrag)
-            self.node_box.close()
-            self.node_box.le_nodes.clear()
+            self.node_box().close()
+            self.node_box().le_nodes.clear()
 
         super(GraphWidget, self).mousePressEvent(event)
 

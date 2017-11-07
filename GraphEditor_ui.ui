@@ -134,7 +134,6 @@
    <addaction name="actionConsole"/>
    <addaction name="actionPropertyView"/>
    <addaction name="separator"/>
-   <addaction name="actionShadows"/>
    <addaction name="actionMultithreaded"/>
    <addaction name="actionDebug"/>
    <addaction name="separator"/>
