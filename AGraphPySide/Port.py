@@ -107,22 +107,24 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         h = background_rect.height() / 2 - 0.5
 
         linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.__width / 2.5)
-        linearGrad.setColorAt(0, self.color.darker(280))
-        linearGrad.setColorAt(0.5, self.color.darker(280))
-        linearGrad.setColorAt(0.65, self.color.lighter(130))
-        linearGrad.setColorAt(1, self.color.lighter(70))
+        if not self._connected:
+            linearGrad.setColorAt(0, self.color.darker(280))
+            linearGrad.setColorAt(0.5, self.color.darker(280))
+            linearGrad.setColorAt(0.65, self.color.lighter(130))
+            linearGrad.setColorAt(1, self.color.lighter(70))
+        else:
+            linearGrad.setColorAt(0, self.color)
+            linearGrad.setColorAt(1, self.color)
 
         # if self.dirty:
         #     painter.setPen(self._dirty_pen)  # move to callback and use in debug mode
 
         if self.hovered:
             linearGrad.setColorAt(1, self.color.lighter(200))
-        else:
-            painter.setBrush(QtGui.QBrush(self.color))
         if self.data_type == AGPortDataTypes.tArray:
             painter.drawRect(background_rect)
         else:
-            painter.setBrush(linearGrad)
+            painter.setBrush(QtGui.QBrush(linearGrad))
             painter.drawEllipse(background_rect)
             arrHeight = -0.4
             arrow = QtGui.QPolygonF([QtCore.QPointF(self.__width, self.__height * 0.7 + arrHeight),
@@ -132,7 +134,6 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             painter.drawPolygon(arrow)
 
     def contextMenuEvent(self, event):
-
         self.menu.exec_(event.screenPos())
 
     def write_to_console(self, data):

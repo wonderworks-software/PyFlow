@@ -17,6 +17,7 @@ class AGPort(object):
         self.edge_list = []
         self.type = None
         self.dirty = True
+        self._connected = False
         # set default values
         self._data = self.getDefaultDataValue()
 
@@ -48,10 +49,11 @@ class AGPort(object):
         return self._data
 
     def port_connected(self):
-        pass
+        self._connected = True
 
     def port_disconnected(self):
-        pass
+        if not self.hasConnections():
+            self._connected = False
 
     def set_clean(self):
         self.dirty = False

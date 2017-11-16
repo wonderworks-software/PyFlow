@@ -36,6 +36,8 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.setPen(self.pen)
 
         self.updateCurve(points[0], points[1])
+        self.source().port_connected()
+        self.destination().port_connected()
 
     def __str__(self):
         return '{0}.{1} >>> {2}.{3}'.format(self.source().parent().name,
@@ -62,6 +64,10 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
     def kill(self):
         self.graph().remove_edge(self)
+        self.source().port_disconnected()
+        self.source().update()
+        self.destination().port_disconnected()
+        self.destination().update()
 
     def mouseReleaseEvent(self, event):
         super(Edge, self).mouseReleaseEvent(event)
@@ -78,7 +84,6 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.update()
 
     def source_port_name(self):
-
         return self.source().port_name()
 
     def updateCurve(self, p1, p2):

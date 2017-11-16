@@ -1356,6 +1356,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.pressed_item = self.itemAt(event.pos())
         self.mousePressPose = self.mapToScene(event.pos())
 
+        modifiers = event.modifiers()
+
+        if modifiers == QtCore.Qt.AltModifier and self.pressed_item.__class__.__name__ == "Port":
+            self.pressed_item.disconnect_all()
+
         if self.pressed_item:
             if hasattr(self.pressed_item, 'mark'):
                 self._resize_group_mode = True
