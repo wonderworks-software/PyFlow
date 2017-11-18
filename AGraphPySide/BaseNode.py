@@ -284,8 +284,8 @@ class Node(QtGui.QGraphicsItem, AGNode):
                     p_item.fit_content()
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def add_input_port(self, port_name, data_type):
-        p = self._add_port(AGPortTypes.kInput, data_type, port_name)
+    def add_input_port(self, port_name, data_type, foo=None):
+        p = self._add_port(AGPortTypes.kInput, data_type, foo, port_name)
         if data_type in [AGPortDataTypes.tFloat, AGPortDataTypes.tInt]:
             for i in [AGPortDataTypes.tFloat, AGPortDataTypes.tInt]:
                 if i not in p.allowed_data_types:
@@ -296,8 +296,8 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def get_category():
         return "Default"
 
-    def add_output_port(self, port_name, data_type):
-        p = self._add_port(AGPortTypes.kOutput, data_type, port_name)
+    def add_output_port(self, port_name, data_type, foo=None):
+        p = self._add_port(AGPortTypes.kOutput, data_type, foo, port_name)
         return p
 
     def add_container(self, portType, head=False):
@@ -338,7 +338,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         AGNode.set_pos(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
 
-    def _add_port(self, port_type, data_type, name='', color=QtGui.QColor(0, 100, 0, 255)):
+    def _add_port(self, port_type, data_type, foo, name='', color=QtGui.QColor(0, 100, 0, 255)):
 
         newColor = color
 
@@ -359,6 +359,8 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
         p = Port(name, self, data_type, 10, 10, newColor)
         p.type = port_type
+        if port_type == AGPortTypes.kInput and foo is not None:
+            p.call = foo
         connector_name = QtGui.QGraphicsProxyWidget()
         connector_name.setContentsMargins(0, 0, 0, 0)
         lbl = QtGui.QLabel(name)

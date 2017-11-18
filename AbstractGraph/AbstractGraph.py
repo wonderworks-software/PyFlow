@@ -71,8 +71,8 @@ class AGPort(object):
 
     def get_data(self, debug=False):
         # if not connected - return data
-        if not self.hasConnections():
-            return self.getDefaultDataValue()
+        # if not self.hasConnections():
+        #     return self.getDefaultDataValue()
 
         if self.type == AGPortTypes.kOutput:
             if self.dirty:
@@ -120,6 +120,10 @@ class AGPort(object):
     @staticmethod
     def str2bool(v):
         return v.lower() in ("true", "1")
+
+    def call(self):
+        for p in self.affects:
+            p.call()
 
     def set_data(self, data, dirty_propagate=True):
         if self.data_type == AGPortDataTypes.tFloat:
@@ -169,16 +173,20 @@ class AGNode(object):
     def set_name(self, name):
         self.name = self.graph().get_uniq_node_name(name)
 
-    def add_input_port(self, port_name, data_type):
-        p = AGPort(port_name, self, data_type)
+    def add_input_port(self, port_name, data_type, foo=None):
+        p = AGPort(port_name, self, data_type, foo)
         self.inputs.append(p)
         p.type = AGPortTypes.kInput
+        if foo:
+            p.call = foo
         return p
 
-    def add_output_port(self, port_name, data_type):
-        p = AGPort(port_name, self, data_type)
+    def add_output_port(self, port_name, data_type, foo=None):
+        p = AGPort(port_name, self, data_type, foo)
         self.outputs.append(p)
         p.type = AGPortTypes.kOutput
+        if foo:
+            p.call = foo
         return p
 
     def get_port_by_name(self, name):
@@ -234,7 +242,6 @@ class AGraph(object):
         self._debug = state
 
     def is_multithreaded(self):
-
         return self._multithreaded
 
     def set_multithreaded(self, state):
@@ -314,11 +321,9 @@ class AGraph(object):
         return True
 
     def remove_node(self, node):
-
         node.kill()
 
     def remove_node_by_name(self, name):
-
         [self.nodes.remove(n) for n in self.nodes if name == n.name]
 
     def count(self):
