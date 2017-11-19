@@ -1,16 +1,15 @@
 SAVE GRAPH SCRIPT
-setHorizontalScrollBar ~h 6612
-setVerticalScrollBar ~v 7281
+setHorizontalScrollBar ~h 6407
+setVerticalScrollBar ~v 7239
 setNodeBoxVisible ~v 1
 setConsoleVisible ~v 1
 setPropertiesVisible ~v 1
-enableShadows ~state 0
 createNode ~type Print ~x 5060.0 ~y 4948.0 ~n Print
 setAttr ~an Print.IN ~v None
-setAttr ~an Print.data ~v 1
+setAttr ~an Print.data ~v 0.0
 createNode ~type Print ~x 5060.0 ~y 5058.0 ~n Print1
 setAttr ~an Print1.IN ~v None
-setAttr ~an Print1.data ~v 0
+setAttr ~an Print1.data ~v 0.0
 createNode ~type Branch ~x 4630.0 ~y 4978.0 ~n Branch
 setAttr ~an Branch.In ~v None
 setAttr ~an Branch.condition ~v True
@@ -20,15 +19,11 @@ createNode ~type BoolNode ~x 4470.0 ~y 5098.0 ~n BoolNode
 setAttr ~an BoolNode.out ~v True
 createNode ~type Call ~x 4420.0 ~y 4948.0 ~n Call
 setAttr ~an Call.OUT ~v None
-createNode ~type MakeInt ~x 4780.0 ~y 5128.0 ~n MakeInt
-setAttr ~an MakeInt. ~v None
-setAttr ~an MakeInt. ~v 0
-createNode ~type MakeInt ~x 4800.0 ~y 4898.0 ~n MakeInt1
-setAttr ~an MakeInt1. ~v None
-setAttr ~an MakeInt1. ~v 1
-connectAttr ~src Branch.True ~dst Print.IN
-connectAttr ~src Branch.False ~dst Print1.IN
+createNode ~type FloatNode ~x 4720.0 ~y 5138.0 ~n FloatNode
+setAttr ~an FloatNode. ~v 0.0
 connectAttr ~src BoolNode.out ~dst Branch.condition
 connectAttr ~src Call.OUT ~dst Branch.In
-connectAttr ~src MakeInt. ~dst Print1.data
-connectAttr ~src MakeInt1. ~dst Print.data
+connectAttr ~src Branch.True ~dst Print.IN
+connectAttr ~src Branch.False ~dst Print1.IN
+connectAttr ~src FloatNode. ~dst Print.data
+connectAttr ~src FloatNode. ~dst Print1.data

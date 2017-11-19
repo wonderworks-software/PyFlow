@@ -24,10 +24,10 @@ class AGPort(object):
     def getDefaultDataValue(self):
         if self.data_type == AGPortDataTypes.tFloat:
             return float()
-        if self.data_type == AGPortDataTypes.tFloat:
+        if self.data_type == AGPortDataTypes.tInt:
             return int()
         if self.data_type == AGPortDataTypes.tString:
-            return str()
+            return str("none")
         if self.data_type == AGPortDataTypes.tBool:
             return bool()
         if self.data_type == AGPortDataTypes.tArray:
@@ -70,9 +70,10 @@ class AGPort(object):
             i.dirty = True
 
     def get_data(self, debug=False):
+
         # if not connected - return data
-        # if not self.hasConnections():
-        #     return self.getDefaultDataValue()
+        if not self.hasConnections():
+            return self.current_data()
 
         if self.type == AGPortTypes.kOutput:
             if self.dirty:
@@ -335,11 +336,12 @@ class AGraph(object):
         debug = self.is_debug()
         if src.type == AGPortTypes.kInput:
             src, dst = dst, src
-        if dst.data_type not in [AGPortDataTypes.tAny, AGPortDataTypes.tReroute]:
-            if src.data_type not in dst.allowed_data_types + [AGPortDataTypes.tReroute]:
-                print('data types error')
-                print(src.data_type, dst.data_type)
-                return False
+        if AGPortDataTypes.tAny not in [dst.data_type, src.data_type]:
+            if dst.data_type not in [AGPortDataTypes.tAny, AGPortDataTypes.tReroute]:
+                if src.data_type not in dst.allowed_data_types + [AGPortDataTypes.tReroute]:
+                    print('data types error')
+                    print(src.data_type, dst.data_type)
+                    return False
         if src in dst.affected_by:
             if debug:
                 print('already connected. skipped')

@@ -12,7 +12,7 @@ class Print(BaseNode.Node, AGNode):
 
     @staticmethod
     def get_category():
-        return 'Utils'
+        return 'Util'
 
     def compute(self):
         self.graph().write_to_console(self.data.get_data(), True)

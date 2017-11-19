@@ -4,8 +4,8 @@ from AGraphPySide import BaseNode
 
 
 class DSBox(QtGui.QDoubleSpinBox):
-    def __init__(self, foo):
-        super(DSBox, self).__init__()
+    def __init__(self, parent, foo):
+        super(DSBox, self).__init__(parent)
         self.foo = foo
         self.setRange(-999999999.99999999, 999999999.99999999)
         self.valueChanged.connect(self.foo)
@@ -15,7 +15,7 @@ class DSBox(QtGui.QDoubleSpinBox):
 class FloatNode(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super(FloatNode, self).__init__(name, graph, spacings=Spacings)
-        self.spin_box = DSBox(self.set_data)
+        self.spin_box = DSBox(self, self.set_data)
         self.output = self._add_port(AGPortTypes.kOutput, AGPortDataTypes.tFloat, 'out')
 
         # hack! overload the output's port 'set_data' method to update lineEdit

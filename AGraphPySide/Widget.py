@@ -623,7 +623,7 @@ class CommentNode(QtGui.QGraphicsRectItem, Colors):
             i.setSelected(False)
         for n in self.nodes:
             n.setSelected(True)
-        self.graph().kill_selected_nodes(call_connection_functions)
+        self.graph().kill_selected_nodes()
         self.scene().removeItem(self)
         self.graph().groupers.remove(self)
         del self
@@ -1018,13 +1018,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def get_nodes(self):
 
-        ls = []
-        for i in self.scene().items():
-            if hasattr(i, 'object_type'):
-                if i.object_type == AGObjectTypes.tNode:
-                    if i.isVisible():
-                        ls.append(i)
-        return ls
+        # ls = []
+        # for i in self.scene().items():
+        #     if hasattr(i, 'object_type'):
+        #         if i.object_type == AGObjectTypes.tNode:
+        #             if i.isVisible():
+        #                 ls.append(i)
+        # return ls
+        return self.nodes
 
     def findPort(self, port_name):
         node = self.get_node_by_name(port_name.split(".")[0])
@@ -1127,7 +1128,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         graph += "setNodeBoxVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeBox.isVisible()))
         graph += "setConsoleVisible ~v {0}\n".format(int(self.parent.dockWidgetConsole.isVisible()))
         graph += "setPropertiesVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeView.isVisible()))
-        graph += "enableShadows ~state {0}\n".format(int(self._shadows))
         # create all nodes and set attributes
         for n in self.get_nodes():
             # process nodes with customized behavior
@@ -1170,7 +1170,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._current_file_name = 'Untitled'
         self._file_name_label.setPlainText('Untitled')
         for n in self.nodes:
-            n.kill(False)
+            n.setSelected(True)
+        self.kill_selected_nodes()
         for g in self.groupers:
             g.delete()
         if len(self.nodes) > 0:
@@ -1254,16 +1255,19 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def selected_nodes(self):
         return [i for i in self.nodes if i.isSelected()]
 
-    def kill_selected_nodes(self, call_connection_functions=False):
+    def movePendingKill(self, node):
+        self.nodesPendingKill.append(self.nodes.pop(self.nodes.index(node)))
+
+    def kill_selected_nodes(self):
 
         selected = self.selected_nodes()
         for i in selected:
             if i.isSelected() and i in self.nodes and i in self.scene().items():
-                i.kill(call_connection_functions)
                 # replace to unused list. This will be deleted later by qt
-                self.nodesPendingKill.append(self.nodes.pop(self.nodes.index(i)))
+                # self.nodesPendingKill.append(self.nodes.pop(self.nodes.index(i)))
+                i.kill()
         if not len(selected) == 0:
-            self.kill_selected_nodes(call_connection_functions)
+            self.kill_selected_nodes()
         clearLayout(self.parent.PropertiesformLayout)
 
     def keyPressEvent(self, event):
@@ -1309,7 +1313,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             self.parent.toggle_property_view()
         if event.key() == QtCore.Qt.Key_Delete:
-            self.kill_selected_nodes(False)
+            self.kill_selected_nodes()
         if self.node_box().listWidget._events:
             if event.key() == QtCore.Qt.Key_Tab:
                 self.node_box().set_visible()
@@ -1547,6 +1551,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         super(GraphWidget, self).mouseReleaseEvent(event)
 
     def update_property_view(self, node):
+        self.ActivePropertiesWidgets = {}
         root = self.parent.dockWidgetNodeView
         layout = self.parent.PropertiesformLayout
         root.owned_node = node
@@ -1568,13 +1573,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             sep_inputs.setText("INPUTS")
             layout.addRow("", sep_inputs)
 
-            def tmp(le):
-                print(le.text())
-
             for inp in node.inputs:
-                le = QtGui.QLineEdit(str(inp.current_data()))
+                le = QtGui.QLineEdit(str(inp.current_data()), self.parent.dockWidgetNodeView)
+                le.setObjectName(inp.port_name())
+                le.textChanged.connect(self.propertyEditingFinished)
                 layout.addRow(inp.name, le)
-                le.setReadOnly(True)
+                if inp.hasConnections():
+                    le.setReadOnly(True)
 
         # outputs
         if len(node.outputs) != 0:
@@ -1584,8 +1589,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             layout.addRow("", sep_outputs)
             for out in node.outputs:
                 le = QtGui.QLineEdit(str(out.current_data()))
-                le.setReadOnly(True)
+                le.setObjectName(out.port_name())
+                le.textChanged.connect(self.propertyEditingFinished)
                 layout.addRow(out.name, le)
+                if out.hasConnections():
+                    le.setReadOnly(True)
 
         doc_lb = QtGui.QLabel()
         doc_lb.setStyleSheet("background-color: black;")
@@ -1594,6 +1602,17 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         doc = QtGui.QLabel(node.description())
         doc.setWordWrap(True)
         layout.addRow("", doc)
+
+    def propertyEditingFinished(self):
+        le = QtGui.QApplication.instance().focusWidget()
+        if isinstance(le, QtGui.QLineEdit):
+            nodeName, attr = le.objectName().split('.')
+            node = self.get_node_by_name(nodeName)
+            port = node.get_port_by_name(attr)
+            port.set_data(le.text())
+            # push(port)
+            # cmd = "setAttr {2}an {0} {2}v {1}\n".format(le.objectName(), le.text(), FLAG_SYMBOL)
+            # self.executeCommand(cmd)
 
     def wheelEvent(self, event):
 

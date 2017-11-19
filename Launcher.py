@@ -60,7 +60,7 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.toggle_console()
         self.toggle_node_box()
 
-        # self.toggle_debug()
+        self.toggle_debug()
 
     def closeEvent(self, event):
         question = "Shure?"

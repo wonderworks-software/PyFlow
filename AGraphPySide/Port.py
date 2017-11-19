@@ -55,6 +55,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.reroutes = []
         self._container = None
         self.color = getPortColorByType(data_type)
+        self.setGeometry(0, 0, self.__width, self.__height)
         if self.options:
             opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))
             opt_dirty_type_name = self.options.value('NODES/Port dirty type')
@@ -116,13 +117,21 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             linearGrad.setColorAt(0, self.color)
             linearGrad.setColorAt(1, self.color)
 
-        # if self.dirty:
-        #     painter.setPen(self._dirty_pen)  # move to callback and use in debug mode
+        if self.dirty:
+            painter.setPen(self._dirty_pen)  # move to callback and use in debug mode
 
         if self.hovered:
             linearGrad.setColorAt(1, self.color.lighter(200))
         if self.data_type == AGPortDataTypes.tArray:
             painter.drawRect(background_rect)
+        elif self.data_type == AGPortDataTypes.tExec:
+            painter.setBrush(QtGui.QBrush(self.color))
+            arrHeight = -0.4
+            arrow = QtGui.QPolygonF([QtCore.QPointF(0, 0),
+                                    QtCore.QPointF(self.__width, self.__height / 2.0),
+                                    QtCore.QPointF(0, self.__height),
+                                    QtCore.QPointF(0, 0)])
+            painter.drawPolygon(arrow)
         else:
             painter.setBrush(QtGui.QBrush(linearGrad))
             painter.drawEllipse(background_rect)

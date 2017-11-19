@@ -1,0 +1,16 @@
+SAVE GRAPH SCRIPT
+setHorizontalScrollBar ~h 7189
+setVerticalScrollBar ~v 7382
+setNodeBoxVisible ~v 1
+setConsoleVisible ~v 1
+setPropertiesVisible ~v 1
+createNode ~type Call ~x 4840.0 ~y 4978.0 ~n Call
+setAttr ~an Call.OUT ~v None
+createNode ~type Print ~x 5090.0 ~y 4978.0 ~n Print
+setAttr ~an Print.IN ~v None
+setAttr ~an Print.data ~v 3
+createNode ~type MakeInt ~x 4830.0 ~y 5078.0 ~n MakeInt
+setAttr ~an MakeInt.in ~v 0
+setAttr ~an MakeInt.out ~v 3
+connectAttr ~src Call.OUT ~dst Print.IN
+connectAttr ~src MakeInt.out ~dst Print.data

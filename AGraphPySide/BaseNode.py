@@ -177,6 +177,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
             if lyt:
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        # pass
 
     def save_command(self):
         return "createNode ~type {0} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name)
@@ -319,7 +320,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
             self.outputsLayout.addItem(container)
         return container
 
-    def kill(self, call_connection_functions=False):
+    def kill(self):
 
         for i in self.inputs + self.outputs:
             if i.hasConnections():
@@ -329,7 +330,9 @@ class Node(QtGui.QGraphicsItem, AGNode):
         if self.parentItem() and hasattr(self.parentItem(), 'object_type'):
             if self.parentItem().object_type == AGObjectTypes.tGrouper:
                 self.parentItem().remove_node(self)
-        # AGNode.kill(self, call_connection_functions)
+        
+        self.graph().movePendingKill(self)
+
         self.graph().write_to_console("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
         self.scene().removeItem(self)
 
