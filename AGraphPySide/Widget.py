@@ -1574,6 +1574,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             layout.addRow("", sep_inputs)
 
             for inp in node.inputs:
+                if inp.data_type == AGPortDataTypes.tExec:
+                    continue
                 le = QtGui.QLineEdit(str(inp.current_data()), self.parent.dockWidgetNodeView)
                 le.setObjectName(inp.port_name())
                 le.textChanged.connect(self.propertyEditingFinished)
@@ -1588,6 +1590,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             sep_outputs.setText("OUTPUTS")
             layout.addRow("", sep_outputs)
             for out in node.outputs:
+                if out.data_type == AGPortDataTypes.tExec:
+                    continue
                 le = QtGui.QLineEdit(str(out.current_data()))
                 le.setObjectName(out.port_name())
                 le.textChanged.connect(self.propertyEditingFinished)
@@ -1610,9 +1614,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             node = self.get_node_by_name(nodeName)
             port = node.get_port_by_name(attr)
             port.set_data(le.text())
-            # push(port)
-            # cmd = "setAttr {2}an {0} {2}v {1}\n".format(le.objectName(), le.text(), FLAG_SYMBOL)
-            # self.executeCommand(cmd)
 
     def wheelEvent(self, event):
 

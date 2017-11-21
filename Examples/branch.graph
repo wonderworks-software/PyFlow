@@ -1,12 +1,12 @@
 SAVE GRAPH SCRIPT
-setHorizontalScrollBar ~h 6407
-setVerticalScrollBar ~v 7239
+setHorizontalScrollBar ~h 7230
+setVerticalScrollBar ~v 7369
 setNodeBoxVisible ~v 1
 setConsoleVisible ~v 1
 setPropertiesVisible ~v 1
 createNode ~type Print ~x 5060.0 ~y 4948.0 ~n Print
 setAttr ~an Print.IN ~v None
-setAttr ~an Print.data ~v 0.0
+setAttr ~an Print.data ~v 1.0
 createNode ~type Print ~x 5060.0 ~y 5058.0 ~n Print1
 setAttr ~an Print1.IN ~v None
 setAttr ~an Print1.data ~v 0.0
@@ -19,11 +19,7 @@ createNode ~type BoolNode ~x 4470.0 ~y 5098.0 ~n BoolNode
 setAttr ~an BoolNode.out ~v True
 createNode ~type Call ~x 4420.0 ~y 4948.0 ~n Call
 setAttr ~an Call.OUT ~v None
-createNode ~type FloatNode ~x 4720.0 ~y 5138.0 ~n FloatNode
-setAttr ~an FloatNode. ~v 0.0
 connectAttr ~src BoolNode.out ~dst Branch.condition
 connectAttr ~src Call.OUT ~dst Branch.In
 connectAttr ~src Branch.True ~dst Print.IN
 connectAttr ~src Branch.False ~dst Print1.IN
-connectAttr ~src FloatNode. ~dst Print.data
-connectAttr ~src FloatNode. ~dst Print1.data

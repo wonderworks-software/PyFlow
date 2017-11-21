@@ -117,8 +117,8 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             linearGrad.setColorAt(0, self.color)
             linearGrad.setColorAt(1, self.color)
 
-        if self.dirty:
-            painter.setPen(self._dirty_pen)  # move to callback and use in debug mode
+        # if self.dirty:
+        #     painter.setPen(self._dirty_pen)  # move to callback and use in debug mode
 
         if self.hovered:
             linearGrad.setColorAt(1, self.color.lighter(200))
@@ -127,10 +127,11 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         elif self.data_type == AGPortDataTypes.tExec:
             painter.setBrush(QtGui.QBrush(self.color))
             arrHeight = -0.4
-            arrow = QtGui.QPolygonF([QtCore.QPointF(0, 0),
+            arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
+                                    QtCore.QPointF(self.__width / 2.0, 0.0),
                                     QtCore.QPointF(self.__width, self.__height / 2.0),
-                                    QtCore.QPointF(0, self.__height),
-                                    QtCore.QPointF(0, 0)])
+                                    QtCore.QPointF(self.__width / 2.0, self.__height),
+                                    QtCore.QPointF(0, self.__height)])
             painter.drawPolygon(arrow)
         else:
             painter.setBrush(QtGui.QBrush(linearGrad))
