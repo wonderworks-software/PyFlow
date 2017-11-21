@@ -45,8 +45,9 @@ def clearLayout(layout):
 def get_node(module, name, graph):
     if hasattr(module, name):
         try:
+            unique_name = graph.get_uniq_node_name(name)
             mod = getattr(module, name)
-            mod = mod(name, graph)
+            mod = mod(unique_name, graph)
             return mod
         except Exception as e:
             print("ERROR node creation!!", e)
@@ -183,6 +184,9 @@ class SceneClass(QtGui.QGraphicsScene):
         self.setItemIndexMethod(self.NoIndex)
         self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
+
+    def shoutDown(self):
+        self.selectionChanged.disconnect()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
@@ -429,7 +433,6 @@ class NodesBox(QtGui.QWidget):
         if not len(items) == 0:
             name = items[0].text()
             node = get_node(Nodes, name, self)
-            # print(node.name, 'created')
             self.graph().add_node(node, self.graph().mousePos.x(),
                                   self.graph().mousePos.y())
             if self.listWidget._events:
@@ -937,9 +940,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         # if (path.isfile(_mod_folder + 'resources/sounds/startup.wav') and platform.system() == "Windows"):
         #     GraphWidget.play_sound_win(_mod_folder + 'resources/sounds/startup.wav')
+        self._bRightBeforeShoutDown = False
 
     def shoutDown(self):
+        self.scene().shoutDown()
         self.scene().clear()
+
 
     def set_scrollbars_positions(self, horizontal, vertical):
         try:
@@ -1680,7 +1686,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def create_node(self, className, x, y, name):
 
         node_class = get_node(Nodes, className, self)
-        node_class.set_name(name)
+        # node_class.set_name(name)
         self.add_node(node_class, x, y)
         return node_class
 
@@ -1965,9 +1971,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         AGraph.add_node(self, node, x, y)
         if node:
-            node.label.setPlainText(node.name)
             self.scene().addItem(node)
-            # node.set_shadows_enabled(self._shadows)
             node.post_create()
         else:
             print '[add_node()] error node creation'

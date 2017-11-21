@@ -190,14 +190,13 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.label.setPlainText(self.name)
 
     def clone(self):
-        x = 0.0
-        y = 0.0
+        x = self.graph().mousePos.x()
+        y = self.graph().mousePos.y()
         if self.parentItem() is None:
-            x = self.pos().x() + self.boundingRect().width()
-            y = self.pos().y() + self.boundingRect().height()
             new_node = self.graph().create_node(self.__class__.__name__, x, y, self.get_name())
             return new_node
         else:
+            # if grouper node is parent
             x = self.pos().x() + self.boundingRect().width() + self.parentItem().scenePos().x()
             y = self.pos().y() + self.boundingRect().height() + self.parentItem().scenePos().y()
             new_node = self.graph().create_node(self.__class__.__name__, x, y, self.get_name())
@@ -330,7 +329,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         if self.parentItem() and hasattr(self.parentItem(), 'object_type'):
             if self.parentItem().object_type == AGObjectTypes.tGrouper:
                 self.parentItem().remove_node(self)
-        
+
         self.graph().movePendingKill(self)
 
         self.graph().write_to_console("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))

@@ -45,6 +45,10 @@ def calc_multithreaded(ls, debug=False):
 
 def cycle_check(src, dst):
 
+    # allow cycles on execs
+    if src.data_type == AGPortDataTypes.tExec or dst.data_type == AGPortDataTypes.tExec:
+        return False
+
     if src.type == AGPortTypes.kInput:
         src, dst = dst, src
     start = src

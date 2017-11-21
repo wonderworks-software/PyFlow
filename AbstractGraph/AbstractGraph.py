@@ -312,13 +312,10 @@ class AGraph(object):
         return None
 
     def add_node(self, node, x=0.0, y=0.0):
-        # generate uniq name
         if not node:
             return False
-        node.set_name(node.name)
         self.nodes.append(node)
         node.set_pos(x, y)
-        # node.graph = self
         return True
 
     def remove_node(self, node):
@@ -328,11 +325,9 @@ class AGraph(object):
         [self.nodes.remove(n) for n in self.nodes if name == n.name]
 
     def count(self):
-
         return self.nodes.__len__()
 
     def add_edge(self, src, dst):
-
         debug = self.is_debug()
         if src.type == AGPortTypes.kInput:
             src, dst = dst, src
@@ -358,11 +353,19 @@ class AGraph(object):
             if debug:
                 print('cycles are not allowed')
             return False
-        if len(dst.affected_by) >= 1:
-            if debug:
-                print('already has connection')
-            for e in dst.edge_list:
-                self.remove_edge(e)
+
+        # input execs can have any number of connections
+        # output execs can have only one connection
+        # input data ports can haveone output connection
+        # output data ports can have any number of connections
+        if not src.data_type == AGPortDataTypes.tExec or not dst.data_type == AGPortDataTypes.tExec:
+            if len(dst.affected_by) >= 1:
+                if debug:
+                    print('already has connection')
+                dst.disconnect_all()
+        else:
+            if src.hasConnections():
+                src.disconnect_all()
 
         portAffects(src, dst)
         src.set_dirty()
@@ -372,7 +375,6 @@ class AGraph(object):
         return True
 
     def remove_edge(self, edge, call_connection_functions=True):
-
         edge.source().affects.remove(edge.destination())
         edge.source().edge_list.remove(edge)
         edge.destination().affected_by.remove(edge.source())

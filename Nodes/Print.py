@@ -7,7 +7,8 @@ from AGraphPySide import BaseNode
 class Print(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super(Print, self).__init__(name, graph)
-        self.inExec = self.add_input_port("IN", AGPortDataTypes.tExec, self.compute)
+        self.inExec = self.add_input_port("in", AGPortDataTypes.tExec, self.compute)
+        self.outExec = self.add_output_port("out", AGPortDataTypes.tExec, self.compute)
         self.data = self.add_input_port("data", AGPortDataTypes.tAny)
 
     @staticmethod
@@ -15,4 +16,6 @@ class Print(BaseNode.Node, AGNode):
         return 'Util'
 
     def compute(self):
-        self.graph().write_to_console(self.data.get_data(), True)
+        if self.inExec.hasConnections():
+            self.graph().write_to_console(self.data.get_data(), True)
+        self.outExec.call()
