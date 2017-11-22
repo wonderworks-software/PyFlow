@@ -177,6 +177,55 @@ def parse(line):
     return out
 
 
+class AutoPanController(object):
+    def __init__(self, amount=10.0):
+        super(AutoPanController, self).__init__()
+        self.bAllow = False
+        self.amount = amount
+        self.autoPanDelta = QtGui.QVector2D(0.0, 0.0)
+        self.beenOutside = False
+
+    def Tick(self, rect, pos):
+        if self.bAllow:
+            if pos.x() < 0:
+                self.autoPanDelta = QtGui.QVector2D(-self.amount, 0.0)
+                self.beenOutside = True
+            if pos.x() > rect.width():
+                self.autoPanDelta = QtGui.QVector2D(self.amount, 0.0)
+                self.beenOutside = True
+            if pos.y() < 0:
+                self.autoPanDelta = QtGui.QVector2D(0.0, -self.amount)
+                self.beenOutside = True
+            if pos.y() > rect.height():
+                self.autoPanDelta = QtGui.QVector2D(0.0, self.amount)
+                self.beenOutside = True
+            if self.beenOutside and rect.contains(pos):
+                self.reset()
+
+    def getAmount(self):
+        return self.amount
+
+    def getDelta(self):
+        return self.autoPanDelta
+
+    def setAmount(self, amount):
+        self.amount = amount
+
+    def start(self):
+        self.bAllow = True
+
+    def isActive(self):
+        return self.bAllow
+
+    def stop(self):
+        self.bAllow = False
+        self.reset()
+
+    def reset(self):
+        self.beenOutside = False
+        self.autoPanDelta = QtGui.QVector2D(0.0, 0.0)
+
+
 class SceneClass(QtGui.QGraphicsScene):
     def __init__(self, parent):
         super(SceneClass, self).__init__(parent)
@@ -901,7 +950,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.factor_diff = 0
         self.scale(self.factor, self.factor)
         self.setWindowTitle(self.tr(name))
-
         self.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemShape)
 
         self._current_file_name = 'Untitled'
@@ -927,25 +975,27 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._resize_group_mode = False
         self.horizontalScrollBar().setValue(self.horizontalScrollBar().maximum() / 2)
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum() / 2)
-        # self._tick_functions = []
         self.registeredCommands = {}
         self.registerCommands()
         self._sortcuts_enabled = True
-        # self.tick_timer = QtCore.QTimer()  # this timer executes all functions in '_tick_functions'
-        # self.tick_timer.timeout.connect(self._tick_executor)
-        # self.tick_timer.start(50)
+        self.tick_timer = QtCore.QTimer()  # this timer executes all functions in '_tick_functions'
+        self.tick_timer.timeout.connect(self.Tick)
+        self.tick_timer.start(50)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid_size = 10
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
-
-        # if (path.isfile(_mod_folder + 'resources/sounds/startup.wav') and platform.system() == "Windows"):
-        #     GraphWidget.play_sound_win(_mod_folder + 'resources/sounds/startup.wav')
+        self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
 
     def shoutDown(self):
         self.scene().shoutDown()
         self.scene().clear()
 
+    def moveScrollbar(self, delta):
+        x = self.horizontalScrollBar().value() + delta.x()
+        y = self.verticalScrollBar().value() + delta.y()
+        self.horizontalScrollBar().setValue(x)
+        self.verticalScrollBar().setValue(y)
 
     def set_scrollbars_positions(self, horizontal, vertical):
         try:
@@ -985,9 +1035,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         t = Thread(target=lambda: winsound.PlaySound(file_name, winsound.SND_FILENAME))
         t.start()
 
-    # def _tick_executor(self):
-    #     for foo in self._tick_functions:
-    #         foo()
+    def Tick(self):
+        if self.autoPanController.isActive():
+            self.moveScrollbar(self.autoPanController.getDelta())
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
@@ -1023,14 +1073,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._sortcuts_enabled = True
 
     def get_nodes(self):
-
-        # ls = []
-        # for i in self.scene().items():
-        #     if hasattr(i, 'object_type'):
-        #         if i.object_type == AGObjectTypes.tNode:
-        #             if i.isVisible():
-        #                 ls.append(i)
-        # return ls
         return self.nodes
 
     def findPort(self, port_name):
@@ -1168,11 +1210,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.parent.console.append(str("// saved: '{0}'".format(self._current_file_name)))
 
     def save_as(self):
-
         self.save(True)
 
     def new_file(self):
-
         self._current_file_name = 'Untitled'
         self._file_name_label.setPlainText('Untitled')
         for n in self.nodes:
@@ -1184,7 +1224,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.new_file()
 
     def load(self):
-
         name_filter = "Graph files (*.graph)"
         fpath = QtGui.QFileDialog.getOpenFileName(filter=name_filter, dir="./Examples")
         if not fpath[0] == '':
@@ -1198,7 +1237,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._file_name_label.setPlainText(self._current_file_name)
 
     def get_port_by_full_name(self, full_name):
-
         node_name = full_name.split('.')[0]
         port_name = full_name.split('.')[1]
         node = self.get_node_by_name(node_name)
@@ -1210,16 +1248,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def options(self):
         self.options_widget.show()
 
-    # def set_shadows_enabled(self, state):
-
-    #     for n in self.nodes:
-    #         n.set_shadows_enabled(state)
-    #     self._shadows = state
-
     def frame(self):
-
-        polygon = self.mapToScene(self.viewport().rect())
-        rect = QtCore.QRectF(polygon[0], polygon[2])
+        # polygon = self.mapToScene(self.viewport().rect()).boundingRect()
+        rect = self.mapToScene(self.viewport().rect()).boundingRect()
         mid_points = []
         for n in self.nodes:
             n_rect = QtCore.QRectF(n.scenePos(),
@@ -1237,7 +1268,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.verticalScrollBar().setValue(float(self.verticalScrollBar().maximum() * by_y))
 
     def get_nodes_rect(self, selected=False):
-
         rectangles = []
         if selected:
             for n in [n for n in self.nodes if n.isSelected()]:
@@ -1265,7 +1295,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.nodesPendingKill.append(self.nodes.pop(self.nodes.index(node)))
 
     def kill_selected_nodes(self):
-
         selected = self.selected_nodes()
         for i in selected:
             if i.isSelected() and i in self.nodes and i in self.scene().items():
@@ -1277,7 +1306,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         clearLayout(self.parent.PropertiesformLayout)
 
     def keyPressEvent(self, event):
-
         if not self.is_sortcuts_enabled():
             QtGui.QGraphicsView.keyPressEvent(self, event)
             return
@@ -1380,6 +1408,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                     self.pressed_item.parent().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
                     self.pressed_item.parent().setFlag(QtGui.QGraphicsItem.ItemIsSelectable, False)
                     self._draw_real_time_line = True
+                    self.autoPanController.start()
                 if self.pressed_item.object_type == AGObjectTypes.tNodeName:
                     self.pressed_item.parentItem().setSelected(True)
             else:
@@ -1439,6 +1468,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                               self.mousePos.y() - self.mousePressPose.y())
             self.rubber_rect.setRect(r.normalized())
 
+        self.autoPanController.Tick(self.viewport().rect(), event.pos())
         super(GraphWidget, self).mouseMoveEvent(event)
 
     def createComment(self, x1, y1, x2, y2, name):
@@ -1489,6 +1519,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
+        self.autoPanController.stop()
         self.released_item = self.itemAt(event.pos())
         self.setDragMode(self.NoDrag)
         self._resize_group_mode = False
