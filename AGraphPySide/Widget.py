@@ -1,5 +1,7 @@
 from PySide import QtCore
 from PySide import QtGui
+# from PySide import QtOpenGL
+# from OpenGL.GL import *
 import math
 import platform
 import random
@@ -7,7 +9,7 @@ from Settings import Colors
 from Settings import LineTypes
 from Settings import get_line_type
 from AbstractGraph import *
-from Edge import Edge, RealTimeLine
+from Edge import Edge  #, RealTimeLine
 from os import listdir, path, startfile
 import sys
 _file_folder = path.dirname(__file__)
@@ -242,6 +244,16 @@ class SceneClass(QtGui.QGraphicsScene):
             event.accept()
         else:
             event.ignore()
+
+    def initGL(self):
+        glClearColor(0.0, 1.0, 0.0, 1.0)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        glOrtho(-500, 500, -500, 500, -1000, 1000)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
 
     def dragMoveEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
@@ -846,7 +858,8 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.write_config()
         self.close()
         try:
-            self.picker.close()
+            if self.picker is not None:
+                self.picker.close()
         except:
             pass
 
@@ -886,9 +899,9 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.settings_class.setValue('Nodes selected pen type', LineTypes.lSolidLine)
         self.settings_class.setValue('Nodes label bg color', Colors.kNodeNameRect)
         self.pb_node_label_bg_color.color = Colors.kNodeNameRect
-        self.settings_class.setValue('Nodes label font', QtGui.QFont('Arial'))
+        self.settings_class.setValue('Nodes label font', QtGui.QFont('Consolas'))
         self.settings_class.setValue('Nodes label font color', Colors.kWhite)
-        self.settings_class.setValue('Nodes label font size', 8)
+        self.settings_class.setValue('Nodes label font size', 6)
         self.settings_class.setValue('Nodes lyt A color', Colors.kPortLinesA)
         self.pb_lyt_a_color.color = Colors.kPortLinesA
         self.settings_class.setValue('Nodes lyt B color', Colors.kPortLinesB)
@@ -900,8 +913,8 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.settings_class.setValue('Port dirty type', LineTypes.lDotLine)
         self.settings_class.setValue('Port label color', Colors.kPortNameColor)
         self.pb_port_label_color.color = Colors.kPortNameColor
-        self.settings_class.setValue('Port label font', QtGui.QFont('Arial'))
-        self.settings_class.setValue('Port label size', 8)
+        self.settings_class.setValue('Port label font', QtGui.QFont('Consolas'))
+        self.settings_class.setValue('Port label size', 5)
         self.settings_class.endGroup()
         self.settings_class.beginGroup('SCENE')
         self.settings_class.setValue('Scene bg color', Colors.kSceneBackground)
@@ -986,6 +999,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
+        # if QtOpenGL.QGLFormat.hasOpenGL():
+        #     self.setViewport(QtOpenGL.QGLWidget(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers)))
 
     def shoutDown(self):
         self.scene().shoutDown()
@@ -1396,6 +1411,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         modifiers = event.modifiers()
 
+
         if modifiers == QtCore.Qt.AltModifier and self.pressed_item.__class__.__name__ == "Port":
             self.pressed_item.disconnect_all()
 
@@ -1415,9 +1431,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.pressed_item.setSelected(True)
 
         if not self.pressed_item:
-            if event.button() == QtCore.Qt.RightButton:
+            if event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.NoModifier:
                 self._is_rubber_band_selection = True
-            if event.button() == QtCore.Qt.LeftButton:
+            if event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.ControlModifier:
                 self.setDragMode(self.ScrollHandDrag)
             self.node_box().close()
             self.node_box().le_nodes.clear()
@@ -1673,28 +1689,24 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         left = int(scene_rect.left()) - (int(scene_rect.left()) % self.grid_size)
         top = int(scene_rect.top()) - (int(scene_rect.top()) % self.grid_size)
 
-        painter.setPen(QtGui.QPen(self.kGridColor, 0.5, QtCore.Qt.SolidLine))
-
         # draw grid vertical lines
+        scaleMult = 1.0
         for x in xrange(left, int(scene_rect.right()), self.grid_size):
+            if x % (self.grid_size * 10.0) == 0.0:
+                painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
+            else:
+                painter.setPen(QtGui.QPen(self.kGridColor, 0.5 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
         for y in xrange(top, int(scene_rect.bottom()), self.grid_size):
-            painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
-
-        painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0, QtCore.Qt.SolidLine))
-
-        # draw grid vertical lines
-        for x in xrange(left, int(scene_rect.right()), self.grid_size * 10):
-            painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
-
-        # draw grid horizontal lines
-        for y in xrange(top, int(scene_rect.bottom()), self.grid_size * 10):
+            if y % (self.grid_size * 10.0) == 0.0:
+                painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
+            else:
+                painter.setPen(QtGui.QPen(self.kGridColor, 0.5 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
     def console_help(self):
-
         msg = """///// AVAILABLE NODES LIST /////\n\n"""
 
         for f in listdir(path.dirname(Nodes.__file__)):
@@ -1715,14 +1727,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.parent.console.append(msg)
 
     def create_node(self, className, x, y, name):
-
         node_class = get_node(Nodes, className, self)
-        # node_class.set_name(name)
         self.add_node(node_class, x, y)
         return node_class
 
     def executeCommand(self, command):
-
         commandLine = parse(command)
 
         # execute custom command
@@ -2056,16 +2065,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if direction:
             self.factor += (step_size - 1)
             self.factor_diff += self.factor - current_factor
-            # if self.factor_diff >= self.maximum_scale:
-            #     self.factor_diff = self.maximum_scale-0.01
-            #     return
             self.scale(step_size, step_size)
         else:
             self.factor -= (1 - step_size)
             self.factor_diff += self.factor - current_factor
-            # if self.factor_diff <= self.minimum_scale:
-            #     self.factor_diff = self.minimum_scale+0.01
-            #     return
             self.scale(step_size, step_size)
 
     def reset_scale(self):
@@ -2074,6 +2077,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def scale_view(self, scale_factor):
 
         self.factor = self.matrix().scale(scale_factor, scale_factor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
+        self.factor = round(self.factor, 1)
+        if self.factor < (self.minimum_scale + 0.4):
+            self.grid_size = 20
+        else:
+            self.grid_size = 10
         if self.factor < self.minimum_scale or self.factor > self.maximum_scale:
             return
         self.scale(scale_factor, scale_factor)

@@ -331,12 +331,19 @@ class AGraph(object):
         debug = self.is_debug()
         if src.type == AGPortTypes.kInput:
             src, dst = dst, src
+
+        # check if exec connects to exec
+        if any(t == AGPortDataTypes.tExec for t in [src.data_type, dst.data_type]):
+            if not all(t == AGPortDataTypes.tExec for t in [src.data_type, dst.data_type]):
+                return False
+
         if AGPortDataTypes.tAny not in [dst.data_type, src.data_type]:
             if dst.data_type not in [AGPortDataTypes.tAny, AGPortDataTypes.tReroute]:
                 if src.data_type not in dst.allowed_data_types + [AGPortDataTypes.tReroute]:
                     print('data types error')
                     print(src.data_type, dst.data_type)
                     return False
+
         if src in dst.affected_by:
             if debug:
                 print('already connected. skipped')

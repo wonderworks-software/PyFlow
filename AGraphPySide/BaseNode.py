@@ -90,6 +90,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def __init__(self, name, graph, w=120, color=Colors.kNodeBackgrounds, spacings=Spacings, port_types=AGPortTypes, headColor=Colors.kNodeNameRect):
         AGNode.__init__(self, name, graph)
         QtGui.QGraphicsItem.__init__(self)
+        self.setCacheMode(QtGui.QGraphicsItem.DeviceCoordinateCache)
         self.options = self.graph().get_settings()
         if self.options:
             self.opt_node_base_color = QtGui.QColor(self.options.value('NODES/Nodes base color'))

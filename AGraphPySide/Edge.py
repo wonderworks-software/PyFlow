@@ -16,14 +16,16 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 
+        self.path = QtGui.QPainterPath()
+
         self.setZValue(-1)
         self.connection = {'From': self.source().port_name(),
                            'To': self.destination().port_name()}
 
         self.settings = self.graph().get_settings()
+        self.color = self.source().color.darker(150)
         if self.settings:
-            self.color = QtGui.QColor(self.settings.value('SCENE/Edge color'))
-            # self.color = QtGui.QColor(self.destination().color.lighter(200))
+            # self.color = QtGui.QColor(self.settings.value('SCENE/Edge color'))
             self.lineType = get_line_type(self.settings.value('SCENE/Edge pen type'))
             self.thikness = float(self.settings.value('SCENE/Edge line thickness'))
 
@@ -33,9 +35,10 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
             self.pen = QtGui.QPen(self.kConnectionLines, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
         points = self.getEndPoints()
+        self.updateCurve(points[0], points[1])
+
         self.setPen(self.pen)
 
-        self.updateCurve(points[0], points[1])
         self.source().port_connected()
         self.destination().port_connected()
 
@@ -79,7 +82,6 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
     def hoverLeaveEvent(self, event):
         super(Edge, self).hoverLeaveEvent(event)
-        # self.setZValue(0.0)
         self.pen.setWidthF(self.thikness)
         self.update()
 
@@ -89,15 +91,15 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
     def updateCurve(self, p1, p2):
         distance = p2.x() - p1.x()
         multiply = 3
-        path = QtGui.QPainterPath()
+        self.path = QtGui.QPainterPath()
 
-        path.moveTo(p1)
+        self.path.moveTo(p1)
         if distance < 0:
-            path.cubicTo(QtCore.QPoint(p1.x() + distance / -multiply, p1.y()), QtCore.QPoint(p2.x() - distance / -multiply, p2.y()), p2)
+            self.path.cubicTo(QtCore.QPoint(p1.x() + distance / -multiply, p1.y()), QtCore.QPoint(p2.x() - distance / -multiply, p2.y()), p2)
         else:
-            path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()), QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
+            self.path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()), QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
 
-        self.setPath(path)
+        self.setPath(self.path)
 
     def destination_port_name(self):
         return self.destination().port_name()
@@ -107,24 +109,3 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         points = self.getEndPoints()
         self.updateCurve(points[0], points[1])
         super(Edge, self).paint(painter, option, widget)
-
-
-class RealTimeLine(QtGui.QGraphicsLineItem, Colors):
-    def __init__(self, graph):
-        super(RealTimeLine, self).__init__()
-        self.p1 = QtCore.QPointF(0, 0)
-        self.p2 = QtCore.QPointF(50, 50)
-        self.graph = graph
-        self.offset = 0
-        self.setZValue(-1)
-
-    def paint(self, painter, option, widget):
-
-        painter.setPen(QtGui.QPen(self.kBlack, 1, QtCore.Qt.SolidLine))
-        if self.graph().pressed_item and hasattr(self.graph().pressed_item, 'object_type'):
-            if self.graph().pressed_item.object_type == AGObjectTypes.tPort:
-                self.offset = self.graph().pressed_item.boundingRect().width()/2
-                painter.drawLine(self.mapToParent(QtCore.QPointF(self.p1.x() + self.offset, self.p1.y() + self.offset)), self.p2)
-
-    def boundingRect(self):
-        return QtCore.QRectF(self.p1, self.p2)
