@@ -23,7 +23,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
                            'To': self.destination().port_name()}
 
         self.settings = self.graph().get_settings()
-        self.color = self.source().color.darker(150)
+        self.color = self.source().color
         if self.settings:
             # self.color = QtGui.QColor(self.settings.value('SCENE/Edge color'))
             self.lineType = get_line_type(self.settings.value('SCENE/Edge pen type'))
@@ -89,9 +89,12 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         return self.source().port_name()
 
     def updateCurve(self, p1, p2):
-        distance = p2.x() - p1.x()
+        distance = p1.x() - p2.x()
         multiply = 3
         self.path = QtGui.QPainterPath()
+
+        direction = QtGui.QVector2D(p1) - QtGui.QVector2D(p2)
+        direction.normalize()
 
         self.path.moveTo(p1)
         if distance < 0:
@@ -108,4 +111,5 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.setPen(self.pen)
         points = self.getEndPoints()
         self.updateCurve(points[0], points[1])
+
         super(Edge, self).paint(painter, option, widget)

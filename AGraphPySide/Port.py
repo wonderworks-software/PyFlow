@@ -55,6 +55,8 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.reroutes = []
         self._container = None
         self.color = getPortColorByType(data_type)
+        if self.data_type == AGPortDataTypes.tReroute:
+            self.color = color
         self.setGeometry(0, 0, self.__width, self.__height)
         if self.options:
             opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))

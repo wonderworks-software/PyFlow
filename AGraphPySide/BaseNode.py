@@ -184,8 +184,9 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.label.setPlainText(self.name)
 
     def clone(self):
-        x = self.graph().mousePos.x()
-        y = self.graph().mousePos.y()
+        pos = self.graph().mapToScene(self.graph().mousePos)
+        x = pos.x()
+        y = pos.y()
         if self.parentItem() is None:
             new_node = self.graph().create_node(self.__class__.__name__, x, y, self.get_name())
             return new_node

@@ -8,6 +8,7 @@ from Settings import LineTypes
 from Settings import get_line_type
 from AbstractGraph import *
 from Edge import Edge  # RealTimeLine
+from Port import getPortColorByType
 from os import listdir, path, startfile
 import sys
 _file_folder = path.dirname(__file__)
@@ -836,8 +837,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         event.accept()
 
     def OnDoubleClick(self, pos):
-        if self.pressed_item and hasattr(self.pressed_item, "object_type"):
-            if isinstance(self.pressed_item, Edge):
+
+        if isinstance(self.pressed_item, Edge):
                 # store neighbors
                 src = self.pressed_item.source()
                 dst = self.pressed_item.destination()
@@ -847,9 +848,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.pressed_item.kill()
                 # reconnect neighbors
                 left_edge = self.add_edge(src, node.inp0)
+                node.out0.color = src.color
                 right_edge = self.add_edge(node.out0, dst)
-                right_edge.color = left_edge.color
 
+        if self.pressed_item and hasattr(self.pressed_item, "object_type"):
             if self.pressed_item.object_type == AGObjectTypes.tNodeName:
                 name, result = QtGui.QInputDialog.getText(self, "New name dialog", "Enter new name:")
                 if result:

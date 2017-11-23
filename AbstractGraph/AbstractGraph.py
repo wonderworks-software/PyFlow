@@ -11,7 +11,7 @@ class AGPort(object):
         self.parent = weakref.ref(parent)
         self.object_type = AGObjectTypes.tPort
         self.data_type = data_type
-        self.allowed_data_types = [data_type]
+        self.allowed_data_types = [data_type, AGPortDataTypes.tReroute]
         self.affects = []
         self.affected_by = []
         self.edge_list = []
@@ -331,11 +331,6 @@ class AGraph(object):
         debug = self.is_debug()
         if src.type == AGPortTypes.kInput:
             src, dst = dst, src
-
-        # check if exec connects to exec
-        if any(t == AGPortDataTypes.tExec for t in [src.data_type, dst.data_type]):
-            if not all(t == AGPortDataTypes.tExec for t in [src.data_type, dst.data_type]):
-                return False
 
         if AGPortDataTypes.tAny not in [dst.data_type, src.data_type]:
             if dst.data_type not in [AGPortDataTypes.tAny, AGPortDataTypes.tReroute]:
