@@ -13,12 +13,9 @@ class NodeName(QtGui.QGraphicsTextItem):
         self.color = color
         self.setPlainText(self.name)
         self.setParentItem(parent)
-        self.setCursor(QtCore.Qt.IBeamCursor)
         self.options = self.parentItem().graph().get_settings()
-        self.setFlags(QtGui.QGraphicsItem.ItemIsFocusable)
-        self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
+        self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         if self.options:
-            # self.opt_bg_color = QtGui.QColor(self.options.value('NODES/Nodes label bg color'))
             self.text_color = QtGui.QColor(self.options.value('NODES/Nodes label font color'))
             self.setDefaultTextColor(self.text_color)
             self.opt_font = QtGui.QFont(self.options.value('NODES/Nodes label font'))
@@ -37,7 +34,6 @@ class NodeName(QtGui.QGraphicsTextItem):
             QtGui.QGraphicsTextItem.keyPressEvent(self, event)
 
     def paint(self, painter, option, widget):
-        # if self.options:
         r = option.rect
         r.setWidth(self.parentItem().childrenBoundingRect().width())
         b = QtGui.QLinearGradient(0, 0, 0, r.height())
@@ -45,9 +41,6 @@ class NodeName(QtGui.QGraphicsTextItem):
         b.setColorAt(0.2, self.color)
         b.setColorAt(1, QtGui.QColor(0, 0, 0, 0))
         painter.fillRect(r, QtGui.QBrush(b))
-        # else:
-        #     r = option.rect
-        #     painter.fillRect(r, QtGui.QColor(self.color))
         super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):

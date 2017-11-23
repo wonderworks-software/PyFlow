@@ -64,6 +64,15 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         else:
             self._dirty_pen = QtGui.QPen(Colors.kDirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
+    def grabMouseEvent(self, event):
+        modifiers = QtGui.QApplication.keyboardModifiers()
+        if self.hasConnections() and modifiers == QtCore.Qt.AltModifier:
+            self.disconnect_all()
+        super(Port, self).grabMouseEvent(event)
+
+    def ungrabMouseEvent(self, event):
+        super(Port, self).ungrabMouseEvent(event)
+
     def get_container(self):
         return self._container
 
@@ -156,18 +165,20 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         else:
             return self.parent().outputsLayout
 
-    def hoverEnterEvent(self, *args, **kwargs):
-
+    def hoverEnterEvent(self, event):
         self.update()
         self.hovered = True
+        self.setToolTip(str(self.current_data()))
         if self.parent().graph().is_debug():
             print('data -', self._data)
             self.write_to_console(self._data)
+        event.accept()
+        super(Port, self).hoverEnterEvent(event)
 
-    def hoverLeaveEvent(self, *args, **kwargs):
-
+    def hoverLeaveEvent(self, event):
         self.update()
         self.hovered = False
+        super(Port, self).hoverLeaveEvent(event)
 
     def set_data(self, data, dirty_propagate=True):
 

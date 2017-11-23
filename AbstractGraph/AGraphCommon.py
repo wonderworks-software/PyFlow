@@ -7,6 +7,10 @@ import math
 FLAG_SYMBOL = "~"
 
 
+def clamp(n, vmin, vmax):
+    return max(min(n, vmax), vmin)
+
+
 def roundup(x, to):
     return int(math.ceil(x / to)) * to
 
