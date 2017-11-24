@@ -10,8 +10,9 @@ class AGPort(object):
         self.name = name.replace(" ", "_")
         self.parent = weakref.ref(parent)
         self.object_type = AGObjectTypes.tPort
+        self._data_type = None
         self.data_type = data_type
-        self.allowed_data_types = [data_type, AGPortDataTypes.tReroute]
+
         self.affects = []
         self.affected_by = []
         self.edge_list = []
@@ -21,20 +22,34 @@ class AGPort(object):
         # set default values
         self._data = self.getDefaultDataValue()
 
-    def getDefaultDataValue(self):
-        if self.data_type == AGPortDataTypes.tFloat:
-            return float()
-        if self.data_type == AGPortDataTypes.tInt:
-            return int()
-        if self.data_type == AGPortDataTypes.tString:
-            return str("none")
-        if self.data_type == AGPortDataTypes.tBool:
-            return bool()
-        if self.data_type == AGPortDataTypes.tArray:
-            return []
-        if self.data_type == AGPortDataTypes.tAny:
-            return None
+    @property
+    def data_type(self):
+        return self._data_type
+
+    @data_type.setter
+    def data_type(self, value):
+        self._data_type = value
+
+        self.allowed_data_types = list(set([AGPortDataTypes.tReroute, value]))
         if self.data_type == AGPortDataTypes.tReroute:
+            self.allowed_data_types.append(AGPortDataTypes.tAny)
+        if self.data_type == AGPortDataTypes.tExec or self.data_type == AGPortDataTypes.tAny:
+            self.allowed_data_types.append(value)
+
+    def getDefaultDataValue(self):
+        if self._data_type == AGPortDataTypes.tFloat:
+            return float()
+        if self._data_type == AGPortDataTypes.tInt:
+            return int()
+        if self._data_type == AGPortDataTypes.tString:
+            return str("none")
+        if self._data_type == AGPortDataTypes.tBool:
+            return bool()
+        if self._data_type == AGPortDataTypes.tArray:
+            return []
+        if self._data_type == AGPortDataTypes.tAny:
+            return None
+        if self._data_type == AGPortDataTypes.tReroute:
             return None
 
     def set_data_overload(self, data, dirty_propagate=True):
@@ -48,10 +63,10 @@ class AGPort(object):
             return self.getDefaultDataValue()
         return self._data
 
-    def port_connected(self):
+    def port_connected(self, other):
         self._connected = True
 
-    def port_disconnected(self):
+    def port_disconnected(self, other):
         if not self.hasConnections():
             self._connected = False
 
@@ -127,20 +142,20 @@ class AGPort(object):
             p.call()
 
     def set_data(self, data, dirty_propagate=True):
-        if self.data_type == AGPortDataTypes.tFloat:
+        if self._data_type == AGPortDataTypes.tFloat:
             self._data = float(data)
-        if self.data_type == AGPortDataTypes.tInt:
+        if self._data_type == AGPortDataTypes.tInt:
             self._data = int(data)
-        if self.data_type == AGPortDataTypes.tString:
+        if self._data_type == AGPortDataTypes.tString:
             self._data = str(data)
-        if self.data_type == AGPortDataTypes.tArray:
+        if self._data_type == AGPortDataTypes.tArray:
             self._data = data
-        if self.data_type == AGPortDataTypes.tBool:
+        if self._data_type == AGPortDataTypes.tBool:
             if type(data) != bool().__class__:
                 self._data = self.str2bool(data)
             else:
                 self._data = bool(data)
-        if self.data_type == AGPortDataTypes.tAny:
+        if self._data_type == AGPortDataTypes.tAny:
             self._data = data
 
         self.set_clean()
@@ -332,11 +347,19 @@ class AGraph(object):
         if src.type == AGPortTypes.kInput:
             src, dst = dst, src
 
-        if AGPortDataTypes.tAny not in [dst.data_type, src.data_type]:
-            if dst.data_type not in [AGPortDataTypes.tAny, AGPortDataTypes.tReroute]:
-                if src.data_type not in dst.allowed_data_types + [AGPortDataTypes.tReroute]:
-                    print('data types error')
-                    print(src.data_type, dst.data_type)
+        if src.data_type == AGPortDataTypes.tReroute:
+            src.data_type = dst.data_type
+        if dst.data_type == AGPortDataTypes.tReroute:
+            dst.data_type = src.data_type
+
+        if AGPortDataTypes.tAny not in dst.allowed_data_types:
+            if src.data_type not in dst.allowed_data_types:
+                print("data types error", src.data_type, dst.data_type)
+                return False
+        else:
+            if src.data_type == AGPortDataTypes.tExec:
+                if dst.data_type not in [AGPortDataTypes.tExec, AGPortDataTypes.tReroute]:
+                    print("data types error", src.data_type, dst.data_type)
                     return False
 
         if src in dst.affected_by:
@@ -360,29 +383,25 @@ class AGraph(object):
         # output execs can have only one connection
         # input data ports can haveone output connection
         # output data ports can have any number of connections
-        if not src.data_type == AGPortDataTypes.tExec or not dst.data_type == AGPortDataTypes.tExec:
-            if len(dst.affected_by) >= 1:
-                if debug:
-                    print('already has connection')
-                dst.disconnect_all()
-        else:
-            if src.hasConnections():
-                src.disconnect_all()
+        # retoutes can have any number of connection both for inputs and outputs
+        if src.data_type == AGPortDataTypes.tReroute and dst.data_type == AGPortDataTypes.tExec:
+            src.disconnect_all()
 
         portAffects(src, dst)
         src.set_dirty()
         dst._data = src._data
-        dst.port_connected()
+        dst.port_connected(src)
+        src.port_connected(dst)
         push(dst)
         return True
 
-    def remove_edge(self, edge, call_connection_functions=True):
+    def remove_edge(self, edge):
         edge.source().affects.remove(edge.destination())
         edge.source().edge_list.remove(edge)
         edge.destination().affected_by.remove(edge.source())
         edge.destination().edge_list.remove(edge)
-        edge.destination().port_disconnected()
-        edge.source().port_disconnected()
+        edge.destination().port_disconnected(edge.source())
+        edge.source().port_disconnected(edge.destination())
 
     def plot(self):
         print self.name + '\n----------\n'

@@ -51,6 +51,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.hovered = False
         self.startPos = None
         self.endPos = None
+        self.bEdgeTangentDirection = False
         self.options = self.parent().graph().get_settings()
         self.reroutes = []
         self._container = None
@@ -85,18 +86,14 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         return QtCore.QSizeF(self.__width, self.__height)
 
     def disconnect_all(self):
-        if self.parent().graph().is_debug():
-            print(self.edge_list)
-        for e in self.edge_list:
-            self.parent().graph().write_to_console('{0} killed'.format(e.__str__()))
-            e.kill()
-        if not len(self.edge_list) == 0:
-            self.disconnect_all()
-
-        self.kill_reroutes()
-        if self.type == AGPortTypes.kInput:
-            for p in self.affected_by:
-                p.kill_reroutes()
+        trash = []
+        for e in self.parent().graph().edges:
+            if self.port_name() == e.connection["To"]:
+                trash.append(e)
+            if self.port_name() == e.connection["From"]:
+                trash.append(e)
+        for t in trash:
+            self.parent().graph().remove_edge(t)
 
         self.parent().graph().write_to_console("disconnectAttr {1}an {0}".format(self.port_name(), FLAG_SYMBOL))
 
@@ -105,10 +102,6 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
         return path
-
-    def kill_reroutes(self):
-        for r in self.reroutes:
-            r.kill()
 
     def paint(self, painter, option, widget):
 

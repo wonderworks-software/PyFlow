@@ -179,6 +179,9 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def property_view(self):
         return self.graph().parent.dockWidgetNodeView
 
+    def Tick(self):
+        pass
+
     def set_name(self, name):
         AGNode.set_name(self, name)
         self.label.setPlainText(self.name)
@@ -315,16 +318,10 @@ class Node(QtGui.QGraphicsItem, AGNode):
         return container
 
     def kill(self):
-
         for i in self.inputs + self.outputs:
-            if i.hasConnections():
-                i.disconnect_all()
+            i.disconnect_all()
 
         self.setVisible(False)
-        if self.parentItem() and hasattr(self.parentItem(), 'object_type'):
-            if self.parentItem().object_type == AGObjectTypes.tGrouper:
-                self.parentItem().remove_node(self)
-
         self.graph().movePendingKill(self)
 
         self.graph().write_to_console("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))

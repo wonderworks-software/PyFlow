@@ -8,7 +8,7 @@ from Settings import LineTypes
 from Settings import get_line_type
 from AbstractGraph import *
 from Edge import Edge  # RealTimeLine
-from Port import getPortColorByType
+from Port import getPortColorByType, Port
 from os import listdir, path, startfile
 import sys
 _file_folder = path.dirname(__file__)
@@ -486,8 +486,8 @@ class NodesBox(QtGui.QWidget):
     def set_visible(self):
 
         pos = self.graph().mousePos
-        self.move(self.graph().mapFromScene(pos.toPoint()).x() + self.graph().pos().x(),
-                  self.graph().mapFromScene(pos.toPoint()).y() + self.graph().pos().y()
+        self.move(self.graph().mapFromScene(pos).x() + self.graph().pos().x(),
+                  self.graph().mapFromScene(pos).y() + self.graph().pos().y()
                   )
         self.refresh_list('')
         self.show()
@@ -807,7 +807,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._sortcuts_enabled = True
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.Tick)
-        self.tick_timer.start(50)
+        self.tick_timer.start(100)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid_size = 10
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
@@ -837,19 +837,19 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         event.accept()
 
     def OnDoubleClick(self, pos):
-
         if isinstance(self.pressed_item, Edge):
-                # store neighbors
-                src = self.pressed_item.source()
-                dst = self.pressed_item.destination()
-                # create rerout node
-                node = self.create_node("Reroute", pos.x(), pos.y() - 5.0, "Reroute")
-                # kill pressed edge
-                self.pressed_item.kill()
-                # reconnect neighbors
-                left_edge = self.add_edge(src, node.inp0)
-                node.out0.color = src.color
-                right_edge = self.add_edge(node.out0, dst)
+            # store neighbors
+            src = self.pressed_item.source()
+            dst = self.pressed_item.destination()
+            # create rerout node
+            node = self.create_node("Reroute", pos.x(), pos.y() - 5.0, "Reroute")
+            # kill pressed edge
+            self.remove_edge(self.pressed_item)
+            # reconnect neighbors
+            left_edge = self.add_edge(src, node.inp0)
+            right_edge = self.add_edge(node.out0, dst)
+            src.reroutes.append(node)
+            dst.reroutes.append(node)
 
         if self.pressed_item and hasattr(self.pressed_item, "object_type"):
             if self.pressed_item.object_type == AGObjectTypes.tNodeName:
@@ -873,6 +873,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def Tick(self):
         if self.autoPanController.isActive():
             self.moveScrollbar(self.autoPanController.getDelta())
+        for n in self.nodes:
+            n.Tick()
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
@@ -1053,8 +1055,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         for n in self.nodes:
             n.setSelected(True)
         self.kill_selected_nodes()
-        for g in self.groupers:
-            g.delete()
         if len(self.nodes) > 0:
             self.new_file()
 
@@ -1268,8 +1268,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
 
-        if self.pressed_item and not self._draw_real_time_line:
-            self.ensureVisible(self.pressed_item)
+        # if self.pressed_item and not self._draw_real_time_line:
+        #     self.ensureVisible(self.pressed_item)
 
         if self.bPanMode:
             delta = self.mapToScene(event.pos()) - self.mapToScene(self._lastMousePos)
@@ -1289,13 +1289,15 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                                                                              grp.resize_item.boundingRect().height()))
 
         if self._draw_real_time_line:
+            self.pressed_item
+
             if self.pressed_item.parentItem().isSelected():
                 self.pressed_item.parentItem().setSelected(False)
             if self.real_time_line not in self.scene().items():
                 self.scene().addItem(self.real_time_line)
 
             p1 = self.pressed_item.scenePos() + QtCore.QPointF(self.pressed_item.boundingRect().width() / 2,
-                                                               self.pressed_item.boundingRect().height() / 2)
+                                                          self.pressed_item.boundingRect().height() / 2)
             p2 = self.mapToScene(self.mousePos)
 
             distance = p2.x() - p1.x()
@@ -1369,14 +1371,23 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 do_connect = False
                 break
         if p_itm and r_itm:
-            if hasattr(p_itm, 'object_type') and hasattr(r_itm, 'object_type'):
-                if all([p_itm.object_type == AGObjectTypes.tPort, r_itm.object_type == AGObjectTypes.tPort]):
-                    if cycle_check(p_itm, r_itm):
-                        self.write_to_console('cycles are not allowed')
-                        do_connect = False
+            if isinstance(p_itm, Port) and isinstance(r_itm, Port):
+                if cycle_check(p_itm, r_itm):
+                    self.write_to_console('cycles are not allowed')
+                    do_connect = False
+            if isinstance(p_itm, Port) and isinstance(r_itm, Nodes.Reroute):
+                do_connect = True
 
         if do_connect:
-            self.add_edge(p_itm, r_itm)
+            if isinstance(r_itm, Nodes.Reroute):
+                p_itm.reroutes.append(r_itm)
+                if p_itm.type == AGPortTypes.kInput:
+                    self.add_edge(p_itm, r_itm.out0)
+                else:
+                    self.add_edge(p_itm, r_itm.inp0)
+            else:
+                if p_itm is not r_itm:
+                    self.add_edge(p_itm, r_itm)
         selected_nodes = self.selected_nodes()
         if len(selected_nodes) != 0:
             self.update_property_view(selected_nodes[0])
@@ -1785,13 +1796,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.write_to_console("connectAttr ~src {0} ~dst {1}".format(src.port_name(), dst.port_name()))
             return edge
 
-    def remove_edge(self, edge, call_connection_functions=True):
-
+    def remove_edge(self, edge):
+        AGraph.remove_edge(self, edge)
+        edge.source().update()
+        edge.destination().update()
         self.edges.remove(edge)
         edge.prepareGeometryChange()
         self.scene().removeItem(edge)
-
-        AGraph.remove_edge(self, edge, call_connection_functions)
 
     def write_to_console(self, data, force=False):
         if not force:
