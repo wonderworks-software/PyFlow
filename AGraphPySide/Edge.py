@@ -1,6 +1,7 @@
 from PySide import QtCore
 from PySide import QtGui
 from Settings import Colors
+from Nodes import Reroute
 from AbstractGraph import *
 import weakref
 
@@ -21,7 +22,14 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.connection = {'From': self.source().port_name(),
                            'To': self.destination().port_name()}
 
-        self.color = self.source().color
+        if isinstance(source.parentItem(), Reroute):
+            if source.parentItem().inp0.hasConnections():
+                self.color = source.parentItem().color
+            else:
+                self.color = destination.color
+        else:
+            self.color = self.source().color
+
         self.thikness = 1.0
         if source.data_type in [AGPortDataTypes.tExec, AGPortDataTypes.tReroute] and destination.data_type in [AGPortDataTypes.tExec, AGPortDataTypes.tReroute]:
             self.thikness = 2.0
@@ -33,9 +41,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
         self.setPen(self.pen)
 
-        # self.source().port_connected(self.destination())
         self.source().update()
-        # self.destination().port_connected(self.source())
         self.destination().update()
 
     def __str__(self):

@@ -22,7 +22,7 @@ class NodeName(QtGui.QGraphicsTextItem):
             self.opt_font_size = int(self.options.value('NODES/Nodes label font size'))
             self.opt_font.setPointSize(self.opt_font_size)
             self.setFont(self.opt_font)
-        self.setPos(0, -self.boundingRect().height() - 6)
+        self.setPos(0, -self.boundingRect().height() - 8)
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -34,12 +34,13 @@ class NodeName(QtGui.QGraphicsTextItem):
             QtGui.QGraphicsTextItem.keyPressEvent(self, event)
 
     def paint(self, painter, option, widget):
-        r = option.rect
-        r.setWidth(self.parentItem().childrenBoundingRect().width())
+        r = QtCore.QRectF(option.rect)
+        r.setWidth(self.parentItem().childrenBoundingRect().width() - 0.25)
+        r.setX(0.25)
         b = QtGui.QLinearGradient(0, 0, 0, r.height())
         b.setColorAt(0, QtGui.QColor(0, 0, 0, 0))
-        b.setColorAt(0.2, self.color)
-        b.setColorAt(1, QtGui.QColor(0, 0, 0, 0))
+        b.setColorAt(0.4, self.color)
+        b.setColorAt(1, self.color)
         painter.fillRect(r, QtGui.QBrush(b))
         super(NodeName, self).paint(painter, option, widget)
 

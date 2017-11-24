@@ -14,6 +14,8 @@ class Reroute(BaseNode.Node, AGNode):
         self.sizes[4] = self.h
         self.label.hide()
 
+        self.color = BaseNode.getPortColorByType(AGPortDataTypes.tReroute)
+
         self.inp0 = BaseNode.Port('in', self, AGPortDataTypes.tReroute, 10, 10, self.color)
         self.inp0.type = AGPortTypes.kInput
         self.inp0.setParentItem(self)
@@ -56,20 +58,40 @@ class Reroute(BaseNode.Node, AGNode):
         self.inp0.color = self.inp0.affected_by[0].color
         self.out0.color = self.inp0.color
         self.inp0.data_type = other.data_type
+        if self.out0.hasConnections():
+            self.color = self.out0.color
+            for e in self.out0.edge_list:
+                e.pen.setColor(self.color)
+        else:
+            self.color = BaseNode.getPortColorByType(other.data_type)
+        self.update()
 
     def OnOutputConnected(self, other):
         self.out0._connected = True
         self.out0.data_type = other.data_type
+        if self.inp0.hasConnections():
+            self.color = self.inp0.color
+        else:
+            self.color = BaseNode.getPortColorByType(other.data_type)
+        self.update()
 
     def OnInputDisconneceted(self, other):
         if self.inp0.hasConnections():
             self.inp0._connected = False
-        self.inp0.data_type = AGPortDataTypes.tReroute
-    
+        if not self.out0.hasConnections():
+            self.resetTypeInfo()
+
     def OnOutputDisconneceted(self, other):
         if self.out0.hasConnections():
             self.out0._connected = False
+        if not self.inp0.hasConnections():
+            self.resetTypeInfo()
+
+    def resetTypeInfo(self):
+        self.inp0.data_type = AGPortDataTypes.tReroute
         self.out0.data_type = AGPortDataTypes.tReroute
+        self.color = BaseNode.getPortColorByType(AGPortDataTypes.tReroute)
+        self.update()
 
     @staticmethod
     def get_category():
@@ -80,7 +102,7 @@ class Reroute(BaseNode.Node, AGNode):
 
     def paint(self, painter, option, widget):
         painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(QtCore.Qt.darkGray)
+        painter.setBrush(self.color)
         painter.drawEllipse(0, 5, 10, 10)
         arrHeight = 5.0
         wh = 10.0

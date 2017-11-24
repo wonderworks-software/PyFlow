@@ -1268,9 +1268,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
 
-        # if self.pressed_item and not self._draw_real_time_line:
-        #     self.ensureVisible(self.pressed_item)
-
         if self.bPanMode:
             delta = self.mapToScene(event.pos()) - self.mapToScene(self._lastMousePos)
             self.pan(delta)
