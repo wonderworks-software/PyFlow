@@ -314,7 +314,7 @@ class NodesBoxListWidget(QtGui.QListWidget):
         self.setSortingEnabled(True)
         self.setDragEnabled(True)
         self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        # self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
     def mousePressEvent(self, event):
         super(NodesBoxListWidget, self).mousePressEvent(event)
@@ -327,7 +327,7 @@ class NodesBoxListWidget(QtGui.QListWidget):
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return:
-            point = self.parent_item().graph().findGoodPlaceForNewNode()
+            point = self.parent_item().graph().mapToScene(self.parent_item().graph().mousePos)
             name = self.currentItem().text()
             self.parent_item().graph().create_node(name, point.x(), point.y(), name)
         if self._events:
@@ -358,7 +358,7 @@ class NodeBoxLineEdit(QtGui.QLineEdit):
         if self._events:
             if event.key() == QtCore.Qt.Key_Escape:
                 self.parent.close()
-                self.parent.listWidget.clear()
+                self.parent.listWidget().clear()
         super(NodeBoxLineEdit, self).keyPressEvent(event)
 
 
@@ -383,7 +383,7 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
         self.setHeaderHidden(True)
         self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
         self.categories = {}
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        # self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
     def refresh(self):
         self.clear()
@@ -441,19 +441,19 @@ class NodesBox(QtGui.QWidget):
         self.verticalLayout.setSpacing(2)
         self.verticalLayout.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.le_nodes = NodeBoxLineEdit(self)
-        self.le_nodes.textChanged.connect(self.le_text_changed)
+        self.le_nodes = weakref.ref(NodeBoxLineEdit(self))
+        self.le_nodes().textChanged.connect(self.le_text_changed)
         self.verticalLayout.addWidget(self.switch_button)
-        self.verticalLayout.addWidget(self.le_nodes)
-        self.listWidget = NodesBoxListWidget(self)
-        self.verticalLayout.addWidget(self.listWidget)
-        self.listWidget.setVisible(False)
+        self.verticalLayout.addWidget(self.le_nodes())
+        self.listWidget = weakref.ref(NodesBoxListWidget(self))
+        self.verticalLayout.addWidget(self.listWidget())
+        self.listWidget().setVisible(False)
         self.setVisible(False)
         self.refresh_list('')
         self.tree_widget = NodeBoxTreeWidget(self.graph())
         self.verticalLayout.addWidget(self.tree_widget)
         self.tree_widget.refresh()
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        # self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setStyleSheet("border:1 inset white")
 
     def keyPressEvent(self, event):
@@ -463,9 +463,9 @@ class NodesBox(QtGui.QWidget):
         super(NodesBox, self).keyPressEvent(event)
 
     def swap_appearance(self):
-        self.listWidget.setVisible(not self.listWidget.isVisible())
+        self.listWidget().setVisible(not self.listWidget().isVisible())
         self.tree_widget.setVisible(not self.tree_widget.isVisible())
-        self.le_nodes.setVisible(not self.le_nodes.isVisible())
+        self.le_nodes().setVisible(not self.le_nodes().isVisible())
         if self.tree_widget.isVisible():
             self.switch_button.setText("go to list mode")
         else:
@@ -473,10 +473,10 @@ class NodesBox(QtGui.QWidget):
 
     def refresh_list(self, pattern):
 
-        self.listWidget.clear()
+        self.listWidget().clear()
         node_file_names = get_nodes_file_names()
-        self.listWidget.addItems([i for i in node_file_names if pattern.lower() in i.lower()])
-        item = self.listWidget.itemAt(0, 0)
+        self.listWidget().addItems([i for i in node_file_names if pattern.lower() in i.lower()])
+        item = self.listWidget().itemAt(0, 0)
         if item and not item.isSelected():
             item.setSelected(True)
 
@@ -485,30 +485,35 @@ class NodesBox(QtGui.QWidget):
 
     def set_visible(self):
 
-        pos = self.graph().mousePos
+        pos = self.graph().mapToScene(self.graph().mousePos)
         self.move(self.graph().mapFromScene(pos).x() + self.graph().pos().x(),
                   self.graph().mapFromScene(pos).y() + self.graph().pos().y()
                   )
+        self.tree_widget.hide()
+        self.listWidget().show()
+        self.le_nodes().show()
+        self.switch_button.hide()
         self.refresh_list('')
+
         self.show()
 
     def create_node(self):
-        items = self.listWidget.selectedItems()
+        items = self.listWidget().selectedItems()
         if not len(items) == 0:
             name = items[0].text()
             node = get_node(Nodes, name, self)
             self.graph().add_node(node, self.graph().mousePos.x(),
                                   self.graph().mousePos.y())
-            if self.listWidget._events:
+            if self.listWidget()._events:
                 self.close()
-                self.listWidget.clear()
+                self.listWidget().clear()
 
     def le_text_changed(self):
-        if self.le_nodes.text() == '':
-            self.le_nodes.setPlaceholderText("enter node name..")
+        if self.le_nodes().text() == '':
+            self.le_nodes().setPlaceholderText("enter node name..")
             self.refresh_list('')
             return
-        self.refresh_list(self.le_nodes.text())
+        self.refresh_list(self.le_nodes().text())
 
 
 class RubberRect(QtGui.QGraphicsRectItem, Colors):
@@ -1030,13 +1035,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             line = "connectAttr {2}src {0} {2}dst {1}\n".format(port_names[0], port_names[1], FLAG_SYMBOL)
             graph += line
 
-            # comment nodes
-        for c in self.groupers:
-            nodes = ""
-            for n in c.nodes:
-                nodes += "{0} ".format(n.name)
-            line = "comment {2}mode names {2}text {0} {2}nl {1}\n".format(c.label.toHtml().replace("\n", ""), nodes, FLAG_SYMBOL)
-            graph += line
         self.write_to_console(graph)
 
         if not self._current_file_name == '':
@@ -1127,9 +1125,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         clearLayout(self.parent.PropertiesformLayout)
 
     def keyPressEvent(self, event):
-        if not self.is_sortcuts_enabled():
-            QtGui.QGraphicsView.keyPressEvent(self, event)
-            return
+        # if not self.is_sortcuts_enabled():
+        #     QtGui.QGraphicsView.keyPressEvent(self, event)
+        #     return
 
         modifiers = event.modifiers()
         if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
@@ -1165,9 +1163,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.parent.toggle_property_view()
         if event.key() == QtCore.Qt.Key_Delete:
             self.kill_selected_nodes()
-        if self.node_box().listWidget._events:
-            if event.key() == QtCore.Qt.Key_Tab:
-                self.node_box().set_visible()
+        if event.key() == QtCore.Qt.Key_Tab:
+            self.node_box().set_visible()
         if all([event.key() == QtCore.Qt.Key_W, modifiers == QtCore.Qt.ControlModifier]):
             self.duplicate_node()
         QtGui.QGraphicsView.keyPressEvent(self, event)
@@ -1235,7 +1232,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.bPanMode = True
             self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
             self.node_box().close()
-            self.node_box().le_nodes.clear()
+            self.node_box().le_nodes().clear()
 
         if not event.button() == QtCore.Qt.RightButton:
             super(GraphWidget, self).mousePressEvent(event)
@@ -1369,7 +1366,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         # label
         le_name = QtGui.QLineEdit(node.get_name())
-        le_name.returnPressed.connect(lambda: node.set_name(le_name.text()))
+        le_name.setReadOnly(True)
+        if node.label().IsRenamable():
+            le_name.setReadOnly(False)
+            le_name.returnPressed.connect(lambda: node.set_name(le_name.text()))
         layout.addRow("Name", le_name)
 
         # pos
@@ -1626,6 +1626,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                     mArrayMod = getattr(Nodes, "MakeArray")
                     node_class = mArrayMod(commandLine["flags"]["~n"], self, int(commandLine["flags"]["~count"]))
                     node_class.set_name("MakeArray")
+                    # node_class.post_create()
                     self.add_node(node_class, float(commandLine["flags"]["~x"]), float(commandLine["flags"]["~y"]))
                 else:
                     self.create_node(commandLine['flags']['~type'], float(commandLine['flags']['~x']), float(commandLine['flags']['~y']), commandLine['flags']['~n'])

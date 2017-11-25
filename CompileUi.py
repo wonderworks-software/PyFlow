@@ -27,7 +27,8 @@ for d, dirs, files in os.walk(CURRENT_DIR):
     if "Python" in d or ".git" in d:
         continue
     for f in files:
-        ext = f.split('.')[1]
-        if ext == 'ui':
-            uiFile = os.path.join(d, f)
-            ui_to_py(uiFile)
+        if "." in f:
+            ext = f.split('.')[1]
+            if ext == 'ui':
+                uiFile = os.path.join(d, f)
+                ui_to_py(uiFile)

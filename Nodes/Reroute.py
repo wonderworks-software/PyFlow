@@ -12,7 +12,7 @@ class Reroute(BaseNode.Node, AGNode):
         super(Reroute, self).__init__(name, graph, spacings=Spacings)
         self.h = 25
         self.sizes[4] = self.h
-        self.label.hide()
+        self.label().hide()
 
         self.r = 10.0
 

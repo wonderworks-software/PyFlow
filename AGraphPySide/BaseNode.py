@@ -43,9 +43,7 @@ class NodeName(QtGui.QGraphicsTextItem):
             QtGui.QGraphicsTextItem.keyPressEvent(self, event)
 
     def boundingRect(self):
-        r = super(NodeName, self).boundingRect()
-        r.setWidth(self.parentItem().childrenBoundingRect().width())
-        return r
+        return QtCore.QRectF(0, 0.0, self.parentItem().w, 20.0)
 
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
@@ -83,7 +81,7 @@ class NodeName(QtGui.QGraphicsTextItem):
             return
         new_name = self.parentItem().graph().get_uniq_node_name(self.toPlainText())
         self.name = new_name
-        self.parentItem().label.setPlainText(new_name)
+        self.parentItem().label().setPlainText(new_name)
 
         for i in self.parentItem().get_input_edges().iterkeys():
             if self.name == i.connection['From'].split('.')[0]:
@@ -122,16 +120,17 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.spacings = spacings
         self.port_types = port_types
         self.nodeMainGWidget = QtGui.QGraphicsWidget()
-        self.w = w
+        self._w = 0
         self.h = 40
         self.sizes = [0, 0, self.w, self.h, 1, 1]
+        self.w = w
         self.setFlag(self.ItemIsMovable)
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable)
         self.setFlag(self.ItemIsSelectable)
         self.setFlag(self.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
-        self.label = NodeName(self.name, self)
+        self.label = weakref.ref(NodeName(self.name, self))
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
         # main
@@ -157,6 +156,15 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
         self.tweakPosition()
         self.setToolTip(self.description())
+
+    @property
+    def w(self):
+        return self._w
+
+    @w.setter
+    def w(self, value):
+        self._w = value
+        self.sizes[2] = value
 
     def tweakPosition(self):
         value = self.scenePos()
@@ -190,24 +198,31 @@ class Node(QtGui.QGraphicsItem, AGNode):
         return "Default node description"
 
     def post_create(self):
-        # self.w = self.childrenBoundingRect().width() + self.spacings.kPortSpacing
-        # self.nodeMainGWidget.setMaximumWidth(self.childrenBoundingRect().width() + self.spacings.kPortOffset)
-        # self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
-        # for i in range(0, self.inputsLayout.count()):
-        #     container = self.inputsLayout.itemAt(i)
-        #     lyt = container.layout()
-        #     if lyt:
-        #         for j in range(0, lyt.count()):
-        #             lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        for i in range(0, self.inputsLayout.count()):
+            container = self.inputsLayout.itemAt(i)
+            lyt = container.layout()
+            if lyt:
+                for j in range(0, lyt.count()):
+                    lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 
-        # for i in range(0, self.outputsLayout.count()):
-        #     container = self.outputsLayout.itemAt(i)
-        #     lyt = container.layout()
-        #     if lyt:
-        #         for j in range(0, lyt.count()):
-        #             lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        for i in range(0, self.outputsLayout.count()):
+            container = self.outputsLayout.itemAt(i)
+            lyt = container.layout()
+            if lyt:
+                for j in range(0, lyt.count()):
+                    lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        self.w = self.getWidth()
+        self.nodeMainGWidget.setMaximumWidth(self.w + self.spacings.kPortOffset)
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
         if self.isCallable():
-            self.label.color = QtGui.QColor(88, 134, 158, 200)
+            self.label().color = QtGui.QColor(88, 134, 158, 200)
+
+    def getWidth(self):
+        dPorts = 0
+        if len(self.outputs) > 0:
+            dPorts = abs(self.outputs[0].scenePos().x() - self.scenePos().x())
+        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.get_name()) + self.spacings.kPortSpacing
+        return max(dPorts, fontWidth)
 
     def save_command(self):
         return "createNode ~type {0} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name)
@@ -220,7 +235,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
     def set_name(self, name):
         AGNode.set_name(self, name)
-        self.label.setPlainText(self.name)
+        self.label().setPlainText(self.name)
 
     def clone(self):
         pos = self.graph().mapToScene(self.graph().mousePos)
