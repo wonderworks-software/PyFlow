@@ -37,7 +37,7 @@ class RequestNode(BaseNode.Node, AGNode):
 
     @staticmethod
     def get_category():
-        return 'Util'
+        return 'Core'
 
     def startEval(self, deltatime):
         if self.cb.isChecked():
@@ -45,8 +45,8 @@ class RequestNode(BaseNode.Node, AGNode):
         else:
             self.looper.stop()
 
-    def kill(self, call_connection_functions=False):
-        BaseNode.Node.kill(self, call_connection_functions)
+    def kill(self):
+        BaseNode.Node.kill(self)
         if self.looper.isActive():
             self.looper.stop()
 

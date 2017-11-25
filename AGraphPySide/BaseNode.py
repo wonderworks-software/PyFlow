@@ -6,15 +6,17 @@ from AbstractGraph import *
 
 
 class NodeName(QtGui.QGraphicsTextItem):
-    def __init__(self, name, parent, color=Colors.kBlue):
+    def __init__(self, name, parent):
         QtGui.QGraphicsTextItem.__init__(self)
         self.object_type = AGObjectTypes.tNodeName
         self.name = name
-        self.color = color
         self.setPlainText(self.name)
         self.setParentItem(parent)
         self.options = self.parentItem().graph().get_settings()
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        self.desc = parent.description()
+        self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
+        self.h = self.boundingRect().height()
         if self.options:
             self.text_color = QtGui.QColor(self.options.value('NODES/Nodes label font color'))
             self.setDefaultTextColor(self.text_color)
@@ -22,7 +24,14 @@ class NodeName(QtGui.QGraphicsTextItem):
             self.opt_font_size = int(self.options.value('NODES/Nodes label font size'))
             self.opt_font.setPointSize(self.opt_font_size)
             self.setFont(self.opt_font)
+        self.descFont = QtGui.QFont("Consolas", self.opt_font.pointSize() / 2.0, 2, True)
         self.setPos(0, -self.boundingRect().height() - 8)
+        self.color = QtGui.QColor(0, 255, 50, 100)
+        self.clipRect = None
+
+    @staticmethod
+    def IsRenamable():
+        return False
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -33,15 +42,29 @@ class NodeName(QtGui.QGraphicsTextItem):
         else:
             QtGui.QGraphicsTextItem.keyPressEvent(self, event)
 
+    def boundingRect(self):
+        r = super(NodeName, self).boundingRect()
+        r.setWidth(self.parentItem().childrenBoundingRect().width())
+        return r
+
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
         r.setWidth(self.parentItem().childrenBoundingRect().width() - 0.25)
         r.setX(0.25)
         b = QtGui.QLinearGradient(0, 0, 0, r.height())
         b.setColorAt(0, QtGui.QColor(0, 0, 0, 0))
-        b.setColorAt(0.4, self.color)
+        b.setColorAt(0.25, self.color)
         b.setColorAt(1, self.color)
         painter.fillRect(r, QtGui.QBrush(b))
+        painter.setFont(self.descFont)
+
+        painter.setClipping(True)
+        if not self.clipRect:
+            self.clipRect = QtCore.QRectF(0, 0, self.parentItem().childrenBoundingRect().width() - 5.0, self.boundingRect().height())
+        painter.setClipRect(self.clipRect)
+        painter.setPen(self.descFontPen)
+        painter.drawText(5.0, self.h - 0.5, self.desc)
+
         super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):
@@ -108,7 +131,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.setFlag(self.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
-        self.label = NodeName(self.name, self, color=headColor)
+        self.label = NodeName(self.name, self)
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
         # main
@@ -133,11 +156,22 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.setCursor(QtCore.Qt.OpenHandCursor)
 
         self.tweakPosition()
+        self.setToolTip(self.description())
 
     def tweakPosition(self):
         value = self.scenePos()
         self.setX(roundup(value.x() - self.graph().grid_size, self.graph().grid_size))
         self.setY(roundup(value.y() - self.graph().grid_size, self.graph().grid_size))
+
+    def isCallable(self):
+        for p in self.inputs + self.outputs:
+            if p.data_type == AGPortDataTypes.tExec:
+                return True
+        return False
+
+    @staticmethod
+    def isReroute():
+        return False
 
     def boundingRect(self):
         return self.childrenBoundingRect()
@@ -156,23 +190,24 @@ class Node(QtGui.QGraphicsItem, AGNode):
         return "Default node description"
 
     def post_create(self):
-        self.w = self.childrenBoundingRect().width() + self.spacings.kPortSpacing
-        self.nodeMainGWidget.setMaximumWidth(self.childrenBoundingRect().width() + self.spacings.kPortOffset)
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
-        for i in range(0, self.inputsLayout.count()):
-            container = self.inputsLayout.itemAt(i)
-            lyt = container.layout()
-            if lyt:
-                for j in range(0, lyt.count()):
-                    lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        # self.w = self.childrenBoundingRect().width() + self.spacings.kPortSpacing
+        # self.nodeMainGWidget.setMaximumWidth(self.childrenBoundingRect().width() + self.spacings.kPortOffset)
+        # self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
+        # for i in range(0, self.inputsLayout.count()):
+        #     container = self.inputsLayout.itemAt(i)
+        #     lyt = container.layout()
+        #     if lyt:
+        #         for j in range(0, lyt.count()):
+        #             lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 
-        for i in range(0, self.outputsLayout.count()):
-            container = self.outputsLayout.itemAt(i)
-            lyt = container.layout()
-            if lyt:
-                for j in range(0, lyt.count()):
-                    lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-        # pass
+        # for i in range(0, self.outputsLayout.count()):
+        #     container = self.outputsLayout.itemAt(i)
+        #     lyt = container.layout()
+        #     if lyt:
+        #         for j in range(0, lyt.count()):
+        #             lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        if self.isCallable():
+            self.label.color = QtGui.QColor(88, 134, 158, 200)
 
     def save_command(self):
         return "createNode ~type {0} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name)
@@ -352,7 +387,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         else:
             newColor = QtGui.QColor(255, 255, 30, 255)
 
-        p = Port(name, self, data_type, 10, 10, newColor)
+        p = Port(name, self, data_type, 7, 7, newColor)
         p.type = port_type
         if port_type == AGPortTypes.kInput and foo is not None:
             p.call = foo

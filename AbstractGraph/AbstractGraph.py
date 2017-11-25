@@ -379,12 +379,13 @@ class AGraph(object):
                 print('cycles are not allowed')
             return False
 
+        # input data ports can have one output connection
+        # output data ports can have any number of connections
+        if not src.data_type == AGPortDataTypes.tExec and dst.hasConnections():
+            dst.disconnect_all()
         # input execs can have any number of connections
         # output execs can have only one connection
-        # input data ports can haveone output connection
-        # output data ports can have any number of connections
-        # retoutes can have any number of connection both for inputs and outputs
-        if src.data_type == AGPortDataTypes.tReroute and dst.data_type == AGPortDataTypes.tExec:
+        if src.data_type == AGPortDataTypes.tExec and dst.data_type == AGPortDataTypes.tExec and src.hasConnections():
             src.disconnect_all()
 
         portAffects(src, dst)

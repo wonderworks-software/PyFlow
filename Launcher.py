@@ -143,7 +143,7 @@ if __name__ == '__main__':
     app.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
     darkPalette = QtGui.QPalette()
-    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(35, 35, 35))
+    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(50, 50, 50))
     darkPalette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
     darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
     darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(35, 35, 35))

@@ -13,7 +13,7 @@ class Print(BaseNode.Node, AGNode):
 
     @staticmethod
     def get_category():
-        return 'Util'
+        return 'String'
 
     def compute(self):
         if self.inExec.hasConnections():

@@ -19,7 +19,7 @@ class Call(BaseNode.Node, AGNode):
 
     @staticmethod
     def get_category():
-        return 'Util'
+        return 'Core'
 
     def compute(self):
         self.out.call()

@@ -13,7 +13,7 @@ class StringContains(BaseNode.Node, AGNode):
 
     @staticmethod
     def get_category():
-        return 'StringUtils'
+        return 'String'
 
     def compute(self):
 

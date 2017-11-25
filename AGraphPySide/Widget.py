@@ -852,7 +852,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             dst.reroutes.append(node)
 
         if self.pressed_item and hasattr(self.pressed_item, "object_type"):
-            if self.pressed_item.object_type == AGObjectTypes.tNodeName:
+            if self.pressed_item.object_type == AGObjectTypes.tNodeName and self.pressed_item.IsRenamable():
                 name, result = QtGui.QInputDialog.getText(self, "New name dialog", "Enter new name:")
                 if result:
                     self.pressed_item.parentItem().set_name(name)
@@ -1070,6 +1070,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.executeCommand(cmd)
         self._current_file_name = fpath[0]
         self._file_name_label.setPlainText(self._current_file_name)
+        self.frame()
 
     def get_port_by_full_name(self, full_name):
         node_name = full_name.split('.')[0]
@@ -1084,23 +1085,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.options_widget.show()
 
     def frame(self):
-        # polygon = self.mapToScene(self.viewport().rect()).boundingRect()
-        rect = self.mapToScene(self.viewport().rect()).boundingRect()
-        mid_points = []
-        for n in self.nodes:
-            n_rect = QtCore.QRectF(n.scenePos(),
-                                   QtCore.QPointF(n.scenePos().x() + float(n.w),
-                                                  n.scenePos().y() + float(n.h)))
-            mid_points.append(((n_rect.center().x()), n_rect.center().y()))
-        mp = get_mid_point(mid_points)
-        if len(mp) == 0:
-            return
         nodes_rect = self.get_nodes_rect()
-        if not rect.contains(nodes_rect):
-            by_x = mp[0] / self.sceneRect().width()
-            by_y = mp[1] / self.sceneRect().height()
-            self.horizontalScrollBar().setValue(float(self.horizontalScrollBar().maximum() * by_x))
-            self.verticalScrollBar().setValue(float(self.verticalScrollBar().maximum() * by_y))
+        self.centerOn(nodes_rect.center())
 
     def get_nodes_rect(self, selected=False):
         rectangles = []
@@ -1251,19 +1237,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.node_box().close()
             self.node_box().le_nodes.clear()
 
-        super(GraphWidget, self).mousePressEvent(event)
+        if not event.button() == QtCore.Qt.RightButton:
+            super(GraphWidget, self).mousePressEvent(event)
 
     def pan(self, delta):
-        delta *= self._scale
+        delta *= self._scale * -1
         delta *= self._panSpeed
-
-        VIEW_WIDTH = self.viewport().rect().width()
-        VIEW_HEIGHT = self.viewport().rect().height()
-        newCenter = QtCore.QPoint(VIEW_WIDTH / 2 - delta.x(), VIEW_HEIGHT / 2 - delta.y() + 1.0)
-
-        self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
-        self.centerOn(self.mapToScene(newCenter))
-        self.setTransformationAnchor(QtGui.QGraphicsView.AnchorViewCenter)
+        self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + delta.x())
+        self.verticalScrollBar().setValue(self.verticalScrollBar().value() + delta.y())
 
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
@@ -1271,19 +1252,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if self.bPanMode:
             delta = self.mapToScene(event.pos()) - self.mapToScene(self._lastMousePos)
             self.pan(delta)
-
-        if self._resize_group_mode:
-            grp = self.pressed_item.parentItem()
-            self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
-            x = max([self.mousePos.x() - grp.pos().x(),
-                     grp.rect().topLeft().x() + grp.minimum_width])
-            y = max([self.mousePos.y() - grp.pos().y(),
-                     grp.rect().topLeft().y() + grp.minimum_height])
-
-            r = QtCore.QRectF(grp.rect().topLeft(), QtCore.QPointF(x, y))
-            grp.setRect(r.normalized())
-            grp.resize_item.setPos(grp.rect().bottomRight() - QtCore.QPointF(grp.resize_item.boundingRect().width(),
-                                                                             grp.resize_item.boundingRect().height()))
 
         if self._draw_real_time_line:
             self.pressed_item
@@ -1294,7 +1262,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.scene().addItem(self.real_time_line)
 
             p1 = self.pressed_item.scenePos() + QtCore.QPointF(self.pressed_item.boundingRect().width() / 2,
-                                                          self.pressed_item.boundingRect().height() / 2)
+                                                               self.pressed_item.boundingRect().height() / 2)
             p2 = self.mapToScene(self.mousePos)
 
             distance = p2.x() - p1.x()

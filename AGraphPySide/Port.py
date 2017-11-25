@@ -48,6 +48,8 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.setZValue(2)
         self.__width = width + 1
         self.__height = height + 1
+        if self.data_type == AGPortDataTypes.tExec:
+            self.__width = self.__height = 10.0
         self.hovered = False
         self.startPos = None
         self.endPos = None
@@ -56,6 +58,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.reroutes = []
         self._container = None
         self.color = getPortColorByType(data_type)
+        self._execPen = QtGui.QPen(self.color, 0.5, QtCore.Qt.SolidLine)
         if self.data_type == AGPortDataTypes.tReroute:
             self.color = color
         self.setGeometry(0, 0, self.__width, self.__height)
@@ -67,11 +70,11 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         else:
             self._dirty_pen = QtGui.QPen(Colors.kDirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
-    def grabMouseEvent(self, event):
+    def mousePressEvent(self, event):
         modifiers = QtGui.QApplication.keyboardModifiers()
         if self.hasConnections() and modifiers == QtCore.Qt.AltModifier:
             self.disconnect_all()
-        super(Port, self).grabMouseEvent(event)
+        super(Port, self).mousePressEvent(event)
 
     def ungrabMouseEvent(self, event):
         super(Port, self).ungrabMouseEvent(event)
@@ -80,7 +83,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         return self._container
 
     def boundingRect(self):
-        return QtCore.QRectF(0, -0.5, self.__width * 1.5, self.__height)
+        return QtCore.QRectF(0, -0.5, self.__width * 1.5, self.__height + 1.0)
 
     def sizeHint(self, which, constraint):
         return QtCore.QSizeF(self.__width, self.__height)
@@ -105,11 +108,10 @@ class Port(QtGui.QGraphicsWidget, AGPort):
 
     def paint(self, painter, option, widget):
 
-        background_rect = self.boundingRect()
-        background_rect.setWidth(self.__width)
+        background_rect = QtCore.QRectF(0, 0, self.__width, self.__width)
 
         w = background_rect.width() / 2
-        h = background_rect.height() / 2 - 0.5
+        h = background_rect.height() / 2
 
         linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.__width / 2.5)
         if not self._connected:
@@ -129,8 +131,11 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         if self.data_type == AGPortDataTypes.tArray:
             painter.drawRect(background_rect)
         elif self.data_type == AGPortDataTypes.tExec:
-            painter.setBrush(QtGui.QBrush(self.color))
-            arrHeight = -0.4
+            if self._connected:
+                painter.setBrush(QtGui.QBrush(self.color))
+            else:
+                painter.setBrush(QtCore.Qt.NoBrush)
+                painter.setPen(self._execPen)
             arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
                                     QtCore.QPointF(self.__width / 2.0, 0.0),
                                     QtCore.QPointF(self.__width, self.__height / 2.0),
@@ -140,11 +145,10 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         else:
             painter.setBrush(QtGui.QBrush(linearGrad))
             painter.drawEllipse(background_rect)
-            arrHeight = -0.4
-            arrow = QtGui.QPolygonF([QtCore.QPointF(self.__width, self.__height * 0.7 + arrHeight),
-                                    QtCore.QPointF(self.__width * 1.2, self.__height / 2.0 + arrHeight),
-                                    QtCore.QPointF(self.__width, self.__height * 0.3 + arrHeight),
-                                    QtCore.QPointF(self.__width, self.__height * 0.7 + arrHeight)])
+            arrow = QtGui.QPolygonF([QtCore.QPointF(self.__width, self.__height * 0.7),
+                                    QtCore.QPointF(self.__width * 1.15, self.__height / 2.0),
+                                    QtCore.QPointF(self.__width, self.__height * 0.3),
+                                    QtCore.QPointF(self.__width, self.__height * 0.7)])
             painter.drawPolygon(arrow)
 
     def contextMenuEvent(self, event):
