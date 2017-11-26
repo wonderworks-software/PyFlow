@@ -110,21 +110,48 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         p1, p2 = self.getEndPoints()
 
         xDistance = p2.x() - p1.x()
+        vDistance = p2.y() - p1.y()
+
+        defaultOffset = 100.0
+        minimum = min(defaultOffset, abs(xDistance))
+        verticalOffset = 0.0
+        ratio = 0.5
 
         multiply = 3
         self.path = QtGui.QPainterPath()
-
         self.path.moveTo(p1)
 
+        if xDistance <= 0:
+            if vDistance <= 0:
+                verticalOffset = -minimum
+            else:
+                verticalOffset = minimum
+            ratio = 1.0
+
         if xDistance < 0:
-            self.cp1 = QtCore.QPoint(p1.x() + xDistance / -1.5, p1.y())
-            self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y())
+            offset = self.source().boundingRect().width() / 3.25
+            if isinstance(self.source().parentItem(), Reroute):
+                self.cp1 = self.source().parentItem().getOutControlPoint()
+                self.path.moveTo(p1.x() - offset, p1.y())
+            else:
+                self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)
+
+            if isinstance(self.destination().parentItem(), Reroute):
+                self.cp2 = self.destination().parentItem().getInControlPoint()
+                self.path.moveTo(p1.x() + offset, p1.y())
+            else:
+                self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y() - verticalOffset)
         else:
-            self.cp1 = QtCore.QPoint(p1.x() + xDistance / multiply, p1.y())
-            self.cp2 = QtCore.QPoint(p2.x() - xDistance / 2, p2.y())
+            if isinstance(self.destination().parentItem(), Reroute):
+                self.cp2 = self.destination().parentItem().getInControlPoint()
+            else:
+                self.cp2 = QtCore.QPoint(p2.x() - xDistance / multiply, p2.y() - verticalOffset)
+
+            if isinstance(self.source().parentItem(), Reroute):
+                self.cp1 = self.source().parentItem().getOutControlPoint()
+            else:
+                self.cp1 = QtCore.QPoint(p1.x() + xDistance / multiply, p1.y() + verticalOffset)
 
         self.path.cubicTo(self.cp1, self.cp2, p2)
-
         self.setPath(self.path)
-
         super(Edge, self).paint(painter, option, widget)

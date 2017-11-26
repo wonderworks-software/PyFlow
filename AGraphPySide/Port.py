@@ -82,6 +82,21 @@ class Port(QtGui.QGraphicsWidget, AGPort):
     def get_container(self):
         return self._container
 
+    def setEdgesControlPointsFlipped(self, bFlipped=False):
+        self.bEdgeTangentDirection = bFlipped
+
+    def getAvgXConnected(self):
+        xAvg = 0.0
+        if not self.hasConnections():
+            return xAvg
+        if self.type == AGPortTypes.kInput:
+            positions = [p.scenePos().x() for p in self.affected_by]
+        else:
+            positions = [p.scenePos().x() for p in self.affects]
+        if not len(positions) == 0:
+            xAvg = sum(positions) / len(positions)
+        return xAvg
+
     def boundingRect(self):
         return QtCore.QRectF(0, -0.5, self.__width * 1.5, self.__height + 1.0)
 
@@ -97,7 +112,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
                 trash.append(e)
         for t in trash:
             self.parent().graph().remove_edge(t)
-
+        self.bEdgeTangentDirection = False
         self.parent().graph().write_to_console("disconnectAttr {1}an {0}".format(self.port_name(), FLAG_SYMBOL))
 
     def shape(self):
