@@ -238,20 +238,9 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.label().setPlainText(self.name)
 
     def clone(self):
-        pos = self.graph().mapToScene(self.graph().mousePos)
-        x = pos.x()
-        y = pos.y()
-        if self.parentItem() is None:
-            new_node = self.graph().create_node(self.__class__.__name__, x, y, self.get_name())
-            return new_node
-        else:
-            # if grouper node is parent
-            x = self.pos().x() + self.boundingRect().width() + self.parentItem().scenePos().x()
-            y = self.pos().y() + self.boundingRect().height() + self.parentItem().scenePos().y()
-            new_node = self.graph().create_node(self.__class__.__name__, x, y, self.get_name())
-            self.parentItem().add_node(new_node)
-            self.parentItem().fit_content()
-            return new_node
+        pos = self.scenePos()
+        new_node = self.graph().create_node(self.__class__.__name__, pos.x(), pos.y(), self.get_name())
+        return new_node
 
     def update_ports(self):
         [i.update() for i in self.inputs]

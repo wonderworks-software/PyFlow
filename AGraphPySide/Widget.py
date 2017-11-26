@@ -1166,16 +1166,24 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if event.key() == QtCore.Qt.Key_Tab:
             self.node_box().set_visible()
         if all([event.key() == QtCore.Qt.Key_W, modifiers == QtCore.Qt.ControlModifier]):
-            self.duplicate_node()
+            self.duplicate_nodes()
         QtGui.QGraphicsView.keyPressEvent(self, event)
 
-    def duplicate_node(self):
-        new_nodes = []
-        for n in [i for i in self.nodes if i.isSelected()]:
-            new_nodes.append(n.clone())
+    def duplicate_nodes(self):
+        selected_nodes = [i for i in self.nodes if i.isSelected()]
+
+        positions_x = [n.scenePos().x() for n in selected_nodes]
+        positions_y = [n.scenePos().y() for n in selected_nodes]
+        if len(selected_nodes) > 0:
+            x = sum(positions_x) / len(positions_x)
+            y = sum(positions_y) / len(positions_y)
+            diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - QtCore.QPointF(x, y)
+
+        for n in selected_nodes:
+            new_node = n.clone()
             n.setSelected(False)
-        for n in new_nodes:
-            n.setSelected(True)
+            new_node.setSelected(True)
+            new_node.setPos(new_node.scenePos() + diff)
 
     def align_selected_nodes(self, direction):
         scene_poses = []
