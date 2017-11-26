@@ -16,7 +16,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 
-        self.path = QtGui.QPainterPath()
+        self.mPath = QtGui.QPainterPath()
 
         self.cp1 = QtCore.QPointF(0.0, 0.0)
         self.cp2 = QtCore.QPointF(0.0, 0.0)
@@ -58,7 +58,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
         self.pen.setWidthF(self.thikness + (self.thikness / 1.5))
         self.update()
         if self.graph().is_debug():
-            print(self.__str__())
+            print(self.__str__(), self.source().data_type, self.destination().data_type)
 
     def getEndPoints(self):
         offset = self.source().boundingRect().width() / 3.25
@@ -86,21 +86,27 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
     def source_port_name(self):
         return self.source().port_name()
 
+    def shape(self):
+        qp = QtGui.QPainterPathStroker()
+        qp.setWidth(10.0)
+        qp.setCapStyle(QtCore.Qt.SquareCap)
+        return qp.createStroke(self.path())
+
     def updateCurve(self, p1, p2):
         xDistance = p2.x() - p1.x()
         multiply = 3
-        self.path = QtGui.QPainterPath()
+        self.mPath = QtGui.QPainterPath()
 
         direction = QtGui.QVector2D(p1) - QtGui.QVector2D(p2)
         direction.normalize()
 
-        self.path.moveTo(p1)
+        self.mPath.moveTo(p1)
         if xDistance < 0:
-            self.path.cubicTo(QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y()), QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y()), p2)
+            self.mPath.cubicTo(QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y()), QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y()), p2)
         else:
-            self.path.cubicTo(QtCore.QPoint(p1.x() + xDistance / multiply, p1.y()), QtCore.QPoint(p2.x() - xDistance / 2, p2.y()), p2)
+            self.mPath.cubicTo(QtCore.QPoint(p1.x() + xDistance / multiply, p1.y()), QtCore.QPoint(p2.x() - xDistance / 2, p2.y()), p2)
 
-        self.setPath(self.path)
+        self.setPath(self.mPath)
 
     def destination_port_name(self):
         return self.destination().port_name()
@@ -114,12 +120,13 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
 
         defaultOffset = 100.0
         minimum = min(defaultOffset, abs(xDistance))
+        maximum = max(defaultOffset, abs(xDistance))
         verticalOffset = 0.0
         ratio = 0.5
 
         multiply = 3
-        self.path = QtGui.QPainterPath()
-        self.path.moveTo(p1)
+        self.mPath = QtGui.QPainterPath()
+        self.mPath.moveTo(p1)
 
         if xDistance <= 0:
             if vDistance <= 0:
@@ -132,26 +139,26 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
             offset = self.source().boundingRect().width() / 3.25
             if isinstance(self.source().parentItem(), Reroute):
                 self.cp1 = self.source().parentItem().getOutControlPoint()
-                self.path.moveTo(p1.x() - offset, p1.y())
+                # self.mPath.moveTo(p1.x() - offset, p1.y())
             else:
-                self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)
+                self.cp1 = QtCore.QPoint(p1.x() + maximum / -multiply, p1.y() + verticalOffset)
 
             if isinstance(self.destination().parentItem(), Reroute):
                 self.cp2 = self.destination().parentItem().getInControlPoint()
-                self.path.moveTo(p1.x() + offset, p1.y())
+                # self.mPath.moveTo(p1.x() + offset, p1.y())
             else:
-                self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y() - verticalOffset)
+                self.cp2 = QtCore.QPoint(p2.x() - maximum / -multiply, p2.y() - verticalOffset)
         else:
             if isinstance(self.destination().parentItem(), Reroute):
                 self.cp2 = self.destination().parentItem().getInControlPoint()
             else:
-                self.cp2 = QtCore.QPoint(p2.x() - xDistance / multiply, p2.y() - verticalOffset)
+                self.cp2 = QtCore.QPoint(p2.x() - minimum / multiply, p2.y() - verticalOffset)
 
             if isinstance(self.source().parentItem(), Reroute):
                 self.cp1 = self.source().parentItem().getOutControlPoint()
             else:
-                self.cp1 = QtCore.QPoint(p1.x() + xDistance / multiply, p1.y() + verticalOffset)
+                self.cp1 = QtCore.QPoint(p1.x() + minimum / multiply, p1.y() + verticalOffset)
 
-        self.path.cubicTo(self.cp1, self.cp2, p2)
-        self.setPath(self.path)
+        self.mPath.cubicTo(self.cp1, self.cp2, p2)
+        self.setPath(self.mPath)
         super(Edge, self).paint(painter, option, widget)

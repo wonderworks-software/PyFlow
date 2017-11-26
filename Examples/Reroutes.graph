@@ -1,17 +1,29 @@
 SAVE GRAPH SCRIPT
-setHorizontalScrollBar ~h 4275
-setVerticalScrollBar ~v 4556
+setHorizontalScrollBar ~h 4124
+setVerticalScrollBar ~v 4783
 setNodeBoxVisible ~v 1
-setConsoleVisible ~v 0
-setPropertiesVisible ~v 0
-createNode ~type Call ~x 4300.0 ~y 4798.0 ~n Call
+setConsoleVisible ~v 1
+setPropertiesVisible ~v 1
+createNode ~type Call ~x 4300.0 ~y 4828.0 ~n Call
 setAttr ~an Call.OUT ~v None
-createNode ~type Print ~x 4940.0 ~y 4838.0 ~n Print
+createNode ~type Print ~x 4300.0 ~y 5068.0 ~n Print
 setAttr ~an Print.in ~v None
 setAttr ~an Print.data ~v None
 setAttr ~an Print.out ~v None
-createNode ~type Reroute ~x 4664.78343549 ~y 4823.83220872 ~n Reroute
+createNode ~type Reroute ~x 4557.0 ~y 4829.0 ~n Reroute
 setAttr ~an Reroute.in ~v None
 setAttr ~an Reroute.out ~v None
+createNode ~type Reroute ~x 4569.0 ~y 4940.0 ~n Reroute1
+setAttr ~an Reroute1.in ~v None
+setAttr ~an Reroute1.out ~v None
+createNode ~type Reroute ~x 4201.0 ~y 4953.0 ~n Reroute2
+setAttr ~an Reroute2.in ~v None
+setAttr ~an Reroute2.out ~v None
+createNode ~type Reroute ~x 4211.0 ~y 5073.0 ~n Reroute3
+setAttr ~an Reroute3.in ~v None
+setAttr ~an Reroute3.out ~v None
 connectAttr ~src Call.OUT ~dst Reroute.in
-connectAttr ~src Reroute.out ~dst Print.in
+connectAttr ~src Reroute.out ~dst Reroute1.in
+connectAttr ~src Reroute1.out ~dst Reroute2.in
+connectAttr ~src Reroute2.out ~dst Reroute3.in
+connectAttr ~src Reroute3.out ~dst Print.in

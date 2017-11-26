@@ -14,7 +14,7 @@ class Branch(BaseNode.Node, AGNode):
 
     @staticmethod
     def get_category():
-        return 'FlowControl'
+        return 'Core|FlowControl'
 
     def compute(self):
         data = self.condition.get_data()

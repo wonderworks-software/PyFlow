@@ -13,7 +13,7 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.setupUi(self)
         self.G = GraphWidget('MAIN_GRAPH', self)
         self.node_box = Widget.NodesBox(self.G)
-        self.node_box.listWidget()._events = False
+        # self.node_box.listWidget()._events = False
         self.node_box.le_nodes()._events = False
         self.SceneLayout.addWidget(self.G)
         self.NodeBoxLayout.addWidget(self.node_box)

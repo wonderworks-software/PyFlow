@@ -56,6 +56,8 @@ class Reroute(BaseNode.Node, AGNode):
     def getOutControlPoint(self):
         cp1 = self.out0.scenePos()
         xDistance = abs(self.out0.scenePos().x() - self.out0.getAvgXConnected())
+        if xDistance < 100.0:
+            xDistance = 100.0
         if self.out0.bEdgeTangentDirection:
             cp1.setX(self.out0.scenePos().x() - (xDistance / 2.0))
         else:
@@ -65,6 +67,8 @@ class Reroute(BaseNode.Node, AGNode):
     def getInControlPoint(self):
         cp2 = self.inp0.scenePos()
         xDistance = abs(self.inp0.scenePos().x() - self.inp0.getAvgXConnected())
+        if xDistance < 100.0:
+            xDistance = 100.0
         if self.inp0.bEdgeTangentDirection:
             cp2.setX(self.inp0.scenePos().x() + (xDistance / 2.0))
         else:
@@ -88,6 +92,7 @@ class Reroute(BaseNode.Node, AGNode):
         self.inp0.color = self.inp0.affected_by[0].color
         self.out0.color = self.inp0.color
         self.inp0.data_type = other.data_type
+        self.out0.data_type = other.data_type
         if self.out0.hasConnections():
             self.color = self.out0.color
             self.color.setAlpha(255)
@@ -102,6 +107,7 @@ class Reroute(BaseNode.Node, AGNode):
         self.out0._connected = True
         self._connected = True
         self.out0.data_type = other.data_type
+        self.inp0.data_type = other.data_type
         if self.inp0.hasConnections():
             self.color = self.inp0.color
             self.color.setAlpha(255)
@@ -165,7 +171,7 @@ class Reroute(BaseNode.Node, AGNode):
                                  QtCore.QPointF(self.r * 1.2, self.r / 2.0),
                                  QtCore.QPointF(self.r, self.r * 0.3),
                                  QtCore.QPointF(self.r, self.r * 0.7)])
-        painter.drawPolygon(arrow)
+        # painter.drawPolygon(arrow)
         painter.setBrush(QtCore.Qt.NoBrush)
         if self.isSelected():
             painter.setPen(self._pen)

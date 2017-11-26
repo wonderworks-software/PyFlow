@@ -352,14 +352,29 @@ class NodeBoxLineEdit(QtGui.QLineEdit):
                 "border-color: black; border-style: outset; border-width: 1px;"
         self.setStyleSheet(style)
         self.setPlaceholderText("enter node name..")
-        self.setVisible(False)
 
-    def keyPressEvent(self, event):
-        if self._events:
-            if event.key() == QtCore.Qt.Key_Escape:
-                self.parent.close()
-                self.parent.listWidget().clear()
-        super(NodeBoxLineEdit, self).keyPressEvent(event)
+    # def keyPressEvent(self, event):
+    #     if self._events:
+    #         if event.key() == QtCore.Qt.Key_Escape:
+    #             self.parent.close()
+    #             self.parent.listWidget().clear()
+    #     super(NodeBoxLineEdit, self).keyPressEvent(event)
+
+
+class TreeEntry(object):
+    """doc string for TreeEntry"""
+    def __init__(self, val, parent=None):
+        super(TreeEntry, self).__init__()
+        self.parent = parent
+        self.val = val
+
+    def __eq__(self, other):
+        if isinstance(other, TreeEntry):
+            return self.parent == other.parent and self.val == other.val
+        return False
+
+    def isRoot(self):
+        return self.parent is None
 
 
 class NodeBoxTreeWidget(QtGui.QTreeWidget):
@@ -383,19 +398,47 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
         self.setHeaderHidden(True)
         self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
         self.categories = {}
-        # self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-    def refresh(self):
+    def _isCategoryExists(self, category_name, categories):
+        bFound = False
+        if category_name in categories:
+            return True
+        if not bFound:
+            for c in categories:
+                sepCatNames = c.split('|')
+                if len(sepCatNames) == 1:
+                    if category_name == c:
+                        return True
+                else:
+                    for i in range(0, len(sepCatNames)):
+                        c = '|'.join(sepCatNames)
+                        if category_name == c:
+                            return True
+                        sepCatNames.pop()
+        return False
+
+    def refresh(self, pattern=''):
         self.clear()
+        self.categories = {}
         for node_file_name in get_nodes_file_names():
             node_class = getattr(Nodes, node_file_name)
             category_name = node_class.get_category()
-            if category_name not in self.categories:
+
+            bCreateExists = self._isCategoryExists(category_name, self.categories.keys())
+
+            catNameTree = category_name.split('|')
+            if catNameTree[0] in self.categories:
+                continue
+
+            if len(catNameTree) == 1:
                 CatItem = QtGui.QTreeWidgetItem(self)
                 CatItem.setText(0, category_name)
                 self.categories[category_name] = CatItem
-            NodeItem = QtGui.QTreeWidgetItem(self.categories[category_name])
-            NodeItem.setText(0, node_file_name)
+
+                NodeItem = QtGui.QTreeWidgetItem(category_name)
+                NodeItem.setText(0, node_file_name)
+            else:
+                pass
 
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
@@ -429,13 +472,9 @@ class NodesBox(QtGui.QWidget):
         self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.CustomizeWindowHint)
         self.setObjectName("nodes_box_form")
         self.setWindowTitle('Node box - {0}'.format(self.graph().name))
-        # self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.resize(160, 200)
         self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         self.name = 'NODE_BOX'
-
-        self.switch_button = QtGui.QPushButton("go to list mode")
-        self.switch_button.clicked.connect(self.swap_appearance)
 
         self.verticalLayout = QtGui.QVBoxLayout(self)
         self.verticalLayout.setSpacing(2)
@@ -443,77 +482,42 @@ class NodesBox(QtGui.QWidget):
         self.verticalLayout.setObjectName("verticalLayout")
         self.le_nodes = weakref.ref(NodeBoxLineEdit(self))
         self.le_nodes().textChanged.connect(self.le_text_changed)
-        self.verticalLayout.addWidget(self.switch_button)
         self.verticalLayout.addWidget(self.le_nodes())
-        self.listWidget = weakref.ref(NodesBoxListWidget(self))
-        self.verticalLayout.addWidget(self.listWidget())
-        self.listWidget().setVisible(False)
+        # self.listWidget = weakref.ref(NodesBoxListWidget(self))
+        # self.verticalLayout.addWidget(self.listWidget())
+        # self.listWidget().setVisible(False)
         self.setVisible(False)
-        self.refresh_list('')
         self.tree_widget = NodeBoxTreeWidget(self.graph())
         self.verticalLayout.addWidget(self.tree_widget)
         self.tree_widget.refresh()
-        # self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setStyleSheet("border:1 inset white")
 
-    def keyPressEvent(self, event):
-        modifiers = event.modifiers()
-        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
-            self.swap_appearance()
-        super(NodesBox, self).keyPressEvent(event)
-
-    def swap_appearance(self):
-        self.listWidget().setVisible(not self.listWidget().isVisible())
-        self.tree_widget.setVisible(not self.tree_widget.isVisible())
-        self.le_nodes().setVisible(not self.le_nodes().isVisible())
-        if self.tree_widget.isVisible():
-            self.switch_button.setText("go to list mode")
-        else:
-            self.switch_button.setText("go to category mode")
-
-    def refresh_list(self, pattern):
-
-        self.listWidget().clear()
-        node_file_names = get_nodes_file_names()
-        self.listWidget().addItems([i for i in node_file_names if pattern.lower() in i.lower()])
-        item = self.listWidget().itemAt(0, 0)
-        if item and not item.isSelected():
-            item.setSelected(True)
+    # def keyPressEvent(self, event):
+    #     modifiers = event.modifiers()
+    #     if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
+    #         self.swap_appearance()
+    #     super(NodesBox, self).keyPressEvent(event)
 
     def get_nodes_file_names(self):
         return get_nodes_file_names()
 
-    def set_visible(self):
-
-        pos = self.graph().mapToScene(self.graph().mousePos)
-        self.move(self.graph().mapFromScene(pos).x() + self.graph().pos().x(),
-                  self.graph().mapFromScene(pos).y() + self.graph().pos().y()
-                  )
-        self.tree_widget.hide()
-        self.listWidget().show()
-        self.le_nodes().show()
-        self.switch_button.hide()
-        self.refresh_list('')
-
-        self.show()
-
-    def create_node(self):
-        items = self.listWidget().selectedItems()
-        if not len(items) == 0:
-            name = items[0].text()
-            node = get_node(Nodes, name, self)
-            self.graph().add_node(node, self.graph().mousePos.x(),
-                                  self.graph().mousePos.y())
-            if self.listWidget()._events:
-                self.close()
-                self.listWidget().clear()
+    # def create_node(self):
+    #     items = self.listWidget().selectedItems()
+    #     if not len(items) == 0:
+    #         name = items[0].text()
+    #         node = get_node(Nodes, name, self)
+    #         self.graph().add_node(node, self.graph().mousePos.x(),
+    #                               self.graph().mousePos.y())
+    #         if self.listWidget()._events:
+    #             self.close()
+    #             self.listWidget().clear()
 
     def le_text_changed(self):
         if self.le_nodes().text() == '':
             self.le_nodes().setPlaceholderText("enter node name..")
-            self.refresh_list('')
+            self.tree_widget.refresh()
             return
-        self.refresh_list(self.le_nodes().text())
+        self.tree_widget.refresh(self.le_nodes().text())
 
 
 class RubberRect(QtGui.QGraphicsRectItem, Colors):
@@ -750,7 +754,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         AGraph.__init__(self, name)
         self.parent = parent
         self.menu = QtGui.QMenu()
-        self.node_box = weakref.ref(NodesBox(self))
+        # self.node_box = weakref.ref(NodesBox(self))
         self.setScene(SceneClass(self))
         self.add_actions()
         self.options_widget = OptionsClass()
@@ -970,13 +974,13 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             new_file_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
         new_file_action.triggered.connect(self.new_file)
 
-        node_box_action = QtGui.QAction(self)
-        node_box_action.setText('Node box')
-        if path.isfile(_mod_folder + 'resources/node_box_icon.png'):
-            node_box_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/node_box_icon.png'))
-        else:
-            node_box_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
-        node_box_action.triggered.connect(self.node_box().set_visible)
+        # node_box_action = QtGui.QAction(self)
+        # node_box_action.setText('Node box')
+        # if path.isfile(_mod_folder + 'resources/node_box_icon.png'):
+        #     node_box_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/node_box_icon.png'))
+        # else:
+        #     node_box_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
+        # node_box_action.triggered.connect(self.node_box().set_visible)
 
         separator = QtGui.QAction(self)
         separator.setSeparator(True)
@@ -987,7 +991,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.menu.addAction(save_as_action)
         self.menu.addAction(separator)
         self.menu.addAction(options_action)
-        self.menu.addAction(node_box_action)
+        # self.menu.addAction(node_box_action)
 
     def save(self, save_as=False):
 
@@ -1125,10 +1129,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         clearLayout(self.parent.PropertiesformLayout)
 
     def keyPressEvent(self, event):
-        # if not self.is_sortcuts_enabled():
-        #     QtGui.QGraphicsView.keyPressEvent(self, event)
-        #     return
-
         modifiers = event.modifiers()
         if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
             self.new_file()
@@ -1163,8 +1163,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.parent.toggle_property_view()
         if event.key() == QtCore.Qt.Key_Delete:
             self.kill_selected_nodes()
-        if event.key() == QtCore.Qt.Key_Tab:
-            self.node_box().set_visible()
+        # if event.key() == QtCore.Qt.Key_Tab:
+        #     self.node_box().set_visible()
         if all([event.key() == QtCore.Qt.Key_W, modifiers == QtCore.Qt.ControlModifier]):
             self.duplicate_nodes()
         QtGui.QGraphicsView.keyPressEvent(self, event)
@@ -1172,18 +1172,14 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def duplicate_nodes(self):
         selected_nodes = [i for i in self.nodes if i.isSelected()]
 
-        positions_x = [n.scenePos().x() for n in selected_nodes]
-        positions_y = [n.scenePos().y() for n in selected_nodes]
         if len(selected_nodes) > 0:
-            x = sum(positions_x) / len(positions_x)
-            y = sum(positions_y) / len(positions_y)
-            diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - QtCore.QPointF(x, y)
+            diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - selected_nodes[0].scenePos()
 
-        for n in selected_nodes:
-            new_node = n.clone()
-            n.setSelected(False)
-            new_node.setSelected(True)
-            new_node.setPos(new_node.scenePos() + diff)
+            for n in selected_nodes:
+                new_node = n.clone()
+                n.setSelected(False)
+                new_node.setSelected(True)
+                new_node.setPos(new_node.scenePos() + diff)
 
     def align_selected_nodes(self, direction):
         scene_poses = []
@@ -1239,11 +1235,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             if event.button() == QtCore.Qt.RightButton and modifiers == QtCore.Qt.NoModifier:
                 self.bPanMode = True
             self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
-            self.node_box().close()
-            self.node_box().le_nodes().clear()
-
-        if not event.button() == QtCore.Qt.RightButton:
-            super(GraphWidget, self).mousePressEvent(event)
+            # self.node_box().close()
+            # self.node_box().le_nodes().clear()
+        super(GraphWidget, self).mousePressEvent(event)
 
     def pan(self, delta):
         delta *= self._scale * -1

@@ -16,7 +16,7 @@ class Sin(BaseNode.Node, AGNode):
 
     @staticmethod
     def get_category():
-        return 'Math'
+        return 'Math|FlowControl'
 
     @staticmethod
     def description():
