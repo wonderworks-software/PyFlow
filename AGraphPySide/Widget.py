@@ -421,6 +421,7 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
                     if categoryPath not in self.categoryPaths:
                         rootFolderItem = QtGui.QTreeWidgetItem(self)
                         rootFolderItem.setText(0, folderName)
+                        rootFolderItem.setBackground(folderId, QtGui.QColor(80, 85, 80))
                         self.categoryPaths[categoryPath] = rootFolderItem
                 else:
                     parentCategoryPath = categoryPath
@@ -428,6 +429,7 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
                     if categoryPath not in self.categoryPaths:
                         childCategoryItem = QtGui.QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
                         childCategoryItem.setText(0, folderName)
+                        childCategoryItem.setBackground(0, QtGui.QColor(80, 85, 80))
                         self.categoryPaths[categoryPath] = childCategoryItem
             # create node under constructed folder
             nodeItem = QtGui.QTreeWidgetItem(self.categoryPaths[categoryPath])
@@ -818,6 +820,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._bRightBeforeShoutDown = False
 
     def shoutDown(self):
+        self.tick_timer.stop()
+        self.tick_timer.timeout.disconnect()
         self.scene().shoutDown()
         self.scene().clear()
 
@@ -876,7 +880,10 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
     def main_loop(self):
         deltaTime = clock() - self._lastClock
         self._lastFps = self.fps
-        self.fps = int((deltaTime * 1000.0) * 0.001)
+        ds = (deltaTime * 1000.0)
+        if ds > 0:
+            self.fps = 1000.0 / ds
+        print(self.fps)
         if self.autoPanController.isActive():
             self.moveScrollbar(self.autoPanController.getDelta())
         for n in self.nodes:
@@ -1208,6 +1215,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         QtGui.QGraphicsView.keyReleaseEvent(self, event)
 
     def mousePressEvent(self, event):
+        super(GraphWidget, self).mousePressEvent(event)
         self.pressed_item = self.itemAt(event.pos())
         self.mousePressPose = event.pos()
 
@@ -1235,8 +1243,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.bPanMode = True
             self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
 
-        super(GraphWidget, self).mousePressEvent(event)
-
     def pan(self, delta):
         delta *= self._scale * -1
         delta *= self._panSpeed
@@ -1244,6 +1250,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.verticalScrollBar().setValue(self.verticalScrollBar().value() + delta.y())
 
     def mouseMoveEvent(self, event):
+        super(GraphWidget, self).mouseMoveEvent(event)
         self.mousePos = event.pos()
 
         if self.bPanMode:
@@ -1283,7 +1290,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.rubber_rect.setRect(r.normalized())
 
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
-        super(GraphWidget, self).mouseMoveEvent(event)
+        
         self._lastMousePos = event.pos()
 
     def remove_item_by_name(self, name):

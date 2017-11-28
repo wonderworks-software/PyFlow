@@ -36,7 +36,6 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionAlignLeft.triggered.connect(lambda: self.G.align_selected_nodes(True))
         self.actionAlignUp.triggered.connect(lambda: self.G.align_selected_nodes(False))
 
-        # self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
         self.console.setLineWrapMode(QtGui.QTextEdit.NoWrap)
         self.console.setReadOnly(True)
         self.console.setStyleSheet('background-color: rgb(49, 49, 49);' +
