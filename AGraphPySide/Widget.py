@@ -883,7 +883,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         ds = (deltaTime * 1000.0)
         if ds > 0:
             self.fps = 1000.0 / ds
-        print(self.fps)
         if self.autoPanController.isActive():
             self.moveScrollbar(self.autoPanController.getDelta())
         for n in self.nodes:
@@ -896,7 +895,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.write_to_console(message)
 
     def registerCommands(self):
-
         for d in listdir(Commands.__path__[0]):
             if d.endswith(".py") and "__init__" not in d:
                 cmd = import_by_name(Commands, d.split(".")[0])
@@ -907,7 +905,6 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                     print "command not imported", d.split(".")[0]
 
     def screen_shot(self):
-
         name_filter = "Image (*.png)"
         fName = QtGui.QFileDialog.getSaveFileName(filter=name_filter)
         if not fName[0] == '':
@@ -1290,7 +1287,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             self.rubber_rect.setRect(r.normalized())
 
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
-        
+
         self._lastMousePos = event.pos()
 
     def remove_item_by_name(self, name):
