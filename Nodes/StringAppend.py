@@ -5,9 +5,9 @@ from AbstractGraph import *
 class StringAppend(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super(StringAppend, self).__init__(name, graph)
-        self.first = self.add_input_port('first', AGPortDataTypes.tString)
-        self.second = self.add_input_port('second', AGPortDataTypes.tString)
-        self.output = self.add_output_port('output', AGPortDataTypes.tString)
+        self.first = self.add_input_port('first', DataTypes.tString)
+        self.second = self.add_input_port('second', DataTypes.tString)
+        self.output = self.add_output_port('output', DataTypes.tString)
         portAffects(self.first, self.output)
         portAffects(self.second, self.output)
 

@@ -3,13 +3,12 @@ from AGraphCommon import *
 import weakref
 
 
-class AGPort(object):
-
+class PortBase(object):
     def __init__(self, name, parent, data_type):
-        super(AGPort, self).__init__()
+        super(PortBase, self).__init__()
         self.name = name.replace(" ", "_")
         self.parent = weakref.ref(parent)
-        self.object_type = AGObjectTypes.tPort
+        self.object_type = ObjectTypes.Port
         self._data_type = None
         self.data_type = data_type
 
@@ -30,26 +29,26 @@ class AGPort(object):
     def data_type(self, value):
         self._data_type = value
 
-        self.allowed_data_types = list(set([AGPortDataTypes.tReroute, value]))
-        if self.data_type == AGPortDataTypes.tReroute:
-            self.allowed_data_types.append(AGPortDataTypes.tAny)
-        if self.data_type == AGPortDataTypes.tExec or self.data_type == AGPortDataTypes.tAny:
+        self.allowed_data_types = list(set([DataTypes.Reroute, value]))
+        if self.data_type == DataTypes.Reroute:
+            self.allowed_data_types.append(DataTypes.Any)
+        if self.data_type == DataTypes.tExec or self.data_type == DataTypes.Any:
             self.allowed_data_types.append(value)
 
     def getDefaultDataValue(self):
-        if self._data_type == AGPortDataTypes.tFloat:
+        if self._data_type == DataTypes.Float:
             return float()
-        if self._data_type == AGPortDataTypes.tInt:
+        if self._data_type == DataTypes.Int:
             return int()
-        if self._data_type == AGPortDataTypes.tString:
+        if self._data_type == DataTypes.String:
             return str("none")
-        if self._data_type == AGPortDataTypes.tBool:
+        if self._data_type == DataTypes.Bool:
             return bool()
-        if self._data_type == AGPortDataTypes.tArray:
+        if self._data_type == DataTypes.Array:
             return []
-        if self._data_type == AGPortDataTypes.tAny:
+        if self._data_type == DataTypes.Any:
             return None
-        if self._data_type == AGPortDataTypes.tReroute:
+        if self._data_type == DataTypes.Reroute:
             return None
 
     def set_data_overload(self, data, dirty_propagate=True):
@@ -90,7 +89,7 @@ class AGPort(object):
         if not self.hasConnections():
             return self.current_data()
 
-        if self.type == AGPortTypes.kOutput:
+        if self.type == PinTypes.Output:
             if self.dirty:
                 compute_order = self.parent().graph().get_evaluation_order(self.parent())
                 if debug:
@@ -109,9 +108,9 @@ class AGPort(object):
                 return self._data
             else:
                 return self._data
-        if self.type == AGPortTypes.kInput:
+        if self.type == PinTypes.Input:
             if self.dirty:
-                out = [i for i in self.affected_by if i.type == AGPortTypes.kOutput]
+                out = [i for i in self.affected_by if i.type == PinTypes.Output]
                 if not out == []:
                     compute_order = out[0].parent().graph().get_evaluation_order(out[0].parent())
                     if debug:
@@ -142,24 +141,24 @@ class AGPort(object):
             p.call()
 
     def set_data(self, data, dirty_propagate=True):
-        if self._data_type == AGPortDataTypes.tFloat:
+        if self._data_type == DataTypes.Float:
             self._data = float(data)
-        if self._data_type == AGPortDataTypes.tInt:
+        if self._data_type == DataTypes.Int:
             self._data = int(data)
-        if self._data_type == AGPortDataTypes.tString:
+        if self._data_type == DataTypes.String:
             self._data = str(data)
-        if self._data_type == AGPortDataTypes.tArray:
+        if self._data_type == DataTypes.Array:
             self._data = data
-        if self._data_type == AGPortDataTypes.tBool:
+        if self._data_type == DataTypes.Bool:
             if type(data) != bool().__class__:
                 self._data = self.str2bool(data)
             else:
                 self._data = bool(data)
-        if self._data_type == AGPortDataTypes.tAny:
+        if self._data_type == DataTypes.Any:
             self._data = data
 
         self.set_clean()
-        if self.type == AGPortTypes.kOutput:
+        if self.type == PinTypes.Output:
             for i in self.affects:
                 i._data = data
                 i.set_clean()
@@ -168,12 +167,12 @@ class AGPort(object):
         self.set_data_overload(data, dirty_propagate)
 
 
-class AGNode(object):
+class NodeBase(object):
     def __init__(self, name, graph):
-        super(AGNode, self).__init__()
+        super(NodeBase, self).__init__()
         self.graph = weakref.ref(graph)
         self.name = name
-        self.object_type = AGObjectTypes.tNode
+        self.object_type = ObjectTypes.Node
         self.inputs = []
         self.outputs = []
         self.x = 0.0
@@ -190,17 +189,17 @@ class AGNode(object):
         self.name = self.graph().get_uniq_node_name(name)
 
     def add_input_port(self, port_name, data_type, foo=None):
-        p = AGPort(port_name, self, data_type, foo)
+        p = PortBase(port_name, self, data_type, foo)
         self.inputs.append(p)
-        p.type = AGPortTypes.kInput
+        p.type = PinTypes.Input
         if foo:
             p.call = foo
         return p
 
     def add_output_port(self, port_name, data_type, foo=None):
-        p = AGPort(port_name, self, data_type, foo)
+        p = PortBase(port_name, self, data_type, foo)
         self.outputs.append(p)
-        p.type = AGPortTypes.kOutput
+        p.type = PinTypes.Output
         if foo:
             p.call = foo
         return p
@@ -223,12 +222,12 @@ class AGNode(object):
         return
 
 
-class AGraph(object):
+class Graph(object):
 
     def __init__(self, name):
 
-        super(AGraph, self).__init__()
-        self.object_type = AGObjectTypes.tGraph
+        super(Graph, self).__init__()
+        self.object_type = ObjectTypes.Graph
         self._debug = False
         self._multithreaded = False
         self.name = name
@@ -271,7 +270,7 @@ class AGraph(object):
         order = {0: [node]}
 
         def foo(n):
-            next_layer_nodes = self.get_next_layer_nodes(n, AGPortTypes.kInput, dirty_only)
+            next_layer_nodes = self.get_next_layer_nodes(n, PinTypes.Input, dirty_only)
             layer_idx = max(order.iterkeys()) + 1
             for n in next_layer_nodes:
                 if layer_idx not in order:
@@ -290,9 +289,9 @@ class AGraph(object):
         return order
 
     @staticmethod
-    def get_next_layer_nodes(node, direction=AGPortTypes.kInput, dirty_only=False):
+    def get_next_layer_nodes(node, direction=PinTypes.Input, dirty_only=False):
         nodes = []
-        if direction == AGPortTypes.kInput:
+        if direction == PinTypes.Input:
             if not node.inputs == []:
                 for i in node.inputs:
                     if not i.affected_by == []:
@@ -303,7 +302,7 @@ class AGraph(object):
                                 if a.dirty:
                                     nodes.append(a.parent())
             return nodes
-        if direction == AGPortTypes.kOutput:
+        if direction == PinTypes.Output:
             if not node.outputs == []:
                 for i in node.outputs:
                     if not i.affects == []:
@@ -344,21 +343,21 @@ class AGraph(object):
 
     def add_edge(self, src, dst):
         debug = self.is_debug()
-        if src.type == AGPortTypes.kInput:
+        if src.type == PinTypes.Input:
             src, dst = dst, src
 
-        if src.data_type == AGPortDataTypes.tReroute:
+        if src.data_type == DataTypes.Reroute:
             src.data_type = dst.data_type
-        if dst.data_type == AGPortDataTypes.tReroute:
+        if dst.data_type == DataTypes.Reroute:
             dst.data_type = src.data_type
 
-        if AGPortDataTypes.tAny not in dst.allowed_data_types:
+        if DataTypes.Any not in dst.allowed_data_types:
             if src.data_type not in dst.allowed_data_types:
                 print("data types error", src.data_type, dst.data_type)
                 return False
         else:
-            if src.data_type == AGPortDataTypes.tExec:
-                if dst.data_type not in [AGPortDataTypes.tExec, AGPortDataTypes.tReroute]:
+            if src.data_type == DataTypes.tExec:
+                if dst.data_type not in [DataTypes.tExec, DataTypes.Reroute]:
                     print("data types error", src.data_type, dst.data_type)
                     return False
 
@@ -381,11 +380,11 @@ class AGraph(object):
 
         # input data ports can have one output connection
         # output data ports can have any number of connections
-        if not src.data_type == AGPortDataTypes.tExec and dst.hasConnections():
+        if not src.data_type == DataTypes.tExec and dst.hasConnections():
             dst.disconnect_all()
         # input execs can have any number of connections
         # output execs can have only one connection
-        if src.data_type == AGPortDataTypes.tExec and dst.data_type == AGPortDataTypes.tExec and src.hasConnections():
+        if src.data_type == DataTypes.tExec and dst.data_type == DataTypes.tExec and src.hasConnections():
             src.disconnect_all()
 
         portAffects(src, dst)

@@ -1,15 +1,15 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class ArrayAppend(BaseNode.Node, AGNode):
+class ArrayAppend(Node, NodeBase):
     def __init__(self, name, graph):
         super(ArrayAppend, self).__init__(name, graph, spacings=Spacings)
-        self.in_arr = self.add_input_port('inArray', AGPortDataTypes.tArray)
-        self.element = self.add_input_port('element', AGPortDataTypes.tAny)
-        self.out_arr = self.add_output_port('out', AGPortDataTypes.tArray)
-        self.out_result = self.add_output_port('result', AGPortDataTypes.tBool)
+        self.in_arr = self.add_input_port('inArray', DataTypes.Array)
+        self.element = self.add_input_port('element', DataTypes.Any)
+        self.out_arr = self.add_output_port('out', DataTypes.Array)
+        self.out_result = self.add_output_port('result', DataTypes.tBool)
         portAffects(self.in_arr, self.out_result)
         portAffects(self.element, self.out_result)
         portAffects(self.in_arr, self.out_arr)

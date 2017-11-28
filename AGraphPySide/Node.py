@@ -8,7 +8,7 @@ from AbstractGraph import *
 class NodeName(QtGui.QGraphicsTextItem):
     def __init__(self, name, parent):
         QtGui.QGraphicsTextItem.__init__(self)
-        self.object_type = AGObjectTypes.tNodeName
+        self.object_type = ObjectTypes.NodeName
         self.name = name
         self.setPlainText(self.name)
         self.setParentItem(parent)
@@ -98,12 +98,12 @@ class NodeName(QtGui.QGraphicsTextItem):
         super(NodeName, self).focusOutEvent(event)
 
 
-class Node(QtGui.QGraphicsItem, AGNode):
+class Node(QtGui.QGraphicsItem, NodeBase):
     """
     Default node description
     """
-    def __init__(self, name, graph, w=120, color=Colors.kNodeBackgrounds, spacings=Spacings, port_types=AGPortTypes, headColor=Colors.kNodeNameRect):
-        AGNode.__init__(self, name, graph)
+    def __init__(self, name, graph, w=120, color=Colors.kNodeBackgrounds, spacings=Spacings, port_types=PinTypes, headColor=Colors.kNodeNameRect):
+        NodeBase.__init__(self, name, graph)
         QtGui.QGraphicsItem.__init__(self)
         self.setCacheMode(QtGui.QGraphicsItem.DeviceCoordinateCache)
         self.options = self.graph().get_settings()
@@ -113,7 +113,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
             self.opt_lyt_a_color = QtGui.QColor(self.options.value('NODES/Nodes lyt A color'))
             self.opt_lyt_b_color = QtGui.QColor(self.options.value('NODES/Nodes lyt B color'))
             self.opt_pen_selected_type = QtCore.Qt.SolidLine
-        self.object_type = AGObjectTypes.tNode
+        self.object_type = ObjectTypes.tNode
         self._left_stretch = 0
         self.color = color
         self.height_offset = 3
@@ -234,7 +234,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         pass
 
     def set_name(self, name):
-        AGNode.set_name(self, name)
+        NodeBase.set_name(self, name)
         self.label().setPlainText(self.name)
 
     def clone(self):
@@ -299,31 +299,31 @@ class Node(QtGui.QGraphicsItem, AGNode):
         self.setCursor(QtCore.Qt.OpenHandCursor)
         modifiers = event.modifiers()
         selected_nodes = [n for n in self.graph().nodes if n.isSelected()]
-        groupers = [i for i in self.graph().groupers if i.object_type == AGObjectTypes.tGrouper]
+        groupers = [i for i in self.graph().groupers if i.object_type == ObjectTypes.tGrouper]
         grouper = [g for g in groupers if self in g.collidingItems()]
         if len(grouper) == 1:
             if not modifiers == QtCore.Qt.ControlModifier:
                 grouper[0].add_from_iterable(selected_nodes)
         else:
             parent = self.parentItem()
-            if parent and parent.object_type == AGObjectTypes.tGrouper:
+            if parent and parent.object_type == ObjectTypes.tGrouper:
                 if self in parent.nodes:
                     parent.remove_from_iterable(selected_nodes)
                     self.setZValue(1)
                     for n in selected_nodes:
                         if n.parentItem():
                             if hasattr(n.parentItem(), 'object_type'):
-                                if n.parentItem().object_type == AGObjectTypes.tGrouper:
+                                if n.parentItem().object_type == ObjectTypes.tGrouper:
                                     n.parentItem().remove_node(n)
         p_item = self.parentItem()
         if p_item and hasattr(p_item, 'object_type'):
-            if p_item.object_type == AGObjectTypes.tGrouper:
+            if p_item.object_type == ObjectTypes.tGrouper:
                 if p_item.auto_fit_content:
                     p_item.fit_content()
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 
     def add_input_port(self, port_name, data_type, foo=None):
-        p = self._add_port(AGPortTypes.kInput, data_type, foo, port_name)
+        p = self._add_port(PinTypes.kInput, data_type, foo, port_name)
         if data_type in [AGPortDataTypes.tFloat, AGPortDataTypes.tInt]:
             for i in [AGPortDataTypes.tFloat, AGPortDataTypes.tInt]:
                 if i not in p.allowed_data_types:
@@ -339,7 +339,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         return []
 
     def add_output_port(self, port_name, data_type, foo=None):
-        p = self._add_port(AGPortTypes.kOutput, data_type, foo, port_name)
+        p = self._add_port(PinTypes.kOutput, data_type, foo, port_name)
         return p
 
     def add_container(self, portType, head=False):
@@ -355,7 +355,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         lyt.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         lyt.setContentsMargins(1, 1, 1, 1)
         container.setLayout(lyt)
-        if portType == AGPortTypes.kInput:
+        if portType == PinTypes.kInput:
             self.inputsLayout.addItem(container)
         else:
             self.outputsLayout.addItem(container)
@@ -373,7 +373,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
     def set_pos(self, x, y):
 
-        AGNode.set_pos(self, x, y)
+        NodeBase.set_pos(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
 
     def _add_port(self, port_type, data_type, foo, name='', color=QtGui.QColor(0, 100, 0, 255)):
@@ -397,7 +397,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
 
         p = Port(name, self, data_type, 7, 7, newColor)
         p.type = port_type
-        if port_type == AGPortTypes.kInput and foo is not None:
+        if port_type == PinTypes.kInput and foo is not None:
             p.call = foo
         connector_name = QtGui.QGraphicsProxyWidget()
         connector_name.setContentsMargins(0, 0, 0, 0)

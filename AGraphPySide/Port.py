@@ -4,7 +4,6 @@ from Settings import *
 
 
 def update_ports(start_from):
-
     if not start_from.affects == []:
         start_from.update()
         for i in start_from.affects:
@@ -13,28 +12,27 @@ def update_ports(start_from):
 
 
 def getPortColorByType(t):
-    if t == AGPortDataTypes.tAny:
-        return Colors.kAny
-    if t == AGPortDataTypes.tFloat:
-        return Colors.kFloat
-    if t == AGPortDataTypes.tInt:
-        return Colors.kInt
-    if t == AGPortDataTypes.tArray:
-        return Colors.kArray
-    if t == AGPortDataTypes.tBool:
-        return Colors.kBool
-    if t == AGPortDataTypes.tExec:
-        return Colors.kExec
-    if t == AGPortDataTypes.tReroute:
-        return Colors.kReroute
-    if t == AGPortDataTypes.tString:
-        return Colors.kString
+    if t == DataTypes.Any:
+        return Colors.Any
+    if t == DataTypes.Float:
+        return Colors.Float
+    if t == DataTypes.Int:
+        return Colors.Int
+    if t == DataTypes.Array:
+        return Colors.Array
+    if t == DataTypes.Bool:
+        return Colors.Bool
+    if t == DataTypes.Exec:
+        return Colors.Exec
+    if t == DataTypes.Reroute:
+        return Colors.Reroute
+    if t == DataTypes.String:
+        return Colors.String
 
 
-class Port(QtGui.QGraphicsWidget, AGPort):
-
+class Port(QtGui.QGraphicsWidget, PortBase):
     def __init__(self, name, parent, data_type, width, height, color=Colors.kConnectors):
-        AGPort.__init__(self, name, parent, data_type)
+        PortBase.__init__(self, name, parent, data_type)
         QtGui.QGraphicsWidget.__init__(self)
         name = name.replace(" ", "_")  # spaces are not allowed
         self.setParentItem(parent)
@@ -48,7 +46,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self.setZValue(2)
         self.__width = width + 1
         self.__height = height + 1
-        if self.data_type == AGPortDataTypes.tExec:
+        if self.data_type == DataTypes.Exec:
             self.__width = self.__height = 10.0
         self.hovered = False
         self.startPos = None
@@ -59,7 +57,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         self._container = None
         self.color = getPortColorByType(data_type)
         self._execPen = QtGui.QPen(self.color, 0.5, QtCore.Qt.SolidLine)
-        if self.data_type == AGPortDataTypes.tReroute:
+        if self.data_type == DataTypes.Reroute:
             self.color = color
         self.setGeometry(0, 0, self.__width, self.__height)
         if self.options:
@@ -89,7 +87,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         xAvg = 0.0
         if not self.hasConnections():
             return xAvg
-        if self.type == AGPortTypes.kInput:
+        if self.type == PortTypesBase.kInput:
             positions = [p.scenePos().x() for p in self.affected_by]
         else:
             positions = [p.scenePos().x() for p in self.affects]
@@ -122,7 +120,6 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         return path
 
     def paint(self, painter, option, widget):
-
         background_rect = QtCore.QRectF(0, 0, self.__width, self.__width)
 
         w = background_rect.width() / 2
@@ -143,9 +140,9 @@ class Port(QtGui.QGraphicsWidget, AGPort):
 
         if self.hovered:
             linearGrad.setColorAt(1, self.color.lighter(200))
-        if self.data_type == AGPortDataTypes.tArray:
+        if self.data_type == DataTypes.Array:
             painter.drawRect(background_rect)
-        elif self.data_type == AGPortDataTypes.tExec:
+        elif self.data_type == DataTypes.Exec:
             if self._connected:
                 painter.setBrush(QtGui.QBrush(self.color))
             else:
@@ -174,7 +171,7 @@ class Port(QtGui.QGraphicsWidget, AGPort):
             self.parent().graph().write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), self._data, FLAG_SYMBOL))
 
     def getLayout(self):
-        if self.type == AGPortTypes.kInput:
+        if self.type == PortTypesBase.kInput:
             return self.parent().inputsLayout
         else:
             return self.parent().outputsLayout
@@ -195,7 +192,6 @@ class Port(QtGui.QGraphicsWidget, AGPort):
         super(Port, self).hoverLeaveEvent(event)
 
     def set_data(self, data, dirty_propagate=True):
-
-        AGPort.set_data(self, data, dirty_propagate)
+        PortBase.set_data(self, data, dirty_propagate)
         self.write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), data, FLAG_SYMBOL))
         update_ports(self)

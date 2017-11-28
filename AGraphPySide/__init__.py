@@ -10,7 +10,7 @@ from Commands import *
 from AbstractGraph import *
 from Settings import *
 from Port import *
-from BaseNode import *
+from Node import *
 from Edge import *
 from Widget import *
 from SyntaxHighlighter import Highlighter

@@ -1,14 +1,14 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class ArrayConcat(BaseNode.Node, AGNode):
+class ArrayConcat(Node, NodeBase):
     def __init__(self, name, graph):
         super(ArrayConcat, self).__init__(name, graph, spacings=Spacings)
-        self.arrayA = self.add_input_port('first', AGPortDataTypes.tArray)
-        self.arrayB = self.add_input_port('second', AGPortDataTypes.tArray)
-        self.result = self.add_output_port('out', AGPortDataTypes.tArray)
+        self.arrayA = self.add_input_port('first', DataTypes.Array)
+        self.arrayB = self.add_input_port('second', DataTypes.Array)
+        self.result = self.add_output_port('out', DataTypes.Array)
         portAffects(self.arrayA, self.result)
         portAffects(self.arrayB, self.result)
 

@@ -50,10 +50,10 @@ def calc_multithreaded(ls, debug=False):
 def cycle_check(src, dst):
 
     # allow cycles on execs
-    if src.data_type == AGPortDataTypes.tExec or dst.data_type == AGPortDataTypes.tExec:
+    if src.data_type == DataTypes.tExec or dst.data_type == DataTypes.tExec:
         return False
 
-    if src.type == AGPortTypes.kInput:
+    if src.type == PinTypes.Input:
         src, dst = dst, src
     start = src
     if src in dst.affects:
@@ -84,39 +84,26 @@ def push(start_from):
             push(i)
 
 
-class AGPortDataTypes(object):
-
-    tFloat = 'numeric_data'
-    tInt = 'numeric_data_int'
+class DataTypes:
+    Float = 'numeric_data'
+    Int = 'numeric_data_int'
     tString = 'string_data'
-    tBool = 'boolean_data'
-    tArray = 'array_data'
-    tAny = 'all'
-    tReroute = 'reroute'
+    Bool = 'boolean_data'
+    Array = 'array_data'
+    Any = 'all'
+    Reroute = 'reroute'
     tExec = 'exec'
 
-    def __init__(self):
-        super(AGPortDataTypes, self).__init__()
+
+class ObjectTypes:
+    Port = 'port_object'
+    Node = 'node_object'
+    Graph = 'graph_object'
+    Grouper = 'group_object'
+    Connection = 'connection_line_object'
+    NodeName = 'node_name_object'
 
 
-class AGObjectTypes(object):
-
-    tPort = 'port_object'
-    tNode = 'node_object'
-    tGraph = 'graph_object'
-    tGrouper = 'group_object'
-    tConnectionLine = 'connection_line_object'
-    tGridLine = 'grid_line_object'
-    tNodeName = 'node_name_object'
-
-    def __init__(self):
-        super(AGObjectTypes, self).__init__()
-
-
-class AGPortTypes(object):
-
-    kInput = 'input_port'
-    kOutput = 'output_port'
-
-    def __init__(self, arg):
-        super(AGPortTypes, self).__init__()
+class PinTypes:
+    Input = 'input_port'
+    Output = 'output_port'
