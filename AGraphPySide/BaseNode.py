@@ -230,7 +230,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def property_view(self):
         return self.graph().parent.dockWidgetNodeView
 
-    def Tick(self):
+    def Tick(self, delta):
         pass
 
     def set_name(self, name):
@@ -267,7 +267,7 @@ class Node(QtGui.QGraphicsItem, AGNode):
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QtGui.QStyle.State_Selected:
             if self.options:
-                pen.setColor(self.opt_selected_pen_color)
+                pen.setColor(Colors.kYellow)
                 pen.setStyle(self.opt_pen_selected_type)
             else:
                 pen.setColor(opt_selected_pen_color)

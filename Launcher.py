@@ -13,7 +13,6 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.setupUi(self)
         self.G = GraphWidget('MAIN_GRAPH', self)
         self.node_box = Widget.NodesBox(self.G)
-        # self.node_box.listWidget()._events = False
         self.node_box.le_nodes()._events = False
         self.SceneLayout.addWidget(self.G)
         self.NodeBoxLayout.addWidget(self.node_box)
@@ -37,7 +36,7 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionAlignLeft.triggered.connect(lambda: self.G.align_selected_nodes(True))
         self.actionAlignUp.triggered.connect(lambda: self.G.align_selected_nodes(False))
 
-        self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
+        # self.horizontal_splitter.setHandleWidth(Spacings.kSplitterHandleWidth)
         self.console.setLineWrapMode(QtGui.QTextEdit.NoWrap)
         self.console.setReadOnly(True)
         self.console.setStyleSheet('background-color: rgb(49, 49, 49);' +
@@ -53,7 +52,7 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.highlighter_inst = Highlighter(self.console.document(),
                                             commands_names,
                                             self.node_box.get_nodes_file_names())
-        self.gridLayout_2.addWidget(self.consoleInput, 2, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.consoleInput, 1, 0, 1, 1)
         self.dockWidgetConsole.hide()
         self.dockWidgetNodeBox.hide()
         self.setMouseTracking(True)

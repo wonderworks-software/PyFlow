@@ -75,7 +75,7 @@ class Reroute(BaseNode.Node, AGNode):
             cp2.setX(self.inp0.scenePos().x() - (xDistance / 2.0))
         return cp2
 
-    def Tick(self):
+    def Tick(self, delta):
         InxDistance = self.inp0.getAvgXConnected() - self.inp0.scenePos().x()
         OutxDistance = self.out0.getAvgXConnected() - self.out0.scenePos().x()
         if OutxDistance < 0 or InxDistance > 0:

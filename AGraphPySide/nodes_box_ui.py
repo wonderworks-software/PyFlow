@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/AGraphPySide\nodes_box_ui.ui'
 #
-# Created: Sat Nov 25 19:20:09 2017
+# Created: Tue Nov 28 11:02:54 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!

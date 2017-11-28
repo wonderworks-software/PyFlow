@@ -18,12 +18,11 @@ if nodes_path not in sys.path:
     sys.path.append(nodes_path)
 import Nodes
 import Commands
-from time import ctime
+from time import ctime, clock
 import OptionsWindow_ui
 import rgba_color_picker_ui
 import json
 import re
-import winsound
 
 
 def get_mid_point(args):
@@ -361,28 +360,11 @@ class NodeBoxLineEdit(QtGui.QLineEdit):
     #     super(NodeBoxLineEdit, self).keyPressEvent(event)
 
 
-class TreeEntry(object):
-    """doc string for TreeEntry"""
-    def __init__(self, val, parent=None):
-        super(TreeEntry, self).__init__()
-        self.parent = parent
-        self.val = val
-
-    def __eq__(self, other):
-        if isinstance(other, TreeEntry):
-            return self.parent == other.parent and self.val == other.val
-        return False
-
-    def isRoot(self):
-        return self.parent is None
-
-
 class NodeBoxTreeWidget(QtGui.QTreeWidget):
     def __init__(self, parent):
         super(NodeBoxTreeWidget, self).__init__(parent)
-        style = "background-color: rgb(80, 80, 80);" +\
-                "selection-background-color: rgb(150, 150, 150);" +\
-                "selection-color: yellow;" +\
+        style = "background-color: rgb(40, 40, 40);" +\
+                "selection-background-color: rgb(50, 50, 50);" +\
                 "border-radius: 2px;" +\
                 "font-size: 14px;" +\
                 "border-color: black; border-style: outset; border-width: 1px;"
@@ -538,8 +520,6 @@ class RubberRect(QtGui.QGraphicsRectItem, Colors):
         self.setZValue(2)
         self.setPen(QtGui.QPen(self.kRubberRect, 0.5, QtCore.Qt.SolidLine))
         self.setBrush(QtGui.QBrush(self.kRubberRect))
-
-
 
     def remove_node(self, node):
         if node in self.nodes:
@@ -765,7 +745,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         AGraph.__init__(self, name)
         self.parent = parent
         self.menu = QtGui.QMenu()
-        # self.node_box = weakref.ref(NodesBox(self))
+        self._lastClock = 0.0
+        self.fps = 0
         self.setScene(SceneClass(self))
         self.add_actions()
         self.options_widget = OptionsClass()
@@ -803,6 +784,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._file_name_label.setFlag(QtGui.QGraphicsTextItem.ItemIgnoresTransformations)
         self._file_name_label.setDefaultTextColor(self.kWhite)
         self._file_name_label.setPlainText(self._current_file_name)
+
         self.scene().addItem(self._file_name_label)
         self.rubber_rect = RubberRect('RubberRect')
 
@@ -826,10 +808,11 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self.registerCommands()
         self._sortcuts_enabled = True
         self.tick_timer = QtCore.QTimer()
-        self.tick_timer.timeout.connect(self.Tick)
-        self.tick_timer.start(100)
+        self.tick_timer.timeout.connect(self.main_loop)
+        self.tick_timer.start(20)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid_size = 10
+        self.drawGrigSize = self.grid_size * 2
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
@@ -890,11 +873,16 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         t = Thread(target=lambda: winsound.PlaySound(file_name, winsound.SND_FILENAME))
         t.start()
 
-    def Tick(self):
+    def main_loop(self):
+        deltaTime = clock() - self._lastClock
+        self._lastFps = self.fps
+        self.fps = int((deltaTime * 1000.0) * 0.001)
         if self.autoPanController.isActive():
             self.moveScrollbar(self.autoPanController.getDelta())
         for n in self.nodes:
-            n.Tick()
+            n.Tick(deltaTime)
+
+        self._lastClock = clock()
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
@@ -1246,8 +1234,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             if event.button() == QtCore.Qt.RightButton and modifiers == QtCore.Qt.NoModifier:
                 self.bPanMode = True
             self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
-            # self.node_box().close()
-            # self.node_box().le_nodes().clear()
+
         super(GraphWidget, self).mousePressEvent(event)
 
     def pan(self, delta):
@@ -1455,21 +1442,21 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             color = self.kSceneBackground
         painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(color))
 
-        left = int(scene_rect.left()) - (int(scene_rect.left()) % self.grid_size)
-        top = int(scene_rect.top()) - (int(scene_rect.top()) % self.grid_size)
+        left = int(scene_rect.left()) - (int(scene_rect.left()) % self.drawGrigSize)
+        top = int(scene_rect.top()) - (int(scene_rect.top()) % self.drawGrigSize)
 
         # draw grid vertical lines
         scaleMult = 1.0
-        for x in xrange(left, int(scene_rect.right()), self.grid_size):
-            if x % (self.grid_size * 10.0) == 0.0:
+        for x in xrange(left, int(scene_rect.right()), self.drawGrigSize):
+            if x % (self.drawGrigSize * 10.0) == 0.0:
                 painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             else:
                 painter.setPen(QtGui.QPen(self.kGridColor, 0.5 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
-        for y in xrange(top, int(scene_rect.bottom()), self.grid_size):
-            if y % (self.grid_size * 10.0) == 0.0:
+        for y in xrange(top, int(scene_rect.bottom()), self.drawGrigSize):
+            if y % (self.drawGrigSize * 10.0) == 0.0:
                 painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             else:
                 painter.setPen(QtGui.QPen(self.kGridColor, 0.5 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
