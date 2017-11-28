@@ -16,7 +16,11 @@ class Sin(BaseNode.Node, AGNode):
 
     @staticmethod
     def get_category():
-        return 'Math|FlowControl'
+        return 'Math'
+
+    @staticmethod
+    def get_keywords():
+        return ["algebra", "math", "trigonometry"]
 
     @staticmethod
     def description():

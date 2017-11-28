@@ -397,7 +397,7 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
         self.setColumnCount(1)
         self.setHeaderHidden(True)
         self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
-        self.categories = {}
+        self.categoryPaths = {}
 
     def _isCategoryExists(self, category_name, categories):
         bFound = False
@@ -419,26 +419,37 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
 
     def refresh(self, pattern=''):
         self.clear()
-        self.categories = {}
+        self.categoryPaths = {}
         for node_file_name in get_nodes_file_names():
             node_class = getattr(Nodes, node_file_name)
-            category_name = node_class.get_category()
+            nodeCategoryPath = node_class.get_category()
 
-            bCreateExists = self._isCategoryExists(category_name, self.categories.keys())
-
-            catNameTree = category_name.split('|')
-            if catNameTree[0] in self.categories:
+            checkString = node_file_name + nodeCategoryPath + ''.join(node_class.get_keywords())
+            if pattern.lower() not in checkString.lower():
                 continue
 
-            if len(catNameTree) == 1:
-                CatItem = QtGui.QTreeWidgetItem(self)
-                CatItem.setText(0, category_name)
-                self.categories[category_name] = CatItem
-
-                NodeItem = QtGui.QTreeWidgetItem(category_name)
-                NodeItem.setText(0, node_file_name)
-            else:
-                pass
+            nodePath = nodeCategoryPath.split('|')
+            categoryPath = ''
+            # walk from tree top to bottom, creating folders if needed
+            # also writing all paths in dict to avoid duplications
+            for folderId in range(0, len(nodePath)):
+                folderName = nodePath[folderId]
+                if folderId == 0:
+                    categoryPath = folderName
+                    if categoryPath not in self.categoryPaths:
+                        rootFolderItem = QtGui.QTreeWidgetItem(self)
+                        rootFolderItem.setText(0, folderName)
+                        self.categoryPaths[categoryPath] = rootFolderItem
+                else:
+                    parentCategoryPath = categoryPath
+                    categoryPath += '|{}'.format(folderName)
+                    if categoryPath not in self.categoryPaths:
+                        childCategoryItem = QtGui.QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
+                        childCategoryItem.setText(0, folderName)
+                        self.categoryPaths[categoryPath] = childCategoryItem
+            # create node under constructed folder
+            nodeItem = QtGui.QTreeWidgetItem(self.categoryPaths[categoryPath])
+            nodeItem.setText(0, node_file_name)
 
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
@@ -455,7 +466,7 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
             return
         pressed_text = item_clicked.text(0)
 
-        if pressed_text in self.categories.keys():
+        if pressed_text in self.categoryPaths.keys():
             event.ignore()
             return
         drag = QtGui.QDrag(self)

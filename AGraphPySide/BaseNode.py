@@ -334,6 +334,10 @@ class Node(QtGui.QGraphicsItem, AGNode):
     def get_category():
         return "Default"
 
+    @staticmethod
+    def get_keywords():
+        return []
+
     def add_output_port(self, port_name, data_type, foo=None):
         p = self._add_port(AGPortTypes.kOutput, data_type, foo, port_name)
         return p
