@@ -1,13 +1,13 @@
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 from AbstractGraph import *
 
 
-class IsEqual(BaseNode.Node, AGNode):
+class IsEqual(Node, NodeBase):
     def __init__(self, name, graph):
         super(IsEqual, self).__init__(name, graph)
-        self.inputA = self.add_input_port('inputA', AGPortDataTypes.tAny)
-        self.inputB = self.add_input_port('inputB', AGPortDataTypes.tAny)
-        self.output = self.add_output_port('output', AGPortDataTypes.tBool)
+        self.inputA = self.add_input_port('inputA', DataTypes.Any)
+        self.inputB = self.add_input_port('inputB', DataTypes.Any)
+        self.output = self.add_output_port('output', DataTypes.Bool)
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)
 

@@ -6,7 +6,7 @@ class AGIntNode(AGNode):
         super(AGIntNode, self).__init__(name, graph)
         self.graph = graph
         self.name = name
-        self.output = self.add_output_port('out', AGPortDataTypes.tNumeric)
+        self.output = self.add_output_port('out', DataTypes.Numeric)
         self.set_data(0)
         self.val = 0
 

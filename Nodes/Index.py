@@ -1,15 +1,15 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class Index(BaseNode.Node, AGNode):
+class Index(Node, NodeBase):
     def __init__(self, name, graph):
         super(Index, self).__init__(name, graph, spacings=Spacings)
-        self.inArray = self.add_input_port('iterable', AGPortDataTypes.tAny)
-        self.value = self.add_input_port('value', AGPortDataTypes.tAny)
-        self.index = self.add_output_port('idx', AGPortDataTypes.tFloat)
-        self.success = self.add_output_port('success', AGPortDataTypes.tBool)
+        self.inArray = self.add_input_port('iterable', DataTypes.Any)
+        self.value = self.add_input_port('value', DataTypes.Any)
+        self.index = self.add_output_port('idx', DataTypes.Float)
+        self.success = self.add_output_port('success', DataTypes.Bool)
         portAffects(self.inArray, self.index)
         portAffects(self.value, self.index)
 

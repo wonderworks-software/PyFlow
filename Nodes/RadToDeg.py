@@ -1,6 +1,6 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 import math
 
 DESC = '''Radians to
@@ -8,11 +8,11 @@ degrees
 '''
 
 
-class RadToDeg(BaseNode.Node, AGNode):
+class RadToDeg(Node, NodeBase):
     def __init__(self, name, graph):
         super(RadToDeg, self).__init__(name, graph, spacings=Spacings)
-        self.inp0 = self.add_input_port('rad', AGPortDataTypes.tFloat)
-        self.out0 = self.add_output_port('deg', AGPortDataTypes.tFloat)
+        self.inp0 = self.add_input_port('rad', DataTypes.Float)
+        self.out0 = self.add_output_port('deg', DataTypes.Float)
         portAffects(self.inp0, self.out0)
 
     @staticmethod

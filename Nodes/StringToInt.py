@@ -1,13 +1,13 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class StringToInt(BaseNode.Node, AGNode):
+class StringToInt(Node, NodeBase):
     def __init__(self, name, graph):
         super(StringToInt, self).__init__(name, graph, spacings=Spacings)
-        self.in_str = self.add_input_port('str', AGPortDataTypes.tString)
-        self.out_int = self.add_output_port('int', AGPortDataTypes.tInt)
+        self.in_str = self.add_input_port('str', DataTypes.String)
+        self.out_int = self.add_output_port('int', DataTypes.Int)
         portAffects(self.in_str, self.out_int)
 
     @staticmethod

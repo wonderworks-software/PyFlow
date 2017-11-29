@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1086</width>
-    <height>669</height>
+    <width>1091</width>
+    <height>757</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,7 +80,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1086</width>
+     <width>1091</width>
      <height>26</height>
     </rect>
    </property>
@@ -128,7 +128,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
    <addaction name="actionNode_box"/>
    <addaction name="actionConsole"/>
@@ -138,7 +138,6 @@
    <addaction name="actionDebug"/>
    <addaction name="separator"/>
    <addaction name="actionPlot_graph"/>
-   <addaction name="actionGroup_selected"/>
    <addaction name="actionScreenshot"/>
    <addaction name="separator"/>
    <addaction name="actionAlignLeft"/>
@@ -151,7 +150,7 @@
    <property name="minimumSize">
     <size>
      <width>91</width>
-     <height>50</height>
+     <height>115</height>
     </size>
    </property>
    <property name="features">
@@ -278,8 +277,8 @@
   </widget>
   <action name="actionDelete">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/delete_icon.png</normaloff>:/icons/delete_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/delete_icon.png</normaloff>:/icons/resources/delete_icon.png</iconset>
    </property>
    <property name="text">
     <string>Delete</string>
@@ -287,8 +286,8 @@
   </action>
   <action name="actionOptions">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/colors_icon.png</normaloff>:/icons/colors_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/colors_icon.png</normaloff>:/icons/resources/colors_icon.png</iconset>
    </property>
    <property name="text">
     <string>Options</string>
@@ -296,8 +295,8 @@
   </action>
   <action name="actionNode_box">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/node_box_icon.png</normaloff>:/icons/node_box_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/node_box_icon.png</normaloff>:/icons/resources/node_box_icon.png</iconset>
    </property>
    <property name="text">
     <string>Node box</string>
@@ -305,8 +304,8 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/save_icon.png</normaloff>:/icons/save_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/save_icon.png</normaloff>:/icons/resources/save_icon.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -314,8 +313,8 @@
   </action>
   <action name="actionLoad">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/folder_open_icon.png</normaloff>:/icons/folder_open_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/folder_open_icon.png</normaloff>:/icons/resources/folder_open_icon.png</iconset>
    </property>
    <property name="text">
     <string>Load</string>
@@ -323,8 +322,8 @@
   </action>
   <action name="actionSave_as">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/save_as_icon.png</normaloff>:/icons/save_as_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/save_as_icon.png</normaloff>:/icons/resources/save_as_icon.png</iconset>
    </property>
    <property name="text">
     <string>Save as</string>
@@ -332,8 +331,8 @@
   </action>
   <action name="actionConsole">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/console_icon.png</normaloff>:/icons/console_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/console_icon.png</normaloff>:/icons/resources/console_icon.png</iconset>
    </property>
    <property name="text">
     <string>Console</string>
@@ -341,44 +340,26 @@
   </action>
   <action name="actionPlot_graph">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/plot_icon.png</normaloff>:/icons/plot_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/plot_icon.png</normaloff>:/icons/resources/plot_icon.png</iconset>
    </property>
    <property name="text">
     <string>Plot graph</string>
    </property>
   </action>
-  <action name="actionGroup_selected">
-   <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/comment_selected_icon.png</normaloff>:/icons/comment_selected_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Group selected</string>
-   </property>
-  </action>
   <action name="actionClear_scene">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/clear_icon.png</normaloff>:/icons/clear_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/clear_icon.png</normaloff>:/icons/resources/clear_icon.png</iconset>
    </property>
    <property name="text">
     <string>Clear scene</string>
    </property>
   </action>
-  <action name="actionShadows">
-   <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/shadow_icon.png</normaloff>:/icons/shadow_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Shadows</string>
-   </property>
-  </action>
   <action name="actionMultithreaded">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/multithreaded_icon.png</normaloff>:/icons/multithreaded_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/multithreaded_icon.png</normaloff>:/icons/resources/multithreaded_icon.png</iconset>
    </property>
    <property name="text">
     <string>Multithreaded</string>
@@ -386,8 +367,8 @@
   </action>
   <action name="actionDebug">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/debug_icon.png</normaloff>:/icons/debug_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/debug_icon.png</normaloff>:/icons/resources/debug_icon.png</iconset>
    </property>
    <property name="text">
     <string>Debug</string>
@@ -395,8 +376,8 @@
   </action>
   <action name="actionScreenshot">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/screenshot_icon.png</normaloff>:/icons/screenshot_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/screenshot_icon.png</normaloff>:/icons/resources/screenshot_icon.png</iconset>
    </property>
    <property name="text">
     <string>Screenshot</string>
@@ -404,8 +385,8 @@
   </action>
   <action name="actionShortcuts">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/shortcuts_icon.png</normaloff>:/icons/shortcuts_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/shortcuts_icon.png</normaloff>:/icons/resources/shortcuts_icon.png</iconset>
    </property>
    <property name="text">
     <string>Shortcuts</string>
@@ -413,8 +394,8 @@
   </action>
   <action name="actionAlignLeft">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/alignLeft.png</normaloff>:/icons/alignLeft.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/alignLeft.png</normaloff>:/icons/resources/alignLeft.png</iconset>
    </property>
    <property name="text">
     <string>AlignLeft</string>
@@ -425,8 +406,8 @@
   </action>
   <action name="actionAlignUp">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/alignright.png</normaloff>:/icons/alignright.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/alignright.png</normaloff>:/icons/resources/alignright.png</iconset>
    </property>
    <property name="text">
     <string>AlignUp</string>
@@ -437,8 +418,8 @@
   </action>
   <action name="actionPropertyView">
    <property name="icon">
-    <iconset resource="resources/nodes_res.qrc">
-     <normaloff>:/icons/property_icon.png</normaloff>:/icons/property_icon.png</iconset>
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/property_icon.png</normaloff>:/icons/resources/property_icon.png</iconset>
    </property>
    <property name="text">
     <string>PropertyView</string>
@@ -449,7 +430,7 @@
   </action>
  </widget>
  <resources>
-  <include location="resources/nodes_res.qrc"/>
+  <include location="nodes_res.qrc"/>
  </resources>
  <connections/>
 </ui>

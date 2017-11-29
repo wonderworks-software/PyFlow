@@ -1,13 +1,13 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class FloatNode(BaseNode.Node, AGNode):
+class FloatNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(FloatNode, self).__init__(name, graph, spacings=Spacings)
-        self.input = self.add_input_port('in', AGPortDataTypes.tFloat)
-        self.output = self.add_output_port('out', AGPortDataTypes.tFloat)
+        self.input = self.add_input_port('in', DataTypes.Float)
+        self.output = self.add_output_port('out', DataTypes.Float)
 
         portAffects(self.input, self.output)
         self.compute()

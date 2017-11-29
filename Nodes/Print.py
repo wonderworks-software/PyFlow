@@ -1,15 +1,15 @@
 from PySide import QtCore
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class Print(BaseNode.Node, AGNode):
+class Print(Node, NodeBase):
     def __init__(self, name, graph):
         super(Print, self).__init__(name, graph)
-        self.inExec = self.add_input_port("in", AGPortDataTypes.tExec, self.compute)
-        self.outExec = self.add_output_port("out", AGPortDataTypes.tExec, self.compute)
-        self.data = self.add_input_port("data", AGPortDataTypes.tAny)
+        self.inExec = self.add_input_port("in", DataTypes.Exec, self.compute)
+        self.outExec = self.add_output_port("out", DataTypes.Exec, self.compute)
+        self.data = self.add_input_port("data", DataTypes.Any)
 
     @staticmethod
     def get_category():

@@ -90,8 +90,8 @@ DESC = '''node desc
 class {0}(BaseNode.Node, AGNode):
     def __init__(self, name, graph):
         super({0}, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
-        self.inp0 = self.add_input_port('in0', AGPortDataTypes.tAny)
-        self.out0 = self.add_output_port('out0', AGPortDataTypes.tAny)
+        self.inp0 = self.add_input_port('in0', DataTypes.Any)
+        self.out0 = self.add_output_port('out0', DataTypes.Any)
         portAffects(self.inp0, self.out0)
 
     @staticmethod
@@ -515,13 +515,13 @@ class NodesBox(QtGui.QWidget):
         self.tree_widget.refresh(self.le_nodes().text())
 
 
-class RubberRect(QtGui.QGraphicsRectItem, Colors):
+class RubberRect(QtGui.QGraphicsRectItem):
     def __init__(self, name):
         super(RubberRect, self).__init__()
         self.name = name
         self.setZValue(2)
-        self.setPen(QtGui.QPen(self.kRubberRect, 0.5, QtCore.Qt.SolidLine))
-        self.setBrush(QtGui.QBrush(self.kRubberRect))
+        self.setPen(QtGui.QPen(Colors.RubberRect, 0.5, QtCore.Qt.SolidLine))
+        self.setBrush(QtGui.QBrush(Colors.RubberRect))
 
     def remove_node(self, node):
         if node in self.nodes:
@@ -703,48 +703,48 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
     def write_default_config(self):
         print('create default config file')
         self.settings_class.beginGroup('NODES')
-        self.settings_class.setValue('Nodes base color', Colors.kNodeBackgrounds)
-        self.pb_node_base_color.color = Colors.kNodeBackgrounds
-        self.settings_class.setValue('Nodes selected pen color', Colors.kNodeSelectedPenColor)
-        self.pb_node_selected_pen_color.color = Colors.kNodeSelectedPenColor
+        self.settings_class.setValue('Nodes base color', Colors.NodeBackgrounds)
+        self.pb_node_base_color.color = Colors.NodeBackgrounds
+        self.settings_class.setValue('Nodes selected pen color', Colors.NodeSelectedPenColor)
+        self.pb_node_selected_pen_color.color = Colors.NodeSelectedPenColor
         self.settings_class.setValue('Nodes selected pen type', LineTypes.lSolidLine)
-        self.settings_class.setValue('Nodes label bg color', Colors.kNodeNameRect)
-        self.pb_node_label_bg_color.color = Colors.kNodeNameRect
+        self.settings_class.setValue('Nodes label bg color', Colors.NodeNameRect)
+        self.pb_node_label_bg_color.color = Colors.NodeNameRect
         self.settings_class.setValue('Nodes label font', QtGui.QFont('Consolas'))
-        self.settings_class.setValue('Nodes label font color', Colors.kWhite)
+        self.settings_class.setValue('Nodes label font color', Colors.White)
         self.settings_class.setValue('Nodes label font size', 6)
-        self.settings_class.setValue('Nodes lyt A color', Colors.kPortLinesA)
-        self.pb_lyt_a_color.color = Colors.kPortLinesA
-        self.settings_class.setValue('Nodes lyt B color', Colors.kPortLinesB)
-        self.pb_lyt_b_color.color = Colors.kPortLinesB
-        self.settings_class.setValue('Port color', Colors.kConnectors)
-        self.pb_port_color.color = Colors.kConnectors
-        self.settings_class.setValue('Port dirty color', Colors.kDirtyPen)
-        self.pb_port_dirty_pen_color.color = Colors.kDirtyPen
+        self.settings_class.setValue('Nodes lyt A color', Colors.PortLinesA)
+        self.pb_lyt_a_color.color = Colors.PortLinesA
+        self.settings_class.setValue('Nodes lyt B color', Colors.PortLinesB)
+        self.pb_lyt_b_color.color = Colors.PortLinesB
+        self.settings_class.setValue('Port color', Colors.Connectors)
+        self.pb_port_color.color = Colors.Connectors
+        self.settings_class.setValue('Port dirty color', Colors.DirtyPen)
+        self.pb_port_dirty_pen_color.color = Colors.DirtyPen
         self.settings_class.setValue('Port dirty type', LineTypes.lDotLine)
-        self.settings_class.setValue('Port label color', Colors.kPortNameColor)
-        self.pb_port_label_color.color = Colors.kPortNameColor
+        self.settings_class.setValue('Port label color', Colors.PortNameColor)
+        self.pb_port_label_color.color = Colors.PortNameColor
         self.settings_class.setValue('Port label font', QtGui.QFont('Consolas'))
         self.settings_class.setValue('Port label size', 5)
         self.settings_class.endGroup()
         self.settings_class.beginGroup('SCENE')
-        self.settings_class.setValue('Scene bg color', Colors.kSceneBackground)
-        self.pb_scene_bg_color.color = Colors.kSceneBackground
-        self.settings_class.setValue('Grid color', Colors.kGridColor)
-        self.pb_grid_color.color = Colors.kGridColor
+        self.settings_class.setValue('Scene bg color', Colors.SceneBackground)
+        self.pb_scene_bg_color.color = Colors.SceneBackground
+        self.settings_class.setValue('Grid color', Colors.GridColor)
+        self.pb_grid_color.color = Colors.GridColor
         self.settings_class.setValue('Grid lines type', LineTypes.lDotLine)
-        self.settings_class.setValue('Edge color', Colors.kConnectionLines)
-        self.pb_edge_color.color = Colors.kConnectionLines
+        self.settings_class.setValue('Edge color', Colors.ConnectionLines)
+        self.pb_edge_color.color = Colors.ConnectionLines
         self.settings_class.setValue('Edge pen type', LineTypes.lSolidLine)
         self.settings_class.setValue('Edge line thickness', 1.0)
         self.settings_class.endGroup()
 
 
-class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
+class GraphWidget(QtGui.QGraphicsView, Graph):
 
     def __init__(self, name, parent=None):
         super(GraphWidget, self).__init__()
-        AGraph.__init__(self, name)
+        Graph.__init__(self, name)
         self.parent = parent
         self.menu = QtGui.QMenu()
         self._lastClock = 0.0
@@ -784,7 +784,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         self._file_name_label.setZValue(5)
         self._file_name_label.setEnabled(False)
         self._file_name_label.setFlag(QtGui.QGraphicsTextItem.ItemIgnoresTransformations)
-        self._file_name_label.setDefaultTextColor(self.kWhite)
+        self._file_name_label.setDefaultTextColor(Colors.White)
         self._file_name_label.setPlainText(self._current_file_name)
 
         self.scene().addItem(self._file_name_label)
@@ -792,8 +792,8 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
         self.real_time_line = QtGui.QGraphicsPathItem(None, self.scene())
         self.real_time_line.name = 'RealTimeLine'
-        self.real_time_line.object_type = AGObjectTypes.tConnectionLine
-        self.real_time_line.setPen(QtGui.QPen(self.kGreen, 1.0, QtCore.Qt.DashLine))
+        self.real_time_line.object_type = ObjectTypes.Connection
+        self.real_time_line.setPen(QtGui.QPen(Colors.Green, 1.0, QtCore.Qt.DashLine))
         self.mousePressPose = QtCore.QPointF(0, 0)
         self.mousePos = QtCore.QPointF(0, 0)
         self._lastMousePos = QtCore.QPointF(0, 0)
@@ -859,7 +859,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             dst.reroutes.append(node)
 
         if self.pressed_item and hasattr(self.pressed_item, "object_type"):
-            if self.pressed_item.object_type == AGObjectTypes.tNodeName and self.pressed_item.IsRenamable():
+            if self.pressed_item.object_type == ObjectTypes.NodeName and self.pressed_item.IsRenamable():
                 name, result = QtGui.QInputDialog.getText(self, "New name dialog", "Enter new name:")
                 if result:
                     self.pressed_item.parentItem().set_name(name)
@@ -1223,12 +1223,12 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self._resize_group_mode = True
                 self.pressed_item.parentItem().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)  # move to comment node
             if hasattr(self.pressed_item, 'object_type') and event.button() == QtCore.Qt.LeftButton:
-                if self.pressed_item.object_type == AGObjectTypes.tPort:
+                if self.pressed_item.object_type == ObjectTypes.Port:
                     self.pressed_item.parent().setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
                     self.pressed_item.parent().setFlag(QtGui.QGraphicsItem.ItemIsSelectable, False)
                     self._draw_real_time_line = True
                     self.autoPanController.start()
-                if self.pressed_item.object_type == AGObjectTypes.tNodeName:
+                if self.pressed_item.object_type == ObjectTypes.NodeName:
                     self.pressed_item.parentItem().setSelected(True)
             else:
                 self.pressed_item.setSelected(True)
@@ -1333,7 +1333,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             if not hasattr(i, 'object_type'):
                 do_connect = False
                 break
-            if not i.object_type == AGObjectTypes.tPort:
+            if not i.object_type == ObjectTypes.Port:
                 do_connect = False
                 break
         if p_itm and r_itm:
@@ -1347,7 +1347,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         if do_connect:
             if isinstance(r_itm, Nodes.Reroute):
                 p_itm.reroutes.append(r_itm)
-                if p_itm.type == AGPortTypes.kInput:
+                if p_itm.type == PinTypes.Input:
                     self.add_edge(p_itm, r_itm.out0)
                 else:
                     self.add_edge(p_itm, r_itm.inp0)
@@ -1388,7 +1388,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             layout.addRow("", sep_inputs)
 
             for inp in node.inputs:
-                if inp.data_type == AGPortDataTypes.tExec:
+                if inp.data_type == DataTypes.Exec:
                     continue
                 le = QtGui.QLineEdit(str(inp.current_data()), self.parent.dockWidgetNodeView)
                 le.setObjectName(inp.port_name())
@@ -1404,7 +1404,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             sep_outputs.setText("OUTPUTS")
             layout.addRow("", sep_outputs)
             for out in node.outputs:
-                if out.data_type == AGPortDataTypes.tExec:
+                if out.data_type == DataTypes.Exec:
                     continue
                 le = QtGui.QLineEdit(str(out.current_data()))
                 le.setObjectName(out.port_name())
@@ -1453,17 +1453,17 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
         scaleMult = 1.0
         for x in xrange(left, int(scene_rect.right()), self.drawGrigSize):
             if x % (self.drawGrigSize * 10.0) == 0.0:
-                painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
+                painter.setPen(QtGui.QPen(Colors.GridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             else:
-                painter.setPen(QtGui.QPen(self.kGridColor, 0.5 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
+                painter.setPen(QtGui.QPen(Colors.GridColor, 0.5 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
         for y in xrange(top, int(scene_rect.bottom()), self.drawGrigSize):
             if y % (self.drawGrigSize * 10.0) == 0.0:
-                painter.setPen(QtGui.QPen(self.kGridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
+                painter.setPen(QtGui.QPen(Colors.GridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             else:
-                painter.setPen(QtGui.QPen(self.kGridColor, 0.5 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
+                painter.setPen(QtGui.QPen(Colors.GridColor, 0.5 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
     def console_help(self):
@@ -1745,7 +1745,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def add_node(self, node, x, y):
 
-        AGraph.add_node(self, node, x, y)
+        Graph.add_node(self, node, x, y)
         if node:
             self.scene().addItem(node)
             node.post_create()
@@ -1754,9 +1754,9 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
 
     def add_edge(self, src, dst):
 
-        result = AGraph.add_edge(self, src, dst)
+        result = Graph.add_edge(self, src, dst)
         if result:
-            if src.type == AGPortTypes.kInput:
+            if src.type == PinTypes.Input:
                 src, dst = dst, src
             edge = Edge(src, dst, self)
             src.edge_list.append(edge)
@@ -1767,7 +1767,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
             return edge
 
     def remove_edge(self, edge):
-        AGraph.remove_edge(self, edge)
+        Graph.remove_edge(self, edge)
         edge.source().update()
         edge.destination().update()
         self.edges.remove(edge)
@@ -1783,7 +1783,7 @@ class GraphWidget(QtGui.QGraphicsView, Colors, AGraph):
                 self.parent.console.append(str(data))
 
     def plot(self):
-        AGraph.plot(self)
+        Graph.plot(self)
         self.parent.console.append('>>>>>>> {0} <<<<<<<\n{1}\n'.format(self.name, ctime()))
         if self.parent:
             for n in self.nodes:

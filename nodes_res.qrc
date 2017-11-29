@@ -1,0 +1,24 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>resources/alignLeft.png</file>
+    <file>resources/alignright.png</file>
+    <file>resources/clear_icon.png</file>
+    <file>resources/colors_icon.png</file>
+    <file>resources/comment_selected_icon.png</file>
+    <file>resources/console_icon.png</file>
+    <file>resources/debug_icon.png</file>
+    <file>resources/delete_icon.png</file>
+    <file>resources/folder_open_icon.png</file>
+    <file>resources/multithreaded_icon.png</file>
+    <file>resources/new_file_icon.png</file>
+    <file>resources/node_box_icon.png</file>
+    <file>resources/options_icon.png</file>
+    <file>resources/plot_icon.png</file>
+    <file>resources/property_icon.png</file>
+    <file>resources/save_as_icon.png</file>
+    <file>resources/save_icon.png</file>
+    <file>resources/screenshot_icon.png</file>
+    <file>resources/shadow_icon.png</file>
+    <file>resources/shortcuts_icon.png</file>
+  </qresource>
+</RCC>

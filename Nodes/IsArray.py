@@ -1,13 +1,13 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class IsArray(BaseNode.Node, AGNode):
+class IsArray(Node, NodeBase):
     def __init__(self, name, graph):
         super(IsArray, self).__init__(name, graph, spacings=Spacings)
-        self.inp = self.add_input_port('obj', AGPortDataTypes.tAny)
-        self.out = self.add_output_port('out', AGPortDataTypes.tBool)
+        self.inp = self.add_input_port('obj', DataTypes.Any)
+        self.out = self.add_output_port('out', DataTypes.Bool)
         portAffects(self.inp, self.out)
 
     @staticmethod

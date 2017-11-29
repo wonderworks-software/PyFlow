@@ -1,13 +1,14 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node, getPortColorByType
+from AGraphPySide.Port import Port
 from PySide import QtCore
 
 DESC = '''This node's purpose is change flow of edges
 '''
 
 
-class Reroute(BaseNode.Node, AGNode):
+class Reroute(Node, NodeBase):
     def __init__(self, name, graph):
         super(Reroute, self).__init__(name, graph, spacings=Spacings)
         self.h = 25
@@ -16,19 +17,19 @@ class Reroute(BaseNode.Node, AGNode):
 
         self.r = 10.0
 
-        self.color = BaseNode.getPortColorByType(AGPortDataTypes.tReroute)
+        self.color = getPortColorByType(DataTypes.Reroute)
         self.color.setAlpha(255)
 
-        self.inp0 = BaseNode.Port('in', self, AGPortDataTypes.tReroute, 10, 10, self.color)
-        self.inp0.type = AGPortTypes.kInput
+        self.inp0 = Port('in', self, DataTypes.Reroute, 10, 10, self.color)
+        self.inp0.type = PinTypes.Input
         self.inp0.setParentItem(self)
         self.inp0.port_connected = self.OnInputConneceted
         self.inp0.port_disconnected = self.OnInputDisconneceted
         self.inputs.append(self.inp0)
         self._connected = False
 
-        self.out0 = BaseNode.Port('out', self, AGPortDataTypes.tReroute, 10, 10, self.color)
-        self.out0.type = AGPortTypes.kOutput
+        self.out0 = Port('out', self, DataTypes.Reroute, 10, 10, self.color)
+        self.out0.type = PinTypes.Output
         self.out0.setParentItem(self)
         self.out0.port_connected = self.OnOutputConnected
         self.out0.port_disconnected = self.OnOutputDisconneceted
@@ -42,7 +43,7 @@ class Reroute(BaseNode.Node, AGNode):
         self.inp0.hide()
         self.out0.hide()
 
-        self._pen = QtGui.QPen(Colors.kDirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        self._pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
     def isReroute(self):
         return True
@@ -99,7 +100,7 @@ class Reroute(BaseNode.Node, AGNode):
             for e in self.out0.edge_list:
                 e.pen.setColor(self.color)
         else:
-            self.color = BaseNode.getPortColorByType(other.data_type)
+            self.color = getPortColorByType(other.data_type)
             self.color.setAlpha(255)
         self.update()
 
@@ -112,7 +113,7 @@ class Reroute(BaseNode.Node, AGNode):
             self.color = self.inp0.color
             self.color.setAlpha(255)
         else:
-            self.color = BaseNode.getPortColorByType(other.data_type)
+            self.color = getPortColorByType(other.data_type)
             self.color.setAlpha(255)
         self.update()
 
@@ -135,9 +136,9 @@ class Reroute(BaseNode.Node, AGNode):
         self.update()
 
     def resetTypeInfo(self):
-        self.inp0.data_type = AGPortDataTypes.tReroute
-        self.out0.data_type = AGPortDataTypes.tReroute
-        self.color = BaseNode.getPortColorByType(AGPortDataTypes.tReroute)
+        self.inp0.data_type = DataTypes.Reroute
+        self.out0.data_type = DataTypes.Reroute
+        self.color = getPortColorByType(DataTypes.Reroute)
         self.color.setAlpha(255)
 
     def mousePressEvent(self, event):

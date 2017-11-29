@@ -1,13 +1,13 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class StringLower(BaseNode.Node, AGNode):
+class StringLower(Node, NodeBase):
     def __init__(self, name, graph):
         super(StringLower, self).__init__(name, graph, spacings=Spacings)
-        self.in_str = self.add_input_port('str', AGPortDataTypes.tString)
-        self.out_str = self.add_output_port('lower str', AGPortDataTypes.tString)
+        self.in_str = self.add_input_port('str', DataTypes.String)
+        self.out_str = self.add_output_port('lower str', DataTypes.String)
         portAffects(self.in_str, self.out_str)
 
     @staticmethod

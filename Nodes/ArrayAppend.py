@@ -9,7 +9,7 @@ class ArrayAppend(Node, NodeBase):
         self.in_arr = self.add_input_port('inArray', DataTypes.Array)
         self.element = self.add_input_port('element', DataTypes.Any)
         self.out_arr = self.add_output_port('out', DataTypes.Array)
-        self.out_result = self.add_output_port('result', DataTypes.tBool)
+        self.out_result = self.add_output_port('result', DataTypes.Bool)
         portAffects(self.in_arr, self.out_result)
         portAffects(self.element, self.out_result)
         portAffects(self.in_arr, self.out_arr)

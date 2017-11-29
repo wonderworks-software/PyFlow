@@ -1,17 +1,17 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
 DESC = """flifs boolean
 """
 
 
-class Not(BaseNode.Node, AGNode):
+class Not(Node, NodeBase):
     def __init__(self, name, graph):
         super(Not, self).__init__(name, graph, spacings=Spacings)
-        self.in_bool = self.add_input_port('in', AGPortDataTypes.tBool)
-        self.out_bool = self.add_output_port('out', AGPortDataTypes.tBool)
+        self.in_bool = self.add_input_port('in', DataTypes.Bool)
+        self.out_bool = self.add_output_port('out', DataTypes.Bool)
         portAffects(self.in_bool, self.out_bool)
 
     @staticmethod

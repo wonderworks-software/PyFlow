@@ -1,15 +1,15 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class ConditionalValue(BaseNode.Node, AGNode):
+class ConditionalValue(Node, NodeBase):
     def __init__(self, name, graph):
         super(ConditionalValue, self).__init__(name, graph, spacings=Spacings)
-        self.condition = self.add_input_port('condition', AGPortDataTypes.tBool)
-        self.trueValue = self.add_input_port('ifTrue', AGPortDataTypes.tAny)
-        self.falseValue = self.add_input_port('ifFalse', AGPortDataTypes.tAny)
-        self.output = self.add_output_port('out', AGPortDataTypes.tAny)
+        self.condition = self.add_input_port('condition', DataTypes.Bool)
+        self.trueValue = self.add_input_port('ifTrue', DataTypes.Any)
+        self.falseValue = self.add_input_port('ifFalse', DataTypes.Any)
+        self.output = self.add_output_port('out', DataTypes.Any)
         portAffects(self.condition, self.output)
         portAffects(self.trueValue, self.output)
         portAffects(self.falseValue, self.output)

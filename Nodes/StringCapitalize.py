@@ -1,13 +1,13 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class StringCapitalize(BaseNode.Node, AGNode):
+class StringCapitalize(Node, NodeBase):
     def __init__(self, name, graph):
         super(StringCapitalize, self).__init__(name, graph, spacings=Spacings)
-        self.in_str = self.add_input_port('str', AGPortDataTypes.tString)
-        self.out_str = self.add_output_port('capitalized str', AGPortDataTypes.tString)
+        self.in_str = self.add_input_port('str', DataTypes.String)
+        self.out_str = self.add_output_port('capitalized str', DataTypes.String)
         portAffects(self.in_str, self.out_str)
 
     @staticmethod

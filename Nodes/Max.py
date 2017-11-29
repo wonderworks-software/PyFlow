@@ -1,16 +1,16 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 DESC = '''returns maximum element of iterable object
 '''
 
 
-class Max(BaseNode.Node, AGNode):
+class Max(Node, NodeBase):
     def __init__(self, name, graph):
         super(Max, self).__init__(name, graph, spacings=Spacings)
-        self.inp0 = self.add_input_port('in', AGPortDataTypes.tAny)
-        self.out0 = self.add_output_port('out', AGPortDataTypes.tAny)
+        self.inp0 = self.add_input_port('in', DataTypes.Any)
+        self.out0 = self.add_output_port('out', DataTypes.Any)
         portAffects(self.inp0, self.out0)
 
     @staticmethod

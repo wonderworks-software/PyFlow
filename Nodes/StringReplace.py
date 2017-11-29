@@ -1,15 +1,15 @@
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 from AGraphPySide.Settings import *
 from AbstractGraph import *
 
 
-class StringReplace(BaseNode.Node, AGNode):
+class StringReplace(Node, NodeBase):
     def __init__(self, name, graph):
         super(StringReplace, self).__init__(name, graph, spacings=Spacings)
-        self.first = self.add_input_port('source', AGPortDataTypes.tString)
-        self.old_ptn = self.add_input_port('old pattern', AGPortDataTypes.tString)
-        self.new_ptn = self.add_input_port('new pattern', AGPortDataTypes.tString)
-        self.output = self.add_output_port('output', AGPortDataTypes.tString)
+        self.first = self.add_input_port('source', DataTypes.String)
+        self.old_ptn = self.add_input_port('old pattern', DataTypes.String)
+        self.new_ptn = self.add_input_port('new pattern', DataTypes.String)
+        self.output = self.add_output_port('output', DataTypes.String)
         portAffects(self.first, self.output)
         portAffects(self.old_ptn, self.output)
         portAffects(self.new_ptn, self.output)

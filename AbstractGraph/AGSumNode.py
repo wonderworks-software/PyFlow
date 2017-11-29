@@ -6,9 +6,9 @@ class AGSumNode(AGNode):
         super(AGSumNode, self).__init__(name, graph)
         self.name = name
         self.graph = graph
-        self.inputA = self.add_input_port('inpA', AGPortDataTypes.tNumeric)
-        self.inputB = self.add_input_port('inpB', AGPortDataTypes.tNumeric)
-        self.output = self.add_output_port('out', AGPortDataTypes.tNumeric)
+        self.inputA = self.add_input_port('inpA', DataTypes.Numeric)
+        self.inputB = self.add_input_port('inpB', DataTypes.Numeric)
+        self.output = self.add_output_port('out', DataTypes.Numeric)
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)
 

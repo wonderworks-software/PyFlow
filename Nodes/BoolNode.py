@@ -1,18 +1,18 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 DESC = """Generic type node.
 Boolean type."""
 
 
-class BoolNode(BaseNode.Node, AGNode):
+class BoolNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(BoolNode, self).__init__(name, graph, spacings=Spacings)
         self.cb = QtGui.QCheckBox()
         self.cb.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         self.cb.stateChanged.connect(lambda: self.on_set_cb_state(self.cb.isChecked()))
-        self.output = self.add_output_port('out', AGPortDataTypes.tBool)
+        self.output = self.add_output_port('out', DataTypes.Bool)
 
         def set_data_overloads(data, dirty_propagate=True):
             if type(data) != bool().__class__:

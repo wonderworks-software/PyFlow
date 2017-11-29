@@ -1,13 +1,13 @@
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node, getPortColorByType
 from AbstractGraph import *
 
 
-class MultNode(BaseNode.Node, AGNode):
+class MultNode(Node, NodeBase):
     def __init__(self, name, graph):
-        super(MultNode, self).__init__(name, graph, color=BaseNode.getPortColorByType(AGPortDataTypes.tInt))
-        self.inputA = self.add_input_port('inputA', AGPortDataTypes.tFloat)
-        self.inputB = self.add_input_port('inputB', AGPortDataTypes.tFloat)
-        self.output = self.add_output_port('output', AGPortDataTypes.tFloat)
+        super(MultNode, self).__init__(name, graph, color=getPortColorByType(DataTypes.Int))
+        self.inputA = self.add_input_port('inputA', DataTypes.Float)
+        self.inputB = self.add_input_port('inputB', DataTypes.Float)
+        self.output = self.add_output_port('output', DataTypes.Float)
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)
 

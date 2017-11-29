@@ -15,4 +15,3 @@ from Edge import *
 from Widget import *
 from SyntaxHighlighter import Highlighter
 from ConsoleInputWidget import ConsoleInput
-import nodes_res_rc

@@ -1,13 +1,13 @@
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 from AbstractGraph import *
 
 
-class PowNode(BaseNode.Node, AGNode):
+class PowNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(PowNode, self).__init__(name, graph)
-        self.base = self.add_input_port('base', AGPortDataTypes.tFloat)
-        self.power = self.add_input_port('power', AGPortDataTypes.tFloat)
-        self.output = self.add_output_port('output', AGPortDataTypes.tFloat)
+        self.base = self.add_input_port('base', DataTypes.Float)
+        self.power = self.add_input_port('power', DataTypes.Float)
+        self.output = self.add_output_port('output', DataTypes.Float)
         portAffects(self.base, self.output)
         portAffects(self.power, self.output)
 

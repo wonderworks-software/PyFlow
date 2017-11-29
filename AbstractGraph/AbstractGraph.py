@@ -32,7 +32,7 @@ class PortBase(object):
         self.allowed_data_types = list(set([DataTypes.Reroute, value]))
         if self.data_type == DataTypes.Reroute:
             self.allowed_data_types.append(DataTypes.Any)
-        if self.data_type == DataTypes.tExec or self.data_type == DataTypes.Any:
+        if self.data_type == DataTypes.Exec or self.data_type == DataTypes.Any:
             self.allowed_data_types.append(value)
 
     def getDefaultDataValue(self):
@@ -356,8 +356,8 @@ class Graph(object):
                 print("data types error", src.data_type, dst.data_type)
                 return False
         else:
-            if src.data_type == DataTypes.tExec:
-                if dst.data_type not in [DataTypes.tExec, DataTypes.Reroute]:
+            if src.data_type == DataTypes.Exec:
+                if dst.data_type not in [DataTypes.Exec, DataTypes.Reroute]:
                     print("data types error", src.data_type, dst.data_type)
                     return False
 
@@ -380,11 +380,11 @@ class Graph(object):
 
         # input data ports can have one output connection
         # output data ports can have any number of connections
-        if not src.data_type == DataTypes.tExec and dst.hasConnections():
+        if not src.data_type == DataTypes.Exec and dst.hasConnections():
             dst.disconnect_all()
         # input execs can have any number of connections
         # output execs can have only one connection
-        if src.data_type == DataTypes.tExec and dst.data_type == DataTypes.tExec and src.hasConnections():
+        if src.data_type == DataTypes.Exec and dst.data_type == DataTypes.Exec and src.hasConnections():
             src.disconnect_all()
 
         portAffects(src, dst)

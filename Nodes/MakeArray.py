@@ -1,15 +1,15 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class MakeArray(BaseNode.Node, AGNode):
+class MakeArray(Node, NodeBase):
     def __init__(self, name, graph, w=60, ports_number=0):
         super(MakeArray, self).__init__(name, graph, w, spacings=Spacings)
         self.ports_number = ports_number
         self.id = 0
 
-        con = self.add_container(AGPortTypes.kOutput)
+        con = self.add_container(PinTypes.Output)
 
         pb = QtGui.QPushButton('+')
         pb.setMaximumWidth(30)
@@ -20,7 +20,7 @@ class MakeArray(BaseNode.Node, AGNode):
 
         self.height_step = pb.size().height()
 
-        self.out_arr = self.add_output_port('out', AGPortDataTypes.tArray)
+        self.out_arr = self.add_output_port('out', DataTypes.Array)
 
     def post_create(self):
         if self.ports_number > 0:
@@ -33,7 +33,7 @@ class MakeArray(BaseNode.Node, AGNode):
         return "createNode ~type {0} ~count {4} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, self.id)
 
     def addInPort(self):
-        port = self.add_input_port(str(self.id), AGPortDataTypes.tAny)
+        port = self.add_input_port(str(self.id), DataTypes.Any)
         # self.h += self.height_step
         portAffects(port, self.out_arr)
         self.id += 1

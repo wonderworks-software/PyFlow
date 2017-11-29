@@ -1,13 +1,13 @@
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 from AbstractGraph import *
 
 
-class IsGreaterThan(BaseNode.Node, AGNode):
+class IsGreaterThan(Node, NodeBase):
     def __init__(self, name, graph):
         super(IsGreaterThan, self).__init__(name, graph)
-        self.inputA = self.add_input_port('inputA', AGPortDataTypes.tFloat)
-        self.inputB = self.add_input_port('inputB', AGPortDataTypes.tFloat)
-        self.output = self.add_output_port('output', AGPortDataTypes.tBool)
+        self.inputA = self.add_input_port('inputA', DataTypes.Float)
+        self.inputB = self.add_input_port('inputB', DataTypes.Float)
+        self.output = self.add_output_port('output', DataTypes.Bool)
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)
 

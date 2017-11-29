@@ -31,7 +31,7 @@ def getPortColorByType(t):
 
 
 class Port(QtGui.QGraphicsWidget, PortBase):
-    def __init__(self, name, parent, data_type, width, height, color=Colors.kConnectors):
+    def __init__(self, name, parent, data_type, width, height, color=Colors.Connectors):
         PortBase.__init__(self, name, parent, data_type)
         QtGui.QGraphicsWidget.__init__(self)
         name = name.replace(" ", "_")  # spaces are not allowed
@@ -66,7 +66,7 @@ class Port(QtGui.QGraphicsWidget, PortBase):
             opt_port_dirty_pen_type = get_line_type(opt_dirty_type_name)
             self._dirty_pen = QtGui.QPen(opt_dirty_pen, 0.5, opt_port_dirty_pen_type, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
         else:
-            self._dirty_pen = QtGui.QPen(Colors.kDirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+            self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
     def mousePressEvent(self, event):
         modifiers = QtGui.QApplication.keyboardModifiers()
@@ -87,7 +87,7 @@ class Port(QtGui.QGraphicsWidget, PortBase):
         xAvg = 0.0
         if not self.hasConnections():
             return xAvg
-        if self.type == PortTypesBase.kInput:
+        if self.type == PinTypes.Input:
             positions = [p.scenePos().x() for p in self.affected_by]
         else:
             positions = [p.scenePos().x() for p in self.affects]
@@ -171,7 +171,7 @@ class Port(QtGui.QGraphicsWidget, PortBase):
             self.parent().graph().write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), self._data, FLAG_SYMBOL))
 
     def getLayout(self):
-        if self.type == PortTypesBase.kInput:
+        if self.type == PinTypes.Input:
             return self.parent().inputsLayout
         else:
             return self.parent().outputsLayout

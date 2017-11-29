@@ -1,14 +1,14 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class Len(BaseNode.Node, AGNode):
+class Len(Node, NodeBase):
     def __init__(self, name, graph):
         super(Len, self).__init__(name, graph, spacings=Spacings)
-        self.in_arr = self.add_input_port('iterable', AGPortDataTypes.tAny)
-        self.out_len = self.add_output_port('len', AGPortDataTypes.tFloat)
-        self.out_result = self.add_output_port('result', AGPortDataTypes.tBool)
+        self.in_arr = self.add_input_port('iterable', DataTypes.Any)
+        self.out_len = self.add_output_port('len', DataTypes.Float)
+        self.out_result = self.add_output_port('result', DataTypes.Bool)
         portAffects(self.in_arr, self.out_result)
         portAffects(self.in_arr, self.out_len)
 

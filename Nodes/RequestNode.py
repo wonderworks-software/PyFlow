@@ -1,21 +1,21 @@
 from PySide import QtCore
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class RequestNode(BaseNode.Node, AGNode):
+class RequestNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(RequestNode, self).__init__(name, graph)
-        self.input = self.add_input_port('input', AGPortDataTypes.tAny)
+        self.input = self.add_input_port('input', DataTypes.Any)
         self.looper = QtCore.QTimer()
         self.spin_box = QtGui.QSpinBox()
         self.cb = QtGui.QCheckBox()
         pb = QtGui.QPushButton('request')
         self.looper.timeout.connect(self.compute)
 
-        con = self.add_container(AGPortTypes.kOutput)
-        con2 = self.add_container(AGPortTypes.kOutput)
+        con = self.add_container(PinTypes.Output)
+        con2 = self.add_container(PinTypes.Output)
 
         self.spin_box.setMinimum(1)
         self.spin_box.setMaximum(5000)

@@ -1,15 +1,15 @@
 from PySide import QtCore
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class Call(BaseNode.Node, AGNode):
+class Call(Node, NodeBase):
     def __init__(self, name, graph):
         super(Call, self).__init__(name, graph)
-        self.out = self.add_output_port("OUT", AGPortDataTypes.tExec, self.compute)
+        self.out = self.add_output_port("OUT", DataTypes.Exec, self.compute)
         pb = QtGui.QPushButton('request')
-        con = self.add_container(AGPortTypes.kOutput)
+        con = self.add_container(PinTypes.Output)
 
         pb.clicked.connect(self.compute)
         prx_btn = QtGui.QGraphicsProxyWidget()

@@ -34,7 +34,7 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
             self.color = self.source().color
 
         self.thikness = 1
-        if source.data_type == AGPortDataTypes.tExec and destination.data_type == AGPortDataTypes.tExec:
+        if source.data_type == DataTypes.Exec and destination.data_type == DataTypes.Exec:
             self.thikness = 2
 
         self.pen = QtGui.QPen(self.color, self.thikness, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
@@ -141,23 +141,23 @@ class Edge(QtGui.QGraphicsPathItem, Colors):
                 self.cp1 = self.source().parentItem().getOutControlPoint()
                 # self.mPath.moveTo(p1.x() - offset, p1.y())
             else:
-                self.cp1 = QtCore.QPoint(p1.x() + maximum / -multiply, p1.y() + verticalOffset)
+                self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)
 
             if isinstance(self.destination().parentItem(), Reroute):
                 self.cp2 = self.destination().parentItem().getInControlPoint()
                 # self.mPath.moveTo(p1.x() + offset, p1.y())
             else:
-                self.cp2 = QtCore.QPoint(p2.x() - maximum / -multiply, p2.y() - verticalOffset)
+                self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y() - verticalOffset)
         else:
             if isinstance(self.destination().parentItem(), Reroute):
                 self.cp2 = self.destination().parentItem().getInControlPoint()
             else:
-                self.cp2 = QtCore.QPoint(p2.x() - minimum / multiply, p2.y() - verticalOffset)
+                self.cp2 = QtCore.QPoint(p2.x() - xDistance / multiply, p2.y() - verticalOffset)
 
             if isinstance(self.source().parentItem(), Reroute):
                 self.cp1 = self.source().parentItem().getOutControlPoint()
             else:
-                self.cp1 = QtCore.QPoint(p1.x() + minimum / multiply, p1.y() + verticalOffset)
+                self.cp1 = QtCore.QPoint(p1.x() + xDistance / multiply, p1.y() + verticalOffset)
 
         self.mPath.cubicTo(self.cp1, self.cp2, p2)
         self.setPath(self.mPath)

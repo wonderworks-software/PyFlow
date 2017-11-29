@@ -1,14 +1,14 @@
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 from AbstractGraph import *
 
 
-class DiscriminantNode(BaseNode.Node, AGNode):
+class DiscriminantNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(DiscriminantNode, self).__init__(name, graph)
-        self.inputA = self.add_input_port('A', AGPortDataTypes.tFloat)
-        self.inputB = self.add_input_port('B', AGPortDataTypes.tFloat)
-        self.inputC = self.add_input_port('C', AGPortDataTypes.tFloat)
-        self.output = self.add_output_port('out', AGPortDataTypes.tFloat)
+        self.inputA = self.add_input_port('A', DataTypes.Float)
+        self.inputB = self.add_input_port('B', DataTypes.Float)
+        self.inputC = self.add_input_port('C', DataTypes.Float)
+        self.output = self.add_output_port('out', DataTypes.Float)
         portAffects(self.inputA, self.output)
         portAffects(self.inputB, self.output)
         portAffects(self.inputC, self.output)

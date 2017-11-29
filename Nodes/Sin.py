@@ -1,17 +1,17 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 import math
 
 DESC = '''in radians
 '''
 
 
-class Sin(BaseNode.Node, AGNode):
+class Sin(Node, NodeBase):
     def __init__(self, name, graph):
         super(Sin, self).__init__(name, graph, spacings=Spacings)
-        self.inp0 = self.add_input_port('in', AGPortDataTypes.tFloat)
-        self.out0 = self.add_output_port('out', AGPortDataTypes.tFloat)
+        self.inp0 = self.add_input_port('in', DataTypes.Float)
+        self.out0 = self.add_output_port('out', DataTypes.Float)
         portAffects(self.inp0, self.out0)
 
     @staticmethod

@@ -1,13 +1,13 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 
 
-class MakeInt(BaseNode.Node, AGNode):
+class MakeInt(Node, NodeBase):
     def __init__(self, name, graph):
         super(MakeInt, self).__init__(name, graph, spacings=Spacings)
-        self.output = self.add_output_port('out', AGPortDataTypes.tInt)
-        self.input = self.add_input_port('in', AGPortDataTypes.tInt)
+        self.output = self.add_output_port('out', DataTypes.Int)
+        self.input = self.add_input_port('in', DataTypes.Int)
 
         portAffects(self.input, self.output)
         self.compute()

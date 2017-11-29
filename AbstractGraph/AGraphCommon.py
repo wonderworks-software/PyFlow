@@ -50,7 +50,7 @@ def calc_multithreaded(ls, debug=False):
 def cycle_check(src, dst):
 
     # allow cycles on execs
-    if src.data_type == DataTypes.tExec or dst.data_type == DataTypes.tExec:
+    if src.data_type == DataTypes.Exec or dst.data_type == DataTypes.Exec:
         return False
 
     if src.type == PinTypes.Input:
@@ -87,12 +87,12 @@ def push(start_from):
 class DataTypes:
     Float = 'numeric_data'
     Int = 'numeric_data_int'
-    tString = 'string_data'
+    String = 'string_data'
     Bool = 'boolean_data'
     Array = 'array_data'
     Any = 'all'
     Reroute = 'reroute'
-    tExec = 'exec'
+    Exec = 'exec'
 
 
 class ObjectTypes:

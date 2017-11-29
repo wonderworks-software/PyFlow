@@ -12,7 +12,6 @@ class ArrayConcat(Node, NodeBase):
         portAffects(self.arrayA, self.result)
         portAffects(self.arrayB, self.result)
 
-
     @staticmethod
     def get_category():
         return 'Array'

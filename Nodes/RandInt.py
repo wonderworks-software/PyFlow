@@ -1,18 +1,18 @@
 from AbstractGraph import *
 from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+from AGraphPySide.Node import Node
 from random import randint
 
 DESC = '''Generates randint from range
 '''
 
 
-class RandInt(BaseNode.Node, AGNode):
+class RandInt(Node, NodeBase):
     def __init__(self, name, graph):
         super(RandInt, self).__init__(name, graph, spacings=Spacings)
-        self.rangeStart = self.add_input_port('from', AGPortDataTypes.tInt)
-        self.rangeEnd = self.add_input_port('to', AGPortDataTypes.tInt)
-        self.result = self.add_output_port('out', AGPortDataTypes.tInt)
+        self.rangeStart = self.add_input_port('from', DataTypes.Int)
+        self.rangeEnd = self.add_input_port('to', DataTypes.Int)
+        self.result = self.add_output_port('out', DataTypes.Int)
         portAffects(self.rangeStart, self.result)
         portAffects(self.rangeEnd, self.result)
 
