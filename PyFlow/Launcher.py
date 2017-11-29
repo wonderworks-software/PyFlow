@@ -1,4 +1,8 @@
-from AGraphPySide import *
+from Widget import GraphWidget
+from Widget import Direction
+from Widget import NodesBox
+from ConsoleInputWidget import ConsoleInput
+from SyntaxHighlighter import Highlighter
 from Qt.QtWidgets import QMainWindow
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QStyleFactory
@@ -20,7 +24,7 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         super(W, self).__init__()
         self.setupUi(self)
         self.G = GraphWidget('MAIN_GRAPH', self)
-        self.node_box = Widget.NodesBox(self.G)
+        self.node_box = NodesBox(self.G)
         self.node_box.le_nodes()._events = False
         self.SceneLayout.addWidget(self.G)
         self.NodeBoxLayout.addWidget(self.node_box)
