@@ -1,15 +1,15 @@
-from PySide import QtCore
-from PySide import QtGui
+from Qt import QtCore
+from Qt import QtGui
+from Qt.QtWidgets import QGraphicsPathItem
 from Settings import Colors
 from Nodes import Reroute
 from AbstractGraph import *
 import weakref
 
 
-class Edge(QtGui.QGraphicsPathItem, Colors):
-
+class Edge(QGraphicsPathItem):
     def __init__(self, source, destination, graph):
-        QtGui.QGraphicsPathItem.__init__(self)
+        QGraphicsPathItem.__init__(self)
         self.graph = weakref.ref(graph)
         self.source = weakref.ref(source)
         self.destination = weakref.ref(destination)

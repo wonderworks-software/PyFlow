@@ -1,3 +1,10 @@
+from Qt.QtWidgets import QMainWindow
+from Qt.QtWidgets import QApplication
+from Qt.QtWidgets import QStyleFactory
+from Qt.QtWidgets import QTextEdit
+from Qt.QtWidgets import QAction
+from Qt import QtGui
+from Qt import QtCore
 from AGraphPySide import *
 import GraphEditor_ui
 import sys
@@ -7,7 +14,7 @@ from os import path
 FILE_DIR = path.dirname(__file__)
 
 
-class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
+class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def __init__(self):
         super(W, self).__init__()
         self.setupUi(self)
@@ -36,13 +43,13 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionAlignLeft.triggered.connect(lambda: self.G.align_selected_nodes(True))
         self.actionAlignUp.triggered.connect(lambda: self.G.align_selected_nodes(False))
 
-        self.console.setLineWrapMode(QtGui.QTextEdit.NoWrap)
+        self.console.setLineWrapMode(QTextEdit.NoWrap)
         self.console.setReadOnly(True)
         self.console.setStyleSheet('background-color: rgb(49, 49, 49);' +
                                    'font: 8pt "Consolas";' +
                                    'color: rgb(200, 200, 200);'
                                    )
-        self.clearConsoleAction = QtGui.QAction('Clear', self)
+        self.clearConsoleAction = QAction('Clear', self)
         self.clearConsoleAction.triggered.connect(lambda: self.console.clear())
         self.console.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.console.addAction(self.clearConsoleAction)
@@ -136,9 +143,9 @@ class W(QtGui.QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
 if __name__ == '__main__':
 
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
-    app.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
+    app.setStyle(QStyleFactory.create("Cleanlooks"))
 
     darkPalette = QtGui.QPalette()
     darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(50, 50, 50))

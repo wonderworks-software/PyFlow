@@ -1,5 +1,22 @@
-from PySide import QtCore
-from PySide import QtGui
+from Qt import QtCore
+from Qt import QtGui
+from Qt.QtWidgets import QGraphicsScene
+from Qt.QtWidgets import QAbstractItemView
+from Qt.QtWidgets import QListWidget
+from Qt.QtWidgets import QFrame
+from Qt.QtWidgets import QLineEdit
+from Qt.QtWidgets import QMenu
+from Qt.QtWidgets import QSizePolicy
+from Qt.QtWidgets import QAction
+from Qt.QtWidgets import QTreeWidget, QTreeWidgetItem
+from Qt.QtWidgets import QWidget
+from Qt.QtWidgets import QMainWindow
+from Qt.QtWidgets import QVBoxLayout
+from Qt.QtWidgets import QGraphicsItem
+from Qt.QtWidgets import QGraphicsRectItem
+from Qt.QtWidgets import QGraphicsTextItem
+from Qt.QtWidgets import QGraphicsPathItem
+from Qt.QtWidgets import QGraphicsView
 import math
 import platform
 import random
@@ -230,7 +247,7 @@ class AutoPanController(object):
         self.autoPanDelta = QtGui.QVector2D(0.0, 0.0)
 
 
-class SceneClass(QtGui.QGraphicsScene):
+class SceneClass(QGraphicsScene):
     def __init__(self, parent):
         super(SceneClass, self).__init__(parent)
         self.Type = 'SCENE'
@@ -294,7 +311,7 @@ class SceneClass(QtGui.QGraphicsScene):
             super(SceneClass, self).dropEvent(event)
 
 
-class NodesBoxListWidget(QtGui.QListWidget):
+class NodesBoxListWidget(QListWidget):
     def __init__(self, parent, events=True):
         super(NodesBoxListWidget, self).__init__(parent)
         self.parent_item = weakref.ref(parent)
@@ -307,12 +324,12 @@ class NodesBoxListWidget(QtGui.QListWidget):
                 "border-color: black; border-style: outset; border-width: 1px;"
         self.setStyleSheet(style)
         self.setParent(parent)
-        self.setFrameShape(QtGui.QFrame.NoFrame)
-        self.setFrameShadow(QtGui.QFrame.Sunken)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setFrameShadow(QFrame.Sunken)
         self.setObjectName("lw_nodes")
         self.setSortingEnabled(True)
         self.setDragEnabled(True)
-        self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
+        self.setDragDropMode(QAbstractItemView.DragOnly)
         # self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
     def mousePressEvent(self, event):
@@ -336,7 +353,7 @@ class NodesBoxListWidget(QtGui.QListWidget):
         super(NodesBoxListWidget, self).keyPressEvent(event)
 
 
-class NodeBoxLineEdit(QtGui.QLineEdit):
+class NodeBoxLineEdit(QLineEdit):
     def __init__(self, parent, events=True):
         super(NodeBoxLineEdit, self).__init__(parent)
         self.setParent(parent)
@@ -360,7 +377,7 @@ class NodeBoxLineEdit(QtGui.QLineEdit):
     #     super(NodeBoxLineEdit, self).keyPressEvent(event)
 
 
-class NodeBoxTreeWidget(QtGui.QTreeWidget):
+class NodeBoxTreeWidget(QTreeWidget):
     def __init__(self, parent):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "background-color: rgb(40, 40, 40);" +\
@@ -371,14 +388,14 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
         self.graph = weakref.ref(parent)
         self.setStyleSheet(style)
         self.setParent(parent)
-        self.setFrameShape(QtGui.QFrame.NoFrame)
-        self.setFrameShadow(QtGui.QFrame.Sunken)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setFrameShadow(QFrame.Sunken)
         self.setObjectName("tree_nodes")
         self.setSortingEnabled(True)
         self.setDragEnabled(True)
         self.setColumnCount(1)
         self.setHeaderHidden(True)
-        self.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
+        self.setDragDropMode(QAbstractItemView.DragOnly)
         self.categoryPaths = {}
 
     def _isCategoryExists(self, category_name, categories):
@@ -419,7 +436,7 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
                 if folderId == 0:
                     categoryPath = folderName
                     if categoryPath not in self.categoryPaths:
-                        rootFolderItem = QtGui.QTreeWidgetItem(self)
+                        rootFolderItem = QTreeWidgetItem(self)
                         rootFolderItem.setText(0, folderName)
                         rootFolderItem.setBackground(folderId, QtGui.QColor(80, 85, 80))
                         self.categoryPaths[categoryPath] = rootFolderItem
@@ -427,12 +444,12 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
                     parentCategoryPath = categoryPath
                     categoryPath += '|{}'.format(folderName)
                     if categoryPath not in self.categoryPaths:
-                        childCategoryItem = QtGui.QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
+                        childCategoryItem = QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
                         childCategoryItem.setText(0, folderName)
                         childCategoryItem.setBackground(0, QtGui.QColor(80, 85, 80))
                         self.categoryPaths[categoryPath] = childCategoryItem
             # create node under constructed folder
-            nodeItem = QtGui.QTreeWidgetItem(self.categoryPaths[categoryPath])
+            nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
             nodeItem.setText(0, node_file_name)
 
     def keyPressEvent(self, event):
@@ -460,7 +477,7 @@ class NodeBoxTreeWidget(QtGui.QTreeWidget):
         drag.exec_()
 
 
-class NodesBox(QtGui.QWidget):
+class NodesBox(QWidget):
     def __init__(self, graph):
         super(NodesBox, self).__init__(graph)
         self.graph = weakref.ref(graph)
@@ -468,10 +485,10 @@ class NodesBox(QtGui.QWidget):
         self.setObjectName("nodes_box_form")
         self.setWindowTitle('Node box - {0}'.format(self.graph().name))
         self.resize(160, 200)
-        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.name = 'NODE_BOX'
 
-        self.verticalLayout = QtGui.QVBoxLayout(self)
+        self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.setSpacing(2)
         self.verticalLayout.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -515,7 +532,7 @@ class NodesBox(QtGui.QWidget):
         self.tree_widget.refresh(self.le_nodes().text())
 
 
-class RubberRect(QtGui.QGraphicsRectItem):
+class RubberRect(QGraphicsRectItem):
     def __init__(self, name):
         super(RubberRect, self).__init__()
         self.name = name
@@ -531,7 +548,7 @@ class RubberRect(QtGui.QGraphicsRectItem):
             self.update_count_label()
 
 
-class RGBAColorPicker(QtGui.QWidget, rgba_color_picker_ui.Ui_rgba_color_picker_ui):
+class RGBAColorPicker(QWidget, rgba_color_picker_ui.Ui_rgba_color_picker_ui):
     def __init__(self, button):
         super(RGBAColorPicker, self).__init__()
         self.button = button
@@ -577,7 +594,7 @@ class RGBAColorPicker(QtGui.QWidget, rgba_color_picker_ui.Ui_rgba_color_picker_u
         self.close()
 
 
-class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
+class OptionsClass(QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
     def __init__(self):
         super(OptionsClass, self).__init__()
         self.setupUi(self)
@@ -740,19 +757,19 @@ class OptionsClass(QtGui.QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.settings_class.endGroup()
 
 
-class GraphWidget(QtGui.QGraphicsView, Graph):
+class GraphWidget(QGraphicsView, Graph):
 
     def __init__(self, name, parent=None):
         super(GraphWidget, self).__init__()
         Graph.__init__(self, name)
         self.parent = parent
-        self.menu = QtGui.QMenu()
+        self.menu = QMenu()
         self._lastClock = 0.0
         self.fps = 0
         self.setScene(SceneClass(self))
         self.add_actions()
         self.options_widget = OptionsClass()
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pressed_item = None
         self.released_item = None
         self.bPanMode = False
@@ -766,12 +783,12 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
         self.minimum_scale = 0.5
         self.maximum_scale = 10
         self.setViewportUpdateMode(self.FullViewportUpdate)
-        self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
+        self.setCacheMode(QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setAcceptDrops(True)
         self.setAttribute(QtCore.Qt.WA_AlwaysShowToolTips)
-        self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
+        self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
         self.scene().setSceneRect(QtCore.QRect(0, 0, 10000, 10000))
         self._grid_spacing = 50
         self.factor = 1
@@ -780,17 +797,17 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
         self.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemShape)
 
         self._current_file_name = 'Untitled'
-        self._file_name_label = QtGui.QGraphicsTextItem()
+        self._file_name_label = QGraphicsTextItem()
         self._file_name_label.setZValue(5)
         self._file_name_label.setEnabled(False)
-        self._file_name_label.setFlag(QtGui.QGraphicsTextItem.ItemIgnoresTransformations)
+        self._file_name_label.setFlag(QGraphicsTextItem.ItemIgnoresTransformations)
         self._file_name_label.setDefaultTextColor(Colors.White)
         self._file_name_label.setPlainText(self._current_file_name)
 
         self.scene().addItem(self._file_name_label)
         self.rubber_rect = RubberRect('RubberRect')
 
-        self.real_time_line = QtGui.QGraphicsPathItem(None, self.scene())
+        self.real_time_line = QGraphicsPathItem(None, self.scene())
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.object_type = ObjectTypes.Connection
         self.real_time_line.setPen(QtGui.QPen(Colors.Green, 1.0, QtCore.Qt.DashLine))
@@ -937,7 +954,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
             return settings
 
     def add_actions(self):
-        save_action = QtGui.QAction(self)
+        save_action = QAction(self)
         save_action.setText('Save')
         if path.isfile(_mod_folder + 'resources/save_icon.png'):
             save_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/save_icon.png'))
@@ -945,7 +962,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
             save_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         save_action.triggered.connect(self.save)
 
-        load_action = QtGui.QAction(self)
+        load_action = QAction(self)
         load_action.setText('Load')
         if path.isfile(_mod_folder + 'resources/folder_open_icon.png'):
             load_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/folder_open_icon.png'))
@@ -953,7 +970,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
             load_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogOpenButton))
         load_action.triggered.connect(self.load)
 
-        save_as_action = QtGui.QAction(self)
+        save_as_action = QAction(self)
         save_as_action.setText('Save as')
         if path.isfile(_mod_folder + 'resources/save_as_icon.png'):
             save_as_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/save_as_icon.png'))
@@ -961,7 +978,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
             save_as_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         save_as_action.triggered.connect(lambda: self.save(True))
 
-        options_action = QtGui.QAction(self)
+        options_action = QAction(self)
         options_action.setText('Options')
         if path.isfile(_mod_folder + 'resources/colors_icon.png'):
             options_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/colors_icon.png'))
@@ -969,7 +986,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
             options_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogSaveButton))
         options_action.triggered.connect(self.options)
 
-        new_file_action = QtGui.QAction(self)
+        new_file_action = QAction(self)
         new_file_action.setText('New')
         if path.isfile(_mod_folder + 'resources/new_file_icon.png'):
             new_file_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/new_file_icon.png'))
@@ -977,7 +994,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
             new_file_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
         new_file_action.triggered.connect(self.new_file)
 
-        # node_box_action = QtGui.QAction(self)
+        # node_box_action = QAction(self)
         # node_box_action.setText('Node box')
         # if path.isfile(_mod_folder + 'resources/node_box_icon.png'):
         #     node_box_action.setIcon(QtGui.QIcon(_mod_folder + 'resources/node_box_icon.png'))
@@ -985,7 +1002,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
         #     node_box_action.setIcon(self.style().standardIcon(QtGui.QStyle.SP_FileDialogNewFolder))
         # node_box_action.triggered.connect(self.node_box().set_visible)
 
-        separator = QtGui.QAction(self)
+        separator = QAction(self)
         separator.setSeparator(True)
 
         self.menu.addAction(new_file_action)
@@ -1170,7 +1187,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
         #     self.node_box().set_visible()
         if all([event.key() == QtCore.Qt.Key_W, modifiers == QtCore.Qt.ControlModifier]):
             self.duplicate_nodes()
-        QtGui.QGraphicsView.keyPressEvent(self, event)
+        QGraphicsView.keyPressEvent(self, event)
 
     def duplicate_nodes(self):
         selected_nodes = [i for i in self.nodes if i.isSelected()]
@@ -1209,7 +1226,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
         return point
 
     def keyReleaseEvent(self, event):
-        QtGui.QGraphicsView.keyReleaseEvent(self, event)
+        QGraphicsView.keyReleaseEvent(self, event)
 
     def mousePressEvent(self, event):
         super(GraphWidget, self).mousePressEvent(event)
@@ -1312,7 +1329,7 @@ class GraphWidget(QtGui.QGraphicsView, Graph):
                 self.remove_item_by_name('RealTimeLine')
         if self._is_rubber_band_selection:
             self._is_rubber_band_selection = False
-            self.setDragMode(QtGui.QGraphicsView.NoDrag)
+            self.setDragMode(QGraphicsView.NoDrag)
             [i.setSelected(True) for i in self.rubber_rect.collidingItems()]
             self.remove_item_by_name(self.rubber_rect.name)
         if event.button() == QtCore.Qt.RightButton:

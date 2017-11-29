@@ -1,4 +1,6 @@
-from PySide import QtCore
+from Qt import QtCore
+from Qt import QtGui
+from Qt.QtWidgets import QGraphicsWidget
 from AbstractGraph import *
 from Settings import *
 
@@ -30,17 +32,17 @@ def getPortColorByType(t):
         return Colors.String
 
 
-class Port(QtGui.QGraphicsWidget, PortBase):
+class Port(QGraphicsWidget, PortBase):
     def __init__(self, name, parent, data_type, width, height, color=Colors.Connectors):
         PortBase.__init__(self, name, parent, data_type)
-        QtGui.QGraphicsWidget.__init__(self)
+        QGraphicsWidget.__init__(self)
         name = name.replace(" ", "_")  # spaces are not allowed
         self.setParentItem(parent)
         self.menu = QtGui.QMenu()
         self.disconnected = self.menu.addAction('Disconnect all')
         self.disconnected.triggered.connect(self.disconnect_all)
         self.newPos = QtCore.QPointF()
-        self.setFlag(QtGui.QGraphicsWidget.ItemSendsGeometryChanges)
+        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
         self.setAcceptHoverEvents(True)
         self.setZValue(2)

@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 
+
 class Ui_OptionsUI(object):
     def setupUi(self, OptionsUI):
         OptionsUI.setObjectName("OptionsUI")

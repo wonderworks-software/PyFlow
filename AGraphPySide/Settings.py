@@ -1,26 +1,19 @@
-from PySide import QtGui, QtCore
+from Qt import QtGui
+from Qt import QtCore
 
 
-class Spacings(object):
-
+class Spacings:
     kPortSpacing = 4
     kPortOffset = 12
     kSplitterHandleWidth = 5
 
-    def __init__(self):
-        super(Spacings, self).__init__()
 
-
-class LineTypes(object):
-
+class LineTypes:
     lDotLine = 'lDotLine'
     lSolidLine = 'lSolidLine'
     lDashLine = 'lDashLine'
     lDashDotDotLine = 'lDashDotDotLine'
     lDashDotLine = 'lDashDotLine'
-
-    def __init__(self):
-        super(LineTypes, self).__init__()
 
 
 def get_line_type(name):
@@ -37,8 +30,7 @@ def get_line_type(name):
     return opt_pen_selected_type
 
 
-class Colors(object):
-
+class Colors:
     NodeBackgrounds = QtGui.QColor(30, 30, 30, 200)
     NodeSelectedPenColor = QtGui.QColor(200, 200, 200, 150)
     White = QtGui.QColor(255, 255, 255, 200)
@@ -77,6 +69,3 @@ class Colors(object):
     Exec = White
     Reroute = DarkGray
     String = Pink
-
-    def __init__(self):
-        super(Colors, self).__init__()

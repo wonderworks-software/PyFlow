@@ -1,22 +1,25 @@
-from PySide import QtCore, QtGui
+from Qt.QtCore import QStringListModel
+from Qt.QtGui import QFont
+from Qt.QtWidgets import QLineEdit, QCompleter
+from Qt.QtCore import Qt
 
 
-class ConsoleInput(QtGui.QLineEdit):
+class ConsoleInput(QLineEdit):
     def __init__(self, parent, graph):
         super(ConsoleInput, self).__init__(parent)
         self.graph = graph
         self.returnPressed.connect(self.OnReturnPressed)
-        self.model = QtGui.QStringListModel()
+        self.model = QStringListModel()
         self.cmd_list = ["renameNode", "setPropertiesVisible", "setNodeBoxVisible", "setConsoleVisible", "plot", "setVerticalScrollBar", "setHorizontalScrollBar", "setScrollbars", "help", "createNode", "save", "load", "comment", "killNode", "setAttr", "connectAttr", "disconectAttr", "select", "move", "pluginWizard"]
         self.executedCommands = [i for i in self.graph.registeredCommands.iterkeys()] + self.cmd_list
         self.builtinCommands = self.cmd_list
-        self.completer = QtGui.QCompleter(self)
+        self.completer = QCompleter(self)
         self.model.setStringList(self.executedCommands)
         self.completer.setModel(self.model)
         self.completer.setCompletionMode(self.completer.PopupCompletion)
-        self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.setCompleter(self.completer)
-        font = QtGui.QFont("Consolas", 9, QtGui.QFont.Bold, False)
+        font = QFont("Consolas", 9, QFont.Bold, False)
         self.setFont(font)
 
     def OnReturnPressed(self):

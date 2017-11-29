@@ -9,6 +9,7 @@
 
 from PySide import QtCore, QtGui
 
+
 class Ui_rgba_color_picker_ui(object):
     def setupUi(self, rgba_color_picker_ui):
         rgba_color_picker_ui.setObjectName("rgba_color_picker_ui")
