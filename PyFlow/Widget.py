@@ -1091,7 +1091,6 @@ class GraphWidget(QGraphicsView, Graph):
     def load(self):
         name_filter = "Graph files (*.graph)"
         fpath = QFileDialog.getOpenFileName(filter=name_filter, dir="./Examples")
-        print(fpath)
         if not fpath[0] == '':
             with open(fpath[0], 'r') as f:
                 data = f.readlines()
