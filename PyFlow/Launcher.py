@@ -1,6 +1,7 @@
 from Widget import GraphWidget
 from Widget import Direction
 from Widget import NodesBox
+from Widget import get_nodes_file_names
 from ConsoleInputWidget import ConsoleInput
 from SyntaxHighlighter import Highlighter
 from Qt.QtWidgets import QMainWindow
@@ -24,8 +25,8 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         super(W, self).__init__()
         self.setupUi(self)
         self.G = GraphWidget('MAIN_GRAPH', self)
-        self.node_box = NodesBox(self.G)
-        self.node_box.le_nodes()._events = False
+        self.node_box = NodesBox()
+        # self.node_box.le_nodes()._events = False
         self.SceneLayout.addWidget(self.G)
         self.NodeBoxLayout.addWidget(self.node_box)
         self.node_box.setVisible(True)
@@ -64,7 +65,7 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         commands_names = [i for i in self.G.registeredCommands.iterkeys()] + self.consoleInput.cmd_list
         self.highlighter_inst = Highlighter(self.console.document(),
                                             commands_names,
-                                            self.node_box.get_nodes_file_names())
+                                            get_nodes_file_names())
         self.gridLayout_2.addWidget(self.consoleInput, 1, 0, 1, 1)
         self.dockWidgetConsole.hide()
         self.dockWidgetNodeBox.hide()
