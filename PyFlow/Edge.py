@@ -61,9 +61,8 @@ class Edge(QGraphicsPathItem):
             print(self.__str__(), self.source().data_type, self.destination().data_type)
 
     def getEndPoints(self):
-        offset = self.source().boundingRect().width() / 3.25
-        p1 = self.source().sceneTransform().map(QtCore.QPointF(offset * 2, offset))
-        p2 = self.destination().sceneTransform().map(QtCore.QPointF(0, offset))
+        p1 = self.source().boundingRect().center() + self.source().scenePos()
+        p2 = self.destination().boundingRect().center() + self.destination().scenePos()
         return p1, p2
 
     def mousePressEvent(self, event):

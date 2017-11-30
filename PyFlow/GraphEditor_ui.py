@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:/GIT/nodes/AGraphPySide/GraphEditor_ui.ui'
+# Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
 #
-# Created: Wed Nov 29 22:48:22 2017
+# Created: Thu Nov 30 09:36:16 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -51,6 +51,8 @@ class Ui_MainWindow(object):
         self.menuFile.setObjectName("menuFile")
         self.menuHelp = QtGui.QMenu(self.menuBar)
         self.menuHelp.setObjectName("menuHelp")
+        self.menuPlugins = QtGui.QMenu(self.menuBar)
+        self.menuPlugins.setObjectName("menuPlugins")
         MainWindow.setMenuBar(self.menuBar)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
@@ -194,6 +196,10 @@ class Ui_MainWindow(object):
         icon18.addPixmap(QtGui.QPixmap(":/icons/resources/alignright.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionAlignRight.setIcon(icon18)
         self.actionAlignRight.setObjectName("actionAlignRight")
+        self.actionNew_Node = QtGui.QAction(MainWindow)
+        self.actionNew_Node.setObjectName("actionNew_Node")
+        self.actionNew_Command = QtGui.QAction(MainWindow)
+        self.actionNew_Command.setObjectName("actionNew_Command")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addAction(self.actionOptions)
         self.menuEdit.addAction(self.actionClear_scene)
@@ -205,9 +211,12 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionSave_as)
         self.menuHelp.addAction(self.actionShortcuts)
+        self.menuPlugins.addAction(self.actionNew_Node)
+        self.menuPlugins.addAction(self.actionNew_Command)
         self.menuBar.addAction(self.menuFile.menuAction())
         self.menuBar.addAction(self.menuEdit.menuAction())
         self.menuBar.addAction(self.menuView.menuAction())
+        self.menuBar.addAction(self.menuPlugins.menuAction())
         self.menuBar.addAction(self.menuHelp.menuAction())
         self.toolBar.addAction(self.actionNode_box)
         self.toolBar.addAction(self.actionConsole)
@@ -233,6 +242,7 @@ class Ui_MainWindow(object):
         self.menuView.setTitle(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuPlugins.setTitle(QtGui.QApplication.translate("MainWindow", "Plugins", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetConsole.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Console", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetNodeBox.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Node Box", None, QtGui.QApplication.UnicodeUTF8))
@@ -258,5 +268,7 @@ class Ui_MainWindow(object):
         self.actionPropertyView.setToolTip(QtGui.QApplication.translate("MainWindow", "toggle property view", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAlignBottom.setText(QtGui.QApplication.translate("MainWindow", "AlignBottom", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAlignRight.setText(QtGui.QApplication.translate("MainWindow", "alignRight", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew_Node.setText(QtGui.QApplication.translate("MainWindow", "New Node", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew_Command.setText(QtGui.QApplication.translate("MainWindow", "New Command", None, QtGui.QApplication.UnicodeUTF8))
 
 import nodes_res_rc

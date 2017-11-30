@@ -115,9 +115,17 @@
     </property>
     <addaction name="actionShortcuts"/>
    </widget>
+   <widget class="QMenu" name="menuPlugins">
+    <property name="title">
+     <string>Plugins</string>
+    </property>
+    <addaction name="actionNew_Node"/>
+    <addaction name="actionNew_Command"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuPlugins"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -446,6 +454,16 @@
    </property>
    <property name="text">
     <string>alignRight</string>
+   </property>
+  </action>
+  <action name="actionNew_Node">
+   <property name="text">
+    <string>New Node</string>
+   </property>
+  </action>
+  <action name="actionNew_Command">
+   <property name="text">
+    <string>New Command</string>
    </property>
   </action>
  </widget>
