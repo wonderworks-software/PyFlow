@@ -1396,7 +1396,9 @@ class GraphWidget(QGraphicsView, Graph):
                 do_connect = True
 
         if isinstance(r_itm, QGraphicsPathItem):
-            print("suggest nodes!!!")
+            # node box tree pops up
+            # with nodes taking supported data types of pressed port as input
+            pass
 
         if do_connect:
             if isinstance(r_itm, Nodes.Reroute):
