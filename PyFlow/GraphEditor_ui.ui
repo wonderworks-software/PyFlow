@@ -81,7 +81,7 @@
      <x>0</x>
      <y>0</y>
      <width>1091</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -121,6 +121,7 @@
     </property>
     <addaction name="actionNew_Node"/>
     <addaction name="actionNew_Command"/>
+    <addaction name="actionFunction_Library"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -464,6 +465,11 @@
   <action name="actionNew_Command">
    <property name="text">
     <string>New Command</string>
+   </property>
+  </action>
+  <action name="actionFunction_Library">
+   <property name="text">
+    <string>New Function Library</string>
    </property>
   </action>
  </widget>

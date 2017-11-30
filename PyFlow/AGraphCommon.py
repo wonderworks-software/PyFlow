@@ -85,25 +85,26 @@ def push(start_from):
 
 
 class DataTypes:
-    Float = 'numeric_data'
-    Int = 'numeric_data_int'
-    String = 'string_data'
-    Bool = 'boolean_data'
-    Array = 'array_data'
-    Any = 'all'
-    Reroute = 'reroute'
-    Exec = 'exec'
+    Float = 0
+    Int = 1
+    String = 2
+    Bool = 3
+    Array = 4
+    Any = 5
+    Reroute = 6
+    Exec = 7
 
 
-class ObjectTypes:
-    Port = 'port_object'
-    Node = 'node_object'
-    Graph = 'graph_object'
-    Grouper = 'group_object'
-    Connection = 'connection_line_object'
-    NodeName = 'node_name_object'
+class ObjectTypes(object):
+    Port = 0
+    Node = 1
+    Graph = 2
+    Grouper = 3
+    Connection = 4
+    NodeName = 5
+    SelectionRect = 6
 
 
 class PinTypes:
-    Input = 'input_port'
-    Output = 'output_port'
+    Input = 0
+    Output = 1

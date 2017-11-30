@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
 #
-# Created: Thu Nov 30 09:36:16 2017
+# Created: Thu Nov 30 21:11:13 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.horizontal_splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1091, 26))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1091, 21))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")
@@ -200,6 +200,8 @@ class Ui_MainWindow(object):
         self.actionNew_Node.setObjectName("actionNew_Node")
         self.actionNew_Command = QtGui.QAction(MainWindow)
         self.actionNew_Command.setObjectName("actionNew_Command")
+        self.actionFunction_Library = QtGui.QAction(MainWindow)
+        self.actionFunction_Library.setObjectName("actionFunction_Library")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addAction(self.actionOptions)
         self.menuEdit.addAction(self.actionClear_scene)
@@ -213,6 +215,7 @@ class Ui_MainWindow(object):
         self.menuHelp.addAction(self.actionShortcuts)
         self.menuPlugins.addAction(self.actionNew_Node)
         self.menuPlugins.addAction(self.actionNew_Command)
+        self.menuPlugins.addAction(self.actionFunction_Library)
         self.menuBar.addAction(self.menuFile.menuAction())
         self.menuBar.addAction(self.menuEdit.menuAction())
         self.menuBar.addAction(self.menuView.menuAction())
@@ -270,5 +273,6 @@ class Ui_MainWindow(object):
         self.actionAlignRight.setText(QtGui.QApplication.translate("MainWindow", "alignRight", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_Node.setText(QtGui.QApplication.translate("MainWindow", "New Node", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_Command.setText(QtGui.QApplication.translate("MainWindow", "New Command", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFunction_Library.setText(QtGui.QApplication.translate("MainWindow", "New Function Library", None, QtGui.QApplication.UnicodeUTF8))
 
 import nodes_res_rc

@@ -546,6 +546,7 @@ class RubberRect(QGraphicsRectItem):
         self.setZValue(2)
         self.setPen(QtGui.QPen(Colors.RubberRect, 0.5, QtCore.Qt.SolidLine))
         self.setBrush(QtGui.QBrush(Colors.RubberRect))
+        self.object_type = ObjectTypes.SelectionRect
 
     def remove_node(self, node):
         if node in self.nodes:
@@ -1342,6 +1343,8 @@ class GraphWidget(QGraphicsView, Graph):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
+        super(GraphWidget, self).mouseReleaseEvent(event)
+
         self.autoPanController.stop()
         self.released_item = self.itemAt(event.pos())
         self.bPanMode = False
@@ -1392,6 +1395,9 @@ class GraphWidget(QGraphicsView, Graph):
             if isinstance(p_itm, Port) and isinstance(r_itm, Nodes.Reroute):
                 do_connect = True
 
+        if isinstance(r_itm, QGraphicsPathItem):
+            print("suggest nodes!!!")
+
         if do_connect:
             if isinstance(r_itm, Nodes.Reroute):
                 p_itm.reroutes.append(r_itm)
@@ -1407,7 +1413,6 @@ class GraphWidget(QGraphicsView, Graph):
             self.update_property_view(selected_nodes[0])
         else:
             clearLayout(self.parent.PropertiesformLayout)
-        super(GraphWidget, self).mouseReleaseEvent(event)
 
     def update_property_view(self, node):
         self.ActivePropertiesWidgets = {}
