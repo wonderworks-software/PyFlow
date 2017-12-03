@@ -21,6 +21,10 @@ class RerouteMover(QGraphicsRectItem):
         self.setPen(QtGui.QPen(QtGui.QColor(0, 0, 0, 0), 0))
         self.setAcceptHoverEvents(True)
         self.setCursor(QtCore.Qt.OpenHandCursor)
+    
+    def hoverEnterEvent(self, event):
+        super(RerouteMover, self).hoverEnterEvent(event)
+        print(self.parentItem()._connected)
 
 
 class Reroute(Node, NodeBase):
@@ -110,13 +114,21 @@ class Reroute(Node, NodeBase):
             self.inp0.setEdgesControlPointsFlipped(False)
             self.out0.setEdgesControlPointsFlipped(False)
 
+    def updateColor(self, dataType):
+        color = getPortColorByType(dataType)
+        self.inp0.color = color
+        self.out0.color = color
+        for i in self.inp0.edge_list + self.out0.edge_list:
+            i.pen.setColor(color)
+
     def OnInputConneceted(self, other):
         self.inp0._connected = True
         self._connected = True
-        self.inp0.color = self.inp0.affected_by[0].color
-        self.out0.color = self.inp0.color
+        # self.inp0.color = self.inp0.affected_by[0].color
+        # self.out0.color = self.inp0.color
         self.inp0.data_type = other.data_type
         self.out0.data_type = other.data_type
+        self.updateColor(other.data_type)
         if self.out0.hasConnections():
             self.color = self.out0.color
             self.color.setAlpha(255)
@@ -141,21 +153,21 @@ class Reroute(Node, NodeBase):
         self.update()
 
     def OnInputDisconneceted(self, other):
-        if self.inp0.hasConnections():
+        if not self.inp0.hasConnections():
             self.inp0._connected = False
-        if not self.out0.hasConnections():
+        self._connected = self.inp0.hasConnections() or self.out0.hasConnections()
+        if not self._connected:
+            self.inp0.bEdgeTangentDirection = False
             self.resetTypeInfo()
-        self._connected = False
-        self.inp0.bEdgeTangentDirection = False
         self.update()
 
     def OnOutputDisconneceted(self, other):
-        if self.out0.hasConnections():
+        if not self.out0.hasConnections():
             self.out0._connected = False
-        if not self.inp0.hasConnections():
+        self._connected = self.inp0.hasConnections() or self.out0.hasConnections()
+        if not self._connected:
+            self.out0.bEdgeTangentDirection = False
             self.resetTypeInfo()
-        self._connected = False
-        self.out0.bEdgeTangentDirection = False
         self.update()
 
     def resetTypeInfo(self):
@@ -201,14 +213,6 @@ class Reroute(Node, NodeBase):
         if self.isSelected():
             painter.setPen(self._pen)
             painter.drawRoundedRect(self.boundingRect(), 2.0, 2.0)
-
-    def itemChange(self, change, value):
-        # if change == QGraphicsItem.ItemSelectedChange:
-        #     if value:
-        #         self.setFlag(QGraphicsItem.ItemIsMovable)
-        #     else:
-        #         self.setFlag(QGraphicsItem.ItemIsMovable, False)
-        return QGraphicsItem.itemChange(self, change, value)
 
     @staticmethod
     def description():

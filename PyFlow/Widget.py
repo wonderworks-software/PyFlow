@@ -273,16 +273,6 @@ class SceneClass(QGraphicsScene):
         else:
             event.ignore()
 
-    def initGL(self):
-        glClearColor(0.0, 1.0, 0.0, 1.0)
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glMatrixMode(GL_PROJECTION)
-        glPushMatrix()
-        glLoadIdentity()
-        glOrtho(-500, 500, -500, 500, -1000, 1000)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
     def dragMoveEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
             event.setDropAction(QtCore.Qt.MoveAction)
@@ -883,7 +873,6 @@ class GraphWidget(QGraphicsView, Graph):
 
     def main_loop(self):
         deltaTime = clock() - self._lastClock
-        self._lastFps = self.fps
         ds = (deltaTime * 1000.0)
         if ds > 0:
             self.fps = 1000.0 / ds
