@@ -26,7 +26,6 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.setupUi(self)
         self.G = GraphWidget('MAIN_GRAPH', self)
         self.node_box = NodesBox()
-        # self.node_box.le_nodes()._events = False
         self.SceneLayout.addWidget(self.G)
         self.NodeBoxLayout.addWidget(self.node_box)
         self.node_box.setVisible(True)
@@ -42,7 +41,6 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionClear_scene.triggered.connect(self.on_clear_scene)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
         self.actionOptions.triggered.connect(self.G.options)
-        # self.actionGroup_selected.triggered.connect(self.G.commentSelectedNodes)
         self.actionSave.triggered.connect(self.G.save)
         self.actionLoad.triggered.connect(self.G.load)
         self.actionSave_as.triggered.connect(self.G.save_as)
@@ -55,10 +53,9 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.console.setReadOnly(True)
         self.console.setStyleSheet('background-color: rgb(49, 49, 49);' +
                                    'font: 8pt "Consolas";' +
-                                   'color: rgb(200, 200, 200);'
-                                   )
+                                   'color: rgb(200, 200, 200);')
         self.clearConsoleAction = QAction('Clear', self)
-        self.clearConsoleAction.triggered.connect(lambda: self.console.clear())
+        self.clearConsoleAction.triggered.connect(self.console.clear)
         self.console.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.console.addAction(self.clearConsoleAction)
         self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)

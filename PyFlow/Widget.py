@@ -258,7 +258,7 @@ class AutoPanController(object):
 class SceneClass(QGraphicsScene):
     def __init__(self, parent):
         super(SceneClass, self).__init__(parent)
-        self.Type = 'SCENE'
+        self.object_type = ObjectTypes.Scene
         self.setItemIndexMethod(self.NoIndex)
         self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
@@ -311,10 +311,12 @@ class SceneClass(QGraphicsScene):
         if event.mimeData().hasFormat('text/plain'):
             className = event.mimeData().text()
             name = self.parent().get_uniq_node_name(className)
-            if className == "MakeArray":
-                self.parent().executeCommand("createNode ~type MakeArray ~count {3} ~x {0} ~y {1} ~n {2}\n".format(event.scenePos().x(), event.scenePos().y(), name, 0))
-            else:
-                self.parent().executeCommand("createNode {4}type {0} {4}x {1} {4}y {2} {4}n {3}".format(className, event.scenePos().x(), event.scenePos().y(), name, FLAG_SYMBOL))
+            dropItem = self.itemAt(event.scenePos())
+            if not dropItem:
+                if className == "MakeArray":
+                    self.parent().executeCommand("createNode ~type MakeArray ~count {3} ~x {0} ~y {1} ~n {2}\n".format(event.scenePos().x(), event.scenePos().y(), name, 0))
+                else:
+                    self.parent().executeCommand("createNode {4}type {0} {4}x {1} {4}y {2} {4}n {3}".format(className, event.scenePos().x(), event.scenePos().y(), name, FLAG_SYMBOL))
         else:
             super(SceneClass, self).dropEvent(event)
 
@@ -478,8 +480,10 @@ class NodesBox(QWidget):
     """doc string for NodesBox"""
     def __init__(self):
         super(NodesBox, self).__init__()
+        self.object_type = ObjectTypes.NodeBox
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.verticalLayout.setContentsMargins(4, 4, 4, 4)
         self.lineEdit = NodeBoxLineEdit(self)
         self.lineEdit.setObjectName("lineEdit")
         self.verticalLayout.addWidget(self.lineEdit)
@@ -783,7 +787,10 @@ class GraphWidget(QGraphicsView, Graph):
         self.node_box = NodesBox()
         self.prx_nodeBox = QGraphicsProxyWidget()
         self.prx_nodeBox.setWidget(self.node_box)
+        self.prx_nodeBox.object_type = ObjectTypes.NodeBox
         self.scene().addItem(self.prx_nodeBox)
+        self.prx_nodeBox.setFlag(QGraphicsItem.ItemIgnoresTransformations)
+        self.prx_nodeBox.setZValue(3)
 
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.object_type = ObjectTypes.Connection
@@ -1241,18 +1248,14 @@ class GraphWidget(QGraphicsView, Graph):
 
         modifiers = event.modifiers()
 
-        if self.pressed_item:
-            if hasattr(self.pressed_item, 'mark'):
-                self._resize_group_mode = True
-                self.pressed_item.parentItem().setFlag(QGraphicsItem.ItemIsMovable, False)  # move to comment node
-            if hasattr(self.pressed_item, 'object_type') and event.button() == QtCore.Qt.LeftButton:
-                if self.pressed_item.object_type == ObjectTypes.Port:
-                    self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsMovable, False)
-                    self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    self._draw_real_time_line = True
-                    self.autoPanController.start()
-                if self.pressed_item.object_type == ObjectTypes.NodeName:
-                    self.pressed_item.parentItem().setSelected(True)
+        if self.pressed_item and isinstance(self.pressed_item, QGraphicsItem):
+            if isinstance(self.pressed_item, PortBase) and event.button() == QtCore.Qt.LeftButton:
+                self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsMovable, False)
+                self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsSelectable, False)
+                self._draw_real_time_line = True
+                self.autoPanController.start()
+            elif isinstance(self.pressed_item, Nodes.RerouteMover):
+                self.pressed_item.parentItem().setFlag(QGraphicsItem.ItemIsMovable)
             else:
                 self.pressed_item.setSelected(True)
 
@@ -1278,8 +1281,6 @@ class GraphWidget(QGraphicsView, Graph):
             self.pan(delta)
 
         if self._draw_real_time_line:
-            self.pressed_item
-
             if self.pressed_item.parentItem().isSelected():
                 self.pressed_item.parentItem().setSelected(False)
             if self.real_time_line not in self.scene().items():
@@ -1328,6 +1329,9 @@ class GraphWidget(QGraphicsView, Graph):
         modifiers = event.modifiers()
 
         for n in self.nodes:
+            if isinstance(n, Nodes.Reroute):
+                n.setFlag(QGraphicsItem.ItemIsMovable, False)            
+                continue
             n.setFlag(QGraphicsItem.ItemIsMovable)
             n.setFlag(QGraphicsItem.ItemIsSelectable)
 
@@ -1345,7 +1349,7 @@ class GraphWidget(QGraphicsView, Graph):
             dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
             if all([abs(i) < 0.1 for i in [dragDiff.x(), dragDiff.y()]]):
                 if self.pressed_item is None:
-                    self.menu.exec_(QtGui.QCursor.pos())
+                    self.showNodeBox()
 
             self._right_button = False
         p_itm = self.pressed_item

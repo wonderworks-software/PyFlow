@@ -103,6 +103,8 @@ class ObjectTypes(object):
     Connection = 4
     NodeName = 5
     SelectionRect = 6
+    Scene = 7
+    NodeBox = 8
 
 
 class PinTypes:

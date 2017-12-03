@@ -40,6 +40,7 @@ class Port(QGraphicsWidget, PortBase):
         QGraphicsWidget.__init__(self)
         name = name.replace(" ", "_")  # spaces are not allowed
         self.setParentItem(parent)
+        self.setCursor(QtCore.Qt.CrossCursor)
         self.menu = QMenu()
         self.disconnected = self.menu.addAction('Disconnect all')
         self.disconnected.triggered.connect(self.disconnect_all)
@@ -181,6 +182,7 @@ class Port(QGraphicsWidget, PortBase):
             return self.parent().outputsLayout
 
     def hoverEnterEvent(self, event):
+        super(Port, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
         self.setToolTip(str(self.current_data()))
@@ -188,12 +190,11 @@ class Port(QGraphicsWidget, PortBase):
             print('data -', self._data)
             self.write_to_console(self._data)
         event.accept()
-        super(Port, self).hoverEnterEvent(event)
 
     def hoverLeaveEvent(self, event):
+        super(Port, self).hoverLeaveEvent(event)
         self.update()
         self.hovered = False
-        super(Port, self).hoverLeaveEvent(event)
 
     def set_data(self, data, dirty_propagate=True):
         PortBase.set_data(self, data, dirty_propagate)

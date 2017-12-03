@@ -298,43 +298,38 @@ class Node(QGraphicsItem, NodeBase):
 
     def mousePressEvent(self, event):
         self.update()
-        self.setCursor(QtCore.Qt.ClosedHandCursor)
+        # self.setCursor(QtCore.Qt.ClosedHandCursor)
         QGraphicsItem.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
         self.update()
-        self.setCursor(QtCore.Qt.OpenHandCursor)
-        modifiers = event.modifiers()
-        selected_nodes = [n for n in self.graph().nodes if n.isSelected()]
-        groupers = [i for i in self.graph().groupers if i.object_type == ObjectTypes.tGrouper]
-        grouper = [g for g in groupers if self in g.collidingItems()]
-        if len(grouper) == 1:
-            if not modifiers == QtCore.Qt.ControlModifier:
-                grouper[0].add_from_iterable(selected_nodes)
-        else:
-            parent = self.parentItem()
-            if parent and parent.object_type == ObjectTypes.tGrouper:
-                if self in parent.nodes:
-                    parent.remove_from_iterable(selected_nodes)
-                    self.setZValue(1)
-                    for n in selected_nodes:
-                        if n.parentItem():
-                            if hasattr(n.parentItem(), 'object_type'):
-                                if n.parentItem().object_type == ObjectTypes.tGrouper:
-                                    n.parentItem().remove_node(n)
-        p_item = self.parentItem()
-        if p_item and hasattr(p_item, 'object_type'):
-            if p_item.object_type == ObjectTypes.tGrouper:
-                if p_item.auto_fit_content:
-                    p_item.fit_content()
+        # self.setCursor(QtCore.Qt.OpenHandCursor)
+        # modifiers = event.modifiers()
+        # selected_nodes = [n for n in self.graph().nodes if n.isSelected()]
+        # groupers = [i for i in self.graph().groupers if i.object_type == ObjectTypes.tGrouper]
+        # grouper = [g for g in groupers if self in g.collidingItems()]
+        # if len(grouper) == 1:
+        #     if not modifiers == QtCore.Qt.ControlModifier:
+        #         grouper[0].add_from_iterable(selected_nodes)
+        # else:
+        #     parent = self.parentItem()
+        #     if parent and parent.object_type == ObjectTypes.tGrouper:
+        #         if self in parent.nodes:
+        #             parent.remove_from_iterable(selected_nodes)
+        #             self.setZValue(1)
+        #             for n in selected_nodes:
+        #                 if n.parentItem():
+        #                     if hasattr(n.parentItem(), 'object_type'):
+        #                         if n.parentItem().object_type == ObjectTypes.tGrouper:
+        #                             n.parentItem().remove_node(n)
         QGraphicsItem.mouseReleaseEvent(self, event)
 
     def add_input_port(self, port_name, data_type, foo=None):
         p = self._add_port(PinTypes.Input, data_type, foo, port_name)
-        if data_type in [DataTypes.Float, DataTypes.Int]:
-            for i in [DataTypes.Float, DataTypes.Int]:
-                if i not in p.allowed_data_types:
-                    p.allowed_data_types.append(i)
+        # if data_type in [DataTypes.Float, DataTypes.Int]:
+        #     for i in [DataTypes.Float, DataTypes.Int]:
+        #         if i not in p.allowed_data_types:
+        #             p.allowed_data_types.append(i)
         return p
 
     @staticmethod

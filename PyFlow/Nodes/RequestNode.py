@@ -50,7 +50,7 @@ class RequestNode(Node, NodeBase):
             self.looper.stop()
 
     def kill(self):
-        BaseNode.Node.kill(self)
+        Node.kill(self)
         if self.looper.isActive():
             self.looper.stop()
 

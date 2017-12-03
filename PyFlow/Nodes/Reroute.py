@@ -5,11 +5,22 @@ from Port import Port
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsItem
+from Qt.QtWidgets import QGraphicsRectItem
 from Qt.QtWidgets import QApplication
 
 
 DESC = '''This node's purpose is change flow of edges
 '''
+
+
+class RerouteMover(QGraphicsRectItem):
+    def __init__(self, parent):
+        super(RerouteMover, self).__init__(parent)
+        self.setRect(0, 0, 20, 5)
+        self.setBrush(QtGui.QColor(0, 0, 0, 0))
+        self.setPen(QtGui.QPen(QtGui.QColor(0, 0, 0, 0), 0))
+        self.setAcceptHoverEvents(True)
+        self.setCursor(QtCore.Qt.OpenHandCursor)
 
 
 class Reroute(Node, NodeBase):
@@ -18,25 +29,33 @@ class Reroute(Node, NodeBase):
         self.h = 25
         self.sizes[4] = self.h
         self.label().hide()
+        self.setCursor(QtCore.Qt.CrossCursor)
+
+        self.reroute_mover = RerouteMover(self)
+               
+        self.reroute_mover.setX(-5)
+        self.reroute_mover.setY(-5)
 
         self.r = 10.0
+
+        self.setFlag(QGraphicsItem.ItemIsMovable, False)
 
         self.color = getPortColorByType(DataTypes.Reroute)
         self.color.setAlpha(255)
 
         self.inp0 = Port('in', self, DataTypes.Reroute, 10, 10, self.color)
         self.inp0.type = PinTypes.Input
-        self.inp0.setParentItem(self)
         self.inp0.port_connected = self.OnInputConneceted
         self.inp0.port_disconnected = self.OnInputDisconneceted
         self.inputs.append(self.inp0)
+        # self.inp0.setX(-15.0)
         self._connected = False
 
         self.out0 = Port('out', self, DataTypes.Reroute, 10, 10, self.color)
         self.out0.type = PinTypes.Output
-        self.out0.setParentItem(self)
         self.out0.port_connected = self.OnOutputConnected
         self.out0.port_disconnected = self.OnOutputDisconneceted
+        # self.out0.setX(10.0)
         self.outputs.append(self.out0)
 
         portAffects(self.inp0, self.out0)
@@ -172,6 +191,7 @@ class Reroute(Node, NodeBase):
             painter.setBrush(self.color)
 
         painter.drawEllipse(center, self.r / 2, self.r / 2)
+        painter.drawEllipse(self.inp0.scenePos(), self.r / 2, self.r / 2)
         arrow = QtGui.QPolygonF([QtCore.QPointF(self.r, self.r * 0.7),
                                  QtCore.QPointF(self.r * 1.2, self.r / 2.0),
                                  QtCore.QPointF(self.r, self.r * 0.3),
@@ -181,6 +201,7 @@ class Reroute(Node, NodeBase):
         if self.isSelected():
             painter.setPen(self._pen)
             painter.drawRoundedRect(self.boundingRect(), 2.0, 2.0)
+        
 
     def itemChange(self, change, value):
         return QGraphicsItem.itemChange(self, change, value)
