@@ -1256,6 +1256,9 @@ class GraphWidget(QGraphicsView, Graph):
                 self.autoPanController.start()
             elif isinstance(self.pressed_item, Nodes.RerouteMover):
                 self.pressed_item.parentItem().setFlag(QGraphicsItem.ItemIsMovable)
+            elif isinstance(self.pressed_item, Nodes.Reroute):
+                if not self.pressed_item.inp0.hasConnections() or not self.pressed_item.out0.hasConnections():
+                    self._draw_real_time_line = True
             else:
                 self.pressed_item.setSelected(True)
 
@@ -1281,13 +1284,13 @@ class GraphWidget(QGraphicsView, Graph):
             self.pan(delta)
 
         if self._draw_real_time_line:
-            if self.pressed_item.parentItem().isSelected():
-                self.pressed_item.parentItem().setSelected(False)
+            if isinstance(self.pressed_item, Port):
+                if self.pressed_item.parentItem().isSelected():
+                    self.pressed_item.parentItem().setSelected(False)
             if self.real_time_line not in self.scene().items():
                 self.scene().addItem(self.real_time_line)
 
-            p1 = self.pressed_item.scenePos() + QtCore.QPointF(self.pressed_item.boundingRect().width() / 2,
-                                                               self.pressed_item.boundingRect().height() / 2)
+            p1 = self.pressed_item.scenePos() + self.pressed_item.boundingRect().center() 
             p2 = self.mapToScene(self.mousePos)
 
             distance = p2.x() - p1.x()
@@ -1330,7 +1333,7 @@ class GraphWidget(QGraphicsView, Graph):
 
         for n in self.nodes:
             if isinstance(n, Nodes.Reroute):
-                n.setFlag(QGraphicsItem.ItemIsMovable, False)            
+                n.setFlag(QGraphicsItem.ItemIsMovable, False)
                 continue
             n.setFlag(QGraphicsItem.ItemIsMovable)
             n.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -1343,6 +1346,7 @@ class GraphWidget(QGraphicsView, Graph):
             self._is_rubber_band_selection = False
             self.setDragMode(QGraphicsView.NoDrag)
             [i.setSelected(True) for i in self.rubber_rect.collidingItems()]
+            [i.setFlag(QGraphicsItem.ItemIsMovable) for i in self.nodes if i.isSelected()]
             self.remove_item_by_name(self.rubber_rect.name)
         if event.button() == QtCore.Qt.RightButton:
             # call context menu only if drag is small
@@ -1373,7 +1377,29 @@ class GraphWidget(QGraphicsView, Graph):
             if isinstance(p_itm, Port) and isinstance(r_itm, Nodes.Reroute):
                 do_connect = True
 
-        if isinstance(r_itm, QGraphicsPathItem):
+            if isinstance(self.pressed_item, Nodes.Reroute) and isinstance(r_itm, Port):
+                diff = self.pressed_item.scenePos() - self.mapToScene(self.mousePos)
+                if diff.x() > 0:
+                    # print("left", diff.x())
+                    p_itm = self.pressed_item.inp0
+                else:
+                    p_itm = self.pressed_item.out0
+                    # print("right", diff.x())
+                do_connect = True
+
+            if isinstance(self.pressed_item, Nodes.Reroute) and isinstance(self.released_item, Nodes.Reroute):
+                diff = self.pressed_item.scenePos().x() - self.released_item.scenePos().x()
+                if diff < 0:
+                    # left to right
+                    p_itm = self.pressed_item.out0
+                    r_itm = self.released_item.inp0
+                else:
+                    # right to left
+                    p_itm = self.pressed_item.inp0
+                    r_itm = self.released_item.out0
+                do_connect = True
+
+        if isinstance(r_itm, QGraphicsPathItem) and isinstance(p_itm, Port):
             # node box tree pops up
             # with nodes taking supported data types of pressed port as input
             pass

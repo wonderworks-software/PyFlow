@@ -201,9 +201,13 @@ class Reroute(Node, NodeBase):
         if self.isSelected():
             painter.setPen(self._pen)
             painter.drawRoundedRect(self.boundingRect(), 2.0, 2.0)
-        
 
     def itemChange(self, change, value):
+        # if change == QGraphicsItem.ItemSelectedChange:
+        #     if value:
+        #         self.setFlag(QGraphicsItem.ItemIsMovable)
+        #     else:
+        #         self.setFlag(QGraphicsItem.ItemIsMovable, False)
         return QGraphicsItem.itemChange(self, change, value)
 
     @staticmethod
