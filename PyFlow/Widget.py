@@ -21,6 +21,7 @@ from Qt.QtWidgets import QGraphicsRectItem
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QGraphicsView
+from Qt.QtWidgets import QApplication
 import math
 import platform
 import random
@@ -478,8 +479,8 @@ class NodeBoxTreeWidget(QTreeWidget):
 
 class NodesBox(QWidget):
     """doc string for NodesBox"""
-    def __init__(self):
-        super(NodesBox, self).__init__()
+    def __init__(self, parent):
+        super(NodesBox, self).__init__(parent)
         self.object_type = ObjectTypes.NodeBox
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -784,13 +785,8 @@ class GraphWidget(QGraphicsView, Graph):
         self.rubber_rect = RubberRect('RubberRect')
 
         self.real_time_line = QGraphicsPathItem(None, self.scene())
-        self.node_box = NodesBox()
-        self.prx_nodeBox = QGraphicsProxyWidget()
-        self.prx_nodeBox.setWidget(self.node_box)
-        self.prx_nodeBox.object_type = ObjectTypes.NodeBox
-        self.scene().addItem(self.prx_nodeBox)
-        self.prx_nodeBox.setFlag(QGraphicsItem.ItemIgnoresTransformations)
-        self.prx_nodeBox.setZValue(3)
+        self.node_box = NodesBox(None)
+        self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
 
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.object_type = ObjectTypes.Connection
@@ -821,8 +817,11 @@ class GraphWidget(QGraphicsView, Graph):
         self._bRightBeforeShoutDown = False
 
     def showNodeBox(self):
-        self.prx_nodeBox.show()
-        self.prx_nodeBox.setPos(self.mapToScene(self.mousePos))
+        self.node_box.show()
+        self.node_box.move(QtGui.QCursor.pos())
+        self.node_box.treeWidget.refresh()
+        self.node_box.lineEdit.clear()
+        self.node_box.lineEdit.setFocus()
 
     def shoutDown(self):
         self.tick_timer.stop()
@@ -1243,8 +1242,8 @@ class GraphWidget(QGraphicsView, Graph):
         super(GraphWidget, self).mousePressEvent(event)
         self.pressed_item = self.itemAt(event.pos())
         self.mousePressPose = event.pos()
-        if not self.pressed_item:
-            self.prx_nodeBox.hide()
+        if not self.pressed_item and self.node_box.isVisible():
+            self.node_box.hide()
 
         modifiers = event.modifiers()
 
@@ -1481,7 +1480,7 @@ class GraphWidget(QGraphicsView, Graph):
         layout.addRow("", doc)
 
     def propertyEditingFinished(self):
-        le = QtGui.QApplication.instance().focusWidget()
+        le = QApplication.instance().focusWidget()
         if isinstance(le, QLineEdit):
             nodeName, attr = le.objectName().split('.')
             node = self.get_node_by_name(nodeName)

@@ -35,7 +35,7 @@ def getPortColorByType(t):
 
 
 class Port(QGraphicsWidget, PortBase):
-    def __init__(self, name, parent, data_type, width, height, color=Colors.Connectors):
+    def __init__(self, name, parent, data_type, width=8.0, height=8.0, color=Colors.Connectors):
         PortBase.__init__(self, name, parent, data_type)
         QGraphicsWidget.__init__(self)
         name = name.replace(" ", "_")  # spaces are not allowed
@@ -49,10 +49,10 @@ class Port(QGraphicsWidget, PortBase):
         self.setCacheMode(self.DeviceCoordinateCache)
         self.setAcceptHoverEvents(True)
         self.setZValue(2)
-        self.__width = width + 1
-        self.__height = height + 1
+        self.width = width + 1
+        self.height = height + 1
         if self.data_type == DataTypes.Exec:
-            self.__width = self.__height = 10.0
+            self.width = self.height = 10.0
         self.hovered = False
         self.startPos = None
         self.endPos = None
@@ -64,7 +64,7 @@ class Port(QGraphicsWidget, PortBase):
         self._execPen = QtGui.QPen(self.color, 0.5, QtCore.Qt.SolidLine)
         if self.data_type == DataTypes.Reroute:
             self.color = color
-        self.setGeometry(0, 0, self.__width, self.__height)
+        self.setGeometry(0, 0, self.width, self.height)
         if self.options:
             opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))
             opt_dirty_type_name = self.options.value('NODES/Port dirty type')
@@ -101,10 +101,13 @@ class Port(QGraphicsWidget, PortBase):
         return xAvg
 
     def boundingRect(self):
-        return QtCore.QRectF(0, -0.5, self.__width * 1.5, self.__height + 1.0)
+        if not self.data_type == DataTypes.Exec:
+            return QtCore.QRectF(0, -0.5, 8 * 1.5, 8 + 1.0)
+        else:
+            return QtCore.QRectF(0, -0.5, 10 * 1.5, 10 + 1.0)
 
     def sizeHint(self, which, constraint):
-        return QtCore.QSizeF(self.__width, self.__height)
+        return QtCore.QSizeF(self.width, self.height)
 
     def disconnect_all(self):
         trash = []
@@ -125,12 +128,12 @@ class Port(QGraphicsWidget, PortBase):
         return path
 
     def paint(self, painter, option, widget):
-        background_rect = QtCore.QRectF(0, 0, self.__width, self.__width)
+        background_rect = QtCore.QRectF(0, 0, self.width, self.width)
 
         w = background_rect.width() / 2
         h = background_rect.height() / 2
 
-        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.__width / 2.5)
+        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.width / 2.5)
         if not self._connected:
             linearGrad.setColorAt(0, self.color.darker(280))
             linearGrad.setColorAt(0.5, self.color.darker(280))
@@ -154,18 +157,18 @@ class Port(QGraphicsWidget, PortBase):
                 painter.setBrush(QtCore.Qt.NoBrush)
                 painter.setPen(self._execPen)
             arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
-                                    QtCore.QPointF(self.__width / 2.0, 0.0),
-                                    QtCore.QPointF(self.__width, self.__height / 2.0),
-                                    QtCore.QPointF(self.__width / 2.0, self.__height),
-                                    QtCore.QPointF(0, self.__height)])
+                                    QtCore.QPointF(self.width / 2.0, 0.0),
+                                    QtCore.QPointF(self.width, self.height / 2.0),
+                                    QtCore.QPointF(self.width / 2.0, self.height),
+                                    QtCore.QPointF(0, self.height)])
             painter.drawPolygon(arrow)
         else:
             painter.setBrush(QtGui.QBrush(linearGrad))
             painter.drawEllipse(background_rect)
-            arrow = QtGui.QPolygonF([QtCore.QPointF(self.__width, self.__height * 0.7),
-                                    QtCore.QPointF(self.__width * 1.15, self.__height / 2.0),
-                                    QtCore.QPointF(self.__width, self.__height * 0.3),
-                                    QtCore.QPointF(self.__width, self.__height * 0.7)])
+            arrow = QtGui.QPolygonF([QtCore.QPointF(self.width, self.height * 0.7),
+                                    QtCore.QPointF(self.width * 1.15, self.height / 2.0),
+                                    QtCore.QPointF(self.width, self.height * 0.3),
+                                    QtCore.QPointF(self.width, self.height * 0.7)])
             painter.drawPolygon(arrow)
 
     def contextMenuEvent(self, event):
