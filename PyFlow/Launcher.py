@@ -25,7 +25,7 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         super(W, self).__init__()
         self.setupUi(self)
         self.G = GraphWidget('MAIN_GRAPH', self)
-        self.node_box = NodesBox(self)
+        self.node_box = NodesBox(self, self.G)
         self.SceneLayout.addWidget(self.G)
         self.NodeBoxLayout.addWidget(self.node_box)
         self.node_box.setVisible(True)

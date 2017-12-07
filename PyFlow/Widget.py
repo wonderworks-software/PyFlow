@@ -379,7 +379,6 @@ class NodeBoxTreeWidget(QTreeWidget):
                 "border-radius: 2px;" +\
                 "font-size: 14px;" +\
                 "border-color: black; border-style: outset; border-width: 1px;"
-        self.graph = weakref.ref(parent)
         self.setStyleSheet(style)
         self.setParent(parent)
         self.setFrameShape(QFrame.NoFrame)
@@ -410,11 +409,18 @@ class NodeBoxTreeWidget(QTreeWidget):
                         sepCatNames.pop()
         return False
 
-    def refresh(self, pattern=''):
+    def refresh(self, dataType=None, pattern=''):
         self.clear()
         self.categoryPaths = {}
         for node_file_name in get_nodes_file_names():
             node_class = getattr(Nodes, node_file_name)
+            # filter by allowed data types
+            if dataType is not None:
+                inst = node_class('tmp', self.parent().graph())
+                if dataType not in inst.InputPinTypes():
+                    del(inst)
+                    continue
+                del(inst)
             nodeCategoryPath = node_class.get_category()
 
             checkString = node_file_name + nodeCategoryPath + ''.join(node_class.get_keywords())
@@ -469,8 +475,9 @@ class NodeBoxTreeWidget(QTreeWidget):
 
 class NodesBox(QWidget):
     """doc string for NodesBox"""
-    def __init__(self, parent):
+    def __init__(self, parent, graph=None):
         super(NodesBox, self).__init__(parent)
+        self.graph = weakref.ref(graph)
         self.object_type = ObjectTypes.NodeBox
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -494,7 +501,7 @@ class NodesBox(QWidget):
             self.lineEdit.setPlaceholderText("enter node name..")
             self.treeWidget.refresh()
             return
-        self.treeWidget.refresh(self.lineEdit.text())
+        self.treeWidget.refresh(None, self.lineEdit.text())
         self.expandCategory()
 
 
@@ -775,7 +782,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.rubber_rect = RubberRect('RubberRect')
 
         self.real_time_line = QGraphicsPathItem(None, self.scene())
-        self.node_box = NodesBox(None)
+        self.node_box = NodesBox(None, self)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
 
         self.real_time_line.name = 'RealTimeLine'
@@ -806,10 +813,10 @@ class GraphWidget(QGraphicsView, Graph):
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
 
-    def showNodeBox(self):
+    def showNodeBox(self, dataType=None):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
-        self.node_box.treeWidget.refresh()
+        self.node_box.treeWidget.refresh(dataType)
         self.node_box.lineEdit.clear()
         self.node_box.lineEdit.setFocus()
 
@@ -1237,11 +1244,11 @@ class GraphWidget(QGraphicsView, Graph):
         modifiers = event.modifiers()
 
         if self.pressed_item and isinstance(self.pressed_item, QGraphicsItem):
+            self.autoPanController.start()
             if isinstance(self.pressed_item, PortBase) and event.button() == QtCore.Qt.LeftButton:
                 self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsMovable, False)
                 self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsSelectable, False)
                 self._draw_real_time_line = True
-                self.autoPanController.start()
             elif isinstance(self.pressed_item, Nodes.RerouteMover):
                 self.pressed_item.parentItem().setFlag(QGraphicsItem.ItemIsMovable)
             elif isinstance(self.pressed_item, Nodes.Reroute):
@@ -1390,7 +1397,7 @@ class GraphWidget(QGraphicsView, Graph):
         if isinstance(r_itm, QGraphicsPathItem) and isinstance(p_itm, Port):
             # node box tree pops up
             # with nodes taking supported data types of pressed port as input
-            pass
+            self.showNodeBox(p_itm.data_type)
 
         if do_connect:
             if isinstance(r_itm, Nodes.Reroute):

@@ -51,7 +51,7 @@ class NodeName(QGraphicsTextItem):
             QtGui.QGraphicsTextItem.keyPressEvent(self, event)
 
     def boundingRect(self):
-        return QtCore.QRectF(0, 0.0, self.parentItem().w, 20.0)
+        return QtCore.QRectF(0, 0, self.parentItem().w, 20)
 
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
@@ -131,10 +131,10 @@ class Node(QGraphicsItem, NodeBase):
         self.h = 40
         self.sizes = [0, 0, self.w, self.h, 1, 1]
         self.w = w
-        self.setFlag(self.ItemIsMovable)
+        self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsFocusable)
-        self.setFlag(self.ItemIsSelectable)
-        self.setFlag(self.ItemSendsGeometryChanges)
+        self.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
         self.label = weakref.ref(NodeName(self.name, self))
@@ -151,7 +151,6 @@ class Node(QGraphicsItem, NodeBase):
         self.inputsLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.inputsLayout.setContentsMargins(1, 1, 1, 1)
         self.portsMainLayout.addItem(self.inputsLayout)
-
         # outputs layout
         self.outputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.outputsLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
@@ -172,6 +171,13 @@ class Node(QGraphicsItem, NodeBase):
     def w(self, value):
         self._w = value
         self.sizes[2] = value
+
+    def InputPinTypes(self):
+        types = []
+        for p in self.inputs:
+            for t in p.supported_data_types:
+                types.append(t)
+        return types
 
     def tweakPosition(self):
         value = self.scenePos()
@@ -303,33 +309,10 @@ class Node(QGraphicsItem, NodeBase):
 
     def mouseReleaseEvent(self, event):
         self.update()
-        # self.setCursor(QtCore.Qt.OpenHandCursor)
-        # modifiers = event.modifiers()
-        # selected_nodes = [n for n in self.graph().nodes if n.isSelected()]
-        # groupers = [i for i in self.graph().groupers if i.object_type == ObjectTypes.tGrouper]
-        # grouper = [g for g in groupers if self in g.collidingItems()]
-        # if len(grouper) == 1:
-        #     if not modifiers == QtCore.Qt.ControlModifier:
-        #         grouper[0].add_from_iterable(selected_nodes)
-        # else:
-        #     parent = self.parentItem()
-        #     if parent and parent.object_type == ObjectTypes.tGrouper:
-        #         if self in parent.nodes:
-        #             parent.remove_from_iterable(selected_nodes)
-        #             self.setZValue(1)
-        #             for n in selected_nodes:
-        #                 if n.parentItem():
-        #                     if hasattr(n.parentItem(), 'object_type'):
-        #                         if n.parentItem().object_type == ObjectTypes.tGrouper:
-        #                             n.parentItem().remove_node(n)
         QGraphicsItem.mouseReleaseEvent(self, event)
 
     def add_input_port(self, port_name, data_type, foo=None):
         p = self._add_port(PinTypes.Input, data_type, foo, port_name)
-        # if data_type in [DataTypes.Float, DataTypes.Int]:
-        #     for i in [DataTypes.Float, DataTypes.Int]:
-        #         if i not in p.allowed_data_types:
-        #             p.allowed_data_types.append(i)
         return p
 
     @staticmethod

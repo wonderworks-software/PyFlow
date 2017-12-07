@@ -10,6 +10,7 @@ class PortBase(object):
         self.parent = weakref.ref(parent)
         self.object_type = ObjectTypes.Port
         self._data_type = None
+        self.supported_data_types = []
         self.data_type = data_type
 
         self.affects = []
@@ -29,11 +30,11 @@ class PortBase(object):
     def data_type(self, value):
         self._data_type = value
 
-        self.allowed_data_types = list(set([DataTypes.Reroute, value]))
+        self.supported_data_types = list(set([DataTypes.Reroute, value]))
         if self.data_type == DataTypes.Reroute:
-            self.allowed_data_types.append(DataTypes.Any)
+            self.supported_data_types.append(DataTypes.Any)
         if self.data_type == DataTypes.Exec or self.data_type == DataTypes.Any:
-            self.allowed_data_types.append(value)
+            self.supported_data_types.append(value)
 
     def getDefaultDataValue(self):
         if self._data_type == DataTypes.Float:
@@ -351,8 +352,8 @@ class Graph(object):
         if dst.data_type == DataTypes.Reroute:
             dst.data_type = src.data_type
 
-        if DataTypes.Any not in dst.allowed_data_types:
-            if src.data_type not in dst.allowed_data_types:
+        if DataTypes.Any not in dst.supported_data_types:
+            if src.data_type not in dst.supported_data_types:
                 print("data types error", src.data_type, dst.data_type)
                 return False
         else:
