@@ -86,10 +86,10 @@ class PluginType:
 
 
 def _implementPlugin(name, console_out_foo, pluginType, graph):
-    base_command_code = """from AGraphPySide import Command
+    CommandTemplate = """from Command import Command
 
 
-class {0}(Command.Command):
+class {0}(Command):
 
     def __init__(self, graph):
         super({0}, self).__init__(graph)
@@ -106,14 +106,13 @@ class {0}(Command.Command):
             print(self.usage())
 """.format(name)
 
-    base_node_code = """from AbstractGraph import *
-from AGraphPySide.Settings import *
-from AGraphPySide import BaseNode
+    base_node_code = """from Node import Node
+from AbstractGraph import *
 
 DESC = '''node desc
 '''
 
-class {0}(BaseNode.Node, AGNode):
+class {0}(Node, NodeBase):
     def __init__(self, name, graph):
         super({0}, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
         self.inp0 = self.add_input_port('in0', DataTypes.Any)
@@ -123,6 +122,10 @@ class {0}(BaseNode.Node, AGNode):
     @staticmethod
     def get_category():
         return 'Common'
+
+    @staticmethod
+    def get_keywords():
+        return []
 
     @staticmethod
     def description():
@@ -140,13 +143,9 @@ class {0}(BaseNode.Node, AGNode):
     if pluginType == PluginType.pNode:
         file_path = "{0}/{1}.py".format(Nodes.__path__[0], name)
         existing_nodes = [n.split(".")[0] for n in listdir(Nodes.__path__[0]) if n.endswith(".py") and "__init__" not in n]
-        category_names = graph.node_box.tree_widget.categories.keys()
+
         if name in existing_nodes:
             console_out_foo("[ERROR] Node {0} already exists".format(name))
-            return
-
-        if name.lower() in [n.lower() for n in category_names]:
-            console_out_foo("[ERROR] Category with this name ( {0} ) already exists. Please, choose another name".format(name))
             return
 
         # write to file. delete older if needed
@@ -163,7 +162,7 @@ class {0}(BaseNode.Node, AGNode):
             return
         # write to file. delete older if needed
         with open(file_path, "wb") as f:
-            f.write(base_command_code)
+            f.write(CommandTemplate)
         console_out_foo("[INFO] Command {0} been created.\n Restart application.".format(name))
         startfile(file_path)
 
