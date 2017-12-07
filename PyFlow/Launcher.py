@@ -1,4 +1,5 @@
 from Widget import GraphWidget
+from Widget import PluginType, _implementPlugin
 from Widget import Direction
 from Widget import NodesBox
 from Widget import get_nodes_file_names
@@ -10,6 +11,7 @@ from Qt.QtWidgets import QStyleFactory
 from Qt.QtWidgets import QTextEdit
 from Qt.QtWidgets import QMessageBox
 from Qt.QtWidgets import QAction
+from Qt.QtWidgets import QInputDialog
 from Qt import QtGui
 from Qt import QtCore
 import GraphEditor_ui
@@ -48,6 +50,7 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionAlignUp.triggered.connect(lambda: self.G.align_selected_nodes(Direction.Up))
         self.actionAlignBottom.triggered.connect(lambda: self.G.align_selected_nodes(Direction.Down))
         self.actionAlignRight.triggered.connect(lambda: self.G.align_selected_nodes(Direction.Right))
+        self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
 
         self.console.setLineWrapMode(QTextEdit.NoWrap)
         self.console.setReadOnly(True)
@@ -74,6 +77,11 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def createPopupMenu(self):
         pass
+
+    def newPlugin(self, pluginType):
+        name, result = QInputDialog.getText(self, 'Plugin name', 'Enter plugin name')
+        if result:
+            _implementPlugin(name, self.console.append, pluginType)
 
     def closeEvent(self, event):
         question = "Shure?"

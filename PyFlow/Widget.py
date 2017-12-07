@@ -85,7 +85,7 @@ class PluginType:
     pCommand = 1
 
 
-def _implementPlugin(name, console_out_foo, pluginType, graph):
+def _implementPlugin(name, console_out_foo, pluginType):
     CommandTemplate = """from Command import Command
 
 
@@ -106,15 +106,16 @@ class {0}(Command):
             print(self.usage())
 """.format(name)
 
-    base_node_code = """from Node import Node
-from AbstractGraph import *
+    base_node_code = """from AbstractGraph import *
+from Settings import *
+from Node import Node
 
 DESC = '''node desc
 '''
 
 class {0}(Node, NodeBase):
     def __init__(self, name, graph):
-        super({0}, self).__init__(name, graph, w=150, colors=Colors, spacings=Spacings)
+        super({0}, self).__init__(name, graph, w=100, spacings=Spacings)
         self.inp0 = self.add_input_port('in0', DataTypes.Any)
         self.out0 = self.add_output_port('out0', DataTypes.Any)
         portAffects(self.inp0, self.out0)
