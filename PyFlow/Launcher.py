@@ -51,6 +51,7 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionAlignBottom.triggered.connect(lambda: self.G.align_selected_nodes(Direction.Down))
         self.actionAlignRight.triggered.connect(lambda: self.G.align_selected_nodes(Direction.Right))
         self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
+        self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
 
         self.console.setLineWrapMode(QTextEdit.NoWrap)
         self.console.setReadOnly(True)
