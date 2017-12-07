@@ -172,6 +172,42 @@ class Node(QGraphicsItem, NodeBase):
         self._w = value
         self.sizes[2] = value
 
+    def get_data(self, port_name):
+        if port_name in [p.name for p in self.inputs]:
+            p = self.get_port_by_name(port_name)
+            return p.get_data()
+
+    def set_data(self, port_name, data):
+        if port_name in [p.name for p in self.outputs]:
+            p = self.get_port_by_name(port_name)
+            p.set_data(data, False)
+
+    @staticmethod
+    def initializeFromFunction(foo, graph):
+        meta = foo.__annotations__.pop('meta')
+        returnType = foo.__annotations__.pop('return')
+        inst = Node(foo.__name__, graph)
+
+        inst.add_output_port('out', returnType)
+
+        for name, dataType in foo.__annotations__.iteritems():
+            if dataType == DataTypes.Reference:
+                out = inst.add_output_port(name, foo.__defaults__[2].data_type)
+            else:
+                inp = inst.add_input_port(name, dataType)
+
+        # generate compute method from function
+        def compute():
+            # arguments will be taken from inputs
+            kwargs = {}
+            for i in inst.inputs:
+                kwargs[i.name] = i.get_data()
+            result = foo(**kwargs)
+            inst.set_data('out', result)
+        inst.compute = compute
+
+        return inst
+
     def InputPinTypes(self):
         types = []
         for p in self.inputs:

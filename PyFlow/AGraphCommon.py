@@ -93,6 +93,7 @@ class DataTypes:
     Any = 5
     Reroute = 6
     Exec = 7
+    Reference = 8
 
 
 class ObjectTypes(object):
@@ -110,3 +111,9 @@ class ObjectTypes(object):
 class PinTypes:
     Input = 0
     Output = 1
+
+
+class NodeTypes:
+    Callable = 0
+    Pure = 1
+    Latent = 2

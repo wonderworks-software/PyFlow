@@ -61,6 +61,8 @@ class Port(QGraphicsWidget, PortBase):
         self.reroutes = []
         self._container = None
         self.color = getPortColorByType(data_type)
+        if data_type == DataTypes.Reference:
+            self.color = getPortColorByType(data_type.data_type)
         self._execPen = QtGui.QPen(self.color, 0.5, QtCore.Qt.SolidLine)
         if self.data_type == DataTypes.Reroute:
             self.color = color

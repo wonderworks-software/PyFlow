@@ -1,7 +1,4 @@
 from inspect import getargspec
-from inspect import getmembers
-from inspect import isclass
-import sys
 
 
 empty = {}
@@ -19,15 +16,15 @@ def returns(annotation):
         >>> example.__annotations__
         {'return': <type 'int'>}
     """
-    def annotate (func):
+    def annotate(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
-        if not annotation is empty:
+        if annotation is not empty:
             func.__annotations__['return'] = annotation
         return func
     return annotate
 
 
-def annotated(func=None, returns=empty):
+def annotated(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}):
     """
     Decorator to treat ``func``'s default args as a combination of
     annotations and default values, migrating the annotations to
@@ -78,6 +75,7 @@ def annotated(func=None, returns=empty):
 
         if not returns == empty:
             func.__annotations__['return'] = returns
+            func.__annotations__['meta'] = meta
 
         defaults = func.__defaults__
         if defaults:
@@ -109,5 +107,7 @@ def annotated(func=None, returns=empty):
     return annotate
 
 
-class FunctionLibraryBase:
-    pass
+class FunctionLibraryBase(object):
+    """doc string for FunctionLibraryBase"""
+    def __init__(self):
+        super(FunctionLibraryBase, self).__init__()

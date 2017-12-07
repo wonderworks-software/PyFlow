@@ -5,11 +5,13 @@ from PySide import QtGui
 p = os.path.abspath('..')
 if p not in sys.path:
     sys.path.append(p)
+from FunctionLibraries import *
 from Nodes import *
 from Commands import *
 from AbstractGraph import *
 from Settings import *
 from Port import *
+from FunctionLibrary import *
 from Node import *
 from Edge import *
 from Widget import *

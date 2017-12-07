@@ -32,10 +32,12 @@ from Settings import get_line_type
 from AbstractGraph import *
 from Edge import Edge  # RealTimeLine
 from Port import getPortColorByType, Port
+from Node import Node
 from os import listdir, path, startfile
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
 import Nodes
+import FunctionLibraries
 import Commands
 from time import ctime, clock
 import OptionsWindow_ui
@@ -72,7 +74,7 @@ def get_node(module, name, graph):
     if hasattr(module, name):
         try:
             unique_name = graph.get_uniq_node_name(name)
-            mod = getattr(module, name)
+            mod = Nodes.getNode(name)
             mod = mod(unique_name, graph)
             return mod
         except Exception as e:
@@ -413,7 +415,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.clear()
         self.categoryPaths = {}
         for node_file_name in get_nodes_file_names():
-            node_class = getattr(Nodes, node_file_name)
+            node_class = Nodes.getNode(node_file_name)
             # filter by allowed data types
             if dataType is not None:
                 inst = node_class('tmp', self.parent().graph())
@@ -812,6 +814,11 @@ class GraphWidget(QGraphicsView, Graph):
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
+
+        foonc = FunctionLibraries.getLib('MathLib')
+        n = Node.initializeFromFunction(foonc[0][1], self)
+        p = self.findGoodPlaceForNewNode()
+        self.add_node(n, p.x(), p.y())
 
     def showNodeBox(self, dataType=None):
         self.node_box.show()
@@ -1681,7 +1688,7 @@ class GraphWidget(QGraphicsView, Graph):
             try:
                 self.parent.console.append(command)
                 if commandLine['flags']['~type'] == "MakeArray":
-                    mArrayMod = getattr(Nodes, "MakeArray")
+                    mArrayMod = Nodes.getNode("MakeArray")
                     node_class = mArrayMod(commandLine["flags"]["~n"], self, int(commandLine["flags"]["~count"]))
                     node_class.set_name("MakeArray")
                     # node_class.post_create()
