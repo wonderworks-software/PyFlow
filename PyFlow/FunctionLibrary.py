@@ -1,5 +1,5 @@
 from inspect import getargspec
-
+from AGraphCommon import *
 
 empty = {}
 
@@ -24,7 +24,7 @@ def returns(annotation):
     return annotate
 
 
-def annotated(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}):
+def annotated(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     """
     Decorator to treat ``func``'s default args as a combination of
     annotations and default values, migrating the annotations to
@@ -72,10 +72,13 @@ def annotated(func=None, returns=empty, meta={'Category': 'Default', 'Keywords':
 
     def annotate(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
+        func.__annotations__['nodeType'] = nodeType
+
+        if not meta == empty:
+            func.__annotations__['meta'] = meta
 
         if not returns == empty:
             func.__annotations__['return'] = returns
-            func.__annotations__['meta'] = meta
 
         defaults = func.__defaults__
         if defaults:

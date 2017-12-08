@@ -3,6 +3,7 @@ from inspect import getmembers
 from inspect import isfunction
 
 _libs = {}
+_foos = {}
 
 # append from FunctionLibraries
 for lib in os.listdir(os.path.dirname(__file__)):
@@ -12,9 +13,21 @@ for lib in os.listdir(os.path.dirname(__file__)):
         exec('lib_class = {0}'.format(libName))
         foos = getmembers(lib_class, isfunction)
         _libs[libName] = foos
+        for f in _libs[libName]:
+            _foos[f[0]] = f[1]
 
 
 def getLib(libName):
     if libName in _libs:
         return _libs[libName]
+    return None
+
+
+def libs():
+    return _libs.keys()
+
+
+def findFunctionByName(name):
+    if name in _foos:
+        return _foos[name]
     return None

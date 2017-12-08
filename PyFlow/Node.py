@@ -184,27 +184,65 @@ class Node(QGraphicsItem, NodeBase):
 
     @staticmethod
     def initializeFromFunction(foo, graph):
-        meta = foo.__annotations__.pop('meta')
-        returnType = foo.__annotations__.pop('return')
+        meta = foo.__annotations__['meta']
+        returnType = foo.__annotations__['return']
+        nodeType = foo.__annotations__['nodeType']
         inst = Node(foo.__name__, graph)
 
         inst.add_output_port('out', returnType)
 
+        def get_category():
+            return meta['Category']
+
+        def get_keywords():
+            return meta['Keywords']
+
+        inst.get_category = get_category
+        inst.get_keywords = get_keywords
+
+        index = 0
+        refs = []
+        outExec = None
         for name, dataType in foo.__annotations__.iteritems():
+            # skip all except input data
+            if name in ['meta', 'return', 'nodeType']:
+                continue
             if dataType == DataTypes.Reference:
-                out = inst.add_output_port(name, foo.__defaults__[2].data_type)
+                outRef = inst.add_output_port(name, foo.__defaults__[index])
+                refs.append(outRef)
             else:
                 inp = inst.add_input_port(name, dataType)
+            index += 1
+
+        # all inputs affects on all outputs
+        for i in inst.inputs:
+            for o in inst.outputs:
+                portAffects(i, o)
 
         # generate compute method from function
         def compute():
             # arguments will be taken from inputs
             kwargs = {}
             for i in inst.inputs:
+                if i.data_type == DataTypes.Exec:
+                    continue
                 kwargs[i.name] = i.get_data()
+            for ref in refs:
+                if ref.data_type == DataTypes.Exec:
+                    continue
+                kwargs[ref.name] = ref
             result = foo(**kwargs)
             inst.set_data('out', result)
+            if nodeType == NodeTypes.Callable and outExec is not None:
+                outExec.call()
         inst.compute = compute
+
+        # create execs if callable
+        if nodeType == NodeTypes.Callable:
+            inst.add_input_port('inExec', DataTypes.Exec, inst.compute, True, index=0)
+            outExec = inst.add_output_port('outExec', DataTypes.Exec, inst.compute, True, index=0)
+
+        inst.post_create()
 
         return inst
 
@@ -347,8 +385,8 @@ class Node(QGraphicsItem, NodeBase):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def add_input_port(self, port_name, data_type, foo=None):
-        p = self._add_port(PinTypes.Input, data_type, foo, port_name)
+    def add_input_port(self, port_name, data_type, foo=None, hideLabel=False, index=-1):
+        p = self._add_port(PinTypes.Input, data_type, foo, hideLabel, port_name, index=index)
         return p
 
     @staticmethod
@@ -359,8 +397,8 @@ class Node(QGraphicsItem, NodeBase):
     def get_keywords():
         return []
 
-    def add_output_port(self, port_name, data_type, foo=None):
-        p = self._add_port(PinTypes.Output, data_type, foo, port_name)
+    def add_output_port(self, port_name, data_type, foo=None, hideLabel=False, index=-1):
+        p = self._add_port(PinTypes.Output, data_type, foo, hideLabel, port_name, index=index)
         return p
 
     def add_container(self, portType, head=False):
@@ -397,7 +435,7 @@ class Node(QGraphicsItem, NodeBase):
         NodeBase.set_pos(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
 
-    def _add_port(self, port_type, data_type, foo, name='', color=QtGui.QColor(0, 100, 0, 255)):
+    def _add_port(self, port_type, data_type, foo, hideLabel=False, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
 
         newColor = color
 
@@ -422,6 +460,9 @@ class Node(QGraphicsItem, NodeBase):
             p.call = foo
         connector_name = QGraphicsProxyWidget()
         connector_name.setContentsMargins(0, 0, 0, 0)
+
+        if hideLabel:
+            name = ''
         lbl = QLabel(name)
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
@@ -444,7 +485,7 @@ class Node(QGraphicsItem, NodeBase):
             p._container = container
             container.layout().addItem(connector_name)
             self.inputs.append(p)
-            self.inputsLayout.insertItem(-1, container)
+            self.inputsLayout.insertItem(index, container)
             container.adjustSize()
         elif port_type == PinTypes.Output:
             container = self.add_container(port_type)
@@ -453,8 +494,7 @@ class Node(QGraphicsItem, NodeBase):
             container.layout().addItem(p)
             p._container = container
             self.outputs.append(p)
-            self.outputsLayout.insertItem(-1, container)
+            self.outputsLayout.insertItem(index, container)
             container.adjustSize()
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         return p
-

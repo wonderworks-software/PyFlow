@@ -21,10 +21,9 @@ class RerouteMover(QGraphicsRectItem):
         self.setPen(QtGui.QPen(QtGui.QColor(0, 0, 0, 0), 0))
         self.setAcceptHoverEvents(True)
         self.setCursor(QtCore.Qt.OpenHandCursor)
-    
+
     def hoverEnterEvent(self, event):
         super(RerouteMover, self).hoverEnterEvent(event)
-        print(self.parentItem()._connected)
 
 
 class Reroute(Node, NodeBase):

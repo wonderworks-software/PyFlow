@@ -143,9 +143,15 @@ class PortBase(object):
 
     def set_data(self, data, dirty_propagate=True):
         if self._data_type == DataTypes.Float:
-            self._data = float(data)
+            try:
+                self._data = float(data)
+            except:
+                self._data = self.getDefaultDataValue()
         if self._data_type == DataTypes.Int:
-            self._data = int(data)
+            try:
+                self._data = int(data)
+            except:
+                self._data = self.getDefaultDataValue()
         if self._data_type == DataTypes.String:
             self._data = str(data)
         if self._data_type == DataTypes.Array:

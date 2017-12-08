@@ -7,8 +7,8 @@ from Node import Node
 class Print(Node, NodeBase):
     def __init__(self, name, graph):
         super(Print, self).__init__(name, graph)
-        self.inExec = self.add_input_port("in", DataTypes.Exec, self.compute)
-        self.outExec = self.add_output_port("out", DataTypes.Exec, self.compute)
+        self.inExec = self.add_input_port("in", DataTypes.Exec, self.compute, True)
+        self.outExec = self.add_output_port("out", DataTypes.Exec, self.compute, True)
         self.data = self.add_input_port("data", DataTypes.Any)
 
     @staticmethod

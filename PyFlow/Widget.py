@@ -57,10 +57,6 @@ def get_mid_point(args):
     return [sum(i) / len(i) for i in zip(*args)]
 
 
-def get_nodes_file_names():
-    return [i[:-3] for i in listdir(nodes_path) if i.endswith('.py') and '__init__' not in i]
-
-
 def clearLayout(layout):
     while layout.count():
         child = layout.takeAt(0)
@@ -414,7 +410,42 @@ class NodeBoxTreeWidget(QTreeWidget):
     def refresh(self, dataType=None, pattern=''):
         self.clear()
         self.categoryPaths = {}
-        for node_file_name in get_nodes_file_names():
+
+        for libName in FunctionLibraries.libs():
+            foos = FunctionLibraries.getLib(libName)
+            for name, foo in foos:
+                libNodeInst = Node.initializeFromFunction(foo, self.parent().graph())
+                nodeCategoryPath = libNodeInst.get_category()
+                checkString = name + nodeCategoryPath + ''.join(libNodeInst.get_keywords())
+                if pattern not in checkString.lower():
+                    continue
+
+                nodePath = nodeCategoryPath.split('|')
+                categoryPath = ''
+                # walk from tree top to bottom, creating folders if needed
+                # also writing all paths in dict to avoid duplications
+                for folderId in range(0, len(nodePath)):
+                    folderName = nodePath[folderId]
+                    if folderId == 0:
+                        categoryPath = folderName
+                        if categoryPath not in self.categoryPaths:
+                            rootFolderItem = QTreeWidgetItem(self)
+                            rootFolderItem.setText(0, folderName)
+                            rootFolderItem.setBackground(folderId, QtGui.QColor(80, 85, 80))
+                            self.categoryPaths[categoryPath] = rootFolderItem
+                    else:
+                        parentCategoryPath = categoryPath
+                        categoryPath += '|{}'.format(folderName)
+                        if categoryPath not in self.categoryPaths:
+                            childCategoryItem = QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
+                            childCategoryItem.setText(0, folderName)
+                            childCategoryItem.setBackground(0, QtGui.QColor(80, 85, 80))
+                            self.categoryPaths[categoryPath] = childCategoryItem
+                # create node under constructed folder
+                nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
+                nodeItem.setText(0, name)
+
+        for node_file_name in Nodes.getNodeNames():
             node_class = Nodes.getNode(node_file_name)
             # filter by allowed data types
             if dataType is not None:
@@ -784,8 +815,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.rubber_rect = RubberRect('RubberRect')
 
         self.real_time_line = QGraphicsPathItem(None, self.scene())
-        self.node_box = NodesBox(None, self)
-        self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
 
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.object_type = ObjectTypes.Connection
@@ -815,10 +844,13 @@ class GraphWidget(QGraphicsView, Graph):
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
 
-        foonc = FunctionLibraries.getLib('MathLib')
-        n = Node.initializeFromFunction(foonc[0][1], self)
-        p = self.findGoodPlaceForNewNode()
-        self.add_node(n, p.x(), p.y())
+        self.node_box = NodesBox(None, self)
+        self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
+
+        # foonc = FunctionLibraries.getLib('MathLib')
+        # n = Node.initializeFromFunction(foonc[0][1], self)
+        # p = self.findGoodPlaceForNewNode()
+        # self.add_node(n, p.x(), p.y())
 
     def showNodeBox(self, dataType=None):
         self.node_box.show()
@@ -1453,7 +1485,7 @@ class GraphWidget(QGraphicsView, Graph):
                     continue
                 le = QLineEdit(str(inp.current_data()), self.parent.dockWidgetNodeView)
                 le.setObjectName(inp.port_name())
-                le.textChanged.connect(self.propertyEditingFinished)
+                le.editingFinished.connect(self.propertyEditingFinished)
                 layout.addRow(inp.name, le)
                 if inp.hasConnections():
                     le.setReadOnly(True)
@@ -1549,6 +1581,16 @@ class GraphWidget(QGraphicsView, Graph):
 
     def create_node(self, className, x, y, name):
         node_class = get_node(Nodes, className, self)
+
+        # if no such node in Nodes mod, check Function libs
+        if node_class is None:
+            foo = FunctionLibraries.findFunctionByName(className)
+            if foo:
+                node_class = Node.initializeFromFunction(foo, self)
+
+        if node_class is None:
+            raise ValueError("node class not found!")
+
         self.add_node(node_class, x, y)
         return node_class
 

@@ -14,11 +14,13 @@ for n in os.listdir(os.path.dirname(__file__)):
         exec("from {0} import *".format(nodeName))
         exec("node_class = {0}".format(nodeName))
         _instances[nodeName] = node_class
-from Reroute import RerouteMover
-_instances[RerouteMover.__name__] = RerouteMover
 
 
 def getNode(name):
     if name in _instances:
         return _instances[name]
     return None
+
+
+def getNodeNames():
+    return _instances.keys()
