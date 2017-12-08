@@ -22,6 +22,6 @@ class FloatToInt(Node, NodeBase):
 
         data = self.inp.get_data()
         try:
-            self.out.set_data(int(data), False)
+            self.out.set_data(int(data))
         except Exception, e:
             self.graph.write_to_console("[ERROR] {0}".format(e))

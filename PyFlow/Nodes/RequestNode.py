@@ -68,4 +68,4 @@ class RequestNode(Node, NodeBase):
                 push(p)
 
         data = self.input.get_data()
-        self.graph().write_to_console(str(data), True)
+        self.graph().write_to_console(str(data))

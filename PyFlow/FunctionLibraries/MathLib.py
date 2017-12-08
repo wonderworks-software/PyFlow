@@ -20,4 +20,5 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Callable, meta={'Category': 'Math', 'Keywords': []})
     def AddFloatWithResult(A=(DataTypes.Float, 0.0), B=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+        Result.set_data(A > B)
         return A + B

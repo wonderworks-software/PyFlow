@@ -29,7 +29,7 @@ class RandInt(Node, NodeBase):
         vFrom = self.rangeStart.get_data()
         vTo = self.rangeEnd.get_data()
         try:
-            self.result.set_data(randint(vFrom, vTo), True)
+            self.result.set_data(randint(vFrom, vTo))
             push(self.result)
         except Exception as e:
             print(e)

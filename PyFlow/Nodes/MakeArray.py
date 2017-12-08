@@ -47,4 +47,4 @@ class MakeArray(Node, NodeBase):
         return 'Array'
 
     def compute(self):
-        self.out_arr.set_data(list([i.get_data() for i in self.inputs]), False)
+        self.out_arr.set_data(list([i.get_data() for i in self.inputs]))

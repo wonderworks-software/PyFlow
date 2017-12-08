@@ -27,6 +27,6 @@ class RadToDeg(Node, NodeBase):
 
         data = self.inp0.get_data()
         try:
-            self.out0.set_data(math.degrees(data), False)
+            self.out0.set_data(math.degrees(data))
         except Exception as e:
             print(e)

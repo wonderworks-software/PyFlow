@@ -17,4 +17,4 @@ class StringNode(Node, NodeBase):
         return 'GenericTypes'
 
     def compute(self):
-        self.output.set_data(self.input.get_data(), False)
+        self.output.set_data(self.input.get_data())

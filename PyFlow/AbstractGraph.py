@@ -17,7 +17,7 @@ class PortBase(object):
         self.affected_by = []
         self.edge_list = []
         self.type = None
-        self.dirty = True
+        self.dirty = False
         self._connected = False
         # set default values
         self._data = self.getDefaultDataValue()
@@ -52,7 +52,7 @@ class PortBase(object):
         if self._data_type == DataTypes.Reroute:
             return None
 
-    def set_data_overload(self, data, dirty_propagate=True):
+    def set_data_overload(self, data):
         pass
 
     def port_name(self):
@@ -141,7 +141,7 @@ class PortBase(object):
         for p in self.affects:
             p.call()
 
-    def set_data(self, data, dirty_propagate=True):
+    def set_data(self, data):
         if self._data_type == DataTypes.Float:
             try:
                 self._data = float(data)
@@ -169,9 +169,7 @@ class PortBase(object):
             for i in self.affects:
                 i._data = data
                 i.set_clean()
-        if dirty_propagate:
-            push(self)
-        self.set_data_overload(data, dirty_propagate)
+        self.set_data_overload(data)
 
 
 class NodeBase(object):

@@ -18,6 +18,6 @@ class StringCapitalize(Node, NodeBase):
 
         str_data = self.in_str.get_data()
         try:
-            self.out_str.set_data(str_data.capitalize(), False)
+            self.out_str.set_data(str_data.capitalize())
         except Exception, e:
             print e

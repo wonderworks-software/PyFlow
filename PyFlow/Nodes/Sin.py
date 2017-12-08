@@ -30,6 +30,6 @@ class Sin(Node, NodeBase):
 
         data = self.inp0.get_data()
         try:
-            self.out0.set_data(math.sin(data), False)
+            self.out0.set_data(math.sin(data))
         except Exception as e:
             print(e)

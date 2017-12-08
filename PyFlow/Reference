@@ -10,7 +10,7 @@ class Ref(object):
 
     @staticmethod
     def set(obj, val):
-        obj.set_data(val, False)
+        obj.set_data(val)
 
     def __str__(self):
         return str(self.data)

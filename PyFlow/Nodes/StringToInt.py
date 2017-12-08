@@ -18,6 +18,6 @@ class StringToInt(Node, NodeBase):
 
         str_data = self.in_str.get_data()
         try:
-            self.out_int.set_data(int(str_data), False)
+            self.out_int.set_data(int(str_data))
         except Exception, e:
             print e

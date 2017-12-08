@@ -21,9 +21,9 @@ class IsGreaterThan(Node, NodeBase):
         inp_b_data = self.inputB.get_data()
         try:
             if inp_a_data > inp_b_data:
-                self.output.set_data(True, False)
+                self.output.set_data(True)
             else:
-                self.output.set_data(False, False)
+                self.output.set_data(False)
         except Exception, e:
             print e
-            self.output.set_data(False, False)
+            self.output.set_data(False)

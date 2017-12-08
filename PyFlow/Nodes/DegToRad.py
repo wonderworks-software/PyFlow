@@ -27,6 +27,6 @@ class DegToRad(Node, NodeBase):
 
         data = self.inp0.get_data()
         try:
-            self.out0.set_data(math.radians(data), False)
+            self.out0.set_data(math.radians(data))
         except Exception as e:
             print(e)

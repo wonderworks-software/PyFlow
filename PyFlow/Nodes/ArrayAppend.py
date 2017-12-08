@@ -28,8 +28,8 @@ class ArrayAppend(Node, NodeBase):
             del in_arr[:]
             del in_arr
             out_arr.append(element)
-            self.out_arr.set_data(out_arr, False)
-            self.out_result.set_data(True, False)
+            self.out_arr.set_data(out_arr)
+            self.out_result.set_data(True)
         except Exception, e:
-            self.out_result.set_data(False, False)
+            self.out_result.set_data(False)
             print e

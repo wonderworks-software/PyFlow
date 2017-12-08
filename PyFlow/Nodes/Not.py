@@ -26,6 +26,6 @@ class Not(Node, NodeBase):
 
         in_bool = self.in_bool.get_data()
         try:
-            self.out_bool.set_data(not in_bool, False)
+            self.out_bool.set_data(not in_bool)
         except Exception as e:
             print(e)

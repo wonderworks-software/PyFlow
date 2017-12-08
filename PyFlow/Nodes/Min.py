@@ -26,6 +26,6 @@ class Min(Node, NodeBase):
 
         inp = self.inp.get_data()
         try:
-            self.out.set_data(min(inp), False)
+            self.out.set_data(min(inp))
         except Exception as e:
             print(e)

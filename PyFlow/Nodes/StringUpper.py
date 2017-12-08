@@ -18,6 +18,6 @@ class StringUpper(Node, NodeBase):
 
         str_data = self.in_str.get_data()
         try:
-            self.out_str.set_data(str_data.upper(), False)
+            self.out_str.set_data(str_data.upper())
         except Exception, e:
             print e

@@ -17,8 +17,7 @@ def roundup(x, to):
 
 def portAffects(affects_port, affected_port):
     '''
-    this function for establish dependencies bitween ports,
-    for simulating dirty propogation
+    this function for establish dependencies bitween ports
     '''
     affects_port.affects.append(affected_port)
     affected_port.affected_by.append(affects_port)
@@ -77,6 +76,10 @@ def find_ports_behind(start_from):
 
 
 def push(start_from):
+    '''
+    marks dirty all ports from start to the right
+    this part of graph will be recomputed every tick
+    '''
     if not start_from.affects == []:
         start_from.set_dirty()
         for i in start_from.affects:
@@ -116,4 +119,3 @@ class PinTypes:
 class NodeTypes:
     Callable = 0
     Pure = 1
-    Latent = 2

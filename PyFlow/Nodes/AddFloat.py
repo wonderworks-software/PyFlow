@@ -21,6 +21,6 @@ class AddFloat(Node, NodeBase):
         inp_b_data = self.inputB.get_data()
         try:
             result = inp_a_data + inp_b_data
-            self.output.set_data(result, False)
+            self.output.set_data(result)
         except Exception, e:
             print e

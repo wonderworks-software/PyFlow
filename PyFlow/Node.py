@@ -11,6 +11,7 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QStyle
 from Port import Port, getPortColorByType
 from AbstractGraph import *
+from types import MethodType
 
 
 class NodeName(QGraphicsTextItem):
@@ -172,6 +173,11 @@ class Node(QGraphicsItem, NodeBase):
         self._w = value
         self.sizes[2] = value
 
+    def call(self, name):
+        if port_name in [p.name for p in self.outputs if p.data_type is DataTypes.Exec]:
+            p = self.get_port_by_name(port_name)
+            return p.call()
+
     def get_data(self, port_name):
         if port_name in [p.name for p in self.inputs]:
             p = self.get_port_by_name(port_name)
@@ -180,7 +186,7 @@ class Node(QGraphicsItem, NodeBase):
     def set_data(self, port_name, data):
         if port_name in [p.name for p in self.outputs]:
             p = self.get_port_by_name(port_name)
-            p.set_data(data, False)
+            p.set_data(data)
 
     @staticmethod
     def initializeFromFunction(foo, graph):
@@ -188,6 +194,7 @@ class Node(QGraphicsItem, NodeBase):
         returnType = foo.__annotations__['return']
         nodeType = foo.__annotations__['nodeType']
         inst = Node(foo.__name__, graph)
+        inst.__class__.__name__ = foo.__name__
 
         inst.add_output_port('out', returnType)
 
@@ -220,30 +227,26 @@ class Node(QGraphicsItem, NodeBase):
                 portAffects(i, o)
 
         # generate compute method from function
-        def compute():
+        def compute(self):
             # arguments will be taken from inputs
             kwargs = {}
-            for i in inst.inputs:
-                if i.data_type == DataTypes.Exec:
-                    continue
-                kwargs[i.name] = i.get_data()
+            for i in self.inputs:
+                if i.data_type is not DataTypes.Exec:
+                    kwargs[i.name] = i.get_data()
             for ref in refs:
-                if ref.data_type == DataTypes.Exec:
-                    continue
-                kwargs[ref.name] = ref
+                if ref.data_type is not DataTypes.Exec:
+                    kwargs[ref.name] = ref
             result = foo(**kwargs)
-            inst.set_data('out', result)
-            if nodeType == NodeTypes.Callable and outExec is not None:
+            self.set_data('out', result)
+            if nodeType == NodeTypes.Callable:
                 outExec.call()
-        inst.compute = compute
+
+        inst.compute = MethodType(compute, inst, Node)
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
             inst.add_input_port('inExec', DataTypes.Exec, inst.compute, True, index=0)
             outExec = inst.add_output_port('outExec', DataTypes.Exec, inst.compute, True, index=0)
-
-        inst.post_create()
-
         return inst
 
     def InputPinTypes(self):
@@ -303,6 +306,8 @@ class Node(QGraphicsItem, NodeBase):
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
         if self.isCallable():
             self.label().color = QtGui.QColor(88, 134, 158, 200)
+        if 'FlowControl' in self.get_category():
+            self.label().color = QtGui.QColor(100, 100, 100, 200)
 
     def getWidth(self):
         dPorts = 0
@@ -429,6 +434,10 @@ class Node(QGraphicsItem, NodeBase):
 
         self.graph().write_to_console("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
         self.scene().removeItem(self)
+
+        def funcname():
+            pass
+        self.compute = funcname
 
     def set_pos(self, x, y):
 

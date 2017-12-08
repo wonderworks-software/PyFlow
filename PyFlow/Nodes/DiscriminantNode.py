@@ -27,4 +27,4 @@ class DiscriminantNode(Node, NodeBase):
         except Exception, e:
             print self.name, e
             return
-        self.output.set_data(result, False)
+        self.output.set_data(result)

@@ -1,0 +1,22 @@
+SAVE GRAPH SCRIPT
+setHorizontalScrollBar ~h 4748
+setVerticalScrollBar ~v 4869
+setNodeBoxVisible ~v 1
+setConsoleVisible ~v 1
+setPropertiesVisible ~v 1
+createNode ~type Call ~x 4820.0 ~y 4998.0 ~n Call
+setAttr ~an Call.OUT ~v None
+createNode ~type Print ~x 5120.0 ~y 4998.0 ~n Print
+setAttr ~an Print.in ~v None
+setAttr ~an Print.data ~v True
+setAttr ~an Print.out ~v None
+createNode ~type AddFloatWithResult ~x 4960.0 ~y 4998.0 ~n AddFloatWithResult
+setAttr ~an AddFloatWithResult.A ~v 1.0
+setAttr ~an AddFloatWithResult.B ~v 0.0
+setAttr ~an AddFloatWithResult.inExec ~v None
+setAttr ~an AddFloatWithResult.out ~v 1.0
+setAttr ~an AddFloatWithResult.Result ~v True
+setAttr ~an AddFloatWithResult.outExec ~v None
+connectAttr ~src AddFloatWithResult.Result ~dst Print.data
+connectAttr ~src AddFloatWithResult.outExec ~dst Print.in
+connectAttr ~src Call.OUT ~dst AddFloatWithResult.inExec

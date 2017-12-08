@@ -220,6 +220,6 @@ class Reroute(Node, NodeBase):
     def compute(self):
         data = self.inp0.get_data()
         try:
-            self.out0.set_data(data, False)
+            self.out0.set_data(data)
         except Exception as e:
             print(e)

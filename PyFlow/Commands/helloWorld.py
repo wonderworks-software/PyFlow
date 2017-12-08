@@ -14,8 +14,8 @@ class helloWorld(Command.Command):
     def execute(self, line):
         commandLine = self.parse(line)
         try:
-            self.graph.write_to_console("HELLO WORLD! Your message: {0}".format(commandLine['~text']), True)
+            self.graph.write_to_console("HELLO WORLD! Your message: {0}".format(commandLine['~text']))
         except Exception as e:
             print("[ERROR] {0}".format(e))
             print(self.usage())
-            self.graph.write_to_console(self.usage(), True)
+            self.graph.write_to_console(self.usage())

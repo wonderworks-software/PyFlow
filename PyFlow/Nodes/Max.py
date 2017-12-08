@@ -25,6 +25,6 @@ class Max(Node, NodeBase):
 
         data = self.inp0.get_data()
         try:
-            self.out0.set_data(max(data), False)
+            self.out0.set_data(max(data))
         except Exception as e:
             print(e)

@@ -17,4 +17,4 @@ class FloatNode(Node, NodeBase):
         return 'GenericTypes'
 
     def compute(self):
-        self.output.set_data(float(self.input.current_data()), False)
+        self.output.set_data(float(self.input.current_data()))

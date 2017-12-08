@@ -1,7 +1,7 @@
 import sys
 import os
-from PySide import QtCore
-from PySide import QtGui
+from Qt import QtCore
+from Qt import QtGui
 p = os.path.abspath('..')
 if p not in sys.path:
     sys.path.append(p)

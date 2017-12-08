@@ -18,6 +18,6 @@ class StringToFloat(Node, NodeBase):
 
         str_data = self.in_str.get_data()
         try:
-            self.out_flt.set_data(float(str_data), False)
+            self.out_flt.set_data(float(str_data))
         except Exception, e:
             print e

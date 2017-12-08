@@ -17,4 +17,4 @@ class MakeInt(Node, NodeBase):
         return 'GenericTypes'
 
     def compute(self):
-        self.output.set_data(int(self.input.current_data()), False)
+        self.output.set_data(int(self.input.current_data()))

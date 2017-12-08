@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
+# Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
 #
-# Created: Sun Dec 03 20:58:34 2017
+# Created: Sat Dec 09 00:15:10 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(926, 757)
+        MainWindow.resize(942, 775)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("AGraphPySide/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -32,16 +32,16 @@ class Ui_MainWindow(object):
         self.SceneWidget.setObjectName("SceneWidget")
         self.gridLayout = QtGui.QGridLayout(self.SceneWidget)
         self.gridLayout.setContentsMargins(1, 1, 1, 1)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
         self.SceneLayout = QtGui.QGridLayout()
         self.SceneLayout.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
+        self.SceneLayout.setContentsMargins(0, 0, 0, 0)
         self.SceneLayout.setObjectName("SceneLayout")
         self.gridLayout.addLayout(self.SceneLayout, 0, 0, 1, 1)
         self.gridLayout_3.addWidget(self.horizontal_splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 926, 31))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 942, 26))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")
@@ -74,10 +74,10 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.console, 0, 0, 1, 1)
         self.dockWidgetConsole.setWidget(self.dockWidgetContents_2)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.dockWidgetConsole)
-        self.dockWidgetNodeBox = QtGui.QDockWidget(MainWindow)
-        self.dockWidgetNodeBox.setFloating(False)
-        self.dockWidgetNodeBox.setFeatures(QtGui.QDockWidget.AllDockWidgetFeatures)
-        self.dockWidgetNodeBox.setObjectName("dockWidgetNodeBox")
+        self.dockWidgetLeft = QtGui.QDockWidget(MainWindow)
+        self.dockWidgetLeft.setFloating(False)
+        self.dockWidgetLeft.setFeatures(QtGui.QDockWidget.AllDockWidgetFeatures)
+        self.dockWidgetLeft.setObjectName("dockWidgetLeft")
         self.dockWidgetContents_5 = QtGui.QWidget()
         self.dockWidgetContents_5.setObjectName("dockWidgetContents_5")
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.dockWidgetContents_5)
@@ -87,18 +87,18 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 228, 382))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 209, 431))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_5 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_5.setObjectName("gridLayout_5")
-        self.NodeBoxLayout = QtGui.QGridLayout()
-        self.NodeBoxLayout.setObjectName("NodeBoxLayout")
-        self.gridLayout_5.addLayout(self.NodeBoxLayout, 0, 0, 1, 1)
+        self.leftDockGridLayout = QtGui.QGridLayout()
+        self.leftDockGridLayout.setObjectName("leftDockGridLayout")
+        self.gridLayout_5.addLayout(self.leftDockGridLayout, 0, 0, 1, 1)
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
         self.verticalLayout_2.addWidget(self.scrollArea_2)
-        self.dockWidgetNodeBox.setWidget(self.dockWidgetContents_5)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetNodeBox)
+        self.dockWidgetLeft.setWidget(self.dockWidgetContents_5)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetLeft)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setObjectName("statusBar")
         MainWindow.setStatusBar(self.statusBar)
@@ -116,7 +116,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_3 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 198, 382))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 198, 431))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.gridLayout_4 = QtGui.QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
@@ -270,7 +270,7 @@ class Ui_MainWindow(object):
         self.menuPlugins.setTitle(QtGui.QApplication.translate("MainWindow", "Plugins", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetConsole.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Console", None, QtGui.QApplication.UnicodeUTF8))
-        self.dockWidgetNodeBox.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Node Box", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidgetLeft.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Dock", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetNodeView.setWindowTitle(QtGui.QApplication.translate("MainWindow", "PropertyView", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDelete.setText(QtGui.QApplication.translate("MainWindow", "Delete", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOptions.setText(QtGui.QApplication.translate("MainWindow", "Options", None, QtGui.QApplication.UnicodeUTF8))

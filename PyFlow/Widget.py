@@ -41,7 +41,9 @@ import FunctionLibraries
 import Commands
 from time import ctime, clock
 import OptionsWindow_ui
+reload(OptionsWindow_ui)
 import rgba_color_picker_ui
+reload(rgba_color_picker_ui)
 import json
 import re
 
@@ -134,7 +136,7 @@ class {0}(Node, NodeBase):
 
         str_data = self.inp0.get_data()
         try:
-            self.out0.set_data(str_data.upper(), False)
+            self.out0.set_data(str_data.upper())
         except Exception as e:
             print(e)
 """.format(name)
@@ -407,6 +409,32 @@ class NodeBoxTreeWidget(QTreeWidget):
                         sepCatNames.pop()
         return False
 
+    def insertNode(self, nodeCategoryPath, name):
+        nodePath = nodeCategoryPath.split('|')
+        categoryPath = ''
+        # walk from tree top to bottom, creating folders if needed
+        # also writing all paths in dict to avoid duplications
+        for folderId in range(0, len(nodePath)):
+            folderName = nodePath[folderId]
+            if folderId == 0:
+                categoryPath = folderName
+                if categoryPath not in self.categoryPaths:
+                    rootFolderItem = QTreeWidgetItem(self)
+                    rootFolderItem.setText(0, folderName)
+                    rootFolderItem.setBackground(folderId, QtGui.QColor(80, 85, 80))
+                    self.categoryPaths[categoryPath] = rootFolderItem
+            else:
+                parentCategoryPath = categoryPath
+                categoryPath += '|{}'.format(folderName)
+                if categoryPath not in self.categoryPaths:
+                    childCategoryItem = QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
+                    childCategoryItem.setText(0, folderName)
+                    childCategoryItem.setBackground(0, QtGui.QColor(80, 85, 80))
+                    self.categoryPaths[categoryPath] = childCategoryItem
+        # create node under constructed folder
+        nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
+        nodeItem.setText(0, name)
+
     def refresh(self, dataType=None, pattern=''):
         self.clear()
         self.categoryPaths = {}
@@ -414,76 +442,21 @@ class NodeBoxTreeWidget(QTreeWidget):
         for libName in FunctionLibraries.libs():
             foos = FunctionLibraries.getLib(libName)
             for name, foo in foos:
-                libNodeInst = Node.initializeFromFunction(foo, self.parent().graph())
-                nodeCategoryPath = libNodeInst.get_category()
-                checkString = name + nodeCategoryPath + ''.join(libNodeInst.get_keywords())
-                if pattern not in checkString.lower():
-                    continue
-
-                nodePath = nodeCategoryPath.split('|')
-                categoryPath = ''
-                # walk from tree top to bottom, creating folders if needed
-                # also writing all paths in dict to avoid duplications
-                for folderId in range(0, len(nodePath)):
-                    folderName = nodePath[folderId]
-                    if folderId == 0:
-                        categoryPath = folderName
-                        if categoryPath not in self.categoryPaths:
-                            rootFolderItem = QTreeWidgetItem(self)
-                            rootFolderItem.setText(0, folderName)
-                            rootFolderItem.setBackground(folderId, QtGui.QColor(80, 85, 80))
-                            self.categoryPaths[categoryPath] = rootFolderItem
-                    else:
-                        parentCategoryPath = categoryPath
-                        categoryPath += '|{}'.format(folderName)
-                        if categoryPath not in self.categoryPaths:
-                            childCategoryItem = QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
-                            childCategoryItem.setText(0, folderName)
-                            childCategoryItem.setBackground(0, QtGui.QColor(80, 85, 80))
-                            self.categoryPaths[categoryPath] = childCategoryItem
-                # create node under constructed folder
-                nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
-                nodeItem.setText(0, name)
+                nodeCategoryPath = foo.__annotations__['meta']['Category']
+                keywords = foo.__annotations__['meta']['Keywords']
+                checkString = name + nodeCategoryPath + ''.join(keywords)
+                if pattern in checkString.lower():
+                    self.insertNode(nodeCategoryPath, name)
 
         for node_file_name in Nodes.getNodeNames():
             node_class = Nodes.getNode(node_file_name)
-            # filter by allowed data types
-            if dataType is not None:
-                inst = node_class('tmp', self.parent().graph())
-                if dataType not in inst.InputPinTypes():
-                    del(inst)
-                    continue
-                del(inst)
             nodeCategoryPath = node_class.get_category()
 
             checkString = node_file_name + nodeCategoryPath + ''.join(node_class.get_keywords())
             if pattern.lower() not in checkString.lower():
                 continue
 
-            nodePath = nodeCategoryPath.split('|')
-            categoryPath = ''
-            # walk from tree top to bottom, creating folders if needed
-            # also writing all paths in dict to avoid duplications
-            for folderId in range(0, len(nodePath)):
-                folderName = nodePath[folderId]
-                if folderId == 0:
-                    categoryPath = folderName
-                    if categoryPath not in self.categoryPaths:
-                        rootFolderItem = QTreeWidgetItem(self)
-                        rootFolderItem.setText(0, folderName)
-                        rootFolderItem.setBackground(folderId, QtGui.QColor(80, 85, 80))
-                        self.categoryPaths[categoryPath] = rootFolderItem
-                else:
-                    parentCategoryPath = categoryPath
-                    categoryPath += '|{}'.format(folderName)
-                    if categoryPath not in self.categoryPaths:
-                        childCategoryItem = QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
-                        childCategoryItem.setText(0, folderName)
-                        childCategoryItem.setBackground(0, QtGui.QColor(80, 85, 80))
-                        self.categoryPaths[categoryPath] = childCategoryItem
-            # create node under constructed folder
-            nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
-            nodeItem.setText(0, node_file_name)
+            self.insertNode(nodeCategoryPath, node_file_name)
 
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
@@ -522,8 +495,8 @@ class NodesBox(QWidget):
         self.treeWidget.setObjectName("treeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)
-        self.treeWidget.refresh()
         self.lineEdit.textChanged.connect(self.le_text_changed)
+        self.treeWidget.refresh()
 
     def expandCategory(self):
         for i in self.treeWidget.categoryPaths:
@@ -847,11 +820,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.node_box = NodesBox(None, self)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
 
-        # foonc = FunctionLibraries.getLib('MathLib')
-        # n = Node.initializeFromFunction(foonc[0][1], self)
-        # p = self.findGoodPlaceForNewNode()
-        # self.add_node(n, p.x(), p.y())
-
     def showNodeBox(self, dataType=None):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
@@ -862,6 +830,7 @@ class GraphWidget(QGraphicsView, Graph):
     def shoutDown(self):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
+        FunctionLibraries.shoutDown()
         self.scene().shoutDown()
         self.scene().clear()
 
@@ -877,7 +846,7 @@ class GraphWidget(QGraphicsView, Graph):
             self.verticalScrollBar().setValue(vertical)
         except Exception as e:
             print(e)
-            self.write_to_console(e, True)
+            self.write_to_console(e)
 
     def mouseDoubleClickEvent(self, event):
         self.OnDoubleClick(self.mapToScene(event.pos()))
@@ -1652,41 +1621,38 @@ class GraphWidget(QGraphicsView, Graph):
 
         if commandLine['cmd'] == "setScrollbars":
             try:
-                self.parent.console.append(command)
+                self.write_to_console(command)
                 h = commandLine['flags']['~h']
                 v = commandLine['flags']['~v']
                 self.set_scrollbars_positions(int(h), int(v))
             except Exception as e:
                 print(e)
-                self.write_to_console(e, True)
+                self.write_to_console(e)
                 self.write_to_console("[USAGE] setScrollbars ~h int ~v int")
                 return
 
         if commandLine['cmd'] == "setHorizontalScrollBar":
             try:
-                self.parent.console.append(command)
                 h = commandLine['flags']['~h']
                 self.set_scrollbars_positions(int(h), self.verticalScrollBar().value())
             except Exception as e:
                 print(e)
-                self.write_to_console(e, True)
+                self.write_to_console(e)
                 self.write_to_console("[USAGE] setHorizontalScrollBar ~h int")
                 return
 
         if commandLine['cmd'] == "setVerticalScrollBar":
             try:
-                self.parent.console.append(command)
                 v = commandLine['flags']['~v']
                 self.set_scrollbars_positions(self.horizontalScrollBar().value(), int(v))
             except Exception as e:
                 print(e)
-                self.write_to_console(e, True)
+                self.write_to_console(e)
                 self.write_to_console("[USAGE] setVerticalScrollBar ~v int")
                 return
 
         if commandLine['cmd'] == "setConsoleVisible":
             try:
-                self.parent.console.append(command)
                 v = commandLine['flags']['~v']
                 if int(v) == 1:
                     self.parent.dockWidgetConsole.show()
@@ -1694,13 +1660,12 @@ class GraphWidget(QGraphicsView, Graph):
                     self.parent.dockWidgetConsole.hide()
             except Exception as e:
                 print(e)
-                self.write_to_console(e, True)
+                self.write_to_console(e)
                 self.write_to_console("[USAGE] setConsoleVisible ~v int")
                 return
 
         if commandLine['cmd'] == "setNodeBoxVisible":
             try:
-                self.parent.console.append(command)
                 v = commandLine['flags']['~v']
                 if int(v) == 1:
                     self.parent.dockWidgetNodeBox.show()
@@ -1708,13 +1673,12 @@ class GraphWidget(QGraphicsView, Graph):
                     self.parent.dockWidgetNodeBox.hide()
             except Exception as e:
                 print(e)
-                self.write_to_console(e, True)
+                self.write_to_console(e)
                 self.write_to_console("[USAGE] setNodeBoxVisible ~v int")
                 return
 
         if commandLine['cmd'] == "setPropertiesVisible":
             try:
-                self.parent.console.append(command)
                 v = commandLine['flags']['~v']
                 if int(v) == 1:
                     self.parent.dockWidgetNodeView.show()
@@ -1722,13 +1686,12 @@ class GraphWidget(QGraphicsView, Graph):
                     self.parent.dockWidgetNodeView.hide()
             except Exception as e:
                 print(e)
-                self.write_to_console(e, True)
+                self.write_to_console(e)
                 self.write_to_console("[USAGE] setPropertiesVisible ~v int")
                 return
 
         if commandLine['cmd'] == "createNode":
             try:
-                self.parent.console.append(command)
                 if commandLine['flags']['~type'] == "MakeArray":
                     mArrayMod = Nodes.getNode("MakeArray")
                     node_class = mArrayMod(commandLine["flags"]["~n"], self, int(commandLine["flags"]["~count"]))
@@ -1762,7 +1725,6 @@ class GraphWidget(QGraphicsView, Graph):
                         node.kill()
                     else:
                         self.parent.console.append("[WARNING] node {0} not found".format(n))
-                self.parent.console.append(command)
                 return
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
@@ -1809,7 +1771,6 @@ class GraphWidget(QGraphicsView, Graph):
                     attr = node.get_port_by_name(attrName)
                     if attr:
                         attr.disconnect_all()
-                        self.parent.console.append(command)
             except Exception, e:
                 self.parent.console.append("[ERROR] {0}".format(e))
                 self.parent.console.append("[USAGE] disconnectAttr {0}an nodeName.attrname".format(FLAG_SYMBOL))
@@ -1877,13 +1838,9 @@ class GraphWidget(QGraphicsView, Graph):
         edge.prepareGeometryChange()
         self.scene().removeItem(edge)
 
-    def write_to_console(self, data, force=False):
-        if not force:
-            if not self.is_debug():
-                return
-        else:
-            if self.parent:
-                self.parent.console.append(str(data))
+    def write_to_console(self, data):
+        if self.is_debug():
+            self.parent.console.append(str(data))
 
     def plot(self):
         Graph.plot(self)

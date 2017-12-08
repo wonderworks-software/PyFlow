@@ -22,6 +22,6 @@ class ArrayConcat(Node, NodeBase):
         secont = self.arrayB.get_data()
         try:
             res_arr = first + secont
-            self.result.set_data(res_arr, False)
+            self.result.set_data(res_arr)
         except Exception, e:
             print e

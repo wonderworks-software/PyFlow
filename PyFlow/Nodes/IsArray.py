@@ -24,4 +24,4 @@ class IsArray(Node, NodeBase):
         except Exception, e:
             result = False
             self.graph.write_to_console("[ERROR] {0}. {1}".format(self.__class__.__name__, e))
-        self.out.set_data(result, False)
+        self.out.set_data(result)

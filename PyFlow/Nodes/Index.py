@@ -23,8 +23,8 @@ class Index(Node, NodeBase):
         value = self.value.get_data()
         try:
             idx = ls.index(value)
-            self.index.set_data(int(idx), False)
-            self.success.set_data(True, False)
+            self.index.set_data(int(idx))
+            self.success.set_data(True)
         except Exception, e:
-            self.success.set_data(False, False)
+            self.success.set_data(False)
             self.graph.write_to_console("[ERROR] {0}. {1}".format(self.__class__.__name__, e))

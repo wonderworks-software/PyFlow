@@ -201,7 +201,7 @@ class Port(QGraphicsWidget, PortBase):
         self.update()
         self.hovered = False
 
-    def set_data(self, data, dirty_propagate=True):
-        PortBase.set_data(self, data, dirty_propagate)
+    def set_data(self, data):
+        PortBase.set_data(self, data)
         self.write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), data, FLAG_SYMBOL))
         update_ports(self)

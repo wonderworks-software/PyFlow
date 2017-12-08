@@ -15,6 +15,7 @@ from Qt.QtWidgets import QInputDialog
 from Qt import QtGui
 from Qt import QtCore
 import GraphEditor_ui
+reload(GraphEditor_ui)
 import sys
 from os import path
 
@@ -27,15 +28,11 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         super(W, self).__init__()
         self.setupUi(self)
         self.G = GraphWidget('MAIN_GRAPH', self)
-        self.node_box = NodesBox(self, self.G)
         self.SceneLayout.addWidget(self.G)
-        self.NodeBoxLayout.addWidget(self.node_box)
-        self.node_box.setVisible(True)
 
         self.actionPlot_graph.triggered.connect(self.G.plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionConsole.triggered.connect(self.toggle_console)
-        self.actionNode_box.triggered.connect(self.toggle_node_box)
         self.actionPropertyView.triggered.connect(self.toggle_property_view)
         self.actionMultithreaded.triggered.connect(self.toggle_multithreaded)
         self.actionDebug.triggered.connect(self.toggle_debug)
@@ -69,12 +66,9 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                                             getNodeNames())
         self.gridLayout_2.addWidget(self.consoleInput, 1, 0, 1, 1)
         self.dockWidgetConsole.hide()
-        self.dockWidgetNodeBox.hide()
+        self.dockWidgetLeft.hide()
         self.setMouseTracking(True)
         self.toggle_console()
-        self.toggle_node_box()
-
-        # self.toggle_debug()
 
     def createPopupMenu(self):
         pass
@@ -144,7 +138,6 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             n.kill()
 
     def toggle_debug(self):
-
         self.G.set_debug(not self.G.is_debug())
         if self.G.is_debug():
             self.G.notify("Debug mode enabled", 3000)
@@ -185,6 +178,7 @@ if __name__ == '__main__':
         ")
 
     instance = W()
+    app.setActiveWindow(instance)
     instance.show()
 
     try:

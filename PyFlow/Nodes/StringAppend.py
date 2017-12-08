@@ -21,6 +21,6 @@ class StringAppend(Node, NodeBase):
         second_str = self.second.get_data()
         try:
             result = first_str + second_str
-            self.output.set_data(result, False)
+            self.output.set_data(result)
         except Exception, e:
             print e

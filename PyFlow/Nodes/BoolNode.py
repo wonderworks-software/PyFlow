@@ -17,7 +17,7 @@ class BoolNode(Node, NodeBase):
         self.cb.stateChanged.connect(lambda: self.on_set_cb_state(self.cb.isChecked()))
         self.output = self.add_output_port('out', DataTypes.Bool)
 
-        def set_data_overloads(data, dirty_propagate=True):
+        def set_data_overloads(data):
             if type(data) != bool().__class__:
                 data = data.lower() in ["true", "1"]
             if data:
@@ -40,7 +40,8 @@ class BoolNode(Node, NodeBase):
         return 'GenericTypes'
 
     def on_set_cb_state(self, state):
-        self.output.set_data(state, True)
+        self.output.set_data(state)
 
     def compute(self):
-        self.output.set_data(self.cb.isChecked(), False)
+        self.output.set_data(self.cb.isChecked())
+        push(self.output)
