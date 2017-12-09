@@ -41,9 +41,7 @@ import FunctionLibraries
 import Commands
 from time import ctime, clock
 import OptionsWindow_ui
-reload(OptionsWindow_ui)
 import rgba_color_picker_ui
-reload(rgba_color_picker_ui)
 import json
 import re
 
@@ -68,16 +66,19 @@ def clearLayout(layout):
             clearLayout(child.layout())
 
 
-def get_node(module, name, graph):
-    if hasattr(module, name):
-        try:
-            unique_name = graph.get_uniq_node_name(name)
-            mod = Nodes.getNode(name)
-            mod = mod(unique_name, graph)
-            return mod
-        except Exception as e:
-            print("ERROR node creation!!", e)
-            return
+def getNodeInstance(module, class_name, nodeName, graph):
+    # Check in Nodes module first
+    mod = Nodes.getNode(class_name)
+    if mod is not None:
+        instance = mod(nodeName, graph)
+        return instance
+
+    # if not found - continue searching in FunctionLibraries
+    foo = FunctionLibraries.findFunctionByName(class_name)
+    if foo:
+        instance = Node.initializeFromFunction(foo, graph)
+        return instance
+    return None
 
 
 class PluginType:
@@ -305,53 +306,11 @@ class SceneClass(QGraphicsScene):
             dropItem = self.itemAt(event.scenePos())
             if not dropItem:
                 if className == "MakeArray":
-                    self.parent().executeCommand("createNode ~type MakeArray ~count {3} ~x {0} ~y {1} ~n {2}\n".format(event.scenePos().x(), event.scenePos().y(), name, 0))
+                    self.parent().executeCommand("createNode ~type MakeArray ~count {3} ~x {0} ~y {1} ~n {2}".format(event.scenePos().x(), event.scenePos().y(), name, 0))
                 else:
                     self.parent().executeCommand("createNode {4}type {0} {4}x {1} {4}y {2} {4}n {3}".format(className, event.scenePos().x(), event.scenePos().y(), name, FLAG_SYMBOL))
         else:
             super(SceneClass, self).dropEvent(event)
-
-
-class NodesBoxListWidget(QListWidget):
-    def __init__(self, parent, events=True):
-        super(NodesBoxListWidget, self).__init__(parent)
-        self.parent_item = weakref.ref(parent)
-        self._events = events
-        style = "background-color: rgb(80, 80, 80);" +\
-                "selection-background-color: rgb(150, 150, 150);" +\
-                "selection-color: yellow;" +\
-                "border-radius: 2px;" +\
-                "font-size: 14px;" +\
-                "border-color: black; border-style: outset; border-width: 1px;"
-        self.setStyleSheet(style)
-        self.setParent(parent)
-        self.setFrameShape(QFrame.NoFrame)
-        self.setFrameShadow(QFrame.Sunken)
-        self.setObjectName("lw_nodes")
-        self.setSortingEnabled(True)
-        self.setDragEnabled(True)
-        self.setDragDropMode(QAbstractItemView.DragOnly)
-        # self.setFocusPolicy(QtCore.Qt.StrongFocus)
-
-    def mousePressEvent(self, event):
-        super(NodesBoxListWidget, self).mousePressEvent(event)
-        pressed_text = self.selectedItems()[0].text()
-        drag = QtGui.QDrag(self)
-        mime_data = QtCore.QMimeData()
-        mime_data.setText(pressed_text)
-        drag.setMimeData(mime_data)
-        drag.exec_()
-
-    def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Return:
-            point = self.parent_item().graph().mapToScene(self.parent_item().graph().mousePos)
-            name = self.currentItem().text()
-            self.parent_item().graph().create_node(name, point.x(), point.y(), name)
-        if self._events:
-            if event.key() == QtCore.Qt.Key_Escape:
-                self.parent_item().close()
-                self.clear()
-        super(NodesBoxListWidget, self).keyPressEvent(event)
 
 
 class NodeBoxLineEdit(QLineEdit):
@@ -747,7 +706,6 @@ class GraphWidget(QGraphicsView, Graph):
         self._lastClock = 0.0
         self.fps = 0
         self.setScene(SceneClass(self))
-        self.add_actions()
         self.options_widget = OptionsClass()
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pressed_item = None
@@ -944,66 +902,6 @@ class GraphWidget(QGraphicsView, Graph):
             settings = QtCore.QSettings(self.options_widget.settings_path, QtCore.QSettings.IniFormat)
             return settings
 
-    def add_actions(self):
-        save_action = QAction(self)
-        save_action.setText('Save')
-        if path.isfile(_file_folder + '/resources/save_icon.png'):
-            save_action.setIcon(QtGui.QIcon(_file_folder + '/resources/save_icon.png'))
-        else:
-            save_action.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
-        save_action.triggered.connect(self.save)
-
-        load_action = QAction(self)
-        load_action.setText('Load')
-        if path.isfile(_file_folder + '/resources/folder_open_icon.png'):
-            load_action.setIcon(QtGui.QIcon(_file_folder + '/resources/folder_open_icon.png'))
-        else:
-            load_action.setIcon(self.style().standardIcon(QStyle.SP_DialogOpenButton))
-        load_action.triggered.connect(self.load)
-
-        save_as_action = QAction(self)
-        save_as_action.setText('Save as')
-        if path.isfile(_file_folder + '/resources/save_as_icon.png'):
-            save_as_action.setIcon(QtGui.QIcon(_file_folder + '/resources/save_as_icon.png'))
-        else:
-            save_as_action.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
-        save_as_action.triggered.connect(lambda: self.save(True))
-
-        options_action = QAction(self)
-        options_action.setText('Options')
-        if path.isfile(_file_folder + '/resources/colors_icon.png'):
-            options_action.setIcon(QtGui.QIcon(_file_folder + '/resources/colors_icon.png'))
-        else:
-            options_action.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
-        options_action.triggered.connect(self.options)
-
-        new_file_action = QAction(self)
-        new_file_action.setText('New')
-        if path.isfile(_file_folder + '/resources/new_file_icon.png'):
-            new_file_action.setIcon(QtGui.QIcon(_file_folder + '/resources/new_file_icon.png'))
-        else:
-            new_file_action.setIcon(self.style().standardIcon(QStyle.SP_FileDialogNewFolder))
-        new_file_action.triggered.connect(self.new_file)
-
-        # node_box_action = QAction(self)
-        # node_box_action.setText('Node box')
-        # if path.isfile(_mod_folder + '/resources/node_box_icon.png'):
-        #     node_box_action.setIcon(QtGui.QIcon(_mod_folder + '/resources/node_box_icon.png'))
-        # else:
-        #     node_box_action.setIcon(self.style().standardIcon(QStyle.SP_FileDialogNewFolder))
-        # node_box_action.triggered.connect( = NodeBoxTreeWidget()().set_visible)
-
-        separator = QAction(self)
-        separator.setSeparator(True)
-
-        self.menu.addAction(new_file_action)
-        self.menu.addAction(load_action)
-        self.menu.addAction(save_action)
-        self.menu.addAction(save_as_action)
-        self.menu.addAction(separator)
-        self.menu.addAction(options_action)
-        # self.menu.addAction(node_box_action)
-
     def save(self, save_as=False):
 
         if save_as:
@@ -1030,7 +928,7 @@ class GraphWidget(QGraphicsView, Graph):
         graph += "setHorizontalScrollBar ~h {0}\n".format(self.horizontalScrollBar().value())
         graph += "setVerticalScrollBar ~v {0}\n".format(self.verticalScrollBar().value())
         # tools visibility
-        graph += "setNodeBoxVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeBox.isVisible()))
+        graph += "setNodeBoxVisible ~v {0}\n".format(int(self.parent.dockWidgetLeft.isVisible()))
         graph += "setConsoleVisible ~v {0}\n".format(int(self.parent.dockWidgetConsole.isVisible()))
         graph += "setPropertiesVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeView.isVisible()))
         # create all nodes and set attributes
@@ -1038,6 +936,8 @@ class GraphWidget(QGraphicsView, Graph):
             # process nodes with customized behavior
             line = n.save_command()
             graph += line
+            if '\n' not in line:
+                print(line, n.name)
             for inp in n.inputs:
                 line = "setAttr {2}an {0} {2}v {1}\n".format(inp.port_name(), inp.current_data(), FLAG_SYMBOL)
                 graph += line
@@ -1549,19 +1449,19 @@ class GraphWidget(QGraphicsView, Graph):
             self.parent.console.append(msg)
 
     def create_node(self, className, x, y, name):
-        node_class = get_node(Nodes, className, self)
+        nodeInstance = getNodeInstance(Nodes, className, name, self)
 
         # if no such node in Nodes mod, check Function libs
-        if node_class is None:
+        if nodeInstance is None:
             foo = FunctionLibraries.findFunctionByName(className)
             if foo:
-                node_class = Node.initializeFromFunction(foo, self)
+                nodeInstance = Node.initializeFromFunction(foo, self)
 
-        if node_class is None:
+        if nodeInstance is None:
             raise ValueError("node class not found!")
 
-        self.add_node(node_class, x, y)
-        return node_class
+        self.add_node(nodeInstance, x, y)
+        return nodeInstance
 
     def executeCommand(self, command):
         commandLine = parse(command)
@@ -1668,9 +1568,9 @@ class GraphWidget(QGraphicsView, Graph):
             try:
                 v = commandLine['flags']['~v']
                 if int(v) == 1:
-                    self.parent.dockWidgetNodeBox.show()
+                    self.parent.dockWidgetLeft.show()
                 else:
-                    self.parent.dockWidgetNodeBox.hide()
+                    self.parent.dockWidgetLeft.hide()
             except Exception as e:
                 print(e)
                 self.write_to_console(e)
@@ -1693,11 +1593,9 @@ class GraphWidget(QGraphicsView, Graph):
         if commandLine['cmd'] == "createNode":
             try:
                 if commandLine['flags']['~type'] == "MakeArray":
-                    mArrayMod = Nodes.getNode("MakeArray")
-                    node_class = mArrayMod(commandLine["flags"]["~n"], self, int(commandLine["flags"]["~count"]))
-                    node_class.set_name("MakeArray")
-                    # node_class.post_create()
-                    self.add_node(node_class, float(commandLine["flags"]["~x"]), float(commandLine["flags"]["~y"]))
+                    arrayNodeClass = Nodes.getNode("MakeArray")
+                    nodeInstance = arrayNodeClass(commandLine["flags"]["~n"], self, ports_number=int(commandLine["flags"]["~count"]))
+                    self.add_node(nodeInstance, float(commandLine["flags"]["~x"]), float(commandLine["flags"]["~y"]))
                 else:
                     self.create_node(commandLine['flags']['~type'], float(commandLine['flags']['~x']), float(commandLine['flags']['~y']), commandLine['flags']['~n'])
                 return

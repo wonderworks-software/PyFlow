@@ -17,7 +17,7 @@ class PortBase(object):
         self.affected_by = []
         self.edge_list = []
         self.type = None
-        self.dirty = False
+        self.dirty = True
         self._connected = False
         # set default values
         self._data = self.getDefaultDataValue()
@@ -80,6 +80,8 @@ class PortBase(object):
             return True
 
     def set_dirty(self):
+        if self.data_type == DataTypes.Exec:
+            return
         self.dirty = True
         for i in self.affects:
             i.dirty = True
@@ -157,10 +159,7 @@ class PortBase(object):
         if self._data_type == DataTypes.Array:
             self._data = data
         if self._data_type == DataTypes.Bool:
-            if type(data) != bool().__class__:
-                self._data = self.str2bool(data)
-            else:
-                self._data = bool(data)
+            self._data = bool(data)
         if self._data_type == DataTypes.Any:
             self._data = data
 
@@ -191,7 +190,7 @@ class NodeBase(object):
         return self.name
 
     def set_name(self, name):
-        self.name = self.graph().get_uniq_node_name(name)
+        self.name = name
 
     def add_input_port(self, port_name, data_type, foo=None):
         p = PortBase(port_name, self, data_type, foo)
@@ -210,7 +209,6 @@ class NodeBase(object):
         return p
 
     def get_port_by_name(self, name):
-
         for p in self.inputs + self.outputs:
             if p.name == name:
                 return p

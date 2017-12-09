@@ -1,5 +1,5 @@
 from Qt import QtCore
-from Qt.QtWidgets import QSpinBox
+from Qt.QtWidgets import QDoubleSpinBox
 from Qt.QtWidgets import QCheckBox
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QGraphicsProxyWidget
@@ -12,18 +12,20 @@ class RequestNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(RequestNode, self).__init__(name, graph)
         self.input = self.add_input_port('input', DataTypes.Any)
-        self.looper = QtCore.QTimer()
-        self.spin_box = QSpinBox()
+        self.input.port_disconnected = self.input_disconnected
+        self.spin_box = QDoubleSpinBox()
+        self.spin_box.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.cb = QCheckBox()
-        pb = QPushButton('request')
-        self.looper.timeout.connect(self.compute)
+        pb = QPushButton('get')
+        pb.setMaximumWidth(25)
+        self.process = False
 
         con = self.add_container(PinTypes.Output)
         con2 = self.add_container(PinTypes.Output)
 
-        self.spin_box.setMinimum(1)
-        self.spin_box.setMaximum(5000)
-        self.spin_box.setValue(100)
+        self.spin_box.setMinimum(0.01)
+        self.spin_box.setMaximum(60.0)
+        self.spin_box.setValue(0.2)
         prx_sb_delta_time = QGraphicsProxyWidget()
         prx_sb_delta_time.setWidget(self.spin_box)
 
@@ -31,7 +33,9 @@ class RequestNode(Node, NodeBase):
         prx_btn = QGraphicsProxyWidget()
         prx_btn.setWidget(pb)
 
-        self.cb.stateChanged.connect(lambda: self.startEval(self.spin_box.value()))
+        self.interval = 0.0
+        self.counter = 0.0
+        self.cb.stateChanged.connect(lambda: self.start(self.spin_box.value()))
         prx_cb = QGraphicsProxyWidget()
         prx_cb.setWidget(self.cb)
 
@@ -39,20 +43,34 @@ class RequestNode(Node, NodeBase):
         con2.layout().addItem(prx_btn)
         con.layout().addItem(prx_sb_delta_time)
 
+    def input_disconnected(self, other):
+        if not self.input.hasConnections():
+            self.input._connected = False
+            self.stop()
+            self.cb.setCheckState(QtCore.Qt.Unchecked)
+
     @staticmethod
     def get_category():
         return 'Core'
 
-    def startEval(self, deltatime):
-        if self.cb.isChecked():
-            self.looper.start(deltatime)
-        else:
-            self.looper.stop()
+    def Tick(self, delta):
+        if self.process and self.input._connected:
+            if self.counter + delta < self.interval:
+                self.counter += delta
+            else:
+                self.compute()
+                self.counter = 0.0
 
-    def kill(self):
-        Node.kill(self)
-        if self.looper.isActive():
-            self.looper.stop()
+    def stop(self):
+        self.process = False
+        self.counter = 0.0
+
+    def start(self, deltatime):
+        if self.cb.isChecked():
+            self.interval = deltatime
+            self.process = True
+        else:
+            self.stop()
 
     def compute(self):
         # check if any dirty nodes before connected port.
@@ -69,3 +87,4 @@ class RequestNode(Node, NodeBase):
 
         data = self.input.get_data()
         self.graph().write_to_console(str(data))
+        print(str(data))

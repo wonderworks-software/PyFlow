@@ -15,7 +15,6 @@ from Qt.QtWidgets import QInputDialog
 from Qt import QtGui
 from Qt import QtCore
 import GraphEditor_ui
-reload(GraphEditor_ui)
 import sys
 from os import path
 
@@ -30,6 +29,7 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.G = GraphWidget('MAIN_GRAPH', self)
         self.SceneLayout.addWidget(self.G)
 
+        self.actionNode_box.triggered.connect(self.toggle_node_box)
         self.actionPlot_graph.triggered.connect(self.G.plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionConsole.triggered.connect(self.toggle_console)
@@ -95,10 +95,10 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def toggle_node_box(self):
 
-        if self.node_box.isVisible():
-            self.dockWidgetNodeBox.hide()
+        if self.dockWidgetLeft.isVisible():
+            self.dockWidgetLeft.hide()
         else:
-            self.dockWidgetNodeBox.show()
+            self.dockWidgetLeft.show()
 
     def shortcuts_info(self):
 

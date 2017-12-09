@@ -5,6 +5,7 @@ from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QApplication
 from AbstractGraph import *
 from Settings import *
+import nodes_res_rc
 
 
 def update_ports(start_from):
@@ -53,6 +54,7 @@ class Port(QGraphicsWidget, PortBase):
         self.height = height + 1
         if self.data_type == DataTypes.Exec:
             self.width = self.height = 10.0
+            self.dirty = False
         self.hovered = False
         self.startPos = None
         self.endPos = None
@@ -74,6 +76,9 @@ class Port(QGraphicsWidget, PortBase):
             self._dirty_pen = QtGui.QPen(opt_dirty_pen, 0.5, opt_port_dirty_pen_type, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
         else:
             self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+
+        self.inputWidget = None
+        self.portImage = QtGui.QImage(':/icons/resources/array.png')
 
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
@@ -145,13 +150,18 @@ class Port(QGraphicsWidget, PortBase):
             linearGrad.setColorAt(0, self.color)
             linearGrad.setColorAt(1, self.color)
 
-        # if self.dirty:
-        #     painter.setPen(self._dirty_pen)  # move to callback and use in debug mode
+        if self.dirty:
+            painter.setPen(self._dirty_pen)  # move to callback and use in debug mode
 
         if self.hovered:
             linearGrad.setColorAt(1, self.color.lighter(200))
         if self.data_type == DataTypes.Array:
-            painter.drawRect(background_rect)
+            if self.portImage:
+                painter.drawImage(background_rect, self.portImage)
+            else:
+                painter.setBrush(Colors.Array)
+                rect = background_rect
+                painter.drawRect(rect)
         elif self.data_type == DataTypes.Exec:
             if self._connected:
                 painter.setBrush(QtGui.QBrush(self.color))
@@ -192,7 +202,7 @@ class Port(QGraphicsWidget, PortBase):
         self.hovered = True
         self.setToolTip(str(self.current_data()))
         if self.parent().graph().is_debug():
-            print('data -', self._data)
+            print('data -', self._data, 'dirtry -', self.dirty)
             self.write_to_console(self._data)
         event.accept()
 
@@ -201,7 +211,19 @@ class Port(QGraphicsWidget, PortBase):
         self.update()
         self.hovered = False
 
+    def port_connected(self, other):
+        PortBase.port_connected(self, other)
+        if self.inputWidget:
+            self.inputWidget.hide()
+
+    def port_disconnected(self, other):
+        PortBase.port_disconnected(self, other)
+        if not self._connected and self.inputWidget:
+            self.inputWidget.show()
+
     def set_data(self, data):
         PortBase.set_data(self, data)
+        if self.inputWidget:
+            self.inputWidget.setData(data)
         self.write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), data, FLAG_SYMBOL))
         update_ports(self)

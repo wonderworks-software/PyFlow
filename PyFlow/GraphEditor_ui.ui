@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -240,7 +243,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>209</width>
+          <width>124</width>
           <height>431</height>
          </rect>
         </property>

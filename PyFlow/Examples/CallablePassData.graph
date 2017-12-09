@@ -1,22 +1,58 @@
 SAVE GRAPH SCRIPT
-setHorizontalScrollBar ~h 4748
-setVerticalScrollBar ~v 4869
-setNodeBoxVisible ~v 1
+setHorizontalScrollBar ~h 2419
+setVerticalScrollBar ~v 3288
+setNodeBoxVisible ~v 0
 setConsoleVisible ~v 1
 setPropertiesVisible ~v 1
-createNode ~type Call ~x 4820.0 ~y 4998.0 ~n Call
-setAttr ~an Call.OUT ~v None
-createNode ~type Print ~x 5120.0 ~y 4998.0 ~n Print
-setAttr ~an Print.in ~v None
-setAttr ~an Print.data ~v True
-setAttr ~an Print.out ~v None
-createNode ~type AddFloatWithResult ~x 4960.0 ~y 4998.0 ~n AddFloatWithResult
-setAttr ~an AddFloatWithResult.A ~v 1.0
-setAttr ~an AddFloatWithResult.B ~v 0.0
+createNode ~type AddFloatWithResult ~x 3940.0 ~y 4748.0 ~n AddFloatWithResult
+setAttr ~an AddFloatWithResult.A ~v 9.18
+setAttr ~an AddFloatWithResult.B ~v 10.0
 setAttr ~an AddFloatWithResult.inExec ~v None
-setAttr ~an AddFloatWithResult.out ~v 1.0
-setAttr ~an AddFloatWithResult.Result ~v True
+setAttr ~an AddFloatWithResult.out ~v 19.18
+setAttr ~an AddFloatWithResult.Result ~v False
 setAttr ~an AddFloatWithResult.outExec ~v None
-connectAttr ~src AddFloatWithResult.Result ~dst Print.data
-connectAttr ~src AddFloatWithResult.outExec ~dst Print.in
-connectAttr ~src Call.OUT ~dst AddFloatWithResult.inExec
+createNode ~type AddFloatWithResult ~x 3880.0 ~y 5078.0 ~n AddFloatWithResult1
+setAttr ~an AddFloatWithResult1.A ~v 0.0
+setAttr ~an AddFloatWithResult1.B ~v 0.0
+setAttr ~an AddFloatWithResult1.inExec ~v None
+setAttr ~an AddFloatWithResult1.out ~v 0.0
+setAttr ~an AddFloatWithResult1.Result ~v False
+setAttr ~an AddFloatWithResult1.outExec ~v None
+createNode ~type Call ~x 3650.0 ~y 4748.0 ~n Call1
+setAttr ~an Call1.OUT ~v None
+createNode ~type Print ~x 4250.0 ~y 4748.0 ~n Print1
+setAttr ~an Print1.in ~v None
+setAttr ~an Print1.data ~v [19.18, False]
+setAttr ~an Print1.out ~v None
+createNode ~type FloatNode ~x 3620.0 ~y 4878.0 ~n FloatNode2
+setAttr ~an FloatNode2.in ~v 9.18
+setAttr ~an FloatNode2.out ~v 9.18
+createNode ~type FloatNode ~x 3620.0 ~y 4938.0 ~n FloatNode3
+setAttr ~an FloatNode3.in ~v 10.0
+setAttr ~an FloatNode3.out ~v 10.0
+createNode ~type Print ~x 4220.0 ~y 5078.0 ~n Print
+setAttr ~an Print.in ~v None
+setAttr ~an Print.data ~v [0.0, False]
+setAttr ~an Print.out ~v None
+createNode ~type Call ~x 3720.0 ~y 5078.0 ~n Call
+setAttr ~an Call.OUT ~v None
+createNode ~type MakeArray ~count 2 ~x 4140.0 ~y 4808.0 ~n MakeArray
+setAttr ~an MakeArray.0 ~v 19.18
+setAttr ~an MakeArray.1 ~v False
+setAttr ~an MakeArray.out ~v [19.18, False]
+createNode ~type MakeArray ~count 2 ~x 4070.0 ~y 5128.0 ~n MakeArray1
+setAttr ~an MakeArray1.0 ~v 0.0
+setAttr ~an MakeArray1.1 ~v False
+setAttr ~an MakeArray1.out ~v [0.0, False]
+connectAttr ~src Call1.OUT ~dst AddFloatWithResult.inExec
+connectAttr ~src AddFloatWithResult.outExec ~dst Print1.in
+connectAttr ~src FloatNode2.out ~dst AddFloatWithResult.A
+connectAttr ~src FloatNode3.out ~dst AddFloatWithResult.B
+connectAttr ~src AddFloatWithResult1.outExec ~dst Print.in
+connectAttr ~src Call.OUT ~dst AddFloatWithResult1.inExec
+connectAttr ~src AddFloatWithResult.out ~dst MakeArray.0
+connectAttr ~src AddFloatWithResult.Result ~dst MakeArray.1
+connectAttr ~src MakeArray.out ~dst Print1.data
+connectAttr ~src MakeArray1.out ~dst Print.data
+connectAttr ~src AddFloatWithResult1.Result ~dst MakeArray1.1
+connectAttr ~src AddFloatWithResult1.out ~dst MakeArray1.0

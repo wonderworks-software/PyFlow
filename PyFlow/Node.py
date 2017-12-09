@@ -12,14 +12,13 @@ from Qt.QtWidgets import QStyle
 from Port import Port, getPortColorByType
 from AbstractGraph import *
 from types import MethodType
+from PinInputWidgets import getPinWidget
 
 
 class NodeName(QGraphicsTextItem):
-    def __init__(self, name, parent):
+    def __init__(self, parent):
         QGraphicsTextItem.__init__(self)
         self.object_type = ObjectTypes.NodeName
-        self.name = name
-        self.setPlainText(self.name)
         self.setParentItem(parent)
         self.options = self.parentItem().graph().get_settings()
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
@@ -70,41 +69,13 @@ class NodeName(QGraphicsTextItem):
             self.clipRect = QtCore.QRectF(0, 0, self.parentItem().childrenBoundingRect().width() - 5.0, self.boundingRect().height())
         painter.setClipRect(self.clipRect)
         painter.setPen(self.descFontPen)
-        painter.drawText(5.0, self.h - 0.5, self.desc)
+        # painter.drawText(5.0, self.h - 0.5, self.desc)
 
         super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):
         self.scene().clearSelection()
         self.parentItem().graph().disable_sortcuts()
-
-    def focusOutEvent(self, event):
-        self.parentItem().graph().enable_sortcuts()
-
-        cursour = QtGui.QTextCursor(self.document())
-        cursour.clearSelection()
-        self.setTextCursor(cursour)
-
-        if self.parentItem().name == self.toPlainText():
-            super(NodeName, self).focusOutEvent(event)
-            return
-        new_name = self.parentItem().graph().get_uniq_node_name(self.toPlainText())
-        self.name = new_name
-        self.parentItem().label().setPlainText(new_name)
-
-        for i in self.parentItem().get_input_edges().iterkeys():
-            if self.name == i.connection['From'].split('.')[0]:
-                i.connection['From'] = i.connection['From'].replace(self.name, new_name)
-            if self.name == i.connection['To'].split('.')[0]:
-                i.connection['To'] = i.connection['To'].replace(self.name, new_name)
-        for i in self.parentItem().get_output_edges().iterkeys():
-            if self.name == i.connection['From'].split('.')[0]:
-                i.connection['From'] = i.connection['From'].replace(self.name, new_name)
-            if self.name == i.connection['To'].split('.')[0]:
-                i.connection['To'] = i.connection['To'].replace(self.name, new_name)
-        new_name = new_name.replace(" ", "_")
-        self.parentItem().set_name(new_name)
-        super(NodeName, self).focusOutEvent(event)
 
 
 class Node(QGraphicsItem, NodeBase):
@@ -138,7 +109,7 @@ class Node(QGraphicsItem, NodeBase):
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
-        self.label = weakref.ref(NodeName(self.name, self))
+        self.label = weakref.ref(NodeName(self))
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
         # main
@@ -193,10 +164,6 @@ class Node(QGraphicsItem, NodeBase):
         meta = foo.__annotations__['meta']
         returnType = foo.__annotations__['return']
         nodeType = foo.__annotations__['nodeType']
-        inst = Node(foo.__name__, graph)
-        inst.__class__.__name__ = foo.__name__
-
-        inst.add_output_port('out', returnType)
 
         def get_category():
             return meta['Category']
@@ -204,8 +171,13 @@ class Node(QGraphicsItem, NodeBase):
         def get_keywords():
             return meta['Keywords']
 
+        inst = Node(graph.get_uniq_node_name(foo.__name__), graph)
+        inst.__class__.__name__ = foo.__name__
+
         inst.get_category = get_category
         inst.get_keywords = get_keywords
+
+        inst.add_output_port('out', returnType)
 
         index = 0
         refs = []
@@ -308,6 +280,7 @@ class Node(QGraphicsItem, NodeBase):
             self.label().color = QtGui.QColor(88, 134, 158, 200)
         if 'FlowControl' in self.get_category():
             self.label().color = QtGui.QColor(100, 100, 100, 200)
+        self.label().setPlainText(self.__class__.__name__)
 
     def getWidth(self):
         dPorts = 0
@@ -327,11 +300,12 @@ class Node(QGraphicsItem, NodeBase):
 
     def set_name(self, name):
         NodeBase.set_name(self, name)
-        self.label().setPlainText(self.name)
+        # self.label().setPlainText(self.name)
 
     def clone(self):
         pos = self.scenePos()
-        new_node = self.graph().create_node(self.__class__.__name__, pos.x(), pos.y(), self.get_name())
+        name = self.graph().get_uniq_node_name(self.get_name())
+        new_node = self.graph().create_node(self.__class__.__name__, pos.x(), pos.y(), name)
         return new_node
 
     def update_ports(self):
@@ -434,18 +408,13 @@ class Node(QGraphicsItem, NodeBase):
 
         self.graph().write_to_console("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
         self.scene().removeItem(self)
-
-        def funcname():
-            pass
-        self.compute = funcname
+        del(self)
 
     def set_pos(self, x, y):
-
         NodeBase.set_pos(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
 
     def _add_port(self, port_type, data_type, foo, hideLabel=False, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
-
         newColor = color
 
         if data_type == DataTypes.Int or DataTypes.Float:
@@ -493,6 +462,12 @@ class Node(QGraphicsItem, NodeBase):
             container.layout().addItem(p)
             p._container = container
             container.layout().addItem(connector_name)
+
+            # create input widget
+            w = getPinWidget(p)
+            if w:
+                container.layout().addItem(w.asProxy())
+
             self.inputs.append(p)
             self.inputsLayout.insertItem(index, container)
             container.adjustSize()

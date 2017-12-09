@@ -6,10 +6,9 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 
 
 class MakeArray(Node, NodeBase):
-    def __init__(self, name, graph, w=60, ports_number=0):
+    def __init__(self, name, graph, ports_number=0, w=60):
         super(MakeArray, self).__init__(name, graph, w, spacings=Spacings)
         self.ports_number = ports_number
-        self.id = 0
 
         con = self.add_container(PinTypes.Output)
 
@@ -25,22 +24,20 @@ class MakeArray(Node, NodeBase):
         self.out_arr = self.add_output_port('out', DataTypes.Array)
 
     def post_create(self):
-        if self.ports_number > 0:
-            for i in range(self.ports_number):
-                self.addInPort()
+        for i in range(self.ports_number):
+            self.addInPort()
         self.label().setPos(0, -self.label().boundingRect().height())
         super(MakeArray, self).post_create()
 
     def save_command(self):
-        return "createNode ~type {0} ~count {4} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, self.id)
+        return "createNode ~type {0} ~count {4} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, len(self.inputs))
 
     def addInPort(self):
-        port = self.add_input_port(str(self.id), DataTypes.Any)
-        # self.h += self.height_step
+        index = len(self.inputs)
+        port = self.add_input_port(str(index), DataTypes.Any)
         portAffects(port, self.out_arr)
-        self.id += 1
         push(self.out_arr)
-        self.graph().redraw_nodes()
+        self.update_ports()
 
     @staticmethod
     def get_category():

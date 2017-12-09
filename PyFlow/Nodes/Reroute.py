@@ -83,8 +83,8 @@ class Reroute(Node, NodeBase):
     def getOutControlPoint(self):
         cp1 = self.out0.scenePos()
         xDistance = abs(self.out0.scenePos().x() - self.out0.getAvgXConnected())
-        if xDistance < 100.0:
-            xDistance = 100.0
+        if xDistance < 70.0:
+            xDistance = 70.0
         if self.out0.bEdgeTangentDirection:
             cp1.setX(self.out0.scenePos().x() - (xDistance / 2.0))
         else:
@@ -94,8 +94,8 @@ class Reroute(Node, NodeBase):
     def getInControlPoint(self):
         cp2 = self.inp0.scenePos()
         xDistance = abs(self.inp0.scenePos().x() - self.inp0.getAvgXConnected())
-        if xDistance < 100.0:
-            xDistance = 100.0
+        if xDistance < 70.0:
+            xDistance = 70.0
         if self.inp0.bEdgeTangentDirection:
             cp2.setX(self.inp0.scenePos().x() + (xDistance / 2.0))
         else:

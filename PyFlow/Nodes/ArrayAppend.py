@@ -30,6 +30,6 @@ class ArrayAppend(Node, NodeBase):
             out_arr.append(element)
             self.out_arr.set_data(out_arr)
             self.out_result.set_data(True)
-        except Exception, e:
+        except Exception as e:
             self.out_result.set_data(False)
-            print e
+            print(e)
