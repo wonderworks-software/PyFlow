@@ -7,14 +7,14 @@ class Len(Node, NodeBase):
     def __init__(self, name, graph):
         super(Len, self).__init__(name, graph, spacings=Spacings)
         self.in_arr = self.add_input_port('iterable', DataTypes.Any)
-        self.out_len = self.add_output_port('len', DataTypes.Float)
+        self.out_len = self.add_output_port('len', DataTypes.Int)
         self.out_result = self.add_output_port('result', DataTypes.Bool)
         portAffects(self.in_arr, self.out_result)
         portAffects(self.in_arr, self.out_len)
 
     @staticmethod
     def get_category():
-        return 'Array'
+        return 'Utils'
 
     def compute(self):
 

@@ -13,6 +13,7 @@ from Port import Port, getPortColorByType
 from AbstractGraph import *
 from types import MethodType
 from PinInputWidgets import getPinWidget
+from inspect import getargspec
 
 
 class NodeName(QGraphicsTextItem):
@@ -36,6 +37,8 @@ class NodeName(QGraphicsTextItem):
         self.setPos(0, -self.boundingRect().height() - 8)
         self.color = QtGui.QColor(0, 255, 50, 100)
         self.clipRect = None
+        self.roundCornerFactor = 1.0
+        self.bg = QtGui.QImage(':/icons/resources/white.png')
 
     @staticmethod
     def IsRenamable():
@@ -48,7 +51,7 @@ class NodeName(QGraphicsTextItem):
             self.setEnabled(True)
             return
         else:
-            QtGui.QGraphicsTextItem.keyPressEvent(self, event)
+            QGraphicsTextItem.keyPressEvent(self, event)
 
     def boundingRect(self):
         return QtCore.QRectF(0, 0, self.parentItem().w, 20)
@@ -57,11 +60,16 @@ class NodeName(QGraphicsTextItem):
         r = QtCore.QRectF(option.rect)
         r.setWidth(self.parentItem().childrenBoundingRect().width() - 0.25)
         r.setX(0.25)
+        r.setY(0.25)
         b = QtGui.QLinearGradient(0, 0, 0, r.height())
         b.setColorAt(0, QtGui.QColor(0, 0, 0, 0))
         b.setColorAt(0.25, self.color)
         b.setColorAt(1, self.color)
-        painter.fillRect(r, QtGui.QBrush(b))
+        painter.setPen(QtCore.Qt.NoPen)
+        b = QtGui.QBrush(self.bg)
+        b.setStyle(QtCore.Qt.TexturePattern)
+        painter.setBrush(b)
+        painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
         painter.setFont(self.descFont)
 
         painter.setClipping(True)
@@ -133,7 +141,6 @@ class Node(QGraphicsItem, NodeBase):
         self.setCursor(QtCore.Qt.OpenHandCursor)
 
         self.tweakPosition()
-        self.setToolTip(self.description())
 
     @property
     def w(self):
@@ -164,6 +171,10 @@ class Node(QGraphicsItem, NodeBase):
         meta = foo.__annotations__['meta']
         returnType = foo.__annotations__['return']
         nodeType = foo.__annotations__['nodeType']
+        doc = foo.__doc__
+
+        def description():
+            return doc
 
         def get_category():
             return meta['Category']
@@ -176,22 +187,24 @@ class Node(QGraphicsItem, NodeBase):
 
         inst.get_category = get_category
         inst.get_keywords = get_keywords
+        inst.description = description
 
-        inst.add_output_port('out', returnType)
+        if returnType is not None:
+            inst.add_output_port('out', returnType)
 
-        index = 0
+        # this is array of 'references' outputs will be created for
         refs = []
         outExec = None
-        for name, dataType in foo.__annotations__.iteritems():
-            # skip all except input data
-            if name in ['meta', 'return', 'nodeType']:
-                continue
+
+        # iterate over function arguments and create ports according to data types
+        fooArgNames = getargspec(foo).args
+        for index in range(len(fooArgNames)):
+            dataType = foo.__annotations__[fooArgNames[index]]
             if dataType == DataTypes.Reference:
-                outRef = inst.add_output_port(name, foo.__defaults__[index])
+                outRef = inst.add_output_port(fooArgNames[index], foo.__defaults__[index])
                 refs.append(outRef)
             else:
-                inp = inst.add_input_port(name, dataType)
-            index += 1
+                inp = inst.add_input_port(fooArgNames[index], dataType)
 
         # all inputs affects on all outputs
         for i in inst.inputs:
@@ -209,7 +222,8 @@ class Node(QGraphicsItem, NodeBase):
                 if ref.data_type is not DataTypes.Exec:
                     kwargs[ref.name] = ref
             result = foo(**kwargs)
-            self.set_data('out', result)
+            if returnType is not None:
+                self.set_data('out', result)
             if nodeType == NodeTypes.Callable:
                 outExec.call()
 
@@ -277,10 +291,11 @@ class Node(QGraphicsItem, NodeBase):
         self.nodeMainGWidget.setMaximumWidth(self.w + self.spacings.kPortOffset)
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
         if self.isCallable():
-            self.label().color = QtGui.QColor(88, 134, 158, 200)
-        if 'FlowControl' in self.get_category():
-            self.label().color = QtGui.QColor(100, 100, 100, 200)
+            self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
+        else:
+            self.label().bg = QtGui.QImage(':/icons/resources/green.png')
         self.label().setPlainText(self.__class__.__name__)
+        self.setToolTip(self.description())
 
     def getWidth(self):
         dPorts = 0
@@ -333,7 +348,7 @@ class Node(QGraphicsItem, NodeBase):
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
             if self.options:
-                pen.setColor(Colors.Yellow)
+                pen.setColor(Colors.White)
                 pen.setStyle(self.opt_pen_selected_type)
             else:
                 pen.setColor(opt_selected_pen_color)
@@ -364,8 +379,8 @@ class Node(QGraphicsItem, NodeBase):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def add_input_port(self, port_name, data_type, foo=None, hideLabel=False, index=-1):
-        p = self._add_port(PinTypes.Input, data_type, foo, hideLabel, port_name, index=index)
+    def add_input_port(self, port_name, data_type, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
+        p = self._add_port(PinTypes.Input, data_type, foo, hideLabel, bCreateInputWidget, port_name, index=index)
         return p
 
     @staticmethod
@@ -376,8 +391,8 @@ class Node(QGraphicsItem, NodeBase):
     def get_keywords():
         return []
 
-    def add_output_port(self, port_name, data_type, foo=None, hideLabel=False, index=-1):
-        p = self._add_port(PinTypes.Output, data_type, foo, hideLabel, port_name, index=index)
+    def add_output_port(self, port_name, data_type, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
+        p = self._add_port(PinTypes.Output, data_type, foo, hideLabel, bCreateInputWidget, port_name, index=index)
         return p
 
     def add_container(self, portType, head=False):
@@ -414,7 +429,7 @@ class Node(QGraphicsItem, NodeBase):
         NodeBase.set_pos(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
 
-    def _add_port(self, port_type, data_type, foo, hideLabel=False, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
+    def _add_port(self, port_type, data_type, foo, hideLabel=False, bCreateInputWidget=True, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
         newColor = color
 
         if data_type == DataTypes.Int or DataTypes.Float:
@@ -458,21 +473,26 @@ class Node(QGraphicsItem, NodeBase):
         connector_name.setWidget(lbl)
         if port_type == PinTypes.Input:
             container = self.add_container(port_type)
+            if hideLabel:
+                container.setMaximumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
             container.layout().addItem(p)
             p._container = container
             container.layout().addItem(connector_name)
 
             # create input widget
-            w = getPinWidget(p)
-            if w:
-                container.layout().addItem(w.asProxy())
+            if bCreateInputWidget:
+                w = getPinWidget(p)
+                if w:
+                    container.layout().addItem(w.asProxy())
 
             self.inputs.append(p)
             self.inputsLayout.insertItem(index, container)
             container.adjustSize()
         elif port_type == PinTypes.Output:
             container = self.add_container(port_type)
+            if hideLabel:
+                container.setMaximumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             container.layout().addItem(connector_name)
             container.layout().addItem(p)

@@ -8,6 +8,7 @@ from Qt.QtWidgets import QListWidget
 from Qt.QtWidgets import QFrame
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QStyle
+from Qt.QtWidgets import QScrollArea
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QAction
@@ -349,6 +350,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.setHeaderHidden(True)
         self.setDragDropMode(QAbstractItemView.DragOnly)
         self.categoryPaths = {}
+        # self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
     def _isCategoryExists(self, category_name, categories):
         bFound = False
@@ -368,7 +370,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                         sepCatNames.pop()
         return False
 
-    def insertNode(self, nodeCategoryPath, name):
+    def insertNode(self, nodeCategoryPath, name, doc=None):
         nodePath = nodeCategoryPath.split('|')
         categoryPath = ''
         # walk from tree top to bottom, creating folders if needed
@@ -393,6 +395,8 @@ class NodeBoxTreeWidget(QTreeWidget):
         # create node under constructed folder
         nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
         nodeItem.setText(0, name)
+        if doc:
+            nodeItem.setToolTip(0, doc)
 
     def refresh(self, dataType=None, pattern=''):
         self.clear()
@@ -405,7 +409,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                 keywords = foo.__annotations__['meta']['Keywords']
                 checkString = name + nodeCategoryPath + ''.join(keywords)
                 if pattern in checkString.lower():
-                    self.insertNode(nodeCategoryPath, name)
+                    self.insertNode(nodeCategoryPath, name, foo.__doc__)
 
         for node_file_name in Nodes.getNodeNames():
             node_class = Nodes.getNode(node_file_name)
@@ -415,7 +419,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             if pattern.lower() not in checkString.lower():
                 continue
 
-            self.insertNode(nodeCategoryPath, node_file_name)
+            self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
 
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
@@ -456,6 +460,9 @@ class NodesBox(QWidget):
         self.verticalLayout.addWidget(self.treeWidget)
         self.lineEdit.textChanged.connect(self.le_text_changed)
         self.treeWidget.refresh()
+
+    def sizeHint(self):
+        return QtCore.QSize(400, 250)
 
     def expandCategory(self):
         for i in self.treeWidget.categoryPaths:

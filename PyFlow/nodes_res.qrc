@@ -1,6 +1,10 @@
 <RCC>
   <qresource prefix="icons">
     <file>resources/array.png</file>
+    <file>resources/green.png</file>
+    <file>resources/red.png</file>
+    <file>resources/white.png</file>
+    <file>resources/blue.png</file>
     <file>resources/alignbottom.png</file>
     <file>resources/alignleft.png</file>
     <file>resources/alignright.png</file>

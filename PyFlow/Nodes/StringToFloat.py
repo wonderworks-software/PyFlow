@@ -1,13 +1,13 @@
 from AbstractGraph import *
 from Settings import *
-from Node import Node
+from ConvertNode import ConvertNode
 
 
-class StringToFloat(Node, NodeBase):
+class StringToFloat(ConvertNode, NodeBase):
     def __init__(self, name, graph):
-        super(StringToFloat, self).__init__(name, graph, spacings=Spacings)
-        self.in_str = self.add_input_port('str', DataTypes.String)
-        self.out_flt = self.add_output_port('float', DataTypes.Float)
+        super(StringToFloat, self).__init__(name, graph)
+        self.in_str = self.add_input_port('str', DataTypes.String, hideLabel=True, bCreateInputWidget=False)
+        self.out_flt = self.add_output_port('float', DataTypes.Float, hideLabel=True, bCreateInputWidget=False)
         portAffects(self.in_str, self.out_flt)
 
     @staticmethod
