@@ -1,7 +1,7 @@
 from FunctionLibrary import *
 from AGraphCommon import *
 import math
-from random import randint
+import random
 
 
 class MathLib(FunctionLibraryBase):
@@ -332,18 +332,134 @@ class MathLib(FunctionLibraryBase):
     @annotated(returns=None, nodeType=NodeTypes.Pure, meta={'Category': 'Math|random', 'Keywords': []})
     def randint(start=(DataTypes.Int, 0), end=(DataTypes.Int, 10), Result=(DataTypes.Reference, DataTypes.Int)):
         '''Return a random integer N such that a <= N <= b.'''
-        Result.set_data(randint(start, end))
+        Result.set_data(random.randint(start, end))
         push(Result)
 
-    # @staticmethod
-    # @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Callable, meta={'Category': 'Math', 'Keywords': []})
-    # def AddFloatWithResult(A=(DataTypes.Float, 0.0), B=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
-    #     Result.set_data(A > B)
-    #     return A + B
+    @staticmethod
+    @annotated(returns=None, nodeType=NodeTypes.Pure, meta={'Category': 'Math|random', 'Keywords': []})
+    def shuffle(seq=(DataTypes.Array, []), Result=(DataTypes.Reference, DataTypes.Array)):
+        '''Shuffle the sequence x in place.'''
+        random.shuffle(seq)
+        # arr = [] + seq
+        # del seq[:]
+        # del seq
+        Result.set_data(seq)
+        push(Result)
 
-    # @staticmethod
-    # @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math', 'Keywords': []})
-    # def AddFloatWithResultPure(A=(DataTypes.Float, 0.0), B=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
-    #     Result.set_data(A > B)
-    #     push(Result)
-    #     return A + B
+    @staticmethod
+    @annotated(returns=None, nodeType=NodeTypes.Pure, meta={'Category': 'Math|random', 'Keywords': []})
+    def choice(seq=(DataTypes.Array, []), Item=(DataTypes.Reference, DataTypes.Any), Result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return a random element from the non-empty sequence seq. If seq is empty, raises IndexError.'''
+        try:
+            item = random.choice(seq)
+            Item.set_data(item)
+            Result.set_data(True)
+            push(Result)
+            push(Item)
+        except:
+            Result.set_data(False)
+            push(Result)
+            push(Item)
+            Item.set_data(None)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
+    def acosh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return the inverse hyperbolic cosine of x.'''
+        try:
+            Result.set_data(True)
+            return math.acosh(x)
+        except:
+            Result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
+    def asinh(x=(DataTypes.Float, 0.0)):
+        '''Return the inverse hyperbolic sine of x.'''
+        return math.asinh(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
+    def atanh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return the inverse hyperbolic tangent of x.'''
+        try:
+            Result.set_data(True)
+            return math.atanh(x)
+        except:
+            Result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
+    def cosh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return the hyperbolic cosine of x.'''
+        try:
+            Result.set_data(True)
+            return math.cosh(x)
+        except:
+            Result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
+    def sinh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return the hyperbolic sine of x.'''
+        try:
+            Result.set_data(True)
+            return math.sinh(x)
+        except:
+            Result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
+    def tanh(x=(DataTypes.Float, 0.0)):
+        '''Return the hyperbolic tangent of x.'''
+        return math.tanh(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Special functions', 'Keywords': []})
+    def erf(x=(DataTypes.Float, 0.0)):
+        '''Return the error function at x.'''
+        return math.erf(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Special functions', 'Keywords': []})
+    def erfc(x=(DataTypes.Float, 0.0)):
+        '''Return the complementary error function at x.'''
+        return math.erfc(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Special functions', 'Keywords': []})
+    def gamma(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return the Gamma function at x.'''
+        try:
+            Result.set_data(True)
+            return math.gamma(x)
+        except:
+            Result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Special functions', 'Keywords': []})
+    def lgamma(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return the natural logarithm of the absolute value of the Gamma function at x.'''
+        try:
+            Result.set_data(True)
+            return math.lgamma(x)
+        except:
+            Result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Constants', 'Keywords': []})
+    def e():
+        '''The mathematical constant e = 2.718281, to available precision.'''
+        return math.e
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Constants', 'Keywords': []})
+    def pi():
+        '''The mathematical constant = 3.141592, to available precision.'''
+        return math.pi

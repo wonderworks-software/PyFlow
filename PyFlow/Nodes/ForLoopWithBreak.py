@@ -35,7 +35,7 @@ class ForLoopWithBreak(Node, NodeBase):
 
     @staticmethod
     def description():
-        return 'For loop wit hability to break'
+        return 'For loop with ability to break'
 
     def compute(self):
         indexFrom = self.firstIndex.get_data()
