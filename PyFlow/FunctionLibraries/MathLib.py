@@ -340,9 +340,6 @@ class MathLib(FunctionLibraryBase):
     def shuffle(seq=(DataTypes.Array, []), Result=(DataTypes.Reference, DataTypes.Array)):
         '''Shuffle the sequence x in place.'''
         random.shuffle(seq)
-        # arr = [] + seq
-        # del seq[:]
-        # del seq
         Result.set_data(seq)
         push(Result)
 

@@ -929,7 +929,7 @@ class GraphWidget(QGraphicsView, Graph):
         graph += "setConsoleVisible ~v {0}\n".format(int(self.parent.dockWidgetConsole.isVisible()))
         graph += "setPropertiesVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeView.isVisible()))
         # create all nodes and set attributes
-        for n in self.get_nodes():
+        for n in self.nodes:
             # process nodes with customized behavior
             line = n.save_command()
             graph += line
