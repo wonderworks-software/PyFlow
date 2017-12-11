@@ -67,5 +67,4 @@ class Colors:
     Array = Gray
     Bool = Red
     Exec = White
-    Reroute = DarkGray
     String = Pink

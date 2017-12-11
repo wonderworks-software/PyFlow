@@ -2,7 +2,6 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsPathItem
 from Settings import Colors
-from Nodes import Reroute
 from AbstractGraph import *
 import weakref
 
@@ -26,13 +25,7 @@ class Edge(QGraphicsPathItem):
         self.connection = {'From': self.source().port_name(),
                            'To': self.destination().port_name()}
 
-        if isinstance(source.parentItem(), Reroute):
-            if source.parentItem().inp0.hasConnections():
-                self.color = source.parentItem().color
-            else:
-                self.color = destination.color
-        else:
-            self.color = self.source().color
+        self.color = self.source().color
 
         self.thikness = 1
         if source.data_type == DataTypes.Exec and destination.data_type == DataTypes.Exec:
@@ -137,27 +130,11 @@ class Edge(QGraphicsPathItem):
 
         if xDistance < 0:
             offset = self.source().boundingRect().width() / 3.25
-            if isinstance(self.source().parentItem(), Reroute):
-                self.cp1 = self.source().parentItem().getOutControlPoint()
-                # self.mPath.moveTo(p1.x() - offset, p1.y())
-            else:
-                self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)
-
-            if isinstance(self.destination().parentItem(), Reroute):
-                self.cp2 = self.destination().parentItem().getInControlPoint()
-                # self.mPath.moveTo(p1.x() + offset, p1.y())
-            else:
-                self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y() - verticalOffset)
+            self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)
+            self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y() - verticalOffset)
         else:
-            if isinstance(self.destination().parentItem(), Reroute):
-                self.cp2 = self.destination().parentItem().getInControlPoint()
-            else:
-                self.cp2 = QtCore.QPoint(p2.x() - xDistance / multiply, p2.y() - verticalOffset)
-
-            if isinstance(self.source().parentItem(), Reroute):
-                self.cp1 = self.source().parentItem().getOutControlPoint()
-            else:
-                self.cp1 = QtCore.QPoint(p1.x() + xDistance / multiply, p1.y() + verticalOffset)
+            self.cp2 = QtCore.QPoint(p2.x() - xDistance / multiply, p2.y() - verticalOffset)
+            self.cp1 = QtCore.QPoint(p1.x() + xDistance / multiply, p1.y() + verticalOffset)
 
         self.mPath.cubicTo(self.cp1, self.cp2, p2)
         self.setPath(self.mPath)

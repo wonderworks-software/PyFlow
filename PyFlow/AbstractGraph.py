@@ -30,9 +30,7 @@ class PortBase(object):
     def data_type(self, value):
         self._data_type = value
 
-        self.supported_data_types = list(set([DataTypes.Reroute, value]))
-        if self.data_type == DataTypes.Reroute:
-            self.supported_data_types.append(DataTypes.Any)
+        self.supported_data_types = list(set([value]))
         if self.data_type == DataTypes.Exec or self.data_type == DataTypes.Any:
             self.supported_data_types.append(value)
 
@@ -48,8 +46,6 @@ class PortBase(object):
         if self._data_type == DataTypes.Array:
             return []
         if self._data_type == DataTypes.Any:
-            return None
-        if self._data_type == DataTypes.Reroute:
             return None
 
     def set_data_overload(self, data):
@@ -349,18 +345,13 @@ class Graph(object):
         if src.type == PinTypes.Input:
             src, dst = dst, src
 
-        if src.data_type == DataTypes.Reroute:
-            src.data_type = dst.data_type
-        if dst.data_type == DataTypes.Reroute:
-            dst.data_type = src.data_type
-
         if DataTypes.Any not in dst.supported_data_types:
             if src.data_type not in dst.supported_data_types:
                 print("data types error", src.data_type, dst.data_type)
                 return False
         else:
             if src.data_type == DataTypes.Exec:
-                if dst.data_type not in [DataTypes.Exec, DataTypes.Reroute]:
+                if dst.data_type not in [DataTypes.Exec]:
                     print("data types error", src.data_type, dst.data_type)
                     return False
 

@@ -94,9 +94,8 @@ class DataTypes:
     Bool = 3
     Array = 4
     Any = 5
-    Reroute = 6
-    Exec = 7
-    Reference = 8
+    Exec = 6
+    Reference = 7
 
 
 class ObjectTypes(object):

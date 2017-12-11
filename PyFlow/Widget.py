@@ -720,7 +720,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.released_item = None
         self.bPanMode = False
         self.groupers = []
-        self.reroutes = []
         self._isPanning = False
         self._mousePressed = False
         self._shadows = False
@@ -820,18 +819,8 @@ class GraphWidget(QGraphicsView, Graph):
 
     def OnDoubleClick(self, pos):
         if isinstance(self.pressed_item, Edge):
-            # store neighbors
-            src = self.pressed_item.source()
-            dst = self.pressed_item.destination()
-            # create rerout node
-            node = self.create_node("Reroute", pos.x(), pos.y() - 5.0, "Reroute")
-            # kill pressed edge
-            self.remove_edge(self.pressed_item)
-            # reconnect neighbors
-            left_edge = self.add_edge(src, node.inp0)
-            right_edge = self.add_edge(node.out0, dst)
-            src.reroutes.append(node)
-            dst.reroutes.append(node)
+            # create knot
+            pass
 
         if self.pressed_item and hasattr(self.pressed_item, "object_type"):
             if self.pressed_item.object_type == ObjectTypes.NodeName and self.pressed_item.IsRenamable():
@@ -1165,11 +1154,6 @@ class GraphWidget(QGraphicsView, Graph):
                 self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsMovable, False)
                 self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsSelectable, False)
                 self._draw_real_time_line = True
-            elif isinstance(self.pressed_item, Nodes.RerouteMover):
-                self.pressed_item.parentItem().setFlag(QGraphicsItem.ItemIsMovable)
-            elif isinstance(self.pressed_item, Nodes.Reroute):
-                if not self.pressed_item.inp0.hasConnections() or not self.pressed_item.out0.hasConnections():
-                    self._draw_real_time_line = True
             else:
                 self.pressed_item.setSelected(True)
 
@@ -1243,9 +1227,6 @@ class GraphWidget(QGraphicsView, Graph):
         modifiers = event.modifiers()
 
         for n in self.nodes:
-            if isinstance(n, Nodes.Reroute):
-                n.setFlag(QGraphicsItem.ItemIsMovable, False)
-                continue
             n.setFlag(QGraphicsItem.ItemIsMovable)
             n.setFlag(QGraphicsItem.ItemIsSelectable)
 
@@ -1285,30 +1266,6 @@ class GraphWidget(QGraphicsView, Graph):
                 if cycle_check(p_itm, r_itm):
                     self.write_to_console('cycles are not allowed')
                     do_connect = False
-            if isinstance(p_itm, Port) and isinstance(r_itm, Nodes.Reroute):
-                do_connect = True
-
-            if isinstance(self.pressed_item, Nodes.Reroute) and isinstance(r_itm, Port):
-                diff = self.pressed_item.scenePos() - self.mapToScene(self.mousePos)
-                if diff.x() > 0:
-                    # print("left", diff.x())
-                    p_itm = self.pressed_item.inp0
-                else:
-                    p_itm = self.pressed_item.out0
-                    # print("right", diff.x())
-                do_connect = True
-
-            if isinstance(self.pressed_item, Nodes.Reroute) and isinstance(self.released_item, Nodes.Reroute):
-                diff = self.pressed_item.scenePos().x() - self.released_item.scenePos().x()
-                if diff < 0:
-                    # left to right
-                    p_itm = self.pressed_item.out0
-                    r_itm = self.released_item.inp0
-                else:
-                    # right to left
-                    p_itm = self.pressed_item.inp0
-                    r_itm = self.released_item.out0
-                do_connect = True
 
         if isinstance(r_itm, QGraphicsPathItem) and isinstance(p_itm, Port):
             # node box tree pops up
@@ -1316,15 +1273,9 @@ class GraphWidget(QGraphicsView, Graph):
             self.showNodeBox(p_itm.data_type)
 
         if do_connect:
-            if isinstance(r_itm, Nodes.Reroute):
-                p_itm.reroutes.append(r_itm)
-                if p_itm.type == PinTypes.Input:
-                    self.add_edge(p_itm, r_itm.out0)
-                else:
-                    self.add_edge(p_itm, r_itm.inp0)
-            else:
-                if p_itm is not r_itm:
-                    self.add_edge(p_itm, r_itm)
+            if p_itm is not r_itm:
+                self.add_edge(p_itm, r_itm)
+
         selected_nodes = self.selected_nodes()
         if len(selected_nodes) != 0:
             self.update_property_view(selected_nodes[0])

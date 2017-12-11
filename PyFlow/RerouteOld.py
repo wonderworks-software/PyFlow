@@ -9,8 +9,7 @@ from Qt.QtWidgets import QGraphicsRectItem
 from Qt.QtWidgets import QApplication
 
 
-DESC = '''This node's purpose is change flow of edges
-'''
+DESC = '''This node's purpose is change flow of edges'''
 
 
 class RerouteMover(QGraphicsRectItem):
@@ -28,14 +27,14 @@ class RerouteMover(QGraphicsRectItem):
 
 class Reroute(Node, NodeBase):
     def __init__(self, name, graph):
-        super(Reroute, self).__init__(name, graph, spacings=Spacings)
+        super(Reroute, self).__init__(name, graph)
         self.h = 25
         self.sizes[4] = self.h
         self.label().hide()
         self.setCursor(QtCore.Qt.CrossCursor)
 
         self.reroute_mover = RerouteMover(self)
-               
+
         self.reroute_mover.setX(-5)
         self.reroute_mover.setY(-5)
 
@@ -73,6 +72,9 @@ class Reroute(Node, NodeBase):
 
     def isReroute(self):
         return True
+
+    def save_command(self):
+        return "createNode ~type {0} ~x {1} ~y {2} ~n {3} ~dataType {4}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, self.inp0.data_type)
 
     def disconnect_all(self):
         if self.inp0.hasConnections():

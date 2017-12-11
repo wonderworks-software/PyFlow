@@ -29,8 +29,6 @@ def getPortColorByType(t):
         return Colors.Bool
     if t == DataTypes.Exec:
         return Colors.Exec
-    if t == DataTypes.Reroute:
-        return Colors.Reroute
     if t == DataTypes.String:
         return Colors.String
 
@@ -60,14 +58,11 @@ class Port(QGraphicsWidget, PortBase):
         self.endPos = None
         self.bEdgeTangentDirection = False
         self.options = self.parent().graph().get_settings()
-        self.reroutes = []
         self._container = None
         self.color = getPortColorByType(data_type)
         if data_type == DataTypes.Reference:
             self.color = getPortColorByType(data_type.data_type)
         self._execPen = QtGui.QPen(self.color, 0.5, QtCore.Qt.SolidLine)
-        if self.data_type == DataTypes.Reroute:
-            self.color = color
         self.setGeometry(0, 0, self.width, self.height)
         if self.options:
             opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))

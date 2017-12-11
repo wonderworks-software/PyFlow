@@ -254,10 +254,6 @@ class Node(QGraphicsItem, NodeBase):
                 return True
         return False
 
-    @staticmethod
-    def isReroute():
-        return False
-
     def boundingRect(self):
         return self.childrenBoundingRect()
 
@@ -292,7 +288,8 @@ class Node(QGraphicsItem, NodeBase):
         self.nodeMainGWidget.setMaximumWidth(self.w + self.spacings.kPortOffset)
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
         if self.isCallable():
-            self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
+            if 'flow' not in self.get_category().lower():
+                self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
         else:
             self.label().bg = QtGui.QImage(':/icons/resources/green.png')
         self.label().setPlainText(self.__class__.__name__)

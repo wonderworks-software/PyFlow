@@ -13,7 +13,6 @@
 * The logic and ui are separated
 * Custom extendable cmd like scripting language
 * Own file format
-* Reroute nodes
 * Grid snapping
 
 To extend functionality use console command 
