@@ -173,21 +173,23 @@ class Node(QGraphicsItem, NodeBase):
         nodeType = foo.__annotations__['nodeType']
         doc = foo.__doc__
 
+        @staticmethod
         def description():
             return doc
 
+        @staticmethod
         def get_category():
             return meta['Category']
 
+        @staticmethod
         def get_keywords():
             return meta['Keywords']
 
-        inst = Node(graph.get_uniq_node_name(foo.__name__), graph)
-        inst.__class__.__name__ = foo.__name__
+        def constructor(self, name, graph, **kwargs):
+            Node.__init__(self, name, graph, **kwargs)
 
-        inst.get_category = get_category
-        inst.get_keywords = get_keywords
-        inst.description = description
+        nodeClass = type(foo.__name__, (Node,), {'__init__': constructor, 'get_category': get_category, 'get_keywords': get_keywords, 'description': description})
+        inst = nodeClass(graph.get_uniq_node_name(foo.__name__), graph)
 
         if returnType is not None:
             inst.add_output_port('out', returnType)
