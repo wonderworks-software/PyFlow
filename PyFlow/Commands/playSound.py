@@ -9,7 +9,6 @@ class playSound(Command.Command):
         super(playSound, self).__init__(graph)
 
     def usage(self):
-
         return "[USAGE] playSound ~file [absolute file path]"
 
     def execute(self, line):

@@ -44,6 +44,7 @@ class FloatInputWidget(PinInputWidgetBase, QDoubleSpinBox):
         self.setRange(-2147483648.01, 2147483647.01)
         self.setSingleStep(0.01)
         self.setMaximumWidth(70)
+        self.setDecimals(20)
         self.valueChanged.connect(self.dataUpdated)
 
     def setData(self, data):

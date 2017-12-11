@@ -3,10 +3,6 @@ from Settings import *
 from Node import Node
 
 
-DESC = '''node desc
-'''
-
-
 class Delay(Node, NodeBase):
     def __init__(self, name, graph):
         super(Delay, self).__init__(name, graph, w=80, spacings=Spacings)
@@ -26,7 +22,7 @@ class Delay(Node, NodeBase):
 
     @staticmethod
     def description():
-        return DESC
+        return 'default description'
 
     def Tick(self, delta):
         if self.process:

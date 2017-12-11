@@ -51,7 +51,7 @@ class RequestNode(Node, NodeBase):
 
     @staticmethod
     def get_category():
-        return 'Core'
+        return 'Utils'
 
     def Tick(self, delta):
         if self.process and self.input._connected:

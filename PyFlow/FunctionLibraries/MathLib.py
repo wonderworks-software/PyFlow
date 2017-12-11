@@ -118,6 +118,73 @@ class MathLib(FunctionLibraryBase):
         return math.trunc(x)
 
     @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
+    def exp(x=(DataTypes.Float, 0.0)):
+        '''Return e**x.'''
+        return math.exp(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
+    def expm1(x=(DataTypes.Float, 0.1)):
+        '''Return e**x - 1. For small floats x, the subtraction in exp(x) - 1 can result in a significant loss of precision.'''
+        return math.expm1(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
+    def log(x=(DataTypes.Float, 1.0), base=(DataTypes.Float, math.e), result=(DataTypes.Reference, DataTypes.Bool)):
+        '''With one argument, return the natural logarithm of x (to base e).\nWith two arguments, return the logarithm of x to the given base, calculated as log(x)/log(base).'''
+        try:
+            result.set_data(True)
+            return math.log(x, base)
+        except:
+            result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
+    def log1p(x=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return the natural logarithm of 1+x (base e). The result is calculated in a way which is accurate for x near zero.'''
+        try:
+            result.set_data(True)
+            return math.log1p(x)
+        except:
+            result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
+    def log10(x=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return the base-10 logarithm of x. This is usually more accurate than log(x, 10).'''
+        try:
+            result.set_data(True)
+            return math.log10(x)
+        except:
+            result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
+    def power(x=(DataTypes.Float, 0.0), y=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return x raised to the power y.'''
+        try:
+            result.set_data(True)
+            return math.pow(x, y)
+        except:
+            result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
+    def sqrt(x=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Return the square root of x.'''
+        try:
+            result.set_data(True)
+            return math.sqrt(x)
+        except:
+            result.set_data(False)
+            return -1
+
+    @staticmethod
     @annotated(returns=DataTypes.Int, nodeType=NodeTypes.Pure, meta={'Category': 'Math|Bult-in functions', 'Keywords': ['+']})
     def Sum(arr=(DataTypes.Array, []), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Sums start and the items of an iterable from left to right and returns the total.'''
@@ -131,24 +198,72 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, nodeType=NodeTypes.Callable, meta={'Category': 'Math', 'Keywords': ['+', 'append']})
-    def addfloat(A=(DataTypes.Float, 0.0), B=(DataTypes.Float, 0.0)):
+    def addf(A=(DataTypes.Float, 0.0), B=(DataTypes.Float, 0.0)):
         '''Sum of two flaots.'''
         return A + B
 
     @staticmethod
     @annotated(returns=DataTypes.Int, meta={'Category': 'Math', 'Keywords': ['+', 'append']})
-    def addint(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0)):
+    def add(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0)):
         '''Sum of two ints.'''
         return A + B
 
     @staticmethod
-    @annotated(returns=DataTypes.Int, meta={'Category': 'Math', 'Keywords': []})
+    @annotated(returns=DataTypes.Int, meta={'Category': 'Math', 'Keywords': ['-']})
+    def substract(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0)):
+        '''Int substraction.'''
+        return A - B
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math', 'Keywords': ['-']})
+    def substractf(A=(DataTypes.Float, 0), B=(DataTypes.Float, 0)):
+        '''Int substraction.'''
+        return A - B
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math', 'Keywords': ['/']})
+    def divide(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0), result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Integer devision.'''
+        try:
+            d = A / B
+            result.set_data(True)
+            return d
+        except:
+            result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math', 'Keywords': ['/']})
+    def dividef(A=(DataTypes.Float, 0.0), B=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Float devision.'''
+        try:
+            d = A / B
+            result.set_data(True)
+            return d
+        except:
+            result.set_data(False)
+            return -1
+
+    @staticmethod
+    @annotated(returns=DataTypes.Int, meta={'Category': 'Math', 'Keywords': ['*']})
+    def mult(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0)):
+        '''Integer multiplication.'''
+        return A * B
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math', 'Keywords': ['*']})
+    def multf(A=(DataTypes.Float, 0.0), B=(DataTypes.Float, 0.0)):
+        '''Float multiplication.'''
+        return A * B
+
+    @staticmethod
+    @annotated(returns=DataTypes.Int, meta={'Category': 'Math|Bult-in functions', 'Keywords': []})
     def absint(inp=(DataTypes.Int, 0)):
         '''Return the absolute value of a number.'''
         return abs(inp)
 
     @staticmethod
-    @annotated(returns=DataTypes.Float, meta={'Category': 'Math', 'Keywords': []})
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Bult-in functions', 'Keywords': []})
     def absfloat(inp=(DataTypes.Float, 0.0)):
         '''Return the absolute value of a number.'''
         return abs(inp)
@@ -169,7 +284,37 @@ class MathLib(FunctionLibraryBase):
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
     def sin(x=(DataTypes.Float, 0.0)):
         '''Return the sine of x radians.'''
-        return math.cos(x)
+        return math.sin(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
+    def asin(x=(DataTypes.Float, 0.0)):
+        '''Return the arc sine of x, in radians.'''
+        return math.asin(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
+    def tan(x=(DataTypes.Float, 0.0)):
+        '''Return the tangent of x radians.'''
+        return math.tan(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
+    def atan(x=(DataTypes.Float, 0.0)):
+        '''Return the arc tangent of x, in radians.'''
+        return math.atan(x)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
+    def atan2(x=(DataTypes.Float, 0.0), y=(DataTypes.Float, 0.0)):
+        '''Return atan(y / x), in radians. The result is between -pi and pi.\nThe vector in the plane from the origin to point (x, y) makes this angle with the positive X axis. The point of atan2() is that the signs of both inputs are known to it, so it can compute the correct quadrant for the angle.\nFor example, atan(1) and atan2(1, 1) are both pi/4, but atan2(-1, -1) is -3*pi/4.'''
+        return math.atan2(x, y)
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
+    def hypot(x=(DataTypes.Float, 0.0), y=(DataTypes.Float, 0.0)):
+        '''Return the Euclidean norm, sqrt(x*x + y*y). This is the length of the vector from the origin to point (x, y).'''
+        return math.hypot(x, y)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Angular conversion', 'Keywords': []})

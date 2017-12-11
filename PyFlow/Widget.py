@@ -89,31 +89,32 @@ class PluginType:
 
 def _implementPlugin(name, console_out_foo, pluginType):
     CommandTemplate = """from Command import Command
+from AbstractGraph import FLAG_SYMBOL
 
 
-class {0}(Command):
+class {0}(Command.Command):
 
     def __init__(self, graph):
         super({0}, self).__init__(graph)
 
     def usage(self):
-
-        return "[USAGE] usage string"
+        msg = "[USAGE] {{0}} {{1}}text str".format(self.__class__.__name__, FLAG_SYMBOL)
+        return msg
 
     def execute(self, line):
         commandLine = self.parse(line)
         try:
-            self.graph.write_to_console(commandLine["-text"])
+            self.graph.write_to_console("HELLO WORLD! Your message: {0}".format(commandLine['~text']))
         except Exception as e:
+            print("[ERROR] {0}".format(e))
             print(self.usage())
+            self.graph.write_to_console(self.usage())
 """.format(name)
 
     base_node_code = """from AbstractGraph import *
 from Settings import *
 from Node import Node
 
-DESC = '''node desc
-'''
 
 class {0}(Node, NodeBase):
     def __init__(self, name, graph):
@@ -132,7 +133,7 @@ class {0}(Node, NodeBase):
 
     @staticmethod
     def description():
-        return DESC
+        return 'default description'
 
     def compute(self):
 

@@ -205,6 +205,7 @@ class Node(QGraphicsItem, NodeBase):
                 refs.append(outRef)
             else:
                 inp = inst.add_input_port(fooArgNames[index], dataType)
+                inp.set_data(foo.__defaults__[index])
 
         # all inputs affects on all outputs
         for i in inst.inputs:

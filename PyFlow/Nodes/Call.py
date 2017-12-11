@@ -65,7 +65,7 @@ class Call(Node, NodeBase):
 
     @staticmethod
     def get_category():
-        return 'Core'
+        return 'Utils'
 
     def compute(self):
         self.out.call()
