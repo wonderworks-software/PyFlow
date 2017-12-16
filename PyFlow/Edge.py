@@ -11,8 +11,8 @@ class Edge(QGraphicsPathItem):
         QGraphicsPathItem.__init__(self)
         self.graph = weakref.ref(graph)
         self.source = weakref.ref(source)
-        self.object_type = ObjectTypes.Connection
         self.destination = weakref.ref(destination)
+        self.object_type = ObjectTypes.Connection
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 
@@ -40,6 +40,9 @@ class Edge(QGraphicsPathItem):
 
         self.source().update()
         self.destination().update()
+
+    def save_command(self):
+        return "connectAttr {2}src {0} {2}dst {1}".format(self.source().port_name(), self.destination().port_name(), FLAG_SYMBOL)
 
     def __str__(self):
         return '{0}.{1} >>> {2}.{3}'.format(self.source().parent().name,

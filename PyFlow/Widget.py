@@ -899,10 +899,22 @@ class GraphWidget(QGraphicsView, Graph):
             settings = QtCore.QSettings(self.options_widget.settings_path, QtCore.QSettings.IniFormat)
             return settings
 
+    def getGraphSaveData(self):
+        data = {self.name: {'nodes': [], 'edges': []}}
+        # save nodes
+        data[self.name]['nodes'] = [node.save_command() for node in self.nodes]
+        #save pins values
+        for n in self.nodes:
+            for p in n.inputs + n.outputs:
+                data[self.name]['nodes'].append(p.save_command())
+        # save edges
+        data[self.name]['edges'] = [e.save_command() for e in self.edges]
+        return data
+
     def save(self, save_as=False):
 
         if save_as:
-            name_filter = "Graph files (*.graph)"
+            name_filter = "Graph files (*.json)"
             pth = QFileDialog.getSaveFileName(filter=name_filter)
             if not pth[0] == '':
                 self._current_file_name = pth[0]
@@ -910,7 +922,7 @@ class GraphWidget(QGraphicsView, Graph):
                 self._current_file_name = "Untitled"
         else:
             if not path.isfile(self._current_file_name):
-                name_filter = "Graph files (*.graph)"
+                name_filter = "Graph files (*.json)"
                 pth = QFileDialog.getSaveFileName(filter=name_filter)
                 if not pth[0] == '':
                     self._current_file_name = pth[0]
@@ -920,38 +932,10 @@ class GraphWidget(QGraphicsView, Graph):
         if self._current_file_name in ["", "Untitled"]:
             return
 
-        graph = "SAVE GRAPH SCRIPT\n"  # add some scene info. version, user, date, etc.
-        # slider positions
-        graph += "setHorizontalScrollBar ~h {0}\n".format(self.horizontalScrollBar().value())
-        graph += "setVerticalScrollBar ~v {0}\n".format(self.verticalScrollBar().value())
-        # tools visibility
-        graph += "setNodeBoxVisible ~v {0}\n".format(int(self.parent.dockWidgetLeft.isVisible()))
-        graph += "setConsoleVisible ~v {0}\n".format(int(self.parent.dockWidgetConsole.isVisible()))
-        graph += "setPropertiesVisible ~v {0}\n".format(int(self.parent.dockWidgetNodeView.isVisible()))
-        # create all nodes and set attributes
-        for n in self.nodes:
-            # process nodes with customized behavior
-            line = n.save_command()
-            graph += line
-            if '\n' not in line:
-                print(line, n.name)
-            for inp in n.inputs:
-                line = "setAttr {2}an {0} {2}v {1}\n".format(inp.port_name(), inp.current_data(), FLAG_SYMBOL)
-                graph += line
-            for out in n.outputs:
-                line = "setAttr {2}an {0} {2}v {1}\n".format(out.port_name(), out.current_data(), FLAG_SYMBOL)
-                graph += line
-            # connect all attributes
-        for e in self.edges:
-            port_names = e.__str__().split(" >>> ")
-            line = "connectAttr {2}src {0} {2}dst {1}\n".format(port_names[0], port_names[1], FLAG_SYMBOL)
-            graph += line
-
-        self.write_to_console(graph)
-
         if not self._current_file_name == '':
-            with open(self._current_file_name, 'wb') as f:
-                f.write(graph)
+            with open(self._current_file_name, 'w') as f:
+                json.dump(self.getGraphSaveData(), f)
+                
             self._file_name_label.setPlainText(self._current_file_name)
             if self.parent:
                 self.parent.console.append(str("// saved: '{0}'".format(self._current_file_name)))
@@ -969,18 +953,19 @@ class GraphWidget(QGraphicsView, Graph):
             self.new_file()
 
     def load(self):
-        name_filter = "Graph files (*.graph)"
+        name_filter = "Graph files (*.json)"
         fpath = QFileDialog.getOpenFileName(filter=name_filter, dir="./Examples")
         if not fpath[0] == '':
             with open(fpath[0], 'r') as f:
-                data = f.readlines()
-            self.new_file()
-            for l in data[1:]:
-                cmd = l.replace("\n", "")
-                self.executeCommand(cmd)
-            self._current_file_name = fpath[0]
-            self._file_name_label.setPlainText(self._current_file_name)
-            self.frame()
+                data = json.load(f)
+                self.new_file()
+                for cmd in data[self.name]['nodes']:
+                    self.executeCommand(cmd)
+                for cmd in data[self.name]['edges']:
+                    self.executeCommand(cmd)
+                self._current_file_name = fpath[0]
+                self._file_name_label.setPlainText(self._current_file_name)
+                self.frame()
 
     def get_port_by_full_name(self, full_name):
         node_name = full_name.split('.')[0]
@@ -1075,8 +1060,8 @@ class GraphWidget(QGraphicsView, Graph):
             self.parent.toggle_property_view()
         if event.key() == QtCore.Qt.Key_Delete:
             self.kill_selected_nodes()
-        if event.key() == QtCore.Qt.Key_End:
-            self.showNodeBox()
+        if event.key() == QtCore.Qt.Key_P and modifiers == QtCore.Qt.NoModifier:
+            print(self.getGraphSaveData())
         if all([event.key() == QtCore.Qt.Key_W, modifiers == QtCore.Qt.ControlModifier]):
             self.duplicate_nodes()
         QGraphicsView.keyPressEvent(self, event)

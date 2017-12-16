@@ -30,7 +30,7 @@ class MakeArray(Node, NodeBase):
         super(MakeArray, self).post_create()
 
     def save_command(self):
-        return "createNode ~type {0} ~count {4} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, len(self.inputs))
+        return "createNode ~type {0} ~count {4} ~x {1} ~y {2} ~n {3}".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, len(self.inputs))
 
     def addInPort(self):
         index = len(self.inputs)
