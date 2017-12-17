@@ -21,7 +21,7 @@ class BoolNode(Node, NodeBase):
         return DESC
 
     @staticmethod
-    def get_category():
+    def category():
         return 'GenericTypes'
 
     def compute(self):

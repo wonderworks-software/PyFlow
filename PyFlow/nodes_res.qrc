@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>resources/py.png</file>
     <file>resources/array.png</file>
     <file>resources/green.png</file>
     <file>resources/red.png</file>

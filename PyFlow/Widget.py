@@ -124,11 +124,11 @@ class {0}(Node, NodeBase):
         portAffects(self.inp0, self.out0)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Common'
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return []
 
     @staticmethod
@@ -414,9 +414,9 @@ class NodeBoxTreeWidget(QTreeWidget):
 
         for node_file_name in Nodes.getNodeNames():
             node_class = Nodes.getNode(node_file_name)
-            nodeCategoryPath = node_class.get_category()
+            nodeCategoryPath = node_class.category()
 
-            checkString = node_file_name + nodeCategoryPath + ''.join(node_class.get_keywords())
+            checkString = node_file_name + nodeCategoryPath + ''.join(node_class.keywords())
             if pattern.lower() not in checkString.lower():
                 continue
 
@@ -726,7 +726,7 @@ class GraphWidget(QGraphicsView, Graph):
         self._scale = 1.0
         self._panSpeed = 1.0
         self.minimum_scale = 0.5
-        self.maximum_scale = 10
+        self.maximum_scale = 2.0
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)

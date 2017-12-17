@@ -64,7 +64,7 @@ class Call(Node, NodeBase):
                 self.counter = 0.0
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Utils'
 
     def compute(self):

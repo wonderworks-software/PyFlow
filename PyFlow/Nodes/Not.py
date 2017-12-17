@@ -15,7 +15,7 @@ class Not(Node, NodeBase):
         portAffects(self.in_bool, self.out_bool)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Common'
 
     @staticmethod

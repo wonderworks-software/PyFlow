@@ -11,7 +11,7 @@ class StringLower(Node, NodeBase):
         portAffects(self.in_str, self.out_str)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'String'
 
     def compute(self):

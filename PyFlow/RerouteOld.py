@@ -184,7 +184,7 @@ class Reroute(Node, NodeBase):
         super(Reroute, self).mousePressEvent(event)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Core'
 
     def boundingRect(self):

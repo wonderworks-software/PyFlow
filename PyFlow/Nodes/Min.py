@@ -15,7 +15,7 @@ class Min(Node, NodeBase):
         portAffects(self.inp, self.out)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Common'
 
     @staticmethod

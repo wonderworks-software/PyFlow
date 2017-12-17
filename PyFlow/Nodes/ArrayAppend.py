@@ -16,7 +16,7 @@ class ArrayAppend(Node, NodeBase):
         portAffects(self.element, self.out_arr)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Array'
 
     def compute(self):

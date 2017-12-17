@@ -11,7 +11,7 @@ class IntToFloat(ConvertNode, NodeBase):
         portAffects(self.inp0, self.out0)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Convert'
 
     @staticmethod
@@ -19,7 +19,7 @@ class IntToFloat(ConvertNode, NodeBase):
         return "Converts integer to float"
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return []
 
     def compute(self):

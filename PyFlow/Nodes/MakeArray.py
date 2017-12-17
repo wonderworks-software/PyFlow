@@ -40,7 +40,7 @@ class MakeArray(Node, NodeBase):
         self.update_ports()
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Array'
 
     def compute(self):

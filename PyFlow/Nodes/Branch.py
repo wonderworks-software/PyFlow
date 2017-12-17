@@ -13,7 +13,7 @@ class Branch(Node, NodeBase):
         self.condition = self.add_input_port("condition", DataTypes.Bool)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'FlowControl'
 
     def compute(self):

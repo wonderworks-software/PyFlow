@@ -14,7 +14,7 @@ class Max(Node, NodeBase):
         portAffects(self.inp0, self.out0)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Common'
 
     @staticmethod

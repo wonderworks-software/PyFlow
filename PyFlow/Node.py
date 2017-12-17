@@ -178,17 +178,17 @@ class Node(QGraphicsItem, NodeBase):
             return doc
 
         @staticmethod
-        def get_category():
+        def category():
             return meta['Category']
 
         @staticmethod
-        def get_keywords():
+        def keywords():
             return meta['Keywords']
 
         def constructor(self, name, graph, **kwargs):
             Node.__init__(self, name, graph, **kwargs)
 
-        nodeClass = type(foo.__name__, (Node,), {'__init__': constructor, 'get_category': get_category, 'get_keywords': get_keywords, 'description': description})
+        nodeClass = type(foo.__name__, (Node,), {'__init__': constructor, 'category': category, 'keywords': keywords, 'description': description})
         inst = nodeClass(graph.get_uniq_node_name(foo.__name__), graph)
 
         if returnType is not None:
@@ -290,7 +290,7 @@ class Node(QGraphicsItem, NodeBase):
         self.nodeMainGWidget.setMaximumWidth(self.w + self.spacings.kPortOffset)
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
         if self.isCallable():
-            if 'flow' not in self.get_category().lower():
+            if 'flow' not in self.category().lower():
                 self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
         else:
             self.label().bg = QtGui.QImage(':/icons/resources/green.png')
@@ -384,11 +384,11 @@ class Node(QGraphicsItem, NodeBase):
         return p
 
     @staticmethod
-    def get_category():
+    def category():
         return "Default"
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return []
 
     def add_output_port(self, port_name, data_type, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
@@ -428,6 +428,19 @@ class Node(QGraphicsItem, NodeBase):
     def set_pos(self, x, y):
         NodeBase.set_pos(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
+
+    def removePort(self, name):
+        for pin in self.inputs:
+            if name == pin.name:
+                item = self.inputs.pop(self.inputs.index(pin))
+                self.scene().removeItem(item)
+                del item
+
+        for pin in self.outputs:
+            if name == pin.name:
+                item = self.outputs.pop(self.outputs.index(pin))
+                self.scene().removeItem(item)
+                del item
 
     def _add_port(self, port_type, data_type, foo, hideLabel=False, bCreateInputWidget=True, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
         newColor = color

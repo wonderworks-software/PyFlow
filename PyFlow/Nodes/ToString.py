@@ -11,7 +11,7 @@ class ToString(ConvertNode, NodeBase):
         portAffects(self.in_data, self.out_data)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Convert'
 
     def compute(self):

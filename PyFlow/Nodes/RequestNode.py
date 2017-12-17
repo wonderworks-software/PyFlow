@@ -50,7 +50,7 @@ class RequestNode(Node, NodeBase):
             self.cb.setCheckState(QtCore.Qt.Unchecked)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Utils'
 
     def Tick(self, delta):

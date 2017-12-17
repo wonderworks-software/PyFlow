@@ -15,7 +15,7 @@ class StringReplace(Node, NodeBase):
         portAffects(self.new_ptn, self.output)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'String'
 
     def compute(self):

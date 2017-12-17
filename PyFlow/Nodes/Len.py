@@ -13,7 +13,7 @@ class Len(Node, NodeBase):
         portAffects(self.in_arr, self.out_len)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Utils'
 
     def compute(self):

@@ -13,11 +13,11 @@ class Delay(Node, NodeBase):
         self.process = False
 
     @staticmethod
-    def get_category():
+    def category():
         return 'FlowControl'
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return []
 
     @staticmethod

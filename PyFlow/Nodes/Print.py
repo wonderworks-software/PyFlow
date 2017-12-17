@@ -12,7 +12,7 @@ class Print(Node, NodeBase):
         self.data = self.add_input_port("data", DataTypes.Any)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'String'
 
     def compute(self):

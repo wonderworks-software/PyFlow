@@ -12,7 +12,7 @@ class StringAppend(Node, NodeBase):
         portAffects(self.second, self.output)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'String'
 
     def compute(self):

@@ -21,11 +21,11 @@ class ForLoop(Node, NodeBase):
         portAffects(self.step, self.index)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'FlowControl'
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return ['iter']
 
     @staticmethod

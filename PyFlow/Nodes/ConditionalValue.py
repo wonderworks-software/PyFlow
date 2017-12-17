@@ -15,7 +15,7 @@ class ConditionalValue(Node, NodeBase):
         portAffects(self.falseValue, self.output)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'FlowControl'
 
     def compute(self):

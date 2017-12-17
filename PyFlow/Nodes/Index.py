@@ -14,7 +14,7 @@ class Index(Node, NodeBase):
         portAffects(self.value, self.index)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Array'
 
     def compute(self):

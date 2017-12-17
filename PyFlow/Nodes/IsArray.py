@@ -11,7 +11,7 @@ class IsArray(Node, NodeBase):
         portAffects(self.inp, self.out)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Conditions'
 
     def compute(self):

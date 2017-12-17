@@ -28,11 +28,11 @@ class ConvertNode(Node, NodeBase):
             return super(ConvertNode, self).add_output_port(*args, **kwargs)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Convert'
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return []
 
     @staticmethod

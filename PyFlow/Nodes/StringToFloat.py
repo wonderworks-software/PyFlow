@@ -11,7 +11,7 @@ class StringToFloat(ConvertNode, NodeBase):
         portAffects(self.in_str, self.out_flt)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Convert'
 
     def compute(self):

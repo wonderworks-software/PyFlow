@@ -26,11 +26,11 @@ class ForLoopWithBreak(Node, NodeBase):
         self.stop = True
 
     @staticmethod
-    def get_category():
+    def category():
         return 'FlowControl'
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return ['iter']
 
     @staticmethod

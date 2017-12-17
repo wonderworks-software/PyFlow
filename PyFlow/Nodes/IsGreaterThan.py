@@ -12,7 +12,7 @@ class IsGreaterThan(Node, NodeBase):
         portAffects(self.inputB, self.output)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Conditions'
 
     def compute(self):

@@ -13,7 +13,7 @@ class MakeInt(Node, NodeBase):
         self.compute()
 
     @staticmethod
-    def get_category():
+    def category():
         return 'GenericTypes'
 
     def compute(self):
