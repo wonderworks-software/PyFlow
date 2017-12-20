@@ -1,11 +1,13 @@
 from threading import Thread
 from AGraphCommon import *
 import weakref
+import uuid
 
 
 class PortBase(object):
     def __init__(self, name, parent, data_type):
         super(PortBase, self).__init__()
+        self.uid = uuid.uuid4()
         self.name = name.replace(" ", "_")
         self.parent = weakref.ref(parent)
         self.object_type = ObjectTypes.Port
@@ -170,6 +172,7 @@ class PortBase(object):
 class NodeBase(object):
     def __init__(self, name, graph):
         super(NodeBase, self).__init__()
+        self.uid = uuid.uuid4()
         self.graph = weakref.ref(graph)
         self.name = name
         self.object_type = ObjectTypes.Node
@@ -204,10 +207,19 @@ class NodeBase(object):
             p.call = foo
         return p
 
-    def get_port_by_name(self, name):
-        for p in self.inputs + self.outputs:
-            if p.name == name:
-                return p
+    def get_port_by_name(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
+        if pinsSelectionGroup == PinSelectionGroup.BothSides:
+            for p in self.inputs + self.outputs:
+                if p.name == name:
+                    return p
+        elif pinsSelectionGroup == PinSelectionGroup.Inputs:
+            for p in self.inputs:
+                if p.name == name:
+                    return p
+        else:
+            for p in self.outputs:
+                if p.name == name:
+                    return p
 
     def compute(self):
         '''

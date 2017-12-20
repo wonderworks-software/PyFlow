@@ -142,6 +142,15 @@ class Node(QGraphicsItem, NodeBase):
 
         self.tweakPosition()
 
+    @staticmethod
+    def recreate(node):
+        pos = node.scenePos()
+        className = node.__class__.__name__
+        name = node.name
+        newNode = node.graph().create_node(className, pos.x(), pos.y(), name)
+        node.kill()
+        return newNode
+
     @property
     def w(self):
         return self._w
@@ -158,12 +167,12 @@ class Node(QGraphicsItem, NodeBase):
 
     def get_data(self, port_name):
         if port_name in [p.name for p in self.inputs]:
-            p = self.get_port_by_name(port_name)
+            p = self.get_port_by_name(port_name, PinSelectionGroup.Inputs)
             return p.get_data()
 
     def set_data(self, port_name, data):
         if port_name in [p.name for p in self.outputs]:
-            p = self.get_port_by_name(port_name)
+            p = self.get_port_by_name(port_name, PinSelectionGroup.Outputs)
             p.set_data(data)
 
     @staticmethod
@@ -429,19 +438,6 @@ class Node(QGraphicsItem, NodeBase):
         NodeBase.set_pos(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
 
-    def removePort(self, name):
-        for pin in self.inputs:
-            if name == pin.name:
-                item = self.inputs.pop(self.inputs.index(pin))
-                self.scene().removeItem(item)
-                del item
-
-        for pin in self.outputs:
-            if name == pin.name:
-                item = self.outputs.pop(self.outputs.index(pin))
-                self.scene().removeItem(item)
-                del item
-
     def _add_port(self, port_type, data_type, foo, hideLabel=False, bCreateInputWidget=True, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
         newColor = color
 
@@ -464,12 +460,15 @@ class Node(QGraphicsItem, NodeBase):
         p.type = port_type
         if port_type == PinTypes.Input and foo is not None:
             p.call = foo
+            # p.call = MethodType(foo, p, Port)
         connector_name = QGraphicsProxyWidget()
         connector_name.setContentsMargins(0, 0, 0, 0)
 
+        lblName = name
         if hideLabel:
-            name = ''
-        lbl = QLabel(name)
+            lblName = ''
+
+        lbl = QLabel(lblName)
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         if self.options:
@@ -487,7 +486,7 @@ class Node(QGraphicsItem, NodeBase):
         if port_type == PinTypes.Input:
             container = self.add_container(port_type)
             if hideLabel:
-                container.setMaximumWidth(15)
+                container.setMinimumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
             container.layout().addItem(p)
             p._container = container
@@ -505,7 +504,7 @@ class Node(QGraphicsItem, NodeBase):
         elif port_type == PinTypes.Output:
             container = self.add_container(port_type)
             if hideLabel:
-                container.setMaximumWidth(15)
+                container.setMinimumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
@@ -514,4 +513,5 @@ class Node(QGraphicsItem, NodeBase):
             self.outputsLayout.insertItem(index, container)
             container.adjustSize()
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        setattr(self, name, p)
         return p

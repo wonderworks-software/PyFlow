@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/PinWidget_ui.ui'
 #
-# Created: Sun Dec 17 22:56:35 2017
+# Created: Wed Dec 20 23:08:38 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(159, 26)
+        Form.resize(167, 26)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -40,6 +40,10 @@ class Ui_Form(object):
         self.lePinName.setMaximumSize(QtCore.QSize(60, 16777215))
         self.lePinName.setObjectName("lePinName")
         self.horizontalLayout.addWidget(self.lePinName)
+        self.cbHideLabel = QtGui.QCheckBox(Form)
+        self.cbHideLabel.setText("")
+        self.cbHideLabel.setObjectName("cbHideLabel")
+        self.horizontalLayout.addWidget(self.cbHideLabel)
         self.cbType = QtGui.QComboBox(Form)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -57,4 +61,5 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QtGui.QApplication.translate("Form", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.lePinName.setText(QtGui.QApplication.translate("Form", "pinName", None, QtGui.QApplication.UnicodeUTF8))
+        self.cbHideLabel.setToolTip(QtGui.QApplication.translate("Form", "should hide label", None, QtGui.QApplication.UnicodeUTF8))
 

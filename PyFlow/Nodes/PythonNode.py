@@ -6,6 +6,8 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QMenu
 from CodeEditor import CodeEditor
+import weakref
+import uuid
 
 
 class PythonNode(Node, NodeBase):
@@ -15,10 +17,21 @@ class PythonNode(Node, NodeBase):
         self.actionEdit = self.menu.addAction('edit')
         self.actionEdit.triggered.connect(self.openEditor)
         self.actionEdit.setIcon(QtGui.QIcon(':/icons/resources/py.png'))
-        self.editor = CodeEditor(self)
+        self.editorUUID = None
+        self.bKillEditor = True
 
     def openEditor(self):
-        self.editor.show()
+        if self.editorUUID and self.editorUUID in self.graph().codeEditors:
+            self.graph().codeEditors[self.editorUUID].show()
+            return
+        self.editorUUID = uuid.uuid4()
+        self.graph().codeEditors[self.editorUUID] = CodeEditor(self)
+        self.graph().codeEditors[self.editorUUID].show()
+
+    def kill(self):
+        if self.editorUUID and self.bKillEditor:
+            self.graph().codeEditors[self.editorUUID].deleteLater()
+        Node.kill(self)
 
     @staticmethod
     def category():
@@ -36,8 +49,4 @@ class PythonNode(Node, NodeBase):
         return 'default description'
 
     def compute(self):
-        str_data = self.inp0.get_data()
-        try:
-            self.out0.set_data(str_data.upper())
-        except Exception as e:
-            print(e)
+        print("Old")

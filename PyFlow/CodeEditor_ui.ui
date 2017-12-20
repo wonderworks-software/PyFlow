@@ -72,7 +72,7 @@
       <widget class="QListWidget" name="lwInputs">
        <property name="maximumSize">
         <size>
-         <width>130</width>
+         <width>150</width>
          <height>16777215</height>
         </size>
        </property>
@@ -95,7 +95,7 @@
       <widget class="QListWidget" name="lwOutputs">
        <property name="maximumSize">
         <size>
-         <width>130</width>
+         <width>150</width>
          <height>16777215</height>
         </size>
        </property>
@@ -108,6 +108,13 @@
      <property name="spacing">
       <number>0</number>
      </property>
+     <item>
+      <widget class="QPushButton" name="pbReset">
+       <property name="text">
+        <string>reset</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">

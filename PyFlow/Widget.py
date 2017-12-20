@@ -23,6 +23,7 @@ from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QGraphicsView
 from Qt.QtWidgets import QApplication
+from Qt.QtWidgets import QInputDialog
 import math
 import platform
 import random
@@ -784,6 +785,7 @@ class GraphWidget(QGraphicsView, Graph):
 
         self.node_box = NodesBox(None, self)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
+        self.codeEditors = {}
 
     def showNodeBox(self, dataType=None):
         self.node_box.show()
@@ -824,7 +826,7 @@ class GraphWidget(QGraphicsView, Graph):
 
         if self.pressed_item and hasattr(self.pressed_item, "object_type"):
             if self.pressed_item.object_type == ObjectTypes.NodeName and self.pressed_item.IsRenamable():
-                name, result = QtGui.QInputDialog.getText(self, "New name dialog", "Enter new name:")
+                name, result = QInputDialog.getText(self, "New name dialog", "Enter new name:")
                 if result:
                     self.pressed_item.parentItem().set_name(name)
                     self.update_property_view(self.pressed_item.parentItem())
@@ -1535,17 +1537,17 @@ class GraphWidget(QGraphicsView, Graph):
                 return
 
         if commandLine['cmd'] == "createNode":
-            try:
-                if commandLine['flags']['~type'] == "MakeArray":
-                    arrayNodeClass = Nodes.getNode("MakeArray")
-                    nodeInstance = arrayNodeClass(commandLine["flags"]["~n"], self, ports_number=int(commandLine["flags"]["~count"]))
-                    self.add_node(nodeInstance, float(commandLine["flags"]["~x"]), float(commandLine["flags"]["~y"]))
-                else:
-                    self.create_node(commandLine['flags']['~type'], float(commandLine['flags']['~x']), float(commandLine['flags']['~y']), commandLine['flags']['~n'])
-                return
-            except Exception, e:
-                self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] createNode {0}type className {0}x float {0}y float {0}n str".format(FLAG_SYMBOL))
+            # try:
+            if commandLine['flags']['~type'] == "MakeArray":
+                arrayNodeClass = Nodes.getNode("MakeArray")
+                nodeInstance = arrayNodeClass(commandLine["flags"]["~n"], self, ports_number=int(commandLine["flags"]["~count"]))
+                self.add_node(nodeInstance, float(commandLine["flags"]["~x"]), float(commandLine["flags"]["~y"]))
+            else:
+                self.create_node(commandLine['flags']['~type'], float(commandLine['flags']['~x']), float(commandLine['flags']['~y']), commandLine['flags']['~n'])
+                # return
+            # except Exception, e:
+            #     self.parent.console.append("[ERROR] {0}".format(e))
+            #     self.parent.console.append("[USAGE] createNode {0}type className {0}x float {0}y float {0}n str".format(FLAG_SYMBOL))
 
         if commandLine["cmd"] == "pluginWizard":
             try:

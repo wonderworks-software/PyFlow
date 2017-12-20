@@ -110,6 +110,12 @@ class ObjectTypes(object):
     NodeBox = 8
 
 
+class PinSelectionGroup:
+    Inputs = -1
+    Outputs = 1
+    BothSides = 0
+
+
 class PinTypes:
     Input = 0
     Output = 1

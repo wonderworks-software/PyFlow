@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>159</width>
+    <width>167</width>
     <height>26</height>
    </rect>
   </property>
@@ -91,6 +91,16 @@
          </property>
          <property name="text">
           <string>pinName</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cbHideLabel">
+         <property name="toolTip">
+          <string>should hide label</string>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
