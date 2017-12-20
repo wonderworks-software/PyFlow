@@ -26,7 +26,7 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def __init__(self):
         super(W, self).__init__()
         self.setupUi(self)
-        self.G = GraphWidget('MAIN_GRAPH', self)
+        self.G = GraphWidget('root', self)
         self.SceneLayout.addWidget(self.G)
 
         self.actionNode_box.triggered.connect(self.toggle_node_box)

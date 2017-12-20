@@ -75,6 +75,9 @@ class Port(QGraphicsWidget, PortBase):
         self.inputWidget = None
         self.portImage = QtGui.QImage(':/icons/resources/array.png')
 
+    def save_command(self):
+        return "setAttr {2}an {0} {2}v {1}".format(self.port_name(), self.current_data(), FLAG_SYMBOL)
+
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
         if self.hasConnections() and modifiers == QtCore.Qt.AltModifier:

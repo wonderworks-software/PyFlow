@@ -305,7 +305,7 @@ class Node(QGraphicsItem, NodeBase):
         return max(dPorts, fontWidth)
 
     def save_command(self):
-        return "createNode ~type {0} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name)
+        return "createNode ~type {0} ~x {1} ~y {2} ~n {3}".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name)
 
     def property_view(self):
         return self.graph().parent.dockWidgetNodeView
