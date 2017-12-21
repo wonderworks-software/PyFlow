@@ -19,6 +19,7 @@ class PythonNode(Node, NodeBase):
         self.actionEdit.setIcon(QtGui.QIcon(':/icons/resources/py.png'))
         self.editorUUID = None
         self.bKillEditor = True
+        self.label().icon = QtGui.QImage(':/icons/resources/py.png')
 
     def openEditor(self):
         if self.editorUUID and self.editorUUID in self.graph().codeEditors:

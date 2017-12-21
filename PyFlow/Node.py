@@ -39,6 +39,7 @@ class NodeName(QGraphicsTextItem):
         self.clipRect = None
         self.roundCornerFactor = 1.0
         self.bg = QtGui.QImage(':/icons/resources/white.png')
+        self.icon = None
 
     @staticmethod
     def IsRenamable():
@@ -54,7 +55,7 @@ class NodeName(QGraphicsTextItem):
             QGraphicsTextItem.keyPressEvent(self, event)
 
     def boundingRect(self):
-        return QtCore.QRectF(0, 0, self.parentItem().w, 20)
+        return QtCore.QRectF(0, 0, self.parentItem().w, 25)
 
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
@@ -70,13 +71,16 @@ class NodeName(QGraphicsTextItem):
         b.setStyle(QtCore.Qt.TexturePattern)
         painter.setBrush(b)
         painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
-        painter.setFont(self.descFont)
+        # painter.setFont(self.descFont)
+        parentRet = self.parentItem().childrenBoundingRect()
+        if self.icon:
+            painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
 
         painter.setClipping(True)
         if not self.clipRect:
-            self.clipRect = QtCore.QRectF(0, 0, self.parentItem().childrenBoundingRect().width() - 5.0, self.boundingRect().height())
+            self.clipRect = QtCore.QRectF(0, 0, parentRet.width() - 5.0, self.boundingRect().height())
         painter.setClipRect(self.clipRect)
-        painter.setPen(self.descFontPen)
+        # painter.setPen(self.descFontPen)
         # painter.drawText(5.0, self.h - 0.5, self.desc)
 
         super(NodeName, self).paint(painter, option, widget)
@@ -141,6 +145,7 @@ class Node(QGraphicsItem, NodeBase):
         self.setCursor(QtCore.Qt.OpenHandCursor)
 
         self.tweakPosition()
+        self.icon = None
 
     @staticmethod
     def recreate(node):

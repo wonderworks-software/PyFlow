@@ -82,6 +82,11 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_Form):
         # recreate node
         self.resetNode()
 
+        # label
+        lbText = self.leLabel.text()
+        if not lbText == '':
+            self.node.label().setPlainText(lbText)
+
         # assign compute method
         code = self.plainTextEdit.toPlainText()
         code = code.replace('\t', '    ')
@@ -105,7 +110,6 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_Form):
         for i in self.node.inputs:
             for o in self.node.outputs:
                 portAffects(i, o)
-
 
     def addInput(self):
         w = PinWidget()

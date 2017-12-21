@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/CodeEditor_ui.ui'
 #
-# Created: Wed Dec 20 23:08:38 2017
+# Created: Thu Dec 21 02:30:25 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,21 +14,32 @@ class Ui_Form(object):
         Form.setObjectName("Form")
         Form.resize(727, 391)
         self.verticalLayout = QtGui.QVBoxLayout(Form)
-        self.verticalLayout.setSpacing(0)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setSpacing(0)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pbAddInput = QtGui.QPushButton(Form)
-        self.pbAddInput.setObjectName("pbAddInput")
-        self.horizontalLayout.addWidget(self.pbAddInput)
+        self.gridLayout_2 = QtGui.QGridLayout()
+        self.gridLayout_2.setObjectName("gridLayout_2")
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
+        self.gridLayout_2.addItem(spacerItem, 0, 1, 1, 1)
         self.pbAddOutput = QtGui.QPushButton(Form)
         self.pbAddOutput.setObjectName("pbAddOutput")
-        self.horizontalLayout.addWidget(self.pbAddOutput)
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.gridLayout_2.addWidget(self.pbAddOutput, 0, 4, 1, 1)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.gridLayout_2.addItem(spacerItem1, 0, 3, 1, 1)
+        self.pbAddInput = QtGui.QPushButton(Form)
+        self.pbAddInput.setObjectName("pbAddInput")
+        self.gridLayout_2.addWidget(self.pbAddInput, 0, 0, 1, 1)
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setSpacing(1)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.leLabel = QtGui.QLineEdit(Form)
+        self.leLabel.setObjectName("leLabel")
+        self.horizontalLayout.addWidget(self.leLabel)
+        self.pbLabelReset = QtGui.QPushButton(Form)
+        self.pbLabelReset.setMaximumSize(QtCore.QSize(20, 16777215))
+        self.pbLabelReset.setText("")
+        self.pbLabelReset.setObjectName("pbLabelReset")
+        self.horizontalLayout.addWidget(self.pbLabelReset)
+        self.gridLayout_2.addLayout(self.horizontalLayout, 0, 2, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout_2)
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setSpacing(0)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
@@ -56,8 +67,8 @@ class Ui_Form(object):
         self.pbReset = QtGui.QPushButton(Form)
         self.pbReset.setObjectName("pbReset")
         self.horizontalLayout_4.addWidget(self.pbReset)
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_4.addItem(spacerItem1)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem2)
         self.pbSave = QtGui.QPushButton(Form)
         self.pbSave.setMaximumSize(QtCore.QSize(45, 16777215))
         self.pbSave.setObjectName("pbSave")
@@ -77,8 +88,10 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QtGui.QApplication.translate("Form", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.pbAddInput.setText(QtGui.QApplication.translate("Form", "add input", None, QtGui.QApplication.UnicodeUTF8))
         self.pbAddOutput.setText(QtGui.QApplication.translate("Form", "add output", None, QtGui.QApplication.UnicodeUTF8))
+        self.pbAddInput.setText(QtGui.QApplication.translate("Form", "add input", None, QtGui.QApplication.UnicodeUTF8))
+        self.leLabel.setText(QtGui.QApplication.translate("Form", "PythonNode", None, QtGui.QApplication.UnicodeUTF8))
+        self.leLabel.setPlaceholderText(QtGui.QApplication.translate("Form", "Node label...", None, QtGui.QApplication.UnicodeUTF8))
         self.pbReset.setText(QtGui.QApplication.translate("Form", "reset", None, QtGui.QApplication.UnicodeUTF8))
         self.pbSave.setText(QtGui.QApplication.translate("Form", "save", None, QtGui.QApplication.UnicodeUTF8))
 
