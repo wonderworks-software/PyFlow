@@ -472,6 +472,7 @@ class Node(QGraphicsItem, NodeBase):
         lblName = name
         if hideLabel:
             lblName = ''
+            p.bLabelHidden = True
 
         lbl = QLabel(lblName)
         lbl.setContentsMargins(0, 0, 0, 0)

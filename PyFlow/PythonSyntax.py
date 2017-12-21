@@ -27,7 +27,7 @@ STYLES = {
     'string': format('yellow'),
     'string2': format('yellow'),
     'comment': format('gray', 'italic'),
-    'self': format('white', 'italic'),
+    'self': format('green', 'italic'),
     'numbers': format('brown'),
 }
 

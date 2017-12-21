@@ -20,18 +20,19 @@ class PythonNode(Node, NodeBase):
         self.editorUUID = None
         self.bKillEditor = True
         self.label().icon = QtGui.QImage(':/icons/resources/py.png')
+        self.currentCode = "def compute(self):\n\tprint('Hello')"
 
     def openEditor(self):
-        if self.editorUUID and self.editorUUID in self.graph().codeEditors:
-            self.graph().codeEditors[self.editorUUID].show()
-            return
+        # if self.editorUUID and self.editorUUID in self.graph().codeEditors:
+        #     self.graph().codeEditors[self.editorUUID].show()
+        #     return
         self.editorUUID = uuid.uuid4()
-        self.graph().codeEditors[self.editorUUID] = CodeEditor(self)
+        self.graph().codeEditors[self.editorUUID] = CodeEditor(self, self.editorUUID)
         self.graph().codeEditors[self.editorUUID].show()
 
     def kill(self):
-        if self.editorUUID and self.bKillEditor:
-            self.graph().codeEditors[self.editorUUID].deleteLater()
+        # if self.editorUUID and self.bKillEditor:
+        self.graph().codeEditors[self.editorUUID].deleteLater()
         Node.kill(self)
 
     @staticmethod

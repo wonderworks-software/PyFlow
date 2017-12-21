@@ -13,13 +13,15 @@ from AbstractGraph import *
 import inspect
 from types import MethodType
 from Node import Node
+import weakref
 
 
 class PinWidget(QWidget, PinWidget_ui.Ui_Form):
     """doc string for PinWidget"""
-    def __init__(self):
+    def __init__(self, editor):
         super(PinWidget, self).__init__()
         self.setupUi(self)
+        self.editor = weakref.ref(editor)
         self.lePinName.setText('pinName')
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.items = [v for v in inspect.getmembers(DataTypes) if v[0] not in ['__doc__', '__module__', 'Reference']]
@@ -29,8 +31,8 @@ class PinWidget(QWidget, PinWidget_ui.Ui_Form):
             self.cbType.addItem(i[0], i[1])
 
     @staticmethod
-    def construct(name='pinName', hideLabel=False, dataType=DataTypes.Float):
-        w = PinWidget()
+    def construct(name='pinName', hideLabel=False, dataType=DataTypes.Float, editor=None):
+        w = PinWidget(editor)
         w.lePinName.setText(name)
 
         if hideLabel:
@@ -39,6 +41,7 @@ class PinWidget(QWidget, PinWidget_ui.Ui_Form):
             w.cbHideLabel.setCheckState(QtCore.Qt.Unchecked)
 
         w.cbType.setCurrentIndex(w.cbType.findData(dataType))
+        return w
 
     def shouldHideLabel(self):
         return self.cbHideLabel.isChecked()
@@ -50,27 +53,58 @@ class PinWidget(QWidget, PinWidget_ui.Ui_Form):
         return getattr(DataTypes, self.cbType.currentText())
 
 
-class CodeEditor(QWidget, CodeEditor_ui.Ui_Form):
-    def __init__(self, node):
+class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
+    def __init__(self, node, uid):
         super(CodeEditor, self).__init__()
         self.setupUi(self)
         self.node = node
+        self.uid = uid
         PythonSyntax.PythonHighlighter(self.plainTextEdit.document())
         option = QtGui.QTextOption()
-        option.setFlags(QtGui.QTextOption.ShowTabsAndSpaces)
+        option.setFlags(option.Flags() | QtGui.QTextOption.ShowTabsAndSpaces)
         self.plainTextEdit.document().setDefaultTextOption(option)
-        self.plainTextEdit.setTabStopWidth(15)
+        self.setFontSize(15)
         self.sbFontSize.valueChanged.connect(lambda: self.setFontSize(self.sbFontSize.value()))
-        self.pbAddInput.clicked.connect(self.addInput)
-        self.pbAddOutput.clicked.connect(self.addOutput)
+        self.pbAddInput.clicked.connect(self.addDefaultInput)
+        self.pbAddOutput.clicked.connect(self.addDefaultOutput)
         self.pbSave.clicked.connect(self.applyData)
         self.pbReset.clicked.connect(self.resetUiData)
+        self.pbKillSelectedItems.clicked.connect(self.onKillSelectedPins)
         self.resetUiData()
+        self.populate()
+
+    def onKillSelectedPins(self):
+        for i in self.lwInputs.selectedItems():
+            r = self.lwInputs.row(i)
+            item = self.lwInputs.takeItem(r)
+            del item
+
+        for o in self.lwOutputs.selectedItems():
+            r = self.lwOutputs.row(o)
+            item = self.lwOutputs.takeItem(r)
+            del item
+
+    def closeEvent(self, event):
+        event.accept()
+        self.node.graph().codeEditors[self.uid].deleteLater()
+
+    def populate(self):
+        '''
+        populate ui from node
+        '''
+        for i in self.node.inputs:
+            pw = PinWidget.construct(i.name, i.bLabelHidden, i.data_type, self)
+            self.appendInput(pw)
+        for o in self.node.outputs:
+            pw = PinWidget.construct(o.name, o.bLabelHidden, o.data_type, self)
+            self.appendOutput(pw)
+        self.leLabel.setText(self.node.label().toPlainText())
+        self.plainTextEdit.setPlainText(self.node.currentCode)
 
     def resetUiData(self):
         self.lwInputs.clear()
         self.lwOutputs.clear()
-        self.plainTextEdit.setPlainText("def compute(self):\n    print('Hello')")
+        self.plainTextEdit.setPlainText("def compute(self):\n\tprint('Hello')")
 
     def resetNode(self):
         self.node.bKillEditor = False
@@ -111,23 +145,36 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_Form):
             for o in self.node.outputs:
                 portAffects(i, o)
 
-    def addInput(self):
-        w = PinWidget()
+        self.node.currentCode = code
+
+    def appendInput(self, pw):
         item = QListWidgetItem(self.lwInputs)
-        item.setSizeHint(QtCore.QSize(w.sizeHint().width(), 40))
+        item.setSizeHint(QtCore.QSize(pw.sizeHint().width(), 80))
         self.lwInputs.addItem(item)
-        self.lwInputs.setItemWidget(item, w)
+        self.lwInputs.setItemWidget(item, pw)
         del item
 
-    def addOutput(self):
-        w = PinWidget()
+    def appendOutput(self, pw):
         item = QListWidgetItem(self.lwOutputs)
-        item.setSizeHint(QtCore.QSize(w.sizeHint().width(), 40))
+        item.setSizeHint(QtCore.QSize(pw.sizeHint().width(), 80))
         self.lwOutputs.addItem(item)
-        self.lwOutputs.setItemWidget(item, w)
+        self.lwOutputs.setItemWidget(item, pw)
         del item
+
+    def addDefaultInput(self):
+        w = PinWidget(self)
+        self.appendInput(w)
+
+    def addDefaultOutput(self):
+        w = PinWidget(self)
+        self.appendOutput(w)
 
     def setFontSize(self, size):
         f = self.plainTextEdit.font()
-        f.setPointSize(abs(size))
+        size = abs(size)
+        f.setPointSize(size)
+        self.plainTextEdit.setTabStopWidth(size)
         self.plainTextEdit.setFont(f)
+        option = self.plainTextEdit.document().defaultTextOption()
+        option.setTabStop(size)
+        self.plainTextEdit.document().setDefaultTextOption(option)
