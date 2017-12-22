@@ -20,7 +20,10 @@ class PythonNode(Node, NodeBase):
         self.editorUUID = None
         self.bKillEditor = True
         self.label().icon = QtGui.QImage(':/icons/resources/py.png')
-        self.currentCode = "def compute(self):\n\tprint('Hello')"
+        self.currentComputeCode = "def compute(self):\n\tprint('Hello')"
+
+    def computeCode(self):
+        return self.currentComputeCode
 
     def openEditor(self):
         self.editorUUID = uuid.uuid4()

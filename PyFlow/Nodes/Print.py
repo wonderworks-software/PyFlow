@@ -7,9 +7,9 @@ from Node import Node
 class Print(Node, NodeBase):
     def __init__(self, name, graph):
         super(Print, self).__init__(name, graph)
-        self.inExec = self.add_input_port("in", DataTypes.Exec, self.compute, True)
-        self.outExec = self.add_output_port("out", DataTypes.Exec, None, True)
-        self.data = self.add_input_port("data", DataTypes.Any)
+        self.inExec = self.addInputPin("in", DataTypes.Exec, self.compute, True)
+        self.outExec = self.addOutputPin("out", DataTypes.Exec, None, True)
+        self.data = self.addInputPin("data", DataTypes.Any)
 
     @staticmethod
     def category():
@@ -17,6 +17,6 @@ class Print(Node, NodeBase):
 
     def compute(self):
         if self.inExec.hasConnections():
-            self.graph().write_to_console(self.data.get_data())
-            print(self.data.get_data())
+            self.graph().writeToConsole(self.data.getData())
+            print(self.data.getData())
         self.outExec.call()

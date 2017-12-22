@@ -11,7 +11,7 @@ from Node import Node
 class Call(Node, NodeBase):
     def __init__(self, name, graph):
         super(Call, self).__init__(name, graph)
-        self.out = self.add_output_port("OUT", DataTypes.Exec, self.compute)
+        self.out = self.addOutputPin("OUT", DataTypes.Exec, self.compute)
 
         self.process = False
         self.interval = 0.0

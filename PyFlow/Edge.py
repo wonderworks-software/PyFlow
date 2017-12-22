@@ -4,11 +4,13 @@ from Qt.QtWidgets import QGraphicsPathItem
 from Settings import Colors
 from AbstractGraph import *
 import weakref
+from uuid import UUID, uuid4
 
 
 class Edge(QGraphicsPathItem):
     def __init__(self, source, destination, graph):
         QGraphicsPathItem.__init__(self)
+        self.uid = uuid4()
         self.graph = weakref.ref(graph)
         self.source = weakref.ref(source)
         self.destination = weakref.ref(destination)
@@ -22,13 +24,13 @@ class Edge(QGraphicsPathItem):
         self.cp2 = QtCore.QPointF(0.0, 0.0)
 
         self.setZValue(-1)
-        self.connection = {'From': self.source().port_name(),
-                           'To': self.destination().port_name()}
+        self.connection = {'From': self.source().pinName(),
+                           'To': self.destination().pinName()}
 
         self.color = self.source().color
 
         self.thikness = 1
-        if source.data_type == DataTypes.Exec and destination.data_type == DataTypes.Exec:
+        if source.dataType == DataTypes.Exec and destination.dataType == DataTypes.Exec:
             self.thikness = 2
 
         self.pen = QtGui.QPen(self.color, self.thikness, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
@@ -41,8 +43,22 @@ class Edge(QGraphicsPathItem):
         self.source().update()
         self.destination().update()
 
-    def save_command(self):
-        return "connectAttr {2}src {0} {2}dst {1}".format(self.source().port_name(), self.destination().port_name(), FLAG_SYMBOL)
+    @staticmethod
+    def deserialize(data, graph):
+        srcUUID = UUID(data['sourceUUID'])
+        dstUUID = UUID(data['destinationUUID'])
+        if srcUUID in graph.pins and dstUUID in graph.pins:
+            srcPin = graph.pins[srcUUID]
+            dstPin = graph.pins[dstUUID]
+            graph.addEdge(srcPin, dstPin)
+
+    def serialize(self):
+        script = {'sourceUUID': str(self.source().uid),
+                  'destinationUUID': str(self.destination().uid),
+                  'sourceName': self.source().pinName(),
+                  'destinationName': self.destination().pinName(),
+                  }
+        return script
 
     def __str__(self):
         return '{0}.{1} >>> {2}.{3}'.format(self.source().parent().name,
@@ -54,8 +70,8 @@ class Edge(QGraphicsPathItem):
         super(Edge, self).hoverEnterEvent(event)
         self.pen.setWidthF(self.thikness + (self.thikness / 1.5))
         self.update()
-        if self.graph().is_debug():
-            print(self.__str__(), self.source().data_type, self.destination().data_type)
+        if self.graph().isDebug():
+            print(self.__str__(), self.source().dataType, self.destination().dataType)
 
     def getEndPoints(self):
         p1 = self.source().boundingRect().center() + self.source().scenePos()
@@ -80,7 +96,7 @@ class Edge(QGraphicsPathItem):
         self.update()
 
     def source_port_name(self):
-        return self.source().port_name()
+        return self.source().pinName()
 
     def shape(self):
         qp = QtGui.QPainterPathStroker()
@@ -105,7 +121,7 @@ class Edge(QGraphicsPathItem):
         self.setPath(self.mPath)
 
     def destination_port_name(self):
-        return self.destination().port_name()
+        return self.destination().pinName()
 
     def paint(self, painter, option, widget):
         self.setPen(self.pen)

@@ -33,10 +33,10 @@ class MathLib(FunctionLibraryBase):
         '''Return x factorial. Raises ValueError if x is not integral or is negative.'''
         try:
             f = math.factorial(x)
-            result.set_data(True)
+            result.setData(True)
             return f
         except:
-            result.set_data(False)
+            result.setData(False)
             return -1
 
     @staticmethod
@@ -62,8 +62,8 @@ class MathLib(FunctionLibraryBase):
     def frexp(x=(DataTypes.Float, 0.0), m=(DataTypes.Reference, DataTypes.Float), e=(DataTypes.Reference, DataTypes.Int)):
         '''Return the mantissa and exponent of x as the pair (m, e). m is a float and e is an integer such that x == m * 2**e exactly.'''
         t = math.frexp(x)
-        m.set_data(t[0])
-        e.set_data(t[1])
+        m.setData(t[0])
+        e.setData(t[1])
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
@@ -71,10 +71,10 @@ class MathLib(FunctionLibraryBase):
         '''Return an accurate floating point sum of values in the iterable. Avoids loss of precision by tracking multiple intermediate partial sums.'''
         try:
             s = math.fsum([float(i) for i in arr])
-            result.set_data(True)
+            result.setData(True)
             return s
         except:
-            result.set_data(False)
+            result.setData(False)
             return 0.0
 
     @staticmethod
@@ -100,16 +100,16 @@ class MathLib(FunctionLibraryBase):
     def modf(x=(DataTypes.Int, 0), f=(DataTypes.Reference, DataTypes.Float), i=(DataTypes.Reference, DataTypes.Int)):
         '''Return the fractional and integer parts of x. Both results carry the sign of x and are floats.'''
         t = math.modf(x)
-        f.set_data(t[0])
-        i.set_data(t[1])
+        f.setData(t[0])
+        i.setData(t[1])
 
     @staticmethod
     @annotated(returns=None, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
     def fmodf(x=(DataTypes.Float, 0), f=(DataTypes.Reference, DataTypes.Float), i=(DataTypes.Reference, DataTypes.Int)):
         '''Return the fractional and integer parts of x. Both results carry the sign of x and are floats.'''
         t = math.modf(x)
-        f.set_data(t[0])
-        i.set_data(t[1])
+        f.setData(t[0])
+        i.setData(t[1])
 
     @staticmethod
     @annotated(returns=DataTypes.Int, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
@@ -134,10 +134,10 @@ class MathLib(FunctionLibraryBase):
     def log(x=(DataTypes.Float, 1.0), base=(DataTypes.Float, math.e), result=(DataTypes.Reference, DataTypes.Bool)):
         '''With one argument, return the natural logarithm of x (to base e).\nWith two arguments, return the logarithm of x to the given base, calculated as log(x)/log(base).'''
         try:
-            result.set_data(True)
+            result.setData(True)
             return math.log(x, base)
         except:
-            result.set_data(False)
+            result.setData(False)
             return -1
 
     @staticmethod
@@ -145,10 +145,10 @@ class MathLib(FunctionLibraryBase):
     def log1p(x=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the natural logarithm of 1+x (base e). The result is calculated in a way which is accurate for x near zero.'''
         try:
-            result.set_data(True)
+            result.setData(True)
             return math.log1p(x)
         except:
-            result.set_data(False)
+            result.setData(False)
             return -1
 
     @staticmethod
@@ -156,10 +156,10 @@ class MathLib(FunctionLibraryBase):
     def log10(x=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the base-10 logarithm of x. This is usually more accurate than log(x, 10).'''
         try:
-            result.set_data(True)
+            result.setData(True)
             return math.log10(x)
         except:
-            result.set_data(False)
+            result.setData(False)
             return -1
 
     @staticmethod
@@ -167,10 +167,10 @@ class MathLib(FunctionLibraryBase):
     def power(x=(DataTypes.Float, 0.0), y=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return x raised to the power y.'''
         try:
-            result.set_data(True)
+            result.setData(True)
             return math.pow(x, y)
         except:
-            result.set_data(False)
+            result.setData(False)
             return -1
 
     @staticmethod
@@ -178,10 +178,10 @@ class MathLib(FunctionLibraryBase):
     def sqrt(x=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the square root of x.'''
         try:
-            result.set_data(True)
+            result.setData(True)
             return math.sqrt(x)
         except:
-            result.set_data(False)
+            result.setData(False)
             return -1
 
     @staticmethod
@@ -190,10 +190,10 @@ class MathLib(FunctionLibraryBase):
         '''Sums start and the items of an iterable from left to right and returns the total.'''
         try:
             s = math.fsum([int(i) for i in arr])
-            result.set_data(True)
+            result.setData(True)
             return s
         except:
-            result.set_data(False)
+            result.setData(False)
             return 0
 
     @staticmethod
@@ -226,10 +226,10 @@ class MathLib(FunctionLibraryBase):
         '''Integer devision.'''
         try:
             d = A / B
-            result.set_data(True)
+            result.setData(True)
             return d
         except:
-            result.set_data(False)
+            result.setData(False)
             return -1
 
     @staticmethod
@@ -238,10 +238,10 @@ class MathLib(FunctionLibraryBase):
         '''Float devision.'''
         try:
             d = A / B
-            result.set_data(True)
+            result.setData(True)
             return d
         except:
-            result.set_data(False)
+            result.setData(False)
             return -1
 
     @staticmethod
@@ -332,7 +332,7 @@ class MathLib(FunctionLibraryBase):
     @annotated(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
     def randint(start=(DataTypes.Int, 0), end=(DataTypes.Int, 10), Result=(DataTypes.Reference, DataTypes.Int)):
         '''Return a random integer N such that a <= N <= b.'''
-        Result.set_data(random.randint(start, end))
+        Result.setData(random.randint(start, end))
         push(Result)
 
     @staticmethod
@@ -340,7 +340,7 @@ class MathLib(FunctionLibraryBase):
     def shuffle(seq=(DataTypes.Array, []), Result=(DataTypes.Reference, DataTypes.Array)):
         '''Shuffle the sequence x in place.'''
         random.shuffle(seq)
-        Result.set_data(seq)
+        Result.setData(seq)
         push(Result)
 
     @staticmethod
@@ -349,25 +349,25 @@ class MathLib(FunctionLibraryBase):
         '''Return a random element from the non-empty sequence seq. If seq is empty, raises IndexError.'''
         try:
             item = random.choice(seq)
-            Item.set_data(item)
-            Result.set_data(True)
+            Item.setData(item)
+            Result.setData(True)
             push(Result)
             push(Item)
         except:
-            Result.set_data(False)
+            Result.setData(False)
             push(Result)
             push(Item)
-            Item.set_data(None)
+            Item.setData(None)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
     def acosh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the inverse hyperbolic cosine of x.'''
         try:
-            Result.set_data(True)
+            Result.setData(True)
             return math.acosh(x)
         except:
-            Result.set_data(False)
+            Result.setData(False)
             return -1
 
     @staticmethod
@@ -381,10 +381,10 @@ class MathLib(FunctionLibraryBase):
     def atanh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the inverse hyperbolic tangent of x.'''
         try:
-            Result.set_data(True)
+            Result.setData(True)
             return math.atanh(x)
         except:
-            Result.set_data(False)
+            Result.setData(False)
             return -1
 
     @staticmethod
@@ -392,10 +392,10 @@ class MathLib(FunctionLibraryBase):
     def cosh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the hyperbolic cosine of x.'''
         try:
-            Result.set_data(True)
+            Result.setData(True)
             return math.cosh(x)
         except:
-            Result.set_data(False)
+            Result.setData(False)
             return -1
 
     @staticmethod
@@ -403,10 +403,10 @@ class MathLib(FunctionLibraryBase):
     def sinh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the hyperbolic sine of x.'''
         try:
-            Result.set_data(True)
+            Result.setData(True)
             return math.sinh(x)
         except:
-            Result.set_data(False)
+            Result.setData(False)
             return -1
 
     @staticmethod
@@ -432,10 +432,10 @@ class MathLib(FunctionLibraryBase):
     def gamma(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the Gamma function at x.'''
         try:
-            Result.set_data(True)
+            Result.setData(True)
             return math.gamma(x)
         except:
-            Result.set_data(False)
+            Result.setData(False)
             return -1
 
     @staticmethod
@@ -443,10 +443,10 @@ class MathLib(FunctionLibraryBase):
     def lgamma(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the natural logarithm of the absolute value of the Gamma function at x.'''
         try:
-            Result.set_data(True)
+            Result.setData(True)
             return math.lgamma(x)
         except:
-            Result.set_data(False)
+            Result.setData(False)
             return -1
 
     @staticmethod

@@ -1,5 +1,5 @@
 import weakref
-from Port import Port
+from Pin import Pin
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QDoubleSpinBox
@@ -16,14 +16,14 @@ class PinInputWidgetBase(object):
 
     def __init__(self, pin, **kwds):
         super(PinInputWidgetBase, self).__init__(**kwds)
-        if not isinstance(pin, Port):
-            raise TypeError("[ERROR] Port expected, got {0}".format(type(pin)))
+        if not isinstance(pin, Pin):
+            raise TypeError("[ERROR] Pin expected, got {0}".format(type(pin)))
         self.pin = weakref.ref(pin)
         pin.inputWidget = self
 
     def dataUpdated(self, data):
         # from widget to pin
-        self.pin().set_data(data)
+        self.pin().setData(data)
         push(self.pin())
 
     def setData(self, data):
@@ -94,14 +94,14 @@ def getPinWidget(pin):
     '''
     fabric method
     '''
-    if not isinstance(pin, Port):
-        raise TypeError("[ERROR] Port expected, got {0}".format(type(pin)))
-    if pin.data_type == DataTypes.Float:
+    if not isinstance(pin, Pin):
+        raise TypeError("[ERROR] Pin expected, got {0}".format(type(pin)))
+    if pin.dataType == DataTypes.Float:
         return FloatInputWidget(pin=pin)
-    if pin.data_type == DataTypes.Int:
+    if pin.dataType == DataTypes.Int:
         return IntInputWidget(pin=pin)
-    if pin.data_type == DataTypes.String:
+    if pin.dataType == DataTypes.String:
         return StringInputWidget(pin=pin)
-    if pin.data_type == DataTypes.Bool:
+    if pin.dataType == DataTypes.Bool:
         return BoolInputWidget(pin=pin)
     return None

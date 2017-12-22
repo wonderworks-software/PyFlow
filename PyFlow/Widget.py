@@ -32,8 +32,8 @@ from Settings import LineTypes
 from Settings import get_line_type
 
 from AbstractGraph import *
-from Edge import Edge  # RealTimeLine
-from Port import getPortColorByType, Port
+from Edge import Edge
+from Pin import getPortColorByType, Pin
 from Node import Node
 from os import listdir, path, startfile
 _file_folder = path.dirname(__file__)
@@ -55,7 +55,7 @@ class Direction:
     Down = 3
 
 
-def get_mid_point(args):
+def getMidPoint(args):
     return [sum(i) / len(i) for i in zip(*args)]
 
 
@@ -93,7 +93,7 @@ def _implementPlugin(name, console_out_foo, pluginType):
 from AbstractGraph import FLAG_SYMBOL
 
 
-class {0}(Command.Command):
+class {0}(Command):
 
     def __init__(self, graph):
         super({0}, self).__init__(graph)
@@ -105,11 +105,11 @@ class {0}(Command.Command):
     def execute(self, line):
         commandLine = self.parse(line)
         try:
-            self.graph.write_to_console("HELLO WORLD! Your message: {0}".format(commandLine['~text']))
+            self.graph.writeToConsole("HELLO WORLD! Your message: {0}".format(commandLine['~text']))
         except Exception as e:
             print("[ERROR] {0}".format(e))
             print(self.usage())
-            self.graph.write_to_console(self.usage())
+            self.graph.writeToConsole(self.usage())
 """.format(name)
 
     base_node_code = """from AbstractGraph import *
@@ -120,8 +120,8 @@ from Node import Node
 class {0}(Node, NodeBase):
     def __init__(self, name, graph):
         super({0}, self).__init__(name, graph, w=100, spacings=Spacings)
-        self.inp0 = self.add_input_port('in0', DataTypes.Any)
-        self.out0 = self.add_output_port('out0', DataTypes.Any)
+        self.inp0 = self.addInputPin('in0', DataTypes.Any)
+        self.out0 = self.addOutputPin('out0', DataTypes.Any)
         portAffects(self.inp0, self.out0)
 
     @staticmethod
@@ -138,9 +138,9 @@ class {0}(Node, NodeBase):
 
     def compute(self):
 
-        str_data = self.inp0.get_data()
+        str_data = self.inp0.getData()
         try:
-            self.out0.set_data(str_data.upper())
+            self.out0.setData(str_data.upper())
         except Exception as e:
             print(e)
 """.format(name)
@@ -172,7 +172,7 @@ class {0}(Node, NodeBase):
         startfile(file_path)
 
 
-def import_by_name(module, name):
+def importByName(module, name):
 
     if hasattr(module, name):
         try:
@@ -289,29 +289,31 @@ class SceneClass(QGraphicsScene):
             n.setSelected(False)
 
     def OnSelectionChanged(self):
-        selected_nodes = []
-        for n in self.parent().get_nodes():
+        selectedNodes = []
+        for n in self.parent().getNodes():
             if n.isSelected():
-                selected_nodes.append(n.name)
-        if len(selected_nodes) == 0:
-            self.parent().write_to_console("select {0}nl none".format(FLAG_SYMBOL))
+                selectedNodes.append(n.name)
+        if len(selectedNodes) == 0:
+            self.parent().writeToConsole("select {0}nl none".format(FLAG_SYMBOL))
             return
         cmd = "select {0}nl ".format(FLAG_SYMBOL)
-        for n in selected_nodes:
+        for n in selectedNodes:
             cmd += n
             cmd += " "
-        self.parent().write_to_console(cmd[:-1])
+        self.parent().writeToConsole(cmd[:-1])
 
     def dropEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
             className = event.mimeData().text()
-            name = self.parent().get_uniq_node_name(className)
+            name = self.parent().getUniqNodeName(className)
             dropItem = self.itemAt(event.scenePos())
             if not dropItem:
-                if className == "MakeArray":
-                    self.parent().executeCommand("createNode ~type MakeArray ~count {3} ~x {0} ~y {1} ~n {2}".format(event.scenePos().x(), event.scenePos().y(), name, 0))
-                else:
-                    self.parent().executeCommand("createNode {4}type {0} {4}x {1} {4}y {2} {4}n {3}".format(className, event.scenePos().x(), event.scenePos().y(), name, FLAG_SYMBOL))
+                nodeTemplate = Node.jsonTemplate()
+                nodeTemplate['type'] = className
+                nodeTemplate['name'] = name
+                nodeTemplate['x'] = event.scenePos().x()
+                nodeTemplate['y'] = event.scenePos().y()
+                instance = self.parent().createNode(nodeTemplate)
         else:
             super(SceneClass, self).dropEvent(event)
 
@@ -460,7 +462,7 @@ class NodesBox(QWidget):
         self.treeWidget.setObjectName("treeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)
-        self.lineEdit.textChanged.connect(self.le_text_changed)
+        self.lineEdit.textChanged.connect(self.leTextChanged)
         self.treeWidget.refresh()
 
     def sizeHint(self):
@@ -470,7 +472,7 @@ class NodesBox(QWidget):
         for i in self.treeWidget.categoryPaths:
             self.treeWidget.setItemExpanded(self.treeWidget.categoryPaths[i], True)
 
-    def le_text_changed(self):
+    def leTextChanged(self):
         if self.lineEdit.text() == '':
             self.lineEdit.setPlaceholderText("enter node name..")
             self.treeWidget.refresh()
@@ -488,26 +490,19 @@ class RubberRect(QGraphicsRectItem):
         self.setBrush(QtGui.QBrush(Colors.RubberRect))
         self.object_type = ObjectTypes.SelectionRect
 
-    def remove_node(self, node):
-        if node in self.nodes:
-            self.nodes.remove(node)
-            node.setParentItem(self.parentItem())
-            node.setPos(self.mapToScene(node.pos()))
-            self.update_count_label()
-
 
 class RGBAColorPicker(QWidget, rgba_color_picker_ui.Ui_rgba_color_picker_ui):
     def __init__(self, button):
         super(RGBAColorPicker, self).__init__()
         self.button = button
         self.setupUi(self)
-        self.set_button_background(self.button.color)
+        self.setButtonBackground(self.button.color)
         self.pb_color.color = self.button.color
         self.pb_color.clicked.connect(self.get_rgb)
         self.pb_apply.clicked.connect(self.apply)
-        self.hs_alpha.valueChanged.connect(self.tweak_alpha)
+        self.hs_alpha.valueChanged.connect(self.tweakAlpha)
 
-    def set_button_background(self, color):
+    def setButtonBackground(self, color):
         self.pb_color.setStyleSheet("background-color: rgb({0}, {1}, {2}, {3});".format(
             color.red(),
             color.green(),
@@ -516,7 +511,7 @@ class RGBAColorPicker(QWidget, rgba_color_picker_ui.Ui_rgba_color_picker_ui):
         ))
 
     def showEvent(self, event):
-        self.set_button_background(self.button.color)
+        self.setButtonBackground(self.button.color)
         self.hs_alpha.setValue(self.button.color.alpha())
         super(RGBAColorPicker, self).showEvent(event)
 
@@ -525,11 +520,11 @@ class RGBAColorPicker(QWidget, rgba_color_picker_ui.Ui_rgba_color_picker_ui):
         if color:
             self.pb_color.color = color
             color.setAlpha(self.hs_alpha.value())
-            self.set_button_background(color)
+            self.setButtonBackground(color)
 
-    def tweak_alpha(self):
+    def tweakAlpha(self):
         self.pb_color.color.setAlpha(self.hs_alpha.value())
-        self.set_button_background(self.pb_color.color)
+        self.setButtonBackground(self.pb_color.color)
 
     def apply(self):
         self.button.color = self.pb_color.color
@@ -546,52 +541,52 @@ class OptionsClass(QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
     def __init__(self):
         super(OptionsClass, self).__init__()
         self.setupUi(self)
-        self.connect_ui()
-        self.populate_ui()
+        self.connectUi()
+        self.populateUi()
         self.picker = None
         self.settings_path = path.dirname(__file__) + '\\config.ini'
         self.settings_class = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat, self)
         if not path.isfile(self.settings_path):
             self.write_default_config()
         self.pb_scene_bg_color.color = QtGui.QColor(self.settings_class.value('SCENE/Scene bg color'))
-        self.set_button_background(self.pb_scene_bg_color, self.pb_scene_bg_color.color)
+        self.setButtonBackground(self.pb_scene_bg_color, self.pb_scene_bg_color.color)
         self.pb_grid_color.color = QtGui.QColor(self.settings_class.value('SCENE/Grid color'))
-        self.set_button_background(self.pb_grid_color, self.pb_grid_color.color)
+        self.setButtonBackground(self.pb_grid_color, self.pb_grid_color.color)
         self.pb_edge_color.color = QtGui.QColor(self.settings_class.value('SCENE/Edge color'))
-        self.set_button_background(self.pb_edge_color, self.pb_edge_color.color)
+        self.setButtonBackground(self.pb_edge_color, self.pb_edge_color.color)
         self.pb_node_base_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes base color'))
-        self.set_button_background(self.pb_node_base_color, self.pb_node_base_color.color)
+        self.setButtonBackground(self.pb_node_base_color, self.pb_node_base_color.color)
         self.pb_node_selected_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes selected pen color'))
-        self.set_button_background(self.pb_node_selected_pen_color, self.pb_node_selected_pen_color.color)
+        self.setButtonBackground(self.pb_node_selected_pen_color, self.pb_node_selected_pen_color.color)
         self.pb_node_label_bg_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes label bg color'))
-        self.set_button_background(self.pb_node_label_bg_color, self.pb_node_label_bg_color.color)
+        self.setButtonBackground(self.pb_node_label_bg_color, self.pb_node_label_bg_color.color)
         self.pb_node_label_font_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes label font color'))
-        self.set_button_background(self.pb_node_label_font_color, self.pb_node_label_font_color.color)
+        self.setButtonBackground(self.pb_node_label_font_color, self.pb_node_label_font_color.color)
         self.pb_lyt_a_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt A color'))
-        self.set_button_background(self.pb_lyt_a_color, self.pb_lyt_a_color.color)
+        self.setButtonBackground(self.pb_lyt_a_color, self.pb_lyt_a_color.color)
         self.pb_lyt_b_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt B color'))
-        self.set_button_background(self.pb_lyt_b_color, self.pb_lyt_b_color.color)
-        self.pb_port_color.color = QtGui.QColor(self.settings_class.value('NODES/Port color'))
-        self.set_button_background(self.pb_port_color, self.pb_port_color.color)
-        self.pb_port_label_color.color = QtGui.QColor(self.settings_class.value('NODES/Port label color'))
-        self.set_button_background(self.pb_port_label_color, self.pb_port_label_color.color)
-        self.pb_port_dirty_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Port dirty color'))
-        self.set_button_background(self.pb_port_dirty_pen_color, self.pb_port_dirty_pen_color.color)
+        self.setButtonBackground(self.pb_lyt_b_color, self.pb_lyt_b_color.color)
+        self.pb_port_color.color = QtGui.QColor(self.settings_class.value('NODES/Pin color'))
+        self.setButtonBackground(self.pb_port_color, self.pb_port_color.color)
+        self.pb_port_label_color.color = QtGui.QColor(self.settings_class.value('NODES/Pin label color'))
+        self.setButtonBackground(self.pb_port_label_color, self.pb_port_label_color.color)
+        self.pb_port_dirty_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Pin dirty color'))
+        self.setButtonBackground(self.pb_port_dirty_pen_color, self.pb_port_dirty_pen_color.color)
         self.sb_node_label_font_size.setValue(int(self.settings_class.value('NODES/Nodes label font size')))
         self.fb_node_label_font.setCurrentFont(QtGui.QFont(self.settings_class.value('NODES/Nodes label font')))
-        self.fb_port_label_font.setCurrentFont(QtGui.QFont(self.settings_class.value('NODES/Port label font')))
-        self.sb_port_font_size.setValue(int(self.settings_class.value('NODES/Port label size')))
+        self.fb_port_label_font.setCurrentFont(QtGui.QFont(self.settings_class.value('NODES/Pin label font')))
+        self.sb_port_font_size.setValue(int(self.settings_class.value('NODES/Pin label size')))
         self.sb_edge_thickness.setValue(float(self.settings_class.value('SCENE/Edge line thickness')))
 
         idx = self.cb_grid_lines_type.findText(str(self.settings_class.value('SCENE/Grid lines type')))
         self.cb_grid_lines_type.setCurrentIndex(idx)
         idx = self.cb_edge_pen_type.findText(str(self.settings_class.value('SCENE/Edge pen type')))
         self.cb_edge_pen_type.setCurrentIndex(idx)
-        idx = self.cb_port_dirty_pen_type.findText(str(self.settings_class.value('NODES/Port dirty type')))
+        idx = self.cb_port_dirty_pen_type.findText(str(self.settings_class.value('NODES/Pin dirty type')))
         self.cb_port_dirty_pen_type.setCurrentIndex(idx)
 
     @staticmethod
-    def set_button_background(button, color):
+    def setButtonBackground(button, color):
         button.setStyleSheet("background-color: rgb({0}, {1}, {2}, {3});".format(
             color.red(),
             color.green(),
@@ -599,39 +594,39 @@ class OptionsClass(QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
             color.alpha()
         ))
 
-    def set_color(self, button):
+    def setColor(self, button):
         self.picker = RGBAColorPicker(button)
         self.picker.move(self.geometry().topRight().x(), self.geometry().topRight().y())
         self.picker.show()
 
-    def populate_ui(self):
+    def populateUi(self):
         line_types = [str(i) for i in dir(LineTypes) if i[0] == 'l']
         self.cb_port_dirty_pen_type.addItems(line_types)
         self.cb_grid_lines_type.addItems(line_types)
         self.cb_edge_pen_type.addItems(line_types)
 
-    def connect_ui(self):
+    def connectUi(self):
 
-        self.actionSave.triggered.connect(self.save_options)
+        self.actionSave.triggered.connect(self.saveOptions)
 
-        self.pb_scene_bg_color.clicked.connect(lambda: self.set_color(self.pb_scene_bg_color))
-        self.pb_grid_color.clicked.connect(lambda: self.set_color(self.pb_grid_color))
-        self.pb_edge_color.clicked.connect(lambda: self.set_color(self.pb_edge_color))
-        self.pb_node_base_color.clicked.connect(lambda: self.set_color(self.pb_node_base_color))
-        self.pb_node_label_font_color.clicked.connect(lambda: self.set_color(self.pb_node_label_font_color))
+        self.pb_scene_bg_color.clicked.connect(lambda: self.setColor(self.pb_scene_bg_color))
+        self.pb_grid_color.clicked.connect(lambda: self.setColor(self.pb_grid_color))
+        self.pb_edge_color.clicked.connect(lambda: self.setColor(self.pb_edge_color))
+        self.pb_node_base_color.clicked.connect(lambda: self.setColor(self.pb_node_base_color))
+        self.pb_node_label_font_color.clicked.connect(lambda: self.setColor(self.pb_node_label_font_color))
 
-        self.pb_node_selected_pen_color.clicked.connect(lambda: self.set_color(self.pb_node_selected_pen_color))
-        self.pb_node_label_bg_color.clicked.connect(lambda: self.set_color(self.pb_node_label_bg_color))
-        self.pb_lyt_a_color.clicked.connect(lambda: self.set_color(self.pb_lyt_a_color))
-        self.pb_lyt_b_color.clicked.connect(lambda: self.set_color(self.pb_lyt_b_color))
-        self.pb_port_color.clicked.connect(lambda: self.set_color(self.pb_port_color))
-        self.pb_port_label_color.clicked.connect(lambda: self.set_color(self.pb_port_label_color))
-        self.pb_port_dirty_pen_color.clicked.connect(lambda: self.set_color(self.pb_port_dirty_pen_color))
+        self.pb_node_selected_pen_color.clicked.connect(lambda: self.setColor(self.pb_node_selected_pen_color))
+        self.pb_node_label_bg_color.clicked.connect(lambda: self.setColor(self.pb_node_label_bg_color))
+        self.pb_lyt_a_color.clicked.connect(lambda: self.setColor(self.pb_lyt_a_color))
+        self.pb_lyt_b_color.clicked.connect(lambda: self.setColor(self.pb_lyt_b_color))
+        self.pb_port_color.clicked.connect(lambda: self.setColor(self.pb_port_color))
+        self.pb_port_label_color.clicked.connect(lambda: self.setColor(self.pb_port_label_color))
+        self.pb_port_dirty_pen_color.clicked.connect(lambda: self.setColor(self.pb_port_dirty_pen_color))
 
-    def save_options(self):
+    def saveOptions(self):
 
         print('save options', self.settings_path)
-        self.write_config()
+        self.writeConfig()
         self.close()
         try:
             if self.picker is not None:
@@ -639,7 +634,7 @@ class OptionsClass(QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         except:
             pass
 
-    def write_config(self):
+    def writeConfig(self):
         self.settings_class.beginGroup('NODES')
         self.settings_class.setValue('Nodes base color', self.pb_node_base_color.color)
         self.settings_class.setValue('Nodes selected pen color', self.pb_node_selected_pen_color.color)
@@ -649,12 +644,12 @@ class OptionsClass(QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.settings_class.setValue('Nodes label font size', self.sb_node_label_font_size.value())
         self.settings_class.setValue('Nodes lyt A color', self.pb_lyt_a_color.color)
         self.settings_class.setValue('Nodes lyt B color', self.pb_lyt_b_color.color)
-        self.settings_class.setValue('Port color', self.pb_port_color.color)
-        self.settings_class.setValue('Port dirty color', self.pb_port_dirty_pen_color.color)
-        self.settings_class.setValue('Port dirty type', self.cb_port_dirty_pen_type.currentText())
-        self.settings_class.setValue('Port label color', self.pb_port_label_color.color)
-        self.settings_class.setValue('Port label font', self.fb_port_label_font.currentFont())
-        self.settings_class.setValue('Port label size', self.sb_port_font_size.value())
+        self.settings_class.setValue('Pin color', self.pb_port_color.color)
+        self.settings_class.setValue('Pin dirty color', self.pb_port_dirty_pen_color.color)
+        self.settings_class.setValue('Pin dirty type', self.cb_port_dirty_pen_type.currentText())
+        self.settings_class.setValue('Pin label color', self.pb_port_label_color.color)
+        self.settings_class.setValue('Pin label font', self.fb_port_label_font.currentFont())
+        self.settings_class.setValue('Pin label size', self.sb_port_font_size.value())
         self.settings_class.endGroup()
         self.settings_class.beginGroup('SCENE')
         self.settings_class.setValue('Scene bg color', self.pb_scene_bg_color.color)
@@ -682,15 +677,15 @@ class OptionsClass(QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
         self.pb_lyt_a_color.color = Colors.PortLinesA
         self.settings_class.setValue('Nodes lyt B color', Colors.PortLinesB)
         self.pb_lyt_b_color.color = Colors.PortLinesB
-        self.settings_class.setValue('Port color', Colors.Connectors)
+        self.settings_class.setValue('Pin color', Colors.Connectors)
         self.pb_port_color.color = Colors.Connectors
-        self.settings_class.setValue('Port dirty color', Colors.DirtyPen)
+        self.settings_class.setValue('Pin dirty color', Colors.DirtyPen)
         self.pb_port_dirty_pen_color.color = Colors.DirtyPen
-        self.settings_class.setValue('Port dirty type', LineTypes.lDotLine)
-        self.settings_class.setValue('Port label color', Colors.PortNameColor)
+        self.settings_class.setValue('Pin dirty type', LineTypes.lDotLine)
+        self.settings_class.setValue('Pin label color', Colors.PortNameColor)
         self.pb_port_label_color.color = Colors.PortNameColor
-        self.settings_class.setValue('Port label font', QtGui.QFont('Consolas'))
-        self.settings_class.setValue('Port label size', 5)
+        self.settings_class.setValue('Pin label font', QtGui.QFont('Consolas'))
+        self.settings_class.setValue('Pin label size', 5)
         self.settings_class.endGroup()
         self.settings_class.beginGroup('SCENE')
         self.settings_class.setValue('Scene bg color', Colors.SceneBackground)
@@ -774,7 +769,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.registerCommands()
         self._sortcuts_enabled = True
         self.tick_timer = QtCore.QTimer()
-        self.tick_timer.timeout.connect(self.main_loop)
+        self.tick_timer.timeout.connect(self.mainLoop)
         self.tick_timer.start(20)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid_size = 10
@@ -807,13 +802,13 @@ class GraphWidget(QGraphicsView, Graph):
         self.horizontalScrollBar().setValue(x)
         self.verticalScrollBar().setValue(y)
 
-    def set_scrollbars_positions(self, horizontal, vertical):
+    def setScrollbarsPositions(self, horizontal, vertical):
         try:
             self.horizontalScrollBar().setValue(horizontal)
             self.verticalScrollBar().setValue(vertical)
         except Exception as e:
             print(e)
-            self.write_to_console(e)
+            self.writeToConsole(e)
 
     def mouseDoubleClickEvent(self, event):
         self.OnDoubleClick(self.mapToScene(event.pos()))
@@ -828,75 +823,72 @@ class GraphWidget(QGraphicsView, Graph):
             if self.pressed_item.object_type == ObjectTypes.NodeName and self.pressed_item.IsRenamable():
                 name, result = QInputDialog.getText(self, "New name dialog", "Enter new name:")
                 if result:
-                    self.pressed_item.parentItem().set_name(name)
-                    self.update_property_view(self.pressed_item.parentItem())
+                    self.pressed_item.parentItem().setName(name)
+                    self.updatePropertyView(self.pressed_item.parentItem())
 
-    def redraw_nodes(self):
-        for n in self.nodes:
+    def redrawNodes(self):
+        for n in self.getNodes():
             n.update_ports()
 
     def __del__(self):
         self.tick_timer.stop()
 
     @staticmethod
-    def play_sound_win(file_name):
+    def playSoundWin(file_name):
         t = Thread(target=lambda: winsound.PlaySound(file_name, winsound.SND_FILENAME))
         t.start()
 
-    def main_loop(self):
+    def mainLoop(self):
         deltaTime = clock() - self._lastClock
         ds = (deltaTime * 1000.0)
         if ds > 0:
             self.fps = 1000.0 / ds
         if self.autoPanController.isActive():
             self.moveScrollbar(self.autoPanController.getDelta())
-        for n in self.nodes:
+        for n in self.getNodes():
             n.Tick(deltaTime)
 
         self._lastClock = clock()
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
-        self.write_to_console(message)
+        self.writeToConsole(message)
 
     def registerCommands(self):
         for d in listdir(Commands.__path__[0]):
             if d.endswith(".py") and "__init__" not in d:
-                cmd = import_by_name(Commands, d.split(".")[0])
+                cmd = importByName(Commands, d.split(".")[0])
                 if cmd:
                     cmd = cmd(self)
                     self.registeredCommands[cmd.__class__.__name__] = cmd
                 else:
                     print "command not imported", d.split(".")[0]
 
-    def screen_shot(self):
+    def screenShot(self):
         name_filter = "Image (*.png)"
         fName = QFileDialog.getSaveFileName(filter=name_filter)
         if not fName[0] == '':
-            self.write_to_console("save screen to {0}".format(fName[0]))
+            self.writeToConsole("save screen to {0}".format(fName[0]))
             img = QtGui.QPixmap.grabWidget(self)
             img.save(fName[0], quality=100)
 
-    def is_sortcuts_enabled(self):
+    def isShortcutsEnabled(self):
         return self._sortcuts_enabled
 
-    def disable_sortcuts(self):
+    def disableSortcuts(self):
         self._sortcuts_enabled = False
 
-    def enable_sortcuts(self):
+    def enableSortcuts(self):
         self._sortcuts_enabled = True
 
-    def get_nodes(self):
-        return self.nodes
-
-    def findPort(self, port_name):
-        node = self.get_node_by_name(port_name.split(".")[0])
+    def findPort(self, pinName):
+        node = self.getNodeByName(pinName.split(".")[0])
         if node:
-            attr = node.get_port_by_name(port_name.split(".")[1])
+            attr = node.getPinByName(pinName.split(".")[1])
             return attr
         return None
 
-    def get_settings(self):
+    def getSettings(self):
         if path.isfile(self.options_widget.settings_path):
             settings = QtCore.QSettings(self.options_widget.settings_path, QtCore.QSettings.IniFormat)
             return settings
@@ -904,13 +896,9 @@ class GraphWidget(QGraphicsView, Graph):
     def getGraphSaveData(self):
         data = {self.name: {'nodes': [], 'edges': []}}
         # save nodes
-        data[self.name]['nodes'] = [node.save_command() for node in self.nodes]
-        #save pins values
-        for n in self.nodes:
-            for p in n.inputs + n.outputs:
-                data[self.name]['nodes'].append(p.save_command())
+        data[self.name]['nodes'] = [node.serialize() for node in self.getNodes()]
         # save edges
-        data[self.name]['edges'] = [e.save_command() for e in self.edges]
+        data[self.name]['edges'] = [e.serialize() for e in self.edges.values()]
         return data
 
     def save(self, save_as=False):
@@ -937,7 +925,7 @@ class GraphWidget(QGraphicsView, Graph):
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
                 json.dump(self.getGraphSaveData(), f)
-                
+
             self._file_name_label.setPlainText(self._current_file_name)
             if self.parent:
                 self.parent.console.append(str("// saved: '{0}'".format(self._current_file_name)))
@@ -948,11 +936,13 @@ class GraphWidget(QGraphicsView, Graph):
     def new_file(self):
         self._current_file_name = 'Untitled'
         self._file_name_label.setPlainText('Untitled')
-        for n in self.nodes:
-            n.setSelected(True)
-        self.kill_selected_nodes()
-        if len(self.nodes) > 0:
-            self.new_file()
+        for node in self.getNodes():
+            node.kill()
+        # for n in self.getNodes():
+        #     n.setSelected(True)
+        # self.killSelectedNodes()
+        # if len(self.nodes) > 0:
+        #     self.new_file()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -961,41 +951,41 @@ class GraphWidget(QGraphicsView, Graph):
             with open(fpath[0], 'r') as f:
                 data = json.load(f)
                 self.new_file()
-                for cmd in data[self.name]['nodes']:
-                    self.executeCommand(cmd)
-                for cmd in data[self.name]['edges']:
-                    self.executeCommand(cmd)
+                for nodeJson in data[self.name]['nodes']:
+                    Node.deserialize(nodeJson, self)
+                for edgeJson in data[self.name]['edges']:
+                    Edge.deserialize(edgeJson, self)
                 self._current_file_name = fpath[0]
                 self._file_name_label.setPlainText(self._current_file_name)
                 self.frame()
 
-    def get_port_by_full_name(self, full_name):
+    def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
-        port_name = full_name.split('.')[1]
-        node = self.get_node_by_name(node_name)
+        pinName = full_name.split('.')[1]
+        node = self.getNodeByName(node_name)
         if node:
-            port = node.get_port_by_name(port_name)
-            if port:
-                return port
+            Pin = node.getPinByName(pinName)
+            if Pin:
+                return Pin
 
     def options(self):
         self.options_widget.show()
 
     def frame(self):
-        nodes_rect = self.get_nodes_rect()
+        nodes_rect = self.getNodesRect()
         if nodes_rect:
             self.centerOn(nodes_rect.center())
 
-    def get_nodes_rect(self, selected=False):
+    def getNodesRect(self, selected=False):
         rectangles = []
         if selected:
-            for n in [n for n in self.nodes if n.isSelected()]:
+            for n in [n for n in self.getNodes() if n.isSelected()]:
                 n_rect = QtCore.QRectF(n.scenePos(),
                                        QtCore.QPointF(n.scenePos().x() + float(n.w),
                                                       n.scenePos().y() + float(n.h)))
                 rectangles.append([n_rect.x(), n_rect.y(), n_rect.bottomRight().x(), n_rect.bottomRight().y()])
         else:
-            for n in self.nodes:
+            for n in self.getNodes():
                 n_rect = QtCore.QRectF(n.scenePos(),
                                        QtCore.QPointF(n.scenePos().x() + float(n.w),
                                                       n.scenePos().y() + float(n.h)))
@@ -1014,21 +1004,16 @@ class GraphWidget(QGraphicsView, Graph):
 
         return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
 
-    def selected_nodes(self):
-        return [i for i in self.nodes if i.isSelected()]
+    def selectedNodes(self):
+        return [i for i in self.getNodes() if i.isSelected()]
 
-    def movePendingKill(self, node):
-        self.nodesPendingKill.append(self.nodes.pop(self.nodes.index(node)))
-
-    def kill_selected_nodes(self):
-        selected = self.selected_nodes()
+    def killSelectedNodes(self):
+        selected = self.selectedNodes()
         for i in selected:
-            if i.isSelected() and i in self.nodes and i in self.scene().items():
-                # replace to unused list. This will be deleted later by qt
-                # self.nodesPendingKill.append(self.nodes.pop(self.nodes.index(i)))
+            if i.isSelected() and i in self.getNodes() and i in self.scene().items():
                 i.kill()
         if not len(selected) == 0:
-            self.kill_selected_nodes()
+            self.killSelectedNodes()
         clearLayout(self.parent.PropertiesformLayout)
 
     def keyPressEvent(self, event):
@@ -1061,27 +1046,27 @@ class GraphWidget(QGraphicsView, Graph):
         if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             self.parent.toggle_property_view()
         if event.key() == QtCore.Qt.Key_Delete:
-            self.kill_selected_nodes()
+            self.killSelectedNodes()
         if event.key() == QtCore.Qt.Key_P and modifiers == QtCore.Qt.NoModifier:
             print(self.getGraphSaveData())
         if all([event.key() == QtCore.Qt.Key_W, modifiers == QtCore.Qt.ControlModifier]):
-            self.duplicate_nodes()
+            self.duplicateNodes()
         QGraphicsView.keyPressEvent(self, event)
 
-    def duplicate_nodes(self):
-        selected_nodes = [i for i in self.nodes if i.isSelected()]
+    def duplicateNodes(self):
+        selectedNodes = [i for i in self.getNodes() if i.isSelected()]
 
-        if len(selected_nodes) > 0:
-            diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - selected_nodes[0].scenePos()
+        if len(selectedNodes) > 0:
+            diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - selectedNodes[0].scenePos()
 
-            for n in selected_nodes:
+            for n in selectedNodes:
                 new_node = n.clone()
                 n.setSelected(False)
                 new_node.setSelected(True)
                 new_node.setPos(new_node.scenePos() + diff)
 
-    def align_selected_nodes(self, direction):
-        ls = [n for n in self.nodes if n.isSelected()]
+    def alignSelectedNodes(self, direction):
+        ls = [n for n in self.getNodes() if n.isSelected()]
 
         x_positions = [p.scenePos().x() for p in ls]
         y_positions = [p.scenePos().y() for p in ls]
@@ -1130,14 +1115,14 @@ class GraphWidget(QGraphicsView, Graph):
         super(GraphWidget, self).mousePressEvent(event)
         self.pressed_item = self.itemAt(event.pos())
         self.mousePressPose = event.pos()
-        if not self.pressed_item and self.node_box.isVisible():
+        if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
             self.node_box.hide()
 
         modifiers = event.modifiers()
 
         if self.pressed_item and isinstance(self.pressed_item, QGraphicsItem):
             self.autoPanController.start()
-            if isinstance(self.pressed_item, PortBase) and event.button() == QtCore.Qt.LeftButton:
+            if isinstance(self.pressed_item, PinBase) and event.button() == QtCore.Qt.LeftButton:
                 self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsMovable, False)
                 self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsSelectable, False)
                 self._draw_real_time_line = True
@@ -1166,13 +1151,13 @@ class GraphWidget(QGraphicsView, Graph):
             self.pan(delta)
 
         if self._draw_real_time_line:
-            if isinstance(self.pressed_item, Port):
+            if isinstance(self.pressed_item, Pin):
                 if self.pressed_item.parentItem().isSelected():
                     self.pressed_item.parentItem().setSelected(False)
             if self.real_time_line not in self.scene().items():
                 self.scene().addItem(self.real_time_line)
 
-            p1 = self.pressed_item.scenePos() + self.pressed_item.boundingRect().center() 
+            p1 = self.pressed_item.scenePos() + self.pressed_item.boundingRect().center()
             p2 = self.mapToScene(self.mousePos)
 
             distance = p2.x() - p1.x()
@@ -1199,7 +1184,7 @@ class GraphWidget(QGraphicsView, Graph):
 
         self._lastMousePos = event.pos()
 
-    def remove_item_by_name(self, name):
+    def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
@@ -1213,20 +1198,20 @@ class GraphWidget(QGraphicsView, Graph):
 
         modifiers = event.modifiers()
 
-        for n in self.nodes:
+        for n in self.getNodes():
             n.setFlag(QGraphicsItem.ItemIsMovable)
             n.setFlag(QGraphicsItem.ItemIsSelectable)
 
         if self._draw_real_time_line:
             self._draw_real_time_line = False
             if self.real_time_line in self.scene().items():
-                self.remove_item_by_name('RealTimeLine')
+                self.removeItemByName('RealTimeLine')
         if self._is_rubber_band_selection:
             self._is_rubber_band_selection = False
             self.setDragMode(QGraphicsView.NoDrag)
             [i.setSelected(True) for i in self.rubber_rect.collidingItems()]
-            [i.setFlag(QGraphicsItem.ItemIsMovable) for i in self.nodes if i.isSelected()]
-            self.remove_item_by_name(self.rubber_rect.name)
+            [i.setFlag(QGraphicsItem.ItemIsMovable) for i in self.getNodes() if i.isSelected()]
+            self.removeItemByName(self.rubber_rect.name)
         if event.button() == QtCore.Qt.RightButton:
             # call context menu only if drag is small
             dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
@@ -1245,31 +1230,31 @@ class GraphWidget(QGraphicsView, Graph):
             if not hasattr(i, 'object_type'):
                 do_connect = False
                 break
-            if not i.object_type == ObjectTypes.Port:
+            if not i.object_type == ObjectTypes.Pin:
                 do_connect = False
                 break
         if p_itm and r_itm:
-            if isinstance(p_itm, Port) and isinstance(r_itm, Port):
+            if isinstance(p_itm, Pin) and isinstance(r_itm, Pin):
                 if cycle_check(p_itm, r_itm):
-                    self.write_to_console('cycles are not allowed')
+                    self.writeToConsole('cycles are not allowed')
                     do_connect = False
 
-        if isinstance(r_itm, QGraphicsPathItem) and isinstance(p_itm, Port):
+        if isinstance(r_itm, QGraphicsPathItem) and isinstance(p_itm, Pin):
             # node box tree pops up
-            # with nodes taking supported data types of pressed port as input
-            self.showNodeBox(p_itm.data_type)
+            # with nodes taking supported data types of pressed Pin as input
+            self.showNodeBox(p_itm.dataType)
 
         if do_connect:
             if p_itm is not r_itm:
-                self.add_edge(p_itm, r_itm)
+                self.addEdge(p_itm, r_itm)
 
-        selected_nodes = self.selected_nodes()
-        if len(selected_nodes) != 0:
-            self.update_property_view(selected_nodes[0])
+        selectedNodes = self.selectedNodes()
+        if len(selectedNodes) != 0:
+            self.updatePropertyView(selectedNodes[0])
         else:
             clearLayout(self.parent.PropertiesformLayout)
 
-    def update_property_view(self, node):
+    def updatePropertyView(self, node):
         self.ActivePropertiesWidgets = {}
         root = self.parent.dockWidgetNodeView
         layout = self.parent.PropertiesformLayout
@@ -1277,12 +1262,17 @@ class GraphWidget(QGraphicsView, Graph):
         clearLayout(layout)
 
         # label
-        le_name = QLineEdit(node.get_name())
+        le_name = QLineEdit(node.getName())
         le_name.setReadOnly(True)
         if node.label().IsRenamable():
             le_name.setReadOnly(False)
-            le_name.returnPressed.connect(lambda: node.set_name(le_name.text()))
+            le_name.returnPressed.connect(lambda: node.setName(le_name.text()))
         layout.addRow("Name", le_name)
+
+        #  uuid
+        uidWidget = QLineEdit(str(node.uid))
+        uidWidget.setReadOnly(True)
+        layout.addRow("uuid", uidWidget)
 
         # pos
         le_pos = QLineEdit("{0} x {1}".format(node.pos().x(), node.pos().y()))
@@ -1296,10 +1286,10 @@ class GraphWidget(QGraphicsView, Graph):
             layout.addRow("", sep_inputs)
 
             for inp in node.inputs:
-                if inp.data_type == DataTypes.Exec:
+                if inp.dataType == DataTypes.Exec:
                     continue
-                le = QLineEdit(str(inp.current_data()), self.parent.dockWidgetNodeView)
-                le.setObjectName(inp.port_name())
+                le = QLineEdit(str(inp.currentData()), self.parent.dockWidgetNodeView)
+                le.setObjectName(inp.pinName())
                 le.editingFinished.connect(self.propertyEditingFinished)
                 layout.addRow(inp.name, le)
                 if inp.hasConnections():
@@ -1312,10 +1302,10 @@ class GraphWidget(QGraphicsView, Graph):
             sep_outputs.setText("OUTPUTS")
             layout.addRow("", sep_outputs)
             for out in node.outputs:
-                if out.data_type == DataTypes.Exec:
+                if out.dataType == DataTypes.Exec:
                     continue
-                le = QLineEdit(str(out.current_data()))
-                le.setObjectName(out.port_name())
+                le = QLineEdit(str(out.currentData()))
+                le.setObjectName(out.pinName())
                 le.textChanged.connect(self.propertyEditingFinished)
                 layout.addRow(out.name, le)
                 if out.hasConnections():
@@ -1333,9 +1323,9 @@ class GraphWidget(QGraphicsView, Graph):
         le = QApplication.instance().focusWidget()
         if isinstance(le, QLineEdit):
             nodeName, attr = le.objectName().split('.')
-            node = self.get_node_by_name(nodeName)
-            port = node.get_port_by_name(attr)
-            port.set_data(le.text())
+            node = self.getNodeByName(nodeName)
+            Pin = node.getPinByName(attr)
+            Pin.setData(le.text())
 
     def wheelEvent(self, event):
         self.zoom(math.pow(2.0, event.delta() / 240.0))
@@ -1347,7 +1337,7 @@ class GraphWidget(QGraphicsView, Graph):
         self._file_name_label.setPos(polygon[0])
         scene_rect = self.sceneRect()
         # Fill
-        settings = self.get_settings()
+        settings = self.getSettings()
         if settings:
             color = QtGui.QColor(settings.value('SCENE/Scene bg color'))
         else:
@@ -1374,7 +1364,7 @@ class GraphWidget(QGraphicsView, Graph):
                 painter.setPen(QtGui.QPen(Colors.GridColor, 0.5 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             painter.drawLine(scene_rect.left(), y, scene_rect.right(), y)
 
-    def console_help(self):
+    def consoleHelp(self):
         msg = """///// AVAILABLE NODES LIST /////\n\n"""
 
         for f in listdir(path.dirname(Nodes.__file__)):
@@ -1394,8 +1384,8 @@ class GraphWidget(QGraphicsView, Graph):
         if self.parent:
             self.parent.console.append(msg)
 
-    def create_node(self, className, x, y, name):
-        nodeInstance = getNodeInstance(Nodes, className, name, self)
+    def createNode(self, jsonTemplate):
+        nodeInstance = getNodeInstance(Nodes, jsonTemplate['type'], jsonTemplate['name'], self)
 
         # if no such node in Nodes mod, check Function libs
         if nodeInstance is None:
@@ -1406,263 +1396,15 @@ class GraphWidget(QGraphicsView, Graph):
         if nodeInstance is None:
             raise ValueError("node class not found!")
 
-        self.add_node(nodeInstance, x, y)
+        self.addNode(nodeInstance, jsonTemplate)
         return nodeInstance
 
-    def executeCommand(self, command):
-        commandLine = parse(command)
+    def addNode(self, node, jsonTemplate=None):
+        Graph.addNode(self, node, jsonTemplate)
+        self.scene().addItem(node)
 
-        # execute custom command
-        if not commandLine["cmd"] in self.parent.consoleInput.builtinCommands:
-
-            cmdObject = None
-            try:
-                cmdObject = self.registeredCommands[commandLine['cmd']]
-            except:
-                self.parent.console.append("[ERROR] command '{0}' not found".format(commandLine['cmd']))
-                return
-
-            try:
-                args = command.split(" ", 1)
-                if len(args) == 1:
-                    args = None
-                else:
-                    args = args[1]
-                self.parent.console.append(command)
-                cmdObject.execute(args)
-            except:
-                self.parent.console.append(cmdObject.usage())
-                return
-            return
-
-        # execute builtins
-
-        if commandLine['cmd'] == "renameNode":
-            self.parent.console.append(command)
-            try:
-                node = self.get_node_by_name(commandLine["flags"]["{0}name".format(FLAG_SYMBOL)])
-                if node:
-                    newName = self.get_uniq_node_name(commandLine["flags"]["{0}newName".format(FLAG_SYMBOL)])
-                    node.set_name(newName)
-                return
-            except Exception, e:
-                self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] renameNode {0}name str {0}newName str".format(FLAG_SYMBOL))
-            return
-
-        if commandLine['cmd'] == "plot":
-            self.parent.console.append(command)
-            self.plot()
-            return
-
-        if commandLine['cmd'] == "load":
-            self.parent.console.append(command)
-            self.load()
-            return
-
-        if commandLine['cmd'] == "save":
-            self.parent.console.append(command)
-            self.save()
-            return
-
-        if commandLine['cmd'] == "setScrollbars":
-            try:
-                self.write_to_console(command)
-                h = commandLine['flags']['~h']
-                v = commandLine['flags']['~v']
-                self.set_scrollbars_positions(int(h), int(v))
-            except Exception as e:
-                print(e)
-                self.write_to_console(e)
-                self.write_to_console("[USAGE] setScrollbars ~h int ~v int")
-                return
-
-        if commandLine['cmd'] == "setHorizontalScrollBar":
-            try:
-                h = commandLine['flags']['~h']
-                self.set_scrollbars_positions(int(h), self.verticalScrollBar().value())
-            except Exception as e:
-                print(e)
-                self.write_to_console(e)
-                self.write_to_console("[USAGE] setHorizontalScrollBar ~h int")
-                return
-
-        if commandLine['cmd'] == "setVerticalScrollBar":
-            try:
-                v = commandLine['flags']['~v']
-                self.set_scrollbars_positions(self.horizontalScrollBar().value(), int(v))
-            except Exception as e:
-                print(e)
-                self.write_to_console(e)
-                self.write_to_console("[USAGE] setVerticalScrollBar ~v int")
-                return
-
-        if commandLine['cmd'] == "setConsoleVisible":
-            try:
-                v = commandLine['flags']['~v']
-                if int(v) == 1:
-                    self.parent.dockWidgetConsole.show()
-                else:
-                    self.parent.dockWidgetConsole.hide()
-            except Exception as e:
-                print(e)
-                self.write_to_console(e)
-                self.write_to_console("[USAGE] setConsoleVisible ~v int")
-                return
-
-        if commandLine['cmd'] == "setNodeBoxVisible":
-            try:
-                v = commandLine['flags']['~v']
-                if int(v) == 1:
-                    self.parent.dockWidgetLeft.show()
-                else:
-                    self.parent.dockWidgetLeft.hide()
-            except Exception as e:
-                print(e)
-                self.write_to_console(e)
-                self.write_to_console("[USAGE] setNodeBoxVisible ~v int")
-                return
-
-        if commandLine['cmd'] == "setPropertiesVisible":
-            try:
-                v = commandLine['flags']['~v']
-                if int(v) == 1:
-                    self.parent.dockWidgetNodeView.show()
-                else:
-                    self.parent.dockWidgetNodeView.hide()
-            except Exception as e:
-                print(e)
-                self.write_to_console(e)
-                self.write_to_console("[USAGE] setPropertiesVisible ~v int")
-                return
-
-        if commandLine['cmd'] == "createNode":
-            # try:
-            if commandLine['flags']['~type'] == "MakeArray":
-                arrayNodeClass = Nodes.getNode("MakeArray")
-                nodeInstance = arrayNodeClass(commandLine["flags"]["~n"], self, ports_number=int(commandLine["flags"]["~count"]))
-                self.add_node(nodeInstance, float(commandLine["flags"]["~x"]), float(commandLine["flags"]["~y"]))
-            else:
-                self.create_node(commandLine['flags']['~type'], float(commandLine['flags']['~x']), float(commandLine['flags']['~y']), commandLine['flags']['~n'])
-                # return
-            # except Exception, e:
-            #     self.parent.console.append("[ERROR] {0}".format(e))
-            #     self.parent.console.append("[USAGE] createNode {0}type className {0}x float {0}y float {0}n str".format(FLAG_SYMBOL))
-
-        if commandLine["cmd"] == "pluginWizard":
-            try:
-                mode = commandLine["flags"]["{0}mode".format(FLAG_SYMBOL)]
-                if mode == "implementNode":
-                    _implementPlugin(str(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]), self.parent.console.append, PluginType.pNode, self)
-                if mode == "implementCommand":
-                    _implementPlugin(str(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]), self.parent.console.append, PluginType.pCommand, self)
-            except Exception, e:
-                self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE]>>>pluginWizard {0}mode [implementNode|implementCommand] {0}n name".format(FLAG_SYMBOL))
-
-        if commandLine["cmd"] == "killNode":
-            try:
-                nodeNames = commandLine["flags"]["{0}nl".format(FLAG_SYMBOL)].split(" ")
-                for n in nodeNames:
-                    node = self.get_node_by_name(n)
-                    if node:
-                        node.kill()
-                    else:
-                        self.parent.console.append("[WARNING] node {0} not found".format(n))
-                return
-            except Exception, e:
-                self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] killNode {0}nl nodeName1 nodeName2 ...".format(FLAG_SYMBOL))
-
-        if commandLine["cmd"] == "setAttr":
-            try:
-                nodeName = commandLine["flags"]["{0}an".format(FLAG_SYMBOL)].split('.')[0]
-                attrName = commandLine["flags"]["{0}an".format(FLAG_SYMBOL)].split('.')[1]
-                node = self.get_node_by_name(nodeName)
-                if node:
-                    attr = node.get_port_by_name(attrName)
-                    if attr:
-                        attr.set_data(commandLine["flags"]["{0}v".format(FLAG_SYMBOL)])
-            except Exception, e:
-                self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] setAttr {0}an nodeName.attrName {0}v value".format(FLAG_SYMBOL))
-
-        if commandLine["cmd"] == "connectAttr":
-            try:
-                # find ports
-                nodeSrcName = commandLine["flags"]["{0}src".format(FLAG_SYMBOL)].split('.')[0]
-                portSrcName = commandLine["flags"]["{0}src".format(FLAG_SYMBOL)].split('.')[1]
-                nodeDstName = commandLine["flags"]["{0}dst".format(FLAG_SYMBOL)].split('.')[0]
-                portDstName = commandLine["flags"]["{0}dst".format(FLAG_SYMBOL)].split('.')[1]
-
-                nodeSrc = self.get_node_by_name(nodeSrcName)
-                nodeDst = self.get_node_by_name(nodeDstName)
-                if nodeSrc and nodeDst:
-                    src = nodeSrc.get_port_by_name(portSrcName)
-                    dst = nodeDst.get_port_by_name(portDstName)
-                    if src and dst:
-                        self.add_edge(src, dst)
-            except Exception, e:
-                self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] connectAttr {0}src nodeName.srcAttrName {0}dst nodeName.dstAttrName".format(FLAG_SYMBOL))
-
-        if commandLine["cmd"] == "disconnectAttr":
-            try:
-                nodeName = commandLine["flags"]["{0}an".format(FLAG_SYMBOL)].split('.')[0]
-                attrName = commandLine["flags"]["{0}an".format(FLAG_SYMBOL)].split('.')[1]
-                node = self.get_node_by_name(nodeName)
-                if node:
-                    attr = node.get_port_by_name(attrName)
-                    if attr:
-                        attr.disconnect_all()
-            except Exception, e:
-                self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] disconnectAttr {0}an nodeName.attrname".format(FLAG_SYMBOL))
-
-        if commandLine["cmd"] == "select":
-            try:
-                if commandLine["flags"]["{0}nl".format(FLAG_SYMBOL)] == "none":
-                    for n in self.get_nodes():
-                        n.setSelected(False)
-                    self.parent.console.append(command)
-                else:
-                    for i in commandLine["flags"]["{0}nl".format(FLAG_SYMBOL)].split(" "):
-                        node = self.get_node_by_name(i)
-                        if node:
-                            node.setSelected(True)
-                    self.parent.console.append(command)
-            except Exception, e:
-                self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE]\nselect {0}nl nodeName1 nodeName2 ...\n'select {0}nl none' - to deselect all".format(FLAG_SYMBOL))
-
-        if commandLine["cmd"] == "move":
-            try:
-                node = self.get_node_by_name(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)])
-                if node:
-                    node.set_pos(float(commandLine["flags"]["{0}x".format(FLAG_SYMBOL)]), float(commandLine["flags"]["{0}y".format(FLAG_SYMBOL)]))
-                    self.parent.console.append(command)
-                else:
-                    self.parent.console.append("[WARNING] node {0} not found".format(commandLine["flags"]["{0}n".format(FLAG_SYMBOL)]))
-            except Exception, e:
-                self.parent.console.append("[ERROR] {0}".format(e))
-                self.parent.console.append("[USAGE] move {0}n nodeName {0}x float {0}y float".format(FLAG_SYMBOL))
-
-        if commandLine["cmd"] == "help":
-            self.parent.console.append(command)
-            self.console_help()
-
-    def add_node(self, node, x, y):
-
-        Graph.add_node(self, node, x, y)
-        if node:
-            self.scene().addItem(node)
-            node.post_create()
-        else:
-            print '[add_node()] error node creation'
-
-    def add_edge(self, src, dst):
-
-        result = Graph.add_edge(self, src, dst)
+    def addEdge(self, src, dst):
+        result = Graph.addEdge(self, src, dst)
         if result:
             if src.type == PinTypes.Input:
                 src, dst = dst, src
@@ -1670,33 +1412,34 @@ class GraphWidget(QGraphicsView, Graph):
             src.edge_list.append(edge)
             dst.edge_list.append(edge)
             self.scene().addItem(edge)
-            self.edges.append(edge)
-            self.write_to_console("connectAttr ~src {0} ~dst {1}".format(src.port_name(), dst.port_name()))
+            self.edges[edge.uid] = edge
             return edge
 
-    def remove_edge(self, edge):
-        Graph.remove_edge(self, edge)
+    def removeEdge(self, edge):
+        Graph.removeEdge(self, edge)
         edge.source().update()
         edge.destination().update()
-        self.edges.remove(edge)
+        self.edges.pop(edge.uid)
         edge.prepareGeometryChange()
         self.scene().removeItem(edge)
 
-    def write_to_console(self, data):
-        if self.is_debug():
+    def writeToConsole(self, data):
+        if self.isDebug():
             self.parent.console.append(str(data))
 
     def plot(self):
+        for k, v in self.nodes.iteritems():
+            print(k, v.name)
         Graph.plot(self)
         self.parent.console.append('>>>>>>> {0} <<<<<<<\n{1}\n'.format(self.name, ctime()))
         if self.parent:
-            for n in self.nodes:
+            for n in self.getNodes():
                 self.parent.console.append(n.name)
                 for i in n.inputs + n.outputs:
-                    self.parent.console.append('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}'.format(i.port_name(),
-                                               i.current_data(),
-                                               [p.port_name() for p in i.affects],
-                                               [p.port_name() for p in i.affected_by],
+                    self.parent.console.append('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}'.format(i.pinName(),
+                                               i.currentData(),
+                                               [p.pinName() for p in i.affects],
+                                               [p.pinName() for p in i.affected_by],
                                                i.dirty))
 
     def zoomDelta(self, direction):

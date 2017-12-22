@@ -6,8 +6,8 @@ from Node import Node
 class FloatNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(FloatNode, self).__init__(name, graph, spacings=Spacings)
-        self.input = self.add_input_port('in', DataTypes.Float)
-        self.output = self.add_output_port('out', DataTypes.Float)
+        self.input = self.addInputPin('in', DataTypes.Float)
+        self.output = self.addOutputPin('out', DataTypes.Float)
 
         portAffects(self.input, self.output)
         self.compute()
@@ -17,4 +17,4 @@ class FloatNode(Node, NodeBase):
         return 'GenericTypes'
 
     def compute(self):
-        self.output.set_data(float(self.input.current_data()))
+        self.output.setData(float(self.input.currentData()))

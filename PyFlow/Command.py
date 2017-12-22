@@ -11,6 +11,10 @@ class Command(object):
     def __init__(self, graph):
         super(Command, self).__init__()
         self.graph = graph
+        self.flags = []
+
+    def flags(self):
+        return self.flags
 
     def parse(self, line):
         '''

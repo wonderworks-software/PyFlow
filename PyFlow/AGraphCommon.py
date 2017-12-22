@@ -39,7 +39,7 @@ def calc_multithreaded(ls):
 def cycle_check(src, dst):
 
     # allow cycles on execs
-    if src.data_type == DataTypes.Exec or dst.data_type == DataTypes.Exec:
+    if src.dataType == DataTypes.Exec or dst.dataType == DataTypes.Exec:
         return False
 
     if src.type == PinTypes.Input:
@@ -71,9 +71,9 @@ def push(start_from):
     this part of graph will be recomputed every tick
     '''
     if not start_from.affects == []:
-        start_from.set_dirty()
+        start_from.setDirty()
         for i in start_from.affects:
-            i.set_dirty()
+            i.setDirty()
             push(i)
 
 
@@ -89,7 +89,7 @@ class DataTypes:
 
 
 class ObjectTypes(object):
-    Port = 0
+    Pin = 0
     Node = 1
     Graph = 2
     Grouper = 3

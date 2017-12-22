@@ -97,10 +97,10 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         populate ui from node
         '''
         for i in self.node.inputs:
-            pw = PinWidget.construct(i.name, i.bLabelHidden, i.data_type, self)
+            pw = PinWidget.construct(i.name, i.bLabelHidden, i.dataType, self)
             self.appendInput(pw)
         for o in self.node.outputs:
-            pw = PinWidget.construct(o.name, o.bLabelHidden, o.data_type, self)
+            pw = PinWidget.construct(o.name, o.bLabelHidden, o.dataType, self)
             self.appendOutput(pw)
         self.leLabel.setText(self.node.label().toPlainText())
         self.plainTextEdit.setPlainText(self.node.currentCode)
@@ -130,20 +130,21 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         code = code.replace('\t', '    ')
         exec(code)
         self.node.compute = MethodType(compute, self.node, Node)
+        self.node.currentComputeCode = code
 
         for index in range(self.lwOutputs.count()):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
             if isinstance(w, PinWidget):
-                self.node.add_output_port(w.name(), w.dataType(), None, w.shouldHideLabel())
+                self.node.addOutputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
 
         # recreate pins from editor data
         for index in range(self.lwInputs.count()):
             w = self.lwInputs.itemWidget(self.lwInputs.item(index))
             if isinstance(w, PinWidget):
                 if w.dataType() == DataTypes.Exec:
-                    self.node.add_input_port(w.name(), w.dataType(), self.node.compute, w.shouldHideLabel())
+                    self.node.addInputPin(w.name(), w.dataType(), self.node.compute, w.shouldHideLabel())
                 else:
-                    self.node.add_input_port(w.name(), w.dataType(), None, w.shouldHideLabel())
+                    self.node.addInputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
 
         for i in self.node.inputs:
             for o in self.node.outputs:

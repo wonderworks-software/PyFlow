@@ -9,8 +9,8 @@ DESC = '''returns maximum element of iterable object
 class Max(Node, NodeBase):
     def __init__(self, name, graph):
         super(Max, self).__init__(name, graph, spacings=Spacings)
-        self.inp0 = self.add_input_port('in', DataTypes.Any)
-        self.out0 = self.add_output_port('out', DataTypes.Any)
+        self.inp0 = self.addInputPin('in', DataTypes.Any)
+        self.out0 = self.addOutputPin('out', DataTypes.Any)
         portAffects(self.inp0, self.out0)
 
     @staticmethod
@@ -23,8 +23,8 @@ class Max(Node, NodeBase):
 
     def compute(self):
 
-        data = self.inp0.get_data()
+        data = self.inp0.getData()
         try:
-            self.out0.set_data(max(data))
+            self.out0.setData(max(data))
         except Exception as e:
             print(e)

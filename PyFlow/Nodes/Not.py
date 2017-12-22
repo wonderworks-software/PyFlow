@@ -10,8 +10,8 @@ DESC = """flifs boolean
 class Not(Node, NodeBase):
     def __init__(self, name, graph):
         super(Not, self).__init__(name, graph, spacings=Spacings)
-        self.in_bool = self.add_input_port('in', DataTypes.Bool)
-        self.out_bool = self.add_output_port('out', DataTypes.Bool)
+        self.in_bool = self.addInputPin('in', DataTypes.Bool)
+        self.out_bool = self.addOutputPin('out', DataTypes.Bool)
         portAffects(self.in_bool, self.out_bool)
 
     @staticmethod
@@ -24,8 +24,8 @@ class Not(Node, NodeBase):
 
     def compute(self):
 
-        in_bool = self.in_bool.get_data()
+        in_bool = self.in_bool.getData()
         try:
-            self.out_bool.set_data(not in_bool)
+            self.out_bool.setData(not in_bool)
         except Exception as e:
             print(e)
