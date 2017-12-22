@@ -23,10 +23,7 @@ def portAffects(affects_port, affected_port):
     affected_port.affected_by.append(affects_port)
 
 
-def calc_multithreaded(ls, debug=False):
-    if debug:
-        print('START', [n.name for n in ls])
-
+def calc_multithreaded(ls):
     def compute_executor():
         for n in ls:
             n.compute()
@@ -35,15 +32,8 @@ def calc_multithreaded(ls, debug=False):
         t = Thread(target=compute_executor, name='{0}_thread'.format(n.name))
         threads.append(t)
         t.start()
-        if debug:
-            print(n.name, 'started in', t.name)
 
-    if debug:
-        print('_WAITING FOR ALL LAYER NODES TO FINISH')
     [t.join() for t in threads]
-
-    if debug:
-        print('DONE', [n.name for n in ls], '\n')
 
 
 def cycle_check(src, dst):

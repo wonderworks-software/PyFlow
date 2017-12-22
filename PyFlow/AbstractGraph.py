@@ -84,7 +84,7 @@ class PortBase(object):
         for i in self.affects:
             i.dirty = True
 
-    def get_data(self, debug=False):
+    def get_data(self):
 
         # if not connected - return data
         if not self.hasConnections():
@@ -93,19 +93,12 @@ class PortBase(object):
         if self.type == PinTypes.Output:
             if self.dirty:
                 compute_order = self.parent().graph().get_evaluation_order(self.parent())
-                if debug:
-                    for i in reversed(sorted([i for i in compute_order.keys()])):
-                        print(i, [n.name for n in compute_order[i]])
                 for i in reversed(sorted([i for i in compute_order.keys()])):
                     if not self.parent().graph().is_multithreaded():
                         for n in compute_order[i]:
-                            if debug:
-                                print(n.name, 'calling compute')
                             n.compute()
                     else:
-                        if debug:
-                            print('multithreaded calc of layer', [n.name for n in compute_order[i]])
-                        calc_multithreaded(compute_order[i], debug)
+                        calc_multithreaded(compute_order[i])
                 return self._data
             else:
                 return self._data
@@ -114,19 +107,12 @@ class PortBase(object):
                 out = [i for i in self.affected_by if i.type == PinTypes.Output]
                 if not out == []:
                     compute_order = out[0].parent().graph().get_evaluation_order(out[0].parent())
-                    if debug:
-                        for i in reversed(sorted([i for i in compute_order.keys()])):
-                            print(i, [n.name for n in compute_order[i]])
                     for i in reversed(sorted([i for i in compute_order.keys()])):
                         if not self.parent().graph().is_multithreaded():
                             for n in compute_order[i]:
-                                if debug:
-                                    print(n.name, 'calling compute')
                                 n.compute()
                         else:
-                            if debug:
-                                print('multithreaded calc of layer', [n.name for n in compute_order[i]])
-                            calc_multithreaded(compute_order[i], debug)
+                            calc_multithreaded(compute_order[i])
                     return out[0]._data
             else:
                 return self._data

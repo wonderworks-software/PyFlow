@@ -86,7 +86,11 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
 
     def closeEvent(self, event):
         event.accept()
-        self.node.graph().codeEditors[self.uid].deleteLater()
+        try:
+            ed = self.node.graph().codeEditors.pop(self.uid)
+            ed.deleteLater()
+        except:
+            pass
 
     def populate(self):
         '''

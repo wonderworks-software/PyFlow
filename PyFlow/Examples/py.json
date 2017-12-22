@@ -1,0 +1,1 @@
+{"root": {"nodes": ["createNode ~type PythonNode ~x 5000.0 ~y 4998.0 ~n PythonNode", "setAttr ~an PythonNode.pinName ~v None", "setAttr ~an PythonNode.pinName ~v None"], "edges": []}}
