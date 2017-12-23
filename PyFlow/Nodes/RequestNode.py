@@ -11,8 +11,8 @@ from Node import Node
 class RequestNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(RequestNode, self).__init__(name, graph)
-        self.input = self.add_input_port('input', DataTypes.Any)
-        self.input.port_disconnected = self.input_disconnected
+        self.input = self.addInputPin('input', DataTypes.Any)
+        self.input.pinDisconnected = self.input_disconnected
         self.spin_box = QDoubleSpinBox()
         self.spin_box.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.cb = QCheckBox()
@@ -50,7 +50,7 @@ class RequestNode(Node, NodeBase):
             self.cb.setCheckState(QtCore.Qt.Unchecked)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Utils'
 
     def Tick(self, delta):
@@ -73,7 +73,7 @@ class RequestNode(Node, NodeBase):
             self.stop()
 
     def compute(self):
-        # check if any dirty nodes before connected port.
+        # check if any dirty nodes before connected Pin.
         # randint for example
         # if so push forward and recompute
 
@@ -85,6 +85,6 @@ class RequestNode(Node, NodeBase):
             for p in behind_dirty_ports:
                 push(p)
 
-        data = self.input.get_data()
-        self.graph().write_to_console(str(data))
+        data = self.input.getData()
+        self.graph().writeToConsole(str(data))
         print(str(data))

@@ -36,17 +36,17 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionPropertyView.triggered.connect(self.toggle_property_view)
         self.actionMultithreaded.triggered.connect(self.toggle_multithreaded)
         self.actionDebug.triggered.connect(self.toggle_debug)
-        self.actionScreenshot.triggered.connect(self.G.screen_shot)
+        self.actionScreenshot.triggered.connect(self.G.screenShot)
         self.actionClear_scene.triggered.connect(self.on_clear_scene)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
         self.actionOptions.triggered.connect(self.G.options)
         self.actionSave.triggered.connect(self.G.save)
         self.actionLoad.triggered.connect(self.G.load)
         self.actionSave_as.triggered.connect(self.G.save_as)
-        self.actionAlignLeft.triggered.connect(lambda: self.G.align_selected_nodes(Direction.Left))
-        self.actionAlignUp.triggered.connect(lambda: self.G.align_selected_nodes(Direction.Up))
-        self.actionAlignBottom.triggered.connect(lambda: self.G.align_selected_nodes(Direction.Down))
-        self.actionAlignRight.triggered.connect(lambda: self.G.align_selected_nodes(Direction.Right))
+        self.actionAlignLeft.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Left))
+        self.actionAlignUp.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Up))
+        self.actionAlignBottom.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Down))
+        self.actionAlignRight.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Right))
         self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
         self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
 
@@ -120,8 +120,8 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def toggle_multithreaded(self):
 
-        self.G.set_multithreaded(not self.G.is_multithreaded())
-        if self.G.is_multithreaded():
+        self.G.setMultithreaded(not self.G.isMultithreaded())
+        if self.G.isMultithreaded():
             self.G.notify("Multithreaded mode enabled", 3000)
         else:
             self.G.notify("Multithreaded mode disabled", 3000)
@@ -134,18 +134,18 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             self.dockWidgetConsole.show()
 
     def on_clear_scene(self):
-        for n in self.G.get_nodes():
+        for n in self.G.getNodes():
             n.kill()
 
     def toggle_debug(self):
-        self.G.set_debug(not self.G.is_debug())
-        if self.G.is_debug():
+        self.G.setDebug(not self.G.isDebug())
+        if self.G.isDebug():
             self.G.notify("Debug mode enabled", 3000)
         else:
             self.G.notify("Debug mode disabled", 3000)
 
     def on_delete(self):
-        self.G.kill_selected_nodes(True)
+        self.G.killSelectedNodes(True)
 
 
 if __name__ == '__main__':

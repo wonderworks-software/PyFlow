@@ -6,27 +6,27 @@ from Node import Node
 class ConditionalValue(Node, NodeBase):
     def __init__(self, name, graph):
         super(ConditionalValue, self).__init__(name, graph, spacings=Spacings)
-        self.condition = self.add_input_port('condition', DataTypes.Bool)
-        self.trueValue = self.add_input_port('ifTrue', DataTypes.Any)
-        self.falseValue = self.add_input_port('ifFalse', DataTypes.Any)
-        self.output = self.add_output_port('out', DataTypes.Any)
+        self.condition = self.addInputPin('condition', DataTypes.Bool)
+        self.trueValue = self.addInputPin('ifTrue', DataTypes.Any)
+        self.falseValue = self.addInputPin('ifFalse', DataTypes.Any)
+        self.output = self.addOutputPin('out', DataTypes.Any)
         portAffects(self.condition, self.output)
         portAffects(self.trueValue, self.output)
         portAffects(self.falseValue, self.output)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'FlowControl'
 
     def compute(self):
 
-        condition = self.condition.get_data()
-        tVal = self.trueValue.get_data()
-        fVal = self.falseValue.get_data()
+        condition = self.condition.getData()
+        tVal = self.trueValue.getData()
+        fVal = self.falseValue.getData()
         try:
             if condition:
-                self.output.set_data(tVal)
+                self.output.setData(tVal)
             else:
-                self.output.set_data(fVal)
+                self.output.setData(fVal)
         except Exception, e:
             print e

@@ -12,8 +12,8 @@ Boolean type."""
 class BoolNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(BoolNode, self).__init__(name, graph, spacings=Spacings)
-        self.input = self.add_input_port('in', DataTypes.Bool, hideLabel=True)
-        self.output = self.add_output_port('out', DataTypes.Bool, hideLabel=True)
+        self.input = self.addInputPin('in', DataTypes.Bool, hideLabel=True)
+        self.output = self.addOutputPin('out', DataTypes.Bool, hideLabel=True)
         portAffects(self.input, self.output)
 
     @staticmethod
@@ -21,8 +21,8 @@ class BoolNode(Node, NodeBase):
         return DESC
 
     @staticmethod
-    def get_category():
+    def category():
         return 'GenericTypes'
 
     def compute(self):
-        self.output.set_data(self.input.get_data())
+        self.output.setData(self.input.getData())

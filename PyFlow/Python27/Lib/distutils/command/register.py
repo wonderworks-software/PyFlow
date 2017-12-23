@@ -235,7 +235,7 @@ Your selection [default 1]: ''', log.INFO)
             'author_email': meta.get_contact_email(),
             'license': meta.get_licence(),
             'description': meta.get_long_description(),
-            'keywords': meta.get_keywords(),
+            'keywords': meta.keywords(),
             'platform': meta.get_platforms(),
             'classifiers': meta.get_classifiers(),
             'download_url': meta.get_download_url(),

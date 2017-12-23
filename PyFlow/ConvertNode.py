@@ -17,22 +17,22 @@ class ConvertNode(Node, NodeBase):
         self.roundFactor = 10
         self.bg = QtGui.QImage(':/icons/resources/white.png')
 
-    def add_input_port(self, *args, **kwargs):
+    def addInputPin(self, *args, **kwargs):
         # allow single input
         if len(self.inputs) == 0:
-            return super(ConvertNode, self).add_input_port(*args, **kwargs)
+            return super(ConvertNode, self).addInputPin(*args, **kwargs)
 
-    def add_output_port(self, *args, **kwargs):
+    def addOutputPin(self, *args, **kwargs):
         # allow single output
         if len(self.outputs) == 0:
-            return super(ConvertNode, self).add_output_port(*args, **kwargs)
+            return super(ConvertNode, self).addOutputPin(*args, **kwargs)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Convert'
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return []
 
     @staticmethod

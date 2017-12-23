@@ -1129,7 +1129,7 @@ class DistributionMetadata:
         long_desc = rfc822_escape(self.get_long_description())
         self._write_field(file, 'Description', long_desc)
 
-        keywords = ','.join(self.get_keywords())
+        keywords = ','.join(self.keywords())
         if keywords:
             self._write_field(file, 'Keywords', keywords)
 
@@ -1198,7 +1198,7 @@ class DistributionMetadata:
     def get_long_description(self):
         return self._encode_field(self.long_description) or "UNKNOWN"
 
-    def get_keywords(self):
+    def keywords(self):
         return self.keywords or []
 
     def get_platforms(self):

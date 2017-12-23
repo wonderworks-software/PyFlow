@@ -6,10 +6,8 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 
 
 class MakeArray(Node, NodeBase):
-    def __init__(self, name, graph, ports_number=0, w=60):
-        super(MakeArray, self).__init__(name, graph, w, spacings=Spacings)
-        self.ports_number = ports_number
-
+    def __init__(self, name, graph):
+        super(MakeArray, self).__init__(name, graph)
         con = self.add_container(PinTypes.Output)
 
         pb = QPushButton('+')
@@ -18,30 +16,23 @@ class MakeArray(Node, NodeBase):
         prx_btn = QGraphicsProxyWidget()
         prx_btn.setWidget(pb)
         con.layout().addItem(prx_btn)
-
-        self.height_step = pb.size().height()
-
-        self.out_arr = self.add_output_port('out', DataTypes.Array)
-
-    def post_create(self):
-        for i in range(self.ports_number):
-            self.addInPort()
-        self.label().setPos(0, -self.label().boundingRect().height())
-        super(MakeArray, self).post_create()
-
-    def save_command(self):
-        return "createNode ~type {0} ~count {4} ~x {1} ~y {2} ~n {3}".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, len(self.inputs))
+        self.out_arr = self.addOutputPin('out', DataTypes.Array)
 
     def addInPort(self):
         index = len(self.inputs)
-        port = self.add_input_port(str(index), DataTypes.Any)
-        portAffects(port, self.out_arr)
+        Pin = self.addInputPin(str(index), DataTypes.Any)
+        portAffects(Pin, self.out_arr)
         push(self.out_arr)
-        self.update_ports()
+
+    def postCreate(self, jsonTemplate=None):
+        Node.postCreate(self, jsonTemplate)
+        for inpJson in jsonTemplate['inputs']:
+            pin = self.addInputPin(inpJson['name'], inpJson['dataType'], None, inpJson['bLabelHidden'])
+            pin.setData(inpJson['value'])
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Array'
 
     def compute(self):
-        self.out_arr.set_data(list([i.get_data() for i in self.inputs]))
+        self.out_arr.setData(list([i.getData() for i in self.inputs]))

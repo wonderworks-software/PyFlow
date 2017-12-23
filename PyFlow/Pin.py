@@ -33,16 +33,16 @@ def getPortColorByType(t):
         return Colors.String
 
 
-class Port(QGraphicsWidget, PortBase):
-    def __init__(self, name, parent, data_type, width=8.0, height=8.0, color=Colors.Connectors):
-        PortBase.__init__(self, name, parent, data_type)
+class Pin(QGraphicsWidget, PinBase):
+    def __init__(self, name, parent, dataType, width=8.0, height=8.0, color=Colors.Connectors):
+        PinBase.__init__(self, name, parent, dataType)
         QGraphicsWidget.__init__(self)
         name = name.replace(" ", "_")  # spaces are not allowed
         self.setParentItem(parent)
         self.setCursor(QtCore.Qt.CrossCursor)
         self.menu = QMenu()
         self.disconnected = self.menu.addAction('Disconnect all')
-        self.disconnected.triggered.connect(self.disconnect_all)
+        self.disconnected.triggered.connect(self.disconnectAll)
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
@@ -50,23 +50,23 @@ class Port(QGraphicsWidget, PortBase):
         self.setZValue(2)
         self.width = width + 1
         self.height = height + 1
-        if self.data_type == DataTypes.Exec:
+        if self.dataType == DataTypes.Exec:
             self.width = self.height = 10.0
             self.dirty = False
         self.hovered = False
         self.startPos = None
         self.endPos = None
         self.bEdgeTangentDirection = False
-        self.options = self.parent().graph().get_settings()
+        self.options = self.parent().graph().getSettings()
         self._container = None
-        self.color = getPortColorByType(data_type)
-        if data_type == DataTypes.Reference:
-            self.color = getPortColorByType(data_type.data_type)
+        self.color = getPortColorByType(dataType)
+        if dataType == DataTypes.Reference:
+            self.color = getPortColorByType(dataType.dataType)
         self._execPen = QtGui.QPen(self.color, 0.5, QtCore.Qt.SolidLine)
         self.setGeometry(0, 0, self.width, self.height)
         if self.options:
-            opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Port dirty color'))
-            opt_dirty_type_name = self.options.value('NODES/Port dirty type')
+            opt_dirty_pen = QtGui.QColor(self.options.value('NODES/Pin dirty color'))
+            opt_dirty_type_name = self.options.value('NODES/Pin dirty type')
             opt_port_dirty_pen_type = get_line_type(opt_dirty_type_name)
             self._dirty_pen = QtGui.QPen(opt_dirty_pen, 0.5, opt_port_dirty_pen_type, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
         else:
@@ -74,18 +74,33 @@ class Port(QGraphicsWidget, PortBase):
 
         self.inputWidget = None
         self.portImage = QtGui.QImage(':/icons/resources/array.png')
+        self.bLabelHidden = False
 
-    def save_command(self):
-        return "setAttr {2}an {0} {2}v {1}".format(self.port_name(), self.current_data(), FLAG_SYMBOL)
+    def kill(self):
+        PinBase.kill(self)
+        self.disconnectAll()
+        self.parent().graph().scene().removeItem(self._container)
+        exec("del self.parent().{}".format(self.name))
+
+    def serialize(self):
+        data = {'name': self.name,
+                'dataType': self.dataType,
+                'type': self.type,
+                'value': self.currentData(),
+                'uuid': str(self.uid),
+                'bLabelHidden': self.bLabelHidden,
+                'bDirty': self.dirty
+                }
+        return data
 
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
         if self.hasConnections() and modifiers == QtCore.Qt.AltModifier:
-            self.disconnect_all()
-        super(Port, self).mousePressEvent(event)
+            self.disconnectAll()
+        super(Pin, self).mousePressEvent(event)
 
     def ungrabMouseEvent(self, event):
-        super(Port, self).ungrabMouseEvent(event)
+        super(Pin, self).ungrabMouseEvent(event)
 
     def get_container(self):
         return self._container
@@ -106,7 +121,7 @@ class Port(QGraphicsWidget, PortBase):
         return xAvg
 
     def boundingRect(self):
-        if not self.data_type == DataTypes.Exec:
+        if not self.dataType == DataTypes.Exec:
             return QtCore.QRectF(0, -0.5, 8 * 1.5, 8 + 1.0)
         else:
             return QtCore.QRectF(0, -0.5, 10 * 1.5, 10 + 1.0)
@@ -114,17 +129,17 @@ class Port(QGraphicsWidget, PortBase):
     def sizeHint(self, which, constraint):
         return QtCore.QSizeF(self.width, self.height)
 
-    def disconnect_all(self):
+    def disconnectAll(self):
         trash = []
-        for e in self.parent().graph().edges:
-            if self.port_name() == e.connection["To"]:
+        for e in self.parent().graph().edges.values():
+            if self.pinName() == e.connection["To"]:
                 trash.append(e)
-            if self.port_name() == e.connection["From"]:
+            if self.pinName() == e.connection["From"]:
                 trash.append(e)
         for t in trash:
-            self.parent().graph().remove_edge(t)
+            self.parent().graph().removeEdge(t)
         self.bEdgeTangentDirection = False
-        self.parent().graph().write_to_console("disconnectAttr {1}an {0}".format(self.port_name(), FLAG_SYMBOL))
+        self.parent().graph().writeToConsole("disconnectAttr {1}an {0}".format(self.pinName(), FLAG_SYMBOL))
 
     def shape(self):
 
@@ -153,14 +168,14 @@ class Port(QGraphicsWidget, PortBase):
 
         if self.hovered:
             linearGrad.setColorAt(1, self.color.lighter(200))
-        if self.data_type == DataTypes.Array:
+        if self.dataType == DataTypes.Array:
             if self.portImage:
                 painter.drawImage(background_rect, self.portImage)
             else:
                 painter.setBrush(Colors.Array)
                 rect = background_rect
                 painter.drawRect(rect)
-        elif self.data_type == DataTypes.Exec:
+        elif self.dataType == DataTypes.Exec:
             if self._connected:
                 painter.setBrush(QtGui.QBrush(self.color))
             else:
@@ -184,9 +199,9 @@ class Port(QGraphicsWidget, PortBase):
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())
 
-    def write_to_console(self, data):
+    def writeToConsole(self, data):
         if self.parent().graph():
-            self.parent().graph().write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), self._data, FLAG_SYMBOL))
+            self.parent().graph().writeToConsole("setAttr {2}an {0} {2}v {1}".format(self.pinName(), self._data, FLAG_SYMBOL))
 
     def getLayout(self):
         if self.type == PinTypes.Input:
@@ -195,33 +210,33 @@ class Port(QGraphicsWidget, PortBase):
             return self.parent().outputsLayout
 
     def hoverEnterEvent(self, event):
-        super(Port, self).hoverEnterEvent(event)
+        super(Pin, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        self.setToolTip(str(self.current_data()))
-        if self.parent().graph().is_debug():
+        self.setToolTip(str(self.currentData()))
+        if self.parent().graph().isDebug():
             print('data -', self._data, 'dirtry -', self.dirty)
-            self.write_to_console(self._data)
+            self.writeToConsole(self._data)
         event.accept()
 
     def hoverLeaveEvent(self, event):
-        super(Port, self).hoverLeaveEvent(event)
+        super(Pin, self).hoverLeaveEvent(event)
         self.update()
         self.hovered = False
 
-    def port_connected(self, other):
-        PortBase.port_connected(self, other)
+    def pinConnected(self, other):
+        PinBase.pinConnected(self, other)
         if self.inputWidget:
             self.inputWidget.hide()
 
-    def port_disconnected(self, other):
-        PortBase.port_disconnected(self, other)
+    def pinDisconnected(self, other):
+        PinBase.pinDisconnected(self, other)
         if not self._connected and self.inputWidget:
             self.inputWidget.show()
 
-    def set_data(self, data):
-        PortBase.set_data(self, data)
+    def setData(self, data):
+        PinBase.setData(self, data)
         if self.inputWidget:
             self.inputWidget.setData(data)
-        self.write_to_console("setAttr {2}an {0} {2}v {1}".format(self.port_name(), data, FLAG_SYMBOL))
+        self.writeToConsole("setAttr {2}an {0} {2}v {1}".format(self.pinName(), data, FLAG_SYMBOL))
         update_ports(self)
