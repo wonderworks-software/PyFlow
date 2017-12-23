@@ -103,7 +103,10 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             pw = PinWidget.construct(o.name, o.bLabelHidden, o.dataType, self)
             self.appendOutput(pw)
         self.leLabel.setText(self.node.label().toPlainText())
-        self.plainTextEdit.setPlainText(self.node.currentCode)
+        code = ""
+        for line in self.node.currentComputeCode:
+            code += line
+        self.plainTextEdit.setPlainText(code)
 
     def resetUiData(self):
         self.lwInputs.clear()
@@ -111,10 +114,12 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.plainTextEdit.setPlainText("def compute(self):\n\tprint('Hello')")
 
     def resetNode(self):
-        self.node.bKillEditor = False
-        edUid = self.node.editorUUID
-        self.node = Node.recreate(self.node)
-        self.node.editorUUID = edUid
+        for i in self.node.inputs + self.node.outputs:
+            Node.removePinByName(self.node, i.name)
+        for i in range(self.node.inputsLayout.count()):
+            self.node.inputsLayout.removeAt(0)
+        for i in range(self.node.outputsLayout.count()):
+            self.node.outputsLayout.removeAt(0)
 
     def applyData(self):
         # recreate node
@@ -127,7 +132,6 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
 
         # assign compute method
         code = self.plainTextEdit.toPlainText()
-        code = code.replace('\t', '    ')
         exec(code)
         self.node.compute = MethodType(compute, self.node, Node)
         self.node.currentComputeCode = code
@@ -149,8 +153,6 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         for i in self.node.inputs:
             for o in self.node.outputs:
                 portAffects(i, o)
-
-        self.node.currentCode = code
 
     def appendInput(self, pw):
         item = QListWidgetItem(self.lwInputs)

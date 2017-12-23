@@ -128,7 +128,7 @@ class Edge(QGraphicsPathItem):
         p1, p2 = self.getEndPoints()
 
         xDistance = p2.x() - p1.x()
-        # vDistance = p2.y() - p1.y()
+        vDistance = p2.y() - p1.y()
 
         defaultOffset = 100.0
         minimum = min(defaultOffset, abs(xDistance))

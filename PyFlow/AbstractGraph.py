@@ -8,7 +8,7 @@ import inspect
 class PinBase(object):
     def __init__(self, name, parent, dataType):
         super(PinBase, self).__init__()
-        self.uid = uuid.uuid4()
+        self._uid = uuid.uuid4()
         self.name = name.replace(" ", "_")
         self.parent = weakref.ref(parent)
         self.object_type = ObjectTypes.Pin
@@ -28,6 +28,16 @@ class PinBase(object):
         self.parent().graph().pins[self.uid] = self
 
     @property
+    def uid(self):
+        return self._uid
+
+    @uid.setter
+    def uid(self, value):
+        self.parent().graph().pins.pop(self._uid)
+        self._uid = value
+        self.parent().graph().pins[self._uid] = self
+
+    @property
     def dataType(self):
         return self._dataType
 
@@ -38,6 +48,15 @@ class PinBase(object):
         self.supportedDataTypes = list(set([value]))
         if self.dataType == DataTypes.Exec or self.dataType == DataTypes.Any:
             self.supportedDataTypes.append(value)
+
+    def kill(self):
+        self.parent().graph().pins.pop(self.uid)
+        if self.type == PinTypes.Input and self in self.parent().inputs:
+            index = self.parent().inputs.index(self)
+            self.parent().inputs.pop(index)
+        if self.type == PinTypes.Output and self in self.parent().outputs:
+            index = self.parent().outputs.index(self)
+            self.parent().outputs.pop(index)
 
     def getDefaultDataValue(self):
         if self._dataType == DataTypes.Float:
@@ -157,7 +176,7 @@ class PinBase(object):
 class NodeBase(object):
     def __init__(self, name, graph):
         super(NodeBase, self).__init__()
-        self.uid = uuid.uuid4()
+        self._uid = uuid.uuid4()
         self.graph = weakref.ref(graph)
         self.name = name
         self.object_type = ObjectTypes.Node
@@ -165,6 +184,16 @@ class NodeBase(object):
         self.outputs = []
         self.x = 0.0
         self.y = 0.0
+
+    @property
+    def uid(self):
+        return self._uid
+
+    @uid.setter
+    def uid(self, value):
+        self.graph().nodes.pop(self._uid)
+        self._uid = value
+        self.graph().nodes[self._uid] = self
 
     def setPosition(self, x, y):
         self.x = x
@@ -191,6 +220,17 @@ class NodeBase(object):
         if foo:
             p.call = foo
         return p
+
+    def getUniqPinName(self, name):
+        pinNames = [i.name for i in self.inputs + self.outputs]
+        if name not in pinNames:
+            return name
+        idx = 0
+        tmp = name
+        while tmp in pinNames:
+            idx += 1
+            tmp = name + str(idx)
+        return name + str(idx)
 
     def getPinByName(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
         if pinsSelectionGroup == PinSelectionGroup.BothSides:
@@ -239,7 +279,6 @@ class Graph(object):
         self.pins = {}
 
     def getUniqNodeName(self, name):
-
         nodes_names = [n.name for n in self.nodes.values()]
         if name not in nodes_names:
             return name
@@ -379,11 +418,11 @@ class Graph(object):
         # input data ports can have one output connection
         # output data ports can have any number of connections
         if not src.dataType == DataTypes.Exec and dst.hasConnections():
-            dst.disconnect_all()
+            dst.disconnectAll()
         # input execs can have any number of connections
         # output execs can have only one connection
         if src.dataType == DataTypes.Exec and dst.dataType == DataTypes.Exec and src.hasConnections():
-            src.disconnect_all()
+            src.disconnectAll()
 
         portAffects(src, dst)
         src.setDirty()

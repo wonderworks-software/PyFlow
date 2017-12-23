@@ -8,6 +8,7 @@ from Qt.QtWidgets import QMenu
 from CodeEditor import CodeEditor
 import weakref
 import uuid
+from types import MethodType
 
 
 class PythonNode(Node, NodeBase):
@@ -20,7 +21,7 @@ class PythonNode(Node, NodeBase):
         self.editorUUID = None
         self.bKillEditor = True
         self.label().icon = QtGui.QImage(':/icons/resources/py.png')
-        self.currentComputeCode = "def compute(self):\n\tprint('Hello')"
+        self.currentComputeCode = ["def compute(self):\n\tprint('Hello')"]
 
     def computeCode(self):
         return self.currentComputeCode
@@ -39,6 +40,24 @@ class PythonNode(Node, NodeBase):
     @staticmethod
     def category():
         return 'Utils'
+
+    def postCreate(self, jsonTemplate):
+        Node.postCreate(self, jsonTemplate)
+
+        self.currentComputeCode = jsonTemplate['computeCode']
+        exec(jsonTemplate['computeCode'])
+        self.compute = MethodType(compute, self, Node)
+
+        for inpJson in jsonTemplate['inputs']:
+            pin = None
+            if inpJson['dataType'] == DataTypes.Exec:
+                pin = self.addInputPin(inpJson['name'], inpJson['dataType'], self.compute, inpJson['bLabelHidden'])
+            else:
+                pin = self.addInputPin(inpJson['name'], inpJson['dataType'], None, inpJson['bLabelHidden'])
+            pin.setData(inpJson['value'])
+        for outJson in jsonTemplate['outputs']:
+            pin = self.addOutputPin(outJson['name'], outJson['dataType'], None, outJson['bLabelHidden'])
+            pin.setData(outJson['value'])
 
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())

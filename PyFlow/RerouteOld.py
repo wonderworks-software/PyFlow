@@ -76,11 +76,11 @@ class Reroute(Node, NodeBase):
     def serialize(self):
         return "createNode ~type {0} ~x {1} ~y {2} ~n {3} ~dataType {4}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, self.inp0.dataType)
 
-    def disconnect_all(self):
+    def disconnectAll(self):
         if self.inp0.hasConnections():
-            self.inp0.disconnect_all()
+            self.inp0.disconnectAll()
         if self.out0.hasConnections():
-            self.out0.disconnect_all()
+            self.out0.disconnectAll()
 
     def getOutControlPoint(self):
         cp1 = self.out0.scenePos()
@@ -180,7 +180,7 @@ class Reroute(Node, NodeBase):
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.AltModifier and event.button() == QtCore.Qt.LeftButton:
-            self.disconnect_all()
+            self.disconnectAll()
         super(Reroute, self).mousePressEvent(event)
 
     @staticmethod

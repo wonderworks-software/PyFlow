@@ -1294,6 +1294,9 @@ class GraphWidget(QGraphicsView, Graph):
                 layout.addRow(inp.name, le)
                 if inp.hasConnections():
                     le.setReadOnly(True)
+                inpUidWidget = QLineEdit(str(inp.uid))
+                inpUidWidget.setReadOnly(True)
+                layout.addRow("uuid", inpUidWidget)
 
         # outputs
         if len(node.outputs) != 0:
@@ -1310,6 +1313,9 @@ class GraphWidget(QGraphicsView, Graph):
                 layout.addRow(out.name, le)
                 if out.hasConnections():
                     le.setReadOnly(True)
+                outUidWidget = QLineEdit(str(out.uid))
+                outUidWidget.setReadOnly(True)
+                layout.addRow("uuid", outUidWidget)
 
         doc_lb = QLabel()
         doc_lb.setStyleSheet("background-color: black;")

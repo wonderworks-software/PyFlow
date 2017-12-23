@@ -42,7 +42,7 @@ class Pin(QGraphicsWidget, PinBase):
         self.setCursor(QtCore.Qt.CrossCursor)
         self.menu = QMenu()
         self.disconnected = self.menu.addAction('Disconnect all')
-        self.disconnected.triggered.connect(self.disconnect_all)
+        self.disconnected.triggered.connect(self.disconnectAll)
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
@@ -76,20 +76,26 @@ class Pin(QGraphicsWidget, PinBase):
         self.portImage = QtGui.QImage(':/icons/resources/array.png')
         self.bLabelHidden = False
 
+    def kill(self):
+        PinBase.kill(self)
+        self.disconnectAll()
+        self.parent().graph().scene().removeItem(self._container)
+
     def serialize(self):
         data = {'name': self.name,
                 'dataType': self.dataType,
                 'type': self.type,
                 'value': self.currentData(),
                 'uuid': str(self.uid),
-                'bLabelHidden': self.bLabelHidden
+                'bLabelHidden': self.bLabelHidden,
+                'bDirty': self.dirty
                 }
         return data
 
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
         if self.hasConnections() and modifiers == QtCore.Qt.AltModifier:
-            self.disconnect_all()
+            self.disconnectAll()
         super(Pin, self).mousePressEvent(event)
 
     def ungrabMouseEvent(self, event):
@@ -122,7 +128,7 @@ class Pin(QGraphicsWidget, PinBase):
     def sizeHint(self, which, constraint):
         return QtCore.QSizeF(self.width, self.height)
 
-    def disconnect_all(self):
+    def disconnectAll(self):
         trash = []
         for e in self.parent().graph().edges.values():
             if self.pinName() == e.connection["To"]:

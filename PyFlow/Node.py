@@ -146,15 +146,14 @@ class Node(QGraphicsItem, NodeBase):
 
         self.tweakPosition()
         self.icon = None
-        self.currentComputeCode = self.computeCode()
 
     @staticmethod
     def recreate(node):
-        pos = node.scenePos()
-        className = node.__class__.__name__
-        name = node.name
-        newNode = node.graph().createNode(className, pos.x(), pos.y(), name)
+        templ = node.serialize()
+        uid = node.uid
         node.kill()
+        newNode = node.graph().createNode(templ)
+        newNode.uid = uid
         return newNode
 
     @property
@@ -258,7 +257,25 @@ class Node(QGraphicsItem, NodeBase):
         node = graph.createNode(data)
         node.uid = uuid.UUID(data['uuid'])
         node.currentComputeCode = data['computeCode']
-        # set pins uids from data
+
+        # set pins data
+        for inpJson in data['inputs']:
+            pin = node.getPinByName(inpJson['name'], PinSelectionGroup.Inputs)
+            pin.uid = uuid.UUID(inpJson['uuid'])
+            pin.setData(inpJson['value'])
+            if inpJson['bDirty']:
+                pin.setDirty()
+            else:
+                pin.setClean()
+
+        for outJson in data['outputs']:
+            pin = node.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
+            pin.uid = uuid.UUID(outJson['uuid'])
+            pin.setData(outJson['value'])
+            if outJson['bDirty']:
+                pin.setDirty()
+            else:
+                pin.setClean()
 
     def InputPinTypes(self):
         types = []
@@ -463,7 +480,7 @@ class Node(QGraphicsItem, NodeBase):
 
     def kill(self):
         for i in self.inputs + self.outputs:
-            i.disconnect_all()
+            i.disconnectAll()
 
         self.graph().nodes.pop(self.uid)
         self.graph().nodesPendingKill.append(self)
@@ -479,8 +496,17 @@ class Node(QGraphicsItem, NodeBase):
     def removePinByUUID(self, uid):
         pass
 
+    @staticmethod
+    def removePinByName(node, name):
+        pin = node.getPinByName(name)
+        if pin:
+            pin.kill()
+
     def _addPin(self, port_type, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
         newColor = color
+
+        # check if pins with this name already exists and get uniq name
+        name = self.getUniqPinName(name)
 
         if dataType == DataTypes.Int or DataTypes.Float:
             # set colot for numeric ports
