@@ -296,11 +296,11 @@ class SceneClass(QGraphicsScene):
         if len(selectedNodes) == 0:
             self.parent().writeToConsole("select {0}nl none".format(FLAG_SYMBOL))
             return
-        cmd = "select {0}nl ".format(FLAG_SYMBOL)
-        for n in selectedNodes:
-            cmd += n
-            cmd += " "
-        self.parent().writeToConsole(cmd[:-1])
+        # cmd = "select {0}nl ".format(FLAG_SYMBOL)
+        # for n in selectedNodes:
+        #     cmd += n
+        #     cmd += " "
+        # self.parent().writeToConsole(cmd[:-1])
 
     def dropEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
@@ -313,6 +313,7 @@ class SceneClass(QGraphicsScene):
                 nodeTemplate['name'] = name
                 nodeTemplate['x'] = event.scenePos().x()
                 nodeTemplate['y'] = event.scenePos().y()
+                nodeTemplate['meta']['label'] = className
                 instance = self.parent().createNode(nodeTemplate)
         else:
             super(SceneClass, self).dropEvent(event)

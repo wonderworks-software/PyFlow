@@ -80,6 +80,7 @@ class Pin(QGraphicsWidget, PinBase):
         PinBase.kill(self)
         self.disconnectAll()
         self.parent().graph().scene().removeItem(self._container)
+        exec("del self.parent().{}".format(self.name))
 
     def serialize(self):
         data = {'name': self.name,

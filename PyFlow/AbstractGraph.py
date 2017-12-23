@@ -222,7 +222,7 @@ class NodeBase(object):
         return p
 
     def getUniqPinName(self, name):
-        pinNames = [i.name for i in self.inputs + self.outputs]
+        pinNames = [i.name for i in self.inputs + self.outputs] + dir(self)
         if name not in pinNames:
             return name
         idx = 0
@@ -250,7 +250,12 @@ class NodeBase(object):
         pass
 
     def computeCode(self):
-        return inspect.getsourcelines(self.compute)[0]
+        lines = inspect.getsourcelines(self.compute)[0]
+        offset = lines[0].find("def compute")
+        code = ""
+        for line in lines:
+            code += line[offset:]
+        return code
 
     def compute(self):
         '''
@@ -265,9 +270,7 @@ class NodeBase(object):
 
 
 class Graph(object):
-
     def __init__(self, name):
-
         super(Graph, self).__init__()
         self.object_type = ObjectTypes.Graph
         self._debug = False

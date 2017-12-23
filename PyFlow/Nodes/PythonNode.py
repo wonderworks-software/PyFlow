@@ -44,10 +44,12 @@ class PythonNode(Node, NodeBase):
     def postCreate(self, jsonTemplate):
         Node.postCreate(self, jsonTemplate)
 
+        # restore compute
         self.currentComputeCode = jsonTemplate['computeCode']
         exec(jsonTemplate['computeCode'])
         self.compute = MethodType(compute, self, Node)
 
+        # restore pins
         for inpJson in jsonTemplate['inputs']:
             pin = None
             if inpJson['dataType'] == DataTypes.Exec:
@@ -58,6 +60,9 @@ class PythonNode(Node, NodeBase):
         for outJson in jsonTemplate['outputs']:
             pin = self.addOutputPin(outJson['name'], outJson['dataType'], None, outJson['bLabelHidden'])
             pin.setData(outJson['value'])
+
+        # restore node label
+        self.label().setPlainText(jsonTemplate['meta']['label'])
 
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())

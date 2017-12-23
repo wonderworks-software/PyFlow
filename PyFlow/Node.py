@@ -352,10 +352,10 @@ class Node(QGraphicsItem, NodeBase):
                     'y': None,
                     'name': None,
                     'uuid': None,
-                    'computeCode': [],
+                    'computeCode': "def compute(self):\n\tprint('Hello world')",
                     'inputs': [],
                     'outputs': [],
-                    'meta': {}
+                    'meta': {'label': 'Node'}
                     }
         return template
 
@@ -369,6 +369,7 @@ class Node(QGraphicsItem, NodeBase):
         template['computeCode'] = self.computeCode()
         template['inputs'] = [i.serialize() for i in self.inputs]
         template['outputs'] = [o.serialize() for o in self.outputs]
+        template['meta']['label'] = self.label().toPlainText()
         return template
 
     def propertyView(self):
