@@ -111,7 +111,6 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     def resetUiData(self):
         self.lwInputs.clear()
         self.lwOutputs.clear()
-        self.plainTextEdit.setPlainText("def compute(self):\n\tprint('Hello')")
 
     def resetNode(self):
         for i in self.node.inputs + self.node.outputs:
@@ -120,6 +119,14 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             self.node.inputsLayout.removeAt(0)
         for i in range(self.node.outputsLayout.count()):
             self.node.outputsLayout.removeAt(0)
+
+    @staticmethod
+    def wrapCodeToFunction(fooName, code):
+        foo = "def {}(self):".format(fooName)
+        lines = [i for i in code.split('\n') if len(i) > 0]
+        for line in lines:
+            foo += '\n\t{}'.format(line)
+        return foo
 
     def applyData(self):
         # recreate node
@@ -132,23 +139,27 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
 
         # assign compute method
         code = self.plainTextEdit.toPlainText()
-        exec(code)
+        foo = CodeEditor.wrapCodeToFunction('compute', code)
+        exec(foo)
         self.node.compute = MethodType(compute, self.node, Node)
         self.node.currentComputeCode = code
 
         for index in range(self.lwOutputs.count()):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
             if isinstance(w, PinWidget):
-                self.node.addOutputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
+                p = self.node.addOutputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
+                w.lePinName.setText(p.name)
 
         # recreate pins from editor data
         for index in range(self.lwInputs.count()):
             w = self.lwInputs.itemWidget(self.lwInputs.item(index))
             if isinstance(w, PinWidget):
                 if w.dataType() == DataTypes.Exec:
-                    self.node.addInputPin(w.name(), w.dataType(), self.node.compute, w.shouldHideLabel())
+                    p = self.node.addInputPin(w.name(), w.dataType(), self.node.compute, w.shouldHideLabel())
+                    w.lePinName.setText(p.name)
                 else:
-                    self.node.addInputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
+                    p = self.node.addInputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
+                    w.lePinName.setText(p.name)
 
         for i in self.node.inputs:
             for o in self.node.outputs:

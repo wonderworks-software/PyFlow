@@ -21,7 +21,7 @@ class PythonNode(Node, NodeBase):
         self.editorUUID = None
         self.bKillEditor = True
         self.label().icon = QtGui.QImage(':/icons/resources/py.png')
-        self.currentComputeCode = ["def compute(self):\n\tprint('Hello')"]
+        self.currentComputeCode = "print('Hello world!')"
 
     def computeCode(self):
         return self.currentComputeCode
@@ -46,7 +46,8 @@ class PythonNode(Node, NodeBase):
 
         # restore compute
         self.currentComputeCode = jsonTemplate['computeCode']
-        exec(jsonTemplate['computeCode'])
+        foo = CodeEditor.wrapCodeToFunction('compute', jsonTemplate['computeCode'])
+        exec(foo)
         self.compute = MethodType(compute, self, Node)
 
         # restore pins

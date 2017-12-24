@@ -352,7 +352,7 @@ class Node(QGraphicsItem, NodeBase):
                     'y': None,
                     'name': None,
                     'uuid': None,
-                    'computeCode': "def compute(self):\n\tprint('Hello world')",
+                    'computeCode': "print('Hello world')",
                     'inputs': [],
                     'outputs': [],
                     'meta': {'label': 'Node'}
@@ -584,5 +584,6 @@ class Node(QGraphicsItem, NodeBase):
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
         # create member if created in runtime
-        setattr(self, name, p)
+        if not hasattr(self, name):
+            setattr(self, name, p)
         return p

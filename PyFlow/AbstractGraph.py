@@ -3,6 +3,7 @@ from AGraphCommon import *
 import weakref
 import uuid
 import inspect
+import keyword
 
 
 class PinBase(object):
@@ -222,7 +223,7 @@ class NodeBase(object):
         return p
 
     def getUniqPinName(self, name):
-        pinNames = [i.name for i in self.inputs + self.outputs] + dir(self)
+        pinNames = [i.name for i in self.inputs + self.outputs] + dir(self) + keyword.kwlist
         if name not in pinNames:
             return name
         idx = 0
