@@ -23,7 +23,7 @@ class CompletionTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super(CompletionTextEdit, self).__init__(parent)
         self.setMinimumWidth(400)
-        wordList = kwlist
+        wordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()', 'setDirty()']
         self.completer = QCompleter(wordList, self)
         self.moveCursor(QtGui.QTextCursor.End)
         font = QtGui.QFont()
@@ -40,10 +40,9 @@ class CompletionTextEdit(QPlainTextEdit):
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
-        extra = len(completion) - len(self.completer.completionPrefix()) - 1
         tc.movePosition(QtGui.QTextCursor.Left)
         tc.movePosition(QtGui.QTextCursor.EndOfWord)
-        tc.insertText(completion[extra:])
+        tc.insertText(completion.replace(self.completer.completionPrefix(), ''))
         self.setTextCursor(tc)
 
     def textUnderCursor(self):
@@ -62,9 +61,9 @@ class CompletionTextEdit(QPlainTextEdit):
                 event.ignore()
                 return
 
-        # has ctrl-E been pressed??
+        # has ctrl-space been pressed??
         isShortcut = (event.modifiers() == QtCore.Qt.ControlModifier and
-                      event.key() == QtCore.Qt.Key_E)
+                      event.key() == QtCore.Qt.Key_Space)
         if (not self.completer or not isShortcut):
             QPlainTextEdit.keyPressEvent(self, event)
 
