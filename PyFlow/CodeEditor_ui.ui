@@ -18,6 +18,18 @@
     <normaloff>:/icons/resources/py.png</normaloff>:/icons/resources/py.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>1</number>
+   </property>
+   <property name="topMargin">
+    <number>1</number>
+   </property>
+   <property name="rightMargin">
+    <number>1</number>
+   </property>
+   <property name="bottomMargin">
+    <number>1</number>
+   </property>
    <item>
     <widget class="QLineEdit" name="leLabel">
      <property name="text">
@@ -31,17 +43,56 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabPins">
       <attribute name="title">
        <string>Pins</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
+       <property name="leftMargin">
+        <number>1</number>
+       </property>
+       <property name="topMargin">
+        <number>1</number>
+       </property>
+       <property name="rightMargin">
+        <number>1</number>
+       </property>
+       <property name="bottomMargin">
+        <number>1</number>
+       </property>
        <item row="1" column="0">
         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>1</number>
+         </property>
+         <property name="leftMargin">
+          <number>1</number>
+         </property>
+         <property name="topMargin">
+          <number>1</number>
+         </property>
+         <property name="rightMargin">
+          <number>1</number>
+         </property>
+         <property name="bottomMargin">
+          <number>1</number>
+         </property>
          <item>
           <layout class="QGridLayout" name="gridLayout_2">
+           <property name="leftMargin">
+            <number>1</number>
+           </property>
+           <property name="topMargin">
+            <number>1</number>
+           </property>
+           <property name="rightMargin">
+            <number>1</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
            <item row="0" column="0">
             <widget class="QPushButton" name="pbAddInput">
              <property name="text">
@@ -100,6 +151,18 @@
            <property name="spacing">
             <number>0</number>
            </property>
+           <property name="leftMargin">
+            <number>1</number>
+           </property>
+           <property name="topMargin">
+            <number>1</number>
+           </property>
+           <property name="rightMargin">
+            <number>1</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
            <item>
             <widget class="QScrollArea" name="scrollArea">
              <property name="widgetResizable">
@@ -110,11 +173,23 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>420</width>
-                <height>355</height>
+                <width>436</width>
+                <height>375</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_5">
+               <property name="leftMargin">
+                <number>1</number>
+               </property>
+               <property name="topMargin">
+                <number>1</number>
+               </property>
+               <property name="rightMargin">
+                <number>1</number>
+               </property>
+               <property name="bottomMargin">
+                <number>1</number>
+               </property>
                <item row="0" column="0">
                 <widget class="QListWidget" name="lwInputs">
                  <property name="selectionMode">
@@ -142,11 +217,23 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>419</width>
-                <height>355</height>
+                <width>435</width>
+                <height>375</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_4">
+               <property name="leftMargin">
+                <number>1</number>
+               </property>
+               <property name="topMargin">
+                <number>1</number>
+               </property>
+               <property name="rightMargin">
+                <number>1</number>
+               </property>
+               <property name="bottomMargin">
+                <number>1</number>
+               </property>
                <item row="0" column="0">
                 <widget class="QListWidget" name="lwOutputs">
                  <property name="selectionMode">
@@ -172,6 +259,18 @@
        <string>Code</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>1</number>
+       </property>
+       <property name="topMargin">
+        <number>1</number>
+       </property>
+       <property name="rightMargin">
+        <number>1</number>
+       </property>
+       <property name="bottomMargin">
+        <number>1</number>
+       </property>
        <item row="0" column="0">
         <widget class="QPlainTextEdit" name="plainTextEdit">
          <property name="sizePolicy">
@@ -179,6 +278,14 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Consolas</family>
+          </font>
+         </property>
+         <property name="mouseTracking">
+          <bool>false</bool>
          </property>
          <property name="tabStopWidth">
           <number>20</number>
@@ -193,6 +300,18 @@
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <property name="spacing">
       <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>1</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="rightMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
+      <number>1</number>
      </property>
      <item>
       <widget class="QPushButton" name="pbReset">
@@ -232,10 +351,22 @@
        <property name="spacing">
         <number>0</number>
        </property>
+       <property name="leftMargin">
+        <number>1</number>
+       </property>
+       <property name="topMargin">
+        <number>1</number>
+       </property>
+       <property name="rightMargin">
+        <number>1</number>
+       </property>
+       <property name="bottomMargin">
+        <number>1</number>
+       </property>
        <item>
         <widget class="QSpinBox" name="sbFontSize">
          <property name="value">
-          <number>14</number>
+          <number>10</number>
          </property>
         </widget>
        </item>

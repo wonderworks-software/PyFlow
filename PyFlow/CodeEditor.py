@@ -63,7 +63,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         option = QtGui.QTextOption()
         option.setFlags(option.Flags() | QtGui.QTextOption.ShowTabsAndSpaces)
         self.plainTextEdit.document().setDefaultTextOption(option)
-        self.setFontSize(15)
+        self.setFontSize(10)
         self.sbFontSize.valueChanged.connect(lambda: self.setFontSize(self.sbFontSize.value()))
         self.pbAddInput.clicked.connect(self.addDefaultInput)
         self.pbAddOutput.clicked.connect(self.addDefaultOutput)

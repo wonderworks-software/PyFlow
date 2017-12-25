@@ -19,6 +19,8 @@ from inspect import getargspec
 class NodeName(QGraphicsTextItem):
     def __init__(self, parent):
         QGraphicsTextItem.__init__(self)
+        self.width = 50
+        self.document().contentsChanged.connect(self.onDocOntentsChanged)
         self.object_type = ObjectTypes.NodeName
         self.setParentItem(parent)
         self.options = self.parentItem().graph().getSettings()
@@ -41,6 +43,9 @@ class NodeName(QGraphicsTextItem):
         self.bg = QtGui.QImage(':/icons/resources/white.png')
         self.icon = None
 
+    def onDocOntentsChanged(self):
+        self.width = QtGui.QFontMetricsF(self.font()).width(self.toPlainText()) + 5.0
+
     @staticmethod
     def IsRenamable():
         return False
@@ -55,7 +60,7 @@ class NodeName(QGraphicsTextItem):
             QGraphicsTextItem.keyPressEvent(self, event)
 
     def boundingRect(self):
-        return QtCore.QRectF(0, 0, self.parentItem().w, 30)
+        return QtCore.QRectF(0, 0, self.width + 5.0, 30)
 
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
@@ -76,10 +81,10 @@ class NodeName(QGraphicsTextItem):
         if self.icon:
             painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
 
-        painter.setClipping(True)
-        if not self.clipRect:
-            self.clipRect = QtCore.QRectF(0, 0, parentRet.width() - 5.0, self.boundingRect().height())
-        painter.setClipRect(self.clipRect)
+        # painter.setClipping(True)
+        # if not self.clipRect:
+        #     self.clipRect = QtCore.QRectF(0, 0, self.boundingRect().width(), self.boundingRect().height())
+        # painter.setClipRect(self.clipRect)
         # painter.setPen(self.descFontPen)
         # painter.drawText(5.0, self.h - 0.5, self.desc)
 
@@ -347,12 +352,16 @@ class Node(QGraphicsItem, NodeBase):
 
     @staticmethod
     def jsonTemplate():
+        doc = '''# access pins like this\n\t# self.pinName.getData()\n\t# self.pinName.setData()'''
+        doc += '''\n\t# self.getData(name) to get data from input pin by name'''
+        doc += '''\n\t# self.setData(name, data) to set data to output pin by name\n'''
+
         template = {'type': None,
                     'x': None,
                     'y': None,
                     'name': None,
                     'uuid': None,
-                    'computeCode': "print('Hello world')",
+                    'computeCode': doc + "\nprint('Hello world')\n",
                     'inputs': [],
                     'outputs': [],
                     'meta': {'label': 'Node'}
@@ -459,6 +468,9 @@ class Node(QGraphicsItem, NodeBase):
     @staticmethod
     def keywords():
         return []
+
+    def onUpdatePropertyView(self, view):
+        pass
 
     def add_container(self, portType, head=False):
         container = QGraphicsWidget()  # for set background color

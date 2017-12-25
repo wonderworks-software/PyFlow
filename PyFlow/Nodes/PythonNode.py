@@ -21,7 +21,7 @@ class PythonNode(Node, NodeBase):
         self.editorUUID = None
         self.bKillEditor = True
         self.label().icon = QtGui.QImage(':/icons/resources/py.png')
-        self.currentComputeCode = "print('Hello world!')"
+        self.currentComputeCode = Node.jsonTemplate()['computeCode']
 
     def computeCode(self):
         return self.currentComputeCode
