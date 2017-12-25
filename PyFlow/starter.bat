@@ -1,2 +1,2 @@
-%cd%/Python27/python.exe "%cd%/Launcher.py"
+%cd%/Python27/Scripts/python.exe "%cd%/Launcher.py"
 pause
