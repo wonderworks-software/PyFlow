@@ -6,6 +6,8 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QListWidget
 from Qt.QtWidgets import QListWidgetItem
 from Qt.QtWidgets import QSizePolicy
+from Qt.QtWidgets import QCompleter
+from Qt.QtWidgets import QPlainTextEdit
 import CodeEditor_ui
 import PythonSyntax
 import PinWidget_ui
@@ -14,6 +16,85 @@ import inspect
 from types import MethodType
 from Node import Node
 import weakref
+from keyword import kwlist
+
+
+class CompletionTextEdit(QPlainTextEdit):
+    def __init__(self, parent=None):
+        super(CompletionTextEdit, self).__init__(parent)
+        self.setMinimumWidth(400)
+        wordList = kwlist
+        self.completer = QCompleter(wordList, self)
+        self.moveCursor(QtGui.QTextCursor.End)
+        font = QtGui.QFont()
+        font.setFamily("Consolas")
+        self.setFont(font)
+        self.setCompleter(self.completer)
+
+    def setCompleter(self, completer):
+        completer.setWidget(self)
+        completer.setCompletionMode(QCompleter.PopupCompletion)
+        completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+        self.completer = completer
+        self.completer.activated.connect(self.insertCompletion)
+
+    def insertCompletion(self, completion):
+        tc = self.textCursor()
+        extra = len(completion) - len(self.completer.completionPrefix()) - 1
+        tc.movePosition(QtGui.QTextCursor.Left)
+        tc.movePosition(QtGui.QTextCursor.EndOfWord)
+        tc.insertText(completion[extra:])
+        self.setTextCursor(tc)
+
+    def textUnderCursor(self):
+        tc = self.textCursor()
+        tc.select(QtGui.QTextCursor.WordUnderCursor)
+        return tc.selectedText()
+
+    def focusInEvent(self, event):
+        if self.completer:
+            self.completer.setWidget(self)
+        QPlainTextEdit.focusInEvent(self, event)
+
+    def keyPressEvent(self, event):
+        if self.completer and self.completer.popup().isVisible():
+            if event.key() in (QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return, QtCore.Qt.Key_Escape, QtCore.Qt.Key_Tab, QtCore.Qt.Key_Backtab):
+                event.ignore()
+                return
+
+        # has ctrl-E been pressed??
+        isShortcut = (event.modifiers() == QtCore.Qt.ControlModifier and
+                      event.key() == QtCore.Qt.Key_E)
+        if (not self.completer or not isShortcut):
+            QPlainTextEdit.keyPressEvent(self, event)
+
+        # ctrl or shift key on it's own??
+        ctrlOrShift = event.modifiers() in (QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier)
+        if ctrlOrShift and event.text() == '':
+            # ctrl or shift key on it's own
+            return
+
+        # end of word
+        eow = "~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="
+
+        hasModifier = ((event.modifiers() != QtCore.Qt.NoModifier) and not ctrlOrShift)
+
+        completionPrefix = self.textUnderCursor()
+
+        if (not isShortcut and (hasModifier or event.text() == '' or len(completionPrefix) < 3 or event.text()[:-1] in eow)):
+            self.completer.popup().hide()
+            return
+
+        if (completionPrefix != self.completer.completionPrefix()):
+            self.completer.setCompletionPrefix(completionPrefix)
+            popup = self.completer.popup()
+            popup.setCurrentIndex(
+                self.completer.completionModel().index(0, 0))
+
+        cr = self.cursorRect()
+        cr.setWidth(self.completer.popup().sizeHintForColumn(0) + self.completer.popup().verticalScrollBar().sizeHint().width())
+        # popup it up!
+        self.completer.complete(cr)
 
 
 class PinWidget(QWidget, PinWidget_ui.Ui_Form):

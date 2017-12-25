@@ -174,7 +174,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>436</width>
-                <height>375</height>
+                <height>392</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_5">
@@ -218,7 +218,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>435</width>
-                <height>375</height>
+                <height>392</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_4">
@@ -272,7 +272,7 @@
         <number>1</number>
        </property>
        <item row="0" column="0">
-        <widget class="QPlainTextEdit" name="plainTextEdit">
+        <widget class="CompletionTextEdit" name="plainTextEdit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -283,12 +283,6 @@
           <font>
            <family>Consolas</family>
           </font>
-         </property>
-         <property name="mouseTracking">
-          <bool>false</bool>
-         </property>
-         <property name="tabStopWidth">
-          <number>20</number>
          </property>
         </widget>
        </item>
@@ -376,6 +370,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CompletionTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>CodeEditor</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="nodes_res.qrc"/>
  </resources>

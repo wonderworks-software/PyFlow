@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/CodeEditor_ui.ui'
 #
-# Created: Mon Dec 25 10:30:57 2017
+# Created: Mon Dec 25 18:27:20 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -61,7 +61,7 @@ class Ui_CodeEditorWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 436, 375))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 436, 392))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_5 = QtGui.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_5.setContentsMargins(1, 1, 1, 1)
@@ -78,7 +78,7 @@ class Ui_CodeEditorWidget(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 435, 375))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 435, 392))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_4 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_4.setContentsMargins(1, 1, 1, 1)
@@ -98,7 +98,7 @@ class Ui_CodeEditorWidget(object):
         self.gridLayout = QtGui.QGridLayout(self.tabCode)
         self.gridLayout.setContentsMargins(1, 1, 1, 1)
         self.gridLayout.setObjectName("gridLayout")
-        self.plainTextEdit = QtGui.QPlainTextEdit(self.tabCode)
+        self.plainTextEdit = CodeEditor.CompletionTextEdit(self.tabCode)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -107,8 +107,6 @@ class Ui_CodeEditorWidget(object):
         font = QtGui.QFont()
         font.setFamily("Consolas")
         self.plainTextEdit.setFont(font)
-        self.plainTextEdit.setMouseTracking(False)
-        self.plainTextEdit.setTabStopWidth(20)
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.gridLayout.addWidget(self.plainTextEdit, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tabCode, "")
@@ -153,4 +151,5 @@ class Ui_CodeEditorWidget(object):
         self.pbReset.setText(QtGui.QApplication.translate("CodeEditorWidget", "reset", None, QtGui.QApplication.UnicodeUTF8))
         self.pbSave.setText(QtGui.QApplication.translate("CodeEditorWidget", "save", None, QtGui.QApplication.UnicodeUTF8))
 
+import CodeEditor
 import nodes_res_rc

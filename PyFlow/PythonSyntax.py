@@ -29,6 +29,7 @@ STYLES = {
     'comment': format('gray', 'italic'),
     'self': format('green', 'italic'),
     'numbers': format('brown'),
+    'dataAccess': format('orange')
 }
 
 
@@ -83,6 +84,8 @@ class PythonHighlighter (QSyntaxHighlighter):
         rules += [
             # 'self'
             (r'\bself\b', 0, STYLES['self']),
+            (r'\bsetData\b', 0, STYLES['dataAccess']),
+            (r'\bgetData\b', 0, STYLES['dataAccess']),
 
             # Double-quoted string, possibly containing escape sequences
             (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES['string']),
