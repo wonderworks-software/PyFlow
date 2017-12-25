@@ -9,7 +9,7 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QGraphicsLinearLayout
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QStyle
-from Port import Port, getPortColorByType
+from Pin import Pin, getPortColorByType
 from AbstractGraph import *
 from types import MethodType
 from PinInputWidgets import getPinWidget
@@ -19,9 +19,11 @@ from inspect import getargspec
 class NodeName(QGraphicsTextItem):
     def __init__(self, parent):
         QGraphicsTextItem.__init__(self)
+        self.width = 50
+        self.document().contentsChanged.connect(self.onDocOntentsChanged)
         self.object_type = ObjectTypes.NodeName
         self.setParentItem(parent)
-        self.options = self.parentItem().graph().get_settings()
+        self.options = self.parentItem().graph().getSettings()
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.desc = parent.description()
         self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
@@ -39,6 +41,10 @@ class NodeName(QGraphicsTextItem):
         self.clipRect = None
         self.roundCornerFactor = 1.0
         self.bg = QtGui.QImage(':/icons/resources/white.png')
+        self.icon = None
+
+    def onDocOntentsChanged(self):
+        self.width = QtGui.QFontMetricsF(self.font()).width(self.toPlainText()) + 5.0
 
     @staticmethod
     def IsRenamable():
@@ -54,7 +60,7 @@ class NodeName(QGraphicsTextItem):
             QGraphicsTextItem.keyPressEvent(self, event)
 
     def boundingRect(self):
-        return QtCore.QRectF(0, 0, self.parentItem().w, 20)
+        return QtCore.QRectF(0, 0, self.width + 5.0, 30)
 
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
@@ -70,20 +76,23 @@ class NodeName(QGraphicsTextItem):
         b.setStyle(QtCore.Qt.TexturePattern)
         painter.setBrush(b)
         painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
-        painter.setFont(self.descFont)
+        # painter.setFont(self.descFont)
+        parentRet = self.parentItem().childrenBoundingRect()
+        if self.icon:
+            painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
 
-        painter.setClipping(True)
-        if not self.clipRect:
-            self.clipRect = QtCore.QRectF(0, 0, self.parentItem().childrenBoundingRect().width() - 5.0, self.boundingRect().height())
-        painter.setClipRect(self.clipRect)
-        painter.setPen(self.descFontPen)
+        # painter.setClipping(True)
+        # if not self.clipRect:
+        #     self.clipRect = QtCore.QRectF(0, 0, self.boundingRect().width(), self.boundingRect().height())
+        # painter.setClipRect(self.clipRect)
+        # painter.setPen(self.descFontPen)
         # painter.drawText(5.0, self.h - 0.5, self.desc)
 
         super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):
         self.scene().clearSelection()
-        self.parentItem().graph().disable_sortcuts()
+        self.parentItem().graph().disableSortcuts()
 
 
 class Node(QGraphicsItem, NodeBase):
@@ -94,7 +103,7 @@ class Node(QGraphicsItem, NodeBase):
         NodeBase.__init__(self, name, graph)
         QGraphicsItem.__init__(self)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        self.options = self.graph().get_settings()
+        self.options = self.graph().getSettings()
         if self.options:
             self.opt_node_base_color = QtGui.QColor(self.options.value('NODES/Nodes base color'))
             self.opt_selected_pen_color = QtGui.QColor(self.options.value('NODES/Nodes selected pen color'))
@@ -141,6 +150,16 @@ class Node(QGraphicsItem, NodeBase):
         self.setCursor(QtCore.Qt.OpenHandCursor)
 
         self.tweakPosition()
+        self.icon = None
+
+    @staticmethod
+    def recreate(node):
+        templ = node.serialize()
+        uid = node.uid
+        node.kill()
+        newNode = node.graph().createNode(templ)
+        newNode.uid = uid
+        return newNode
 
     @property
     def w(self):
@@ -152,19 +171,19 @@ class Node(QGraphicsItem, NodeBase):
         self.sizes[2] = value
 
     def call(self, name):
-        if port_name in [p.name for p in self.outputs if p.data_type is DataTypes.Exec]:
-            p = self.get_port_by_name(port_name)
+        if pinName in [p.name for p in self.outputs if p.dataType is DataTypes.Exec]:
+            p = self.getPinByName(pinName)
             return p.call()
 
-    def get_data(self, port_name):
-        if port_name in [p.name for p in self.inputs]:
-            p = self.get_port_by_name(port_name)
-            return p.get_data()
+    def getData(self, pinName):
+        if pinName in [p.name for p in self.inputs]:
+            p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
+            return p.getData()
 
-    def set_data(self, port_name, data):
-        if port_name in [p.name for p in self.outputs]:
-            p = self.get_port_by_name(port_name)
-            p.set_data(data)
+    def setData(self, pinName, data):
+        if pinName in [p.name for p in self.outputs]:
+            p = self.getPinByName(pinName, PinSelectionGroup.Outputs)
+            p.setData(data)
 
     @staticmethod
     def initializeFromFunction(foo, graph):
@@ -178,21 +197,21 @@ class Node(QGraphicsItem, NodeBase):
             return doc
 
         @staticmethod
-        def get_category():
+        def category():
             return meta['Category']
 
         @staticmethod
-        def get_keywords():
+        def keywords():
             return meta['Keywords']
 
         def constructor(self, name, graph, **kwargs):
             Node.__init__(self, name, graph, **kwargs)
 
-        nodeClass = type(foo.__name__, (Node,), {'__init__': constructor, 'get_category': get_category, 'get_keywords': get_keywords, 'description': description})
-        inst = nodeClass(graph.get_uniq_node_name(foo.__name__), graph)
+        nodeClass = type(foo.__name__, (Node,), {'__init__': constructor, 'category': category, 'keywords': keywords, 'description': description})
+        inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
-            inst.add_output_port('out', returnType)
+            inst.addOutputPin('out', returnType)
 
         # this is array of 'references' outputs will be created for
         refs = []
@@ -203,11 +222,11 @@ class Node(QGraphicsItem, NodeBase):
         for index in range(len(fooArgNames)):
             dataType = foo.__annotations__[fooArgNames[index]]
             if dataType == DataTypes.Reference:
-                outRef = inst.add_output_port(fooArgNames[index], foo.__defaults__[index])
+                outRef = inst.addOutputPin(fooArgNames[index], foo.__defaults__[index])
                 refs.append(outRef)
             else:
-                inp = inst.add_input_port(fooArgNames[index], dataType)
-                inp.set_data(foo.__defaults__[index])
+                inp = inst.addInputPin(fooArgNames[index], dataType)
+                inp.setData(foo.__defaults__[index])
 
         # all inputs affects on all outputs
         for i in inst.inputs:
@@ -219,14 +238,14 @@ class Node(QGraphicsItem, NodeBase):
             # arguments will be taken from inputs
             kwargs = {}
             for i in self.inputs:
-                if i.data_type is not DataTypes.Exec:
-                    kwargs[i.name] = i.get_data()
+                if i.dataType is not DataTypes.Exec:
+                    kwargs[i.name] = i.getData()
             for ref in refs:
-                if ref.data_type is not DataTypes.Exec:
+                if ref.dataType is not DataTypes.Exec:
                     kwargs[ref.name] = ref
             result = foo(**kwargs)
             if returnType is not None:
-                self.set_data('out', result)
+                self.setData('out', result)
             if nodeType == NodeTypes.Callable:
                 outExec.call()
 
@@ -234,14 +253,39 @@ class Node(QGraphicsItem, NodeBase):
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
-            inst.add_input_port('inExec', DataTypes.Exec, inst.compute, True, index=0)
-            outExec = inst.add_output_port('outExec', DataTypes.Exec, inst.compute, True, index=0)
+            inst.addInputPin('inExec', DataTypes.Exec, inst.compute, True, index=0)
+            outExec = inst.addOutputPin('outExec', DataTypes.Exec, inst.compute, True, index=0)
         return inst
+
+    @staticmethod
+    def deserialize(data, graph):
+        node = graph.createNode(data)
+        node.uid = uuid.UUID(data['uuid'])
+        node.currentComputeCode = data['computeCode']
+
+        # set pins data
+        for inpJson in data['inputs']:
+            pin = node.getPinByName(inpJson['name'], PinSelectionGroup.Inputs)
+            pin.uid = uuid.UUID(inpJson['uuid'])
+            pin.setData(inpJson['value'])
+            if inpJson['bDirty']:
+                pin.setDirty()
+            else:
+                pin.setClean()
+
+        for outJson in data['outputs']:
+            pin = node.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
+            pin.uid = uuid.UUID(outJson['uuid'])
+            pin.setData(outJson['value'])
+            if outJson['bDirty']:
+                pin.setDirty()
+            else:
+                pin.setClean()
 
     def InputPinTypes(self):
         types = []
         for p in self.inputs:
-            for t in p.supported_data_types:
+            for t in p.supportedDataTypes:
                 types.append(t)
         return types
 
@@ -252,7 +296,7 @@ class Node(QGraphicsItem, NodeBase):
 
     def isCallable(self):
         for p in self.inputs + self.outputs:
-            if p.data_type == DataTypes.Exec:
+            if p.dataType == DataTypes.Exec:
                 return True
         return False
 
@@ -272,7 +316,7 @@ class Node(QGraphicsItem, NodeBase):
     def description():
         return "Default node description"
 
-    def post_create(self):
+    def postCreate(self, jsonTemplate=None):
         for i in range(0, self.inputsLayout.count()):
             container = self.inputsLayout.itemAt(i)
             lyt = container.layout()
@@ -290,37 +334,67 @@ class Node(QGraphicsItem, NodeBase):
         self.nodeMainGWidget.setMaximumWidth(self.w + self.spacings.kPortOffset)
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
         if self.isCallable():
-            if 'flow' not in self.get_category().lower():
+            if 'flow' not in self.category().lower():
                 self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
         else:
             self.label().bg = QtGui.QImage(':/icons/resources/green.png')
         self.label().setPlainText(self.__class__.__name__)
         self.setToolTip(self.description())
 
+        NodeBase.postCreate(self, jsonTemplate)
+
     def getWidth(self):
         dPorts = 0
         if len(self.outputs) > 0:
             dPorts = abs(self.outputs[0].scenePos().x() - self.scenePos().x())
-        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.get_name()) + self.spacings.kPortSpacing
+        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.getName()) + self.spacings.kPortSpacing
         return max(dPorts, fontWidth)
 
-    def save_command(self):
-        return "createNode ~type {0} ~x {1} ~y {2} ~n {3}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name)
+    @staticmethod
+    def jsonTemplate():
+        doc = '''# access pins like this\n\t# self.pinName.getData()\n\t# self.pinName.setData()'''
+        doc += '''\n\t# self.getData(name) to get data from input pin by name'''
+        doc += '''\n\t# self.setData(name, data) to set data to output pin by name\n'''
 
-    def property_view(self):
+        template = {'type': None,
+                    'x': None,
+                    'y': None,
+                    'name': None,
+                    'uuid': None,
+                    'computeCode': doc + "\nprint('Hello world')\n",
+                    'inputs': [],
+                    'outputs': [],
+                    'meta': {'label': 'Node'}
+                    }
+        return template
+
+    def serialize(self):
+        template = Node.jsonTemplate()
+        template['type'] = self.__class__.__name__
+        template['name'] = self.name
+        template['x'] = self.scenePos().x()
+        template['y'] = self.scenePos().y()
+        template['uuid'] = str(self.uid)
+        template['computeCode'] = self.computeCode()
+        template['inputs'] = [i.serialize() for i in self.inputs]
+        template['outputs'] = [o.serialize() for o in self.outputs]
+        template['meta']['label'] = self.label().toPlainText()
+        return template
+
+    def propertyView(self):
         return self.graph().parent.dockWidgetNodeView
 
     def Tick(self, delta):
         pass
 
-    def set_name(self, name):
-        NodeBase.set_name(self, name)
+    def setName(self, name):
+        NodeBase.setName(self, name)
         # self.label().setPlainText(self.name)
 
     def clone(self):
-        pos = self.scenePos()
-        name = self.graph().get_uniq_node_name(self.get_name())
-        new_node = self.graph().create_node(self.__class__.__name__, pos.x(), pos.y(), name)
+        templ = self.serialize()
+        templ['name'] = self.graph().getUniqNodeName(self.name)
+        new_node = self.graph().createNode(templ)
         return new_node
 
     def update_ports(self):
@@ -379,28 +453,31 @@ class Node(QGraphicsItem, NodeBase):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def add_input_port(self, port_name, data_type, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
-        p = self._add_port(PinTypes.Input, data_type, foo, hideLabel, bCreateInputWidget, port_name, index=index)
+    def addInputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
+        p = self._addPin(PinTypes.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
+        return p
+
+    def addOutputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
+        p = self._addPin(PinTypes.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
         return p
 
     @staticmethod
-    def get_category():
+    def category():
         return "Default"
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return []
 
-    def add_output_port(self, port_name, data_type, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
-        p = self._add_port(PinTypes.Output, data_type, foo, hideLabel, bCreateInputWidget, port_name, index=index)
-        return p
+    def onUpdatePropertyView(self, view):
+        pass
 
     def add_container(self, portType, head=False):
         container = QGraphicsWidget()  # for set background color
         container.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         container.sizeHint(QtCore.Qt.MinimumSize, QtCore.QSizeF(50.0, 10.0))
 
-        if self.graph().is_debug():
+        if self.graph().isDebug():
             container.setAutoFillBackground(True)
             container.setPalette(QtGui.QPalette(QtCore.Qt.gray))
 
@@ -416,53 +493,69 @@ class Node(QGraphicsItem, NodeBase):
 
     def kill(self):
         for i in self.inputs + self.outputs:
-            i.disconnect_all()
+            i.disconnectAll()
 
-        self.setVisible(False)
-        self.graph().movePendingKill(self)
+        self.graph().nodes.pop(self.uid)
+        self.graph().nodesPendingKill.append(self)
 
-        self.graph().write_to_console("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
+        self.graph().writeToConsole("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
         self.scene().removeItem(self)
         del(self)
 
-    def set_pos(self, x, y):
-        NodeBase.set_pos(self, x, y)
+    def setPosition(self, x, y):
+        NodeBase.setPosition(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
 
-    def _add_port(self, port_type, data_type, foo, hideLabel=False, bCreateInputWidget=True, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
+    def removePinByUUID(self, uid):
+        pass
+
+    @staticmethod
+    def removePinByName(node, name):
+        pin = node.getPinByName(name)
+        if pin:
+            pin.kill()
+
+    def _addPin(self, port_type, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
         newColor = color
 
-        if data_type == DataTypes.Int or DataTypes.Float:
+        # check if pins with this name already exists and get uniq name
+        name = self.getUniqPinName(name)
+
+        if dataType == DataTypes.Int or DataTypes.Float:
             # set colot for numeric ports
             newColor = QtGui.QColor(0, 100, 0, 255)
-        elif data_type == DataTypes.String:
+        elif dataType == DataTypes.String:
             # set colot for string ports
             newColor = QtGui.QColor(50, 0, 50, 255)
-        elif data_type == DataTypes.Bool:
+        elif dataType == DataTypes.Bool:
             # set colot for bool ports
             newColor = QtGui.QColor(100, 0, 0, 255)
-        elif data_type == DataTypes.Array:
+        elif dataType == DataTypes.Array:
             # set colot for bool ports
             newColor = QtGui.QColor(0, 0, 0, 255)
         else:
             newColor = QtGui.QColor(255, 255, 30, 255)
 
-        p = Port(name, self, data_type, 7, 7, newColor)
+        p = Pin(name, self, dataType, 7, 7, newColor)
         p.type = port_type
         if port_type == PinTypes.Input and foo is not None:
             p.call = foo
+            # p.call = MethodType(foo, p, Pin)
         connector_name = QGraphicsProxyWidget()
         connector_name.setContentsMargins(0, 0, 0, 0)
 
+        lblName = name
         if hideLabel:
-            name = ''
-        lbl = QLabel(name)
+            lblName = ''
+            p.bLabelHidden = True
+
+        lbl = QLabel(lblName)
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         if self.options:
-            font = QtGui.QFont(self.options.value('NODES/Port label font'))
-            color = QtGui.QColor(self.options.value('NODES/Port label color'))
-            font.setPointSize(int(self.options.value('NODES/Port label size')))
+            font = QtGui.QFont(self.options.value('NODES/Pin label font'))
+            color = QtGui.QColor(self.options.value('NODES/Pin label color'))
+            font.setPointSize(int(self.options.value('NODES/Pin label size')))
             lbl.setFont(font)
             style = 'color: rgb({0}, {1}, {2}, {3});'.format(
                 color.red(),
@@ -474,7 +567,7 @@ class Node(QGraphicsItem, NodeBase):
         if port_type == PinTypes.Input:
             container = self.add_container(port_type)
             if hideLabel:
-                container.setMaximumWidth(15)
+                container.setMinimumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
             container.layout().addItem(p)
             p._container = container
@@ -492,7 +585,7 @@ class Node(QGraphicsItem, NodeBase):
         elif port_type == PinTypes.Output:
             container = self.add_container(port_type)
             if hideLabel:
-                container.setMaximumWidth(15)
+                container.setMinimumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
@@ -501,4 +594,8 @@ class Node(QGraphicsItem, NodeBase):
             self.outputsLayout.insertItem(index, container)
             container.adjustSize()
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+
+        # create member if created in runtime
+        if not hasattr(self, name):
+            setattr(self, name, p)
         return p

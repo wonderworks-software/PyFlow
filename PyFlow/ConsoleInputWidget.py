@@ -8,7 +8,7 @@ class ConsoleInput(QLineEdit):
     def __init__(self, parent, graph):
         super(ConsoleInput, self).__init__(parent)
         self.graph = graph
-        self.returnPressed.connect(self.OnReturnPressed)
+        # self.returnPressed.connect(self.OnReturnPressed)
         self.model = QStringListModel()
         self.cmd_list = ["renameNode", "setPropertiesVisible", "setNodeBoxVisible", "setConsoleVisible", "plot", "setVerticalScrollBar", "setHorizontalScrollBar", "setScrollbars", "help", "createNode", "save", "load", "comment", "killNode", "setAttr", "connectAttr", "disconectAttr", "select", "move", "pluginWizard"]
         self.executedCommands = [i for i in self.graph.registeredCommands.iterkeys()] + self.cmd_list
@@ -22,10 +22,10 @@ class ConsoleInput(QLineEdit):
         font = QFont("Consolas", 9, QFont.Bold, False)
         self.setFont(font)
 
-    def OnReturnPressed(self):
-        line = self.text()
-        if line not in self.executedCommands:
-            self.executedCommands.append(line)
-        self.model.setStringList(self.executedCommands)
-        self.graph.executeCommand(line)
-        self.clear()
+    # def OnReturnPressed(self):
+    #     line = self.text()
+    #     if line not in self.executedCommands:
+    #         self.executedCommands.append(line)
+    #     self.model.setStringList(self.executedCommands)
+    #     self.graph.executeCommand(line)
+    #     self.clear()

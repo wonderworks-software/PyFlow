@@ -10,12 +10,12 @@ of iterable object.
 class Min(Node, NodeBase):
     def __init__(self, name, graph):
         super(Min, self).__init__(name, graph, spacings=Spacings)
-        self.inp = self.add_input_port('in', DataTypes.Any)
-        self.out = self.add_output_port('min', DataTypes.Any)
+        self.inp = self.addInputPin('in', DataTypes.Any)
+        self.out = self.addOutputPin('min', DataTypes.Any)
         portAffects(self.inp, self.out)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Common'
 
     @staticmethod
@@ -24,8 +24,8 @@ class Min(Node, NodeBase):
 
     def compute(self):
 
-        inp = self.inp.get_data()
+        inp = self.inp.getData()
         try:
-            self.out.set_data(min(inp))
+            self.out.setData(min(inp))
         except Exception as e:
             print(e)

@@ -14,25 +14,35 @@ class ConvertNode(Node, NodeBase):
     def __init__(self, name, graph):
         super(ConvertNode, self).__init__(name, graph, w=100, spacings=Spacings)
         self.label().hide()
-        self.roundFactor = 10
-        self.bg = QtGui.QImage(':/icons/resources/white.png')
+        self.roundFactor = 4
+        self.bg = QtGui.QBrush(QtGui.QImage(':/icons/resources/white.png'))
+        self.bg.setStyle(QtCore.Qt.TexturePattern)
 
-    def add_input_port(self, *args, **kwargs):
+    def addInputPin(self, *args, **kwargs):
         # allow single input
         if len(self.inputs) == 0:
-            return super(ConvertNode, self).add_input_port(*args, **kwargs)
+            pin = super(ConvertNode, self).addInputPin(*args, **kwargs)
+            pin.getLayout().setMaximumWidth(10)
+            pin._container.layout().setMaximumWidth(10)
+            pin._container.layout().setMinimumHeight(50)
+            pin._container.setMaximumWidth(10)
+            return pin
 
-    def add_output_port(self, *args, **kwargs):
+    def addOutputPin(self, *args, **kwargs):
         # allow single output
         if len(self.outputs) == 0:
-            return super(ConvertNode, self).add_output_port(*args, **kwargs)
+            pin = super(ConvertNode, self).addOutputPin(*args, **kwargs)
+            pin.getLayout().setMaximumWidth(10)
+            pin._container.layout().setMaximumWidth(10)
+            pin._container.setMaximumWidth(10)
+            return pin
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Convert'
 
     @staticmethod
-    def get_keywords():
+    def keywords():
         return []
 
     @staticmethod
@@ -40,7 +50,7 @@ class ConvertNode(Node, NodeBase):
         return DESC
 
     def boundingRect(self):
-        return QtCore.QRectF(0, -4, 50, 23)
+        return QtCore.QRectF(0, 0, 80, 14)
 
     def paint(self, painter, option, widget):
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)

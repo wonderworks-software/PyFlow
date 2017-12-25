@@ -1,17 +1,21 @@
 from threading import Thread
 from AGraphCommon import *
 import weakref
+import uuid
+import inspect
+import keyword
 
 
-class PortBase(object):
-    def __init__(self, name, parent, data_type):
-        super(PortBase, self).__init__()
+class PinBase(object):
+    def __init__(self, name, parent, dataType):
+        super(PinBase, self).__init__()
+        self._uid = uuid.uuid4()
         self.name = name.replace(" ", "_")
         self.parent = weakref.ref(parent)
-        self.object_type = ObjectTypes.Port
-        self._data_type = None
-        self.supported_data_types = []
-        self.data_type = data_type
+        self.object_type = ObjectTypes.Pin
+        self._dataType = None
+        self.supportedDataTypes = []
+        self.dataType = dataType
 
         self.affects = []
         self.affected_by = []
@@ -21,52 +25,70 @@ class PortBase(object):
         self._connected = False
         # set default values
         self._data = self.getDefaultDataValue()
+        # put self in graph
+        self.parent().graph().pins[self.uid] = self
 
     @property
-    def data_type(self):
-        return self._data_type
+    def uid(self):
+        return self._uid
 
-    @data_type.setter
-    def data_type(self, value):
-        self._data_type = value
+    @uid.setter
+    def uid(self, value):
+        self.parent().graph().pins.pop(self._uid)
+        self._uid = value
+        self.parent().graph().pins[self._uid] = self
 
-        self.supported_data_types = list(set([value]))
-        if self.data_type == DataTypes.Exec or self.data_type == DataTypes.Any:
-            self.supported_data_types.append(value)
+    @property
+    def dataType(self):
+        return self._dataType
+
+    @dataType.setter
+    def dataType(self, value):
+        self._dataType = value
+
+        self.supportedDataTypes = list(set([value]))
+        if self.dataType == DataTypes.Exec or self.dataType == DataTypes.Any:
+            self.supportedDataTypes.append(value)
+
+    def kill(self):
+        self.parent().graph().pins.pop(self.uid)
+        if self.type == PinTypes.Input and self in self.parent().inputs:
+            index = self.parent().inputs.index(self)
+            self.parent().inputs.pop(index)
+        if self.type == PinTypes.Output and self in self.parent().outputs:
+            index = self.parent().outputs.index(self)
+            self.parent().outputs.pop(index)
 
     def getDefaultDataValue(self):
-        if self._data_type == DataTypes.Float:
+        if self._dataType == DataTypes.Float:
             return float()
-        if self._data_type == DataTypes.Int:
+        if self._dataType == DataTypes.Int:
             return int()
-        if self._data_type == DataTypes.String:
+        if self._dataType == DataTypes.String:
             return str("none")
-        if self._data_type == DataTypes.Bool:
+        if self._dataType == DataTypes.Bool:
             return bool()
-        if self._data_type == DataTypes.Array:
+        if self._dataType == DataTypes.Array:
             return []
-        if self._data_type == DataTypes.Any:
+        if self._dataType == DataTypes.Any:
             return None
 
-    def set_data_overload(self, data):
-        pass
-
-    def port_name(self):
+    def pinName(self):
         return self.parent().name + '.' + self.name
 
-    def current_data(self):
+    def currentData(self):
         if self._data is None:
             return self.getDefaultDataValue()
         return self._data
 
-    def port_connected(self, other):
+    def pinConnected(self, other):
         self._connected = True
 
-    def port_disconnected(self, other):
+    def pinDisconnected(self, other):
         if not self.hasConnections():
             self._connected = False
 
-    def set_clean(self):
+    def setClean(self):
         self.dirty = False
 
     def hasConnections(self):
@@ -75,35 +97,28 @@ class PortBase(object):
         else:
             return True
 
-    def set_dirty(self):
-        if self.data_type == DataTypes.Exec:
+    def setDirty(self):
+        if self.dataType == DataTypes.Exec:
             return
         self.dirty = True
         for i in self.affects:
             i.dirty = True
 
-    def get_data(self, debug=False):
+    def getData(self):
 
         # if not connected - return data
         if not self.hasConnections():
-            return self.current_data()
+            return self.currentData()
 
         if self.type == PinTypes.Output:
             if self.dirty:
-                compute_order = self.parent().graph().get_evaluation_order(self.parent())
-                if debug:
-                    for i in reversed(sorted([i for i in compute_order.keys()])):
-                        print(i, [n.name for n in compute_order[i]])
+                compute_order = self.parent().graph().getEvaluationOrder(self.parent())
                 for i in reversed(sorted([i for i in compute_order.keys()])):
-                    if not self.parent().graph().is_multithreaded():
+                    if not self.parent().graph().isMultithreaded():
                         for n in compute_order[i]:
-                            if debug:
-                                print(n.name, 'calling compute')
                             n.compute()
                     else:
-                        if debug:
-                            print('multithreaded calc of layer', [n.name for n in compute_order[i]])
-                        calc_multithreaded(compute_order[i], debug)
+                        calc_multithreaded(compute_order[i])
                 return self._data
             else:
                 return self._data
@@ -111,20 +126,13 @@ class PortBase(object):
             if self.dirty:
                 out = [i for i in self.affected_by if i.type == PinTypes.Output]
                 if not out == []:
-                    compute_order = out[0].parent().graph().get_evaluation_order(out[0].parent())
-                    if debug:
-                        for i in reversed(sorted([i for i in compute_order.keys()])):
-                            print(i, [n.name for n in compute_order[i]])
+                    compute_order = out[0].parent().graph().getEvaluationOrder(out[0].parent())
                     for i in reversed(sorted([i for i in compute_order.keys()])):
-                        if not self.parent().graph().is_multithreaded():
+                        if not self.parent().graph().isMultithreaded():
                             for n in compute_order[i]:
-                                if debug:
-                                    print(n.name, 'calling compute')
                                 n.compute()
                         else:
-                            if debug:
-                                print('multithreaded calc of layer', [n.name for n in compute_order[i]])
-                            calc_multithreaded(compute_order[i], debug)
+                            calc_multithreaded(compute_order[i])
                     return out[0]._data
             else:
                 return self._data
@@ -139,37 +147,37 @@ class PortBase(object):
         for p in self.affects:
             p.call()
 
-    def set_data(self, data):
-        if self._data_type == DataTypes.Float:
+    def setData(self, data):
+        if self._dataType == DataTypes.Float:
             try:
                 self._data = float(data)
             except:
                 self._data = self.getDefaultDataValue()
-        if self._data_type == DataTypes.Int:
+        if self._dataType == DataTypes.Int:
             try:
                 self._data = int(data)
             except:
                 self._data = self.getDefaultDataValue()
-        if self._data_type == DataTypes.String:
+        if self._dataType == DataTypes.String:
             self._data = str(data)
-        if self._data_type == DataTypes.Array:
+        if self._dataType == DataTypes.Array:
             self._data = data
-        if self._data_type == DataTypes.Bool:
+        if self._dataType == DataTypes.Bool:
             self._data = bool(data)
-        if self._data_type == DataTypes.Any:
+        if self._dataType == DataTypes.Any:
             self._data = data
 
-        self.set_clean()
+        self.setClean()
         if self.type == PinTypes.Output:
             for i in self.affects:
                 i._data = data
-                i.set_clean()
-        self.set_data_overload(data)
+                i.setClean()
 
 
 class NodeBase(object):
     def __init__(self, name, graph):
         super(NodeBase, self).__init__()
+        self._uid = uuid.uuid4()
         self.graph = weakref.ref(graph)
         self.name = name
         self.object_type = ObjectTypes.Node
@@ -178,36 +186,77 @@ class NodeBase(object):
         self.x = 0.0
         self.y = 0.0
 
-    def set_pos(self, x, y):
+    @property
+    def uid(self):
+        return self._uid
+
+    @uid.setter
+    def uid(self, value):
+        self.graph().nodes.pop(self._uid)
+        self._uid = value
+        self.graph().nodes[self._uid] = self
+
+    def setPosition(self, x, y):
         self.x = x
         self.y = y
 
-    def get_name(self):
+    def getName(self):
         return self.name
 
-    def set_name(self, name):
+    def setName(self, name):
         self.name = name
 
-    def add_input_port(self, port_name, data_type, foo=None):
-        p = PortBase(port_name, self, data_type, foo)
+    def addInputPin(self, pinName, dataType, foo=None):
+        p = PinBase(pinName, self, dataType, foo)
         self.inputs.append(p)
         p.type = PinTypes.Input
         if foo:
             p.call = foo
         return p
 
-    def add_output_port(self, port_name, data_type, foo=None):
-        p = PortBase(port_name, self, data_type, foo)
+    def addOutputPin(self, pinName, dataType, foo=None):
+        p = PinBase(pinName, self, dataType, foo)
         self.outputs.append(p)
         p.type = PinTypes.Output
         if foo:
             p.call = foo
         return p
 
-    def get_port_by_name(self, name):
-        for p in self.inputs + self.outputs:
-            if p.name == name:
-                return p
+    def getUniqPinName(self, name):
+        pinNames = [i.name for i in self.inputs + self.outputs] + dir(self) + keyword.kwlist
+        if name not in pinNames:
+            return name
+        idx = 0
+        tmp = name
+        while tmp in pinNames:
+            idx += 1
+            tmp = name + str(idx)
+        return name + str(idx)
+
+    def getPinByName(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
+        if pinsSelectionGroup == PinSelectionGroup.BothSides:
+            for p in self.inputs + self.outputs:
+                if p.name == name:
+                    return p
+        elif pinsSelectionGroup == PinSelectionGroup.Inputs:
+            for p in self.inputs:
+                if p.name == name:
+                    return p
+        else:
+            for p in self.outputs:
+                if p.name == name:
+                    return p
+
+    def postCreate(self, jsonTemplate=None):
+        pass
+
+    def computeCode(self):
+        lines = inspect.getsourcelines(self.compute)[0]
+        offset = lines[0].find("def compute")
+        code = ""
+        for line in lines:
+            code += line[offset:]
+        return code
 
     def compute(self):
         '''
@@ -222,21 +271,19 @@ class NodeBase(object):
 
 
 class Graph(object):
-
     def __init__(self, name):
-
         super(Graph, self).__init__()
         self.object_type = ObjectTypes.Graph
         self._debug = False
         self._multithreaded = False
         self.name = name
-        self.nodes = []
+        self.nodes = {}
         self.nodesPendingKill = []
-        self.edges = []
+        self.edges = {}
+        self.pins = {}
 
-    def get_uniq_node_name(self, name):
-
-        nodes_names = [n.name for n in self.nodes]
+    def getUniqNodeName(self, name):
+        nodes_names = [n.name for n in self.nodes.values()]
         if name not in nodes_names:
             return name
         idx = 0
@@ -246,30 +293,30 @@ class Graph(object):
             tmp = name + str(idx)
         return name + str(idx)
 
-    def is_debug(self):
+    def isDebug(self):
         return self._debug
 
-    def set_debug(self, state):
+    def setDebug(self, state):
         if not isinstance(state, bool):
             print 'bool expected. skipped'
             return
         self._debug = state
 
-    def is_multithreaded(self):
+    def isMultithreaded(self):
         return self._multithreaded
 
-    def set_multithreaded(self, state):
+    def setMultithreaded(self, state):
         if not isinstance(state, bool):
             print 'bool expected. skipped'
             return
         self._multithreaded = state
 
-    def get_evaluation_order(self, node, dirty_only=True):
+    def getEvaluationOrder(self, node, dirty_only=True):
 
         order = {0: [node]}
 
         def foo(n):
-            next_layer_nodes = self.get_next_layer_nodes(n, PinTypes.Input, dirty_only)
+            next_layer_nodes = self.getNextLayerNodes(n, PinTypes.Input, dirty_only)
             layer_idx = max(order.iterkeys()) + 1
             for n in next_layer_nodes:
                 if layer_idx not in order:
@@ -288,7 +335,7 @@ class Graph(object):
         return order
 
     @staticmethod
-    def get_next_layer_nodes(node, direction=PinTypes.Input, dirty_only=False):
+    def getNextLayerNodes(node, direction=PinTypes.Input, dirty_only=False):
         nodes = []
         if direction == PinTypes.Input:
             if not node.inputs == []:
@@ -313,46 +360,46 @@ class Graph(object):
                                     nodes.append(p.parent())
             return nodes
 
-    def get_nodes(self):
+    def getNodes(self):
+        return self.nodes.values()
 
-        return self.nodes
-
-    def get_node_by_name(self, name):
-
-        for i in self.nodes:
+    def getNodeByName(self, name):
+        for i in self.nodes.values():
             if i.name == name:
                 return i
         return None
 
-    def add_node(self, node, x=0.0, y=0.0):
+    def addNode(self, node, jsonTemplate):
         if not node:
             return False
-        self.nodes.append(node)
-        node.set_pos(x, y)
+        if node.uid in self.nodes:
+            return False
+        self.nodes[node.uid] = node
+        node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
+        node.postCreate(jsonTemplate)
         return True
 
-    def remove_node(self, node):
+    def removeNode(self, node):
+        uid = node.uid
         node.kill()
-
-    def remove_node_by_name(self, name):
-        [self.nodes.remove(n) for n in self.nodes if name == n.name]
+        self.nodes.pop(uid)
 
     def count(self):
         return self.nodes.__len__()
 
-    def add_edge(self, src, dst):
-        debug = self.is_debug()
+    def addEdge(self, src, dst):
+        debug = self.isDebug()
         if src.type == PinTypes.Input:
             src, dst = dst, src
 
-        if DataTypes.Any not in dst.supported_data_types:
-            if src.data_type not in dst.supported_data_types:
-                print("data types error", src.data_type, dst.data_type)
+        if DataTypes.Any not in dst.supportedDataTypes:
+            if src.dataType not in dst.supportedDataTypes:
+                print("data types error", src.dataType, dst.dataType)
                 return False
         else:
-            if src.data_type == DataTypes.Exec:
-                if dst.data_type not in [DataTypes.Exec]:
-                    print("data types error", src.data_type, dst.data_type)
+            if src.dataType == DataTypes.Exec:
+                if dst.dataType not in [DataTypes.Exec]:
+                    print("data types error", src.dataType, dst.dataType)
                     return False
 
         if src in dst.affected_by:
@@ -374,42 +421,42 @@ class Graph(object):
 
         # input data ports can have one output connection
         # output data ports can have any number of connections
-        if not src.data_type == DataTypes.Exec and dst.hasConnections():
-            dst.disconnect_all()
+        if not src.dataType == DataTypes.Exec and dst.hasConnections():
+            dst.disconnectAll()
         # input execs can have any number of connections
         # output execs can have only one connection
-        if src.data_type == DataTypes.Exec and dst.data_type == DataTypes.Exec and src.hasConnections():
-            src.disconnect_all()
+        if src.dataType == DataTypes.Exec and dst.dataType == DataTypes.Exec and src.hasConnections():
+            src.disconnectAll()
 
         portAffects(src, dst)
-        src.set_dirty()
+        src.setDirty()
         dst._data = src._data
-        dst.port_connected(src)
-        src.port_connected(dst)
+        dst.pinConnected(src)
+        src.pinConnected(dst)
         push(dst)
         return True
 
-    def remove_edge(self, edge):
+    def removeEdge(self, edge):
         edge.source().affects.remove(edge.destination())
         edge.source().edge_list.remove(edge)
         edge.destination().affected_by.remove(edge.source())
         edge.destination().edge_list.remove(edge)
-        edge.destination().port_disconnected(edge.source())
-        edge.source().port_disconnected(edge.destination())
+        edge.destination().pinDisconnected(edge.source())
+        edge.source().pinDisconnected(edge.destination())
 
     def plot(self):
         print self.name + '\n----------\n'
-        for n in self.nodes:
+        for n in self.getNodes():
             print n.name
             for inp in n.inputs:
-                print '|---', inp.name, 'data - {0}'.format(inp.current_data()), \
+                print '|---', inp.name, 'data - {0}'.format(inp.currentData()), \
                     'affects on', [i.name for i in inp.affects], \
                     'affected_by ', [p.name for p in inp.affected_by], \
                     'DIRTY ', inp.dirty
                 for e in inp.edge_list:
                     print '\t|---', e.__str__()
             for out in n.outputs:
-                print '|---' + out.name, 'data - {0}'.format(out.current_data()), \
+                print '|---' + out.name, 'data - {0}'.format(out.currentData()), \
                     'affects on', [i.name for i in out.affects], \
                     'affected_by ', [p.name for p in out.affected_by], \
                     'DIRTY', out.dirty

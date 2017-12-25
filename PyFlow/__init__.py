@@ -10,7 +10,7 @@ from Nodes import *
 from Commands import *
 from AbstractGraph import *
 from Settings import *
-from Port import *
+from Pin import *
 from FunctionLibrary import *
 from Node import *
 from Edge import *

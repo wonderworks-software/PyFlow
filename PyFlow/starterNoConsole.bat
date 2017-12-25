@@ -1,1 +1,1 @@
-start %cd%/Python27/pythonw.exe "%cd%/Launcher.py"
+start %cd%/Python27/Scripts/pythonw.exe "%cd%/Launcher.py"

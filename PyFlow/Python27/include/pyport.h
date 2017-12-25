@@ -265,7 +265,7 @@ typedef Py_intptr_t     Py_ssize_t;
  * for platforms that support that.
  *
  * If PY_LOCAL_AGGRESSIVE is defined before python.h is included, more
- * "aggressive" inlining/optimizaion is enabled for the entire module.  This
+ * "aggressive" inlining/optimization is enabled for the entire module.  This
  * may lead to code bloat, and may slow things down for those reasons.  It may
  * also lead to errors, if the code relies on pointer aliasing.  Use with
  * care.
@@ -702,7 +702,9 @@ extern int fdatasync(int);
 
 #ifdef __FreeBSD__
 #include <osreldate.h>
-#if __FreeBSD_version > 500039
+#if (__FreeBSD_version >= 500040 && __FreeBSD_version < 602113) || \
+    (__FreeBSD_version >= 700000 && __FreeBSD_version < 700054) || \
+    (__FreeBSD_version >= 800000 && __FreeBSD_version < 800001)
 # define _PY_PORT_CTYPE_UTF8_ISSUE
 #endif
 #endif
@@ -713,6 +715,12 @@ extern int fdatasync(int);
 #endif
 
 #ifdef _PY_PORT_CTYPE_UTF8_ISSUE
+#ifndef __cplusplus
+   /* The workaround below is unsafe in C++ because
+    * the <locale> defines these symbols as real functions,
+    * with a slightly different signature.
+    * See issue #10910
+    */
 #include <ctype.h>
 #include <wctype.h>
 #undef isalnum
@@ -729,6 +737,7 @@ extern int fdatasync(int);
 #define tolower(c) towlower(btowc(c))
 #undef toupper
 #define toupper(c) towupper(btowc(c))
+#endif
 #endif
 
 

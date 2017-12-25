@@ -1,7 +1,7 @@
 from AbstractGraph import *
 from Settings import *
 from Node import Node, getPortColorByType
-from Port import Port
+from Pin import Pin
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsItem
@@ -45,18 +45,18 @@ class Reroute(Node, NodeBase):
         self.color = getPortColorByType(DataTypes.Reroute)
         self.color.setAlpha(255)
 
-        self.inp0 = Port('in', self, DataTypes.Reroute, 10, 10, self.color)
+        self.inp0 = Pin('in', self, DataTypes.Reroute, 10, 10, self.color)
         self.inp0.type = PinTypes.Input
-        self.inp0.port_connected = self.OnInputConneceted
-        self.inp0.port_disconnected = self.OnInputDisconneceted
+        self.inp0.pinConnected = self.OnInputConneceted
+        self.inp0.pinDisconnected = self.OnInputDisconneceted
         self.inputs.append(self.inp0)
         # self.inp0.setX(-15.0)
         self._connected = False
 
-        self.out0 = Port('out', self, DataTypes.Reroute, 10, 10, self.color)
+        self.out0 = Pin('out', self, DataTypes.Reroute, 10, 10, self.color)
         self.out0.type = PinTypes.Output
-        self.out0.port_connected = self.OnOutputConnected
-        self.out0.port_disconnected = self.OnOutputDisconneceted
+        self.out0.pinConnected = self.OnOutputConnected
+        self.out0.pinDisconnected = self.OnOutputDisconneceted
         # self.out0.setX(10.0)
         self.outputs.append(self.out0)
 
@@ -73,14 +73,14 @@ class Reroute(Node, NodeBase):
     def isReroute(self):
         return True
 
-    def save_command(self):
-        return "createNode ~type {0} ~x {1} ~y {2} ~n {3} ~dataType {4}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, self.inp0.data_type)
+    def serialize(self):
+        return "createNode ~type {0} ~x {1} ~y {2} ~n {3} ~dataType {4}\n".format(self.__class__.__name__, self.scenePos().x(), self.scenePos().y(), self.name, self.inp0.dataType)
 
-    def disconnect_all(self):
+    def disconnectAll(self):
         if self.inp0.hasConnections():
-            self.inp0.disconnect_all()
+            self.inp0.disconnectAll()
         if self.out0.hasConnections():
-            self.out0.disconnect_all()
+            self.out0.disconnectAll()
 
     def getOutControlPoint(self):
         cp1 = self.out0.scenePos()
@@ -127,29 +127,29 @@ class Reroute(Node, NodeBase):
         self._connected = True
         # self.inp0.color = self.inp0.affected_by[0].color
         # self.out0.color = self.inp0.color
-        self.inp0.data_type = other.data_type
-        self.out0.data_type = other.data_type
-        self.updateColor(other.data_type)
+        self.inp0.dataType = other.dataType
+        self.out0.dataType = other.dataType
+        self.updateColor(other.dataType)
         if self.out0.hasConnections():
             self.color = self.out0.color
             self.color.setAlpha(255)
             for e in self.out0.edge_list:
                 e.pen.setColor(self.color)
         else:
-            self.color = getPortColorByType(other.data_type)
+            self.color = getPortColorByType(other.dataType)
             self.color.setAlpha(255)
         self.update()
 
     def OnOutputConnected(self, other):
         self.out0._connected = True
         self._connected = True
-        self.out0.data_type = other.data_type
-        self.inp0.data_type = other.data_type
+        self.out0.dataType = other.dataType
+        self.inp0.dataType = other.dataType
         if self.inp0.hasConnections():
             self.color = self.inp0.color
             self.color.setAlpha(255)
         else:
-            self.color = getPortColorByType(other.data_type)
+            self.color = getPortColorByType(other.dataType)
             self.color.setAlpha(255)
         self.update()
 
@@ -172,19 +172,19 @@ class Reroute(Node, NodeBase):
         self.update()
 
     def resetTypeInfo(self):
-        self.inp0.data_type = DataTypes.Reroute
-        self.out0.data_type = DataTypes.Reroute
+        self.inp0.dataType = DataTypes.Reroute
+        self.out0.dataType = DataTypes.Reroute
         self.color = getPortColorByType(DataTypes.Reroute)
         self.color.setAlpha(255)
 
     def mousePressEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.AltModifier and event.button() == QtCore.Qt.LeftButton:
-            self.disconnect_all()
+            self.disconnectAll()
         super(Reroute, self).mousePressEvent(event)
 
     @staticmethod
-    def get_category():
+    def category():
         return 'Core'
 
     def boundingRect(self):
@@ -220,8 +220,8 @@ class Reroute(Node, NodeBase):
         return DESC
 
     def compute(self):
-        data = self.inp0.get_data()
+        data = self.inp0.getData()
         try:
-            self.out0.set_data(data)
+            self.out0.setData(data)
         except Exception as e:
             print(e)
