@@ -49,7 +49,7 @@ class Reroute(Node, NodeBase):
         self.inp0.type = PinTypes.Input
         self.inp0.pinConnected = self.OnInputConneceted
         self.inp0.pinDisconnected = self.OnInputDisconneceted
-        self.inputs.append(self.inp0)
+        self.inputs[self.inp0.uid] = self.inp0
         # self.inp0.setX(-15.0)
         self._connected = False
 
@@ -58,7 +58,7 @@ class Reroute(Node, NodeBase):
         self.out0.pinConnected = self.OnOutputConnected
         self.out0.pinDisconnected = self.OnOutputDisconneceted
         # self.out0.setX(10.0)
-        self.outputs.append(self.out0)
+        self.outputs[self.out0.uid] = self.out0
 
         portAffects(self.inp0, self.out0)
 

@@ -30,7 +30,6 @@ import random
 from Settings import Colors
 from Settings import LineTypes
 from Settings import get_line_type
-
 from AbstractGraph import *
 from Edge import Edge
 from Pin import getPortColorByType, Pin
@@ -829,7 +828,7 @@ class GraphWidget(QGraphicsView, Graph):
 
     def redrawNodes(self):
         for n in self.getNodes():
-            n.update_ports()
+            n.updatePins()
 
     def __del__(self):
         self.tick_timer.stop()
@@ -903,7 +902,6 @@ class GraphWidget(QGraphicsView, Graph):
         return data
 
     def save(self, save_as=False):
-
         if save_as:
             name_filter = "Graph files (*.json)"
             pth = QFileDialog.getSaveFileName(filter=name_filter)
@@ -939,11 +937,6 @@ class GraphWidget(QGraphicsView, Graph):
         self._file_name_label.setPlainText('Untitled')
         for node in self.getNodes():
             node.kill()
-        # for n in self.getNodes():
-        #     n.setSelected(True)
-        # self.killSelectedNodes()
-        # if len(self.nodes) > 0:
-        #     self.new_file()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -1251,80 +1244,10 @@ class GraphWidget(QGraphicsView, Graph):
 
         selectedNodes = self.selectedNodes()
         if len(selectedNodes) != 0:
-            self.updatePropertyView(selectedNodes[0])
+            # self.updatePropertyView(selectedNodes[0])
+            selectedNodes[0].onUpdatePropertyView(self.parent.formLayout)
         else:
-            clearLayout(self.parent.PropertiesformLayout)
-
-    def updatePropertyView(self, node):
-        self.ActivePropertiesWidgets = {}
-        root = self.parent.dockWidgetNodeView
-        layout = self.parent.PropertiesformLayout
-        root.owned_node = node
-        clearLayout(layout)
-
-        # label
-        le_name = QLineEdit(node.getName())
-        le_name.setReadOnly(True)
-        if node.label().IsRenamable():
-            le_name.setReadOnly(False)
-            le_name.returnPressed.connect(lambda: node.setName(le_name.text()))
-        layout.addRow("Name", le_name)
-
-        #  uuid
-        uidWidget = QLineEdit(str(node.uid))
-        uidWidget.setReadOnly(True)
-        layout.addRow("uuid", uidWidget)
-
-        # pos
-        le_pos = QLineEdit("{0} x {1}".format(node.pos().x(), node.pos().y()))
-        layout.addRow("Pos", le_pos)
-
-        # inputs
-        if len(node.inputs) != 0:
-            sep_inputs = QLabel()
-            sep_inputs.setStyleSheet("background-color: black;")
-            sep_inputs.setText("INPUTS")
-            layout.addRow("", sep_inputs)
-
-            for inp in node.inputs:
-                if inp.dataType == DataTypes.Exec:
-                    continue
-                le = QLineEdit(str(inp.currentData()), self.parent.dockWidgetNodeView)
-                le.setObjectName(inp.pinName())
-                le.editingFinished.connect(self.propertyEditingFinished)
-                layout.addRow(inp.name, le)
-                if inp.hasConnections():
-                    le.setReadOnly(True)
-                inpUidWidget = QLineEdit(str(inp.uid))
-                inpUidWidget.setReadOnly(True)
-                layout.addRow("uuid", inpUidWidget)
-
-        # outputs
-        if len(node.outputs) != 0:
-            sep_outputs = QLabel()
-            sep_outputs.setStyleSheet("background-color: black;")
-            sep_outputs.setText("OUTPUTS")
-            layout.addRow("", sep_outputs)
-            for out in node.outputs:
-                if out.dataType == DataTypes.Exec:
-                    continue
-                le = QLineEdit(str(out.currentData()))
-                le.setObjectName(out.pinName())
-                le.textChanged.connect(self.propertyEditingFinished)
-                layout.addRow(out.name, le)
-                if out.hasConnections():
-                    le.setReadOnly(True)
-                outUidWidget = QLineEdit(str(out.uid))
-                outUidWidget.setReadOnly(True)
-                layout.addRow("uuid", outUidWidget)
-
-        doc_lb = QLabel()
-        doc_lb.setStyleSheet("background-color: black;")
-        doc_lb.setText("Description")
-        layout.addRow("", doc_lb)
-        doc = QLabel(node.description())
-        doc.setWordWrap(True)
-        layout.addRow("", doc)
+            Node.clearLayout(self.parent.formLayout)
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()

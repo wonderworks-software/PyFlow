@@ -9,7 +9,7 @@ class Print(Node, NodeBase):
         super(Print, self).__init__(name, graph)
         self.inExec = self.addInputPin("in", DataTypes.Exec, self.compute, True)
         self.outExec = self.addOutputPin("out", DataTypes.Exec, None, True)
-        self.data = self.addInputPin("data", DataTypes.Any)
+        self.obj = self.addInputPin("string", DataTypes.String)
 
     @staticmethod
     def category():
@@ -17,6 +17,6 @@ class Print(Node, NodeBase):
 
     def compute(self):
         if self.inExec.hasConnections():
-            self.graph().writeToConsole(self.data.getData())
-            print(self.data.getData())
+            self.graph().writeToConsole(self.obj.getData())
+            print(self.obj.getData())
         self.outExec.call()

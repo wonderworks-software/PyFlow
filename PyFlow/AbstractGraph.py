@@ -52,12 +52,10 @@ class PinBase(object):
 
     def kill(self):
         self.parent().graph().pins.pop(self.uid)
-        if self.type == PinTypes.Input and self in self.parent().inputs:
-            index = self.parent().inputs.index(self)
-            self.parent().inputs.pop(index)
-        if self.type == PinTypes.Output and self in self.parent().outputs:
-            index = self.parent().outputs.index(self)
-            self.parent().outputs.pop(index)
+        if self.type == PinTypes.Input and self.uid in self.parent().inputs:
+            self.parent().inputs.pop(self.uid)
+        if self.type == PinTypes.Output and self.uid in self.parent().outputs:
+            self.parent().outputs.pop(self.uid)
 
     def getDefaultDataValue(self):
         if self._dataType == DataTypes.Float:
@@ -181,8 +179,8 @@ class NodeBase(object):
         self.graph = weakref.ref(graph)
         self.name = name
         self.object_type = ObjectTypes.Node
-        self.inputs = []
-        self.outputs = []
+        self.inputs = {}
+        self.outputs = {}
         self.x = 0.0
         self.y = 0.0
 
@@ -208,7 +206,7 @@ class NodeBase(object):
 
     def addInputPin(self, pinName, dataType, foo=None):
         p = PinBase(pinName, self, dataType, foo)
-        self.inputs.append(p)
+        self.inputs[p.uid] = p
         p.type = PinTypes.Input
         if foo:
             p.call = foo
@@ -216,14 +214,14 @@ class NodeBase(object):
 
     def addOutputPin(self, pinName, dataType, foo=None):
         p = PinBase(pinName, self, dataType, foo)
-        self.outputs.append(p)
+        self.outputs[p.uid] = p
         p.type = PinTypes.Output
         if foo:
             p.call = foo
         return p
 
     def getUniqPinName(self, name):
-        pinNames = [i.name for i in self.inputs + self.outputs] + dir(self) + keyword.kwlist
+        pinNames = [i.name for i in self.inputs.values() + self.outputs.values()] + dir(self) + keyword.kwlist
         if name not in pinNames:
             return name
         idx = 0
@@ -235,15 +233,15 @@ class NodeBase(object):
 
     def getPinByName(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
         if pinsSelectionGroup == PinSelectionGroup.BothSides:
-            for p in self.inputs + self.outputs:
+            for p in self.inputs.values() + self.outputs.values():
                 if p.name == name:
                     return p
         elif pinsSelectionGroup == PinSelectionGroup.Inputs:
-            for p in self.inputs:
+            for p in self.inputs.values():
                 if p.name == name:
                     return p
         else:
-            for p in self.outputs:
+            for p in self.outputs.values():
                 if p.name == name:
                     return p
 
@@ -338,8 +336,8 @@ class Graph(object):
     def getNextLayerNodes(node, direction=PinTypes.Input, dirty_only=False):
         nodes = []
         if direction == PinTypes.Input:
-            if not node.inputs == []:
-                for i in node.inputs:
+            if not node.inputs.values() == []:
+                for i in node.inputs.values():
                     if not i.affected_by == []:
                         for a in i.affected_by:
                             if not dirty_only:
@@ -349,8 +347,8 @@ class Graph(object):
                                     nodes.append(a.parent())
             return nodes
         if direction == PinTypes.Output:
-            if not node.outputs == []:
-                for i in node.outputs:
+            if not node.outputs.values() == []:
+                for i in node.outputs.values():
                     if not i.affects == []:
                         for p in i.affects:
                             if not dirty_only:

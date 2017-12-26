@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>942</width>
-    <height>775</height>
+    <width>1287</width>
+    <height>875</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,6 +41,9 @@
      <number>1</number>
     </property>
     <property name="bottomMargin">
+     <number>1</number>
+    </property>
+    <property name="spacing">
      <number>1</number>
     </property>
     <item row="0" column="0">
@@ -83,8 +86,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>942</width>
-     <height>26</height>
+     <width>1287</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -243,8 +246,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>89</width>
-          <height>431</height>
+          <width>78</width>
+          <height>630</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
@@ -314,8 +317,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>198</width>
-          <height>431</height>
+          <width>308</width>
+          <height>630</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
@@ -332,7 +335,7 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <layout class="QFormLayout" name="PropertiesformLayout"/>
+          <layout class="QFormLayout" name="formLayout"/>
          </item>
         </layout>
        </widget>

@@ -8,12 +8,12 @@ from Settings import *
 import nodes_res_rc
 
 
-def update_ports(start_from):
+def updatePins(start_from):
     if not start_from.affects == []:
         start_from.update()
         for i in start_from.affects:
             i.update()
-            update_ports(i)
+            updatePins(i)
 
 
 def getPortColorByType(t):
@@ -240,4 +240,4 @@ class Pin(QGraphicsWidget, PinBase):
         if self.inputWidget:
             self.inputWidget.setData(data)
         self.writeToConsole("setAttr {2}an {0} {2}v {1}".format(self.pinName(), data, FLAG_SYMBOL))
-        update_ports(self)
+        updatePins(self)

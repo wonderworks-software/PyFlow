@@ -43,7 +43,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabPins">
       <attribute name="title">
@@ -271,21 +271,6 @@
        <property name="bottomMargin">
         <number>1</number>
        </property>
-       <item row="0" column="0">
-        <widget class="CompletionTextEdit" name="plainTextEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <family>Consolas</family>
-          </font>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </widget>
@@ -370,13 +355,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>CompletionTextEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>CodeEditor</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="nodes_res.qrc"/>
  </resources>

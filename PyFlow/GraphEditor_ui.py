@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
 #
-# Created: Mon Dec 25 18:27:20 2017
+# Created: Tue Dec 26 16:38:54 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(942, 775)
+        MainWindow.resize(1287, 875)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("AGraphPySide/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -23,6 +23,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_3 = QtGui.QGridLayout(self.centralwidget)
+        self.gridLayout_3.setSpacing(1)
         self.gridLayout_3.setContentsMargins(1, 1, 1, 1)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.horizontal_splitter = QtGui.QSplitter(self.centralwidget)
@@ -42,7 +43,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.horizontal_splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 942, 26))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1287, 21))
         self.menuBar.setObjectName("menuBar")
         self.menuEdit = QtGui.QMenu(self.menuBar)
         self.menuEdit.setObjectName("menuEdit")
@@ -88,7 +89,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 89, 431))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 78, 630))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_5 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
@@ -117,14 +118,14 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_3 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 198, 431))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 308, 630))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.gridLayout_4 = QtGui.QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_4.setObjectName("gridLayout_4")
-        self.PropertiesformLayout = QtGui.QFormLayout()
-        self.PropertiesformLayout.setObjectName("PropertiesformLayout")
-        self.gridLayout_4.addLayout(self.PropertiesformLayout, 0, 0, 1, 1)
+        self.formLayout = QtGui.QFormLayout()
+        self.formLayout.setObjectName("formLayout")
+        self.gridLayout_4.addLayout(self.formLayout, 0, 0, 1, 1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_3)
         self.verticalLayout.addWidget(self.scrollArea)
         self.dockWidgetNodeView.setWidget(self.dockWidgetContents)

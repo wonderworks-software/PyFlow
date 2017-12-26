@@ -6,9 +6,6 @@ from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore
 from Qt import QtGui
 
-DESC = '''node desc
-'''
-
 
 class ConvertNode(Node, NodeBase):
     def __init__(self, name, graph):
@@ -47,10 +44,10 @@ class ConvertNode(Node, NodeBase):
 
     @staticmethod
     def description():
-        return DESC
+        return 'Converts A into B'
 
     def boundingRect(self):
-        return QtCore.QRectF(0, 0, 80, 14)
+        return QtCore.QRectF(0, 0, 42, 14)
 
     def paint(self, painter, option, widget):
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)

@@ -86,6 +86,9 @@ class PythonHighlighter (QSyntaxHighlighter):
             (r'\bself\b', 0, STYLES['self']),
             (r'\bsetData\b', 0, STYLES['dataAccess']),
             (r'\bgetData\b', 0, STYLES['dataAccess']),
+            (r'\bsetClean\b', 0, STYLES['dataAccess']),
+            (r'\bsetDirty\b', 0, STYLES['dataAccess']),
+            (r'\bcurrentData\b', 0, STYLES['dataAccess']),
 
             # Double-quoted string, possibly containing escape sequences
             (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES['string']),
