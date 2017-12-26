@@ -231,6 +231,13 @@ class NodeBase(object):
             tmp = name + str(idx)
         return name + str(idx)
 
+    def getPinByUUID(self, uid):
+        if uid in self.inputs:
+            return self.inputs[uid]
+        if uid in self.outputs:
+            return self.outputs[uid]
+        return None
+
     def getPinByName(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
         if pinsSelectionGroup == PinSelectionGroup.BothSides:
             for p in self.inputs.values() + self.outputs.values():
