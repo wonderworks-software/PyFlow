@@ -8,7 +8,7 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 class MakeArray(Node, NodeBase):
     def __init__(self, name, graph):
         super(MakeArray, self).__init__(name, graph)
-        con = self.add_container(PinTypes.Output)
+        con = self.addContainer(PinTypes.Output)
 
         pb = QPushButton('+')
         pb.setMaximumWidth(30)

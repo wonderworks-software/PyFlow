@@ -9,6 +9,9 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QGraphicsLinearLayout
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QStyle
+from Qt.QtWidgets import QLineEdit
+from Qt.QtWidgets import QApplication
+from Qt.QtWidgets import QTreeWidgetItem
 from Pin import Pin, getPortColorByType
 from AbstractGraph import *
 from types import MethodType
@@ -20,7 +23,7 @@ class NodeName(QGraphicsTextItem):
     def __init__(self, parent):
         QGraphicsTextItem.__init__(self)
         self.width = 50
-        self.document().contentsChanged.connect(self.onDocOntentsChanged)
+        self.document().contentsChanged.connect(self.onDocContentsChanged)
         self.object_type = ObjectTypes.NodeName
         self.setParentItem(parent)
         self.options = self.parentItem().graph().getSettings()
@@ -43,7 +46,7 @@ class NodeName(QGraphicsTextItem):
         self.bg = QtGui.QImage(':/icons/resources/white.png')
         self.icon = None
 
-    def onDocOntentsChanged(self):
+    def onDocContentsChanged(self):
         self.width = QtGui.QFontMetricsF(self.font()).width(self.toPlainText()) + 5.0
 
     @staticmethod
@@ -295,7 +298,7 @@ class Node(QGraphicsItem, NodeBase):
         self.setY(roundup(value.y() - self.graph().grid_size, self.graph().grid_size))
 
     def isCallable(self):
-        for p in self.inputs + self.outputs:
+        for p in self.inputs.values() + self.outputs.values():
             if p.dataType == DataTypes.Exec:
                 return True
         return False
@@ -345,8 +348,8 @@ class Node(QGraphicsItem, NodeBase):
 
     def getWidth(self):
         dPorts = 0
-        if len(self.outputs) > 0:
-            dPorts = abs(self.outputs[0].scenePos().x() - self.scenePos().x())
+        if len(self.outputs.values()) > 0:
+            dPorts = abs(self.outputs.values()[0].scenePos().x() - self.scenePos().x())
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.getName()) + self.spacings.kPortSpacing
         return max(dPorts, fontWidth)
 
@@ -376,8 +379,8 @@ class Node(QGraphicsItem, NodeBase):
         template['y'] = self.scenePos().y()
         template['uuid'] = str(self.uid)
         template['computeCode'] = self.computeCode()
-        template['inputs'] = [i.serialize() for i in self.inputs]
-        template['outputs'] = [o.serialize() for o in self.outputs]
+        template['inputs'] = [i.serialize() for i in self.inputs.values()]
+        template['outputs'] = [o.serialize() for o in self.outputs.values()]
         template['meta']['label'] = self.label().toPlainText()
         return template
 
@@ -397,7 +400,7 @@ class Node(QGraphicsItem, NodeBase):
         new_node = self.graph().createNode(templ)
         return new_node
 
-    def update_ports(self):
+    def updatePins(self):
         [i.update() for i in self.inputs]
         [i.update() for i in self.outputs]
 
@@ -430,14 +433,14 @@ class Node(QGraphicsItem, NodeBase):
         painter.setPen(pen)
         painter.drawRoundedRect(self.childrenBoundingRect(), self.sizes[4], self.sizes[5])
 
-    def get_input_edges(self):
+    def getInputEdges(self):
         out = {}
         for i in [i.edge_list for i in self.inputs]:
             if not i.__len__() == 0:
                 out[i[0]] = [e.connection for e in i]
         return out
 
-    def get_output_edges(self):
+    def getOutputEdges(self):
         out = {}
         for i in [i.edge_list for i in self.outputs]:
             if not i.__len__() == 0:
@@ -469,10 +472,79 @@ class Node(QGraphicsItem, NodeBase):
     def keywords():
         return []
 
-    def onUpdatePropertyView(self, view):
-        pass
+    @staticmethod
+    def clearLayout(layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                clearLayout(child.layout())
 
-    def add_container(self, portType, head=False):
+    def propertyEditingFinished(self):
+        le = QApplication.instance().focusWidget()
+        if isinstance(le, QLineEdit):
+            nodeName, attr = le.objectName().split('.')
+            Pin = self.getPinByName(attr)
+            Pin.setData(le.text())
+
+    def onUpdatePropertyView(self, formLayout):
+        Node.clearLayout(formLayout)
+
+        # name
+        le_name = QLineEdit(self.getName())
+        le_name.setReadOnly(True)
+        if self.label().IsRenamable():
+            le_name.setReadOnly(False)
+            le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
+        formLayout.addRow("Name", le_name)
+
+        # pos
+        le_pos = QLineEdit("{0} x {1}".format(self.pos().x(), self.pos().y()))
+        formLayout.addRow("Pos", le_pos)
+
+        # inputs
+        if len([i for i in self.inputs.values() if not i.dataType == DataTypes.Exec]) != 0:
+            sep_inputs = QLabel()
+            sep_inputs.setStyleSheet("background-color: black;")
+            sep_inputs.setText("INPUTS")
+            formLayout.addRow("", sep_inputs)
+
+            for inp in self.inputs.values():
+                if inp.dataType == DataTypes.Exec:
+                    continue
+                le = QLineEdit(str(inp.currentData()))
+                le.setObjectName(inp.pinName())
+                le.editingFinished.connect(self.propertyEditingFinished)
+                formLayout.addRow(inp.name, le)
+                if inp.hasConnections():
+                    le.setReadOnly(True)
+
+        # outputs
+        if len([i for i in self.outputs.values() if not i.dataType == DataTypes.Exec]) != 0:
+            sep_outputs = QLabel()
+            sep_outputs.setStyleSheet("background-color: black;")
+            sep_outputs.setText("OUTPUTS")
+            formLayout.addRow("", sep_outputs)
+            for out in self.outputs.values():
+                if out.dataType == DataTypes.Exec:
+                    continue
+                le = QLineEdit(str(out.currentData()))
+                le.setObjectName(out.pinName())
+                le.textChanged.connect(self.propertyEditingFinished)
+                formLayout.addRow(out.name, le)
+                if out.hasConnections():
+                    le.setReadOnly(True)
+
+        doc_lb = QLabel()
+        doc_lb.setStyleSheet("background-color: black;")
+        doc_lb.setText("Description")
+        formLayout.addRow("", doc_lb)
+        doc = QLabel(self.description())
+        doc.setWordWrap(True)
+        formLayout.addRow("", doc)
+
+    def addContainer(self, portType, head=False):
         container = QGraphicsWidget()  # for set background color
         container.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         container.sizeHint(QtCore.Qt.MinimumSize, QtCore.QSizeF(50.0, 10.0))
@@ -492,7 +564,7 @@ class Node(QGraphicsItem, NodeBase):
         return container
 
     def kill(self):
-        for i in self.inputs + self.outputs:
+        for i in self.inputs.values() + self.outputs.values():
             i.disconnectAll()
 
         self.graph().nodes.pop(self.uid)
@@ -505,9 +577,6 @@ class Node(QGraphicsItem, NodeBase):
     def setPosition(self, x, y):
         NodeBase.setPosition(self, x, y)
         self.setPos(QtCore.QPointF(x, y))
-
-    def removePinByUUID(self, uid):
-        pass
 
     @staticmethod
     def removePinByName(node, name):
@@ -565,7 +634,7 @@ class Node(QGraphicsItem, NodeBase):
             lbl.setStyleSheet(style)
         connector_name.setWidget(lbl)
         if port_type == PinTypes.Input:
-            container = self.add_container(port_type)
+            container = self.addContainer(port_type)
             if hideLabel:
                 container.setMinimumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
@@ -579,18 +648,18 @@ class Node(QGraphicsItem, NodeBase):
                 if w:
                     container.layout().addItem(w.asProxy())
 
-            self.inputs.append(p)
+            self.inputs[p.uid] = p
             self.inputsLayout.insertItem(index, container)
             container.adjustSize()
         elif port_type == PinTypes.Output:
-            container = self.add_container(port_type)
+            container = self.addContainer(port_type)
             if hideLabel:
                 container.setMinimumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
             p._container = container
-            self.outputs.append(p)
+            self.outputs[p.uid] = p
             self.outputsLayout.insertItem(index, container)
             container.adjustSize()
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)

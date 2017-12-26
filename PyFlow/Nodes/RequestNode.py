@@ -20,8 +20,8 @@ class RequestNode(Node, NodeBase):
         pb.setMaximumWidth(25)
         self.process = False
 
-        con = self.add_container(PinTypes.Output)
-        con2 = self.add_container(PinTypes.Output)
+        con = self.addContainer(PinTypes.Output)
+        con2 = self.addContainer(PinTypes.Output)
 
         self.spin_box.setMinimum(0.01)
         self.spin_box.setMaximum(60.0)

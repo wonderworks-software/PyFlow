@@ -18,7 +18,6 @@ from Node import Node
 import weakref
 from keyword import kwlist
 
-
 class CompletionTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super(CompletionTextEdit, self).__init__(parent)
@@ -139,11 +138,25 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.setupUi(self)
         self.node = node
         self.uid = uid
+
+        # insert code editor
+        self.plainTextEdit = CompletionTextEdit(self.tabCode)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.plainTextEdit.sizePolicy().hasHeightForWidth())
+        self.plainTextEdit.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("Consolas")
+        self.plainTextEdit.setFont(font)
+        self.plainTextEdit.setObjectName("plainTextEdit")
+        self.gridLayout.addWidget(self.plainTextEdit, 0, 0, 1, 1)
         PythonSyntax.PythonHighlighter(self.plainTextEdit.document())
         option = QtGui.QTextOption()
         option.setFlags(option.Flags() | QtGui.QTextOption.ShowTabsAndSpaces)
         self.plainTextEdit.document().setDefaultTextOption(option)
         self.setFontSize(10)
+
         self.sbFontSize.valueChanged.connect(lambda: self.setFontSize(self.sbFontSize.value()))
         self.pbAddInput.clicked.connect(self.addDefaultInput)
         self.pbAddOutput.clicked.connect(self.addDefaultOutput)
@@ -193,8 +206,8 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.lwOutputs.clear()
 
     def resetNode(self):
-        for i in self.node.inputs + self.node.outputs:
-            Node.removePinByName(self.node, i.name)
+        for i in self.node.inputs.values() + self.node.outputs.values():
+            i.kill()
         for i in range(self.node.inputsLayout.count()):
             self.node.inputsLayout.removeAt(0)
         for i in range(self.node.outputsLayout.count()):
@@ -241,8 +254,8 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
                     p = self.node.addInputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
                     w.lePinName.setText(p.name)
 
-        for i in self.node.inputs:
-            for o in self.node.outputs:
+        for i in self.node.inputs.values():
+            for o in self.node.outputs.values():
                 portAffects(i, o)
 
     def appendInput(self, pw):

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/CodeEditor_ui.ui'
 #
-# Created: Mon Dec 25 18:27:20 2017
+# Created: Tue Dec 26 16:38:54 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -98,17 +98,6 @@ class Ui_CodeEditorWidget(object):
         self.gridLayout = QtGui.QGridLayout(self.tabCode)
         self.gridLayout.setContentsMargins(1, 1, 1, 1)
         self.gridLayout.setObjectName("gridLayout")
-        self.plainTextEdit = CodeEditor.CompletionTextEdit(self.tabCode)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.plainTextEdit.sizePolicy().hasHeightForWidth())
-        self.plainTextEdit.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("Consolas")
-        self.plainTextEdit.setFont(font)
-        self.plainTextEdit.setObjectName("plainTextEdit")
-        self.gridLayout.addWidget(self.plainTextEdit, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tabCode, "")
         self.verticalLayout.addWidget(self.tabWidget)
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
@@ -136,7 +125,7 @@ class Ui_CodeEditorWidget(object):
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
         self.retranslateUi(CodeEditorWidget)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(CodeEditorWidget)
 
     def retranslateUi(self, CodeEditorWidget):
@@ -151,5 +140,4 @@ class Ui_CodeEditorWidget(object):
         self.pbReset.setText(QtGui.QApplication.translate("CodeEditorWidget", "reset", None, QtGui.QApplication.UnicodeUTF8))
         self.pbSave.setText(QtGui.QApplication.translate("CodeEditorWidget", "save", None, QtGui.QApplication.UnicodeUTF8))
 
-import CodeEditor
 import nodes_res_rc
