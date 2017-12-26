@@ -472,14 +472,14 @@ class Node(QGraphicsItem, NodeBase):
     def keywords():
         return []
 
-    @staticmethod
-    def clearLayout(layout):
-        while layout.count():
-            child = layout.takeAt(0)
-            if child.widget() is not None:
-                child.widget().deleteLater()
-            elif child.layout() is not None:
-                clearLayout(child.layout())
+    # @staticmethod
+    # def clearLayout(layout):
+    #     while layout.count():
+    #         child = layout.takeAt(0)
+    #         if child.widget() is not None:
+    #             child.widget().deleteLater()
+    #         elif child.layout() is not None:
+    #             clearLayout(child.layout())
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()
@@ -489,7 +489,7 @@ class Node(QGraphicsItem, NodeBase):
             Pin.setData(le.text())
 
     def onUpdatePropertyView(self, formLayout):
-        Node.clearLayout(formLayout)
+        clearLayout(formLayout)
 
         # name
         le_name = QLineEdit(self.getName())

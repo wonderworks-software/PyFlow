@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QtNodes</string>
+   <string>PyFlow</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -210,6 +210,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidgetLeft">
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>93</height>
+    </size>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -217,7 +223,7 @@
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
-    <string>Dock</string>
+    <string>Variables</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -246,8 +252,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>78</width>
-          <height>630</height>
+          <width>215</width>
+          <height>556</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
@@ -317,8 +323,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>308</width>
-          <height>630</height>
+          <width>198</width>
+          <height>556</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">

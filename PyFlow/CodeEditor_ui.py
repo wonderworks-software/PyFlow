@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/CodeEditor_ui.ui'
 #
-# Created: Tue Dec 26 16:38:54 2017
+# Created: Tue Dec 26 20:26:56 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -67,6 +67,8 @@ class Ui_CodeEditorWidget(object):
         self.gridLayout_5.setContentsMargins(1, 1, 1, 1)
         self.gridLayout_5.setObjectName("gridLayout_5")
         self.lwInputs = QtGui.QListWidget(self.scrollAreaWidgetContents)
+        self.lwInputs.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+        self.lwInputs.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.lwInputs.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.lwInputs.setUniformItemSizes(False)
         self.lwInputs.setSelectionRectVisible(True)
@@ -84,6 +86,8 @@ class Ui_CodeEditorWidget(object):
         self.gridLayout_4.setContentsMargins(1, 1, 1, 1)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.lwOutputs = QtGui.QListWidget(self.scrollAreaWidgetContents_2)
+        self.lwOutputs.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+        self.lwOutputs.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.lwOutputs.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.lwOutputs.setSelectionRectVisible(True)
         self.lwOutputs.setObjectName("lwOutputs")

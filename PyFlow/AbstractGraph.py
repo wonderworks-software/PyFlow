@@ -24,7 +24,7 @@ class PinBase(object):
         self.dirty = True
         self._connected = False
         # set default values
-        self._data = self.getDefaultDataValue()
+        self._data = PinBase.getDefaultDataValue(0)
         # put self in graph
         self.parent().graph().pins[self.uid] = self
 
@@ -57,18 +57,19 @@ class PinBase(object):
         if self.type == PinTypes.Output and self.uid in self.parent().outputs:
             self.parent().outputs.pop(self.uid)
 
-    def getDefaultDataValue(self):
-        if self._dataType == DataTypes.Float:
+    @staticmethod
+    def getDefaultDataValue(dataType):
+        if dataType == DataTypes.Float:
             return float()
-        if self._dataType == DataTypes.Int:
+        if dataType == DataTypes.Int:
             return int()
-        if self._dataType == DataTypes.String:
+        if dataType == DataTypes.String:
             return str("none")
-        if self._dataType == DataTypes.Bool:
+        if dataType == DataTypes.Bool:
             return bool()
-        if self._dataType == DataTypes.Array:
+        if dataType == DataTypes.Array:
             return []
-        if self._dataType == DataTypes.Any:
+        if dataType == DataTypes.Any:
             return None
 
     def pinName(self):
@@ -76,7 +77,7 @@ class PinBase(object):
 
     def currentData(self):
         if self._data is None:
-            return self.getDefaultDataValue()
+            return PinBase.getDefaultDataValue(self._dataType)
         return self._data
 
     def pinConnected(self, other):
@@ -150,12 +151,12 @@ class PinBase(object):
             try:
                 self._data = float(data)
             except:
-                self._data = self.getDefaultDataValue()
+                self._data = PinBase.getDefaultDataValue(self._dataType)
         if self._dataType == DataTypes.Int:
             try:
                 self._data = int(data)
             except:
-                self._data = self.getDefaultDataValue()
+                self._data = PinBase.getDefaultDataValue(self._dataType)
         if self._dataType == DataTypes.String:
             self._data = str(data)
         if self._dataType == DataTypes.Array:
@@ -286,6 +287,18 @@ class Graph(object):
         self.nodesPendingKill = []
         self.edges = {}
         self.pins = {}
+        self.vars = {}
+
+    def getUniqVarName(self, name):
+        names = [v.name for v in self.vars.values()]
+        if name not in names:
+            return name
+        idx = 0
+        tmp = name
+        while tmp in names:
+            idx += 1
+            tmp = name + str(idx)
+        return name + str(idx)
 
     def getUniqNodeName(self, name):
         nodes_names = [n.name for n in self.nodes.values()]

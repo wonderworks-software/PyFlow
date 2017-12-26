@@ -295,25 +295,23 @@ class SceneClass(QGraphicsScene):
         if len(selectedNodes) == 0:
             self.parent().writeToConsole("select {0}nl none".format(FLAG_SYMBOL))
             return
-        # cmd = "select {0}nl ".format(FLAG_SYMBOL)
-        # for n in selectedNodes:
-        #     cmd += n
-        #     cmd += " "
-        # self.parent().writeToConsole(cmd[:-1])
 
     def dropEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
-            className = event.mimeData().text()
-            name = self.parent().getUniqNodeName(className)
-            dropItem = self.itemAt(event.scenePos())
-            if not dropItem:
-                nodeTemplate = Node.jsonTemplate()
-                nodeTemplate['type'] = className
-                nodeTemplate['name'] = name
-                nodeTemplate['x'] = event.scenePos().x()
-                nodeTemplate['y'] = event.scenePos().y()
-                nodeTemplate['meta']['label'] = className
-                instance = self.parent().createNode(nodeTemplate)
+            tag, mimeText = event.mimeData().text().split('|')
+            if tag == 'Node':
+                name = self.parent().getUniqNodeName(mimeText)
+                dropItem = self.itemAt(event.scenePos())
+                if not dropItem:
+                    nodeTemplate = Node.jsonTemplate()
+                    nodeTemplate['type'] = mimeText
+                    nodeTemplate['name'] = name
+                    nodeTemplate['x'] = event.scenePos().x()
+                    nodeTemplate['y'] = event.scenePos().y()
+                    nodeTemplate['meta']['label'] = mimeText
+                    instance = self.parent().createNode(nodeTemplate)
+            if tag == 'Var':
+                print('create variable getter', mimeText)
         else:
             super(SceneClass, self).dropEvent(event)
 
@@ -441,6 +439,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             return
         drag = QtGui.QDrag(self)
         mime_data = QtCore.QMimeData()
+        pressed_text = "Node|" + pressed_text
         mime_data.setText(pressed_text)
         drag.setMimeData(mime_data)
         drag.exec_()
@@ -1247,7 +1246,10 @@ class GraphWidget(QGraphicsView, Graph):
             # self.updatePropertyView(selectedNodes[0])
             selectedNodes[0].onUpdatePropertyView(self.parent.formLayout)
         else:
-            Node.clearLayout(self.parent.formLayout)
+            self._clearPropertiesView()
+
+    def _clearPropertiesView(self):
+        clearLayout(self.parent.formLayout)
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()

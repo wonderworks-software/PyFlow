@@ -17,14 +17,15 @@ from Qt import QtCore
 import GraphEditor_ui
 import sys
 from os import path
+from VariablesWidget import VariablesWidget
 
 
 FILE_DIR = path.dirname(__file__)
 
 
-class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
+class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def __init__(self):
-        super(W, self).__init__()
+        super(PyFlow, self).__init__()
         self.setupUi(self)
         self.G = GraphWidget('root', self)
         self.SceneLayout.addWidget(self.G)
@@ -66,9 +67,10 @@ class W(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                                             getNodeNames())
         self.gridLayout_2.addWidget(self.consoleInput, 1, 0, 1, 1)
         self.dockWidgetConsole.hide()
-        self.dockWidgetLeft.hide()
         self.setMouseTracking(True)
         self.toggle_console()
+
+        self.leftDockGridLayout.addWidget(VariablesWidget(self, self.G))
 
     def createPopupMenu(self):
         pass
@@ -177,7 +179,7 @@ if __name__ == '__main__':
         QWidget:focus {border:2 inset black;}\
         ")
 
-    instance = W()
+    instance = PyFlow()
     app.setActiveWindow(instance)
     instance.show()
 

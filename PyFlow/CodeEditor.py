@@ -18,6 +18,7 @@ from Node import Node
 import weakref
 from keyword import kwlist
 
+
 class CompletionTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super(CompletionTextEdit, self).__init__(parent)
