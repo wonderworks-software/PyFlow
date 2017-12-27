@@ -13,11 +13,17 @@ class GetVarNode(Node, NodeBase):
     def __init__(self, name, graph, var):
         super(GetVarNode, self).__init__(name, graph)
         self.var = var
+        # self.uid = var.uid
         self.out = self.addOutputPin('val', self.var.dataType, hideLabel=True)
         self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+
+    def serialize(self):
+        template = Node.serialize(self)
+        template['meta']['varuuid'] = str(self.var.uid)
+        return template
 
     def onVarDataTypeChanged(self, dataType):
         self.out.disconnectAll()
@@ -32,6 +38,7 @@ class GetVarNode(Node, NodeBase):
 
     def onVarNameChanged(self, newName):
         self.label().setPlainText(newName)
+        self.name = newName
 
     def onVarValueChanged(self):
         push(self.out)

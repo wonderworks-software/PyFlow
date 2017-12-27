@@ -71,7 +71,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.setMouseTracking(True)
         self.toggle_console()
 
-        self.leftDockGridLayout.addWidget(VariablesWidget(self, self.G))
+        self.variablesWidget = VariablesWidget(self, self.G)
+        self.leftDockGridLayout.addWidget(self.variablesWidget)
 
     def createPopupMenu(self):
         pass

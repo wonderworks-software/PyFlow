@@ -176,7 +176,8 @@ class NodeBase(object):
 
     @uid.setter
     def uid(self, value):
-        self.graph().nodes.pop(self._uid)
+        if self._uid in self.graph().nodes:
+            self.graph().nodes.pop(self._uid)
         self._uid = value
         self.graph().nodes[self._uid] = self
 
@@ -377,7 +378,9 @@ class Graph(object):
             return False
         if node.uid in self.nodes:
             return False
+        # node.uid = uuid.UUID(jsonTemplate['uuid'])
         self.nodes[node.uid] = node
+        # print(node.uid, jsonTemplate['uuid'])
         node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
         node.postCreate(jsonTemplate)
         return True

@@ -68,7 +68,7 @@ class VariableBase(QWidget):
     killed = QtCore.Signal()
     dataTypeChanged = QtCore.Signal(int)
 
-    def __init__(self, name, value, graph, varsListWidget, dataType=DataTypes.Any):
+    def __init__(self, name, value, graph, varsListWidget, dataType=DataTypes.Any, uid=None):
         super(VariableBase, self).__init__()
         # ui
         self.horizontalLayout = QHBoxLayout(self)
@@ -90,11 +90,50 @@ class VariableBase(QWidget):
         self.name = None
         self._value = value
         self.dataType = dataType
-        self.uid = uuid4()
+        self._uid = uid
+        if self._uid is None:
+            self._uid = uuid4()
         self.graph = graph
         self.setName(name)
         self.types = [v for v in inspect.getmembers(DataTypes) if v[0] not in ['__doc__', '__module__', 'Reference', 'Exec']]
         self.graph.vars[self.uid] = self
+
+    @property
+    def uid(self):
+        return self._uid
+
+    @uid.setter
+    def uid(self, value):
+        self._uid = value
+        if self._uid in self.graph.vars:
+            self.graph.vars.pop(self._uid)
+            self.graph.vars[self._uid] = self
+
+    @staticmethod
+    def jsonTemplate():
+        template = {
+            'name': None,
+            'uuid': None,
+            'value': None,
+            'type': None
+        }
+        return template
+
+    def serialize(self):
+        template = VariableBase.jsonTemplate()
+        template['name'] = self.name
+        template['uuid'] = str(self.uid)
+        template['value'] = self.value
+        template['type'] = self.dataType
+        return template
+
+    @staticmethod
+    def deserialize(data, graph):
+        var = graph.parent.variablesWidget.createVariable(uuid.UUID(data['uuid']))
+        var.setName(data['name'])
+        var.setDataType(data['type'])
+        var.value = data['value']
+        return var
 
     @property
     def value(self):

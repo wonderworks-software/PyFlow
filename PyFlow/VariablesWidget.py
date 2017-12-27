@@ -41,8 +41,9 @@ class VariablesWidget(QWidget, VariablesWidget_ui.Ui_Form):
                 var.killed.emit()
         self.graph._clearPropertiesView()
 
-    def createVariable(self):
-        var = VariableBase(self.graph.getUniqVarName('NewVar'), False, self.graph, self, DataTypes.Bool)
+    def createVariable(self, uid=None):
+        var = VariableBase(self.graph.getUniqVarName('NewVar'), False, self.graph, self, DataTypes.Bool, uid=uid)
         item = QListWidgetItem(self.listWidget)
         item.setSizeHint(QtCore.QSize(60, 38))
         self.listWidget.setItemWidget(item, var)
+        return var
