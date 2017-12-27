@@ -314,11 +314,10 @@ class SceneClass(QGraphicsScene):
             if tag == 'Var':
                 uid = uuid.UUID(mimeText)
                 if uid in self.parent().vars:
-                    print('create variable getter', mimeText)
                     var = self.parent().vars[uid]
                     nodeTemplate = Node.jsonTemplate()
                     nodeTemplate['type'] = 'GetVarNode'
-                    nodeTemplate['name'] = var.name
+                    nodeTemplate['name'] = 'GetVarNode'
                     nodeTemplate['uuid'] = str(var.uid)
                     nodeTemplate['x'] = event.scenePos().x()
                     nodeTemplate['y'] = event.scenePos().y()

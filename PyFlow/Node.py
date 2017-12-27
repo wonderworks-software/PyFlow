@@ -499,6 +499,11 @@ class Node(QGraphicsItem, NodeBase):
             le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
         formLayout.addRow("Name", le_name)
 
+        # type
+        leType = QLineEdit(self.__class__.__name__)
+        leType.setReadOnly(True)
+        formLayout.addRow("Type", leType)
+
         # pos
         le_pos = QLineEdit("{0} x {1}".format(self.pos().x(), self.pos().y()))
         formLayout.addRow("Pos", le_pos)

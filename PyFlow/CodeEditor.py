@@ -223,13 +223,14 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         return foo
 
     def applyData(self):
-        # recreate node
+        # reset node
         self.resetNode()
 
         # label
         lbText = self.leLabel.text()
         if not lbText == '':
             self.node.label().setPlainText(lbText)
+            self.node.name = lbText
 
         # assign compute method
         code = self.plainTextEdit.toPlainText()
