@@ -451,14 +451,14 @@ class Graph(object):
         print self.name + '\n----------\n'
         for n in self.getNodes():
             print n.name
-            for inp in n.inputs:
+            for inp in n.inputs.values():
                 print '|---', inp.name, 'data - {0}'.format(inp.currentData()), \
                     'affects on', [i.name for i in inp.affects], \
                     'affected_by ', [p.name for p in inp.affected_by], \
                     'DIRTY ', inp.dirty
                 for e in inp.edge_list:
                     print '\t|---', e.__str__()
-            for out in n.outputs:
+            for out in n.outputs.values():
                 print '|---' + out.name, 'data - {0}'.format(out.currentData()), \
                     'affects on', [i.name for i in out.affects], \
                     'affected_by ', [p.name for p in out.affected_by], \

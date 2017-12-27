@@ -1385,7 +1385,7 @@ class GraphWidget(QGraphicsView, Graph):
         if self.parent:
             for n in self.getNodes():
                 self.parent.console.append(n.name)
-                for i in n.inputs + n.outputs:
+                for i in n.inputs.values() + n.outputs.values():
                     self.parent.console.append('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}'.format(i.pinName(),
                                                i.currentData(),
                                                [p.pinName() for p in i.affects],
