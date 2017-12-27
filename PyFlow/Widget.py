@@ -38,6 +38,7 @@ from os import listdir, path, startfile
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
 import Nodes
+from GetVarNode import GetVarNode
 import FunctionLibraries
 import Commands
 from time import ctime, clock
@@ -311,7 +312,19 @@ class SceneClass(QGraphicsScene):
                     nodeTemplate['meta']['label'] = mimeText
                     instance = self.parent().createNode(nodeTemplate)
             if tag == 'Var':
-                print('create variable getter', mimeText)
+                uid = uuid.UUID(mimeText)
+                if uid in self.parent().vars:
+                    print('create variable getter', mimeText)
+                    var = self.parent().vars[uid]
+                    nodeTemplate = Node.jsonTemplate()
+                    nodeTemplate['type'] = 'GetVarNode'
+                    nodeTemplate['name'] = var.name
+                    nodeTemplate['uuid'] = str(var.uid)
+                    nodeTemplate['x'] = event.scenePos().x()
+                    nodeTemplate['y'] = event.scenePos().y()
+                    nodeTemplate['meta']['label'] = var.name
+                    instance = GetVarNode(var.name, self.parent(), var)
+                    self.parent().addNode(instance, nodeTemplate)
         else:
             super(SceneClass, self).dropEvent(event)
 
@@ -1007,7 +1020,7 @@ class GraphWidget(QGraphicsView, Graph):
                 i.kill()
         if not len(selected) == 0:
             self.killSelectedNodes()
-        clearLayout(self.parent.PropertiesformLayout)
+        clearLayout(self.parent.formLayout)
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
@@ -1244,9 +1257,14 @@ class GraphWidget(QGraphicsView, Graph):
         selectedNodes = self.selectedNodes()
         if len(selectedNodes) != 0:
             # self.updatePropertyView(selectedNodes[0])
-            selectedNodes[0].onUpdatePropertyView(self.parent.formLayout)
+            self.tryFillPropertiesView(selectedNodes[0])
         else:
             self._clearPropertiesView()
+
+    def tryFillPropertiesView(self, obj):
+        if hasattr(obj, 'onUpdatePropertyView'):
+            self._clearPropertiesView()
+            obj.onUpdatePropertyView(self.parent.formLayout)
 
     def _clearPropertiesView(self):
         clearLayout(self.parent.formLayout)

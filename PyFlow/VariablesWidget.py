@@ -12,11 +12,12 @@ from AbstractGraph import *
 def lwMousePressEvent(self, event):
     QListWidget.mousePressEvent(self, event)
     w = self.itemWidget(self.currentItem())
-    drag = QtGui.QDrag(self)
-    mime_data = QtCore.QMimeData()
-    mime_data.setText("Var|" + str(w.uid))
-    drag.setMimeData(mime_data)
-    drag.exec_()
+    if w:
+        drag = QtGui.QDrag(self)
+        mime_data = QtCore.QMimeData()
+        mime_data.setText("Var|" + str(w.uid))
+        drag.setMimeData(mime_data)
+        drag.exec_()
 
 
 class VariablesWidget(QWidget, VariablesWidget_ui.Ui_Form):
@@ -34,9 +35,10 @@ class VariablesWidget(QWidget, VariablesWidget_ui.Ui_Form):
         for i in self.listWidget.selectedItems():
             w = self.listWidget.itemWidget(i)
             if w.uid in self.graph.vars:
-                self.graph.vars.pop(w.uid)
+                var = self.graph.vars.pop(w.uid)
                 row = self.listWidget.row(i)
                 self.listWidget.takeItem(row)
+                var.killed.emit()
         self.graph._clearPropertiesView()
 
     def createVariable(self):
@@ -44,4 +46,3 @@ class VariablesWidget(QWidget, VariablesWidget_ui.Ui_Form):
         item = QListWidgetItem(self.listWidget)
         item.setSizeHint(QtCore.QSize(60, 38))
         self.listWidget.setItemWidget(item, var)
-        self.graph.vars[var.uid] = var

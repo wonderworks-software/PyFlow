@@ -24,7 +24,7 @@ class PinBase(object):
         self.dirty = True
         self._connected = False
         # set default values
-        self._data = PinBase.getDefaultDataValue(0)
+        self._data = getDefaultDataValue(self._dataType)
         # put self in graph
         self.parent().graph().pins[self.uid] = self
 
@@ -57,27 +57,12 @@ class PinBase(object):
         if self.type == PinTypes.Output and self.uid in self.parent().outputs:
             self.parent().outputs.pop(self.uid)
 
-    @staticmethod
-    def getDefaultDataValue(dataType):
-        if dataType == DataTypes.Float:
-            return float()
-        if dataType == DataTypes.Int:
-            return int()
-        if dataType == DataTypes.String:
-            return str("none")
-        if dataType == DataTypes.Bool:
-            return bool()
-        if dataType == DataTypes.Array:
-            return []
-        if dataType == DataTypes.Any:
-            return None
-
     def pinName(self):
         return self.parent().name + '.' + self.name
 
     def currentData(self):
         if self._data is None:
-            return PinBase.getDefaultDataValue(self._dataType)
+            return getDefaultDataValue(self._dataType)
         return self._data
 
     def pinConnected(self, other):
@@ -151,12 +136,12 @@ class PinBase(object):
             try:
                 self._data = float(data)
             except:
-                self._data = PinBase.getDefaultDataValue(self._dataType)
+                self._data = getDefaultDataValue(self._dataType)
         if self._dataType == DataTypes.Int:
             try:
                 self._data = int(data)
             except:
-                self._data = PinBase.getDefaultDataValue(self._dataType)
+                self._data = getDefaultDataValue(self._dataType)
         if self._dataType == DataTypes.String:
             self._data = str(data)
         if self._dataType == DataTypes.Array:

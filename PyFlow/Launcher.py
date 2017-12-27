@@ -12,6 +12,7 @@ from Qt.QtWidgets import QTextEdit
 from Qt.QtWidgets import QMessageBox
 from Qt.QtWidgets import QAction
 from Qt.QtWidgets import QInputDialog
+from Qt.QtWidgets import QHBoxLayout
 from Qt import QtGui
 from Qt import QtCore
 import GraphEditor_ui

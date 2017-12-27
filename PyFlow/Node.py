@@ -232,8 +232,8 @@ class Node(QGraphicsItem, NodeBase):
                 inp.setData(foo.__defaults__[index])
 
         # all inputs affects on all outputs
-        for i in inst.inputs:
-            for o in inst.outputs:
+        for i in inst.inputs.values():
+            for o in inst.outputs.values():
                 portAffects(i, o)
 
         # generate compute method from function

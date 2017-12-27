@@ -16,23 +16,6 @@ def updatePins(start_from):
             updatePins(i)
 
 
-def getPortColorByType(t):
-    if t == DataTypes.Any:
-        return Colors.Any
-    if t == DataTypes.Float:
-        return Colors.Float
-    if t == DataTypes.Int:
-        return Colors.Int
-    if t == DataTypes.Array:
-        return Colors.Array
-    if t == DataTypes.Bool:
-        return Colors.Bool
-    if t == DataTypes.Exec:
-        return Colors.Exec
-    if t == DataTypes.String:
-        return Colors.String
-
-
 class Pin(QGraphicsWidget, PinBase):
     def __init__(self, name, parent, dataType, width=8.0, height=8.0, color=Colors.Connectors):
         PinBase.__init__(self, name, parent, dataType)

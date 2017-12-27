@@ -15,6 +15,7 @@ import inspect
 from Pin import Pin
 from Pin import getPortColorByType
 from AbstractGraph import *
+import VariableInputWidgets
 
 
 class TypeWidget(QWidget):
@@ -42,18 +43,31 @@ class VarTypeComboBox(QComboBox):
     """docstring for VarTypeComboBox"""
     def __init__(self, var, parent=None):
         super(VarTypeComboBox, self).__init__(parent)
+        self._bJustSpawned = True
         self.var = var
         for i in self.var.types:
             self.addItem(i[0], i[1])
         self.currentIndexChanged.connect(self.onCurrentIndexChanged)
         self.setCurrentIndex(self.findData(var.dataType))
+        self._bJustSpawned = False
 
     def onCurrentIndexChanged(self, index):
-        self.var.setDataType(self.itemData(index))
+        if self._bJustSpawned:
+            val = self.var.value
+
+        self.var.setDataType(self.itemData(index), self._bJustSpawned)
+
+        if self._bJustSpawned:
+            self.var.value = val
 
 
 class VariableBase(QWidget):
     """docstring for VariableBase"""
+    valueChanged = QtCore.Signal()
+    nameChanged = QtCore.Signal(str)
+    killed = QtCore.Signal()
+    dataTypeChanged = QtCore.Signal(int)
+
     def __init__(self, name, value, graph, varsListWidget, dataType=DataTypes.Any):
         super(VariableBase, self).__init__()
         # ui
@@ -74,26 +88,58 @@ class VariableBase(QWidget):
         # body
         self.varsListWidget = varsListWidget
         self.name = None
-        self.value = value
+        self._value = value
         self.dataType = dataType
         self.uid = uuid4()
         self.graph = graph
         self.setName(name)
         self.types = [v for v in inspect.getmembers(DataTypes) if v[0] not in ['__doc__', '__module__', 'Reference', 'Exec']]
+        self.graph.vars[self.uid] = self
 
-    def setDataType(self, dataType):
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, data):
+        if self.dataType == DataTypes.Float:
+            try:
+                self._value = float(data)
+            except:
+                self._value = getDefaultDataValue(self.dataType)
+        if self.dataType == DataTypes.Int:
+            try:
+                self._value = int(data)
+            except:
+                self._value = getDefaultDataValue(self.dataType)
+        if self.dataType == DataTypes.String:
+            self._value = str(data)
+        if self.dataType == DataTypes.Array:
+            self._value = data
+        if self.dataType == DataTypes.Bool:
+            self._value = bool(data)
+        if self.dataType == DataTypes.Any:
+            self._value = str(data)
+        self.valueChanged.emit()
+
+    def setDataType(self, dataType, _bJustSpawned=False):
         self.dataType = dataType
-        self.value = PinBase.getDefaultDataValue(self.dataType)
         self.widget.color = getPortColorByType(dataType)
+        self.value = getDefaultDataValue(dataType)
         self.widget.update()
+        if _bJustSpawned:
+            return
+        self.dataTypeChanged.emit(self.dataType)
 
     def mousePressEvent(self, event):
         QWidget.mousePressEvent(self, event)
-        self.onUpdatePropertyView(self.graph.parent.formLayout)
+        self.graph.tryFillPropertiesView(self)
+        # self.onUpdatePropertyView(self.graph.parent.formLayout)
 
     def setName(self, name):
         self.labelName.setText(name)
         self.name = name
+        self.nameChanged.emit(str(name))
 
     def onUpdatePropertyView(self, formLayout):
         clearLayout(formLayout)
@@ -106,6 +152,12 @@ class VariableBase(QWidget):
         # data type
         cbTypes = VarTypeComboBox(self)
         formLayout.addRow("Type", cbTypes)
+
+        # current value
+        valueWidget = VariableInputWidgets.getVarWidget(self)
+        if valueWidget:
+            valueWidget.postCreate(self.value)
+            formLayout.addRow("Value", valueWidget)
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QApplication.translate("Form", "Form", None, QApplication.UnicodeUTF8))
