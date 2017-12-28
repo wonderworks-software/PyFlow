@@ -24,6 +24,7 @@ from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QGraphicsView
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QInputDialog
+from Qt.QtWidgets import QUndoStack
 import math
 import platform
 import random
@@ -70,48 +71,26 @@ def clearLayout(layout):
             clearLayout(child.layout())
 
 
-def getNodeInstance(module, class_name, nodeName, graph):
-    # Check in Nodes module first
-    mod = Nodes.getNode(class_name)
-    if mod is not None:
-        instance = mod(nodeName, graph)
-        return instance
-
-    # if not found - continue searching in FunctionLibraries
-    foo = FunctionLibraries.findFunctionByName(class_name)
-    if foo:
-        instance = Node.initializeFromFunction(foo, graph)
-        return instance
-    return None
-
-
 class PluginType:
     pNode = 0
     pCommand = 1
 
 
 def _implementPlugin(name, console_out_foo, pluginType):
-    CommandTemplate = """from Command import Command
-from AbstractGraph import FLAG_SYMBOL
+    CommandTemplate = """from Qt.QtWidgets import QUndoCommand
 
 
-class {0}(Command):
+class {0}(QUndoCommand):
 
     def __init__(self, graph):
         super({0}, self).__init__(graph)
+        self.graph = graph
 
-    def usage(self):
-        msg = "[USAGE] {{0}} {{1}}text str".format(self.__class__.__name__, FLAG_SYMBOL)
-        return msg
+    def undo(self):
+        pass
 
-    def execute(self, line):
-        commandLine = self.parse(line)
-        try:
-            self.graph.writeToConsole("HELLO WORLD! Your message: {0}".format(commandLine['~text']))
-        except Exception as e:
-            print("[ERROR] {0}".format(e))
-            print(self.usage())
-            self.graph.writeToConsole(self.usage())
+    def redo(self):
+        pass
 """.format(name)
 
     base_node_code = """from AbstractGraph import *
@@ -323,7 +302,7 @@ class SceneClass(QGraphicsScene):
                 nodeTemplate['x'] = event.scenePos().x()
                 nodeTemplate['y'] = event.scenePos().y()
                 nodeTemplate['meta']['label'] = mimeText
-                instance = self.parent().createNode(nodeTemplate)
+                self.parent().createNode(nodeTemplate)
         else:
             super(SceneClass, self).dropEvent(event)
 
@@ -716,6 +695,7 @@ class GraphWidget(QGraphicsView, Graph):
     def __init__(self, name, parent=None):
         super(GraphWidget, self).__init__()
         Graph.__init__(self, name)
+        self.undoStack = QUndoStack(self)
         self.parent = parent
         self.menu = QMenu()
         self._lastClock = 0.0
@@ -776,8 +756,8 @@ class GraphWidget(QGraphicsView, Graph):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.centerOn(QtCore.QPointF(self.sceneRect().width() / 2, self.sceneRect().height() / 2))
         self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
-        self.registeredCommands = {}
-        self.registerCommands()
+        # self.registeredCommands = {}
+        # self.registerCommands()
         self._sortcuts_enabled = True
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.mainLoop)
@@ -864,16 +844,6 @@ class GraphWidget(QGraphicsView, Graph):
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
         self.writeToConsole(message)
-
-    def registerCommands(self):
-        for d in listdir(Commands.__path__[0]):
-            if d.endswith(".py") and "__init__" not in d:
-                cmd = importByName(Commands, d.split(".")[0])
-                if cmd:
-                    cmd = cmd(self)
-                    self.registeredCommands[cmd.__class__.__name__] = cmd
-                else:
-                    print "command not imported", d.split(".")[0]
 
     def screenShot(self):
         name_filter = "Image (*.png)"
@@ -1034,6 +1004,10 @@ class GraphWidget(QGraphicsView, Graph):
         modifiers = event.modifiers()
         if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
             self.new_file()
+        if all([event.key() == QtCore.Qt.Key_Z, modifiers == QtCore.Qt.ControlModifier]):
+            self.undoStack.undo()
+        if all([event.key() == QtCore.Qt.Key_Y, modifiers == QtCore.Qt.ControlModifier]):
+            self.undoStack.redo()
         if all([event.key() == QtCore.Qt.Key_Equal, modifiers == QtCore.Qt.ControlModifier]):
             self.zoomDelta(True)
         if all([event.key() == QtCore.Qt.Key_Minus, modifiers == QtCore.Qt.ControlModifier]):
@@ -1360,26 +1334,9 @@ class GraphWidget(QGraphicsView, Graph):
         return instance
 
     def createNode(self, jsonTemplate):
-        nodeInstance = getNodeInstance(Nodes, jsonTemplate['type'], jsonTemplate['name'], self)
-
-        # if no such node in Nodes mod, check Function libs
-        if nodeInstance is None:
-            foo = FunctionLibraries.findFunctionByName(jsonTemplate['type'])
-            if foo:
-                nodeInstance = Node.initializeFromFunction(foo, self)
-
-        # If clas still not found, check variables
-        if nodeInstance is None:
-            if jsonTemplate['type'] == 'GetVarNode':
-                nodeInstance = self.createVariableGetter(jsonTemplate)
-            if jsonTemplate['type'] == 'SetVarNode':
-                nodeInstance = self.createVariableSetter(jsonTemplate)
-
-        if nodeInstance is None:
-            raise ValueError("node class not found!")
-
-        self.addNode(nodeInstance, jsonTemplate)
-        return nodeInstance
+        cmd = Commands.CreateNode(self, jsonTemplate)
+        self.undoStack.push(cmd)
+        return cmd.nodeInstance
 
     def addNode(self, node, jsonTemplate=None):
         Graph.addNode(self, node, jsonTemplate)

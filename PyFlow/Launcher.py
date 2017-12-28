@@ -61,12 +61,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.clearConsoleAction.triggered.connect(self.console.clear)
         self.console.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.console.addAction(self.clearConsoleAction)
-        self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)
-        commands_names = [i for i in self.G.registeredCommands.iterkeys()] + self.consoleInput.cmd_list
-        self.highlighter_inst = Highlighter(self.console.document(),
-                                            commands_names,
-                                            getNodeNames())
-        self.gridLayout_2.addWidget(self.consoleInput, 1, 0, 1, 1)
+        # self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)
+        # commands_names = [i for i in self.G.registeredCommands.iterkeys()] + self.consoleInput.cmd_list
+        # self.highlighter_inst = Highlighter(self.console.document(),
+        #                                     commands_names,
+        #                                     getNodeNames())
+        # self.gridLayout_2.addWidget(self.consoleInput, 1, 0, 1, 1)
         self.dockWidgetConsole.hide()
         self.setMouseTracking(True)
         self.toggle_console()
