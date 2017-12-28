@@ -572,12 +572,13 @@ class Node(QGraphicsItem, NodeBase):
         for i in self.inputs.values() + self.outputs.values():
             i.disconnectAll()
 
-        self.graph().nodes.pop(self.uid)
-        self.graph().nodesPendingKill.append(self)
+        if self.uid in self.graph().nodes:
+            self.graph().nodes.pop(self.uid)
+            self.graph().nodesPendingKill.append(self)
 
-        self.graph().writeToConsole("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
-        self.scene().removeItem(self)
-        del(self)
+            self.graph().writeToConsole("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
+            self.scene().removeItem(self)
+            del(self)
 
     def setPosition(self, x, y):
         NodeBase.setPosition(self, x, y)

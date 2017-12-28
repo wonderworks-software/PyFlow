@@ -39,6 +39,7 @@ _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
 import Nodes
 from GetVarNode import GetVarNode
+from SetVarNode import SetVarNode
 import FunctionLibraries
 import Commands
 from Variable import VariableBase
@@ -307,8 +308,16 @@ class SceneClass(QGraphicsScene):
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = mimeText
                 if tag == 'Var':
-                    nodeTemplate['type'] = 'GetVarNode'
-                    nodeTemplate['meta']['varuuid'] = mimeText
+                    modifiers = event.modifiers()
+                    if modifiers == QtCore.Qt.ControlModifier:
+                        nodeTemplate['type'] = 'GetVarNode'
+                        nodeTemplate['meta']['varuuid'] = mimeText
+                    if modifiers == QtCore.Qt.AltModifier:
+                        nodeTemplate['type'] = 'SetVarNode'
+                        nodeTemplate['meta']['varuuid'] = mimeText
+                    if modifiers == QtCore.Qt.NoModifier:
+                        print('Getter pr setter')
+                        return
                 nodeTemplate['name'] = name
                 nodeTemplate['uuid'] = mimeText
                 nodeTemplate['x'] = event.scenePos().x()
@@ -1340,10 +1349,14 @@ class GraphWidget(QGraphicsView, Graph):
                 var = v
         return var
 
+    def createVariableSetter(self, jsonTemplate):
+        var = self.vars[uuid.UUID(jsonTemplate['meta']['varuuid'])]
+        instance = SetVarNode(var.name, self, var)
+        return instance
+
     def createVariableGetter(self, jsonTemplate):
         var = self.vars[uuid.UUID(jsonTemplate['meta']['varuuid'])]
         instance = GetVarNode(var.name, self, var)
-        # self.addNode(instance, nodeTemplate)
         return instance
 
     def createNode(self, jsonTemplate):
@@ -1357,7 +1370,10 @@ class GraphWidget(QGraphicsView, Graph):
 
         # If clas still not found, check variables
         if nodeInstance is None:
-            nodeInstance = self.createVariableGetter(jsonTemplate)
+            if jsonTemplate['type'] == 'GetVarNode':
+                nodeInstance = self.createVariableGetter(jsonTemplate)
+            if jsonTemplate['type'] == 'SetVarNode':
+                nodeInstance = self.createVariableSetter(jsonTemplate)
 
         if nodeInstance is None:
             raise ValueError("node class not found!")

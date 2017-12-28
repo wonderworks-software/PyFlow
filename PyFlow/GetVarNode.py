@@ -13,7 +13,6 @@ class GetVarNode(Node, NodeBase):
     def __init__(self, name, graph, var):
         super(GetVarNode, self).__init__(name, graph)
         self.var = var
-        # self.uid = var.uid
         self.out = self.addOutputPin('val', self.var.dataType, hideLabel=True)
         self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.nameChanged.connect(self.onVarNameChanged)
