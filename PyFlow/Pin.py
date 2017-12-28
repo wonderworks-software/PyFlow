@@ -16,23 +16,6 @@ def updatePins(start_from):
             updatePins(i)
 
 
-def getPortColorByType(t):
-    if t == DataTypes.Any:
-        return Colors.Any
-    if t == DataTypes.Float:
-        return Colors.Float
-    if t == DataTypes.Int:
-        return Colors.Int
-    if t == DataTypes.Array:
-        return Colors.Array
-    if t == DataTypes.Bool:
-        return Colors.Bool
-    if t == DataTypes.Exec:
-        return Colors.Exec
-    if t == DataTypes.String:
-        return Colors.String
-
-
 class Pin(QGraphicsWidget, PinBase):
     def __init__(self, name, parent, dataType, width=8.0, height=8.0, color=Colors.Connectors):
         PinBase.__init__(self, name, parent, dataType)
@@ -78,10 +61,15 @@ class Pin(QGraphicsWidget, PinBase):
 
     def kill(self):
         PinBase.kill(self)
+        con = self._container
         self.disconnectAll()
         if hasattr(self.parent(), self.name):
             exec(r"del self.parent().{}".format(self.name))
         self.parent().graph().scene().removeItem(self._container)
+        if self.type == PinTypes.Input:
+            self.parent().inputsLayout.removeItem(con)
+        else:
+            self.parent().outputsLayout.removeItem(con)
 
     def serialize(self):
         data = {'name': self.name,

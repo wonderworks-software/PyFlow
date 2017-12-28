@@ -2,7 +2,7 @@
 common defines, functions and structures
 '''
 import math
-
+from Settings import *
 
 FLAG_SYMBOL = "~"
 
@@ -75,6 +75,47 @@ def push(start_from):
         for i in start_from.affects:
             i.setDirty()
             push(i)
+
+
+def getPortColorByType(t):
+    if t == DataTypes.Any:
+        return Colors.Any
+    if t == DataTypes.Float:
+        return Colors.Float
+    if t == DataTypes.Int:
+        return Colors.Int
+    if t == DataTypes.Array:
+        return Colors.Array
+    if t == DataTypes.Bool:
+        return Colors.Bool
+    if t == DataTypes.Exec:
+        return Colors.Exec
+    if t == DataTypes.String:
+        return Colors.String
+
+
+def getDefaultDataValue(dataType):
+    if dataType == DataTypes.Float:
+        return float()
+    if dataType == DataTypes.Int:
+        return int()
+    if dataType == DataTypes.String:
+        return str("none")
+    if dataType == DataTypes.Bool:
+        return bool()
+    if dataType == DataTypes.Array:
+        return []
+    if dataType == DataTypes.Any:
+        return str("none")
+
+
+def clearLayout(layout):
+    while layout.count():
+        child = layout.takeAt(0)
+        if child.widget() is not None:
+            child.widget().deleteLater()
+        elif child.layout() is not None:
+            clearLayout(child.layout())
 
 
 class DataTypes:

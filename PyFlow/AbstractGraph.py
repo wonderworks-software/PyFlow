@@ -24,7 +24,7 @@ class PinBase(object):
         self.dirty = True
         self._connected = False
         # set default values
-        self._data = self.getDefaultDataValue()
+        self._data = getDefaultDataValue(self._dataType)
         # put self in graph
         self.parent().graph().pins[self.uid] = self
 
@@ -57,26 +57,12 @@ class PinBase(object):
         if self.type == PinTypes.Output and self.uid in self.parent().outputs:
             self.parent().outputs.pop(self.uid)
 
-    def getDefaultDataValue(self):
-        if self._dataType == DataTypes.Float:
-            return float()
-        if self._dataType == DataTypes.Int:
-            return int()
-        if self._dataType == DataTypes.String:
-            return str("none")
-        if self._dataType == DataTypes.Bool:
-            return bool()
-        if self._dataType == DataTypes.Array:
-            return []
-        if self._dataType == DataTypes.Any:
-            return None
-
     def pinName(self):
         return self.parent().name + '.' + self.name
 
     def currentData(self):
         if self._data is None:
-            return self.getDefaultDataValue()
+            return getDefaultDataValue(self._dataType)
         return self._data
 
     def pinConnected(self, other):
@@ -150,12 +136,12 @@ class PinBase(object):
             try:
                 self._data = float(data)
             except:
-                self._data = self.getDefaultDataValue()
+                self._data = getDefaultDataValue(self._dataType)
         if self._dataType == DataTypes.Int:
             try:
                 self._data = int(data)
             except:
-                self._data = self.getDefaultDataValue()
+                self._data = getDefaultDataValue(self._dataType)
         if self._dataType == DataTypes.String:
             self._data = str(data)
         if self._dataType == DataTypes.Array:
@@ -190,7 +176,8 @@ class NodeBase(object):
 
     @uid.setter
     def uid(self, value):
-        self.graph().nodes.pop(self._uid)
+        if self._uid in self.graph().nodes:
+            self.graph().nodes.pop(self._uid)
         self._uid = value
         self.graph().nodes[self._uid] = self
 
@@ -286,6 +273,18 @@ class Graph(object):
         self.nodesPendingKill = []
         self.edges = {}
         self.pins = {}
+        self.vars = {}
+
+    def getUniqVarName(self, name):
+        names = [v.name for v in self.vars.values()]
+        if name not in names:
+            return name
+        idx = 0
+        tmp = name
+        while tmp in names:
+            idx += 1
+            tmp = name + str(idx)
+        return name + str(idx)
 
     def getUniqNodeName(self, name):
         nodes_names = [n.name for n in self.nodes.values()]
@@ -379,7 +378,9 @@ class Graph(object):
             return False
         if node.uid in self.nodes:
             return False
+        # node.uid = uuid.UUID(jsonTemplate['uuid'])
         self.nodes[node.uid] = node
+        # print(node.uid, jsonTemplate['uuid'])
         node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
         node.postCreate(jsonTemplate)
         return True
@@ -453,14 +454,14 @@ class Graph(object):
         print self.name + '\n----------\n'
         for n in self.getNodes():
             print n.name
-            for inp in n.inputs:
+            for inp in n.inputs.values():
                 print '|---', inp.name, 'data - {0}'.format(inp.currentData()), \
                     'affects on', [i.name for i in inp.affects], \
                     'affected_by ', [p.name for p in inp.affected_by], \
                     'DIRTY ', inp.dirty
                 for e in inp.edge_list:
                     print '\t|---', e.__str__()
-            for out in n.outputs:
+            for out in n.outputs.values():
                 print '|---' + out.name, 'data - {0}'.format(out.currentData()), \
                     'affects on', [i.name for i in out.affects], \
                     'affected_by ', [p.name for p in out.affected_by], \

@@ -38,8 +38,11 @@ from os import listdir, path, startfile
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
 import Nodes
+from GetVarNode import GetVarNode
+from SetVarNode import SetVarNode
 import FunctionLibraries
 import Commands
+from Variable import VariableBase
 from time import ctime, clock
 import OptionsWindow_ui
 import rgba_color_picker_ui
@@ -295,24 +298,31 @@ class SceneClass(QGraphicsScene):
         if len(selectedNodes) == 0:
             self.parent().writeToConsole("select {0}nl none".format(FLAG_SYMBOL))
             return
-        # cmd = "select {0}nl ".format(FLAG_SYMBOL)
-        # for n in selectedNodes:
-        #     cmd += n
-        #     cmd += " "
-        # self.parent().writeToConsole(cmd[:-1])
 
     def dropEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
-            className = event.mimeData().text()
-            name = self.parent().getUniqNodeName(className)
+            tag, mimeText = event.mimeData().text().split('|')
+            name = self.parent().getUniqNodeName(mimeText)
             dropItem = self.itemAt(event.scenePos())
             if not dropItem:
                 nodeTemplate = Node.jsonTemplate()
-                nodeTemplate['type'] = className
+                nodeTemplate['type'] = mimeText
+                if tag == 'Var':
+                    modifiers = event.modifiers()
+                    if modifiers == QtCore.Qt.ControlModifier:
+                        nodeTemplate['type'] = 'GetVarNode'
+                        nodeTemplate['meta']['varuuid'] = mimeText
+                    if modifiers == QtCore.Qt.AltModifier:
+                        nodeTemplate['type'] = 'SetVarNode'
+                        nodeTemplate['meta']['varuuid'] = mimeText
+                    if modifiers == QtCore.Qt.NoModifier:
+                        print('Getter pr setter')
+                        return
                 nodeTemplate['name'] = name
+                nodeTemplate['uuid'] = mimeText
                 nodeTemplate['x'] = event.scenePos().x()
                 nodeTemplate['y'] = event.scenePos().y()
-                nodeTemplate['meta']['label'] = className
+                nodeTemplate['meta']['label'] = mimeText
                 instance = self.parent().createNode(nodeTemplate)
         else:
             super(SceneClass, self).dropEvent(event)
@@ -441,6 +451,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             return
         drag = QtGui.QDrag(self)
         mime_data = QtCore.QMimeData()
+        pressed_text = "Node|" + pressed_text
         mime_data.setText(pressed_text)
         drag.setMimeData(mime_data)
         drag.exec_()
@@ -894,11 +905,13 @@ class GraphWidget(QGraphicsView, Graph):
             return settings
 
     def getGraphSaveData(self):
-        data = {self.name: {'nodes': [], 'edges': []}}
+        data = {self.name: {'nodes': [], 'edges': [], 'variables': []}}
         # save nodes
         data[self.name]['nodes'] = [node.serialize() for node in self.getNodes()]
         # save edges
         data[self.name]['edges'] = [e.serialize() for e in self.edges.values()]
+        # variables
+        data[self.name]['variables'] = [v.serialize() for v in self.vars.values()]
         return data
 
     def save(self, save_as=False):
@@ -937,6 +950,8 @@ class GraphWidget(QGraphicsView, Graph):
         self._file_name_label.setPlainText('Untitled')
         for node in self.getNodes():
             node.kill()
+        self.vars.clear()
+        self.parent.variablesWidget.listWidget.clear()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -945,8 +960,13 @@ class GraphWidget(QGraphicsView, Graph):
             with open(fpath[0], 'r') as f:
                 data = json.load(f)
                 self.new_file()
+                # vars
+                for varJson in data[self.name]['variables']:
+                    VariableBase.deserialize(varJson, self)
+                # nodes
                 for nodeJson in data[self.name]['nodes']:
                     Node.deserialize(nodeJson, self)
+                # edges
                 for edgeJson in data[self.name]['edges']:
                     Edge.deserialize(edgeJson, self)
                 self._current_file_name = fpath[0]
@@ -1008,7 +1028,7 @@ class GraphWidget(QGraphicsView, Graph):
                 i.kill()
         if not len(selected) == 0:
             self.killSelectedNodes()
-        clearLayout(self.parent.PropertiesformLayout)
+        clearLayout(self.parent.formLayout)
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
@@ -1245,9 +1265,17 @@ class GraphWidget(QGraphicsView, Graph):
         selectedNodes = self.selectedNodes()
         if len(selectedNodes) != 0:
             # self.updatePropertyView(selectedNodes[0])
-            selectedNodes[0].onUpdatePropertyView(self.parent.formLayout)
+            self.tryFillPropertiesView(selectedNodes[0])
         else:
-            Node.clearLayout(self.parent.formLayout)
+            self._clearPropertiesView()
+
+    def tryFillPropertiesView(self, obj):
+        if hasattr(obj, 'onUpdatePropertyView'):
+            self._clearPropertiesView()
+            obj.onUpdatePropertyView(self.parent.formLayout)
+
+    def _clearPropertiesView(self):
+        clearLayout(self.parent.formLayout)
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()
@@ -1314,14 +1342,38 @@ class GraphWidget(QGraphicsView, Graph):
         if self.parent:
             self.parent.console.append(msg)
 
+    def getVarByName(self, name):
+        var = None
+        for v in self.vars.values():
+            if v.name == name:
+                var = v
+        return var
+
+    def createVariableSetter(self, jsonTemplate):
+        var = self.vars[uuid.UUID(jsonTemplate['meta']['varuuid'])]
+        instance = SetVarNode(var.name, self, var)
+        return instance
+
+    def createVariableGetter(self, jsonTemplate):
+        var = self.vars[uuid.UUID(jsonTemplate['meta']['varuuid'])]
+        instance = GetVarNode(var.name, self, var)
+        return instance
+
     def createNode(self, jsonTemplate):
         nodeInstance = getNodeInstance(Nodes, jsonTemplate['type'], jsonTemplate['name'], self)
 
         # if no such node in Nodes mod, check Function libs
         if nodeInstance is None:
-            foo = FunctionLibraries.findFunctionByName(className)
+            foo = FunctionLibraries.findFunctionByName(jsonTemplate['type'])
             if foo:
                 nodeInstance = Node.initializeFromFunction(foo, self)
+
+        # If clas still not found, check variables
+        if nodeInstance is None:
+            if jsonTemplate['type'] == 'GetVarNode':
+                nodeInstance = self.createVariableGetter(jsonTemplate)
+            if jsonTemplate['type'] == 'SetVarNode':
+                nodeInstance = self.createVariableSetter(jsonTemplate)
 
         if nodeInstance is None:
             raise ValueError("node class not found!")
@@ -1365,12 +1417,18 @@ class GraphWidget(QGraphicsView, Graph):
         if self.parent:
             for n in self.getNodes():
                 self.parent.console.append(n.name)
-                for i in n.inputs + n.outputs:
-                    self.parent.console.append('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}'.format(i.pinName(),
+                for i in n.inputs.values() + n.outputs.values():
+                    self.parent.console.append('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}, uid - {5}'.format(i.pinName(),
                                                i.currentData(),
                                                [p.pinName() for p in i.affects],
                                                [p.pinName() for p in i.affected_by],
-                                               i.dirty))
+                                               i.dirty,
+                                               str(i.uid)))
+            self.parent.console.append('Variables\n----------')
+            for k, v in self.vars.iteritems():
+                msg = '{0} - {1}, uid - {2}'.format(v.name, v.value, str(v.uid))
+                print(msg)
+                self.parent.console.append(msg)
 
     def zoomDelta(self, direction):
         current_factor = self.factor

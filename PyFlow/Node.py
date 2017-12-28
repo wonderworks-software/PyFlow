@@ -232,8 +232,8 @@ class Node(QGraphicsItem, NodeBase):
                 inp.setData(foo.__defaults__[index])
 
         # all inputs affects on all outputs
-        for i in inst.inputs:
-            for o in inst.outputs:
+        for i in inst.inputs.values():
+            for o in inst.outputs.values():
                 portAffects(i, o)
 
         # generate compute method from function
@@ -472,14 +472,14 @@ class Node(QGraphicsItem, NodeBase):
     def keywords():
         return []
 
-    @staticmethod
-    def clearLayout(layout):
-        while layout.count():
-            child = layout.takeAt(0)
-            if child.widget() is not None:
-                child.widget().deleteLater()
-            elif child.layout() is not None:
-                clearLayout(child.layout())
+    # @staticmethod
+    # def clearLayout(layout):
+    #     while layout.count():
+    #         child = layout.takeAt(0)
+    #         if child.widget() is not None:
+    #             child.widget().deleteLater()
+    #         elif child.layout() is not None:
+    #             clearLayout(child.layout())
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()
@@ -489,7 +489,7 @@ class Node(QGraphicsItem, NodeBase):
             Pin.setData(le.text())
 
     def onUpdatePropertyView(self, formLayout):
-        Node.clearLayout(formLayout)
+        clearLayout(formLayout)
 
         # name
         le_name = QLineEdit(self.getName())
@@ -498,6 +498,11 @@ class Node(QGraphicsItem, NodeBase):
             le_name.setReadOnly(False)
             le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
         formLayout.addRow("Name", le_name)
+
+        # type
+        leType = QLineEdit(self.__class__.__name__)
+        leType.setReadOnly(True)
+        formLayout.addRow("Type", leType)
 
         # pos
         le_pos = QLineEdit("{0} x {1}".format(self.pos().x(), self.pos().y()))
@@ -567,12 +572,13 @@ class Node(QGraphicsItem, NodeBase):
         for i in self.inputs.values() + self.outputs.values():
             i.disconnectAll()
 
-        self.graph().nodes.pop(self.uid)
-        self.graph().nodesPendingKill.append(self)
+        if self.uid in self.graph().nodes:
+            self.graph().nodes.pop(self.uid)
+            self.graph().nodesPendingKill.append(self)
 
-        self.graph().writeToConsole("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
-        self.scene().removeItem(self)
-        del(self)
+            self.graph().writeToConsole("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
+            self.scene().removeItem(self)
+            del(self)
 
     def setPosition(self, x, y):
         NodeBase.setPosition(self, x, y)
