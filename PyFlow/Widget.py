@@ -279,10 +279,6 @@ class SceneClass(QGraphicsScene):
         else:
             event.ignore()
 
-    # def clearSelection(self):
-    #     for n in self.selectedItems():
-    #         n.setSelected(False)
-
     def OnSelectionChanged(self):
         selectedNodesUids = self.parent().selectedNodes()
         cmdSelect = Commands.Select(selectedNodesUids, self.parent())
@@ -300,11 +296,11 @@ class SceneClass(QGraphicsScene):
                     modifiers = event.modifiers()
                     if modifiers == QtCore.Qt.ControlModifier:
                         nodeTemplate['type'] = 'GetVarNode'
-                        nodeTemplate['meta']['varuuid'] = mimeText
+                        nodeTemplate['meta']['var']['uuid'] = mimeText
                         nodeTemplate['uuid'] = mimeText
                     if modifiers == QtCore.Qt.AltModifier:
                         nodeTemplate['type'] = 'SetVarNode'
-                        nodeTemplate['meta']['varuuid'] = mimeText
+                        nodeTemplate['meta']['var']['uuid'] = mimeText
                         nodeTemplate['uuid'] = mimeText
                     if modifiers == QtCore.Qt.NoModifier:
                         print('Getter pr setter')
@@ -1009,7 +1005,7 @@ class GraphWidget(QGraphicsView, Graph):
         return [i for i in self.getNodes() if i.isSelected()]
 
     def killSelectedNodes(self):
-        cmdRemove = Commands.RemoveNodes(self.selectedNodes(), self)
+        cmdRemove = Commands.RemoveNodes([i.serialize() for i in self.selectedNodes()], self)
         self.undoStack.push(cmdRemove)
         clearLayout(self.parent.formLayout)
 
@@ -1272,21 +1268,17 @@ class GraphWidget(QGraphicsView, Graph):
             if not v['from'] == v['to']:
                 bMoved = True
 
-        # pass copy of dict!
+        # pass copy
         if bMoved:
             cmdMove = Commands.Move(dict(self.nodesMoveInfo), self)
             self.undoStack.push(cmdMove)
-            self.nodesMoveInfo.clear()
+        self.nodesMoveInfo.clear()
 
         selectedNodes = self.selectedNodes()
         if len(selectedNodes) != 0:
             self.tryFillPropertiesView(selectedNodes[0])
         else:
             self._clearPropertiesView()
-        # selectedNodesUids = [n.uid for n in self.getNodes() if n.isSelected()]
-        # if len(selectedNodesUids) > 0:
-            # cmdSelect = Commands.Select(selectedNodesUids, self)
-            # self.undoStack.push(cmdSelect)
 
     def tryFillPropertiesView(self, obj):
         '''
@@ -1373,12 +1365,12 @@ class GraphWidget(QGraphicsView, Graph):
         return var
 
     def createVariableSetter(self, jsonTemplate):
-        var = self.vars[uuid.UUID(jsonTemplate['meta']['varuuid'])]
+        var = self.vars[uuid.UUID(jsonTemplate['meta']['var']['uuid'])]
         instance = SetVarNode(var.name, self, var)
         return instance
 
     def createVariableGetter(self, jsonTemplate):
-        var = self.vars[uuid.UUID(jsonTemplate['meta']['varuuid'])]
+        var = self.vars[uuid.UUID(jsonTemplate['meta']['var']['uuid'])]
         instance = GetVarNode(var.name, self, var)
         return instance
 
@@ -1388,17 +1380,17 @@ class GraphWidget(QGraphicsView, Graph):
         # If not found, check variables
         if nodeInstance is None:
             if jsonTemplate['type'] == 'GetVarNode':
-                nodeInstance = self.graph.createVariableGetter(jsonTemplate)
+                nodeInstance = self.createVariableGetter(jsonTemplate)
             if jsonTemplate['type'] == 'SetVarNode':
-                nodeInstance = self.graph.createVariableSetter(jsonTemplate)
+                nodeInstance = self.createVariableSetter(jsonTemplate)
 
         # set pins data
-        for inspJson in jsonTemplate['inputs']:
-            pin = nodeInstance.getPinByName(inspJson['name'], PinSelectionGroup.Inputs)
+        for inpJson in jsonTemplate['inputs']:
+            pin = nodeInstance.getPinByName(inpJson['name'], PinSelectionGroup.Inputs)
             if pin:
-                pin.uid = uuid.UUID(inspJson['uuid'])
-                pin.setData(inspJson['value'])
-                if inspJson['bDirty']:
+                pin.uid = uuid.UUID(inpJson['uuid'])
+                pin.setData(inpJson['value'])
+                if inpJson['bDirty']:
                     pin.setDirty()
                 else:
                     pin.setClean()
@@ -1417,6 +1409,7 @@ class GraphWidget(QGraphicsView, Graph):
             raise ValueError("node class not found!")
 
         self.addNode(nodeInstance, jsonTemplate)
+        nodeInstance.postCreate(jsonTemplate)
         return nodeInstance
 
     def createNode(self, jsonTemplate):
@@ -1474,6 +1467,11 @@ class GraphWidget(QGraphicsView, Graph):
             self.parent.console.append('Variables\n----------')
             for k, v in self.vars.iteritems():
                 msg = '{0} - {1}, uid - {2}'.format(v.name, v.value, str(v.uid))
+                print(msg)
+                self.parent.console.append(msg)
+
+            for pinUid, pin in self.pins.iteritems():
+                msg = '{0} - {1}'.format(pinUid, pin.name, str(v.uid))
                 print(msg)
                 self.parent.console.append(msg)
 

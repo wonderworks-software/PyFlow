@@ -368,7 +368,7 @@ class Node(QGraphicsItem, NodeBase):
                     'computeCode': doc + "\nprint('Hello world')\n",
                     'inputs': [],
                     'outputs': [],
-                    'meta': {'label': 'Node'}
+                    'meta': {'label': 'Node', 'var': {}}
                     }
         return template
 
@@ -579,8 +579,9 @@ class Node(QGraphicsItem, NodeBase):
         return container
 
     def kill(self):
+        # disconnect edges
         for i in self.inputs.values() + self.outputs.values():
-            i.disconnectAll()
+            i.kill()
 
         if self.uid in self.graph().nodes:
             self.graph().nodes.pop(self.uid)

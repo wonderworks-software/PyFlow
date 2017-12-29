@@ -382,7 +382,7 @@ class Graph(object):
         self.nodes[node.uid] = node
         # print(node.uid, jsonTemplate['uuid'])
         node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
-        node.postCreate(jsonTemplate)
+        # node.postCreate(jsonTemplate)
         return True
 
     def removeNode(self, node):

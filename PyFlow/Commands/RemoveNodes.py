@@ -6,34 +6,25 @@ from uuid import UUID
 
 class RemoveNodes(QUndoCommand):
 
-    def __init__(self, selectedNodes, graph):
+    def __init__(self, selectedNodesData, graph):
         super(RemoveNodes, self).__init__()
         self.setText("Remove nodes")
         self.graph = graph
-        self.selectedNodes = selectedNodes
-        self.jsonData = []
+        self.selectedNodesData = selectedNodesData
         self.connectionInfo = []
-        for node in self.selectedNodes:
-            self.jsonData.append(node.serialize())
 
     def undo(self):
-        for nodeJson in self.jsonData:
+        for nodeJson in self.selectedNodesData:
             nodeInstance = self.graph._createNode(nodeJson)
-            # nodeInstance.postCreate(nodeJson)
             nodeInstance.uid = UUID(nodeJson['uuid'])
         # restore connection info
         for edgeJson in self.connectionInfo:
-            srcUid = edgeJson['sourceUUID']
-            dstUid = edgeJson['destinationUUID']
-            self.graph._addEdge(self.graph.pins[UUID(srcUid)], self.graph.pins[UUID(dstUid)])
+            src = self.graph.pins[UUID(edgeJson['sourceUUID'])]
+            dst = self.graph.pins[UUID(edgeJson['destinationUUID'])]
+            self.graph._addEdge(src, dst)
 
     def redo(self):
-
-        # del self.jsonData[:]
-        # for node in self.selectedNodes:
-        #     self.jsonData.append(node.serialize())
-
-        for nodeJson in self.jsonData:
+        for nodeJson in self.selectedNodesData:
             uid = UUID(nodeJson['uuid'])
             node = self.graph.nodes[uid]
 

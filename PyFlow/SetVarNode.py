@@ -6,6 +6,7 @@ from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore
 from Qt import QtGui
 from Pin import updatePins
+from Commands import RemoveNodes
 
 
 class SetVarNode(Node, NodeBase):
@@ -22,24 +23,20 @@ class SetVarNode(Node, NodeBase):
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
+    def kill(self):
+        self.var.nameChanged.disconnect()
+        self.var.killed.disconnect()
+        self.var.dataTypeChanged.disconnect()
+        Node.kill(self)
+
     def serialize(self):
         template = Node.serialize(self)
-        template['meta']['varuuid'] = str(self.var.uid)
+        template['meta']['var'] = self.var.serialize()
         return template
 
     def onVarDataTypeChanged(self, dataType):
-        color = getPortColorByType(dataType)
-        defVal = getDefaultDataValue(dataType)
-
-        # kill input
-        self.value.kill()
-
-        # kill output
-        self.valOut.kill()
-
-        # recreate
-        self.value = self.addInputPin('val', dataType, hideLabel=True)
-        self.outValue = self.addOutputPin('valOut', dataType, hideLabel=True)
+        cmd = RemoveNodes([self.serialize()], self.graph())
+        self.graph().undoStack.push(cmd)
 
     def postCreate(self, template):
         Node.postCreate(self, template)

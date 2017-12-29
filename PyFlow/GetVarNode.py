@@ -21,7 +21,7 @@ class GetVarNode(Node, NodeBase):
 
     def serialize(self):
         template = Node.serialize(self)
-        template['meta']['varuuid'] = str(self.var.uid)
+        template['meta']['var'] = self.var.serialize()
         return template
 
     def onVarDataTypeChanged(self, dataType):
