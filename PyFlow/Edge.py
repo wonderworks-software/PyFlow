@@ -50,7 +50,7 @@ class Edge(QGraphicsPathItem):
         if srcUUID in graph.pins and dstUUID in graph.pins:
             srcPin = graph.pins[srcUUID]
             dstPin = graph.pins[dstUUID]
-            graph.addEdge(srcPin, dstPin)
+            graph._addEdge(srcPin, dstPin)
 
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
@@ -70,8 +70,6 @@ class Edge(QGraphicsPathItem):
         super(Edge, self).hoverEnterEvent(event)
         self.pen.setWidthF(self.thikness + (self.thikness / 1.5))
         self.update()
-        if self.graph().isDebug():
-            print(self.__str__(), self.source().dataType, self.destination().dataType)
 
     def getEndPoints(self):
         p1 = self.source().boundingRect().center() + self.source().scenePos()

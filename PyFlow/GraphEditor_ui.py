@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
 #
-# Created: Wed Dec 27 16:01:48 2017
+# Created: Fri Dec 29 17:01:34 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -90,7 +90,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 215, 556))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 148, 385))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_5 = QtGui.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
@@ -131,6 +131,17 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.scrollArea)
         self.dockWidgetNodeView.setWidget(self.dockWidgetContents)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetNodeView)
+        self.dockWidgetUndoStack = QtGui.QDockWidget(MainWindow)
+        self.dockWidgetUndoStack.setEnabled(True)
+        self.dockWidgetUndoStack.setObjectName("dockWidgetUndoStack")
+        self.dockWidgetContents_3 = QtGui.QWidget()
+        self.dockWidgetContents_3.setObjectName("dockWidgetContents_3")
+        self.gridLayout_6 = QtGui.QGridLayout(self.dockWidgetContents_3)
+        self.gridLayout_6.setSpacing(1)
+        self.gridLayout_6.setContentsMargins(1, 1, 1, 1)
+        self.gridLayout_6.setObjectName("gridLayout_6")
+        self.dockWidgetUndoStack.setWidget(self.dockWidgetContents_3)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetUndoStack)
         self.actionDelete = QtGui.QAction(MainWindow)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(":/icons/resources/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -227,10 +238,13 @@ class Ui_MainWindow(object):
         self.actionNew_Command.setObjectName("actionNew_Command")
         self.actionFunction_Library = QtGui.QAction(MainWindow)
         self.actionFunction_Library.setObjectName("actionFunction_Library")
+        self.actionClear_history = QtGui.QAction(MainWindow)
+        self.actionClear_history.setObjectName("actionClear_history")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addAction(self.actionOptions)
         self.menuEdit.addAction(self.actionClear_scene)
         self.menuEdit.addSeparator()
+        self.menuEdit.addAction(self.actionClear_history)
         self.menuView.addAction(self.actionNode_box)
         self.menuView.addAction(self.actionConsole)
         self.menuView.addAction(self.actionPlot_graph)
@@ -275,6 +289,7 @@ class Ui_MainWindow(object):
         self.dockWidgetConsole.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Console", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetLeft.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Variables", None, QtGui.QApplication.UnicodeUTF8))
         self.dockWidgetNodeView.setWindowTitle(QtGui.QApplication.translate("MainWindow", "PropertyView", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidgetUndoStack.setWindowTitle(QtGui.QApplication.translate("MainWindow", "History", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDelete.setText(QtGui.QApplication.translate("MainWindow", "Delete", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOptions.setText(QtGui.QApplication.translate("MainWindow", "Options", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNode_box.setText(QtGui.QApplication.translate("MainWindow", "Node box", None, QtGui.QApplication.UnicodeUTF8))
@@ -299,5 +314,6 @@ class Ui_MainWindow(object):
         self.actionNew_Node.setText(QtGui.QApplication.translate("MainWindow", "New Node", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_Command.setText(QtGui.QApplication.translate("MainWindow", "New Command", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFunction_Library.setText(QtGui.QApplication.translate("MainWindow", "New Function Library", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionClear_history.setText(QtGui.QApplication.translate("MainWindow", "Clear history", None, QtGui.QApplication.UnicodeUTF8))
 
 import nodes_res_rc

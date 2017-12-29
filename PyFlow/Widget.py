@@ -82,9 +82,8 @@ def _implementPlugin(name, console_out_foo, pluginType):
 
 class {0}(QUndoCommand):
 
-    def __init__(self, graph):
-        super({0}, self).__init__(graph)
-        self.graph = graph
+    def __init__(self):
+        super({0}, self).__init__()
 
     def undo(self):
         pass
@@ -188,6 +187,21 @@ def parse(line):
     return out
 
 
+def getNodeInstance(module, class_name, nodeName, graph):
+    # Check in Nodes module first
+    mod = Nodes.getNode(class_name)
+    if mod is not None:
+        instance = mod(nodeName, graph)
+        return instance
+
+    # if not found - continue searching in FunctionLibraries
+    foo = FunctionLibraries.findFunctionByName(class_name)
+    if foo:
+        instance = Node.initializeFromFunction(foo, graph)
+        return instance
+    return None
+
+
 class AutoPanController(object):
     def __init__(self, amount=10.0):
         super(AutoPanController, self).__init__()
@@ -265,18 +279,14 @@ class SceneClass(QGraphicsScene):
         else:
             event.ignore()
 
-    def clearSelection(self):
-        for n in self.selectedItems():
-            n.setSelected(False)
+    # def clearSelection(self):
+    #     for n in self.selectedItems():
+    #         n.setSelected(False)
 
     def OnSelectionChanged(self):
-        selectedNodes = []
-        for n in self.parent().getNodes():
-            if n.isSelected():
-                selectedNodes.append(n.name)
-        if len(selectedNodes) == 0:
-            self.parent().writeToConsole("select {0}nl none".format(FLAG_SYMBOL))
-            return
+        selectedNodesUids = self.parent().selectedNodes()
+        cmdSelect = Commands.Select(selectedNodesUids, self.parent())
+        self.parent().undoStack.push(cmdSelect)
 
     def dropEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
@@ -291,17 +301,19 @@ class SceneClass(QGraphicsScene):
                     if modifiers == QtCore.Qt.ControlModifier:
                         nodeTemplate['type'] = 'GetVarNode'
                         nodeTemplate['meta']['varuuid'] = mimeText
+                        nodeTemplate['uuid'] = mimeText
                     if modifiers == QtCore.Qt.AltModifier:
                         nodeTemplate['type'] = 'SetVarNode'
                         nodeTemplate['meta']['varuuid'] = mimeText
+                        nodeTemplate['uuid'] = mimeText
                     if modifiers == QtCore.Qt.NoModifier:
                         print('Getter pr setter')
                         return
                 nodeTemplate['name'] = name
-                nodeTemplate['uuid'] = mimeText
                 nodeTemplate['x'] = event.scenePos().x()
                 nodeTemplate['y'] = event.scenePos().y()
                 nodeTemplate['meta']['label'] = mimeText
+                nodeTemplate['uuid'] = None
                 self.parent().createNode(nodeTemplate)
         else:
             super(SceneClass, self).dropEvent(event)
@@ -697,6 +709,8 @@ class GraphWidget(QGraphicsView, Graph):
         Graph.__init__(self, name)
         self.undoStack = QUndoStack(self)
         self.parent = parent
+        self.parent.actionClear_history.triggered.connect(self.undoStack.clear)
+        self.parent.listViewUndoStack.setStack(self.undoStack)
         self.menu = QMenu()
         self._lastClock = 0.0
         self.fps = 0
@@ -772,6 +786,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.node_box = NodesBox(None, self)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
+        self.nodesMoveInfo = {}
 
     def showNodeBox(self, dataType=None):
         self.node_box.show()
@@ -922,6 +937,7 @@ class GraphWidget(QGraphicsView, Graph):
             node.kill()
         self.vars.clear()
         self.parent.variablesWidget.listWidget.clear()
+        self.undoStack.clear()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -942,6 +958,7 @@ class GraphWidget(QGraphicsView, Graph):
                 self._current_file_name = fpath[0]
                 self._file_name_label.setPlainText(self._current_file_name)
                 self.frame()
+                self.undoStack.clear()
 
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
@@ -992,12 +1009,8 @@ class GraphWidget(QGraphicsView, Graph):
         return [i for i in self.getNodes() if i.isSelected()]
 
     def killSelectedNodes(self):
-        selected = self.selectedNodes()
-        for i in selected:
-            if i.isSelected() and i in self.getNodes() and i in self.scene().items():
-                i.kill()
-        if not len(selected) == 0:
-            self.killSelectedNodes()
+        cmdRemove = Commands.RemoveNodes(self.selectedNodes(), self)
+        self.undoStack.push(cmdRemove)
         clearLayout(self.parent.formLayout)
 
     def keyPressEvent(self, event):
@@ -1049,7 +1062,7 @@ class GraphWidget(QGraphicsView, Graph):
 
             for n in selectedNodes:
                 new_node = n.clone()
-                n.setSelected(False)
+                # n.setSelected(False)
                 new_node.setSelected(True)
                 new_node.setPos(new_node.scenePos() + diff)
 
@@ -1124,6 +1137,12 @@ class GraphWidget(QGraphicsView, Graph):
                 self.bPanMode = True
             self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
 
+        selectedNodes = self.selectedNodes()
+        if len(selectedNodes) > 0 and isinstance(self.pressed_item, Node):
+            self.nodesMoveInfo.clear()
+            for n in self.getNodes():
+                self.nodesMoveInfo[n.uid] = {'from': n.scenePos(), 'to': None}
+
     def pan(self, delta):
         delta *= self._scale * -1
         delta *= self._panSpeed
@@ -1197,7 +1216,16 @@ class GraphWidget(QGraphicsView, Graph):
         if self._is_rubber_band_selection:
             self._is_rubber_band_selection = False
             self.setDragMode(QGraphicsView.NoDrag)
-            [i.setSelected(True) for i in self.rubber_rect.collidingItems()]
+
+            # hack. disable signals and call selectionChanged once with last selected item
+            self.scene().blockSignals(True)
+            items = [i for i in self.rubber_rect.collidingItems() if isinstance(i, Node)]
+            for item in items[:-1]:
+                item.setSelected(True)
+            self.scene().blockSignals(False)
+            if len(items) > 0:
+                items[-1].setSelected(True)
+
             [i.setFlag(QGraphicsItem.ItemIsMovable) for i in self.getNodes() if i.isSelected()]
             self.removeItemByName(self.rubber_rect.name)
         if event.button() == QtCore.Qt.RightButton:
@@ -1236,14 +1264,35 @@ class GraphWidget(QGraphicsView, Graph):
             if p_itm is not r_itm:
                 self.addEdge(p_itm, r_itm)
 
+        for nodeUid in self.nodesMoveInfo:
+            self.nodesMoveInfo[nodeUid]['to'] = self.nodes[nodeUid].scenePos()
+        #  check if nodes moved
+        bMoved = False
+        for nodeUid, v in self.nodesMoveInfo.iteritems():
+            if not v['from'] == v['to']:
+                bMoved = True
+
+        # pass copy of dict!
+        if bMoved:
+            cmdMove = Commands.Move(dict(self.nodesMoveInfo), self)
+            self.undoStack.push(cmdMove)
+            self.nodesMoveInfo.clear()
+
         selectedNodes = self.selectedNodes()
         if len(selectedNodes) != 0:
-            # self.updatePropertyView(selectedNodes[0])
             self.tryFillPropertiesView(selectedNodes[0])
         else:
             self._clearPropertiesView()
+        # selectedNodesUids = [n.uid for n in self.getNodes() if n.isSelected()]
+        # if len(selectedNodesUids) > 0:
+            # cmdSelect = Commands.Select(selectedNodesUids, self)
+            # self.undoStack.push(cmdSelect)
 
     def tryFillPropertiesView(self, obj):
+        '''
+            toDO: obj should implement interface class
+            with onUpdatePropertyView method
+        '''
         if hasattr(obj, 'onUpdatePropertyView'):
             self._clearPropertiesView()
             obj.onUpdatePropertyView(self.parent.formLayout)
@@ -1333,6 +1382,43 @@ class GraphWidget(QGraphicsView, Graph):
         instance = GetVarNode(var.name, self, var)
         return instance
 
+    def _createNode(self, jsonTemplate):
+        nodeInstance = getNodeInstance(Nodes, jsonTemplate['type'], jsonTemplate['name'], self)
+
+        # If not found, check variables
+        if nodeInstance is None:
+            if jsonTemplate['type'] == 'GetVarNode':
+                nodeInstance = self.graph.createVariableGetter(jsonTemplate)
+            if jsonTemplate['type'] == 'SetVarNode':
+                nodeInstance = self.graph.createVariableSetter(jsonTemplate)
+
+        # set pins data
+        for inspJson in jsonTemplate['inputs']:
+            pin = nodeInstance.getPinByName(inspJson['name'], PinSelectionGroup.Inputs)
+            if pin:
+                pin.uid = uuid.UUID(inspJson['uuid'])
+                pin.setData(inspJson['value'])
+                if inspJson['bDirty']:
+                    pin.setDirty()
+                else:
+                    pin.setClean()
+
+        for outJson in jsonTemplate['outputs']:
+            pin = nodeInstance.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
+            if pin:
+                pin.uid = uuid.UUID(outJson['uuid'])
+                pin.setData(outJson['value'])
+                if outJson['bDirty']:
+                    pin.setDirty()
+                else:
+                    pin.setClean()
+
+        if nodeInstance is None:
+            raise ValueError("node class not found!")
+
+        self.addNode(nodeInstance, jsonTemplate)
+        return nodeInstance
+
     def createNode(self, jsonTemplate):
         cmd = Commands.CreateNode(self, jsonTemplate)
         self.undoStack.push(cmd)
@@ -1342,7 +1428,7 @@ class GraphWidget(QGraphicsView, Graph):
         Graph.addNode(self, node, jsonTemplate)
         self.scene().addItem(node)
 
-    def addEdge(self, src, dst):
+    def _addEdge(self, src, dst):
         result = Graph.addEdge(self, src, dst)
         if result:
             if src.type == PinTypes.Input:
@@ -1353,6 +1439,10 @@ class GraphWidget(QGraphicsView, Graph):
             self.scene().addItem(edge)
             self.edges[edge.uid] = edge
             return edge
+
+    def addEdge(self, src, dst):
+        cmd = Commands.ConnectPin(self, src, dst)
+        self.undoStack.push(cmd)
 
     def removeEdge(self, edge):
         Graph.removeEdge(self, edge)

@@ -34,9 +34,9 @@ class PinBase(object):
 
     @uid.setter
     def uid(self, value):
-        self.parent().graph().pins.pop(self._uid)
+        self.parent().graph().pins[value] = self.parent().graph().pins.pop(self._uid)
         self._uid = value
-        self.parent().graph().pins[self._uid] = self
+        # self.parent().graph().pins[self._uid] = self
 
     @property
     def dataType(self):
@@ -177,9 +177,9 @@ class NodeBase(object):
     @uid.setter
     def uid(self, value):
         if self._uid in self.graph().nodes:
-            self.graph().nodes.pop(self._uid)
-        self._uid = value
-        self.graph().nodes[self._uid] = self
+            self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
+            self._uid = value
+            # self.graph().nodes[self._uid] = self
 
     def setPosition(self, x, y):
         self.x = x
@@ -397,6 +397,13 @@ class Graph(object):
         debug = self.isDebug()
         if src.type == PinTypes.Input:
             src, dst = dst, src
+
+        if src.uid not in self.pins:
+            print('scr not in graph.pins')
+            return False
+        if dst.uid not in self.pins:
+            print('dst not in graph.pins')
+            return False
 
         if DataTypes.Any not in dst.supportedDataTypes:
             if src.dataType not in dst.supportedDataTypes:
