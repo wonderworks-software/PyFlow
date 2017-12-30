@@ -1165,10 +1165,14 @@ class GraphWidget(QGraphicsView, Graph):
 
         if self.pressed_item and isinstance(self.pressed_item, QGraphicsItem):
             self.autoPanController.start()
-            if isinstance(self.pressed_item, PinBase) and event.button() == QtCore.Qt.LeftButton:
-                self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsMovable, False)
-                self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsSelectable, False)
-                self._draw_real_time_line = True
+            if isinstance(self.pressed_item, PinBase):
+                if event.button() == QtCore.Qt.LeftButton:
+                    self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsMovable, False)
+                    self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    self._draw_real_time_line = True
+                if modifiers == QtCore.Qt.AltModifier:
+                    # self.pressed_item.disconnectAll()
+                    self.removeEdgeCmd(self.pressed_item.edge_list)
             else:
                 self.pressed_item.setSelected(True)
 
@@ -1484,6 +1488,10 @@ class GraphWidget(QGraphicsView, Graph):
             cmd = Commands.ConnectPin(self, src, dst)
             self.undoStack.push(cmd)
 
+    def removeEdgeCmd(self, edges):
+        cmdRemoveEdges = Commands.RemoveEdges(self, [e.serialize() for e in edges])
+        self.undoStack.push(cmdRemoveEdges)
+
     def removeEdge(self, edge):
         Graph.removeEdge(self, edge)
         edge.source().update()
@@ -1520,6 +1528,9 @@ class GraphWidget(QGraphicsView, Graph):
                 msg = '{0} - {1}'.format(pinUid, pin.name, str(v.uid))
                 print(msg)
                 self.parent.console.append(msg)
+            print('Edges\n-----------------')
+            for edgeUid, edge in self.edges.iteritems():
+                print(edgeUid, edge)
 
     def zoomDelta(self, direction):
         current_factor = self.factor

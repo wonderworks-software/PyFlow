@@ -82,12 +82,6 @@ class Pin(QGraphicsWidget, PinBase):
                 }
         return data
 
-    def mousePressEvent(self, event):
-        modifiers = QApplication.keyboardModifiers()
-        if self.hasConnections() and modifiers == QtCore.Qt.AltModifier:
-            self.disconnectAll()
-        super(Pin, self).mousePressEvent(event)
-
     def ungrabMouseEvent(self, event):
         super(Pin, self).ungrabMouseEvent(event)
 
@@ -125,8 +119,8 @@ class Pin(QGraphicsWidget, PinBase):
                 trash.append(e)
             if self.pinName() == e.connection["From"]:
                 trash.append(e)
-        for t in trash:
-            self.parent().graph().removeEdge(t)
+        for e in trash:
+            self.parent().graph().removeEdge(e)
         self.bEdgeTangentDirection = False
 
     def shape(self):
