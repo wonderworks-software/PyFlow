@@ -11,7 +11,7 @@ class ConnectPin(QUndoCommand):
         self.graph = graph
         self.srcUid = src.uid
         self.dstUid = dst.uid
-        self.setText('connect {0} to {1}'.format(src.pinName(), dst.pinName()))
+        self.setText('connect edges')
         self.edgeUid = None
 
     def undo(self):
@@ -20,7 +20,6 @@ class ConnectPin(QUndoCommand):
         if self.edgeUid:
             if self.edgeUid in self.graph.edges:
                 self.graph.removeEdge(self.graph.edges[self.edgeUid])
-                self.edgeUid = None
 
         self.graph.scene().blockSignals(False)
 
@@ -31,7 +30,11 @@ class ConnectPin(QUndoCommand):
         src = self.graph.pins[self.srcUid]
         dst = self.graph.pins[self.dstUid]
         edge = self.graph._addEdge(src, dst)
-        if edge:
+
+        if edge and self.edgeUid:
+            edge.uid = self.edgeUid
+
+        if edge and not self.edgeUid:
             self.edgeUid = edge.uid
 
         self.graph.scene().blockSignals(False)

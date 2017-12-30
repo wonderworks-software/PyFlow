@@ -7,7 +7,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Pin import updatePins
 from Commands import RemoveNodes
-from Commands import ChangeVarSetterDataType
+# from Commands import ChangeVarSetterDataType
 
 
 class SetVarNode(Node, NodeBase):

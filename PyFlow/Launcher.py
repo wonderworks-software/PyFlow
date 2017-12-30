@@ -1,3 +1,7 @@
+from os import path
+import sys
+from Qt import QtGui
+from Qt import QtCore
 from Widget import GraphWidget
 from Widget import PluginType, _implementPlugin
 from Widget import Direction
@@ -14,11 +18,7 @@ from Qt.QtWidgets import QAction
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QUndoView
-from Qt import QtGui
-from Qt import QtCore
 import GraphEditor_ui
-import sys
-from os import path
 from VariablesWidget import VariablesWidget
 
 
