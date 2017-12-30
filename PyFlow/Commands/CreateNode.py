@@ -18,17 +18,18 @@ class CreateNode(QUndoCommand):
 
     def undo(self):
         self.graph.scene().blockSignals(True)
-        # self.jsonTemplate = self.nodeInstance.serialize()
+
+        self.jsonTemplate.clear()
+        self.jsonTemplate = self.nodeInstance.serialize()
         if self.uid in self.graph.nodes:
             self.graph.nodes[self.uid].kill()
-        # self.graph.nodes[uuid.UUID(self.jsonTemplate['uuid'])].kill()
+
         self.graph.scene().blockSignals(False)
 
     def redo(self):
         self.graph.scene().blockSignals(True)
+
         self.nodeInstance = self.graph._createNode(self.jsonTemplate)
-        # self.uid = uuid.UUID(self.jsonTemplate['uuid'])
-        # self.nodeInstance.uid = uuid.UUID(self.jsonTemplate['uuid'])
         if self.uid:
             self.nodeInstance.uid = self.uid
         else:

@@ -587,7 +587,6 @@ class Node(QGraphicsItem, NodeBase):
             self.graph().nodes.pop(self.uid)
             self.graph().nodesPendingKill.append(self)
 
-            self.graph().writeToConsole("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
             self.scene().removeItem(self)
             del(self)
 

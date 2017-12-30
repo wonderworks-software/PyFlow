@@ -64,7 +64,7 @@ class Pin(QGraphicsWidget, PinBase):
         con = self._container
         self.disconnectAll()
         if hasattr(self.parent(), self.name):
-            exec(r"del self.parent().{}".format(self.name))
+            delattr(self.parent(), self.name)
         self.parent().graph().scene().removeItem(self._container)
         if self.type == PinTypes.Input:
             self.parent().inputsLayout.removeItem(con)
@@ -128,7 +128,6 @@ class Pin(QGraphicsWidget, PinBase):
         for t in trash:
             self.parent().graph().removeEdge(t)
         self.bEdgeTangentDirection = False
-        self.parent().graph().writeToConsole("disconnectAttr {1}an {0}".format(self.pinName(), FLAG_SYMBOL))
 
     def shape(self):
 
@@ -190,7 +189,7 @@ class Pin(QGraphicsWidget, PinBase):
 
     def writeToConsole(self, data):
         if self.parent().graph():
-            self.parent().graph().writeToConsole("setAttr {2}an {0} {2}v {1}".format(self.pinName(), self._data, FLAG_SYMBOL))
+            self.parent().graph().writeToConsole(str(data))
 
     def getLayout(self):
         if self.type == PinTypes.Input:
@@ -203,9 +202,6 @@ class Pin(QGraphicsWidget, PinBase):
         self.update()
         self.hovered = True
         self.setToolTip(str(self.currentData()))
-        if self.parent().graph().isDebug():
-            print('data -', self._data, 'dirtry -', self.dirty)
-            self.writeToConsole(self._data)
         event.accept()
 
     def hoverLeaveEvent(self, event):
@@ -227,5 +223,4 @@ class Pin(QGraphicsWidget, PinBase):
         PinBase.setData(self, data)
         if self.inputWidget:
             self.inputWidget.setData(data)
-        self.writeToConsole("setAttr {2}an {0} {2}v {1}".format(self.pinName(), data, FLAG_SYMBOL))
         updatePins(self)

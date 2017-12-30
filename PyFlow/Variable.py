@@ -169,6 +169,7 @@ class VariableBase(QWidget):
         if _bJustSpawned:
             return
         self.dataTypeChanged.emit(self.dataType)
+        self.graph.undoStack.clear()
 
     def mousePressEvent(self, event):
         QWidget.mousePressEvent(self, event)

@@ -29,10 +29,12 @@ class MakeArray(Node, NodeBase):
         for inpJson in jsonTemplate['inputs']:
             pin = self.addInputPin(inpJson['name'], inpJson['dataType'], None, inpJson['bLabelHidden'])
             pin.setData(inpJson['value'])
+            pin.uid = uuid.UUID(inpJson['uuid'])
 
     @staticmethod
     def category():
         return 'Array'
 
     def compute(self):
-        self.out_arr.setData(list([i.getData() for i in self.inputs]))
+        self.out_arr.setData(list([i.getData() for i in self.inputs.values()]))
+        push(self.out_arr)

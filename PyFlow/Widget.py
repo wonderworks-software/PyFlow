@@ -74,6 +74,7 @@ def clearLayout(layout):
 class PluginType:
     pNode = 0
     pCommand = 1
+    pFunctionLibrary = 2
 
 
 def _implementPlugin(name, console_out_foo, pluginType):
@@ -92,7 +93,7 @@ class {0}(QUndoCommand):
         pass
 """.format(name)
 
-    base_node_code = """from AbstractGraph import *
+    NodeTemplate = """from AbstractGraph import *
 from Settings import *
 from Node import Node
 
@@ -125,31 +126,75 @@ class {0}(Node, NodeBase):
             print(e)
 """.format(name)
 
+    LibraryTemplate = """from FunctionLibrary import *
+# import types stuff
+from AGraphCommon import *
+# import stuff you need
+# ...
+
+
+class {0}(FunctionLibraryBase):
+    '''doc string for {0}'''
+    def __init__(self):
+        super({0}, self).__init__()
+
+    @staticmethod
+    @annotated(returns=DataTypes.Int, meta={{'Category': 'CategoryName|SubCategory name', 'Keywords': ['+', 'append', 'sum']}})
+    def add(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0)):
+        '''Sum of two ints.'''
+        return A + B
+
+    @staticmethod
+    @annotated(returns=DataTypes.Float, meta={{'Category': 'CategoryName', 'Keywords': ['/']}})
+    def divide(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0), result=(DataTypes.Reference, DataTypes.Bool)):
+        '''Integer devision.'''
+        try:
+            d = A / B
+            result.setData(True)
+            return d
+        except:
+            result.setData(False)
+            return -1
+
+""".format(name)
+
     if pluginType == PluginType.pNode:
         file_path = "{0}/{1}.py".format(Nodes.__path__[0], name)
         existing_nodes = [n.split(".")[0] for n in listdir(Nodes.__path__[0]) if n.endswith(".py") and "__init__" not in n]
 
         if name in existing_nodes:
-            console_out_foo("[ERROR] Node {0} already exists".format(name))
+            console_out_foo("[ERROR] Node {0} already exists! Chose another name".format(name))
             return
 
         # write to file. delete older if needed
         with open(file_path, "wb") as f:
-            f.write(base_node_code)
+            f.write(NodeTemplate)
         console_out_foo("[INFO] Node {0} been created.\nIn order to appear in node box, restart application.".format(name))
         startfile(file_path)
 
-    else:
+    if pluginType == PluginType.pCommand:
         file_path = "{0}/{1}.py".format(Commands.__path__[0], name)
         existing_commands = [c.split(".")[0] for c in listdir(Commands.__path__[0]) if c.endswith(".py") and "__init__" not in c]
         if name in existing_commands:
-            console_out_foo("[ERROR] Command {0} already exists".format(name))
+            console_out_foo("[ERROR] Command {0} already exists! Chose another name".format(name))
             return
         # write to file. delete older if needed
         with open(file_path, "wb") as f:
             f.write(CommandTemplate)
         console_out_foo("[INFO] Command {0} been created.\n Restart application.".format(name))
         startfile(file_path)
+
+    if pluginType == PluginType.pFunctionLibrary:
+        filePath = "{0}/{1}.py".format(FunctionLibraries.__path__[0], name)
+        existingLibs = [c.split(".")[0] for c in listdir(FunctionLibraries.__path__[0]) if c.endswith(".py") and "__init__" not in c]
+        if name in existingLibs:
+            console_out_foo("[ERROR] Library {0} already exists! Chose another name".format(name))
+            return
+        # write to file. delete older if needed
+        with open(filePath, "wb") as f:
+            f.write(LibraryTemplate)
+        console_out_foo("[INFO] Command {0} been created.\n Restart application.".format(name))
+        startfile(filePath)
 
 
 def importByName(module, name):
@@ -280,9 +325,10 @@ class SceneClass(QGraphicsScene):
             event.ignore()
 
     def OnSelectionChanged(self):
-        selectedNodesUids = self.parent().selectedNodes()
-        cmdSelect = Commands.Select(selectedNodesUids, self.parent())
-        self.parent().undoStack.push(cmdSelect)
+        # selectedNodesUids = self.parent().selectedNodes()
+        # cmdSelect = Commands.Select(selectedNodesUids, self.parent())
+        # self.parent().undoStack.push(cmdSelect)
+        pass
 
     def dropEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
@@ -1005,7 +1051,7 @@ class GraphWidget(QGraphicsView, Graph):
         return [i for i in self.getNodes() if i.isSelected()]
 
     def killSelectedNodes(self):
-        cmdRemove = Commands.RemoveNodes([i.serialize() for i in self.selectedNodes()], self)
+        cmdRemove = Commands.RemoveNodes(self.selectedNodes(), self)
         self.undoStack.push(cmdRemove)
         clearLayout(self.parent.formLayout)
 
@@ -1134,7 +1180,7 @@ class GraphWidget(QGraphicsView, Graph):
             self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
 
         selectedNodes = self.selectedNodes()
-        if len(selectedNodes) > 0 and isinstance(self.pressed_item, Node):
+        if len(selectedNodes) > 0:
             self.nodesMoveInfo.clear()
             for n in self.getNodes():
                 self.nodesMoveInfo[n.uid] = {'from': n.scenePos(), 'to': None}
@@ -1434,8 +1480,9 @@ class GraphWidget(QGraphicsView, Graph):
             return edge
 
     def addEdge(self, src, dst):
-        cmd = Commands.ConnectPin(self, src, dst)
-        self.undoStack.push(cmd)
+        if self.canConnectPins(src, dst):
+            cmd = Commands.ConnectPin(self, src, dst)
+            self.undoStack.push(cmd)
 
     def removeEdge(self, edge):
         Graph.removeEdge(self, edge)
@@ -1446,8 +1493,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.scene().removeItem(edge)
 
     def writeToConsole(self, data):
-        if self.isDebug():
-            self.parent.console.append(str(data))
+        self.parent.console.append(str(data))
 
     def plot(self):
         for k, v in self.nodes.iteritems():

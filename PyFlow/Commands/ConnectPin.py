@@ -25,6 +25,7 @@ class ConnectPin(QUndoCommand):
         self.graph.scene().blockSignals(False)
 
     def redo(self):
+
         self.graph.scene().blockSignals(True)
 
         src = self.graph.pins[self.srcUid]

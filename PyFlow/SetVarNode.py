@@ -7,6 +7,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Pin import updatePins
 from Commands import RemoveNodes
+from Commands import ChangeVarSetterDataType
 
 
 class SetVarNode(Node, NodeBase):
@@ -23,20 +24,16 @@ class SetVarNode(Node, NodeBase):
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
-    def kill(self):
-        self.var.nameChanged.disconnect()
-        self.var.killed.disconnect()
-        self.var.dataTypeChanged.disconnect()
-        Node.kill(self)
-
     def serialize(self):
         template = Node.serialize(self)
         template['meta']['var'] = self.var.serialize()
         return template
 
     def onVarDataTypeChanged(self, dataType):
-        cmd = RemoveNodes([self.serialize()], self.graph())
+        # cmd = ChangeVarSetterDataType(self.value.dataType, dataType, self.var, self.serialize())
+        cmd = RemoveNodes([self], self.graph())
         self.graph().undoStack.push(cmd)
+        # self.kill()
 
     def postCreate(self, template):
         Node.postCreate(self, template)
@@ -57,3 +54,4 @@ class SetVarNode(Node, NodeBase):
     def compute(self):
         val = self.value.getData()
         self.var.value = val
+        self.outExec.call()

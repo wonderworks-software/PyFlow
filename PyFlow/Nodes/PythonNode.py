@@ -9,6 +9,7 @@ from CodeEditor import CodeEditor
 import weakref
 import uuid
 from types import MethodType
+from collections import OrderedDict
 
 
 class PythonNode(Node, NodeBase):

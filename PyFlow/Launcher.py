@@ -44,7 +44,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionMultithreaded.triggered.connect(self.toggle_multithreaded)
         self.actionDebug.triggered.connect(self.toggle_debug)
         self.actionScreenshot.triggered.connect(self.G.screenShot)
-        self.actionClear_scene.triggered.connect(self.on_clear_scene)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
         self.actionOptions.triggered.connect(self.G.options)
         self.actionSave.triggered.connect(self.G.save)
@@ -56,6 +55,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionAlignRight.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Right))
         self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
         self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
+        self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
 
         self.console.setLineWrapMode(QTextEdit.NoWrap)
         self.console.setReadOnly(True)
@@ -141,10 +141,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             self.dockWidgetConsole.hide()
         else:
             self.dockWidgetConsole.show()
-
-    def on_clear_scene(self):
-        for n in self.G.getNodes():
-            n.kill()
 
     def toggle_debug(self):
         self.G.setDebug(not self.G.isDebug())

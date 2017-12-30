@@ -6,15 +6,18 @@ from uuid import UUID
 
 class RemoveNodes(QUndoCommand):
 
-    def __init__(self, selectedNodesData, graph):
+    def __init__(self, selectedNodes, graph):
         super(RemoveNodes, self).__init__()
         self.setText("Remove nodes")
         self.graph = graph
-        self.selectedNodesData = selectedNodesData
+        self.selectedNodes = selectedNodes
         self.connectionInfo = []
+        self.jsonData = []
+        for node in self.selectedNodes:
+            self.jsonData.append(node.serialize())
 
     def undo(self):
-        for nodeJson in self.selectedNodesData:
+        for nodeJson in self.jsonData:
             nodeInstance = self.graph._createNode(nodeJson)
             nodeInstance.uid = UUID(nodeJson['uuid'])
         # restore connection info
@@ -24,8 +27,8 @@ class RemoveNodes(QUndoCommand):
             self.graph._addEdge(src, dst)
 
     def redo(self):
-        for nodeJson in self.selectedNodesData:
-            uid = UUID(nodeJson['uuid'])
+        for node in self.selectedNodes:
+            uid = node.uid
             node = self.graph.nodes[uid]
 
             # store connecton info

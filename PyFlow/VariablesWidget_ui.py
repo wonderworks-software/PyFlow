@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/VariablesWidget_ui.ui'
 #
-# Created: Fri Dec 29 17:01:34 2017
+# Created: Sat Dec 30 14:38:33 2017
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -30,7 +30,6 @@ class Ui_Form(object):
         self.horizontalLayout.addWidget(self.pbNewVar)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.listWidget = QtGui.QListWidget(Form)
-        self.listWidget.setTabKeyNavigation(False)
         self.listWidget.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
         self.listWidget.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.listWidget.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)

@@ -68,9 +68,6 @@
    </item>
    <item>
     <widget class="QListWidget" name="listWidget">
-     <property name="tabKeyNavigation">
-      <bool>false</bool>
-     </property>
      <property name="dragDropMode">
       <enum>QAbstractItemView::InternalMove</enum>
      </property>

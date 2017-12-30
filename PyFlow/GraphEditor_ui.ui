@@ -87,7 +87,7 @@
      <x>0</x>
      <y>0</y>
      <width>1287</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -96,7 +96,6 @@
     </property>
     <addaction name="actionDelete"/>
     <addaction name="actionOptions"/>
-    <addaction name="actionClear_scene"/>
     <addaction name="separator"/>
     <addaction name="actionClear_history"/>
    </widget>
@@ -214,7 +213,7 @@
    <property name="minimumSize">
     <size>
      <width>150</width>
-     <height>93</height>
+     <height>113</height>
     </size>
    </property>
    <property name="floating">
@@ -254,8 +253,14 @@
           <x>0</x>
           <y>0</y>
           <width>148</width>
-          <height>385</height>
+          <height>298</height>
          </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
          <property name="leftMargin">
@@ -325,7 +330,7 @@
           <x>0</x>
           <y>0</y>
           <width>198</width>
-          <height>556</height>
+          <height>531</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
@@ -355,6 +360,10 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="windowIcon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/history.png</normaloff>:/icons/resources/history.png</iconset>
+   </property>
    <property name="windowTitle">
     <string>History</string>
    </property>
@@ -362,6 +371,12 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <layout class="QGridLayout" name="gridLayout_6">
      <property name="leftMargin">
       <number>1</number>
@@ -451,15 +466,6 @@
    </property>
    <property name="text">
     <string>Plot graph</string>
-   </property>
-  </action>
-  <action name="actionClear_scene">
-   <property name="icon">
-    <iconset resource="nodes_res.qrc">
-     <normaloff>:/icons/resources/clear_icon.png</normaloff>:/icons/resources/clear_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Clear scene</string>
    </property>
   </action>
   <action name="actionMultithreaded">
@@ -553,21 +559,46 @@
    </property>
   </action>
   <action name="actionNew_Node">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/brick.png</normaloff>:/icons/resources/brick.png</iconset>
+   </property>
    <property name="text">
-    <string>New Node</string>
+    <string>New node</string>
+   </property>
+   <property name="toolTip">
+    <string>New node</string>
    </property>
   </action>
   <action name="actionNew_Command">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/script.png</normaloff>:/icons/resources/script.png</iconset>
+   </property>
    <property name="text">
-    <string>New Command</string>
+    <string>New editor command</string>
+   </property>
+   <property name="toolTip">
+    <string>New editor command</string>
    </property>
   </action>
   <action name="actionFunction_Library">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/function.png</normaloff>:/icons/resources/function.png</iconset>
+   </property>
    <property name="text">
-    <string>New Function Library</string>
+    <string>New function library</string>
+   </property>
+   <property name="toolTip">
+    <string>New function library</string>
    </property>
   </action>
   <action name="actionClear_history">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/clear_icon.png</normaloff>:/icons/resources/clear_icon.png</iconset>
+   </property>
    <property name="text">
     <string>Clear history</string>
    </property>

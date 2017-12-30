@@ -44,6 +44,17 @@ class Call(Node, NodeBase):
         con2.layout().addItem(prx_cb)
         con2.layout().addItem(prx_btn)
 
+    def serialize(self):
+        template = Node.serialize(self)
+        template['meta']['deltaTime'] = self.spin_box.value()
+        return template
+
+    def postCreate(self, jsonTemplate):
+        Node.postCreate(self, jsonTemplate)
+        if 'deltaTime' in jsonTemplate['meta']:
+            # deltaTime key will be created when serialize called once in runtime
+            self.spin_box.setValue(jsonTemplate['meta']['deltaTime'])
+
     def stop(self):
         self.process = False
         self.counter = 0.0
