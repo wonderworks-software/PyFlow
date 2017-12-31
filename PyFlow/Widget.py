@@ -338,24 +338,37 @@ class SceneClass(QGraphicsScene):
             if not dropItem:
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = mimeText
-                if tag == 'Var':
-                    modifiers = event.modifiers()
-                    if modifiers == QtCore.Qt.ControlModifier:
-                        nodeTemplate['type'] = 'GetVarNode'
-                        nodeTemplate['meta']['var']['uuid'] = mimeText
-                        nodeTemplate['uuid'] = mimeText
-                    if modifiers == QtCore.Qt.AltModifier:
-                        nodeTemplate['type'] = 'SetVarNode'
-                        nodeTemplate['meta']['var']['uuid'] = mimeText
-                        nodeTemplate['uuid'] = mimeText
-                    if modifiers == QtCore.Qt.NoModifier:
-                        print('Getter pr setter')
-                        return
                 nodeTemplate['name'] = name
                 nodeTemplate['x'] = event.scenePos().x()
                 nodeTemplate['y'] = event.scenePos().y()
                 nodeTemplate['meta']['label'] = mimeText
                 nodeTemplate['uuid'] = None
+
+                if tag == 'Var':
+                    modifiers = event.modifiers()
+                    if modifiers == QtCore.Qt.NoModifier:
+                        nodeTemplate['uuid'] = mimeText
+                        nodeTemplate['meta']['var']['uuid'] = mimeText
+                        m = QMenu()
+                        getterAction = m.addAction('Get')
+                        nodeTemplate['type'] = 'GetVarNode'
+                        getterAction.triggered.connect(lambda: self.parent().createNode(nodeTemplate))
+
+                        setNodeTemplate = dict(nodeTemplate)
+                        setterAction = m.addAction('Set')
+                        setNodeTemplate['type'] = 'SetVarNode'
+                        setterAction.triggered.connect(lambda: self.parent().createNode(setNodeTemplate))
+                        m.exec_(QtGui.QCursor.pos(), None)
+                        return
+                    if modifiers == QtCore.Qt.ControlModifier:
+                        nodeTemplate['type'] = 'GetVarNode'
+                        nodeTemplate['uuid'] = mimeText
+                        nodeTemplate['meta']['var']['uuid'] = mimeText
+                    if modifiers == QtCore.Qt.AltModifier:
+                        nodeTemplate['type'] = 'SetVarNode'
+                        nodeTemplate['uuid'] = mimeText
+                        nodeTemplate['meta']['var']['uuid'] = mimeText
+
                 self.parent().createNode(nodeTemplate)
         else:
             super(SceneClass, self).dropEvent(event)

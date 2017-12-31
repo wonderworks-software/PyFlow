@@ -182,8 +182,6 @@ class VariableBase(QWidget):
         self.nameChanged.emit(str(name))
 
     def onUpdatePropertyView(self, formLayout):
-        clearLayout(formLayout)
-
         # name
         le_name = QLineEdit(self.name)
         le_name.returnPressed.connect(lambda: self.setName(le_name.text()))

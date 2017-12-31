@@ -494,8 +494,6 @@ class Node(QGraphicsItem, NodeBase):
             Pin.setData(le.text())
 
     def onUpdatePropertyView(self, formLayout):
-        clearLayout(formLayout)
-
         # name
         le_name = QLineEdit(self.getName())
         le_name.setReadOnly(True)

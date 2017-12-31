@@ -19,7 +19,7 @@ class SetVarNode(Node, NodeBase):
         self.outExec = self.addOutputPin('out0', DataTypes.Exec, hideLabel=True)
         self.value = self.addInputPin('val', self.var.dataType, hideLabel=True)
         self.outValue = self.addOutputPin('valOut', self.var.dataType, hideLabel=True)
-        # self.var.valueChanged.connect(self.onVarValueChanged)
+        self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
@@ -29,11 +29,12 @@ class SetVarNode(Node, NodeBase):
         template['meta']['var'] = self.var.serialize()
         return template
 
+    def onUpdatePropertyView(self, formLayout):
+        self.var.onUpdatePropertyView(formLayout)
+
     def onVarDataTypeChanged(self, dataType):
-        # cmd = ChangeVarSetterDataType(self.value.dataType, dataType, self.var, self.serialize())
         cmd = RemoveNodes([self], self.graph())
         self.graph().undoStack.push(cmd)
-        # self.kill()
 
     def postCreate(self, template):
         Node.postCreate(self, template)
@@ -44,6 +45,7 @@ class SetVarNode(Node, NodeBase):
         self.name = newName
 
     def onVarValueChanged(self):
+        self.value.setData(self.var.value)
         push(self.value)
         updatePins(self.value)
 
