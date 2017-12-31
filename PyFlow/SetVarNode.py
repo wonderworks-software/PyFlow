@@ -45,7 +45,6 @@ class SetVarNode(Node, NodeBase):
         self.name = newName
 
     def onVarValueChanged(self):
-        self.value.setData(self.var.value)
         push(self.value)
         updatePins(self.value)
 
