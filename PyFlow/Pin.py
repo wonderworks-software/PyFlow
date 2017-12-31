@@ -17,6 +17,11 @@ def updatePins(start_from):
 
 
 class Pin(QGraphicsWidget, PinBase):
+
+    OnDataChanged = QtCore.Signal(object)
+    OnPinConnected = QtCore.Signal()
+    OnPinDisconnected = QtCore.Signal()
+
     def __init__(self, name, parent, dataType, width=8.0, height=8.0, color=Colors.Connectors):
         PinBase.__init__(self, name, parent, dataType)
         QGraphicsWidget.__init__(self)
@@ -55,9 +60,12 @@ class Pin(QGraphicsWidget, PinBase):
         else:
             self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
-        self.inputWidget = None
         self.portImage = QtGui.QImage(':/icons/resources/array.png')
         self.bLabelHidden = False
+
+    def setData(self, data):
+        PinBase.setData(self, data)
+        self.OnDataChanged.emit(data)
 
     def kill(self):
         PinBase.kill(self)
@@ -205,16 +213,12 @@ class Pin(QGraphicsWidget, PinBase):
 
     def pinConnected(self, other):
         PinBase.pinConnected(self, other)
-        if self.inputWidget:
-            self.inputWidget.hide()
+        self.OnPinConnected.emit()
 
     def pinDisconnected(self, other):
         PinBase.pinDisconnected(self, other)
-        if not self._connected and self.inputWidget:
-            self.inputWidget.show()
+        self.OnPinDisconnected.emit()
 
     def setData(self, data):
         PinBase.setData(self, data)
-        if self.inputWidget:
-            self.inputWidget.setData(data)
         updatePins(self)

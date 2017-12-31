@@ -477,15 +477,6 @@ class Node(QGraphicsItem, NodeBase):
     def keywords():
         return []
 
-    # @staticmethod
-    # def clearLayout(layout):
-    #     while layout.count():
-    #         child = layout.takeAt(0)
-    #         if child.widget() is not None:
-    #             child.widget().deleteLater()
-    #         elif child.layout() is not None:
-    #             clearLayout(child.layout())
-
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()
         if isinstance(le, QLineEdit):
@@ -526,12 +517,12 @@ class Node(QGraphicsItem, NodeBase):
             for inp in self.inputs.values():
                 if inp.dataType == DataTypes.Exec:
                     continue
-                le = QLineEdit(str(inp.currentData()))
-                le.setObjectName(inp.pinName())
-                le.editingFinished.connect(self.propertyEditingFinished)
-                formLayout.addRow(inp.name, le)
-                if inp.hasConnections():
-                    le.setReadOnly(True)
+                w = getPinWidget(inp)
+                if w:
+                    w.setObjectName(inp.pinName())
+                    formLayout.addRow(inp.name, w)
+                    if inp.hasConnections():
+                        w.setEnabled(False)
 
         # outputs
         if len([i for i in self.outputs.values() if not i.dataType == DataTypes.Exec]) != 0:
@@ -542,12 +533,12 @@ class Node(QGraphicsItem, NodeBase):
             for out in self.outputs.values():
                 if out.dataType == DataTypes.Exec:
                     continue
-                le = QLineEdit(str(out.currentData()))
-                le.setObjectName(out.pinName())
-                le.textChanged.connect(self.propertyEditingFinished)
-                formLayout.addRow(out.name, le)
-                if out.hasConnections():
-                    le.setReadOnly(True)
+                w = getPinWidget(out)
+                if w:
+                    w.setObjectName(out.pinName())
+                    formLayout.addRow(out.name, w)
+                    if out.hasConnections():
+                        w.setEnabled(False)
 
         doc_lb = QLabel()
         doc_lb.setStyleSheet("background-color: black;")
@@ -657,9 +648,14 @@ class Node(QGraphicsItem, NodeBase):
             container.layout().addItem(connector_name)
 
             # create input widget
+            bCreateInputWidget = False  # temporarily disable inputWidgets on nodes, use properties view only
+
             if bCreateInputWidget:
                 w = getPinWidget(p)
                 if w:
+                    p.OnPinConnected.connect(w.hide)
+                    p.OnPinDisconnected.connect(w.show)
+                    # p.OnDataChanged.connect(w.setData)
                     container.layout().addItem(w.asProxy())
 
             self.inputs[p.uid] = p
