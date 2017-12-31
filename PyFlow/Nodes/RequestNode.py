@@ -77,7 +77,7 @@ class RequestNode(Node, NodeBase):
         # randint for example
         # if so push forward and recompute
 
-        behind_dirty_ports = [p for p in find_ports_behind(self.input) if p.dirty is True]
+        behind_dirty_ports = [p for p in findPinsBehind(self.input) if p.dirty is True]
         shouldRecalc = (not len(behind_dirty_ports) == 0)
         if shouldRecalc:
             # push from dirty ports

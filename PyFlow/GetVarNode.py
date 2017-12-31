@@ -6,6 +6,7 @@ from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore
 from Qt import QtGui
 from Pin import updatePins
+from Commands import RemoveNodes
 
 
 class GetVarNode(Node, NodeBase):
@@ -21,15 +22,15 @@ class GetVarNode(Node, NodeBase):
 
     def serialize(self):
         template = Node.serialize(self)
-        template['meta']['varuuid'] = str(self.var.uid)
+        template['meta']['var'] = self.var.serialize()
         return template
 
+    def onUpdatePropertyView(self, formLayout):
+        self.var.onUpdatePropertyView(formLayout)
+
     def onVarDataTypeChanged(self, dataType):
-        self.out.disconnectAll()
-        self.out.dataType = dataType
-        self.out.color = getPortColorByType(dataType)
-        self.out.update()
-        self.out.setData(getDefaultDataValue(dataType))
+        cmd = RemoveNodes([self], self.graph())
+        self.graph().undoStack.push(cmd)
 
     def postCreate(self, template):
         Node.postCreate(self, template)
@@ -40,6 +41,7 @@ class GetVarNode(Node, NodeBase):
         self.name = newName
 
     def onVarValueChanged(self):
+        self.out.setData(self.var.value)
         push(self.out)
         updatePins(self.out)
 

@@ -333,6 +333,8 @@ class MathLib(FunctionLibraryBase):
     def randint(start=(DataTypes.Int, 0), end=(DataTypes.Int, 10), Result=(DataTypes.Reference, DataTypes.Int)):
         '''Return a random integer N such that a <= N <= b.'''
         Result.setData(random.randint(start, end))
+        # this node returns new data every frame
+        # makew shure to push dirty flag forward
         push(Result)
 
     @staticmethod

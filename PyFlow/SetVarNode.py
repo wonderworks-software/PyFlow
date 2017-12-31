@@ -6,6 +6,8 @@ from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore
 from Qt import QtGui
 from Pin import updatePins
+from Commands import RemoveNodes
+# from Commands import ChangeVarSetterDataType
 
 
 class SetVarNode(Node, NodeBase):
@@ -17,29 +19,22 @@ class SetVarNode(Node, NodeBase):
         self.outExec = self.addOutputPin('out0', DataTypes.Exec, hideLabel=True)
         self.value = self.addInputPin('val', self.var.dataType, hideLabel=True)
         self.outValue = self.addOutputPin('valOut', self.var.dataType, hideLabel=True)
-        # self.var.valueChanged.connect(self.onVarValueChanged)
+        self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
     def serialize(self):
         template = Node.serialize(self)
-        template['meta']['varuuid'] = str(self.var.uid)
+        template['meta']['var'] = self.var.serialize()
         return template
 
+    def onUpdatePropertyView(self, formLayout):
+        self.var.onUpdatePropertyView(formLayout)
+
     def onVarDataTypeChanged(self, dataType):
-        color = getPortColorByType(dataType)
-        defVal = getDefaultDataValue(dataType)
-
-        # kill input
-        self.value.kill()
-
-        # kill output
-        self.valOut.kill()
-
-        # recreate
-        self.value = self.addInputPin('val', dataType, hideLabel=True)
-        self.outValue = self.addOutputPin('valOut', dataType, hideLabel=True)
+        cmd = RemoveNodes([self], self.graph())
+        self.graph().undoStack.push(cmd)
 
     def postCreate(self, template):
         Node.postCreate(self, template)
@@ -50,6 +45,7 @@ class SetVarNode(Node, NodeBase):
         self.name = newName
 
     def onVarValueChanged(self):
+        self.value.setData(self.var.value)
         push(self.value)
         updatePins(self.value)
 
@@ -60,3 +56,4 @@ class SetVarNode(Node, NodeBase):
     def compute(self):
         val = self.value.getData()
         self.var.value = val
+        self.outExec.call()

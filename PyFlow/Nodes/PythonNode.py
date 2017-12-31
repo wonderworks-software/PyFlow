@@ -9,6 +9,7 @@ from CodeEditor import CodeEditor
 import weakref
 import uuid
 from types import MethodType
+from collections import OrderedDict
 
 
 class PythonNode(Node, NodeBase):
@@ -55,11 +56,14 @@ class PythonNode(Node, NodeBase):
             pin = None
             if inpJson['dataType'] == DataTypes.Exec:
                 pin = self.addInputPin(inpJson['name'], inpJson['dataType'], self.compute, inpJson['bLabelHidden'])
+                pin.uid = uuid.UUID(inpJson['uuid'])
             else:
                 pin = self.addInputPin(inpJson['name'], inpJson['dataType'], None, inpJson['bLabelHidden'])
+                pin.uid = uuid.UUID(inpJson['uuid'])
             pin.setData(inpJson['value'])
         for outJson in jsonTemplate['outputs']:
             pin = self.addOutputPin(outJson['name'], outJson['dataType'], None, outJson['bLabelHidden'])
+            pin.uid = uuid.UUID(outJson['uuid'])
             pin.setData(outJson['value'])
 
         # restore node label

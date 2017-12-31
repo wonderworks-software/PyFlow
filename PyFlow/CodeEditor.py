@@ -190,10 +190,10 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         '''
         populate ui from node
         '''
-        for i in self.node.inputs:
+        for i in self.node.inputs.values():
             pw = PinWidget.construct(i.name, i.bLabelHidden, i.dataType, self)
             self.appendInput(pw)
-        for o in self.node.outputs:
+        for o in self.node.outputs.values():
             pw = PinWidget.construct(o.name, o.bLabelHidden, o.dataType, self)
             self.appendOutput(pw)
         self.leLabel.setText(self.node.label().toPlainText())

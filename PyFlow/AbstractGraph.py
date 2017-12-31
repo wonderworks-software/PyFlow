@@ -4,6 +4,7 @@ import weakref
 import uuid
 import inspect
 import keyword
+from collections import OrderedDict
 
 
 class PinBase(object):
@@ -34,9 +35,9 @@ class PinBase(object):
 
     @uid.setter
     def uid(self, value):
-        self.parent().graph().pins.pop(self._uid)
+        self.parent().graph().pins[value] = self.parent().graph().pins.pop(self._uid)
         self._uid = value
-        self.parent().graph().pins[self._uid] = self
+        # self.parent().graph().pins[self._uid] = self
 
     @property
     def dataType(self):
@@ -165,8 +166,8 @@ class NodeBase(object):
         self.graph = weakref.ref(graph)
         self.name = name
         self.object_type = ObjectTypes.Node
-        self.inputs = {}
-        self.outputs = {}
+        self.inputs = OrderedDict()
+        self.outputs = OrderedDict()
         self.x = 0.0
         self.y = 0.0
 
@@ -177,9 +178,9 @@ class NodeBase(object):
     @uid.setter
     def uid(self, value):
         if self._uid in self.graph().nodes:
-            self.graph().nodes.pop(self._uid)
-        self._uid = value
-        self.graph().nodes[self._uid] = self
+            self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
+            self._uid = value
+            # self.graph().nodes[self._uid] = self
 
     def setPosition(self, x, y):
         self.x = x
@@ -382,7 +383,7 @@ class Graph(object):
         self.nodes[node.uid] = node
         # print(node.uid, jsonTemplate['uuid'])
         node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
-        node.postCreate(jsonTemplate)
+        # node.postCreate(jsonTemplate)
         return True
 
     def removeNode(self, node):
@@ -393,19 +394,26 @@ class Graph(object):
     def count(self):
         return self.nodes.__len__()
 
-    def addEdge(self, src, dst):
+    def canConnectPins(self, src, dst):
         debug = self.isDebug()
         if src.type == PinTypes.Input:
             src, dst = dst, src
 
+        if src.uid not in self.pins:
+            print('scr not in graph.pins')
+            return False
+        if dst.uid not in self.pins:
+            print('dst not in graph.pins')
+            return False
+
         if DataTypes.Any not in dst.supportedDataTypes:
             if src.dataType not in dst.supportedDataTypes:
-                print("data types error", src.dataType, dst.dataType)
+                print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
                 return False
         else:
             if src.dataType == DataTypes.Exec:
                 if dst.dataType not in [DataTypes.Exec]:
-                    print("data types error", src.dataType, dst.dataType)
+                    print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
                     return False
 
         if src in dst.affected_by:
@@ -424,6 +432,14 @@ class Graph(object):
             if debug:
                 print('cycles are not allowed')
             return False
+        return True
+
+    def addEdge(self, src, dst):
+        if not self.canConnectPins(src, dst):
+            return False
+
+        if src.type == PinTypes.Input:
+            src, dst = dst, src
 
         # input data ports can have one output connection
         # output data ports can have any number of connections

@@ -94,7 +94,7 @@ class NodeName(QGraphicsTextItem):
         super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):
-        self.scene().clearSelection()
+        # self.scene().clearSelection()
         self.parentItem().graph().disableSortcuts()
 
 
@@ -174,17 +174,17 @@ class Node(QGraphicsItem, NodeBase):
         self.sizes[2] = value
 
     def call(self, name):
-        if pinName in [p.name for p in self.outputs if p.dataType is DataTypes.Exec]:
+        if pinName in [p.name for p in self.outputs.values() if p.dataType is DataTypes.Exec]:
             p = self.getPinByName(pinName)
             return p.call()
 
     def getData(self, pinName):
-        if pinName in [p.name for p in self.inputs]:
+        if pinName in [p.name for p in self.inputs.values()]:
             p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
             return p.getData()
 
     def setData(self, pinName, data):
-        if pinName in [p.name for p in self.outputs]:
+        if pinName in [p.name for p in self.outputs.values()]:
             p = self.getPinByName(pinName, PinSelectionGroup.Outputs)
             p.setData(data)
 
@@ -240,7 +240,7 @@ class Node(QGraphicsItem, NodeBase):
         def compute(self):
             # arguments will be taken from inputs
             kwargs = {}
-            for i in self.inputs:
+            for i in self.inputs.values():
                 if i.dataType is not DataTypes.Exec:
                     kwargs[i.name] = i.getData()
             for ref in refs:
@@ -284,6 +284,7 @@ class Node(QGraphicsItem, NodeBase):
                 pin.setDirty()
             else:
                 pin.setClean()
+        return node
 
     def InputPinTypes(self):
         types = []
@@ -367,7 +368,7 @@ class Node(QGraphicsItem, NodeBase):
                     'computeCode': doc + "\nprint('Hello world')\n",
                     'inputs': [],
                     'outputs': [],
-                    'meta': {'label': 'Node'}
+                    'meta': {'label': 'Node', 'var': {}}
                     }
         return template
 
@@ -392,11 +393,15 @@ class Node(QGraphicsItem, NodeBase):
 
     def setName(self, name):
         NodeBase.setName(self, name)
-        # self.label().setPlainText(self.name)
 
     def clone(self):
         templ = self.serialize()
         templ['name'] = self.graph().getUniqNodeName(self.name)
+        templ['uuid'] = str(uuid.uuid4())
+        for inp in templ['inputs']:
+            inp['uuid'] = str(uuid.uuid4())
+        for out in templ['outputs']:
+            out['uuid'] = str(uuid.uuid4())
         new_node = self.graph().createNode(templ)
         return new_node
 
@@ -489,8 +494,6 @@ class Node(QGraphicsItem, NodeBase):
             Pin.setData(le.text())
 
     def onUpdatePropertyView(self, formLayout):
-        clearLayout(formLayout)
-
         # name
         le_name = QLineEdit(self.getName())
         le_name.setReadOnly(True)
@@ -498,6 +501,11 @@ class Node(QGraphicsItem, NodeBase):
             le_name.setReadOnly(False)
             le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
         formLayout.addRow("Name", le_name)
+
+        # uid
+        leUid = QLineEdit(str(self.uid))
+        leUid.setReadOnly(True)
+        formLayout.addRow("Uuid", leUid)
 
         # type
         leType = QLineEdit(self.__class__.__name__)
@@ -569,14 +577,14 @@ class Node(QGraphicsItem, NodeBase):
         return container
 
     def kill(self):
+        # disconnect edges
         for i in self.inputs.values() + self.outputs.values():
-            i.disconnectAll()
+            i.kill()
 
         if self.uid in self.graph().nodes:
             self.graph().nodes.pop(self.uid)
             self.graph().nodesPendingKill.append(self)
 
-            self.graph().writeToConsole("killNode {1}nl {0}".format(self.name, FLAG_SYMBOL))
             self.scene().removeItem(self)
             del(self)
 

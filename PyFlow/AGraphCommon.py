@@ -3,6 +3,9 @@ common defines, functions and structures
 '''
 import math
 from Settings import *
+import inspect
+from threading import Thread
+
 
 FLAG_SYMBOL = "~"
 
@@ -53,7 +56,7 @@ def cycle_check(src, dst):
     return False
 
 
-def find_ports_behind(start_from):
+def findPinsBehind(start_from):
     out = []
 
     def foo(start_from):
@@ -127,6 +130,14 @@ class DataTypes:
     Any = 5
     Exec = 6
     Reference = 7
+
+
+def getDataTypeName(inValue):
+    for name, value in inspect.getmembers(DataTypes):
+        if isinstance(value, int):
+            if inValue == value:
+                return name
+    return None
 
 
 class ObjectTypes(object):

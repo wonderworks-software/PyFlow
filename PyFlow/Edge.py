@@ -10,7 +10,7 @@ from uuid import UUID, uuid4
 class Edge(QGraphicsPathItem):
     def __init__(self, source, destination, graph):
         QGraphicsPathItem.__init__(self)
-        self.uid = uuid4()
+        self._uid = uuid4()
         self.graph = weakref.ref(graph)
         self.source = weakref.ref(source)
         self.destination = weakref.ref(destination)
@@ -43,20 +43,32 @@ class Edge(QGraphicsPathItem):
         self.source().update()
         self.destination().update()
 
+    @property
+    def uid(self):
+        return self._uid
+
+    @uid.setter
+    def uid(self, value):
+        if self._uid in self.graph().edges:
+            self.graph().edges[value] = self.graph().edges.pop(self._uid)
+            self._uid = value
+
     @staticmethod
     def deserialize(data, graph):
         srcUUID = UUID(data['sourceUUID'])
         dstUUID = UUID(data['destinationUUID'])
-        if srcUUID in graph.pins and dstUUID in graph.pins:
-            srcPin = graph.pins[srcUUID]
-            dstPin = graph.pins[dstUUID]
-            graph.addEdge(srcPin, dstPin)
+        # if srcUUID in graph.pins and dstUUID in graph.pins:
+        srcPin = graph.pins[srcUUID]
+        dstPin = graph.pins[dstUUID]
+        edge = graph._addEdge(srcPin, dstPin)
+        edge.uid = uuid.UUID(data['uuid'])
 
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
                   'sourceName': self.source().pinName(),
                   'destinationName': self.destination().pinName(),
+                  'uuid': str(self.uid)
                   }
         return script
 
@@ -70,8 +82,6 @@ class Edge(QGraphicsPathItem):
         super(Edge, self).hoverEnterEvent(event)
         self.pen.setWidthF(self.thikness + (self.thikness / 1.5))
         self.update()
-        if self.graph().isDebug():
-            print(self.__str__(), self.source().dataType, self.destination().dataType)
 
     def getEndPoints(self):
         p1 = self.source().boundingRect().center() + self.source().scenePos()
@@ -130,11 +140,10 @@ class Edge(QGraphicsPathItem):
         xDistance = p2.x() - p1.x()
         vDistance = p2.y() - p1.y()
 
-        defaultOffset = 100.0
-        minimum = min(defaultOffset, abs(xDistance))
-        maximum = max(defaultOffset, abs(xDistance))
+        defaultVerticalOffset = 100.0
+        minimumV = min(defaultVerticalOffset, abs(vDistance))
+        maximumV = max(defaultVerticalOffset, abs(vDistance))
         verticalOffset = 0.0
-        ratio = 0.5
 
         multiply = 3
         self.mPath = QtGui.QPainterPath()
@@ -142,13 +151,11 @@ class Edge(QGraphicsPathItem):
 
         if xDistance <= 0:
             if vDistance <= 0:
-                verticalOffset = -minimum
+                verticalOffset = -minimumV
             else:
-                verticalOffset = minimum
-            ratio = 1.0
+                verticalOffset = minimumV
 
         if xDistance < 0:
-            # offset = self.source().boundingRect().width() / 3.25
             self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)
             self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y() - verticalOffset)
         else:

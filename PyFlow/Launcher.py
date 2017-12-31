@@ -1,3 +1,7 @@
+from os import path
+import sys
+from Qt import QtGui
+from Qt import QtCore
 from Widget import GraphWidget
 from Widget import PluginType, _implementPlugin
 from Widget import Direction
@@ -13,11 +17,8 @@ from Qt.QtWidgets import QMessageBox
 from Qt.QtWidgets import QAction
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QHBoxLayout
-from Qt import QtGui
-from Qt import QtCore
+from Qt.QtWidgets import QUndoView
 import GraphEditor_ui
-import sys
-from os import path
 from VariablesWidget import VariablesWidget
 
 
@@ -28,6 +29,10 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def __init__(self):
         super(PyFlow, self).__init__()
         self.setupUi(self)
+        self.listViewUndoStack = QUndoView(self.dockWidgetContents_3)
+        self.listViewUndoStack.setObjectName("listViewUndoStack")
+        self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
+
         self.G = GraphWidget('root', self)
         self.SceneLayout.addWidget(self.G)
 
@@ -39,7 +44,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionMultithreaded.triggered.connect(self.toggle_multithreaded)
         self.actionDebug.triggered.connect(self.toggle_debug)
         self.actionScreenshot.triggered.connect(self.G.screenShot)
-        self.actionClear_scene.triggered.connect(self.on_clear_scene)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
         self.actionOptions.triggered.connect(self.G.options)
         self.actionSave.triggered.connect(self.G.save)
@@ -51,6 +55,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionAlignRight.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Right))
         self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
         self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
+        self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
 
         self.console.setLineWrapMode(QTextEdit.NoWrap)
         self.console.setReadOnly(True)
@@ -61,12 +66,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.clearConsoleAction.triggered.connect(self.console.clear)
         self.console.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.console.addAction(self.clearConsoleAction)
-        self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)
-        commands_names = [i for i in self.G.registeredCommands.iterkeys()] + self.consoleInput.cmd_list
-        self.highlighter_inst = Highlighter(self.console.document(),
-                                            commands_names,
-                                            getNodeNames())
-        self.gridLayout_2.addWidget(self.consoleInput, 1, 0, 1, 1)
+        # self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)
+        # commands_names = [i for i in self.G.registeredCommands.iterkeys()] + self.consoleInput.cmd_list
+        # self.highlighter_inst = Highlighter(self.console.document(),
+        #                                     commands_names,
+        #                                     getNodeNames())
+        # self.gridLayout_2.addWidget(self.consoleInput, 1, 0, 1, 1)
         self.dockWidgetConsole.hide()
         self.setMouseTracking(True)
         self.toggle_console()
@@ -136,10 +141,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             self.dockWidgetConsole.hide()
         else:
             self.dockWidgetConsole.show()
-
-    def on_clear_scene(self):
-        for n in self.G.getNodes():
-            n.kill()
 
     def toggle_debug(self):
         self.G.setDebug(not self.G.isDebug())
