@@ -13,6 +13,8 @@ class RemoveNodes(QUndoCommand):
         self.selectedNodes = selectedNodes
         self.connectionInfo = []
         self.jsonData = []
+        # we do not want to use class references directly
+        # instead we store uuids, and access refs through graph
         for node in self.selectedNodes:
             self.jsonData.append(node.serialize())
 
@@ -29,8 +31,8 @@ class RemoveNodes(QUndoCommand):
                 edge.uid = UUID(edgeJson['uuid'])
 
     def redo(self):
-        for node in self.selectedNodes:
-            uid = node.uid
+        for nodeData in self.jsonData:
+            uid = UUID(nodeData['uuid'])
             node = self.graph.nodes[uid]
 
             # store connecton info
@@ -39,4 +41,4 @@ class RemoveNodes(QUndoCommand):
                     self.connectionInfo.append(e.serialize())
                 pin.disconnectAll()
 
-            self.graph.nodes[uid].kill()
+            node.kill()

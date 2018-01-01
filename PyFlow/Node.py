@@ -44,7 +44,7 @@ class NodeName(QGraphicsTextItem):
         self.color = color
         self.clipRect = None
         self.roundCornerFactor = 1.0
-        self.bg = None
+        self.bg = QtGui.QImage(':/icons/resources/white.png')
         self.icon = None
 
     def onDocContentsChanged(self):

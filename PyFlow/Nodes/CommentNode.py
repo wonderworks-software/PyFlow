@@ -7,6 +7,8 @@ from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QGraphicsItemGroup
 from Qt.QtWidgets import QStyle
+from Qt.QtWidgets import QMenu
+from Qt.QtWidgets import QColorDialog
 from Qt import QtGui
 from Qt import QtCore
 
@@ -40,7 +42,7 @@ class CommentNodeName(NodeName):
             self.setEnabled(True)
         elif not key == QtCore.Qt.Key_Backspace:
             # if backspace is pressed do not change width
-            width = QtGui.QFontMetricsF(self.font()).width(self.toPlainText()) + 10.0
+            width = self.document().documentLayout().documentSize().width()
             height = self.document().documentLayout().documentSize().height()
             self.h = height
             # change width if needed
@@ -96,13 +98,31 @@ class CommentNode(Node, NodeBase):
         self.lastMousePos = QtCore.QPointF()
         self.setZValue(-2)
 
+        self.menu = QMenu()
+        self.actionChangeColor = self.menu.addAction('Change color')
+        self.actionChangeColor.triggered.connect(self.onChangeColor)
+        self.actionChangeColor.setIcon(QtGui.QIcon(':/icons/resources/colors_icon.png'))
+
+    def contextMenuEvent(self, event):
+        self.menu.exec_(event.screenPos())
+
+    def onChangeColor(self):
+        res = QColorDialog.getColor(self.color, None, 'Comment node color setup')
+        if res.isValid():
+            res.setAlpha(80)
+            self.color = res
+            self.label().color = res
+            self.update()
+            self.label().update()
+
     def serialize(self):
         template = Node.serialize(self)
         template['meta']['commentNode'] = {
             'w': self.rect.right(),
             'h': self.rect.bottom(),
             'labelHeight': self.label().h,
-            'text': self.label().toPlainText()
+            'text': self.label().toPlainText(),
+            'color': (self.color.toTuple())
         }
         return template
 
@@ -113,17 +133,20 @@ class CommentNode(Node, NodeBase):
         height = self.minHeight
         labelHeight = self.label().h
         text = self.__class__.__name__
+        color = Colors.White
         try:
             # if copied in runtime
             width = jsonTemplate['meta']['commentNode']['w']
             height = jsonTemplate['meta']['commentNode']['h']
             labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
             text = jsonTemplate['meta']['commentNode']['text']
+            color = QtGui.QColor(*jsonTemplate['meta']['commentNode']['color'])
         except:
             pass
 
         self.rect.setRight(width)
         self.rect.setBottom(height)
+        self.color = color
         self.update()
         self.scene().removeItem(self.label())
         delattr(self, 'label')
@@ -131,6 +154,7 @@ class CommentNode(Node, NodeBase):
         self.label().setPlainText(text)
         self.label().width = self.rect.width()
         self.label().h = labelHeight
+        self.label().color = color
         self.label().update()
 
     @staticmethod

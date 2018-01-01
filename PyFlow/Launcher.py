@@ -36,7 +36,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.G = GraphWidget('root', self)
         self.SceneLayout.addWidget(self.G)
 
-        self.actionNode_box.triggered.connect(self.toggle_node_box)
+        self.actionVariables.triggered.connect(self.toggleVariables)
         self.actionPlot_graph.triggered.connect(self.G.plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionConsole.triggered.connect(self.toggle_console)
@@ -56,6 +56,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
         self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
         self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
+        self.actionHistory.triggered.connect(self.toggleHistory)
 
         self.console.setLineWrapMode(QTextEdit.NoWrap)
         self.console.setReadOnly(True)
@@ -66,12 +67,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.clearConsoleAction.triggered.connect(self.console.clear)
         self.console.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.console.addAction(self.clearConsoleAction)
-        # self.consoleInput = ConsoleInput(self.dockWidgetContents_2, self.G)
-        # commands_names = [i for i in self.G.registeredCommands.iterkeys()] + self.consoleInput.cmd_list
-        # self.highlighter_inst = Highlighter(self.console.document(),
-        #                                     commands_names,
-        #                                     getNodeNames())
-        # self.gridLayout_2.addWidget(self.consoleInput, 1, 0, 1, 1)
         self.dockWidgetConsole.hide()
         self.setMouseTracking(True)
         self.toggle_console()
@@ -81,6 +76,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def createPopupMenu(self):
         pass
+
+    def toggleHistory(self):
+        self.dockWidgetUndoStack.setVisible(not self.dockWidgetUndoStack.isVisible())
 
     def newPlugin(self, pluginType):
         name, result = QInputDialog.getText(self, 'Plugin name', 'Enter plugin name')
@@ -102,12 +100,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         else:
             self.dockWidgetNodeView.setVisible(True)
 
-    def toggle_node_box(self):
-
-        if self.dockWidgetLeft.isVisible():
-            self.dockWidgetLeft.hide()
+    def toggleVariables(self):
+        if self.dockWidgetVariables.isVisible():
+            self.dockWidgetVariables.hide()
         else:
-            self.dockWidgetLeft.show()
+            self.dockWidgetVariables.show()
 
     def shortcuts_info(self):
 

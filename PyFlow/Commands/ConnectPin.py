@@ -16,9 +16,7 @@ class ConnectPin(QUndoCommand):
 
     def undo(self):
         self.graph.scene().blockSignals(True)
-
         self.graph.removeEdge(self.graph.edges[self.edgeUid])
-
         self.graph.scene().blockSignals(False)
 
     def redo(self):
@@ -29,9 +27,14 @@ class ConnectPin(QUndoCommand):
         dst = self.graph.pins[self.dstUid]
         edge = self.graph._addEdge(src, dst)
 
+        # recreate the same edge with same uuid
+        # if it was deleted
         if edge and self.edgeUid:
             edge.uid = self.edgeUid
 
-        self.edgeUid = edge.uid
+        # if first created store connection uuid
+        # of this particular connection
+        if edge and self.edgeUid is None:
+            self.edgeUid = edge.uid
 
         self.graph.scene().blockSignals(False)

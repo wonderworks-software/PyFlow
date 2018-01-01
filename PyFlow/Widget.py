@@ -1080,30 +1080,32 @@ class GraphWidget(QGraphicsView, Graph):
             if self.isShortcutsEnabled():
                 # create comment node
                 rect = CommentNode.getNodesRect(self.selectedNodes())
-                b = rect.bottom()
-                rect.setTop(rect.top() - 20)
-                rect.setLeft(rect.left() - 20)
+                if rect:
+                    rect.setTop(rect.top() - 20)
+                    rect.setLeft(rect.left() - 20)
 
-                rect.setRight(rect.right() + 20)
-                rect.setBottom(rect.bottom() + 20)
+                    rect.setRight(rect.right() + 20)
+                    rect.setBottom(rect.bottom() + 20)
 
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = CommentNode.__name__
                 nodeTemplate['name'] = self.getUniqNodeName(CommentNode.__name__)
 
-                nodeTemplate['x'] = rect.topLeft().x()
-                # nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
-                nodeTemplate['y'] = rect.topLeft().y()
-                # nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
+                if rect:
+                    nodeTemplate['x'] = rect.topLeft().x()
+                    nodeTemplate['y'] = rect.topLeft().y()
+                else:
+                    nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
+                    nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
                 nodeTemplate['meta']['label'] = CommentNode.__name__
                 nodeTemplate['uuid'] = None
                 instance = self.createNode(nodeTemplate)
-                instance.rect.setRight(rect.width())
-                instance.rect.setBottom(rect.height())
-                instance.label().width = rect.width()
-                instance.label().adjustSizes()
-                # instance.label().update()
-                # instance.update()
+                if rect:
+                    instance.rect.setRight(rect.width())
+                    instance.rect.setBottom(rect.height())
+                    instance.label().width = rect.width()
+                    instance.label().adjustSizes()
+
 
         if all([event.key() == QtCore.Qt.Key_Z, modifiers == QtCore.Qt.ControlModifier]):
             if self.isShortcutsEnabled():

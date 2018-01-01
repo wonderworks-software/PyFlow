@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1287</width>
+    <width>1299</width>
     <height>875</height>
    </rect>
   </property>
@@ -86,7 +86,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1287</width>
+     <width>1299</width>
      <height>26</height>
     </rect>
    </property>
@@ -103,9 +103,10 @@
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionNode_box"/>
     <addaction name="actionConsole"/>
-    <addaction name="actionPlot_graph"/>
+    <addaction name="actionVariables"/>
+    <addaction name="actionHistory"/>
+    <addaction name="actionPropertyView"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -119,6 +120,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionPlot_graph"/>
     <addaction name="actionShortcuts"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
@@ -145,9 +147,10 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionNode_box"/>
    <addaction name="actionConsole"/>
    <addaction name="actionPropertyView"/>
+   <addaction name="actionVariables"/>
+   <addaction name="actionHistory"/>
    <addaction name="separator"/>
    <addaction name="actionMultithreaded"/>
    <addaction name="actionDebug"/>
@@ -209,7 +212,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidgetLeft">
+  <widget class="QDockWidget" name="dockWidgetVariables">
    <property name="minimumSize">
     <size>
      <width>150</width>
@@ -253,7 +256,7 @@
           <x>0</x>
           <y>0</y>
           <width>148</width>
-          <height>298</height>
+          <height>376</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -412,15 +415,6 @@
    </property>
    <property name="text">
     <string>Options</string>
-   </property>
-  </action>
-  <action name="actionNode_box">
-   <property name="icon">
-    <iconset resource="nodes_res.qrc">
-     <normaloff>:/icons/resources/node_box_icon.png</normaloff>:/icons/resources/node_box_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Node box</string>
    </property>
   </action>
   <action name="actionSave">
@@ -601,6 +595,24 @@
    </property>
    <property name="text">
     <string>Clear history</string>
+   </property>
+  </action>
+  <action name="actionVariables">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/variable.png</normaloff>:/icons/resources/variable.png</iconset>
+   </property>
+   <property name="text">
+    <string>Variables</string>
+   </property>
+  </action>
+  <action name="actionHistory">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/history.png</normaloff>:/icons/resources/history.png</iconset>
+   </property>
+   <property name="text">
+    <string>History</string>
    </property>
   </action>
  </widget>
