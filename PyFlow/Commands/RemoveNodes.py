@@ -24,7 +24,9 @@ class RemoveNodes(QUndoCommand):
         for edgeJson in self.connectionInfo:
             src = self.graph.pins[UUID(edgeJson['sourceUUID'])]
             dst = self.graph.pins[UUID(edgeJson['destinationUUID'])]
-            self.graph._addEdge(src, dst)
+            edge = self.graph._addEdge(src, dst)
+            if edge:
+                edge.uid = UUID(edgeJson['uuid'])
 
     def redo(self):
         for node in self.selectedNodes:
@@ -35,5 +37,6 @@ class RemoveNodes(QUndoCommand):
             for pin in node.inputs.values() + node.outputs.values():
                 for e in pin.edge_list:
                     self.connectionInfo.append(e.serialize())
+                pin.disconnectAll()
 
             self.graph.nodes[uid].kill()

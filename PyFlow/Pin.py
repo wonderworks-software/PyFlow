@@ -122,10 +122,10 @@ class Pin(QGraphicsWidget, PinBase):
 
     def disconnectAll(self):
         trash = []
-        for e in self.parent().graph().edges.values():
+        for e in self.edge_list:
             if self.uid == e.destination().uid:
                 trash.append(e)
-            if self.pinName() == e.source().uid:
+            if self.uid == e.source().uid:
                 trash.append(e)
         for e in trash:
             self.parent().graph().removeEdge(e)

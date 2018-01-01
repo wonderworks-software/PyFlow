@@ -36,6 +36,7 @@ from Edge import Edge
 from Pin import getPortColorByType, Pin
 from Node import Node
 from Node import NodeName
+from Nodes import CommentNode
 from os import listdir, path, startfile
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
@@ -336,7 +337,7 @@ class SceneClass(QGraphicsScene):
             tag, mimeText = event.mimeData().text().split('|')
             name = self.parent().getUniqNodeName(mimeText)
             dropItem = self.itemAt(event.scenePos())
-            if not dropItem:
+            if not dropItem or isinstance(dropItem, CommentNode):
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = mimeText
                 nodeTemplate['name'] = name
@@ -1075,10 +1076,41 @@ class GraphWidget(QGraphicsView, Graph):
         modifiers = event.modifiers()
         if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
             self.new_file()
+        if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
+            if self.isShortcutsEnabled():
+                # create comment node
+                rect = CommentNode.getNodesRect(self.selectedNodes())
+                b = rect.bottom()
+                rect.setTop(rect.top() - 20)
+                rect.setLeft(rect.left() - 20)
+
+                rect.setRight(rect.right() + 20)
+                rect.setBottom(rect.bottom() + 20)
+
+                nodeTemplate = Node.jsonTemplate()
+                nodeTemplate['type'] = CommentNode.__name__
+                nodeTemplate['name'] = self.getUniqNodeName(CommentNode.__name__)
+
+                nodeTemplate['x'] = rect.topLeft().x()
+                # nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
+                nodeTemplate['y'] = rect.topLeft().y()
+                # nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
+                nodeTemplate['meta']['label'] = CommentNode.__name__
+                nodeTemplate['uuid'] = None
+                instance = self.createNode(nodeTemplate)
+                instance.rect.setRight(rect.width())
+                instance.rect.setBottom(rect.height())
+                instance.label().width = rect.width()
+                instance.label().adjustSizes()
+                # instance.label().update()
+                # instance.update()
+
         if all([event.key() == QtCore.Qt.Key_Z, modifiers == QtCore.Qt.ControlModifier]):
-            self.undoStack.undo()
+            if self.isShortcutsEnabled():
+                self.undoStack.undo()
         if all([event.key() == QtCore.Qt.Key_Y, modifiers == QtCore.Qt.ControlModifier]):
-            self.undoStack.redo()
+            if self.isShortcutsEnabled():
+                self.undoStack.redo()
         if all([event.key() == QtCore.Qt.Key_Equal, modifiers == QtCore.Qt.ControlModifier]):
             self.zoomDelta(True)
         if all([event.key() == QtCore.Qt.Key_Minus, modifiers == QtCore.Qt.ControlModifier]):
@@ -1106,8 +1138,6 @@ class GraphWidget(QGraphicsView, Graph):
             self.parent.toggle_property_view()
         if event.key() == QtCore.Qt.Key_Delete:
             self.killSelectedNodes()
-        if event.key() == QtCore.Qt.Key_P and modifiers == QtCore.Qt.NoModifier:
-            print(self.getGraphSaveData())
         if all([event.key() == QtCore.Qt.Key_W, modifiers == QtCore.Qt.ControlModifier]):
             self.duplicateNodes()
         QGraphicsView.keyPressEvent(self, event)
@@ -1281,7 +1311,7 @@ class GraphWidget(QGraphicsView, Graph):
 
             # hack. disable signals and call selectionChanged once with last selected item
             self.scene().blockSignals(True)
-            items = [i for i in self.rubber_rect.collidingItems() if isinstance(i, Node)]
+            items = [i for i in self.rubber_rect.collidingItems() if isinstance(i, Node) and not isinstance(i, CommentNode)]
             for item in items[:-1]:
                 item.setSelected(True)
             self.scene().blockSignals(False)
@@ -1498,6 +1528,7 @@ class GraphWidget(QGraphicsView, Graph):
             self.scene().addItem(edge)
             self.edges[edge.uid] = edge
             return edge
+        return None
 
     def addEdge(self, src, dst):
         if self.canConnectPins(src, dst):
@@ -1520,8 +1551,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.parent.console.append(str(data))
 
     def plot(self):
-        for k, v in self.nodes.iteritems():
-            print(k, v.name)
         Graph.plot(self)
         self.parent.console.append('>>>>>>> {0} <<<<<<<\n{1}\n'.format(self.name, ctime()))
         if self.parent:
@@ -1539,9 +1568,9 @@ class GraphWidget(QGraphicsView, Graph):
                 msg = '{0} - {1}, uid - {2}'.format(v.name, v.value, str(v.uid))
                 print(msg)
                 self.parent.console.append(msg)
-
+            print('Pins\n-----------------')
             for pinUid, pin in self.pins.iteritems():
-                msg = '{0} - {1}'.format(pinUid, pin.name, str(v.uid))
+                msg = '{0} - {1}'.format(pinUid, pin.name, str(pin.uid))
                 print(msg)
                 self.parent.console.append(msg)
             print('Edges\n-----------------')

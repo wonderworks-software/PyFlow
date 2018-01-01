@@ -31,7 +31,7 @@ class NodeName(QGraphicsTextItem):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.desc = parent.description()
         self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
-        self.h = self.boundingRect().height()
+        self.h = 30
         if self.options:
             self.text_color = QtGui.QColor(self.options.value('NODES/Nodes label font color'))
             self.setDefaultTextColor(self.text_color)
@@ -64,7 +64,7 @@ class NodeName(QGraphicsTextItem):
             QGraphicsTextItem.keyPressEvent(self, event)
 
     def boundingRect(self):
-        return QtCore.QRectF(0, 0, self.width + 5.0, 30)
+        return QtCore.QRectF(0, 0, self.width + 5.0, self.h)
 
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
@@ -82,7 +82,7 @@ class NodeName(QGraphicsTextItem):
             painter.setBrush(b)
         else:
             painter.setBrush(self.color)
-            # b.setStyle(QtCore.Qt.SolidPattern)
+            b.setStyle(QtCore.Qt.SolidPattern)
         painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
         parentRet = self.parentItem().childrenBoundingRect()
         if self.icon:
@@ -95,6 +95,10 @@ class NodeName(QGraphicsTextItem):
 
     def focusOutEvent(self, event):
         self.parentItem().graph().enableSortcuts()
+        # clear cursour
+        cursor = QtGui.QTextCursor(self.document())
+        cursor.clearSelection()
+        self.setTextCursor(cursor)
 
 
 class Node(QGraphicsItem, NodeBase):
@@ -431,7 +435,7 @@ class Node(QGraphicsItem, NodeBase):
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
             if self.options:
-                pen.setColor(Colors.White)
+                pen.setColor(Colors.Yellow)
                 pen.setStyle(self.opt_pen_selected_type)
             else:
                 pen.setColor(opt_selected_pen_color)

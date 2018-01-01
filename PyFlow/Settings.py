@@ -66,5 +66,5 @@ class Colors:
     Any = Yellow
     Array = Gray
     Bool = Red
-    Exec = White
+    Exec = QtGui.QColor(255, 255, 255, 200)
     String = Pink
