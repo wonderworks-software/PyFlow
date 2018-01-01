@@ -20,12 +20,13 @@ from inspect import getargspec
 
 
 class NodeName(QGraphicsTextItem):
-    def __init__(self, parent):
-        QGraphicsTextItem.__init__(self)
+    def __init__(self, parent, bUseTextureBg=True, color=Colors.Green):
+        super(NodeName, self).__init__(parent)
+        self.setParentItem(parent)
+        self.bUseTextureBg = bUseTextureBg
         self.width = 50
         self.document().contentsChanged.connect(self.onDocContentsChanged)
         self.object_type = ObjectTypes.NodeName
-        self.setParentItem(parent)
         self.options = self.parentItem().graph().getSettings()
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.desc = parent.description()
@@ -40,10 +41,10 @@ class NodeName(QGraphicsTextItem):
             self.setFont(self.opt_font)
         self.descFont = QtGui.QFont("Consolas", self.opt_font.pointSize() / 2.0, 2, True)
         self.setPos(0, -self.boundingRect().height() - 8)
-        self.color = QtGui.QColor(0, 255, 50, 100)
+        self.color = color
         self.clipRect = None
         self.roundCornerFactor = 1.0
-        self.bg = QtGui.QImage(':/icons/resources/white.png')
+        self.bg = None
         self.icon = None
 
     def onDocContentsChanged(self):
@@ -75,36 +76,34 @@ class NodeName(QGraphicsTextItem):
         b.setColorAt(0.25, self.color)
         b.setColorAt(1, self.color)
         painter.setPen(QtCore.Qt.NoPen)
-        b = QtGui.QBrush(self.bg)
-        b.setStyle(QtCore.Qt.TexturePattern)
-        painter.setBrush(b)
+        if self.bUseTextureBg:
+            b = QtGui.QBrush(self.bg)
+            b.setStyle(QtCore.Qt.TexturePattern)
+            painter.setBrush(b)
+        else:
+            painter.setBrush(self.color)
+            # b.setStyle(QtCore.Qt.SolidPattern)
         painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
-        # painter.setFont(self.descFont)
         parentRet = self.parentItem().childrenBoundingRect()
         if self.icon:
             painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
 
-        # painter.setClipping(True)
-        # if not self.clipRect:
-        #     self.clipRect = QtCore.QRectF(0, 0, self.boundingRect().width(), self.boundingRect().height())
-        # painter.setClipRect(self.clipRect)
-        # painter.setPen(self.descFontPen)
-        # painter.drawText(5.0, self.h - 0.5, self.desc)
-
         super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):
-        # self.scene().clearSelection()
         self.parentItem().graph().disableSortcuts()
+
+    def focusOutEvent(self, event):
+        self.parentItem().graph().enableSortcuts()
 
 
 class Node(QGraphicsItem, NodeBase):
     """
     Default node description
     """
-    def __init__(self, name, graph, w=120, color=Colors.NodeBackgrounds, spacings=Spacings, headColor=Colors.NodeNameRect):
-        NodeBase.__init__(self, name, graph)
+    def __init__(self, name, graph, w=120, color=Colors.NodeBackgrounds, spacings=Spacings, headColor=Colors.NodeNameRect, bUseTextureBg=True):
         QGraphicsItem.__init__(self)
+        NodeBase.__init__(self, name, graph)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.options = self.graph().getSettings()
         if self.options:
@@ -129,7 +128,7 @@ class Node(QGraphicsItem, NodeBase):
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
-        self.label = weakref.ref(NodeName(self))
+        self.label = weakref.ref(NodeName(self, bUseTextureBg, headColor))
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
         # main
@@ -339,9 +338,11 @@ class Node(QGraphicsItem, NodeBase):
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
         if self.isCallable():
             if 'flow' not in self.category().lower():
-                self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
+                if self.label().bUseTextureBg:
+                    self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
         else:
-            self.label().bg = QtGui.QImage(':/icons/resources/green.png')
+            if self.label().bUseTextureBg:
+                self.label().bg = QtGui.QImage(':/icons/resources/green.png')
         self.label().setPlainText(self.__class__.__name__)
         self.setToolTip(self.description())
 

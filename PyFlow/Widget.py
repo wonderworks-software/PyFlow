@@ -35,6 +35,7 @@ from AbstractGraph import *
 from Edge import Edge
 from Pin import getPortColorByType, Pin
 from Node import Node
+from Node import NodeName
 from os import listdir, path, startfile
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
@@ -872,6 +873,7 @@ class GraphWidget(QGraphicsView, Graph):
             self.writeToConsole(e)
 
     def mouseDoubleClickEvent(self, event):
+        QGraphicsView.mouseDoubleClickEvent(self, event)
         self.OnDoubleClick(self.mapToScene(event.pos()))
         event.accept()
 
@@ -880,8 +882,8 @@ class GraphWidget(QGraphicsView, Graph):
             # create knot
             pass
 
-        if self.pressed_item and hasattr(self.pressed_item, "object_type"):
-            if self.pressed_item.object_type == ObjectTypes.NodeName and self.pressed_item.IsRenamable():
+        if self.pressed_item and isinstance(self.pressed_item, NodeName):
+            if self.pressed_item.IsRenamable():
                 name, result = QInputDialog.getText(self, "New name dialog", "Enter new name:")
                 if result:
                     self.pressed_item.parentItem().setName(name)
@@ -1064,9 +1066,10 @@ class GraphWidget(QGraphicsView, Graph):
         return [i for i in self.getNodes() if i.isSelected()]
 
     def killSelectedNodes(self):
-        cmdRemove = Commands.RemoveNodes(self.selectedNodes(), self)
-        self.undoStack.push(cmdRemove)
-        clearLayout(self.parent.formLayout)
+        if self.isShortcutsEnabled():
+            cmdRemove = Commands.RemoveNodes(self.selectedNodes(), self)
+            self.undoStack.push(cmdRemove)
+            clearLayout(self.parent.formLayout)
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
