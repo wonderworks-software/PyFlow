@@ -5,9 +5,9 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QGraphicsProxyWidget
 
 
-class MakeArray(Node, NodeBase):
+class MakeConstArray(Node, NodeBase):
     def __init__(self, name, graph):
-        super(MakeArray, self).__init__(name, graph)
+        super(MakeConstArray, self).__init__(name, graph)
         con = self.addContainer(PinTypes.Output)
 
         pb = QPushButton('+')

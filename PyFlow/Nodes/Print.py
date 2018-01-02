@@ -17,6 +17,6 @@ class Print(Node, NodeBase):
 
     def compute(self):
         if self.inExec.hasConnections():
-            self.graph().writeToConsole(self.obj.getData())
-            print(self.obj.getData())
+            data = self.obj.getData()
+            self.graph().writeToConsole(data)
         self.outExec.call()

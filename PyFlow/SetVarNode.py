@@ -54,5 +54,11 @@ class SetVarNode(Node, NodeBase):
 
     def compute(self):
         val = self.value.getData()
+
+        # block signals to prevent recurcive loop
+        self.var.blockSignals(True)
         self.var.value = val
+        self.var.blockSignals(False)
+
+        self.outValue.setData(val)
         self.outExec.call()

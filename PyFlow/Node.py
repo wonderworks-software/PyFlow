@@ -223,7 +223,7 @@ class Node(QGraphicsItem, NodeBase):
         refs = []
         outExec = None
 
-        # iterate over function arguments and create ports according to data types
+        # iterate over function arguments and create pins according to data types
         fooArgNames = getargspec(foo).args
         for index in range(len(fooArgNames)):
             dataType = foo.__annotations__[fooArgNames[index]]

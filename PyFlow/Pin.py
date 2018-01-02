@@ -203,7 +203,7 @@ class Pin(QGraphicsWidget, PinBase):
         super(Pin, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        self.setToolTip(str(self.currentData()))
+        self.setToolTip(str(self.dirty))
         event.accept()
 
     def hoverLeaveEvent(self, event):

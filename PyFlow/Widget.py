@@ -1075,8 +1075,9 @@ class GraphWidget(QGraphicsView, Graph):
         return [i for i in self.getNodes() if i.isSelected()]
 
     def killSelectedNodes(self):
-        if self.isShortcutsEnabled():
-            cmdRemove = Commands.RemoveNodes(self.selectedNodes(), self)
+        selectedNodes = self.selectedNodes()
+        if self.isShortcutsEnabled() and len(selectedNodes) > 0:
+            cmdRemove = Commands.RemoveNodes(selectedNodes, self)
             self.undoStack.push(cmdRemove)
             clearLayout(self.parent.formLayout)
 

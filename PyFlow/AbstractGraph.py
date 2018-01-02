@@ -75,6 +75,8 @@ class PinBase(object):
 
     def setClean(self):
         self.dirty = False
+        for i in self.affects:
+            i.dirty = False
 
     def hasConnections(self):
         if len(self.edge_list) == 0:
@@ -104,24 +106,29 @@ class PinBase(object):
                             n.compute()
                     else:
                         calc_multithreaded(compute_order[i])
+                self.setClean()
                 return self._data
             else:
+                self.setClean()
                 return self._data
         if self.type == PinTypes.Input:
             if self.dirty:
                 out = [i for i in self.affected_by if i.type == PinTypes.Output]
                 if not out == []:
-                    compute_order = out[0].parent().graph().getEvaluationOrder(out[0].parent())
-                    for i in reversed(sorted([i for i in compute_order.keys()])):
+                    compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
+                    for layer in reversed(sorted([i for i in compute_order.keys()])):
                         if not self.parent().graph().isMultithreaded():
-                            for n in compute_order[i]:
+                            for n in compute_order[layer]:
                                 n.compute()
                         else:
-                            calc_multithreaded(compute_order[i])
+                            calc_multithreaded(compute_order[layer])
+                    self.setClean()
                     return out[0]._data
             else:
+                self.setClean()
                 return self._data
         else:
+            self.setClean()
             return self._data
 
     @staticmethod
