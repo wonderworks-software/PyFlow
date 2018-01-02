@@ -313,6 +313,14 @@ class SceneClass(QGraphicsScene):
     def shoutDown(self):
         self.selectionChanged.disconnect()
 
+    def mousePressEvent(self, event):
+        # do not clear selection when panning
+        modifiers = event.modifiers()
+        if event.button() == QtCore.Qt.RightButton or modifiers == QtCore.Qt.ShiftModifier:
+            event.accept()
+            return
+        QGraphicsScene.mousePressEvent(self, event)
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
             event.accept()
@@ -808,7 +816,7 @@ class GraphWidget(QGraphicsView, Graph):
         self._file_name_label.setPlainText(self._current_file_name)
 
         self.scene().addItem(self._file_name_label)
-        self.rubber_rect = RubberRect('RubberRect')
+        self.rubberRect = RubberRect('RubberRect')
 
         self.real_time_line = QGraphicsPathItem(None, self.scene())
 
@@ -1152,7 +1160,6 @@ class GraphWidget(QGraphicsView, Graph):
 
             for n in selectedNodes:
                 new_node = n.clone()
-                # n.setSelected(False)
                 new_node.setSelected(True)
                 new_node.setPos(new_node.scenePos() + diff)
 
@@ -1219,13 +1226,12 @@ class GraphWidget(QGraphicsView, Graph):
                     self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsSelectable, False)
                     self._draw_real_time_line = True
                 if modifiers == QtCore.Qt.AltModifier:
-                    # self.pressed_item.disconnectAll()
                     self.removeEdgeCmd(self.pressed_item.edge_list)
             else:
                 self.pressed_item.setSelected(True)
 
         if not self.pressed_item:
-            if event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.NoModifier:
+            if event.button() == QtCore.Qt.LeftButton:
                 self._is_rubber_band_selection = True
             if event.button() == QtCore.Qt.RightButton and modifiers == QtCore.Qt.NoModifier:
                 self.bPanMode = True
@@ -1271,15 +1277,15 @@ class GraphWidget(QGraphicsView, Graph):
         if self._is_rubber_band_selection:
             mCurrentPose = self.mapToScene(self.mousePos)
             mPressPose = self.mapToScene(self.mousePressPose)
-            if self.rubber_rect not in self.scene().items():
-                self.scene().addItem(self.rubber_rect)
-            if not self.rubber_rect.isVisible():
-                self.rubber_rect.setVisible(True)
+            if self.rubberRect not in self.scene().items():
+                self.scene().addItem(self.rubberRect)
+            if not self.rubberRect.isVisible():
+                self.rubberRect.setVisible(True)
             r = QtCore.QRectF(mPressPose.x(),
                               mPressPose.y(),
                               mCurrentPose.x() - mPressPose.x(),
                               mCurrentPose.y() - mPressPose.y())
-            self.rubber_rect.setRect(r.normalized())
+            self.rubberRect.setRect(r.normalized())
 
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
 
@@ -1313,7 +1319,7 @@ class GraphWidget(QGraphicsView, Graph):
 
             # hack. disable signals and call selectionChanged once with last selected item
             self.scene().blockSignals(True)
-            items = [i for i in self.rubber_rect.collidingItems() if isinstance(i, Node) and not isinstance(i, CommentNode)]
+            items = [i for i in self.rubberRect.collidingItems() if isinstance(i, Node) and not isinstance(i, CommentNode)]
             for item in items[:-1]:
                 item.setSelected(True)
             self.scene().blockSignals(False)
@@ -1321,12 +1327,12 @@ class GraphWidget(QGraphicsView, Graph):
                 items[-1].setSelected(True)
 
             [i.setFlag(QGraphicsItem.ItemIsMovable) for i in self.getNodes() if i.isSelected()]
-            self.removeItemByName(self.rubber_rect.name)
+            self.removeItemByName(self.rubberRect.name)
         if event.button() == QtCore.Qt.RightButton:
-            # call context menu only if drag is small
-            dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
-            if all([abs(i) < 0.1 for i in [dragDiff.x(), dragDiff.y()]]):
-                if self.pressed_item is None:
+            # show nodebox only if drag is small and no items under cursor
+            if self.pressed_item is None:
+                dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
+                if all([abs(i) < 0.2 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
 
             self._right_button = False

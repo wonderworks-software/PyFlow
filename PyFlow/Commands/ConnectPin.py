@@ -15,9 +15,10 @@ class ConnectPin(QUndoCommand):
         self.edgeUid = None
 
     def undo(self):
-        self.graph.scene().blockSignals(True)
-        self.graph.removeEdge(self.graph.edges[self.edgeUid])
-        self.graph.scene().blockSignals(False)
+        if self.edgeUid in self.graph.edges:
+            self.graph.scene().blockSignals(True)
+            self.graph.removeEdge(self.graph.edges[self.edgeUid])
+            self.graph.scene().blockSignals(False)
 
     def redo(self):
 
