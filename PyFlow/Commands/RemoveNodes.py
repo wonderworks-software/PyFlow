@@ -33,7 +33,8 @@ class RemoveNodes(QUndoCommand):
     def redo(self):
         for nodeData in self.jsonData:
             uid = UUID(nodeData['uuid'])
-            node = self.graph.nodes[uid]
+            if uid in self.graph.nodes:
+                node = self.graph.nodes[uid]
 
             # store connecton info
             for pin in node.inputs.values() + node.outputs.values():

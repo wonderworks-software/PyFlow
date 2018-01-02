@@ -24,6 +24,10 @@ class SetVarNode(Node, NodeBase):
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
+    def kill(self):
+        self.var.killed.disconnect()
+        Node.kill(self)
+
     def serialize(self):
         template = Node.serialize(self)
         template['meta']['var'] = self.var.serialize()
@@ -61,4 +65,5 @@ class SetVarNode(Node, NodeBase):
         self.var.blockSignals(False)
 
         self.outValue.setData(val)
+        push(self.outValue)
         self.outExec.call()

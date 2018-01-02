@@ -25,6 +25,10 @@ class GetVarNode(Node, NodeBase):
         template['meta']['var'] = self.var.serialize()
         return template
 
+    def kill(self):
+        self.var.killed.disconnect()
+        Node.kill(self)
+
     def onUpdatePropertyView(self, formLayout):
         self.var.onUpdatePropertyView(formLayout)
 
