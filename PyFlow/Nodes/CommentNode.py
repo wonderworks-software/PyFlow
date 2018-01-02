@@ -22,9 +22,9 @@ class CommentNodeName(NodeName):
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.setDefaultTextColor(QtGui.QColor(255, 255, 255, 255))
-        self.width = QtGui.QFontMetricsF(self.font()).width(self.toPlainText()) + 5.0
         self.roundCornerFactor = 1.0
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
+        self.width = self.document().documentLayout().documentSize().width()
 
     def keyPressEvent(self, event):
 
@@ -43,8 +43,7 @@ class CommentNodeName(NodeName):
         elif not key == QtCore.Qt.Key_Backspace:
             # if backspace is pressed do not change width
             width = self.document().documentLayout().documentSize().width()
-            height = self.document().documentLayout().documentSize().height()
-            self.h = height
+            self.h = self.document().documentLayout().documentSize().height()
             # change width if needed
             if width >= self.parentItem().rect.width():
                 self.width = width
@@ -57,12 +56,11 @@ class CommentNodeName(NodeName):
     def adjustSizes(self):
         self.parentItem().rect.setRight(self.width)
         self.setTextWidth(self.width)
+        self.h = self.document().documentLayout().documentSize().height()
         self.update()
         self.parentItem().update()
 
     def paint(self, painter, option, widget):
-        # super(CommentNodeName, self).paint(painter, option, widget)
-
         QGraphicsTextItem.paint(self, painter, option, widget)
         r = QtCore.QRectF(option.rect)
         r.setWidth(self.width)
@@ -210,10 +208,11 @@ class CommentNode(Node, NodeBase):
                 if newWidth > self.minWidth:
                     self.label().width = newWidth
                     self.rect.setRight(newWidth)
-                    self.label().setTextWidth(newWidth)
+                    self.label().adjustSizes()
+
             elif self.resizeDirection == (0, 1):
                 newHeight = delta.y() + self.initialRectHeight
-                newHeight = roundup(newHeight, self.graph().grid_size)
+                newHeight = max(roundup(newHeight, self.graph().grid_size), self.label().h + 20.0)
                 if newHeight > self.minHeight:
                     # bottom edge resize
                     self.rect.setHeight(newHeight)
@@ -222,7 +221,7 @@ class CommentNode(Node, NodeBase):
                 newWidth = roundup(newWidth, self.graph().grid_size)
 
                 newHeight = delta.y() + self.initialRectHeight
-                newHeight = roundup(newHeight, self.graph().grid_size)
+                newHeight = max(roundup(newHeight, self.graph().grid_size), self.label().h + 20.0)
                 if newHeight > self.minHeight and newWidth > self.minWidth:
                     self.label().width = newWidth
                     self.rect.setRight(newWidth)
