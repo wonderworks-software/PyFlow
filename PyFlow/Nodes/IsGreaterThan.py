@@ -12,6 +12,10 @@ class IsGreaterThan(Node, NodeBase):
         portAffects(self.inputB, self.output)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Float]
+
+    @staticmethod
     def category():
         return 'Conditions'
 

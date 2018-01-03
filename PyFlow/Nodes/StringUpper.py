@@ -11,6 +11,10 @@ class StringUpper(Node, NodeBase):
         portAffects(self.in_str, self.out_str)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.String]
+
+    @staticmethod
     def category():
         return 'String'
 

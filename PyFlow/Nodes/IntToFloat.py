@@ -11,6 +11,10 @@ class IntToFloat(ConvertNode, NodeBase):
         portAffects(self.inp0, self.out0)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Int]
+
+    @staticmethod
     def category():
         return 'Convert'
 

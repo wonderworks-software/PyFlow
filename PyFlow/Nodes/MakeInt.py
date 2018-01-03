@@ -13,6 +13,10 @@ class MakeInt(Node, NodeBase):
         self.compute()
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Int]
+
+    @staticmethod
     def category():
         return 'GenericTypes'
 

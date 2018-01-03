@@ -13,6 +13,10 @@ class FloatNode(Node, NodeBase):
         self.compute()
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Float]
+
+    @staticmethod
     def category():
         return 'GenericTypes'
 

@@ -22,6 +22,10 @@ class ForLoopWithBreak(Node, NodeBase):
         portAffects(self.lastIndex, self.index)
         portAffects(self.step, self.index)
 
+    @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Exec, DataTypes.Int]
+
     def interrupt(self):
         self.stop = True
 

@@ -14,6 +14,10 @@ class Max(Node, NodeBase):
         portAffects(self.inp0, self.out0)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Any]
+
+    @staticmethod
     def category():
         return 'Common'
 

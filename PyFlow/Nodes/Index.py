@@ -14,6 +14,10 @@ class Index(Node, NodeBase):
         portAffects(self.value, self.index)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Any]
+
+    @staticmethod
     def category():
         return 'Array'
 

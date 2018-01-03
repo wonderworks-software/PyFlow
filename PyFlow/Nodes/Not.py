@@ -3,10 +3,6 @@ from Settings import *
 from Node import Node
 
 
-DESC = """flifs boolean
-"""
-
-
 class Not(Node, NodeBase):
     def __init__(self, name, graph):
         super(Not, self).__init__(name, graph, spacings=Spacings)
@@ -19,8 +15,12 @@ class Not(Node, NodeBase):
         return 'Common'
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Bool]
+
+    @staticmethod
     def description():
-        return DESC
+        return 'flips boolean'
 
     def compute(self):
 

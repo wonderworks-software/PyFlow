@@ -468,18 +468,34 @@ class NodeBoxTreeWidget(QTreeWidget):
         if doc:
             nodeItem.setToolTip(0, doc)
 
-    def refresh(self, dataType=None, pattern=''):
+    def refresh(self, dataType=None, pattern='', pinType=None):
         self.clear()
         self.categoryPaths = {}
 
         for libName in FunctionLibraries.libs():
             foos = FunctionLibraries.getLib(libName)
             for name, foo in foos:
+                fooArgNames = inspect.getargspec(foo).args
+                fooInpTypes = []
+                # print name,
+                for index in range(len(fooArgNames)):
+                    dType = foo.__annotations__[fooArgNames[index]]
+                    if dType == DataTypes.Reference:
+                        pass
+                    else:
+                        # print getDataTypeName(dType),
+                        fooInpTypes.append(dType)
+                # print
                 nodeCategoryPath = foo.__annotations__['meta']['Category']
                 keywords = foo.__annotations__['meta']['Keywords']
                 checkString = name + nodeCategoryPath + ''.join(keywords)
                 if pattern in checkString.lower():
-                    self.insertNode(nodeCategoryPath, name, foo.__doc__)
+                    # create all nodes items if clicked on canvas
+                    if dataType is None:
+                        self.insertNode(nodeCategoryPath, name, foo.__doc__)
+                    else:
+                        if dataType in fooInpTypes:
+                            self.insertNode(nodeCategoryPath, name, foo.__doc__)
 
         for node_file_name in Nodes.getNodeNames():
             node_class = Nodes.getNode(node_file_name)
@@ -488,8 +504,23 @@ class NodeBoxTreeWidget(QTreeWidget):
             checkString = node_file_name + nodeCategoryPath + ''.join(node_class.keywords())
             if pattern.lower() not in checkString.lower():
                 continue
-
-            self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
+            if dataType is None:
+                self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
+            else:
+                # if pressed pin is output pin
+                # filter by nodes input types
+                if pinType == PinTypes.Output:
+                    if dataType in node_class.inputPinsTypes():
+                        self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
+                else:
+                    # if pressed pin is input pin
+                    # filter by nodes output types
+                    # # if pinType == PinTypes.Input:
+                    self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
+        # expand all categories
+        if dataType is not None:
+            for categoryItem in self.categoryPaths.values():
+                categoryItem.setExpanded(True)
 
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
@@ -853,10 +884,10 @@ class GraphWidget(QGraphicsView, Graph):
         self.codeEditors = {}
         self.nodesMoveInfo = {}
 
-    def showNodeBox(self, dataType=None):
+    def showNodeBox(self, dataType=None, pinType=None):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
-        self.node_box.treeWidget.refresh(dataType)
+        self.node_box.treeWidget.refresh(dataType, '', pinType)
         self.node_box.lineEdit.clear()
         self.node_box.lineEdit.setFocus()
 
@@ -1356,10 +1387,10 @@ class GraphWidget(QGraphicsView, Graph):
                     self.writeToConsole('cycles are not allowed')
                     do_connect = False
 
-        if isinstance(r_itm, QGraphicsPathItem) and isinstance(p_itm, Pin):
+        if not isinstance(r_itm, Pin) and isinstance(p_itm, Pin):
             # node box tree pops up
             # with nodes taking supported data types of pressed Pin as input
-            self.showNodeBox(p_itm.dataType)
+            self.showNodeBox(p_itm.dataType, p_itm.type)
 
         if do_connect:
             if p_itm is not r_itm:

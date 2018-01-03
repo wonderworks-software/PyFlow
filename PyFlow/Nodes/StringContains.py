@@ -12,6 +12,10 @@ class StringContains(Node, NodeBase):
         portAffects(self.second, self.output)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.String]
+
+    @staticmethod
     def category():
         return 'String'
 

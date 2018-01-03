@@ -11,6 +11,10 @@ class StringToInt(ConvertNode, NodeBase):
         portAffects(self.in_str, self.out_int)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.String]
+
+    @staticmethod
     def category():
         return 'Convert'
 

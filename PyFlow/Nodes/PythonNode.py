@@ -24,6 +24,10 @@ class PythonNode(Node, NodeBase):
         self.label().icon = QtGui.QImage(':/icons/resources/py.png')
         self.currentComputeCode = Node.jsonTemplate()['computeCode']
 
+    @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Any]
+
     def computeCode(self):
         return self.currentComputeCode
 

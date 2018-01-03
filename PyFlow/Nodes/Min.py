@@ -15,6 +15,10 @@ class Min(Node, NodeBase):
         portAffects(self.inp, self.out)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Any]
+
+    @staticmethod
     def category():
         return 'Common'
 

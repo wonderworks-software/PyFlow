@@ -15,6 +15,10 @@ class StringReplace(Node, NodeBase):
         portAffects(self.new_ptn, self.output)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.String]
+
+    @staticmethod
     def category():
         return 'String'
 

@@ -13,6 +13,10 @@ class StringNode(Node, NodeBase):
         self.compute()
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.String]
+
+    @staticmethod
     def category():
         return 'GenericTypes'
 

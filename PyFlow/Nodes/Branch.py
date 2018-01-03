@@ -13,6 +13,10 @@ class Branch(Node, NodeBase):
         self.condition = self.addInputPin("condition", DataTypes.Bool)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Exec, DataTypes.Bool]
+
+    @staticmethod
     def category():
         return 'FlowControl'
 

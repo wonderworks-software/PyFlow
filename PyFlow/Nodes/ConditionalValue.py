@@ -15,6 +15,10 @@ class ConditionalValue(Node, NodeBase):
         portAffects(self.falseValue, self.output)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Bool, DataTypes.Any]
+
+    @staticmethod
     def category():
         return 'FlowControl'
 

@@ -11,6 +11,10 @@ class ToString(ConvertNode, NodeBase):
         portAffects(self.in_data, self.out_data)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Any]
+
+    @staticmethod
     def category():
         return 'Convert'
 

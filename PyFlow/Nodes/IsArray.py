@@ -11,6 +11,10 @@ class IsArray(Node, NodeBase):
         portAffects(self.inp, self.out)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Any]
+
+    @staticmethod
     def category():
         return 'Conditions'
 

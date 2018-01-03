@@ -12,6 +12,10 @@ class Print(Node, NodeBase):
         self.obj = self.addInputPin("string", DataTypes.String)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.String]
+
+    @staticmethod
     def category():
         return 'String'
 

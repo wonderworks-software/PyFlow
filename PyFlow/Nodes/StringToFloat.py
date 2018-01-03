@@ -11,6 +11,10 @@ class StringToFloat(ConvertNode, NodeBase):
         portAffects(self.in_str, self.out_flt)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.String]
+
+    @staticmethod
     def category():
         return 'Convert'
 

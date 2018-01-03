@@ -18,6 +18,10 @@ class MakeConstArray(Node, NodeBase):
         con.layout().addItem(prx_btn)
         self.out_arr = self.addOutputPin('out', DataTypes.Array)
 
+    @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Any]
+
     def addInPort(self):
         index = len(self.inputs)
         Pin = self.addInputPin(str(index), DataTypes.Any)

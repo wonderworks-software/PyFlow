@@ -22,6 +22,10 @@ class ArrayAppend(Node, NodeBase):
         portAffects(self.element, self.out_result)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Exec, DataTypes.Array, DataTypes.Any]
+
+    @staticmethod
     def description():
         return '''Appends element to array.'''
 

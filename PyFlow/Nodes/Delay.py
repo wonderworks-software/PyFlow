@@ -13,6 +13,10 @@ class Delay(Node, NodeBase):
         self.process = False
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Exec, DataTypes.Float]
+
+    @staticmethod
     def category():
         return 'FlowControl'
 

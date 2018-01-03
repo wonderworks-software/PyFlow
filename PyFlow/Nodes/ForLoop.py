@@ -21,6 +21,10 @@ class ForLoop(Node, NodeBase):
         portAffects(self.step, self.index)
 
     @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Exec, DataTypes.Int]
+
+    @staticmethod
     def category():
         return 'FlowControl'
 

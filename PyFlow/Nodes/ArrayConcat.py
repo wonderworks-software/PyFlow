@@ -16,6 +16,10 @@ class ArrayConcat(Node, NodeBase):
     def category():
         return 'Array'
 
+    @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Array]
+
     def compute(self):
 
         first = self.arrayA.getData()

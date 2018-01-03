@@ -43,6 +43,10 @@ class RequestNode(Node, NodeBase):
         con2.layout().addItem(prx_btn)
         con.layout().addItem(prx_sb_delta_time)
 
+    @staticmethod
+    def inputPinsTypes():
+        return [DataTypes.Any]
+
     def input_disconnected(self, other):
         if not self.input.hasConnections():
             self.input._connected = False
