@@ -19,14 +19,10 @@ class SetVarNode(Node, NodeBase):
         self.outExec = self.addOutputPin('out0', DataTypes.Exec, hideLabel=True)
         self.value = self.addInputPin('val', self.var.dataType, hideLabel=True)
         self.outValue = self.addOutputPin('valOut', self.var.dataType, hideLabel=True)
-        self.var.valueChanged.connect(self.onVarValueChanged)
+        # self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
-
-    def kill(self):
-        self.var.killed.disconnect()
-        Node.kill(self)
 
     def serialize(self):
         template = Node.serialize(self)
@@ -59,11 +55,7 @@ class SetVarNode(Node, NodeBase):
     def compute(self):
         val = self.value.getData()
 
-        # block signals to prevent recurcive loop
-        self.var.blockSignals(True)
         self.var.value = val
-        self.var.blockSignals(False)
-
         self.outValue.setData(val)
-        push(self.outValue)
+
         self.outExec.call()
