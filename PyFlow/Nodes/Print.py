@@ -12,8 +12,8 @@ class Print(Node, NodeBase):
         self.obj = self.addInputPin("string", DataTypes.String)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.String]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.String, DataTypes.Exec], 'outputs': [DataTypes.Exec]}
 
     @staticmethod
     def category():

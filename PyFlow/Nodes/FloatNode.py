@@ -13,8 +13,8 @@ class FloatNode(Node, NodeBase):
         self.compute()
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Float]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Float], 'outputs': [DataTypes.Float]}
 
     @staticmethod
     def category():

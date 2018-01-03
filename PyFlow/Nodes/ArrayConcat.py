@@ -17,8 +17,8 @@ class ArrayConcat(Node, NodeBase):
         return 'Array'
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Array]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Array], 'outputs': [DataTypes.Array]}
 
     def compute(self):
 

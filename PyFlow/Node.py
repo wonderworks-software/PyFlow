@@ -324,8 +324,8 @@ class Node(QGraphicsItem, NodeBase):
         return "Default node description"
 
     @staticmethod
-    def inputPinsTypes():
-        return []
+    def pinTypeHints():
+        return {'inputs': [], 'outputs': []}
 
     def postCreate(self, jsonTemplate=None):
         for i in range(0, self.inputsLayout.count()):

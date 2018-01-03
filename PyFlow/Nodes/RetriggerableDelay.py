@@ -17,8 +17,8 @@ class RetriggerableDelay(Node, NodeBase):
         self.process = False
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Exec, DataTypes.Float]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Exec, DataTypes.Float], 'outputs': [DataTypes.Exec]}
 
     @staticmethod
     def category():

@@ -13,8 +13,8 @@ class Branch(Node, NodeBase):
         self.condition = self.addInputPin("condition", DataTypes.Bool)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Exec, DataTypes.Bool]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Exec, DataTypes.Bool], 'outputs': [DataTypes.Bool]}
 
     @staticmethod
     def category():

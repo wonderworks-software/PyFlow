@@ -13,8 +13,8 @@ class StringNode(Node, NodeBase):
         self.compute()
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.String]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.String], 'outputs': [DataTypes.String]}
 
     @staticmethod
     def category():

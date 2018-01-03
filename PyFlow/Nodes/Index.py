@@ -14,8 +14,8 @@ class Index(Node, NodeBase):
         portAffects(self.value, self.index)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Any]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Any], 'outputs': [DataTypes.Bool, DataTypes.Float]}
 
     @staticmethod
     def category():

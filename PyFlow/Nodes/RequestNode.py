@@ -44,8 +44,8 @@ class RequestNode(Node, NodeBase):
         con.layout().addItem(prx_sb_delta_time)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Any]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Any], 'outputs': []}
 
     def input_disconnected(self, other):
         if not self.input.hasConnections():

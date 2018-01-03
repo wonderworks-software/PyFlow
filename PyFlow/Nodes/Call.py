@@ -44,6 +44,10 @@ class Call(Node, NodeBase):
         con2.layout().addItem(prx_cb)
         con2.layout().addItem(prx_btn)
 
+    @staticmethod
+    def pinTypeHints():
+        return {'inputs': [], 'outputs': [DataTypes.Exec]}
+
     def serialize(self):
         template = Node.serialize(self)
         template['meta']['deltaTime'] = self.spin_box.value()

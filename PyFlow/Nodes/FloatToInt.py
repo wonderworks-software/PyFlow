@@ -11,8 +11,8 @@ class FloatToInt(ConvertNode, NodeBase):
         portAffects(self.fromType, self.toType)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Float]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Float], 'outputs': [DataTypes.Int]}
 
     @staticmethod
     def description():

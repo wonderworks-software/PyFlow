@@ -15,8 +15,8 @@ class ConditionalValue(Node, NodeBase):
         portAffects(self.falseValue, self.output)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Bool, DataTypes.Any]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Bool, DataTypes.Any], 'outputs': [DataTypes.Any]}
 
     @staticmethod
     def category():

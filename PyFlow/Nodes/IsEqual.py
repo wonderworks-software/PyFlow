@@ -12,8 +12,8 @@ class IsEqual(Node, NodeBase):
         portAffects(self.inputB, self.output)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Any]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Any], 'outputs': [DataTypes.Bool]}
 
     @staticmethod
     def category():

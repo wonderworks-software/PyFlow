@@ -13,8 +13,8 @@ class MakeInt(Node, NodeBase):
         self.compute()
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Int]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Int], 'outputs': [DataTypes.Int]}
 
     @staticmethod
     def category():

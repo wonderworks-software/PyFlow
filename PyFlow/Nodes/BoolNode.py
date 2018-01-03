@@ -17,8 +17,8 @@ class BoolNode(Node, NodeBase):
         portAffects(self.input, self.output)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Bool]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Bool], 'outputs': [DataTypes.Bool]}
 
     @staticmethod
     def description():

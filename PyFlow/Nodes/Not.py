@@ -15,8 +15,8 @@ class Not(Node, NodeBase):
         return 'Common'
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Bool]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Bool], 'outputs': [DataTypes.Bool]}
 
     @staticmethod
     def description():

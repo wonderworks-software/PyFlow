@@ -12,8 +12,8 @@ class StringContains(Node, NodeBase):
         portAffects(self.second, self.output)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.String]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.String], 'outputs': [DataTypes.Bool]}
 
     @staticmethod
     def category():

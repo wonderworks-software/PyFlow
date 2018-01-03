@@ -12,8 +12,8 @@ class IsLessThan(Node, NodeBase):
         portAffects(self.inputB, self.output)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Float]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Float], 'outputs': [DataTypes.Bool]}
 
     @staticmethod
     def category():

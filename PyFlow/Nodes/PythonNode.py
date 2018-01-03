@@ -25,8 +25,8 @@ class PythonNode(Node, NodeBase):
         self.currentComputeCode = Node.jsonTemplate()['computeCode']
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Any]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Any], 'outputs': [DataTypes.Any]}
 
     def computeCode(self):
         return self.currentComputeCode

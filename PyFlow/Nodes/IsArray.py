@@ -11,8 +11,8 @@ class IsArray(Node, NodeBase):
         portAffects(self.inp, self.out)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Any]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Any], 'outputs': [DataTypes.Bool]}
 
     @staticmethod
     def category():

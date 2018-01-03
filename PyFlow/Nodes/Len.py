@@ -13,8 +13,8 @@ class Len(Node, NodeBase):
         portAffects(self.in_arr, self.out_len)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Any]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Any], 'outputs': [DataTypes.Int, DataTypes.Bool]}
 
     @staticmethod
     def category():

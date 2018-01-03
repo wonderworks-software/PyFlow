@@ -19,8 +19,8 @@ class MakeConstArray(Node, NodeBase):
         self.out_arr = self.addOutputPin('out', DataTypes.Array)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.Any]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.Any], 'outputs': [DataTypes.Array]}
 
     def addInPort(self):
         index = len(self.inputs)

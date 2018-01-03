@@ -11,8 +11,8 @@ class StringLower(Node, NodeBase):
         portAffects(self.in_str, self.out_str)
 
     @staticmethod
-    def inputPinsTypes():
-        return [DataTypes.String]
+    def pinTypeHints():
+        return {'inputs': [DataTypes.String], 'outputs': [DataTypes.String]}
 
     @staticmethod
     def category():
