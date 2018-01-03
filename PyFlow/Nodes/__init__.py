@@ -11,9 +11,13 @@ _instances = {}
 for n in os.listdir(os.path.dirname(__file__)):
     if n.endswith(".py") and "__init__" not in n:
         nodeName = n.split(".")[0]
-        exec("from {0} import *".format(nodeName))
-        exec("node_class = {0}".format(nodeName))
-        _instances[nodeName] = node_class
+        try:
+            exec("from {0} import *".format(nodeName))
+            exec("node_class = {0}".format(nodeName))
+            _instances[nodeName] = node_class
+        except:
+            # do not load node if errors or unknown modules
+            pass
 
 
 def getNode(name):

@@ -9,12 +9,16 @@ _foos = {}
 for lib in os.listdir(os.path.dirname(__file__)):
     if lib.endswith(".py") and "__init__" not in lib:
         libName = lib.split(".")[0]
-        exec('from {0} import {0}'.format(libName))
-        exec('lib_class = {0}'.format(libName))
-        foos = getmembers(lib_class, isfunction)
-        _libs[libName] = foos
-        for f in _libs[libName]:
-            _foos[f[0]] = f[1]
+        try:
+            exec('from {0} import {0}'.format(libName))
+            exec('lib_class = {0}'.format(libName))
+            foos = getmembers(lib_class, isfunction)
+            _libs[libName] = foos
+            for f in _libs[libName]:
+                _foos[f[0]] = f[1]
+        except:
+            # not load lib if any errors or unknown modules etc.
+            pass
 
 
 def getLib(libName):

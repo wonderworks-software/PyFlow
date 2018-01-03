@@ -113,7 +113,7 @@ class {0}(Node, NodeBase):
             used by nodebox to suggest supported pins
             when drop wire from pin into empty space
         '''
-        return {'inputs': [DataTypes.Any], 'outputs': [DataTypes.Any]}
+        return {{'inputs': [DataTypes.Any], 'outputs': [DataTypes.Any]}}
 
     @staticmethod
     def category():
