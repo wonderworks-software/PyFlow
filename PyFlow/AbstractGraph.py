@@ -52,11 +52,12 @@ class PinBase(object):
             self.supportedDataTypes.append(value)
 
     def kill(self):
-        self.parent().graph().pins.pop(self.uid)
         if self.type == PinTypes.Input and self.uid in self.parent().inputs:
             self.parent().inputs.pop(self.uid)
         if self.type == PinTypes.Output and self.uid in self.parent().outputs:
             self.parent().outputs.pop(self.uid)
+        if self.uid in self.parent().graph().pins:
+            self.parent().graph().pins.pop(self.uid)
 
     def pinName(self):
         return self.parent().name + '.' + self.name

@@ -134,10 +134,11 @@ class PinWidget(QWidget, PinWidget_ui.Ui_Form):
 
 
 class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
-    def __init__(self, node, uid):
+    def __init__(self, graph, node, uid):
         super(CodeEditor, self).__init__()
         self.setupUi(self)
-        self.node = node
+        self.graph = graph
+        self.nodeUid = node.uid
         self.uid = uid
 
         # insert code editor
@@ -181,7 +182,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     def closeEvent(self, event):
         event.accept()
         try:
-            ed = self.node.graph().codeEditors.pop(self.uid)
+            ed = self.graph().codeEditors.pop(self.uid)
             ed.deleteLater()
         except:
             pass
@@ -190,15 +191,16 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         '''
         populate ui from node
         '''
-        for i in self.node.inputs.values():
+        node = self.graph.nodes[self.nodeUid]
+        for i in node.inputs.values():
             pw = PinWidget.construct(i.name, i.bLabelHidden, i.dataType, self)
             self.appendInput(pw)
-        for o in self.node.outputs.values():
+        for o in node.outputs.values():
             pw = PinWidget.construct(o.name, o.bLabelHidden, o.dataType, self)
             self.appendOutput(pw)
-        self.leLabel.setText(self.node.label().toPlainText())
+        self.leLabel.setText(node.label().toPlainText())
         code = ""
-        for line in self.node.currentComputeCode:
+        for line in node.currentComputeCode:
             code += line
         self.plainTextEdit.setPlainText(code)
 
@@ -207,12 +209,18 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.lwOutputs.clear()
 
     def resetNode(self):
-        for i in self.node.inputs.values() + self.node.outputs.values():
+        node = self.graph.nodes[self.nodeUid]
+        for i in node.inputs.values():
             i.kill()
-        for i in range(self.node.inputsLayout.count()):
-            self.node.inputsLayout.removeAt(0)
-        for i in range(self.node.outputsLayout.count()):
-            self.node.outputsLayout.removeAt(0)
+        for o in node.outputs.values():
+            o.kill()
+        node.inputs.clear()
+        node.outputs.clear()
+
+        for i in range(node.inputsLayout.count()):
+            node.inputsLayout.removeAt(0)
+        for i in range(node.outputsLayout.count()):
+            node.outputsLayout.removeAt(0)
 
     @staticmethod
     def wrapCodeToFunction(fooName, code):
@@ -225,24 +233,25 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     def applyData(self):
         # reset node
         self.resetNode()
+        node = self.graph.nodes[self.nodeUid]
 
         # label
         lbText = self.leLabel.text()
         if not lbText == '':
-            self.node.label().setPlainText(lbText)
-            self.node.name = lbText
+            node.label().setPlainText(lbText)
+            node.name = lbText
 
         # assign compute method
         code = self.plainTextEdit.toPlainText()
         foo = CodeEditor.wrapCodeToFunction('compute', code)
         exec(foo)
-        self.node.compute = MethodType(compute, self.node, Node)
-        self.node.currentComputeCode = code
+        node.compute = MethodType(compute, node, Node)
+        node.currentComputeCode = code
 
         for index in range(self.lwOutputs.count()):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
             if isinstance(w, PinWidget):
-                p = self.node.addOutputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
+                p = node.addOutputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
                 w.lePinName.setText(p.name)
 
         # recreate pins from editor data
@@ -250,14 +259,14 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             w = self.lwInputs.itemWidget(self.lwInputs.item(index))
             if isinstance(w, PinWidget):
                 if w.dataType() == DataTypes.Exec:
-                    p = self.node.addInputPin(w.name(), w.dataType(), self.node.compute, w.shouldHideLabel())
+                    p = node.addInputPin(w.name(), w.dataType(), node.compute, w.shouldHideLabel())
                     w.lePinName.setText(p.name)
                 else:
-                    p = self.node.addInputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
+                    p = node.addInputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
                     w.lePinName.setText(p.name)
 
-        for i in self.node.inputs.values():
-            for o in self.node.outputs.values():
+        for i in node.inputs.values():
+            for o in node.outputs.values():
                 portAffects(i, o)
 
     def appendInput(self, pw):

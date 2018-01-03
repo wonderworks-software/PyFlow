@@ -29,7 +29,7 @@ class PythonNode(Node, NodeBase):
 
     def openEditor(self):
         self.editorUUID = uuid.uuid4()
-        self.graph().codeEditors[self.editorUUID] = CodeEditor(self, self.editorUUID)
+        self.graph().codeEditors[self.editorUUID] = CodeEditor(self.graph(), self, self.editorUUID)
         self.graph().codeEditors[self.editorUUID].show()
 
     def kill(self):
