@@ -108,18 +108,46 @@ class {0}(Node, NodeBase):
         portAffects(self.inp0, self.out0)
 
     @staticmethod
+    def pinTypeHints():
+        '''
+            used by nodebox to suggest supported pins
+            when drop wire from pin into empty space
+        '''
+        return {'inputs': [DataTypes.Any], 'outputs': [DataTypes.Any]}
+
+    @staticmethod
     def category():
+        '''
+            used by nodebox to place in tree
+            to make nested one - use '|' like this ( 'CatName|SubCatName' )
+        '''
         return 'Common'
 
     @staticmethod
     def keywords():
+        '''
+            used by nodebox filter while typing
+        '''
         return []
 
     @staticmethod
     def description():
+        '''
+            used by property view and node box widgets
+        '''
         return 'default description'
 
     def compute(self):
+        '''
+            1) get data from inputs
+            2) do stuff
+            3) put data to outputs
+            4) call output execs
+
+            IMPORTANT!:
+                Call output execs after all data was written into value pins
+                otherwise recursive loop may occur
+        '''
 
         str_data = self.inp0.getData()
         try:
