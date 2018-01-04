@@ -52,4 +52,3 @@ class MakeConstArray(Node, NodeBase):
 
     def compute(self):
         self.out_arr.setData(list([i.getData() for i in self.inputs.values()]))
-        # push(self.out_arr)

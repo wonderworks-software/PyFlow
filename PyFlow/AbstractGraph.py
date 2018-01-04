@@ -98,7 +98,7 @@ class PinBase(object):
         if not self.hasConnections():
             if self.dataType == DataTypes.Array:
                 return []
-            return self.currentData()
+            return self._data
 
         if self.type == PinTypes.Output:
             if self.dirty:
@@ -130,16 +130,13 @@ class PinBase(object):
             else:
                 self.setClean()
                 return self._data
-        else:
-            self.setClean()
-            return self._data
 
     @staticmethod
     def str2bool(v):
         return v.lower() in ("true", "1")
 
     def call(self):
-        for p in self.affects:
+        for p in [pin for pin in self.affects if pin.dataType == DataTypes.Exec]:
             p.call()
 
     def setData(self, data):
@@ -369,32 +366,25 @@ class Graph(object):
     @staticmethod
     def getNextLayerNodes(node, direction=PinTypes.Input):
         nodes = []
+        '''
+            callable nodes skipped
+            because execution flow is defined by execution wires
+        '''
         if direction == PinTypes.Input:
-            if not node.inputs.values() == []:
+            if not len(node.inputs) == 0:
                 for i in node.inputs.values():
-                    if not i.affected_by == []:
+                    if not len(i.affected_by) == 0:
                         for a in i.affected_by:
-                            # if not dirty_only:
                             if not a.parent().bCallable:
                                 nodes.append(a.parent())
-                            # else:
-                            #     if a.dirty and not a.parent().bCallable:
-                            #         nodes.append(a.parent())
-            # non callable first
-            nodes.sort(key=lambda x: x.bCallable is True)
             return nodes
         if direction == PinTypes.Output:
-            if not node.outputs.values() == []:
+            if not len(node.outputs) == 0:
                 for i in node.outputs.values():
-                    if not i.affects == []:
+                    if not len(i.affects) == 0:
                         for p in i.affects:
-                            # if not dirty_only:
-                            nodes.append(p.parent())
-                            # else:
-                            #     if not [dout for dout in p.affects if dout.dirty] == []:
-                            #         nodes.append(p.parent())
-            # non callable first
-            nodes.sort(key=lambda x: x.bCallable is True)
+                            if not p.parent().bCallable:
+                                nodes.append(p.parent())
             return nodes
 
     def getNodes(self):

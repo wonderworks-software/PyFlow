@@ -333,9 +333,6 @@ class MathLib(FunctionLibraryBase):
     def randint(start=(DataTypes.Int, 0), end=(DataTypes.Int, 10), Result=(DataTypes.Reference, DataTypes.Int)):
         '''Return a random integer N such that a <= N <= b.'''
         Result.setData(random.randint(start, end))
-        # this node returns new data every frame
-        # makew shure to push dirty flag forward
-        push(Result)
 
     @staticmethod
     @annotated(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
@@ -343,7 +340,6 @@ class MathLib(FunctionLibraryBase):
         '''Shuffle the sequence x in place.'''
         random.shuffle(seq)
         Result.setData(seq)
-        push(Result)
 
     @staticmethod
     @annotated(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
@@ -353,12 +349,8 @@ class MathLib(FunctionLibraryBase):
             item = random.choice(seq)
             Item.setData(item)
             Result.setData(True)
-            push(Result)
-            push(Item)
         except:
             Result.setData(False)
-            push(Result)
-            push(Item)
             Item.setData(None)
 
     @staticmethod
