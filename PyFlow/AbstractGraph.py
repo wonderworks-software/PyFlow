@@ -1,4 +1,3 @@
-# # from threading import Thread
 from AGraphCommon import *
 import weakref
 import uuid
@@ -277,7 +276,6 @@ class Graph(object):
         super(Graph, self).__init__()
         self.object_type = ObjectTypes.Graph
         self._debug = False
-        self._multithreaded = False
         self.name = name
         self.nodes = {}
         self.nodesPendingKill = []
@@ -316,15 +314,6 @@ class Graph(object):
             return
         self._debug = state
 
-    def isMultithreaded(self):
-        return self._multithreaded
-
-    def setMultithreaded(self, state):
-        if not isinstance(state, bool):
-            print 'bool expected. skipped'
-            return
-        self._multithreaded = state
-
     def getEvaluationOrder(self, node):
 
         order = {0: []}
@@ -337,9 +326,6 @@ class Graph(object):
             if not process:
                 return
             next_layer_nodes = self.getNextLayerNodes(n, PinTypes.Input)
-
-            # if not n.bCallable and any([j.bCallable for j in next_layer_nodes]):
-            #     return False
 
             layer_idx = max(order.iterkeys()) + 1
             for n in next_layer_nodes:
