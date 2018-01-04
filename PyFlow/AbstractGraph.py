@@ -1,4 +1,4 @@
-from threading import Thread
+# # from threading import Thread
 from AGraphCommon import *
 import weakref
 import uuid
@@ -37,7 +37,6 @@ class PinBase(object):
     def uid(self, value):
         self.parent().graph().pins[value] = self.parent().graph().pins.pop(self._uid)
         self._uid = value
-        # self.parent().graph().pins[self._uid] = self
 
     @property
     def dataType(self):
@@ -104,27 +103,22 @@ class PinBase(object):
             if self.dirty:
                 compute_order = self.parent().graph().getEvaluationOrder(self.parent())
                 for i in reversed(sorted([i for i in compute_order.keys()])):
-                    if not self.parent().graph().isMultithreaded():
-                        for n in compute_order[i]:
-                            n.compute()
-                    else:
-                        calc_multithreaded(compute_order[i])
+                    for n in compute_order[i]:
+                        n.compute()
                 self.setClean()
                 return self._data
             else:
                 self.setClean()
                 return self._data
         if self.type == PinTypes.Input:
-            if self.dirty:
+            if self.dirty or self.parent().bCallable:
                 out = [i for i in self.affected_by if i.type == PinTypes.Output]
                 if not out == []:
                     compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
-                        if not self.parent().graph().isMultithreaded():
-                            for n in compute_order[layer]:
-                                n.compute()
-                        else:
-                            calc_multithreaded(compute_order[layer])
+                        for n in compute_order[layer]:
+                            # if not n.bCallable:
+                            n.compute()
                     self.setClean()
                     return out[0]._data
             else:
@@ -333,7 +327,9 @@ class Graph(object):
 
     def getEvaluationOrder(self, node):
 
-        order = {0: [node]}
+        order = {0: []}
+        if not node.bCallable:
+            order[0].append(node)
 
         bProcess = True
 
@@ -352,9 +348,8 @@ class Graph(object):
                 order[layer_idx].append(n)
             for i in next_layer_nodes:
                 foo(i)
-            return True
 
-        bProcess = foo(node, bProcess)
+        foo(node)
         # make sure no copies of nodes in higher layers (non directional cycles)
         for i in reversed(sorted([i for i in order.iterkeys()])):
             for iD in range(i - 1, -1, -1):

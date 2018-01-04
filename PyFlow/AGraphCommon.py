@@ -27,12 +27,13 @@ def pinAffects(affects_port, affected_port):
 
 
 def calc_multithreaded(ls):
-    def compute_executor():
-        for n in ls:
-            n.compute()
+
+    def compute_executor(node):
+        node.compute()
+
     threads = []
     for n in ls:
-        t = Thread(target=compute_executor, name='{0}_thread'.format(n.name))
+        t = Thread(target=compute_executor, args=(n,))
         threads.append(t)
         t.start()
 

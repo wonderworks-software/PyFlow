@@ -41,7 +41,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionConsole.triggered.connect(self.toggle_console)
         self.actionPropertyView.triggered.connect(self.toggle_property_view)
-        self.actionMultithreaded.triggered.connect(self.toggle_multithreaded)
         self.actionDebug.triggered.connect(self.toggle_debug)
         self.actionScreenshot.triggered.connect(self.G.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
@@ -123,14 +122,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         data += "Ctrl+Shift+Q - Align Up\n"
 
         QMessageBox.information(self, "Shortcuts", data)
-
-    def toggle_multithreaded(self):
-
-        self.G.setMultithreaded(not self.G.isMultithreaded())
-        if self.G.isMultithreaded():
-            self.G.notify("Multithreaded mode enabled", 3000)
-        else:
-            self.G.notify("Multithreaded mode disabled", 3000)
 
     def toggle_console(self):
 

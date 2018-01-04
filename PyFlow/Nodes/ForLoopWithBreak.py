@@ -50,6 +50,5 @@ class ForLoopWithBreak(Node, NodeBase):
                 break
             self.index.setData(i)
             self.loopBody.call()
-            # push(self.index)
         self.completed.call()
         self.stop = False

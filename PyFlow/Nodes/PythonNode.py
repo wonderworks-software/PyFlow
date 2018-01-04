@@ -73,6 +73,8 @@ class PythonNode(Node, NodeBase):
         # restore node label
         self.label().setPlainText(jsonTemplate['meta']['label'])
 
+        self.bCallable = self.isCallable()
+
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())
 
