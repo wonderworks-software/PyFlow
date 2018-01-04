@@ -20,6 +20,7 @@ class Print(Node, NodeBase):
         return 'String'
 
     def compute(self):
+        self.obj.setDirty()
         if self.inExec.hasConnections():
             data = self.obj.getData()
             self.graph().writeToConsole(data)

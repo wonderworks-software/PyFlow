@@ -118,7 +118,7 @@ class PinBase(object):
             if self.dirty:
                 out = [i for i in self.affected_by if i.type == PinTypes.Output]
                 if not out == []:
-                    compute_order = self.parent().graph().getEvaluationOrder(out[0].parent(), False)
+                    compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
                         if not self.parent().graph().isMultithreaded():
                             for n in compute_order[layer]:
@@ -334,7 +334,7 @@ class Graph(object):
             return
         self._multithreaded = state
 
-    def getEvaluationOrder(self, node, dirty_only=True):
+    def getEvaluationOrder(self, node):
 
         order = {0: [node]}
 
@@ -343,10 +343,10 @@ class Graph(object):
         def foo(n, process=True):
             if not process:
                 return
-            next_layer_nodes = self.getNextLayerNodes(n, PinTypes.Input, dirty_only)
+            next_layer_nodes = self.getNextLayerNodes(n, PinTypes.Input)
 
-            if not n.bCallable and any([j.bCallable for j in next_layer_nodes]):
-                return False
+            # if not n.bCallable and any([j.bCallable for j in next_layer_nodes]):
+            #     return False
 
             layer_idx = max(order.iterkeys()) + 1
             for n in next_layer_nodes:
@@ -364,33 +364,37 @@ class Graph(object):
                 for check_node in order[i]:
                     if check_node in order[iD]:
                         order[iD].remove(check_node)
-
         return order
 
     @staticmethod
-    def getNextLayerNodes(node, direction=PinTypes.Input, dirty_only=False):
+    def getNextLayerNodes(node, direction=PinTypes.Input):
         nodes = []
         if direction == PinTypes.Input:
             if not node.inputs.values() == []:
                 for i in node.inputs.values():
                     if not i.affected_by == []:
                         for a in i.affected_by:
-                            if not dirty_only:
+                            # if not dirty_only:
+                            if not a.parent().bCallable:
                                 nodes.append(a.parent())
-                            else:
-                                if a.dirty:
-                                    nodes.append(a.parent())
+                            # else:
+                            #     if a.dirty and not a.parent().bCallable:
+                            #         nodes.append(a.parent())
+            # non callable first
+            nodes.sort(key=lambda x: x.bCallable is True)
             return nodes
         if direction == PinTypes.Output:
             if not node.outputs.values() == []:
                 for i in node.outputs.values():
                     if not i.affects == []:
                         for p in i.affects:
-                            if not dirty_only:
-                                nodes.append(p.parent())
-                            else:
-                                if not [dout for dout in p.affects if dout.dirty] == []:
-                                    nodes.append(p.parent())
+                            # if not dirty_only:
+                            nodes.append(p.parent())
+                            # else:
+                            #     if not [dout for dout in p.affects if dout.dirty] == []:
+                            #         nodes.append(p.parent())
+            # non callable first
+            nodes.sort(key=lambda x: x.bCallable is True)
             return nodes
 
     def getNodes(self):

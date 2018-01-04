@@ -70,7 +70,7 @@ class Pin(QGraphicsWidget, PinBase):
         for i, k in order.iteritems():
             print i,
             for node in [n for n in k]:
-                print node.name, node.bCallable,
+                print node.name, '->', 
             print
         print('----------\n')
 

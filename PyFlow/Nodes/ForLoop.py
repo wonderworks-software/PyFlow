@@ -37,7 +37,7 @@ class ForLoop(Node, NodeBase):
         return 'For loop'
 
     def compute(self):
-        self.index.setClean()
+        # self.index.setClean()
 
         indexFrom = self.firstIndex.getData()
         indexTo = self.lastIndex.getData()
