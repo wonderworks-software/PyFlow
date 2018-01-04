@@ -8,7 +8,7 @@ class StringToInt(ConvertNode, NodeBase):
         super(StringToInt, self).__init__(name, graph)
         self.in_str = self.addInputPin('str', DataTypes.String, hideLabel=True, bCreateInputWidget=False)
         self.out_int = self.addOutputPin('int', DataTypes.Int, hideLabel=True, bCreateInputWidget=False)
-        portAffects(self.in_str, self.out_int)
+        pinAffects(self.in_str, self.out_int)
 
     @staticmethod
     def pinTypeHints():

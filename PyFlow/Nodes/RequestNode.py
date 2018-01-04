@@ -77,18 +77,7 @@ class RequestNode(Node, NodeBase):
             self.stop()
 
     def compute(self):
-        # check if any dirty nodes before connected Pin.
-        # randint for example
-        # if so push forward and recompute
-
-        behind_dirty_ports = [p for p in findPinsBehind(self.input) if p.dirty is True]
-        shouldRecalc = (not len(behind_dirty_ports) == 0)
-        if shouldRecalc:
-            # push from dirty ports
-            # request data
-            for p in behind_dirty_ports:
-                push(p)
-
+        self.input.setDirty()
         data = self.input.getData()
         self.graph().writeToConsole(str(data))
         print(str(data))

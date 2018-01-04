@@ -50,4 +50,4 @@ class GetVarNode(Node, NodeBase):
 
     def compute(self):
         self.out.setData(self.var.value)
-        push(self.out)
+        # push(self.out)

@@ -8,8 +8,8 @@ class IsGreaterThan(Node, NodeBase):
         self.inputA = self.addInputPin('inputA', DataTypes.Float)
         self.inputB = self.addInputPin('inputB', DataTypes.Float)
         self.output = self.addOutputPin('output', DataTypes.Bool)
-        portAffects(self.inputA, self.output)
-        portAffects(self.inputB, self.output)
+        pinAffects(self.inputA, self.output)
+        pinAffects(self.inputB, self.output)
 
     @staticmethod
     def pinTypeHints():

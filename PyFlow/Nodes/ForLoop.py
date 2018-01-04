@@ -16,9 +16,9 @@ class ForLoop(Node, NodeBase):
         self.index = self.addOutputPin('Index', DataTypes.Int)
         self.completed = self.addOutputPin('Completed', DataTypes.Exec)
 
-        portAffects(self.firstIndex, self.index)
-        portAffects(self.lastIndex, self.index)
-        portAffects(self.step, self.index)
+        pinAffects(self.firstIndex, self.index)
+        pinAffects(self.lastIndex, self.index)
+        pinAffects(self.step, self.index)
 
     @staticmethod
     def pinTypeHints():
@@ -37,11 +37,15 @@ class ForLoop(Node, NodeBase):
         return 'For loop'
 
     def compute(self):
+        self.index.setClean()
+
         indexFrom = self.firstIndex.getData()
         indexTo = self.lastIndex.getData()
         step = self.step.getData()
-        for i in range(indexFrom, indexTo, step):
-            self.index.setData(i)
-            self.loopBody.call()
-            push(self.index)
-        self.completed.call()
+        if step == 0:
+            self.completed.call()
+        else:
+            for i in range(indexFrom, indexTo, step):
+                self.index.setData(i)
+                self.loopBody.call()
+            self.completed.call()

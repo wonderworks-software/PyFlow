@@ -105,7 +105,7 @@ class {0}(Node, NodeBase):
         super({0}, self).__init__(name, graph, w=100, spacings=Spacings)
         self.inp0 = self.addInputPin('in0', DataTypes.Any)
         self.out0 = self.addOutputPin('out0', DataTypes.Any)
-        portAffects(self.inp0, self.out0)
+        pinAffects(self.inp0, self.out0)
 
     @staticmethod
     def pinTypeHints():
@@ -1174,7 +1174,6 @@ class GraphWidget(QGraphicsView, Graph):
                     instance.label().width = rect.width()
                     instance.label().adjustSizes()
 
-
         if all([event.key() == QtCore.Qt.Key_Z, modifiers == QtCore.Qt.ControlModifier]):
             if self.isShortcutsEnabled():
                 self.undoStack.undo()
@@ -1395,7 +1394,7 @@ class GraphWidget(QGraphicsView, Graph):
                 dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
                 if all([abs(i) < 0.2 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
-        if event.button() == QtCore.Qt.LeftButton:
+        if event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, Pin):
             if isinstance(self.pressed_item, Pin):
                 # node box tree pops up
                 # with nodes taking supported data types of pressed Pin as input

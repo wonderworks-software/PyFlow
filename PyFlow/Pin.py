@@ -29,8 +29,10 @@ class Pin(QGraphicsWidget, PinBase):
         self.setParentItem(parent)
         self.setCursor(QtCore.Qt.CrossCursor)
         self.menu = QMenu()
-        self.disconnected = self.menu.addAction('Disconnect all')
-        self.disconnected.triggered.connect(self.disconnectAll)
+        self.actionDisconnect = self.menu.addAction('Disconnect all')
+        self.actionGetData = self.menu.addAction('Get order')
+        self.actionDisconnect.triggered.connect(self.disconnectAll)
+        self.actionGetData.triggered.connect(self.OnGetEvalOrderDebug)
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
@@ -62,6 +64,15 @@ class Pin(QGraphicsWidget, PinBase):
 
         self.portImage = QtGui.QImage(':/icons/resources/array.png')
         self.bLabelHidden = False
+
+    def OnGetEvalOrderDebug(self):
+        order = self.parent().graph().getEvaluationOrder(self.parent())
+        for i, k in order.iteritems():
+            print i,
+            for node in [n for n in k]:
+                print node.name, node.bCallable,
+            print
+        print('----------\n')
 
     def setData(self, data):
         PinBase.setData(self, data)

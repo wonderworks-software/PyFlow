@@ -8,7 +8,7 @@ class StringToFloat(ConvertNode, NodeBase):
         super(StringToFloat, self).__init__(name, graph)
         self.in_str = self.addInputPin('str', DataTypes.String, hideLabel=True, bCreateInputWidget=False)
         self.out_flt = self.addOutputPin('float', DataTypes.Float, hideLabel=True, bCreateInputWidget=False)
-        portAffects(self.in_str, self.out_flt)
+        pinAffects(self.in_str, self.out_flt)
 
     @staticmethod
     def pinTypeHints():

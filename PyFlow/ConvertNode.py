@@ -21,7 +21,7 @@ class ConvertNode(Node, NodeBase):
             pin = super(ConvertNode, self).addInputPin(*args, **kwargs)
             pin.getLayout().setMaximumWidth(10)
             pin._container.layout().setMaximumWidth(10)
-            pin._container.layout().setMinimumHeight(50)
+            # pin._container.layout().setMinimumHeight(50)
             pin._container.setMaximumWidth(10)
             return pin
 

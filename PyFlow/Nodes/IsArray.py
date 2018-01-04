@@ -8,7 +8,7 @@ class IsArray(Node, NodeBase):
         super(IsArray, self).__init__(name, graph, spacings=Spacings)
         self.inp = self.addInputPin('obj', DataTypes.Any)
         self.out = self.addOutputPin('out', DataTypes.Bool)
-        portAffects(self.inp, self.out)
+        pinAffects(self.inp, self.out)
 
     @staticmethod
     def pinTypeHints():

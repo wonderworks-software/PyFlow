@@ -96,6 +96,8 @@ class PinBase(object):
 
         # if not connected - return data
         if not self.hasConnections():
+            if self.dataType == DataTypes.Array:
+                return []
             return self.currentData()
 
         if self.type == PinTypes.Output:
@@ -116,7 +118,7 @@ class PinBase(object):
             if self.dirty:
                 out = [i for i in self.affected_by if i.type == PinTypes.Output]
                 if not out == []:
-                    compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
+                    compute_order = self.parent().graph().getEvaluationOrder(out[0].parent(), False)
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
                         if not self.parent().graph().isMultithreaded():
                             for n in compute_order[layer]:
@@ -178,6 +180,7 @@ class NodeBase(object):
         self.outputs = OrderedDict()
         self.x = 0.0
         self.y = 0.0
+        self.bCallable = False
 
     @property
     def uid(self):
@@ -189,6 +192,12 @@ class NodeBase(object):
             self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
             self._uid = value
             # self.graph().nodes[self._uid] = self
+
+    def isCallable(self):
+        for p in self.inputs.values() + self.outputs.values():
+            if p.dataType == DataTypes.Exec:
+                return True
+        return False
 
     def setPosition(self, x, y):
         self.x = x
@@ -249,7 +258,8 @@ class NodeBase(object):
                     return p
 
     def postCreate(self, jsonTemplate=None):
-        pass
+        if self.isCallable():
+            self.bCallable = True
 
     def computeCode(self):
         lines = inspect.getsourcelines(self.compute)[0]
@@ -328,23 +338,33 @@ class Graph(object):
 
         order = {0: [node]}
 
-        def foo(n):
+        bProcess = True
+
+        def foo(n, process=True):
+            if not process:
+                return
             next_layer_nodes = self.getNextLayerNodes(n, PinTypes.Input, dirty_only)
+
+            if not n.bCallable and any([j.bCallable for j in next_layer_nodes]):
+                return False
+
             layer_idx = max(order.iterkeys()) + 1
             for n in next_layer_nodes:
                 if layer_idx not in order:
                     order[layer_idx] = []
                 order[layer_idx].append(n)
-            if not next_layer_nodes == []:
-                for i in next_layer_nodes:
-                    foo(i)
-        foo(node)
+            for i in next_layer_nodes:
+                foo(i)
+            return True
+
+        bProcess = foo(node, bProcess)
         # make sure no copies of nodes in higher layers (non directional cycles)
         for i in reversed(sorted([i for i in order.iterkeys()])):
             for iD in range(i - 1, -1, -1):
                 for check_node in order[i]:
                     if check_node in order[iD]:
                         order[iD].remove(check_node)
+
         return order
 
     @staticmethod
@@ -458,7 +478,7 @@ class Graph(object):
         if src.dataType == DataTypes.Exec and dst.dataType == DataTypes.Exec and src.hasConnections():
             src.disconnectAll()
 
-        portAffects(src, dst)
+        pinAffects(src, dst)
         src.setDirty()
         dst._data = src._data
         dst.pinConnected(src)
@@ -473,6 +493,8 @@ class Graph(object):
         edge.destination().edge_list.remove(edge)
         edge.destination().pinDisconnected(edge.source())
         edge.source().pinDisconnected(edge.destination())
+        push(edge.destination())
+        # edge.destination().setDirty()
 
     def plot(self):
         print self.name + '\n----------\n'

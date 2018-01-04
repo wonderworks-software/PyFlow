@@ -60,7 +60,7 @@ class Reroute(Node, NodeBase):
         # self.out0.setX(10.0)
         self.outputs[self.out0.uid] = self.out0
 
-        portAffects(self.inp0, self.out0)
+        pinAffects(self.inp0, self.out0)
 
         self.cp1 = QtCore.QPointF(0.0, 0.0)
         self.cp2 = QtCore.QPointF(0.0, 0.0)

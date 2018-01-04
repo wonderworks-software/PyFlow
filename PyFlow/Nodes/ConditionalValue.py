@@ -10,9 +10,9 @@ class ConditionalValue(Node, NodeBase):
         self.trueValue = self.addInputPin('ifTrue', DataTypes.Any)
         self.falseValue = self.addInputPin('ifFalse', DataTypes.Any)
         self.output = self.addOutputPin('out', DataTypes.Any)
-        portAffects(self.condition, self.output)
-        portAffects(self.trueValue, self.output)
-        portAffects(self.falseValue, self.output)
+        pinAffects(self.condition, self.output)
+        pinAffects(self.trueValue, self.output)
+        pinAffects(self.falseValue, self.output)
 
     @staticmethod
     def pinTypeHints():

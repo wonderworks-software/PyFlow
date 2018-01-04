@@ -11,7 +11,7 @@ class Max(Node, NodeBase):
         super(Max, self).__init__(name, graph, spacings=Spacings)
         self.inp0 = self.addInputPin('in', DataTypes.Any)
         self.out0 = self.addOutputPin('out', DataTypes.Any)
-        portAffects(self.inp0, self.out0)
+        pinAffects(self.inp0, self.out0)
 
     @staticmethod
     def pinTypeHints():

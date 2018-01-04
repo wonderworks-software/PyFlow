@@ -19,7 +19,6 @@ class PinInputWidgetBase(object):
         if not isinstance(pin, Pin):
             raise TypeError("[ERROR] Pin expected, got {0}".format(type(pin)))
         self.pin = weakref.ref(pin)
-        self.setData(self.pin().currentData())
 
     def dataUpdated(self, data):
         # from widget to pin

@@ -8,7 +8,7 @@ class FloatToInt(ConvertNode, NodeBase):
         ConvertNode.__init__(self, name, graph)
         self.fromType = self.addInputPin('from', DataTypes.Float, hideLabel=True, bCreateInputWidget=False)
         self.toType = self.addOutputPin('to', DataTypes.Int, hideLabel=True, bCreateInputWidget=False)
-        portAffects(self.fromType, self.toType)
+        pinAffects(self.fromType, self.toType)
 
     @staticmethod
     def pinTypeHints():

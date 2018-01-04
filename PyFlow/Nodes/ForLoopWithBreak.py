@@ -18,9 +18,9 @@ class ForLoopWithBreak(Node, NodeBase):
         self.index = self.addOutputPin('Index', DataTypes.Int)
         self.completed = self.addOutputPin('Completed', DataTypes.Exec)
 
-        portAffects(self.firstIndex, self.index)
-        portAffects(self.lastIndex, self.index)
-        portAffects(self.step, self.index)
+        pinAffects(self.firstIndex, self.index)
+        pinAffects(self.lastIndex, self.index)
+        pinAffects(self.step, self.index)
 
     @staticmethod
     def pinTypeHints():

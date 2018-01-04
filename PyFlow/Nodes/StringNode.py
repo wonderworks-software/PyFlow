@@ -9,7 +9,7 @@ class StringNode(Node, NodeBase):
         self.input = self.addInputPin('in', DataTypes.String)
         self.output = self.addOutputPin('out', DataTypes.String)
 
-        portAffects(self.input, self.output)
+        pinAffects(self.input, self.output)
         self.compute()
 
     @staticmethod

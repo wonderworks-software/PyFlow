@@ -9,8 +9,8 @@ class ArrayConcat(Node, NodeBase):
         self.arrayA = self.addInputPin('first', DataTypes.Array)
         self.arrayB = self.addInputPin('second', DataTypes.Array)
         self.result = self.addOutputPin('out', DataTypes.Array)
-        portAffects(self.arrayA, self.result)
-        portAffects(self.arrayB, self.result)
+        pinAffects(self.arrayA, self.result)
+        pinAffects(self.arrayB, self.result)
 
     @staticmethod
     def category():

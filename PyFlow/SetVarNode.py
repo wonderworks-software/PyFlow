@@ -23,6 +23,7 @@ class SetVarNode(Node, NodeBase):
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+        pinAffects(self.value, self.outValue)
 
     def serialize(self):
         template = Node.serialize(self)
@@ -45,7 +46,7 @@ class SetVarNode(Node, NodeBase):
         self.name = newName
 
     def onVarValueChanged(self):
-        push(self.value)
+        # push(self.value)
         updatePins(self.value)
 
     @staticmethod

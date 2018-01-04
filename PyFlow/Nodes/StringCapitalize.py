@@ -8,7 +8,7 @@ class StringCapitalize(Node, NodeBase):
         super(StringCapitalize, self).__init__(name, graph, spacings=Spacings)
         self.in_str = self.addInputPin('str', DataTypes.String)
         self.out_str = self.addOutputPin('capitalized str', DataTypes.String)
-        portAffects(self.in_str, self.out_str)
+        pinAffects(self.in_str, self.out_str)
 
     @staticmethod
     def pinTypeHints():

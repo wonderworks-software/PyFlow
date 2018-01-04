@@ -9,7 +9,7 @@ class MakeInt(Node, NodeBase):
         self.output = self.addOutputPin('out', DataTypes.Int)
         self.input = self.addInputPin('in', DataTypes.Int)
 
-        portAffects(self.input, self.output)
+        pinAffects(self.input, self.output)
         self.compute()
 
     @staticmethod

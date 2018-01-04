@@ -10,8 +10,8 @@ class Index(Node, NodeBase):
         self.value = self.addInputPin('value', DataTypes.Any)
         self.index = self.addOutputPin('idx', DataTypes.Float)
         self.success = self.addOutputPin('success', DataTypes.Bool)
-        portAffects(self.inArray, self.index)
-        portAffects(self.value, self.index)
+        pinAffects(self.inArray, self.index)
+        pinAffects(self.value, self.index)
 
     @staticmethod
     def pinTypeHints():

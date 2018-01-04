@@ -8,8 +8,8 @@ class StringAppend(Node, NodeBase):
         self.first = self.addInputPin('first', DataTypes.String)
         self.second = self.addInputPin('second', DataTypes.String)
         self.output = self.addOutputPin('output', DataTypes.String)
-        portAffects(self.first, self.output)
-        portAffects(self.second, self.output)
+        pinAffects(self.first, self.output)
+        pinAffects(self.second, self.output)
 
     @staticmethod
     def pinTypeHints():

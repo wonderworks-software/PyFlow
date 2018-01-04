@@ -23,4 +23,5 @@ class Print(Node, NodeBase):
         if self.inExec.hasConnections():
             data = self.obj.getData()
             self.graph().writeToConsole(data)
+            print(data)
         self.outExec.call()

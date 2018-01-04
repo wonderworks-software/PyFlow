@@ -10,9 +10,9 @@ class StringReplace(Node, NodeBase):
         self.old_ptn = self.addInputPin('old pattern', DataTypes.String)
         self.new_ptn = self.addInputPin('new pattern', DataTypes.String)
         self.output = self.addOutputPin('output', DataTypes.String)
-        portAffects(self.first, self.output)
-        portAffects(self.old_ptn, self.output)
-        portAffects(self.new_ptn, self.output)
+        pinAffects(self.first, self.output)
+        pinAffects(self.old_ptn, self.output)
+        pinAffects(self.new_ptn, self.output)
 
     @staticmethod
     def pinTypeHints():

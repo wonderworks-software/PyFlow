@@ -8,7 +8,7 @@ class Not(Node, NodeBase):
         super(Not, self).__init__(name, graph, spacings=Spacings)
         self.in_bool = self.addInputPin('in', DataTypes.Bool)
         self.out_bool = self.addOutputPin('out', DataTypes.Bool)
-        portAffects(self.in_bool, self.out_bool)
+        pinAffects(self.in_bool, self.out_bool)
 
     @staticmethod
     def category():

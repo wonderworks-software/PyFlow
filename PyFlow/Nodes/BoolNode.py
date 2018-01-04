@@ -14,7 +14,7 @@ class BoolNode(Node, NodeBase):
         super(BoolNode, self).__init__(name, graph, spacings=Spacings)
         self.input = self.addInputPin('in', DataTypes.Bool, hideLabel=True)
         self.output = self.addOutputPin('out', DataTypes.Bool, hideLabel=True)
-        portAffects(self.input, self.output)
+        pinAffects(self.input, self.output)
 
     @staticmethod
     def pinTypeHints():

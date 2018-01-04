@@ -12,7 +12,7 @@ class Min(Node, NodeBase):
         super(Min, self).__init__(name, graph, spacings=Spacings)
         self.inp = self.addInputPin('in', DataTypes.Any)
         self.out = self.addOutputPin('min', DataTypes.Any)
-        portAffects(self.inp, self.out)
+        pinAffects(self.inp, self.out)
 
     @staticmethod
     def pinTypeHints():

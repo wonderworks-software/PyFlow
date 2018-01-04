@@ -9,8 +9,8 @@ class Len(Node, NodeBase):
         self.in_arr = self.addInputPin('iterable', DataTypes.Any)
         self.out_len = self.addOutputPin('len', DataTypes.Int)
         self.out_result = self.addOutputPin('result', DataTypes.Bool)
-        portAffects(self.in_arr, self.out_result)
-        portAffects(self.in_arr, self.out_len)
+        pinAffects(self.in_arr, self.out_result)
+        pinAffects(self.in_arr, self.out_len)
 
     @staticmethod
     def pinTypeHints():

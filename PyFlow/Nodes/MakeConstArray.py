@@ -25,7 +25,7 @@ class MakeConstArray(Node, NodeBase):
     def addInPort(self):
         index = len(self.inputs)
         Pin = self.addInputPin(str(index), DataTypes.Any)
-        portAffects(Pin, self.out_arr)
+        pinAffects(Pin, self.out_arr)
         push(self.out_arr)
 
     def postCreate(self, jsonTemplate=None):

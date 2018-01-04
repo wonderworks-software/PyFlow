@@ -9,7 +9,7 @@ class FloatNode(Node, NodeBase):
         self.input = self.addInputPin('in', DataTypes.Float)
         self.output = self.addOutputPin('out', DataTypes.Float)
 
-        portAffects(self.input, self.output)
+        pinAffects(self.input, self.output)
         self.compute()
 
     @staticmethod

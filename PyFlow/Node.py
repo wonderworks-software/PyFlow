@@ -122,6 +122,7 @@ class Node(QGraphicsItem, NodeBase):
         self.height_offset = 3
         self.spacings = spacings
         self.nodeMainGWidget = QGraphicsWidget()
+        self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(name))
         self._w = 0
         self.h = 40
         self.sizes = [0, 0, self.w, self.h, 1, 1]
@@ -237,7 +238,7 @@ class Node(QGraphicsItem, NodeBase):
         # all inputs affects on all outputs
         for i in inst.inputs.values():
             for o in inst.outputs.values():
-                portAffects(i, o)
+                pinAffects(i, o)
 
         # generate compute method from function
         def compute(self):
@@ -300,12 +301,6 @@ class Node(QGraphicsItem, NodeBase):
         value = self.scenePos()
         self.setX(roundup(value.x() - self.graph().grid_size, self.graph().grid_size))
         self.setY(roundup(value.y() - self.graph().grid_size, self.graph().grid_size))
-
-    def isCallable(self):
-        for p in self.inputs.values() + self.outputs.values():
-            if p.dataType == DataTypes.Exec:
-                return True
-        return False
 
     def boundingRect(self):
         return self.childrenBoundingRect()
@@ -528,6 +523,7 @@ class Node(QGraphicsItem, NodeBase):
                     continue
                 w = getPinWidget(inp)
                 if w:
+                    w.setData(inp.currentData())
                     w.setObjectName(inp.pinName())
                     formLayout.addRow(inp.name, w)
                     if inp.hasConnections():
@@ -544,6 +540,7 @@ class Node(QGraphicsItem, NodeBase):
                     continue
                 w = getPinWidget(out)
                 if w:
+                    w.setData(out.currentData())
                     w.setObjectName(out.pinName())
                     formLayout.addRow(out.name, w)
                     if out.hasConnections():
@@ -559,6 +556,7 @@ class Node(QGraphicsItem, NodeBase):
 
     def addContainer(self, portType, head=False):
         container = QGraphicsWidget()  # for set background color
+        container.setObjectName('{0}PinContainerWidget'.format(self.name))
         container.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         container.sizeHint(QtCore.Qt.MinimumSize, QtCore.QSizeF(50.0, 10.0))
 
@@ -625,6 +623,7 @@ class Node(QGraphicsItem, NodeBase):
             p.call = foo
             # p.call = MethodType(foo, p, Pin)
         connector_name = QGraphicsProxyWidget()
+        connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)
 
         lblName = name

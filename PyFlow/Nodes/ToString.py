@@ -8,7 +8,7 @@ class ToString(ConvertNode, NodeBase):
         super(ToString, self).__init__(name, graph)
         self.in_data = self.addInputPin('in', DataTypes.Any, hideLabel=True, bCreateInputWidget=False)
         self.out_data = self.addOutputPin('out', DataTypes.String, hideLabel=True, bCreateInputWidget=False)
-        portAffects(self.in_data, self.out_data)
+        pinAffects(self.in_data, self.out_data)
 
     @staticmethod
     def pinTypeHints():

@@ -267,7 +267,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
 
         for i in node.inputs.values():
             for o in node.outputs.values():
-                portAffects(i, o)
+                pinAffects(i, o)
 
     def appendInput(self, pw):
         item = QListWidgetItem(self.lwInputs)

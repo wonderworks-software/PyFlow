@@ -15,11 +15,11 @@ class ArrayAppend(Node, NodeBase):
         self.newItemIndex = self.addOutputPin('out', DataTypes.Int)
         self.out_result = self.addOutputPin('result', DataTypes.Bool)
 
-        portAffects(self.in_arr, self.newItemIndex)
-        portAffects(self.in_arr, self.out_result)
+        pinAffects(self.in_arr, self.newItemIndex)
+        pinAffects(self.in_arr, self.out_result)
 
-        portAffects(self.element, self.newItemIndex)
-        portAffects(self.element, self.out_result)
+        pinAffects(self.element, self.newItemIndex)
+        pinAffects(self.element, self.out_result)
 
     @staticmethod
     def pinTypeHints():
@@ -37,11 +37,16 @@ class ArrayAppend(Node, NodeBase):
     def compute(self):
         try:
             element = self.element.getData()
-
+            if len(self.in_arr.edge_list) == 0:
+                self.newItemIndex.setClean()
+                self.out_result.setClean()
+                self.outExec.call()
+                return
             in_arr = self.in_arr.getData()
             in_arr.append(element)
-            self.newItemIndex.setData(in_arr.index(element))
+            self.newItemIndex.setData(len(in_arr) - 1)
             self.out_result.setData(True)
+
         except Exception as e:
             self.out_result.setData(False)
             print(e)

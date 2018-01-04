@@ -11,25 +11,25 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def ceil(x=(DataTypes.Float, 0.0)):
+    def ceil(a=(DataTypes.Float, 0.0)):
         '''Return the ceiling of x as a float, the smallest integer value greater than or equal to x.'''
         return math.ceil(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def copysignf(x=(DataTypes.Float, 0.0), y=(DataTypes.Float, 0.0)):
+    def copysignf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0.'''
         return math.copysign(x, y)
 
     @staticmethod
     @annotated(returns=DataTypes.Int, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def copysign(x=(DataTypes.Int, 0), y=(DataTypes.Int, 0)):
+    def copysign(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
         '''Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0.'''
         return math.copysign(x, y)
 
     @staticmethod
     @annotated(returns=DataTypes.Int, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def factorial(x=(DataTypes.Int, 0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def factorial(a=(DataTypes.Int, 0), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return x factorial. Raises ValueError if x is not integral or is negative.'''
         try:
             f = math.factorial(x)
@@ -41,25 +41,25 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def floor(x=(DataTypes.Float, 0.0)):
+    def floor(a=(DataTypes.Float, 0.0)):
         '''Sum of two flaots.'''
         return math.floor(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def fmodf(x=(DataTypes.Float, 0.0), y=(DataTypes.Float, 0.0)):
+    def fmodf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''Return fmod(x, y), as defined by the platform C library.'''
         return math.fmod(x, y)
 
     @staticmethod
     @annotated(returns=DataTypes.Int, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def fmod(x=(DataTypes.Int, 0), y=(DataTypes.Int, 0)):
+    def fmod(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
         '''Python x % y.'''
         return x % y
 
     @staticmethod
     @annotated(returns=None, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def frexp(x=(DataTypes.Float, 0.0), m=(DataTypes.Reference, DataTypes.Float), e=(DataTypes.Reference, DataTypes.Int)):
+    def frexp(a=(DataTypes.Float, 0.0), m=(DataTypes.Reference, DataTypes.Float), e=(DataTypes.Reference, DataTypes.Int)):
         '''Return the mantissa and exponent of x as the pair (m, e). m is a float and e is an integer such that x == m * 2**e exactly.'''
         t = math.frexp(x)
         m.setData(t[0])
@@ -79,25 +79,25 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Bool, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def isinf(x=(DataTypes.Float, 0.0)):
+    def isinf(a=(DataTypes.Float, 0.0)):
         '''Check if the float x is positive or negative infinity.'''
         return math.isinf(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Bool, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def isnan(x=(DataTypes.Float, 0.0)):
+    def isnan(a=(DataTypes.Float, 0.0)):
         '''Check if the float x is a NaN (not a number).'''
         return math.isnan(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def ldexp(x=(DataTypes.Float, 0.0), i=(DataTypes.Int, 0)):
+    def ldexp(a=(DataTypes.Float, 0.0), i=(DataTypes.Int, 0)):
         '''Return x * (2**i). This is essentially the inverse of function frexp().'''
         return math.ldexp(x, i)
 
     @staticmethod
     @annotated(returns=None, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def modf(x=(DataTypes.Int, 0), f=(DataTypes.Reference, DataTypes.Float), i=(DataTypes.Reference, DataTypes.Int)):
+    def modf(a=(DataTypes.Int, 0), f=(DataTypes.Reference, DataTypes.Float), i=(DataTypes.Reference, DataTypes.Int)):
         '''Return the fractional and integer parts of x. Both results carry the sign of x and are floats.'''
         t = math.modf(x)
         f.setData(t[0])
@@ -105,7 +105,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=None, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def fmodf(x=(DataTypes.Float, 0), f=(DataTypes.Reference, DataTypes.Float), i=(DataTypes.Reference, DataTypes.Int)):
+    def fmodf(a=(DataTypes.Float, 0), f=(DataTypes.Reference, DataTypes.Float), i=(DataTypes.Reference, DataTypes.Int)):
         '''Return the fractional and integer parts of x. Both results carry the sign of x and are floats.'''
         t = math.modf(x)
         f.setData(t[0])
@@ -113,25 +113,25 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Int, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def trunc(x=(DataTypes.Float, 0)):
+    def trunc(a=(DataTypes.Float, 0)):
         '''Return the Real value x truncated to an Integral (usually a long integer).'''
         return math.trunc(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def exp(x=(DataTypes.Float, 0.0)):
+    def exp(a=(DataTypes.Float, 0.0)):
         '''Return e**x.'''
         return math.exp(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def expm1(x=(DataTypes.Float, 0.1)):
+    def expm1(a=(DataTypes.Float, 0.1)):
         '''Return e**x - 1. For small floats x, the subtraction in exp(x) - 1 can result in a significant loss of precision.'''
         return math.expm1(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def log(x=(DataTypes.Float, 1.0), base=(DataTypes.Float, math.e), result=(DataTypes.Reference, DataTypes.Bool)):
+    def log(a=(DataTypes.Float, 1.0), base=(DataTypes.Float, math.e), result=(DataTypes.Reference, DataTypes.Bool)):
         '''With one argument, return the natural logarithm of x (to base e).\nWith two arguments, return the logarithm of x to the given base, calculated as log(x)/log(base).'''
         try:
             result.setData(True)
@@ -142,7 +142,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def log1p(x=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def log1p(a=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the natural logarithm of 1+x (base e). The result is calculated in a way which is accurate for x near zero.'''
         try:
             result.setData(True)
@@ -153,7 +153,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def log10(x=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def log10(a=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the base-10 logarithm of x. This is usually more accurate than log(x, 10).'''
         try:
             result.setData(True)
@@ -164,7 +164,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def power(x=(DataTypes.Float, 0.0), y=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def power(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return x raised to the power y.'''
         try:
             result.setData(True)
@@ -175,7 +175,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def sqrt(x=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def sqrt(a=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the square root of x.'''
         try:
             result.setData(True)
@@ -270,49 +270,49 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
-    def cos(x=(DataTypes.Float, 0.0)):
+    def cos(a=(DataTypes.Float, 0.0)):
         '''Return the cosine of x radians.'''
         return math.cos(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
-    def acos(x=(DataTypes.Float, 0.0)):
+    def acos(a=(DataTypes.Float, 0.0)):
         '''Return the arc cosine of x, in radians.'''
         return math.acos(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
-    def sin(x=(DataTypes.Float, 0.0)):
+    def sin(a=(DataTypes.Float, 0.0)):
         '''Return the sine of x radians.'''
         return math.sin(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
-    def asin(x=(DataTypes.Float, 0.0)):
+    def asin(a=(DataTypes.Float, 0.0)):
         '''Return the arc sine of x, in radians.'''
         return math.asin(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
-    def tan(x=(DataTypes.Float, 0.0)):
+    def tan(a=(DataTypes.Float, 0.0)):
         '''Return the tangent of x radians.'''
         return math.tan(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
-    def atan(x=(DataTypes.Float, 0.0)):
+    def atan(a=(DataTypes.Float, 0.0)):
         '''Return the arc tangent of x, in radians.'''
         return math.atan(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
-    def atan2(x=(DataTypes.Float, 0.0), y=(DataTypes.Float, 0.0)):
+    def atan2(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''Return atan(y / x), in radians. The result is between -pi and pi.\nThe vector in the plane from the origin to point (x, y) makes this angle with the positive X axis. The point of atan2() is that the signs of both inputs are known to it, so it can compute the correct quadrant for the angle.\nFor example, atan(1) and atan2(1, 1) are both pi/4, but atan2(-1, -1) is -3*pi/4.'''
         return math.atan2(x, y)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Trigonometry', 'Keywords': []})
-    def hypot(x=(DataTypes.Float, 0.0), y=(DataTypes.Float, 0.0)):
+    def hypot(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''Return the Euclidean norm, sqrt(x*x + y*y). This is the length of the vector from the origin to point (x, y).'''
         return math.hypot(x, y)
 
@@ -363,7 +363,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def acosh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def acosh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the inverse hyperbolic cosine of x.'''
         try:
             Result.setData(True)
@@ -374,13 +374,13 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def asinh(x=(DataTypes.Float, 0.0)):
+    def asinh(a=(DataTypes.Float, 0.0)):
         '''Return the inverse hyperbolic sine of x.'''
         return math.asinh(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def atanh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def atanh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the inverse hyperbolic tangent of x.'''
         try:
             Result.setData(True)
@@ -391,7 +391,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def cosh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def cosh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the hyperbolic cosine of x.'''
         try:
             Result.setData(True)
@@ -402,7 +402,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def sinh(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def sinh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the hyperbolic sine of x.'''
         try:
             Result.setData(True)
@@ -413,25 +413,25 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def tanh(x=(DataTypes.Float, 0.0)):
+    def tanh(a=(DataTypes.Float, 0.0)):
         '''Return the hyperbolic tangent of x.'''
         return math.tanh(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Special functions', 'Keywords': []})
-    def erf(x=(DataTypes.Float, 0.0)):
+    def erf(a=(DataTypes.Float, 0.0)):
         '''Return the error function at x.'''
         return math.erf(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Special functions', 'Keywords': []})
-    def erfc(x=(DataTypes.Float, 0.0)):
+    def erfc(a=(DataTypes.Float, 0.0)):
         '''Return the complementary error function at x.'''
         return math.erfc(x)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Special functions', 'Keywords': []})
-    def gamma(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def gamma(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the Gamma function at x.'''
         try:
             Result.setData(True)
@@ -442,7 +442,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Special functions', 'Keywords': []})
-    def lgamma(x=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def lgamma(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
         '''Return the natural logarithm of the absolute value of the Gamma function at x.'''
         try:
             Result.setData(True)

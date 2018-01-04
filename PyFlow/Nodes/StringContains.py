@@ -8,8 +8,8 @@ class StringContains(Node, NodeBase):
         self.first = self.addInputPin('source', DataTypes.String)
         self.second = self.addInputPin('pattern', DataTypes.String)
         self.output = self.addOutputPin('out', DataTypes.Bool)
-        portAffects(self.first, self.output)
-        portAffects(self.second, self.output)
+        pinAffects(self.first, self.output)
+        pinAffects(self.second, self.output)
 
     @staticmethod
     def pinTypeHints():

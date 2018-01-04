@@ -18,7 +18,7 @@ def roundup(x, to):
     return int(math.ceil(x / to)) * to
 
 
-def portAffects(affects_port, affected_port):
+def pinAffects(affects_port, affected_port):
     '''
     this function for establish dependencies bitween ports
     '''
