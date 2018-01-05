@@ -947,7 +947,7 @@ class GraphWidget(QGraphicsView, Graph):
 
     def OnDoubleClick(self, pos):
         if isinstance(self.pressed_item, Edge):
-            # create knot
+            # create reroute
             pass
 
         if self.pressed_item and isinstance(self.pressed_item, NodeName):
@@ -957,17 +957,8 @@ class GraphWidget(QGraphicsView, Graph):
                     self.pressed_item.parentItem().setName(name)
                     self.updatePropertyView(self.pressed_item.parentItem())
 
-    def redrawNodes(self):
-        for n in self.getNodes():
-            n.updatePins()
-
     def __del__(self):
         self.tick_timer.stop()
-
-    @staticmethod
-    def playSoundWin(file_name):
-        t = Thread(target=lambda: winsound.PlaySound(file_name, winsound.SND_FILENAME))
-        t.start()
 
     def mainLoop(self):
         deltaTime = clock() - self._lastClock

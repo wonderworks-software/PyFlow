@@ -4,6 +4,7 @@ import uuid
 import inspect
 import keyword
 from collections import OrderedDict
+import itertools
 
 
 class PinBase(object):
@@ -14,7 +15,7 @@ class PinBase(object):
         self.parent = weakref.ref(parent)
         self.object_type = ObjectTypes.Pin
         self._dataType = None
-        self.supportedDataTypes = []
+        self.supportedDataTypes = list()
         self.dataType = dataType
 
         self.affects = []
@@ -109,7 +110,8 @@ class PinBase(object):
                     compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
                     # call from left to right
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
-                        map(lambda node: node.compute(), compute_order[layer])
+                        for node in compute_order[layer]:
+                            node.compute()
                     self.setClean()
                     return out[0]._data
             else:
@@ -309,8 +311,6 @@ class Graph(object):
         if not node.bCallable:
             order[0].append(node)
 
-        bProcess = True
-
         def foo(n, process=True):
             if not process:
                 return
@@ -321,7 +321,8 @@ class Graph(object):
                 if layer_idx not in order:
                     order[layer_idx] = []
                 order[layer_idx].append(n)
-            map(foo, next_layer_nodes)
+            for i in next_layer_nodes:
+                foo(i)
         foo(node)
 
         # make sure no copies of nodes in higher layers (non directional cycles)
@@ -370,11 +371,8 @@ class Graph(object):
             return False
         if node.uid in self.nodes:
             return False
-        # node.uid = uuid.UUID(jsonTemplate['uuid'])
         self.nodes[node.uid] = node
-        # print(node.uid, jsonTemplate['uuid'])
         node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
-        # node.postCreate(jsonTemplate)
         return True
 
     def removeNode(self, node):
@@ -432,8 +430,8 @@ class Graph(object):
         if src.type == PinTypes.Input:
             src, dst = dst, src
 
-        # input data ports can have one output connection
-        # output data ports can have any number of connections
+        # input value pins can have one output connection
+        # output value pins can have any number of connections
         if not src.dataType == DataTypes.Exec and dst.hasConnections():
             dst.disconnectAll()
         # input execs can have any number of connections

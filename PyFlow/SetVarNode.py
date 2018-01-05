@@ -3,11 +3,12 @@ from Settings import *
 from Node import Node
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
+from Qt.QtWidgets import QLineEdit
 from Qt import QtCore
 from Qt import QtGui
 from Pin import updatePins
 from Commands import RemoveNodes
-# from Commands import ChangeVarSetterDataType
+from PinInputWidgets import getPinWidget
 
 
 class SetVarNode(Node, NodeBase):
@@ -31,7 +32,24 @@ class SetVarNode(Node, NodeBase):
         return template
 
     def onUpdatePropertyView(self, formLayout):
-        self.var.onUpdatePropertyView(formLayout)
+        # var name
+        leName = QLineEdit(self.var.name)
+        leName.setReadOnly(True)
+        formLayout.addRow("Name", leName)
+
+        # var type
+        leType = QLineEdit(getDataTypeName(self.var.dataType))
+        leType.setReadOnly(True)
+        formLayout.addRow("Type", leType)
+
+        # input value
+        w = getPinWidget(self.value)
+        if w:
+            w.setData(self.value.currentData())
+            w.setObjectName(self.value.pinName())
+            formLayout.addRow(self.value.name, w)
+            if self.value.hasConnections():
+                w.setEnabled(False)
 
     def onVarDataTypeChanged(self, dataType):
         cmd = RemoveNodes([self], self.graph())

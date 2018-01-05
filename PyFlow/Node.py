@@ -197,11 +197,10 @@ class Node(QGraphicsItem, NodeBase):
         meta = foo.__annotations__['meta']
         returnType = foo.__annotations__['return']
         nodeType = foo.__annotations__['nodeType']
-        doc = foo.__doc__
 
         @staticmethod
         def description():
-            return doc
+            return foo.__doc__
 
         @staticmethod
         def category():
@@ -289,13 +288,6 @@ class Node(QGraphicsItem, NodeBase):
             else:
                 pin.setClean()
         return node
-
-    def InputPinTypes(self):
-        types = []
-        for p in self.inputs:
-            for t in p.supportedDataTypes:
-                types.append(t)
-        return types
 
     def tweakPosition(self):
         value = self.scenePos()
@@ -408,10 +400,6 @@ class Node(QGraphicsItem, NodeBase):
             out['uuid'] = str(uuid.uuid4())
         new_node = self.graph().createNode(templ)
         return new_node
-
-    def updatePins(self):
-        [i.update() for i in self.inputs]
-        [i.update() for i in self.outputs]
 
     def paint(self, painter, option, widget):
 
