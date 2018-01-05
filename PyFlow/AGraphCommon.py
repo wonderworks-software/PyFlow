@@ -5,6 +5,7 @@ import math
 from Settings import *
 import inspect
 from threading import Thread
+from functools import wraps
 
 
 FLAG_SYMBOL = "~"
@@ -120,6 +121,20 @@ def clearLayout(layout):
             child.widget().deleteLater()
         elif child.layout() is not None:
             clearLayout(child.layout())
+
+
+def memoize(foo):
+    memo = {}
+
+    @wraps(foo)
+    def wrapper(*args):
+        if args in memo:
+            return memo[args]
+        else:
+            rv = foo(*args)
+            memo[args] = rv
+            return rv
+    return wrapper
 
 
 class DataTypes:

@@ -91,7 +91,6 @@ class PinBase(object):
             i.dirty = True
 
     def getData(self):
-
         # if not connected - return data
         if not self.hasConnections():
             if self.dataType == DataTypes.Array:
@@ -100,33 +99,22 @@ class PinBase(object):
 
         if self.type == PinTypes.Output:
             if self.dirty:
-                compute_order = self.parent().graph().getEvaluationOrder(self.parent())
-                for i in reversed(sorted([i for i in compute_order.keys()])):
-                    for n in compute_order[i]:
-                        n.compute()
-                self.setClean()
-                return self._data
-            else:
-                self.setClean()
-                return self._data
+                self.parent().compute()
+            self.setClean()
+            return self._data
         if self.type == PinTypes.Input:
             if self.dirty or self.parent().bCallable:
                 out = [i for i in self.affected_by if i.type == PinTypes.Output]
                 if not out == []:
                     compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
+                    # call from left to right
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
-                        for n in compute_order[layer]:
-                            # if not n.bCallable:
-                            n.compute()
+                        map(lambda node: node.compute(), compute_order[layer])
                     self.setClean()
                     return out[0]._data
             else:
                 self.setClean()
                 return self._data
-
-    @staticmethod
-    def str2bool(v):
-        return v.lower() in ("true", "1")
 
     def call(self):
         for p in [pin for pin in self.affects if pin.dataType == DataTypes.Exec]:
@@ -181,7 +169,6 @@ class NodeBase(object):
         if self._uid in self.graph().nodes:
             self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
             self._uid = value
-            # self.graph().nodes[self._uid] = self
 
     def isCallable(self):
         for p in self.inputs.values() + self.outputs.values():
@@ -317,6 +304,8 @@ class Graph(object):
     def getEvaluationOrder(self, node):
 
         order = {0: []}
+
+        # include first node only if it is callable
         if not node.bCallable:
             order[0].append(node)
 
@@ -332,10 +321,9 @@ class Graph(object):
                 if layer_idx not in order:
                     order[layer_idx] = []
                 order[layer_idx].append(n)
-            for i in next_layer_nodes:
-                foo(i)
-
+            map(foo, next_layer_nodes)
         foo(node)
+
         # make sure no copies of nodes in higher layers (non directional cycles)
         for i in reversed(sorted([i for i in order.iterkeys()])):
             for iD in range(i - 1, -1, -1):
@@ -469,7 +457,6 @@ class Graph(object):
         edge.destination().pinDisconnected(edge.source())
         edge.source().pinDisconnected(edge.destination())
         push(edge.destination())
-        # edge.destination().setDirty()
 
     def plot(self):
         print self.name + '\n----------\n'
