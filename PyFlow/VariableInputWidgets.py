@@ -109,67 +109,6 @@ class ArrayInputWidget(VarInputWidgetBase, QCheckBox):
             self.setCheckState(QtCore.Qt.Unchecked)
 
 
-class _ArrayIniputWidget(QWidget):
-    """docstring for _ArrayIniputWidget"""
-    def __init__(self, data, parent=None):
-        super(_ArrayIniputWidget, self).__init__(parent)
-        self.horizontalLayout = QHBoxLayout(self)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.label = QLabel(self)
-        self.label.setObjectName("label")
-        self.horizontalLayout.addWidget(self.label)
-        self.lineEdit = QLineEdit(self, data)
-        self.lineEdit.setObjectName("lineEdit")
-        self.horizontalLayout.addWidget(self.lineEdit)
-        self.pushButton = QPushButton(self)
-        self.pushButton.setMaximumSize(QtCore.QSize(25, 16777215))
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton.setText('x')
-        self.horizontalLayout.addWidget(self.pushButton)
-
-
-class ArrayInputWidget(VarInputWidgetBase, QWidget, ArrayInputWidget_ui.Ui_Form):
-    """docstring for ArrayInputWidget"""
-    def __init__(self, parent=None, **kwds):
-        super(ArrayInputWidget, self).__init__(**kwds)
-        self.setupUi(self)
-        self.pushButton.clicked.connect(lambda: self.onAddElement(None, True))
-        self.index = 0
-        self.data = {}
-
-    def setElementData(self, index, data):
-        self.var().value[index] = data
-
-    def onAddElement(self, data=None, bAddToVarList=True):
-        arrInputWidget = _ArrayIniputWidget(data)
-        index = self.index
-        arrInputWidget.lineEdit.editingFinished.connect(lambda: self.setElementData(index, arrInputWidget.lineEdit.text()))
-        self.data[self.index] = arrInputWidget
-        arrInputWidget.label.setText(str(self.index))
-        item = QListWidgetItem(self.listWidget)
-        item.setSizeHint(QtCore.QSize(arrInputWidget.sizeHint().width(), 40))
-        self.listWidget.addItem(item)
-        self.listWidget.setItemWidget(item, arrInputWidget)
-        del item
-        if bAddToVarList:
-            self.var().value.append(data)
-        self.index += 1
-        return arrInputWidget
-
-    def postCreate(self, data):
-        # populate widget from var data
-        for index in range(len(data)):
-            arrInputWidget = _ArrayIniputWidget(data[index])
-            arrInputWidget.lineEdit.editingFinished.connect(lambda: self.setElementData(index, arrInputWidget.lineEdit.text()))
-            arrInputWidget.label.setText(str(index))
-            arrInputWidget.lineEdit.setText(str(self.var().value[index]))
-            item = QListWidgetItem(self.listWidget)
-            item.setSizeHint(QtCore.QSize(arrInputWidget.sizeHint().width(), 40))
-            self.listWidget.addItem(item)
-            self.listWidget.setItemWidget(item, arrInputWidget)
-            del item
-
-
 def getVarWidget(var):
     '''
     fabric method
@@ -184,8 +123,7 @@ def getVarWidget(var):
         return StringInputWidget(var=var)
     if var.dataType == DataTypes.Bool:
         return BoolInputWidget(var=var)
-    if var.dataType == DataTypes.Array:
-        return ArrayInputWidget(var=var)
     if var.dataType == DataTypes.Any:
         return StringInputWidget(var=var)
+    # array ?
     return None

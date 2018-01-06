@@ -13,6 +13,12 @@ class DefaultLib(FunctionLibraryBase):
         super(DefaultLib, self).__init__()
 
     @staticmethod
+    @annotated(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
+    def pyprint(entity=(DataTypes.Any, None)):
+        '''print any object'''
+        print(entity)
+
+    @staticmethod
     @annotated(returns=None, meta={'Category': 'DefaultLib|Info', 'Keywords': ['version', 'os']})
     def getplatform(system=(DataTypes.Reference, DataTypes.String), version=(DataTypes.Reference, DataTypes.String)):
         '''Os information'''

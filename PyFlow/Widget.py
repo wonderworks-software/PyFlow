@@ -335,7 +335,7 @@ class SceneClass(QGraphicsScene):
         super(SceneClass, self).__init__(parent)
         self.object_type = ObjectTypes.Scene
         self.setItemIndexMethod(self.NoIndex)
-        self.pressed_port = None
+        # self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
 
     def shoutDown(self):
@@ -447,8 +447,9 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.setColumnCount(1)
         self.setHeaderHidden(True)
         self.setDragDropMode(QAbstractItemView.DragOnly)
+        self.setAnimated(True)
         self.categoryPaths = {}
-        # self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.itemClicked.connect(self.OnItemClicked)
 
     def _isCategoryExists(self, category_name, categories):
         bFound = False
@@ -479,6 +480,8 @@ class NodeBoxTreeWidget(QTreeWidget):
                 categoryPath = folderName
                 if categoryPath not in self.categoryPaths:
                     rootFolderItem = QTreeWidgetItem(self)
+                    rootFolderItem.bCategory = True
+                    rootFolderItem.setFlags(QtCore.Qt.ItemIsEnabled)
                     rootFolderItem.setText(0, folderName)
                     rootFolderItem.setBackground(folderId, QtGui.QColor(80, 85, 80))
                     self.categoryPaths[categoryPath] = rootFolderItem
@@ -487,11 +490,14 @@ class NodeBoxTreeWidget(QTreeWidget):
                 categoryPath += '|{}'.format(folderName)
                 if categoryPath not in self.categoryPaths:
                     childCategoryItem = QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
+                    childCategoryItem.setFlags(QtCore.Qt.ItemIsEnabled)
+                    childCategoryItem.bCategory = True
                     childCategoryItem.setText(0, folderName)
                     childCategoryItem.setBackground(0, QtGui.QColor(80, 85, 80))
                     self.categoryPaths[categoryPath] = childCategoryItem
         # create node under constructed folder
         nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
+        nodeItem.bCategory = False
         nodeItem.setText(0, name)
         if doc:
             nodeItem.setToolTip(0, doc)
@@ -505,25 +511,31 @@ class NodeBoxTreeWidget(QTreeWidget):
             for name, foo in foos:
                 fooArgNames = inspect.getargspec(foo).args
                 fooInpTypes = []
-                # print name,
+                fooOutTypes = []
+                if foo.__annotations__['nodeType'] == NodeTypes.Callable:
+                    fooInpTypes.append(DataTypes.Exec)
+                    fooOutTypes.append(DataTypes.Exec)
                 for index in range(len(fooArgNames)):
                     dType = foo.__annotations__[fooArgNames[index]]
                     if dType == DataTypes.Reference:
-                        pass
+                        fooOutTypes.append(dType)
                     else:
-                        # print getDataTypeName(dType),
                         fooInpTypes.append(dType)
-                # print
+
                 nodeCategoryPath = foo.__annotations__['meta']['Category']
                 keywords = foo.__annotations__['meta']['Keywords']
                 checkString = name + nodeCategoryPath + ''.join(keywords)
-                if pattern in checkString.lower():
+                if pattern.lower() in checkString.lower():
                     # create all nodes items if clicked on canvas
                     if dataType is None:
                         self.insertNode(nodeCategoryPath, name, foo.__doc__)
                     else:
-                        if dataType in fooInpTypes:
-                            self.insertNode(nodeCategoryPath, name, foo.__doc__)
+                        if pinType == PinTypes.Output:
+                            if dataType in fooInpTypes:
+                                self.insertNode(nodeCategoryPath, name, foo.__doc__)
+                        else:
+                            if dataType in fooOutTypes:
+                                self.insertNode(nodeCategoryPath, name, foo.__doc__)
 
         for node_file_name in Nodes.getNodeNames():
             node_class = Nodes.getNode(node_file_name)
@@ -543,9 +555,8 @@ class NodeBoxTreeWidget(QTreeWidget):
                 else:
                     # if pressed pin is input pin
                     # filter by nodes output types
-                    if pinType == PinTypes.Input:
-                        if dataType in node_class.pinTypeHints()['outputs']:
-                            self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
+                    if dataType in node_class.pinTypeHints()['outputs']:
+                        self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
         # expand all categories
         if dataType is not None:
             for categoryItem in self.categoryPaths.values():
@@ -553,6 +564,21 @@ class NodeBoxTreeWidget(QTreeWidget):
 
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
+        key = event.key()
+        if key == QtCore.Qt.Key_Return:
+            itm = self.currentItem()
+            if not itm.bCategory:
+                nodeClassName = self.currentItem().text(0)
+                name = self.parent().graph().getUniqNodeName(nodeClassName)
+                pos = self.parent().graph().mapToScene(self.parent().graph().mouseReleasePos)
+                nodeTemplate = Node.jsonTemplate()
+                nodeTemplate['type'] = nodeClassName
+                nodeTemplate['name'] = name
+                nodeTemplate['x'] = pos.x()
+                nodeTemplate['y'] = pos.y()
+                nodeTemplate['meta']['label'] = nodeClassName
+                nodeTemplate['uuid'] = None
+                self.parent().graph().createNode(nodeTemplate)
 
     def mousePressEvent(self, event):
         super(NodeBoxTreeWidget, self).mousePressEvent(event)
@@ -901,7 +927,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.mainLoop)
         self.tick_timer.start(20)
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        # self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid_size = 10
         self.drawGrigSize = self.grid_size * 2
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
@@ -917,7 +943,8 @@ class GraphWidget(QGraphicsView, Graph):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
         self.node_box.treeWidget.refresh(dataType, '', pinType)
-        self.node_box.lineEdit.setFocus()
+        if dataType is None:
+            self.node_box.lineEdit.setFocus()
 
     def shoutDown(self):
         self.tick_timer.stop()
@@ -925,6 +952,8 @@ class GraphWidget(QGraphicsView, Graph):
         FunctionLibraries.shoutDown()
         self.scene().shoutDown()
         self.scene().clear()
+        self.node_box.hide()
+        self.node_box.lineEdit.clear()
 
     def moveScrollbar(self, delta):
         x = self.horizontalScrollBar().value() + delta.x()
@@ -1040,8 +1069,7 @@ class GraphWidget(QGraphicsView, Graph):
                 json.dump(self.getGraphSaveData(), f)
 
             self._file_name_label.setPlainText(self._current_file_name)
-            if self.parent:
-                self.parent.console.append(str("// saved: '{0}'".format(self._current_file_name)))
+            print(str("// saved: '{0}'".format(self._current_file_name)))
 
     def save_as(self):
         self.save(True)
@@ -1067,7 +1095,11 @@ class GraphWidget(QGraphicsView, Graph):
                     VariableBase.deserialize(varJson, self)
                 # nodes
                 for nodeJson in data[self.name]['nodes']:
-                    Node.deserialize(nodeJson, self)
+                    try:
+                        Node.deserialize(nodeJson, self)
+                    except Exception as e:
+                        print(nodeJson)
+                        print(e)
                 # edges
                 for edgeJson in data[self.name]['edges']:
                     Edge.deserialize(edgeJson, self)
@@ -1192,8 +1224,6 @@ class GraphWidget(QGraphicsView, Graph):
             self.parent.toggle_multithreaded()
         if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
             self.parent.toggle_debug()
-        if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            self.parent.toggle_console()
         if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             self.parent.toggle_property_view()
         if event.key() == QtCore.Qt.Key_Delete:
@@ -1349,6 +1379,7 @@ class GraphWidget(QGraphicsView, Graph):
         super(GraphWidget, self).mouseReleaseEvent(event)
 
         self.autoPanController.stop()
+        self.mouseReleasePos = event.pos()
         self.released_item = self.itemAt(event.pos())
         self.bPanMode = False
         self._resize_group_mode = False

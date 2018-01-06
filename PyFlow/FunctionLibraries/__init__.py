@@ -16,8 +16,9 @@ for lib in os.listdir(os.path.dirname(__file__)):
             _libs[libName] = foos
             for f in _libs[libName]:
                 _foos[f[0]] = f[1]
-        except:
+        except Exception as e:
             # not load lib if any errors or unknown modules etc.
+            print e
             pass
 
 

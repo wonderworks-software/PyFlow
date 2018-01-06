@@ -39,7 +39,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionVariables.triggered.connect(self.toggleVariables)
         self.actionPlot_graph.triggered.connect(self.G.plot)
         self.actionDelete.triggered.connect(self.on_delete)
-        self.actionConsole.triggered.connect(self.toggle_console)
         self.actionPropertyView.triggered.connect(self.toggle_property_view)
         self.actionDebug.triggered.connect(self.toggle_debug)
         self.actionScreenshot.triggered.connect(self.G.screenShot)
@@ -56,19 +55,10 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
         self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
         self.actionHistory.triggered.connect(self.toggleHistory)
+        self.dockWidgetUndoStack.setVisible(False)
 
-        self.console.setLineWrapMode(QTextEdit.NoWrap)
-        self.console.setReadOnly(True)
-        self.console.setStyleSheet('background-color: rgb(49, 49, 49);' +
-                                   'font: 8pt "Consolas";' +
-                                   'color: rgb(200, 200, 200);')
-        self.clearConsoleAction = QAction('Clear', self)
-        self.clearConsoleAction.triggered.connect(self.console.clear)
-        self.console.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self.console.addAction(self.clearConsoleAction)
-        self.dockWidgetConsole.hide()
+        self.dockWidgetBottom.hide()
         self.setMouseTracking(True)
-        self.toggle_console()
 
         self.variablesWidget = VariablesWidget(self, self.G)
         self.leftDockGridLayout.addWidget(self.variablesWidget)
@@ -122,13 +112,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         data += "Ctrl+Shift+Q - Align Up\n"
 
         QMessageBox.information(self, "Shortcuts", data)
-
-    def toggle_console(self):
-
-        if self.dockWidgetConsole.isVisible():
-            self.dockWidgetConsole.hide()
-        else:
-            self.dockWidgetConsole.show()
 
     def toggle_debug(self):
         self.G.setDebug(not self.G.isDebug())

@@ -197,6 +197,7 @@ class Node(QGraphicsItem, NodeBase):
         meta = foo.__annotations__['meta']
         returnType = foo.__annotations__['return']
         nodeType = foo.__annotations__['nodeType']
+        fooArgNames = getargspec(foo).args
 
         @staticmethod
         def description():
@@ -213,7 +214,11 @@ class Node(QGraphicsItem, NodeBase):
         def constructor(self, name, graph, **kwargs):
             Node.__init__(self, name, graph, **kwargs)
 
-        nodeClass = type(foo.__name__, (Node,), {'__init__': constructor, 'category': category, 'keywords': keywords, 'description': description})
+        nodeClass = type(foo.__name__, (Node,), {'__init__': constructor,
+                                                 'category': category,
+                                                 'keywords': keywords,
+                                                 'description': description
+                                                 })
         inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
@@ -224,7 +229,6 @@ class Node(QGraphicsItem, NodeBase):
         outExec = None
 
         # iterate over function arguments and create pins according to data types
-        fooArgNames = getargspec(foo).args
         for index in range(len(fooArgNames)):
             dataType = foo.__annotations__[fooArgNames[index]]
             if dataType == DataTypes.Reference:

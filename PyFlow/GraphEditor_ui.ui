@@ -162,7 +162,7 @@
    <addaction name="actionAlignBottom"/>
    <addaction name="actionAlignRight"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidgetConsole">
+  <widget class="QDockWidget" name="dockWidgetBottom">
    <property name="enabled">
     <bool>true</bool>
    </property>
@@ -176,12 +176,12 @@
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
-    <string>Console</string>
+    <string>BottomDock</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
+   <widget class="QWidget" name="dockWidgetBottomContents">
     <layout class="QGridLayout" name="gridLayout_2">
      <property name="leftMargin">
       <number>1</number>
@@ -195,19 +195,6 @@
      <property name="bottomMargin">
       <number>1</number>
      </property>
-     <item row="0" column="0">
-      <widget class="QTextEdit" name="console">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
@@ -228,7 +215,7 @@
     <string>Variables</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_5">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -254,8 +241,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>148</width>
-          <height>376</height>
+          <width>198</width>
+          <height>193</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -332,7 +319,7 @@
           <x>0</x>
           <y>0</y>
           <width>198</width>
-          <height>531</height>
+          <height>383</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">

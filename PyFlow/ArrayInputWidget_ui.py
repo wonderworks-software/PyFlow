@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/ArrayInputWidget_ui.ui'
 #
-# Created: Thu Jan 04 21:58:47 2018
+# Created: Sat Jan 06 13:45:45 2018
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!

@@ -154,6 +154,7 @@ class CommentNode(Node, NodeBase):
         self.label().h = labelHeight
         self.label().color = color
         self.label().update()
+        self.label().adjustSizes()
 
     @staticmethod
     def isInRange(mid, val, width=10):

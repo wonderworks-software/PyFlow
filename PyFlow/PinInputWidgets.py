@@ -101,8 +101,6 @@ class BoolInputWidget(PinInputWidgetBase, QCheckBox):
             self.setCheckState(QtCore.Qt.Checked)
         else:
             self.setCheckState(QtCore.Qt.Unchecked)
-        # self.OnDataChanged.emit(bool(data))
-        # push(self.pin())
 
 
 def getPinWidget(pin):
@@ -121,4 +119,5 @@ def getPinWidget(pin):
         return BoolInputWidget(pin=pin)
     if pin.dataType == DataTypes.Any:
         return StringInputWidget(pin=pin)
+    # array ?
     return None
