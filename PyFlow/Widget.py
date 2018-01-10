@@ -449,7 +449,6 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.setDragDropMode(QAbstractItemView.DragOnly)
         self.setAnimated(True)
         self.categoryPaths = {}
-        self.itemClicked.connect(self.OnItemClicked)
 
     def _isCategoryExists(self, category_name, categories):
         bFound = False
@@ -998,6 +997,8 @@ class GraphWidget(QGraphicsView, Graph):
             self.moveScrollbar(self.autoPanController.getDelta())
         for n in self.getNodes():
             n.Tick(deltaTime)
+        for e in self.edges.values():
+            e.Tick()
 
         self._lastClock = clock()
 

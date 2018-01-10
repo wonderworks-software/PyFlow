@@ -42,6 +42,20 @@ class Edge(QGraphicsPathItem):
 
         self.source().update()
         self.destination().update()
+        self.fade = 0.0
+
+    def Tick(self):
+        if self.fade > 0:
+            self.pen.setWidthF(self.thikness + self.fade * 2)
+            r = abs(lerp(self.color.red(), Colors.Yellow.red(), clamp(self.fade, 0, 1)))
+            g = abs(lerp(self.color.green(), Colors.Yellow.green(), clamp(self.fade, 0, 1)))
+            b = abs(lerp(self.color.blue(), Colors.Yellow.blue(), clamp(self.fade, 0, 1)))
+            self.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
+            self.fade -= 0.1
+            self.update()
+
+    def highlight(self):
+        self.fade = 1.0
 
     @property
     def uid(self):
@@ -145,15 +159,18 @@ class Edge(QGraphicsPathItem):
         maximumV = max(defaultVerticalOffset, abs(vDistance))
         verticalOffset = 0.0
 
-        multiply = 3
+        multiply = 2
         self.mPath = QtGui.QPainterPath()
         self.mPath.moveTo(p1)
 
         if xDistance <= 0:
             if vDistance <= 0:
-                verticalOffset = -minimumV
+                # verticalOffset = -minimumV
+                verticalOffset = 0
+                pass
             else:
-                verticalOffset = minimumV
+                # verticalOffset = minimumV
+                verticalOffset = 0
 
         if xDistance < 0:
             self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)

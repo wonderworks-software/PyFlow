@@ -65,6 +65,13 @@ class Pin(QGraphicsWidget, PinBase):
         self.portImage = QtGui.QImage(':/icons/resources/array.png')
         self.bLabelHidden = False
 
+    def call(self):
+        PinBase.call(self)
+        # highlight wire
+        if self.dataType == DataTypes.Exec and self.type == PinTypes.Output:
+            for e in self.edge_list:
+                e.highlight()
+
     def OnGetEvalOrderDebug(self):
         order = self.parent().graph().getEvaluationOrder(self.parent())
         for i, k in order.iteritems():

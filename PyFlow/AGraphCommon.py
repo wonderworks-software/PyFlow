@@ -2,6 +2,7 @@
 common defines, functions and structures
 '''
 import math
+import time
 from Settings import *
 import inspect
 from threading import Thread
@@ -10,6 +11,10 @@ from Queue import Queue
 
 
 FLAG_SYMBOL = "~"
+
+
+def lerp(start, end, percent):
+    return (start + percent * (end - start))
 
 
 def clamp(n, vmin, vmax):
