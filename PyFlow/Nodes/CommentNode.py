@@ -15,7 +15,7 @@ from Qt import QtCore
 
 class CommentNodeName(NodeName):
     """doc string for CommentNodeName"""
-    def __init__(self, parent, bUseTextureBg=False, color=Colors.White):
+    def __init__(self, parent, bUseTextureBg=False, color=Colors.AbsoluteBlack):
         super(CommentNodeName, self).__init__(parent, bUseTextureBg, color=color)
         self.color = color
         self.color.setAlpha(80)
@@ -79,9 +79,10 @@ class CommentNodeName(NodeName):
 
 
 class CommentNode(Node, NodeBase):
-    def __init__(self, name, graph, bUseTextureBg=False, headColor=Colors.White):
+    def __init__(self, name, graph, bUseTextureBg=False, headColor=Colors.AbsoluteBlack):
         super(CommentNode, self).__init__(name, graph, headColor=headColor)
-        self.color = Colors.White
+        self.color = Colors.AbsoluteBlack
+        self.color.setAlpha(80)
         self.nodesToMove = {}
         self.lastNodePos = self.scenePos()
         self.rect = self.childrenBoundingRect()
@@ -131,7 +132,8 @@ class CommentNode(Node, NodeBase):
         height = self.minHeight
         labelHeight = self.label().h
         text = self.__class__.__name__
-        color = Colors.White
+        # initial color is black
+        color = self.color
         try:
             # if copied in runtime
             width = jsonTemplate['meta']['commentNode']['w']
@@ -186,7 +188,7 @@ class CommentNode(Node, NodeBase):
             self.resizeDirection = (1, 0)
             self.setFlag(QGraphicsItem.ItemIsMovable, False)
             self.bResize = True
-        elif (event.pos().y() + self.label().boundingRect().height()) > (self.rect.height() - 20):
+        elif (event.pos().y() + self.label().boundingRect().height()) > (self.rect.height() - 30):
             self.initialRectHeight = self.rect.height()
             self.resizeDirection = (0, 1)
             self.setFlag(QGraphicsItem.ItemIsMovable, False)

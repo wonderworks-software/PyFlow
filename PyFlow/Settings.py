@@ -45,6 +45,7 @@ class Colors:
     Green = QtGui.QColor(96, 169, 23, 255)
     Blue = QtGui.QColor(0, 0, 255, 255)
     Black = QtGui.QColor(50, 50, 50, 255)
+    AbsoluteBlack = QtGui.QColor(0, 0, 0, 255)
     ConnectionLines = QtGui.QColor(255, 255, 255, 255)
     DirtyPen = QtGui.QColor(250, 250, 250, 200)
     Shadow = QtGui.QColor(20, 20, 20, 150)
