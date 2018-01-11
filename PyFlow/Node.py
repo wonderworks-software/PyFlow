@@ -588,32 +588,18 @@ class Node(QGraphicsItem, NodeBase):
         if pin:
             pin.kill()
 
-    def _addPin(self, port_type, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', color=QtGui.QColor(0, 100, 0, 255), index=-1):
-        newColor = color
+    def _addPin(self, port_type, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1):
+        # newColor = color
 
         # check if pins with this name already exists and get uniq name
         name = self.getUniqPinName(name)
 
-        if dataType == DataTypes.Int or DataTypes.Float:
-            # set colot for numeric ports
-            newColor = QtGui.QColor(0, 100, 0, 255)
-        elif dataType == DataTypes.String:
-            # set colot for string ports
-            newColor = QtGui.QColor(50, 0, 50, 255)
-        elif dataType == DataTypes.Bool:
-            # set colot for bool ports
-            newColor = QtGui.QColor(100, 0, 0, 255)
-        elif dataType == DataTypes.Array:
-            # set colot for bool ports
-            newColor = QtGui.QColor(0, 0, 0, 255)
-        else:
-            newColor = QtGui.QColor(255, 255, 30, 255)
-
-        p = Pin(name, self, dataType, 7, 7, newColor)
+        p = Pin(name, self, dataType, 7, 7)
         p.type = port_type
+
         if port_type == PinTypes.Input and foo is not None:
             p.call = foo
-            # p.call = MethodType(foo, p, Pin)
+
         connector_name = QGraphicsProxyWidget()
         connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)

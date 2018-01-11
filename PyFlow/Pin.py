@@ -22,7 +22,7 @@ class Pin(QGraphicsWidget, PinBase):
     OnPinConnected = QtCore.Signal()
     OnPinDisconnected = QtCore.Signal()
 
-    def __init__(self, name, parent, dataType, width=8.0, height=8.0, color=Colors.Connectors):
+    def __init__(self, name, parent, dataType, width=8.0, height=8.0):
         PinBase.__init__(self, name, parent, dataType)
         QGraphicsWidget.__init__(self)
         name = name.replace(" ", "_")  # spaces are not allowed

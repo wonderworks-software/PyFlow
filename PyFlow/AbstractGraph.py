@@ -141,6 +141,8 @@ class PinBase(object):
             self._data = bool(data)
         if self._dataType == DataTypes.Any:
             self._data = data
+        if self._dataType == DataTypes.FloatVector3:
+            self._data = data
 
         self.setClean()
         if self.type == PinTypes.Output:
