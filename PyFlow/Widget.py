@@ -966,7 +966,6 @@ class GraphWidget(QGraphicsView, Graph):
             self.verticalScrollBar().setValue(vertical)
         except Exception as e:
             print(e)
-            self.writeToConsole(e)
 
     def mouseDoubleClickEvent(self, event):
         QGraphicsView.mouseDoubleClickEvent(self, event)
@@ -1004,13 +1003,13 @@ class GraphWidget(QGraphicsView, Graph):
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
-        self.writeToConsole(message)
+        print(message)
 
     def screenShot(self):
         name_filter = "Image (*.png)"
         fName = QFileDialog.getSaveFileName(filter=name_filter)
         if not fName[0] == '':
-            self.writeToConsole("save screen to {0}".format(fName[0]))
+            print("save screen to {0}".format(fName[0]))
             img = QtGui.QPixmap.grabWidget(self)
             img.save(fName[0], quality=100)
 
@@ -1440,7 +1439,7 @@ class GraphWidget(QGraphicsView, Graph):
         if p_itm and r_itm:
             if isinstance(p_itm, Pin) and isinstance(r_itm, Pin):
                 if cycle_check(p_itm, r_itm):
-                    self.writeToConsole('cycles are not allowed')
+                    print('cycles are not allowed')
                     do_connect = False
 
         if do_connect:
@@ -1637,9 +1636,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.edges.pop(edge.uid)
         edge.prepareGeometryChange()
         self.scene().removeItem(edge)
-
-    def writeToConsole(self, data):
-        self.parent.console.append(str(data))
 
     def plot(self):
         Graph.plot(self)

@@ -69,3 +69,10 @@ class Colors:
     Bool = Red
     Exec = QtGui.QColor(255, 255, 255, 200)
     String = Pink
+    IntVector2 = QtGui.QColor(0, 0, 255, 200)
+    FloatVector2 = QtGui.QColor(0, 0, 255, 200)
+    IntVector3 = QtGui.QColor(0, 0, 255, 200)
+    FloatVector3 = QtGui.QColor(0, 0, 255, 200)
+    IntVector4 = QtGui.QColor(0, 0, 255, 200)
+    FloatVector4 = QtGui.QColor(0, 0, 255, 200)
+    Transform = QtGui.QColor(255, 69, 0, 200)

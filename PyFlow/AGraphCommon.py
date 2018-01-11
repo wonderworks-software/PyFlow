@@ -103,6 +103,20 @@ def getPortColorByType(t):
         return Colors.Exec
     if t == DataTypes.String:
         return Colors.String
+    if t == DataTypes.IntVector2:
+        return Colors.IntVector2
+    if t == DataTypes.FloatVector2:
+        return Colors.FloatVector2
+    if t == DataTypes.IntVector3:
+        return Colors.IntVector3
+    if t == DataTypes.FloatVector3:
+        return Colors.FloatVector3
+    if t == DataTypes.IntVector4:
+        return Colors.IntVector4
+    if t == DataTypes.FloatVector4:
+        return Colors.FloatVector4
+    if t == DataTypes.Transform:
+        return Colors.Transform
 
 
 def getDefaultDataValue(dataType):
@@ -152,6 +166,13 @@ class DataTypes:
     Any = 5
     Exec = 6
     Reference = 7
+    IntVector2 = 8
+    FloatVector2 = 9
+    IntVector3 = 10
+    FloatVector3 = 11
+    IntVector4 = 12
+    FloatVector4 = 13
+    Transform = 14
 
 
 def getDataTypeName(inValue):

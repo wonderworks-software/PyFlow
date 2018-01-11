@@ -27,5 +27,5 @@ class IsArray(Node, NodeBase):
             result = True
         except Exception, e:
             result = False
-            self.graph.writeToConsole("[ERROR] {0}. {1}".format(self.__class__.__name__, e))
+            print("[ERROR] {0}. {1}".format(self.__class__.__name__, e))
         self.out.setData(result)

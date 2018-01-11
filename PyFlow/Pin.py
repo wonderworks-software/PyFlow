@@ -207,10 +207,6 @@ class Pin(QGraphicsWidget, PinBase):
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())
 
-    def writeToConsole(self, data):
-        if self.parent().graph():
-            self.parent().graph().writeToConsole(str(data))
-
     def getLayout(self):
         if self.type == PinTypes.Input:
             return self.parent().inputsLayout

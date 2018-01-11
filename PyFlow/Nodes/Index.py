@@ -31,4 +31,4 @@ class Index(Node, NodeBase):
             self.success.setData(True)
         except Exception, e:
             self.success.setData(False)
-            self.graph.writeToConsole("[ERROR] {0}. {1}".format(self.__class__.__name__, e))
+            print("[ERROR] {0}. {1}".format(self.__class__.__name__, e))
