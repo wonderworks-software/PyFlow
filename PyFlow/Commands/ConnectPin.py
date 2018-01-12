@@ -1,6 +1,6 @@
 from Qt.QtWidgets import QUndoCommand
 from AbstractGraph import Graph
-from AbstractGraph import PinTypes
+from AbstractGraph import PinDirection
 from Edge import Edge
 
 

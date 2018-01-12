@@ -529,7 +529,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                     if dataType is None:
                         self.insertNode(nodeCategoryPath, name, foo.__doc__)
                     else:
-                        if pinType == PinTypes.Output:
+                        if pinType == PinDirection.Output:
                             if dataType in fooInpTypes:
                                 self.insertNode(nodeCategoryPath, name, foo.__doc__)
                         else:
@@ -548,7 +548,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             else:
                 # if pressed pin is output pin
                 # filter by nodes input types
-                if pinType == PinTypes.Output:
+                if pinType == PinDirection.Output:
                     if dataType in node_class.pinTypeHints()['inputs']:
                         self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
                 else:
@@ -1339,7 +1339,7 @@ class GraphWidget(QGraphicsView, Graph):
             self.pan(delta)
 
         if self._draw_real_time_line:
-            if isinstance(self.pressed_item, Pin):
+            if isinstance(self.pressed_item, PinBase):
                 if self.pressed_item.parentItem().isSelected():
                     self.pressed_item.parentItem().setSelected(False)
             if self.real_time_line not in self.scene().items():
@@ -1416,11 +1416,11 @@ class GraphWidget(QGraphicsView, Graph):
                 dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
                 if all([abs(i) < 0.2 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
-        if event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, Pin):
-            if isinstance(self.pressed_item, Pin):
+        if event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, PinBase):
+            if isinstance(self.pressed_item, PinBase):
                 # node box tree pops up
                 # with nodes taking supported data types of pressed Pin as input
-                self.showNodeBox(self.pressed_item.dataType, self.pressed_item.type)
+                self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction)
 
             self._right_button = False
         p_itm = self.pressed_item
@@ -1437,7 +1437,7 @@ class GraphWidget(QGraphicsView, Graph):
                 do_connect = False
                 break
         if p_itm and r_itm:
-            if isinstance(p_itm, Pin) and isinstance(r_itm, Pin):
+            if isinstance(p_itm, PinBase) and isinstance(r_itm, PinBase):
                 if cycle_check(p_itm, r_itm):
                     print('cycles are not allowed')
                     do_connect = False
@@ -1610,7 +1610,7 @@ class GraphWidget(QGraphicsView, Graph):
     def _addEdge(self, src, dst):
         result = Graph.addEdge(self, src, dst)
         if result:
-            if src.type == PinTypes.Input:
+            if src.direction == PinDirection.Input:
                 src, dst = dst, src
             edge = Edge(src, dst, self)
             src.edge_list.append(edge)

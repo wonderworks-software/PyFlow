@@ -9,6 +9,7 @@ from Qt.QtWidgets import QCheckBox
 from Qt.QtWidgets import QGraphicsProxyWidget
 from AGraphCommon import DataTypes
 from AGraphCommon import push
+from AbstractGraph import PinBase
 
 
 class PinInputWidgetBase(object):
@@ -16,7 +17,7 @@ class PinInputWidgetBase(object):
 
     def __init__(self, pin, **kwds):
         super(PinInputWidgetBase, self).__init__(**kwds)
-        if not isinstance(pin, Pin):
+        if not isinstance(pin, PinBase):
             raise TypeError("[ERROR] Pin expected, got {0}".format(type(pin)))
         self.pin = weakref.ref(pin)
 
@@ -51,7 +52,6 @@ class FloatInputWidget(PinInputWidgetBase, QDoubleSpinBox):
 
     def setData(self, data):
         self.setValue(float(data))
-        # self.OnDataChanged.emit(float(data))
 
 
 class IntInputWidget(PinInputWidgetBase, QSpinBox):
@@ -68,7 +68,6 @@ class IntInputWidget(PinInputWidgetBase, QSpinBox):
 
     def setData(self, data):
         self.setValue(int(data))
-        # self.OnDataChanged.emit(int(data))
 
 
 class StringInputWidget(PinInputWidgetBase, QLineEdit):
@@ -84,7 +83,6 @@ class StringInputWidget(PinInputWidgetBase, QLineEdit):
 
     def setData(self, data):
         self.setText(str(data))
-        # self.OnDataChanged.emit(str(data))
 
 
 class BoolInputWidget(PinInputWidgetBase, QCheckBox):
@@ -107,7 +105,7 @@ def getPinWidget(pin):
     '''
     fabric method
     '''
-    if not isinstance(pin, Pin):
+    if not isinstance(pin, PinBase):
         raise TypeError("[ERROR] Pin expected, got {0}".format(type(pin)))
     if pin.dataType == DataTypes.Float:
         return FloatInputWidget(pin=pin)

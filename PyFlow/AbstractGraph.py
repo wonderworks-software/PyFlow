@@ -8,24 +8,22 @@ import itertools
 
 
 class PinBase(object):
-    def __init__(self, name, parent, dataType):
+    def __init__(self, name, parent, dataType, direction):
         super(PinBase, self).__init__()
         self._uid = uuid.uuid4()
         self.name = name.replace(" ", "_")
         self.parent = weakref.ref(parent)
         self.object_type = ObjectTypes.Pin
         self._dataType = None
-        self.supportedDataTypes = list()
+        self._data = None
         self.dataType = dataType
 
         self.affects = []
         self.affected_by = []
         self.edge_list = []
-        self.type = None
+        self.direction = direction
         self.dirty = True
         self._connected = False
-        # set default values
-        self._data = getDefaultDataValue(self._dataType)
         # put self in graph
         self.parent().graph().pins[self.uid] = self
 
@@ -42,18 +40,17 @@ class PinBase(object):
     def dataType(self):
         return self._dataType
 
+    def supportedDataTypes(self):
+        return (self.dataType)
+
     @dataType.setter
     def dataType(self, value):
         self._dataType = value
 
-        self.supportedDataTypes = list(set([value]))
-        if self.dataType == DataTypes.Exec or self.dataType == DataTypes.Any:
-            self.supportedDataTypes.append(value)
-
     def kill(self):
-        if self.type == PinTypes.Input and self.uid in self.parent().inputs:
+        if self.direction == PinDirection.Input and self.uid in self.parent().inputs:
             self.parent().inputs.pop(self.uid)
-        if self.type == PinTypes.Output and self.uid in self.parent().outputs:
+        if self.direction == PinDirection.Output and self.uid in self.parent().outputs:
             self.parent().outputs.pop(self.uid)
         if self.uid in self.parent().graph().pins:
             self.parent().graph().pins.pop(self.uid)
@@ -75,8 +72,9 @@ class PinBase(object):
 
     def setClean(self):
         self.dirty = False
-        for i in self.affects:
-            i.dirty = False
+        if self.direction == PinDirection.Output:
+            for i in self.affects:
+                i.dirty = False
 
     def hasConnections(self):
         if len(self.edge_list) == 0:
@@ -98,14 +96,14 @@ class PinBase(object):
                 return []
             return self._data
 
-        if self.type == PinTypes.Output:
+        if self.direction == PinDirection.Output:
             if self.dirty:
                 self.parent().compute()
             self.setClean()
             return self._data
-        if self.type == PinTypes.Input:
+        if self.direction == PinDirection.Input:
             if self.dirty or self.parent().bCallable:
-                out = [i for i in self.affected_by if i.type == PinTypes.Output]
+                out = [i for i in self.affected_by if i.direction == PinDirection.Output]
                 if not out == []:
                     compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
                     # call from left to right
@@ -119,33 +117,39 @@ class PinBase(object):
                 return self._data
 
     def call(self):
-        for p in [pin for pin in self.affects if pin.dataType == DataTypes.Exec]:
-            p.call()
+        pass
+
+    def defaultValue(self):
+        return None
 
     def setData(self, data):
-        if self._dataType == DataTypes.Float:
-            try:
-                self._data = float(data)
-            except:
-                self._data = getDefaultDataValue(self._dataType)
-        if self._dataType == DataTypes.Int:
-            try:
-                self._data = int(data)
-            except:
-                self._data = getDefaultDataValue(self._dataType)
-        if self._dataType == DataTypes.String:
-            self._data = str(data)
-        if self._dataType == DataTypes.Array:
-            self._data = data
-        if self._dataType == DataTypes.Bool:
-            self._data = bool(data)
-        if self._dataType == DataTypes.Any:
-            self._data = data
-        if self._dataType == DataTypes.FloatVector3:
-            self._data = data
+        '''
+        try convert input value to needed type
+        if failed - set default value
+        '''
+        # if self._dataType == DataTypes.Float:
+        #     try:
+        #         self._data = float(data)
+        #     except:
+        #         self._data = getDefaultDataValue(self._dataType)
+        # if self._dataType == DataTypes.Int:
+        #     try:
+        #         self._data = int(data)
+        #     except:
+        #         self._data = getDefaultDataValue(self._dataType)
+        # if self._dataType == DataTypes.String:
+        #     self._data = str(data)
+        # if self._dataType == DataTypes.Array:
+        #     self._data = data
+        # if self._dataType == DataTypes.Bool:
+        #     self._data = bool(data)
+        # if self._dataType == DataTypes.Any:
+        #     self._data = data
+        # if self._dataType == DataTypes.FloatVector3:
+        #     self._data = data
 
         self.setClean()
-        if self.type == PinTypes.Output:
+        if self.direction == PinDirection.Output:
             for i in self.affects:
                 i._data = data
                 i.setClean()
@@ -193,7 +197,7 @@ class NodeBase(object):
     def addInputPin(self, pinName, dataType, foo=None):
         p = PinBase(pinName, self, dataType, foo)
         self.inputs[p.uid] = p
-        p.type = PinTypes.Input
+        p.direction = PinDirection.Input
         if foo:
             p.call = foo
         return p
@@ -201,7 +205,7 @@ class NodeBase(object):
     def addOutputPin(self, pinName, dataType, foo=None):
         p = PinBase(pinName, self, dataType, foo)
         self.outputs[p.uid] = p
-        p.type = PinTypes.Output
+        p.direction = PinDirection.Output
         if foo:
             p.call = foo
         return p
@@ -316,7 +320,7 @@ class Graph(object):
         def foo(n, process=True):
             if not process:
                 return
-            next_layer_nodes = self.getNextLayerNodes(n, PinTypes.Input)
+            next_layer_nodes = self.getNextLayerNodes(n, PinDirection.Input)
 
             layer_idx = max(order.iterkeys()) + 1
             for n in next_layer_nodes:
@@ -336,13 +340,13 @@ class Graph(object):
         return order
 
     @staticmethod
-    def getNextLayerNodes(node, direction=PinTypes.Input):
+    def getNextLayerNodes(node, direction=PinDirection.Input):
         nodes = []
         '''
             callable nodes skipped
             because execution flow is defined by execution wires
         '''
-        if direction == PinTypes.Input:
+        if direction == PinDirection.Input:
             if not len(node.inputs) == 0:
                 for i in node.inputs.values():
                     if not len(i.affected_by) == 0:
@@ -350,7 +354,7 @@ class Graph(object):
                             if not a.parent().bCallable:
                                 nodes.append(a.parent())
             return nodes
-        if direction == PinTypes.Output:
+        if direction == PinDirection.Output:
             if not len(node.outputs) == 0:
                 for i in node.outputs.values():
                     if not len(i.affects) == 0:
@@ -387,7 +391,7 @@ class Graph(object):
 
     def canConnectPins(self, src, dst):
         debug = self.isDebug()
-        if src.type == PinTypes.Input:
+        if src.direction == PinDirection.Input:
             src, dst = dst, src
 
         if src.uid not in self.pins:
@@ -397,8 +401,8 @@ class Graph(object):
             print('dst not in graph.pins')
             return False
 
-        if DataTypes.Any not in dst.supportedDataTypes:
-            if src.dataType not in dst.supportedDataTypes:
+        if DataTypes.Any not in dst.supportedDataTypes():
+            if src.dataType not in dst.supportedDataTypes():
                 print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
                 return False
         else:
@@ -411,7 +415,7 @@ class Graph(object):
             if debug:
                 print('already connected. skipped')
             return False
-        if src.type == dst.type:
+        if src.direction == dst.direction:
             if debug:
                 print('same types can not be connected')
             return False
@@ -429,7 +433,7 @@ class Graph(object):
         if not self.canConnectPins(src, dst):
             return False
 
-        if src.type == PinTypes.Input:
+        if src.direction == PinDirection.Input:
             src, dst = dst, src
 
         # input value pins can have one output connection

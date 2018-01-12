@@ -46,7 +46,7 @@ class Reroute(Node, NodeBase):
         self.color.setAlpha(255)
 
         self.inp0 = Pin('in', self, DataTypes.Reroute, 10, 10, self.color)
-        self.inp0.type = PinTypes.Input
+        self.inp0.direction = PinDirection.Input
         self.inp0.pinConnected = self.OnInputConneceted
         self.inp0.pinDisconnected = self.OnInputDisconneceted
         self.inputs[self.inp0.uid] = self.inp0
@@ -54,7 +54,7 @@ class Reroute(Node, NodeBase):
         self._connected = False
 
         self.out0 = Pin('out', self, DataTypes.Reroute, 10, 10, self.color)
-        self.out0.type = PinTypes.Output
+        self.out0.direction = PinDirection.Output
         self.out0.pinConnected = self.OnOutputConnected
         self.out0.pinDisconnected = self.OnOutputDisconneceted
         # self.out0.setX(10.0)
@@ -131,7 +131,7 @@ class Reroute(Node, NodeBase):
         self.out0.dataType = other.dataType
         self.updateColor(other.dataType)
         if self.out0.hasConnections():
-            self.color = self.out0.color
+            self.color = self.out0.color()
             self.color.setAlpha(255)
             for e in self.out0.edge_list:
                 e.pen.setColor(self.color)
@@ -146,7 +146,7 @@ class Reroute(Node, NodeBase):
         self.out0.dataType = other.dataType
         self.inp0.dataType = other.dataType
         if self.inp0.hasConnections():
-            self.color = self.inp0.color
+            self.color = self.inp0.color()
             self.color.setAlpha(255)
         else:
             self.color = getPortColorByType(other.dataType)

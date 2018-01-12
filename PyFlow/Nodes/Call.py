@@ -33,8 +33,8 @@ class Call(Node, NodeBase):
 
         pb = QPushButton('call')
         pb.setMaximumWidth(30)
-        con = self.addContainer(PinTypes.Input)
-        con2 = self.addContainer(PinTypes.Input)
+        con = self.addContainer(PinDirection.Input)
+        con2 = self.addContainer(PinDirection.Input)
 
         pb.clicked.connect(self.compute)
         prx_btn = QGraphicsProxyWidget()

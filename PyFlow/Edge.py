@@ -27,7 +27,7 @@ class Edge(QGraphicsPathItem):
         self.connection = {'From': self.source().pinName(),
                            'To': self.destination().pinName()}
 
-        self.color = self.source().color
+        self.color = self.source().color()
 
         self.thikness = 1
         if source.dataType == DataTypes.Exec and destination.dataType == DataTypes.Exec:

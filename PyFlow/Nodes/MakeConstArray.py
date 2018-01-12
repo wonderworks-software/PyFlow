@@ -16,7 +16,7 @@ class MakeConstArray(Node, NodeBase):
         for dataType in valueDataTypes:
             self.action = self.menu.addAction('Add {0}'.format(getDataTypeName(dataType)))
             self.action.triggered.connect(lambda t=dataType: self.addInPin(t))
-        # con = self.addContainer(PinTypes.Output)
+        # con = self.addContainer(PinDirection.Output)
 
         # pb = QPushButton('+')
         # pb.setMaximumWidth(30)

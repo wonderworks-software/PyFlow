@@ -53,7 +53,7 @@ def cycle_check(src, dst):
     if src.dataType == DataTypes.Exec or dst.dataType == DataTypes.Exec:
         return False
 
-    if src.type == PinTypes.Input:
+    if src.direction == PinDirection.Input:
         src, dst = dst, src
     start = src
     if src in dst.affects:
@@ -241,7 +241,7 @@ class PinSelectionGroup:
     BothSides = 0
 
 
-class PinTypes:
+class PinDirection:
     Input = 0
     Output = 1
 

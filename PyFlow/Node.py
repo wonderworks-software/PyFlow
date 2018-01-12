@@ -12,8 +12,9 @@ from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
-from Pin import Pin, getPortColorByType
-from AbstractGraph import *
+# from Pin import Pin, getPortColorByType
+# from AbstractGraph import *
+from Pins import *
 from types import MethodType
 from PinInputWidgets import getPinWidget
 from inspect import getargspec
@@ -458,11 +459,11 @@ class Node(QGraphicsItem, NodeBase):
         QGraphicsItem.mouseReleaseEvent(self, event)
 
     def addInputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
-        p = self._addPin(PinTypes.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
+        p = self._addPin(PinDirection.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
         return p
 
     def addOutputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
-        p = self._addPin(PinTypes.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
+        p = self._addPin(PinDirection.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
         return p
 
     @staticmethod
@@ -560,7 +561,7 @@ class Node(QGraphicsItem, NodeBase):
         lyt.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         lyt.setContentsMargins(1, 1, 1, 1)
         container.setLayout(lyt)
-        if portType == PinTypes.Input:
+        if portType == PinDirection.Input:
             self.inputsLayout.addItem(container)
         else:
             self.outputsLayout.addItem(container)
@@ -588,16 +589,15 @@ class Node(QGraphicsItem, NodeBase):
         if pin:
             pin.kill()
 
-    def _addPin(self, port_type, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1):
+    def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1):
         # newColor = color
 
         # check if pins with this name already exists and get uniq name
         name = self.getUniqPinName(name)
 
-        p = Pin(name, self, dataType, 7, 7)
-        p.type = port_type
+        p = getPinByType(name, self, dataType, pinDirection)
 
-        if port_type == PinTypes.Input and foo is not None:
+        if pinDirection == PinDirection.Input and foo is not None:
             p.call = foo
 
         connector_name = QGraphicsProxyWidget()
@@ -624,8 +624,8 @@ class Node(QGraphicsItem, NodeBase):
                 color.alpha())
             lbl.setStyleSheet(style)
         connector_name.setWidget(lbl)
-        if port_type == PinTypes.Input:
-            container = self.addContainer(port_type)
+        if pinDirection == PinDirection.Input:
+            container = self.addContainer(pinDirection)
             if hideLabel:
                 container.setMinimumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
@@ -641,14 +641,13 @@ class Node(QGraphicsItem, NodeBase):
                 if w:
                     p.OnPinConnected.connect(w.hide)
                     p.OnPinDisconnected.connect(w.show)
-                    # p.OnDataChanged.connect(w.setData)
                     container.layout().addItem(w.asProxy())
 
             self.inputs[p.uid] = p
             self.inputsLayout.insertItem(index, container)
             container.adjustSize()
-        elif port_type == PinTypes.Output:
-            container = self.addContainer(port_type)
+        elif pinDirection == PinDirection.Output:
+            container = self.addContainer(pinDirection)
             if hideLabel:
                 container.setMinimumWidth(15)
             lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
