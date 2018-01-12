@@ -79,7 +79,7 @@ class PluginType:
     pFunctionLibrary = 2
 
 
-def _implementPlugin(name, console_out_foo, pluginType):
+def _implementPlugin(name, pluginType):
     CommandTemplate = """from Qt.QtWidgets import QUndoCommand
 
 
@@ -102,7 +102,7 @@ from Node import Node
 
 class {0}(Node, NodeBase):
     def __init__(self, name, graph):
-        super({0}, self).__init__(name, graph, w=100, spacings=Spacings)
+        super({0}, self).__init__(name, graph)
         self.inp0 = self.addInputPin('in0', DataTypes.Any)
         self.out0 = self.addOutputPin('out0', DataTypes.Any)
         pinAffects(self.inp0, self.out0)
@@ -193,37 +193,37 @@ class {0}(FunctionLibraryBase):
         existing_nodes = [n.split(".")[0] for n in listdir(Nodes.__path__[0]) if n.endswith(".py") and "__init__" not in n]
 
         if name in existing_nodes:
-            console_out_foo("[ERROR] Node {0} already exists! Chose another name".format(name))
+            print("[ERROR] Node {0} already exists! Chose another name".format(name))
             return
 
         # write to file. delete older if needed
         with open(file_path, "wb") as f:
             f.write(NodeTemplate)
-        console_out_foo("[INFO] Node {0} been created.\nIn order to appear in node box, restart application.".format(name))
+        print("[INFO] Node {0} been created.\nIn order to appear in node box, restart application.".format(name))
         startfile(file_path)
 
     if pluginType == PluginType.pCommand:
         file_path = "{0}/{1}.py".format(Commands.__path__[0], name)
         existing_commands = [c.split(".")[0] for c in listdir(Commands.__path__[0]) if c.endswith(".py") and "__init__" not in c]
         if name in existing_commands:
-            console_out_foo("[ERROR] Command {0} already exists! Chose another name".format(name))
+            print("[ERROR] Command {0} already exists! Chose another name".format(name))
             return
         # write to file. delete older if needed
         with open(file_path, "wb") as f:
             f.write(CommandTemplate)
-        console_out_foo("[INFO] Command {0} been created.\n Restart application.".format(name))
+        print("[INFO] Command {0} been created.\n Restart application.".format(name))
         startfile(file_path)
 
     if pluginType == PluginType.pFunctionLibrary:
         filePath = "{0}/{1}.py".format(FunctionLibraries.__path__[0], name)
         existingLibs = [c.split(".")[0] for c in listdir(FunctionLibraries.__path__[0]) if c.endswith(".py") and "__init__" not in c]
         if name in existingLibs:
-            console_out_foo("[ERROR] Library {0} already exists! Chose another name".format(name))
+            print("[ERROR] Library {0} already exists! Chose another name".format(name))
             return
         # write to file. delete older if needed
         with open(filePath, "wb") as f:
             f.write(LibraryTemplate)
-        console_out_foo("[INFO] Command {0} been created.\n Restart application.".format(name))
+        print("[INFO] Command {0} been created.\n Restart application.".format(name))
         startfile(filePath)
 
 

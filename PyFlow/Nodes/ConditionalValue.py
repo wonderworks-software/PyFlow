@@ -5,7 +5,7 @@ from Node import Node
 
 class ConditionalValue(Node, NodeBase):
     def __init__(self, name, graph):
-        super(ConditionalValue, self).__init__(name, graph, spacings=Spacings)
+        super(ConditionalValue, self).__init__(name, graph)
         self.condition = self.addInputPin('condition', DataTypes.Bool)
         self.trueValue = self.addInputPin('ifTrue', DataTypes.Any)
         self.falseValue = self.addInputPin('ifFalse', DataTypes.Any)

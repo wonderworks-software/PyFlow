@@ -72,7 +72,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def newPlugin(self, pluginType):
         name, result = QInputDialog.getText(self, 'Plugin name', 'Enter plugin name')
         if result:
-            _implementPlugin(name, self.console.append, pluginType)
+            _implementPlugin(name, pluginType)
 
     def closeEvent(self, event):
         question = "Shure?"
