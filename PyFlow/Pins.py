@@ -408,6 +408,50 @@ class FloatVector3Pin(_Pin):
         PinBase.setData(self, data)
 
 
+class FloatVector4Pin(_Pin):
+    """doc string for FloatVector4Pin"""
+    def __init__(self, name, parent, dataType, direction):
+        super(FloatVector4Pin, self).__init__(name, parent, dataType, direction)
+
+    def supportedDataTypes(self):
+        return (DataTypes.FloatVector4,)
+
+    def color(self):
+        return Colors.FloatVector4
+
+    def defaultValue(self):
+        return pyrr.Vector4()
+
+    def setData(self, data):
+        if isinstance(data, pyrr.Vector4):
+            self._data = data
+        else:
+            self._data = self.defaultValue()
+        PinBase.setData(self, data)
+
+
+class QuatPin(_Pin):
+    """doc string for QuatPin"""
+    def __init__(self, name, parent, dataType, direction):
+        super(QuatPin, self).__init__(name, parent, dataType, direction)
+
+    def supportedDataTypes(self):
+        return (DataTypes.Quaternion,)
+
+    def color(self):
+        return Colors.Quaternion
+
+    def defaultValue(self):
+        return pyrr.Quaternion()
+
+    def setData(self, data):
+        if isinstance(data, pyrr.Quaternion):
+            self._data = data
+        else:
+            self._data = self.defaultValue()
+        PinBase.setData(self, data)
+
+
 def getPinByType(name, parent, dataType, direction):
     '''
     this function will be used by node
@@ -428,5 +472,9 @@ def getPinByType(name, parent, dataType, direction):
         return BoolPin(name, parent, dataType, direction)
     if dataType == DataTypes.FloatVector3:
         return FloatVector3Pin(name, parent, dataType, direction)
+    if dataType == DataTypes.FloatVector4:
+        return FloatVector4Pin(name, parent, dataType, direction)
+    if dataType == DataTypes.Quaternion:
+        return QuatPin(name, parent, dataType, direction)
 
     return None

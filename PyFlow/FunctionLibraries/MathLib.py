@@ -2,12 +2,40 @@ from FunctionLibrary import *
 from AGraphCommon import *
 import math
 import random
+import pyrr
 
 
 class MathLib(FunctionLibraryBase):
     """doc string for MathLib"""
     def __init__(self):
         super(MathLib, self).__init__()
+
+    # #######################
+    # vectors and quaternions
+    # using pyrr module
+    # #######################
+
+    @staticmethod
+    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr', 'Keywords': []})
+    def zeroVector3():
+        v = pyrr.Vector3()
+        return v
+
+    @staticmethod
+    @annotated(returns=DataTypes.FloatVector4, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr', 'Keywords': []})
+    def zeroVector4():
+        v = pyrr.Vector4()
+        return v
+
+    @staticmethod
+    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr', 'Keywords': []})
+    def zeroQuat():
+        v = pyrr.Quaternion()
+        return v
+
+    # ############
+    # builtin math
+    # ############
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})

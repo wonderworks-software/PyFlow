@@ -74,5 +74,6 @@ class Colors:
     IntVector3 = QtGui.QColor(0, 0, 255, 200)
     FloatVector3 = QtGui.QColor(0, 0, 255, 200)
     IntVector4 = QtGui.QColor(0, 0, 255, 200)
-    FloatVector4 = QtGui.QColor(0, 0, 255, 200)
+    FloatVector4 = QtGui.QColor(173, 216, 230, 200)
+    Quaternion = QtGui.QColor(32, 178, 170, 200)
     Transform = QtGui.QColor(255, 69, 0, 200)

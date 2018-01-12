@@ -88,6 +88,7 @@ def push(start_from):
             push(i)
 
 
+# kill this. replace by inheritance
 def getPortColorByType(t):
     if t == DataTypes.Any:
         return Colors.Any
@@ -119,6 +120,7 @@ def getPortColorByType(t):
         return Colors.Transform
 
 
+# kill this. replace by inheritance
 def getDefaultDataValue(dataType):
     if dataType == DataTypes.Float:
         return float()
@@ -166,13 +168,12 @@ class DataTypes:
     Any = 5
     Exec = 6
     Reference = 7
-    IntVector2 = 8
-    FloatVector2 = 9
-    IntVector3 = 10
-    FloatVector3 = 11
-    IntVector4 = 12
-    FloatVector4 = 13
-    Transform = 14
+    IntVector3 = 8
+    FloatVector3 = 9
+    IntVector4 = 10
+    FloatVector4 = 11
+    Transform = 12
+    Quaternion = 13
 
 
 def getDataTypeName(inValue):

@@ -5,7 +5,6 @@ from AGraphCommon import *
 # ...
 import os
 import platform
-import pyrr
 
 
 class DefaultLib(FunctionLibraryBase):
@@ -18,12 +17,6 @@ class DefaultLib(FunctionLibraryBase):
     def pyprint(entity=(DataTypes.Any, None)):
         '''print any object'''
         print(entity)
-
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr', 'Keywords': []})
-    def zeroVector3():
-        v = pyrr.Vector3()
-        return v
 
     @staticmethod
     @annotated(returns=None, meta={'Category': 'DefaultLib|Info', 'Keywords': ['version', 'os']})
