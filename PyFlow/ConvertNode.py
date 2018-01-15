@@ -52,12 +52,8 @@ class ConvertNode(Node, NodeBase):
     def paint(self, painter, option, widget):
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            if self.options:
-                pen.setColor(Colors.Yellow)
-                pen.setStyle(self.opt_pen_selected_type)
-            else:
-                pen.setColor(opt_selected_pen_color)
-                pen.setStyle(self.opt_pen_selected_type)
+            pen.setColor(opt_selected_pen_color)
+            pen.setStyle(self.opt_pen_selected_type)
         painter.setPen(pen)
         painter.setBrush(self.bg)
         painter.drawRoundedRect(self.boundingRect(), self.roundFactor, self.roundFactor)

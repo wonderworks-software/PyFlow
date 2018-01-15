@@ -6,7 +6,7 @@ from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QLineEdit
 from Qt import QtCore
 from Qt import QtGui
-from Pin import updatePins
+from Pins import updatePins
 from Commands import RemoveNodes
 from PinInputWidgets import getPinWidget
 
@@ -20,7 +20,6 @@ class SetVarNode(Node, NodeBase):
         self.outExec = self.addOutputPin('out0', DataTypes.Exec, hideLabel=True)
         self.value = self.addInputPin('val', self.var.dataType, hideLabel=True)
         self.outValue = self.addOutputPin('valOut', self.var.dataType, hideLabel=True)
-        # self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)

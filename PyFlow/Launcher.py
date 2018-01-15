@@ -43,7 +43,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionDebug.triggered.connect(self.toggle_debug)
         self.actionScreenshot.triggered.connect(self.G.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
-        self.actionOptions.triggered.connect(self.G.options)
         self.actionSave.triggered.connect(self.G.save)
         self.actionLoad.triggered.connect(self.G.load)
         self.actionSave_as.triggered.connect(self.G.save_as)

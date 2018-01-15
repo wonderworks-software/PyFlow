@@ -12,8 +12,6 @@ from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
-# from Pin import Pin, getPortColorByType
-# from AbstractGraph import *
 from Pins import *
 from types import MethodType
 from PinInputWidgets import getPinWidget
@@ -28,18 +26,16 @@ class NodeName(QGraphicsTextItem):
         self.width = 50
         self.document().contentsChanged.connect(self.onDocContentsChanged)
         self.object_type = ObjectTypes.NodeName
-        self.options = self.parentItem().graph().getSettings()
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.desc = parent.description()
         self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
         self.h = 30
-        if self.options:
-            self.text_color = QtGui.QColor(self.options.value('NODES/Nodes label font color'))
-            self.setDefaultTextColor(self.text_color)
-            self.opt_font = QtGui.QFont(self.options.value('NODES/Nodes label font'))
-            self.opt_font_size = int(self.options.value('NODES/Nodes label font size'))
-            self.opt_font.setPointSize(self.opt_font_size)
-            self.setFont(self.opt_font)
+        self.text_color = Colors.PortNameColor
+        self.setDefaultTextColor(self.text_color)
+        self.opt_font = QtGui.QFont('Consolas')
+        self.opt_font_size = 8
+        self.opt_font.setPointSize(self.opt_font_size)
+        self.setFont(self.opt_font)
         self.descFont = QtGui.QFont("Consolas", self.opt_font.pointSize() / 2.0, 2, True)
         self.setPos(0, -self.boundingRect().height() - 8)
         self.color = color
@@ -110,13 +106,9 @@ class Node(QGraphicsItem, NodeBase):
         QGraphicsItem.__init__(self)
         NodeBase.__init__(self, name, graph)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        self.options = self.graph().getSettings()
-        if self.options:
-            self.opt_node_base_color = QtGui.QColor(self.options.value('NODES/Nodes base color'))
-            self.opt_selected_pen_color = QtGui.QColor(self.options.value('NODES/Nodes selected pen color'))
-            self.opt_lyt_a_color = QtGui.QColor(self.options.value('NODES/Nodes lyt A color'))
-            self.opt_lyt_b_color = QtGui.QColor(self.options.value('NODES/Nodes lyt B color'))
-            self.opt_pen_selected_type = QtCore.Qt.SolidLine
+        self.opt_node_base_color = Colors.NodeBackgrounds
+        self.opt_selected_pen_color = Colors.NodeSelectedPenColor
+        self.opt_pen_selected_type = QtCore.Qt.SolidLine
         self.object_type = ObjectTypes.Node
         self._left_stretch = 0
         self.color = color
@@ -411,10 +403,7 @@ class Node(QGraphicsItem, NodeBase):
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtCore.Qt.darkGray)
 
-        if self.options:
-            color = self.opt_node_base_color
-        else:
-            color = Colors.NodeBackgrounds
+        color = Colors.NodeBackgrounds
         if self.isSelected():
             color = color.lighter(150)
 
@@ -423,15 +412,10 @@ class Node(QGraphicsItem, NodeBase):
         linearGrad.setColorAt(1, color.lighter(180))
         br = QtGui.QBrush(linearGrad)
         painter.setBrush(br)
-        # painter.setOpacity(0.95)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            if self.options:
-                pen.setColor(Colors.Yellow)
-                pen.setStyle(self.opt_pen_selected_type)
-            else:
-                pen.setColor(opt_selected_pen_color)
-                pen.setStyle(self.opt_pen_selected_type)
+            pen.setColor(Colors.NodeSelectedPenColor)
+            pen.setStyle(self.opt_pen_selected_type)
         painter.setPen(pen)
         painter.drawRoundedRect(self.childrenBoundingRect(), self.sizes[4], self.sizes[5])
 
@@ -590,8 +574,6 @@ class Node(QGraphicsItem, NodeBase):
             pin.kill()
 
     def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1):
-        # newColor = color
-
         # check if pins with this name already exists and get uniq name
         name = self.getUniqPinName(name)
 
@@ -612,17 +594,16 @@ class Node(QGraphicsItem, NodeBase):
         lbl = QLabel(lblName)
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        if self.options:
-            font = QtGui.QFont(self.options.value('NODES/Pin label font'))
-            color = QtGui.QColor(self.options.value('NODES/Pin label color'))
-            font.setPointSize(int(self.options.value('NODES/Pin label size')))
-            lbl.setFont(font)
-            style = 'color: rgb({0}, {1}, {2}, {3});'.format(
-                color.red(),
-                color.green(),
-                color.blue(),
-                color.alpha())
-            lbl.setStyleSheet(style)
+        font = QtGui.QFont('Consolas')
+        color = Colors.PortNameColor
+        font.setPointSize(6)
+        lbl.setFont(font)
+        style = 'color: rgb({0}, {1}, {2}, {3});'.format(
+            color.red(),
+            color.green(),
+            color.blue(),
+            color.alpha())
+        lbl.setStyleSheet(style)
         connector_name.setWidget(lbl)
         if pinDirection == PinDirection.Input:
             container = self.addContainer(pinDirection)

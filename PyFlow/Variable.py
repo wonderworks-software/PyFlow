@@ -12,8 +12,6 @@ from Qt.QtWidgets import QSizePolicy
 import nodes_res_rc
 from uuid import uuid4
 import inspect
-from Pin import Pin
-from Pin import getPortColorByType
 from AbstractGraph import *
 import VariableInputWidgets
 

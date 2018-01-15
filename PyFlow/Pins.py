@@ -102,21 +102,6 @@ class _Pin(QGraphicsWidget, PinBase):
     def get_container(self):
         return self._container
 
-    # def setEdgesControlPointsFlipped(self, bFlipped=False):
-    #     self.bEdgeTangentDirection = bFlipped
-
-    # def getAvgXConnected(self):
-    #     xAvg = 0.0
-    #     if not self.hasConnections():
-    #         return xAvg
-    #     if self.direction == PinDirection.Input:
-    #         positions = [p.scenePos().x() for p in self.affected_by]
-    #     else:
-    #         positions = [p.scenePos().x() for p in self.affects]
-    #     if not len(positions) == 0:
-    #         xAvg = sum(positions) / len(positions)
-    #     return xAvg
-
     def boundingRect(self):
         if not self.dataType == DataTypes.Exec:
             return QtCore.QRectF(0, -0.5, 8 * 1.5, 8 + 1.0)

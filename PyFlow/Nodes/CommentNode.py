@@ -293,12 +293,8 @@ class CommentNode(Node, NodeBase):
         painter.setBrush(self.color)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            if self.options:
-                pen.setColor(Colors.Yellow)
-                pen.setStyle(self.opt_pen_selected_type)
-            else:
-                pen.setColor(opt_selected_pen_color)
-                pen.setStyle(self.opt_pen_selected_type)
+            pen.setColor(opt_selected_pen_color)
+            pen.setStyle(self.opt_pen_selected_type)
         painter.setPen(pen)
         painter.drawRoundedRect(self.rect, self.sizes[4], self.sizes[5])
 

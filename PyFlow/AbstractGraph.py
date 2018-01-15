@@ -7,7 +7,33 @@ from collections import OrderedDict
 import itertools
 
 
-class PinBase(object):
+class Serializable(object):
+    """docstring for Serializable"""
+
+    def serialize(self):
+        raise NotImplementedError
+
+    def deserialize(self):
+        raise NotImplementedError
+
+
+class IPin(object):
+    """Pin interface"""
+
+    def color(self):
+        raise NotImplementedError
+
+    def supportedDataTypes(self):
+        raise NotImplementedError
+
+    def defaultValue(self):
+        raise NotImplementedError
+
+    def setData(self, value):
+        raise NotImplementedError
+
+
+class PinBase(IPin):
     def __init__(self, name, parent, dataType, direction):
         super(PinBase, self).__init__()
         self._uid = uuid.uuid4()
@@ -127,27 +153,6 @@ class PinBase(object):
         try convert input value to needed type
         if failed - set default value
         '''
-        # if self._dataType == DataTypes.Float:
-        #     try:
-        #         self._data = float(data)
-        #     except:
-        #         self._data = getDefaultDataValue(self._dataType)
-        # if self._dataType == DataTypes.Int:
-        #     try:
-        #         self._data = int(data)
-        #     except:
-        #         self._data = getDefaultDataValue(self._dataType)
-        # if self._dataType == DataTypes.String:
-        #     self._data = str(data)
-        # if self._dataType == DataTypes.Array:
-        #     self._data = data
-        # if self._dataType == DataTypes.Bool:
-        #     self._data = bool(data)
-        # if self._dataType == DataTypes.Any:
-        #     self._data = data
-        # if self._dataType == DataTypes.FloatVector3:
-        #     self._data = data
-
         self.setClean()
         if self.direction == PinDirection.Output:
             for i in self.affects:

@@ -33,7 +33,6 @@ from Settings import LineTypes
 from Settings import get_line_type
 from AbstractGraph import *
 from Edge import Edge
-from Pin import getPortColorByType, Pin
 from Node import Node
 from Node import NodeName
 from Nodes import CommentNode
@@ -47,8 +46,6 @@ import FunctionLibraries
 import Commands
 from Variable import VariableBase
 from time import ctime, clock
-import OptionsWindow_ui
-import rgba_color_picker_ui
 import json
 import re
 
@@ -643,215 +640,6 @@ class RubberRect(QGraphicsRectItem):
         self.object_type = ObjectTypes.SelectionRect
 
 
-class RGBAColorPicker(QWidget, rgba_color_picker_ui.Ui_rgba_color_picker_ui):
-    def __init__(self, button):
-        super(RGBAColorPicker, self).__init__()
-        self.button = button
-        self.setupUi(self)
-        self.setButtonBackground(self.button.color)
-        self.pb_color.color = self.button.color
-        self.pb_color.clicked.connect(self.get_rgb)
-        self.pb_apply.clicked.connect(self.apply)
-        self.hs_alpha.valueChanged.connect(self.tweakAlpha)
-
-    def setButtonBackground(self, color):
-        self.pb_color.setStyleSheet("background-color: rgb({0}, {1}, {2}, {3});".format(
-            color.red(),
-            color.green(),
-            color.blue(),
-            color.alpha()
-        ))
-
-    def showEvent(self, event):
-        self.setButtonBackground(self.button.color)
-        self.hs_alpha.setValue(self.button.color.alpha())
-        super(RGBAColorPicker, self).showEvent(event)
-
-    def get_rgb(self):
-        color = QtGui.QColorDialog.getColor()
-        if color:
-            self.pb_color.color = color
-            color.setAlpha(self.hs_alpha.value())
-            self.setButtonBackground(color)
-
-    def tweakAlpha(self):
-        self.pb_color.color.setAlpha(self.hs_alpha.value())
-        self.setButtonBackground(self.pb_color.color)
-
-    def apply(self):
-        self.button.color = self.pb_color.color
-        self.button.setStyleSheet("background-color: rgb({0}, {1}, {2}, {3});".format(
-            self.pb_color.color.red(),
-            self.pb_color.color.green(),
-            self.pb_color.color.blue(),
-            self.pb_color.color.alpha()
-        ))
-        self.close()
-
-
-class OptionsClass(QMainWindow, OptionsWindow_ui.Ui_OptionsUI):
-    def __init__(self):
-        super(OptionsClass, self).__init__()
-        self.setupUi(self)
-        self.connectUi()
-        self.populateUi()
-        self.picker = None
-        self.settings_path = path.dirname(__file__) + '\\config.ini'
-        self.settings_class = QtCore.QSettings(self.settings_path, QtCore.QSettings.IniFormat, self)
-        if not path.isfile(self.settings_path):
-            self.write_default_config()
-        self.pb_scene_bg_color.color = QtGui.QColor(self.settings_class.value('SCENE/Scene bg color'))
-        self.setButtonBackground(self.pb_scene_bg_color, self.pb_scene_bg_color.color)
-        self.pb_grid_color.color = QtGui.QColor(self.settings_class.value('SCENE/Grid color'))
-        self.setButtonBackground(self.pb_grid_color, self.pb_grid_color.color)
-        self.pb_edge_color.color = QtGui.QColor(self.settings_class.value('SCENE/Edge color'))
-        self.setButtonBackground(self.pb_edge_color, self.pb_edge_color.color)
-        self.pb_node_base_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes base color'))
-        self.setButtonBackground(self.pb_node_base_color, self.pb_node_base_color.color)
-        self.pb_node_selected_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes selected pen color'))
-        self.setButtonBackground(self.pb_node_selected_pen_color, self.pb_node_selected_pen_color.color)
-        self.pb_node_label_bg_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes label bg color'))
-        self.setButtonBackground(self.pb_node_label_bg_color, self.pb_node_label_bg_color.color)
-        self.pb_node_label_font_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes label font color'))
-        self.setButtonBackground(self.pb_node_label_font_color, self.pb_node_label_font_color.color)
-        self.pb_lyt_a_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt A color'))
-        self.setButtonBackground(self.pb_lyt_a_color, self.pb_lyt_a_color.color)
-        self.pb_lyt_b_color.color = QtGui.QColor(self.settings_class.value('NODES/Nodes lyt B color'))
-        self.setButtonBackground(self.pb_lyt_b_color, self.pb_lyt_b_color.color)
-        self.pb_port_color.color = QtGui.QColor(self.settings_class.value('NODES/Pin color'))
-        self.setButtonBackground(self.pb_port_color, self.pb_port_color.color)
-        self.pb_port_label_color.color = QtGui.QColor(self.settings_class.value('NODES/Pin label color'))
-        self.setButtonBackground(self.pb_port_label_color, self.pb_port_label_color.color)
-        self.pb_port_dirty_pen_color.color = QtGui.QColor(self.settings_class.value('NODES/Pin dirty color'))
-        self.setButtonBackground(self.pb_port_dirty_pen_color, self.pb_port_dirty_pen_color.color)
-        self.sb_node_label_font_size.setValue(int(self.settings_class.value('NODES/Nodes label font size')))
-        self.fb_node_label_font.setCurrentFont(QtGui.QFont(self.settings_class.value('NODES/Nodes label font')))
-        self.fb_port_label_font.setCurrentFont(QtGui.QFont(self.settings_class.value('NODES/Pin label font')))
-        self.sb_port_font_size.setValue(int(self.settings_class.value('NODES/Pin label size')))
-        self.sb_edge_thickness.setValue(float(self.settings_class.value('SCENE/Edge line thickness')))
-
-        idx = self.cb_grid_lines_type.findText(str(self.settings_class.value('SCENE/Grid lines type')))
-        self.cb_grid_lines_type.setCurrentIndex(idx)
-        idx = self.cb_edge_pen_type.findText(str(self.settings_class.value('SCENE/Edge pen type')))
-        self.cb_edge_pen_type.setCurrentIndex(idx)
-        idx = self.cb_port_dirty_pen_type.findText(str(self.settings_class.value('NODES/Pin dirty type')))
-        self.cb_port_dirty_pen_type.setCurrentIndex(idx)
-
-    @staticmethod
-    def setButtonBackground(button, color):
-        button.setStyleSheet("background-color: rgb({0}, {1}, {2}, {3});".format(
-            color.red(),
-            color.green(),
-            color.blue(),
-            color.alpha()
-        ))
-
-    def setColor(self, button):
-        self.picker = RGBAColorPicker(button)
-        self.picker.move(self.geometry().topRight().x(), self.geometry().topRight().y())
-        self.picker.show()
-
-    def populateUi(self):
-        line_types = [str(i) for i in dir(LineTypes) if i[0] == 'l']
-        self.cb_port_dirty_pen_type.addItems(line_types)
-        self.cb_grid_lines_type.addItems(line_types)
-        self.cb_edge_pen_type.addItems(line_types)
-
-    def connectUi(self):
-
-        self.actionSave.triggered.connect(self.saveOptions)
-
-        self.pb_scene_bg_color.clicked.connect(lambda: self.setColor(self.pb_scene_bg_color))
-        self.pb_grid_color.clicked.connect(lambda: self.setColor(self.pb_grid_color))
-        self.pb_edge_color.clicked.connect(lambda: self.setColor(self.pb_edge_color))
-        self.pb_node_base_color.clicked.connect(lambda: self.setColor(self.pb_node_base_color))
-        self.pb_node_label_font_color.clicked.connect(lambda: self.setColor(self.pb_node_label_font_color))
-
-        self.pb_node_selected_pen_color.clicked.connect(lambda: self.setColor(self.pb_node_selected_pen_color))
-        self.pb_node_label_bg_color.clicked.connect(lambda: self.setColor(self.pb_node_label_bg_color))
-        self.pb_lyt_a_color.clicked.connect(lambda: self.setColor(self.pb_lyt_a_color))
-        self.pb_lyt_b_color.clicked.connect(lambda: self.setColor(self.pb_lyt_b_color))
-        self.pb_port_color.clicked.connect(lambda: self.setColor(self.pb_port_color))
-        self.pb_port_label_color.clicked.connect(lambda: self.setColor(self.pb_port_label_color))
-        self.pb_port_dirty_pen_color.clicked.connect(lambda: self.setColor(self.pb_port_dirty_pen_color))
-
-    def saveOptions(self):
-
-        print('save options', self.settings_path)
-        self.writeConfig()
-        self.close()
-        try:
-            if self.picker is not None:
-                self.picker.close()
-        except:
-            pass
-
-    def writeConfig(self):
-        self.settings_class.beginGroup('NODES')
-        self.settings_class.setValue('Nodes base color', self.pb_node_base_color.color)
-        self.settings_class.setValue('Nodes selected pen color', self.pb_node_selected_pen_color.color)
-        self.settings_class.setValue('Nodes label bg color', self.pb_node_label_bg_color.color)
-        self.settings_class.setValue('Nodes label font', self.fb_node_label_font.currentFont())
-        self.settings_class.setValue('Nodes label font color', self.pb_node_label_font_color.color)
-        self.settings_class.setValue('Nodes label font size', self.sb_node_label_font_size.value())
-        self.settings_class.setValue('Nodes lyt A color', self.pb_lyt_a_color.color)
-        self.settings_class.setValue('Nodes lyt B color', self.pb_lyt_b_color.color)
-        self.settings_class.setValue('Pin color', self.pb_port_color.color)
-        self.settings_class.setValue('Pin dirty color', self.pb_port_dirty_pen_color.color)
-        self.settings_class.setValue('Pin dirty type', self.cb_port_dirty_pen_type.currentText())
-        self.settings_class.setValue('Pin label color', self.pb_port_label_color.color)
-        self.settings_class.setValue('Pin label font', self.fb_port_label_font.currentFont())
-        self.settings_class.setValue('Pin label size', self.sb_port_font_size.value())
-        self.settings_class.endGroup()
-        self.settings_class.beginGroup('SCENE')
-        self.settings_class.setValue('Scene bg color', self.pb_scene_bg_color.color)
-        self.settings_class.setValue('Grid color', self.pb_grid_color.color)
-        self.settings_class.setValue('Grid lines type', self.cb_grid_lines_type.currentText())
-        self.settings_class.setValue('Edge color', self.pb_edge_color.color)
-        self.settings_class.setValue('Edge pen type', self.cb_edge_pen_type.currentText())
-        self.settings_class.setValue('Edge line thickness', self.sb_edge_thickness.value())
-        self.settings_class.endGroup()
-
-    def write_default_config(self):
-        print('create default config file')
-        self.settings_class.beginGroup('NODES')
-        self.settings_class.setValue('Nodes base color', Colors.NodeBackgrounds)
-        self.pb_node_base_color.color = Colors.NodeBackgrounds
-        self.settings_class.setValue('Nodes selected pen color', Colors.NodeSelectedPenColor)
-        self.pb_node_selected_pen_color.color = Colors.NodeSelectedPenColor
-        self.settings_class.setValue('Nodes selected pen type', LineTypes.lSolidLine)
-        self.settings_class.setValue('Nodes label bg color', Colors.NodeNameRect)
-        self.pb_node_label_bg_color.color = Colors.NodeNameRect
-        self.settings_class.setValue('Nodes label font', QtGui.QFont('Consolas'))
-        self.settings_class.setValue('Nodes label font color', Colors.White)
-        self.settings_class.setValue('Nodes label font size', 6)
-        self.settings_class.setValue('Nodes lyt A color', Colors.PortLinesA)
-        self.pb_lyt_a_color.color = Colors.PortLinesA
-        self.settings_class.setValue('Nodes lyt B color', Colors.PortLinesB)
-        self.pb_lyt_b_color.color = Colors.PortLinesB
-        self.settings_class.setValue('Pin color', Colors.Connectors)
-        self.pb_port_color.color = Colors.Connectors
-        self.settings_class.setValue('Pin dirty color', Colors.DirtyPen)
-        self.pb_port_dirty_pen_color.color = Colors.DirtyPen
-        self.settings_class.setValue('Pin dirty type', LineTypes.lDotLine)
-        self.settings_class.setValue('Pin label color', Colors.PortNameColor)
-        self.pb_port_label_color.color = Colors.PortNameColor
-        self.settings_class.setValue('Pin label font', QtGui.QFont('Consolas'))
-        self.settings_class.setValue('Pin label size', 5)
-        self.settings_class.endGroup()
-        self.settings_class.beginGroup('SCENE')
-        self.settings_class.setValue('Scene bg color', Colors.SceneBackground)
-        self.pb_scene_bg_color.color = Colors.SceneBackground
-        self.settings_class.setValue('Grid color', Colors.GridColor)
-        self.pb_grid_color.color = Colors.GridColor
-        self.settings_class.setValue('Grid lines type', LineTypes.lDotLine)
-        self.settings_class.setValue('Edge color', Colors.ConnectionLines)
-        self.pb_edge_color.color = Colors.ConnectionLines
-        self.settings_class.setValue('Edge pen type', LineTypes.lSolidLine)
-        self.settings_class.setValue('Edge line thickness', 1.0)
-        self.settings_class.endGroup()
-
-
 class GraphWidget(QGraphicsView, Graph):
 
     def __init__(self, name, parent=None):
@@ -865,7 +653,6 @@ class GraphWidget(QGraphicsView, Graph):
         self._lastClock = 0.0
         self.fps = 0
         self.setScene(SceneClass(self))
-        self.options_widget = OptionsClass()
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pressed_item = None
         self.released_item = None
@@ -1029,11 +816,6 @@ class GraphWidget(QGraphicsView, Graph):
             return attr
         return None
 
-    def getSettings(self):
-        if path.isfile(self.options_widget.settings_path):
-            settings = QtCore.QSettings(self.options_widget.settings_path, QtCore.QSettings.IniFormat)
-            return settings
-
     def getGraphSaveData(self):
         data = {self.name: {'nodes': [], 'edges': [], 'variables': []}}
         # save nodes
@@ -1116,9 +898,6 @@ class GraphWidget(QGraphicsView, Graph):
             Pin = node.getPinByName(pinName)
             if Pin:
                 return Pin
-
-    def options(self):
-        self.options_widget.show()
 
     def frame(self):
         nodes_rect = self.getNodesRect()
@@ -1495,12 +1274,7 @@ class GraphWidget(QGraphicsView, Graph):
         polygon = self.mapToScene(self.viewport().rect())
         self._file_name_label.setPos(polygon[0])
         scene_rect = self.sceneRect()
-        # Fill
-        settings = self.getSettings()
-        if settings:
-            color = QtGui.QColor(settings.value('SCENE/Scene bg color'))
-        else:
-            color = self.kSceneBackground
+        color = Colors.SceneBackground
         painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(color))
 
         left = int(scene_rect.left()) - (int(scene_rect.left()) % self.drawGrigSize)

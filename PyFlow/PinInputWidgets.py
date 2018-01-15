@@ -1,5 +1,4 @@
 import weakref
-from Pin import Pin
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QDoubleSpinBox
