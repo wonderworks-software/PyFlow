@@ -24,8 +24,8 @@ class Edge(QGraphicsPathItem):
         self.cp2 = QtCore.QPointF(0.0, 0.0)
 
         self.setZValue(-1)
-        self.connection = {'From': self.source().pinName(),
-                           'To': self.destination().pinName()}
+        self.connection = {'From': self.source().getName(),
+                           'To': self.destination().getName()}
 
         self.color = self.source().color()
 
@@ -80,8 +80,8 @@ class Edge(QGraphicsPathItem):
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
-                  'sourceName': self.source().pinName(),
-                  'destinationName': self.destination().pinName(),
+                  'sourceName': self.source().getName(),
+                  'destinationName': self.destination().getName(),
                   'uuid': str(self.uid)
                   }
         return script
@@ -120,7 +120,7 @@ class Edge(QGraphicsPathItem):
         self.update()
 
     def source_port_name(self):
-        return self.source().pinName()
+        return self.source().getName()
 
     def shape(self):
         qp = QtGui.QPainterPathStroker()
@@ -145,7 +145,7 @@ class Edge(QGraphicsPathItem):
         self.setPath(self.mPath)
 
     def destination_port_name(self):
-        return self.destination().pinName()
+        return self.destination().getName()
 
     def paint(self, painter, option, widget):
         self.setPen(self.pen)

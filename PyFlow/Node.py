@@ -414,7 +414,7 @@ class Node(QGraphicsItem, NodeBase):
         painter.setBrush(br)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            pen.setColor(Colors.NodeSelectedPenColor)
+            pen.setColor(Colors.Yellow)
             pen.setStyle(self.opt_pen_selected_type)
         painter.setPen(pen)
         painter.drawRoundedRect(self.childrenBoundingRect(), self.sizes[4], self.sizes[5])
@@ -501,7 +501,7 @@ class Node(QGraphicsItem, NodeBase):
                 w = getPinWidget(inp)
                 if w:
                     w.setData(inp.currentData())
-                    w.setObjectName(inp.pinName())
+                    w.setObjectName(inp.getName())
                     formLayout.addRow(inp.name, w)
                     if inp.hasConnections():
                         w.setEnabled(False)
@@ -518,7 +518,7 @@ class Node(QGraphicsItem, NodeBase):
                 w = getPinWidget(out)
                 if w:
                     w.setData(out.currentData())
-                    w.setObjectName(out.pinName())
+                    w.setObjectName(out.getName())
                     formLayout.addRow(out.name, w)
                     if out.hasConnections():
                         w.setEnabled(False)

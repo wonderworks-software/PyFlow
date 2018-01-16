@@ -1315,7 +1315,7 @@ class GraphWidget(QGraphicsView, Graph):
             msg += (c + " - {0}\n".format(self.registeredCommands[c].usage()))
 
         if self.parent:
-            self.parent.console.append(msg)
+            print(msg)
 
     def getVarByName(self, name):
         var = None
@@ -1413,27 +1413,25 @@ class GraphWidget(QGraphicsView, Graph):
 
     def plot(self):
         Graph.plot(self)
-        self.parent.console.append('>>>>>>> {0} <<<<<<<\n{1}\n'.format(self.name, ctime()))
+        print('>>>>>>> {0} <<<<<<<\n{1}\n'.format(self.name, ctime()))
         if self.parent:
             for n in self.getNodes():
-                self.parent.console.append(n.name)
+                print(n.name)
                 for i in n.inputs.values() + n.outputs.values():
-                    self.parent.console.append('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}, uid - {5}'.format(i.pinName(),
-                                               i.currentData(),
-                                               [p.pinName() for p in i.affects],
-                                               [p.pinName() for p in i.affected_by],
-                                               i.dirty,
-                                               str(i.uid)))
-            self.parent.console.append('Variables\n----------')
+                    print('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}, uid - {5}'.format(i.getName(),
+                          i.currentData(),
+                          [p.getName() for p in i.affects],
+                          [p.getName() for p in i.affected_by],
+                          i.dirty,
+                          str(i.uid)))
+            print('Variables\n----------')
             for k, v in self.vars.iteritems():
                 msg = '{0} - {1}, uid - {2}'.format(v.name, v.value, str(v.uid))
                 print(msg)
-                self.parent.console.append(msg)
             print('Pins\n-----------------')
             for pinUid, pin in self.pins.iteritems():
                 msg = '{0} - {1}'.format(pinUid, pin.name, str(pin.uid))
                 print(msg)
-                self.parent.console.append(msg)
             print('Edges\n-----------------')
             for edgeUid, edge in self.edges.iteritems():
                 print(edgeUid, edge)

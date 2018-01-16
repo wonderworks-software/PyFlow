@@ -33,9 +33,7 @@ class _Pin(QGraphicsWidget, PinBase):
         self.setCursor(QtCore.Qt.CrossCursor)
         self.menu = QMenu()
         self.actionDisconnect = self.menu.addAction('Disconnect all')
-        self.actionGetData = self.menu.addAction('Get order')
         self.actionDisconnect.triggered.connect(self.disconnectAll)
-        self.actionGetData.triggered.connect(self.OnGetEvalOrderDebug)
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
@@ -61,17 +59,8 @@ class _Pin(QGraphicsWidget, PinBase):
     def call(self):
         PinBase.call(self)
 
-    def OnGetEvalOrderDebug(self):
-        order = self.parent().graph().getEvaluationOrder(self.parent())
-        for i, k in order.iteritems():
-            print i,
-            for node in [n for n in k]:
-                print node.name, '->',
-            print
-        print('----------\n')
-
     def defaultValue(self):
-        return 0.0
+        return None
 
     def kill(self):
         PinBase.kill(self)
@@ -84,6 +73,9 @@ class _Pin(QGraphicsWidget, PinBase):
             self.parent().inputsLayout.removeItem(con)
         else:
             self.parent().outputsLayout.removeItem(con)
+
+    def deserialize(self):
+        pass
 
     def serialize(self):
         data = {'name': self.name,

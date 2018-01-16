@@ -7,37 +7,74 @@ from collections import OrderedDict
 import itertools
 
 
-class Serializable(object):
-    """docstring for Serializable"""
+class ISerializable(object):
+    """docstring for ISerializable"""
+    def __init__(self):
+        super(ISerializable, self).__init__()
 
     def serialize(self):
-        raise NotImplementedError
+        raise NotImplementedError('serialize method of ISerializable is not implemented')
 
     def deserialize(self):
-        raise NotImplementedError
+        raise NotImplementedError('deserialize method of ISerializable is not implemented')
 
 
-class IPin(object):
+class IItemBase(object):
+
+    def __init__(self):
+        super(IItemBase, self).__init__()
+        self._uid = uuid.uuid4()
+
+    @property
+    def uid(self):
+        return self._uid
+
+    @uid.setter
+    def uid(self, value):
+        return self._uid
+
+    @uid.deleter
+    def uid(self):
+        raise NotImplementedError('uid property of IItemBase can not be deleted')
+
+    def getName(self):
+        raise NotImplementedError('getName method of IItemBase is not implemented')
+
+    def setName(self):
+        raise NotImplementedError('setName method of IItemBase is not implemented')
+
+
+class IPin(IItemBase, ISerializable):
     """Pin interface"""
 
+    def __init__(self):
+        super(IPin, self).__init__()
+
     def color(self):
-        raise NotImplementedError
+        raise NotImplementedError('color method of IPin is not implemented')
 
     def supportedDataTypes(self):
-        raise NotImplementedError
+        raise NotImplementedError('supportedDataTypes method of IPin is not implemented')
 
     def defaultValue(self):
-        raise NotImplementedError
+        raise NotImplementedError('defaultValue method of IPin is not implemented')
 
     def setData(self, value):
-        raise NotImplementedError
+        raise NotImplementedError('setData method of IPin is not implemented')
 
 
-class PinBase(IPin):
+class INode(IItemBase, ISerializable):
+    def __init__(self):
+        super(INode, self).__init__()
+
+    def compute(self):
+        raise NotImplementedError('compute method of INode is not implemented')
+
+
+class PinBase(IPin, ISerializable):
     def __init__(self, name, parent, dataType, direction):
         super(PinBase, self).__init__()
-        self._uid = uuid.uuid4()
-        self.name = name.replace(" ", "_")
+        self.setName(name)
         self.parent = weakref.ref(parent)
         self.object_type = ObjectTypes.Pin
         self._dataType = None
@@ -53,11 +90,10 @@ class PinBase(IPin):
         # put self in graph
         self.parent().graph().pins[self.uid] = self
 
-    @property
-    def uid(self):
-        return self._uid
+    def setName(self, name):
+        self.name = name.replace(" ", "_")
 
-    @uid.setter
+    @IItemBase.uid.setter
     def uid(self, value):
         self.parent().graph().pins[value] = self.parent().graph().pins.pop(self._uid)
         self._uid = value
@@ -66,12 +102,12 @@ class PinBase(IPin):
     def dataType(self):
         return self._dataType
 
-    def supportedDataTypes(self):
-        return (self.dataType)
-
     @dataType.setter
     def dataType(self, value):
         self._dataType = value
+
+    def supportedDataTypes(self):
+        return (self.dataType,)
 
     def kill(self):
         if self.direction == PinDirection.Input and self.uid in self.parent().inputs:
@@ -81,7 +117,7 @@ class PinBase(IPin):
         if self.uid in self.parent().graph().pins:
             self.parent().graph().pins.pop(self.uid)
 
-    def pinName(self):
+    def getName(self):
         return self.parent().name + '.' + self.name
 
     def currentData(self):
@@ -149,10 +185,6 @@ class PinBase(IPin):
         return None
 
     def setData(self, data):
-        '''
-        try convert input value to needed type
-        if failed - set default value
-        '''
         self.setClean()
         if self.direction == PinDirection.Output:
             for i in self.affects:
@@ -160,10 +192,9 @@ class PinBase(IPin):
                 i.setClean()
 
 
-class NodeBase(object):
+class NodeBase(INode):
     def __init__(self, name, graph):
         super(NodeBase, self).__init__()
-        self._uid = uuid.uuid4()
         self.graph = weakref.ref(graph)
         self.name = name
         self.object_type = ObjectTypes.Node
@@ -173,15 +204,43 @@ class NodeBase(object):
         self.y = 0.0
         self.bCallable = False
 
-    @property
-    def uid(self):
-        return self._uid
+    # ###################
+    # IItemBase interface begin
+    # ###################
 
-    @uid.setter
+    @IItemBase.uid.setter
     def uid(self, value):
         if self._uid in self.graph().nodes:
             self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
             self._uid = value
+
+    def getName(self):
+        return self.name
+
+    def setName(self, name):
+        self.name = name
+
+    # ###################
+    # IItemBase interface end
+    # ###################
+
+    # ###############
+    # INode interface begin
+    # ###############
+    def compute(self):
+        '''
+        node calculations here
+        '''
+        # getting data from inputs
+
+        # do stuff
+
+        # write data to outputs
+        return
+
+    # ###############
+    # INode interface end
+    # ###############
 
     def isCallable(self):
         for p in self.inputs.values() + self.outputs.values():
@@ -192,12 +251,6 @@ class NodeBase(object):
     def setPosition(self, x, y):
         self.x = x
         self.y = y
-
-    def getName(self):
-        return self.name
-
-    def setName(self, name):
-        self.name = name
 
     def addInputPin(self, pinName, dataType, foo=None):
         p = PinBase(pinName, self, dataType, foo)
@@ -258,17 +311,6 @@ class NodeBase(object):
         for line in lines:
             code += line[offset:]
         return code
-
-    def compute(self):
-        '''
-        node calculations here
-        '''
-        # getting data from inputs
-
-        # do stuff
-
-        # write data to outputs
-        return
 
 
 class Graph(object):

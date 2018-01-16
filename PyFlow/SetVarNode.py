@@ -45,7 +45,7 @@ class SetVarNode(Node, NodeBase):
         w = getPinWidget(self.value)
         if w:
             w.setData(self.value.currentData())
-            w.setObjectName(self.value.pinName())
+            w.setObjectName(self.value.getName())
             formLayout.addRow(self.value.name, w)
             if self.value.hasConnections():
                 w.setEnabled(False)
