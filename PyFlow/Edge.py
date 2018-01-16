@@ -5,6 +5,7 @@ from Settings import Colors
 from AbstractGraph import *
 import weakref
 from uuid import UUID, uuid4
+import numpy
 
 
 def CatmullRomSpline(P0, P1, P2, P3, nPoints=10):
