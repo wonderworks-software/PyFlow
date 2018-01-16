@@ -74,8 +74,8 @@ class INode(IItemBase, ISerializable):
 class PinBase(IPin, ISerializable):
     def __init__(self, name, parent, dataType, direction):
         super(PinBase, self).__init__()
-        self.setName(name)
         self.parent = weakref.ref(parent)
+        self.setName(name)
         self.object_type = ObjectTypes.Pin
         self._dataType = None
         self._data = None
@@ -447,6 +447,9 @@ class Graph(object):
         if dst.uid not in self.pins:
             print('dst not in graph.pins')
             return False
+
+        if src.dataType is DataTypes.Reroute or dst.dataType is DataTypes.Reroute:
+            return True
 
         if DataTypes.Any not in dst.supportedDataTypes():
             if src.dataType not in dst.supportedDataTypes():

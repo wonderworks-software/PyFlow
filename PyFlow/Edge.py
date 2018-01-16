@@ -78,8 +78,8 @@ class Edge(QGraphicsPathItem):
         self.cp2 = QtCore.QPointF(0.0, 0.0)
 
         self.setZValue(-1)
-        self.connection = {'From': self.source().getName(),
-                           'To': self.destination().getName()}
+        # self.connection = {'From': self.source().getName(),
+        #                    'To': self.destination().getName()}
 
         self.color = self.source().color()
 
@@ -97,6 +97,10 @@ class Edge(QGraphicsPathItem):
         self.source().update()
         self.destination().update()
         self.fade = 0.0
+
+    def setColor(self, color):
+        self.pen.setColor(color)
+        self.color = color
 
     def Tick(self):
         if self.fade > 0:

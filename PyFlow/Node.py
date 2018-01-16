@@ -16,6 +16,7 @@ from Pins import *
 from types import MethodType
 from PinInputWidgets import getPinWidget
 from inspect import getargspec
+from NodePainter import NodePainter
 
 
 class NodeName(QGraphicsTextItem):
@@ -102,7 +103,7 @@ class Node(QGraphicsItem, NodeBase):
     """
     Default node description
     """
-    def __init__(self, name, graph, w=120, color=Colors.NodeBackgrounds, spacings=Spacings, headColor=Colors.NodeNameRect, bUseTextureBg=True):
+    def __init__(self, name, graph, w=80, color=Colors.NodeBackgrounds, spacings=Spacings, headColor=Colors.NodeNameRect, bUseTextureBg=True):
         QGraphicsItem.__init__(self)
         NodeBase.__init__(self, name, graph)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
@@ -399,39 +400,21 @@ class Node(QGraphicsItem, NodeBase):
         return new_node
 
     def paint(self, painter, option, widget):
+        NodePainter.default(self, painter, option, widget)
 
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(QtCore.Qt.darkGray)
+    # def getInputEdges(self):
+    #     out = {}
+    #     for i in [i.edge_list for i in self.inputs]:
+    #         if not i.__len__() == 0:
+    #             out[i[0]] = [e.connection for e in i]
+    #     return out
 
-        color = Colors.NodeBackgrounds
-        if self.isSelected():
-            color = color.lighter(150)
-
-        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(40, 40), 300)
-        linearGrad.setColorAt(0, color)
-        linearGrad.setColorAt(1, color.lighter(180))
-        br = QtGui.QBrush(linearGrad)
-        painter.setBrush(br)
-        pen = QtGui.QPen(QtCore.Qt.black, 0.5)
-        if option.state & QStyle.State_Selected:
-            pen.setColor(Colors.Yellow)
-            pen.setStyle(self.opt_pen_selected_type)
-        painter.setPen(pen)
-        painter.drawRoundedRect(self.childrenBoundingRect(), self.sizes[4], self.sizes[5])
-
-    def getInputEdges(self):
-        out = {}
-        for i in [i.edge_list for i in self.inputs]:
-            if not i.__len__() == 0:
-                out[i[0]] = [e.connection for e in i]
-        return out
-
-    def getOutputEdges(self):
-        out = {}
-        for i in [i.edge_list for i in self.outputs]:
-            if not i.__len__() == 0:
-                out[i[0]] = [e.connection for e in i]
-        return out
+    # def getOutputEdges(self):
+    #     out = {}
+    #     for i in [i.edge_list for i in self.outputs]:
+    #         if not i.__len__() == 0:
+    #             out[i[0]] = [e.connection for e in i]
+    #     return out
 
     def mousePressEvent(self, event):
         self.update()

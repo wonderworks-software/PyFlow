@@ -5,6 +5,7 @@ from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore
 from Qt import QtGui
+from NodePainter import NodePainter
 
 
 class ConvertNode(Node, NodeBase):
@@ -50,13 +51,7 @@ class ConvertNode(Node, NodeBase):
         return QtCore.QRectF(0, 0, 42, 14)
 
     def paint(self, painter, option, widget):
-        pen = QtGui.QPen(QtCore.Qt.black, 0.5)
-        if option.state & QStyle.State_Selected:
-            pen.setColor(opt_selected_pen_color)
-            pen.setStyle(self.opt_pen_selected_type)
-        painter.setPen(pen)
-        painter.setBrush(self.bg)
-        painter.drawRoundedRect(self.boundingRect(), self.roundFactor, self.roundFactor)
+        NodePainter.asConvertNode(self, painter, option, widget)
 
     def compute(self):
         pass

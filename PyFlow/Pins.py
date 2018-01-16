@@ -22,13 +22,13 @@ class _Pin(QGraphicsWidget, PinBase):
     This is base class for all ui pins
     '''
 
-    OnPinConnected = QtCore.Signal()
-    OnPinDisconnected = QtCore.Signal()
+    OnPinConnected = QtCore.Signal(object)
+    OnPinDisconnected = QtCore.Signal(object)
 
     def __init__(self, name, parent, dataType, direction):
-        PinBase.__init__(self, name, parent, dataType, direction)
         QGraphicsWidget.__init__(self)
-        name = name.replace(" ", "_")  # spaces are not allowed
+        PinBase.__init__(self, name, parent, dataType, direction)
+        # self.name = name.replace(" ", "_")  # spaces are not allowed
         self.setParentItem(parent)
         self.setCursor(QtCore.Qt.CrossCursor)
         self.menu = QMenu()
@@ -192,11 +192,11 @@ class _Pin(QGraphicsWidget, PinBase):
 
     def pinConnected(self, other):
         PinBase.pinConnected(self, other)
-        self.OnPinConnected.emit()
+        self.OnPinConnected.emit(other)
 
     def pinDisconnected(self, other):
         PinBase.pinDisconnected(self, other)
-        self.OnPinDisconnected.emit()
+        self.OnPinDisconnected.emit(other)
 
 
 ###############################
@@ -429,6 +429,25 @@ class QuatPin(_Pin):
         PinBase.setData(self, data)
 
 
+class ReroutePin(_Pin):
+    """doc string for ReroutePin"""
+    def __init__(self, name, parent, dataType, direction):
+        super(ReroutePin, self).__init__(name, parent, dataType, direction)
+
+    def supportedDataTypes(self):
+        return (DataTypes.Any,)
+
+    def color(self):
+        return Colors.DarkGray
+
+    def defaultValue(self):
+        return None
+
+    def setData(self, data):
+        self._data = data
+        PinBase.setData(self, data)
+
+
 def getPinByType(name, parent, dataType, direction):
     '''
     this function will be used by node
@@ -453,5 +472,7 @@ def getPinByType(name, parent, dataType, direction):
         return FloatVector4Pin(name, parent, dataType, direction)
     if dataType == DataTypes.Quaternion:
         return QuatPin(name, parent, dataType, direction)
+    if dataType == DataTypes.Reroute:
+        return ReroutePin(name, parent, dataType, direction)
 
     return None
