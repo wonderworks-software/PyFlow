@@ -27,7 +27,7 @@ def roundup(x, to):
 
 def pinAffects(affects_port, affected_port):
     '''
-    this function for establish dependencies bitween ports
+    this function for establish dependencies bitween pins
     '''
     affects_port.affects.append(affected_port)
     affected_port.affected_by.append(affects_port)

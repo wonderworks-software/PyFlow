@@ -156,7 +156,7 @@ class PinBase(IPin, ISerializable):
         if not self.hasConnections():
             if self.dataType == DataTypes.Array:
                 return []
-            return self._data
+            return self.currentData()
 
         if self.direction == PinDirection.Output:
             if self.dirty:

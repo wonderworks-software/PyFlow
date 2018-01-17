@@ -779,6 +779,9 @@ class GraphWidget(QGraphicsView, Graph):
             # kill pressed edge
             self.removeEdge(self.pressed_item)
             # reconnect neighbors
+            node.dataType = src.dataType
+            node.inp0.dataType = src.dataType
+            node.out0.dataType = src.dataType
             eLeft = self._addEdge(src, node.inp0)
             eRight = self._addEdge(node.out0, dst)
 

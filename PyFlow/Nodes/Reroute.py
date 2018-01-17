@@ -10,18 +10,18 @@ class Reroute(Node, NodeBase):
         super(Reroute, self).__init__(name, graph)
         self.inp0 = ReroutePin('in0', self, DataTypes.Reroute, PinDirection.Input)
         self.inputs[self.inp0.uid] = self.inp0
-        self.inp0.setX(-5)
         self.inp0.OnPinConnected.connect(self.inputConnected)
         self.inp0.OnPinDisconnected.connect(self.inputDisconnected)
 
         self.out0 = ReroutePin('out0', self, DataTypes.Reroute, PinDirection.Output)
         self.outputs[self.out0.uid] = self.out0
-        self.out0.setX(5)
         self.out0.OnPinConnected.connect(self.outputConnected)
         self.out0.OnPinDisconnected.connect(self.outputDisconnected)
 
         pinAffects(self.inp0, self.out0)
         self.r = 10
+        self.inp0.setPos(0, self.r / 3)
+        self.out0.setPos(0, self.r / 3)
         self._connected = False
         self.label().hide()
         self._pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
@@ -84,29 +84,24 @@ class Reroute(Node, NodeBase):
 
     def inputConnected(self, other):
         self._connected = True
-        self.dataType = other.dataType
-        self.inp0.dataType = self.dataType
         self.color = self.inp0.color()
 
     def inputDisconnected(self, other):
-        if not self.inp0.hasConnections():
-            self.inp0.dataType = DataTypes.Reroute
+        pass
 
     def outputConnected(self, other):
         self._connected = True
-        self.dataType = other.dataType
-        self.out0.dataType = self.dataType
         self.color = self.out0.color()
 
     def outputDisconnected(self, other):
-        if not self.out0.hasConnections():
-            self.out0.dataType = DataTypes.Reroute
+        pass
 
     def boundingRect(self):
-        return QtCore.QRectF(-10.0, 0.0, 30.0, 15.0)
+        # x0 y0 x1 y1
+        return QtCore.QRectF(-(self.r), -(self.r), (self.r * 3), (self.r * 3))
 
     def paint(self, painter, option, widget):
-        center = QtCore.QPointF(self.r / 2, self.r / 2)
+        center = QtCore.QPointF(self.r, self.r / 2 + 2.5)
 
         linearGrad = QtGui.QRadialGradient(center, self.r / 2)
         if not self._connected:

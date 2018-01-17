@@ -464,7 +464,7 @@ class ReroutePin(ExecPin):
         PinBase.setData(self, data)
 
 
-def getPinByType(name, parent, dataType, direction):
+def CreatePin(name, parent, dataType, direction):
     '''
     this function will be used by node
     '''

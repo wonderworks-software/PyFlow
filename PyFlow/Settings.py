@@ -67,7 +67,7 @@ class Colors:
     Any = Yellow
     Array = Gray
     Bool = Red
-    Exec = QtGui.QColor(255, 255, 255, 200)
+    Exec = QtGui.QColor(255, 255, 255, 255)
     String = Pink
     IntVector2 = QtGui.QColor(0, 0, 255, 200)
     FloatVector2 = QtGui.QColor(0, 0, 255, 200)

@@ -9,8 +9,8 @@ class NodePainter(object):
     def asConvertNode(node, painter, option, widget):
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            pen.setColor(opt_selected_pen_color)
-            pen.setStyle(node.opt_pen_selected_type)
+            pen.setColor(Colors.Yellow)
+            pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)
         painter.setBrush(node.bg)
         painter.drawRoundedRect(node.boundingRect(), node.roundFactor, node.roundFactor)

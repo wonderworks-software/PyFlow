@@ -560,7 +560,7 @@ class Node(QGraphicsItem, NodeBase):
         # check if pins with this name already exists and get uniq name
         name = self.getUniqPinName(name)
 
-        p = getPinByType(name, self, dataType, pinDirection)
+        p = CreatePin(name, self, dataType, pinDirection)
 
         if pinDirection == PinDirection.Input and foo is not None:
             p.call = foo
