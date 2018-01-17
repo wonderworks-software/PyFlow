@@ -110,7 +110,6 @@ class Edge(QGraphicsPathItem):
             self.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
             self.fade -= 0.1
             self.update()
-        self.setColor(self.source().color())
 
     def highlight(self):
         self.fade = 1.0
