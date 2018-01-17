@@ -53,6 +53,21 @@ class _Pin(QGraphicsWidget, PinBase):
         self.pinImage = QtGui.QImage(':/icons/resources/array.png')
         self.bLabelHidden = False
 
+    def setEdgesControlPointsFlipped(self, bFlipped=False):
+        self.bEdgeTangentDirection = bFlipped
+
+    def getAvgXConnected(self):
+        xAvg = 0.0
+        if not self.hasConnections():
+            return xAvg
+        if self.direction == PinDirection.Input:
+            positions = [p.scenePos().x() for p in self.affected_by]
+        else:
+            positions = [p.scenePos().x() for p in self.affects]
+        if not len(positions) == 0:
+            xAvg = sum(positions) / len(positions)
+        return xAvg
+
     def color(self):
         return QtGui.QColor()
 
@@ -64,15 +79,15 @@ class _Pin(QGraphicsWidget, PinBase):
 
     def kill(self):
         PinBase.kill(self)
-        con = self._container
         self.disconnectAll()
         if hasattr(self.parent(), self.name):
             delattr(self.parent(), self.name)
-        self.parent().graph().scene().removeItem(self._container)
-        if self.direction == PinDirection.Input:
-            self.parent().inputsLayout.removeItem(con)
-        else:
-            self.parent().outputsLayout.removeItem(con)
+        if self._container is not None:
+            self.parent().graph().scene().removeItem(self._container)
+            if self.direction == PinDirection.Input:
+                self.parent().inputsLayout.removeItem(self._container)
+            else:
+                self.parent().outputsLayout.removeItem(self._container)
 
     def deserialize(self):
         pass
@@ -429,13 +444,13 @@ class QuatPin(_Pin):
         PinBase.setData(self, data)
 
 
-class ReroutePin(_Pin):
+class ReroutePin(ExecPin):
     """doc string for ReroutePin"""
     def __init__(self, name, parent, dataType, direction):
         super(ReroutePin, self).__init__(name, parent, dataType, direction)
 
     def supportedDataTypes(self):
-        return (DataTypes.Any,)
+        return (DataTypes.Any, DataTypes.Exec)
 
     def color(self):
         return Colors.DarkGray
