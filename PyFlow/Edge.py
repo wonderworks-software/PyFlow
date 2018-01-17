@@ -79,8 +79,6 @@ class Edge(QGraphicsPathItem):
         self.cp2 = QtCore.QPointF(0.0, 0.0)
 
         self.setZValue(-1)
-        # self.connection = {'From': self.source().getName(),
-        #                    'To': self.destination().getName()}
 
         self.color = self.source().color()
 
@@ -112,6 +110,7 @@ class Edge(QGraphicsPathItem):
             self.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
             self.fade -= 0.1
             self.update()
+        self.setColor(self.source().color())
 
     def highlight(self):
         self.fade = 1.0

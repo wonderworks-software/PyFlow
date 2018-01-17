@@ -2,6 +2,7 @@ from AbstractGraph import *
 from Settings import *
 from Node import Node
 from Pins import ReroutePin
+from types import MethodType
 
 
 class Reroute(Node, NodeBase):
@@ -30,11 +31,29 @@ class Reroute(Node, NodeBase):
         self.dataType = DataTypes.Any
         self.inp0.call = self.compute
 
+    def serialize(self):
+        template = Node.serialize(self)
+        template['meta']['RerouteNode'] = {
+            'inColor': self.inp0.color().toTuple(),
+            'outColor': self.out0.color().toTuple()
+        }
+        return template
+
+    def postCreate(self, jsonTemplate):
+        Node.postCreate(self, jsonTemplate)
+        try:
+            inpColor = QtGui.QColor(*jsonTemplate['meta']['RerouteNode']['inColor'])
+            self.inp0._color = inpColor
+            outColor = QtGui.QColor(*jsonTemplate['meta']['RerouteNode']['outColor'])
+            self.out0._color = outColor
+        except:
+            pass
+
     def getOutControlPoint(self):
         cp1 = self.out0.scenePos()
         xDistance = abs(self.out0.scenePos().x() - self.out0.getAvgXConnected())
-        if xDistance < 70.0:
-            xDistance = 70.0
+        if xDistance < 90.0:
+            xDistance = 90.0
         if self.out0.bEdgeTangentDirection:
             cp1.setX(self.out0.scenePos().x() - (xDistance / 2.0))
         else:
@@ -44,8 +63,8 @@ class Reroute(Node, NodeBase):
     def getInControlPoint(self):
         cp2 = self.inp0.scenePos()
         xDistance = abs(self.inp0.scenePos().x() - self.inp0.getAvgXConnected())
-        if xDistance < 70.0:
-            xDistance = 70.0
+        if xDistance < 90.0:
+            xDistance = 90.0
         if self.inp0.bEdgeTangentDirection:
             cp2.setX(self.inp0.scenePos().x() + (xDistance / 2.0))
         else:
@@ -55,7 +74,7 @@ class Reroute(Node, NodeBase):
     def Tick(self, delta):
         InxDistance = self.inp0.getAvgXConnected() - self.inp0.scenePos().x()
         OutxDistance = self.out0.getAvgXConnected() - self.out0.scenePos().x()
-        if OutxDistance <= 0 or InxDistance >= 0:
+        if OutxDistance <= -(self.r * 2) or InxDistance >= (self.r * 2):
             if self.out0.hasConnections() and self.inp0.hasConnections():
                 self.inp0.setEdgesControlPointsFlipped(True)
                 self.out0.setEdgesControlPointsFlipped(True)
@@ -67,6 +86,7 @@ class Reroute(Node, NodeBase):
         self._connected = True
         self.dataType = other.dataType
         self.inp0.dataType = self.dataType
+        self.color = self.inp0.color()
 
     def inputDisconnected(self, other):
         if not self.inp0.hasConnections():
@@ -76,13 +96,14 @@ class Reroute(Node, NodeBase):
         self._connected = True
         self.dataType = other.dataType
         self.out0.dataType = self.dataType
+        self.color = self.out0.color()
 
     def outputDisconnected(self, other):
         if not self.out0.hasConnections():
             self.out0.dataType = DataTypes.Reroute
 
     def boundingRect(self):
-        return QtCore.QRectF(-10.0, -5.0, 30.0, 20.0)
+        return QtCore.QRectF(-10.0, 0.0, 30.0, 15.0)
 
     def paint(self, painter, option, widget):
         center = QtCore.QPointF(self.r / 2, self.r / 2)

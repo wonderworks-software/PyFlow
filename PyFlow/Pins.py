@@ -448,12 +448,13 @@ class ReroutePin(ExecPin):
     """doc string for ReroutePin"""
     def __init__(self, name, parent, dataType, direction):
         super(ReroutePin, self).__init__(name, parent, dataType, direction)
+        self._color = Colors.DarkGray
 
     def supportedDataTypes(self):
         return (DataTypes.Any, DataTypes.Exec)
 
     def color(self):
-        return Colors.DarkGray
+        return self._color
 
     def defaultValue(self):
         return None
