@@ -760,30 +760,31 @@ class GraphWidget(QGraphicsView, Graph):
         event.accept()
 
     def OnDoubleClick(self, pos):
-        if isinstance(self.pressed_item, Edge):
-            # store neighbors
-            src = self.pressed_item.source()
-            dst = self.pressed_item.destination()
-            # create rerout node
-            t = Node.jsonTemplate()
-            t['type'] = 'Reroute'
-            t['name'] = self.getUniqNodeName('Reroute')
-            t['x'] = pos.x()
-            t['y'] = pos.y() - 5.0
-            color = self.pressed_item.color.toTuple()
-            t['meta']['RerouteNode'] = {
-                'inColor': color,
-                'outColor': color
-            }
-            node = self.createNode(t)
-            # kill pressed edge
-            self.removeEdge(self.pressed_item)
-            # reconnect neighbors
-            node.dataType = src.dataType
-            node.inp0.dataType = src.dataType
-            node.out0.dataType = src.dataType
-            eLeft = self._addEdge(src, node.inp0)
-            eRight = self._addEdge(node.out0, dst)
+        # if isinstance(self.pressed_item, Edge):
+        #     # store neighbors
+        #     src = self.pressed_item.source()
+        #     dst = self.pressed_item.destination()
+        #     # create rerout node
+        #     t = Node.jsonTemplate()
+        #     t['type'] = 'Reroute'
+        #     t['name'] = self.getUniqNodeName('Reroute')
+        #     t['x'] = pos.x()
+        #     t['y'] = pos.y() - 5.0
+        #     color = self.pressed_item.color.toTuple()
+        #     t['meta']['RerouteNode'] = {
+        #         'inColor': color,
+        #         'outColor': color
+        #     }
+        #     node = self.createNode(t)
+        #     # kill pressed edge
+        #     self.removeEdge(self.pressed_item)
+        #     # reconnect neighbors
+        #     node.dataType = src.dataType
+        #     node.inp0.dataType = src.dataType
+        #     node.out0.dataType = src.dataType
+        #     eLeft = self._addEdge(src, node.inp0)
+        #     eRight = self._addEdge(node.out0, dst)
+        pass
 
         if self.pressed_item and isinstance(self.pressed_item, NodeName):
             if self.pressed_item.IsRenamable():
