@@ -68,7 +68,8 @@ class _Pin(QGraphicsWidget, PinBase):
             xAvg = sum(positions) / len(positions)
         return xAvg
 
-    def color(self):
+    @staticmethod
+    def color():
         return QtGui.QColor()
 
     def call(self):
@@ -224,7 +225,8 @@ class FloatPin(_Pin):
     def __init__(self, name, parent, dataType, direction):
         super(FloatPin, self).__init__(name, parent, dataType, direction)
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.Float
 
     def supportedDataTypes(self):
@@ -246,7 +248,8 @@ class IntPin(_Pin):
     def __init__(self, name, parent, dataType, direction):
         super(IntPin, self).__init__(name, parent, dataType, direction)
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.Int
 
     def supportedDataTypes(self):
@@ -282,7 +285,8 @@ class ExecPin(_Pin):
         for e in self.edge_list:
             e.highlight()
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.Exec
 
     def defaultValue(self):
@@ -304,7 +308,8 @@ class AnyPin(_Pin):
         # all except reference and exec
         return tuple([i[1] for i in inspect.getmembers(DataTypes) if isinstance(i[1], int) and i[1] not in (DataTypes.Reference, DataTypes.Exec)])
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.Any
 
     def setData(self, data):
@@ -320,7 +325,8 @@ class StringPin(_Pin):
     def supportedDataTypes(self):
         return (DataTypes.String,)
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.String
 
     def defaultValue(self):
@@ -342,7 +348,8 @@ class ListPin(_Pin):
     def supportedDataTypes(self):
         return (DataTypes.Array,)
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.Array
 
     def defaultValue(self):
@@ -364,7 +371,8 @@ class BoolPin(_Pin):
     def supportedDataTypes(self):
         return (DataTypes.Bool,)
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.Bool
 
     def defaultValue(self):
@@ -386,7 +394,8 @@ class FloatVector3Pin(_Pin):
     def supportedDataTypes(self):
         return (DataTypes.FloatVector3,)
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.FloatVector3
 
     def defaultValue(self):
@@ -408,7 +417,8 @@ class FloatVector4Pin(_Pin):
     def supportedDataTypes(self):
         return (DataTypes.FloatVector4,)
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.FloatVector4
 
     def defaultValue(self):
@@ -430,7 +440,8 @@ class QuatPin(_Pin):
     def supportedDataTypes(self):
         return (DataTypes.Quaternion,)
 
-    def color(self):
+    @staticmethod
+    def color():
         return Colors.Quaternion
 
     def defaultValue(self):
@@ -444,23 +455,49 @@ class QuatPin(_Pin):
         PinBase.setData(self, data)
 
 
-class ReroutePin(ExecPin):
-    """doc string for ReroutePin"""
+class Matrix33Pin(_Pin):
+    """doc string for Matrix33Pin"""
     def __init__(self, name, parent, dataType, direction):
-        super(ReroutePin, self).__init__(name, parent, dataType, direction)
-        self._color = Colors.DarkGray
+        super(Matrix33Pin, self).__init__(name, parent, dataType, direction)
 
     def supportedDataTypes(self):
-        return (DataTypes.Any, DataTypes.Exec)
+        return (DataTypes.Matrix33,)
 
-    def color(self):
-        return self._color
+    @staticmethod
+    def color():
+        return Colors.Matrix33
 
     def defaultValue(self):
-        return None
+        return pyrr.Matrix33()
 
     def setData(self, data):
-        self._data = data
+        if isinstance(data, pyrr.Matrix33):
+            self._data = data
+        else:
+            self._data = self.defaultValue()
+        PinBase.setData(self, data)
+
+
+class Matrix44Pin(_Pin):
+    """doc string for Matrix44Pin"""
+    def __init__(self, name, parent, dataType, direction):
+        super(Matrix44Pin, self).__init__(name, parent, dataType, direction)
+
+    def supportedDataTypes(self):
+        return (DataTypes.Matrix44,)
+
+    @staticmethod
+    def color():
+        return Colors.Matrix44
+
+    def defaultValue(self):
+        return pyrr.Matrix44()
+
+    def setData(self, data):
+        if isinstance(data, pyrr.Matrix44):
+            self._data = data
+        else:
+            self._data = self.defaultValue()
         PinBase.setData(self, data)
 
 
@@ -488,7 +525,9 @@ def CreatePin(name, parent, dataType, direction):
         return FloatVector4Pin(name, parent, dataType, direction)
     if dataType == DataTypes.Quaternion:
         return QuatPin(name, parent, dataType, direction)
-    if dataType == DataTypes.Reroute:
-        return ReroutePin(name, parent, dataType, direction)
+    if dataType == DataTypes.Matrix33:
+        return Matrix33Pin(name, parent, dataType, direction)
+    if dataType == DataTypes.Matrix44:
+        return Matrix44Pin(name, parent, dataType, direction)
 
     return None

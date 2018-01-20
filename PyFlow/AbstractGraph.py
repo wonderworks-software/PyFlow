@@ -50,7 +50,8 @@ class IPin(IItemBase, ISerializable):
     def __init__(self):
         super(IPin, self).__init__()
 
-    def color(self):
+    @staticmethod
+    def color():
         raise NotImplementedError('color method of IPin is not implemented')
 
     def supportedDataTypes(self):
@@ -447,9 +448,6 @@ class Graph(object):
         if dst.uid not in self.pins:
             print('dst not in graph.pins')
             return False
-
-        if src.dataType is DataTypes.Reroute or dst.dataType is DataTypes.Reroute:
-            return True
 
         if DataTypes.Any not in dst.supportedDataTypes():
             if src.dataType not in dst.supportedDataTypes():

@@ -11,7 +11,7 @@ class MathLib(FunctionLibraryBase):
         super(MathLib, self).__init__()
 
     # #######################
-    # vectors and quaternions
+    # vectors, quaternions, matrices
     # using pyrr module
     # #######################
 
@@ -32,6 +32,18 @@ class MathLib(FunctionLibraryBase):
     def zeroQuat():
         v = pyrr.Quaternion()
         return v
+
+    @staticmethod
+    @annotated(returns=DataTypes.Matrix33, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr', 'Keywords': []})
+    def zeroMatrix33():
+        m = pyrr.Matrix33()
+        return m
+
+    @staticmethod
+    @annotated(returns=DataTypes.Matrix44, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr', 'Keywords': []})
+    def zeroMatrix44():
+        m = pyrr.Matrix44()
+        return m
 
     # ############
     # builtin math

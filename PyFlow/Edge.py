@@ -6,7 +6,6 @@ from AbstractGraph import *
 import weakref
 from uuid import UUID, uuid4
 import numpy
-from Nodes import Reroute
 
 
 def CatmullRomSpline(P0, P1, P2, P3, nPoints=10):
@@ -230,25 +229,11 @@ class Edge(QGraphicsPathItem):
                 verticalOffset = 0
 
         if xDistance < 0:
-            if isinstance(self.source().parentItem(), Reroute):
-                self.cp1 = self.source().parentItem().getOutControlPoint()
-            else:
-                self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)
-
-            if isinstance(self.destination().parentItem(), Reroute):
-                self.cp2 = self.destination().parentItem().getInControlPoint()
-            else:
-                self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y() - verticalOffset)
+            self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)
+            self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y() - verticalOffset)
         else:
-            if isinstance(self.destination().parentItem(), Reroute):
-                self.cp2 = self.destination().parentItem().getInControlPoint()
-            else:
-                self.cp2 = QtCore.QPoint(p2.x() - xDistance / multiply, p2.y() - verticalOffset)
-
-            if isinstance(self.source().parentItem(), Reroute):
-                self.cp1 = self.source().parentItem().getOutControlPoint()
-            else:
-                self.cp1 = QtCore.QPoint(p1.x() + xDistance / multiply, p1.y() + verticalOffset)
+            self.cp2 = QtCore.QPoint(p2.x() - xDistance / multiply, p2.y() - verticalOffset)
+            self.cp1 = QtCore.QPoint(p1.x() + xDistance / multiply, p1.y() + verticalOffset)
 
         self.mPath.cubicTo(self.cp1, self.cp2, p2)
         self.setPath(self.mPath)

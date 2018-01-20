@@ -13,8 +13,8 @@ from Queue import Queue
 FLAG_SYMBOL = "~"
 
 
-def lerp(start, end, percent):
-    return (start + percent * (end - start))
+def lerp(start, end, alpha):
+    return (start + alpha * (end - start))
 
 
 def clamp(n, vmin, vmax):
@@ -104,16 +104,10 @@ def getPortColorByType(t):
         return Colors.Exec
     if t == DataTypes.String:
         return Colors.String
-    if t == DataTypes.IntVector2:
-        return Colors.IntVector2
     if t == DataTypes.FloatVector2:
         return Colors.FloatVector2
-    if t == DataTypes.IntVector3:
-        return Colors.IntVector3
     if t == DataTypes.FloatVector3:
         return Colors.FloatVector3
-    if t == DataTypes.IntVector4:
-        return Colors.IntVector4
     if t == DataTypes.FloatVector4:
         return Colors.FloatVector4
     if t == DataTypes.Transform:
@@ -160,7 +154,6 @@ def memoize(foo):
 
 
 class DataTypes:
-    Reroute = 14
     Float = 0
     Int = 1
     String = 2
@@ -169,12 +162,11 @@ class DataTypes:
     Any = 5
     Exec = 6
     Reference = 7
-    IntVector3 = 8
-    FloatVector3 = 9
-    IntVector4 = 10
-    FloatVector4 = 11
-    Transform = 12
-    Quaternion = 13
+    FloatVector3 = 8
+    FloatVector4 = 9
+    Matrix33 = 10
+    Matrix44 = 11
+    Quaternion = 12
 
 
 def getDataTypeName(inValue):
