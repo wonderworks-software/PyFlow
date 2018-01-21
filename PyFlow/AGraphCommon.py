@@ -191,8 +191,8 @@ class asynchronous(object):
 
     def start(self, *args, **kwargs):
         self.queue = Queue()
-        thread = Thread(target=self.threaded, args=args, kwargs=kwargs);
-        thread.start();
+        thread = Thread(target=self.threaded, args=args, kwargs=kwargs)
+        thread.start()
         return asynchronous.Result(self.queue, thread)
 
     class NotYetDoneException(Exception):

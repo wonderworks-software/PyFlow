@@ -34,6 +34,8 @@ class _Pin(QGraphicsWidget, PinBase):
         self.menu = QMenu()
         self.actionDisconnect = self.menu.addAction('Disconnect all')
         self.actionDisconnect.triggered.connect(self.disconnectAll)
+        self.actionCopyUid = self.menu.addAction('Copy uid')
+        self.actionCopyUid.triggered.connect(self.saveUidToClipboard)
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
@@ -44,7 +46,6 @@ class _Pin(QGraphicsWidget, PinBase):
         self.hovered = False
         self.startPos = None
         self.endPos = None
-        self.bEdgeTangentDirection = False
         self._container = None
         self._execPen = QtGui.QPen(Colors.Exec, 0.5, QtCore.Qt.SolidLine)
         self.setGeometry(0, 0, self.width, self.height)
@@ -52,21 +53,26 @@ class _Pin(QGraphicsWidget, PinBase):
 
         self.pinImage = QtGui.QImage(':/icons/resources/array.png')
         self.bLabelHidden = False
+        self.bAnimate = False
+        self.val = 0
 
-    def setEdgesControlPointsFlipped(self, bFlipped=False):
-        self.bEdgeTangentDirection = bFlipped
+    def highlight(self):
+        self.bAnimate = True
+        t = QtCore.QTimeLine(900, self)
+        t.setFrameRange(0, 100)
+        t.frameChanged[int].connect(self.animFrameChanged)
+        t.finished.connect(self.animationFinished)
+        t.start()
 
-    def getAvgXConnected(self):
-        xAvg = 0.0
-        if not self.hasConnections():
-            return xAvg
-        if self.direction == PinDirection.Input:
-            positions = [p.scenePos().x() for p in self.affected_by]
-        else:
-            positions = [p.scenePos().x() for p in self.affects]
-        if not len(positions) == 0:
-            xAvg = sum(positions) / len(positions)
-        return xAvg
+    def animFrameChanged(self, value):
+        self.width = clamp(math.sin(self.val) * 9, 4.5, 25)
+        self.update()
+        self.val += 0.1
+
+    def animationFinished(self):
+        self.width = 9
+        self.update()
+        self.val = 0
 
     @staticmethod
     def color():
@@ -119,6 +125,11 @@ class _Pin(QGraphicsWidget, PinBase):
     def sizeHint(self, which, constraint):
         return QtCore.QSizeF(self.width, self.height)
 
+    def saveUidToClipboard(self):
+        clipboard = QApplication.clipboard()
+        clipboard.clear()
+        clipboard.setText(str(self.uid))
+
     def disconnectAll(self):
         trash = []
         for e in self.edge_list:
@@ -131,7 +142,6 @@ class _Pin(QGraphicsWidget, PinBase):
         self.bEdgeTangentDirection = False
 
     def shape(self):
-
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
         return path
@@ -165,11 +175,11 @@ class _Pin(QGraphicsWidget, PinBase):
                 rect = background_rect
                 painter.drawRect(rect)
         elif self.dataType == DataTypes.Exec:
+            painter.setPen(self._execPen)
             if self._connected:
                 painter.setBrush(QtGui.QBrush(self.color()))
             else:
                 painter.setBrush(QtCore.Qt.NoBrush)
-                painter.setPen(self._execPen)
             arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
                                     QtCore.QPointF(self.width / 2.0, 0.0),
                                     QtCore.QPointF(self.width, self.height / 2.0),
