@@ -140,10 +140,6 @@ class {0}(Node):
             2) do stuff
             3) put data to outputs
             4) call output execs
-
-            IMPORTANT!:
-                Call output execs after all data was written into value pins
-                otherwise recursive loop may occur
         '''
 
         str_data = self.inp0.getData()
@@ -852,7 +848,8 @@ class GraphWidget(QGraphicsView, Graph):
 
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
-                json.dump(self.getGraphSaveData(), f)
+                graphData = self.getGraphSaveData()
+                json.dump(graphData, f)
 
             self._file_name_label.setPlainText(self._current_file_name)
             print(str("// saved: '{0}'".format(self._current_file_name)))

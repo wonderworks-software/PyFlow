@@ -34,7 +34,7 @@ class _Pin(QGraphicsWidget, PinBase):
         self.menu = QMenu()
         self.actionDisconnect = self.menu.addAction('Disconnect all')
         self.actionDisconnect.triggered.connect(self.disconnectAll)
-        self.actionCopyUid = self.menu.addAction('Copy uid')
+        self.actionCopyUid = self.menu.addAction('copy uid')
         self.actionCopyUid.triggered.connect(self.saveUidToClipboard)
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
@@ -454,12 +454,19 @@ class QuatPin(_Pin):
     def color():
         return Colors.Quaternion
 
+    def serialize(self):
+        data = _Pin.serialize(self)
+        data['value'] = self.currentData().xyzw.tolist()
+        return data
+
     def defaultValue(self):
         return pyrr.Quaternion()
 
     def setData(self, data):
         if isinstance(data, pyrr.Quaternion):
             self._data = data
+        elif isinstance(data, list) and len(data) == 4:
+            self._data = pyrr.Quaternion(data)
         else:
             self._data = self.defaultValue()
         PinBase.setData(self, data)

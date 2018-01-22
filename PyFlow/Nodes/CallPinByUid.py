@@ -19,32 +19,18 @@ class CallPinByUid(Node):
 
     @staticmethod
     def pinTypeHints():
-        '''
-            used by nodebox to suggest supported pins
-            when drop wire from pin into empty space
-        '''
         return {'inputs': [DataTypes.String, DataTypes.Exec], 'outputs': [DataTypes.Exec]}
 
     @staticmethod
     def category():
-        '''
-            used by nodebox to place in tree
-            to make nested one - use '|' like this ( 'CatName|SubCatName' )
-        '''
         return 'FlowControl'
 
     @staticmethod
     def keywords():
-        '''
-            used by nodebox filter while typing
-        '''
         return []
 
     @staticmethod
     def description():
-        '''
-            used by property view and node box widgets
-        '''
         return 'Implicit execution pin call'
 
     def OnFindPin(self):
@@ -62,13 +48,11 @@ class CallPinByUid(Node):
             2) do stuff
             3) put data to outputs
             4) call output execs
-
-            IMPORTANT!:
-                Call output execs after all data was written into value pins
-                otherwise recursive loop may occur
         '''
 
         uidStr = self.uidInp.getData()
         uid = uuid.UUID(uidStr)
         if uid in self.graph().pins:
-            self.graph().pins[uid].call()
+            pin = self.graph().pins[uid]
+            if not pin.hasConnections():
+                pin.call()
