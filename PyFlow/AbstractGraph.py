@@ -88,8 +88,6 @@ class PinBase(IPin, ISerializable):
         self.direction = direction
         self.dirty = True
         self._connected = False
-        # put self in graph
-        self.parent().graph().pins[self.uid] = self
 
     def setName(self, name):
         self.name = name.replace(" ", "_")

@@ -561,6 +561,7 @@ class Node(QGraphicsItem, NodeBase):
         name = self.getUniqPinName(name)
 
         p = CreatePin(name, self, dataType, pinDirection)
+        self.graph().pins[p.uid] = p
 
         if pinDirection == PinDirection.Input and foo is not None:
             p.call = foo

@@ -55,6 +55,7 @@ class _Pin(QGraphicsWidget, PinBase):
         self.bLabelHidden = False
         self.bAnimate = False
         self.val = 0
+        self.setData(self.defaultValue())
 
     def highlight(self):
         self.bAnimate = True
@@ -161,9 +162,6 @@ class _Pin(QGraphicsWidget, PinBase):
         else:
             linearGrad.setColorAt(0, self.color())
             linearGrad.setColorAt(1, self.color())
-
-        if self.dirty:
-            painter.setPen(self._dirty_pen)  # move to callback and use in debug mode
 
         if self.hovered:
             linearGrad.setColorAt(1, self.color().lighter(200))
@@ -308,14 +306,34 @@ class ExecPin(_Pin):
 
 class AnyPin(_Pin):
     """doc string for AnyPin"""
+    # how to save/load this ? because we don't know data type supplied and it can be another Any pin
     def __init__(self, name, parent, dataType, direction):
         super(AnyPin, self).__init__(name, parent, dataType, direction)
+        self.OnPinConnected.connect(self.OnConnected)
+        self.valueDataType = DataTypes.String
+
+    def serialize(self):
+        # create fake pin based on input value data type
+        # serialize it
+        # get rid of it
+        pinTemp = CreatePin('temp', self.parent(), self.valueDataType, self.direction)
+        data = pinTemp.serialize()
+        data['name'] = self.name
+        data['uuid'] = str(self.uid)
+        data['bLabelHidden'] = self.bLabelHidden
+        data['bDirty'] = self.dirty
+        pinTemp.kill()
+        self.parent().graph().scene().removeItem(pinTemp)
+        return data
+
+    def OnConnected(self, other):
+        self.valueDataType = other.dataType
 
     def defaultValue(self):
         return None
 
     def supportedDataTypes(self):
-        # all except reference and exec
+        # all except reference, exec and any
         return tuple([i[1] for i in inspect.getmembers(DataTypes) if isinstance(i[1], int) and i[1] not in (DataTypes.Reference, DataTypes.Exec)])
 
     @staticmethod
@@ -434,9 +452,16 @@ class FloatVector4Pin(_Pin):
     def defaultValue(self):
         return pyrr.Vector4()
 
+    def serialize(self):
+        data = _Pin.serialize(self)
+        data['value'] = self.currentData().xyzw.tolist()
+        return data
+
     def setData(self, data):
         if isinstance(data, pyrr.Vector4):
             self._data = data
+        elif isinstance(data, list) and len(data) == 4:
+            self._data = pyrr.Vector4(data)
         else:
             self._data = self.defaultValue()
         PinBase.setData(self, data)
