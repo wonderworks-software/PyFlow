@@ -198,7 +198,7 @@ class _Pin(QGraphicsWidget, PinBase):
         super(_Pin, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        self.setToolTip(str(self.dirty))
+        self.setToolTip(str(self.currentData()))
         event.accept()
 
     def hoverLeaveEvent(self, event):
@@ -380,9 +380,16 @@ class FloatVector3Pin(_Pin):
     def defaultValue(self):
         return pyrr.Vector3()
 
+    def serialize(self):
+        data = _Pin.serialize(self)
+        data['value'] = self.currentData().xyz.tolist()
+        return data
+
     def setData(self, data):
         if isinstance(data, pyrr.Vector3):
             self._data = data
+        elif isinstance(data, list) and len(data) == 3:
+            self._data = pyrr.Vector3(data)
         else:
             self._data = self.defaultValue()
         PinBase.setData(self, data)
@@ -431,6 +438,8 @@ class QuatPin(_Pin):
         return Colors.Quaternion
 
     def serialize(self):
+        # note how custom class can be serialized
+        # here we store quats xyzw as list
         data = _Pin.serialize(self)
         data['value'] = self.currentData().xyzw.tolist()
         return data
@@ -442,6 +451,9 @@ class QuatPin(_Pin):
         if isinstance(data, pyrr.Quaternion):
             self._data = data
         elif isinstance(data, list) and len(data) == 4:
+            # here serialized data will be handled
+            # when node desirializes itself, it creates all pins
+            # and then sets data to them. Here, data will be set fo the first time after deserialization
             self._data = pyrr.Quaternion(data)
         else:
             self._data = self.defaultValue()
@@ -463,9 +475,17 @@ class Matrix33Pin(_Pin):
     def defaultValue(self):
         return pyrr.Matrix33()
 
+    def serialize(self):
+        data = _Pin.serialize(self)
+        m = self.currentData()
+        data['value'] = [m.c1.tolist(), m.c2.tolist(), m.c3.tolist()]
+        return data
+
     def setData(self, data):
         if isinstance(data, pyrr.Matrix33):
             self._data = data
+        elif isinstance(data, list) and len(data) == 3:
+            self._data = pyrr.Matrix33([data[0], data[1], data[2]])
         else:
             self._data = self.defaultValue()
         PinBase.setData(self, data)
@@ -486,9 +506,17 @@ class Matrix44Pin(_Pin):
     def defaultValue(self):
         return pyrr.Matrix44()
 
+    def serialize(self):
+        data = _Pin.serialize(self)
+        m = self.currentData()
+        data['value'] = [m.c1.tolist(), m.c2.tolist(), m.c3.tolist(), m.c4.tolist()]
+        return data
+
     def setData(self, data):
         if isinstance(data, pyrr.Matrix44):
             self._data = data
+        elif isinstance(data, list) and len(data) == 4:
+            self._data = pyrr.Matrix44([data[0], data[1], data[2], data[3]])
         else:
             self._data = self.defaultValue()
         PinBase.setData(self, data)

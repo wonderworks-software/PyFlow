@@ -189,7 +189,7 @@ class Node(QGraphicsItem, NodeBase):
     @staticmethod
     def initializeFromFunction(foo, graph):
         meta = foo.__annotations__['meta']
-        returnType = foo.__annotations__['return']
+        returnType, returnDefaultValue = foo.__annotations__['return']
         nodeType = foo.__annotations__['nodeType']
         fooArgNames = getargspec(foo).args
 
@@ -216,7 +216,8 @@ class Node(QGraphicsItem, NodeBase):
         inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
-            inst.addOutputPin('out', returnType)
+            p = inst.addOutputPin('out', returnType)
+            p.setData(returnDefaultValue)
 
         # this is array of 'references' outputs will be created for
         refs = []
