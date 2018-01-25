@@ -9,14 +9,6 @@ import nodes_res_rc
 import pyrr
 
 
-def updatePins(start_from):
-    if not start_from.affects == []:
-        start_from.update()
-        for i in start_from.affects:
-            i.update()
-            updatePins(i)
-
-
 class _Pin(QGraphicsWidget, PinBase):
     '''
     This is base class for all ui pins
@@ -25,9 +17,9 @@ class _Pin(QGraphicsWidget, PinBase):
     OnPinConnected = QtCore.Signal(object)
     OnPinDisconnected = QtCore.Signal(object)
 
-    def __init__(self, name, parent, dataType, direction):
+    def __init__(self, name, parent, dataType, direction, **kwargs):
         QGraphicsWidget.__init__(self)
-        PinBase.__init__(self, name, parent, dataType, direction)
+        PinBase.__init__(self, name, parent, dataType, direction, **kwargs)
         # self.name = name.replace(" ", "_")  # spaces are not allowed
         self.setParentItem(parent)
         self.setCursor(QtCore.Qt.CrossCursor)
@@ -230,8 +222,8 @@ class _Pin(QGraphicsWidget, PinBase):
 
 class FloatPin(_Pin):
     """doc string for FloatPin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(FloatPin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(FloatPin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     @staticmethod
     def color():
@@ -253,8 +245,8 @@ class FloatPin(_Pin):
 
 class IntPin(_Pin):
     """doc string for IntPin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(IntPin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(IntPin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     @staticmethod
     def color():
@@ -276,8 +268,8 @@ class IntPin(_Pin):
 
 class ExecPin(_Pin):
     """doc string for ExecPin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(ExecPin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(ExecPin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.width = self.height = 10.0
         self.dirty = False
 
@@ -306,8 +298,8 @@ class ExecPin(_Pin):
 
 class StringPin(_Pin):
     """doc string for StringPin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(StringPin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(StringPin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     def supportedDataTypes(self):
         return (DataTypes.String,)
@@ -329,8 +321,8 @@ class StringPin(_Pin):
 
 class ListPin(_Pin):
     """doc string for ListPin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(ListPin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(ListPin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     def supportedDataTypes(self):
         return (DataTypes.Array,)
@@ -352,8 +344,8 @@ class ListPin(_Pin):
 
 class BoolPin(_Pin):
     """doc string for BoolPin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(BoolPin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(BoolPin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     def supportedDataTypes(self):
         return (DataTypes.Bool,)
@@ -375,8 +367,8 @@ class BoolPin(_Pin):
 
 class FloatVector3Pin(_Pin):
     """doc string for FloatVector3Pin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(FloatVector3Pin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(FloatVector3Pin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     def supportedDataTypes(self):
         return (DataTypes.FloatVector3,)
@@ -398,8 +390,8 @@ class FloatVector3Pin(_Pin):
 
 class FloatVector4Pin(_Pin):
     """doc string for FloatVector4Pin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(FloatVector4Pin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(FloatVector4Pin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     def supportedDataTypes(self):
         return (DataTypes.FloatVector4,)
@@ -428,8 +420,8 @@ class FloatVector4Pin(_Pin):
 
 class QuatPin(_Pin):
     """doc string for QuatPin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(QuatPin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(QuatPin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     def supportedDataTypes(self):
         return (DataTypes.Quaternion,)
@@ -458,8 +450,8 @@ class QuatPin(_Pin):
 
 class Matrix33Pin(_Pin):
     """doc string for Matrix33Pin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(Matrix33Pin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(Matrix33Pin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     def supportedDataTypes(self):
         return (DataTypes.Matrix33,)
@@ -481,8 +473,8 @@ class Matrix33Pin(_Pin):
 
 class Matrix44Pin(_Pin):
     """doc string for Matrix44Pin"""
-    def __init__(self, name, parent, dataType, direction):
-        super(Matrix44Pin, self).__init__(name, parent, dataType, direction)
+    def __init__(self, name, parent, dataType, direction, **kwargs):
+        super(Matrix44Pin, self).__init__(name, parent, dataType, direction, **kwargs)
 
     def supportedDataTypes(self):
         return (DataTypes.Matrix44,)

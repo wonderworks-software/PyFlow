@@ -5,7 +5,6 @@ from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore
 from Qt import QtGui
-from Pins import updatePins
 from Commands import RemoveNodes
 
 
@@ -42,7 +41,6 @@ class GetVarNode(Node, NodeBase):
 
     def onVarValueChanged(self):
         push(self.out)
-        updatePins(self.out)
 
     @staticmethod
     def category():

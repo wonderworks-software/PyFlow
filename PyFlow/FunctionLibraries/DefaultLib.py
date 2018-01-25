@@ -75,9 +75,19 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @implementNode(returns=DataTypes.String, meta={'Category': 'Conversion', 'Keywords': []})
     def floatToString(f=(DataTypes.Float, 0.0)):
-        return str(i)
+        return str(f)
 
     @staticmethod
     @implementNode(returns=DataTypes.String, meta={'Category': 'Conversion', 'Keywords': []})
     def boolToString(b=(DataTypes.Bool, str(False))):
         return str(b)
+
+    @staticmethod
+    @implementNode(returns=DataTypes.String, meta={'Category': 'Conversion', 'Keywords': []})
+    def arrayToString(arr=(DataTypes.Array, [])):
+        return str(arr)
+
+    @staticmethod
+    @implementNode(returns=DataTypes.Int, meta={'Category': 'DefaultLib', 'Keywords': []})
+    def arrayToLen(arr=(DataTypes.Array, [])):
+        return len(arr)

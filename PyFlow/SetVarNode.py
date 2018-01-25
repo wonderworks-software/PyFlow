@@ -6,7 +6,6 @@ from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QLineEdit
 from Qt import QtCore
 from Qt import QtGui
-from Pins import updatePins
 from Commands import RemoveNodes
 from PinInputWidgets import getPinWidget
 
@@ -61,9 +60,6 @@ class SetVarNode(Node, NodeBase):
     def onVarNameChanged(self, newName):
         self.label().setPlainText('Set {}'.format(newName))
         self.name = newName
-
-    def onVarValueChanged(self):
-        updatePins(self.value)
 
     @staticmethod
     def category():
