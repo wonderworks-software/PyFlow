@@ -90,8 +90,6 @@ def push(start_from):
 
 # kill this. replace by inheritance
 def getPortColorByType(t):
-    if t == DataTypes.Any:
-        return Colors.Any
     if t == DataTypes.Float:
         return Colors.Float
     if t == DataTypes.Int:
@@ -126,8 +124,6 @@ def getDefaultDataValue(dataType):
         return bool()
     if dataType == DataTypes.Array:
         return []
-    if dataType == DataTypes.Any:
-        return str("none")
 
 
 def clearLayout(layout):
@@ -159,14 +155,13 @@ class DataTypes:
     String = 2
     Bool = 3
     Array = 4
-    Any = 5
-    Exec = 6
-    Reference = 7
-    FloatVector3 = 8
-    FloatVector4 = 9
-    Matrix33 = 10
-    Matrix44 = 11
-    Quaternion = 12
+    Exec = 5
+    Reference = 6
+    FloatVector3 = 7
+    FloatVector4 = 8
+    Matrix33 = 9
+    Matrix44 = 10
+    Quaternion = 11
 
 
 def getDataTypeName(inValue):

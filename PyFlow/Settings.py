@@ -64,7 +64,6 @@ class Colors:
 
     Float = Green
     Int = LimeGreen
-    Any = Yellow
     Array = Gray
     Bool = Red
     Exec = QtGui.QColor(255, 255, 255)

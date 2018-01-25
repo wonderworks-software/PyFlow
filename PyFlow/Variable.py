@@ -66,7 +66,7 @@ class VariableBase(QWidget):
     killed = QtCore.Signal()
     dataTypeChanged = QtCore.Signal(int)
 
-    def __init__(self, name, value, graph, varsListWidget, dataType=DataTypes.Any, uid=None):
+    def __init__(self, name, value, graph, varsListWidget, dataType=DataTypes.Bool, uid=None):
         super(VariableBase, self).__init__()
         # ui
         self.horizontalLayout = QHBoxLayout(self)
@@ -155,8 +155,6 @@ class VariableBase(QWidget):
             self._value = data
         if self.dataType == DataTypes.Bool:
             self._value = bool(data)
-        if self.dataType == DataTypes.Any:
-            self._value = str(data)
         self.valueChanged.emit()
 
     def setDataType(self, dataType, _bJustSpawned=False):

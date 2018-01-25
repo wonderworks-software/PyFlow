@@ -123,7 +123,4 @@ def getVarWidget(var):
         return StringInputWidget(var=var)
     if var.dataType == DataTypes.Bool:
         return BoolInputWidget(var=var)
-    if var.dataType == DataTypes.Any:
-        return StringInputWidget(var=var)
-    # array ?
     return None

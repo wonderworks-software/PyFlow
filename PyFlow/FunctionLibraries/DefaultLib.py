@@ -14,8 +14,8 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @annotated(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
-    def pyprint(entity=(DataTypes.Any, None)):
-        '''print any object'''
+    def pyprint(entity=(DataTypes.String, None)):
+        '''print string'''
         print(entity)
 
     @staticmethod
@@ -24,22 +24,3 @@ class DefaultLib(FunctionLibraryBase):
         '''Os information'''
         system.setData(platform.system())
         version.setData(platform.version())
-
-    @staticmethod
-    @annotated(returns=DataTypes.Any, meta={'Category': 'Array', 'Keywords': ['get', '[]']})
-    def getitem(arr=(DataTypes.Array, []), index=(DataTypes.Int, 0)):
-        '''Get item from iterable by index'''
-        try:
-            return arr[index]
-        except:
-            return None
-
-    @staticmethod
-    @annotated(returns=DataTypes.Bool, nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': ['set', '[]']})
-    def setitem(arr=(DataTypes.Array, []), index=(DataTypes.Int, 0), dat=(DataTypes.Any, None)):
-        '''Set iterable item by index'''
-        try:
-            arr[index] = dat
-            return True
-        except:
-            return False

@@ -114,7 +114,4 @@ def getPinWidget(pin):
         return StringInputWidget(pin=pin)
     if pin.dataType == DataTypes.Bool:
         return BoolInputWidget(pin=pin)
-    if pin.dataType == DataTypes.Any:
-        return StringInputWidget(pin=pin)
-    # array ?
     return None

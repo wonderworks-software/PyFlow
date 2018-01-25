@@ -100,8 +100,8 @@ from Node import Node
 class {0}(Node):
     def __init__(self, name, graph):
         super({0}, self).__init__(name, graph)
-        self.inp0 = self.addInputPin('in0', DataTypes.Any)
-        self.out0 = self.addOutputPin('out0', DataTypes.Any)
+        self.inp0 = self.addInputPin('in0', DataTypes.Bool)
+        self.out0 = self.addOutputPin('out0', DataTypes.Bool)
         pinAffects(self.inp0, self.out0)
 
     @staticmethod
@@ -110,7 +110,7 @@ class {0}(Node):
             used by nodebox to suggest supported pins
             when drop wire from pin into empty space
         '''
-        return {{'inputs': [DataTypes.Any], 'outputs': [DataTypes.Any]}}
+        return {{'inputs': [DataTypes.Bool], 'outputs': [DataTypes.Bool]}}
 
     @staticmethod
     def category():

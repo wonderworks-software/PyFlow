@@ -16,6 +16,7 @@ class MathLib(FunctionLibraryBase):
     # using pyrr module
     # #######################
 
+    # vector3
     @staticmethod
     @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector3', 'Keywords': []})
     def zeroVector3():
@@ -484,18 +485,6 @@ class MathLib(FunctionLibraryBase):
         '''Shuffle the sequence x in place.'''
         random.shuffle(seq)
         Result.setData(seq)
-
-    @staticmethod
-    @annotated(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
-    def choice(seq=(DataTypes.Array, []), Item=(DataTypes.Reference, DataTypes.Any), Result=(DataTypes.Reference, DataTypes.Bool)):
-        '''Return a random element from the non-empty sequence seq. If seq is empty, raises IndexError.'''
-        try:
-            item = random.choice(seq)
-            Item.setData(item)
-            Result.setData(True)
-        except:
-            Result.setData(False)
-            Item.setData(None)
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})

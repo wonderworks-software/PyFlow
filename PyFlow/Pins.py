@@ -304,47 +304,6 @@ class ExecPin(_Pin):
         pass
 
 
-class AnyPin(_Pin):
-    """doc string for AnyPin"""
-    # how to save/load this ? because we don't know data type supplied and it can be another Any pin
-    def __init__(self, name, parent, dataType, direction):
-        super(AnyPin, self).__init__(name, parent, dataType, direction)
-        self.OnPinConnected.connect(self.OnConnected)
-        self.valueDataType = DataTypes.String
-
-    def serialize(self):
-        # create fake pin based on input value data type
-        # serialize it
-        # get rid of it
-        pinTemp = CreatePin('temp', self.parent(), self.valueDataType, self.direction)
-        data = pinTemp.serialize()
-        data['name'] = self.name
-        data['uuid'] = str(self.uid)
-        data['bLabelHidden'] = self.bLabelHidden
-        data['bDirty'] = self.dirty
-        pinTemp.kill()
-        self.parent().graph().scene().removeItem(pinTemp)
-        return data
-
-    def OnConnected(self, other):
-        self.valueDataType = other.dataType
-
-    def defaultValue(self):
-        return None
-
-    def supportedDataTypes(self):
-        # all except reference, exec and any
-        return tuple([i[1] for i in inspect.getmembers(DataTypes) if isinstance(i[1], int) and i[1] not in (DataTypes.Reference, DataTypes.Exec)])
-
-    @staticmethod
-    def color():
-        return Colors.Any
-
-    def setData(self, data):
-        self._data = data
-        PinBase.setData(self, data)
-
-
 class StringPin(_Pin):
     """doc string for StringPin"""
     def __init__(self, name, parent, dataType, direction):
@@ -553,8 +512,6 @@ def CreatePin(name, parent, dataType, direction):
         return IntPin(name, parent, dataType, direction)
     if dataType == DataTypes.Exec:
         return ExecPin(name, parent, dataType, direction)
-    if dataType == DataTypes.Any:
-        return AnyPin(name, parent, dataType, direction)
     if dataType == DataTypes.String:
         return StringPin(name, parent, dataType, direction)
     if dataType == DataTypes.Array:

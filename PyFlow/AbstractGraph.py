@@ -447,13 +447,12 @@ class Graph(object):
             print('dst not in graph.pins')
             return False
 
-        if DataTypes.Any not in dst.supportedDataTypes():
-            if src.dataType not in dst.supportedDataTypes():
-                print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
-                return False
+        if src.dataType not in dst.supportedDataTypes():
+            print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
+            return False
         else:
-            if src.dataType == DataTypes.Exec:
-                if dst.dataType not in [DataTypes.Exec]:
+            if src.dataType is DataTypes.Exec:
+                if dst.dataType is not DataTypes.Exec:
                     print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
                     return False
 

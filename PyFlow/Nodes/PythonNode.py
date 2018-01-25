@@ -26,7 +26,7 @@ class PythonNode(Node, NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Any], 'outputs': [DataTypes.Any]}
+        return {'inputs': [], 'outputs': []}
 
     def computeCode(self):
         return self.currentComputeCode
