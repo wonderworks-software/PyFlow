@@ -24,7 +24,7 @@ def returns(annotation):
     return annotate
 
 
-def annotated(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
+def implementNode(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     """
     Decorator to treat ``func``'s default args as a combination of
     annotations and default values, migrating the annotations to
