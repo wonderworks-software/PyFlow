@@ -3,7 +3,6 @@ from AGraphCommon import *
 import math
 import random
 import pyrr
-import numpy as np
 
 
 class MathLib(FunctionLibraryBase):
@@ -11,148 +10,9 @@ class MathLib(FunctionLibraryBase):
     def __init__(self):
         super(MathLib, self).__init__()
 
-    # #######################
-    # vectors, quaternions, matrices
-    # using pyrr module
-    # #######################
-
-    # vector3
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector3', 'Keywords': []})
-    def zeroVector3():
-        '''zero Vector3'''
-        v = pyrr.Vector3()
-        return v
-
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector3', 'Keywords': []})
-    def makeVector3(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), c=(DataTypes.Float, 0.0)):
-        '''creates Vector3 from given components'''
-        return pyrr.Vector3([a, b, c])
-
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector3', 'Keywords': []})
-    def addVector3(a=(DataTypes.FloatVector3, pyrr.Vector3()), b=(DataTypes.FloatVector3, pyrr.Vector3())):
-        '''adds vector a and b'''
-        return a + b
-
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector3', 'Keywords': []})
-    def substractVector3(a=(DataTypes.FloatVector3, pyrr.Vector3()), b=(DataTypes.FloatVector3, pyrr.Vector3())):
-        '''substracts vector a and b'''
-        return a - b
-
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector3', 'Keywords': []})
-    def dotVector3(a=(DataTypes.FloatVector3, pyrr.Vector3()), b=(DataTypes.FloatVector3, pyrr.Vector3())):
-        '''dot product of two vectors'''
-        return a | b
-
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector3', 'Keywords': []})
-    def crossVector3(a=(DataTypes.FloatVector3, pyrr.Vector3()), b=(DataTypes.FloatVector3, pyrr.Vector3())):
-        '''cross product of two vectors'''
-        return a ^ b
-
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector3', 'Keywords': []})
-    def rotateVector3byM33(v=(DataTypes.FloatVector3, pyrr.Vector3()), m=(DataTypes.Matrix33, pyrr.Matrix33())):
-        '''rotates a vector3 by a matrix33'''
-        return m * v
-
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector3, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector3', 'Keywords': []})
-    def rotateVector3byQuat(v=(DataTypes.FloatVector3, pyrr.Vector3()), q=(DataTypes.Quaternion, pyrr.Quaternion())):
-        '''rotates a vector3 by a quaternion'''
-        return q * v
-
-    @staticmethod
-    @annotated(returns=DataTypes.FloatVector4, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector4', 'Keywords': []})
-    def zeroVector4():
-        '''zero vector4'''
-        return pyrr.Vector4()
-
-    @staticmethod
-    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Quaternion', 'Keywords': []})
-    def zeroQuat():
-        '''zero quaternion'''
-        return pyrr.Quaternion()
-
-    @staticmethod
-    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Quaternion', 'Keywords': []})
-    def quatFromXRotation(theta=(DataTypes.Float, 0.0)):
-        '''Creates a new Quaternion with a rotation around the X-axis.'''
-        return pyrr.Quaternion.from_x_rotation(theta)
-
-    @staticmethod
-    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Quaternion', 'Keywords': []})
-    def quatFromYRotation(theta=(DataTypes.Float, 0.0)):
-        '''Creates a new Quaternion with a rotation around the X-axis.'''
-        return pyrr.Quaternion.from_y_rotation(theta)
-
-    @staticmethod
-    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Quaternion', 'Keywords': []})
-    def quatFromZRotation(theta=(DataTypes.Float, 0.0)):
-        '''Creates a new Quaternion with a rotation around the X-axis.'''
-        return pyrr.Quaternion.from_z_rotation(theta)
-
-    @staticmethod
-    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Quaternion', 'Keywords': []})
-    def quatFromMatrix33(m=(DataTypes.Matrix33, pyrr.Matrix33())):
-        '''Creates a Quaternion from the specified Matrix33.'''
-        return pyrr.Quaternion.from_matrix(m)
-
-    @staticmethod
-    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Quaternion', 'Keywords': []})
-    def quatFromMatrix44(m=(DataTypes.Matrix44, pyrr.Matrix44())):
-        '''Creates a Quaternion from the specified Matrix33.'''
-        return pyrr.Quaternion.from_matrix(m)
-
-    @staticmethod
-    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Quaternion', 'Keywords': []})
-    def quatFromEulers(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), c=(DataTypes.Float, 0.0)):
-        '''Creates a Quaternion from the specified Euler angles.'''
-        return pyrr.Quaternion.from_eulers([a, b, c])
-
-    @staticmethod
-    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Quaternion', 'Keywords': []})
-    def quatFromInverseOfEulers(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), c=(DataTypes.Float, 0.0)):
-        '''Creates a Quaternion from the specified Euler angles.'''
-        return pyrr.Quaternion.from_inverse_of_eulers([a, b, c])
-
-    @staticmethod
-    @annotated(returns=DataTypes.Quaternion, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Quaternion', 'Keywords': []})
-    def quatFromAxisRotation(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), c=(DataTypes.Float, 0.0), theta=(DataTypes.Float, 0.0)):
-        '''Creates a new Quaternion with a rotation around the specified axis.'''
-        return pyrr.Quaternion.from_axis_rotation([a, b, c], theta)
-
-    @staticmethod
-    @annotated(returns=DataTypes.Matrix33, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Matrix33', 'Keywords': []})
-    def zeroMatrix33():
-        '''zero matrix33'''
-        return pyrr.Matrix33()
-
-    @staticmethod
-    @annotated(returns=DataTypes.Matrix33, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Matrix33', 'Keywords': []})
-    def identityMatrix33():
-        '''identity matrix33'''
-        return pyrr.Matrix33.identity()
-
-    @staticmethod
-    @annotated(returns=DataTypes.Matrix44, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Matrix44', 'Keywords': []})
-    def zeroMatrix44():
-        '''zero matrix44'''
-        return pyrr.Matrix44()
-
-    @staticmethod
-    @annotated(returns=DataTypes.Matrix44, nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Matrix44', 'Keywords': []})
-    def identityMatrix44():
-        '''identity matrix44'''
-        return pyrr.Matrix44.identity()
-
-    # ############
-    # builtin math
-    # ############
+    # ###################
+    # builtin python math
+    # ###################
 
     @staticmethod
     @annotated(returns=DataTypes.Float, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
