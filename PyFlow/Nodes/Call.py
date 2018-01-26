@@ -8,9 +8,9 @@ from Settings import *
 from Node import Node
 
 
-class Call(Node, NodeBase):
+class call(Node, NodeBase):
     def __init__(self, name, graph):
-        super(Call, self).__init__(name, graph)
+        super(call, self).__init__(name, graph)
         self.out = self.addOutputPin("OUT", DataTypes.Exec, self.compute)
 
         self.process = False

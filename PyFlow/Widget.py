@@ -35,7 +35,7 @@ from AbstractGraph import *
 from Edge import Edge
 from Node import Node
 from Node import NodeName
-from Nodes import CommentNode
+from Nodes import commentNode
 from os import listdir, path, startfile
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
@@ -366,7 +366,7 @@ class SceneClass(QGraphicsScene):
             tag, mimeText = event.mimeData().text().split('|')
             name = self.parent().getUniqNodeName(mimeText)
             dropItem = self.itemAt(event.scenePos())
-            if not dropItem or isinstance(dropItem, CommentNode):
+            if not dropItem or isinstance(dropItem, commentNode):
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = mimeText
                 nodeTemplate['name'] = name
@@ -955,7 +955,7 @@ class GraphWidget(QGraphicsView, Graph):
         if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
             if self.isShortcutsEnabled():
                 # create comment node
-                rect = CommentNode.getNodesRect(self.selectedNodes())
+                rect = commentNode.getNodesRect(self.selectedNodes())
                 if rect:
                     rect.setTop(rect.top() - 20)
                     rect.setLeft(rect.left() - 20)
@@ -964,8 +964,8 @@ class GraphWidget(QGraphicsView, Graph):
                     rect.setBottom(rect.bottom() + 20)
 
                 nodeTemplate = Node.jsonTemplate()
-                nodeTemplate['type'] = CommentNode.__name__
-                nodeTemplate['name'] = self.getUniqNodeName(CommentNode.__name__)
+                nodeTemplate['type'] = commentNode.__name__
+                nodeTemplate['name'] = self.getUniqNodeName(commentNode.__name__)
 
                 if rect:
                     nodeTemplate['x'] = rect.topLeft().x()
@@ -973,7 +973,7 @@ class GraphWidget(QGraphicsView, Graph):
                 else:
                     nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
                     nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
-                nodeTemplate['meta']['label'] = CommentNode.__name__
+                nodeTemplate['meta']['label'] = commentNode.__name__
                 nodeTemplate['uuid'] = None
                 instance = self.createNode(nodeTemplate)
                 if rect:
@@ -1186,7 +1186,7 @@ class GraphWidget(QGraphicsView, Graph):
 
             # hack. disable signals and call selectionChanged once with last selected item
             self.scene().blockSignals(True)
-            items = [i for i in self.rubberRect.collidingItems() if isinstance(i, Node) and not isinstance(i, CommentNode)]
+            items = [i for i in self.rubberRect.collidingItems() if isinstance(i, Node) and not isinstance(i, commentNode)]
             for item in items[:-1]:
                 item.setSelected(True)
             self.scene().blockSignals(False)

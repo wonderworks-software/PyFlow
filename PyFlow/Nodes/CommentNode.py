@@ -13,10 +13,10 @@ from Qt import QtGui
 from Qt import QtCore
 
 
-class CommentNodeName(NodeName):
-    """doc string for CommentNodeName"""
+class commentNodeName(NodeName):
+    """doc string for commentNodeName"""
     def __init__(self, parent, bUseTextureBg=False, color=Colors.AbsoluteBlack):
-        super(CommentNodeName, self).__init__(parent, bUseTextureBg, color=color)
+        super(commentNodeName, self).__init__(parent, bUseTextureBg, color=color)
         self.color = color
         self.color.setAlpha(80)
         self.setAcceptHoverEvents(True)
@@ -78,9 +78,9 @@ class CommentNodeName(NodeName):
         NodeName.hoverEnterEvent(self, event)
 
 
-class CommentNode(Node, NodeBase):
+class commentNode(Node, NodeBase):
     def __init__(self, name, graph, bUseTextureBg=False, headColor=Colors.AbsoluteBlack):
-        super(CommentNode, self).__init__(name, graph, headColor=headColor)
+        super(commentNode, self).__init__(name, graph, headColor=headColor)
         self.color = Colors.AbsoluteBlack
         self.color.setAlpha(80)
         self.nodesToMove = {}
@@ -150,7 +150,7 @@ class CommentNode(Node, NodeBase):
         self.update()
         self.scene().removeItem(self.label())
         delattr(self, 'label')
-        self.label = weakref.ref(CommentNodeName(self, False, Colors.White))
+        self.label = weakref.ref(commentNodeName(self, False, Colors.White))
         self.label().setPlainText(text)
         self.label().width = self.rect.width()
         self.label().h = labelHeight
@@ -195,7 +195,7 @@ class CommentNode(Node, NodeBase):
             self.bResize = True
 
         self.nodesToMove.clear()
-        for node in [i for i in self.collidingItems() if isinstance(i, Node) and not isinstance(i, CommentNode)]:
+        for node in [i for i in self.collidingItems() if isinstance(i, Node) and not isinstance(i, commentNode)]:
             self.nodesToMove[node] = node.scenePos()
 
     def mouseMoveEvent(self, event):

@@ -3,9 +3,9 @@ from Settings import *
 from Node import Node
 
 
-class Delay(Node, NodeBase):
+class delay(Node, NodeBase):
     def __init__(self, name, graph):
-        super(Delay, self).__init__(name, graph, w=80, spacings=Spacings)
+        super(delay, self).__init__(name, graph, w=80, spacings=Spacings)
         self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute)
         self.delay = self.addInputPin('delay(s)', DataTypes.Float)
         self.out0 = self.addOutputPin('out0', DataTypes.Exec)

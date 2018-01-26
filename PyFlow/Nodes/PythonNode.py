@@ -12,9 +12,9 @@ from types import MethodType
 from collections import OrderedDict
 
 
-class PythonNode(Node, NodeBase):
+class pythonNode(Node, NodeBase):
     def __init__(self, name, graph):
-        super(PythonNode, self).__init__(name, graph)
+        super(pythonNode, self).__init__(name, graph)
         self.menu = QMenu()
         self.actionEdit = self.menu.addAction('edit')
         self.actionEdit.triggered.connect(self.openEditor)

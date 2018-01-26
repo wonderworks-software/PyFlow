@@ -7,9 +7,9 @@ DESC = '''node desc
 '''
 
 
-class RetriggerableDelay(Node, NodeBase):
+class retriggerableDelay(Node, NodeBase):
     def __init__(self, name, graph):
-        super(RetriggerableDelay, self).__init__(name, graph, w=80, spacings=Spacings)
+        super(retriggerableDelay, self).__init__(name, graph, w=80, spacings=Spacings)
         self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute)
         self.delay = self.addInputPin('delay(s)', DataTypes.Float)
         self.out0 = self.addOutputPin('out0', DataTypes.Exec)

@@ -3,9 +3,9 @@ from Settings import *
 from Node import Node
 
 
-class ForLoopWithBreak(Node, NodeBase):
+class forLoopWithBreak(Node, NodeBase):
     def __init__(self, name, graph):
-        super(ForLoopWithBreak, self).__init__(name, graph, w=100, spacings=Spacings)
+        super(forLoopWithBreak, self).__init__(name, graph, w=100, spacings=Spacings)
         self.stop = False
         self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
         self.firstIndex = self.addInputPin('start', DataTypes.Int)
