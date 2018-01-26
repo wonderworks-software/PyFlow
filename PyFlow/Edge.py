@@ -210,30 +210,24 @@ class Edge(QGraphicsPathItem):
         xDistance = p2.x() - p1.x()
         vDistance = p2.y() - p1.y()
 
-        defaultVerticalOffset = 100.0
-        minimumV = min(defaultVerticalOffset, abs(vDistance))
-        maximumV = max(defaultVerticalOffset, abs(vDistance))
-        verticalOffset = 0.0
+        offset = abs(xDistance) * 0.5
+        defOffset = 200
+        if abs(xDistance) < defOffset:
+            offset = defOffset / 2
+
+        if abs(vDistance) < 20:
+            offset = abs(xDistance) * 0.3
 
         multiply = 2
         self.mPath = QtGui.QPainterPath()
         self.mPath.moveTo(p1)
 
-        if xDistance <= 0:
-            if vDistance <= 0:
-                # verticalOffset = -minimumV
-                verticalOffset = 0
-                pass
-            else:
-                # verticalOffset = minimumV
-                verticalOffset = 0
-
         if xDistance < 0:
-            self.cp1 = QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y() + verticalOffset)
-            self.cp2 = QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y() - verticalOffset)
+            self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
+            self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
         else:
-            self.cp2 = QtCore.QPoint(p2.x() - xDistance / multiply, p2.y() - verticalOffset)
-            self.cp1 = QtCore.QPoint(p1.x() + xDistance / multiply, p1.y() + verticalOffset)
+            self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+            self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
 
         self.mPath.cubicTo(self.cp1, self.cp2, p2)
         self.setPath(self.mPath)
