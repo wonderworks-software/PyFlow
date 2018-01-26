@@ -189,7 +189,9 @@ class Node(QGraphicsItem, NodeBase):
     @staticmethod
     def initializeFromFunction(foo, graph):
         meta = foo.__annotations__['meta']
-        returnType, returnDefaultValue = foo.__annotations__['return']
+        returnType = returnDefaultValue = None
+        if foo.__annotations__['return'] is not None:
+            returnType, returnDefaultValue = foo.__annotations__['return']
         nodeType = foo.__annotations__['nodeType']
         fooArgNames = getargspec(foo).args
 

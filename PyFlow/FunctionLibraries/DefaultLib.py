@@ -89,5 +89,5 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'DefaultLib', 'Keywords': []})
-    def arrayToLen(arr=(DataTypes.Array, [])):
+    def arrayLen(arr=(DataTypes.Array, [])):
         return len(arr)

@@ -9,7 +9,12 @@ class Vector4(FunctionLibraryBase):
         super(Vector4, self).__init__()
 
     @staticmethod
-    @implementNode(returns=(DataTypes.FloatVector4, pyrr.Vector4()), nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Vector4', 'Keywords': []})
+    @implementNode(returns=(DataTypes.FloatVector4, pyrr.Vector4()), nodeType=NodeTypes.Pure, meta={'Category': 'Math|Vector4', 'Keywords': []})
     def zeroVector4():
         '''zero vector4'''
         return pyrr.Vector4()
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.String, str(pyrr.Vector4())), meta={'Category': 'Math|Vector4', 'Keywords': []})
+    def vector4ToString(v=(DataTypes.FloatVector4, pyrr.Vector4())):
+        return str(v)
