@@ -507,6 +507,11 @@ class NodeBoxTreeWidget(QTreeWidget):
                 if foo.__annotations__['nodeType'] == NodeTypes.Callable:
                     fooInpTypes.append(DataTypes.Exec)
                     fooOutTypes.append(DataTypes.Exec)
+
+                # consider return type if not None
+                if foo.__annotations__['return'] is not None:
+                    fooOutTypes.append(foo.__annotations__['return'][0])
+
                 for index in range(len(fooArgNames)):
                     dType = foo.__annotations__[fooArgNames[index]]
                     if dType == DataTypes.Reference:
