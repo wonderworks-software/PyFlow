@@ -447,3 +447,13 @@ class MathLib(FunctionLibraryBase):
     def pi():
         '''The mathematical constant = 3.141592, to available precision.'''
         return math.pi
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math', 'Keywords': ['lerp']})
+    def lerpf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), alpha=(DataTypes.Float, 0.0)):
+        return lerp(a, b, clamp(alpha, 0.0, 1.0))
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math', 'Keywords': ['clamp']})
+    def clampf(i=(DataTypes.Float, 0.0), imin=(DataTypes.Float, 0.0), imax=(DataTypes.Float, 0.0)):
+        return clamp(i, imin, imax)
