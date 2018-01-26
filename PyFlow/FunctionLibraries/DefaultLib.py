@@ -19,7 +19,7 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @implementNode(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})
     def cls():
-        '''cls cmd call'''
+        '''cls cmd call.'''
         os.system('cls')
 
     @staticmethod

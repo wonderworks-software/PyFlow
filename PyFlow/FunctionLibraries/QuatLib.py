@@ -203,3 +203,9 @@ class QuatLib(FunctionLibraryBase):
     def quatIsZeroLength(q=(DataTypes.Quaternion, pyrr.Quaternion())):
         '''Checks if a quaternion is zero length.'''
         return pyrr.quaternion.is_zero_length(q)
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.Quaternion, pyrr.Quaternion()), meta={'Category': 'Math|Quaternion', 'Keywords': ['*']})
+    def quatMult(q1=(DataTypes.Quaternion, pyrr.Quaternion()), q2=(DataTypes.Quaternion, pyrr.Quaternion())):
+        '''"*" operator for quaternions.'''
+        return q1 * q2
