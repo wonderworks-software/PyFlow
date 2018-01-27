@@ -204,7 +204,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math', 'Keywords': ['+', 'append']})
     def addf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
-        '''Sum of two flaots.'''
+        '''Sum of two floats.'''
         return a + b
 
     @staticmethod
