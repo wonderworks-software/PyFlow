@@ -184,7 +184,7 @@ class QuatLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Quaternion, pyrr.Quaternion()), meta={'Category': 'Math|Quaternion', 'Keywords': []})
-    def quatPower(q=(DataTypes.Quaternion, pyrr.Quaternion()), exp=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def quatPower(q=(DataTypes.Quaternion, pyrr.Quaternion()), exp=(DataTypes.Float, 0.0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Returns a new Quaternion representing this Quaternion to the power of the exponent. Checks for identify quaternion'''
         try:
             powered = q.power(exp)

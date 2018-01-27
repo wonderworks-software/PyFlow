@@ -34,7 +34,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def factorial(a=(DataTypes.Int, 0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def factorial(a=(DataTypes.Int, 0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return x factorial. Raises ValueError if x is not integral or is negative.'''
         try:
             f = math.factorial(a)
@@ -64,7 +64,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=None, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def frexp(a=(DataTypes.Float, 0.0), m=(DataTypes.Reference, DataTypes.Float), e=(DataTypes.Reference, DataTypes.Int)):
+    def frexp(a=(DataTypes.Float, 0.0), m=(DataTypes.Reference, (DataTypes.Float, 0.0)), e=(DataTypes.Reference, (DataTypes.Int, 0))):
         '''Return the mantissa and exponent of x as the pair (m, e). m is a float and e is an integer such that x == m * 2**e exactly.'''
         t = math.frexp(a)
         m.setData(t[0])
@@ -72,7 +72,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def fsum(arr=(DataTypes.Array, []), result=(DataTypes.Reference, DataTypes.Bool)):
+    def fsum(arr=(DataTypes.Array, []), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return an accurate floating point sum of values in the iterable. Avoids loss of precision by tracking multiple intermediate partial sums.'''
         try:
             s = math.fsum([float(i) for i in arr])
@@ -102,7 +102,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=None, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def modf(a=(DataTypes.Int, 0), f=(DataTypes.Reference, DataTypes.Float), i=(DataTypes.Reference, DataTypes.Int)):
+    def modf(a=(DataTypes.Int, 0), f=(DataTypes.Reference, (DataTypes.Float, 0.0)), i=(DataTypes.Reference, (DataTypes.Int, 0))):
         '''Return the fractional and integer parts of x. Both results carry the sign of x and are floats.'''
         t = math.modf(a)
         f.setData(t[0])
@@ -110,7 +110,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=None, meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
-    def fmodf(a=(DataTypes.Float, 0), f=(DataTypes.Reference, DataTypes.Float), i=(DataTypes.Reference, DataTypes.Int)):
+    def fmodf(a=(DataTypes.Float, 0), f=(DataTypes.Reference, (DataTypes.Float, 0.0)), i=(DataTypes.Reference, (DataTypes.Int, 0))):
         '''Return the fractional and integer parts of x. Both results carry the sign of x and are floats.'''
         t = math.modf(a)
         f.setData(t[0])
@@ -136,7 +136,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def log(a=(DataTypes.Float, 1.0), base=(DataTypes.Float, math.e), result=(DataTypes.Reference, DataTypes.Bool)):
+    def log(a=(DataTypes.Float, 1.0), base=(DataTypes.Float, math.e), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''With one argument, return the natural logarithm of x (to base e).\nWith two arguments, return the logarithm of x to the given base, calculated as log(x)/log(base).'''
         try:
             result.setData(True)
@@ -147,7 +147,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def log1p(a=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def log1p(a=(DataTypes.Float, 1.0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return the natural logarithm of 1+x (base e). The result is calculated in a way which is accurate for x near zero.'''
         try:
             result.setData(True)
@@ -158,7 +158,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def log10(a=(DataTypes.Float, 1.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def log10(a=(DataTypes.Float, 1.0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return the base-10 logarithm of x. This is usually more accurate than log(x, 10).'''
         try:
             result.setData(True)
@@ -169,7 +169,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def power(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def power(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return x raised to the power y.'''
         try:
             result.setData(True)
@@ -180,7 +180,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Power and logarithmic functions', 'Keywords': []})
-    def sqrt(a=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def sqrt(a=(DataTypes.Float, 0.0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return the square root of x.'''
         try:
             result.setData(True)
@@ -191,7 +191,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bult-in functions', 'Keywords': ['+']})
-    def Sum(arr=(DataTypes.Array, []), result=(DataTypes.Reference, DataTypes.Bool)):
+    def Sum(arr=(DataTypes.Array, []), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Sums start and the items of an iterable from left to right and returns the total.'''
         try:
             s = math.fsum([int(i) for i in arr])
@@ -227,7 +227,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math', 'Keywords': ['/']})
-    def divide(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def divide(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Integer devision.'''
         try:
             d = a / b
@@ -239,7 +239,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math', 'Keywords': ['/']})
-    def dividef(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def dividef(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Float devision.'''
         try:
             d = a / b
@@ -335,20 +335,20 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
-    def randint(start=(DataTypes.Int, 0), end=(DataTypes.Int, 10), Result=(DataTypes.Reference, DataTypes.Int)):
+    def randint(start=(DataTypes.Int, 0), end=(DataTypes.Int, 10), Result=(DataTypes.Reference, (DataTypes.Int, 0))):
         '''Return a random integer N such that a <= N <= b.'''
         Result.setData(random.randint(start, end))
 
     @staticmethod
     @implementNode(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
-    def shuffle(seq=(DataTypes.Array, []), Result=(DataTypes.Reference, DataTypes.Array)):
+    def shuffle(seq=(DataTypes.Array, []), Result=(DataTypes.Reference, (DataTypes.Array, []))):
         '''Shuffle the sequence x in place.'''
         random.shuffle(seq)
         Result.setData(seq)
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def acosh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def acosh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return the inverse hyperbolic cosine of x.'''
         try:
             Result.setData(True)
@@ -365,7 +365,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def atanh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def atanh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return the inverse hyperbolic tangent of x.'''
         try:
             Result.setData(True)
@@ -376,7 +376,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def cosh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def cosh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return the hyperbolic cosine of x.'''
         try:
             Result.setData(True)
@@ -387,7 +387,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Hyperbolic functions', 'Keywords': []})
-    def sinh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def sinh(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return the hyperbolic sine of x.'''
         try:
             Result.setData(True)
@@ -416,7 +416,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Special functions', 'Keywords': []})
-    def gamma(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def gamma(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return the Gamma function at x.'''
         try:
             Result.setData(True)
@@ -427,7 +427,7 @@ class MathLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Special functions', 'Keywords': []})
-    def lgamma(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, DataTypes.Bool)):
+    def lgamma(a=(DataTypes.Float, 0.0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Return the natural logarithm of the absolute value of the Gamma function at x.'''
         try:
             Result.setData(True)

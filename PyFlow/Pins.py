@@ -74,9 +74,6 @@ class _Pin(QGraphicsWidget, PinBase):
     def call(self):
         PinBase.call(self)
 
-    def defaultValue(self):
-        return None
-
     def kill(self):
         PinBase.kill(self)
         self.disconnectAll()
@@ -224,6 +221,7 @@ class FloatPin(_Pin):
     """doc string for FloatPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(FloatPin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue(0.0)
 
     @staticmethod
     def color():
@@ -231,9 +229,6 @@ class FloatPin(_Pin):
 
     def supportedDataTypes(self):
         return (DataTypes.Float, DataTypes.Int)
-
-    def defaultValue(self):
-        return 0.0
 
     def setData(self, data):
         try:
@@ -247,6 +242,7 @@ class IntPin(_Pin):
     """doc string for IntPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(IntPin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue(0)
 
     @staticmethod
     def color():
@@ -254,9 +250,6 @@ class IntPin(_Pin):
 
     def supportedDataTypes(self):
         return (DataTypes.Int, DataTypes.Float)
-
-    def defaultValue(self):
-        return 0
 
     def setData(self, data):
         try:
@@ -289,9 +282,6 @@ class ExecPin(_Pin):
     def color():
         return Colors.Exec
 
-    def defaultValue(self):
-        return None
-
     def setData(self, data):
         pass
 
@@ -300,6 +290,7 @@ class StringPin(_Pin):
     """doc string for StringPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(StringPin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue("")
 
     def supportedDataTypes(self):
         return (DataTypes.String,)
@@ -307,9 +298,6 @@ class StringPin(_Pin):
     @staticmethod
     def color():
         return Colors.String
-
-    def defaultValue(self):
-        return ""
 
     def setData(self, data):
         try:
@@ -323,6 +311,7 @@ class ListPin(_Pin):
     """doc string for ListPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(ListPin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue([])
 
     def supportedDataTypes(self):
         return (DataTypes.Array,)
@@ -330,9 +319,6 @@ class ListPin(_Pin):
     @staticmethod
     def color():
         return Colors.Array
-
-    def defaultValue(self):
-        return []
 
     def setData(self, data):
         if isinstance(data, list):
@@ -346,6 +332,7 @@ class BoolPin(_Pin):
     """doc string for BoolPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(BoolPin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue(False)
 
     def supportedDataTypes(self):
         return (DataTypes.Bool,)
@@ -353,9 +340,6 @@ class BoolPin(_Pin):
     @staticmethod
     def color():
         return Colors.Bool
-
-    def defaultValue(self):
-        return False
 
     def setData(self, data):
         try:
@@ -369,6 +353,7 @@ class FloatVector3Pin(_Pin):
     """doc string for FloatVector3Pin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(FloatVector3Pin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue(pyrr.Vector3())
 
     def supportedDataTypes(self):
         return (DataTypes.FloatVector3,)
@@ -376,9 +361,6 @@ class FloatVector3Pin(_Pin):
     @staticmethod
     def color():
         return Colors.FloatVector3
-
-    def defaultValue(self):
-        return pyrr.Vector3()
 
     def serialize(self):
         data = _Pin.serialize(self)
@@ -399,6 +381,7 @@ class FloatVector4Pin(_Pin):
     """doc string for FloatVector4Pin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(FloatVector4Pin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue(pyrr.Vector4())
 
     def supportedDataTypes(self):
         return (DataTypes.FloatVector4,)
@@ -406,9 +389,6 @@ class FloatVector4Pin(_Pin):
     @staticmethod
     def color():
         return Colors.FloatVector4
-
-    def defaultValue(self):
-        return pyrr.Vector4()
 
     def serialize(self):
         data = _Pin.serialize(self)
@@ -429,6 +409,7 @@ class QuatPin(_Pin):
     """doc string for QuatPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(QuatPin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue(pyrr.Quaternion())
 
     def supportedDataTypes(self):
         return (DataTypes.Quaternion,)
@@ -443,9 +424,6 @@ class QuatPin(_Pin):
         data = _Pin.serialize(self)
         data['value'] = self.currentData().xyzw.tolist()
         return data
-
-    def defaultValue(self):
-        return pyrr.Quaternion()
 
     def setData(self, data):
         if isinstance(data, pyrr.Quaternion):
@@ -464,6 +442,7 @@ class Matrix33Pin(_Pin):
     """doc string for Matrix33Pin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(Matrix33Pin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue(pyrr.Matrix33())
 
     def supportedDataTypes(self):
         return (DataTypes.Matrix33,)
@@ -471,9 +450,6 @@ class Matrix33Pin(_Pin):
     @staticmethod
     def color():
         return Colors.Matrix33
-
-    def defaultValue(self):
-        return pyrr.Matrix33()
 
     def serialize(self):
         data = _Pin.serialize(self)
@@ -495,6 +471,7 @@ class Matrix44Pin(_Pin):
     """doc string for Matrix44Pin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(Matrix44Pin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.setDefaultValue(pyrr.Matrix44())
 
     def supportedDataTypes(self):
         return (DataTypes.Matrix44,)
@@ -502,9 +479,6 @@ class Matrix44Pin(_Pin):
     @staticmethod
     def color():
         return Colors.Matrix44
-
-    def defaultValue(self):
-        return pyrr.Matrix44()
 
     def serialize(self):
         data = _Pin.serialize(self)

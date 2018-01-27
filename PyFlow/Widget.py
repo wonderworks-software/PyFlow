@@ -169,7 +169,7 @@ class {0}(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={{'Category': 'CategoryName', 'Keywords': ['/']}})
-    def divide(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0), result=(DataTypes.Reference, DataTypes.Bool)):
+    def divide(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Integer devision.'''
         try:
             d = A / B
@@ -514,8 +514,10 @@ class NodeBoxTreeWidget(QTreeWidget):
 
                 for index in range(len(fooArgNames)):
                     dType = foo.__annotations__[fooArgNames[index]]
-                    if dType == DataTypes.Reference:
-                        fooOutTypes.append(dType)
+                    # if tuple - this means ref pin type (output) + default value
+                    # eg: (3, True) - bool with True default val
+                    if isinstance(dType, tuple):
+                        fooOutTypes.append(dType[0])
                     else:
                         fooInpTypes.append(dType)
 

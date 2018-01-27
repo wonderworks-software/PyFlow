@@ -5,6 +5,7 @@ import inspect
 import keyword
 from collections import OrderedDict
 import itertools
+from copy import deepcopy
 
 
 class ISerializable(object):
@@ -80,6 +81,7 @@ class PinBase(IPin, ISerializable):
         self.object_type = ObjectTypes.Pin
         self._dataType = None
         self._data = None
+        self._defaultValue = None
         self.dataType = dataType
 
         self.affects = []
@@ -121,7 +123,7 @@ class PinBase(IPin, ISerializable):
 
     def currentData(self):
         if self._data is None:
-            return getDefaultDataValue(self._dataType)
+            return self._defaultValue
         return self._data
 
     def pinConnected(self, other):
@@ -181,7 +183,13 @@ class PinBase(IPin, ISerializable):
         pass
 
     def defaultValue(self):
-        return None
+        return self._defaultValue
+
+    def setDefaultValue(self, val):
+        # In python, all user-defined classes are mutable
+        # So make sure to store sepatrate copy of value
+        # For example if this is a Matrix, default value will be changed each time data has been set in original Matrix
+        self._defaultValue = deepcopy(val)
 
     def setData(self, data):
         self.setClean()

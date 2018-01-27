@@ -58,9 +58,15 @@ class DefaultLib(FunctionLibraryBase):
         return bool(i)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Conversion', 'Keywords': []})
+    @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Conversion', 'Keywords': []})
     def floatToInt(f=(DataTypes.Float, 0.0)):
         return int(f)
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Conversion', 'Keywords': []})
+    def clock():
+        '''Returns the CPU time or real time since the start of the process or since the first call of clock().'''
+        return time.clock()
 
     @staticmethod
     @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Conversion', 'Keywords': []})

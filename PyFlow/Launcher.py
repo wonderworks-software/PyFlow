@@ -56,7 +56,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionHistory.triggered.connect(self.toggleHistory)
         self.dockWidgetUndoStack.setVisible(False)
 
-        self.dockWidgetBottom.hide()
         self.setMouseTracking(True)
 
         self.variablesWidget = VariablesWidget(self, self.G)

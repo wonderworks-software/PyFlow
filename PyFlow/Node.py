@@ -220,6 +220,7 @@ class Node(QGraphicsItem, NodeBase):
         if returnType is not None:
             p = inst.addOutputPin('out', returnType)
             p.setData(returnDefaultValue)
+            p.setDefaultValue(returnDefaultValue)
 
         # this is array of 'references' outputs will be created for
         refs = []
@@ -228,12 +229,15 @@ class Node(QGraphicsItem, NodeBase):
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
             dataType = foo.__annotations__[fooArgNames[index]]
-            if dataType == DataTypes.Reference:
-                outRef = inst.addOutputPin(fooArgNames[index], foo.__defaults__[index])
+            # tuple means this is reference pin with default value eg - (dataType, defaultValue)
+            if isinstance(dataType, tuple):
+                outRef = inst.addOutputPin(fooArgNames[index], dataType[0])
+                outRef.setData(dataType[1])
                 refs.append(outRef)
             else:
                 inp = inst.addInputPin(fooArgNames[index], dataType)
                 inp.setData(foo.__defaults__[index])
+                inp.setDefaultValue(foo.__defaults__[index])
 
         # all inputs affects on all outputs
         for i in inst.inputs.values():

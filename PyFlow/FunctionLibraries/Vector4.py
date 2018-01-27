@@ -117,7 +117,7 @@ class Vector4(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.FloatVector4, pyrr.Vector4()), meta={'Category': 'Math|Vector4', 'Keywords': ['vector4']})
-    def v4Normalize(v=(DataTypes.FloatVector4, pyrr.Vector4()), result=(DataTypes.Reference, DataTypes.Bool)):
+    def v4Normalize(v=(DataTypes.FloatVector4, pyrr.Vector4()), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Normalizes a single vector to unit length.\nIf zero-length - returns original one.'''
         try:
             res = pyrr.Vector4(pyrr.vector.normalize(v))

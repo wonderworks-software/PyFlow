@@ -32,10 +32,21 @@ def implementNode(func=None, returns=empty, meta={'Category': 'Default', 'Keywor
             for (i, name) in enumerate(spec.args[-nanno:]):
                 if len(defaults[i]) < 1 or defaults[i][0] is empty:
                     continue
-                func.__annotations__[name] = defaults[i][0]
+                if defaults[i][0] == DataTypes.Reference:
+                    func.__annotations__[name] = defaults[i][1]
+                else:
+                    func.__annotations__[name] = defaults[i][0]
 
-            defaults = tuple((d[1] for d in func.__defaults__ if len(d) > 1))
-            func.__defaults__ = defaults or None
+            # defaults = tuple((d[1] for d in func.__defaults__ if len(d) > 1))
+            customDefaults = []
+            for d in func.__defaults__:
+                if len(d) > 1:
+                    if isinstance(d[1], tuple):
+                        customDefaults.append(d[1][1])
+                    else:
+                        customDefaults.append(d[1])
+            # func.__defaults__ = defaults or None
+            func.__defaults__ = tuple(customDefaults) or None
         return func
 
     if returns == empty:
