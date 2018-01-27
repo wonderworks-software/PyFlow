@@ -13,6 +13,7 @@ from AbstractGraph import PinBase
 import FloatVector3InputWidget_ui
 import FloatVector4InputWidget_ui
 import Matrix33InputWidget_ui
+import Matrix44InputWidget_ui
 
 
 FLOAT_SINGLE_STEP = 0.01
@@ -285,6 +286,137 @@ class Matrix33InputWidget(PinInputWidgetBase, QWidget, Matrix33InputWidget_ui.Ui
         self.dsbm33.setValue(data.m33)
 
 
+class Matrix44InputWidget(PinInputWidgetBase, QWidget, Matrix44InputWidget_ui.Ui_Form):
+    """doc string for Matrix44InputWidget"""
+    def __init__(self, parent=None, **kwds):
+        super(Matrix44InputWidget, self).__init__(**kwds)
+        self.setupUi(self)
+        self._configSpinBoxes()
+
+        self.dsbm11.valueChanged.connect(self.m11Changed)
+        self.dsbm12.valueChanged.connect(self.m12Changed)
+        self.dsbm13.valueChanged.connect(self.m13Changed)
+        self.dsbm14.valueChanged.connect(self.m14Changed)
+
+        self.dsbm21.valueChanged.connect(self.m21Changed)
+        self.dsbm22.valueChanged.connect(self.m22Changed)
+        self.dsbm23.valueChanged.connect(self.m23Changed)
+        self.dsbm24.valueChanged.connect(self.m24Changed)
+
+        self.dsbm31.valueChanged.connect(self.m31Changed)
+        self.dsbm32.valueChanged.connect(self.m32Changed)
+        self.dsbm33.valueChanged.connect(self.m33Changed)
+        self.dsbm34.valueChanged.connect(self.m34Changed)
+
+        self.dsbm41.valueChanged.connect(self.m41Changed)
+        self.dsbm42.valueChanged.connect(self.m42Changed)
+        self.dsbm43.valueChanged.connect(self.m43Changed)
+        self.dsbm44.valueChanged.connect(self.m44Changed)
+
+        self.pbReset.clicked.connect(self.OnResetToDefaults)
+
+    def _configSpinBoxes(self):
+        ls = [self.dsbm11, self.dsbm12, self.dsbm13, self.dsbm14,
+              self.dsbm21, self.dsbm22, self.dsbm23, self.dsbm24,
+              self.dsbm31, self.dsbm32, self.dsbm33, self.dsbm34,
+              self.dsbm41, self.dsbm42, self.dsbm43, self.dsbm44]
+        for sb in ls:
+            sb.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
+            sb.setSingleStep(FLOAT_SINGLE_STEP)
+            sb.setDecimals(FLOAT_DECIMALS)
+
+    def OnResetToDefaults(self):
+        d = self.pin().defaultValue()
+        self.dsbm11.setValue(d.m11)
+        self.dsbm12.setValue(d.m12)
+        self.dsbm13.setValue(d.m13)
+        self.dsbm14.setValue(d.m14)
+
+        self.dsbm21.setValue(d.m21)
+        self.dsbm22.setValue(d.m22)
+        self.dsbm23.setValue(d.m23)
+        self.dsbm24.setValue(d.m24)
+
+        self.dsbm31.setValue(d.m31)
+        self.dsbm32.setValue(d.m32)
+        self.dsbm33.setValue(d.m33)
+        self.dsbm34.setValue(d.m34)
+
+        self.dsbm41.setValue(d.m41)
+        self.dsbm42.setValue(d.m42)
+        self.dsbm43.setValue(d.m43)
+        self.dsbm44.setValue(d.m44)
+
+    def m11Changed(self, val):
+        self.pin().currentData().m11 = val
+
+    def m12Changed(self, val):
+        self.pin().currentData().m12 = val
+
+    def m13Changed(self, val):
+        self.pin().currentData().m13 = val
+
+    def m14Changed(self, val):
+        self.pin().currentData().m14 = val
+
+    def m21Changed(self, val):
+        self.pin().currentData().m21 = val
+
+    def m22Changed(self, val):
+        self.pin().currentData().m22 = val
+
+    def m23Changed(self, val):
+        self.pin().currentData().m23 = val
+
+    def m24Changed(self, val):
+        self.pin().currentData().m24 = val
+
+    def m31Changed(self, val):
+        self.pin().currentData().m31 = val
+
+    def m32Changed(self, val):
+        self.pin().currentData().m32 = val
+
+    def m33Changed(self, val):
+        self.pin().currentData().m33 = val
+
+    def m34Changed(self, val):
+        self.pin().currentData().m34 = val
+
+    def m41Changed(self, val):
+        self.pin().currentData().m41 = val
+
+    def m42Changed(self, val):
+        self.pin().currentData().m42 = val
+
+    def m43Changed(self, val):
+        self.pin().currentData().m43 = val
+
+    def m44Changed(self, val):
+        self.pin().currentData().m44 = val
+
+    def setData(self, data):
+        self.dsbm11.setValue(data.m11)
+        self.dsbm12.setValue(data.m12)
+        self.dsbm13.setValue(data.m13)
+        self.dsbm14.setValue(data.m14)
+
+        self.dsbm21.setValue(data.m21)
+        self.dsbm22.setValue(data.m22)
+        self.dsbm23.setValue(data.m23)
+        self.dsbm24.setValue(data.m24)
+
+        self.dsbm31.setValue(data.m31)
+        self.dsbm32.setValue(data.m32)
+        self.dsbm33.setValue(data.m33)
+        self.dsbm34.setValue(data.m34)
+
+        self.dsbm41.setValue(data.m41)
+        self.dsbm42.setValue(data.m42)
+        self.dsbm43.setValue(data.m43)
+        self.dsbm44.setValue(data.m44)
+
+
 def getPinWidget(pin):
     '''
     fabric method
@@ -305,4 +437,6 @@ def getPinWidget(pin):
         return FloatVector4InputWidget(pin=pin)
     if pin.dataType == DataTypes.Matrix33:
         return Matrix33InputWidget(pin=pin)
+    if pin.dataType == DataTypes.Matrix44:
+        return Matrix44InputWidget(pin=pin)
     return None
