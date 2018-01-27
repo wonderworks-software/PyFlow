@@ -4,13 +4,13 @@ import warnings
 import numpy as np
 from numpy.core import (array, arange, atleast_1d, atleast_2d, atleast_3d,
                         block, vstack, hstack, newaxis, concatenate, stack)
-from numpy.testing import (TestCase, assert_, assert_raises,
+from numpy.testing import (assert_, assert_raises,
                            assert_array_equal, assert_equal, run_module_suite,
                            assert_raises_regex, assert_almost_equal)
 
 from numpy.compat import long
 
-class TestAtleast1d(TestCase):
+class TestAtleast1d(object):
     def test_0D_array(self):
         a = array(1)
         b = array(2)
@@ -51,7 +51,7 @@ class TestAtleast1d(TestCase):
         assert_(atleast_1d([[2, 3], [4, 5]]).shape == (2, 2))
 
 
-class TestAtleast2d(TestCase):
+class TestAtleast2d(object):
     def test_0D_array(self):
         a = array(1)
         b = array(2)
@@ -90,7 +90,7 @@ class TestAtleast2d(TestCase):
         assert_(atleast_2d([[[3, 1], [4, 5]], [[3, 5], [1, 2]]]).shape == (2, 2, 2))
 
 
-class TestAtleast3d(TestCase):
+class TestAtleast3d(object):
     def test_0D_array(self):
         a = array(1)
         b = array(2)
@@ -122,7 +122,7 @@ class TestAtleast3d(TestCase):
         assert_array_equal(res, desired)
 
 
-class TestHstack(TestCase):
+class TestHstack(object):
     def test_non_iterable(self):
         assert_raises(TypeError, hstack, 1)
 
@@ -151,7 +151,7 @@ class TestHstack(TestCase):
         assert_array_equal(res, desired)
 
 
-class TestVstack(TestCase):
+class TestVstack(object):
     def test_non_iterable(self):
         assert_raises(TypeError, vstack, 1)
 
@@ -187,7 +187,7 @@ class TestVstack(TestCase):
         assert_array_equal(res, desired)
 
 
-class TestConcatenate(TestCase):
+class TestConcatenate(object):
     def test_exceptions(self):
         # test axis must be in bounds
         for ndim in [1, 2, 3]:
@@ -208,8 +208,8 @@ class TestConcatenate(TestCase):
             np.concatenate((a, b), axis=axis[0])  # OK
             assert_raises(ValueError, np.concatenate, (a, b), axis=axis[1])
             assert_raises(ValueError, np.concatenate, (a, b), axis=axis[2])
-            a = np.rollaxis(a, -1)
-            b = np.rollaxis(b, -1)
+            a = np.moveaxis(a, -1, 0)
+            b = np.moveaxis(b, -1, 0)
             axis.append(axis.pop(0))
 
         # No arrays to concatenate raises ValueError
@@ -229,6 +229,12 @@ class TestConcatenate(TestCase):
         d = array(['0.0', '1.0', '2.0', '3.0',
                    '0', '1', '2', 'x'])
         assert_array_equal(r, d)
+
+        out = np.zeros(a.size + len(b))
+        r = np.concatenate((a, b), axis=None)
+        rout = np.concatenate((a, b), axis=None, out=out)
+        assert_(out is rout)
+        assert_equal(r, rout)
 
     def test_large_concatenate_axis_None(self):
         # When no axis is given, concatenate uses flattened versions.
@@ -277,6 +283,34 @@ class TestConcatenate(TestCase):
         assert_array_equal(concatenate((a0, a1, a2), 2), res)
         assert_array_equal(concatenate((a0, a1, a2), -1), res)
         assert_array_equal(concatenate((a0.T, a1.T, a2.T), 0), res.T)
+
+        out = res.copy()
+        rout = concatenate((a0, a1, a2), 2, out=out)
+        assert_(out is rout)
+        assert_equal(res, rout)
+
+    def test_bad_out_shape(self):
+        a = array([1, 2])
+        b = array([3, 4])
+
+        assert_raises(ValueError, concatenate, (a, b), out=np.empty(5))
+        assert_raises(ValueError, concatenate, (a, b), out=np.empty((4,1)))
+        assert_raises(ValueError, concatenate, (a, b), out=np.empty((1,4)))
+        concatenate((a, b), out=np.empty(4))
+
+    def test_out_dtype(self):
+        out = np.empty(4, np.float32)
+        res = concatenate((array([1, 2]), array([3, 4])), out=out)
+        assert_(out is res)
+
+        out = np.empty(4, np.complex64)
+        res = concatenate((array([0.1, 0.2]), array([0.3, 0.4])), out=out)
+        assert_(out is res)
+
+        # invalid cast
+        out = np.empty(4, np.int32)
+        assert_raises(TypeError, concatenate,
+            (array([0.1, 0.2]), array([0.3, 0.4])), out=out)
 
 
 def test_stack():
@@ -333,7 +367,7 @@ def test_stack():
                         stack, [m, m])
 
 
-class TestBlock(TestCase):
+class TestBlock(object):
     def test_block_simple_row_wise(self):
         a_2d = np.ones((2, 2))
         b_2d = 2 * a_2d
@@ -525,6 +559,28 @@ class TestBlock(TestCase):
     def test_tuple(self):
         assert_raises_regex(TypeError, 'tuple', np.block, ([1, 2], [3, 4]))
         assert_raises_regex(TypeError, 'tuple', np.block, [(1, 2), (3, 4)])
+
+    def test_different_ndims(self):
+        a = 1.
+        b = 2 * np.ones((1, 2))
+        c = 3 * np.ones((1, 1, 3))
+
+        result = np.block([a, b, c])
+        expected = np.array([[[1., 2., 2., 3., 3., 3.]]])
+
+        assert_equal(result, expected)
+
+    def test_different_ndims_depths(self):
+        a = 1.
+        b = 2 * np.ones((1, 2))
+        c = 3 * np.ones((1, 2, 3))
+
+        result = np.block([[a, b], [c]])
+        expected = np.array([[[1., 2., 2.],
+                              [3., 3., 3.],
+                              [3., 3., 3.]]])
+
+        assert_equal(result, expected)
 
 
 if __name__ == "__main__":

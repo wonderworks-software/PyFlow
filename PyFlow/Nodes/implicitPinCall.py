@@ -31,7 +31,7 @@ class implicitPinCall(Node):
 
     @staticmethod
     def description():
-        return 'Implicit execution pin call by provided uuid.'
+        return 'Implicit execution pin call by provided uuid.\nUse this when pins are far from each other.'
 
     def OnFindPin(self):
         uidStr = self.uidInp.getData()

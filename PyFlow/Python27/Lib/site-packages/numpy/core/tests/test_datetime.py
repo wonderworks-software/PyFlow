@@ -6,7 +6,7 @@ import numpy
 import numpy as np
 import datetime
 from numpy.testing import (
-    TestCase, run_module_suite, assert_, assert_equal, assert_raises,
+    run_module_suite, assert_, assert_equal, assert_raises,
     assert_warns, dec, suppress_warnings
 )
 
@@ -18,7 +18,7 @@ except ImportError:
     _has_pytz = False
 
 
-class TestDateTime(TestCase):
+class TestDateTime(object):
     def test_datetime_dtype_creation(self):
         for unit in ['Y', 'M', 'W', 'D',
                      'h', 'm', 's', 'ms', 'us',
@@ -518,31 +518,38 @@ class TestDateTime(TestCase):
     def test_datetime_string_conversion(self):
         a = ['2011-03-16', '1920-01-01', '2013-05-19']
         str_a = np.array(a, dtype='S')
+        uni_a = np.array(a, dtype='U')
         dt_a = np.array(a, dtype='M')
-        str_b = np.empty_like(str_a)
-        dt_b = np.empty_like(dt_a)
 
         # String to datetime
         assert_equal(dt_a, str_a.astype('M'))
         assert_equal(dt_a.dtype, str_a.astype('M').dtype)
+        dt_b = np.empty_like(dt_a)
         dt_b[...] = str_a
         assert_equal(dt_a, dt_b)
+
         # Datetime to string
         assert_equal(str_a, dt_a.astype('S0'))
+        str_b = np.empty_like(str_a)
         str_b[...] = dt_a
         assert_equal(str_a, str_b)
 
-        # Convert the 'S' to 'U'
-        str_a = str_a.astype('U')
-        str_b = str_b.astype('U')
-
         # Unicode to datetime
-        assert_equal(dt_a, str_a.astype('M'))
-        assert_equal(dt_a.dtype, str_a.astype('M').dtype)
-        dt_b[...] = str_a
+        assert_equal(dt_a, uni_a.astype('M'))
+        assert_equal(dt_a.dtype, uni_a.astype('M').dtype)
+        dt_b = np.empty_like(dt_a)
+        dt_b[...] = uni_a
         assert_equal(dt_a, dt_b)
+
         # Datetime to unicode
-        assert_equal(str_a, dt_a.astype('U'))
+        assert_equal(uni_a, dt_a.astype('U'))
+        uni_b = np.empty_like(uni_a)
+        uni_b[...] = dt_a
+        assert_equal(uni_a, uni_b)
+
+        # Datetime to long string - gh-9712
+        assert_equal(str_a, dt_a.astype((np.string_, 128)))
+        str_b = np.empty(str_a.shape, dtype=(np.string_, 128))
         str_b[...] = dt_a
         assert_equal(str_a, str_b)
 
@@ -558,7 +565,7 @@ class TestDateTime(TestCase):
 
         # Check that one NaT doesn't corrupt subsequent entries
         a = np.array(['2010', 'NaT', '2030']).astype('M')
-        assert_equal(str(a), "['2010' 'NaT' '2030']")
+        assert_equal(str(a), "['2010'  'NaT' '2030']")
 
     def test_timedelta_array_str(self):
         a = np.array([-1, 0, 100], dtype='m')
@@ -1131,7 +1138,19 @@ class TestDateTime(TestCase):
             assert_(np.not_equal(dt_other, dt_nat))
             assert_(np.not_equal(td_nat, td_other))
             assert_(np.not_equal(td_other, td_nat))
-            self.assertEqual(len(sup.log), 0)
+            assert_equal(len(sup.log), 0)
+
+    def test_datetime_futurewarning_once_nat(self):
+        # Test that the futurewarning is only given once per inner loop
+        arr1 = np.array(['NaT', 'NaT', '2000-01-01'] * 2, dtype='M8[s]')
+        arr2 = np.array(['NaT', '2000-01-01', 'NaT'] * 2, dtype='M8[s]')
+        # All except less, because for less it can't be wrong (NaT is min)
+        for op in [np.equal, np.less, np.less_equal,
+                   np.greater, np.greater_equal]:
+            with suppress_warnings() as sup:
+                rec = sup.record(FutureWarning, ".*NAT")
+                op(arr1, arr2)
+                assert_(len(rec) == 1, "failed for {}".format(op))
 
     def test_datetime_minmax(self):
         # The metadata of the result should become the GCD
@@ -1227,10 +1246,10 @@ class TestDateTime(TestCase):
 
     def test_divisor_conversion_fs(self):
         assert_(np.dtype('M8[fs/100]') == np.dtype('M8[10as]'))
-        self.assertRaises(ValueError, lambda: np.dtype('M8[3fs/10000]'))
+        assert_raises(ValueError, lambda: np.dtype('M8[3fs/10000]'))
 
     def test_divisor_conversion_as(self):
-        self.assertRaises(ValueError, lambda: np.dtype('M8[as/10]'))
+        assert_raises(ValueError, lambda: np.dtype('M8[as/10]'))
 
     def test_string_parser_variants(self):
         # Allow space instead of 'T' between date and time
@@ -1944,10 +1963,10 @@ class TestDateTime(TestCase):
         for t in np.typecodes["All"]:
             if t in np.typecodes["Datetime"]:
                 continue
-            assert_raises(ValueError, np.isnat, np.zeros(10, t))
+            assert_raises(TypeError, np.isnat, np.zeros(10, t))
 
 
-class TestDateTimeData(TestCase):
+class TestDateTimeData(object):
 
     def test_basic(self):
         a = np.array(['1980-03-23'], dtype=np.datetime64)

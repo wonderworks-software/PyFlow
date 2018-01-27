@@ -6,6 +6,7 @@ from __future__ import division, absolute_import, print_function
 from numpy.core.numeric import (
     absolute, asanyarray, arange, zeros, greater_equal, multiply, ones,
     asarray, where, int8, int16, int32, int64, empty, promote_types, diagonal,
+    nonzero
     )
 from numpy.core import iinfo, transpose
 
@@ -136,7 +137,7 @@ def flipud(m):
     return m[::-1, ...]
 
 
-def eye(N, M=None, k=0, dtype=float):
+def eye(N, M=None, k=0, dtype=float, order='C'):
     """
     Return a 2-D array with ones on the diagonal and zeros elsewhere.
 
@@ -152,6 +153,11 @@ def eye(N, M=None, k=0, dtype=float):
       to a lower diagonal.
     dtype : data-type, optional
       Data-type of the returned array.
+    order : {'C', 'F'}, optional
+        Whether the output should be stored in row-major (C-style) or
+        column-major (Fortran-style) order in memory.
+
+        .. versionadded:: 1.14.0
 
     Returns
     -------
@@ -177,7 +183,7 @@ def eye(N, M=None, k=0, dtype=float):
     """
     if M is None:
         M = N
-    m = zeros((N, M), dtype=dtype)
+    m = zeros((N, M), dtype=dtype, order=order)
     if k >= M:
         return m
     if k >= 0:
@@ -717,7 +723,7 @@ def mask_indices(n, mask_func, k=0):
     """
     m = ones((n, n), int)
     a = mask_func(m, k)
-    return where(a != 0)
+    return nonzero(a != 0)
 
 
 def tril_indices(n, k=0, m=None):
@@ -797,7 +803,7 @@ def tril_indices(n, k=0, m=None):
            [-10, -10, -10, -10]])
 
     """
-    return where(tri(n, m, k=k, dtype=bool))
+    return nonzero(tri(n, m, k=k, dtype=bool))
 
 
 def tril_indices_from(arr, k=0):
@@ -907,7 +913,7 @@ def triu_indices(n, k=0, m=None):
            [ 12,  13,  14,  -1]])
 
     """
-    return where(~tri(n, m, k=k-1, dtype=bool))
+    return nonzero(~tri(n, m, k=k-1, dtype=bool))
 
 
 def triu_indices_from(arr, k=0):

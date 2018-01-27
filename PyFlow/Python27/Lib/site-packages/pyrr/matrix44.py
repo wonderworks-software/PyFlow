@@ -10,6 +10,8 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 from . import matrix33
 from . import vector
+from . import vector3
+from . import quaternion
 from .utils import all_parameters_as_numpy_arrays, parameters_as_numpy_arrays
 
 
@@ -488,3 +490,28 @@ def inverse(m):
     .. seealso:: http://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.inv.html
     """
     return np.linalg.inv(m)
+
+
+def decompose(m):
+    """Decomposes an affine transformation matrix into its scale, rotation and
+    translation components.
+
+    :param numpy.array m: A matrix.
+    :return: tuple (scale, rotation, translation)
+        numpy.array scale vector3
+        numpy.array rotation quaternion
+        numpy.array translation vector3
+    """
+    m = np.asarray(m)
+
+    scale = np.linalg.norm(m[:3, :3], axis=1)
+
+    det = np.linalg.det(m)
+    if det < 0:
+        scale[0] *= -1
+
+    position = m[3, :3]
+
+    rotation = m[:3, :3] * (1 / scale)[:, None]
+
+    return scale, quaternion.create_from_matrix(rotation), position

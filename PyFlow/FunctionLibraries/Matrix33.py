@@ -116,7 +116,7 @@ class Matrix33(FunctionLibraryBase):
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
     def m33FromAxisAngle(axis=(DataTypes.FloatVector3, pyrr.Vector3()), theta=(DataTypes.Float, 0.0)):
-        '''Creates a matrix from the specified theta rotation around an axis.'''
+        '''Creates a matrix from the specified theta rotation around an axis.\ntheta in radians.'''
         return pyrr.Matrix33(pyrr.matrix33.create_from_axis_rotation(axis, theta))
 
     @staticmethod
@@ -133,32 +133,32 @@ class Matrix33(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['create', 'matrix33']})
-    def m33FromM44(m=(DataTypes.Matrix44, pyrr.Matrix44())):
+    def m33From44(m=(DataTypes.Matrix44, pyrr.Matrix44())):
         '''Creates a Matrix33 from a Matrix44.'''
         return pyrr.Matrix33(pyrr.matrix33.create_from_matrix44(m))
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['create', 'matrix33']})
-    def m33FromScale(s=(DataTypes.Float, 1.0)):
+    def m33FromScale(s=(DataTypes.FloatVector3, pyrr.Vector3([1, 1, 1]))):
         '''Creates an identity matrix with the scale set.'''
         return pyrr.Matrix33(pyrr.matrix33.create_from_scale(s))
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['create', 'matrix33']})
     def m33FromX(theta=(DataTypes.Float, 0.0)):
-        '''Creates a matrix with the specified rotation about the X axis.'''
+        '''Creates a matrix with the specified rotation about the X axis.\ntheta in radians.'''
         return pyrr.Matrix33(pyrr.matrix33.create_from_x_rotation(theta))
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['create', 'matrix33']})
     def m33FromY(theta=(DataTypes.Float, 0.0)):
-        '''Creates a matrix with the specified rotation about the Y axis.'''
+        '''Creates a matrix with the specified rotation about the Y axis.\ntheta in radians.'''
         return pyrr.Matrix33(pyrr.matrix33.create_from_y_rotation(theta))
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['create', 'matrix33']})
     def m33FromZ(theta=(DataTypes.Float, 0.0)):
-        '''Creates a matrix with the specified rotation about the Z axis.'''
+        '''Creates a matrix with the specified rotation about the Z axis.\ntheta in radians.'''
         return pyrr.Matrix33(pyrr.matrix33.create_from_z_rotation(theta))
 
     @staticmethod

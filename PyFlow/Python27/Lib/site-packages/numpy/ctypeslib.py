@@ -164,7 +164,7 @@ def _num_fromflags(flaglist):
     return num
 
 _flagnames = ['C_CONTIGUOUS', 'F_CONTIGUOUS', 'ALIGNED', 'WRITEABLE',
-              'OWNDATA', 'UPDATEIFCOPY']
+              'OWNDATA', 'UPDATEIFCOPY', 'WRITEBACKIFCOPY']
 def _flags_fromnum(num):
     res = []
     for key in _flagnames:
@@ -244,6 +244,7 @@ def ndpointer(dtype=None, ndim=None, shape=None, flags=None):
           - OWNDATA / O
           - WRITEABLE / W
           - ALIGNED / A
+          - WRITEBACKIFCOPY / X
           - UPDATEIFCOPY / U
 
     Returns
@@ -283,7 +284,7 @@ def ndpointer(dtype=None, ndim=None, shape=None, flags=None):
         if num is None:
             try:
                 flags = [x.strip().upper() for x in flags]
-            except:
+            except Exception:
                 raise TypeError("invalid flags specification")
             num = _num_fromflags(flags)
     try:

@@ -24,9 +24,9 @@ files not under version control).  Otherwise reinstall numpy.
 Original error was: %s
 """ % (exc,)
     raise ImportError(msg)
-
-for envkey in env_added:
-    del os.environ[envkey]
+finally:
+    for envkey in env_added:
+        del os.environ[envkey]
 del envkey
 del env_added
 del os
@@ -71,7 +71,7 @@ __all__ += shape_base.__all__
 __all__ += einsumfunc.__all__
 
 
-from numpy.testing.nosetester import _numpy_tester
+from numpy.testing import _numpy_tester
 test = _numpy_tester().test
 bench = _numpy_tester().bench
 

@@ -215,7 +215,7 @@ def masked_all_like(arr):
 #####--------------------------------------------------------------------------
 #---- --- Standard functions ---
 #####--------------------------------------------------------------------------
-class _fromnxfunction:
+class _fromnxfunction(object):
     """
     Defines a wrapper to adapt NumPy functions to masked arrays.
 
@@ -778,7 +778,7 @@ def _median(a, axis=None, out=None, overwrite_input=False):
     # not necessary for scalar True/False masks
     try:
         np.copyto(low.mask, high.mask, where=odd)
-    except:
+    except Exception:
         pass
 
     if np.issubdtype(asorted.dtype, np.inexact):
@@ -939,7 +939,7 @@ def mask_rows(a, axis=None):
     Examples
     --------
     >>> import numpy.ma as ma
-    >>> a = np.zeros((3, 3), dtype=np.int)
+    >>> a = np.zeros((3, 3), dtype=int)
     >>> a[1, 1] = 1
     >>> a
     array([[0, 0, 0],
@@ -984,7 +984,7 @@ def mask_cols(a, axis=None):
     Examples
     --------
     >>> import numpy.ma as ma
-    >>> a = np.zeros((3, 3), dtype=np.int)
+    >>> a = np.zeros((3, 3), dtype=int)
     >>> a[1, 1] = 1
     >>> a
     array([[0, 0, 0],
