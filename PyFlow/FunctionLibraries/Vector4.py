@@ -92,8 +92,8 @@ class Vector4(FunctionLibraryBase):
         return a | b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, True), meta={'Category': 'Math|Vector4', 'Keywords': ['vector4']})
-    def v4Lerp(a=(DataTypes.FloatVector4, pyrr.Vector4()), b=(DataTypes.FloatVector4, pyrr.Vector4()), alpha=(DataTypes.Float, 0.0)):
+    @implementNode(returns=(DataTypes.FloatVector4, pyrr.Vector4()), meta={'Category': 'Math|Vector4', 'Keywords': ['vector4']})
+    def v4Lerp(a=(DataTypes.FloatVector4, pyrr.Vector4()), b=(DataTypes.FloatVector4, pyrr.Vector4([1.0, 1.0, 1.0, 1.0])), alpha=(DataTypes.Float, 0.0)):
         '''Vector4 lerp.'''
         return pyrr.Vector4(pyrr.vector.interpolate(a, b, clamp(alpha, 0.0, 1.0)))
 
