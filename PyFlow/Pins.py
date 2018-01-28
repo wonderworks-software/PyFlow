@@ -16,6 +16,7 @@ class _Pin(QGraphicsWidget, PinBase):
 
     OnPinConnected = QtCore.Signal(object)
     OnPinDisconnected = QtCore.Signal(object)
+    dataBeenSet = QtCore.Signal(object)
 
     def __init__(self, name, parent, dataType, direction, **kwargs):
         QGraphicsWidget.__init__(self)
@@ -48,6 +49,10 @@ class _Pin(QGraphicsWidget, PinBase):
         self.bAnimate = False
         self.val = 0
         self.setData(self.defaultValue())
+
+    def setData(self, value):
+        PinBase.setData(self, value)
+        self.dataBeenSet.emit(value)
 
     def highlight(self):
         self.bAnimate = True
@@ -253,7 +258,7 @@ class FloatPin(_Pin):
             self._data = float(data)
         except:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 class IntPin(_Pin):
@@ -274,7 +279,7 @@ class IntPin(_Pin):
             self._data = int(data)
         except:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 class ExecPin(_Pin):
@@ -322,7 +327,7 @@ class StringPin(_Pin):
             self._data = str(data)
         except:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 class ListPin(_Pin):
@@ -343,7 +348,7 @@ class ListPin(_Pin):
             self._data = data
         else:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 class BoolPin(_Pin):
@@ -364,7 +369,7 @@ class BoolPin(_Pin):
             self._data = bool(data)
         except:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 class FloatVector3Pin(_Pin):
@@ -392,7 +397,7 @@ class FloatVector3Pin(_Pin):
             self._data = pyrr.Vector3(data)
         else:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 class FloatVector4Pin(_Pin):
@@ -420,7 +425,7 @@ class FloatVector4Pin(_Pin):
             self._data = pyrr.Vector4(data)
         else:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 class QuatPin(_Pin):
@@ -453,7 +458,7 @@ class QuatPin(_Pin):
             self._data = pyrr.Quaternion(data)
         else:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 class Matrix33Pin(_Pin):
@@ -482,7 +487,7 @@ class Matrix33Pin(_Pin):
             self._data = pyrr.Matrix33([data[0], data[1], data[2]])
         else:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 class Matrix44Pin(_Pin):
@@ -511,7 +516,7 @@ class Matrix44Pin(_Pin):
             self._data = pyrr.Matrix44([data[0], data[1], data[2], data[3]])
         else:
             self._data = self.defaultValue()
-        PinBase.setData(self, data)
+        _Pin.setData(self, self._data)
 
 
 def CreatePin(name, parent, dataType, direction):

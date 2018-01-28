@@ -597,8 +597,8 @@ class Node(QGraphicsItem, NodeBase):
             if bCreateInputWidget:
                 w = getPinWidget(p)
                 if w:
-                    p.OnPinConnected.connect(w.hide)
-                    p.OnPinDisconnected.connect(w.show)
+                    p.pinConnected.connect(w.hide)
+                    p.pinDisconnected.connect(w.show)
                     container.layout().addItem(w.asProxy())
 
             self.inputs[p.uid] = p
