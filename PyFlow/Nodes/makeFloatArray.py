@@ -2,6 +2,7 @@ from AbstractGraph import *
 from Settings import *
 from Node import Node
 from Qt.QtWidgets import QMenu
+from Pins import _Pin
 
 
 class makeFloatArray(Node):
@@ -34,6 +35,14 @@ class makeFloatArray(Node):
     @staticmethod
     def description():
         return 'array of floats'
+
+    def postCreate(self, jsonTemplate):
+        Node.postCreate(self, jsonTemplate)
+
+        # restore dinamically created inputs
+        for inp in jsonTemplate['inputs']:
+            p = _Pin.deserialize(self, inp)
+            pinAffects(p, self.out0)
 
     def compute(self):
         self.out0.setData(list([i.getData() for i in self.inputs.values()]))

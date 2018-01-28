@@ -86,8 +86,26 @@ class _Pin(QGraphicsWidget, PinBase):
             else:
                 self.parent().outputsLayout.removeItem(self._container)
 
-    def deserialize(self):
-        pass
+    @staticmethod
+    def deserialize(owningNode, jsonData):
+        name = jsonData['name']
+        dataType = jsonData['dataType']
+        direction = jsonData['type']
+        value = jsonData['value']
+        uid = uuid.UUID(jsonData['uuid'])
+        bLabelHidden = jsonData['bLabelHidden']
+        bDirty = jsonData['bDirty']
+
+        p = None
+        if direction == PinDirection.Input:
+            p = owningNode.addInputPin(name, dataType, hideLabel=bLabelHidden)
+            p.uid = uid
+        else:
+            p = owningNode.addOutputPin(name, dataType, hideLabel=bLabelHidden)
+            p.uid = uid
+
+        p.setData(value)
+        return p
 
     def serialize(self):
         data = {'name': self.name,

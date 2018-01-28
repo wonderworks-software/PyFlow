@@ -409,20 +409,6 @@ class Node(QGraphicsItem, NodeBase):
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)
 
-    # def getInputEdges(self):
-    #     out = {}
-    #     for i in [i.edge_list for i in self.inputs]:
-    #         if not i.__len__() == 0:
-    #             out[i[0]] = [e.connection for e in i]
-    #     return out
-
-    # def getOutputEdges(self):
-    #     out = {}
-    #     for i in [i.edge_list for i in self.outputs]:
-    #         if not i.__len__() == 0:
-    #             out[i[0]] = [e.connection for e in i]
-    #     return out
-
     def mousePressEvent(self, event):
         self.update()
         # self.setCursor(QtCore.Qt.ClosedHandCursor)

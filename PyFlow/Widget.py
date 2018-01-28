@@ -1027,6 +1027,7 @@ class GraphWidget(QGraphicsView, Graph):
 
             for n in selectedNodes:
                 new_node = n.clone()
+                n.setSelected(False)
                 new_node.setSelected(True)
                 new_node.setPos(new_node.scenePos() + diff)
 
