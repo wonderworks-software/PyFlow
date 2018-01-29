@@ -1,1 +1,1 @@
-%cd%/Python27/Scripts/python.exe -u -m trace -t "%cd%/Launcher.py" /all > "nodes.log"
+python.exe -u -m trace -t "%cd%/Launcher.py" /all > "nodes.log"
