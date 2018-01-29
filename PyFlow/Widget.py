@@ -984,6 +984,19 @@ class GraphWidget(QGraphicsView, Graph):
                     instance.label().width = rect.width()
                     instance.label().adjustSizes()
 
+        if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.alignSelectedNodes(Direction.Left)
+            return
+        if all([event.key() == QtCore.Qt.Key_Up, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.alignSelectedNodes(Direction.Up)
+            return
+        if all([event.key() == QtCore.Qt.Key_Right, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.alignSelectedNodes(Direction.Right)
+            return
+        if all([event.key() == QtCore.Qt.Key_Down, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.alignSelectedNodes(Direction.Down)
+            return
+
         if all([event.key() == QtCore.Qt.Key_Z, modifiers == QtCore.Qt.ControlModifier]):
             if self.isShortcutsEnabled():
                 self.undoStack.undo()

@@ -149,8 +149,6 @@
    <addaction name="actionVariables"/>
    <addaction name="actionHistory"/>
    <addaction name="separator"/>
-   <addaction name="actionDebug"/>
-   <addaction name="separator"/>
    <addaction name="actionPlot_graph"/>
    <addaction name="actionScreenshot"/>
    <addaction name="separator"/>
@@ -158,6 +156,7 @@
    <addaction name="actionAlignUp"/>
    <addaction name="actionAlignBottom"/>
    <addaction name="actionAlignRight"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QDockWidget" name="dockWidgetVariables">
    <property name="minimumSize">
@@ -280,7 +279,7 @@
           <x>0</x>
           <y>0</y>
           <width>498</width>
-          <height>138</height>
+          <height>594</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
@@ -389,15 +388,6 @@
    </property>
    <property name="text">
     <string>Plot graph</string>
-   </property>
-  </action>
-  <action name="actionDebug">
-   <property name="icon">
-    <iconset resource="nodes_res.qrc">
-     <normaloff>:/icons/resources/debug_icon.png</normaloff>:/icons/resources/debug_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Debug</string>
    </property>
   </action>
   <action name="actionScreenshot">

@@ -42,7 +42,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionPlot_graph.triggered.connect(self.G.plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionPropertyView.triggered.connect(self.toggle_property_view)
-        # self.actionDebug.triggered.connect(self.toggle_debug)
         self.actionScreenshot.triggered.connect(self.G.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
         self.actionSave.triggered.connect(self.G.save)
@@ -115,15 +114,10 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         data += "Delete - kill selected nodes\n"
         data += "Ctrl+Shift+ArrowLeft - Align left\n"
         data += "Ctrl+Shift+ArrowUp - Align Up\n"
+        data += "Ctrl+Shift+ArrowRight - Align right\n"
+        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"
 
         QMessageBox.information(self, "Shortcuts", data)
-
-    def toggle_debug(self):
-        self.G.setDebug(not self.G.isDebug())
-        if self.G.isDebug():
-            self.G.notify("Debug mode enabled", 3000)
-        else:
-            self.G.notify("Debug mode disabled", 3000)
 
     def on_delete(self):
         self.G.killSelectedNodes(True)
