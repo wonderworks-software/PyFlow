@@ -1,20 +1,19 @@
 from AbstractGraph import *
 from Settings import *
 from Node import Node
-
-
-DESC = '''node desc
-'''
+from Qt.QtCore import QTimer
 
 
 class retriggerableDelay(Node, NodeBase):
     def __init__(self, name, graph):
-        super(retriggerableDelay, self).__init__(name, graph, w=80, spacings=Spacings)
+        super(retriggerableDelay, self).__init__(name, graph)
         self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute)
         self.delay = self.addInputPin('delay(s)', DataTypes.Float)
+        self.delay.setDefaultValue(0.2)
         self.out0 = self.addOutputPin('out0', DataTypes.Exec)
-        self.count = 0.0
         self.process = False
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.callAndReset)
 
     @staticmethod
     def pinTypeHints():
@@ -30,20 +29,17 @@ class retriggerableDelay(Node, NodeBase):
 
     @staticmethod
     def description():
-        return DESC
+        return '''Delayed call. With ability to reset.'''
 
-    def Tick(self, delta):
-        if self.process:
-            self.count += delta
-            if self.count > self.delay.getData():
-                self.out0.call()
-                self.reset()
-
-    def reset(self):
+    def callAndReset(self):
+        self.out0.call()
         self.process = False
-        self.count = 0.0
+        self.timer.stop()
+
+    def restart(self):
+        delay = self.delay.getData() * 1000.0
+        self.timer.stop()
+        self.timer.start(delay)
 
     def compute(self):
-        if self.process:
-            self.reset()
-        self.process = True
+        self.restart()

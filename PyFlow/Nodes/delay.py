@@ -1,15 +1,16 @@
 from AbstractGraph import *
 from Settings import *
 from Node import Node
+from Qt.QtCore import QTimer
 
 
 class delay(Node, NodeBase):
     def __init__(self, name, graph):
-        super(delay, self).__init__(name, graph, w=80, spacings=Spacings)
+        super(delay, self).__init__(name, graph)
         self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute)
         self.delay = self.addInputPin('delay(s)', DataTypes.Float)
+        self.delay.setDefaultValue(0.2)
         self.out0 = self.addOutputPin('out0', DataTypes.Exec)
-        self.count = 0.0
         self.process = False
 
     @staticmethod
@@ -26,19 +27,14 @@ class delay(Node, NodeBase):
 
     @staticmethod
     def description():
-        return 'default description'
+        return '''Delayed call.'''
 
-    def Tick(self, delta):
-        if self.process:
-            self.count += delta
-            if self.count > self.delay.getData():
-                self.out0.call()
-                self.reset()
-
-    def reset(self):
+    def callAndReset(self):
+        self.out0.call()
         self.process = False
-        self.count = 0.0
 
     def compute(self):
         if not self.process:
             self.process = True
+            delay = self.delay.getData() * 1000.0
+            QTimer.singleShot(delay, self.callAndReset)
