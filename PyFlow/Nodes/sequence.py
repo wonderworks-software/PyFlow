@@ -13,6 +13,9 @@ class sequence(Node):
         self.action = self.menu.addAction('add pin')
         self.action.triggered.connect(self.addOutPin)
 
+        self.addOutPin()
+        self.addOutPin()
+
     def addOutPin(self):
         p = self.addOutputPin(str(len(self.outputs)), DataTypes.Exec)
         pinAffects(self.inExecPin, p)

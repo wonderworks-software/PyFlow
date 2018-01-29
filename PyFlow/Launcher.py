@@ -20,9 +20,11 @@ from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QUndoView
 import GraphEditor_ui
 from VariablesWidget import VariablesWidget
+import json
 
 
 FILE_DIR = path.dirname(__file__)
+SETTINGS_PATH = FILE_DIR + "/appConfig.ini"
 
 
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
@@ -40,7 +42,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionPlot_graph.triggered.connect(self.G.plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionPropertyView.triggered.connect(self.toggle_property_view)
-        self.actionDebug.triggered.connect(self.toggle_debug)
+        # self.actionDebug.triggered.connect(self.toggle_debug)
         self.actionScreenshot.triggered.connect(self.G.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
         self.actionSave.triggered.connect(self.G.save)
@@ -61,6 +63,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.variablesWidget = VariablesWidget(self, self.G)
         self.leftDockGridLayout.addWidget(self.variablesWidget)
 
+    def OnLoadEditorConfig(self, configJson):
+        pass
+
     def createPopupMenu(self):
         pass
 
@@ -73,13 +78,18 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             _implementPlugin(name, pluginType)
 
     def closeEvent(self, event):
-        question = "Shure?"
-        reply = QMessageBox.question(self, 'Exit', question, QMessageBox.Yes, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            self.G.shoutDown()
-            event.accept()
-        else:
-            event.ignore()
+        self.G.shoutDown()
+        # save editor config
+        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
+        settings.beginGroup('Editor')
+        settings.setValue("geometry", self.saveGeometry())
+        settings.setValue("windowState", self.saveState())
+        settings.endGroup()
+        QMainWindow.closeEvent(self, event)
+
+    def applySettings(self, settings):
+        self.restoreGeometry(settings.value('Editor/geometry'))
+        self.restoreState(settings.value('Editor/windowState'))
 
     def toggle_property_view(self):
         if self.dockWidgetNodeView.isVisible():
@@ -96,18 +106,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def shortcuts_info(self):
 
         data = "Ctrl+Shift+N - togle node box\n"
-        data += "Ctrl+Shift+C - togle console\n"
         data += "Ctrl+N - new file\n"
         data += "Ctrl+S - save\n"
         data += "Ctrl+Shift+S - save as\n"
         data += "Ctrl+O - open file\n"
         data += "Ctrl+F - frame\n"
-        data += "Ctrl+Shift+Alt+C - comment selected nodes\n"
-        data += "Ctrl+Alt+M - toggle multithreaded\n"
-        data += "Ctrl+Alt+D - toggle debug\n"
+        data += "C - comment selected nodes\n"
         data += "Delete - kill selected nodes\n"
-        data += "Ctrl+Shift+A - Align left\n"
-        data += "Ctrl+Shift+Q - Align Up\n"
+        data += "Ctrl+Shift+ArrowLeft - Align left\n"
+        data += "Ctrl+Shift+ArrowUp - Align Up\n"
 
         QMessageBox.information(self, "Shortcuts", data)
 
@@ -152,6 +159,10 @@ if __name__ == '__main__':
         ")
 
     instance = PyFlow()
+
+    settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
+    instance.applySettings(settings)
+
     app.setActiveWindow(instance)
     instance.show()
 
