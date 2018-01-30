@@ -233,28 +233,6 @@ def importByName(module, name):
         print("error", name)
 
 
-def parse(line):
-    '''
-    returns - {'cmd': command, 'flags': {-x1: 50, -x2: 100}}
-    '''
-    out = {}
-    flag_sep = [m.start() for m in re.finditer(FLAG_SYMBOL, line)]
-    if len(flag_sep) == 0:
-        out["cmd"] = line
-        return out
-    out = {"flags": {}}
-    cmd = line.split(" ")[0]
-    out["cmd"] = cmd
-    for i in xrange(len(flag_sep) - 1):
-        newLine = line[flag_sep[i]:]
-        newLineDashes = [m.start() for m in re.finditer(FLAG_SYMBOL, newLine)]
-        flag = newLine[:newLineDashes[1] - 1].split(" ", 1)  # flag + value
-        out["flags"][flag[0]] = flag[1]
-    flag = line[flag_sep[-1]:].split(" ", 1)  # last flag + value
-    out["flags"][flag[0]] = flag[1]
-    return out
-
-
 def getNodeInstance(module, class_name, nodeName, graph):
     # Check in Nodes module first
     mod = Nodes.getNode(class_name)
@@ -326,7 +304,6 @@ class AutoPanController(object):
 class SceneClass(QGraphicsScene):
     def __init__(self, parent):
         super(SceneClass, self).__init__(parent)
-        self.object_type = ObjectTypes.Scene
         self.setItemIndexMethod(self.NoIndex)
         # self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
@@ -603,7 +580,6 @@ class NodesBox(QWidget):
     def __init__(self, parent, graph=None):
         super(NodesBox, self).__init__(parent)
         self.graph = weakref.ref(graph)
-        self.object_type = ObjectTypes.NodeBox
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.setObjectName("verticalLayout")
         self.verticalLayout.setContentsMargins(4, 4, 4, 4)
@@ -640,7 +616,6 @@ class RubberRect(QGraphicsRectItem):
         self.setZValue(2)
         self.setPen(QtGui.QPen(Colors.RubberRect, 0.5, QtCore.Qt.SolidLine))
         self.setBrush(QtGui.QBrush(Colors.RubberRect))
-        self.object_type = ObjectTypes.SelectionRect
 
 
 class GraphWidget(QGraphicsView, Graph):
@@ -696,7 +671,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.real_time_line = QGraphicsPathItem(None, self.scene())
 
         self.real_time_line.name = 'RealTimeLine'
-        self.real_time_line.object_type = ObjectTypes.Connection
         self.real_time_line.setPen(QtGui.QPen(Colors.Green, 1.0, QtCore.Qt.DashLine))
         self.mousePressPose = QtCore.QPointF(0, 0)
         self.mousePos = QtCore.QPointF(0, 0)
@@ -1231,10 +1205,7 @@ class GraphWidget(QGraphicsView, Graph):
             if not i:
                 do_connect = False
                 break
-            if not hasattr(i, 'object_type'):
-                do_connect = False
-                break
-            if not i.object_type == ObjectTypes.Pin:
+            if not isinstance(i, PinBase):
                 do_connect = False
                 break
         if p_itm and r_itm:

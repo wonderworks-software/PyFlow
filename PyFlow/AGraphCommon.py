@@ -10,9 +10,6 @@ from functools import wraps
 from Queue import Queue
 
 
-FLAG_SYMBOL = "~"
-
-
 def lerp(start, end, alpha):
     return (start + alpha * (end - start))
 
@@ -33,20 +30,6 @@ def pinAffects(affects_port, affected_port):
     affected_port.affected_by.append(affects_port)
 
 
-def calc_multithreaded(ls):
-
-    def compute_executor(node):
-        node.compute()
-
-    threads = []
-    for n in ls:
-        t = Thread(target=compute_executor, args=(n,))
-        threads.append(t)
-        t.start()
-
-    [t.join() for t in threads]
-
-
 def cycle_check(src, dst):
 
     # allow cycles on execs
@@ -64,18 +47,6 @@ def cycle_check(src, dst):
     return False
 
 
-def findPinsBehind(start_from):
-    out = []
-
-    def foo(start_from):
-        if not start_from.affected_by == []:
-            for p in start_from.affected_by:
-                out.append(p)
-                foo(p)
-    foo(start_from)
-    return out
-
-
 def push(start_from):
     '''
     marks dirty all ports from start to the right
@@ -89,7 +60,7 @@ def push(start_from):
 
 
 # kill this. replace by inheritance
-def getPortColorByType(t):
+def getPinColorByType(t):
     if t == DataTypes.Float:
         return Colors.Float
     if t == DataTypes.Int:
@@ -108,8 +79,6 @@ def getPortColorByType(t):
         return Colors.FloatVector3
     if t == DataTypes.FloatVector4:
         return Colors.FloatVector4
-    if t == DataTypes.Transform:
-        return Colors.Transform
 
 
 # kill this. replace by inheritance
@@ -210,18 +179,6 @@ class asynchronous(object):
                 self.result = self.queue.get()
 
             return self.result
-
-
-class ObjectTypes(object):
-    Pin = 0
-    Node = 1
-    Graph = 2
-    Grouper = 3
-    Connection = 4
-    NodeName = 5
-    SelectionRect = 6
-    Scene = 7
-    NodeBox = 8
 
 
 class PinSelectionGroup:

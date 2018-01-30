@@ -68,7 +68,6 @@ class Edge(QGraphicsPathItem):
         self.graph = weakref.ref(graph)
         self.source = weakref.ref(source)
         self.destination = weakref.ref(destination)
-        self.object_type = ObjectTypes.Connection
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 

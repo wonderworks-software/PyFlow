@@ -26,7 +26,6 @@ class NodeName(QGraphicsTextItem):
         self.bUseTextureBg = bUseTextureBg
         self.width = 50
         self.document().contentsChanged.connect(self.onDocContentsChanged)
-        self.object_type = ObjectTypes.NodeName
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.desc = parent.description()
         self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
@@ -110,7 +109,6 @@ class Node(QGraphicsItem, NodeBase):
         self.opt_node_base_color = Colors.NodeBackgrounds
         self.opt_selected_pen_color = Colors.NodeSelectedPenColor
         self.opt_pen_selected_type = QtCore.Qt.SolidLine
-        self.object_type = ObjectTypes.Node
         self._left_stretch = 0
         self.color = color
         self.height_offset = 3

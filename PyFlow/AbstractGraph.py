@@ -32,7 +32,7 @@ class IItemBase(object):
 
     @uid.setter
     def uid(self, value):
-        return self._uid
+        self._uid = value
 
     @uid.deleter
     def uid(self):
@@ -78,7 +78,6 @@ class PinBase(IPin, ISerializable):
         super(PinBase, self).__init__()
         self.parent = weakref.ref(parent)
         self.setName(name)
-        self.object_type = ObjectTypes.Pin
         self._dataType = None
         self._data = None
         self._defaultValue = None
@@ -204,7 +203,6 @@ class NodeBase(INode):
         super(NodeBase, self).__init__()
         self.graph = weakref.ref(graph)
         self.name = name
-        self.object_type = ObjectTypes.Node
         self.inputs = OrderedDict()
         self.outputs = OrderedDict()
         self.x = 0.0
@@ -323,7 +321,6 @@ class NodeBase(INode):
 class Graph(object):
     def __init__(self, name):
         super(Graph, self).__init__()
-        self.object_type = ObjectTypes.Graph
         self._debug = False
         self.name = name
         self.nodes = {}

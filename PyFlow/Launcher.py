@@ -7,8 +7,6 @@ from Widget import PluginType, _implementPlugin
 from Widget import Direction
 from Widget import NodesBox
 from Nodes import getNodeNames
-from ConsoleInputWidget import ConsoleInput
-from SyntaxHighlighter import Highlighter
 from Qt.QtWidgets import QMainWindow
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QStyleFactory

@@ -73,7 +73,7 @@ class VariableBase(QWidget):
         self.horizontalLayout.setSpacing(1)
         self.horizontalLayout.setContentsMargins(1, 1, 1, 1)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.widget = TypeWidget(getPortColorByType(dataType), self)
+        self.widget = TypeWidget(getPinColorByType(dataType), self)
         self.widget.setObjectName("widget")
         self.horizontalLayout.addWidget(self.widget)
         self.labelName = QLabel(self)
@@ -159,7 +159,7 @@ class VariableBase(QWidget):
 
     def setDataType(self, dataType, _bJustSpawned=False):
         self.dataType = dataType
-        self.widget.color = getPortColorByType(dataType)
+        self.widget.color = getPinColorByType(dataType)
         self.value = getDefaultDataValue(dataType)
         self.widget.update()
         if _bJustSpawned:
