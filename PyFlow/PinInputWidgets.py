@@ -7,21 +7,12 @@ from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QCheckBox
 from Qt.QtWidgets import QGraphicsProxyWidget
-from AGraphCommon import DataTypes
-from AGraphCommon import push
+from AGraphCommon import *
 from AbstractGraph import PinBase
 import FloatVector3InputWidget_ui
 import FloatVector4InputWidget_ui
 import Matrix33InputWidget_ui
 import Matrix44InputWidget_ui
-
-
-FLOAT_SINGLE_STEP = 0.01
-FLOAT_DECIMALS = 10
-FLOAT_RANGE_MIN = -2147483648.01
-FLOAT_RANGE_MAX = 2147483647.01
-INT_RANGE_MIN = -2147483648
-INT_RANGE_MAX = 2147483647
 
 
 class PinInputWidgetBase(object):

@@ -55,6 +55,10 @@ class IPin(IItemBase, ISerializable):
     def color():
         raise NotImplementedError('color method of IPin is not implemented')
 
+    @staticmethod
+    def pinDataType():
+        raise NotImplementedError('pinDataType method of IPin is not implemented')
+
     def supportedDataTypes(self):
         raise NotImplementedError('supportedDataTypes method of IPin is not implemented')
 
@@ -89,6 +93,10 @@ class PinBase(IPin, ISerializable):
         self.direction = direction
         self.dirty = True
         self._connected = False
+
+    @staticmethod
+    def pinDataType():
+        return None
 
     def setName(self, name):
         self.name = name.replace(" ", "_")

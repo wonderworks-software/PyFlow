@@ -9,6 +9,9 @@ import nodes_res_rc
 import pyrr
 
 
+_PINS = {}
+
+
 class _Pin(QGraphicsWidget, PinBase):
     '''
     This is base class for all ui pins
@@ -21,7 +24,6 @@ class _Pin(QGraphicsWidget, PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
         QGraphicsWidget.__init__(self)
         PinBase.__init__(self, name, parent, dataType, direction, **kwargs)
-        # self.name = name.replace(" ", "_")  # spaces are not allowed
         self.setParentItem(parent)
         self.setCursor(QtCore.Qt.CrossCursor)
         self.menu = QMenu()
@@ -250,6 +252,10 @@ class FloatPin(_Pin):
     def color():
         return Colors.Float
 
+    @staticmethod
+    def pinDataType():
+        return DataTypes.Float, 0.0
+
     def supportedDataTypes(self):
         return (DataTypes.Float, DataTypes.Int)
 
@@ -270,6 +276,10 @@ class IntPin(_Pin):
     @staticmethod
     def color():
         return Colors.Int
+
+    @staticmethod
+    def pinDataType():
+        return DataTypes.Int, 0
 
     def supportedDataTypes(self):
         return (DataTypes.Int, DataTypes.Float)
@@ -305,6 +315,10 @@ class ExecPin(_Pin):
     def color():
         return Colors.Exec
 
+    @staticmethod
+    def pinDataType():
+        return DataTypes.Exec, None
+
     def setData(self, data):
         pass
 
@@ -321,6 +335,10 @@ class StringPin(_Pin):
     @staticmethod
     def color():
         return Colors.String
+
+    @staticmethod
+    def pinDataType():
+        return DataTypes.String, ''
 
     def setData(self, data):
         try:
@@ -343,6 +361,10 @@ class ListPin(_Pin):
     def color():
         return Colors.Array
 
+    @staticmethod
+    def pinDataType():
+        return DataTypes.Array, []
+
     def setData(self, data):
         if isinstance(data, list):
             self._data = data
@@ -364,6 +386,10 @@ class BoolPin(_Pin):
     def color():
         return Colors.Bool
 
+    @staticmethod
+    def pinDataType():
+        return DataTypes.Bool, False
+
     def setData(self, data):
         try:
             self._data = bool(data)
@@ -384,6 +410,10 @@ class FloatVector3Pin(_Pin):
     @staticmethod
     def color():
         return Colors.FloatVector3
+
+    @staticmethod
+    def pinDataType():
+        return DataTypes.FloatVector3, pyrr.Vector3()
 
     def serialize(self):
         data = _Pin.serialize(self)
@@ -408,6 +438,10 @@ class FloatVector4Pin(_Pin):
 
     def supportedDataTypes(self):
         return (DataTypes.FloatVector4,)
+
+    @staticmethod
+    def pinDataType():
+        return DataTypes.FloatVector4, pyrr.Vector4()
 
     @staticmethod
     def color():
@@ -440,6 +474,10 @@ class QuatPin(_Pin):
     @staticmethod
     def color():
         return Colors.Quaternion
+
+    @staticmethod
+    def pinDataType():
+        return DataTypes.Quaternion, pyrr.Quaternion()
 
     def serialize(self):
         # note how custom class can be serialized
@@ -474,6 +512,10 @@ class Matrix33Pin(_Pin):
     def color():
         return Colors.Matrix33
 
+    @staticmethod
+    def pinDataType():
+        return DataTypes.Matrix33, pyrr.Matrix33()
+
     def serialize(self):
         data = _Pin.serialize(self)
         m = self.currentData()
@@ -503,6 +545,10 @@ class Matrix44Pin(_Pin):
     def color():
         return Colors.Matrix44
 
+    @staticmethod
+    def pinDataType():
+        return DataTypes.Matrix44, pyrr.Matrix44()
+
     def serialize(self):
         data = _Pin.serialize(self)
         m = self.currentData()
@@ -518,32 +564,47 @@ class Matrix44Pin(_Pin):
             self._data = self.defaultValue()
         _Pin.setData(self, self._data)
 
+# put classes by dataType
+for subclass in _Pin.__subclasses__():
+    # put data types in dict
+    _PINS[subclass.pinDataType()[0]] = subclass
+
+
+def findPinClassByType(dataType):
+        return _PINS[dataType] if dataType in _PINS else None
+
 
 def CreatePin(name, parent, dataType, direction):
     '''
     this function will be used by node
     '''
-    if dataType == DataTypes.Float:
-        return FloatPin(name, parent, dataType, direction)
-    if dataType == DataTypes.Int:
-        return IntPin(name, parent, dataType, direction)
-    if dataType == DataTypes.Exec:
-        return ExecPin(name, parent, dataType, direction)
-    if dataType == DataTypes.String:
-        return StringPin(name, parent, dataType, direction)
-    if dataType == DataTypes.Array:
-        return ListPin(name, parent, dataType, direction)
-    if dataType == DataTypes.Bool:
-        return BoolPin(name, parent, dataType, direction)
-    if dataType == DataTypes.FloatVector3:
-        return FloatVector3Pin(name, parent, dataType, direction)
-    if dataType == DataTypes.FloatVector4:
-        return FloatVector4Pin(name, parent, dataType, direction)
-    if dataType == DataTypes.Quaternion:
-        return QuatPin(name, parent, dataType, direction)
-    if dataType == DataTypes.Matrix33:
-        return Matrix33Pin(name, parent, dataType, direction)
-    if dataType == DataTypes.Matrix44:
-        return Matrix44Pin(name, parent, dataType, direction)
+    # if dataType == DataTypes.Float:
+    #     return FloatPin(name, parent, dataType, direction)
+    # if dataType == DataTypes.Int:
+    #     return IntPin(name, parent, dataType, direction)
+    # if dataType == DataTypes.Exec:
+    #     return ExecPin(name, parent, dataType, direction)
+    # if dataType == DataTypes.String:
+    #     return StringPin(name, parent, dataType, direction)
+    # if dataType == DataTypes.Array:
+    #     return ListPin(name, parent, dataType, direction)
+    # if dataType == DataTypes.Bool:
+    #     return BoolPin(name, parent, dataType, direction)
+    # if dataType == DataTypes.FloatVector3:
+    #     return FloatVector3Pin(name, parent, dataType, direction)
+    # if dataType == DataTypes.FloatVector4:
+    #     return FloatVector4Pin(name, parent, dataType, direction)
+    # if dataType == DataTypes.Quaternion:
+    #     return QuatPin(name, parent, dataType, direction)
+    # if dataType == DataTypes.Matrix33:
+    #     return Matrix33Pin(name, parent, dataType, direction)
+    # if dataType == DataTypes.Matrix44:
+    #     return Matrix44Pin(name, parent, dataType, direction)
 
-    return None
+    # return None
+
+    pinClass = findPinClassByType(dataType)
+    if pinClass is None:
+        return None
+    inst = pinClass(name, parent, dataType, direction)
+    return inst

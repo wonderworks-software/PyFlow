@@ -14,6 +14,7 @@ from uuid import uuid4
 import inspect
 from AbstractGraph import *
 import VariableInputWidgets
+import Pins
 
 
 class TypeWidget(QWidget):
@@ -139,28 +140,13 @@ class VariableBase(QWidget):
 
     @value.setter
     def value(self, data):
-        if self.dataType == DataTypes.Float:
-            try:
-                self._value = float(data)
-            except:
-                self._value = getDefaultDataValue(self.dataType)
-        if self.dataType == DataTypes.Int:
-            try:
-                self._value = int(data)
-            except:
-                self._value = getDefaultDataValue(self.dataType)
-        if self.dataType == DataTypes.String:
-            self._value = str(data)
-        if self.dataType == DataTypes.Array:
-            self._value = data
-        if self.dataType == DataTypes.Bool:
-            self._value = bool(data)
+        self._value = data
         self.valueChanged.emit()
 
     def setDataType(self, dataType, _bJustSpawned=False):
         self.dataType = dataType
-        self.widget.color = getPinColorByType(dataType)
-        self.value = getDefaultDataValue(dataType)
+        self.widget.color = Pins.findPinClassByType(self.dataType).color()
+        self.value = Pins.findPinClassByType(self.dataType).pinDataType()[1]
         self.widget.update()
         if _bJustSpawned:
             return

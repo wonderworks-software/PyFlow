@@ -13,9 +13,9 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QLabel
 from Qt.QtWidgets import QGraphicsProxyWidget
-from AGraphCommon import DataTypes
-from AGraphCommon import push
+from AGraphCommon import *
 import Variable
+import FloatVector4InputWidget_ui
 
 
 class VarInputWidgetBase(object):
@@ -26,7 +26,7 @@ class VarInputWidgetBase(object):
         if not isinstance(var, Variable.VariableBase):
             raise TypeError("[ERROR] VariableBase expected, got {0}".format(type(var)))
         self.var = weakref.ref(var)
-        self.varDataUpdated(self.var().value)
+        self.varValueUpdated(self.var().value)
 
     def kill(self):
         pass
@@ -38,7 +38,7 @@ class VarInputWidgetBase(object):
         # update var
         self.var().value = value
 
-    def varDataUpdated(self, data):
+    def varValueUpdated(self, value):
         # update widget
         pass
 
@@ -48,14 +48,14 @@ class FloatInputWidget(VarInputWidgetBase, QDoubleSpinBox):
     def __init__(self, parent=None, **kwds):
         super(FloatInputWidget, self).__init__(**kwds)
         self.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
-        self.setRange(-2147483648.01, 2147483647.01)
-        self.setSingleStep(0.01)
+        self.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
+        self.setSingleStep(FLOAT_SINGLE_STEP)
         self.setMaximumWidth(70)
-        self.setDecimals(20)
+        self.setDecimals(FLOAT_DECIMALS)
         self.valueChanged.connect(self.widgetValueUpdated)
 
-    def varDataUpdated(self, data):
-        self.setValue(float(data))
+    def varValueUpdated(self, value):
+        self.setValue(float(value))
 
 
 class IntInputWidget(VarInputWidgetBase, QSpinBox):
@@ -63,12 +63,12 @@ class IntInputWidget(VarInputWidgetBase, QSpinBox):
     def __init__(self, parent=None, **kwds):
         super(IntInputWidget, self).__init__(**kwds)
         self.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
-        self.setRange(-2147483648, 2147483647)
+        self.setRange(INT_RANGE_MIN, INT_RANGE_MAX)
         self.setMaximumWidth(70)
         self.valueChanged.connect(self.widgetValueUpdated)
 
-    def varDataUpdated(self, data):
-        self.setValue(int(data))
+    def varValueUpdated(self, value):
+        self.setValue(int(value))
 
 
 class StringInputWidget(VarInputWidgetBase, QLineEdit):
@@ -79,8 +79,8 @@ class StringInputWidget(VarInputWidgetBase, QLineEdit):
         self.textChanged.connect(self.widgetValueUpdated)
         self.setMaximumWidth(70)
 
-    def varDataUpdated(self, data):
-        self.setText(str(data))
+    def varValueUpdated(self, value):
+        self.setText(str(value))
 
 
 class BoolInputWidget(VarInputWidgetBase, QCheckBox):
@@ -89,24 +89,40 @@ class BoolInputWidget(VarInputWidgetBase, QCheckBox):
         super(BoolInputWidget, self).__init__(**kwds)
         self.stateChanged.connect(self.widgetValueUpdated)
 
-    def varDataUpdated(self, data):
-        if bool(data):
+    def varValueUpdated(self, value):
+        if bool(value):
             self.setCheckState(QtCore.Qt.Checked)
         else:
             self.setCheckState(QtCore.Qt.Unchecked)
 
 
-class ArrayInputWidget(VarInputWidgetBase, QCheckBox):
-    """doc string for BoolInputWidget"""
+class QuatInputWidget(QWidget, VarInputWidgetBase, FloatVector4InputWidget_ui.Ui_Form):
+    """doc string for QuatInputWidget"""
     def __init__(self, parent=None, **kwds):
-        super(BoolInputWidget, self).__init__(**kwds)
-        self.stateChanged.connect(self.widgetValueUpdated)
+        VarInputWidgetBase.__init__(self, **kwds)
+        QWidget.__init__(self, parent)
+        self.setupUi(self)
+        self._configSpinBoxes()
 
-    def varDataUpdated(self, data):
-        if bool(data):
-            self.setCheckState(QtCore.Qt.Checked)
-        else:
-            self.setCheckState(QtCore.Qt.Unchecked)
+    def _configSpinBoxes(self):
+        self.dsbX.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
+        self.dsbY.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
+        self.dsbZ.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
+        self.dsbW.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
+        self.dsbX.setSingleStep(FLOAT_SINGLE_STEP)
+        self.dsbY.setSingleStep(FLOAT_SINGLE_STEP)
+        self.dsbZ.setSingleStep(FLOAT_SINGLE_STEP)
+        self.dsbW.setSingleStep(FLOAT_SINGLE_STEP)
+        self.dsbX.setDecimals(FLOAT_DECIMALS)
+        self.dsbY.setDecimals(FLOAT_DECIMALS)
+        self.dsbZ.setDecimals(FLOAT_DECIMALS)
+        self.dsbW.setDecimals(FLOAT_DECIMALS)
+
+    def varValueUpdated(self, value):
+        pass
+
+    def widgetValueUpdated(self, value):
+        pass
 
 
 def getVarWidget(var):
@@ -123,4 +139,6 @@ def getVarWidget(var):
         return StringInputWidget(var=var)
     if var.dataType == DataTypes.Bool:
         return BoolInputWidget(var=var)
+    if var.dataType in (DataTypes.Quaternion, DataTypes.FloatVector4):
+        return QuatInputWidget(var=var)
     return None

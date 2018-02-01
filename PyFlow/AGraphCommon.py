@@ -8,6 +8,16 @@ import inspect
 from threading import Thread
 from functools import wraps
 from Queue import Queue
+import uuid
+import sys
+
+
+FLOAT_SINGLE_STEP = 0.01
+FLOAT_DECIMALS = 10
+FLOAT_RANGE_MIN = (-sys.maxint - 1.0) + 0.1
+FLOAT_RANGE_MAX = sys.maxint + 0.1
+INT_RANGE_MIN = -sys.maxint
+INT_RANGE_MAX = sys.maxint
 
 
 def lerp(start, end, alpha):
