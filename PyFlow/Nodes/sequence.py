@@ -13,9 +13,6 @@ class sequence(Node):
         self.action = self.menu.addAction('add pin')
         self.action.triggered.connect(self.addOutPin)
 
-        self.addOutPin()
-        self.addOutPin()
-
     def addOutPin(self):
         p = self.addOutputPin(str(len(self.outputs)), DataTypes.Exec)
         pinAffects(self.inExecPin, p)
@@ -42,9 +39,13 @@ class sequence(Node):
     def postCreate(self, jsonTemplate):
         Node.postCreate(self, jsonTemplate)
 
-        # restore dinamically created  outputs
-        for out in jsonTemplate['outputs']:
-            _Pin.deserialize(self, out)
+        # restore dynamically created  outputs
+        if len(jsonTemplate['outputs']) == 0:
+            self.addOutPin()
+            self.addOutPin()
+        else:
+            for out in jsonTemplate['outputs']:
+                _Pin.deserialize(self, out)
 
     def compute(self):
         for out in self.outputs.values():

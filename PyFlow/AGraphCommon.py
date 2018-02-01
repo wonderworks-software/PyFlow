@@ -59,7 +59,6 @@ def push(start_from):
             push(i)
 
 
-# kill this. replace by inheritance
 def getPinColorByType(t):
     if t == DataTypes.Float:
         return Colors.Float
@@ -79,20 +78,6 @@ def getPinColorByType(t):
         return Colors.FloatVector3
     if t == DataTypes.FloatVector4:
         return Colors.FloatVector4
-
-
-# kill this. replace by inheritance
-def getDefaultDataValue(dataType):
-    if dataType == DataTypes.Float:
-        return float()
-    if dataType == DataTypes.Int:
-        return int()
-    if dataType == DataTypes.String:
-        return str("none")
-    if dataType == DataTypes.Bool:
-        return bool()
-    if dataType == DataTypes.Array:
-        return []
 
 
 def clearLayout(layout):

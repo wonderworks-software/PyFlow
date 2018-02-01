@@ -1020,6 +1020,10 @@ class GraphWidget(QGraphicsView, Graph):
 
     def alignSelectedNodes(self, direction):
         ls = [n for n in self.getNodes() if n.isSelected()]
+        nodesMoveInfo = {}
+        # {'from': [], 'to': []}
+        for node in ls:
+            nodesMoveInfo[node.uid] = {'from': node.scenePos(), 'to': QtCore.QPointF()}
 
         x_positions = [p.scenePos().x() for p in ls]
         y_positions = [p.scenePos().y() for p in ls]
@@ -1029,28 +1033,38 @@ class GraphWidget(QGraphicsView, Graph):
                 return
             x = min(x_positions)
             for n in ls:
-                n.setX(x)
+                p = n.scenePos()
+                p.setX(x)
+                nodesMoveInfo[n.uid]['to'] = p
 
         if direction == Direction.Right:
             if len(x_positions) == 0:
                 return
             x = max(x_positions)
             for n in ls:
-                n.setX(x)
+                p = n.scenePos()
+                p.setX(x)
+                nodesMoveInfo[n.uid]['to'] = p
 
         if direction == Direction.Up:
             if len(y_positions) == 0:
                 return
             y = min(y_positions)
             for n in ls:
-                n.setY(y)
+                p = n.scenePos()
+                p.setY(y)
+                nodesMoveInfo[n.uid]['to'] = p
 
         if direction == Direction.Down:
             if len(y_positions) == 0:
                 return
             y = max(y_positions)
             for n in ls:
-                n.setY(y)
+                p = n.scenePos()
+                p.setY(y)
+                nodesMoveInfo[n.uid]['to'] = p
+
+        self.undoStack.push(Commands.Move(dict(nodesMoveInfo), self))
 
     def findGoodPlaceForNewNode(self):
         polygon = self.mapToScene(self.viewport().rect())

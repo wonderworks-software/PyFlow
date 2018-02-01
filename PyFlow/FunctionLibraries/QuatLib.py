@@ -189,6 +189,7 @@ class QuatLib(FunctionLibraryBase):
         try:
             powered = q.power(exp)
             result.setData(True)
+            return powered
         except:
             result.setData(False)
 

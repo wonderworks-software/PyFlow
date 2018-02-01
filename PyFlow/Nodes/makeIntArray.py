@@ -39,7 +39,7 @@ class makeIntArray(Node):
     def postCreate(self, jsonTemplate):
         Node.postCreate(self, jsonTemplate)
 
-        # restore dinamically created inputs
+        # restore dynamically created inputs
         for inp in jsonTemplate['inputs']:
             p = _Pin.deserialize(self, inp)
             pinAffects(p, self.out0)
