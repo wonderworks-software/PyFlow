@@ -36,7 +36,6 @@ class charge(Node):
         step = abs(self.step.getData())
         if (self._currentAmount + step) < abs(self.amount.getData()):
             self._currentAmount += step
-            print(self._currentAmount)
             return
         self.completed.call()
         self._currentAmount = 0.0

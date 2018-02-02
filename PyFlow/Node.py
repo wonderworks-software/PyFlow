@@ -14,7 +14,7 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 from Pins import *
 from types import MethodType
-from PinInputWidgets import getPinWidget
+from InputWidgets import getPinWidget
 from inspect import getargspec
 from NodePainter import NodePainter
 
@@ -472,9 +472,9 @@ class Node(QGraphicsItem, NodeBase):
             for inp in self.inputs.values():
                 if inp.dataType == DataTypes.Exec:
                     continue
-                w = getPinWidget(inp)
+                w = getPinWidget(inp.dataType, inp.setData)
                 if w:
-                    w.setData(inp.currentData())
+                    w.setWidgetValue(inp.currentData())
                     w.setObjectName(inp.getName())
                     formLayout.addRow(inp.name, w)
                     if inp.hasConnections():
@@ -489,9 +489,9 @@ class Node(QGraphicsItem, NodeBase):
             for out in self.outputs.values():
                 if out.dataType == DataTypes.Exec:
                     continue
-                w = getPinWidget(out)
+                w = getPinWidget(out.dataType, out.setData)
                 if w:
-                    w.setData(out.currentData())
+                    w.setWidgetValue(out.currentData())
                     w.setObjectName(out.getName())
                     formLayout.addRow(out.name, w)
                     if out.hasConnections():
@@ -588,16 +588,6 @@ class Node(QGraphicsItem, NodeBase):
             container.layout().addItem(p)
             p._container = container
             container.layout().addItem(connector_name)
-
-            # create input widget
-            bCreateInputWidget = False  # temporarily disable inputWidgets on nodes, use properties view only
-
-            if bCreateInputWidget:
-                w = getPinWidget(p)
-                if w:
-                    p.pinConnected.connect(w.hide)
-                    p.pinDisconnected.connect(w.show)
-                    container.layout().addItem(w.asProxy())
 
             self.inputs[p.uid] = p
             self.inputsLayout.insertItem(index, container)

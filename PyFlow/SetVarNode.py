@@ -7,7 +7,7 @@ from Qt.QtWidgets import QLineEdit
 from Qt import QtCore
 from Qt import QtGui
 from Commands import RemoveNodes
-from PinInputWidgets import getPinWidget
+from InputWidgets import getPinWidget
 
 
 class SetVarNode(Node, NodeBase):
@@ -41,9 +41,9 @@ class SetVarNode(Node, NodeBase):
         formLayout.addRow("Type", leType)
 
         # input value
-        w = getPinWidget(self.value)
+        w = getPinWidget(self.value.dataType, self.value.setData)
         if w:
-            w.setData(self.value.currentData())
+            w.setWidgetValue(self.value.currentData())
             w.setObjectName(self.value.getName())
             formLayout.addRow(self.value.name, w)
             if self.value.hasConnections():

@@ -13,7 +13,7 @@ import nodes_res_rc
 from uuid import uuid4
 import inspect
 from AbstractGraph import *
-import VariableInputWidgets
+import InputWidgets
 import Pins
 
 
@@ -174,10 +174,13 @@ class VariableBase(QWidget):
         formLayout.addRow("Type", cbTypes)
 
         # current value
-        valueWidget = VariableInputWidgets.getVarWidget(self)
-        if valueWidget:
-            valueWidget.postCreate(self.value)
-            formLayout.addRow("Value", valueWidget)
+        def valSetter(x):
+            self.value = x
+        w = InputWidgets.getPinWidget(self.dataType, valSetter)
+        if w:
+            w.setWidgetValue(self.value)
+            w.setObjectName(self.name)
+            formLayout.addRow(self.name, w)
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QApplication.translate("Form", "Form", None, QApplication.UnicodeUTF8))
