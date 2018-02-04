@@ -1,8 +1,4 @@
 from Qt.QtWidgets import QUndoCommand
-import Nodes
-import FunctionLibraries
-import uuid
-from Core.AbstractGraph import *
 
 
 class CreateNode(QUndoCommand):

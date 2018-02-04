@@ -1,6 +1,4 @@
 from Qt.QtWidgets import QUndoCommand
-from Core import Node
-from Core import Edge
 from uuid import UUID
 
 

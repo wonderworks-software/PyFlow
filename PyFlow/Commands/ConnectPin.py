@@ -1,7 +1,4 @@
 from Qt.QtWidgets import QUndoCommand
-from Core.AbstractGraph import Graph
-from Core.AbstractGraph import PinDirection
-from Core import Edge
 
 
 class ConnectPin(QUndoCommand):
