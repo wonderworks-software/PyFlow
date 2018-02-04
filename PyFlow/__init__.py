@@ -11,7 +11,7 @@ from Commands import *
 from AbstractGraph import *
 from Settings import *
 from Pin import *
-from FunctionLibrary import *
+from Core.FunctionLibrary import *
 from Node import *
 from Edge import *
 from Widget import *

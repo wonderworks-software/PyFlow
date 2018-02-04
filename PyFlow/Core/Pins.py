@@ -97,7 +97,7 @@ class _Pin(QGraphicsWidget, PinBase):
     def deserialize(owningNode, jsonData):
         name = jsonData['name']
         dataType = jsonData['dataType']
-        direction = jsonData['type']
+        direction = jsonData['direction']
         value = jsonData['value']
         uid = uuid.UUID(jsonData['uuid'])
         bLabelHidden = jsonData['bLabelHidden']
@@ -117,7 +117,7 @@ class _Pin(QGraphicsWidget, PinBase):
     def serialize(self):
         data = {'name': self.name,
                 'dataType': self.dataType,
-                'type': self.direction,
+                'direction': self.direction,
                 'value': self.currentData(),
                 'uuid': str(self.uid),
                 'bLabelHidden': self.bLabelHidden,

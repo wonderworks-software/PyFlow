@@ -1,5 +1,5 @@
 from Qt.QtWidgets import QUndoCommand
-from Edge import Edge
+from Core import Edge
 from uuid import UUID
 
 

@@ -1,7 +1,7 @@
-from AbstractGraph import *
-from Settings import *
-from Node import Node
-from Node import NodeName
+from Core.AbstractGraph import *
+from Core.Settings import *
+from Core import Node
+from Core import NodeName
 from types import MethodType
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem
@@ -188,7 +188,7 @@ class commentNode(Node, NodeBase):
             self.resizeDirection = (1, 0)
             self.setFlag(QGraphicsItem.ItemIsMovable, False)
             self.bResize = True
-        elif (event.pos().y() + self.label().boundingRect().height()) > (self.rect.height() - 30):
+        elif (event.pos().y() + self.label().defaultHeight) > (self.rect.height() - 30):
             self.initialRectHeight = self.rect.height()
             self.resizeDirection = (0, 1)
             self.setFlag(QGraphicsItem.ItemIsMovable, False)

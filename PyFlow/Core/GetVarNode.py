@@ -1,6 +1,6 @@
 from AbstractGraph import *
 from Settings import *
-from Node import Node
+from Core import Node
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore

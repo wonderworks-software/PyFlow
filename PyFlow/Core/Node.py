@@ -14,7 +14,7 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 from Pins import *
 from types import MethodType
-from InputWidgets import getPinWidget
+from InputWidgets import getInputWidget
 from inspect import getargspec
 from NodePainter import NodePainter
 
@@ -29,7 +29,8 @@ class NodeName(QGraphicsTextItem):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.desc = parent.description()
         self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
-        self.h = 30
+        self.defaultHeight = 30
+        self.h = self.defaultHeight
         self.text_color = Colors.PortNameColor
         self.setDefaultTextColor(self.text_color)
         self.opt_font = QtGui.QFont('Consolas')
@@ -472,7 +473,7 @@ class Node(QGraphicsItem, NodeBase):
             for inp in self.inputs.values():
                 if inp.dataType == DataTypes.Exec:
                     continue
-                w = getPinWidget(inp.dataType, inp.setData)
+                w = getInputWidget(inp.dataType, inp.setData)
                 if w:
                     w.setWidgetValue(inp.currentData())
                     w.setObjectName(inp.getName())
@@ -489,7 +490,7 @@ class Node(QGraphicsItem, NodeBase):
             for out in self.outputs.values():
                 if out.dataType == DataTypes.Exec:
                     continue
-                w = getPinWidget(out.dataType, out.setData)
+                w = getInputWidget(out.dataType, out.setData)
                 if w:
                     w.setWidgetValue(out.currentData())
                     w.setObjectName(out.getName())

@@ -35,16 +35,15 @@ from AbstractGraph import *
 from Edge import Edge
 from Node import Node
 from Node import NodeName
-from Nodes import commentNode
+from GetVarNode import GetVarNode
+from SetVarNode import SetVarNode
+import Nodes
 from os import listdir, path, startfile
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
-import Nodes
-from GetVarNode import GetVarNode
-from SetVarNode import SetVarNode
 import FunctionLibraries
 import Commands
-from Variable import VariableBase
+from Core.Variable import VariableBase
 from time import ctime, clock
 import json
 import re
@@ -94,7 +93,7 @@ class {0}(QUndoCommand):
 
     NodeTemplate = """from AbstractGraph import *
 from Settings import *
-from Node import Node
+from Core import Node
 
 
 class {0}(Node):
@@ -149,7 +148,7 @@ class {0}(Node):
             print(e)
 """.format(name)
 
-    LibraryTemplate = """from FunctionLibrary import *
+    LibraryTemplate = """from Core.FunctionLibrary import *
 # import types stuff
 from AGraphCommon import *
 # import stuff you need
@@ -343,7 +342,7 @@ class SceneClass(QGraphicsScene):
             tag, mimeText = event.mimeData().text().split('|')
             name = self.parent().getUniqNodeName(mimeText)
             dropItem = self.itemAt(event.scenePos())
-            if not dropItem or isinstance(dropItem, commentNode):
+            if not dropItem or isinstance(dropItem, Nodes.commentNode):
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = mimeText
                 nodeTemplate['name'] = name
@@ -931,7 +930,7 @@ class GraphWidget(QGraphicsView, Graph):
         if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
             if self.isShortcutsEnabled():
                 # create comment node
-                rect = commentNode.getNodesRect(self.selectedNodes())
+                rect = Nodes.commentNode.getNodesRect(self.selectedNodes())
                 if rect:
                     rect.setTop(rect.top() - 20)
                     rect.setLeft(rect.left() - 20)
@@ -940,8 +939,8 @@ class GraphWidget(QGraphicsView, Graph):
                     rect.setBottom(rect.bottom() + 20)
 
                 nodeTemplate = Node.jsonTemplate()
-                nodeTemplate['type'] = commentNode.__name__
-                nodeTemplate['name'] = self.getUniqNodeName(commentNode.__name__)
+                nodeTemplate['type'] = Nodes.commentNode.__name__
+                nodeTemplate['name'] = self.getUniqNodeName(Nodes.commentNode.__name__)
 
                 if rect:
                     nodeTemplate['x'] = rect.topLeft().x()
@@ -949,7 +948,7 @@ class GraphWidget(QGraphicsView, Graph):
                 else:
                     nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
                     nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
-                nodeTemplate['meta']['label'] = commentNode.__name__
+                nodeTemplate['meta']['label'] = Nodes.commentNode.__name__
                 nodeTemplate['uuid'] = None
                 instance = self.createNode(nodeTemplate)
                 if rect:
@@ -1190,7 +1189,7 @@ class GraphWidget(QGraphicsView, Graph):
 
             # hack. disable signals and call selectionChanged once with last selected item
             self.scene().blockSignals(True)
-            items = [i for i in self.rubberRect.collidingItems() if isinstance(i, Node) and not isinstance(i, commentNode)]
+            items = [i for i in self.rubberRect.collidingItems() if isinstance(i, Node) and not isinstance(i, Nodes.commentNode)]
             for item in items[:-1]:
                 item.setSelected(True)
             self.scene().blockSignals(False)

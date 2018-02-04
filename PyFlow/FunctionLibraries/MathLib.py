@@ -1,5 +1,5 @@
-from FunctionLibrary import *
-from AGraphCommon import *
+from Core.FunctionLibrary import *
+from Core.AGraphCommon import *
 import math
 import random
 import pyrr

@@ -1,11 +1,11 @@
-from AbstractGraph import *
-from Settings import *
-from Node import Node
+from Core.AbstractGraph import *
+from Core.Settings import *
+from Core import Node
 
 
 class forLoop(Node, NodeBase):
     def __init__(self, name, graph):
-        super(forLoop, self).__init__(name, graph, w=100, spacings=Spacings)
+        super(forLoop, self).__init__(name, graph)
         self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
         self.firstIndex = self.addInputPin('start', DataTypes.Int)
         self.lastIndex = self.addInputPin('stop', DataTypes.Int)

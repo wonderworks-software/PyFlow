@@ -1,5 +1,5 @@
-from FunctionLibrary import *
-from AGraphCommon import *
+from Core.FunctionLibrary import *
+from Core.AGraphCommon import *
 import pyrr
 
 
@@ -134,7 +134,7 @@ class Vector3(FunctionLibraryBase):
     @implementNode(returns=(DataTypes.FloatVector3, pyrr.Vector3()), meta={'Category': 'Math|Vector3', 'Keywords': ['vector3']})
     def v3GenerateNormals(v1=(DataTypes.FloatVector3, pyrr.Vector3()), v2=(DataTypes.FloatVector3, pyrr.Vector3()), v3=(DataTypes.FloatVector3, pyrr.Vector3()), norm=(DataTypes.Bool, True)):
         '''Generates a normal vector for 3 vertices.\nThe result is a normalized vector.\nIt is assumed the ordering is counter-clockwise starting at v1, v2 then v3.'''
-        return pyrr.vector3.generate_normals(v1, v2, v3, norm)
+        return pyrr.Vector3(pyrr.vector3.generate_normals(v1, v2, v3, norm))
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Vector3', 'Keywords': ['vector3']})

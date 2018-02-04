@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from FunctionLibrary import *
-from AGraphCommon import *
+from Core.FunctionLibrary import *
+from Core.AGraphCommon import *
 import pyrr
 
 
@@ -10,7 +10,7 @@ class Matrix44(FunctionLibraryBase):
         super(Matrix44, self).__init__()
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Matrix44, pyrr.Matrix44()), nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Matrix44', 'Keywords': []})
+    @implementNode(returns=(DataTypes.Matrix44, pyrr.Matrix44()), nodeType=NodeTypes.Pure, meta={'Category': 'Math|Matrix44', 'Keywords': []})
     def m44Zero():
         '''zero matrix44'''
         return pyrr.Matrix44()
@@ -22,7 +22,7 @@ class Matrix44(FunctionLibraryBase):
         return str(m)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Matrix44, pyrr.Matrix44.identity()), nodeType=NodeTypes.Pure, meta={'Category': 'pyrr|Matrix44', 'Keywords': []})
+    @implementNode(returns=(DataTypes.Matrix44, pyrr.Matrix44.identity()), nodeType=NodeTypes.Pure, meta={'Category': 'Math|Matrix44', 'Keywords': []})
     def m44Ident():
         '''Identity matrix44.'''
         return pyrr.Matrix44.identity()

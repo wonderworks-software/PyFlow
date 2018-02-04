@@ -1,13 +1,13 @@
 from AbstractGraph import *
 from Settings import *
-from Node import Node
+from Core import Node
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QLineEdit
 from Qt import QtCore
 from Qt import QtGui
 from Commands import RemoveNodes
-from InputWidgets import getPinWidget
+from InputWidgets import getInputWidget
 
 
 class SetVarNode(Node, NodeBase):
@@ -41,7 +41,7 @@ class SetVarNode(Node, NodeBase):
         formLayout.addRow("Type", leType)
 
         # input value
-        w = getPinWidget(self.value.dataType, self.value.setData)
+        w = getInputWidget(self.value.dataType, self.value.setData)
         if w:
             w.setWidgetValue(self.value.currentData())
             w.setObjectName(self.value.getName())

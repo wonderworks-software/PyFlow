@@ -1,7 +1,7 @@
 from Qt import QtCore
-from AbstractGraph import *
-from Settings import *
-from Node import Node
+from Core.AbstractGraph import *
+from Core.Settings import *
+from Core import Node
 
 
 class branch(Node, NodeBase):

@@ -3,9 +3,9 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QDoubleSpinBox
 from Qt.QtWidgets import QCheckBox
 from Qt.QtWidgets import QGraphicsProxyWidget
-from AbstractGraph import *
-from Settings import *
-from Node import Node
+from Core.AbstractGraph import *
+from Core.Settings import *
+from Core import Node
 
 
 class call(Node, NodeBase):

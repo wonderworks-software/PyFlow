@@ -15,8 +15,9 @@ for n in os.listdir(os.path.dirname(__file__)):
             exec("from {0} import *".format(nodeName))
             exec("node_class = {0}".format(nodeName))
             _instances[nodeName] = node_class
-        except:
+        except Exception as e:
             # do not load node if errors or unknown modules
+            print(e)
             pass
 
 

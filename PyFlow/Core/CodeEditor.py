@@ -14,7 +14,7 @@ import PinWidget_ui
 from AbstractGraph import *
 import inspect
 from types import MethodType
-from Node import Node
+from Core import Node
 import weakref
 from keyword import kwlist
 
