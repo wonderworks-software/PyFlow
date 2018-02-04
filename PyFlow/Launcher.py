@@ -2,11 +2,6 @@ from os import path
 import sys
 from Qt import QtGui
 from Qt import QtCore
-from Core.Widget import GraphWidget
-from Core.Widget import PluginType, _implementPlugin
-from Core.Widget import Direction
-from Core.Widget import NodesBox
-from Nodes import getNodeNames
 from Qt.QtWidgets import QMainWindow
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QStyleFactory
@@ -16,8 +11,13 @@ from Qt.QtWidgets import QAction
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QUndoView
-import GraphEditor_ui
+from Core.Widget import GraphWidget
+from Core.Widget import PluginType, _implementPlugin
+from Core.Widget import Direction
+from Core.Widget import NodesBox
 from Core.VariablesWidget import VariablesWidget
+from Nodes import getNodeNames
+import GraphEditor_ui
 import json
 
 

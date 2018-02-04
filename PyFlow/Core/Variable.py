@@ -14,7 +14,7 @@ from uuid import uuid4
 import inspect
 from AbstractGraph import *
 import InputWidgets
-import Pins
+# import Pins
 
 
 class TypeWidget(QWidget):

@@ -1,3 +1,4 @@
+from Pin import _Pin
 from Edge import Edge
 from Node import Node
 from Node import NodeName

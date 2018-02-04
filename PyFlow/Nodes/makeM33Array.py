@@ -2,7 +2,7 @@ from Core.AbstractGraph import *
 from Core.Settings import *
 from Core import Node
 from Qt.QtWidgets import QMenu
-from Core.Pins import _Pin
+from Core.Pin import _Pin
 
 
 class makeM33Array(Node):

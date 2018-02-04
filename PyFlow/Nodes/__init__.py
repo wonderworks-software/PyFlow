@@ -17,7 +17,7 @@ for n in os.listdir(os.path.dirname(__file__)):
             _instances[nodeName] = node_class
         except Exception as e:
             # do not load node if errors or unknown modules
-            print(e)
+            print(e, nodeName)
             pass
 
 

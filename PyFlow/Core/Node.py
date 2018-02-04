@@ -12,7 +12,8 @@ from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
-from Pins import *
+from AbstractGraph import *
+from Pins import CreatePin
 from types import MethodType
 from InputWidgets import getInputWidget
 from inspect import getargspec
