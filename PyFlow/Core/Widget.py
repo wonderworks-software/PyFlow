@@ -38,7 +38,7 @@ from Node import NodeName
 from GetVarNode import GetVarNode
 from SetVarNode import SetVarNode
 import Nodes
-from os import listdir, path, startfile
+from os import listdir, path
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
 import FunctionLibraries
@@ -49,17 +49,6 @@ import json
 import re
 
 
-class Direction:
-    Left = 0
-    Right = 1
-    Up = 2
-    Down = 3
-
-
-def getMidPoint(args):
-    return [sum(i) / len(i) for i in zip(*args)]
-
-
 def clearLayout(layout):
     while layout.count():
         child = layout.takeAt(0)
@@ -67,156 +56,6 @@ def clearLayout(layout):
             child.widget().deleteLater()
         elif child.layout() is not None:
             clearLayout(child.layout())
-
-
-class PluginType:
-    pNode = 0
-    pCommand = 1
-    pFunctionLibrary = 2
-
-
-def _implementPlugin(name, pluginType):
-    CommandTemplate = """from Qt.QtWidgets import QUndoCommand
-
-
-class {0}(QUndoCommand):
-
-    def __init__(self):
-        super({0}, self).__init__()
-
-    def undo(self):
-        pass
-
-    def redo(self):
-        pass
-""".format(name)
-
-    NodeTemplate = """from AbstractGraph import *
-from Settings import *
-from Core import Node
-
-
-class {0}(Node):
-    def __init__(self, name, graph):
-        super({0}, self).__init__(name, graph)
-        self.inp0 = self.addInputPin('in0', DataTypes.Bool)
-        self.out0 = self.addOutputPin('out0', DataTypes.Bool)
-        pinAffects(self.inp0, self.out0)
-
-    @staticmethod
-    def pinTypeHints():
-        '''
-            used by nodebox to suggest supported pins
-            when drop wire from pin into empty space
-        '''
-        return {{'inputs': [DataTypes.Bool], 'outputs': [DataTypes.Bool]}}
-
-    @staticmethod
-    def category():
-        '''
-            used by nodebox to place in tree
-            to make nested one - use '|' like this ( 'CatName|SubCatName' )
-        '''
-        return 'Common'
-
-    @staticmethod
-    def keywords():
-        '''
-            used by nodebox filter while typing
-        '''
-        return []
-
-    @staticmethod
-    def description():
-        '''
-            used by property view and node box widgets
-        '''
-        return 'default description'
-
-    def compute(self):
-        '''
-            1) get data from inputs
-            2) do stuff
-            3) put data to outputs
-            4) call output execs
-        '''
-
-        str_data = self.inp0.getData()
-        try:
-            self.out0.setData(str_data.upper())
-        except Exception as e:
-            print(e)
-""".format(name)
-
-    LibraryTemplate = """from Core.FunctionLibrary import *
-# import types stuff
-from AGraphCommon import *
-# import stuff you need
-# ...
-
-
-class {0}(FunctionLibraryBase):
-    '''doc string for {0}'''
-    def __init__(self):
-        super({0}, self).__init__()
-
-    @staticmethod
-    @implementNode(returns=(DataTypes.Int, 0), meta={{'Category': 'CategoryName|SubCategory name', 'Keywords': ['+', 'append', 'sum']}})
-    def add(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0)):
-        '''Sum of two ints.'''
-        return A + B
-
-    @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={{'Category': 'CategoryName', 'Keywords': ['/']}})
-    def divide(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
-        '''Integer devision.'''
-        try:
-            d = A / B
-            result.setData(True)
-            return d
-        except:
-            result.setData(False)
-            return -1
-
-""".format(name)
-
-    if pluginType == PluginType.pNode:
-        file_path = "{0}/{1}.py".format(Nodes.__path__[0], name)
-        existing_nodes = [n.split(".")[0] for n in listdir(Nodes.__path__[0]) if n.endswith(".py") and "__init__" not in n]
-
-        if name in existing_nodes:
-            print("[ERROR] Node {0} already exists! Chose another name".format(name))
-            return
-
-        # write to file. delete older if needed
-        with open(file_path, "wb") as f:
-            f.write(NodeTemplate)
-        print("[INFO] Node {0} been created.\nIn order to appear in node box, restart application.".format(name))
-        startfile(file_path)
-
-    if pluginType == PluginType.pCommand:
-        file_path = "{0}/{1}.py".format(Commands.__path__[0], name)
-        existing_commands = [c.split(".")[0] for c in listdir(Commands.__path__[0]) if c.endswith(".py") and "__init__" not in c]
-        if name in existing_commands:
-            print("[ERROR] Command {0} already exists! Chose another name".format(name))
-            return
-        # write to file. delete older if needed
-        with open(file_path, "wb") as f:
-            f.write(CommandTemplate)
-        print("[INFO] Command {0} been created.\n Restart application.".format(name))
-        startfile(file_path)
-
-    if pluginType == PluginType.pFunctionLibrary:
-        filePath = "{0}/{1}.py".format(FunctionLibraries.__path__[0], name)
-        existingLibs = [c.split(".")[0] for c in listdir(FunctionLibraries.__path__[0]) if c.endswith(".py") and "__init__" not in c]
-        if name in existingLibs:
-            print("[ERROR] Library {0} already exists! Chose another name".format(name))
-            return
-        # write to file. delete older if needed
-        with open(filePath, "wb") as f:
-            f.write(LibraryTemplate)
-        print("[INFO] Command {0} been created.\n Restart application.".format(name))
-        startfile(filePath)
 
 
 def importByName(module, name):

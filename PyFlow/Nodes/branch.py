@@ -1,4 +1,3 @@
-from Qt import QtCore
 from Core.AbstractGraph import *
 from Core.Settings import *
 from Core import Node

@@ -2,7 +2,7 @@ import os
 _PINS = {}
 
 
-def REGISTER_PIN_TYPE(pinSubclass):
+def _REGISTER_PIN_TYPE(pinSubclass):
     dType = pinSubclass.pinDataType()[0]
     if dType not in _PINS:
         _PINS[pinSubclass.pinDataType()[0]] = pinSubclass
@@ -17,7 +17,7 @@ for n in os.listdir(os.path.dirname(__file__)):
         try:
             exec("from {0} import {0}".format(pinName))
             exec("pin_class = {0}".format(pinName))
-            REGISTER_PIN_TYPE(pin_class)
+            _REGISTER_PIN_TYPE(pin_class)
         except Exception as e:
             print(e, pinName)
             pass

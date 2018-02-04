@@ -128,6 +128,7 @@
     <addaction name="actionNew_Node"/>
     <addaction name="actionNew_Command"/>
     <addaction name="actionFunction_Library"/>
+    <addaction name="actionNew_pin"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -523,6 +524,15 @@
    </property>
    <property name="text">
     <string>History</string>
+   </property>
+  </action>
+  <action name="actionNew_pin">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/pin.png</normaloff>:/icons/resources/pin.png</iconset>
+   </property>
+   <property name="text">
+    <string>New pin</string>
    </property>
   </action>
  </widget>

@@ -24,6 +24,10 @@ def lerp(start, end, alpha):
     return (start + alpha * (end - start))
 
 
+def getMidPoint(args):
+    return [sum(i) / len(i) for i in zip(*args)]
+
+
 def clamp(n, vmin, vmax):
     return max(min(n, vmax), vmin)
 
@@ -190,3 +194,10 @@ class PinDirection:
 class NodeTypes:
     Callable = 0
     Pure = 1
+
+
+class Direction:
+    Left = 0
+    Right = 1
+    Up = 2
+    Down = 3

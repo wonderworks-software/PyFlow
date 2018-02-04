@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/PinWidget_ui.ui'
 #
-# Created: Fri Feb 02 22:36:17 2018
+# Created: Sun Feb 04 18:32:04 2018
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!

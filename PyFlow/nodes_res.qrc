@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>resources/pin.png</file>
     <file>resources/reset.png</file>
     <file>resources/variable.png</file>
     <file>resources/script.png</file>

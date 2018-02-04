@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
 #
-# Created: Fri Feb 02 22:36:17 2018
+# Created: Sun Feb 04 18:32:04 2018
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -226,6 +226,11 @@ class Ui_MainWindow(object):
         self.actionHistory = QtGui.QAction(MainWindow)
         self.actionHistory.setIcon(icon1)
         self.actionHistory.setObjectName("actionHistory")
+        self.actionNew_pin = QtGui.QAction(MainWindow)
+        icon19 = QtGui.QIcon()
+        icon19.addPixmap(QtGui.QPixmap(":/icons/resources/pin.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionNew_pin.setIcon(icon19)
+        self.actionNew_pin.setObjectName("actionNew_pin")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionClear_history)
@@ -240,6 +245,7 @@ class Ui_MainWindow(object):
         self.menuPlugins.addAction(self.actionNew_Node)
         self.menuPlugins.addAction(self.actionNew_Command)
         self.menuPlugins.addAction(self.actionFunction_Library)
+        self.menuPlugins.addAction(self.actionNew_pin)
         self.menuBar.addAction(self.menuFile.menuAction())
         self.menuBar.addAction(self.menuEdit.menuAction())
         self.menuBar.addAction(self.menuView.menuAction())
@@ -296,5 +302,6 @@ class Ui_MainWindow(object):
         self.actionClear_history.setText(QtGui.QApplication.translate("MainWindow", "Clear history", None, QtGui.QApplication.UnicodeUTF8))
         self.actionVariables.setText(QtGui.QApplication.translate("MainWindow", "Variables", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHistory.setText(QtGui.QApplication.translate("MainWindow", "History", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew_pin.setText(QtGui.QApplication.translate("MainWindow", "New pin", None, QtGui.QApplication.UnicodeUTF8))
 
 import nodes_res_rc
