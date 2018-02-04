@@ -260,25 +260,18 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.leftDockGridLayout.addWidget(self.variablesWidget)
 
         self._lastClock = 0.0
-        self._defaultFps = EDITOR_TARGET_FPS
-        self.fps = self._defaultFps
-        self.fpsBuffer = CircularBuffer(10)
+        self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.mainLoop)
 
     def startMainLoop(self):
-        try:
-            self.tick_timer.start(1000 / int(self.fps))
-        except:
-            self.tick_timer.start(1000 / EDITOR_TARGET_FPS)
+        self.tick_timer.start(1000 / EDITOR_TARGET_FPS)
 
     def mainLoop(self):
         deltaTime = clock() - self._lastClock
         ds = (deltaTime * 1000.0)
         if ds > 0:
             self.fps = int(1000.0 / ds)
-            self.fpsBuffer.append(self.fps)
-            self.setWindowTitle("PyFlow. fps=[{0}]".format(int(mean(self.fpsBuffer.get()))))
         self.G.Tick(deltaTime)
         self._lastClock = clock()
 
