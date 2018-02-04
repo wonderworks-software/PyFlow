@@ -180,6 +180,34 @@ class asynchronous(object):
             return self.result
 
 
+# circular buffer
+class CircularBuffer(object):
+    def __init__(self, capacity):
+        super(CircularBuffer, self).__init__()
+        self._capacity = capacity
+        self._ls = []
+        self._current = 0
+
+    def _is_full(self):
+        return len(self._ls) == self.capacity()
+
+    def append(self, item):
+        if self._is_full():
+            self._ls[self._current] = item
+            self._current = (self._current + 1) % self.capacity()
+        else:
+            self._ls.append(item)
+
+    def get(self):
+        if self._is_full():
+            return self._ls[self._current:] + self._ls[:self._current]
+        else:
+            return self._ls
+
+    def capacity(self):
+        return self._capacity
+
+
 class PinSelectionGroup:
     Inputs = -1
     Outputs = 1

@@ -32,7 +32,7 @@ class NodeName(QGraphicsTextItem):
         self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
         self.defaultHeight = 30
         self.h = self.defaultHeight
-        self.text_color = Colors.PortNameColor
+        self.text_color = Colors.PinNameColor
         self.setDefaultTextColor(self.text_color)
         self.opt_font = QtGui.QFont('Consolas')
         self.opt_font_size = 8
@@ -334,8 +334,8 @@ class Node(QGraphicsItem, NodeBase):
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
         self.w = self.getWidth()
-        self.nodeMainGWidget.setMaximumWidth(self.w + self.spacings.kPortOffset)
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPortOffset, self.childrenBoundingRect().height()))
+        self.nodeMainGWidget.setMaximumWidth(self.w + self.spacings.kPinOffset)
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPinOffset, self.childrenBoundingRect().height()))
         if self.isCallable():
             if 'flow' not in self.category().lower():
                 if self.label().bUseTextureBg:
@@ -349,11 +349,11 @@ class Node(QGraphicsItem, NodeBase):
         NodeBase.postCreate(self, jsonTemplate)
 
     def getWidth(self):
-        dPorts = 0
+        dPins = 0
         if len(self.outputs.values()) > 0:
-            dPorts = abs(self.outputs.values()[0].scenePos().x() - self.scenePos().x())
-        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.getName()) + self.spacings.kPortSpacing
-        return max(dPorts, fontWidth)
+            dPins = abs(self.outputs.values()[0].scenePos().x() - self.scenePos().x())
+        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.getName()) + self.spacings.kPinSpacing
+        return max(dPins, fontWidth)
 
     @staticmethod
     def jsonTemplate():
@@ -572,7 +572,7 @@ class Node(QGraphicsItem, NodeBase):
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         font = QtGui.QFont('Consolas')
-        color = Colors.PortNameColor
+        color = Colors.PinNameColor
         font.setPointSize(6)
         lbl.setFont(font)
         style = 'color: rgb({0}, {1}, {2}, {3});'.format(

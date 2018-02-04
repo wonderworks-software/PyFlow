@@ -466,8 +466,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.parent.actionClear_history.triggered.connect(self.undoStack.clear)
         self.parent.listViewUndoStack.setStack(self.undoStack)
         self.menu = QMenu()
-        self._lastClock = 0.0
-        self.fps = 0
         self.setScene(SceneClass(self))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pressed_item = None
@@ -525,9 +523,6 @@ class GraphWidget(QGraphicsView, Graph):
         # self.registeredCommands = {}
         # self.registerCommands()
         self._sortcuts_enabled = True
-        self.tick_timer = QtCore.QTimer()
-        self.tick_timer.timeout.connect(self.mainLoop)
-        self.tick_timer.start(20)
         # self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid_size = 10
         self.drawGrigSize = self.grid_size * 2
@@ -548,8 +543,6 @@ class GraphWidget(QGraphicsView, Graph):
             self.node_box.lineEdit.setFocus()
 
     def shoutDown(self):
-        self.tick_timer.stop()
-        self.tick_timer.timeout.disconnect()
         FunctionLibraries.shoutDown()
         self.scene().shoutDown()
         self.scene().clear()
@@ -593,19 +586,13 @@ class GraphWidget(QGraphicsView, Graph):
             self.centerOn(pin)
             pin.highlight()
 
-    def mainLoop(self):
-        deltaTime = clock() - self._lastClock
-        ds = (deltaTime * 1000.0)
-        if ds > 0:
-            self.fps = 1000.0 / ds
+    def Tick(self, deltaTime):
         if self.autoPanController.isActive():
             self.moveScrollbar(self.autoPanController.getDelta())
         for n in self.getNodes():
             n.Tick(deltaTime)
         for e in self.edges.values():
             e.Tick()
-
-        self._lastClock = clock()
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
@@ -628,7 +615,7 @@ class GraphWidget(QGraphicsView, Graph):
     def enableSortcuts(self):
         self._sortcuts_enabled = True
 
-    def findPort(self, pinName):
+    def findPin(self, pinName):
         node = self.getNodeByName(pinName.split(".")[0])
         if node:
             attr = node.getPinByName(pinName.split(".")[1])

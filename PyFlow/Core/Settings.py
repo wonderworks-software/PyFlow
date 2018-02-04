@@ -3,8 +3,8 @@ from Qt import QtCore
 
 
 class Spacings:
-    kPortSpacing = 4
-    kPortOffset = 12
+    kPinSpacing = 4
+    kPinOffset = 12
     kSplitterHandleWidth = 5
 
 
@@ -38,8 +38,8 @@ class Colors:
     GridColor = QtGui.QColor(100, 100, 100, 100)
     GridColorDarker = QtGui.QColor(20, 20, 20)
     Connectors = QtGui.QColor(0, 100, 0, 255)
-    PortLinesA = QtGui.QColor(0, 90, 0, 0)
-    PortLinesB = QtGui.QColor(0, 0, 90, 0)
+    PinLinesA = QtGui.QColor(0, 90, 0, 0)
+    PinLinesB = QtGui.QColor(0, 0, 90, 0)
     NodeNameRect = QtGui.QColor(80, 80, 100, 200)
     Red = QtGui.QColor(255, 0, 0, 255)
     Green = QtGui.QColor(96, 169, 23, 255)
@@ -55,7 +55,7 @@ class Colors:
     CommentNodePen = QtGui.QColor(0, 0, 0, 100)
     CommentNodeResizer = QtGui.QColor(255, 255, 255, 20)
     SplitterHandleColor = QtGui.QColor(255, 255, 255, 20)
-    PortNameColor = QtGui.QColor(255, 255, 255, 255)
+    PinNameColor = QtGui.QColor(255, 255, 255, 255)
     Pink = QtGui.QColor(255, 8, 127)
     Yellow = QtGui.QColor(255, 211, 25)
     Gray = QtGui.QColor(110, 110, 110)

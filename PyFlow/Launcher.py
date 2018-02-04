@@ -15,16 +15,20 @@ from Core.Widget import GraphWidget
 from Core.Widget import Direction
 from Core.Widget import NodesBox
 from Core.VariablesWidget import VariablesWidget
+from Core.AGraphCommon import CircularBuffer
 import Nodes
 import Commands
 import FunctionLibraries
 import Pins
 import GraphEditor_ui
 import json
+from time import clock
+from numpy import mean
 
 
 FILE_DIR = path.dirname(__file__)
 SETTINGS_PATH = FILE_DIR + "/appConfig.ini"
+EDITOR_TARGET_FPS = 60
 
 
 class PluginType:
@@ -255,8 +259,28 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.variablesWidget = VariablesWidget(self, self.G)
         self.leftDockGridLayout.addWidget(self.variablesWidget)
 
-    def OnLoadEditorConfig(self, configJson):
-        pass
+        self._lastClock = 0.0
+        self._defaultFps = EDITOR_TARGET_FPS
+        self.fps = self._defaultFps
+        self.fpsBuffer = CircularBuffer(10)
+        self.tick_timer = QtCore.QTimer()
+        self.tick_timer.timeout.connect(self.mainLoop)
+
+    def startMainLoop(self):
+        try:
+            self.tick_timer.start(1000 / int(self.fps))
+        except:
+            self.tick_timer.start(1000 / EDITOR_TARGET_FPS)
+
+    def mainLoop(self):
+        deltaTime = clock() - self._lastClock
+        ds = (deltaTime * 1000.0)
+        if ds > 0:
+            self.fps = int(1000.0 / ds)
+            self.fpsBuffer.append(self.fps)
+            self.setWindowTitle("PyFlow. fps=[{0}]".format(int(mean(self.fpsBuffer.get()))))
+        self.G.Tick(deltaTime)
+        self._lastClock = clock()
 
     def createPopupMenu(self):
         pass
@@ -270,6 +294,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             _implementPlugin(name, pluginType)
 
     def closeEvent(self, event):
+        self.tick_timer.stop()
+        self.tick_timer.timeout.disconnect()
         self.G.shoutDown()
         # save editor config
         settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
@@ -345,10 +371,11 @@ if __name__ == '__main__':
         QWidget:focus {border:2 inset black;}\
         ")
 
-    instance = PyFlow()
-
     settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
+
+    instance = PyFlow()
     instance.applySettings(settings)
+    instance.startMainLoop()
 
     app.setActiveWindow(instance)
     instance.show()
