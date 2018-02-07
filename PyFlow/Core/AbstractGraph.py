@@ -77,7 +77,7 @@ class INode(IItemBase, ISerializable):
         raise NotImplementedError('compute method of INode is not implemented')
 
 
-class PinBase(IPin, ISerializable):
+class PinBase(IPin):
     def __init__(self, name, parent, dataType, direction):
         super(PinBase, self).__init__()
         self.parent = weakref.ref(parent)

@@ -1,0 +1,1 @@
+%~dp0/PyFlow/Python27/Scripts/doxypypy.exe -a -c %1
