@@ -111,14 +111,8 @@ class _Pin(QGraphicsWidget, PinBase):
         return p
 
     def serialize(self):
-        data = {'name': self.name,
-                'dataType': self.dataType,
-                'direction': self.direction,
-                'value': self.currentData(),
-                'uuid': str(self.uid),
-                'bLabelHidden': self.bLabelHidden,
-                'bDirty': self.dirty
-                }
+        data = PinBase.serialize(self)
+        data['bLabelHidden'] = self.bLabelHidden
         return data
 
     def ungrabMouseEvent(self, event):

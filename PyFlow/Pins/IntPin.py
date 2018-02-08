@@ -13,7 +13,7 @@ class IntPin(_Pin):
         return Colors.Int
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         return DataTypes.Int, 0
 
     def supportedDataTypes(self):

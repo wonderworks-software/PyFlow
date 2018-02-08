@@ -146,7 +146,7 @@ class VariableBase(QWidget):
     def setDataType(self, dataType, _bJustSpawned=False):
         self.dataType = dataType
         self.widget.color = Pins.findPinClassByType(self.dataType).color()
-        self.value = Pins.findPinClassByType(self.dataType).pinDataType()[1]
+        self.value = Pins.findPinClassByType(self.dataType).pinDataTypeHint()[1]
         self.widget.update()
         if _bJustSpawned:
             return

@@ -26,7 +26,7 @@ class ExecPin(_Pin):
         return Colors.Exec
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         return DataTypes.Exec, None
 
     def setData(self, data):

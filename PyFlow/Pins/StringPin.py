@@ -16,7 +16,7 @@ class StringPin(_Pin):
         return Colors.String
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         return DataTypes.String, ''
 
     def setData(self, data):

@@ -13,7 +13,7 @@ class FloatVector4Pin(_Pin):
         return (DataTypes.FloatVector4,)
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         return DataTypes.FloatVector4, Vector4()
 
     @staticmethod

@@ -3,9 +3,12 @@ _PINS = {}
 
 
 def _REGISTER_PIN_TYPE(pinSubclass):
-    dType = pinSubclass.pinDataType()[0]
+    '''
+    registering pin
+    '''
+    dType = pinSubclass.pinDataTypeHint()[0]
     if dType not in _PINS:
-        _PINS[pinSubclass.pinDataType()[0]] = pinSubclass
+        _PINS[pinSubclass.pinDataTypeHint()[0]] = pinSubclass
     else:
         raise Exception("Error registering pin type {0}\n pin with ID [{1}] already registered".format(pinSubclass.__name__))
 

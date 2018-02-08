@@ -13,7 +13,7 @@ class FloatPin(_Pin):
         return Colors.Float
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         '''data type index and default value'''
         return DataTypes.Float, 0.0
 

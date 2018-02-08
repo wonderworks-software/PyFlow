@@ -13,7 +13,9 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @implementNode(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
     def pyprint(entity=(DataTypes.String, None)):
-        '''print string'''
+        '''
+        printing a string
+        '''
         print(entity)
 
     @staticmethod

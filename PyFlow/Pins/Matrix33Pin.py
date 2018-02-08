@@ -17,7 +17,7 @@ class Matrix33Pin(_Pin):
         return Colors.Matrix33
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         return DataTypes.Matrix33, Matrix33()
 
     def serialize(self):

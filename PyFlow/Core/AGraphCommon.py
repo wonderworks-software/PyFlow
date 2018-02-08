@@ -1,5 +1,5 @@
 '''
-common defines, functions and structures
+@package common defines, functions and structures
 '''
 import math
 import time
@@ -118,6 +118,9 @@ def memoize(foo):
 
 
 class DataTypes:
+    '''
+    Data types identifires.
+    '''
     Float = 0
     Int = 1
     String = 2

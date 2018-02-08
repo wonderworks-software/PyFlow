@@ -16,7 +16,7 @@ class BoolPin(_Pin):
         return Colors.Bool
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         return DataTypes.Bool, False
 
     def setData(self, data):

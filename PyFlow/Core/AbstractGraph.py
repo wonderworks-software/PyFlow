@@ -1,3 +1,7 @@
+'''
+Common definitions
+'''
+
 from AGraphCommon import *
 import weakref
 import uuid
@@ -9,22 +13,238 @@ from copy import deepcopy
 
 
 class ISerializable(object):
-    """docstring for ISerializable"""
+    """
+    Interface for serialization and deserialization.
+    """
     def __init__(self):
         super(ISerializable, self).__init__()
 
-    def serialize(self):
+    def serialize(self, *args, **Kwargs):
+        '''
+        Implements how item should be serialized.
+
+        Raises:
+            NotImplementedError.
+        '''
         raise NotImplementedError('serialize method of ISerializable is not implemented')
 
-    def deserialize(self):
+    def deserialize(self, *args, **Kwargs):
+        '''
+        Implements how item should be deserialized.
+
+        Raises:
+            NotImplementedError.
+        '''
         raise NotImplementedError('deserialize method of ISerializable is not implemented')
 
 
-class IItemBase(object):
+class IItemBase(ISerializable):
+    '''
+    Item interface.
+
+    Base for pins and nodes.
+    '''
 
     def __init__(self):
         super(IItemBase, self).__init__()
+
+    @property
+    def uid(self):
+        '''
+        uid getter.
+
+        used by graph and by nodes for fast members access
+        pins inside node and nodes inside graph.
+
+        Returns:
+            universally unique identifier UUID class.
+        '''
+        pass
+
+    @uid.setter
+    def uid(self, value):
+        '''
+        uid setter.
+
+        Args:
+            value:  uuid4 universally unique identifier
+        '''
+        pass
+
+    @uid.deleter
+    def uid(self):
+        '''
+        uid deleter.
+
+        uid is a fundamental element. Do not allow to accidentally delete it.
+
+        Raises:
+            NotImplementedError.
+        '''
+        raise NotImplementedError('uid property of IItemBase can not be deleted')
+
+    def getName(self):
+        '''
+        returns item's name as string.
+
+        Returns:
+            string name of item.
+        '''
+        raise NotImplementedError('getName method of IItemBase is not implemented')
+
+    def setName(self, name):
+        '''
+        sets item's name.
+
+        Args:
+            name: string to be used as name.
+        '''
+        raise NotImplementedError('setName method of IItemBase is not implemented')
+
+
+class IPin(IItemBase):
+    """
+    Pin interface.
+    """
+
+    def __init__(self):
+        super(IPin, self).__init__()
+
+    @staticmethod
+    def color():
+        '''
+        Defines what color pin will be drawn.
+
+        Returns:
+            QColor class.
+        '''
+        raise NotImplementedError('color method of IPin is not implemented')
+
+    @staticmethod
+    def pinDataTypeHint():
+        """
+        Static hint of what data type is this pin, as well as default value for this data type.
+
+        Used to easily find pin classes by type id.
+
+
+        Returns:
+            A tuple containing data type id as first element + default value for this data type as second.
+
+        Examples:
+            # printing hints
+            >>> somePin.pinDataTypeHint()
+            (0, 0.0)
+            >>> somePin.pinDataTypeHint()
+            (3, False)
+
+            # this is how it used in pins initialization
+            >>> def _REGISTER_PIN_TYPE(pinSubclass):
+            >>>     dType = pinSubclass.pinDataTypeHint()[0]
+            >>>     if dType not in _PINS:
+            >>>         _PINS[pinSubclass.pinDataTypeHint()[0]] = pinSubclass
+            >>>     else:
+            >>>         raise Exception("Error registering pin type {0}\n pin with ID [{1}] already registered".format(pinSubclass.__name__))
+
+        \sa AGraphCommon.DataTypes
+        """
+        raise NotImplementedError('pinDataTypeHint method of IPin is not implemented')
+
+    def supportedDataTypes(self):
+        '''
+        An array of supported data types.
+
+        Array of data types that can be casted to this type. For example - int can support float, or vector3 can support vector4 etc.
+        '''
+        raise NotImplementedError('supportedDataTypes method of IPin is not implemented')
+
+    def defaultValue(self):
+        '''
+        Default value for this particular pin.
+
+        This can be set whenever you need.
+
+        \sa Pins
+        '''
+        raise NotImplementedError('defaultValue method of IPin is not implemented')
+
+    def getData(self):
+        raise NotImplementedError('getData method of IPin is not implemented')
+
+    def setData(self, value):
+        raise NotImplementedError('setData method of IPin is not implemented')
+
+    def call(self):
+        raise NotImplementedError('call method of IPin is not implemented')
+
+    @property
+    def dataType(self):
+        raise NotImplementedError('dataType getter method of IPin is not implemented')
+
+    @dataType.setter
+    def dataType(self, value):
+        raise NotImplementedError('dataType setter method of IPin is not implemented')
+
+
+class INode(IItemBase):
+    def __init__(self):
+        super(INode, self).__init__()
+
+    def compute(self):
+        raise NotImplementedError('compute method of INode is not implemented')
+
+    def isCallable(self):
+        raise NotImplementedError('isCallable method of INode is not implemented')
+
+    def addInputPin(self, pinName, dataType, foo=None):
+        raise NotImplementedError('addInputPin method of INode is not implemented')
+
+    def addOutputPin(self, pinName, dataType, foo=None):
+        raise NotImplementedError('addOutputPin method of INode is not implemented')
+
+    def getUniqPinName(self, name):
+        raise NotImplementedError('getUniqPinName method of INode is not implemented')
+
+    def postCreate(self, jsonTemplate=None):
+        raise NotImplementedError('postCreate method of INode is not implemented')
+
+
+class PinBase(IPin):
+    def __init__(self, name, parent, dataType, direction):
+        super(PinBase, self).__init__()
         self._uid = uuid.uuid4()
+        self._dataType = None
+        self._data = None
+        self._defaultValue = None
+        self.dirty = True
+        self._connected = False
+        self.affects = []
+        self.affected_by = []
+        self.edge_list = []
+
+        self.parent = weakref.ref(parent)
+        self.setName(name)
+        self.dataType = dataType
+
+        self.direction = direction
+
+    # ISerializable interface
+
+    def serialize(self):
+        data = {'name': self.getName(),
+                'dataType': self.dataType,
+                'direction': self.direction,
+                'value': self.currentData(),
+                'uuid': str(self.uid),
+                'bDirty': self.dirty
+                }
+        return data
+
+    @staticmethod
+    def deserialize(owningNode, jsonData):
+        pass
+
+    # IItemBase interface
 
     @property
     def uid(self):
@@ -32,79 +252,66 @@ class IItemBase(object):
 
     @uid.setter
     def uid(self, value):
+        self.parent().graph().pins[value] = self.parent().graph().pins.pop(self._uid)
         self._uid = value
-
-    @uid.deleter
-    def uid(self):
-        raise NotImplementedError('uid property of IItemBase can not be deleted')
-
-    def getName(self):
-        raise NotImplementedError('getName method of IItemBase is not implemented')
-
-    def setName(self):
-        raise NotImplementedError('setName method of IItemBase is not implemented')
-
-
-class IPin(IItemBase, ISerializable):
-    """Pin interface"""
-
-    def __init__(self):
-        super(IPin, self).__init__()
-
-    @staticmethod
-    def color():
-        raise NotImplementedError('color method of IPin is not implemented')
-
-    @staticmethod
-    def pinDataType():
-        raise NotImplementedError('pinDataType method of IPin is not implemented')
-
-    def supportedDataTypes(self):
-        raise NotImplementedError('supportedDataTypes method of IPin is not implemented')
-
-    def defaultValue(self):
-        raise NotImplementedError('defaultValue method of IPin is not implemented')
-
-    def setData(self, value):
-        raise NotImplementedError('setData method of IPin is not implemented')
-
-
-class INode(IItemBase, ISerializable):
-    def __init__(self):
-        super(INode, self).__init__()
-
-    def compute(self):
-        raise NotImplementedError('compute method of INode is not implemented')
-
-
-class PinBase(IPin):
-    def __init__(self, name, parent, dataType, direction):
-        super(PinBase, self).__init__()
-        self.parent = weakref.ref(parent)
-        self.setName(name)
-        self._dataType = None
-        self._data = None
-        self._defaultValue = None
-        self.dataType = dataType
-
-        self.affects = []
-        self.affected_by = []
-        self.edge_list = []
-        self.direction = direction
-        self.dirty = True
-        self._connected = False
-
-    @staticmethod
-    def pinDataType():
-        return None
 
     def setName(self, name):
         self.name = name.replace(" ", "_")
 
-    @IItemBase.uid.setter
-    def uid(self, value):
-        self.parent().graph().pins[value] = self.parent().graph().pins.pop(self._uid)
-        self._uid = value
+    def getName(self):
+        return self.parent().name + '.' + self.name
+
+    # IPin interface
+
+    def color(self):
+        return None
+
+    @staticmethod
+    def pinDataTypeHint():
+        return None
+
+    def supportedDataTypes(self):
+        return (self.dataType,)
+
+    def defaultValue(self):
+        return self._defaultValue
+
+    def getData(self):
+        # if not connected - return data
+        if not self.hasConnections():
+            if self.dataType == DataTypes.Array:
+                return []
+            return self.currentData()
+
+        if self.direction == PinDirection.Output:
+            if self.dirty:
+                self.parent().compute()
+            self.setClean()
+            return self._data
+        if self.direction == PinDirection.Input:
+            if self.dirty or self.parent().bCallable:
+                out = [i for i in self.affected_by if i.direction == PinDirection.Output]
+                if not out == []:
+                    compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
+                    # call from left to right
+                    for layer in reversed(sorted([i for i in compute_order.keys()])):
+                        for node in compute_order[layer]:
+                            node.compute()
+                    self.setClean()
+                    return out[0]._data
+            else:
+                self.setClean()
+                return self._data
+
+    def setData(self, data):
+        self.setClean()
+        if self.direction == PinDirection.Output:
+            for i in self.affects:
+                i._data = data
+                i.setClean()
+
+    def call(self):
+        pass
 
     @property
     def dataType(self):
@@ -114,8 +321,7 @@ class PinBase(IPin):
     def dataType(self, value):
         self._dataType = value
 
-    def supportedDataTypes(self):
-        return (self.dataType,)
+    # PinBase methods
 
     def kill(self):
         if self.direction == PinDirection.Input and self.uid in self.parent().inputs:
@@ -124,9 +330,6 @@ class PinBase(IPin):
             self.parent().outputs.pop(self.uid)
         if self.uid in self.parent().graph().pins:
             self.parent().graph().pins.pop(self.uid)
-
-    def getName(self):
-        return self.parent().name + '.' + self.name
 
     def currentData(self):
         if self._data is None:
@@ -159,56 +362,17 @@ class PinBase(IPin):
         for i in self.affects:
             i.dirty = True
 
-    def getData(self):
-        # if not connected - return data
-        if not self.hasConnections():
-            if self.dataType == DataTypes.Array:
-                return []
-            return self.currentData()
-
-        if self.direction == PinDirection.Output:
-            if self.dirty:
-                self.parent().compute()
-            self.setClean()
-            return self._data
-        if self.direction == PinDirection.Input:
-            if self.dirty or self.parent().bCallable:
-                out = [i for i in self.affected_by if i.direction == PinDirection.Output]
-                if not out == []:
-                    compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
-                    # call from left to right
-                    for layer in reversed(sorted([i for i in compute_order.keys()])):
-                        for node in compute_order[layer]:
-                            node.compute()
-                    self.setClean()
-                    return out[0]._data
-            else:
-                self.setClean()
-                return self._data
-
-    def call(self):
-        pass
-
-    def defaultValue(self):
-        return self._defaultValue
-
     def setDefaultValue(self, val):
         # In python, all user-defined classes are mutable
         # So make sure to store sepatrate copy of value
         # For example if this is a Matrix, default value will be changed each time data has been set in original Matrix
         self._defaultValue = deepcopy(val)
 
-    def setData(self, data):
-        self.setClean()
-        if self.direction == PinDirection.Output:
-            for i in self.affects:
-                i._data = data
-                i.setClean()
-
 
 class NodeBase(INode):
     def __init__(self, name, graph):
         super(NodeBase, self).__init__()
+        self._uid = uuid.uuid4()
         self.graph = weakref.ref(graph)
         self.name = name
         self.inputs = OrderedDict()
@@ -217,11 +381,13 @@ class NodeBase(INode):
         self.y = 0.0
         self.bCallable = False
 
-    # ###################
-    # IItemBase interface begin
-    # ###################
+    # IItemBase interface
 
-    @IItemBase.uid.setter
+    @property
+    def uid(self):
+        return self._uid
+
+    @uid.setter
     def uid(self, value):
         if self._uid in self.graph().nodes:
             self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
@@ -233,13 +399,8 @@ class NodeBase(INode):
     def setName(self, name):
         self.name = name
 
-    # ###################
-    # IItemBase interface end
-    # ###################
+    # INode interface
 
-    # ###############
-    # INode interface begin
-    # ###############
     def compute(self):
         '''
         node calculations here
@@ -251,9 +412,7 @@ class NodeBase(INode):
         # write data to outputs
         return
 
-    # ###############
     # INode interface end
-    # ###############
 
     def isCallable(self):
         for p in self.inputs.values() + self.outputs.values():

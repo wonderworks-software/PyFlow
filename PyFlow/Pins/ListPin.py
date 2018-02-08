@@ -16,7 +16,7 @@ class ListPin(_Pin):
         return Colors.Array
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         return DataTypes.Array, []
 
     def setData(self, data):

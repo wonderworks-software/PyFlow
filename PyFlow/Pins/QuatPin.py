@@ -17,7 +17,7 @@ class QuatPin(_Pin):
         return Colors.Quaternion
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         return DataTypes.Quaternion, Quaternion()
 
     def serialize(self):

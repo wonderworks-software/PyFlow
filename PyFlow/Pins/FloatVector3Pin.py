@@ -17,7 +17,7 @@ class FloatVector3Pin(_Pin):
         return Colors.FloatVector3
 
     @staticmethod
-    def pinDataType():
+    def pinDataTypeHint():
         return DataTypes.FloatVector3, Vector3()
 
     def serialize(self):
@@ -26,10 +26,10 @@ class FloatVector3Pin(_Pin):
         return data
 
     def setData(self, data):
-        if isinstance(data, pyrr.Vector3):
+        if isinstance(data, Vector3):
             self._data = data
         elif isinstance(data, list) and len(data) == 3:
-            self._data = pyrr.Vector3(data)
+            self._data = Vector3(data)
         else:
             self._data = self.defaultValue()
         _Pin.setData(self, self._data)
