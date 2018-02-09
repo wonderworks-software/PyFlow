@@ -4,15 +4,6 @@ from AGraphCommon import *
 empty = {}
 
 
-def returns(annotation):
-    def wrapper(func):
-        func.__annotations__ = getattr(func, '__annotations__', {})
-        if annotation is not empty:
-            func.__annotations__['return'] = annotation
-        return func
-    return wrapper
-
-
 def implementNode(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     def wrapper(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
