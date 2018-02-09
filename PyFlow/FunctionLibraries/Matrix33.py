@@ -10,72 +10,86 @@ class Matrix33(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['create', 'matrix33']})
+    ## Zero matrix33
     def m33Zero():
         '''Zero matrix33.'''
         return pyrr.Matrix33()
 
     @staticmethod
     @implementNode(returns=(DataTypes.String, str(pyrr.Matrix33())), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Matrix33 to string
     def m33ToStr(m=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Matrix33 to string.'''
         return str(m)
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33.identity()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Identity matrix33
     def m33Ident():
         '''Identity matrix33.'''
         return pyrr.Matrix33.identity()
 
     @staticmethod
     @implementNode(returns=(DataTypes.FloatVector3, pyrr.Vector3()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Returns first column of matrix
     def m33c1(m=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Returns first column of matrix.'''
         return pyrr.Vector3(m.c1)
 
     @staticmethod
     @implementNode(returns=(DataTypes.FloatVector3, pyrr.Vector3()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Returns second column of matrix
     def m33c2(m=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Returns second column of matrix.'''
         return pyrr.Vector3(m.c2)
 
     @staticmethod
     @implementNode(returns=(DataTypes.FloatVector3, pyrr.Vector3()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Returns third column of matrix
     def m33c3(m=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Returns third column of matrix.'''
         return pyrr.Vector3(m.c3)
 
     @staticmethod
     @implementNode(returns=(DataTypes.FloatVector3, pyrr.Vector3()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Returns first row of matrix
     def m33r1(m=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Returns first row of matrix.'''
         return pyrr.Vector3(m.r1)
 
     @staticmethod
     @implementNode(returns=(DataTypes.FloatVector3, pyrr.Vector3()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Returns second row of matrix
     def m33r2(m=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Returns second row of matrix.'''
         return pyrr.Vector3(m.r2)
 
     @staticmethod
     @implementNode(returns=(DataTypes.FloatVector3, pyrr.Vector3()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Returns third row of matrix
     def m33r3(m=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Returns third row of matrix.'''
         return pyrr.Vector3(m.r3)
 
     @staticmethod
     @implementNode(returns=(DataTypes.Quaternion, pyrr.Quaternion()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Returns a Quaternion representing this matrix
     def m33quat(m=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Returns a Quaternion representing this matrix.'''
         return m.quaternion
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix44, pyrr.Matrix44()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Returns a Matrix44 representing this matrix
     def m33ToM44(m=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Returns a Matrix44 representing this matrix.'''
         return m.matrix44
 
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33']})
+    ## Returns single scalar from matrix33. r and c taken as abs and clamped in range 1-3
+    #  \param r: matrix row
+    #  \param c: matrix column
     def m33GetComp(m=(DataTypes.Matrix33, pyrr.Matrix33()), r=(DataTypes.Int, 1), c=(DataTypes.Int, 1)):
         '''Returns single scalar from matrix33. r and c taken as abs and clamped in range 1-3.'''
         _r = clamp(abs(r), 1, 3)
@@ -85,12 +99,14 @@ class Matrix33(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['create', 'matrix33', 'quat']})
+    ## Creates matrix33 from given quaternion
     def m33FromQuat(q=(DataTypes.Quaternion, pyrr.Quaternion())):
         '''Creates matrix33 from given quaternion.'''
         return pyrr.Matrix33(q)
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix33, pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['matrix33', '*']})
+    ## Multiplies two m33 matrices m1 by m2
     def m33MultM33(m1=(DataTypes.Matrix33, pyrr.Matrix33()), m2=(DataTypes.Matrix33, pyrr.Matrix33())):
         '''Multiplies two m33 matrices m1 by m2.'''
         return m1 * m2

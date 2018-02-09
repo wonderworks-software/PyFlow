@@ -1,6 +1,3 @@
-'''
-@package common defines, functions and structures
-'''
 import math
 import time
 from Settings import *
