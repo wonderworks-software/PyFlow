@@ -1,7 +1,7 @@
 var NAVTREE =
 [
   [ "PyFlow", "index.html", [
-    [ "README", "index.html", null ],
+    [ "Coming soon", "index.html", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
