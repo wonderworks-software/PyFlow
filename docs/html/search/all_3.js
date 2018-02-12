@@ -19,6 +19,5 @@ var searchData=
   ['copysignf',['copysignf',['../class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#afce8fbd7dad467179643904ec898eeda',1,'PyFlow::FunctionLibraries::MathLib::MathLib']]],
   ['cos',['cos',['../class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a0168663be16d56d06eb97e6eb456c660',1,'PyFlow::FunctionLibraries::MathLib::MathLib']]],
   ['cosh',['cosh',['../class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a573bbd622b61aeb7019c17b387eb5378',1,'PyFlow::FunctionLibraries::MathLib::MathLib']]],
-  ['createnode',['CreateNode',['../class_py_flow_1_1_commands_1_1_create_node_1_1_create_node.html',1,'PyFlow::Commands::CreateNode']]],
-  ['coming_20soon',['Coming soon',['../index.html',1,'']]]
+  ['createnode',['CreateNode',['../class_py_flow_1_1_commands_1_1_create_node_1_1_create_node.html',1,'PyFlow::Commands::CreateNode']]]
 ];
