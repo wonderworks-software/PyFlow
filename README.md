@@ -26,4 +26,4 @@ This repository is a self contained app with python virtualenv configured. So tr
 # Credits
 
 # Licensing
-[MIT]()
+[MIT](LICENSE)

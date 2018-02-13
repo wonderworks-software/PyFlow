@@ -474,7 +474,7 @@ class Node(QGraphicsItem, NodeBase):
             for inp in self.inputs.values():
                 if inp.dataType == DataTypes.Exec:
                     continue
-                w = getInputWidget(inp.dataType, inp.setData)
+                w = getInputWidget(inp.dataType, inp.setData, inp.defaultValue())
                 if w:
                     w.setWidgetValue(inp.currentData())
                     w.setObjectName(inp.getName())
@@ -491,7 +491,7 @@ class Node(QGraphicsItem, NodeBase):
             for out in self.outputs.values():
                 if out.dataType == DataTypes.Exec:
                     continue
-                w = getInputWidget(out.dataType, out.setData)
+                w = getInputWidget(out.dataType, out.setData, out.defaultValue())
                 if w:
                     w.setWidgetValue(out.currentData())
                     w.setObjectName(out.getName())
