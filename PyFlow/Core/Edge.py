@@ -5,7 +5,6 @@ from Settings import Colors
 from AbstractGraph import *
 import weakref
 from uuid import UUID, uuid4
-import numpy
 
 
 class Edge(QGraphicsPathItem):

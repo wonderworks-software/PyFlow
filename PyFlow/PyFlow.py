@@ -23,7 +23,6 @@ import Pins
 import GraphEditor_ui
 import json
 from time import clock
-from numpy import mean
 
 
 FILE_DIR = path.dirname(__file__)
