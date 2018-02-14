@@ -45,7 +45,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_input_widgets_1_1_string_input_widget.html#a6cd02a1b96d3f5927ffa24afa9d3f3d5"><param name="Name" value="PyFlow::Core::InputWidgets::StringInputWidget"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#a305e9ca919756681a2fc018b583388a1"><param name="Name" value="PyFlow::Core::Node::Node"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a217e3666fd36e30f1c4a7fda16b37119"><param name="Name" value="PyFlow::Core::Node::NodeName"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a536b83fb1cd645ee05b1154c64249118"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a536b83fb1cd645ee05b1154c64249118"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter.html#a52417219f9d9cbff18926390b69bbb7e"><param name="Name" value="PyFlow::Core::PythonSyntax::PythonHighlighter"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a6b0f825fa4028f60c92bad33c50dee79"><param name="Name" value="PyFlow::Core::SetVarNode::SetVarNode"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_variable_1_1_type_widget.html#ab8c72be6d4b4f997db12e4463047c149"><param name="Name" value="PyFlow::Core::Variable::TypeWidget"></OBJECT>
@@ -301,7 +301,7 @@
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#a3c1797b4fa172378f411c6983a7a461b"><param name="Name" value="PyFlow::Core::Node::Node"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a3cf064c45b4f6038fbdfef4db0a6be32"><param name="Name" value="PyFlow::Core::Node::NodeName"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a40b414b8f22b8e956bc827866cb7ba30"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a40b414b8f22b8e956bc827866cb7ba30"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a98df08f09c51e13d7322c6c41ac787bc"><param name="Name" value="PyFlow::Nodes::commentNode::commentNode"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a2a926facfab2a80ed9c260ae2b0d10c9"><param name="Name" value="bPanMode"></OBJECT>
@@ -318,7 +318,7 @@
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a531b0ba776168ce39d21240ac4025f6a"><param name="Name" value="PyFlow::Core::AbstractGraph::PinBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#ae8fe163b4bb526a28c881ab077717c75"><param name="Name" value="PyFlow::Core::Node::Node"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#aeba439eab582d846a952ba5b8f313aca"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#aeba439eab582d846a952ba5b8f313aca"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_pins_1_1_exec_pin_1_1_exec_pin.html#aca56ee2f9be22997b8cf2f136ff1c88e"><param name="Name" value="PyFlow::Pins::ExecPin::ExecPin"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_a_graph_common_1_1_node_types.html#a7d115844ca93a291686bcdb89f81965f"><param name="Name" value="Callable"></OBJECT>
@@ -404,7 +404,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#ab41daf7fc4498574ff68fbe3ed32a1d7"><param name="Name" value="PyFlow::Core::Edge::Edge"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#ae5c42fb74b15597471a5157c4fc5b613"><param name="Name" value="PyFlow::Core::Node::Node"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a7f843d460563e0f0a1044c0263a3f86c"><param name="Name" value="PyFlow::Core::Node::NodeName"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a51332f2387a8b0d635efe1bc18034757"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a51332f2387a8b0d635efe1bc18034757"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_variable_1_1_type_widget.html#a24d8218a247a2589151b063f2a4f5a59"><param name="Name" value="PyFlow::Core::Variable::TypeWidget"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a35ac5e0ece6d074aa3564ae01c33ba0f"><param name="Name" value="PyFlow::Nodes::commentNode::commentNode"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node_name.html#a4e298f813b1d0d19276cb5c6ef65066d"><param name="Name" value="PyFlow::Nodes::commentNode::commentNodeName"></OBJECT>
@@ -499,7 +499,7 @@
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a0cf50a50867f1bcdfc50a8f5776d0c13"><param name="Name" value="contextMenuEvent"></OBJECT>
   <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a0cf50a50867f1bcdfc50a8f5776d0c13"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a0cf50a50867f1bcdfc50a8f5776d0c13"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a8004f5d7c82830b16a2fc5e6580d8756"><param name="Name" value="PyFlow::Nodes::commentNode::commentNode"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1implicit_pin_call_1_1implicit_pin_call.html#a42c6ec4038457bc44f68d53ca10a42c6"><param name="Name" value="PyFlow::Nodes::implicitPinCall::implicitPinCall"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1make_bool_array_1_1make_bool_array.html#a10d7afec3d6087dc2c7e88b1357aabc7"><param name="Name" value="PyFlow::Nodes::makeBoolArray::makeBoolArray"></OBJECT>
@@ -562,7 +562,7 @@
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#aa240df841d0da1f3bf3e0475133d41b7"><param name="Name" value="PyFlow::Core::AbstractGraph::PinBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_code_editor_1_1_pin_widget.html#a74e8502d397dd3d23805781b4e3efb85"><param name="Name" value="PyFlow::Core::CodeEditor::PinWidget"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a2afc7833a35098035c2fd9a428658834"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a2afc7833a35098035c2fd9a428658834"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a26fdf85837d2cbad6d6cbe627ed598cd"><param name="Name" value="PyFlow::Core::Variable::VariableBase"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a1a2907d68f2df63d64f5dc38f2ac5d57"><param name="Name" value="dataTypeChanged"></OBJECT>
@@ -614,7 +614,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_serializable.html#a748a82fa5c3572c653cc1fae396f6cae"><param name="Name" value="PyFlow::Core::AbstractGraph::ISerializable"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a2e61b0dbcd1ceb89c2214e419bd38579"><param name="Name" value="PyFlow::Core::Edge::Edge"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#a9f8570f05adb91cd90cee9fac1f2a38e"><param name="Name" value="PyFlow::Core::Node::Node"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a1cab0e9d40da596869072be50ca9a737"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a1cab0e9d40da596869072be50ca9a737"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a1d74b641d72f8ca67bdee248499840bc"><param name="Name" value="PyFlow::Core::Variable::VariableBase"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#af0910f9b51cb7141d9de0c9f57dd4fc4"><param name="Name" value="destination"></OBJECT>
@@ -622,7 +622,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a747ce9bbc81e48429050943e565e220a"><param name="Name" value="direction"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a747ce9bbc81e48429050943e565e220a"><param name="Name" value="PyFlow::Core::AbstractGraph::PinBase"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a1b8aaa1b24fb5ddb971400709c867e24"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a1b8aaa1b24fb5ddb971400709c867e24"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#ad7e761a9b84cc10b4f955728879b8c12"><param name="Name" value="dirty"></OBJECT>
   <UL>
@@ -1101,14 +1101,14 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a9cb2454b86f7aac3ab33badb5ca61683"><param name="Name" value="hasConnections"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#abafcd17ad0733c714ae504b7ba2243a0"><param name="Name" value="height"></OBJECT>
   <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#abafcd17ad0733c714ae504b7ba2243a0"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#abafcd17ad0733c714ae504b7ba2243a0"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_pins_1_1_exec_pin_1_1_exec_pin.html#a7dffba2ed305add3b8ea8ea019090397"><param name="Name" value="PyFlow::Pins::ExecPin::ExecPin"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#a5bafe03dbf1bf78952348d3de72b6bbc"><param name="Name" value="height_offset"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#aa105763baf8fbb138b6947ac8699cff1"><param name="Name" value="highlight"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#aa105763baf8fbb138b6947ac8699cff1"><param name="Name" value="PyFlow::Core::Edge::Edge"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a143dd4a2b8f1028fdb7be3d1c646dd53"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a143dd4a2b8f1028fdb7be3d1c646dd53"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter.html#a539575740999c08fb721b2c2a627f944"><param name="Name" value="highlightBlock"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_graph_editor__ui_1_1_ui___main_window.html#a4a3d557e91940ec647b736c57e40b33c"><param name="Name" value="horizontal_splitter"></OBJECT>
@@ -1150,13 +1150,13 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a3bb68b26031da8e62b0b61b29f9b8133"><param name="Name" value="hoverEnterEvent"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a3bb68b26031da8e62b0b61b29f9b8133"><param name="Name" value="PyFlow::Core::Edge::Edge"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#afa1763639e65122e3a3494d570d11223"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#afa1763639e65122e3a3494d570d11223"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node_name.html#a7e0023af3819e8bbb4f45b5417428856"><param name="Name" value="PyFlow::Nodes::commentNode::commentNodeName"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a4844ec0eca0dd363bc6fe528f2a9e0d3"><param name="Name" value="hoverLeaveEvent"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a4844ec0eca0dd363bc6fe528f2a9e0d3"><param name="Name" value="PyFlow::Core::Edge::Edge"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a334fd3bb080bdf2c1d59d96c70e68ff6"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a334fd3bb080bdf2c1d59d96c70e68ff6"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#aff645f64e2c4559e9900d44a95527dba"><param name="Name" value="hypot"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#a27df42274960984e0543cdab8b2aa17a"><param name="Name" value="icon"></OBJECT>
@@ -1300,7 +1300,7 @@
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#aa93a7160fe5150c900eeecf438d50858"><param name="Name" value="PyFlow::Core::AbstractGraph::PinBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#a645be97b5d7087deacdd3d55ecd43210"><param name="Name" value="PyFlow::Core::Node::Node"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a3dbc571513951d09d18142b0c0d503c6"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a3dbc571513951d09d18142b0c0d503c6"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html#ae924de6143a082f2c4e204a031f6b2a4"><param name="Name" value="PyFlow::Nodes::pythonNode::pythonNode"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#ae2d500854e546ebfebde8a42955331e5"><param name="Name" value="killed"></OBJECT>
@@ -1544,7 +1544,7 @@
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a4cb72f1f000ed5a0a2a1b34dfcdc6f1c"><param name="Name" value="menu"></OBJECT>
   <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a4cb72f1f000ed5a0a2a1b34dfcdc6f1c"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a4cb72f1f000ed5a0a2a1b34dfcdc6f1c"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a4b4071777945ba4fc44d878038b55d74"><param name="Name" value="PyFlow::Core::Widget::GraphWidget"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#ab6ff907c8972715e2c9f23292adf3cc7"><param name="Name" value="PyFlow::Nodes::commentNode::commentNode"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1implicit_pin_call_1_1implicit_pin_call.html#ad870f5ad94fe20cc1ec6397037b8de33"><param name="Name" value="PyFlow::Nodes::implicitPinCall::implicitPinCall"></OBJECT>
@@ -1770,7 +1770,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#ace63c9a52770c3c34f1d114f4c13a92b"><param name="Name" value="PyFlow::Core::Edge::Edge"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#add09b426c8d254842f28d6c6eeef26bd"><param name="Name" value="PyFlow::Core::Node::Node"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a0a51cf34094341f01b834bd0896873fb"><param name="Name" value="PyFlow::Core::Node::NodeName"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a89bca2ffd1b244b1ef2eae78bcb29c73"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a89bca2ffd1b244b1ef2eae78bcb29c73"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a1415c43bfe5dede8e8f450680b448134"><param name="Name" value="PyFlow::Nodes::commentNode::commentNode"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node_name.html#ae84fe2aec91465263e1658d2119be1ec"><param name="Name" value="PyFlow::Nodes::commentNode::commentNodeName"></OBJECT>
   </UL>
@@ -1818,7 +1818,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a2dd468ad369190674dcda7f67cd3007d"><param name="Name" value="pinConnected"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a2dd468ad369190674dcda7f67cd3007d"><param name="Name" value="PyFlow::Core::AbstractGraph::PinBase"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a9b638525e58e28805c371cc2788e8dca"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a9b638525e58e28805c371cc2788e8dca"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_pin.html#aa63684ad8073012b55568df87c702d70"><param name="Name" value="pinDataType"></OBJECT>
   <UL>
@@ -1839,7 +1839,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#ad8330cf5d7ff032a6545e49c25483fd6"><param name="Name" value="pinDisconnected"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#ad8330cf5d7ff032a6545e49c25483fd6"><param name="Name" value="PyFlow::Core::AbstractGraph::PinBase"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a5792a35ddfeae1475e1b4f3e9945ad67"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a5792a35ddfeae1475e1b4f3e9945ad67"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#afbef6547e64def322509dc7b7f23b069"><param name="Name" value="pinImage"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_settings_1_1_colors.html#ad62fcc4e3306f02f1e5adffd5507c01e"><param name="Name" value="Pink"></OBJECT>
@@ -2537,7 +2537,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_painter_1_1_node_painter.html#ad70a8982910865d8b0a2d9e20e51570b"><param name="Name" value="default"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="namespace_py_flow_1_1_core_1_1_pin.html"><param name="Name" value="PyFlow::Core::Pin"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a536b83fb1cd645ee05b1154c64249118"><param name="Name" value="__init__"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ae2b9c29f0f589af8b19ac48f8ce33d1a"><param name="Name" value="actionCopyUid"></OBJECT>
@@ -4130,7 +4130,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#acdd9fc36a419bfc6b713a7f6669afa69"><param name="Name" value="PyFlow::Core::Edge::Edge"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html#a7aeceff45be562c76e211f8e2e75d351"><param name="Name" value="PyFlow::Core::GetVarNode::GetVarNode"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#a0877eefa232ac4842f3ad375c87cb81b"><param name="Name" value="PyFlow::Core::Node::Node"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ab2cdc2bded2758fbaa607c240cebb8c8"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ab2cdc2bded2758fbaa607c240cebb8c8"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a00d4f30f3056333a9d5c1319321b75cc"><param name="Name" value="PyFlow::Core::SetVarNode::SetVarNode"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a62bb8431d351b64344876a89ce77df74"><param name="Name" value="PyFlow::Core::Variable::VariableBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1call_1_1call.html#a344d5a96b2423cd930dc302ac1f116f6"><param name="Name" value="PyFlow::Nodes::call::call"></OBJECT>
@@ -4150,7 +4150,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_pin.html#a8451f00414674a1ebaa926b878412295"><param name="Name" value="PyFlow::Core::AbstractGraph::IPin"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#ac78eb6539185cf76c409ed4a0fd0dc3a"><param name="Name" value="PyFlow::Core::AbstractGraph::PinBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#a0949d998074fc2206513182289e590fc"><param name="Name" value="PyFlow::Core::Node::Node"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a216863faba986c1570d751b59abc162e"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a216863faba986c1570d751b59abc162e"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_pins_1_1_bool_pin_1_1_bool_pin.html#afab591ae137787cb4715bd28950edc69"><param name="Name" value="PyFlow::Pins::BoolPin::BoolPin"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_pins_1_1_exec_pin_1_1_exec_pin.html#a5367827c7cdfff8cfbea1f3ef21fb74a"><param name="Name" value="PyFlow::Pins::ExecPin::ExecPin"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_pins_1_1_float_pin_1_1_float_pin.html#a69a6808d0683a1dbe601052819740305"><param name="Name" value="PyFlow::Pins::FloatPin::FloatPin"></OBJECT>
@@ -4223,7 +4223,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a6a342858bd9cf0fa31028386a40a3f73"><param name="Name" value="shape"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a6a342858bd9cf0fa31028386a40a3f73"><param name="Name" value="PyFlow::Core::Edge::Edge"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ac4afa33aa31cd5fec174949aa6564ddd"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ac4afa33aa31cd5fec174949aa6564ddd"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_py_flow_1_1_py_flow.html#a298e86fe6a062d56c87457c75112f7cd"><param name="Name" value="shortcuts_info"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_code_editor_1_1_pin_widget.html#a0d33ddd2baa46389213581157c9fdbcb"><param name="Name" value="shouldHideLabel"></OBJECT>
@@ -4245,7 +4245,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a7958aaa86eb024a9167a5e938704b0d2"><param name="Name" value="sinh"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#aed4361a7bbbede322e7cdef1565ec917"><param name="Name" value="sizeHint"></OBJECT>
   <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#aed4361a7bbbede322e7cdef1565ec917"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#aed4361a7bbbede322e7cdef1565ec917"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_widget_1_1_nodes_box.html#a6f7f5467814f6c6900a8301c6257aa61"><param name="Name" value="PyFlow::Core::Widget::NodesBox"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node.html#ac50ccebcc251ae1e0cab5a72a50d3d62"><param name="Name" value="sizes"></OBJECT>
@@ -4363,7 +4363,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a88000f8b14371dbb7903337683a791c3"><param name="Name" value="PyFlow::Core::AbstractGraph::PinBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_code_editor_1_1_code_editor.html#a244b9e911b41e8d39ba5d201ad3f763c"><param name="Name" value="PyFlow::Core::CodeEditor::CodeEditor"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a6b3f36c3297689e0d08036f30fad46f2"><param name="Name" value="PyFlow::Core::Edge::Edge"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a210f3146271a0b5e201e73f25174d293"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a210f3146271a0b5e201e73f25174d293"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a433de7c058bcce3b5589893e261fc6df"><param name="Name" value="PyFlow::Core::Variable::VariableBase"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1implicit_pin_call_1_1implicit_pin_call.html#adf39086a16c717ac599d2db8e522a814"><param name="Name" value="uidInp"></OBJECT>
@@ -4490,7 +4490,7 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node_name.html#ad8640ff8bf135c816e1e52c199fb33b2"><param name="Name" value="width"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_node_1_1_node_name.html#ad8640ff8bf135c816e1e52c199fb33b2"><param name="Name" value="PyFlow::Core::Node::NodeName"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ac2cd8ad885feaff4cf72636dd8617f0c"><param name="Name" value="PyFlow::Core::Pin::_Pin"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ac2cd8ad885feaff4cf72636dd8617f0c"><param name="Name" value="PyFlow::Core::Pin::PinWidgetBase"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node_name.html#a9d4e97ff274f611cacf7d1b0a4ceefa8"><param name="Name" value="PyFlow::Nodes::commentNode::commentNodeName"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_py_flow_1_1_pins_1_1_exec_pin_1_1_exec_pin.html#a3e414d772eeeac306e1144c4752d8364"><param name="Name" value="PyFlow::Pins::ExecPin::ExecPin"></OBJECT>
   </UL>

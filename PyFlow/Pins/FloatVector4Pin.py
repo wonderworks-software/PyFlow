@@ -1,9 +1,9 @@
-from Core.Pin import _Pin
+from Core.Pin import PinWidgetBase
 from Core.AGraphCommon import *
 from pyrr import Vector4
 
 
-class FloatVector4Pin(_Pin):
+class FloatVector4Pin(PinWidgetBase):
     """doc string for FloatVector4Pin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(FloatVector4Pin, self).__init__(name, parent, dataType, direction, **kwargs)
@@ -21,7 +21,7 @@ class FloatVector4Pin(_Pin):
         return Colors.FloatVector4
 
     def serialize(self):
-        data = _Pin.serialize(self)
+        data = PinWidgetBase.serialize(self)
         data['value'] = self.currentData().xyzw.tolist()
         return data
 
@@ -32,4 +32,4 @@ class FloatVector4Pin(_Pin):
             self._data = Vector4(data)
         else:
             self._data = self.defaultValue()
-        _Pin.setData(self, self._data)
+        PinWidgetBase.setData(self, self._data)

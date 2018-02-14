@@ -8,7 +8,7 @@ from Settings import *
 import nodes_res_rc
 
 
-class _Pin(QGraphicsWidget, PinBase):
+class PinWidgetBase(QGraphicsWidget, PinBase):
     '''
     This is base class for all ui pins
     '''
@@ -116,7 +116,7 @@ class _Pin(QGraphicsWidget, PinBase):
         return data
 
     def ungrabMouseEvent(self, event):
-        super(_Pin, self).ungrabMouseEvent(event)
+        super(PinWidgetBase, self).ungrabMouseEvent(event)
 
     def get_container(self):
         return self._container
@@ -207,14 +207,14 @@ class _Pin(QGraphicsWidget, PinBase):
             return self.parent().outputsLayout
 
     def hoverEnterEvent(self, event):
-        super(_Pin, self).hoverEnterEvent(event)
+        super(PinWidgetBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
         self.setToolTip(str(self.currentData()))
         event.accept()
 
     def hoverLeaveEvent(self, event):
-        super(_Pin, self).hoverLeaveEvent(event)
+        super(PinWidgetBase, self).hoverLeaveEvent(event)
         self.update()
         self.hovered = False
 

@@ -142,11 +142,11 @@ class {0}(FunctionLibraryBase):
 
 """.format(name)
 
-    PinTemplate = """from Core.Pin import _Pin
+    PinTemplate = """from Core.Pin import PinWidgetBase
 from Core.AGraphCommon import *
 
 
-class {0}(_Pin):
+class {0}(PinWidgetBase):
     '''doc string for {0}'''
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super({0}, self).__init__(name, parent, dataType, direction, **kwargs)
@@ -168,7 +168,7 @@ class {0}(_Pin):
             self._data = bool(data)
         except:
             self._data = self.defaultValue()
-        _Pin.setData(self, self._data)
+        PinWidgetBase.setData(self, self._data)
 """.format(name)
 
     if pluginType == PluginType.pNode:

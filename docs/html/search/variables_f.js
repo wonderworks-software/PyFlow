@@ -13,7 +13,7 @@ var searchData=
   ['pcommand',['pCommand',['../class_py_flow_1_1_py_flow_1_1_plugin_type.html#a0eedbb21449ba1422403707493856364',1,'PyFlow::PyFlow::PluginType']]],
   ['pen',['pen',['../class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a7c8367da04db025d7f03591ae40274d5',1,'PyFlow::Core::Edge::Edge']]],
   ['pfunctionlibrary',['pFunctionLibrary',['../class_py_flow_1_1_py_flow_1_1_plugin_type.html#aed63637c838eeca8dbf9e1f777bce858',1,'PyFlow::PyFlow::PluginType']]],
-  ['pinimage',['pinImage',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#afbef6547e64def322509dc7b7f23b069',1,'PyFlow::Core::Pin::_Pin']]],
+  ['pinimage',['pinImage',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#afbef6547e64def322509dc7b7f23b069',1,'PyFlow::Core::Pin::PinWidgetBase']]],
   ['pink',['Pink',['../class_py_flow_1_1_core_1_1_settings_1_1_colors.html#ad62fcc4e3306f02f1e5adffd5507c01e',1,'PyFlow::Core::Settings::Colors']]],
   ['pinlinesa',['PinLinesA',['../class_py_flow_1_1_core_1_1_settings_1_1_colors.html#a2f117c86c92487fe05566d0e1902476d',1,'PyFlow::Core::Settings::Colors']]],
   ['pinlinesb',['PinLinesB',['../class_py_flow_1_1_core_1_1_settings_1_1_colors.html#aaba00d90accb900193c8619512df66c5',1,'PyFlow::Core::Settings::Colors']]],

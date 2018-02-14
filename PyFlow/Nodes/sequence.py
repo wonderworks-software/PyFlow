@@ -2,7 +2,7 @@ from Core.AbstractGraph import *
 from Core.Settings import *
 from Core import Node
 from Qt.QtWidgets import QMenu
-from Core.Pin import _Pin
+from Core.Pin import PinWidgetBase
 
 
 class sequence(Node):
@@ -45,7 +45,7 @@ class sequence(Node):
             self.addOutPin()
         else:
             for out in jsonTemplate['outputs']:
-                _Pin.deserialize(self, out)
+                PinWidgetBase.deserialize(self, out)
 
     def compute(self):
         for out in self.outputs.values():

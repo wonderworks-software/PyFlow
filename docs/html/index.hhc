@@ -692,7 +692,7 @@
           </UL>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="Pin"><param name="Local" value="namespace_py_flow_1_1_core_1_1_pin.html"><param name="ImageNumber" value="1"></OBJECT>
           <UL>
-          <LI><OBJECT type="text/sitemap"><param name="Name" value="_Pin"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="ImageNumber" value="1"></OBJECT>
+          <LI><OBJECT type="text/sitemap"><param name="Name" value="PinWidgetBase"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="ImageNumber" value="1"></OBJECT>
             <UL>
             <LI><OBJECT type="text/sitemap"><param name="Name" value="__init__"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a536b83fb1cd645ee05b1154c64249118"><param name="ImageNumber" value="11"></OBJECT>
             <LI><OBJECT type="text/sitemap"><param name="Name" value="animationFinished"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a02347a062b12b3e0da4022fea7e60855"><param name="ImageNumber" value="11"></OBJECT>
@@ -2037,7 +2037,7 @@
           <UL>
           <LI><OBJECT type="text/sitemap"><param name="Name" value="PyFlow.Core.AbstractGraph.PinBase"><param name="Local" value="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html"><param name="ImageNumber" value="1"></OBJECT>
             <UL>
-            <LI><OBJECT type="text/sitemap"><param name="Name" value="PyFlow.Core.Pin._Pin"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="ImageNumber" value="1"></OBJECT>
+            <LI><OBJECT type="text/sitemap"><param name="Name" value="PyFlow.Core.Pin.PinWidgetBase"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="ImageNumber" value="1"></OBJECT>
               <UL>
               <LI><OBJECT type="text/sitemap"><param name="Name" value="PyFlow.Pins.BoolPin.BoolPin"><param name="Local" value="class_py_flow_1_1_pins_1_1_bool_pin_1_1_bool_pin.html"><param name="ImageNumber" value="11"></OBJECT>
               <LI><OBJECT type="text/sitemap"><param name="Name" value="PyFlow.Pins.ExecPin.ExecPin"><param name="Local" value="class_py_flow_1_1_pins_1_1_exec_pin_1_1_exec_pin.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -2148,7 +2148,7 @@
       </UL>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="QGraphicsWidget"><param name="ImageNumber" value="1"></OBJECT>
       <UL>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="PyFlow.Core.Pin._Pin"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="ImageNumber" value="11"></OBJECT>
+      <LI><OBJECT type="text/sitemap"><param name="Name" value="PyFlow.Core.Pin.PinWidgetBase"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="ImageNumber" value="11"></OBJECT>
       </UL>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="QLineEdit"><param name="ImageNumber" value="1"></OBJECT>
       <UL>
@@ -2841,7 +2841,7 @@
           </UL>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="Pin.py"><param name="Local" value="_pin_8py.html"><param name="ImageNumber" value="11"></OBJECT>
           <UL>
-          <LI><OBJECT type="text/sitemap"><param name="Name" value="_Pin"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="ImageNumber" value="1"></OBJECT>
+          <LI><OBJECT type="text/sitemap"><param name="Name" value="PinWidgetBase"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html"><param name="ImageNumber" value="1"></OBJECT>
             <UL>
             <LI><OBJECT type="text/sitemap"><param name="Name" value="__init__"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a536b83fb1cd645ee05b1154c64249118"><param name="ImageNumber" value="11"></OBJECT>
             <LI><OBJECT type="text/sitemap"><param name="Name" value="animationFinished"><param name="Local" value="class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a02347a062b12b3e0da4022fea7e60855"><param name="ImageNumber" value="11"></OBJECT>

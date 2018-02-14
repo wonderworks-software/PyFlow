@@ -1,4 +1,4 @@
-from Pin import _Pin
+from Pin import PinWidgetBase
 from Edge import Edge
 from Node import Node
 from Node import NodeName

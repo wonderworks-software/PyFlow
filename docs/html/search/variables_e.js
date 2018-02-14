@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['onpinconnected',['OnPinConnected',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a15be5c18265dab7c16199f9c4352d149',1,'PyFlow::Core::Pin::_Pin']]],
-  ['onpindisconnected',['OnPinDisconnected',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#af0b927e4716909b67478f66e680da2d8',1,'PyFlow::Core::Pin::_Pin']]],
+  ['onpinconnected',['OnPinConnected',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a15be5c18265dab7c16199f9c4352d149',1,'PyFlow::Core::Pin::PinWidgetBase']]],
+  ['onpindisconnected',['OnPinDisconnected',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#af0b927e4716909b67478f66e680da2d8',1,'PyFlow::Core::Pin::PinWidgetBase']]],
   ['operators',['operators',['../class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter.html#aca00ab33b56ccea852653310e7b620d9',1,'PyFlow::Core::PythonSyntax::PythonHighlighter']]],
   ['opt_5ffont',['opt_font',['../class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a999aa94dde1796d6ea01774866686f49',1,'PyFlow::Core::Node::NodeName']]],
   ['opt_5ffont_5fsize',['opt_font_size',['../class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a0cb957fb8efd00117941d187f5c4c6d1',1,'PyFlow::Core::Node::NodeName']]],

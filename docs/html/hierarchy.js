@@ -60,7 +60,7 @@ var hierarchy =
           ] ],
           [ "PyFlow.Core.AbstractGraph.IPin", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_pin.html", [
             [ "PyFlow.Core.AbstractGraph.PinBase", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html", [
-              [ "PyFlow.Core.Pin._Pin", "class_py_flow_1_1_core_1_1_pin_1_1___pin.html", [
+              [ "PyFlow.Core.Pin.PinWidgetBase", "class_py_flow_1_1_core_1_1_pin_1_1___pin.html", [
                 [ "PyFlow.Pins.BoolPin.BoolPin", "class_py_flow_1_1_pins_1_1_bool_pin_1_1_bool_pin.html", null ],
                 [ "PyFlow.Pins.ExecPin.ExecPin", "class_py_flow_1_1_pins_1_1_exec_pin_1_1_exec_pin.html", null ],
                 [ "PyFlow.Pins.FloatPin.FloatPin", "class_py_flow_1_1_pins_1_1_float_pin_1_1_float_pin.html", null ],
@@ -146,7 +146,7 @@ var hierarchy =
       [ "PyFlow.Core.Widget.GraphWidget", "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html", null ]
     ] ],
     [ "QGraphicsWidget", null, [
-      [ "PyFlow.Core.Pin._Pin", "class_py_flow_1_1_core_1_1_pin_1_1___pin.html", null ]
+      [ "PyFlow.Core.Pin.PinWidgetBase", "class_py_flow_1_1_core_1_1_pin_1_1___pin.html", null ]
     ] ],
     [ "QLineEdit", null, [
       [ "PyFlow.Core.Widget.NodeBoxLineEdit", "class_py_flow_1_1_core_1_1_widget_1_1_node_box_line_edit.html", null ]

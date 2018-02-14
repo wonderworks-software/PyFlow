@@ -1,7 +1,7 @@
 var searchData=
 [
   ['v',['v',['../namespace_graph_widget_maya.html#a946f9a216e82353373d8877d7d065a7f',1,'GraphWidgetMaya']]],
-  ['val',['val',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ab0cf4ccc2a08898f9f4634bd0423db95',1,'PyFlow::Core::Pin::_Pin']]],
+  ['val',['val',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ab0cf4ccc2a08898f9f4634bd0423db95',1,'PyFlow::Core::Pin::PinWidgetBase']]],
   ['value',['value',['../class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a15634989ee2ace4a7aadb4fbbb3927c4',1,'PyFlow.Core.SetVarNode.SetVarNode.value()'],['../class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a7e25c6ca40dede8c44d18dcffe6573f1',1,'PyFlow.Core.Variable.VariableBase.value()']]],
   ['valuechanged',['valueChanged',['../class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#ad99871f3c81ec9e2381ba1f081425965',1,'PyFlow::Core::Variable::VariableBase']]],
   ['var',['var',['../class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html#a35e4b343cdd1bdb5ddf0fb47b2d94bb1',1,'PyFlow.Core.GetVarNode.GetVarNode.var()'],['../class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#ad83308551a945659f053e8248ac979e3',1,'PyFlow.Core.SetVarNode.SetVarNode.var()'],['../class_py_flow_1_1_core_1_1_variable_1_1_var_type_combo_box.html#a4f41e79b94c3a29bd7675879faf655d6',1,'PyFlow.Core.Variable.VarTypeComboBox.var()']]],

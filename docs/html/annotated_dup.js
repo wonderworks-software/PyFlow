@@ -72,7 +72,7 @@ var annotated_dup =
           [ "NodePainter", "class_py_flow_1_1_core_1_1_node_painter_1_1_node_painter.html", null ]
         ] ],
         [ "Pin", null, [
-          [ "_Pin", "class_py_flow_1_1_core_1_1_pin_1_1___pin.html", "class_py_flow_1_1_core_1_1_pin_1_1___pin" ]
+          [ "PinWidgetBase", "class_py_flow_1_1_core_1_1_pin_1_1___pin.html", "class_py_flow_1_1_core_1_1_pin_1_1___pin" ]
         ] ],
         [ "PythonSyntax", null, [
           [ "PythonHighlighter", "class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter.html", "class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter" ]

@@ -34,9 +34,5 @@ This repository is a self contained app with python virtualenv configured. So tr
 # Usage
 App's entry point is a PyFlow.py file. There are also several handy bat scripts for debigging and profiling.
 
-# Contributing
-
-# Credits
-
 # Licensing
 [MIT](LICENSE)

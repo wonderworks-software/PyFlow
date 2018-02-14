@@ -1,9 +1,9 @@
-from Core.Pin import _Pin
+from Core.Pin import PinWidgetBase
 from Core.AGraphCommon import *
 from pyrr import Quaternion
 
 
-class QuatPin(_Pin):
+class QuatPin(PinWidgetBase):
     """doc string for QuatPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(QuatPin, self).__init__(name, parent, dataType, direction, **kwargs)
@@ -23,7 +23,7 @@ class QuatPin(_Pin):
     def serialize(self):
         # note how custom class can be serialized
         # here we store quats xyzw as list
-        data = _Pin.serialize(self)
+        data = PinWidgetBase.serialize(self)
         data['value'] = self.currentData().xyzw.tolist()
         return data
 
@@ -37,4 +37,4 @@ class QuatPin(_Pin):
             self._data = Quaternion(data)
         else:
             self._data = self.defaultValue()
-        _Pin.setData(self, self._data)
+        PinWidgetBase.setData(self, self._data)

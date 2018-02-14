@@ -1,8 +1,8 @@
-from Core.Pin import _Pin
+from Core.Pin import PinWidgetBase
 from Core.AGraphCommon import *
 
 
-class ExecPin(_Pin):
+class ExecPin(PinWidgetBase):
     """doc string for ExecPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(ExecPin, self).__init__(name, parent, dataType, direction, **kwargs)

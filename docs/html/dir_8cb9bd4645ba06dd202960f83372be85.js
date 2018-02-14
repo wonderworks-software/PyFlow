@@ -32,7 +32,7 @@ var dir_8cb9bd4645ba06dd202960f83372be85 =
       [ "NodePainter", "class_py_flow_1_1_core_1_1_node_painter_1_1_node_painter.html", null ]
     ] ],
     [ "Pin.py", "_pin_8py.html", [
-      [ "_Pin", "class_py_flow_1_1_core_1_1_pin_1_1___pin.html", "class_py_flow_1_1_core_1_1_pin_1_1___pin" ]
+      [ "PinWidgetBase", "class_py_flow_1_1_core_1_1_pin_1_1___pin.html", "class_py_flow_1_1_core_1_1_pin_1_1___pin" ]
     ] ],
     [ "PythonSyntax.py", "_python_syntax_8py.html", "_python_syntax_8py" ],
     [ "Settings.py", "_settings_8py.html", "_settings_8py" ],

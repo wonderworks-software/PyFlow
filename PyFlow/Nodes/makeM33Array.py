@@ -2,7 +2,7 @@ from Core.AbstractGraph import *
 from Core.Settings import *
 from Core import Node
 from Qt.QtWidgets import QMenu
-from Core.Pin import _Pin
+from Core.Pin import PinWidgetBase
 
 
 class makeM33Array(Node):
@@ -41,7 +41,7 @@ class makeM33Array(Node):
 
         # restore dynamically created inputs
         for inp in jsonTemplate['inputs']:
-            p = _Pin.deserialize(self, inp)
+            p = PinWidgetBase.deserialize(self, inp)
             pinAffects(p, self.out0)
 
     def compute(self):

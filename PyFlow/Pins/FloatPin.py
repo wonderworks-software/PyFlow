@@ -1,8 +1,8 @@
-from Core.Pin import _Pin
+from Core.Pin import PinWidgetBase
 from Core.AGraphCommon import *
 
 
-class FloatPin(_Pin):
+class FloatPin(PinWidgetBase):
     """doc string for FloatPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(FloatPin, self).__init__(name, parent, dataType, direction, **kwargs)
@@ -25,4 +25,4 @@ class FloatPin(_Pin):
             self._data = float(data)
         except:
             self._data = self.defaultValue()
-        _Pin.setData(self, self._data)
+        PinWidgetBase.setData(self, self._data)

@@ -1,8 +1,8 @@
-from Core.Pin import _Pin
+from Core.Pin import PinWidgetBase
 from Core.AGraphCommon import *
 
 
-class ListPin(_Pin):
+class ListPin(PinWidgetBase):
     """doc string for ListPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(ListPin, self).__init__(name, parent, dataType, direction, **kwargs)
@@ -24,4 +24,4 @@ class ListPin(_Pin):
             self._data = data
         else:
             self._data = self.defaultValue()
-        _Pin.setData(self, self._data)
+        PinWidgetBase.setData(self, self._data)

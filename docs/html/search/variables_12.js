@@ -20,7 +20,7 @@ var searchData=
   ['spin_5fbox',['spin_box',['../class_py_flow_1_1_nodes_1_1call_1_1call.html#ae80fb8f1a35a81934ebb1a154f959423',1,'PyFlow::Nodes::call::call']]],
   ['splitterhandlecolor',['SplitterHandleColor',['../class_py_flow_1_1_core_1_1_settings_1_1_colors.html#ae65bac65df2921bb0e3f9283ed608a1e',1,'PyFlow::Core::Settings::Colors']]],
   ['srcuid',['srcUid',['../class_py_flow_1_1_commands_1_1_connect_pin_1_1_connect_pin.html#a30190772c646d5a3bff083f79ff56ca4',1,'PyFlow::Commands::ConnectPin::ConnectPin']]],
-  ['startpos',['startPos',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a620787e541816bc0da8698a48a6b8316',1,'PyFlow::Core::Pin::_Pin']]],
+  ['startpos',['startPos',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a620787e541816bc0da8698a48a6b8316',1,'PyFlow::Core::Pin::PinWidgetBase']]],
   ['startsizex',['StartSizeX',['../class_graph_widget_mobu_1_1_character_replacer_class.html#a54399a9932136b3924495ff1c71ae4af',1,'GraphWidgetMobu::CharacterReplacerClass']]],
   ['startsizey',['StartSizeY',['../class_graph_widget_mobu_1_1_character_replacer_class.html#a299a3f018aff414860bb227976696348',1,'GraphWidgetMobu::CharacterReplacerClass']]],
   ['statusbar',['statusBar',['../class_py_flow_1_1_graph_editor__ui_1_1_ui___main_window.html#a1d04c4d92702abf330b7776f0db79f8f',1,'PyFlow::GraphEditor_ui::Ui_MainWindow']]],
