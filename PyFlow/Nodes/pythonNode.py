@@ -33,7 +33,7 @@ class pythonNode(Node, NodeBase):
 
     def openEditor(self):
         self.editorUUID = uuid.uuid4()
-        self.graph().codeEditors[self.editorUUID] = CodeEditor(self.graph(), self, self.editorUUID)
+        self.graph().codeEditors[self.editorUUID] = WCodeEditor(self.graph(), self, self.editorUUID)
         self.graph().codeEditors[self.editorUUID].show()
 
     def kill(self):
@@ -51,7 +51,7 @@ class pythonNode(Node, NodeBase):
 
         # restore compute
         self.currentComputeCode = jsonTemplate['computeCode']
-        foo = CodeEditor.wrapCodeToFunction('compute', jsonTemplate['computeCode'])
+        foo = WCodeEditor.wrapCodeToFunction('compute', jsonTemplate['computeCode'])
         exec(foo)
         self.compute = MethodType(compute, self, Node)
 

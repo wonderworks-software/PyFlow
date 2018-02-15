@@ -13,5 +13,5 @@ var _input_widgets_8py =
     [ "Matrix44InputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_matrix44_input_widget.html", "class_py_flow_1_1_core_1_1_input_widgets_1_1_matrix44_input_widget" ],
     [ "_configDoubleSpinBox", "_input_widgets_8py.html#a1df57ca224acbeb857489d1eeecac7ce", null ],
     [ "_configIntSpinBox", "_input_widgets_8py.html#a9af1027eb1c068f75998095a09b4c5ee", null ],
-    [ "getInputWidget", "_input_widgets_8py.html#acf0957b696bfad588ceb62e75b10c96b", null ]
+    [ "getInputWidget", "_input_widgets_8py.html#a91e7d8097c6f69236f59bd95de02d194", null ]
 ];

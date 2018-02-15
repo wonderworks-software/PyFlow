@@ -17,8 +17,8 @@
    <string>PyFlow</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>AGraphPySide/icon.png</normaloff>AGraphPySide/icon.png</iconset>
+   <iconset resource="nodes_res.qrc">
+    <normaloff>:/icons/resources/LogoBpApp.png</normaloff>:/icons/resources/LogoBpApp.png</iconset>
   </property>
   <property name="documentMode">
    <bool>false</bool>

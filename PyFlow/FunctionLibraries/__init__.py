@@ -26,16 +26,23 @@ for lib in os.listdir(os.path.dirname(__file__)):
             pass
 
 
+## Get registered function library by name
+# @param[in] libName library name (string)
+# @returns [FunctionLibraryBase](@ref PyFlow.Core.FunctionLibrary.FunctionLibraryBase) dereived class or None
 def getLib(libName):
     if libName in _libs:
         return _libs[libName]
     return None
 
 
+## Get registered library names
+# @returns array of names (string)
 def libs():
     return _libs.keys()
 
 
+## Finds function by name
+# @details Searches from all refistered libraries.
 def findFunctionByName(name):
     if name in _foos:
         return _foos[name]

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['v',['v',['../namespace_graph_widget_maya.html#a946f9a216e82353373d8877d7d065a7f',1,'GraphWidgetMaya']]],
   ['v3add',['v3Add',['../class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#a3f6d2195becd0407663e615e767b91ca',1,'PyFlow::FunctionLibraries::Vector3::Vector3']]],
   ['v3create',['v3Create',['../class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#ab9dd4fcc2cf935411614d6ade576511b',1,'PyFlow.FunctionLibraries.Vector3.Vector3.v3Create()'],['../class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#aaeea1823b837fea66b0c64fbab1fecf1',1,'PyFlow.FunctionLibraries.Vector3.Vector3.v3Create(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), c=(DataTypes.Float, 0.0))']]],
   ['v3cross',['v3Cross',['../class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#a4701d0ce1134d5c26897b1e4b7781972',1,'PyFlow::FunctionLibraries::Vector3::Vector3']]],
@@ -44,16 +43,14 @@ var searchData=
   ['v4x',['v4X',['../class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#aaf0bf1e96883dd896c1fac3c0d76104c',1,'PyFlow::FunctionLibraries::Vector4::Vector4']]],
   ['v4y',['v4Y',['../class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#abce8bddb6f0ad05ad267b210909f1105',1,'PyFlow::FunctionLibraries::Vector4::Vector4']]],
   ['v4z',['v4Z',['../class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#aea7975bd50a15be6747eb7e7277bd8c1',1,'PyFlow::FunctionLibraries::Vector4::Vector4']]],
-  ['val',['val',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#ab0cf4ccc2a08898f9f4634bd0423db95',1,'PyFlow::Core::Pin::PinWidgetBase']]],
+  ['val',['val',['../class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#ae08b2916d9f7f527447504f0850a90fc',1,'PyFlow::Core::Pin::PinWidgetBase']]],
   ['value',['value',['../class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a15634989ee2ace4a7aadb4fbbb3927c4',1,'PyFlow.Core.SetVarNode.SetVarNode.value()'],['../class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a7e25c6ca40dede8c44d18dcffe6573f1',1,'PyFlow.Core.Variable.VariableBase.value()'],['../class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a518a1b35bfdc346f4340e5b82b36132b',1,'PyFlow.Core.Variable.VariableBase.value(self)'],['../class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a9dd0e42101e6b4ceba1927ad583e9533',1,'PyFlow.Core.Variable.VariableBase.value(self, data)']]],
   ['valuechanged',['valueChanged',['../class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#ad99871f3c81ec9e2381ba1f081425965',1,'PyFlow::Core::Variable::VariableBase']]],
   ['var',['var',['../class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html#a35e4b343cdd1bdb5ddf0fb47b2d94bb1',1,'PyFlow.Core.GetVarNode.GetVarNode.var()'],['../class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#ad83308551a945659f053e8248ac979e3',1,'PyFlow.Core.SetVarNode.SetVarNode.var()'],['../class_py_flow_1_1_core_1_1_variable_1_1_var_type_combo_box.html#a4f41e79b94c3a29bd7675879faf655d6',1,'PyFlow.Core.Variable.VarTypeComboBox.var()']]],
   ['variable_2epy',['Variable.py',['../_variable_8py.html',1,'']]],
   ['variablebase',['VariableBase',['../class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html',1,'PyFlow::Core::Variable']]],
-  ['variableform_5fui_2epy',['VariableForm_ui.py',['../_variable_form__ui_8py.html',1,'']]],
   ['variableswidget',['VariablesWidget',['../class_py_flow_1_1_core_1_1_variables_widget_1_1_variables_widget.html',1,'PyFlow.Core.VariablesWidget.VariablesWidget'],['../class_py_flow_1_1_py_flow_1_1_py_flow.html#a23f583c9a446a362590e5602a3facc5d',1,'PyFlow.PyFlow.PyFlow.variablesWidget()']]],
   ['variableswidget_2epy',['VariablesWidget.py',['../_variables_widget_8py.html',1,'']]],
-  ['variableswidget_5fui_2epy',['VariablesWidget_ui.py',['../_variables_widget__ui_8py.html',1,'']]],
   ['vars',['vars',['../class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html#a205f115148d13779a9c808ae89a774dc',1,'PyFlow::Core::AbstractGraph::Graph']]],
   ['varslistwidget',['varsListWidget',['../class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a892fc5744676f28913e64ec5683fe180',1,'PyFlow::Core::Variable::VariableBase']]],
   ['vartypecombobox',['VarTypeComboBox',['../class_py_flow_1_1_core_1_1_variable_1_1_var_type_combo_box.html',1,'PyFlow::Core::Variable']]],
@@ -61,7 +58,5 @@ var searchData=
   ['vector3_2epy',['Vector3.py',['../_vector3_8py.html',1,'']]],
   ['vector4',['Vector4',['../class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html',1,'PyFlow::FunctionLibraries::Vector4']]],
   ['vector4_2epy',['Vector4.py',['../_vector4_8py.html',1,'']]],
-  ['verticallayout',['verticalLayout',['../class_py_flow_1_1_array_input_widget__ui_1_1_ui___form.html#a1aa2197c0e93154b7b83542b84c43d53',1,'PyFlow.ArrayInputWidget_ui.Ui_Form.verticalLayout()'],['../class_py_flow_1_1_code_editor__ui_1_1_ui___code_editor_widget.html#acd216a51944c33d65de10b542cb19f50',1,'PyFlow.CodeEditor_ui.Ui_CodeEditorWidget.verticalLayout()'],['../class_py_flow_1_1_core_1_1_widget_1_1_nodes_box.html#acdbcbbbfb97b026fbaa01e8e498534cf',1,'PyFlow.Core.Widget.NodesBox.verticalLayout()'],['../class_py_flow_1_1_graph_editor__ui_1_1_ui___main_window.html#ae8c9c223e3f6209ab6dc65e118cc42b4',1,'PyFlow.GraphEditor_ui.Ui_MainWindow.verticalLayout()'],['../class_py_flow_1_1_matrix33_input_widget__ui_1_1_ui___form.html#a453754d250fb8bda6352872221132793',1,'PyFlow.Matrix33InputWidget_ui.Ui_Form.verticalLayout()'],['../class_py_flow_1_1_matrix44_input_widget__ui_1_1_ui___form.html#a88a5b0f43393c3adb3082eaf7b83d89d',1,'PyFlow.Matrix44InputWidget_ui.Ui_Form.verticalLayout()'],['../class_py_flow_1_1_pin_widget__ui_1_1_ui___form.html#a85c7eef0d2dfe56a2fcfef84ecf35b68',1,'PyFlow.PinWidget_ui.Ui_Form.verticalLayout()'],['../class_py_flow_1_1_variables_widget__ui_1_1_ui___form.html#a6bf1a899ddfd695a1e8bf438072803f5',1,'PyFlow.VariablesWidget_ui.Ui_Form.verticalLayout()']]],
-  ['verticallayout_5f2',['verticalLayout_2',['../class_py_flow_1_1_code_editor__ui_1_1_ui___code_editor_widget.html#ac7ae18d48dd5b674f35e722270dfdb25',1,'PyFlow.CodeEditor_ui.Ui_CodeEditorWidget.verticalLayout_2()'],['../class_py_flow_1_1_graph_editor__ui_1_1_ui___main_window.html#a5df4bf730a951c02e086052074cad4cb',1,'PyFlow.GraphEditor_ui.Ui_MainWindow.verticalLayout_2()']]],
-  ['vis',['vis',['../namespace_graph_widget_maya.html#ad3ba7f501539d337fd673c2b23de504b',1,'GraphWidgetMaya']]]
+  ['verticallayout',['verticalLayout',['../class_py_flow_1_1_core_1_1_widget_1_1_nodes_box.html#acdbcbbbfb97b026fbaa01e8e498534cf',1,'PyFlow::Core::Widget::NodesBox']]]
 ];

@@ -39,7 +39,9 @@ class implicitPinCall(Node):
             return
         try:
             uid = uuid.UUID(uidStr)
-            self.graph().findPin(uid)
+            pin = self.graph().pins[uid]
+            self.graph().centerOn(pin)
+            pin.highlight()
         except Exception as e:
             print(e)
             pass

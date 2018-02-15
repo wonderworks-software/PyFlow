@@ -32,6 +32,7 @@ var NAVTREEINDEX6 =
 "index.html":[0],
 "namespace_core.html":[3,0,0],
 "namespace_function_libraries.html":[3,0,1],
+"namespace_nodes.html":[3,0,2],
 "namespaces.html":[3,0],
 "pages.html":[],
 "todo.html":[1]

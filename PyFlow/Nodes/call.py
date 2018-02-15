@@ -8,6 +8,7 @@ from Core.Settings import *
 from Core import Node
 
 
+## Call node
 class call(Node, NodeBase):
     def __init__(self, name, graph):
         super(call, self).__init__(name, graph)

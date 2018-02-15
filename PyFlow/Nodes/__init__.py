@@ -1,3 +1,7 @@
+"""@package Nodes
+
+Class based nodes.
+"""
 import os
 import FunctionLibraries
 from inspect import getmembers

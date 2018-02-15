@@ -11,10 +11,8 @@ var searchData=
   ['makevector4array_2epy',['makeVector4Array.py',['../make_vector4_array_8py.html',1,'']]],
   ['mathlib_2epy',['MathLib.py',['../_math_lib_8py.html',1,'']]],
   ['matrix33_2epy',['Matrix33.py',['../_matrix33_8py.html',1,'']]],
-  ['matrix33inputwidget_5fui_2epy',['Matrix33InputWidget_ui.py',['../_matrix33_input_widget__ui_8py.html',1,'']]],
   ['matrix33pin_2epy',['Matrix33Pin.py',['../_matrix33_pin_8py.html',1,'']]],
   ['matrix44_2epy',['Matrix44.py',['../_matrix44_8py.html',1,'']]],
-  ['matrix44inputwidget_5fui_2epy',['Matrix44InputWidget_ui.py',['../_matrix44_input_widget__ui_8py.html',1,'']]],
   ['matrix44pin_2epy',['Matrix44Pin.py',['../_matrix44_pin_8py.html',1,'']]],
   ['move_2epy',['Move.py',['../_move_8py.html',1,'']]]
 ];

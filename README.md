@@ -1,9 +1,8 @@
-
 # Overview
 
-![](logo.png)
+![](logoBp.png)
 
-**PyFlow** is a general purpose extendable python qt node editor.
+[PyFlow](@ref PyFlow.PyFlow.PyFlow) is a general purpose extendable python qt node editor.
 
 # Table of contents
 - [Features](#features)
@@ -12,7 +11,6 @@
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [Credits](#credits)
-- [Licensing](#licensing)
 
 # Features
 - Json serializable
@@ -35,11 +33,8 @@ This repository is a self contained app with python virtualenv configured. So tr
 # Usage
 App's entry point is a **PyFlow.py** file. There are also several handy bat scripts for debugging and profiling.
 Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
-Connect pins and execute the graph with **Call** node.
+Connect pins and execute the graph with [Call](@ref PyFlow.Nodes.call.call) node.
 
-Writing this project i was inspired by Unreal Engine blueprints :) So, if you are familiar with it, you will quickly figure out what's what.
+Writing this project i was inspired by Unreal Engine blueprints. So, if you are familiar with it, you will quickly figure out what's what.
 
 For in depth descriptin and how it works, see video tutorials and documentation.
-
-# Licensing
-[MIT](LICENSE)

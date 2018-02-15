@@ -17,6 +17,65 @@ class MathLib(FunctionLibraryBase):
     # ###################
 
     @staticmethod
+    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Int', 'Keywords': []})
+    ## Is two integers equal
+    def isequal(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+        '''
+        Ints equal
+        '''
+        return a == b
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Int', 'Keywords': []})
+    ## Is a > b
+    def isgreater(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+        '''
+        Is a > b
+        '''
+        return a > b
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Int', 'Keywords': []})
+    ## Is a < b
+    def intless(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+        '''
+        Is a < b
+        '''
+        return a < b
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
+    ## Is two floats equal
+    def isequalf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
+        '''
+        Floats equal
+        '''
+        return a == b
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
+    ## Is a > b
+    def isgreaterf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
+        '''
+        Is a > b
+        '''
+        return a > b
+
+    @staticmethod
+    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
+    ## Is a < b
+    def intlessf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
+        '''
+        Is a < b
+        '''
+        return a < b
+
+
+
+
+
+
+    @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
     ## Return the ceiling of x as a float, the smallest integer value greater than or equal to x
     def ceil(a=(DataTypes.Float, 0.0)):

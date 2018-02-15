@@ -24,7 +24,7 @@ FLOAT_RANGE_MIN = 0.1 + (-sys.maxint - 1.0)
 FLOAT_RANGE_MAX = sys.maxint + 0.1
 ## determines int minimum value
 INT_RANGE_MIN = -sys.maxint + 0
-# determines int maximum value
+## determines int maximum value
 INT_RANGE_MAX = sys.maxint + 0
 
 
@@ -128,7 +128,7 @@ class DataTypes:
     Bool = 3
     Array = 4
     ## This type represents Execution pins.
-    # It doesn't carry any data, but it implements [call](@ref PyFlow.Pins.ExecPin.call) method.
+    # It doesn't carry any data, but it implements [call](@ref PyFlow.Pins.ExecPin.ExecPin#call) method.
     # Using pins of this type we can control execution flow of graph.
     Exec = 5
     ## Special type of data which represents value passed by reference using [implementNode](@ref PyFlow.Core.FunctionLibrary.implementNode) decorator.
@@ -193,7 +193,7 @@ class asynchronous(object):
             return self.result
 
 
-## <a href="https://en.wikipedia.org/wiki/Circular_buffer">Circular buffer</a> container class.
+## [Circular buffer](https://en.wikipedia.org/wiki/Circular_buffer) container class.
 # Useful for processing streaming data.
 class CircularBuffer(object):
     def __init__(self, capacity):

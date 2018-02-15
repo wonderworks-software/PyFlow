@@ -3,6 +3,7 @@ from Core.Settings import *
 from Core import Node
 
 
+## If else node
 class branch(Node, NodeBase):
     def __init__(self, name, graph):
         super(branch, self).__init__(name, graph)

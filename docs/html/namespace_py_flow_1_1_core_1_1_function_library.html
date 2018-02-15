@@ -97,14 +97,13 @@ $(document).ready(function(){initNavTree('namespace_py_flow_1_1_core_1_1_functio
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_function_library_1_1_function_library_base.html">FunctionLibraryBase</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">doc string for <a class="el" href="class_py_flow_1_1_core_1_1_function_library_1_1_function_library_base.html" title="doc string for FunctionLibraryBase ">FunctionLibraryBase</a>  <a href="class_py_flow_1_1_core_1_1_function_library_1_1_function_library_base.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for all function libraries some common utilities can be moved here in future.  <a href="class_py_flow_1_1_core_1_1_function_library_1_1_function_library_base.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a4304ee225f5940a1ccafd92df430343e"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_py_flow_1_1_core_1_1_function_library.html#a4304ee225f5940a1ccafd92df430343e">returns</a> (annotation)</td></tr>
-<tr class="separator:a4304ee225f5940a1ccafd92df430343e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02fe03b6c91483498b3373e91f304186"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_py_flow_1_1_core_1_1_function_library.html#a02fe03b6c91483498b3373e91f304186">implementNode</a></td></tr>
+<tr class="memdesc:a02fe03b6c91483498b3373e91f304186"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turns function into a node.  <a href="#a02fe03b6c91483498b3373e91f304186">More...</a><br /></td></tr>
 <tr class="separator:a02fe03b6c91483498b3373e91f304186"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -151,23 +150,17 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="a4304ee225f5940a1ccafd92df430343e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4304ee225f5940a1ccafd92df430343e">&#9670;&nbsp;</a></span>returns()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">def PyFlow.Core.FunctionLibrary.returns </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>annotation</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Turns function into a node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">decorated</td><td>function </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">returns</td><td>it can be tuple with <a class="el" href="class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html">data type identifier</a> + default value, or None </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meta</td><td>dictionary with category path, keywords and any additional info </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodeType</td><td>determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_py_flow_1_1_core_1_1_a_graph_common_1_1_node_types.html">NodeTypes</a> </dd></dl>
 
 </div>
 </div>

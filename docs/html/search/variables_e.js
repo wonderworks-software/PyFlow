@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['onpinconnected',['OnPinConnected',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#a15be5c18265dab7c16199f9c4352d149',1,'PyFlow::Core::Pin::PinWidgetBase']]],
-  ['onpindisconnected',['OnPinDisconnected',['../class_py_flow_1_1_core_1_1_pin_1_1___pin.html#af0b927e4716909b67478f66e680da2d8',1,'PyFlow::Core::Pin::PinWidgetBase']]],
+  ['onpinconnected',['OnPinConnected',['../class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#aca3370d166f7ccf7090dc30dba482d47',1,'PyFlow::Core::Pin::PinWidgetBase']]],
+  ['onpindisconnected',['OnPinDisconnected',['../class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#a31c511aef6464d9460f861ed26d22a67',1,'PyFlow::Core::Pin::PinWidgetBase']]],
   ['operators',['operators',['../class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter.html#aca00ab33b56ccea852653310e7b620d9',1,'PyFlow::Core::PythonSyntax::PythonHighlighter']]],
   ['opt_5ffont',['opt_font',['../class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a999aa94dde1796d6ea01774866686f49',1,'PyFlow::Core::Node::NodeName']]],
   ['opt_5ffont_5fsize',['opt_font_size',['../class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a0cb957fb8efd00117941d187f5c4c6d1',1,'PyFlow::Core::Node::NodeName']]],
@@ -14,7 +14,7 @@ var searchData=
   ['outb',['outB',['../class_py_flow_1_1_nodes_1_1flip_flop_1_1flip_flop.html#a2038687c903bb1c91d5a098454909e5f',1,'PyFlow::Nodes::flipFlop::flipFlop']]],
   ['outexec',['outExec',['../class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a7c184805bc70307597d7d531be37ad3f',1,'PyFlow.Core.SetVarNode.SetVarNode.outExec()'],['../class_py_flow_1_1_nodes_1_1implicit_pin_call_1_1implicit_pin_call.html#a6d92d268f29e38f11159e6f9bd3345c6',1,'PyFlow.Nodes.implicitPinCall.implicitPinCall.outExec()']]],
   ['output',['Output',['../class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_direction.html#a4d8c7a9f2fed72f9e0a86cd89dcb360a',1,'PyFlow::Core::AGraphCommon::PinDirection']]],
-  ['outputs',['Outputs',['../class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_selection_group.html#a9ddf17b0f837b0cbd83ee709e45d693e',1,'PyFlow.Core.AGraphCommon.PinSelectionGroup.Outputs()'],['../class_py_flow_1_1_core_1_1_abstract_graph_1_1_node_base.html#a46f1c2d1789f4cf1b33b4bd1d3dab8ec',1,'PyFlow.Core.AbstractGraph.NodeBase.outputs()']]],
+  ['outputs',['outputs',['../class_py_flow_1_1_core_1_1_abstract_graph_1_1_node_base.html#a46f1c2d1789f4cf1b33b4bd1d3dab8ec',1,'PyFlow.Core.AbstractGraph.NodeBase.outputs()'],['../class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_selection_group.html#a9ddf17b0f837b0cbd83ee709e45d693e',1,'PyFlow.Core.AGraphCommon.PinSelectionGroup.Outputs()']]],
   ['outputslayout',['outputsLayout',['../class_py_flow_1_1_core_1_1_node_1_1_node.html#a8bc2521471d1a33f232f9ac07506ab62',1,'PyFlow::Core::Node::Node']]],
   ['outvalue',['outValue',['../class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a1dde48cce6f93808df909ab8961508e5',1,'PyFlow::Core::SetVarNode::SetVarNode']]]
 ];

@@ -3,6 +3,11 @@ from Core.Settings import *
 from Core import Node
 
 
+## charge node
+#
+# Each time node called it accumulates the step value.
+# When accumulated value reaches "amount" - sompleted pin called.
+# Useful when you need to wait some time inside some tick function.
 class charge(Node):
     def __init__(self, name, graph):
         super(charge, self).__init__(name, graph)
