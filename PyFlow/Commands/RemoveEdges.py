@@ -4,7 +4,9 @@ from uuid import UUID
 
 
 class RemoveEdges(QUndoCommand):
-
+    '''
+    Disconnects pins
+    '''
     def __init__(self, graph, jsonTemplates):
         super(RemoveEdges, self).__init__()
         self.setText('Remove edges')

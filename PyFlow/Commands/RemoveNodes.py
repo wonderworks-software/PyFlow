@@ -3,7 +3,9 @@ from uuid import UUID
 
 
 class RemoveNodes(QUndoCommand):
-
+    '''
+    Removes nodes
+    '''
     def __init__(self, selectedNodes, graph):
         super(RemoveNodes, self).__init__()
         self.setText("Remove nodes")

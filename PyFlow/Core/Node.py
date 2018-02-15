@@ -1,3 +1,10 @@
+"""@file Node.py
+
+Node is a base class for all ui nodes. This is actually a QGraphicsItem with all common stuff for nodes.
+
+Also, it implements [initializeFromFunction](@ref PyFlow.Core.Node.initializeFromFunction) method which constructs node from given annotated function.
+@sa FunctionLibrary.py
+"""
 from Settings import *
 from Qt import QtCore
 from Qt import QtGui
@@ -104,7 +111,7 @@ class Node(QGraphicsItem, NodeBase):
     """
     Default node description
     """
-    def __init__(self, name, graph, w=80, color=Colors.NodeBackgrounds, spacings=Spacings, headColor=Colors.NodeNameRect, bUseTextureBg=True):
+    def __init__(self, name, graph, w=80, color=Colors.NodeBackgrounds, headColor=Colors.NodeNameRect, bUseTextureBg=True):
         QGraphicsItem.__init__(self)
         NodeBase.__init__(self, name, graph)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
@@ -114,7 +121,6 @@ class Node(QGraphicsItem, NodeBase):
         self._left_stretch = 0
         self.color = color
         self.height_offset = 3
-        self.spacings = spacings
         self.nodeMainGWidget = QGraphicsWidget()
         self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(name))
         self._w = 0
@@ -187,6 +193,7 @@ class Node(QGraphicsItem, NodeBase):
             p.setData(data)
 
     @staticmethod
+    ## Constructs a node from given annotated function and adds it to the canvas
     def initializeFromFunction(foo, graph):
         meta = foo.__annotations__['meta']
         returnType = returnDefaultValue = None
@@ -334,8 +341,8 @@ class Node(QGraphicsItem, NodeBase):
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
         self.w = self.getWidth()
-        self.nodeMainGWidget.setMaximumWidth(self.w + self.spacings.kPinOffset)
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + self.spacings.kPinOffset, self.childrenBoundingRect().height()))
+        self.nodeMainGWidget.setMaximumWidth(self.w + Spacings.kPinOffset)
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + Spacings.kPinOffset, self.childrenBoundingRect().height()))
         if self.isCallable():
             if 'flow' not in self.category().lower():
                 if self.label().bUseTextureBg:
@@ -352,7 +359,7 @@ class Node(QGraphicsItem, NodeBase):
         dPins = 0
         if len(self.outputs.values()) > 0:
             dPins = abs(self.outputs.values()[0].scenePos().x() - self.scenePos().x())
-        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.getName()) + self.spacings.kPinSpacing
+        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.getName()) + Spacings.kPinSpacing
         return max(dPins, fontWidth)
 
     @staticmethod

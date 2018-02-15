@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['uid',['uid',['../class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_item_base.html#a01031255d1a9b85dbe7ac6ead5360a18',1,'PyFlow.Core.AbstractGraph.IItemBase.uid(self)'],['../class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_item_base.html#a9a530facd21a5081ec33e3acd0721e81',1,'PyFlow.Core.AbstractGraph.IItemBase.uid(self, value)'],['../class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_item_base.html#a01031255d1a9b85dbe7ac6ead5360a18',1,'PyFlow.Core.AbstractGraph.IItemBase.uid(self)']]]
+  ['tan',['tan',['../class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#aedfc1087ec0fbfe556964adc3ccfce67',1,'PyFlow::FunctionLibraries::MathLib::MathLib']]],
+  ['tanh',['tanh',['../class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a076d4206eaf284ccdc36ed5731bc27ef',1,'PyFlow::FunctionLibraries::MathLib::MathLib']]],
+  ['trunc',['trunc',['../class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a6758307e0812e31826e5e17e52b57424',1,'PyFlow::FunctionLibraries::MathLib::MathLib']]]
 ];

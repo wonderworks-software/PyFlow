@@ -107,9 +107,9 @@ $(document).ready(function(){initNavTree('class_py_flow_1_1_core_1_1_abstract_gr
 <area href="class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_item_base.html" title="Item interface. " alt="PyFlow.Core.AbstractGraph.IItemBase" shape="rect" coords="0,112,272,136"/>
 <area href="class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_serializable.html" title="Interface for serialization and deserialization. " alt="PyFlow.Core.AbstractGraph.ISerializable" shape="rect" coords="0,56,272,80"/>
 <area href="class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html" alt="PyFlow.Core.AbstractGraph.PinBase" shape="rect" coords="0,224,272,248"/>
-<area href="class_py_flow_1_1_core_1_1_pin_1_1___pin.html" title="This is base class for all ui pins. " alt="PyFlow.Core.Pin.PinWidgetBase" shape="rect" coords="0,280,272,304"/>
+<area href="class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html" title="This is base class for all ui pins. " alt="PyFlow.Core.Pin.PinWidgetBase" shape="rect" coords="0,280,272,304"/>
 <area href="class_py_flow_1_1_pins_1_1_bool_pin_1_1_bool_pin.html" title="doc string for BoolPin " alt="PyFlow.Pins.BoolPin.BoolPin" shape="rect" coords="282,336,554,360"/>
-<area href="class_py_flow_1_1_pins_1_1_exec_pin_1_1_exec_pin.html" title="doc string for ExecPin " alt="PyFlow.Pins.ExecPin.ExecPin" shape="rect" coords="282,392,554,416"/>
+<area href="class_py_flow_1_1_pins_1_1_exec_pin_1_1_exec_pin.html" title="Execution pin. " alt="PyFlow.Pins.ExecPin.ExecPin" shape="rect" coords="282,392,554,416"/>
 <area href="class_py_flow_1_1_pins_1_1_float_pin_1_1_float_pin.html" title="doc string for FloatPin " alt="PyFlow.Pins.FloatPin.FloatPin" shape="rect" coords="282,448,554,472"/>
 <area href="class_py_flow_1_1_pins_1_1_float_vector3_pin_1_1_float_vector3_pin.html" title="doc string for FloatVector3Pin " alt="PyFlow.Pins.FloatVector3Pin.FloatVector3Pin" shape="rect" coords="282,504,554,528"/>
 <area href="class_py_flow_1_1_pins_1_1_float_vector4_pin_1_1_float_vector4_pin.html" title="doc string for FloatVector4Pin " alt="PyFlow.Pins.FloatVector4Pin.FloatVector4Pin" shape="rect" coords="282,560,554,584"/>
@@ -236,7 +236,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Default value for this particular pin. </p>
 <p>This can be set whenever you need.</p>
-<dl class="section see"><dt>See also</dt><dd>Pins </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>PyFlow.Pins </dd></dl>
 
 </div>
 </div>
@@ -266,7 +266,7 @@ Static Public Member Functions</h2></td></tr>
 <p>Static hint of what data type is this pin, as well as default value for this data type. </p>
 <p>Used to easily find pin classes by type id.</p>
 <dl class="section return"><dt>Returns</dt><dd>A tuple containing data type id as first element + default value for this data type as second.</dd></dl>
-<p><b>Examples</b> </p><div class="fragment"><div class="line"><span class="comment"># printing hints</span></div><div class="line">&gt;&gt;&gt; somePin.pinDataTypeHint()</div><div class="line">(0, 0.0)</div><div class="line">&gt;&gt;&gt; somePin.pinDataTypeHint()</div><div class="line">(3, <span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="comment"># this is how it used in pins initialization</span></div><div class="line">&gt;&gt;&gt; <span class="keyword">def </span>_REGISTER_PIN_TYPE(pinSubclass):</div><div class="line">&gt;&gt;&gt;     dType = pinSubclass.pinDataTypeHint()[0]</div><div class="line">&gt;&gt;&gt;     <span class="keywordflow">if</span> dType <span class="keywordflow">not</span> <span class="keywordflow">in</span> _PINS:</div><div class="line">&gt;&gt;&gt;         _PINS[pinSubclass.pinDataTypeHint()[0]] = pinSubclass</div><div class="line">&gt;&gt;&gt;     <span class="keywordflow">else</span>:</div><div class="line">&gt;&gt;&gt;         <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Error registering pin type {0}\n pin with ID [{1}] already registered&quot;</span>.format(pinSubclass.__name__))</div></div><!-- fragment --> <dl class="section see"><dt>See also</dt><dd><a class="el" href="class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html" title="Data types identifires. ">AGraphCommon.DataTypes</a>  </dd></dl>
+<p><b>Examples</b> </p><div class="fragment"><div class="line"><span class="comment"># printing hints</span></div><div class="line">&gt;&gt;&gt; somePin.pinDataTypeHint()</div><div class="line">(0, 0.0)</div><div class="line">&gt;&gt;&gt; somePin.pinDataTypeHint()</div><div class="line">(3, <span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="comment"># this is how it used in pins initialization</span></div><div class="line">&gt;&gt;&gt; <span class="keyword">def </span>_REGISTER_PIN_TYPE(pinSubclass):</div><div class="line">&gt;&gt;&gt;     dType = pinSubclass.pinDataTypeHint()[0]</div><div class="line">&gt;&gt;&gt;     <span class="keywordflow">if</span> dType <span class="keywordflow">not</span> <span class="keywordflow">in</span> _PINS:</div><div class="line">&gt;&gt;&gt;         _PINS[pinSubclass.pinDataTypeHint()[0]] = pinSubclass</div><div class="line">&gt;&gt;&gt;     <span class="keywordflow">else</span>:</div><div class="line">&gt;&gt;&gt;         <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Error registering pin type {0}\n pin with ID [{1}] already registered&quot;</span>.format(pinSubclass.__name__))</div></div><!-- fragment --> <dl class="section see"><dt>See also</dt><dd><a class="el" href="class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html">DataTypes</a>  </dd></dl>
 
 </div>
 </div>

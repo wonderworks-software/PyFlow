@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['gamma',['gamma',['../class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a08ce02752ba96f53290b6f351d32e5c3',1,'PyFlow::FunctionLibraries::MathLib::MathLib']]],
-  ['getname',['getName',['../class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_item_base.html#aedbefa16477c070f45dfaecab5d3e639',1,'PyFlow::Core::AbstractGraph::IItemBase']]],
-  ['getvarnode',['GetVarNode',['../class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html',1,'PyFlow::Core::GetVarNode']]],
-  ['graph',['Graph',['../class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html',1,'PyFlow::Core::AbstractGraph']]],
-  ['graphwidget',['GraphWidget',['../class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html',1,'PyFlow::Core::Widget']]]
+  ['highlightblock',['highlightBlock',['../class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter.html#a539575740999c08fb721b2c2a627f944',1,'PyFlow::Core::PythonSyntax::PythonHighlighter']]],
+  ['hypot',['hypot',['../class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#aff645f64e2c4559e9900d44a95527dba',1,'PyFlow::FunctionLibraries::MathLib::MathLib']]]
 ];

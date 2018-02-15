@@ -31,16 +31,16 @@ var annotated_dup =
         [ "AGraphCommon", null, [
           [ "asynchronous", "class_py_flow_1_1_core_1_1_a_graph_common_1_1asynchronous.html", "class_py_flow_1_1_core_1_1_a_graph_common_1_1asynchronous" ],
           [ "CircularBuffer", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_circular_buffer.html", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_circular_buffer" ],
-          [ "DataTypes", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html", null ],
-          [ "Direction", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_direction.html", null ],
-          [ "NodeTypes", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_node_types.html", null ],
-          [ "PinDirection", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_direction.html", null ],
-          [ "PinSelectionGroup", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_selection_group.html", null ]
+          [ "DataTypes", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types" ],
+          [ "Direction", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_direction.html", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_direction" ],
+          [ "NodeTypes", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_node_types.html", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_node_types" ],
+          [ "PinDirection", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_direction.html", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_direction" ],
+          [ "PinSelectionGroup", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_selection_group.html", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_selection_group" ]
         ] ],
         [ "CodeEditor", null, [
-          [ "CodeEditor", "class_py_flow_1_1_core_1_1_code_editor_1_1_code_editor.html", "class_py_flow_1_1_core_1_1_code_editor_1_1_code_editor" ],
-          [ "CompletionTextEdit", "class_py_flow_1_1_core_1_1_code_editor_1_1_completion_text_edit.html", "class_py_flow_1_1_core_1_1_code_editor_1_1_completion_text_edit" ],
-          [ "PinWidget", "class_py_flow_1_1_core_1_1_code_editor_1_1_pin_widget.html", "class_py_flow_1_1_core_1_1_code_editor_1_1_pin_widget" ]
+          [ "WCodeEditor", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor" ],
+          [ "WCompletionTextEdit", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_completion_text_edit.html", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_completion_text_edit" ],
+          [ "WPinWidget", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_pin_widget.html", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_pin_widget" ]
         ] ],
         [ "Edge", null, [
           [ "Edge", "class_py_flow_1_1_core_1_1_edge_1_1_edge.html", "class_py_flow_1_1_core_1_1_edge_1_1_edge" ]
@@ -69,18 +69,17 @@ var annotated_dup =
           [ "NodeName", "class_py_flow_1_1_core_1_1_node_1_1_node_name.html", "class_py_flow_1_1_core_1_1_node_1_1_node_name" ]
         ] ],
         [ "NodePainter", null, [
-          [ "NodePainter", "class_py_flow_1_1_core_1_1_node_painter_1_1_node_painter.html", null ]
+          [ "NodePainter", "class_py_flow_1_1_core_1_1_node_painter_1_1_node_painter.html", "class_py_flow_1_1_core_1_1_node_painter_1_1_node_painter" ]
         ] ],
         [ "Pin", null, [
-          [ "PinWidgetBase", "class_py_flow_1_1_core_1_1_pin_1_1___pin.html", "class_py_flow_1_1_core_1_1_pin_1_1___pin" ]
+          [ "PinWidgetBase", "class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html", "class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base" ]
         ] ],
         [ "PythonSyntax", null, [
           [ "PythonHighlighter", "class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter.html", "class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter" ]
         ] ],
         [ "Settings", null, [
-          [ "Colors", "class_py_flow_1_1_core_1_1_settings_1_1_colors.html", null ],
-          [ "LineTypes", "class_py_flow_1_1_core_1_1_settings_1_1_line_types.html", null ],
-          [ "Spacings", "class_py_flow_1_1_core_1_1_settings_1_1_spacings.html", null ]
+          [ "Colors", "class_py_flow_1_1_core_1_1_settings_1_1_colors.html", "class_py_flow_1_1_core_1_1_settings_1_1_colors" ],
+          [ "Spacings", "class_py_flow_1_1_core_1_1_settings_1_1_spacings.html", "class_py_flow_1_1_core_1_1_settings_1_1_spacings" ]
         ] ],
         [ "SetVarNode", null, [
           [ "SetVarNode", "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html", "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node" ]
@@ -240,7 +239,7 @@ var annotated_dup =
         ] ]
       ] ],
       [ "PyFlow", null, [
-        [ "PluginType", "class_py_flow_1_1_py_flow_1_1_plugin_type.html", null ],
+        [ "PluginType", "class_py_flow_1_1_py_flow_1_1_plugin_type.html", "class_py_flow_1_1_py_flow_1_1_plugin_type" ],
         [ "PyFlow", "class_py_flow_1_1_py_flow_1_1_py_flow.html", "class_py_flow_1_1_py_flow_1_1_py_flow" ]
       ] ]
     ] ]

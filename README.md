@@ -1,6 +1,7 @@
+
 # Overview
 
-![](/logo.jpg)
+![](logo.png)
 
 **PyFlow** is a general purpose extendable python qt node editor.
 
@@ -32,7 +33,13 @@ This repository is a self contained app with python virtualenv configured. So tr
 - [pyrr](https://github.com/adamlwgriffiths/Pyrr) for builtin math. (optional)
 
 # Usage
-App's entry point is a PyFlow.py file. There are also several handy bat scripts for debigging and profiling.
+App's entry point is a **PyFlow.py** file. There are also several handy bat scripts for debugging and profiling.
+Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
+Connect pins and execute the graph with **Call** node.
+
+Writing this project i was inspired by Unreal Engine blueprints :) So, if you are familiar with it, you will quickly figure out what's what.
+
+For in depth descriptin and how it works, see video tutorials and documentation.
 
 # Licensing
 [MIT](LICENSE)

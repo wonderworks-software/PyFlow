@@ -1,3 +1,5 @@
+"""@file Pin.py
+"""
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsWidget

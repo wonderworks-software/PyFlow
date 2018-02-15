@@ -1,9 +1,13 @@
+"""@file NodePainter.py
+"""
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QStyle
 from Settings import *
 
 
+## Determines how to paint the node
+# @todo ability to pass painting method as argument to implementNode decorator
 class NodePainter(object):
     @staticmethod
     def asConvertNode(node, painter, option, widget):

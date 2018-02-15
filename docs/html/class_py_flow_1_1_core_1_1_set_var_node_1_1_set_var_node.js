@@ -1,6 +1,7 @@
 var class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node =
 [
     [ "__init__", "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a6b0f825fa4028f60c92bad33c50dee79", null ],
+    [ "category", "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a8fb70246daac060cffb5e01cca16f72c", null ],
     [ "compute", "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a0da16084b96244ce4d7e47a972dd71af", null ],
     [ "onUpdatePropertyView", "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a483dc79912e168a5f6d15e0c61bf2650", null ],
     [ "onVarDataTypeChanged", "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a0df2575d812f63766158e5f9c83b2d0c", null ],

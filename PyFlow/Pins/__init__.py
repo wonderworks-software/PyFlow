@@ -1,3 +1,5 @@
+"""@package Pins
+"""
 import os
 _PINS = {}
 

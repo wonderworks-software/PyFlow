@@ -1,3 +1,7 @@
+"""@file Variable.py
+
+Variable related classes.
+"""
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QWidget
@@ -14,11 +18,12 @@ from uuid import uuid4
 import inspect
 from AbstractGraph import *
 import InputWidgets
-# import Pins
+import Pins
 
 
+## Colored rounded rect
+# color corresponds to pin data type color
 class TypeWidget(QWidget):
-    """docstring for TypeWidget"""
     def __init__(self, color, parent=None):
         super(TypeWidget, self).__init__()
         self.color = color
@@ -38,8 +43,8 @@ class TypeWidget(QWidget):
         painter.end()
 
 
+## Changes type of variable
 class VarTypeComboBox(QComboBox):
-    """docstring for VarTypeComboBox"""
     def __init__(self, var, parent=None):
         super(VarTypeComboBox, self).__init__(parent)
         self._bJustSpawned = True
@@ -60,11 +65,15 @@ class VarTypeComboBox(QComboBox):
             self.var.value = val
 
 
+## Variable class
 class VariableBase(QWidget):
-    """docstring for VariableBase"""
+    ## executed when value been set
     valueChanged = QtCore.Signal()
+    ## executed when name been changed
     nameChanged = QtCore.Signal(str)
+    ## executed when variable been killed
     killed = QtCore.Signal()
+    ## executed when variable data type been changed
     dataTypeChanged = QtCore.Signal(int)
 
     def __init__(self, name, value, graph, varsListWidget, dataType=DataTypes.Bool, uid=None):
@@ -143,6 +152,8 @@ class VariableBase(QWidget):
         self._value = data
         self.valueChanged.emit()
 
+    ## Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
+    # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
     def setDataType(self, dataType, _bJustSpawned=False):
         self.dataType = dataType
         self.widget.color = Pins.findPinClassByType(self.dataType).color()

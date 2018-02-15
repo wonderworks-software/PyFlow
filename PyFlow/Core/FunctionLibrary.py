@@ -1,9 +1,23 @@
+"""@file FunctionLibrary.py
+
+This file contains decorator for implementing node from function.
+
+The main idea is to describe argument types and default values.
+
+Using this information it becomes possible to create pins according to arguments types.
+"""
 from inspect import getargspec
 from AGraphCommon import *
 
 empty = {}
 
 
+## Turns function into a node
+# @param[in] decorated function
+# @param[in] returns it can be tuple with [data type identifier](@ref PyFlow.Core.AGraphCommon.DataTypes) + default value, or None
+# @param[in] meta dictionary with category path, keywords and any additional info
+# @param[in] nodeType determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created
+# @sa [NodeTypes](@ref PyFlow.Core.AGraphCommon.NodeTypes)
 def implementNode(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     def wrapper(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
@@ -45,7 +59,8 @@ def implementNode(func=None, returns=empty, meta={'Category': 'Default', 'Keywor
     return wrapper
 
 
+## Base class for all function libraries
+# some common utilities can be moved here in future
 class FunctionLibraryBase(object):
-    """doc string for FunctionLibraryBase"""
     def __init__(self):
         super(FunctionLibraryBase, self).__init__()

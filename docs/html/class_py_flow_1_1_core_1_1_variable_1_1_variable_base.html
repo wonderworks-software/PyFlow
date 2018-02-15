@@ -96,7 +96,7 @@ $(document).ready(function(){initNavTree('class_py_flow_1_1_core_1_1_variable_1_
 </div><!--header-->
 <div class="contents">
 
-<p>docstring for <a class="el" href="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html" title="docstring for VariableBase ">VariableBase</a>  
+<p>Variable class.  
  <a href="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#details">More...</a></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for PyFlow.Core.Variable.VariableBase:</div>
@@ -129,8 +129,8 @@ def&#160;</td><td class="memItemRight" valign="bottom"><b>value</b> (self)</td><
 <tr class="memitem:a9dd0e42101e6b4ceba1927ad583e9533"><td class="memItemLeft" align="right" valign="top"><a id="a9dd0e42101e6b4ceba1927ad583e9533"></a>
 def&#160;</td><td class="memItemRight" valign="bottom"><b>value</b> (self, data)</td></tr>
 <tr class="separator:a9dd0e42101e6b4ceba1927ad583e9533"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb310eb14bb16868e13c2802d76f9155"><td class="memItemLeft" align="right" valign="top"><a id="aeb310eb14bb16868e13c2802d76f9155"></a>
-def&#160;</td><td class="memItemRight" valign="bottom"><b>setDataType</b> (self, dataType, _bJustSpawned=False)</td></tr>
+<tr class="memitem:aeb310eb14bb16868e13c2802d76f9155"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#aeb310eb14bb16868e13c2802d76f9155">setDataType</a> (self, dataType, _bJustSpawned=False)</td></tr>
+<tr class="memdesc:aeb310eb14bb16868e13c2802d76f9155"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes variable data type and updates <a class="el" href="class_py_flow_1_1_core_1_1_variable_1_1_type_widget.html">TypeWidget</a> color.  <a href="#aeb310eb14bb16868e13c2802d76f9155">More...</a><br /></td></tr>
 <tr class="separator:aeb310eb14bb16868e13c2802d76f9155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f6b4f1e7b49084f8138b42da69f2692"><td class="memItemLeft" align="right" valign="top"><a id="a5f6b4f1e7b49084f8138b42da69f2692"></a>
 def&#160;</td><td class="memItemRight" valign="bottom"><b>mousePressEvent</b> (self, event)</td></tr>
@@ -187,22 +187,65 @@ Public Attributes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:ad99871f3c81ec9e2381ba1f081425965"><td class="memItemLeft" align="right" valign="top"><a id="ad99871f3c81ec9e2381ba1f081425965"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>valueChanged</b> = QtCore.Signal()</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#ad99871f3c81ec9e2381ba1f081425965">valueChanged</a> = QtCore.Signal()</td></tr>
+<tr class="memdesc:ad99871f3c81ec9e2381ba1f081425965"><td class="mdescLeft">&#160;</td><td class="mdescRight">executed when value been set <br /></td></tr>
 <tr class="separator:ad99871f3c81ec9e2381ba1f081425965"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fc18ffd1acf3d91f37e1bd525d7a611"><td class="memItemLeft" align="right" valign="top"><a id="a7fc18ffd1acf3d91f37e1bd525d7a611"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>nameChanged</b> = QtCore.Signal(str)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a7fc18ffd1acf3d91f37e1bd525d7a611">nameChanged</a> = QtCore.Signal(str)</td></tr>
+<tr class="memdesc:a7fc18ffd1acf3d91f37e1bd525d7a611"><td class="mdescLeft">&#160;</td><td class="mdescRight">executed when name been changed <br /></td></tr>
 <tr class="separator:a7fc18ffd1acf3d91f37e1bd525d7a611"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2d500854e546ebfebde8a42955331e5"><td class="memItemLeft" align="right" valign="top"><a id="ae2d500854e546ebfebde8a42955331e5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>killed</b> = QtCore.Signal()</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#ae2d500854e546ebfebde8a42955331e5">killed</a> = QtCore.Signal()</td></tr>
+<tr class="memdesc:ae2d500854e546ebfebde8a42955331e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">executed when variable been killed <br /></td></tr>
 <tr class="separator:ae2d500854e546ebfebde8a42955331e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a2907d68f2df63d64f5dc38f2ac5d57"><td class="memItemLeft" align="right" valign="top"><a id="a1a2907d68f2df63d64f5dc38f2ac5d57"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>dataTypeChanged</b> = QtCore.Signal(int)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a1a2907d68f2df63d64f5dc38f2ac5d57">dataTypeChanged</a> = QtCore.Signal(int)</td></tr>
+<tr class="memdesc:a1a2907d68f2df63d64f5dc38f2ac5d57"><td class="mdescLeft">&#160;</td><td class="mdescRight">executed when variable data type been changed <br /></td></tr>
 <tr class="separator:a1a2907d68f2df63d64f5dc38f2ac5d57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>docstring for <a class="el" href="class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html" title="docstring for VariableBase ">VariableBase</a> </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>PyFlow/Core/Variable.py</li>
+<div class="textblock"><p>Variable class. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="aeb310eb14bb16868e13c2802d76f9155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb310eb14bb16868e13c2802d76f9155">&#9670;&nbsp;</a></span>setDataType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def PyFlow.Core.Variable.VariableBase.setDataType </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>dataType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>_bJustSpawned</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes variable data type and updates <a class="el" href="class_py_flow_1_1_core_1_1_variable_1_1_type_widget.html">TypeWidget</a> color. </p>
+<dl class="bug"><dt><b><a class="el" href="bug.html#_bug000001">Bug:</a></b></dt><dd>in the end of this method we clear undo stack, but we should not.</dd></dl>
+<p>We do this because undo redo goes crazy </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>PyFlow/Core/<a class="el" href="_variable_8py.html">Variable.py</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

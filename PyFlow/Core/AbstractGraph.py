@@ -1,7 +1,3 @@
-'''
-Common definitions
-'''
-
 from AGraphCommon import *
 import weakref
 import uuid
@@ -146,7 +142,7 @@ class IPin(IItemBase):
             >>>     else:
             >>>         raise Exception("Error registering pin type {0}\n pin with ID [{1}] already registered".format(pinSubclass.__name__))
 
-        \sa AGraphCommon.DataTypes
+        @sa [DataTypes](@ref AGraphCommon.DataTypes)
         """
         raise NotImplementedError('pinDataTypeHint method of IPin is not implemented')
 
@@ -164,7 +160,7 @@ class IPin(IItemBase):
 
         This can be set whenever you need.
 
-        \sa Pins
+        @sa PyFlow.Pins
         '''
         raise NotImplementedError('defaultValue method of IPin is not implemented')
 
@@ -231,7 +227,7 @@ class PinBase(IPin):
     # ISerializable interface
 
     def serialize(self):
-        data = {'name': self.getName(),
+        data = {'name': self.name,
                 'dataType': self.dataType,
                 'direction': self.direction,
                 'value': self.currentData(),

@@ -1,3 +1,7 @@
+"""@file Settings.py
+
+Some common variables related to appearance.
+"""
 from Qt import QtGui
 from Qt import QtCore
 
@@ -6,28 +10,6 @@ class Spacings:
     kPinSpacing = 4
     kPinOffset = 12
     kSplitterHandleWidth = 5
-
-
-class LineTypes:
-    lDotLine = 'lDotLine'
-    lSolidLine = 'lSolidLine'
-    lDashLine = 'lDashLine'
-    lDashDotDotLine = 'lDashDotDotLine'
-    lDashDotLine = 'lDashDotLine'
-
-
-def get_line_type(name):
-    if name == 'lDotLine':
-        opt_pen_selected_type = QtCore.Qt.DotLine
-    elif name == 'lSolidLine':
-        opt_pen_selected_type = QtCore.Qt.SolidLine
-    elif name == 'lDashLine':
-        opt_pen_selected_type = QtCore.Qt.DashLine
-    elif name == 'lDashDotDotLine':
-        opt_pen_selected_type = QtCore.Qt.DashDotDotLine
-    else:
-        opt_pen_selected_type = QtCore.Qt.DashDotLine
-    return opt_pen_selected_type
 
 
 class Colors:

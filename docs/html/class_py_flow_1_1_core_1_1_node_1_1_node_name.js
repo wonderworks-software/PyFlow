@@ -4,6 +4,7 @@ var class_py_flow_1_1_core_1_1_node_1_1_node_name =
     [ "boundingRect", "class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a3cf064c45b4f6038fbdfef4db0a6be32", null ],
     [ "focusInEvent", "class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a155a5e78620e26fb55a69aec29743946", null ],
     [ "focusOutEvent", "class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a200c0f0bdec4223ad2f16bb89c30ea6b", null ],
+    [ "IsRenamable", "class_py_flow_1_1_core_1_1_node_1_1_node_name.html#ac7d7357ab76f00f7936560d0d967c160", null ],
     [ "keyPressEvent", "class_py_flow_1_1_core_1_1_node_1_1_node_name.html#aae850360f6289f26a3a671470a99469c", null ],
     [ "onDocContentsChanged", "class_py_flow_1_1_core_1_1_node_1_1_node_name.html#ac01e46af629e58119e3aa5eed7154862", null ],
     [ "paint", "class_py_flow_1_1_core_1_1_node_1_1_node_name.html#a0a51cf34094341f01b834bd0896873fb", null ],

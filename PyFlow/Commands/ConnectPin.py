@@ -2,7 +2,9 @@ from Qt.QtWidgets import QUndoCommand
 
 
 class ConnectPin(QUndoCommand):
-
+    '''
+    Connects two pins
+    '''
     def __init__(self, graph, src, dst):
         super(ConnectPin, self).__init__()
         self.graph = graph

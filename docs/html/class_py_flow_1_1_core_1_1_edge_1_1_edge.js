@@ -2,6 +2,7 @@ var class_py_flow_1_1_core_1_1_edge_1_1_edge =
 [
     [ "__init__", "class_py_flow_1_1_core_1_1_edge_1_1_edge.html#ab9319e85e4092cc2c8ab1c16139d7903", null ],
     [ "__str__", "class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a4c471241f8b9b0a553ea258d900c0ea4", null ],
+    [ "deserialize", "class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a2e61b0dbcd1ceb89c2214e419bd38579", null ],
     [ "destination_port_name", "class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a882906189435ef9e4a9cc5bfe1cfb477", null ],
     [ "getEndPoints", "class_py_flow_1_1_core_1_1_edge_1_1_edge.html#a37ff2ed780c44dbbd20cddec46c26eaa", null ],
     [ "highlight", "class_py_flow_1_1_core_1_1_edge_1_1_edge.html#aa105763baf8fbb138b6947ac8699cff1", null ],

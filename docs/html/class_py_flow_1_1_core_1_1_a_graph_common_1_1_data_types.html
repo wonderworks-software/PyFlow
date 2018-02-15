@@ -113,11 +113,11 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>Bool</b> = 3</td></tr>
 <tr class="memitem:aaa4370e4f28831625a056c464bbb7d28"><td class="memItemLeft" align="right" valign="top"><a id="aaa4370e4f28831625a056c464bbb7d28"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>Array</b> = 4</td></tr>
 <tr class="separator:aaa4370e4f28831625a056c464bbb7d28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25b7e9431883e271a36bd9feb00e4a46"><td class="memItemLeft" align="right" valign="top"><a id="a25b7e9431883e271a36bd9feb00e4a46"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Exec</b> = 5</td></tr>
+<tr class="memitem:a25b7e9431883e271a36bd9feb00e4a46"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html#a25b7e9431883e271a36bd9feb00e4a46">Exec</a> = 5</td></tr>
+<tr class="memdesc:a25b7e9431883e271a36bd9feb00e4a46"><td class="mdescLeft">&#160;</td><td class="mdescRight">This type represents Execution pins.  <a href="#a25b7e9431883e271a36bd9feb00e4a46">More...</a><br /></td></tr>
 <tr class="separator:a25b7e9431883e271a36bd9feb00e4a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafe7838f6c6730e58a6d00ab9c1a6643"><td class="memItemLeft" align="right" valign="top"><a id="aafe7838f6c6730e58a6d00ab9c1a6643"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Reference</b> = 6</td></tr>
+<tr class="memitem:aafe7838f6c6730e58a6d00ab9c1a6643"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html#aafe7838f6c6730e58a6d00ab9c1a6643">Reference</a> = 6</td></tr>
+<tr class="memdesc:aafe7838f6c6730e58a6d00ab9c1a6643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Special type of data which represents value passed by reference using implementNode decorator.  <a href="#aafe7838f6c6730e58a6d00ab9c1a6643">More...</a><br /></td></tr>
 <tr class="separator:aafe7838f6c6730e58a6d00ab9c1a6643"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abaec717d286a7eb0d6bb3e7bb277848e"><td class="memItemLeft" align="right" valign="top"><a id="abaec717d286a7eb0d6bb3e7bb277848e"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>FloatVector3</b> = 7</td></tr>
@@ -137,8 +137,59 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>Quaternion</b> = 11</t
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Data types identifires. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>PyFlow/Core/AGraphCommon.py</li>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a25b7e9431883e271a36bd9feb00e4a46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25b7e9431883e271a36bd9feb00e4a46">&#9670;&nbsp;</a></span>Exec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int PyFlow.Core.AGraphCommon.DataTypes.Exec = 5</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>This type represents Execution pins. </p>
+<p>It doesn't carry any data, but it implements call method. Using pins of this type we can control execution flow of graph. </p>
+
+</div>
+</div>
+<a id="aafe7838f6c6730e58a6d00ab9c1a6643"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafe7838f6c6730e58a6d00ab9c1a6643">&#9670;&nbsp;</a></span>Reference</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int PyFlow.Core.AGraphCommon.DataTypes.Reference = 6</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Special type of data which represents value passed by reference using implementNode decorator. </p>
+<p>For example see <a class="el" href="class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a87cbe099c971788b7d4158210f22da54">factorial</a> function. Here along with computation results we return additional info, whether function call succeeded or not. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>PyFlow/Core/<a class="el" href="_a_graph_common_8py.html">AGraphCommon.py</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

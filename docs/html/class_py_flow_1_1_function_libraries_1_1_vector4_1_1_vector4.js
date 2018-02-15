@@ -22,5 +22,7 @@ var class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4 =
     [ "v4W", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#a3f7efd8fad5fffab6a5a8ff05eab51b9", null ],
     [ "v4X", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#aaf0bf1e96883dd896c1fac3c0d76104c", null ],
     [ "v4Y", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#abce8bddb6f0ad05ad267b210909f1105", null ],
-    [ "v4Z", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#aea7975bd50a15be6747eb7e7277bd8c1", null ]
+    [ "v4Z", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#aea7975bd50a15be6747eb7e7277bd8c1", null ],
+    [ "meta", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#a4d9b94c2534a6b97a4d5ee12c707c287", null ],
+    [ "returns", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html#ab040ba610f8e909e8714d849f378d6d2", null ]
 ];

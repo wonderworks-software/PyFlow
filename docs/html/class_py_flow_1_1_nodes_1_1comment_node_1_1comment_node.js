@@ -2,8 +2,13 @@ var class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node =
 [
     [ "__init__", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a9c8f969c7dd63060adb1ca6e2eb1df1f", null ],
     [ "boundingRect", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a98df08f09c51e13d7322c6c41ac787bc", null ],
+    [ "category", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a9a631c2ee701f2f5cb6aaf48711d65d3", null ],
     [ "contextMenuEvent", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a8004f5d7c82830b16a2fc5e6580d8756", null ],
+    [ "description", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a9e29dfd51d5a35e0ed1a824a58e1ad73", null ],
+    [ "getNodesRect", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#afb94211efe3929aa42b1e46e334703a0", null ],
+    [ "isInRange", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a6b2d150d5c9ad9ce6660683ab183b470", null ],
     [ "itemChange", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a9aa0fe11ce038e88e3faba4aca77fea1", null ],
+    [ "keywords", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#ae231b5becdc02555913848f52a3cbaa7", null ],
     [ "mouseMoveEvent", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a9c0337778ca892d4b91518f1c34c9ef0", null ],
     [ "mousePressEvent", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#ac69e737601d3ed076c60bf42de7ebd75", null ],
     [ "mouseReleaseEvent", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html#a41abb7ccb6bd4120c235675ef572db5b", null ],

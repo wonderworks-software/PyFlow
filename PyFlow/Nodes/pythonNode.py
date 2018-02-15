@@ -5,7 +5,7 @@ from Qt import QtGui
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QMenu
-from Core.CodeEditor import CodeEditor
+from Core.CodeEditor import WCodeEditor
 import weakref
 import uuid
 from types import MethodType

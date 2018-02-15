@@ -29,8 +29,6 @@ import math
 import platform
 import random
 from Settings import Colors
-from Settings import LineTypes
-from Settings import get_line_type
 from AbstractGraph import *
 from Edge import Edge
 from Node import Node

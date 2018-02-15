@@ -476,6 +476,7 @@ class MathLib(FunctionLibraryBase):
         '''
         Return a random integer N such that a <= N <= b
         '''
+        push(Result)
         Result.setData(random.randint(start, end))
 
     @staticmethod

@@ -1,3 +1,7 @@
+"""@file VariablesWidget.py
+
+Variables input widget. Container for [VariableBase](@ref PyFlow.Core.Variable.VariableBase)
+"""
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QWidget

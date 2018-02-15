@@ -1,4 +1,5 @@
 var namespaces_dup =
 [
-    [ "common", "namespacecommon.html", null ]
+    [ "Core", "namespace_core.html", null ],
+    [ "FunctionLibraries", "namespace_function_libraries.html", null ]
 ];

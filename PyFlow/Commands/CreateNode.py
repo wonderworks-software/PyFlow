@@ -2,7 +2,9 @@ from Qt.QtWidgets import QUndoCommand
 
 
 class CreateNode(QUndoCommand):
-
+    '''
+    Creates a node
+    '''
     def __init__(self, graph, jsonTemplate):
         super(CreateNode, self).__init__()
         self.graph = graph

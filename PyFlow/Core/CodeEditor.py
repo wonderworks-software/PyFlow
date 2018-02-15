@@ -1,3 +1,55 @@
+"""@file CodeEditor.py
+
+The code editor is a widget for [pythonNode](@ref PyFlow.Nodes.pythonNode.pythonNode)
+To open it, create pythonNode first, then right click on it and click 'edit'. Code editor will pop up.
+@image html codeEditorInput.jpg
+The editor is divided into two parts.
+
+**The first part** is a place where you will define and sort pins. To sort pins, simply drag
+
+them as you would like them to be located on the node.
+
+1. node name
+
+2. create new input button. To the right there is a button for output pin creation also.
+
+3. remove selected pins
+
+4. pin widget. Here you can specify pin name and data type, as well as label visibility.
+
+5. spin box to change editor font size
+
+6. reset ui to defaults
+
+7. apply to node. This button will populate node with data from code editor ui.
+
+@image html codeEditorCode.jpg
+
+**The second part** is actually the text editor. Here you can read/write pins data, import python modules and use them in calculationis.
+
+When save button is pressed, function with code you wrote will be generated and used as node's compute method.
+
+    Examples:
+        # you can acess pins in two ways
+        # like so
+        >>> self.pinName.getData()
+        >>> self.pinName.setData(value)
+        # or like so
+        >>> self.getData('pinName')
+        >>> self.setData('pinName', value)
+
+        # this code
+        >>> import math
+        >>> print(math.pi)
+        # will be turned into the following
+        >>> def compute(self):
+        >>>     import math
+        >>>     print(math.pi)
+        # and then used inside the node
+
+
+"""
+
 from Qt import QtGui
 from Qt import QtCore
 from Qt.QtWidgets import QWidget
@@ -19,9 +71,9 @@ import weakref
 from keyword import kwlist
 
 
-class CompletionTextEdit(QPlainTextEdit):
+class WCompletionTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
-        super(CompletionTextEdit, self).__init__(parent)
+        super(WCompletionTextEdit, self).__init__(parent)
         self.setMinimumWidth(400)
         wordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()', 'setDirty()']
         self.completer = QCompleter(wordList, self)
@@ -96,10 +148,9 @@ class CompletionTextEdit(QPlainTextEdit):
         self.completer.complete(cr)
 
 
-class PinWidget(QWidget, PinWidget_ui.Ui_Form):
-    """doc string for PinWidget"""
+class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
     def __init__(self, editor):
-        super(PinWidget, self).__init__()
+        super(WPinWidget, self).__init__()
         self.setupUi(self)
         self.editor = weakref.ref(editor)
         self.lePinName.setText('pinName')
@@ -112,7 +163,7 @@ class PinWidget(QWidget, PinWidget_ui.Ui_Form):
 
     @staticmethod
     def construct(name='pinName', hideLabel=False, dataType=DataTypes.Float, editor=None):
-        w = PinWidget(editor)
+        w = WPinWidget(editor)
         w.lePinName.setText(name)
 
         if hideLabel:
@@ -133,16 +184,18 @@ class PinWidget(QWidget, PinWidget_ui.Ui_Form):
         return getattr(DataTypes, self.cbType.currentText())
 
 
-class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
+## @brief Used to write code into pythonNode
+# @details See [Package description](@ref CodeEditor) for details
+class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     def __init__(self, graph, node, uid):
-        super(CodeEditor, self).__init__()
+        super(WCodeEditor, self).__init__()
         self.setupUi(self)
         self.graph = graph
         self.nodeUid = node.uid
         self.uid = uid
 
         # insert code editor
-        self.plainTextEdit = CompletionTextEdit(self.tabCode)
+        self.plainTextEdit = WCompletionTextEdit(self.tabCode)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -168,6 +221,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.resetUiData()
         self.populate()
 
+    ## slot for kill selected pins button
     def onKillSelectedPins(self):
         for i in self.lwInputs.selectedItems():
             r = self.lwInputs.row(i)
@@ -187,16 +241,14 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         except:
             pass
 
+    ##  populte editor ui from node data
     def populate(self):
-        '''
-        populate ui from node
-        '''
         node = self.graph.nodes[self.nodeUid]
         for i in node.inputs.values():
-            pw = PinWidget.construct(i.name, i.bLabelHidden, i.dataType, self)
+            pw = WPinWidget.construct(i.name, i.bLabelHidden, i.dataType, self)
             self.appendInput(pw)
         for o in node.outputs.values():
-            pw = PinWidget.construct(o.name, o.bLabelHidden, o.dataType, self)
+            pw = WPinWidget.construct(o.name, o.bLabelHidden, o.dataType, self)
             self.appendOutput(pw)
         self.leLabel.setText(node.label().toPlainText())
         code = ""
@@ -204,10 +256,13 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             code += line
         self.plainTextEdit.setPlainText(code)
 
+    ## resets ui to defaults
     def resetUiData(self):
         self.lwInputs.clear()
         self.lwOutputs.clear()
 
+    ## @brief this method resets python node to its initial state
+    # @details kills all inputs and outputs including all containers etc.
     def resetNode(self):
         node = self.graph.nodes[self.nodeUid]
         for i in node.inputs.values():
@@ -223,6 +278,10 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             node.outputsLayout.removeAt(0)
 
     @staticmethod
+    ## this method wraps code into the function
+    # @param fooName function name (string)
+    # @param code python code (string)
+    # @returns function object
     def wrapCodeToFunction(fooName, code):
         foo = "def {}(self):".format(fooName)
         lines = [i for i in code.split('\n') if len(i) > 0]
@@ -230,6 +289,8 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             foo += '\n\t{}'.format(line)
         return foo
 
+    ## slot called when Save button is pressed
+    # @sa CodeEditor
     def applyData(self):
         # reset node
         self.resetNode()
@@ -243,21 +304,21 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
 
         # assign compute method
         code = self.plainTextEdit.toPlainText()
-        foo = CodeEditor.wrapCodeToFunction('compute', code)
+        foo = WCodeEditor.wrapCodeToFunction('compute', code)
         exec(foo)
         node.compute = MethodType(compute, node, Node)
         node.currentComputeCode = code
 
         for index in range(self.lwOutputs.count()):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
-            if isinstance(w, PinWidget):
+            if isinstance(w, WPinWidget):
                 p = node.addOutputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
                 w.lePinName.setText(p.name)
 
         # recreate pins from editor data
         for index in range(self.lwInputs.count()):
             w = self.lwInputs.itemWidget(self.lwInputs.item(index))
-            if isinstance(w, PinWidget):
+            if isinstance(w, WPinWidget):
                 if w.dataType() == DataTypes.Exec:
                     p = node.addInputPin(w.name(), w.dataType(), node.compute, w.shouldHideLabel())
                     w.lePinName.setText(p.name)
@@ -269,6 +330,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             for o in node.outputs.values():
                 pinAffects(i, o)
 
+    ## puts created widget inside input list widget
     def appendInput(self, pw):
         item = QListWidgetItem(self.lwInputs)
         item.setSizeHint(QtCore.QSize(pw.sizeHint().width(), 80))
@@ -276,6 +338,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.lwInputs.setItemWidget(item, pw)
         del item
 
+    ## puts created widget inside output list widget
     def appendOutput(self, pw):
         item = QListWidgetItem(self.lwOutputs)
         item.setSizeHint(QtCore.QSize(pw.sizeHint().width(), 80))
@@ -283,14 +346,17 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.lwOutputs.setItemWidget(item, pw)
         del item
 
+    ## add input pin slot
     def addDefaultInput(self):
-        w = PinWidget(self)
+        w = WPinWidget(self)
         self.appendInput(w)
 
+    ## add output pin slot
     def addDefaultOutput(self):
-        w = PinWidget(self)
+        w = WPinWidget(self)
         self.appendOutput(w)
 
+    ## changes text editor font size
     def setFontSize(self, size):
         f = self.plainTextEdit.font()
         size = abs(size)

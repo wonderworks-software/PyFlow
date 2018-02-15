@@ -1,3 +1,7 @@
+"""@file GetVarNode.py
+
+Builtin node to set variable value.
+"""
 from AbstractGraph import *
 from Settings import *
 from Core import Node
@@ -10,6 +14,7 @@ from Commands import RemoveNodes
 from InputWidgets import getInputWidget
 
 
+## Variable setter node
 class SetVarNode(Node, NodeBase):
     """docstring for SetVarNode"""
     def __init__(self, name, graph, var):

@@ -1,3 +1,7 @@
+"""@package FunctionLibraries
+
+Set of decorated functioins which will be turned into nodes.
+"""
 import os
 from inspect import getmembers
 from inspect import isfunction

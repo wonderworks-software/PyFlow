@@ -1,7 +1,9 @@
 var class_py_flow_1_1_nodes_1_1call_1_1call =
 [
     [ "__init__", "class_py_flow_1_1_nodes_1_1call_1_1call.html#ab0332198793b5dfd65c157c800242a0e", null ],
+    [ "category", "class_py_flow_1_1_nodes_1_1call_1_1call.html#a8ffae582ae07e29c2f590aef9ca576ee", null ],
     [ "compute", "class_py_flow_1_1_nodes_1_1call_1_1call.html#adc2bd5c7cd9963bef95a70bc3ad26bda", null ],
+    [ "pinTypeHints", "class_py_flow_1_1_nodes_1_1call_1_1call.html#a2aacb25bdcd7998b4cc49e97266e3534", null ],
     [ "postCreate", "class_py_flow_1_1_nodes_1_1call_1_1call.html#afd5b88db0416040e8c80ca357531a97e", null ],
     [ "serialize", "class_py_flow_1_1_nodes_1_1call_1_1call.html#a344d5a96b2423cd930dc302ac1f116f6", null ],
     [ "start", "class_py_flow_1_1_nodes_1_1call_1_1call.html#a19476c8316825acd224ad7140fc6c127", null ],

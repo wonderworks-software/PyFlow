@@ -23,5 +23,9 @@ var class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3 =
     [ "v3UnitLenZ", "class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#a7c87a485d5c5f1c925f37cfcee1ffdaa", null ],
     [ "v3X", "class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#af6978a6db02f5d5af66d73b84b1a6275", null ],
     [ "v3Y", "class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#a4185424e27a0d3c066e2dea61b37bf89", null ],
-    [ "v3Z", "class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#a5f768121c0b6e85d09a4f487fc2f0ba8", null ]
+    [ "v3Z", "class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#a5f768121c0b6e85d09a4f487fc2f0ba8", null ],
+    [ "meta", "class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#a50740b27773da898882341509cc6ce68", null ],
+    [ "nodeType", "class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#afaf19178f1d8eb8fc6d41fe94d5a0edc", null ],
+    [ "Pure", "class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#aa01ec14c59ac413f0338f28a0fa47ce8", null ],
+    [ "returns", "class_py_flow_1_1_function_libraries_1_1_vector3_1_1_vector3.html#a22b76aee4f325eb187c6ce55ef3ae58c", null ]
 ];

@@ -1,3 +1,6 @@
+"""@file Edge.py
+Edge is a cubic spline curve. It represents connecton between two pins.
+"""
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsPathItem
@@ -7,6 +10,7 @@ import weakref
 from uuid import UUID, uuid4
 
 
+## Connection between pins
 class Edge(QGraphicsPathItem):
     def __init__(self, source, destination, graph):
         QGraphicsPathItem.__init__(self)

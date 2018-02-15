@@ -86,29 +86,48 @@ $(document).ready(function(){initNavTree('_code_editor_8py.html','');});
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
 <div class="title">CodeEditor.py File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>The code editor is a widget for <a class="el" href="class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html">pythonNode</a> To open it, create pythonNode first, then right click on it and click 'edit'.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_code_editor_1_1_completion_text_edit.html">PyFlow.Core.CodeEditor.CompletionTextEdit</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_code_editor_1_1_w_completion_text_edit.html">PyFlow.Core.CodeEditor.WCompletionTextEdit</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_code_editor_1_1_pin_widget.html">PyFlow.Core.CodeEditor.PinWidget</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">doc string for <a class="el" href="class_py_flow_1_1_core_1_1_code_editor_1_1_pin_widget.html" title="doc string for PinWidget ">PinWidget</a>  <a href="class_py_flow_1_1_core_1_1_code_editor_1_1_pin_widget.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_code_editor_1_1_w_pin_widget.html">PyFlow.Core.CodeEditor.WPinWidget</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_code_editor_1_1_code_editor.html">PyFlow.Core.CodeEditor.CodeEditor</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespace_py_flow_1_1_core_1_1_code_editor"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_py_flow_1_1_core_1_1_code_editor.html">PyFlow.Core.CodeEditor</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html">PyFlow.Core.CodeEditor.WCodeEditor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to write code into pythonNode.  <a href="class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The code editor is a widget for <a class="el" href="class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html">pythonNode</a> To open it, create pythonNode first, then right click on it and click 'edit'. </p>
+<p>Code editor will pop up. </p><div class="image">
+<img src="codeEditorInput.jpg" alt="codeEditorInput.jpg"/>
+</div>
+<p> The editor is divided into two parts.</p>
+<p><b>The first part</b> is a place where you will define and sort pins. To sort pins, simply drag</p>
+<p>them as you would like them to be located on the node.</p>
+<ol type="1">
+<li>node name</li>
+<li>create new input button. To the right there is a button for output pin creation also.</li>
+<li>remove selected pins</li>
+<li>pin widget. Here you can specify pin name and data type, as well as label visibility.</li>
+<li>spin box to change editor font size</li>
+<li>reset ui to defaults</li>
+<li>apply to node. This button will populate node with data from code editor ui.</li>
+</ol>
+<div class="image">
+<img src="codeEditorCode.jpg" alt="codeEditorCode.jpg"/>
+</div>
+<p><b>The second part</b> is actually the text editor. Here you can read/write pins data, import python modules and use them in calculationis.</p>
+<p>When save button is pressed, function with code you wrote will be generated and used as node's compute method.</p>
+<p><b>Examples</b> </p><div class="fragment"><div class="line"><span class="comment"># you can acess pins in two ways</span></div><div class="line"><span class="comment"># like so</span></div><div class="line">&gt;&gt;&gt; self.pinName.getData()</div><div class="line">&gt;&gt;&gt; self.pinName.setData(value)</div><div class="line"><span class="comment"># or like so</span></div><div class="line">&gt;&gt;&gt; self.getData(<span class="stringliteral">&#39;pinName&#39;</span>)</div><div class="line">&gt;&gt;&gt; self.setData(<span class="stringliteral">&#39;pinName&#39;</span>, value)</div><div class="line"></div><div class="line"><span class="comment"># this code</span></div><div class="line">&gt;&gt;&gt; <span class="keyword">import</span> math</div><div class="line">&gt;&gt;&gt; print(math.pi)</div><div class="line"><span class="comment"># will be turned into the following</span></div><div class="line">&gt;&gt;&gt; <span class="keyword">def </span>compute(self):</div><div class="line">&gt;&gt;&gt;     <span class="keyword">import</span> math</div><div class="line">&gt;&gt;&gt;     print(math.pi)</div><div class="line"><span class="comment"># and then used inside the node</span></div></div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

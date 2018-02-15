@@ -26,5 +26,7 @@ var class_py_flow_1_1_function_libraries_1_1_matrix33_1_1_matrix33 =
     [ "m33r3", "class_py_flow_1_1_function_libraries_1_1_matrix33_1_1_matrix33.html#ad6a53d66bd58016b20f992e1e046ae5e", null ],
     [ "m33ToM44", "class_py_flow_1_1_function_libraries_1_1_matrix33_1_1_matrix33.html#a92e3e3054cb41a258a91fb0ebc806f9b", null ],
     [ "m33ToStr", "class_py_flow_1_1_function_libraries_1_1_matrix33_1_1_matrix33.html#a5b61b67998951c9db34cd87a3dbc253c", null ],
-    [ "m33Zero", "class_py_flow_1_1_function_libraries_1_1_matrix33_1_1_matrix33.html#aaa08f4d9c7765a4a34cdd62eac289647", null ]
+    [ "m33Zero", "class_py_flow_1_1_function_libraries_1_1_matrix33_1_1_matrix33.html#aaa08f4d9c7765a4a34cdd62eac289647", null ],
+    [ "meta", "class_py_flow_1_1_function_libraries_1_1_matrix33_1_1_matrix33.html#a519f8ee528a8626dc43cf35f753f8bfb", null ],
+    [ "returns", "class_py_flow_1_1_function_libraries_1_1_matrix33_1_1_matrix33.html#abc7167bc07e6127dd8ae8481319d6e3f", null ]
 ];

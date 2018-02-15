@@ -87,37 +87,91 @@ $(document).ready(function(){initNavTree('_function_library_8py.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">FunctionLibrary.py File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>This file contains decorator for implementing node from function.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_py_flow_1_1_core_1_1_function_library_1_1_function_library_base.html">PyFlow.Core.FunctionLibrary.FunctionLibraryBase</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">doc string for <a class="el" href="class_py_flow_1_1_core_1_1_function_library_1_1_function_library_base.html" title="doc string for FunctionLibraryBase ">FunctionLibraryBase</a>  <a href="class_py_flow_1_1_core_1_1_function_library_1_1_function_library_base.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespace_py_flow_1_1_core_1_1_function_library"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_py_flow_1_1_core_1_1_function_library.html">PyFlow.Core.FunctionLibrary</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for all function libraries some common utilities can be moved here in future.  <a href="class_py_flow_1_1_core_1_1_function_library_1_1_function_library_base.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a4304ee225f5940a1ccafd92df430343e"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_py_flow_1_1_core_1_1_function_library.html#a4304ee225f5940a1ccafd92df430343e">PyFlow.Core.FunctionLibrary.returns</a> (annotation)</td></tr>
-<tr class="separator:a4304ee225f5940a1ccafd92df430343e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02fe03b6c91483498b3373e91f304186"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_py_flow_1_1_core_1_1_function_library.html#a02fe03b6c91483498b3373e91f304186">PyFlow.Core.FunctionLibrary.implementNode</a></td></tr>
+<tr class="memitem:a02fe03b6c91483498b3373e91f304186"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_function_library_8py.html#a02fe03b6c91483498b3373e91f304186">PyFlow.Core.FunctionLibrary.implementNode</a></td></tr>
+<tr class="memdesc:a02fe03b6c91483498b3373e91f304186"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turns function into a node.  <a href="_function_library_8py.html#a02fe03b6c91483498b3373e91f304186">More...</a><br /></td></tr>
 <tr class="separator:a02fe03b6c91483498b3373e91f304186"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a3e4bd00a6719225076bcb892da0e59cb"><td class="memItemLeft" align="right" valign="top">dictionary&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_py_flow_1_1_core_1_1_function_library.html#a3e4bd00a6719225076bcb892da0e59cb">PyFlow.Core.FunctionLibrary.empty</a> = {}</td></tr>
+<tr class="memitem:a3e4bd00a6719225076bcb892da0e59cb"><td class="memItemLeft" align="right" valign="top"><a id="a3e4bd00a6719225076bcb892da0e59cb"></a>
+dictionary&#160;</td><td class="memItemRight" valign="bottom"><b>PyFlow.Core.FunctionLibrary.empty</b> = {}</td></tr>
 <tr class="separator:a3e4bd00a6719225076bcb892da0e59cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This file contains decorator for implementing node from function. </p>
+<p>The main idea is to describe argument types and default values.</p>
+<p>Using this information it becomes possible to create pins according to arguments types. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="file_a02fe03b6c91483498b3373e91f304186"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a02fe03b6c91483498b3373e91f304186">&#9670;&nbsp;</a></span>implementNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def PyFlow.Core.FunctionLibrary.implementNode </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>func</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>returns</em> = <code>empty</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>meta</em> = <code>{'Category':&#160;'Default'</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>Keywords</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Turns function into a node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">decorated</td><td>function </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">returns</td><td>it can be tuple with <a class="el" href="class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html">data type identifier</a> + default value, or None </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meta</td><td>dictionary with category path, keywords and any additional info </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodeType</td><td>determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_py_flow_1_1_core_1_1_a_graph_common_1_1_node_types.html">NodeTypes</a> </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

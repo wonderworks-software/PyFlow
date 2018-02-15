@@ -2,6 +2,9 @@ from Qt.QtWidgets import QUndoCommand
 
 
 class Move(QUndoCommand):
+    '''
+    Moves nodes
+    '''
     def __init__(self, nodesInfo, graph):
         super(Move, self).__init__()
         self.graph = graph

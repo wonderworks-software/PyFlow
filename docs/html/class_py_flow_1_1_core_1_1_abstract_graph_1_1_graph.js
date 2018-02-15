@@ -6,6 +6,7 @@ var class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph =
     [ "canConnectPins", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html#aed036b6fdf34890e31d51970102f51fb", null ],
     [ "count", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html#a4334a8b66f496ac7094756730bc21a17", null ],
     [ "getEvaluationOrder", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html#a66c5e213dec5b08e6e111f02f4374cd2", null ],
+    [ "getNextLayerNodes", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html#a0dc0f972ae0efe306f7a8f11879859e0", null ],
     [ "getNodeByName", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html#a20544fe9e3d0384101ceac8652807449", null ],
     [ "getNodes", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html#a0d20c4c2ff7fdd8291199e19e03a91da", null ],
     [ "getUniqNodeName", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html#a5e9142a80530e08363a9c0ce71cf99c9", null ],

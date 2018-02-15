@@ -1,3 +1,7 @@
+"""@file GetVarNode.py
+
+Builtin node to acess variable value.
+"""
 from AbstractGraph import *
 from Settings import *
 from Core import Node
@@ -8,8 +12,8 @@ from Qt import QtGui
 from Commands import RemoveNodes
 
 
+## Variable getter node
 class GetVarNode(Node, NodeBase):
-    """docstring for GetVarNode"""
     def __init__(self, name, graph, var):
         super(GetVarNode, self).__init__(name, graph)
         self.var = var

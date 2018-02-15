@@ -25,6 +25,11 @@ var NAVTREE =
 [
   [ "PyFlow", "index.html", [
     [ "Overview", "index.html", null ],
+    [ "Todo List", "todo.html", null ],
+    [ "Bug List", "bug.html", null ],
+    [ "Packages", "namespaces.html", [
+      [ "Packages", "namespaces.html", "namespaces_dup" ]
+    ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -34,6 +39,9 @@ var NAVTREE =
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
+    ] ],
+    [ "Files", "files.html", [
+      [ "File List", "files.html", "files_dup" ]
     ] ]
   ] ]
 ];
@@ -41,10 +49,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"class_py_flow_1_1_core_1_1_code_editor_1_1_code_editor.html#a70572cd6a4c1615459371b461f6d9146",
-"class_py_flow_1_1_core_1_1_python_syntax_1_1_python_highlighter.html#af2f5a0d4cb21c140356a66757e948ba7",
-"class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#aedfc1087ec0fbfe556964adc3ccfce67",
-"class_py_flow_1_1_nodes_1_1flip_flop_1_1flip_flop.html"
+"class_py_flow_1_1_core_1_1_abstract_graph_1_1_node_base.html#a860400ddbc227455ded6c43702edadae",
+"class_py_flow_1_1_core_1_1_node_1_1_node.html#afd9cc592674530cf9df99d9d5a67d152",
+"class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#aa33b46abaddf5c1b18ca023000693173",
+"class_py_flow_1_1_function_libraries_1_1_quat_lib_1_1_quat_lib.html#ad9752e6f7f66d47ac81ddbb8d7f53b9d",
+"class_py_flow_1_1_nodes_1_1make_bool_array_1_1make_bool_array.html#a2bd3e3519cd22c9213f22eb38ad72383",
+"class_py_flow_1_1_py_flow_1_1_plugin_type.html#adbb79f3829e21603594a3195f920cf1f"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

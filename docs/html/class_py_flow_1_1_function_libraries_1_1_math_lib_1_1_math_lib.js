@@ -59,5 +59,8 @@ var class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib =
     [ "Sum", "class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a968052d10075caba91b6c90ac8245ddd", null ],
     [ "tan", "class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#aedfc1087ec0fbfe556964adc3ccfce67", null ],
     [ "tanh", "class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a076d4206eaf284ccdc36ed5731bc27ef", null ],
-    [ "trunc", "class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a6758307e0812e31826e5e17e52b57424", null ]
+    [ "trunc", "class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a6758307e0812e31826e5e17e52b57424", null ],
+    [ "meta", "class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a34b4116e1ca73342ef148b547b3418f2", null ],
+    [ "None", "class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a939388468dc0c48bc966182a6c3e3983", null ],
+    [ "returns", "class_py_flow_1_1_function_libraries_1_1_math_lib_1_1_math_lib.html#a4bb94b27d63657d608bfb64fb27b4de6", null ]
 ];
