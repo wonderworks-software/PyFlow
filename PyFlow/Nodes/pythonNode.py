@@ -47,10 +47,6 @@ class pythonNode(Node, NodeBase):
         return 'Utils'
 
     def postCreate(self, jsonTemplate):
-        # restore node label
-        self.label().setPlainText(jsonTemplate['meta']['label'])
-        Node.postCreate(self, jsonTemplate)
-
         # restore compute
         self.currentComputeCode = jsonTemplate['computeCode']
         foo = WCodeEditor.wrapCodeToFunction('compute', jsonTemplate['computeCode'])
@@ -73,6 +69,11 @@ class pythonNode(Node, NodeBase):
             pin.setData(outJson['value'])
 
         self.bCallable = self.isCallable()
+
+        Node.postCreate(self, jsonTemplate)
+
+        # restore node label
+        self.label().setPlainText(jsonTemplate['meta']['label'])
 
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())
