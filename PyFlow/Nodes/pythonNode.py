@@ -47,6 +47,8 @@ class pythonNode(Node, NodeBase):
         return 'Utils'
 
     def postCreate(self, jsonTemplate):
+        # restore node label
+        self.label().setPlainText(jsonTemplate['meta']['label'])
         Node.postCreate(self, jsonTemplate)
 
         # restore compute
@@ -69,9 +71,6 @@ class pythonNode(Node, NodeBase):
             pin = self.addOutputPin(outJson['name'], outJson['dataType'], None, outJson['bLabelHidden'])
             pin.uid = uuid.UUID(outJson['uuid'])
             pin.setData(outJson['value'])
-
-        # restore node label
-        self.label().setPlainText(jsonTemplate['meta']['label'])
 
         self.bCallable = self.isCallable()
 

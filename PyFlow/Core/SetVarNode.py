@@ -46,7 +46,7 @@ class SetVarNode(Node, NodeBase):
         formLayout.addRow("Type", leType)
 
         # input value
-        w = getInputWidget(self.value.dataType, self.value.setData)
+        w = getInputWidget(self.value.dataType, self.value.setData, self.var.value)
         if w:
             w.setWidgetValue(self.value.currentData())
             w.setObjectName(self.value.getName())
@@ -59,8 +59,8 @@ class SetVarNode(Node, NodeBase):
         self.graph().undoStack.push(cmd)
 
     def postCreate(self, template):
-        Node.postCreate(self, template)
         self.label().setPlainText('Set {}'.format(self.var.name))
+        Node.postCreate(self, template)
 
     def onVarNameChanged(self, newName):
         self.label().setPlainText('Set {}'.format(newName))

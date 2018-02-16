@@ -326,7 +326,7 @@ class Node(QGraphicsItem, NodeBase):
     def pinTypeHints():
         return {'inputs': [], 'outputs': []}
 
-    def postCreate(self, jsonTemplate=None):
+    def updateNodeShape(self, label=None):
         for i in range(0, self.inputsLayout.count()):
             container = self.inputsLayout.itemAt(i)
             lyt = container.layout()
@@ -340,6 +340,10 @@ class Node(QGraphicsItem, NodeBase):
             if lyt:
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        if label is None:
+            self.label().setPlainText(self.__class__.__name__)
+        else:
+            self.label().setPlainText(label)
         self.w = self.getWidth()
         self.nodeMainGWidget.setMaximumWidth(self.w + Spacings.kPinOffset)
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + Spacings.kPinOffset, self.childrenBoundingRect().height()))
@@ -350,17 +354,21 @@ class Node(QGraphicsItem, NodeBase):
         else:
             if self.label().bUseTextureBg:
                 self.label().bg = QtGui.QImage(':/icons/resources/green.png')
-        self.label().setPlainText(self.__class__.__name__)
         self.setToolTip(self.description())
+        self.update()
 
+    def postCreate(self, jsonTemplate=None):
+        self.updateNodeShape()
         NodeBase.postCreate(self, jsonTemplate)
 
     def getWidth(self):
-        dPins = 0
-        if len(self.outputs.values()) > 0:
-            dPins = abs(self.outputs.values()[0].scenePos().x() - self.scenePos().x())
+        # dPins = 0
+        # if len(self.outputs.values()) > 0:
+        #     dPins = abs(self.outputs.values()[0].scenePos().x() - self.scenePos().x())
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.getName()) + Spacings.kPinSpacing
-        return max(dPins, fontWidth)
+        outWidth = fontWidth
+        # outWidth = max(dPins, fontWidth)
+        return outWidth if outWidth > 25 else 25
 
     @staticmethod
     def jsonTemplate():

@@ -330,6 +330,9 @@ class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             for o in node.outputs.values():
                 pinAffects(i, o)
 
+        # reset node shape
+        node.updateNodeShape(lbText)
+
     ## puts created widget inside input list widget
     def appendInput(self, pw):
         item = QListWidgetItem(self.lwInputs)

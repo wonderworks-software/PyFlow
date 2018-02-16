@@ -32,6 +32,13 @@ def findPinClassByType(dataType):
         return _PINS[dataType] if dataType in _PINS else None
 
 
+def getPinDefaultValueByType(dataType):
+    pin = findPinClassByType(dataType)
+    if pin:
+        return pin.pinDataTypeHint()[1]
+    return None
+
+
 def CreatePin(name, parent, dataType, direction):
     pinClass = findPinClassByType(dataType)
     if pinClass is None:

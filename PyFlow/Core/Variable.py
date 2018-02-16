@@ -187,7 +187,7 @@ class VariableBase(QWidget):
         # current value
         def valSetter(x):
             self.value = x
-        w = InputWidgets.getInputWidget(self.dataType, valSetter)
+        w = InputWidgets.getInputWidget(self.dataType, valSetter, Pins.getPinDefaultValueByType(self.dataType))
         if w:
             w.setWidgetValue(self.value)
             w.setObjectName(self.name)

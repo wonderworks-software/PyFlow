@@ -50,12 +50,9 @@ class Colors:
     Bool = Red
     Exec = QtGui.QColor(255, 255, 255)
     String = Pink
-    IntVector2 = QtGui.QColor(0, 0, 255)
     FloatVector2 = QtGui.QColor(0, 0, 255)
-    IntVector3 = QtGui.QColor(0, 0, 255)
-    FloatVector3 = QtGui.QColor(0, 0, 255)
-    IntVector4 = QtGui.QColor(0, 0, 255)
+    FloatVector3 = QtGui.QColor(170, 100, 200)
     FloatVector4 = QtGui.QColor(173, 216, 230)
     Quaternion = QtGui.QColor(32, 178, 170)
-    Matrix33 = QtGui.QColor(255, 69, 0)
-    Matrix44 = QtGui.QColor(255, 69, 45)
+    Matrix33 = QtGui.QColor(150, 69, 20)
+    Matrix44 = QtGui.QColor(150, 0, 20)

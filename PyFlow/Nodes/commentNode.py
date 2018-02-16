@@ -1,3 +1,5 @@
+"""@file CommentNode.py
+"""
 from Core.AbstractGraph import *
 from Core.Settings import *
 from Core import Node
@@ -78,6 +80,10 @@ class commentNodeName(NodeName):
         NodeName.hoverEnterEvent(self, event)
 
 
+## Comment node
+#
+# Can drag intersected nodes.
+# You can also specify color and resize it.
 class commentNode(Node, NodeBase):
     def __init__(self, name, graph, bUseTextureBg=False, headColor=Colors.AbsoluteBlack):
         super(commentNode, self).__init__(name, graph, headColor=headColor)
