@@ -546,6 +546,8 @@ class GraphWidget(QGraphicsView, Graph):
         self.scene().clear()
         self.node_box.hide()
         self.node_box.lineEdit.clear()
+        for ed in self.codeEditors.values():
+            ed.deleteLater()
 
     def moveScrollbar(self, delta):
         x = self.horizontalScrollBar().value() + delta.x()

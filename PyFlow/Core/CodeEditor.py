@@ -69,14 +69,17 @@ from types import MethodType
 from Core import Node
 import weakref
 from keyword import kwlist
+import __builtin__
+
+
+_defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()', 'setDirty()'] + dir(__builtin__)
 
 
 class WCompletionTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super(WCompletionTextEdit, self).__init__(parent)
         self.setMinimumWidth(400)
-        wordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()', 'setDirty()']
-        self.completer = QCompleter(wordList, self)
+        self.completer = QCompleter(_defaultWordList, self)
         self.moveCursor(QtGui.QTextCursor.End)
         font = QtGui.QFont()
         font.setFamily("Consolas")
@@ -114,8 +117,7 @@ class WCompletionTextEdit(QPlainTextEdit):
                 return
 
         # has ctrl-space been pressed??
-        isShortcut = (event.modifiers() == QtCore.Qt.ControlModifier and
-                      event.key() == QtCore.Qt.Key_Space)
+        isShortcut = (event.modifiers() == QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_Space)
         if (not self.completer or not isShortcut):
             QPlainTextEdit.keyPressEvent(self, event)
 
@@ -210,6 +212,7 @@ class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         option = QtGui.QTextOption()
         option.setFlags(option.Flags() | QtGui.QTextOption.ShowTabsAndSpaces)
         self.plainTextEdit.document().setDefaultTextOption(option)
+        self.tabWidget.currentChanged.connect(self.OnCurrentTabChanged)
         self.setFontSize(10)
 
         self.sbFontSize.valueChanged.connect(lambda: self.setFontSize(self.sbFontSize.value()))
@@ -220,6 +223,11 @@ class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.pbKillSelectedItems.clicked.connect(self.onKillSelectedPins)
         self.resetUiData()
         self.populate()
+
+    def OnCurrentTabChanged(self, index):
+        if index is 1:
+            stringList = _defaultWordList + self.gatherPinNames()
+            self.plainTextEdit.completer.model().setStringList(stringList)
 
     ## slot for kill selected pins button
     def onKillSelectedPins(self):
@@ -332,6 +340,22 @@ class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
 
         # reset node shape
         node.updateNodeShape(lbText)
+
+    def gatherPinNames(self):
+        names = []
+        for index in range(self.lwOutputs.count()):
+            w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
+            if isinstance(w, WPinWidget):
+                name = w.lePinName.text()
+                if name not in names:
+                    names.append(name)
+        for index in range(self.lwInputs.count()):
+            w = self.lwInputs.itemWidget(self.lwInputs.item(index))
+            if isinstance(w, WPinWidget):
+                name = w.lePinName.text()
+                if name not in names:
+                    names.append(name)
+        return names
 
     ## puts created widget inside input list widget
     def appendInput(self, pw):

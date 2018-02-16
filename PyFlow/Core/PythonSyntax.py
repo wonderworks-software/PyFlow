@@ -1,5 +1,6 @@
 from Qt.QtCore import QRegExp
 from Qt.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
+import __builtin__
 
 
 def format(color, style=''):
@@ -29,7 +30,8 @@ STYLES = {
     'comment': format('gray', 'italic'),
     'self': format('green', 'italic'),
     'numbers': format('brown'),
-    'dataAccess': format('orange')
+    'dataAccess': format('orange'),
+    'builtinFunction': format('cyan')
 }
 
 
@@ -41,9 +43,8 @@ class PythonHighlighter (QSyntaxHighlighter):
         'and', 'assert', 'break', 'class', 'continue', 'def',
         'del', 'elif', 'else', 'except', 'exec', 'finally',
         'for', 'from', 'global', 'if', 'import', 'in',
-        'is', 'lambda', 'not', 'or', 'pass', 'print',
-        'raise', 'return', 'try', 'while', 'yield',
-        'None', 'True', 'False',
+        'is', 'lambda', 'not', 'or', 'pass', 'raise',
+        'return', 'try', 'while', 'yield', 'None', 'True', 'False',
     ]
 
     # Python operators
@@ -79,6 +80,7 @@ class PythonHighlighter (QSyntaxHighlighter):
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in PythonHighlighter.keywords]
         rules += [(r'%s' % o, 0, STYLES['operator']) for o in PythonHighlighter.operators]
         rules += [(r'%s' % b, 0, STYLES['brace']) for b in PythonHighlighter.braces]
+        rules += [(r'%s' % b, 0, STYLES['builtinFunction']) for b in dir(__builtin__)]
 
         # All other rules
         rules += [
