@@ -178,7 +178,7 @@ class SceneClass(QGraphicsScene):
         if event.mimeData().hasFormat('text/plain'):
             tag, mimeText = event.mimeData().text().split('|')
             name = self.parent().getUniqNodeName(mimeText)
-            dropItem = self.itemAt(event.scenePos())
+            dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
             if not dropItem or isinstance(dropItem, Nodes.commentNode):
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = mimeText
@@ -1107,7 +1107,7 @@ class GraphWidget(QGraphicsView, Graph):
         self._file_name_label.setPos(polygon[0])
         scene_rect = self.sceneRect()
         color = Colors.SceneBackground
-        painter.fillRect(rect.intersect(scene_rect), QtGui.QBrush(color))
+        painter.fillRect(rect.intersected(scene_rect), QtGui.QBrush(color))
 
         left = int(scene_rect.left()) - (int(scene_rect.left()) % self.drawGrigSize)
         top = int(scene_rect.top()) - (int(scene_rect.top()) % self.drawGrigSize)

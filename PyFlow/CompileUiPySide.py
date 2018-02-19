@@ -1,8 +1,10 @@
 import os
-import pysideuic
+import pyside2uic
+import subprocess
 
 
 CURRENT_DIR = os.path.dirname(__file__).replace('\\', '/') + '/'
+INTERPRETER_PATH = CURRENT_DIR + 'Python27/python.exe'
 
 
 def ui_to_py(ui_file):
@@ -17,10 +19,14 @@ def ui_to_py(ui_file):
     py_file_name = os.path.splitext(ui_file)[0] + '.py'
     with open(py_file_name, 'w') as py_file:
         try:
-            pysideuic.compileUi(ui_file, py_file)
+            pyside2uic.compileUi(ui_file, py_file)
             print('{0} converted to {1}.'.format(ui_file.upper(), py_file_name.upper()))
         except Exception as e:
             print('Error: compilation error.', e)
+
+    # convert to cross compatible code
+    subprocess.call([INTERPRETER_PATH, '-m', 'Qt', '--convert', py_file_name])
+
 
 
 def compile():

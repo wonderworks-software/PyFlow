@@ -1,5 +1,4 @@
-rem PySide should be installed as well as python.exe should present in Path
-%cd%/Python27/Scripts/python.exe %cd%/%~n0.py
-pyside-rcc.exe -o %cd%/nodes_res_rc.py %cd%/nodes_res.qrc
+%cd%/Python27/python.exe %cd%/%~n0.py
+%cd%/Python27/Library/bin/pyside2-rcc.exe -o %cd%/nodes_res_rc.py %cd%/nodes_res.qrc
 
 pause

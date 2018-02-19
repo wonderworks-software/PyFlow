@@ -7,7 +7,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from Qt import QtCompat, QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_CodeEditorWidget(object):
     def setupUi(self, CodeEditorWidget):
@@ -133,15 +133,15 @@ class Ui_CodeEditorWidget(object):
         QtCore.QMetaObject.connectSlotsByName(CodeEditorWidget)
 
     def retranslateUi(self, CodeEditorWidget):
-        CodeEditorWidget.setWindowTitle(QtCompat.translate("CodeEditorWidget", "Python node editor", None, -1))
-        self.leLabel.setText(QtCompat.translate("CodeEditorWidget", "PythonNode", None, -1))
-        self.leLabel.setPlaceholderText(QtCompat.translate("CodeEditorWidget", "Node label...", None, -1))
-        self.pbAddInput.setText(QtCompat.translate("CodeEditorWidget", "add input", None, -1))
-        self.pbAddOutput.setText(QtCompat.translate("CodeEditorWidget", "add output", None, -1))
-        self.pbKillSelectedItems.setText(QtCompat.translate("CodeEditorWidget", "kill selected pins", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabPins), QtCompat.translate("CodeEditorWidget", "Pins", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabCode), QtCompat.translate("CodeEditorWidget", "Code", None, -1))
-        self.pbReset.setText(QtCompat.translate("CodeEditorWidget", "reset", None, -1))
-        self.pbSave.setText(QtCompat.translate("CodeEditorWidget", "save", None, -1))
+        CodeEditorWidget.setWindowTitle(QtWidgets.QApplication.translate("CodeEditorWidget", "Python node editor", None, -1))
+        self.leLabel.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "PythonNode", None, -1))
+        self.leLabel.setPlaceholderText(QtWidgets.QApplication.translate("CodeEditorWidget", "Node label...", None, -1))
+        self.pbAddInput.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "add input", None, -1))
+        self.pbAddOutput.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "add output", None, -1))
+        self.pbKillSelectedItems.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "kill selected pins", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabPins), QtWidgets.QApplication.translate("CodeEditorWidget", "Pins", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabCode), QtWidgets.QApplication.translate("CodeEditorWidget", "Code", None, -1))
+        self.pbReset.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "reset", None, -1))
+        self.pbSave.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "save", None, -1))
 
 import nodes_res_rc

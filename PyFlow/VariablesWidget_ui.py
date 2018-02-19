@@ -2,48 +2,48 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/VariablesWidget_ui.ui'
 #
-# Created: Thu Feb 15 22:49:31 2018
-#      by: pyside-uic 0.2.15 running on PySide 1.2.4
+# Created: Mon Feb 19 15:01:15 2018
+#      by: pyside2-uic 2.0.0 running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide import QtCore, QtGui
+from Qt import QtCompat, QtCore, QtGui, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(367, 437)
-        self.verticalLayout = QtGui.QVBoxLayout(Form)
+        self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setSpacing(1)
         self.verticalLayout.setContentsMargins(1, 1, 1, 1)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.label = QtGui.QLabel(Form)
+        self.label = QtWidgets.QLabel(Form)
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.pbNewVar = QtGui.QPushButton(Form)
+        self.pbNewVar = QtWidgets.QPushButton(Form)
         self.pbNewVar.setMaximumSize(QtCore.QSize(50, 16777215))
         self.pbNewVar.setObjectName("pbNewVar")
         self.horizontalLayout.addWidget(self.pbNewVar)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.listWidget = QtGui.QListWidget(Form)
-        self.listWidget.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+        self.listWidget = QtWidgets.QListWidget(Form)
+        self.listWidget.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         self.listWidget.setDefaultDropAction(QtCore.Qt.MoveAction)
-        self.listWidget.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self.listWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.listWidget.setSelectionRectVisible(True)
         self.listWidget.setObjectName("listWidget")
         self.verticalLayout.addWidget(self.listWidget)
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.label_2 = QtGui.QLabel(Form)
+        self.label_2 = QtWidgets.QLabel(Form)
         self.label_2.setObjectName("label_2")
         self.horizontalLayout_2.addWidget(self.label_2)
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
-        self.pbKillVar = QtGui.QPushButton(Form)
+        self.pbKillVar = QtWidgets.QPushButton(Form)
         self.pbKillVar.setMaximumSize(QtCore.QSize(50, 16777215))
         self.pbKillVar.setText("")
         icon = QtGui.QIcon()
@@ -57,9 +57,9 @@ class Ui_Form(object):
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QtGui.QApplication.translate("Form", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("Form", "Create var", None, QtGui.QApplication.UnicodeUTF8))
-        self.pbNewVar.setText(QtGui.QApplication.translate("Form", "+", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("Form", "Kill selected var", None, QtGui.QApplication.UnicodeUTF8))
+        Form.setWindowTitle(QtCompat.translate("Form", "Form", None, -1))
+        self.label.setText(QtCompat.translate("Form", "Create var", None, -1))
+        self.pbNewVar.setText(QtCompat.translate("Form", "+", None, -1))
+        self.label_2.setText(QtCompat.translate("Form", "Kill selected var", None, -1))
 
 import nodes_res_rc

@@ -91,7 +91,7 @@ class VariableBase(QWidget):
         self.horizontalLayout.addWidget(self.labelName)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.retranslateUi(self)
+        # self.retranslateUi(self)
         QtCore.QMetaObject.connectSlotsByName(self)
         # body
         self.varsListWidget = varsListWidget
@@ -193,6 +193,6 @@ class VariableBase(QWidget):
             w.setObjectName(self.name)
             formLayout.addRow(self.name, w)
 
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(QApplication.translate("Form", "Form", None, QApplication.UnicodeUTF8))
-        self.labelName.setText(QApplication.translate("Form", "var name", None, QApplication.UnicodeUTF8))
+    # def retranslateUi(self, Form):
+    #     Form.setWindowTitle(QApplication.translate("Form", "Form", None, QApplication.UnicodeUTF8))
+    #     self.labelName.setText(QApplication.translate("Form", "var name", None, QApplication.UnicodeUTF8))

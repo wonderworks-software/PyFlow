@@ -828,14 +828,16 @@ class easy_install(Command):
         target = os.path.join(self.script_dir, script_name)
         self.add_output(target)
 
+        if self.dry_run:
+            return
+
         mask = current_umask()
-        if not self.dry_run:
-            ensure_directory(target)
-            if os.path.exists(target):
-                os.unlink(target)
-            with open(target, "w" + mode) as f:
-                f.write(contents)
-            chmod(target, 0o777 - mask)
+        ensure_directory(target)
+        if os.path.exists(target):
+            os.unlink(target)
+        with open(target, "w" + mode) as f:
+            f.write(contents)
+        chmod(target, 0o777 - mask)
 
     def install_eggs(self, spec, dist_filename, tmpdir):
         # .egg dirs or files are already built, so just return them
@@ -1248,7 +1250,6 @@ class easy_install(Command):
 
     def byte_compile(self, to_compile):
         if sys.dont_write_bytecode:
-            self.warn('byte-compiling is disabled, skipping.')
             return
 
         from distutils.util import byte_compile

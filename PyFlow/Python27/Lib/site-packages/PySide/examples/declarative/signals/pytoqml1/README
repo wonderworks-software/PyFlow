@@ -1,5 +1,0 @@
-This example illustrates connecting a signal originating from Python to
-a QML function.
-
-A timer is defined in Python, ticking at 2-second intervals. Whenever
-the timer ticks, the rectangle is rotated 45 degrees clockwise.

@@ -1,3 +1,0 @@
-PySide
-QtCore
-pysideuic

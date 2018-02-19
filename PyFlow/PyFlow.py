@@ -338,30 +338,25 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    app.setStyle(QStyleFactory.create("Cleanlooks"))
+    dark_palette = QtGui.QPalette()
 
-    darkPalette = QtGui.QPalette()
-    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(50, 50, 50))
-    darkPalette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
-    darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
-    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(35, 35, 35))
-    darkPalette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
-    darkPalette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
-    darkPalette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
-    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(35, 35, 35))
-    darkPalette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
-    darkPalette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
-    darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+    dark_palette.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
+    dark_palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
+    dark_palette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53, 53, 53))
+    dark_palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
+    dark_palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
+    dark_palette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+    dark_palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+    dark_palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
 
-    darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-    darkPalette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
+    # app.setPalette(dark_palette)
 
-    app.setPalette(darkPalette)
-
-    app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da;+ \
-        border: 1px solid white;}\
-        QWidget:focus {border:2 inset black;}\
-        ")
+    app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
 
     settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
 
