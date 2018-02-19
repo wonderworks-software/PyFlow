@@ -23,7 +23,8 @@ class GetVarNode(Node, NodeBase):
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
         self.label().hide()
-        self.label().opt_font.setPointSizeF(8.0)
+        self.label().opt_font.setPointSizeF(7.0)
+        self.label().opt_font.setItalic(True)
 
     def boundingRect(self):
         return QtCore.QRectF(-5, -3, self.w + Spacings.kPinOffset, 20)

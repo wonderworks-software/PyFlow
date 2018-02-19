@@ -70,11 +70,6 @@ class MathLib(FunctionLibraryBase):
         '''
         return a < b
 
-
-
-
-
-
     @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
     ## Return the ceiling of x as a float, the smallest integer value greater than or equal to x

@@ -1,11 +1,7 @@
 var dir_8cb9bd4645ba06dd202960f83372be85 =
 [
     [ "AGraphCommon.py", "_a_graph_common_8py.html", "_a_graph_common_8py" ],
-    [ "CodeEditor.py", "_code_editor_8py.html", [
-      [ "WCompletionTextEdit", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_completion_text_edit.html", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_completion_text_edit" ],
-      [ "WPinWidget", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_pin_widget.html", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_pin_widget" ],
-      [ "WCodeEditor", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor" ]
-    ] ],
+    [ "CodeEditor.py", "_code_editor_8py.html", "_code_editor_8py" ],
     [ "Edge.py", "_edge_8py.html", [
       [ "Edge", "class_py_flow_1_1_core_1_1_edge_1_1_edge.html", "class_py_flow_1_1_core_1_1_edge_1_1_edge" ]
     ] ],

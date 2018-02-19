@@ -1,6 +1,6 @@
 """@package FunctionLibraries
 
-Set of decorated functioins which will be turned into nodes.
+Set of decorated functioins which will be turned into nodes. See examples under **PyFlow/FunctionLibraries**.
 """
 import os
 from inspect import getmembers

@@ -7,7 +7,6 @@ from Settings import *
 
 
 ## Determines how to paint the node
-# @todo ability to pass painting method as argument to implementNode decorator
 class NodePainter(object):
     @staticmethod
     def asConvertNode(node, painter, option, widget):

@@ -33,6 +33,7 @@ var class_py_flow_1_1_core_1_1_node_1_1_node =
     [ "setPosition", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a5b429a846364c8a5226bfa287d6263e0", null ],
     [ "Tick", "class_py_flow_1_1_core_1_1_node_1_1_node.html#af4bccd8ca09d098bf11bf515d4130bbe", null ],
     [ "tweakPosition", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a8eca0735e1ec1a895f2dce4cb6f16c82", null ],
+    [ "updateNodeShape", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a0a22852c87a86f60fe4d69726c2a31cc", null ],
     [ "w", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a65a30fde247ace5849bc8d4b90b941e7", null ],
     [ "w", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a70961cb9f4d4b4bda078a57ce1c27c75", null ],
     [ "color", "class_py_flow_1_1_core_1_1_node_1_1_node.html#ae5c42fb74b15597471a5157c4fc5b613", null ],
