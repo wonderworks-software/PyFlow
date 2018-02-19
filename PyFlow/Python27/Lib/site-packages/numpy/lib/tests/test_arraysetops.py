@@ -5,14 +5,14 @@ from __future__ import division, absolute_import, print_function
 
 import numpy as np
 from numpy.testing import (
-    run_module_suite, TestCase, assert_array_equal, assert_equal, assert_raises
+    run_module_suite, assert_array_equal, assert_equal, assert_raises,
     )
 from numpy.lib.arraysetops import (
     ediff1d, intersect1d, setxor1d, union1d, setdiff1d, unique, in1d, isin
     )
 
 
-class TestSetOps(TestCase):
+class TestSetOps(object):
 
     def test_intersect1d(self):
         # unique inputs
@@ -89,28 +89,28 @@ class TestSetOps(TestCase):
             x = isin(a, b)
             y = isin_slow(a, b)
             assert_array_equal(x, y)
-            
+
         #multidimensional arrays in both arguments
         a = np.arange(24).reshape([2, 3, 4])
         b = np.array([[10, 20, 30], [0, 1, 3], [11, 22, 33]])
         assert_isin_equal(a, b)
-        
+
         #array-likes as both arguments
         c = [(9, 8), (7, 6)]
         d = (9, 7)
         assert_isin_equal(c, d)
-        
+
         #zero-d array:
         f = np.array(3)
         assert_isin_equal(f, b)
         assert_isin_equal(a, f)
         assert_isin_equal(f, f)
-        
+
         #scalar:
         assert_isin_equal(5, b)
         assert_isin_equal(a, 6)
         assert_isin_equal(5, 6)
-        
+
         #empty array-like:
         x = []
         assert_isin_equal(x, b)
@@ -208,6 +208,37 @@ class TestSetOps(TestCase):
         assert_array_equal(in1d(a, long_b, assume_unique=True), ec)
         assert_array_equal(in1d(a, long_b, assume_unique=False), ec)
 
+    def test_in1d_first_array_is_object(self):
+        ar1 = [None]
+        ar2 = np.array([1]*10)
+        expected = np.array([False])
+        result = np.in1d(ar1, ar2)
+        assert_array_equal(result, expected)
+
+    def test_in1d_second_array_is_object(self):
+        ar1 = 1
+        ar2 = np.array([None]*10)
+        expected = np.array([False])
+        result = np.in1d(ar1, ar2)
+        assert_array_equal(result, expected)
+
+    def test_in1d_both_arrays_are_object(self):
+        ar1 = [None]
+        ar2 = np.array([None]*10)
+        expected = np.array([True])
+        result = np.in1d(ar1, ar2)
+        assert_array_equal(result, expected)
+
+    def test_in1d_both_arrays_have_structured_dtype(self):
+        # Test arrays of a structured data type containing an integer field
+        # and a field of dtype `object` allowing for arbitrary Python objects
+        dt = np.dtype([('field1', int), ('field2', object)])
+        ar1 = np.array([(1, None)], dtype=dt)
+        ar2 = np.array([(1, None)]*10, dtype=dt)
+        expected = np.array([True])
+        result = np.in1d(ar1, ar2)
+        assert_array_equal(result, expected)
+
     def test_union1d(self):
         a = np.array([5, 4, 7, 1, 2])
         b = np.array([2, 4, 3, 3, 2, 1, 5])
@@ -252,7 +283,7 @@ class TestSetOps(TestCase):
         assert_array_equal(c1, c2)
 
 
-class TestUnique(TestCase):
+class TestUnique(object):
 
     def test_unique_1d(self):
 
@@ -354,6 +385,16 @@ class TestUnique(TestCase):
         a[...] = ''
         a2, a2_inv = np.unique(a, return_inverse=True)
         assert_array_equal(a2_inv, np.zeros(5))
+
+        # test for ticket #9137
+        a = []
+        a1_idx = np.unique(a, return_index=True)[1]
+        a2_inv = np.unique(a, return_inverse=True)[1]
+        a3_idx, a3_inv = np.unique(a, return_index=True, return_inverse=True)[1:]
+        assert_equal(a1_idx.dtype, np.intp)
+        assert_equal(a2_inv.dtype, np.intp)
+        assert_equal(a3_idx.dtype, np.intp)
+        assert_equal(a3_inv.dtype, np.intp)
 
     def test_unique_axis_errors(self):
         assert_raises(TypeError, self._run_axis_tests, object)

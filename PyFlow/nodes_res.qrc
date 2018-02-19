@@ -1,5 +1,13 @@
 <RCC>
   <qresource prefix="icons">
+    <file>resources/LogoBpApp.png</file>
+    <file>resources/pin.png</file>
+    <file>resources/reset.png</file>
+    <file>resources/variable.png</file>
+    <file>resources/script.png</file>
+    <file>resources/brick.png</file>
+    <file>resources/function.png</file>
+    <file>resources/history.png</file>
     <file>resources/py.png</file>
     <file>resources/array.png</file>
     <file>resources/green.png</file>

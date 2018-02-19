@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/" >
-        <file>calculator.js</file>
-        <file>calculator.ui</file>
-    </qresource>
-</RCC>

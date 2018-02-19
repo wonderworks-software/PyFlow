@@ -1,34 +1,40 @@
-# Qt node editor #
+# Overview
 
+![](logoBp.png)
 
-![Capture.PNG](https://bitbucket.org/repo/Radzbd/images/4008374530-Capture.PNG)
+[PyFlow](@ref PyFlow.PyFlow.PyFlow) is a general purpose extendable python qt node editor.
 
-[Watch video](https://www.youtube.com/watch?v=HEP5E84O0mo)
+# Table of contents
+- [Features](#features)
+- [Installation](#installation)
+- [Pip dependencies](#dependencies)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Credits](#credits)
 
+# Features
+- Json serializable
+- Easy node creation from annotated functions
+- Categories tree
+- Undo stack
+- Properties view
+- Dirty propagation for optimal graph computation
+- Runtime nodes creation
+- Variables and variables view
 
-### Description and features ###
+# Installation
+This repository is a self contained app with python virtualenv configured. So treat it as standalone version.
 
-* Node based multithreaded extendable editor. For this moment this is just a calc
-* UI implemented using PySide, and you can start the editor under any application that uses **Python** as ascripting language.( **Autodesk Maya**, **MotionBuilder**, **Houdini** etc.)
-* The logic and ui are separated
-* Custom extendable cmd like scripting language
-* Own file format
-* Grid snapping
+# Pip dependencies:
+- [Qt.py](https://github.com/mottosso/Qt.py)
+- PySide or PySide2 or PyQt5
+- [pyrr](https://github.com/adamlwgriffiths/Pyrr) for builtin math. (optional)
 
-To extend functionality use console command 
-```
-#!bash
+# Usage
+App's entry point is a **PyFlow.py** file. There are also several handy bat scripts for debugging and profiling.
+Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
+Connect pins and execute the graph with [Call](@ref PyFlow.Nodes.call.call) node.
 
-pluginWizard ~mode [implementNode|implementCommand] ~n name
-```
-as a result code template  with your *.py associated application will be opened. For examples, see existing nodes/commands source code. No extra work, new nodes/commands will be hooked up with restart automatically.
+Writing this project i was inspired by Unreal Engine blueprints. So, if you are familiar with it, you will quickly figure out what's what.
 
-To get existing command list use **help** command. Call command with no parameters to get description.
-
-This is my learning project of Qt and applicatoin developement. Use this as you wish.
-
-[Detailed description here (russian language)](http://ilgarlunin.blogspot.ru/2015/09/blog-post.html)
-
-### Install and run ###
-
-Download repo and double click **QtNodes.vbs** script. Or execute **Launcher.py** with python interpreter
+For in depth descriptin and how it works, see video tutorials and documentation.

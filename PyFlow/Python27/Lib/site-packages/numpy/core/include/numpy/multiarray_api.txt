@@ -2333,7 +2333,7 @@ just "array".
 Precondition: 'arr' is a copy of 'base' (though possibly with different
 strides, ordering, etc.). This function sets the UPDATEIFCOPY flag and the
 ->base pointer on 'arr', so that when 'arr' is destructed, it will copy any
-changes back to 'base'.
+changes back to 'base'. DEPRECATED, use PyArray_SetWritebackIfCopyBase
 
 Steals a reference to 'base'.
 
@@ -2462,5 +2462,31 @@ Same as PyArray_MapIterArray, but:
 If copy_if_overlap != 0, check if `a` has memory overlap with any of the
 arrays in `index` and with `extra_op`. If yes, make copies as appropriate
 to avoid problems if `a` is modified during the iteration.
-`iter->array` may contain a copied array (with UPDATEIFCOPY set).
+`iter->array` may contain a copied array (UPDATEIFCOPY/WRITEBACKIFCOPY set).
+
+::
+
+  int
+  PyArray_ResolveWritebackIfCopy(PyArrayObject *self)
+
+
+If WRITEBACKIFCOPY and self has data, reset the base WRITEABLE flag,
+copy the local data to base, release the local data, and set flags
+appropriately. Return 0 if not relevant, 1 if success, < 0 on failure
+
+::
+
+  int
+  PyArray_SetWritebackIfCopyBase(PyArrayObject *arr, PyArrayObject
+                                 *base)
+
+
+Precondition: 'arr' is a copy of 'base' (though possibly with different
+strides, ordering, etc.). This function sets the WRITEBACKIFCOPY flag and the
+->base pointer on 'arr', call PyArray_ResolveWritebackIfCopy to copy any
+changes back to 'base' before deallocating the array.
+
+Steals a reference to 'base'.
+
+Returns 0 on success, -1 on failure.
 

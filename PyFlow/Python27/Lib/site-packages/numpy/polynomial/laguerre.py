@@ -703,7 +703,7 @@ def lagder(c, m=1, scl=1, axis=0):
     if cnt == 0:
         return c
 
-    c = np.rollaxis(c, iaxis)
+    c = np.moveaxis(c, iaxis, 0)
     n = len(c)
     if cnt >= n:
         c = c[:1]*0
@@ -717,7 +717,7 @@ def lagder(c, m=1, scl=1, axis=0):
                 c[j - 1] += c[j]
             der[0] = -c[1]
             c = der
-    c = np.rollaxis(c, 0, iaxis + 1)
+    c = np.moveaxis(c, 0, iaxis)
     return c
 
 
@@ -770,8 +770,8 @@ def lagint(c, m=1, k=[], lbnd=0, scl=1, axis=0):
     Raises
     ------
     ValueError
-        If ``m < 0``, ``len(k) > m``, ``np.isscalar(lbnd) == False``, or
-        ``np.isscalar(scl) == False``.
+        If ``m < 0``, ``len(k) > m``, ``np.ndim(lbnd) != 0``, or
+        ``np.ndim(scl) != 0``.
 
     See Also
     --------
@@ -818,6 +818,10 @@ def lagint(c, m=1, k=[], lbnd=0, scl=1, axis=0):
         raise ValueError("The order of integration must be non-negative")
     if len(k) > cnt:
         raise ValueError("Too many integration constants")
+    if np.ndim(lbnd) != 0:
+        raise ValueError("lbnd must be a scalar.")
+    if np.ndim(scl) != 0:
+        raise ValueError("scl must be a scalar.")
     if iaxis != axis:
         raise ValueError("The axis must be integer")
     iaxis = normalize_axis_index(iaxis, c.ndim)
@@ -825,7 +829,7 @@ def lagint(c, m=1, k=[], lbnd=0, scl=1, axis=0):
     if cnt == 0:
         return c
 
-    c = np.rollaxis(c, iaxis)
+    c = np.moveaxis(c, iaxis, 0)
     k = list(k) + [0]*(cnt - len(k))
     for i in range(cnt):
         n = len(c)
@@ -841,7 +845,7 @@ def lagint(c, m=1, k=[], lbnd=0, scl=1, axis=0):
                 tmp[j + 1] = -c[j]
             tmp[0] += k[i] - lagval(lbnd, tmp)
             c = tmp
-    c = np.rollaxis(c, 0, iaxis + 1)
+    c = np.moveaxis(c, 0, iaxis)
     return c
 
 
@@ -988,7 +992,7 @@ def lagval2d(x, y, c):
     """
     try:
         x, y = np.array((x, y), copy=0)
-    except:
+    except Exception:
         raise ValueError('x, y are incompatible')
 
     c = lagval(x, c)
@@ -1101,7 +1105,7 @@ def lagval3d(x, y, z, c):
     """
     try:
         x, y, z = np.array((x, y, z), copy=0)
-    except:
+    except Exception:
         raise ValueError('x, y, z are incompatible')
 
     c = lagval(x, c)
@@ -1228,7 +1232,7 @@ def lagvander(x, deg):
         v[1] = 1 - x
         for i in range(2, ideg + 1):
             v[i] = (v[i-1]*(2*i - 1 - x) - v[i-2]*(i - 1))/i
-    return np.rollaxis(v, 0, v.ndim)
+    return np.moveaxis(v, 0, -1)
 
 
 def lagvander2d(x, y, deg):

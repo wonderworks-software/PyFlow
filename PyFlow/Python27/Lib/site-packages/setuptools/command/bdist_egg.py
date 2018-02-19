@@ -39,6 +39,7 @@ def strip_module(filename):
         filename = filename[:-6]
     return filename
 
+
 def sorted_walk(dir):
     """Do os.walk in a reproducible way,
     independent of indeterministic filesystem readdir order
@@ -47,6 +48,7 @@ def sorted_walk(dir):
         dirs.sort()
         files.sort()
         yield base, dirs, files
+
 
 def write_stub(resource, pyfile):
     _stub_template = textwrap.dedent("""
@@ -252,14 +254,16 @@ class bdist_egg(Command):
 
                     pattern = r'(?P<name>.+)\.(?P<magic>[^.]+)\.pyc'
                     m = re.match(pattern, name)
-                    path_new = os.path.join(base, os.pardir, m.group('name') + '.pyc')
-                    log.info("Renaming file from [%s] to [%s]" % (path_old, path_new))
+                    path_new = os.path.join(
+                        base, os.pardir, m.group('name') + '.pyc')
+                    log.info(
+                        "Renaming file from [%s] to [%s]"
+                        % (path_old, path_new))
                     try:
                         os.remove(path_new)
                     except OSError:
                         pass
                     os.rename(path_old, path_new)
-
 
     def zip_safe(self):
         safe = getattr(self.distribution, 'zip_safe', None)
@@ -409,8 +413,10 @@ def scan_module(egg_dir, base, name, stubs):
     module = pkg + (pkg and '.' or '') + os.path.splitext(name)[0]
     if sys.version_info < (3, 3):
         skip = 8  # skip magic & date
-    else:
+    elif sys.version_info < (3, 7):
         skip = 12  # skip magic & date & file size
+    else:
+        skip = 16  # skip magic & reserved? & date & file size
     f = open(filename, 'rb')
     f.read(skip)
     code = marshal.load(f)

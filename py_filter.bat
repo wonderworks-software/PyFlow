@@ -1,0 +1,1 @@
+doxypypy.exe -a -c %1

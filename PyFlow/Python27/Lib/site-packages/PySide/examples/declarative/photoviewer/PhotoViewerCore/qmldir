@@ -1,8 +1,0 @@
-AlbumDelegate AlbumDelegate.qml
-PhotoDelegate PhotoDelegate.qml
-ProgressBar ProgressBar.qml
-RssModel RssModel.qml
-BusyIndicator BusyIndicator.qml
-EditableButton EditableButton.qml
-Button Button.qml
-Tag Tag.qml

@@ -1,9 +1,0 @@
-<RCC>
-<qresource>
-	<file>images/play.png</file>
-	<file>images/pause.png</file>
-	<file>images/stop.png</file>
-	<file>images/qplayer.png</file>
-	<file>images/folder-music.png</file>
-</qresource>
-</RCC>

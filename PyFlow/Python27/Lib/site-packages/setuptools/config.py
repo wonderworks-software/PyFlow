@@ -404,6 +404,7 @@ class ConfigMetadataHandler(ConfigHandler):
         """Metadata item name to parser function mapping."""
         parse_list = self._parse_list
         parse_file = self._parse_file
+        parse_dict = self._parse_dict
 
         return {
             'platforms': parse_list,
@@ -416,6 +417,7 @@ class ConfigMetadataHandler(ConfigHandler):
             'description': parse_file,
             'long_description': parse_file,
             'version': self._parse_version,
+            'project_urls': parse_dict,
         }
 
     def _parse_version(self, value):

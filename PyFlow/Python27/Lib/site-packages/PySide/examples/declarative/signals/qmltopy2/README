@@ -1,3 +1,0 @@
-This example illustrates returning a value from Python to QML.
-
-When the button is clicked, the text rotates ten degrees more.

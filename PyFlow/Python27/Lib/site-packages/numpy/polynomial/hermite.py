@@ -706,7 +706,7 @@ def hermder(c, m=1, scl=1, axis=0):
     if cnt == 0:
         return c
 
-    c = np.rollaxis(c, iaxis)
+    c = np.moveaxis(c, iaxis, 0)
     n = len(c)
     if cnt >= n:
         c = c[:1]*0
@@ -718,7 +718,7 @@ def hermder(c, m=1, scl=1, axis=0):
             for j in range(n, 0, -1):
                 der[j - 1] = (2*j)*c[j]
             c = der
-    c = np.rollaxis(c, 0, iaxis + 1)
+    c = np.moveaxis(c, 0, iaxis)
     return c
 
 
@@ -770,8 +770,8 @@ def hermint(c, m=1, k=[], lbnd=0, scl=1, axis=0):
     Raises
     ------
     ValueError
-        If ``m < 0``, ``len(k) > m``, ``np.isscalar(lbnd) == False``, or
-        ``np.isscalar(scl) == False``.
+        If ``m < 0``, ``len(k) > m``, ``np.ndim(lbnd) != 0``, or
+        ``np.ndim(scl) != 0``.
 
     See Also
     --------
@@ -818,6 +818,10 @@ def hermint(c, m=1, k=[], lbnd=0, scl=1, axis=0):
         raise ValueError("The order of integration must be non-negative")
     if len(k) > cnt:
         raise ValueError("Too many integration constants")
+    if np.ndim(lbnd) != 0:
+        raise ValueError("lbnd must be a scalar.")
+    if np.ndim(scl) != 0:
+        raise ValueError("scl must be a scalar.")
     if iaxis != axis:
         raise ValueError("The axis must be integer")
     iaxis = normalize_axis_index(iaxis, c.ndim)
@@ -825,7 +829,7 @@ def hermint(c, m=1, k=[], lbnd=0, scl=1, axis=0):
     if cnt == 0:
         return c
 
-    c = np.rollaxis(c, iaxis)
+    c = np.moveaxis(c, iaxis, 0)
     k = list(k) + [0]*(cnt - len(k))
     for i in range(cnt):
         n = len(c)
@@ -840,7 +844,7 @@ def hermint(c, m=1, k=[], lbnd=0, scl=1, axis=0):
                 tmp[j + 1] = c[j]/(2*(j + 1))
             tmp[0] += k[i] - hermval(lbnd, tmp)
             c = tmp
-    c = np.rollaxis(c, 0, iaxis + 1)
+    c = np.moveaxis(c, 0, iaxis)
     return c
 
 
@@ -988,7 +992,7 @@ def hermval2d(x, y, c):
     """
     try:
         x, y = np.array((x, y), copy=0)
-    except:
+    except Exception:
         raise ValueError('x, y are incompatible')
 
     c = hermval(x, c)
@@ -1101,7 +1105,7 @@ def hermval3d(x, y, z, c):
     """
     try:
         x, y, z = np.array((x, y, z), copy=0)
-    except:
+    except Exception:
         raise ValueError('x, y, z are incompatible')
 
     c = hermval(x, c)
@@ -1229,7 +1233,7 @@ def hermvander(x, deg):
         v[1] = x2
         for i in range(2, ideg + 1):
             v[i] = (v[i-1]*x2 - v[i-2]*(2*(i - 1)))
-    return np.rollaxis(v, 0, v.ndim)
+    return np.moveaxis(v, 0, -1)
 
 
 def hermvander2d(x, y, deg):

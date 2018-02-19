@@ -597,10 +597,7 @@ def write_pkg_info(cmd, basename, filename):
         metadata = cmd.distribution.metadata
         metadata.version, oldver = cmd.egg_version, metadata.version
         metadata.name, oldname = cmd.egg_name, metadata.name
-        metadata.long_description_content_type = getattr(
-            cmd.distribution,
-            'long_description_content_type'
-        )
+
         try:
             # write unescaped data to PKG-INFO, so older pkg_resources
             # can still parse it

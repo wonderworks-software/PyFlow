@@ -1,0 +1,2 @@
+#!/usr/bin/env bash 
+source C:\Python27\Scripts\activate "$@"

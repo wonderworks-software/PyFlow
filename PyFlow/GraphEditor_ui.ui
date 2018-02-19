@@ -9,16 +9,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>942</width>
-    <height>775</height>
+    <width>1608</width>
+    <height>875</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QtNodes</string>
+   <string>PyFlow</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>AGraphPySide/icon.png</normaloff>AGraphPySide/icon.png</iconset>
+   <iconset resource="nodes_res.qrc">
+    <normaloff>:/icons/resources/LogoBpApp.png</normaloff>:/icons/resources/LogoBpApp.png</iconset>
   </property>
   <property name="documentMode">
    <bool>false</bool>
@@ -41,6 +41,9 @@
      <number>1</number>
     </property>
     <property name="bottomMargin">
+     <number>1</number>
+    </property>
+    <property name="spacing">
      <number>1</number>
     </property>
     <item row="0" column="0">
@@ -83,7 +86,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>942</width>
+     <width>1608</width>
      <height>26</height>
     </rect>
    </property>
@@ -92,17 +95,16 @@
      <string>Edit</string>
     </property>
     <addaction name="actionDelete"/>
-    <addaction name="actionOptions"/>
-    <addaction name="actionClear_scene"/>
     <addaction name="separator"/>
+    <addaction name="actionClear_history"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionNode_box"/>
-    <addaction name="actionConsole"/>
-    <addaction name="actionPlot_graph"/>
+    <addaction name="actionVariables"/>
+    <addaction name="actionHistory"/>
+    <addaction name="actionPropertyView"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -116,6 +118,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionPlot_graph"/>
     <addaction name="actionShortcuts"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
@@ -125,6 +128,7 @@
     <addaction name="actionNew_Node"/>
     <addaction name="actionNew_Command"/>
     <addaction name="actionFunction_Library"/>
+    <addaction name="actionNew_pin"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -142,12 +146,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionNode_box"/>
-   <addaction name="actionConsole"/>
    <addaction name="actionPropertyView"/>
-   <addaction name="separator"/>
-   <addaction name="actionMultithreaded"/>
-   <addaction name="actionDebug"/>
+   <addaction name="actionVariables"/>
+   <addaction name="actionHistory"/>
    <addaction name="separator"/>
    <addaction name="actionPlot_graph"/>
    <addaction name="actionScreenshot"/>
@@ -156,57 +157,15 @@
    <addaction name="actionAlignUp"/>
    <addaction name="actionAlignBottom"/>
    <addaction name="actionAlignRight"/>
+   <addaction name="separator"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidgetConsole">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
+  <widget class="QDockWidget" name="dockWidgetVariables">
    <property name="minimumSize">
     <size>
-     <width>109</width>
-     <height>142</height>
+     <width>150</width>
+     <height>113</height>
     </size>
    </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
-   </property>
-   <property name="windowTitle">
-    <string>Console</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <property name="leftMargin">
-      <number>1</number>
-     </property>
-     <property name="topMargin">
-      <number>1</number>
-     </property>
-     <property name="rightMargin">
-      <number>1</number>
-     </property>
-     <property name="bottomMargin">
-      <number>1</number>
-     </property>
-     <item row="0" column="0">
-      <widget class="QTextEdit" name="console">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidgetLeft">
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -214,10 +173,10 @@
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
-    <string>Dock</string>
+    <string>Variables</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_5">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -243,9 +202,15 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>89</width>
-          <height>431</height>
+          <width>148</width>
+          <height>756</height>
          </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
          <property name="leftMargin">
@@ -274,18 +239,18 @@
   <widget class="QDockWidget" name="dockWidgetNodeView">
    <property name="minimumSize">
     <size>
-     <width>200</width>
+     <width>500</width>
      <height>166</height>
     </size>
    </property>
    <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+    <set>Qt::AllDockWidgetAreas</set>
    </property>
    <property name="windowTitle">
     <string>PropertyView</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -314,8 +279,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>198</width>
-          <height>431</height>
+          <width>498</width>
+          <height>594</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
@@ -332,12 +297,52 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <layout class="QFormLayout" name="PropertiesformLayout"/>
+          <layout class="QFormLayout" name="formLayout"/>
          </item>
         </layout>
        </widget>
       </widget>
      </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetUndoStack">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="windowIcon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/history.png</normaloff>:/icons/resources/history.png</iconset>
+   </property>
+   <property name="windowTitle">
+    <string>History</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_6">
+     <property name="leftMargin">
+      <number>1</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="rightMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
+      <number>1</number>
+     </property>
+     <property name="spacing">
+      <number>1</number>
+     </property>
     </layout>
    </widget>
   </widget>
@@ -348,24 +353,6 @@
    </property>
    <property name="text">
     <string>Delete</string>
-   </property>
-  </action>
-  <action name="actionOptions">
-   <property name="icon">
-    <iconset resource="nodes_res.qrc">
-     <normaloff>:/icons/resources/colors_icon.png</normaloff>:/icons/resources/colors_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Options</string>
-   </property>
-  </action>
-  <action name="actionNode_box">
-   <property name="icon">
-    <iconset resource="nodes_res.qrc">
-     <normaloff>:/icons/resources/node_box_icon.png</normaloff>:/icons/resources/node_box_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Node box</string>
    </property>
   </action>
   <action name="actionSave">
@@ -395,15 +382,6 @@
     <string>Save as</string>
    </property>
   </action>
-  <action name="actionConsole">
-   <property name="icon">
-    <iconset resource="nodes_res.qrc">
-     <normaloff>:/icons/resources/console_icon.png</normaloff>:/icons/resources/console_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Console</string>
-   </property>
-  </action>
   <action name="actionPlot_graph">
    <property name="icon">
     <iconset resource="nodes_res.qrc">
@@ -411,33 +389,6 @@
    </property>
    <property name="text">
     <string>Plot graph</string>
-   </property>
-  </action>
-  <action name="actionClear_scene">
-   <property name="icon">
-    <iconset resource="nodes_res.qrc">
-     <normaloff>:/icons/resources/clear_icon.png</normaloff>:/icons/resources/clear_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Clear scene</string>
-   </property>
-  </action>
-  <action name="actionMultithreaded">
-   <property name="icon">
-    <iconset resource="nodes_res.qrc">
-     <normaloff>:/icons/resources/multithreaded_icon.png</normaloff>:/icons/resources/multithreaded_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Multithreaded</string>
-   </property>
-  </action>
-  <action name="actionDebug">
-   <property name="icon">
-    <iconset resource="nodes_res.qrc">
-     <normaloff>:/icons/resources/debug_icon.png</normaloff>:/icons/resources/debug_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Debug</string>
    </property>
   </action>
   <action name="actionScreenshot">
@@ -513,18 +464,75 @@
    </property>
   </action>
   <action name="actionNew_Node">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/brick.png</normaloff>:/icons/resources/brick.png</iconset>
+   </property>
    <property name="text">
-    <string>New Node</string>
+    <string>New node</string>
+   </property>
+   <property name="toolTip">
+    <string>New node</string>
    </property>
   </action>
   <action name="actionNew_Command">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/script.png</normaloff>:/icons/resources/script.png</iconset>
+   </property>
    <property name="text">
-    <string>New Command</string>
+    <string>New editor command</string>
+   </property>
+   <property name="toolTip">
+    <string>New editor command</string>
    </property>
   </action>
   <action name="actionFunction_Library">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/function.png</normaloff>:/icons/resources/function.png</iconset>
+   </property>
    <property name="text">
-    <string>New Function Library</string>
+    <string>New function library</string>
+   </property>
+   <property name="toolTip">
+    <string>New function library</string>
+   </property>
+  </action>
+  <action name="actionClear_history">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/clear_icon.png</normaloff>:/icons/resources/clear_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear history</string>
+   </property>
+  </action>
+  <action name="actionVariables">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/variable.png</normaloff>:/icons/resources/variable.png</iconset>
+   </property>
+   <property name="text">
+    <string>Variables</string>
+   </property>
+  </action>
+  <action name="actionHistory">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/history.png</normaloff>:/icons/resources/history.png</iconset>
+   </property>
+   <property name="text">
+    <string>History</string>
+   </property>
+  </action>
+  <action name="actionNew_pin">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/pin.png</normaloff>:/icons/resources/pin.png</iconset>
+   </property>
+   <property name="text">
+    <string>New pin</string>
    </property>
   </action>
  </widget>
