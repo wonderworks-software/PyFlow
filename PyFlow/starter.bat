@@ -1,2 +1,2 @@
-%cd%/Python27/python.exe PyFlow.py
+%cd%/Python27/python.exe %cd%/PyFlow.py
 pause

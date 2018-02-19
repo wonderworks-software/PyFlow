@@ -27,6 +27,7 @@ from time import clock
 
 FILE_DIR = path.dirname(__file__)
 SETTINGS_PATH = FILE_DIR + "/appConfig.ini"
+STYLE_PATH = FILE_DIR + "/style.css"
 EDITOR_TARGET_FPS = 60
 
 
@@ -338,7 +339,7 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    dark_palette = QtGui.QPalette()
+    dark_palette = app.palette()
 
     dark_palette.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
     dark_palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
@@ -346,17 +347,22 @@ if __name__ == '__main__':
     dark_palette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53, 53, 53))
     dark_palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
     dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
-    dark_palette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Text, QtCore.Qt.black)
     dark_palette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
-    dark_palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.black)
     dark_palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
     dark_palette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
     dark_palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
     dark_palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
 
-    # app.setPalette(dark_palette)
+    app.setPalette(dark_palette)
 
-    app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+    try:
+        with open(STYLE_PATH, 'r') as f:
+            styleString = f.read()
+            app.setStyleSheet(styleString)
+    except:
+        pass
 
     settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
 

@@ -523,14 +523,10 @@ class Node(QGraphicsItem, NodeBase):
         formLayout.addRow("", doc)
 
     def addContainer(self, portType, head=False):
-        container = QGraphicsWidget()  # for set background color
+        container = QGraphicsWidget()
         container.setObjectName('{0}PinContainerWidget'.format(self.name))
         container.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         container.sizeHint(QtCore.Qt.MinimumSize, QtCore.QSizeF(50.0, 10.0))
-
-        if self.graph().isDebug():
-            container.setAutoFillBackground(True)
-            container.setPalette(QtGui.QPalette(QtCore.Qt.gray))
 
         lyt = QGraphicsLinearLayout()
         lyt.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
