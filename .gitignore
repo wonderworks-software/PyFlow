@@ -3,3 +3,4 @@
 *.name
 *.xml
 .vscode/
+PyFlow/Python27/
