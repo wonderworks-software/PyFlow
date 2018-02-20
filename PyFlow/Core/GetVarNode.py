@@ -26,7 +26,7 @@ class GetVarNode(Node, NodeBase):
         self.label().opt_font.setPointSizeF(6.5)
 
     def boundingRect(self):
-        return QtCore.QRectF(-5, -3, self.w + Spacings.kPinOffset, 20)
+        return QtCore.QRectF(-5, -3, self.w, 20)
 
     def serialize(self):
         template = Node.serialize(self)
@@ -47,12 +47,7 @@ class GetVarNode(Node, NodeBase):
     def onVarNameChanged(self, newName):
         self.label().setPlainText(newName)
         self.setName(newName)
-        self.w = max(QtGui.QFontMetricsF(self.label().font()).width(self.getName()) + Spacings.kPinSpacing, 25)
-        self.nodeMainGWidget.setMaximumWidth(self.w + Spacings.kPinOffset)
-        self.nodeMainGWidget.setGeometry(0, 0, self.w + Spacings.kPinOffset, self.childrenBoundingRect().height())
-        self.nodeMainGWidget.hide()
-        self.nodeMainGWidget.show()
-        self.update()
+        self.updateNodeShape(label=self.label().toPlainText())
 
     def onVarValueChanged(self):
         push(self.out)

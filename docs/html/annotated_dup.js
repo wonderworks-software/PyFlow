@@ -1,6 +1,9 @@
 var annotated_dup =
 [
     [ "PyFlow", null, [
+      [ "CodeEditor_ui_backup", null, [
+        [ "Ui_CodeEditorWidget", "class_py_flow_1_1_code_editor__ui__backup_1_1_ui___code_editor_widget.html", "class_py_flow_1_1_code_editor__ui__backup_1_1_ui___code_editor_widget" ]
+      ] ],
       [ "Commands", null, [
         [ "ConnectPin", null, [
           [ "ConnectPin", "class_py_flow_1_1_commands_1_1_connect_pin_1_1_connect_pin.html", "class_py_flow_1_1_commands_1_1_connect_pin_1_1_connect_pin" ]
@@ -53,6 +56,7 @@ var annotated_dup =
         ] ],
         [ "InputWidgets", null, [
           [ "BoolInputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_bool_input_widget.html", "class_py_flow_1_1_core_1_1_input_widgets_1_1_bool_input_widget" ],
+          [ "ExecInputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_exec_input_widget.html", "class_py_flow_1_1_core_1_1_input_widgets_1_1_exec_input_widget" ],
           [ "FloatInputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_input_widget.html", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_input_widget" ],
           [ "FloatVector3InputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_vector3_input_widget.html", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_vector3_input_widget" ],
           [ "FloatVector4InputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_vector4_input_widget.html", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_vector4_input_widget" ],
@@ -125,12 +129,12 @@ var annotated_dup =
           [ "Vector4", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4" ]
         ] ]
       ] ],
+      [ "GraphEditor_ui_backup", null, [
+        [ "Ui_MainWindow", "class_py_flow_1_1_graph_editor__ui__backup_1_1_ui___main_window.html", "class_py_flow_1_1_graph_editor__ui__backup_1_1_ui___main_window" ]
+      ] ],
       [ "Nodes", null, [
         [ "branch", null, [
           [ "branch", "class_py_flow_1_1_nodes_1_1branch_1_1branch.html", "class_py_flow_1_1_nodes_1_1branch_1_1branch" ]
-        ] ],
-        [ "call", null, [
-          [ "call", "class_py_flow_1_1_nodes_1_1call_1_1call.html", "class_py_flow_1_1_nodes_1_1call_1_1call" ]
         ] ],
         [ "charge", null, [
           [ "charge", "class_py_flow_1_1_nodes_1_1charge_1_1charge.html", "class_py_flow_1_1_nodes_1_1charge_1_1charge" ]
@@ -198,6 +202,9 @@ var annotated_dup =
         ] ],
         [ "sequence", null, [
           [ "sequence", "class_py_flow_1_1_nodes_1_1sequence_1_1sequence.html", "class_py_flow_1_1_nodes_1_1sequence_1_1sequence" ]
+        ] ],
+        [ "timer", null, [
+          [ "timer", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html", "class_py_flow_1_1_nodes_1_1timer_1_1timer" ]
         ] ],
         [ "whileLoop", null, [
           [ "whileLoop", "class_py_flow_1_1_nodes_1_1while_loop_1_1while_loop.html", "class_py_flow_1_1_nodes_1_1while_loop_1_1while_loop" ]

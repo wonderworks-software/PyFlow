@@ -8,11 +8,12 @@ class forLoopWithBreak(Node, NodeBase):
         super(forLoopWithBreak, self).__init__(name, graph)
         self.stop = False
         self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
-        self.firstIndex = self.addInputPin('start', DataTypes.Int)
-        self.lastIndex = self.addInputPin('stop', DataTypes.Int)
-        self.step = self.addInputPin('step', DataTypes.Int)
-        self.breakExec = self.addInputPin('break', DataTypes.Exec, self.interrupt)
-        self.step.setData(1)
+        self.firstIndex = self.addInputPin('Start', DataTypes.Int)
+        self.lastIndex = self.addInputPin('Stop', DataTypes.Int)
+        self.lastIndex.setDefaultValue(10)
+        self.step = self.addInputPin('Step', DataTypes.Int)
+        self.step.setDefaultValue(1)
+        self.breakExec = self.addInputPin('Break', DataTypes.Exec, self.interrupt)
 
         self.loopBody = self.addOutputPin('LoopBody', DataTypes.Exec)
         self.index = self.addOutputPin('Index', DataTypes.Int)

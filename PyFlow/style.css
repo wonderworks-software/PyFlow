@@ -88,3 +88,9 @@ QMenu::indicator {
     width: 13px;
     height: 13px;
 }
+
+
+QTextBrowser
+{
+    color: #e4e4e4;
+}

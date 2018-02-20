@@ -27,7 +27,7 @@ class delay(Node, NodeBase):
 
     @staticmethod
     def description():
-        return '''Delayed call.'''
+        return 'Delayed call'
 
     def callAndReset(self):
         self.out0.call()

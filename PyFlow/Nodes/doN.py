@@ -34,7 +34,8 @@ class doN(Node):
 
     @staticmethod
     def description():
-        return 'The DoN node will fire off an execution pin N times. After the limit has been reached, it will cease all outgoing execution until a pulse is sent into its Reset input.'
+        return 'The DoN node will fire off an execution pin N times. After the limit has been reached,\
+        it will cease all outgoing execution until a pulse is sent into its Reset input.'
 
     def compute(self):
         maxCalls = self.N.getData()

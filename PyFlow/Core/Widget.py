@@ -208,10 +208,12 @@ class SceneClass(QGraphicsScene):
                         nodeTemplate['type'] = 'GetVarNode'
                         nodeTemplate['uuid'] = mimeText
                         nodeTemplate['meta']['var']['uuid'] = mimeText
+                        nodeTemplate['meta']['label'] = self.parent().vars[uuid.UUID(mimeText)].name
                     if modifiers == QtCore.Qt.AltModifier:
                         nodeTemplate['type'] = 'SetVarNode'
                         nodeTemplate['uuid'] = mimeText
                         nodeTemplate['meta']['var']['uuid'] = mimeText
+                        nodeTemplate['meta']['label'] = self.parent().vars[uuid.UUID(mimeText)].name
 
                 self.parent().createNode(nodeTemplate)
         else:

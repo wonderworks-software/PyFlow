@@ -24,6 +24,7 @@ var class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base =
     [ "shape", "class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#a75fc4624861be995299e1cab380834cd", null ],
     [ "sizeHint", "class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#aad6fdc2150e69ecc346c36a27bc067bd", null ],
     [ "ungrabMouseEvent", "class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#a04252a0814c169be3a2503f1d07f2a02", null ],
+    [ "actionCall", "class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#a10523f1746c896945a15db3523a70d7a", null ],
     [ "actionCopyUid", "class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#a7eb5b2333efea2607e03398561213743", null ],
     [ "actionDisconnect", "class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#a2d319c24651988a649ddbd00c9ba3508", null ],
     [ "bAnimate", "class_py_flow_1_1_core_1_1_pin_1_1_pin_widget_base.html#a01e7ef8b3211f535534a253ffc6df76a", null ],

@@ -95,6 +95,7 @@ class ExecInputWidget(InputWidgetSingle):
         self.pb = QPushButton('execute', self)
         self.setWidget(self.pb)
         self.pb.clicked.connect(self.dataSetCallback)
+        self.pbReset.deleteLater()
 
 
 class FloatInputWidget(InputWidgetSingle):

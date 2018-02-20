@@ -284,8 +284,6 @@ class commentNode(Node, NodeBase):
 
     def mouseReleaseEvent(self, event):
         QGraphicsItem.mouseReleaseEvent(self, event)
-        # self.setFlag(QGraphicsItem.ItemIsMovable, False)
-        # self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.bResize = False
 
     def paint(self, painter, option, widget):

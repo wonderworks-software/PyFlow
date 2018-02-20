@@ -223,6 +223,7 @@ class {0}(PinWidgetBase):
         startfile(filePath)
 
 
+## App itself
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def __init__(self):
         super(PyFlow, self).__init__()

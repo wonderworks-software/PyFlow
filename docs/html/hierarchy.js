@@ -8,6 +8,7 @@ var hierarchy =
     ] ],
     [ "PyFlow.Core.AGraphCommon.NodeTypes", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_node_types.html", null ],
     [ "object", null, [
+      [ "PyFlow.CodeEditor_ui_backup.Ui_CodeEditorWidget", "class_py_flow_1_1_code_editor__ui__backup_1_1_ui___code_editor_widget.html", null ],
       [ "PyFlow.Core.AbstractGraph.Graph", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_graph.html", [
         [ "PyFlow.Core.Widget.GraphWidget", "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html", null ]
       ] ],
@@ -20,7 +21,6 @@ var hierarchy =
                 [ "PyFlow.Core.GetVarNode.GetVarNode", "class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html", null ],
                 [ "PyFlow.Core.SetVarNode.SetVarNode", "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html", null ],
                 [ "PyFlow.Nodes.branch.branch", "class_py_flow_1_1_nodes_1_1branch_1_1branch.html", null ],
-                [ "PyFlow.Nodes.call.call", "class_py_flow_1_1_nodes_1_1call_1_1call.html", null ],
                 [ "PyFlow.Nodes.charge.charge", "class_py_flow_1_1_nodes_1_1charge_1_1charge.html", null ],
                 [ "PyFlow.Nodes.commentNode.commentNode", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html", null ],
                 [ "PyFlow.Nodes.delay.delay", "class_py_flow_1_1_nodes_1_1delay_1_1delay.html", null ],
@@ -43,18 +43,19 @@ var hierarchy =
                 [ "PyFlow.Nodes.pythonNode.pythonNode", "class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html", null ],
                 [ "PyFlow.Nodes.retriggerableDelay.retriggerableDelay", "class_py_flow_1_1_nodes_1_1retriggerable_delay_1_1retriggerable_delay.html", null ],
                 [ "PyFlow.Nodes.sequence.sequence", "class_py_flow_1_1_nodes_1_1sequence_1_1sequence.html", null ],
+                [ "PyFlow.Nodes.timer.timer", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html", null ],
                 [ "PyFlow.Nodes.whileLoop.whileLoop", "class_py_flow_1_1_nodes_1_1while_loop_1_1while_loop.html", null ]
               ] ],
               [ "PyFlow.Core.SetVarNode.SetVarNode", "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html", null ],
               [ "PyFlow.Nodes.branch.branch", "class_py_flow_1_1_nodes_1_1branch_1_1branch.html", null ],
-              [ "PyFlow.Nodes.call.call", "class_py_flow_1_1_nodes_1_1call_1_1call.html", null ],
               [ "PyFlow.Nodes.commentNode.commentNode", "class_py_flow_1_1_nodes_1_1comment_node_1_1comment_node.html", null ],
               [ "PyFlow.Nodes.delay.delay", "class_py_flow_1_1_nodes_1_1delay_1_1delay.html", null ],
               [ "PyFlow.Nodes.flipFlop.flipFlop", "class_py_flow_1_1_nodes_1_1flip_flop_1_1flip_flop.html", null ],
               [ "PyFlow.Nodes.forLoop.forLoop", "class_py_flow_1_1_nodes_1_1for_loop_1_1for_loop.html", null ],
               [ "PyFlow.Nodes.forLoopWithBreak.forLoopWithBreak", "class_py_flow_1_1_nodes_1_1for_loop_with_break_1_1for_loop_with_break.html", null ],
               [ "PyFlow.Nodes.pythonNode.pythonNode", "class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html", null ],
-              [ "PyFlow.Nodes.retriggerableDelay.retriggerableDelay", "class_py_flow_1_1_nodes_1_1retriggerable_delay_1_1retriggerable_delay.html", null ]
+              [ "PyFlow.Nodes.retriggerableDelay.retriggerableDelay", "class_py_flow_1_1_nodes_1_1retriggerable_delay_1_1retriggerable_delay.html", null ],
+              [ "PyFlow.Nodes.timer.timer", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html", null ]
             ] ]
           ] ],
           [ "PyFlow.Core.AbstractGraph.IPin", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_i_pin.html", [
@@ -89,7 +90,8 @@ var hierarchy =
         [ "PyFlow.FunctionLibraries.Vector4.Vector4", "class_py_flow_1_1_function_libraries_1_1_vector4_1_1_vector4.html", null ]
       ] ],
       [ "PyFlow.Core.NodePainter.NodePainter", "class_py_flow_1_1_core_1_1_node_painter_1_1_node_painter.html", null ],
-      [ "PyFlow.Core.Widget.AutoPanController", "class_py_flow_1_1_core_1_1_widget_1_1_auto_pan_controller.html", null ]
+      [ "PyFlow.Core.Widget.AutoPanController", "class_py_flow_1_1_core_1_1_widget_1_1_auto_pan_controller.html", null ],
+      [ "PyFlow.GraphEditor_ui_backup.Ui_MainWindow", "class_py_flow_1_1_graph_editor__ui__backup_1_1_ui___main_window.html", null ]
     ] ],
     [ "PyFlow.Core.AGraphCommon.PinDirection", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_direction.html", null ],
     [ "PyFlow.Core.AGraphCommon.PinSelectionGroup", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_pin_selection_group.html", null ],
@@ -102,12 +104,6 @@ var hierarchy =
       [ "PyFlow.Core.VariablesWidget.VariablesWidget", "class_py_flow_1_1_core_1_1_variables_widget_1_1_variables_widget.html", null ]
     ] ],
     [ "Ui_Form", null, [
-      [ "PyFlow.Core.InputWidgets.Matrix33InputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_matrix33_input_widget.html", null ]
-    ] ],
-    [ "Ui_Form", null, [
-      [ "PyFlow.Core.CodeEditor.WPinWidget", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_pin_widget.html", null ]
-    ] ],
-    [ "Ui_Form", null, [
       [ "PyFlow.Core.InputWidgets.FloatVector4InputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_vector4_input_widget.html", [
         [ "PyFlow.Core.InputWidgets.QuatInputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_quat_input_widget.html", null ]
       ] ]
@@ -117,6 +113,12 @@ var hierarchy =
     ] ],
     [ "Ui_Form", null, [
       [ "PyFlow.Core.InputWidgets.FloatVector3InputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_vector3_input_widget.html", null ]
+    ] ],
+    [ "Ui_Form", null, [
+      [ "PyFlow.Core.InputWidgets.Matrix33InputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_matrix33_input_widget.html", null ]
+    ] ],
+    [ "Ui_Form", null, [
+      [ "PyFlow.Core.CodeEditor.WPinWidget", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_pin_widget.html", null ]
     ] ],
     [ "Ui_MainWindow", null, [
       [ "PyFlow.PyFlow.PyFlow", "class_py_flow_1_1_py_flow_1_1_py_flow.html", null ]
@@ -177,6 +179,7 @@ var hierarchy =
         [ "PyFlow.Core.InputWidgets.FloatVector4InputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_vector4_input_widget.html", null ],
         [ "PyFlow.Core.InputWidgets.InputWidgetSingle", "class_py_flow_1_1_core_1_1_input_widgets_1_1_input_widget_single.html", [
           [ "PyFlow.Core.InputWidgets.BoolInputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_bool_input_widget.html", null ],
+          [ "PyFlow.Core.InputWidgets.ExecInputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_exec_input_widget.html", null ],
           [ "PyFlow.Core.InputWidgets.FloatInputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_float_input_widget.html", null ],
           [ "PyFlow.Core.InputWidgets.IntInputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_int_input_widget.html", null ],
           [ "PyFlow.Core.InputWidgets.StringInputWidget", "class_py_flow_1_1_core_1_1_input_widgets_1_1_string_input_widget.html", null ]
