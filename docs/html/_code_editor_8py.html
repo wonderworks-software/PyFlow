@@ -94,6 +94,8 @@ $(document).ready(function(){initNavTree('_code_editor_8py.html','');});
 
 <p>The code editor is a widget for <a class="el" href="class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html">pythonNode</a> To open it, create pythonNode first, then right click on it and click 'edit'.  
 <a href="#details">More...</a></p>
+
+<p><a href="_code_editor_8py_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -127,7 +129,9 @@ Classes</h2></td></tr>
 </div>
 <p><b>The second part</b> is actually the text editor. Here you can read/write pins data, import python modules and use them in calculationis.</p>
 <p>When save button is pressed, function with code you wrote will be generated and used as node's compute method.</p>
-<p><b>Examples</b> </p><div class="fragment"><div class="line"><span class="comment"># you can acess pins in two ways</span></div><div class="line"><span class="comment"># like so</span></div><div class="line">&gt;&gt;&gt; self.pinName.getData()</div><div class="line">&gt;&gt;&gt; self.pinName.setData(value)</div><div class="line"><span class="comment"># or like so</span></div><div class="line">&gt;&gt;&gt; self.getData(<span class="stringliteral">&#39;pinName&#39;</span>)</div><div class="line">&gt;&gt;&gt; self.setData(<span class="stringliteral">&#39;pinName&#39;</span>, value)</div><div class="line"></div><div class="line"><span class="comment"># this code</span></div><div class="line">&gt;&gt;&gt; <span class="keyword">import</span> math</div><div class="line">&gt;&gt;&gt; print(math.pi)</div><div class="line"><span class="comment"># will be turned into the following</span></div><div class="line">&gt;&gt;&gt; <span class="keyword">def </span>compute(self):</div><div class="line">&gt;&gt;&gt;     <span class="keyword">import</span> math</div><div class="line">&gt;&gt;&gt;     print(math.pi)</div><div class="line"><span class="comment"># and then used inside the node</span></div></div><!-- fragment --> </div></div><!-- contents -->
+<p><b>Examples</b> </p><div class="fragment"><div class="line"><span class="comment"># you can acess pins in two ways</span></div><div class="line"><span class="comment"># like so</span></div><div class="line">&gt;&gt;&gt; self.pinName.getData()</div><div class="line">&gt;&gt;&gt; self.pinName.setData(value)</div><div class="line"><span class="comment"># or like so</span></div><div class="line">&gt;&gt;&gt; self.getData(<span class="stringliteral">&#39;pinName&#39;</span>)</div><div class="line">&gt;&gt;&gt; self.setData(<span class="stringliteral">&#39;pinName&#39;</span>, value)</div><div class="line"></div><div class="line"><span class="comment"># this code</span></div><div class="line">&gt;&gt;&gt; <span class="keyword">import</span> math</div><div class="line">&gt;&gt;&gt; print(math.pi)</div><div class="line"><span class="comment"># will be turned into the following</span></div><div class="line">&gt;&gt;&gt; <span class="keyword">def </span>compute(self):</div><div class="line">&gt;&gt;&gt;     <span class="keyword">import</span> math</div><div class="line">&gt;&gt;&gt;     print(math.pi)</div><div class="line"><span class="comment"># and then used inside the node</span></div></div><!-- fragment --> 
+<p class="definition">Definition in file <a class="el" href="_code_editor_8py_source.html">CodeEditor.py</a>.</p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

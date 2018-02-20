@@ -189,6 +189,8 @@ Static Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Pin interface. </p>
+
+<p class="definition">Definition at line <a class="el" href="_abstract_graph_8py_source.html#l00106">106</a> of file <a class="el" href="_abstract_graph_8py_source.html">AbstractGraph.py</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a9f0dc4ecb4b673bd5427c51b7ce6e94d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9f0dc4ecb4b673bd5427c51b7ce6e94d">&#9670;&nbsp;</a></span>color()</h2>
@@ -216,6 +218,8 @@ Static Public Member Functions</h2></td></tr>
 <p>Defines what color pin will be drawn. </p>
 <dl class="section return"><dt>Returns</dt><dd>QColor class. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_abstract_graph_8py_source.html#l00118">118</a> of file <a class="el" href="_abstract_graph_8py_source.html">AbstractGraph.py</a>.</p>
+
 </div>
 </div>
 <a id="ada35da1dbbe3daa17878310760f10595"></a>
@@ -237,6 +241,8 @@ Static Public Member Functions</h2></td></tr>
 <p>Default value for this particular pin. </p>
 <p>This can be set whenever you need.</p>
 <dl class="section see"><dt>See also</dt><dd>PyFlow.Pins </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_abstract_graph_8py_source.html#l00169">169</a> of file <a class="el" href="_abstract_graph_8py_source.html">AbstractGraph.py</a>.</p>
 
 </div>
 </div>
@@ -268,6 +274,8 @@ Static Public Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>A tuple containing data type id as first element + default value for this data type as second.</dd></dl>
 <p><b>Examples</b> </p><div class="fragment"><div class="line"><span class="comment"># printing hints</span></div><div class="line">&gt;&gt;&gt; somePin.pinDataTypeHint()</div><div class="line">(0, 0.0)</div><div class="line">&gt;&gt;&gt; somePin.pinDataTypeHint()</div><div class="line">(3, <span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="comment"># this is how it used in pins initialization</span></div><div class="line">&gt;&gt;&gt; <span class="keyword">def </span>_REGISTER_PIN_TYPE(pinSubclass):</div><div class="line">&gt;&gt;&gt;     dType = pinSubclass.pinDataTypeHint()[0]</div><div class="line">&gt;&gt;&gt;     <span class="keywordflow">if</span> dType <span class="keywordflow">not</span> <span class="keywordflow">in</span> _PINS:</div><div class="line">&gt;&gt;&gt;         _PINS[pinSubclass.pinDataTypeHint()[0]] = pinSubclass</div><div class="line">&gt;&gt;&gt;     <span class="keywordflow">else</span>:</div><div class="line">&gt;&gt;&gt;         <span class="keywordflow">raise</span> Exception(<span class="stringliteral">&quot;Error registering pin type {0}\n pin with ID [{1}] already registered&quot;</span>.format(pinSubclass.__name__))</div></div><!-- fragment --> <dl class="section see"><dt>See also</dt><dd><a class="el" href="class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html">DataTypes</a>  </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="_abstract_graph_8py_source.html#l00151">151</a> of file <a class="el" href="_abstract_graph_8py_source.html">AbstractGraph.py</a>.</p>
+
 </div>
 </div>
 <a id="a38f4bd0d4fb95e020d052734c2cc186f"></a>
@@ -289,10 +297,12 @@ Static Public Member Functions</h2></td></tr>
 <p>An array of supported data types. </p>
 <p>Array of data types that can be casted to this type. For example - int can support float, or vector3 can support vector4 etc. </p>
 
+<p class="definition">Definition at line <a class="el" href="_abstract_graph_8py_source.html#l00159">159</a> of file <a class="el" href="_abstract_graph_8py_source.html">AbstractGraph.py</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>PyFlow/Core/AbstractGraph.py</li>
+<li>PyFlow/Core/<a class="el" href="_abstract_graph_8py_source.html">AbstractGraph.py</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
