@@ -1,8 +1,11 @@
+
+
 # Overview
+<p align="center">
+  <img width="460" height="460" src="PyFlow/resources/logoBp.png">
+</p>
 
-![](logoBp.png)
-
-[PyFlow](@ref PyFlow.PyFlow.PyFlow) is a general purpose extendable python qt node editor.
+**PyFlow** is a general purpose extendable python qt node editor. Written in python!
 
 # Table of contents
 - [Features](#features)
@@ -19,9 +22,9 @@
 - Properties view
 - Dirty propagation for optimal graph computation
 - Runtime nodes creation
-- Variables and variables view
+- Variables
 
-# Installation and run
+# Installation
 1. Download repository.
 2. Install [conda](https://conda.io/docs/)  with pyside2 environment. [Instruction](https://fredrikaverpil.github.io/2017/08/28/pyside2-easy-install/) here
 3. Go to **Scripts/** folder and install dependencies
@@ -31,7 +34,7 @@
 4. Execute **starter.bat**
 
 
-# Pip dependencies:
+# Dependencies
 - [Qt.py](https://github.com/mottosso/Qt.py)
 - PySide or PySide2 or PyQt5 or PyQt4
 - [pyrr](https://github.com/adamlwgriffiths/Pyrr) for builtin math. (optional)
@@ -39,11 +42,9 @@
 # Usage
 App's entry point is a **PyFlow.py** file. There are also several handy bat scripts for debugging and profiling.
 Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
-Connect pins and execute the graph with [Call](@ref PyFlow.Nodes.call.call) node.
+Connect and execute pins from property view or using timer node.
 
-Writing this project i was inspired by Unreal Engine blueprints. So, if you are familiar with it, you will quickly figure out what's what.
-
-For in depth descriptin and how it works, see **video tutorials** and documentation.
+For in depth descriptin and how it works, see [video tutorials](http://blank.org/) and [documentation](https://ilgarlunin.github.io/PyFlow/html/index.html).
 
 # Licensing
 The MIT License (MIT)
