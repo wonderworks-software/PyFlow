@@ -88,6 +88,15 @@ class InputWidgetSingle(InputWidgetRaw):
         self.horizontalLayout.insertWidget(self._index, widget)
 
 
+class ExecInputWidget(InputWidgetSingle):
+    """docstring for ExecInputWidget"""
+    def __init__(self, parent=None, **kwds):
+        super(ExecInputWidget, self).__init__(parent=parent, **kwds)
+        self.pb = QPushButton('execute', self)
+        self.setWidget(self.pb)
+        self.pb.clicked.connect(self.dataSetCallback)
+
+
 class FloatInputWidget(InputWidgetSingle):
     """
     Floating point data input widget
@@ -530,4 +539,6 @@ def getInputWidget(dataType, dataSetter, defaultValue):
         return Matrix33InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == DataTypes.Matrix44:
         return Matrix44InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+    if dataType == DataTypes.Exec:
+        return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None)
     return None

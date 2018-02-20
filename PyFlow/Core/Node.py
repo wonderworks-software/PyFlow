@@ -487,9 +487,8 @@ class Node(QGraphicsItem, NodeBase):
             formLayout.addRow("", sep_inputs)
 
             for inp in self.inputs.values():
-                if inp.dataType == DataTypes.Exec:
-                    continue
-                w = getInputWidget(inp.dataType, inp.setData, inp.defaultValue())
+                dataSetter = inp.call if inp.dataType == DataTypes.Exec else inp.setData
+                w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue())
                 if w:
                     w.setWidgetValue(inp.currentData())
                     w.setObjectName(inp.getName())
