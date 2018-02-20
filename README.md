@@ -2,7 +2,7 @@
 
 # Overview
 <p align="center">
-  <img width="460" height="460" src="PyFlow/resources/logoBp.png">
+  <img src="PyFlow/resources/PyFlow.jpg">
 </p>
 
 **PyFlow** is a general purpose extendable python qt node editor. Written in python!
