@@ -1,9 +1,9 @@
 """@file CommentNode.py
 """
-from Core.AbstractGraph import *
-from Core.Settings import *
-from Core import Node
-from Core import NodeName
+from ..Core.AbstractGraph import *
+from ..Core.Settings import *
+from ..Core import Node
+from ..Core import NodeName
 from types import MethodType
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem

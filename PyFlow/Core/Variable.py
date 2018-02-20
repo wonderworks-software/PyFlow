@@ -13,12 +13,11 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
-import nodes_res_rc
 from uuid import uuid4
 import inspect
 from AbstractGraph import *
 import InputWidgets
-import Pins
+from .. import Pins
 
 
 ## Colored rounded rect

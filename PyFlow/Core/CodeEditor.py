@@ -60,13 +60,13 @@ from Qt.QtWidgets import QListWidgetItem
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QCompleter
 from Qt.QtWidgets import QPlainTextEdit
-import CodeEditor_ui
+from .. import CodeEditor_ui
 import PythonSyntax
-import PinWidget_ui
+from .. import PinWidget_ui
 from AbstractGraph import *
 import inspect
 from types import MethodType
-from Core import Node
+from ..Core import Node
 import weakref
 from keyword import kwlist
 import __builtin__

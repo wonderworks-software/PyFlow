@@ -1,5 +1,5 @@
-from Core.FunctionLibrary import *
-from Core.AGraphCommon import *
+from ..Core.FunctionLibrary import *
+from ..Core.AGraphCommon import *
 import os
 
 

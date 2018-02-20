@@ -21,9 +21,9 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 from AbstractGraph import *
-from Pins import CreatePin
+from ..Pins import CreatePin
 from types import MethodType
-from InputWidgets import getInputWidget
+from .InputWidgets import getInputWidget
 from inspect import getargspec
 from NodePainter import NodePainter
 

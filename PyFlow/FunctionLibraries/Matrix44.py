@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from Core.FunctionLibrary import *
-from Core.AGraphCommon import *
+from ..Core.FunctionLibrary import *
+from ..Core.AGraphCommon import *
 import pyrr
 
 

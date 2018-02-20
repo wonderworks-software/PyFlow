@@ -1,5 +1,6 @@
 """@package Pins
 """
+from __future__ import absolute_import
 import os
 _PINS = {}
 
@@ -19,13 +20,13 @@ def _REGISTER_PIN_TYPE(pinSubclass):
 for n in os.listdir(os.path.dirname(__file__)):
     if n.endswith(".py") and "__init__" not in n:
         pinName = n.split(".")[0]
-        try:
-            exec("from {0} import {0}".format(pinName))
-            exec("pin_class = {0}".format(pinName))
-            _REGISTER_PIN_TYPE(pin_class)
-        except Exception as e:
-            print(e, pinName)
-            pass
+        # try:
+        exec("from .{0} import {0}".format(pinName))
+        exec("pin_class = {0}".format(pinName))
+        _REGISTER_PIN_TYPE(pin_class)
+        # except Exception as e:
+        #     print(e, pinName)
+        #     pass
 
 
 def findPinClassByType(dataType):

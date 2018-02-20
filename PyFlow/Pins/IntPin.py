@@ -1,5 +1,5 @@
-from Core.Pin import PinWidgetBase
-from Core.AGraphCommon import *
+from ..Core.Pin import PinWidgetBase
+from ..Core.AGraphCommon import *
 
 
 class IntPin(PinWidgetBase):

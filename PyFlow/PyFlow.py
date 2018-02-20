@@ -15,7 +15,6 @@ from Core.Widget import GraphWidget
 from Core.Widget import Direction
 from Core.Widget import NodesBox
 from Core.VariablesWidget import VariablesWidget
-from Core.AGraphCommon import CircularBuffer
 import Nodes
 import Commands
 import FunctionLibraries
@@ -225,8 +224,8 @@ class {0}(PinWidgetBase):
 
 ## App itself
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
-    def __init__(self):
-        super(PyFlow, self).__init__()
+    def __init__(self, parent=None):
+        super(PyFlow, self).__init__(parent=parent)
         self.setupUi(self)
         self.listViewUndoStack = QUndoView(self.dockWidgetContents_3)
         self.listViewUndoStack.setObjectName("listViewUndoStack")

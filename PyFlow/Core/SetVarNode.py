@@ -4,13 +4,13 @@ Builtin node to set variable value.
 """
 from AbstractGraph import *
 from Settings import *
-from Core import Node
+from . import Node
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QLineEdit
 from Qt import QtCore
 from Qt import QtGui
-from Commands import RemoveNodes
+from ..Commands import RemoveNodes
 from InputWidgets import getInputWidget
 
 

@@ -14,10 +14,10 @@ from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QSizePolicy
 from AGraphCommon import *
 from AbstractGraph import PinBase
-import FloatVector3InputWidget_ui
-import FloatVector4InputWidget_ui
-import Matrix33InputWidget_ui
-import Matrix44InputWidget_ui
+from .. import FloatVector3InputWidget_ui
+from .. import FloatVector4InputWidget_ui
+from .. import Matrix33InputWidget_ui
+from .. import Matrix44InputWidget_ui
 import pyrr
 
 

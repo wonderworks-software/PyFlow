@@ -7,7 +7,7 @@ from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QApplication
 from AbstractGraph import *
 from Settings import *
-import nodes_res_rc
+# import nodes_res_rc
 
 
 class PinWidgetBase(QGraphicsWidget, PinBase):

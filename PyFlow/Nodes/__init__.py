@@ -3,7 +3,7 @@
 Class based nodes.
 """
 import os
-import FunctionLibraries
+from .. import FunctionLibraries
 from inspect import getmembers
 from inspect import isfunction
 

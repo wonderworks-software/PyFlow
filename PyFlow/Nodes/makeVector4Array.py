@@ -1,8 +1,8 @@
-from Core.AbstractGraph import *
-from Core.Settings import *
-from Core import Node
+from ..Core.AbstractGraph import *
+from ..Core.Settings import *
+from ..Core import Node
 from Qt.QtWidgets import QMenu
-from Core.Pin import PinWidgetBase
+from ..Core.Pin import PinWidgetBase
 
 
 class makeVector4Array(Node):

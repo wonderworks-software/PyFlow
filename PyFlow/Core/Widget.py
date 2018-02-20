@@ -35,13 +35,13 @@ from Node import Node
 from Node import NodeName
 from GetVarNode import GetVarNode
 from SetVarNode import SetVarNode
-import Nodes
+from .. import Nodes
 from os import listdir, path
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
-import FunctionLibraries
-import Commands
-from Core.Variable import VariableBase
+from .. import FunctionLibraries
+from .. import Commands
+from .Variable import VariableBase
 from time import ctime, clock
 import json
 import re

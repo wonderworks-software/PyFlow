@@ -4,12 +4,12 @@ Builtin node to acess variable value.
 """
 from AbstractGraph import *
 from Settings import *
-from Core import Node
+from . import Node
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore
 from Qt import QtGui
-from Commands import RemoveNodes
+from ..Commands import RemoveNodes
 
 
 ## Variable getter node

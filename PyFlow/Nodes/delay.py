@@ -1,6 +1,6 @@
-from Core.AbstractGraph import *
-from Core.Settings import *
-from Core import Node
+from ..Core.AbstractGraph import *
+from ..Core.Settings import *
+from ..Core import Node
 from Qt.QtCore import QTimer
 
 
