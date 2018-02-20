@@ -2,7 +2,6 @@ var class_py_flow_1_1_nodes_1_1python_node_1_1python_node =
 [
     [ "__init__", "class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html#a4cb3c38242b31d3f1d0f1e6c559b9741", null ],
     [ "category", "class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html#ab481864f14bc97f74279e3988452048b", null ],
-    [ "compute", "class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html#abf762065d3c4f6d626940f2a2d4655a1", null ],
     [ "computeCode", "class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html#ad63a43947d4fab0179033d5ec24ee4b3", null ],
     [ "contextMenuEvent", "class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html#a88762f381c17b70f414cbd32dc265126", null ],
     [ "description", "class_py_flow_1_1_nodes_1_1python_node_1_1python_node.html#a2b3465e9dfa110f4906938955dcffb27", null ],

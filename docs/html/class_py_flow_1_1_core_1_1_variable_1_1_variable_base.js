@@ -5,7 +5,6 @@ var class_py_flow_1_1_core_1_1_variable_1_1_variable_base =
     [ "jsonTemplate", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a982309efb00719e9b85ee4e6a5c4871f", null ],
     [ "mousePressEvent", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a5f6b4f1e7b49084f8138b42da69f2692", null ],
     [ "onUpdatePropertyView", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a889be0808013132b07148e335ced17bb", null ],
-    [ "retranslateUi", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a80419871f1b5e5379507beff0f871977", null ],
     [ "serialize", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a62bb8431d351b64344876a89ce77df74", null ],
     [ "setDataType", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#aeb310eb14bb16868e13c2802d76f9155", null ],
     [ "setName", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a9a52159612ecb2b665d362174fef879f", null ],

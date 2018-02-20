@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['call',['call',['../class_py_flow_1_1_nodes_1_1call_1_1call.html',1,'PyFlow::Nodes::call']]],
   ['charge',['charge',['../class_py_flow_1_1_nodes_1_1charge_1_1charge.html',1,'PyFlow::Nodes::charge']]],
   ['circularbuffer',['CircularBuffer',['../class_py_flow_1_1_core_1_1_a_graph_common_1_1_circular_buffer.html',1,'PyFlow::Core::AGraphCommon']]],
   ['colors',['Colors',['../class_py_flow_1_1_core_1_1_settings_1_1_colors.html',1,'PyFlow::Core::Settings']]],

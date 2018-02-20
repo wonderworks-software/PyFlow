@@ -71,7 +71,7 @@ class DefaultLib(FunctionLibraryBase):
         return int(f)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Conversion', 'Keywords': []})
+    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Utils', 'Keywords': []})
     ## Returns the CPU time or real time since the start of the process or since the first call of clock()
     def clock():
         '''Returns the CPU time or real time since the start of the process or since the first call of clock().'''

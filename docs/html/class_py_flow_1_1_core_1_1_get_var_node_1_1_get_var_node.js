@@ -12,6 +12,5 @@ var class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node =
     [ "postCreate", "class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html#a7dd9a18c11df7c99f86761e9c4e85a1d", null ],
     [ "serialize", "class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html#a7aeceff45be562c76e211f8e2e75d351", null ],
     [ "out", "class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html#afcdfdc8d77a2b26dfdf4954b9cb794a0", null ],
-    [ "var", "class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html#a35e4b343cdd1bdb5ddf0fb47b2d94bb1", null ],
-    [ "w", "class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html#aefb37e7ff642facd178d808cb503b297", null ]
+    [ "var", "class_py_flow_1_1_core_1_1_get_var_node_1_1_get_var_node.html#a35e4b343cdd1bdb5ddf0fb47b2d94bb1", null ]
 ];

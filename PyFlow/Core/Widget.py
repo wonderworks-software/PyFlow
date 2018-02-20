@@ -208,10 +208,12 @@ class SceneClass(QGraphicsScene):
                         nodeTemplate['type'] = 'GetVarNode'
                         nodeTemplate['uuid'] = mimeText
                         nodeTemplate['meta']['var']['uuid'] = mimeText
+                        nodeTemplate['meta']['label'] = self.parent().vars[uuid.UUID(mimeText)].name
                     if modifiers == QtCore.Qt.AltModifier:
                         nodeTemplate['type'] = 'SetVarNode'
                         nodeTemplate['uuid'] = mimeText
                         nodeTemplate['meta']['var']['uuid'] = mimeText
+                        nodeTemplate['meta']['label'] = self.parent().vars[uuid.UUID(mimeText)].name
 
                 self.parent().createNode(nodeTemplate)
         else:
@@ -1072,7 +1074,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.nodesMoveInfo.clear()
 
         selectedNodes = self.selectedNodes()
-        if len(selectedNodes) != 0:
+        if len(selectedNodes) != 0 and event.button() == QtCore.Qt.LeftButton:
             self.tryFillPropertiesView(selectedNodes[0])
         else:
             self._clearPropertiesView()

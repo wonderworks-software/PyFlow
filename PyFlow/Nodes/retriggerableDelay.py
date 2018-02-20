@@ -29,7 +29,7 @@ class retriggerableDelay(Node, NodeBase):
 
     @staticmethod
     def description():
-        return '''Delayed call. With ability to reset.'''
+        return 'Delayed call. With ability to reset.'
 
     def callAndReset(self):
         self.out0.call()

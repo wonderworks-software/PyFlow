@@ -90,18 +90,9 @@ $(document).ready(function(){initNavTree('index.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><div class="image">
-<img src="logoBp.png" alt="logoBp.png"/>
+<img src="PyFlow.jpg" alt="PyFlow.jpg"/>
 </div>
 <p><a class="el" href="class_py_flow_1_1_py_flow_1_1_py_flow.html">PyFlow</a> is a general purpose extendable python qt node editor.</p>
-<h1>Table of contents</h1>
-<ul>
-<li><a href="#features">Features</a></li>
-<li><a href="#installation">Installation</a></li>
-<li><a href="#dependencies">Pip dependencies</a></li>
-<li><a href="#usage">Usage</a></li>
-<li><a href="#contributing">Contributing</a></li>
-<li><a href="#credits">Credits</a></li>
-</ul>
 <h1>Features</h1>
 <ul>
 <li>Json serializable</li>
@@ -113,18 +104,30 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>Runtime nodes creation</li>
 <li>Variables and variables view</li>
 </ul>
-<h1>Installation</h1>
-<p>This repository is a self contained app with python virtualenv configured. So treat it as standalone version.</p>
+<h1>Installation and run</h1>
+<ol type="1">
+<li>Download repository.</li>
+<li>Install <a href="https://conda.io/docs/">conda</a> with pyside2 environment. <a href="https://fredrikaverpil.github.io/2017/08/28/pyside2-easy-install/">Instruction</a> here</li>
+<li><p class="startli">Go to <b>Scripts/</b> folder and install dependencies</p>
+<p class="startli"><b>pip install Qt.py pyrr</b></p>
+</li>
+<li>Execute <b>starter.bat</b></li>
+</ol>
 <h1>Pip dependencies:</h1>
 <ul>
 <li><a href="https://github.com/mottosso/Qt.py">Qt.py</a></li>
-<li>PySide or PySide2 or PyQt5</li>
+<li>PySide or PySide2 or PyQt5 or PyQt4</li>
 <li><a href="https://github.com/adamlwgriffiths/Pyrr">pyrr</a> for builtin math. (optional)</li>
 </ul>
 <h1>Usage</h1>
-<p>App's entry point is a <b>PyFlow.py</b> file. There are also several handy bat scripts for debugging and profiling. Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected. Connect pins and execute the graph with <a class="el" href="class_py_flow_1_1_nodes_1_1call_1_1call.html">Call</a> node.</p>
-<p>Writing this project i was inspired by Unreal Engine blueprints. So, if you are familiar with it, you will quickly figure out what's what.</p>
-<p>For in depth descriptin and how it works, see video tutorials and documentation. </p>
+<p>App's entry point is a <b>PyFlow.py</b> file. There are also several handy bat scripts for debugging and profiling. Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected. Connect and execute pins from property view or using <a class="el" href="class_py_flow_1_1_nodes_1_1timer_1_1timer.html">timer node</a>.</p>
+<p>See <a href="http://blank.org/">video tutorials</a>.</p>
+<h1>Licensing</h1>
+<p>The MIT License (MIT)</p>
+<p>Copyright (c) 2015-2018 The PyFlow Authors</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

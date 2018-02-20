@@ -71,6 +71,15 @@ class MathLib(FunctionLibraryBase):
         return a < b
 
     @staticmethod
+    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    ## Inverse of bool
+    def Not(b=(DataTypes.Bool, False)):
+        '''
+        Inverse of bool
+        '''
+        return not b
+
+    @staticmethod
     @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Number-theoretic and representation functions', 'Keywords': []})
     ## Return the ceiling of x as a float, the smallest integer value greater than or equal to x
     def ceil(a=(DataTypes.Float, 0.0)):

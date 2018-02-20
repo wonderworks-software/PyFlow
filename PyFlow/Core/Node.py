@@ -11,6 +11,7 @@ from Qt import QtGui
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QLabel
+from Qt.QtWidgets import QTextBrowser
 from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QGraphicsLinearLayout
@@ -340,13 +341,15 @@ class Node(QGraphicsItem, NodeBase):
             if lyt:
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+
         if label is None:
             self.label().setPlainText(self.__class__.__name__)
         else:
             self.label().setPlainText(label)
-        self.w = self.getWidth()
-        self.nodeMainGWidget.setMaximumWidth(self.w + Spacings.kPinOffset)
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w + Spacings.kPinOffset, self.childrenBoundingRect().height()))
+
+        self.w = self.getWidth() + Spacings.kPinOffset
+        self.nodeMainGWidget.setMaximumWidth(self.w)
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
         if self.isCallable():
             if 'flow' not in self.category().lower():
                 if self.label().bUseTextureBg:
@@ -358,17 +361,12 @@ class Node(QGraphicsItem, NodeBase):
         self.update()
 
     def postCreate(self, jsonTemplate=None):
-        self.updateNodeShape()
+        self.updateNodeShape(label=jsonTemplate['meta']['label'])
         NodeBase.postCreate(self, jsonTemplate)
 
     def getWidth(self):
-        # dPins = 0
-        # if len(self.outputs.values()) > 0:
-        #     dPins = abs(self.outputs.values()[0].scenePos().x() - self.scenePos().x())
-        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.getName()) + Spacings.kPinSpacing
-        outWidth = fontWidth
-        # outWidth = max(dPins, fontWidth)
-        return outWidth if outWidth > 25 else 25
+        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.label().toPlainText()) + Spacings.kPinSpacing
+        return fontWidth if fontWidth > 25 else 25
 
     @staticmethod
     def jsonTemplate():
@@ -480,16 +478,15 @@ class Node(QGraphicsItem, NodeBase):
         formLayout.addRow("Pos", le_pos)
 
         # inputs
-        if len([i for i in self.inputs.values() if not i.dataType == DataTypes.Exec]) != 0:
+        if len([i for i in self.inputs.values()]) != 0:
             sep_inputs = QLabel()
             sep_inputs.setStyleSheet("background-color: black;")
             sep_inputs.setText("INPUTS")
             formLayout.addRow("", sep_inputs)
 
             for inp in self.inputs.values():
-                if inp.dataType == DataTypes.Exec:
-                    continue
-                w = getInputWidget(inp.dataType, inp.setData, inp.defaultValue())
+                dataSetter = inp.call if inp.dataType == DataTypes.Exec else inp.setData
+                w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue())
                 if w:
                     w.setWidgetValue(inp.currentData())
                     w.setObjectName(inp.getName())
@@ -498,7 +495,7 @@ class Node(QGraphicsItem, NodeBase):
                         w.setEnabled(False)
 
         # outputs
-        if len([i for i in self.outputs.values() if not i.dataType == DataTypes.Exec]) != 0:
+        if len([i for i in self.outputs.values()]) != 0:
             sep_outputs = QLabel()
             sep_outputs.setStyleSheet("background-color: black;")
             sep_outputs.setText("OUTPUTS")
@@ -518,8 +515,9 @@ class Node(QGraphicsItem, NodeBase):
         doc_lb.setStyleSheet("background-color: black;")
         doc_lb.setText("Description")
         formLayout.addRow("", doc_lb)
-        doc = QLabel(self.description())
-        doc.setWordWrap(True)
+        doc = QTextBrowser()
+        doc.setOpenExternalLinks(True)
+        doc.setHtml(self.description())
         formLayout.addRow("", doc)
 
     def addContainer(self, portType, head=False):

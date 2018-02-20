@@ -85,6 +85,3 @@ class pythonNode(Node, NodeBase):
     @staticmethod
     def description():
         return 'default description'
-
-    def compute(self):
-        print("Old")

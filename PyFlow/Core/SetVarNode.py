@@ -59,12 +59,12 @@ class SetVarNode(Node, NodeBase):
         self.graph().undoStack.push(cmd)
 
     def postCreate(self, template):
-        self.label().setPlainText('Set {}'.format(self.var.name))
+        template['meta']['label'] = 'Set {0}'.format(self.var.name)
         Node.postCreate(self, template)
 
     def onVarNameChanged(self, newName):
-        self.label().setPlainText('Set {}'.format(newName))
-        self.name = newName
+        self.setName(newName)
+        self.updateNodeShape(label='Set {}'.format(newName))
 
     @staticmethod
     def category():
