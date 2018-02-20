@@ -1074,7 +1074,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.nodesMoveInfo.clear()
 
         selectedNodes = self.selectedNodes()
-        if len(selectedNodes) != 0:
+        if len(selectedNodes) != 0 and event.button() == QtCore.Qt.LeftButton:
             self.tryFillPropertiesView(selectedNodes[0])
         else:
             self._clearPropertiesView()

@@ -1,8 +1,9 @@
 # Overview
 
-![](logoBp.png)
+![](PyFlow.jpg)
 
 [PyFlow](@ref PyFlow.PyFlow.PyFlow) is a general purpose extendable python qt node editor.
+
 
 # Features
 - Json serializable
@@ -18,9 +19,8 @@
 1. Download repository.
 2. Install [conda](https://conda.io/docs/)  with pyside2 environment. [Instruction](https://fredrikaverpil.github.io/2017/08/28/pyside2-easy-install/) here
 3. Go to **Scripts/** folder and install dependencies
-	```
-    pip install Qt.py pyrr
-	```
+
+	**pip install Qt.py pyrr**
 
 4. Execute **starter.bat**
 

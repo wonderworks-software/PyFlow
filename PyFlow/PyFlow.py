@@ -238,7 +238,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionVariables.triggered.connect(self.toggleVariables)
         self.actionPlot_graph.triggered.connect(self.G.plot)
         self.actionDelete.triggered.connect(self.on_delete)
-        self.actionPropertyView.triggered.connect(self.toggle_property_view)
+        self.actionPropertyView.triggered.connect(self.togglePropertyView)
         self.actionScreenshot.triggered.connect(self.G.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
         self.actionSave.triggered.connect(self.G.save)
@@ -303,7 +303,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.restoreGeometry(settings.value('Editor/geometry'))
         self.restoreState(settings.value('Editor/windowState'))
 
-    def toggle_property_view(self):
+    def togglePropertyView(self):
         if self.dockWidgetNodeView.isVisible():
             self.dockWidgetNodeView.setVisible(False)
         else:

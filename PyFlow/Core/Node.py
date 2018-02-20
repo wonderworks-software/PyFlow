@@ -495,12 +495,14 @@ class Node(QGraphicsItem, NodeBase):
                         w.setEnabled(False)
 
         # outputs
-        if len([i for i in self.outputs.values() if not i.dataType == DataTypes.Exec]) != 0:
+        if len([i for i in self.outputs.values()]) != 0:
             sep_outputs = QLabel()
             sep_outputs.setStyleSheet("background-color: black;")
             sep_outputs.setText("OUTPUTS")
             formLayout.addRow("", sep_outputs)
             for out in self.outputs.values():
+                if out.dataType == DataTypes.Exec:
+                    continue
                 w = getInputWidget(out.dataType, out.setData, out.defaultValue())
                 if w:
                     w.setWidgetValue(out.currentData())

@@ -1,6 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"class_py_flow_1_1_core_1_1_node_1_1_node.html#a476fbf590cd715dfdacd25202a4e2b1f":[3,0,0,2,7,0,11],
 "class_py_flow_1_1_core_1_1_node_1_1_node.html#a528e301972bc23eae3bc6f266a1acfc4":[3,0,0,2,7,0,41],
 "class_py_flow_1_1_core_1_1_node_1_1_node.html#a52d85aa22942d73e24d8d6e924f33265":[3,0,0,2,7,0,37],
 "class_py_flow_1_1_core_1_1_node_1_1_node.html#a530a10b2e5191c5f8bbd6b1d8a043345":[3,0,0,2,7,0,15],
@@ -128,17 +127,16 @@ var NAVTREEINDEX2 =
 "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a00d4f30f3056333a9d5c1319321b75cc":[3,0,0,2,12,0,7],
 "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a0da16084b96244ce4d7e47a972dd71af":[3,0,0,2,12,0,2],
 "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a0df2575d812f63766158e5f9c83b2d0c":[3,0,0,2,12,0,4],
-"class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a15634989ee2ace4a7aadb4fbbb3927c4":[3,0,0,2,12,0,12],
-"class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a1dde48cce6f93808df909ab8961508e5":[3,0,0,2,12,0,11],
+"class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a15634989ee2ace4a7aadb4fbbb3927c4":[3,0,0,2,12,0,11],
+"class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a1dde48cce6f93808df909ab8961508e5":[3,0,0,2,12,0,10],
 "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a36224174704783588586d559642051fb":[3,0,0,2,12,0,8],
 "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a483dc79912e168a5f6d15e0c61bf2650":[3,0,0,2,12,0,3],
 "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a6b0f825fa4028f60c92bad33c50dee79":[3,0,0,2,12,0,0],
-"class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a7c184805bc70307597d7d531be37ad3f":[3,0,0,2,12,0,10],
+"class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a7c184805bc70307597d7d531be37ad3f":[3,0,0,2,12,0,9],
 "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a7d30ea3d05f43fe79b834686c5f4ae6b":[3,0,0,2,12,0,5],
 "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a8fb70246daac060cffb5e01cca16f72c":[3,0,0,2,12,0,1],
-"class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#a9c2cff3799eb0b2f4dce40610dd93e7f":[3,0,0,2,12,0,9],
 "class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#ac21016cfbd9953bdb4a71e08b6a44165":[3,0,0,2,12,0,6],
-"class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#ad83308551a945659f053e8248ac979e3":[3,0,0,2,12,0,13],
+"class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html#ad83308551a945659f053e8248ac979e3":[3,0,0,2,12,0,12],
 "class_py_flow_1_1_core_1_1_settings_1_1_colors.html":[3,0,0,2,11,0],
 "class_py_flow_1_1_core_1_1_settings_1_1_colors.html#a01ca2561b9d945b47b7910c401c7507c":[3,0,0,2,11,0,0],
 "class_py_flow_1_1_core_1_1_settings_1_1_colors.html#a0eeeaa662a6c2f325befd85edf100dc8":[3,0,0,2,11,0,36],
@@ -249,5 +247,7 @@ var NAVTREEINDEX2 =
 "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a122e1d2ee0e59f759e49b61391f8fa59":[3,0,0,2,15,1,74],
 "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a145bff215d7f4bd0996555bb3d46180e":[3,0,0,2,15,1,57],
 "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a1832a0483c2cc15d7c251f5c5c200256":[3,0,0,2,15,1,36],
-"class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a1889805a400c750c26d1f46d2ab30cdd":[3,0,0,2,15,1,19]
+"class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a1889805a400c750c26d1f46d2ab30cdd":[3,0,0,2,15,1,19],
+"class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a18ffea4810a097c423f842ea6672d28c":[3,0,0,2,15,1,51],
+"class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a20e0080bac6372bec4c4348444659c59":[3,0,0,2,15,1,27]
 };
