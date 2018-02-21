@@ -332,7 +332,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         QMessageBox.information(self, "Shortcuts", data)
 
     def on_delete(self):
-        self.G.killSelectedNodes(True)
+        self.G.killSelectedNodes()
 
 
 if __name__ == '__main__':

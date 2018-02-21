@@ -35,12 +35,13 @@ from Node import Node
 from Node import NodeName
 from GetVarNode import GetVarNode
 from SetVarNode import SetVarNode
+from .. import Commands
+from .. import FunctionLibraries
 from .. import Nodes
+from .. import Pins
 from os import listdir, path
 _file_folder = path.dirname(__file__)
 nodes_path = _file_folder + '\\Nodes'
-from .. import FunctionLibraries
-from .. import Commands
 from .Variable import VariableBase
 from time import ctime, clock
 import json
@@ -543,13 +544,14 @@ class GraphWidget(QGraphicsView, Graph):
             self.node_box.lineEdit.setFocus()
 
     def shoutDown(self):
-        FunctionLibraries.shoutDown()
+        for ed in self.codeEditors.values():
+            ed.deleteLater()
+        for node in self.getNodes():
+            node.kill()
         self.scene().shoutDown()
         self.scene().clear()
         self.node_box.hide()
         self.node_box.lineEdit.clear()
-        for ed in self.codeEditors.values():
-            ed.deleteLater()
 
     def moveScrollbar(self, delta):
         x = self.horizontalScrollBar().value() + delta.x()

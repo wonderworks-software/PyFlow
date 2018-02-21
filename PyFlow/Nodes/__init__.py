@@ -4,8 +4,6 @@ Class based nodes.
 """
 import os
 from .. import FunctionLibraries
-from inspect import getmembers
-from inspect import isfunction
 
 
 _instances = {}
@@ -18,7 +16,8 @@ for n in os.listdir(os.path.dirname(__file__)):
         try:
             exec("from {0} import *".format(nodeName))
             exec("node_class = {0}".format(nodeName))
-            _instances[nodeName] = node_class
+            if nodeName not in _instances:
+                _instances[nodeName] = node_class
         except Exception as e:
             # do not load node if errors or unknown modules
             print(e, nodeName)

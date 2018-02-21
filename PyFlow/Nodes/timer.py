@@ -21,6 +21,11 @@ class timer(Node, NodeBase):
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.compute)
 
+    def kill(self):
+        self._timer.stop()
+        self._timer.timeout.disconnect()
+        Node.kill(self)
+
     @staticmethod
     def pinTypeHints():
         return {'inputs': [DataTypes.Float, DataTypes.Exec], 'outputs': [DataTypes.Exec]}

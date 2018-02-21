@@ -47,8 +47,3 @@ def findFunctionByName(name):
     if name in _foos:
         return _foos[name]
     return None
-
-
-def shoutDown():
-    _foos.clear()
-    _libs.clear()
