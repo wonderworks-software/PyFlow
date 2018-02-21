@@ -334,6 +334,20 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def on_delete(self):
         self.G.killSelectedNodes()
 
+    @staticmethod
+    def instance(parent=None):
+        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
+        instance = PyFlow(parent)
+        instance.applySettings(settings)
+        instance.startMainLoop()
+        return instance
+
+    @staticmethod
+    def hotReload():
+        reload(Pins)
+        reload(FunctionLibraries)
+        reload(Nodes)
+
 
 if __name__ == '__main__':
 

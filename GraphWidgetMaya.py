@@ -1,10 +1,9 @@
-import PyFlow.PyFlow as PyFlow
+from PyFlow import PyFlow
 import shiboken2
 import maya.OpenMayaUI as omui
 from Qt.QtWidgets import QWidget
 
 MAYA_MAIN_WINDOW = shiboken2.wrapInstance(long(omui.MQtUtil.mainWindow()), QWidget)
 
-instance = PyFlow.PyFlow(MAYA_MAIN_WINDOW)
-instance.startMainLoop()
+instance = PyFlow.instance(MAYA_MAIN_WINDOW)
 instance.show()

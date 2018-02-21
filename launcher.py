@@ -3,8 +3,7 @@ from Qt import QtGui
 from Qt import QtCore
 import sys
 from os import path
-from PyFlow.PyFlow import PyFlow
-import PyFlow.nodes_res_rc
+from PyFlow.App import PyFlow
 
 FILE_DIR = path.dirname(__file__)
 SETTINGS_PATH = FILE_DIR + "PyFlow/appConfig.ini"
@@ -37,12 +36,7 @@ try:
 except Exception as e:
     print(e)
 
-settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
-
-instance = PyFlow.PyFlow.PyFlow()
-instance.applySettings(settings)
-instance.startMainLoop()
-
+instance = PyFlow.instance()
 app.setActiveWindow(instance)
 instance.show()
 

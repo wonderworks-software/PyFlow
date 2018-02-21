@@ -2,6 +2,7 @@ from ..Core.AbstractGraph import *
 from ..Core.Settings import *
 from ..Core import Node
 import pymel.core as pm
+from pyrr import Vector3
 
 
 class setTransform(Node):
@@ -14,6 +15,7 @@ class setTransform(Node):
         self.locationPin = self.addInputPin('Location', DataTypes.FloatVector3)
         self.rotationPin = self.addInputPin('Rotation', DataTypes.FloatVector3)
         self.scalePin = self.addInputPin('Scale', DataTypes.FloatVector3)
+        self.scalePin.setDefaultValue(Vector3([1.0, 1.0, 1.0]))
 
     @staticmethod
     def pinTypeHints():

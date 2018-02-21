@@ -78,7 +78,7 @@ class DefaultLib(FunctionLibraryBase):
         return time.clock()
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Conversion', 'Keywords': []})
+    @implementNode(returns=(DataTypes.Float, False), meta={'Category': 'Conversion', 'Keywords': []})
     def intToFloat(i=(DataTypes.Int, 0)):
         return float(i)
 
