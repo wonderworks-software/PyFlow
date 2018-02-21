@@ -229,6 +229,13 @@ class PinSelectionGroup:
     BothSides = 0
 
 
+## Can be used for code generation
+class AccessLevel:
+    public = 0
+    private = 1
+    protected = 2
+
+
 ## Determines wheter it is input pin or output.
 class PinDirection:
     Input = 0

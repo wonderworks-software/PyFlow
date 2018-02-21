@@ -1,1 +1,0 @@
-%cd%/Python27/Scripts/python.exe -u -m trace -t "%cd%/PyFlow.py" /all > "nodes.log"

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/VariablesWidget_ui.ui'
 #
-# Created: Mon Feb 19 15:01:15 2018
+# Created: Wed Feb 21 14:51:10 2018
 #      by: pyside2-uic 2.0.0 running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!
