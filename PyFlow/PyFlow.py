@@ -53,9 +53,9 @@ class {0}(QUndoCommand):
         pass
 """.format(name)
 
-    NodeTemplate = """from AbstractGraph import *
-from Settings import *
-from Core import Node
+    NodeTemplate = """from ..Core.AbstractGraph import *
+from ..Core.Settings import *
+from ..Core import Node
 
 
 class {0}(Node):
@@ -110,9 +110,9 @@ class {0}(Node):
             print(e)
 """.format(name)
 
-    LibraryTemplate = """from Core.FunctionLibrary import *
+    LibraryTemplate = """from ..Core.FunctionLibrary import *
 # import types stuff
-from AGraphCommon import *
+from ..Core.AGraphCommon import *
 # import stuff you need
 # ...
 
@@ -142,8 +142,8 @@ class {0}(FunctionLibraryBase):
 
 """.format(name)
 
-    PinTemplate = """from Core.Pin import PinWidgetBase
-from Core.AGraphCommon import *
+    PinTemplate = """from ..Core.Pin import PinWidgetBase
+from ..Core.AGraphCommon import *
 
 
 class {0}(PinWidgetBase):
