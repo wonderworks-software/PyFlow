@@ -347,6 +347,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         reload(Pins)
         reload(FunctionLibraries)
         reload(Nodes)
+        Nodes._getClasses()
+        FunctionLibraries._getFunctions()
 
 
 if __name__ == '__main__':

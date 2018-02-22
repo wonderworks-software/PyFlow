@@ -9,19 +9,20 @@ from .. import FunctionLibraries
 _instances = {}
 
 
-# append from Nodes
-for n in os.listdir(os.path.dirname(__file__)):
-    if n.endswith(".py") and "__init__" not in n:
-        nodeName = n.split(".")[0]
-        try:
-            exec("from {0} import *".format(nodeName))
-            exec("node_class = {0}".format(nodeName))
-            if nodeName not in _instances:
-                _instances[nodeName] = node_class
-        except Exception as e:
-            # do not load node if errors or unknown modules
-            print(e, nodeName)
-            pass
+def _getClasses():
+    # append from Nodes
+    for n in os.listdir(os.path.dirname(__file__)):
+        if n.endswith(".py") and "__init__" not in n:
+            nodeName = n.split(".")[0]
+            try:
+                exec("from {0} import *".format(nodeName))
+                exec("node_class = {0}".format(nodeName))
+                if nodeName not in _instances:
+                    _instances[nodeName] = node_class
+            except Exception as e:
+                # do not load node if errors or unknown modules
+                print(e, nodeName)
+                pass
 
 
 def getNode(name):
@@ -32,3 +33,6 @@ def getNode(name):
 
 def getNodeNames():
     return _instances.keys()
+
+
+_getClasses()
