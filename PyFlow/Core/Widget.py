@@ -1019,7 +1019,7 @@ class GraphWidget(QGraphicsView, Graph):
 
             # hack. disable signals and call selectionChanged once with last selected item
             self.scene().blockSignals(True)
-            items = [i for i in self.rubberRect.collidingItems() if isinstance(i, Node) and not isinstance(i, Nodes.commentNode)]
+            items = [i for i in self.rubberRect.collidingItems() if isinstance(i, Node) and not isinstance(i, Nodes.commentNode.commentNodeName)]
             for item in items[:-1]:
                 item.setSelected(True)
             self.scene().blockSignals(False)

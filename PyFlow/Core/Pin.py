@@ -7,7 +7,6 @@ from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QApplication
 from AbstractGraph import *
 from Settings import *
-# import nodes_res_rc
 
 
 class PinWidgetBase(QGraphicsWidget, PinBase):
@@ -18,6 +17,7 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
     OnPinConnected = QtCore.Signal(object)
     OnPinDisconnected = QtCore.Signal(object)
     dataBeenSet = QtCore.Signal(object)
+    nameChanged = QtCore.Signal(str)
 
     def __init__(self, name, parent, dataType, direction, **kwargs):
         QGraphicsWidget.__init__(self)
@@ -51,6 +51,10 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         self.bAnimate = False
         self.val = 0
         self.setData(self.defaultValue())
+
+    def setName(self, newName):
+        super(PinWidgetBase, self).setName(newName)
+        self.nameChanged.emit(newName)
 
     def setData(self, value):
         PinBase.setData(self, value)

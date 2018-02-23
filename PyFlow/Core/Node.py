@@ -578,6 +578,7 @@ class Node(QGraphicsItem, NodeBase):
             p.bLabelHidden = True
 
         lbl = QLabel(lblName)
+        p.nameChanged.connect(lbl.setText)
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         font = QtGui.QFont('Consolas')
