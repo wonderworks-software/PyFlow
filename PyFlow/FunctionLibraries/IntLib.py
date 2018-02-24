@@ -153,39 +153,39 @@ class IntLib(FunctionLibraryBase):
 
     @staticmethod
     @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def testBit(int_type=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
+    def testBit(intType=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
         '''
         Returns a nonzero result, 2**offset, if the bit at 'offset' is one
         '''
         mask = 1 << offset
-        return(int_type & mask)
+        return(intType & mask)
 
     @staticmethod
     @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def setBit(int_type=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
+    def setBit(intType=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
         '''
         Returns an integer with the bit at 'offset' set to 1'
         '''
         mask = 1 << offset
-        return(int_type | mask)
+        return(intType | mask)
 
     @staticmethod
     @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def clearBit(int_type=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
+    def clearBit(intType=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
         '''
         Returns an integer with the bit at 'offset' cleared.
         '''
         mask = ~(1 << offset)
-        return(int_type & mask)
+        return(intType & mask)
 
     @staticmethod
     @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def toggleBit(int_type=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
+    def toggleBit(intType=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
         '''
         Returns an integer with the bit at 'offset' inverted, 0 -> 1 and 1 -> 0.
         '''
         mask = 1 << offset
-        return(int_type ^ mask)
+        return(intType ^ mask)
 
     @staticmethod
     @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Int', 'Keywords': []})

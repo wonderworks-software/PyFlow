@@ -169,3 +169,9 @@ QTabBar::tab:left:last, QTabBar::tab:right:last,
 QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     margin-bottom: 0;
 }
+
+/*** Rubber band color ***/
+QWidget
+{
+    selection-background-color: rgba(150, 150, 150, 128);
+}

@@ -9,6 +9,7 @@ from Qt.QtWidgets import QFrame
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QScrollArea
+from Qt.QtWidgets import QRubberBand
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QAction
@@ -458,10 +459,10 @@ class RubberRect(QGraphicsRectItem):
 
 
 class GraphWidget(QGraphicsView, Graph):
-
     def __init__(self, name, parent=None):
         super(GraphWidget, self).__init__()
         Graph.__init__(self, name)
+        self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent
         self.parent.actionClear_history.triggered.connect(self.undoStack.clear)
@@ -492,7 +493,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.factor = 1
         self.factor_diff = 0
         self.setWindowTitle(self.tr(name))
-        self.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemShape)
 
         self._current_file_name = 'Untitled'
         self._file_name_label = QGraphicsTextItem()
@@ -503,7 +503,6 @@ class GraphWidget(QGraphicsView, Graph):
         self._file_name_label.setPlainText(self._current_file_name)
 
         self.scene().addItem(self._file_name_label)
-        self.rubberRect = RubberRect('RubberRect')
 
         self.real_time_line = QGraphicsPathItem(None, self.scene())
 
@@ -760,7 +759,7 @@ class GraphWidget(QGraphicsView, Graph):
         if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
             if self.isShortcutsEnabled():
                 # create comment node
-                rect = Nodes.commentNode.getNodesRect(self.selectedNodes())
+                rect = Nodes.commentNode.commentNode.getNodesRect(self.selectedNodes())
                 if rect:
                     rect.setTop(rect.top() - 20)
                     rect.setLeft(rect.left() - 20)
@@ -769,8 +768,8 @@ class GraphWidget(QGraphicsView, Graph):
                     rect.setBottom(rect.bottom() + 20)
 
                 nodeTemplate = Node.jsonTemplate()
-                nodeTemplate['type'] = Nodes.commentNode.__name__
-                nodeTemplate['name'] = self.getUniqNodeName(Nodes.commentNode.__name__)
+                nodeTemplate['type'] = Nodes.commentNode.commentNode.__name__
+                nodeTemplate['name'] = self.getUniqNodeName(Nodes.commentNode.commentNode.__name__)
 
                 if rect:
                     nodeTemplate['x'] = rect.topLeft().x()
@@ -778,7 +777,7 @@ class GraphWidget(QGraphicsView, Graph):
                 else:
                     nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
                     nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
-                nodeTemplate['meta']['label'] = Nodes.commentNode.__name__
+                nodeTemplate['meta']['label'] = Nodes.commentNode.commentNode.__name__
                 nodeTemplate['uuid'] = None
                 instance = self.createNode(nodeTemplate)
                 if rect:
@@ -976,15 +975,6 @@ class GraphWidget(QGraphicsView, Graph):
         if self._is_rubber_band_selection:
             mCurrentPose = self.mapToScene(self.mousePos)
             mPressPose = self.mapToScene(self.mousePressPose)
-            if self.rubberRect not in self.scene().items():
-                self.scene().addItem(self.rubberRect)
-            if not self.rubberRect.isVisible():
-                self.rubberRect.setVisible(True)
-            r = QtCore.QRectF(mPressPose.x(),
-                              mPressPose.y(),
-                              mCurrentPose.x() - mPressPose.x(),
-                              mCurrentPose.y() - mPressPose.y())
-            self.rubberRect.setRect(r.normalized())
 
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
 
@@ -1015,19 +1005,8 @@ class GraphWidget(QGraphicsView, Graph):
                 self.removeItemByName('RealTimeLine')
         if self._is_rubber_band_selection:
             self._is_rubber_band_selection = False
-            self.setDragMode(QGraphicsView.NoDrag)
-
-            # hack. disable signals and call selectionChanged once with last selected item
-            self.scene().blockSignals(True)
-            items = [i for i in self.rubberRect.collidingItems() if isinstance(i, Node) and not isinstance(i, Nodes.commentNode.commentNodeName)]
-            for item in items[:-1]:
-                item.setSelected(True)
-            self.scene().blockSignals(False)
-            if len(items) > 0:
-                items[-1].setSelected(True)
-
             [i.setFlag(QGraphicsItem.ItemIsMovable) for i in self.getNodes() if i.isSelected()]
-            self.removeItemByName(self.rubberRect.name)
+
         if event.button() == QtCore.Qt.RightButton:
             # show nodebox only if drag is small and no items under cursor
             if self.pressed_item is None:
