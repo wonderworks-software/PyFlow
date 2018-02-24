@@ -17,6 +17,8 @@ class switchOnString(Node):
         self.menu = QMenu()
         self.action = self.menu.addAction('add pin')
         self.action.triggered.connect(self.addOutPin)
+        self.actionDebug = self.menu.addAction('debug')
+        self.actionDebug.triggered.connect(self.OnDebug)
         self._map = {}
 
     def renameOutPin(self, oldName, newName):
@@ -27,9 +29,15 @@ class switchOnString(Node):
         print(self._map.keys())
 
     def addOutPin(self):
-        name = str(len(self.outputs) - 1)
+        name = self.getUniqPinName("option")
         p = self.addOutputPin(name, DataTypes.Exec)
         renameAction = p.menu.addAction("rename")
+        killAction = p.menu.addAction("kill")
+
+        def OnKill():
+            self._map.pop(p.name)
+            p.kill()
+        killAction.triggered.connect(OnKill)
 
         def OnRename():
             res = QInputDialog.getText(None, 'Rename pin', 'label')

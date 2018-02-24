@@ -27,6 +27,6 @@ class MayaLib(FunctionLibraryBase):
             node.t.set(Location.x, Location.y, Location.z)
             node.r.set(Rotation.x, Rotation.y, Rotation.z)
             node.s.set(Scale.x, Scale.y, Scale.z)
-            Result.setData(True)
+            Result(True)
         else:
-            Result.setData(False)
+            Result(False)

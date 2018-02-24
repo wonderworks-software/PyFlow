@@ -261,7 +261,7 @@ class Node(QGraphicsItem, NodeBase):
                     kwargs[i.name] = i.getData()
             for ref in refs:
                 if ref.dataType is not DataTypes.Exec:
-                    kwargs[ref.name] = ref
+                    kwargs[ref.name] = ref.setData
             result = foo(**kwargs)
             if returnType is not None:
                 self.setData('out', result)

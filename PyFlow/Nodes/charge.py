@@ -6,7 +6,7 @@ from ..Core import Node
 ## charge node
 #
 # Each time node called it accumulates the step value.
-# When accumulated value reaches "amount" - sompleted pin called.
+# When accumulated value reaches "amount" - completed pin called.
 # Useful when you need to wait some time inside some tick function.
 class charge(Node):
     def __init__(self, name, graph):
@@ -36,7 +36,7 @@ class charge(Node):
     @staticmethod
     def description():
         return 'Each time node called it accumulates the step value. \
-        When accumulated value reaches <b>"amount"</b> - sompleted pin called.\n\
+        When accumulated value reaches <b>"amount"</b> - completed pin called.\n\
         Useful when you need to wait some time inside some tick function.'
 
     def compute(self):

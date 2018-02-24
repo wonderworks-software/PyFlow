@@ -13,6 +13,8 @@ from functools import wraps
 from Queue import Queue
 import uuid
 import sys
+from enum import IntEnum
+
 
 ## determines step for all floating point input widgets
 FLOAT_SINGLE_STEP = 0.01
@@ -121,7 +123,7 @@ def memoize(foo):
 
 
 ## Data types identifires.
-class DataTypes:
+class DataTypes(IntEnum):
     Float = 0
     Int = 1
     String = 2
@@ -223,34 +225,34 @@ class CircularBuffer(object):
 
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPinByName for optimization purposes
-class PinSelectionGroup:
-    Inputs = -1
+class PinSelectionGroup(IntEnum):
+    Inputs = 0
     Outputs = 1
-    BothSides = 0
+    BothSides = 2
 
 
 ## Can be used for code generation
-class AccessLevel:
+class AccessLevel(IntEnum):
     public = 0
     private = 1
     protected = 2
 
 
 ## Determines wheter it is input pin or output.
-class PinDirection:
+class PinDirection(IntEnum):
     Input = 0
     Output = 1
 
 
 ## Determines wheter it is callable node or pure.
 # Callable node is a node with Exec pins
-class NodeTypes:
+class NodeTypes(IntEnum):
     Callable = 0
     Pure = 1
 
 
 ## Direction identifires. Used in [alignSelectedNodes](@ref PyFlow.Core.Widget.GraphWidget.alignSelectedNodes)
-class Direction:
+class Direction(IntEnum):
     Left = 0
     Right = 1
     Up = 2

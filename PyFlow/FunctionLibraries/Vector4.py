@@ -121,10 +121,10 @@ class Vector4(FunctionLibraryBase):
         '''Normalizes a single vector to unit length.\nIf zero-length - returns original one.'''
         try:
             res = pyrr.Vector4(pyrr.vector.normalize(v))
-            result.setData(True)
+            result(True)
             return res
         except:
-            result.setData(False)
+            result(False)
             return v
 
     @staticmethod

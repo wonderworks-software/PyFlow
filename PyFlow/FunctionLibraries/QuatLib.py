@@ -188,10 +188,10 @@ class QuatLib(FunctionLibraryBase):
         '''Returns a new Quaternion representing this Quaternion to the power of the exponent. Checks for identify quaternion'''
         try:
             powered = q.power(exp)
-            result.setData(True)
+            result(True)
             return powered
         except:
-            result.setData(False)
+            result(False)
 
     @staticmethod
     @implementNode(returns=(DataTypes.Quaternion, pyrr.Quaternion()), meta={'Category': 'Math|Quaternion', 'Keywords': []})

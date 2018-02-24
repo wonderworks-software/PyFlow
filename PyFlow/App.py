@@ -134,10 +134,10 @@ class {0}(FunctionLibraryBase):
         '''Integer devision.'''
         try:
             d = A / B
-            result.setData(True)
+            result(True)
             return d
         except:
-            result.setData(False)
+            result(False)
             return -1
 
 """.format(name)

@@ -38,7 +38,7 @@ class Vector3(FunctionLibraryBase):
     def v3FromVector4(v4=(DataTypes.FloatVector4, pyrr.Vector4()), W=(DataTypes.Reference, (DataTypes.Float, 0.0))):
         '''Returns a vector3 and the W component.'''
         arrV3, _w = pyrr.vector3.create_from_vector4(v4)
-        W.setData(_w)
+        W(_w)
         return pyrr.Vector3(arrV3)
 
     @staticmethod
@@ -118,10 +118,10 @@ class Vector3(FunctionLibraryBase):
         '''Normalizes a single vector to unit length.\nIf zero-length - returns original one.'''
         try:
             res = pyrr.Vector3(pyrr.vector.normalize(v))
-            result.setData(True)
+            result(True)
             return res
         except:
-            result.setData(False)
+            result(False)
             return v
 
     @staticmethod

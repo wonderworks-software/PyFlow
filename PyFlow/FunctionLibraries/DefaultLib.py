@@ -27,13 +27,6 @@ class DefaultLib(FunctionLibraryBase):
         os.system('cls')
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'GenericTypes', 'Keywords': []})
-    ## make simple boolean
-    def makeBool(b=(DataTypes.Bool, False)):
-        '''make simple boolean'''
-        return b
-
-    @staticmethod
     @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'GenericTypes', 'Keywords': []})
     ## make integer
     def makeInt(i=(DataTypes.Int, 0)):
@@ -55,11 +48,6 @@ class DefaultLib(FunctionLibraryBase):
         return s
 
     # Conversions
-    @staticmethod
-    @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Conversion', 'Keywords': []})
-    def boolToInt(b=(DataTypes.Bool, False)):
-        return int(b)
-
     @staticmethod
     @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Conversion', 'Keywords': []})
     def intToBool(i=(DataTypes.Int, 0)):
@@ -91,11 +79,6 @@ class DefaultLib(FunctionLibraryBase):
     @implementNode(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
     def floatToString(f=(DataTypes.Float, 0.0)):
         return str(f)
-
-    @staticmethod
-    @implementNode(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
-    def boolToString(b=(DataTypes.Bool, str(False))):
-        return str(b)
 
     @staticmethod
     @implementNode(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})

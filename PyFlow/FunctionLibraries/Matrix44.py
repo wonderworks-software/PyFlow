@@ -117,10 +117,10 @@ class Matrix44(FunctionLibraryBase):
         '''Creates an orthogonal projection matrix.\n\nleft (float) - The left of the near plane relative to the planes centre.\n\nright (float) - The right of the near plane relative to the planes centre.\n\ntop (float) - The top of the near plane relative to the planes centre.\n\nbottom (float) - The bottom of the near plane relative to the planes centre.\n\nnear (float) - The distance of the near plane from the cameras origin. It is recommended that the near plane is set to 1.0 or above to avoid rendering issues at close range.\n\nfar (float) - The distance of the far plane from the cameras origin.'''
         try:
             m = pyrr.Matrix44(pyrr.matrix44.create_orthogonal_projection(left, right, bottom, top, near, far))
-            result.setData(True)
+            result(True)
             return m
         except:
-            result.setData(False)
+            result(False)
             return pyrr.Matrix44.identity()
 
     @staticmethod
@@ -129,10 +129,10 @@ class Matrix44(FunctionLibraryBase):
         '''Creates perspective projection matrix.\n\nfovy (float) - field of view in y direction in degrees\n\naspect (float) - aspect ratio of the view (width / height)\n\nnear (float) - distance from the viewer to the near clipping plane (only positive)\n\nfar (float) - distance from the viewer to the far clipping plane (only positive).'''
         try:
             m = pyrr.Matrix44(pyrr.matrix44.create_perspective_projection(fovy, aspect, near, far))
-            result.setData(True)
+            result(True)
             return m
         except:
-            result.setData(False)
+            result(False)
             return pyrr.Matrix44.identity()
 
     @staticmethod
@@ -141,10 +141,10 @@ class Matrix44(FunctionLibraryBase):
         '''Creates a perspective projection matrix using the specified near plane dimensions.\n\nleft (float) - The left of the near plane relative to the planes centre.\n\nright (float) - The right of the near plane relative to the planes centre.\n\ntop (float) - The top of the near plane relative to the planes centre.\n\nbottom (float) - The bottom of the near plane relative to the planes centre.\n\nnear (float) - The distance of the near plane from the cameras origin. It is recommended that the near plane is set to 1.0 or above to avoid rendering issues at close range.\n\nfar (float) - The distance of the far plane from the cameras origin.'''
         try:
             m = pyrr.Matrix44(pyrr.matrix44.create_perspective_projection_from_bounds(left, right, bottom, top, near, far))
-            result.setData(True)
+            result(True)
             return m
         except:
-            result.setData(False)
+            result(False)
             return pyrr.Matrix44.identity()
 
     @staticmethod
@@ -152,9 +152,9 @@ class Matrix44(FunctionLibraryBase):
     def m44Decompose(m=(DataTypes.Matrix44, pyrr.Matrix44()), t=(DataTypes.Reference, (DataTypes.FloatVector3, pyrr.Vector3())), r=(DataTypes.Reference, (DataTypes.Quaternion, pyrr.Quaternion())), s=(DataTypes.Reference, (DataTypes.FloatVector3, pyrr.Vector3()))):
         '''Decomposes an affine transformation matrix into its scale, rotation and translation components.'''
         _s, _r, _t = pyrr.matrix44.decompose(m)
-        t.setData(pyrr.Vector3(_t))
-        r.setData(pyrr.Quaternion(_r))
-        s.setData(pyrr.Vector3(_s))
+        t(pyrr.Vector3(_t))
+        r(pyrr.Quaternion(_r))
+        s(pyrr.Vector3(_s))
 
     @staticmethod
     @implementNode(returns=(DataTypes.Matrix44, pyrr.Matrix44()), meta={'Category': 'Math|Matrix44', 'Keywords': ['create', 'matrix44']})
