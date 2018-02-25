@@ -449,15 +449,6 @@ class NodesBox(QWidget):
         self.expandCategory()
 
 
-class RubberRect(QGraphicsRectItem):
-    def __init__(self, name):
-        super(RubberRect, self).__init__()
-        self.name = name
-        self.setZValue(2)
-        self.setPen(QtGui.QPen(Colors.RubberRect, 0.5, QtCore.Qt.SolidLine))
-        self.setBrush(QtGui.QBrush(Colors.RubberRect))
-
-
 class GraphWidget(QGraphicsView, Graph):
     def __init__(self, name, parent=None):
         super(GraphWidget, self).__init__()

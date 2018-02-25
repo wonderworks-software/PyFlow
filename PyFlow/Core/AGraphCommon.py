@@ -122,6 +122,16 @@ def memoize(foo):
     return wrapper
 
 
+class REGISTER_ENUM(object):
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self, cls):
+        print("register", cls, "with params", self.args, self.kwargs)
+        return cls
+
+
 ## Data types identifires.
 class DataTypes(IntEnum):
     Float = 0
