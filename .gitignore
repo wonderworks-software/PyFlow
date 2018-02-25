@@ -4,3 +4,4 @@
 *.xml
 .vscode/
 PyFlow/Python27/
+PyFlow/appConfig.ini
