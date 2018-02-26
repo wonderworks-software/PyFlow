@@ -15,7 +15,7 @@ class FloatLib(FunctionLibraryBase):
         super(FloatLib, self).__init__()
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
     ## Is two floats equal
     def isEqualf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''
@@ -24,7 +24,7 @@ class FloatLib(FunctionLibraryBase):
         return a == b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
     ## Is a > b
     def isGreaterf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''
@@ -33,7 +33,7 @@ class FloatLib(FunctionLibraryBase):
         return a > b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
     ## Is a >= b
     def isGreaterOrEqualf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''
@@ -42,7 +42,7 @@ class FloatLib(FunctionLibraryBase):
         return a >= b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
     ## Is a < b
     def isLessf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''
@@ -51,7 +51,7 @@ class FloatLib(FunctionLibraryBase):
         return a < b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
     ## Is a <= b
     def isLessOrEqualf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''
@@ -60,7 +60,7 @@ class FloatLib(FunctionLibraryBase):
         return a <= b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['+', 'append']})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['+', 'append']})
     ## Sum of two floats
     def addf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''
@@ -69,7 +69,7 @@ class FloatLib(FunctionLibraryBase):
         return a + b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['-']})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['-']})
     ## Float substraction
     def substractf(a=(DataTypes.Float, 0), b=(DataTypes.Float, 0)):
         '''
@@ -78,7 +78,7 @@ class FloatLib(FunctionLibraryBase):
         return a - b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['/']})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['/']})
     ## Float devision
     def dividef(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''
@@ -93,7 +93,7 @@ class FloatLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['*']})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['*']})
     ## Float multiplication
     def multf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''
@@ -102,7 +102,7 @@ class FloatLib(FunctionLibraryBase):
         return a * b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Python math|Bult-in functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Python math|Bult-in functions', 'Keywords': []})
     ## Return the absolute value of a number
     def absfloat(inp=(DataTypes.Float, 0.0)):
         '''
@@ -111,7 +111,7 @@ class FloatLib(FunctionLibraryBase):
         return abs(inp)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['lerp']})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['lerp']})
     ## Linear interpolate
     def lerpf(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), alpha=(DataTypes.Float, 0.0)):
         '''
@@ -120,7 +120,7 @@ class FloatLib(FunctionLibraryBase):
         return lerp(a, b, clamp(alpha, 0.0, 1.0))
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['clamp']})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': ['clamp']})
     ## Clamp float
     def clampf(i=(DataTypes.Float, 0.0), imin=(DataTypes.Float, 0.0), imax=(DataTypes.Float, 0.0)):
         '''
@@ -129,7 +129,7 @@ class FloatLib(FunctionLibraryBase):
         return clamp(i, imin, imax)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
     def modulof(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0)):
         '''
         Modulo (A % B)
@@ -137,7 +137,7 @@ class FloatLib(FunctionLibraryBase):
         return a % b
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
     def mapRangeClamped(Value=(DataTypes.Float, 0.0),
                         InRangeA=(DataTypes.Float, 0.0),
                         InRangeB=(DataTypes.Float, 1.0),
@@ -150,7 +150,7 @@ class FloatLib(FunctionLibraryBase):
         return lerp(OutRangeA, OutRangeB, ClampedPct)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
     def mapRangeUnclamped(Value=(DataTypes.Float, 0.0),
                           InRangeA=(DataTypes.Float, 0.0),
                           InRangeB=(DataTypes.Float, 1.0),
@@ -162,12 +162,12 @@ class FloatLib(FunctionLibraryBase):
         return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Float', 'Keywords': []})
     def nearlyEqual(a=(DataTypes.Float, 0.0), b=(DataTypes.Float, 0.0), abs_tol=(DataTypes.Float, 0.0)):
         return abs(a - b) < abs_tol
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
     def multByPi(a=(DataTypes.Float, 0.0)):
         '''
         Multiplies the input value by pi
@@ -175,7 +175,7 @@ class FloatLib(FunctionLibraryBase):
         return a * pi
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
     def normalizeToRange(Value=(DataTypes.Float, 0.0), RangeMin=(DataTypes.Float, 0.0), RangeMax=(DataTypes.Float, 0.0)):
         '''
         Returns Value normalized to the given range. (e.g. 20 normalized to the range 10->50 would result in 0.25)
@@ -188,7 +188,7 @@ class FloatLib(FunctionLibraryBase):
         return (Value - RangeMin) / (RangeMax - RangeMin)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
     def selectFloat(A=(DataTypes.Float, 0.0), B=(DataTypes.Float, 0.0), PickA=(DataTypes.Bool, False)):
         '''
         If bPickA is true, A is returned, otherwise B is
@@ -196,7 +196,7 @@ class FloatLib(FunctionLibraryBase):
         return A if PickA else B
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
     def signf(a=(DataTypes.Float, 0.0)):
         '''
         Returns -1 if x &lt; 0, 0 if x==0, 1 if x &gt; 0
@@ -204,7 +204,7 @@ class FloatLib(FunctionLibraryBase):
         return sign(a)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
     def roundf(Value=(DataTypes.Float, 0.0), Digits=(DataTypes.Int, 1)):
         '''
         Round a number to a given precision in decimal digits (default 0 digits)

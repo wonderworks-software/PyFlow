@@ -40,9 +40,9 @@ def getPinDefaultValueByType(dataType):
     return None
 
 
-def CreatePin(name, parent, dataType, direction):
+def CreatePin(name, parent, dataType, direction, **kwds):
     pinClass = findPinClassByType(dataType)
     if pinClass is None:
         return None
-    inst = pinClass(name, parent, dataType, direction)
+    inst = pinClass(name, parent, dataType, direction, **kwds)
     return inst

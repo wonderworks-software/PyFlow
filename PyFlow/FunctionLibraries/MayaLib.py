@@ -12,12 +12,12 @@ class MayaLib(FunctionLibraryBase):
         super(MayaLib, self).__init__()
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
     def objExists(DagPath=(DataTypes.String, "")):
         return pm.objExists(DagPath)
 
     @staticmethod
-    @implementNode(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
     def setTransform(DagPath=(DataTypes.String, ""), Location=(DataTypes.FloatVector3, pyrr.Vector3()), Rotation=(DataTypes.FloatVector3, pyrr.Vector3()), Scale=(DataTypes.FloatVector3, pyrr.Vector3([1.0, 1.0, 1.0])), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''
         Sets transform to PyNode

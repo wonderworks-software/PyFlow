@@ -181,6 +181,15 @@ class IPin(IItemBase):
     def dataType(self, value):
         raise NotImplementedError('dataType setter method of IPin is not implemented')
 
+    def isUserStruct(self):
+        raise NotImplementedError('isUserStruct method of IPin is not implemented')
+
+    def getUserStruct(self):
+        raise NotImplementedError('getUserStruct method of IPin is not implemented')
+
+    def setUserStruct(self, inStruct):
+        raise NotImplementedError('setUserStruct method of IPin is not implemented')
+
 
 class INode(IItemBase):
     def __init__(self):
@@ -206,10 +215,11 @@ class INode(IItemBase):
 
 
 class PinBase(IPin):
-    def __init__(self, name, parent, dataType, direction):
+    def __init__(self, name, parent, dataType, direction, userStructClass=None):
         super(PinBase, self).__init__()
         self._uid = uuid.uuid4()
         self._dataType = None
+        self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
         self.dirty = True
@@ -225,11 +235,10 @@ class PinBase(IPin):
         self.direction = direction
 
     # ISerializable interface
-
     def serialize(self):
         data = {'name': self.name,
-                'dataType': self.dataType,
-                'direction': self.direction,
+                'dataType': int(self.dataType),
+                'direction': int(self.direction),
                 'value': self.currentData(),
                 'uuid': str(self.uid),
                 'bDirty': self.dirty
@@ -316,6 +325,15 @@ class PinBase(IPin):
     @dataType.setter
     def dataType(self, value):
         self._dataType = value
+
+    def isUserStruct(self):
+        return self._userStructClass is not None
+
+    def getUserStruct(self):
+        return self._userStructClass
+
+    def setUserStruct(self, inStruct):
+        self._userStructClass = inStruct
 
     # PinBase methods
 
@@ -614,6 +632,11 @@ class Graph(object):
         if dst.uid not in self.pins:
             print('dst not in graph.pins')
             return False
+
+        # if src.dataType == DataTypes.Enum and dst.dataType == DataTypes.Enum:
+        #     if src.getUserStruct() != dst.getUserStruct():
+        #         print('{0} and {1} structures are not supported'.format(src.getUserStruct().__name__, dst.getUserStruct().__name__))
+        #         return False
 
         if src.dataType not in dst.supportedDataTypes():
             print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))

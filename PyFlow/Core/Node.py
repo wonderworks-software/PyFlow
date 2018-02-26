@@ -26,6 +26,7 @@ from types import MethodType
 from .InputWidgets import getInputWidget
 from inspect import getargspec
 from NodePainter import NodePainter
+from Enums import ENone
 
 
 class NodeName(QGraphicsTextItem):
@@ -226,7 +227,12 @@ class Node(QGraphicsItem, NodeBase):
         inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
-            p = inst.addOutputPin('out', returnType)
+            structClass = ENone
+            try:
+                structClass = meta['userStructClass']['returns']
+            except:
+                pass
+            p = inst.addOutputPin('out', returnType, userStructClass=structClass)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
 
@@ -236,16 +242,19 @@ class Node(QGraphicsItem, NodeBase):
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
-            dataType = foo.__annotations__[fooArgNames[index]]
+            argName = fooArgNames[index]
+            argDefaultValue = foo.__defaults__[index]
+            dataType = foo.__annotations__[argName]
+            structClass = meta['userStructClass'][argName] if 'userStructClass' in meta else ENone
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
-                outRef = inst.addOutputPin(fooArgNames[index], dataType[0])
+                outRef = inst.addOutputPin(argName, dataType[0], userStructClass=structClass)
                 outRef.setData(dataType[1])
                 refs.append(outRef)
             else:
-                inp = inst.addInputPin(fooArgNames[index], dataType)
-                inp.setData(foo.__defaults__[index])
-                inp.setDefaultValue(foo.__defaults__[index])
+                inp = inst.addInputPin(argName, dataType, userStructClass=structClass)
+                inp.setData(argDefaultValue)
+                inp.setDefaultValue(argDefaultValue)
 
         # all inputs affects on all outputs
         for i in inst.inputs.values():
@@ -431,12 +440,12 @@ class Node(QGraphicsItem, NodeBase):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def addInputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
-        p = self._addPin(PinDirection.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
+    def addInputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone):
+        p = self._addPin(PinDirection.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass)
         return p
 
-    def addOutputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
-        p = self._addPin(PinDirection.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
+    def addOutputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone):
+        p = self._addPin(PinDirection.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass)
         return p
 
     @staticmethod
@@ -486,7 +495,7 @@ class Node(QGraphicsItem, NodeBase):
 
             for inp in self.inputs.values():
                 dataSetter = inp.call if inp.dataType == DataTypes.Exec else inp.setData
-                w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue())
+                w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
                     w.setWidgetValue(inp.currentData())
                     w.setObjectName(inp.getName())
@@ -503,7 +512,7 @@ class Node(QGraphicsItem, NodeBase):
             for out in self.outputs.values():
                 if out.dataType == DataTypes.Exec:
                     continue
-                w = getInputWidget(out.dataType, out.setData, out.defaultValue())
+                w = getInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
                 if w:
                     w.setWidgetValue(out.currentData())
                     w.setObjectName(out.getName())
@@ -558,11 +567,11 @@ class Node(QGraphicsItem, NodeBase):
         if pin:
             pin.kill()
 
-    def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1):
+    def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1, userStructClass=ENone):
         # check if pins with this name already exists and get uniq name
         name = self.getUniqPinName(name)
 
-        p = CreatePin(name, self, dataType, pinDirection)
+        p = CreatePin(name, self, dataType, pinDirection, userStructClass=userStructClass)
         self.graph().pins[p.uid] = p
 
         if pinDirection == PinDirection.Input and foo is not None:

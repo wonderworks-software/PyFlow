@@ -18,6 +18,7 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
     OnPinDisconnected = QtCore.Signal(object)
     dataBeenSet = QtCore.Signal(object)
     nameChanged = QtCore.Signal(str)
+    userStructChanged = QtCore.Signal(object)
 
     def __init__(self, name, parent, dataType, direction, **kwargs):
         QGraphicsWidget.__init__(self)
@@ -51,6 +52,10 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         self.bAnimate = False
         self.val = 0
         self.setData(self.defaultValue())
+
+    def setUserStruct(self, inStruct):
+        PinBase.setUserStruct(self, inStruct)
+        self.userStructChanged.emit(inStruct)
 
     def setName(self, newName):
         super(PinWidgetBase, self).setName(newName)

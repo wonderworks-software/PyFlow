@@ -8,7 +8,7 @@ class RandomLib(FunctionLibraryBase):
         super(RandomLib, self).__init__()
 
     @staticmethod
-    @implementNode(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
     ## Return a random integer N such that a <= N <= b
     def randint(start=(DataTypes.Int, 0), end=(DataTypes.Int, 10), Result=(DataTypes.Reference, (DataTypes.Int, 0))):
         '''
@@ -18,7 +18,7 @@ class RandomLib(FunctionLibraryBase):
         Result(random.randint(start, end))
 
     @staticmethod
-    @implementNode(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
     ## Shuffle the sequence x in place
     def shuffle(seq=(DataTypes.Array, []), Result=(DataTypes.Reference, (DataTypes.Array, []))):
         '''

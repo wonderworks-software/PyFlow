@@ -11,7 +11,7 @@ class DefaultLib(FunctionLibraryBase):
         super(DefaultLib, self).__init__()
 
     @staticmethod
-    @implementNode(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
     ## Python's 'print' function wrapper
     def pyprint(entity=(DataTypes.String, None)):
         '''
@@ -20,28 +20,28 @@ class DefaultLib(FunctionLibraryBase):
         print(entity)
 
     @staticmethod
-    @implementNode(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})
     ## cls cmd call.
     def cls():
         '''cls cmd call.'''
         os.system('cls')
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'GenericTypes', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'GenericTypes', 'Keywords': []})
     ## make integer
     def makeInt(i=(DataTypes.Int, 0)):
         '''make integer'''
         return i
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'GenericTypes', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'GenericTypes', 'Keywords': []})
     ## make floating point number
     def makeFloat(f=(DataTypes.Float, 0.0)):
         '''make floating point number'''
         return f
 
     @staticmethod
-    @implementNode(returns=(DataTypes.String, ''), meta={'Category': 'GenericTypes', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.String, ''), meta={'Category': 'GenericTypes', 'Keywords': []})
     ## make string
     def makeString(s=(DataTypes.String, '')):
         '''make string'''
@@ -49,43 +49,43 @@ class DefaultLib(FunctionLibraryBase):
 
     # Conversions
     @staticmethod
-    @implementNode(returns=(DataTypes.Bool, False), meta={'Category': 'Conversion', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Conversion', 'Keywords': []})
     def intToBool(i=(DataTypes.Int, 0)):
         return bool(i)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'Conversion', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Conversion', 'Keywords': []})
     def floatToInt(f=(DataTypes.Float, 0.0)):
         return int(f)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={'Category': 'Utils', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Utils', 'Keywords': []})
     ## Returns the CPU time or real time since the start of the process or since the first call of clock()
     def clock():
         '''Returns the CPU time or real time since the start of the process or since the first call of clock().'''
         return time.clock()
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, False), meta={'Category': 'Conversion', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, False), meta={'Category': 'Conversion', 'Keywords': []})
     def intToFloat(i=(DataTypes.Int, 0)):
         return float(i)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
     def intToString(i=(DataTypes.Int, 0)):
         return str(i)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
     def floatToString(f=(DataTypes.Float, 0.0)):
         return str(f)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
     def arrayToString(arr=(DataTypes.Array, [])):
         return str(arr)
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Int, 0), meta={'Category': 'DefaultLib', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'DefaultLib', 'Keywords': []})
     def arrayLen(arr=(DataTypes.Array, [])):
         return len(arr)

@@ -123,13 +123,13 @@ class {0}(FunctionLibraryBase):
         super({0}, self).__init__()
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Int, 0), meta={{'Category': 'CategoryName|SubCategory name', 'Keywords': ['+', 'append', 'sum']}})
+    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={{'Category': 'CategoryName|SubCategory name', 'Keywords': ['+', 'append', 'sum']}})
     def add(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0)):
         '''Sum of two ints.'''
         return A + B
 
     @staticmethod
-    @implementNode(returns=(DataTypes.Float, 0.0), meta={{'Category': 'CategoryName', 'Keywords': ['/']}})
+    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={{'Category': 'CategoryName', 'Keywords': ['/']}})
     def divide(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''Integer devision.'''
         try:

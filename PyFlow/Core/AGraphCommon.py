@@ -14,6 +14,7 @@ from Queue import Queue
 import uuid
 import sys
 from enum import IntEnum
+import Enums
 
 
 ## determines step for all floating point input widgets
@@ -128,7 +129,7 @@ class REGISTER_ENUM(object):
         self.kwargs = kwargs
 
     def __call__(self, cls):
-        print("register", cls, "with params", self.args, self.kwargs)
+        Enums.appendEnumInstance(cls)
         return cls
 
 
@@ -143,7 +144,7 @@ class DataTypes(IntEnum):
     # It doesn't carry any data, but it implements [call](@ref PyFlow.Pins.ExecPin.ExecPin#call) method.
     # Using pins of this type we can control execution flow of graph.
     Exec = 5
-    ## Special type of data which represents value passed by reference using [implementNode](@ref PyFlow.Core.FunctionLibrary.implementNode) decorator.
+    ## Special type of data which represents value passed by reference using [IMPLEMENT_NODE](@ref PyFlow.Core.FunctionLibrary.IMPLEMENT_NODE) decorator.
     # For example see [factorial](@ref FunctionLibraries.MathLib.MathLib.factorial) function.
     # Here along with computation results we return additional info, whether function call succeeded or not.
     Reference = 6
@@ -152,6 +153,7 @@ class DataTypes(IntEnum):
     Matrix33 = 9
     Matrix44 = 10
     Quaternion = 11
+    Enum = 12
 
 
 ## Returns string representation of the data type identifier
