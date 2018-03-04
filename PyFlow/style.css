@@ -175,3 +175,10 @@ QWidget
 {
     selection-background-color: rgba(150, 150, 150, 128);
 }
+
+QPlainTextEdit
+{
+    color: #ffff00; background-color: #242424;
+    selection-background-color: #3b3b3b;
+    selection-color: #ffffff;
+}
