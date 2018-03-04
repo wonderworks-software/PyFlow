@@ -561,5 +561,5 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
     if dataType == DataTypes.Exec:
         return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None)
     if dataType == DataTypes.Enum:
-        return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=None, userStructClass=userStructClass)
+        return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, userStructClass=userStructClass)
     return None

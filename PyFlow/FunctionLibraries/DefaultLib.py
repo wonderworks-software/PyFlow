@@ -11,6 +11,14 @@ class DefaultLib(FunctionLibraryBase):
         super(DefaultLib, self).__init__()
 
     @staticmethod
+    @IMPLEMENT_NODE(returns=(DataTypes.Enum, Direction.Up), nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
+    def enumTestFoo(entity=(DataTypes.Enum, Direction.Down)):
+        '''
+        print enum
+        '''
+        print(entity)
+
+    @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
     ## Python's 'print' function wrapper
     def pyprint(entity=(DataTypes.String, None)):

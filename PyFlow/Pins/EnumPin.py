@@ -28,8 +28,11 @@ class EnumPin(PinWidgetBase):
         return DataTypes.Enum, ENone
 
     def setData(self, data):
-        try:
-            self._data = self._userStruct(data)
-        except:
-            self._data = self.defaultValue()
+        if isinstance(data, self._userStruct) and data != self._userStruct:
+            self._data = data
+        if isinstance(data, int):
+            try:
+                self._data = self._userStruct(data)
+            except:
+                self._data = self.defaultValue()
         PinWidgetBase.setData(self, self._data)

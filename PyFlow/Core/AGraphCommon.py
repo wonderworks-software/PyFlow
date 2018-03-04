@@ -263,6 +263,7 @@ class NodeTypes(IntEnum):
     Pure = 1
 
 
+@REGISTER_ENUM()
 ## Direction identifires. Used in [alignSelectedNodes](@ref PyFlow.Core.Widget.GraphWidget.alignSelectedNodes)
 class Direction(IntEnum):
     Left = 0

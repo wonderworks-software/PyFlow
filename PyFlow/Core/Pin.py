@@ -51,7 +51,6 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         self.bLabelHidden = False
         self.bAnimate = False
         self.val = 0
-        self.setData(self.defaultValue())
 
     def setUserStruct(self, inStruct):
         PinBase.setUserStruct(self, inStruct)

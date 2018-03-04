@@ -227,11 +227,7 @@ class Node(QGraphicsItem, NodeBase):
         inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
-            structClass = ENone
-            try:
-                structClass = meta['userStructClass']['returns']
-            except:
-                pass
+            structClass = type(returnDefaultValue) if returnType == DataTypes.Enum else ENone
             p = inst.addOutputPin('out', returnType, userStructClass=structClass)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
@@ -245,10 +241,11 @@ class Node(QGraphicsItem, NodeBase):
             argName = fooArgNames[index]
             argDefaultValue = foo.__defaults__[index]
             dataType = foo.__annotations__[argName]
-            structClass = meta['userStructClass'][argName] if 'userStructClass' in meta else ENone
+            structClass = type(argDefaultValue) if dataType == DataTypes.Enum else ENone
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
                 outRef = inst.addOutputPin(argName, dataType[0], userStructClass=structClass)
+                outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 refs.append(outRef)
             else:
@@ -440,12 +437,12 @@ class Node(QGraphicsItem, NodeBase):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def addInputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone):
-        p = self._addPin(PinDirection.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass)
+    def addInputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone, defaultValue=None):
+        p = self._addPin(PinDirection.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass, defaultValue=defaultValue)
         return p
 
-    def addOutputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone):
-        p = self._addPin(PinDirection.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass)
+    def addOutputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone, defaultValue=None):
+        p = self._addPin(PinDirection.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass, defaultValue=defaultValue)
         return p
 
     @staticmethod
@@ -567,11 +564,14 @@ class Node(QGraphicsItem, NodeBase):
         if pin:
             pin.kill()
 
-    def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1, userStructClass=ENone):
+    def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1, userStructClass=ENone, defaultValue=None):
         # check if pins with this name already exists and get uniq name
         name = self.getUniqPinName(name)
 
         p = CreatePin(name, self, dataType, pinDirection, userStructClass=userStructClass)
+        if defaultValue is not None:
+            p.setDefaultValue(defaultValue)
+
         self.graph().pins[p.uid] = p
 
         if pinDirection == PinDirection.Input and foo is not None:
