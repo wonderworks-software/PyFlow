@@ -18,7 +18,11 @@ class MayaLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
-    def setTransform(DagPath=(DataTypes.String, ""), Location=(DataTypes.FloatVector3, pyrr.Vector3()), Rotation=(DataTypes.FloatVector3, pyrr.Vector3()), Scale=(DataTypes.FloatVector3, pyrr.Vector3([1.0, 1.0, 1.0])), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    def setTransform(DagPath=(DataTypes.String, ""),
+                     Location=(DataTypes.FloatVector3, pyrr.Vector3()),
+                     Rotation=(DataTypes.FloatVector3, pyrr.Vector3()),
+                     Scale=(DataTypes.FloatVector3, pyrr.Vector3([1.0, 1.0, 1.0])),
+                     Result=(DataTypes.Reference, (DataTypes.Bool, False))):
         '''
         Sets transform to PyNode
         '''

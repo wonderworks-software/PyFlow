@@ -11,14 +11,6 @@ class DefaultLib(FunctionLibraryBase):
         super(DefaultLib, self).__init__()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Enum, Direction.Up), nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
-    def enumTestFoo(entity=(DataTypes.Enum, Direction.Down)):
-        '''
-        print enum
-        '''
-        print(entity)
-
-    @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
     ## Python's 'print' function wrapper
     def pyprint(entity=(DataTypes.String, None)):
@@ -87,13 +79,3 @@ class DefaultLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
     def floatToString(f=(DataTypes.Float, 0.0)):
         return str(f)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.String, ''), meta={'Category': 'Conversion', 'Keywords': []})
-    def arrayToString(arr=(DataTypes.Array, [])):
-        return str(arr)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'DefaultLib', 'Keywords': []})
-    def arrayLen(arr=(DataTypes.Array, [])):
-        return len(arr)
