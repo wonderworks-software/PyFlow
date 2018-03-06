@@ -7,7 +7,7 @@ class deltaTime(Node):
     def __init__(self, name, graph):
         super(deltaTime, self).__init__(name, graph)
         self._deltaTime = 0.0
-        self.out0 = self.addOutputPin('out0', DataTypes.Float)
+        self._out0 = self.addOutputPin('out0', DataTypes.Float, hideLabel=True)
 
     @staticmethod
     def pinTypeHints():
@@ -29,4 +29,4 @@ class deltaTime(Node):
         self._deltaTime = deltaTime
 
     def compute(self):
-        self.out0.setData(self._deltaTime)
+        self._out0.setData(self._deltaTime)

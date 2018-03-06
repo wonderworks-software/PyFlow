@@ -7,9 +7,9 @@ class forLoop(Node, NodeBase):
     def __init__(self, name, graph):
         super(forLoop, self).__init__(name, graph)
         self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
-        self.firstIndex = self.addInputPin('start', DataTypes.Int)
-        self.lastIndex = self.addInputPin('stop', DataTypes.Int)
-        self.step = self.addInputPin('step', DataTypes.Int)
+        self.firstIndex = self.addInputPin('Start', DataTypes.Int)
+        self.lastIndex = self.addInputPin('Stop', DataTypes.Int)
+        self.step = self.addInputPin('Step', DataTypes.Int)
         self.step.setData(1)
 
         self.loopBody = self.addOutputPin('LoopBody', DataTypes.Exec)

@@ -41,10 +41,8 @@ from .. import FunctionLibraries
 from .. import Nodes
 from .. import Pins
 from os import listdir, path
-_file_folder = path.dirname(__file__)
-nodes_path = _file_folder + '\\Nodes'
 from .Variable import VariableBase
-from time import ctime, clock
+from time import ctime
 import json
 import re
 

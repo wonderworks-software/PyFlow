@@ -6,13 +6,13 @@ from ..Core import Node
 class doN(Node):
     def __init__(self, name, graph):
         super(doN, self).__init__(name, graph)
-        self.enter = self.addInputPin('enter', DataTypes.Exec, self.compute, hideLabel=True)
-        self.N = self.addInputPin('n', DataTypes.Int)
-        self.N.setData(10)
-        self.reset = self.addInputPin('reset', DataTypes.Exec, self.OnReset)
+        self.enter = self.addInputPin('Enter', DataTypes.Exec, self.compute, hideLabel=True)
+        self._N = self.addInputPin('N', DataTypes.Int)
+        self._N.setData(10)
+        self.reset = self.addInputPin('Reset', DataTypes.Exec, self.OnReset)
 
-        self.completed = self.addOutputPin('exit', DataTypes.Exec)
-        self.counter = self.addOutputPin('counter', DataTypes.Int)
+        self.completed = self.addOutputPin('Exit', DataTypes.Exec)
+        self.counter = self.addOutputPin('Counter', DataTypes.Int)
         self.bClosed = False
         self._numCalls = 0
 
@@ -38,7 +38,7 @@ class doN(Node):
         it will cease all outgoing execution until a pulse is sent into its Reset input.'
 
     def compute(self):
-        maxCalls = self.N.getData()
+        maxCalls = self._N.getData()
         if not self.bClosed and self._numCalls <= maxCalls:
             self._numCalls += 1
             self.counter.setData(self._numCalls)

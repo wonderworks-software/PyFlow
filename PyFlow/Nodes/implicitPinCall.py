@@ -7,9 +7,9 @@ from Qt.QtWidgets import QMenu
 class implicitPinCall(Node):
     def __init__(self, name, graph):
         super(implicitPinCall, self).__init__(name, graph)
-        self.inExec = self.addInputPin('inp', DataTypes.Exec, self.compute)
-        self.uidInp = self.addInputPin('uuid', DataTypes.String)
-        self.outExec = self.addOutputPin('out', DataTypes.Exec)
+        self.inExec = self.addInputPin('inp', DataTypes.Exec, self.compute, hideLabel=True)
+        self.uidInp = self.addInputPin('UUID', DataTypes.String)
+        self.outExec = self.addOutputPin('out', DataTypes.Exec, hideLabel=True)
         self.menu = QMenu()
         self.actionFindPin = self.menu.addAction('Find pin')
         self.actionFindPin.triggered.connect(self.OnFindPin)

@@ -9,8 +9,8 @@ class branch(Node, NodeBase):
         super(branch, self).__init__(name, graph)
         self.trueExec = self.addOutputPin("True", DataTypes.Exec)
         self.falseExec = self.addOutputPin("False", DataTypes.Exec)
-        self.inExec = self.addInputPin("In", DataTypes.Exec, self.compute)
-        self.condition = self.addInputPin("condition", DataTypes.Bool)
+        self.inExec = self.addInputPin("In", DataTypes.Exec, self.compute, hideLabel=True)
+        self.condition = self.addInputPin("Condition", DataTypes.Bool)
 
     @staticmethod
     def pinTypeHints():

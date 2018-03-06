@@ -7,9 +7,9 @@ class doOnce(Node):
     def __init__(self, name, graph):
         super(doOnce, self).__init__(name, graph)
         self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
-        self.reset = self.addInputPin('reset', DataTypes.Exec, self.OnReset)
+        self.reset = self.addInputPin('Reset', DataTypes.Exec, self.OnReset)
         self.bStartClosed = self.addInputPin('Start closed', DataTypes.Bool)
-        self.completed = self.addOutputPin('completed', DataTypes.Exec)
+        self.completed = self.addOutputPin('Completed', DataTypes.Exec)
         self.bClosed = False
 
     def OnReset(self):
