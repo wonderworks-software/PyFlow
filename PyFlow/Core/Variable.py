@@ -49,7 +49,7 @@ class VarTypeComboBox(QComboBox):
         self._bJustSpawned = True
         self.var = var
         for i in self.var.types:
-            self.addItem(i[0], i[1])
+            self.addItem(i, DataTypes[i].value)
         self.currentIndexChanged.connect(self.onCurrentIndexChanged)
         self.setCurrentIndex(self.findData(var.dataType))
         self._bJustSpawned = False
@@ -105,7 +105,7 @@ class VariableBase(QWidget):
             self._uid = uuid4()
         self.graph = graph
         self.setName(name)
-        self.types = [v for v in inspect.getmembers(DataTypes) if v[0] not in ['__doc__', '__module__', 'Reference', 'Exec']]
+        self.types = [v.name for v in list(DataTypes) if v not in [DataTypes.Reference, DataTypes.Exec, DataTypes.Enum]]
         self.graph.vars[self.uid] = self
 
     @property
@@ -176,11 +176,11 @@ class VariableBase(QWidget):
             return
         self.dataTypeChanged.emit(self.dataType)
         self.graph.undoStack.clear()
+        self.graph.tryFillPropertiesView(self)
 
     def mousePressEvent(self, event):
         QWidget.mousePressEvent(self, event)
         self.graph.tryFillPropertiesView(self)
-        # self.onUpdatePropertyView(self.graph.parent.formLayout)
 
     def setName(self, name):
         self.labelName.setText(name)
@@ -200,7 +200,7 @@ class VariableBase(QWidget):
         # current value
         def valSetter(x):
             self.value = x
-        w = InputWidgets.getInputWidget(self.dataType, valSetter, Pins.getPinDefaultValueByType(self.dataType))
+        w = InputWidgets.getInputWidget(self.dataType, valSetter, Pins.getPinDefaultValueByType(self.dataType), None)
         if w:
             w.setWidgetValue(self.value)
             w.setObjectName(self.name)

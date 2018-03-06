@@ -46,7 +46,7 @@ class SetVarNode(Node, NodeBase):
         formLayout.addRow("Type", leType)
 
         # input value
-        w = getInputWidget(self.value.dataType, self.value.setData, self.var.value)
+        w = getInputWidget(self.value.dataType, self.value.setData, self.var.value, None)
         if w:
             w.setWidgetValue(self.value.currentData())
             w.setObjectName(self.value.getName())

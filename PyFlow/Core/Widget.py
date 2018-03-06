@@ -196,7 +196,11 @@ class SceneClass(QGraphicsScene):
                         m = QMenu()
                         getterAction = m.addAction('Get')
                         nodeTemplate['type'] = 'GetVarNode'
-                        getterAction.triggered.connect(lambda: self.parent().createNode(nodeTemplate))
+
+                        def varGetterCreator():
+                            n = self.parent().createNode(nodeTemplate)
+                            n.updateNodeShape(label=n.var.name)
+                        getterAction.triggered.connect(varGetterCreator)
 
                         setNodeTemplate = dict(nodeTemplate)
                         setterAction = m.addAction('Set')
