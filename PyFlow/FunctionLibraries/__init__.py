@@ -18,15 +18,15 @@ def _getFunctions():
             try:
                 exec('from {0} import {0}'.format(libName))
                 exec('lib_class = {0}'.format(libName))
-                # Call lib constructor here!!!!
-                # create method in base lib class for automatic creation of nodes
-                # arrays for example or enums
-                foos = [f for f in getmembers(lib_class, isfunction) if "__" not in f[0]]
+
+                libInstance = lib_class()
+                foos = libInstance.getFunctions()
 
                 _libs[libName] = foos
 
                 for f in _libs[libName]:
                     _foos[f[0]] = f[1]
+
             except Exception as e:
                 # not load lib if any errors or unknown modules etc.
                 print e, libName

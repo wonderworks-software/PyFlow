@@ -64,3 +64,7 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
 class FunctionLibraryBase(object):
     def __init__(self):
         super(FunctionLibraryBase, self).__init__()
+        self.__foos = inspect.getmembers(self, inspect.isfunction)
+
+    def getFunctions(self):
+        return self.__foos

@@ -6,7 +6,7 @@ import os
 from .. import FunctionLibraries
 
 
-_instances = {}
+_nodeClasses = {}
 
 
 def _getClasses():
@@ -17,8 +17,8 @@ def _getClasses():
             try:
                 exec("from {0} import *".format(nodeName))
                 exec("node_class = {0}".format(nodeName))
-                if nodeName not in _instances:
-                    _instances[nodeName] = node_class
+                if nodeName not in _nodeClasses:
+                    _nodeClasses[nodeName] = node_class
             except Exception as e:
                 # do not load node if errors or unknown modules
                 print(e, nodeName)
@@ -26,13 +26,13 @@ def _getClasses():
 
 
 def getNode(name):
-    if name in _instances:
-        return _instances[name]
+    if name in _nodeClasses:
+        return _nodeClasses[name]
     return None
 
 
 def getNodeNames():
-    return _instances.keys()
+    return _nodeClasses.keys()
 
 
 _getClasses()
