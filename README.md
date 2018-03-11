@@ -40,7 +40,7 @@ Watch [video](https://youtu.be/chnRrr1Qfj8)
 - [pyrr](https://github.com/adamlwgriffiths/Pyrr) for builtin math. (optional)
 
 # Usage
-App's entry point is a **PyFlow.py** file. There are also several handy bat scripts for debugging and profiling.
+App's entry point is a **App.py** file under PyFlow folder. There are also several handy bat scripts for debugging and profiling.
 Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
 Connect and execute pins from property view or using timer node.
 
