@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
 #
-# Created: Wed Feb 21 14:51:09 2018
+# Created: Sun Mar 11 16:56:54 2018
 #      by: pyside2-uic 2.0.0 running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!
@@ -231,12 +231,18 @@ class Ui_MainWindow(object):
         icon19.addPixmap(QtGui.QPixmap(":/icons/resources/pin.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionNew_pin.setIcon(icon19)
         self.actionNew_pin.setObjectName("actionNew_pin")
+        self.actionNew = QtWidgets.QAction(MainWindow)
+        icon20 = QtGui.QIcon()
+        icon20.addPixmap(QtGui.QPixmap(":/icons/resources/new_file_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionNew.setIcon(icon20)
+        self.actionNew.setObjectName("actionNew")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionClear_history)
         self.menuView.addAction(self.actionVariables)
         self.menuView.addAction(self.actionHistory)
         self.menuView.addAction(self.actionPropertyView)
+        self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionSave_as)
@@ -303,5 +309,6 @@ class Ui_MainWindow(object):
         self.actionVariables.setText(QtCompat.translate("MainWindow", "Variables", None, -1))
         self.actionHistory.setText(QtCompat.translate("MainWindow", "History", None, -1))
         self.actionNew_pin.setText(QtCompat.translate("MainWindow", "New pin", None, -1))
+        self.actionNew.setText(QtCompat.translate("MainWindow", "New", None, -1))
 
 import nodes_res_rc

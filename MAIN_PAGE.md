@@ -2,7 +2,7 @@
 
 ![](PyFlow.jpg)
 
-[PyFlow](@ref PyFlow.App.PyFlow) is a general purpose extendable python qt node editor.
+[PyFlow](@ref PyFlow.App.PyFlow) is a general purpose runtime extendable python qt node editor.
 
 
 # Features
@@ -36,7 +36,9 @@ App's entry point is a **PyFlow.py** file. There are also several handy bat scri
 Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
 Connect and execute pins from property view or using [timer node](@ref PyFlow.Nodes.timer.timer).
 
-See [video tutorials](http://blank.org/).
+# Extending
+See source code. **FunctionLibraries** folder for annotated nodes, **Nodes** folder for
+class based nodes. **Pins**, for data types and **Commands** for editor commands.
 
 # Licensing
 The MIT License (MIT)
