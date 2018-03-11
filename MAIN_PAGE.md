@@ -32,9 +32,11 @@
 - [pyrr](https://github.com/adamlwgriffiths/Pyrr) for builtin math. (optional)
 
 # Usage
-App's entry point is a **PyFlow.py** file. There are also several handy bat scripts for debugging and profiling.
+App's entry point is a **App.py** file. There are also several handy bat scripts for debugging and profiling.
 Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
 Connect and execute pins from property view or using [timer node](@ref PyFlow.Nodes.timer.timer).
+
+For visual profiling i used [snakeviz](https://jiffyclub.github.io/snakeviz/).
 
 # Extending
 See source code. **FunctionLibraries** folder for annotated nodes, **Nodes** folder for
