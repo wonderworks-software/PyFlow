@@ -1,5 +1,3 @@
-
-
 # Overview
 <p align="center">
   <img src="PyFlow/resources/PyFlow.jpg">
@@ -44,7 +42,9 @@ App's entry point is a **PyFlow.py** file. There are also several handy bat scri
 Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
 Connect and execute pins from property view or using timer node.
 
-For in depth descriptin and how it works, see [video tutorials](http://blank.org/) and [documentation](https://ilgarlunin.github.io/PyFlow/html/index.html).
+# Extending
+See source code. **FunctionLibraries** folder for annotated nodes, **Nodes** folder for
+class based nodes. **Pins**, for data types and **Commands** for editor commands.
 
 # Donate
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ILunin)
