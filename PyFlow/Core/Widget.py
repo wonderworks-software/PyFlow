@@ -179,7 +179,7 @@ class SceneClass(QGraphicsScene):
             tag, mimeText = event.mimeData().text().split('|')
             name = self.parent().getUniqNodeName(mimeText)
             dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
-            if not dropItem or isinstance(dropItem, Nodes.commentNode):
+            if not dropItem or isinstance(dropItem, Nodes.commentNode.commentNode):
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = mimeText
                 nodeTemplate['name'] = name
@@ -1002,9 +1002,9 @@ class GraphWidget(QGraphicsView, Graph):
 
         if event.button() == QtCore.Qt.RightButton:
             # show nodebox only if drag is small and no items under cursor
-            if self.pressed_item is None:
+            if self.pressed_item is None or isinstance(self.pressed_item, Nodes.commentNode.commentNode):
                 dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
-                if all([abs(i) < 0.2 for i in [dragDiff.x(), dragDiff.y()]]):
+                if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
         if event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, PinBase):
             if isinstance(self.pressed_item, PinBase):

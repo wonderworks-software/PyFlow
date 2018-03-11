@@ -9,6 +9,10 @@ from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QGraphicsItemGroup
 from Qt.QtWidgets import QStyle
+from Qt.QtWidgets import QLabel
+from Qt.QtWidgets import QLineEdit
+from Qt.QtWidgets import QTextBrowser
+from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QColorDialog
 from Qt import QtGui
@@ -102,14 +106,6 @@ class commentNode(Node, NodeBase):
         self.minHeight = 100.0
         self.lastMousePos = QtCore.QPointF()
         self.setZValue(-2)
-
-        self.menu = QMenu()
-        self.actionChangeColor = self.menu.addAction('Change color')
-        self.actionChangeColor.triggered.connect(self.onChangeColor)
-        self.actionChangeColor.setIcon(QtGui.QIcon(':/icons/resources/colors_icon.png'))
-
-    def contextMenuEvent(self, event):
-        self.menu.exec_(event.screenPos())
 
     def onChangeColor(self):
         res = QColorDialog.getColor(self.color, None, 'Comment node color setup')
@@ -330,7 +326,41 @@ class commentNode(Node, NodeBase):
         painter.drawLine(pLeft, pRight)
 
     def onUpdatePropertyView(self, formLayout):
-        pass
+
+        # name
+        le_name = QLineEdit(self.getName())
+        le_name.setReadOnly(True)
+        if self.label().IsRenamable():
+            le_name.setReadOnly(False)
+            le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
+        formLayout.addRow("Name", le_name)
+
+        # uid
+        leUid = QLineEdit(str(self.uid))
+        leUid.setReadOnly(True)
+        formLayout.addRow("Uuid", leUid)
+
+        # type
+        leType = QLineEdit(self.__class__.__name__)
+        leType.setReadOnly(True)
+        formLayout.addRow("Type", leType)
+
+        # pos
+        le_pos = QLineEdit("{0} x {1}".format(self.pos().x(), self.pos().y()))
+        formLayout.addRow("Pos", le_pos)
+
+        pb = QPushButton("...")
+        pb.clicked.connect(self.onChangeColor)
+        formLayout.addRow("Color", pb)
+
+        doc_lb = QLabel()
+        doc_lb.setStyleSheet("background-color: black;")
+        doc_lb.setText("Description")
+        formLayout.addRow("", doc_lb)
+        doc = QTextBrowser()
+        doc.setOpenExternalLinks(True)
+        doc.setHtml(self.description())
+        formLayout.addRow("", doc)
 
     @staticmethod
     def category():
@@ -342,4 +372,4 @@ class commentNode(Node, NodeBase):
 
     @staticmethod
     def description():
-        return 'Comment node'
+        return 'Can drag intersected nodes. You can also specify color and resize it.'
