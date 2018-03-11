@@ -4,7 +4,7 @@ import subprocess
 
 
 CURRENT_DIR = os.path.dirname(__file__).replace('\\', '/') + '/'
-INTERPRETER_PATH = CURRENT_DIR + 'Python27/python.exe'
+INTERPRETER_PATH = 'python.exe'
 
 
 def ui_to_py(ui_file):

@@ -252,6 +252,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
         self.actionNew_pin.triggered.connect(lambda: self.newPlugin(PluginType.pPin))
         self.actionHistory.triggered.connect(self.toggleHistory)
+        self.actionNew.triggered.connect(self.G.new_file)
         self.dockWidgetUndoStack.setVisible(False)
 
         self.setMouseTracking(True)

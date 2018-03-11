@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/FloatVector4InputWidget_ui.ui'
 #
-# Created: Sun Mar 11 16:56:54 2018
-#      by: pyside2-uic 2.0.0 running on PySide2 2.0.0~alpha0
+# Created: Sun Mar 11 18:19:07 2018
+#      by: pyside2-uic 2.0.0 running on PySide2 5.6.0~a1
 #
 # WARNING! All changes made in this file will be lost!
 

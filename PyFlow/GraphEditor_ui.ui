@@ -204,7 +204,7 @@
           <x>0</x>
           <y>0</y>
           <width>148</width>
-          <height>756</height>
+          <height>781</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -236,7 +236,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidgetNodeView">
    <property name="minimumSize">
     <size>
@@ -281,7 +280,7 @@
           <x>0</x>
           <y>0</y>
           <width>498</width>
-          <height>594</height>
+          <height>614</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">

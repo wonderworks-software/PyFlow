@@ -667,6 +667,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.vars.clear()
         self.parent.variablesWidget.listWidget.clear()
         self.undoStack.clear()
+        self._clearPropertiesView()
 
     def load(self):
         name_filter = "Graph files (*.json)"

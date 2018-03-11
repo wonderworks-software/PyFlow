@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
 #
-# Created: Sun Mar 11 16:56:54 2018
-#      by: pyside2-uic 2.0.0 running on PySide2 2.0.0~alpha0
+# Created: Sun Mar 11 18:19:07 2018
+#      by: pyside2-uic 2.0.0 running on PySide2 5.6.0~a1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -73,7 +73,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 148, 756))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 148, 781))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -90,9 +90,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.scrollArea_2)
         self.dockWidgetVariables.setWidget(self.dockWidgetContents_5)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetVariables)
-        self.statusBar = QtWidgets.QStatusBar(MainWindow)
-        self.statusBar.setObjectName("statusBar")
-        MainWindow.setStatusBar(self.statusBar)
         self.dockWidgetNodeView = QtWidgets.QDockWidget(MainWindow)
         self.dockWidgetNodeView.setMinimumSize(QtCore.QSize(500, 166))
         self.dockWidgetNodeView.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
@@ -107,7 +104,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 498, 594))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 498, 614))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
