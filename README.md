@@ -5,6 +5,8 @@
 
 **PyFlow** is a general purpose runtime extendable python qt node editor.
 
+Watch [video](https://youtu.be/chnRrr1Qfj8)
+
 # Table of contents
 - [Features](#features)
 - [Installation](#installation)
