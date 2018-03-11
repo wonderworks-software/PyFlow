@@ -5,7 +5,7 @@
   <img src="PyFlow/resources/PyFlow.jpg">
 </p>
 
-**PyFlow** is a general purpose extendable python qt node editor. Written in python!
+**PyFlow** is a general purpose runtime extendable python qt node editor.
 
 # Table of contents
 - [Features](#features)
