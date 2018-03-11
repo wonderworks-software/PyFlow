@@ -2,7 +2,7 @@
 
 ![](PyFlow.jpg)
 
-[PyFlow](@ref PyFlow.PyFlow.PyFlow) is a general purpose extendable python qt node editor.
+[PyFlow](@ref PyFlow.App.PyFlow) is a general purpose extendable python qt node editor.
 
 
 # Features
@@ -20,13 +20,14 @@
 2. Install [conda](https://conda.io/docs/)  with pyside2 environment. [Instruction](https://fredrikaverpil.github.io/2017/08/28/pyside2-easy-install/) here
 3. Go to **Scripts/** folder and install dependencies
 
-	**pip install Qt.py pyrr**
+	**pip install Qt.py pyrr enum34**
 
 4. Execute **starter.bat**
 
 
 # Pip dependencies:
 - [Qt.py](https://github.com/mottosso/Qt.py)
+- [enum34](https://pypi.python.org/pypi/enum34)
 - PySide or PySide2 or PyQt5 or PyQt4
 - [pyrr](https://github.com/adamlwgriffiths/Pyrr) for builtin math. (optional)
 

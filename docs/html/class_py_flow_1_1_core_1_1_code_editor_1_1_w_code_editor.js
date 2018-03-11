@@ -8,6 +8,7 @@ var class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor =
     [ "applyData", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html#ad1fb2826840e28f307e359f1725b99eb", null ],
     [ "closeEvent", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html#ac88b3f4ddbc4f3f13138ae1b5e20cbe7", null ],
     [ "gatherPinNames", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html#a3ff82326cab9057d826d9d636b32fdf4", null ],
+    [ "keyPressEvent", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html#a22bf1244340d73b8e8341d62a7616075", null ],
     [ "OnCurrentTabChanged", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html#adc1580aad035b9c06dfbdd06cad49d02", null ],
     [ "onKillSelectedPins", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html#a5278bf1bace49e03565890baca5e03c1", null ],
     [ "populate", "class_py_flow_1_1_core_1_1_code_editor_1_1_w_code_editor.html#ac25122b4322f92c90f5370dd99950b7d", null ],

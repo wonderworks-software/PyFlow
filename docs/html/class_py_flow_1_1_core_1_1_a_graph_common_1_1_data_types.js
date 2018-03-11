@@ -2,6 +2,7 @@ var class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types =
 [
     [ "Array", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html#aaa4370e4f28831625a056c464bbb7d28", null ],
     [ "Bool", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html#a37989b7df903cffa2e7fc977021fb44b", null ],
+    [ "Enum", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html#a95310da6d7e8358847314d4da8a40c5e", null ],
     [ "Exec", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html#a25b7e9431883e271a36bd9feb00e4a46", null ],
     [ "Float", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html#a15f4857c701e07be5c8e5df82f16330d", null ],
     [ "FloatVector3", "class_py_flow_1_1_core_1_1_a_graph_common_1_1_data_types.html#abaec717d286a7eb0d6bb3e7bb277848e", null ],

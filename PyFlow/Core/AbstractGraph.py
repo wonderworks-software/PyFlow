@@ -214,6 +214,7 @@ class INode(IItemBase):
         raise NotImplementedError('postCreate method of INode is not implemented')
 
 
+## Base no gui Pin class
 class PinBase(IPin):
     def __init__(self, name, parent, dataType, direction, userStructClass=None):
         super(PinBase, self).__init__()
@@ -222,16 +223,23 @@ class PinBase(IPin):
         self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
+        ## This flag for lazy evaluation
+        # @sa @ref PinBase::getData
         self.dirty = True
         self._connected = False
+        ## List of pins this pin connected to
         self.affects = []
+        ## Lsit of pins connected to this pin
         self.affected_by = []
+        ## List of connections
         self.edge_list = []
 
+        ## Access to the node
         self.parent = weakref.ref(parent)
         self.setName(name)
         self.dataType = dataType
 
+        ## Defines is this input pin or output
         self.direction = direction
 
     # ISerializable interface
@@ -271,6 +279,7 @@ class PinBase(IPin):
     def color(self):
         return None
 
+    ## This used by node box to suggest nodes by type
     @staticmethod
     def pinDataTypeHint():
         return None
@@ -281,6 +290,7 @@ class PinBase(IPin):
     def defaultValue(self):
         return self._defaultValue
 
+    ## retrieving the data
     def getData(self):
         # if not connected - return data
         if not self.hasConnections():
@@ -308,6 +318,7 @@ class PinBase(IPin):
                 self.setClean()
                 return self._data
 
+    ## Setting the data
     def setData(self, data):
         self.setClean()
         if self.direction == PinDirection.Output:
@@ -315,9 +326,11 @@ class PinBase(IPin):
                 i._data = data
                 i.setClean()
 
+    ## Calling execution pin
     def call(self):
         pass
 
+    ## Describes, what data type is this pin.
     @property
     def dataType(self):
         return self._dataType

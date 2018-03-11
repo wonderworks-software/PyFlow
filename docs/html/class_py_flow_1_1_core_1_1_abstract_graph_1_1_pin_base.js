@@ -1,6 +1,6 @@
 var class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base =
 [
-    [ "__init__", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a2d692fecaafbbf8e50c15f7f02b72bae", null ],
+    [ "__init__", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a4e97cf1950a90ac8b75363af568991fb", null ],
     [ "call", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a531b0ba776168ce39d21240ac4025f6a", null ],
     [ "color", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a98ed1442477f05dc9003cac0ed083fb1", null ],
     [ "currentData", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#acf6119e134241ff1d62305a8a50926c5", null ],
@@ -10,7 +10,9 @@ var class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base =
     [ "deserialize", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a00928f5ddcefcc6c1a8b9ef7abb7137b", null ],
     [ "getData", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#afc9d6f7f1fbda91993dccaf1f44d73af", null ],
     [ "getName", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a2d880daf3c57d2aee607c79afdc30905", null ],
+    [ "getUserStruct", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#ab195ca1e86054fd243c6f8af30a0ae69", null ],
     [ "hasConnections", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a9cb2454b86f7aac3ab33badb5ca61683", null ],
+    [ "isUserStruct", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#adff63aa0b82285b013c14e3d5261a978", null ],
     [ "kill", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#aa93a7160fe5150c900eeecf438d50858", null ],
     [ "pinConnected", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a2dd468ad369190674dcda7f67cd3007d", null ],
     [ "pinDataTypeHint", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#ae8bacd2bc930a62a8cd51b394354ff9a", null ],
@@ -21,6 +23,7 @@ var class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base =
     [ "setDefaultValue", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a95b2973007485ee2c532cd30b86729e8", null ],
     [ "setDirty", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a6c5c6393598a1ef2323158bb2c34e578", null ],
     [ "setName", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#aabdd1b24df67b74face673a3ad1c7e00", null ],
+    [ "setUserStruct", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a38f46647e1b96291c09e8adce8e7469d", null ],
     [ "supportedDataTypes", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a4b733900fd7f1149d1fa51092ce8c7af", null ],
     [ "uid", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a0b609212e64e24ffcd441610c2c35419", null ],
     [ "uid", "class_py_flow_1_1_core_1_1_abstract_graph_1_1_pin_base.html#a88000f8b14371dbb7903337683a791c3", null ],

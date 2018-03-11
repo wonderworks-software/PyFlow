@@ -75,6 +75,5 @@ var class_py_flow_1_1_core_1_1_widget_1_1_graph_widget =
     [ "pressed_item", "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#af2a503c60041b1802cad032c58e256b2", null ],
     [ "real_time_line", "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a311eb561014a68bad833df34019e5bf4", null ],
     [ "released_item", "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#a122e1d2ee0e59f759e49b61391f8fa59", null ],
-    [ "rubberRect", "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#aa1616d5ef53a181da375f54d32cc9a01", null ],
     [ "undoStack", "class_py_flow_1_1_core_1_1_widget_1_1_graph_widget.html#ab3a31fb209d04b6ad9b736f9197e707c", null ]
 ];

@@ -5,5 +5,6 @@ var searchData=
   ['setvarnode',['SetVarNode',['../class_py_flow_1_1_core_1_1_set_var_node_1_1_set_var_node.html',1,'PyFlow::Core::SetVarNode']]],
   ['spacings',['Spacings',['../class_py_flow_1_1_core_1_1_settings_1_1_spacings.html',1,'PyFlow::Core::Settings']]],
   ['stringinputwidget',['StringInputWidget',['../class_py_flow_1_1_core_1_1_input_widgets_1_1_string_input_widget.html',1,'PyFlow::Core::InputWidgets']]],
-  ['stringpin',['StringPin',['../class_py_flow_1_1_pins_1_1_string_pin_1_1_string_pin.html',1,'PyFlow::Pins::StringPin']]]
+  ['stringpin',['StringPin',['../class_py_flow_1_1_pins_1_1_string_pin_1_1_string_pin.html',1,'PyFlow::Pins::StringPin']]],
+  ['switchonstring',['switchOnString',['../class_py_flow_1_1_nodes_1_1switch_on_string_1_1switch_on_string.html',1,'PyFlow::Nodes::switchOnString']]]
 ];

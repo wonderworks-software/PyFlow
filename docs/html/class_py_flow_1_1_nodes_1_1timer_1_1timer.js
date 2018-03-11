@@ -3,6 +3,7 @@ var class_py_flow_1_1_nodes_1_1timer_1_1timer =
     [ "__init__", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html#a798109cf539a09d0a5dccc66a8a154fd", null ],
     [ "category", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html#aad48cddccbe34b5c345c7cb9a1e332a4", null ],
     [ "compute", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html#a4d6b52d1335e6a92d03aeb0c5a20c738", null ],
+    [ "kill", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html#a80cd10fe031db66ea0899658f554fb86", null ],
     [ "pinTypeHints", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html#a3acc516fb129567a50f071250d2b80a0", null ],
     [ "reset", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html#ac6b6647c42496493299766e69679883c", null ],
     [ "start", "class_py_flow_1_1_nodes_1_1timer_1_1timer.html#a4af25d032aeeab4b9611d9e289455a56", null ],

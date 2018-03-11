@@ -4,7 +4,7 @@ from ..Core import Node
 
 
 ## If else node
-class branch(Node, NodeBase):
+class branch(Node):
     def __init__(self, name, graph):
         super(branch, self).__init__(name, graph)
         self.trueExec = self.addOutputPin("True", DataTypes.Exec)

@@ -2,8 +2,8 @@ var class_py_flow_1_1_core_1_1_node_1_1_node =
 [
     [ "__init__", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a40858c0eddb16b9e7d9da5a19afea316", null ],
     [ "addContainer", "class_py_flow_1_1_core_1_1_node_1_1_node.html#abae0e7ddaa63bef8ff68ef5558b6d104", null ],
-    [ "addInputPin", "class_py_flow_1_1_core_1_1_node_1_1_node.html#ad27eaaf02d36fdde5605408d278972a0", null ],
-    [ "addOutputPin", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a33e0e997eeb9c202f2ec8e16aa11f0fc", null ],
+    [ "addInputPin", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a7a22dd216c72e2be504e9aa6094abed0", null ],
+    [ "addOutputPin", "class_py_flow_1_1_core_1_1_node_1_1_node.html#aa2a7a836a1be03092a2805077c6748a9", null ],
     [ "boundingRect", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a3c1797b4fa172378f411c6983a7a461b", null ],
     [ "call", "class_py_flow_1_1_core_1_1_node_1_1_node.html#ae8fe163b4bb526a28c881ab077717c75", null ],
     [ "category", "class_py_flow_1_1_core_1_1_node_1_1_node.html#a8786b66853002ab51b05c62509920bfe", null ],
