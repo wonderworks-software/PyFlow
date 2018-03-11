@@ -1,5 +1,6 @@
 """@package Pins
 """
+from __future__ import absolute_import
 import os
 _PINS = {}
 
@@ -20,7 +21,7 @@ for n in os.listdir(os.path.dirname(__file__)):
     if n.endswith(".py") and "__init__" not in n:
         pinName = n.split(".")[0]
         try:
-            exec("from {0} import {0}".format(pinName))
+            exec("from .{0} import {0}".format(pinName))
             exec("pin_class = {0}".format(pinName))
             _REGISTER_PIN_TYPE(pin_class)
         except Exception as e:
@@ -39,9 +40,9 @@ def getPinDefaultValueByType(dataType):
     return None
 
 
-def CreatePin(name, parent, dataType, direction):
+def CreatePin(name, parent, dataType, direction, **kwds):
     pinClass = findPinClassByType(dataType)
     if pinClass is None:
         return None
-    inst = pinClass(name, parent, dataType, direction)
+    inst = pinClass(name, parent, dataType, direction, **kwds)
     return inst

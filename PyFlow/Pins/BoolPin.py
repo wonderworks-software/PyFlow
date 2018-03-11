@@ -1,5 +1,5 @@
-from Core.Pin import PinWidgetBase
-from Core.AGraphCommon import *
+from ..Core.Pin import PinWidgetBase
+from ..Core.AGraphCommon import *
 
 
 class BoolPin(PinWidgetBase):
@@ -9,7 +9,7 @@ class BoolPin(PinWidgetBase):
         self.setDefaultValue(False)
 
     def supportedDataTypes(self):
-        return (DataTypes.Bool,)
+        return (DataTypes.Bool, DataTypes.Int,)
 
     @staticmethod
     def color():

@@ -9,6 +9,7 @@ from Qt.QtWidgets import QFrame
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QScrollArea
+from Qt.QtWidgets import QRubberBand
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QAction
@@ -35,14 +36,13 @@ from Node import Node
 from Node import NodeName
 from GetVarNode import GetVarNode
 from SetVarNode import SetVarNode
-import Nodes
+from .. import Commands
+from .. import FunctionLibraries
+from .. import Nodes
+from .. import Pins
 from os import listdir, path
-_file_folder = path.dirname(__file__)
-nodes_path = _file_folder + '\\Nodes'
-import FunctionLibraries
-import Commands
-from Core.Variable import VariableBase
-from time import ctime, clock
+from .Variable import VariableBase
+from time import ctime
 import json
 import re
 
@@ -179,7 +179,7 @@ class SceneClass(QGraphicsScene):
             tag, mimeText = event.mimeData().text().split('|')
             name = self.parent().getUniqNodeName(mimeText)
             dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
-            if not dropItem or isinstance(dropItem, Nodes.commentNode):
+            if not dropItem or isinstance(dropItem, Nodes.commentNode.commentNode):
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = mimeText
                 nodeTemplate['name'] = name
@@ -196,7 +196,11 @@ class SceneClass(QGraphicsScene):
                         m = QMenu()
                         getterAction = m.addAction('Get')
                         nodeTemplate['type'] = 'GetVarNode'
-                        getterAction.triggered.connect(lambda: self.parent().createNode(nodeTemplate))
+
+                        def varGetterCreator():
+                            n = self.parent().createNode(nodeTemplate)
+                            n.updateNodeShape(label=n.var.name)
+                        getterAction.triggered.connect(varGetterCreator)
 
                         setNodeTemplate = dict(nodeTemplate)
                         setterAction = m.addAction('Set')
@@ -447,20 +451,11 @@ class NodesBox(QWidget):
         self.expandCategory()
 
 
-class RubberRect(QGraphicsRectItem):
-    def __init__(self, name):
-        super(RubberRect, self).__init__()
-        self.name = name
-        self.setZValue(2)
-        self.setPen(QtGui.QPen(Colors.RubberRect, 0.5, QtCore.Qt.SolidLine))
-        self.setBrush(QtGui.QBrush(Colors.RubberRect))
-
-
 class GraphWidget(QGraphicsView, Graph):
-
     def __init__(self, name, parent=None):
         super(GraphWidget, self).__init__()
         Graph.__init__(self, name)
+        self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent
         self.parent.actionClear_history.triggered.connect(self.undoStack.clear)
@@ -491,7 +486,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.factor = 1
         self.factor_diff = 0
         self.setWindowTitle(self.tr(name))
-        self.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemShape)
 
         self._current_file_name = 'Untitled'
         self._file_name_label = QGraphicsTextItem()
@@ -502,7 +496,6 @@ class GraphWidget(QGraphicsView, Graph):
         self._file_name_label.setPlainText(self._current_file_name)
 
         self.scene().addItem(self._file_name_label)
-        self.rubberRect = RubberRect('RubberRect')
 
         self.real_time_line = QGraphicsPathItem(None, self.scene())
 
@@ -543,13 +536,14 @@ class GraphWidget(QGraphicsView, Graph):
             self.node_box.lineEdit.setFocus()
 
     def shoutDown(self):
-        FunctionLibraries.shoutDown()
+        for ed in self.codeEditors.values():
+            ed.deleteLater()
+        for node in self.getNodes():
+            node.kill()
         self.scene().shoutDown()
         self.scene().clear()
         self.node_box.hide()
         self.node_box.lineEdit.clear()
-        for ed in self.codeEditors.values():
-            ed.deleteLater()
 
     def moveScrollbar(self, delta):
         x = self.horizontalScrollBar().value() + delta.x()
@@ -673,6 +667,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.vars.clear()
         self.parent.variablesWidget.listWidget.clear()
         self.undoStack.clear()
+        self._clearPropertiesView()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -758,7 +753,7 @@ class GraphWidget(QGraphicsView, Graph):
         if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
             if self.isShortcutsEnabled():
                 # create comment node
-                rect = Nodes.commentNode.getNodesRect(self.selectedNodes())
+                rect = Nodes.commentNode.commentNode.getNodesRect(self.selectedNodes())
                 if rect:
                     rect.setTop(rect.top() - 20)
                     rect.setLeft(rect.left() - 20)
@@ -767,8 +762,8 @@ class GraphWidget(QGraphicsView, Graph):
                     rect.setBottom(rect.bottom() + 20)
 
                 nodeTemplate = Node.jsonTemplate()
-                nodeTemplate['type'] = Nodes.commentNode.__name__
-                nodeTemplate['name'] = self.getUniqNodeName(Nodes.commentNode.__name__)
+                nodeTemplate['type'] = Nodes.commentNode.commentNode.__name__
+                nodeTemplate['name'] = self.getUniqNodeName(Nodes.commentNode.commentNode.__name__)
 
                 if rect:
                     nodeTemplate['x'] = rect.topLeft().x()
@@ -776,7 +771,7 @@ class GraphWidget(QGraphicsView, Graph):
                 else:
                     nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
                     nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
-                nodeTemplate['meta']['label'] = Nodes.commentNode.__name__
+                nodeTemplate['meta']['label'] = Nodes.commentNode.commentNode.__name__
                 nodeTemplate['uuid'] = None
                 instance = self.createNode(nodeTemplate)
                 if rect:
@@ -974,15 +969,6 @@ class GraphWidget(QGraphicsView, Graph):
         if self._is_rubber_band_selection:
             mCurrentPose = self.mapToScene(self.mousePos)
             mPressPose = self.mapToScene(self.mousePressPose)
-            if self.rubberRect not in self.scene().items():
-                self.scene().addItem(self.rubberRect)
-            if not self.rubberRect.isVisible():
-                self.rubberRect.setVisible(True)
-            r = QtCore.QRectF(mPressPose.x(),
-                              mPressPose.y(),
-                              mCurrentPose.x() - mPressPose.x(),
-                              mCurrentPose.y() - mPressPose.y())
-            self.rubberRect.setRect(r.normalized())
 
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
 
@@ -1013,24 +999,13 @@ class GraphWidget(QGraphicsView, Graph):
                 self.removeItemByName('RealTimeLine')
         if self._is_rubber_band_selection:
             self._is_rubber_band_selection = False
-            self.setDragMode(QGraphicsView.NoDrag)
-
-            # hack. disable signals and call selectionChanged once with last selected item
-            self.scene().blockSignals(True)
-            items = [i for i in self.rubberRect.collidingItems() if isinstance(i, Node) and not isinstance(i, Nodes.commentNode)]
-            for item in items[:-1]:
-                item.setSelected(True)
-            self.scene().blockSignals(False)
-            if len(items) > 0:
-                items[-1].setSelected(True)
-
             [i.setFlag(QGraphicsItem.ItemIsMovable) for i in self.getNodes() if i.isSelected()]
-            self.removeItemByName(self.rubberRect.name)
+
         if event.button() == QtCore.Qt.RightButton:
             # show nodebox only if drag is small and no items under cursor
-            if self.pressed_item is None:
+            if self.pressed_item is None or isinstance(self.pressed_item, Nodes.commentNode.commentNode):
                 dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
-                if all([abs(i) < 0.2 for i in [dragDiff.x(), dragDiff.y()]]):
+                if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
         if event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, PinBase):
             if isinstance(self.pressed_item, PinBase):
@@ -1076,7 +1051,7 @@ class GraphWidget(QGraphicsView, Graph):
         selectedNodes = self.selectedNodes()
         if len(selectedNodes) != 0 and event.button() == QtCore.Qt.LeftButton:
             self.tryFillPropertiesView(selectedNodes[0])
-        else:
+        elif event.button() == QtCore.Qt.LeftButton:
             self._clearPropertiesView()
 
     def tryFillPropertiesView(self, obj):

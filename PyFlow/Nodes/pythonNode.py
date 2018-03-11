@@ -1,11 +1,11 @@
-from Core.AbstractGraph import *
-from Core.Settings import *
-from Core import Node
+from ..Core.AbstractGraph import *
+from ..Core.Settings import *
+from ..Core import Node
 from Qt import QtGui
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QMenu
-from Core.CodeEditor import WCodeEditor
+from ..Core.CodeEditor import WCodeEditor
 import weakref
 import uuid
 from types import MethodType

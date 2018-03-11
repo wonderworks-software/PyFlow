@@ -60,13 +60,13 @@ from Qt.QtWidgets import QListWidgetItem
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QCompleter
 from Qt.QtWidgets import QPlainTextEdit
-import CodeEditor_ui
+from .. import CodeEditor_ui
 import PythonSyntax
-import PinWidget_ui
+from .. import PinWidget_ui
 from AbstractGraph import *
 import inspect
 from types import MethodType
-from Core import Node
+from ..Core import Node
 import weakref
 from keyword import kwlist
 import __builtin__
@@ -157,11 +157,11 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
         self.editor = weakref.ref(editor)
         self.lePinName.setText('pinName')
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.items = [v for v in inspect.getmembers(DataTypes) if v[0] not in ['__doc__', '__module__', 'Reference']]
+        self.items = [v for v in DataTypes if v not in [DataTypes.Reference, DataTypes.Enum]]
         self.cbType.clear()
 
         for i in self.items:
-            self.cbType.addItem(i[0], i[1])
+            self.cbType.addItem(i.name, i.value)
 
     @staticmethod
     def construct(name='pinName', hideLabel=False, dataType=DataTypes.Float, editor=None):
@@ -223,6 +223,10 @@ class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.pbKillSelectedItems.clicked.connect(self.onKillSelectedPins)
         self.resetUiData()
         self.populate()
+
+    def keyPressEvent(self, event):
+        if event.modifiers() == QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_S:
+            self.applyData()
 
     def OnCurrentTabChanged(self, index):
         if index is 1:

@@ -13,6 +13,9 @@ from functools import wraps
 from Queue import Queue
 import uuid
 import sys
+from enum import IntEnum
+import Enums
+
 
 ## determines step for all floating point input widgets
 FLOAT_SINGLE_STEP = 0.01
@@ -120,8 +123,18 @@ def memoize(foo):
     return wrapper
 
 
+class REGISTER_ENUM(object):
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self, cls):
+        Enums.appendEnumInstance(cls)
+        return cls
+
+
 ## Data types identifires.
-class DataTypes:
+class DataTypes(IntEnum):
     Float = 0
     Int = 1
     String = 2
@@ -131,7 +144,7 @@ class DataTypes:
     # It doesn't carry any data, but it implements [call](@ref PyFlow.Pins.ExecPin.ExecPin#call) method.
     # Using pins of this type we can control execution flow of graph.
     Exec = 5
-    ## Special type of data which represents value passed by reference using [implementNode](@ref PyFlow.Core.FunctionLibrary.implementNode) decorator.
+    ## Special type of data which represents value passed by reference using [IMPLEMENT_NODE](@ref PyFlow.Core.FunctionLibrary.IMPLEMENT_NODE) decorator.
     # For example see [factorial](@ref FunctionLibraries.MathLib.MathLib.factorial) function.
     # Here along with computation results we return additional info, whether function call succeeded or not.
     Reference = 6
@@ -140,6 +153,7 @@ class DataTypes:
     Matrix33 = 9
     Matrix44 = 10
     Quaternion = 11
+    Enum = 12
 
 
 ## Returns string representation of the data type identifier
@@ -223,27 +237,35 @@ class CircularBuffer(object):
 
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPinByName for optimization purposes
-class PinSelectionGroup:
-    Inputs = -1
+class PinSelectionGroup(IntEnum):
+    Inputs = 0
     Outputs = 1
-    BothSides = 0
+    BothSides = 2
+
+
+## Can be used for code generation
+class AccessLevel(IntEnum):
+    public = 0
+    private = 1
+    protected = 2
 
 
 ## Determines wheter it is input pin or output.
-class PinDirection:
+class PinDirection(IntEnum):
     Input = 0
     Output = 1
 
 
 ## Determines wheter it is callable node or pure.
 # Callable node is a node with Exec pins
-class NodeTypes:
+class NodeTypes(IntEnum):
     Callable = 0
     Pure = 1
 
 
+@REGISTER_ENUM()
 ## Direction identifires. Used in [alignSelectedNodes](@ref PyFlow.Core.Widget.GraphWidget.alignSelectedNodes)
-class Direction:
+class Direction(IntEnum):
     Left = 0
     Right = 1
     Up = 2

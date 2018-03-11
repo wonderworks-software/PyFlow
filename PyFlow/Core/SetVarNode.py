@@ -4,13 +4,13 @@ Builtin node to set variable value.
 """
 from AbstractGraph import *
 from Settings import *
-from Core import Node
+from . import Node
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QLineEdit
 from Qt import QtCore
 from Qt import QtGui
-from Commands import RemoveNodes
+from ..Commands import RemoveNodes
 from InputWidgets import getInputWidget
 
 
@@ -46,7 +46,7 @@ class SetVarNode(Node, NodeBase):
         formLayout.addRow("Type", leType)
 
         # input value
-        w = getInputWidget(self.value.dataType, self.value.setData, self.var.value)
+        w = getInputWidget(self.value.dataType, self.value.setData, self.var.value, None)
         if w:
             w.setWidgetValue(self.value.currentData())
             w.setObjectName(self.value.getName())

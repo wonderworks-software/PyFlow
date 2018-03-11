@@ -21,11 +21,12 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 from AbstractGraph import *
-from Pins import CreatePin
+from ..Pins import CreatePin
 from types import MethodType
-from InputWidgets import getInputWidget
+from .InputWidgets import getInputWidget
 from inspect import getargspec
 from NodePainter import NodePainter
+from Enums import ENone
 
 
 class NodeName(QGraphicsTextItem):
@@ -226,7 +227,8 @@ class Node(QGraphicsItem, NodeBase):
         inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
-            p = inst.addOutputPin('out', returnType)
+            structClass = type(returnDefaultValue) if returnType == DataTypes.Enum else ENone
+            p = inst.addOutputPin('out', returnType, userStructClass=structClass)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
 
@@ -236,16 +238,20 @@ class Node(QGraphicsItem, NodeBase):
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
-            dataType = foo.__annotations__[fooArgNames[index]]
+            argName = fooArgNames[index]
+            argDefaultValue = foo.__defaults__[index]
+            dataType = foo.__annotations__[argName]
+            structClass = type(argDefaultValue) if dataType == DataTypes.Enum else ENone
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
-                outRef = inst.addOutputPin(fooArgNames[index], dataType[0])
+                outRef = inst.addOutputPin(argName, dataType[0], userStructClass=structClass)
+                outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 refs.append(outRef)
             else:
-                inp = inst.addInputPin(fooArgNames[index], dataType)
-                inp.setData(foo.__defaults__[index])
-                inp.setDefaultValue(foo.__defaults__[index])
+                inp = inst.addInputPin(argName, dataType, userStructClass=structClass)
+                inp.setData(argDefaultValue)
+                inp.setDefaultValue(argDefaultValue)
 
         # all inputs affects on all outputs
         for i in inst.inputs.values():
@@ -261,7 +267,7 @@ class Node(QGraphicsItem, NodeBase):
                     kwargs[i.name] = i.getData()
             for ref in refs:
                 if ref.dataType is not DataTypes.Exec:
-                    kwargs[ref.name] = ref
+                    kwargs[ref.name] = ref.setData
             result = foo(**kwargs)
             if returnType is not None:
                 self.setData('out', result)
@@ -431,12 +437,12 @@ class Node(QGraphicsItem, NodeBase):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def addInputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
-        p = self._addPin(PinDirection.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
+    def addInputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone, defaultValue=None):
+        p = self._addPin(PinDirection.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass, defaultValue=defaultValue)
         return p
 
-    def addOutputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1):
-        p = self._addPin(PinDirection.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index)
+    def addOutputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone, defaultValue=None):
+        p = self._addPin(PinDirection.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass, defaultValue=defaultValue)
         return p
 
     @staticmethod
@@ -486,7 +492,7 @@ class Node(QGraphicsItem, NodeBase):
 
             for inp in self.inputs.values():
                 dataSetter = inp.call if inp.dataType == DataTypes.Exec else inp.setData
-                w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue())
+                w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
                     w.setWidgetValue(inp.currentData())
                     w.setObjectName(inp.getName())
@@ -503,7 +509,7 @@ class Node(QGraphicsItem, NodeBase):
             for out in self.outputs.values():
                 if out.dataType == DataTypes.Exec:
                     continue
-                w = getInputWidget(out.dataType, out.setData, out.defaultValue())
+                w = getInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
                 if w:
                     w.setWidgetValue(out.currentData())
                     w.setObjectName(out.getName())
@@ -558,11 +564,14 @@ class Node(QGraphicsItem, NodeBase):
         if pin:
             pin.kill()
 
-    def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1):
+    def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1, userStructClass=ENone, defaultValue=None):
         # check if pins with this name already exists and get uniq name
         name = self.getUniqPinName(name)
 
-        p = CreatePin(name, self, dataType, pinDirection)
+        p = CreatePin(name, self, dataType, pinDirection, userStructClass=userStructClass)
+        if defaultValue is not None:
+            p.setDefaultValue(defaultValue)
+
         self.graph().pins[p.uid] = p
 
         if pinDirection == PinDirection.Input and foo is not None:
@@ -578,6 +587,7 @@ class Node(QGraphicsItem, NodeBase):
             p.bLabelHidden = True
 
         lbl = QLabel(lblName)
+        p.nameChanged.connect(lbl.setText)
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         font = QtGui.QFont('Consolas')

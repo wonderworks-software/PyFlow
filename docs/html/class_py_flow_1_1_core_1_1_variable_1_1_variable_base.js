@@ -1,6 +1,8 @@
 var class_py_flow_1_1_core_1_1_variable_1_1_variable_base =
 [
     [ "__init__", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a183dce77bb469770d88efa83d073aafd", null ],
+    [ "accessLevel", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a8e744f46605aaa347e4cfde7afc604ce", null ],
+    [ "accessLevel", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a3d087dc90d554633bee1776fabf05e24", null ],
     [ "deserialize", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a1d74b641d72f8ca67bdee248499840bc", null ],
     [ "jsonTemplate", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a982309efb00719e9b85ee4e6a5c4871f", null ],
     [ "mousePressEvent", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a5f6b4f1e7b49084f8138b42da69f2692", null ],
@@ -12,6 +14,8 @@ var class_py_flow_1_1_core_1_1_variable_1_1_variable_base =
     [ "uid", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a642e35ad64381e6ccbc695aee5498e07", null ],
     [ "value", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a518a1b35bfdc346f4340e5b82b36132b", null ],
     [ "value", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a9dd0e42101e6b4ceba1927ad583e9533", null ],
+    [ "accessLevel", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#ad467a3414f7a12decc01fcb90a148c1d", null ],
+    [ "accessLevelChanged", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a2e17a4ab6a5f787e6cca7dfd772832ea", null ],
     [ "dataType", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a26fdf85837d2cbad6d6cbe627ed598cd", null ],
     [ "dataTypeChanged", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a1a2907d68f2df63d64f5dc38f2ac5d57", null ],
     [ "graph", "class_py_flow_1_1_core_1_1_variable_1_1_variable_base.html#a93373706604ca90af547ffb9b75e2837", null ],

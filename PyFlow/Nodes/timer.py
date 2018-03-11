@@ -3,9 +3,9 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QDoubleSpinBox
 from Qt.QtWidgets import QCheckBox
 from Qt.QtWidgets import QGraphicsProxyWidget
-from Core.AbstractGraph import *
-from Core.Settings import *
-from Core import Node
+from ..Core.AbstractGraph import *
+from ..Core.Settings import *
+from ..Core import Node
 
 
 ## Timer node
@@ -20,6 +20,11 @@ class timer(Node, NodeBase):
         self.interval.setDefaultValue(0.2)
         self._timer = QtCore.QTimer()
         self._timer.timeout.connect(self.compute)
+
+    def kill(self):
+        self._timer.stop()
+        self._timer.timeout.disconnect()
+        Node.kill(self)
 
     @staticmethod
     def pinTypeHints():

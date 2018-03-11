@@ -181,6 +181,15 @@ class IPin(IItemBase):
     def dataType(self, value):
         raise NotImplementedError('dataType setter method of IPin is not implemented')
 
+    def isUserStruct(self):
+        raise NotImplementedError('isUserStruct method of IPin is not implemented')
+
+    def getUserStruct(self):
+        raise NotImplementedError('getUserStruct method of IPin is not implemented')
+
+    def setUserStruct(self, inStruct):
+        raise NotImplementedError('setUserStruct method of IPin is not implemented')
+
 
 class INode(IItemBase):
     def __init__(self):
@@ -205,31 +214,39 @@ class INode(IItemBase):
         raise NotImplementedError('postCreate method of INode is not implemented')
 
 
+## Base no gui Pin class
 class PinBase(IPin):
-    def __init__(self, name, parent, dataType, direction):
+    def __init__(self, name, parent, dataType, direction, userStructClass=None):
         super(PinBase, self).__init__()
         self._uid = uuid.uuid4()
         self._dataType = None
+        self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
+        ## This flag for lazy evaluation
+        # @sa @ref PinBase::getData
         self.dirty = True
         self._connected = False
+        ## List of pins this pin connected to
         self.affects = []
+        ## Lsit of pins connected to this pin
         self.affected_by = []
+        ## List of connections
         self.edge_list = []
 
+        ## Access to the node
         self.parent = weakref.ref(parent)
         self.setName(name)
         self.dataType = dataType
 
+        ## Defines is this input pin or output
         self.direction = direction
 
     # ISerializable interface
-
     def serialize(self):
         data = {'name': self.name,
-                'dataType': self.dataType,
-                'direction': self.direction,
+                'dataType': int(self.dataType),
+                'direction': int(self.direction),
                 'value': self.currentData(),
                 'uuid': str(self.uid),
                 'bDirty': self.dirty
@@ -262,6 +279,7 @@ class PinBase(IPin):
     def color(self):
         return None
 
+    ## This used by node box to suggest nodes by type
     @staticmethod
     def pinDataTypeHint():
         return None
@@ -272,6 +290,7 @@ class PinBase(IPin):
     def defaultValue(self):
         return self._defaultValue
 
+    ## retrieving the data
     def getData(self):
         # if not connected - return data
         if not self.hasConnections():
@@ -299,6 +318,7 @@ class PinBase(IPin):
                 self.setClean()
                 return self._data
 
+    ## Setting the data
     def setData(self, data):
         self.setClean()
         if self.direction == PinDirection.Output:
@@ -306,9 +326,11 @@ class PinBase(IPin):
                 i._data = data
                 i.setClean()
 
+    ## Calling execution pin
     def call(self):
         pass
 
+    ## Describes, what data type is this pin.
     @property
     def dataType(self):
         return self._dataType
@@ -316,6 +338,15 @@ class PinBase(IPin):
     @dataType.setter
     def dataType(self, value):
         self._dataType = value
+
+    def isUserStruct(self):
+        return self._userStructClass is not None
+
+    def getUserStruct(self):
+        return self._userStructClass
+
+    def setUserStruct(self, inStruct):
+        self._userStructClass = inStruct
 
     # PinBase methods
 
@@ -614,6 +645,11 @@ class Graph(object):
         if dst.uid not in self.pins:
             print('dst not in graph.pins')
             return False
+
+        # if src.dataType == DataTypes.Enum and dst.dataType == DataTypes.Enum:
+        #     if src.getUserStruct() != dst.getUserStruct():
+        #         print('{0} and {1} structures are not supported'.format(src.getUserStruct().__name__, dst.getUserStruct().__name__))
+        #         return False
 
         if src.dataType not in dst.supportedDataTypes():
             print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))

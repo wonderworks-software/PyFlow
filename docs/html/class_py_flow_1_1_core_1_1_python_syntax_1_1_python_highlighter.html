@@ -144,8 +144,6 @@ Static Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Syntax highlighter for the Python language. </p>
-
-<p class="definition">Definition at line <a class="el" href="_python_syntax_8py_source.html#l00048">48</a> of file <a class="el" href="_python_syntax_8py_source.html">PythonSyntax.py</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a12831c8a9da1dc514c6fc53f67872f38"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a12831c8a9da1dc514c6fc53f67872f38">&#9670;&nbsp;</a></span>match_multiline()</h2>
@@ -194,8 +192,6 @@ Static Public Attributes</h2></td></tr>
 <p>Do highlighting of multi-line strings. </p>
 <p><code>delimiter</code> should be a <code>QRegExp</code> for triple-single-quotes or triple-double-quotes, and <code>in_state</code> should be a unique integer to represent the corresponding state changes when inside those strings. Returns True if we're still inside a multi-line string when this function is finished. </p>
 
-<p class="definition">Definition at line <a class="el" href="_python_syntax_8py_source.html#l00153">153</a> of file <a class="el" href="_python_syntax_8py_source.html">PythonSyntax.py</a>.</p>
-
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -219,8 +215,6 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=  [</div><div class="line">        <span class="stringliteral">&#39;\{&#39;</span>, <span class="stringliteral">&#39;\}&#39;</span>, <span class="stringliteral">&#39;\(&#39;</span>, <span class="stringliteral">&#39;\)&#39;</span>, <span class="stringliteral">&#39;\[&#39;</span>, <span class="stringliteral">&#39;\]&#39;</span>,</div><div class="line">    ]</div></div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="_python_syntax_8py_source.html#l00072">72</a> of file <a class="el" href="_python_syntax_8py_source.html">PythonSyntax.py</a>.</p>
-
 </div>
 </div>
 <a id="a7d1c54b4941ff6a4af0aff7b2d6e8ba6"></a>
@@ -243,8 +237,6 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=  [</div><div class="line">        <span class="stringliteral">&#39;and&#39;</span>, <span class="stringliteral">&#39;assert&#39;</span>, <span class="stringliteral">&#39;break&#39;</span>, <span class="stringliteral">&#39;class&#39;</span>, <span class="stringliteral">&#39;continue&#39;</span>, <span class="stringliteral">&#39;def&#39;</span>,</div><div class="line">        <span class="stringliteral">&#39;del&#39;</span>, <span class="stringliteral">&#39;elif&#39;</span>, <span class="stringliteral">&#39;else&#39;</span>, <span class="stringliteral">&#39;except&#39;</span>, <span class="stringliteral">&#39;exec&#39;</span>, <span class="stringliteral">&#39;finally&#39;</span>,</div><div class="line">        <span class="stringliteral">&#39;for&#39;</span>, <span class="stringliteral">&#39;from&#39;</span>, <span class="stringliteral">&#39;global&#39;</span>, <span class="stringliteral">&#39;if&#39;</span>, <span class="stringliteral">&#39;import&#39;</span>, <span class="stringliteral">&#39;in&#39;</span>,</div><div class="line">        <span class="stringliteral">&#39;is&#39;</span>, <span class="stringliteral">&#39;lambda&#39;</span>, <span class="stringliteral">&#39;not&#39;</span>, <span class="stringliteral">&#39;or&#39;</span>, <span class="stringliteral">&#39;pass&#39;</span>, <span class="stringliteral">&#39;raise&#39;</span>,</div><div class="line">        <span class="stringliteral">&#39;return&#39;</span>, <span class="stringliteral">&#39;try&#39;</span>, <span class="stringliteral">&#39;while&#39;</span>, <span class="stringliteral">&#39;yield&#39;</span>, <span class="stringliteral">&#39;None&#39;</span>, <span class="stringliteral">&#39;True&#39;</span>, <span class="stringliteral">&#39;False&#39;</span>,</div><div class="line">    ]</div></div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="_python_syntax_8py_source.html#l00050">50</a> of file <a class="el" href="_python_syntax_8py_source.html">PythonSyntax.py</a>.</p>
-
 </div>
 </div>
 <a id="aca00ab33b56ccea852653310e7b620d9"></a>
@@ -267,12 +259,10 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">=  [</div><div class="line">        <span class="stringliteral">&#39;=&#39;</span>,</div><div class="line">        <span class="comment"># Comparison</span></div><div class="line">        <span class="stringliteral">&#39;==&#39;</span>, <span class="stringliteral">&#39;!=&#39;</span>, <span class="stringliteral">&#39;&lt;&#39;</span>, <span class="stringliteral">&#39;&lt;=&#39;</span>, <span class="stringliteral">&#39;&gt;&#39;</span>, <span class="stringliteral">&#39;&gt;=&#39;</span>,</div><div class="line">        <span class="comment"># Arithmetic</span></div><div class="line">        <span class="stringliteral">&#39;\+&#39;</span>, <span class="stringliteral">&#39;-&#39;</span>, <span class="stringliteral">&#39;\*&#39;</span>, <span class="stringliteral">&#39;/&#39;</span>, <span class="stringliteral">&#39;//&#39;</span>, <span class="stringliteral">&#39;\%&#39;</span>, <span class="stringliteral">&#39;\*\*&#39;</span>,</div><div class="line">        <span class="comment"># In-place</span></div><div class="line">        <span class="stringliteral">&#39;\+=&#39;</span>, <span class="stringliteral">&#39;-=&#39;</span>, <span class="stringliteral">&#39;\*=&#39;</span>, <span class="stringliteral">&#39;/=&#39;</span>, <span class="stringliteral">&#39;\%=&#39;</span>,</div><div class="line">        <span class="comment"># Bitwise</span></div><div class="line">        <span class="stringliteral">&#39;\^&#39;</span>, <span class="stringliteral">&#39;\|&#39;</span>, <span class="stringliteral">&#39;\&amp;&#39;</span>, <span class="stringliteral">&#39;\~&#39;</span>, <span class="stringliteral">&#39;&gt;&gt;&#39;</span>, <span class="stringliteral">&#39;&lt;&lt;&#39;</span>,</div><div class="line">    ]</div></div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="_python_syntax_8py_source.html#l00059">59</a> of file <a class="el" href="_python_syntax_8py_source.html">PythonSyntax.py</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>PyFlow/Core/<a class="el" href="_python_syntax_8py_source.html">PythonSyntax.py</a></li>
+<li>PyFlow/Core/PythonSyntax.py</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

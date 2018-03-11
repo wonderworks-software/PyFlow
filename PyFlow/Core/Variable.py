@@ -13,12 +13,11 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
-import nodes_res_rc
 from uuid import uuid4
 import inspect
 from AbstractGraph import *
 import InputWidgets
-import Pins
+from .. import Pins
 
 
 ## Colored rounded rect
@@ -50,7 +49,7 @@ class VarTypeComboBox(QComboBox):
         self._bJustSpawned = True
         self.var = var
         for i in self.var.types:
-            self.addItem(i[0], i[1])
+            self.addItem(i, DataTypes[i].value)
         self.currentIndexChanged.connect(self.onCurrentIndexChanged)
         self.setCurrentIndex(self.findData(var.dataType))
         self._bJustSpawned = False
@@ -75,9 +74,12 @@ class VariableBase(QWidget):
     killed = QtCore.Signal()
     ## executed when variable data type been changed
     dataTypeChanged = QtCore.Signal(int)
+    ## executed when variable access level been changed
+    accessLevelChanged = QtCore.Signal(int)
 
     def __init__(self, name, value, graph, varsListWidget, dataType=DataTypes.Bool, uid=None):
         super(VariableBase, self).__init__()
+        self._accessLevel = AccessLevel.public
         # ui
         self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setSpacing(1)
@@ -91,7 +93,7 @@ class VariableBase(QWidget):
         self.horizontalLayout.addWidget(self.labelName)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        # self.retranslateUi(self)
+
         QtCore.QMetaObject.connectSlotsByName(self)
         # body
         self.varsListWidget = varsListWidget
@@ -103,8 +105,17 @@ class VariableBase(QWidget):
             self._uid = uuid4()
         self.graph = graph
         self.setName(name)
-        self.types = [v for v in inspect.getmembers(DataTypes) if v[0] not in ['__doc__', '__module__', 'Reference', 'Exec']]
+        self.types = [v.name for v in list(DataTypes) if v not in [DataTypes.Reference, DataTypes.Exec, DataTypes.Enum]]
         self.graph.vars[self.uid] = self
+
+    @property
+    def accessLevel(self):
+        return self._accessLevel
+
+    @accessLevel.setter
+    def accessLevel(self, value):
+        self._accessLevel = value
+        self.accessLevelChanged.emit(value)
 
     @property
     def uid(self):
@@ -133,6 +144,7 @@ class VariableBase(QWidget):
         template['uuid'] = str(self.uid)
         template['value'] = self.value
         template['type'] = self.dataType
+        template['accessLevel'] = self.accessLevel
         return template
 
     @staticmethod
@@ -141,6 +153,7 @@ class VariableBase(QWidget):
         var.setName(data['name'])
         var.setDataType(data['type'])
         var.value = data['value']
+        var.accessLevel = data['accessLevel']
         return var
 
     @property
@@ -163,11 +176,11 @@ class VariableBase(QWidget):
             return
         self.dataTypeChanged.emit(self.dataType)
         self.graph.undoStack.clear()
+        self.graph.tryFillPropertiesView(self)
 
     def mousePressEvent(self, event):
         QWidget.mousePressEvent(self, event)
         self.graph.tryFillPropertiesView(self)
-        # self.onUpdatePropertyView(self.graph.parent.formLayout)
 
     def setName(self, name):
         self.labelName.setText(name)
@@ -187,12 +200,19 @@ class VariableBase(QWidget):
         # current value
         def valSetter(x):
             self.value = x
-        w = InputWidgets.getInputWidget(self.dataType, valSetter, Pins.getPinDefaultValueByType(self.dataType))
+        w = InputWidgets.getInputWidget(self.dataType, valSetter, Pins.getPinDefaultValueByType(self.dataType), None)
         if w:
             w.setWidgetValue(self.value)
             w.setObjectName(self.name)
             formLayout.addRow(self.name, w)
+        # access level
+        cb = QComboBox()
+        cb.addItem('public', 0)
+        cb.addItem('private', 1)
+        cb.addItem('protected', 2)
 
-    # def retranslateUi(self, Form):
-    #     Form.setWindowTitle(QApplication.translate("Form", "Form", None, QApplication.UnicodeUTF8))
-    #     self.labelName.setText(QApplication.translate("Form", "var name", None, QApplication.UnicodeUTF8))
+        def accessLevelChanged(x):
+            self.accessLevel = x
+        cb.currentIndexChanged[int].connect(accessLevelChanged)
+        cb.setCurrentIndex(self.accessLevel)
+        formLayout.addRow('Access level', cb)

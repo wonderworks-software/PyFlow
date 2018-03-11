@@ -1,15 +1,15 @@
-from Core.AbstractGraph import *
-from Core.Settings import *
-from Core import Node
+from ..Core.AbstractGraph import *
+from ..Core.Settings import *
+from ..Core import Node
 
 
 class whileLoop(Node):
     def __init__(self, name, graph):
         super(whileLoop, self).__init__(name, graph)
-        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.begin)
-        self.bCondition = self.addInputPin('condition', DataTypes.Bool)
-        self.loopBody = self.addOutputPin('loop body', DataTypes.Exec)
-        self.completed = self.addOutputPin('completed', DataTypes.Exec)
+        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.begin, hideLabel=True)
+        self.bCondition = self.addInputPin('Condition', DataTypes.Bool)
+        self.loopBody = self.addOutputPin('LoopBody', DataTypes.Exec)
+        self.completed = self.addOutputPin('Completed', DataTypes.Exec)
         self.bProcess = False
         self._dirty = False
 

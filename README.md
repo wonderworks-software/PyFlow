@@ -1,11 +1,9 @@
-
-
 # Overview
 <p align="center">
   <img src="PyFlow/resources/PyFlow.jpg">
 </p>
 
-**PyFlow** is a general purpose extendable python qt node editor. Written in python!
+**PyFlow** is a general purpose runtime extendable python qt node editor.
 
 # Table of contents
 - [Features](#features)
@@ -26,10 +24,10 @@
 
 # Installation
 1. Download repository.
-2. Install [conda](https://conda.io/docs/)  with pyside2 environment. [Instruction](https://fredrikaverpil.github.io/2017/08/28/pyside2-easy-install/) here
+2. Install [conda](https://conda.io/miniconda.html) with pyside2 environment. [Instruction](https://fredrikaverpil.github.io/2017/08/28/pyside2-easy-install/) here
 3. Go to **Scripts/** folder and install dependencies
 	```bash
-	pip install Qt.py pyrr
+	pip install Qt.py pyrr enum34
 	```
 4. Execute **starter.bat**
 
@@ -44,7 +42,12 @@ App's entry point is a **PyFlow.py** file. There are also several handy bat scri
 Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
 Connect and execute pins from property view or using timer node.
 
-For in depth descriptin and how it works, see [video tutorials](http://blank.org/) and [documentation](https://ilgarlunin.github.io/PyFlow/html/index.html).
+# Extending
+See source code. **FunctionLibraries** folder for annotated nodes, **Nodes** folder for
+class based nodes. **Pins**, for data types and **Commands** for editor commands.
+
+# Donate
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ILunin)
 
 # Donate
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ILunin)

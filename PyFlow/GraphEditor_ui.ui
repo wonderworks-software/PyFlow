@@ -110,6 +110,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew"/>
     <addaction name="actionSave"/>
     <addaction name="actionLoad"/>
     <addaction name="actionSave_as"/>
@@ -203,7 +204,7 @@
           <x>0</x>
           <y>0</y>
           <width>148</width>
-          <height>756</height>
+          <height>781</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -235,7 +236,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidgetNodeView">
    <property name="minimumSize">
     <size>
@@ -280,7 +280,7 @@
           <x>0</x>
           <y>0</y>
           <width>498</width>
-          <height>594</height>
+          <height>614</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
@@ -533,6 +533,15 @@
    </property>
    <property name="text">
     <string>New pin</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset resource="nodes_res.qrc">
+     <normaloff>:/icons/resources/new_file_icon.png</normaloff>:/icons/resources/new_file_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>New</string>
    </property>
   </action>
  </widget>

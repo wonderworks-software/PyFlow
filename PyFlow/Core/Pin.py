@@ -7,7 +7,6 @@ from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QApplication
 from AbstractGraph import *
 from Settings import *
-import nodes_res_rc
 
 
 class PinWidgetBase(QGraphicsWidget, PinBase):
@@ -15,20 +14,32 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
     This is base class for all ui pins
     '''
 
+    ## Event called when pin is connected
     OnPinConnected = QtCore.Signal(object)
+    ## Event called when pin is disconnected
     OnPinDisconnected = QtCore.Signal(object)
+    ## Event called when data been set
     dataBeenSet = QtCore.Signal(object)
+    ## Event called when pin name changes
+    nameChanged = QtCore.Signal(str)
+    ## Event called when setUserStruct called
+    # used by enums
+    userStructChanged = QtCore.Signal(object)
 
     def __init__(self, name, parent, dataType, direction, **kwargs):
         QGraphicsWidget.__init__(self)
         PinBase.__init__(self, name, parent, dataType, direction, **kwargs)
         self.setParentItem(parent)
         self.setCursor(QtCore.Qt.CrossCursor)
+        ## context menu for pin
         self.menu = QMenu()
+        ## Disconnect all connections
         self.actionDisconnect = self.menu.addAction('disconnect all')
         self.actionDisconnect.triggered.connect(self.disconnectAll)
+        ## Copy UUID to buffer
         self.actionCopyUid = self.menu.addAction('copy uid')
         self.actionCopyUid.triggered.connect(self.saveUidToClipboard)
+        ## Call exec pin
         self.actionCall = self.menu.addAction('execute')
         self.actionCall.triggered.connect(self.call)
         self.newPos = QtCore.QPointF()
@@ -49,8 +60,15 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         self.pinImage = QtGui.QImage(':/icons/resources/array.png')
         self.bLabelHidden = False
         self.bAnimate = False
-        self.val = 0
-        self.setData(self.defaultValue())
+        self._val = 0
+
+    def setUserStruct(self, inStruct):
+        PinBase.setUserStruct(self, inStruct)
+        self.userStructChanged.emit(inStruct)
+
+    def setName(self, newName):
+        super(PinWidgetBase, self).setName(newName)
+        self.nameChanged.emit(newName)
 
     def setData(self, value):
         PinBase.setData(self, value)
@@ -65,14 +83,14 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         t.start()
 
     def animFrameChanged(self, value):
-        self.width = clamp(math.sin(self.val) * 9, 4.5, 25)
+        self.width = clamp(math.sin(self._val) * 9, 4.5, 25)
         self.update()
-        self.val += 0.1
+        self._val += 0.1
 
     def animationFinished(self):
         self.width = 9
         self.update()
-        self.val = 0
+        self._val = 0
 
     @staticmethod
     def color():
@@ -148,7 +166,6 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
                 trash.append(e)
         for e in trash:
             self.parent().graph().removeEdge(e)
-        self.bEdgeTangentDirection = False
 
     def shape(self):
         path = QtGui.QPainterPath()

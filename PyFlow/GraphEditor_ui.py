@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/GraphEditor_ui.ui'
 #
-# Created: Mon Feb 19 15:01:14 2018
-#      by: pyside2-uic 2.0.0 running on PySide2 2.0.0~alpha0
+# Created: Sun Mar 11 18:19:07 2018
+#      by: pyside2-uic 2.0.0 running on PySide2 5.6.0~a1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -73,7 +73,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 148, 756))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 148, 781))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -90,9 +90,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.scrollArea_2)
         self.dockWidgetVariables.setWidget(self.dockWidgetContents_5)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetVariables)
-        self.statusBar = QtWidgets.QStatusBar(MainWindow)
-        self.statusBar.setObjectName("statusBar")
-        MainWindow.setStatusBar(self.statusBar)
         self.dockWidgetNodeView = QtWidgets.QDockWidget(MainWindow)
         self.dockWidgetNodeView.setMinimumSize(QtCore.QSize(500, 166))
         self.dockWidgetNodeView.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
@@ -107,7 +104,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 498, 594))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 498, 614))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
@@ -231,12 +228,18 @@ class Ui_MainWindow(object):
         icon19.addPixmap(QtGui.QPixmap(":/icons/resources/pin.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionNew_pin.setIcon(icon19)
         self.actionNew_pin.setObjectName("actionNew_pin")
+        self.actionNew = QtWidgets.QAction(MainWindow)
+        icon20 = QtGui.QIcon()
+        icon20.addPixmap(QtGui.QPixmap(":/icons/resources/new_file_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionNew.setIcon(icon20)
+        self.actionNew.setObjectName("actionNew")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionClear_history)
         self.menuView.addAction(self.actionVariables)
         self.menuView.addAction(self.actionHistory)
         self.menuView.addAction(self.actionPropertyView)
+        self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionSave_as)
@@ -303,5 +306,6 @@ class Ui_MainWindow(object):
         self.actionVariables.setText(QtCompat.translate("MainWindow", "Variables", None, -1))
         self.actionHistory.setText(QtCompat.translate("MainWindow", "History", None, -1))
         self.actionNew_pin.setText(QtCompat.translate("MainWindow", "New pin", None, -1))
+        self.actionNew.setText(QtCompat.translate("MainWindow", "New", None, -1))
 
 import nodes_res_rc

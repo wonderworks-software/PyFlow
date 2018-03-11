@@ -18,7 +18,7 @@ empty = {}
 # @param[in] meta dictionary with category path, keywords and any additional info
 # @param[in] nodeType determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created
 # @sa [NodeTypes](@ref PyFlow.Core.AGraphCommon.NodeTypes) FunctionLibraries
-def implementNode(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
+def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     def wrapper(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
         func.__annotations__['nodeType'] = nodeType
@@ -64,3 +64,7 @@ def implementNode(func=None, returns=empty, meta={'Category': 'Default', 'Keywor
 class FunctionLibraryBase(object):
     def __init__(self):
         super(FunctionLibraryBase, self).__init__()
+        self.__foos = inspect.getmembers(self, inspect.isfunction)
+
+    def getFunctions(self):
+        return self.__foos

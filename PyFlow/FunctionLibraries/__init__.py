@@ -9,21 +9,28 @@ from inspect import isfunction
 _libs = {}
 _foos = {}
 
-# append from FunctionLibraries
-for lib in os.listdir(os.path.dirname(__file__)):
-    if lib.endswith(".py") and "__init__" not in lib:
-        libName = lib.split(".")[0]
-        try:
-            exec('from {0} import {0}'.format(libName))
-            exec('lib_class = {0}'.format(libName))
-            foos = getmembers(lib_class, isfunction)
-            _libs[libName] = foos
-            for f in _libs[libName]:
-                _foos[f[0]] = f[1]
-        except Exception as e:
-            # not load lib if any errors or unknown modules etc.
-            print e, libName
-            pass
+
+def _getFunctions():
+    # append from FunctionLibraries
+    for lib in os.listdir(os.path.dirname(__file__)):
+        if lib.endswith(".py") and "__init__" not in lib:
+            libName = lib.split(".")[0]
+            try:
+                exec('from {0} import {0}'.format(libName))
+                exec('lib_class = {0}'.format(libName))
+
+                libInstance = lib_class()
+                foos = libInstance.getFunctions()
+
+                _libs[libName] = foos
+
+                for f in _libs[libName]:
+                    _foos[f[0]] = f[1]
+
+            except Exception as e:
+                # not load lib if any errors or unknown modules etc.
+                print e, libName
+                pass
 
 
 ## Get registered function library by name
@@ -49,6 +56,4 @@ def findFunctionByName(name):
     return None
 
 
-def shoutDown():
-    _foos.clear()
-    _libs.clear()
+_getFunctions()
