@@ -46,6 +46,9 @@ Connect and execute pins from property view or using timer node.
 
 For in depth descriptin and how it works, see [video tutorials](http://blank.org/) and [documentation](https://ilgarlunin.github.io/PyFlow/html/index.html).
 
+# Donate
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ILunin)
+
 # Licensing
 The MIT License (MIT)
 
