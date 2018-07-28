@@ -25,7 +25,7 @@ import json
 from time import clock
 
 
-FILE_DIR = os.path.abspath(os.path(dirname(__file__)))
+FILE_DIR = os.path.abspath( os.path.dirname(__file__))
 SETTINGS_PATH = os.path.join(FILE_DIR,"appConfig.ini")
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 EDITOR_TARGET_FPS = 60
