@@ -1,5 +1,6 @@
-from os import listdir, path, startfile
+from os import listdir, path
 import sys
+import subprocess
 from Qt import QtGui
 from Qt import QtCore
 from Qt.QtWidgets import QMainWindow
@@ -29,7 +30,12 @@ SETTINGS_PATH = FILE_DIR + "/appConfig.ini"
 STYLE_PATH = FILE_DIR + "/style.css"
 EDITOR_TARGET_FPS = 60
 
-
+def open_file(filename):
+    if sys.platform == "win32":
+        os.startfile(filename)
+    else:
+        opener ="open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, filename])
 class PluginType:
     pNode = 0
     pCommand = 1
@@ -183,7 +189,7 @@ class {0}(PinWidgetBase):
         with open(file_path, "wb") as f:
             f.write(NodeTemplate)
         print("[INFO] Node {0} been created.\nIn order to appear in node box, restart application.".format(name))
-        startfile(file_path)
+        open_file(file_path)
 
     if pluginType == PluginType.pCommand:
         file_path = "{0}/{1}.py".format(Commands.__path__[0], name)
@@ -195,7 +201,7 @@ class {0}(PinWidgetBase):
         with open(file_path, "wb") as f:
             f.write(CommandTemplate)
         print("[INFO] Command {0} been created.\n Restart application.".format(name))
-        startfile(file_path)
+        open_file(file_path)
 
     if pluginType == PluginType.pFunctionLibrary:
         filePath = "{0}/{1}.py".format(FunctionLibraries.__path__[0], name)
@@ -207,7 +213,7 @@ class {0}(PinWidgetBase):
         with open(filePath, "wb") as f:
             f.write(LibraryTemplate)
         print("[INFO] Function lib {0} been created.\n Restart application.".format(name))
-        startfile(filePath)
+        open_file(filePath)
 
     if pluginType == PluginType.pPin:
         filePath = "{0}/{1}.py".format(Pins.__path__[0], name)
@@ -219,7 +225,7 @@ class {0}(PinWidgetBase):
         with open(filePath, "wb") as f:
             f.write(PinTemplate)
         print("[INFO] Pin {0} been created.\n Restart application.".format(name))
-        startfile(filePath)
+        open_file(filePath)
 
 
 ## App itself
