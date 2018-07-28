@@ -1,4 +1,4 @@
-from os import listdir, path
+import os
 import sys
 import subprocess
 from Qt import QtGui
@@ -25,9 +25,9 @@ import json
 from time import clock
 
 
-FILE_DIR = path.dirname(__file__)
-SETTINGS_PATH = FILE_DIR + "/appConfig.ini"
-STYLE_PATH = FILE_DIR + "/style.css"
+FILE_DIR = os.path.abspath(os.path(dirname(__file__)))
+SETTINGS_PATH = os.path.join(FILE_DIR,"appConfig.ini")
+STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 EDITOR_TARGET_FPS = 60
 
 def open_file(filename):
@@ -179,7 +179,7 @@ class {0}(PinWidgetBase):
 
     if pluginType == PluginType.pNode:
         file_path = "{0}/{1}.py".format(Nodes.__path__[0], name)
-        existing_nodes = [n.split(".")[0] for n in listdir(Nodes.__path__[0]) if n.endswith(".py") and "__init__" not in n]
+        existing_nodes = [n.split(".")[0] for n in os.listdir(Nodes.__path__[0]) if n.endswith(".py") and "__init__" not in n]
 
         if name in existing_nodes:
             print("[ERROR] Node {0} already exists! Chose another name".format(name))
@@ -193,7 +193,7 @@ class {0}(PinWidgetBase):
 
     if pluginType == PluginType.pCommand:
         file_path = "{0}/{1}.py".format(Commands.__path__[0], name)
-        existing_commands = [c.split(".")[0] for c in listdir(Commands.__path__[0]) if c.endswith(".py") and "__init__" not in c]
+        existing_commands = [c.split(".")[0] for c in os.listdir(Commands.__path__[0]) if c.endswith(".py") and "__init__" not in c]
         if name in existing_commands:
             print("[ERROR] Command {0} already exists! Chose another name".format(name))
             return
@@ -205,7 +205,7 @@ class {0}(PinWidgetBase):
 
     if pluginType == PluginType.pFunctionLibrary:
         filePath = "{0}/{1}.py".format(FunctionLibraries.__path__[0], name)
-        existingLibs = [c.split(".")[0] for c in listdir(FunctionLibraries.__path__[0]) if c.endswith(".py") and "__init__" not in c]
+        existingLibs = [c.split(".")[0] for c in os.listdir(FunctionLibraries.__path__[0]) if c.endswith(".py") and "__init__" not in c]
         if name in existingLibs:
             print("[ERROR] Function library {0} already exists! Chose another name".format(name))
             return
@@ -217,7 +217,7 @@ class {0}(PinWidgetBase):
 
     if pluginType == PluginType.pPin:
         filePath = "{0}/{1}.py".format(Pins.__path__[0], name)
-        existingPins = [c.split(".")[0] for c in listdir(Pins.__path__[0]) if c.endswith(".py") and "__init__" not in c]
+        existingPins = [c.split(".")[0] for c in os.listdir(Pins.__path__[0]) if c.endswith(".py") and "__init__" not in c]
         if name in existingPins:
             print("[ERROR] Pin {0} already exists! Chose another name".format(name))
             return
