@@ -5,9 +5,9 @@ import sys
 from os import path
 from PyFlow.App import PyFlow
 
-FILE_DIR = path.dirname(__file__)
-SETTINGS_PATH = FILE_DIR + "PyFlow/appConfig.ini"
-STYLE_PATH = FILE_DIR + "/PyFlow/style.css"
+FILE_DIR = path.abspath(path.dirname(__file__))
+SETTINGS_PATH = path.join(FILE_DIR, "PyFlow", "appConfig.ini")
+STYLE_PATH = path.join(FILE_DIR, "PyFlow", "style.css")
 
 app = QApplication(sys.argv)
 
