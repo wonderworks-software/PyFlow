@@ -2,12 +2,12 @@ from Qt.QtWidgets import QApplication
 from Qt import QtGui
 from Qt import QtCore
 import sys
-from os import path
+import os
 from PyFlow.App import PyFlow
 
-FILE_DIR = path.dirname(__file__)
-SETTINGS_PATH = FILE_DIR + "PyFlow/appConfig.ini"
-STYLE_PATH = FILE_DIR + "/PyFlow/style.css"
+FILE_DIR = os.path.abspath(os.path.dirname(__file__))
+SETTINGS_PATH = os.path.join(FILE_DIR, "PyFlow", "appConfig.ini")
+STYLE_PATH = os.path.join(FILE_DIR, "PyFlow", "style.css")
 
 app = QApplication(sys.argv)
 
