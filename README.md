@@ -1,6 +1,6 @@
 # Overview
 <p align="center">
-  <img src="PyFlow/resources/PyFlow.jpg">
+  <img src="PyFlow/UI/resources/PyFlow.jpg">
 </p>
 
 **PyFlow** is a general purpose runtime extendable python qt node editor.
