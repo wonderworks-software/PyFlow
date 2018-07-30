@@ -476,7 +476,6 @@ class GraphWidget(QGraphicsView, Graph):
         self.maximum_scale = 2.0
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
-        self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setAcceptDrops(True)
         self.setAttribute(QtCore.Qt.WA_AlwaysShowToolTips)
@@ -513,10 +512,7 @@ class GraphWidget(QGraphicsView, Graph):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.centerOn(QtCore.QPointF(self.sceneRect().width() / 2, self.sceneRect().height() / 2))
         self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
-        # self.registeredCommands = {}
-        # self.registerCommands()
         self._sortcuts_enabled = True
-        # self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid_size = 10
         self.drawGrigSize = self.grid_size * 2
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)

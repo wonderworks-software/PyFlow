@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/ArrayInputWidget_ui.ui'
+# Form implementation generated from reading ui file 'e:\GIT\PyFlow\PyFlow\UI\ArrayInputWidget_ui.ui'
 #
-# Created: Sun Mar 11 18:19:06 2018
+# Created: Mon Jul 30 21:06:56 2018
 #      by: pyside2-uic 2.0.0 running on PySide2 5.6.0~a1
 #
 # WARNING! All changes made in this file will be lost!
 
-from Qt import QtCompat, QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -32,6 +32,6 @@ class Ui_Form(object):
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QtCompat.translate("Form", "Form", None, -1))
-        self.pushButton.setText(QtCompat.translate("Form", "+", None, -1))
+        Form.setWindowTitle(QtWidgets.QApplication.translate("Form", "Form", None, -1))
+        self.pushButton.setText(QtWidgets.QApplication.translate("Form", "+", None, -1))
 

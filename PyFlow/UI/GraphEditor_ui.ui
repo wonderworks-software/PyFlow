@@ -9,15 +9,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1608</width>
-    <height>875</height>
+    <width>1154</width>
+    <height>633</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>PyFlow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="nodes_res.qrc">
+   <iconset>
     <normaloff>:/icons/resources/LogoBpApp.png</normaloff>:/icons/resources/LogoBpApp.png</iconset>
   </property>
   <property name="documentMode">
@@ -86,8 +86,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1608</width>
-     <height>26</height>
+     <width>1154</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuEdit">
@@ -204,7 +204,7 @@
           <x>0</x>
           <y>0</y>
           <width>148</width>
-          <height>781</height>
+          <height>554</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -239,8 +239,8 @@
   <widget class="QDockWidget" name="dockWidgetNodeView">
    <property name="minimumSize">
     <size>
-     <width>500</width>
-     <height>166</height>
+     <width>0</width>
+     <height>0</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -279,8 +279,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>498</width>
-          <height>614</height>
+          <width>78</width>
+          <height>445</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">

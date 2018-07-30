@@ -7,7 +7,7 @@ from Qt import QtGui
 from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QListWidget
 from Qt.QtWidgets import QListWidgetItem
-from .. import VariablesWidget_ui
+from ..UI import VariablesWidget_ui
 from Variable import VariableBase
 from types import MethodType
 from AbstractGraph import *

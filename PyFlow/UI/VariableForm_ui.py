@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/VariableForm_ui.ui'
+# Form implementation generated from reading ui file 'E:/GIT/PyFlow/PyFlow/UI/VariableForm_ui.ui'
 #
-# Created: Sun Mar 11 18:19:08 2018
+# Created: Mon Jul 30 21:09:29 2018
 #      by: pyside2-uic 2.0.0 running on PySide2 5.6.0~a1
 #
 # WARNING! All changes made in this file will be lost!

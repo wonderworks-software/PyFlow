@@ -20,13 +20,13 @@ import Nodes
 import Commands
 import FunctionLibraries
 import Pins
-import GraphEditor_ui
+from UI import GraphEditor_ui
 import json
 from time import clock
 
 
-FILE_DIR = os.path.abspath( os.path.dirname(__file__))
-SETTINGS_PATH = os.path.join(FILE_DIR,"appConfig.ini")
+FILE_DIR = os.path.abspath(os.path.dirname(__file__))
+SETTINGS_PATH = os.path.join(FILE_DIR, "appConfig.ini")
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 EDITOR_TARGET_FPS = 60
 
@@ -34,7 +34,7 @@ def open_file(filename):
     if sys.platform == "win32":
         os.startfile(filename)
     else:
-        opener ="open" if sys.platform == "darwin" else "xdg-open"
+        opener = "open" if sys.platform == "darwin" else "xdg-open"
         subprocess.call([opener, filename])
 class PluginType:
     pNode = 0

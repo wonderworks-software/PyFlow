@@ -24,9 +24,14 @@ def ui_to_py(ui_file):
         except Exception as e:
             print('Error: compilation error.', e)
 
+    bakFileName = py_file_name.replace("ui.py", "ui_backup.py")
+
     # convert to cross compatible code
     subprocess.call([INTERPRETER_PATH, '-m', 'Qt', '--convert', py_file_name])
 
+    if(os.path.isfile(bakFileName)):
+        os.remove(bakFileName)
+        print("REMOVING", bakFileName)
 
 
 def compile():

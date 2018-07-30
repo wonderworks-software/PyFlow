@@ -60,9 +60,9 @@ from Qt.QtWidgets import QListWidgetItem
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QCompleter
 from Qt.QtWidgets import QPlainTextEdit
-from .. import CodeEditor_ui
+from ..UI import CodeEditor_ui
 import PythonSyntax
-from .. import PinWidget_ui
+from ..UI import PinWidget_ui
 from AbstractGraph import *
 import inspect
 from types import MethodType

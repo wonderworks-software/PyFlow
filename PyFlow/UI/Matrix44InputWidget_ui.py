@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:/GIT/nodes/PyFlow/Matrix33InputWidget_ui.ui'
+# Form implementation generated from reading ui file 'E:/GIT/PyFlow/PyFlow/UI/Matrix44InputWidget_ui.ui'
 #
-# Created: Sun Mar 11 18:19:07 2018
+# Created: Mon Jul 30 21:09:28 2018
 #      by: pyside2-uic 2.0.0 running on PySide2 5.6.0~a1
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from Qt import QtCompat, QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(221, 72)
+        Form.resize(281, 96)
         self.horizontalLayout = QtWidgets.QHBoxLayout(Form)
         self.horizontalLayout.setSpacing(7)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -35,16 +35,16 @@ class Ui_Form(object):
         self.dsbm31.setSingleStep(0.1)
         self.dsbm31.setObjectName("dsbm31")
         self.gridLayout.addWidget(self.dsbm31, 2, 0, 1, 1)
-        self.dsbm23 = QtWidgets.QDoubleSpinBox(Form)
-        self.dsbm23.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.dsbm23.setSingleStep(0.1)
-        self.dsbm23.setObjectName("dsbm23")
-        self.gridLayout.addWidget(self.dsbm23, 1, 2, 1, 1)
         self.dsbm32 = QtWidgets.QDoubleSpinBox(Form)
         self.dsbm32.setMaximumSize(QtCore.QSize(80, 16777215))
         self.dsbm32.setSingleStep(0.1)
         self.dsbm32.setObjectName("dsbm32")
         self.gridLayout.addWidget(self.dsbm32, 2, 1, 1, 1)
+        self.dsbm23 = QtWidgets.QDoubleSpinBox(Form)
+        self.dsbm23.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.dsbm23.setSingleStep(0.1)
+        self.dsbm23.setObjectName("dsbm23")
+        self.gridLayout.addWidget(self.dsbm23, 1, 2, 1, 1)
         self.dsbm33 = QtWidgets.QDoubleSpinBox(Form)
         self.dsbm33.setMaximumSize(QtCore.QSize(80, 16777215))
         self.dsbm33.setSingleStep(0.1)
@@ -65,6 +65,34 @@ class Ui_Form(object):
         self.dsbm13.setSingleStep(0.1)
         self.dsbm13.setObjectName("dsbm13")
         self.gridLayout.addWidget(self.dsbm13, 0, 2, 1, 1)
+        self.dsbm24 = QtWidgets.QDoubleSpinBox(Form)
+        self.dsbm24.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.dsbm24.setObjectName("dsbm24")
+        self.gridLayout.addWidget(self.dsbm24, 1, 3, 1, 1)
+        self.dsbm34 = QtWidgets.QDoubleSpinBox(Form)
+        self.dsbm34.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.dsbm34.setObjectName("dsbm34")
+        self.gridLayout.addWidget(self.dsbm34, 2, 3, 1, 1)
+        self.dsbm14 = QtWidgets.QDoubleSpinBox(Form)
+        self.dsbm14.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.dsbm14.setObjectName("dsbm14")
+        self.gridLayout.addWidget(self.dsbm14, 0, 3, 1, 1)
+        self.dsbm44 = QtWidgets.QDoubleSpinBox(Form)
+        self.dsbm44.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.dsbm44.setObjectName("dsbm44")
+        self.gridLayout.addWidget(self.dsbm44, 3, 3, 1, 1)
+        self.dsbm41 = QtWidgets.QDoubleSpinBox(Form)
+        self.dsbm41.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.dsbm41.setObjectName("dsbm41")
+        self.gridLayout.addWidget(self.dsbm41, 3, 0, 1, 1)
+        self.dsbm42 = QtWidgets.QDoubleSpinBox(Form)
+        self.dsbm42.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.dsbm42.setObjectName("dsbm42")
+        self.gridLayout.addWidget(self.dsbm42, 3, 1, 1, 1)
+        self.dsbm43 = QtWidgets.QDoubleSpinBox(Form)
+        self.dsbm43.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.dsbm43.setObjectName("dsbm43")
+        self.gridLayout.addWidget(self.dsbm43, 3, 2, 1, 1)
         self.horizontalLayout.addLayout(self.gridLayout)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
