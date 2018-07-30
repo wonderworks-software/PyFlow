@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'E:/GIT/PyFlow/PyFlow/UI/GraphEditor_ui.ui'
 #
-# Created: Mon Jul 30 21:09:28 2018
+# Created: Mon Jul 30 21:57:13 2018
 #      by: pyside2-uic 2.0.0 running on PySide2 5.6.0~a1
 #
 # WARNING! All changes made in this file will be lost!
@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
         self.dockWidgetVariables.setWidget(self.dockWidgetContents_5)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetVariables)
         self.dockWidgetNodeView = QtWidgets.QDockWidget(MainWindow)
-        self.dockWidgetNodeView.setMinimumSize(QtCore.QSize(0, 0))
+        self.dockWidgetNodeView.setMinimumSize(QtCore.QSize(80, 93))
         self.dockWidgetNodeView.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.dockWidgetNodeView.setObjectName("dockWidgetNodeView")
         self.dockWidgetContents = QtWidgets.QWidget()
@@ -104,7 +104,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 78, 445))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 78, 383))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)

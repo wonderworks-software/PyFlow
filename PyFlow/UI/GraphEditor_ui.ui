@@ -17,7 +17,7 @@
    <string>PyFlow</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="nodes_res.qrc">
     <normaloff>:/icons/resources/LogoBpApp.png</normaloff>:/icons/resources/LogoBpApp.png</iconset>
   </property>
   <property name="documentMode">
@@ -239,8 +239,8 @@
   <widget class="QDockWidget" name="dockWidgetNodeView">
    <property name="minimumSize">
     <size>
-     <width>0</width>
-     <height>0</height>
+     <width>80</width>
+     <height>93</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -280,7 +280,7 @@
           <x>0</x>
           <y>0</y>
           <width>78</width>
-          <height>445</height>
+          <height>383</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
