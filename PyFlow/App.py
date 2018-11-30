@@ -30,12 +30,15 @@ SETTINGS_PATH = os.path.join(FILE_DIR, "appConfig.ini")
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 EDITOR_TARGET_FPS = 60
 
+
 def open_file(filename):
     if sys.platform == "win32":
         os.startfile(filename)
     else:
         opener = "open" if sys.platform == "darwin" else "xdg-open"
         subprocess.call([opener, filename])
+
+
 class PluginType:
     pNode = 0
     pCommand = 1
