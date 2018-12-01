@@ -292,10 +292,13 @@ class PinBase(IPin):
 
     ## retrieving the data
     def getData(self):
-        # if not connected - return data
+        # if not connected - compute and return
         if not self.hasConnections():
             if self.dataType == DataTypes.Array:
                 return []
+            if self.dirty:
+                self.parent().compute()
+            self.setClean()
             return self.currentData()
 
         if self.direction == PinDirection.Output:
@@ -321,6 +324,7 @@ class PinBase(IPin):
     ## Setting the data
     def setData(self, data):
         self.setClean()
+        self._data = data
         if self.direction == PinDirection.Output:
             for i in self.affects:
                 i._data = data
@@ -407,6 +411,7 @@ class NodeBase(INode):
         self.x = 0.0
         self.y = 0.0
         self.bCallable = False
+        self.graph().addNode(self)
 
     # IItemBase interface
 
@@ -451,20 +456,26 @@ class NodeBase(INode):
         self.x = x
         self.y = y
 
-    def addInputPin(self, pinName, dataType, foo=None):
+    def addInputPin(self, pinName, dataType, defaultValue=None, foo=None):
         p = PinBase(pinName, self, dataType, foo)
         self.inputs[p.uid] = p
         p.direction = PinDirection.Input
         if foo:
             p.call = foo
+        if defaultValue is not None:
+            p.setDefaultValue(defaultValue)
+            p.setData(defaultValue)
         return p
 
-    def addOutputPin(self, pinName, dataType, foo=None):
+    def addOutputPin(self, pinName, dataType, defaultValue=None, foo=None):
         p = PinBase(pinName, self, dataType, foo)
         self.outputs[p.uid] = p
         p.direction = PinDirection.Output
         if foo:
             p.call = foo
+        if defaultValue is not None:
+            p.setDefaultValue(defaultValue)
+            p.setData(defaultValue)
         return p
 
     def getUniqPinName(self, name):
@@ -617,13 +628,16 @@ class Graph(object):
                 return i
         return None
 
-    def addNode(self, node, jsonTemplate):
+    def addNode(self, node, jsonTemplate=None):
         if not node:
             return False
         if node.uid in self.nodes:
             return False
         self.nodes[node.uid] = node
-        node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
+        if jsonTemplate is not None:
+            node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
+        else:
+            node.setPosition(0, 0)
         return True
 
     def removeNode(self, node):

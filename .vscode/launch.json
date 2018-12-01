@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: PyFlow no ui debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/no_ui.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: PyFlow debug",
             "type": "python",
             "request": "launch",

@@ -1141,6 +1141,7 @@ class GraphWidget(QGraphicsView, Graph):
 
     def _createNode(self, jsonTemplate):
         nodeInstance = getNodeInstance(Nodes, jsonTemplate['type'], jsonTemplate['name'], self)
+        nodeInstance.setPosition(jsonTemplate["x"], jsonTemplate["y"])
 
         # If not found, check variables
         if nodeInstance is None:
@@ -1173,7 +1174,6 @@ class GraphWidget(QGraphicsView, Graph):
         if nodeInstance is None:
             raise ValueError("node class not found!")
 
-        self.addNode(nodeInstance, jsonTemplate)
         nodeInstance.postCreate(jsonTemplate)
         return nodeInstance
 
