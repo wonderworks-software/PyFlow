@@ -1,8 +1,8 @@
-from ..Core.Pin import PinWidgetBase
+from ..Core.AbstractGraph import PinBase
 from ..Core.AGraphCommon import *
 
 
-class ListPin(PinWidgetBase):
+class ListPin(PinBase):
     """doc string for ListPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(ListPin, self).__init__(name, parent, dataType, direction, **kwargs)
@@ -24,4 +24,4 @@ class ListPin(PinWidgetBase):
             self._data = data
         else:
             self._data = self.defaultValue()
-        PinWidgetBase.setData(self, self._data)
+        PinBase.setData(self, self._data)

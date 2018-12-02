@@ -1,8 +1,8 @@
-from ..Core.Pin import PinWidgetBase
+from ..Core.AbstractGraph import PinBase
 from ..Core.AGraphCommon import *
 
 
-class BoolPin(PinWidgetBase):
+class BoolPin(PinBase):
     """doc string for BoolPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(BoolPin, self).__init__(name, parent, dataType, direction, **kwargs)
@@ -10,10 +10,6 @@ class BoolPin(PinWidgetBase):
 
     def supportedDataTypes(self):
         return (DataTypes.Bool, DataTypes.Int,)
-
-    @staticmethod
-    def color():
-        return Colors.Bool
 
     @staticmethod
     def pinDataTypeHint():
@@ -24,4 +20,4 @@ class BoolPin(PinWidgetBase):
             self._data = bool(data)
         except:
             self._data = self.defaultValue()
-        PinWidgetBase.setData(self, self._data)
+        PinBase.setData(self, self._data)

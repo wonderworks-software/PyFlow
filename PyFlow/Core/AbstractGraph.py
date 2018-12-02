@@ -216,7 +216,7 @@ class INode(IItemBase):
 
 ## Base no gui Pin class
 class PinBase(IPin):
-    def __init__(self, name, parent, dataType, direction, userStructClass=None):
+    def __init__(self, name, owningNode, dataType, direction, userStructClass=None):
         super(PinBase, self).__init__()
         self._uid = uuid.uuid4()
         self._dataType = None
@@ -235,7 +235,7 @@ class PinBase(IPin):
         self.edge_list = []
 
         ## Access to the node
-        self.parent = weakref.ref(parent)
+        self.owningNode = weakref.ref(owningNode)
         self.setName(name)
         self.dataType = dataType
 
@@ -265,14 +265,14 @@ class PinBase(IPin):
 
     @uid.setter
     def uid(self, value):
-        self.parent().graph().pins[value] = self.parent().graph().pins.pop(self._uid)
+        self.owningNode().graph().pins[value] = self.owningNode().graph().pins.pop(self._uid)
         self._uid = value
 
     def setName(self, name):
         self.name = name.replace(" ", "_")
 
     def getName(self):
-        return self.parent().name + '.' + self.name
+        return self.owningNode().name + '.' + self.name
 
     # IPin interface
 
@@ -297,20 +297,20 @@ class PinBase(IPin):
             if self.dataType == DataTypes.Array:
                 return []
             if self.dirty:
-                self.parent().compute()
+                self.owningNode().compute()
             self.setClean()
             return self.currentData()
 
         if self.direction == PinDirection.Output:
             if self.dirty:
-                self.parent().compute()
+                self.owningNode().compute()
             self.setClean()
             return self._data
         if self.direction == PinDirection.Input:
-            if self.dirty or self.parent().bCallable:
+            if self.dirty or self.owningNode().bCallable:
                 out = [i for i in self.affected_by if i.direction == PinDirection.Output]
                 if not out == []:
-                    compute_order = self.parent().graph().getEvaluationOrder(out[0].parent())
+                    compute_order = self.owningNode().graph().getEvaluationOrder(out[0].parent())
                     # call from left to right
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
                         for node in compute_order[layer]:
@@ -355,12 +355,12 @@ class PinBase(IPin):
     # PinBase methods
 
     def kill(self):
-        if self.direction == PinDirection.Input and self.uid in self.parent().inputs:
-            self.parent().inputs.pop(self.uid)
-        if self.direction == PinDirection.Output and self.uid in self.parent().outputs:
-            self.parent().outputs.pop(self.uid)
-        if self.uid in self.parent().graph().pins:
-            self.parent().graph().pins.pop(self.uid)
+        if self.direction == PinDirection.Input and self.uid in self.owningNode().inputs:
+            self.owningNode().inputs.pop(self.uid)
+        if self.direction == PinDirection.Output and self.uid in self.owningNode().outputs:
+            self.owningNode().outputs.pop(self.uid)
+        if self.uid in self.owningNode().graph().pins:
+            self.owningNode().graph().pins.pop(self.uid)
 
     def currentData(self):
         if self._data is None:
@@ -475,6 +475,8 @@ class NodeBase(INode):
         self.y = y
 
     def addInputPin(self, pinName, dataType, defaultValue=None, foo=None):
+        # check unique name
+        pinName = self.getUniqPinName(pinName)
         p = PinBase(pinName, self, dataType, foo)
         self.inputs[p.uid] = p
         p.direction = PinDirection.Input

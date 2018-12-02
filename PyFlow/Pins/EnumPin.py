@@ -1,10 +1,10 @@
-from ..Core.Pin import PinWidgetBase
+from ..Core.AbstractGraph import PinBase
 from ..Core.AGraphCommon import *
 from ..Core.Enums import ENone
 from ..Core.Enums import findByName
 
 
-class EnumPin(PinWidgetBase):
+class EnumPin(PinBase):
     '''doc string for EnumPin'''
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(EnumPin, self).__init__(name, parent, dataType, direction, **kwargs)
@@ -20,10 +20,6 @@ class EnumPin(PinWidgetBase):
         return (DataTypes.Int, DataTypes.Enum,)
 
     @staticmethod
-    def color():
-        return Colors.Gray
-
-    @staticmethod
     def pinDataTypeHint():
         return DataTypes.Enum, ENone
 
@@ -35,4 +31,4 @@ class EnumPin(PinWidgetBase):
                 self._data = self._userStruct(data)
             except:
                 self._data = self.defaultValue()
-        PinWidgetBase.setData(self, self._data)
+        PinBase.setData(self, self._data)

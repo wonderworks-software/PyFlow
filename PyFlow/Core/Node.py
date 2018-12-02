@@ -21,7 +21,8 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 from AbstractGraph import *
-from ..Pins import CreatePin
+from ..Pins import CreateRawPin
+from Pin import PinWidgetBase
 from types import MethodType
 from .InputWidgets import getInputWidget
 from inspect import getargspec
@@ -369,9 +370,13 @@ class Node(QGraphicsItem):
         self.update()
 
     def postCreate(self, jsonTemplate=None):
-        self.updateNodeShape(label=jsonTemplate['meta']['label'])
         self._rawNode.postCreate(jsonTemplate)
-        
+
+        # create pins
+        for i in self._rawNode.inputs.values():
+            self.addInputPin(i.getName(), i.dataType)
+
+        self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
     def getWidth(self):
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.label().toPlainText()) + Spacings.kPinSpacing
@@ -560,17 +565,11 @@ class Node(QGraphicsItem):
             pin.kill()
 
     def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1, userStructClass=ENone, defaultValue=None):
-        # check if pins with this name already exists and get uniq name
-        name = self.getUniqPinName(name)
+        # TODO: create wrapper for raw pin
+        # p = PinWidgetBase(self, rp)
 
-        p = CreatePin(name, self, dataType, pinDirection, userStructClass=userStructClass)
-        if defaultValue is not None:
-            p.setDefaultValue(defaultValue)
-
-        self.graph().pins[p.uid] = p
-
-        if pinDirection == PinDirection.Input and foo is not None:
-            p.call = foo
+        # if pinDirection == PinDirection.Input and foo is not None:
+        #     p.call = foo
 
         connector_name = QGraphicsProxyWidget()
         connector_name.setObjectName('{0}PinConnector'.format(name))

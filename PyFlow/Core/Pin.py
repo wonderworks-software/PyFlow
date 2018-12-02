@@ -9,9 +9,9 @@ from AbstractGraph import *
 from Settings import *
 
 
-class PinWidgetBase(QGraphicsWidget, PinBase):
+class PinWidgetBase(QGraphicsWidget):
     '''
-    This is base class for all ui pins
+    Pin ui wrapper
     '''
 
     ## Event called when pin is connected
@@ -26,10 +26,10 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
     # used by enums
     userStructChanged = QtCore.Signal(object)
 
-    def __init__(self, name, parent, dataType, direction, **kwargs):
-        QGraphicsWidget.__init__(self)
-        PinBase.__init__(self, name, parent, dataType, direction, **kwargs)
-        self.setParentItem(parent)
+    def __init__(self, owningNode, raw_pin, **kwargs):
+        super(PinWidgetBase, self).__init__()
+        self._rawPin = raw_pin
+        self.setParentItem(owningNode)
         self.setCursor(QtCore.Qt.CrossCursor)
         ## context menu for pin
         self.menu = QMenu()
@@ -62,16 +62,29 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         self.bAnimate = False
         self._val = 0
 
+    @property
+    def uid(self):
+        return self._rawPin._uid
+
+    @uid.setter
+    def uid(self, value):
+        self.owningNode().graph().pins[value] = self.owningNode().graph().pins.pop(self._rawPin._uid)
+        self._rawPin._uid = value
+
+    @staticmethod
+    def color():
+        return Colors.Bool
+
     def setUserStruct(self, inStruct):
-        PinBase.setUserStruct(self, inStruct)
+        self._rawPin.setUserStruct(inStruct)
         self.userStructChanged.emit(inStruct)
 
     def setName(self, newName):
-        super(PinWidgetBase, self).setName(newName)
+        self._rawPin.setName(newName)
         self.nameChanged.emit(newName)
 
     def setData(self, value):
-        PinBase.setData(self, value)
+        self._rawPin.setData(value)
         self.dataBeenSet.emit(value)
 
     def highlight(self):
@@ -97,10 +110,10 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         return QtGui.QColor()
 
     def call(self):
-        PinBase.call(self)
+        self._rawPin.call()
 
     def kill(self):
-        PinBase.kill(self)
+        self._rawPin.kill()
         self.disconnectAll()
         if hasattr(self.parent(), self.name):
             delattr(self.parent(), self.name)
@@ -133,7 +146,7 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         return p
 
     def serialize(self):
-        data = PinBase.serialize(self)
+        data = self._rawPin.serialize()
         data['bLabelHidden'] = self.bLabelHidden
         return data
 
@@ -142,6 +155,14 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
 
     def get_container(self):
         return self._container
+
+    @property
+    def dataType(self):
+        return self._rawPin._dataType
+
+    @dataType.setter
+    def dataType(self, value):
+        self._rawPin._dataType = value
 
     def boundingRect(self):
         if not self.dataType == DataTypes.Exec:
@@ -159,7 +180,7 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
 
     def disconnectAll(self):
         trash = []
-        for e in self.edge_list:
+        for e in self._rawPin.edge_list:
             if self.uid == e.destination().uid:
                 trash.append(e)
             if self.uid == e.source().uid:
@@ -179,7 +200,7 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         h = background_rect.height() / 2
 
         linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.width / 2.5)
-        if not self._connected:
+        if not self._rawPin._connected:
             linearGrad.setColorAt(0, self.color().darker(280))
             linearGrad.setColorAt(0.5, self.color().darker(280))
             linearGrad.setColorAt(0.65, self.color().lighter(130))
@@ -199,7 +220,7 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
                 painter.drawRect(rect)
         elif self.dataType == DataTypes.Exec:
             painter.setPen(self._execPen)
-            if self._connected:
+            if self._rawPin._connected:
                 painter.setBrush(QtGui.QBrush(self.color()))
             else:
                 painter.setBrush(QtCore.Qt.NoBrush)
@@ -231,7 +252,7 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         super(PinWidgetBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        self.setToolTip(str(self.currentData()))
+        self.setToolTip(str(self._rawPin.currentData()))
         event.accept()
 
     def hoverLeaveEvent(self, event):
@@ -240,9 +261,9 @@ class PinWidgetBase(QGraphicsWidget, PinBase):
         self.hovered = False
 
     def pinConnected(self, other):
-        PinBase.pinConnected(self, other)
+        self._rawPin.pinConnected(other)
         self.OnPinConnected.emit(other)
 
     def pinDisconnected(self, other):
-        PinBase.pinDisconnected(self, other)
+        self._rawPin.pinDisconnected(other)
         self.OnPinDisconnected.emit(other)
