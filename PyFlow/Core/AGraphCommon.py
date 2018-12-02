@@ -30,6 +30,7 @@ INT_RANGE_MIN = -sys.maxint + 0
 ## determines int maximum value
 INT_RANGE_MAX = sys.maxint + 0
 
+GRID_SIZE = 20
 
 ## Performs a linear interpolation
 # @param[in] start the value to interpolate from

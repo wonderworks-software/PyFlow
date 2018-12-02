@@ -7,10 +7,10 @@ from ..Core.InputWidgets import getInputWidget
 from ..Core.Pin import PinWidgetBase
 
 
-class switchOnString(Node):
-    def __init__(self, name, graph):
-        super(switchOnString, self).__init__(name, graph)
-        self.inExecPin = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
+class switchOnString(NodeBase):
+    def __init__(self, name):
+        super(switchOnString, self).__init__(name)
+        self.inExecPin = self.addInputPin('inExec', DataTypes.Exec, self.compute)
         self.defaultPin = None
         self.outString = None
         self.inString = self.addInputPin('String', DataTypes.String)

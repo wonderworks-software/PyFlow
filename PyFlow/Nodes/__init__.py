@@ -3,7 +3,7 @@
 Class based nodes.
 """
 import os
-from .. import FunctionLibraries
+from .. Core.Node import Node
 
 
 _nodeClasses = {}

@@ -3,10 +3,10 @@ from ..Core.Settings import *
 from ..Core import Node
 
 
-class doN(Node):
-    def __init__(self, name, graph):
-        super(doN, self).__init__(name, graph)
-        self.enter = self.addInputPin('Enter', DataTypes.Exec, self.compute, hideLabel=True)
+class doN(NodeBase):
+    def __init__(self, name):
+        super(doN, self).__init__(name)
+        self.enter = self.addInputPin('Enter', DataTypes.Exec, self.compute)
         self._N = self.addInputPin('N', DataTypes.Int)
         self._N.setData(10)
         self.reset = self.addInputPin('Reset', DataTypes.Exec, self.OnReset)

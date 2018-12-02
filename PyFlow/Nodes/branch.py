@@ -4,12 +4,12 @@ from ..Core import Node
 
 
 ## If else node
-class branch(Node):
-    def __init__(self, name, graph):
-        super(branch, self).__init__(name, graph)
+class branch(NodeBase):
+    def __init__(self, name):
+        super(branch, self).__init__(name)
         self.trueExec = self.addOutputPin("True", DataTypes.Exec)
         self.falseExec = self.addOutputPin("False", DataTypes.Exec)
-        self.inExec = self.addInputPin("In", DataTypes.Exec, self.compute, hideLabel=True)
+        self.inExec = self.addInputPin("In", DataTypes.Exec, self.compute)
         self.condition = self.addInputPin("Condition", DataTypes.Bool)
 
     @staticmethod

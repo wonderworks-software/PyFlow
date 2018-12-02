@@ -5,9 +5,9 @@ from Qt.QtWidgets import QMenu
 from ..Core.Pin import PinWidgetBase
 
 
-class makeBoolArray(Node):
-    def __init__(self, name, graph):
-        super(makeBoolArray, self).__init__(name, graph)
+class makeBoolArray(NodeBase):
+    def __init__(self, name):
+        super(makeBoolArray, self).__init__(name)
         self.out0 = self.addOutputPin('bools', DataTypes.Array)
         self.menu = QMenu()
         self.action = self.menu.addAction('add input')

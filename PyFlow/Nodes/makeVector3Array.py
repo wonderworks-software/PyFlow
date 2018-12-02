@@ -5,8 +5,8 @@ from Qt.QtWidgets import QMenu
 from ..Core.Pin import PinWidgetBase
 
 
-class makeVector3Array(Node):
-    def __init__(self, name, graph):
+class makeVector3Array(NodeBase):
+    def __init__(self, name):
         super(makeVector3Array, self).__init__(name, graph)
         self.out0 = self.addOutputPin('vArr', DataTypes.Array)
         self.menu = QMenu()

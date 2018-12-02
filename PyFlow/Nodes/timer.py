@@ -9,9 +9,9 @@ from ..Core import Node
 
 
 ## Timer node
-class timer(Node, NodeBase):
-    def __init__(self, name, graph):
-        super(timer, self).__init__(name, graph)
+class timer(NodeBase):
+    def __init__(self, name):
+        super(timer, self).__init__(name)
         self.out = self.addOutputPin("OUT", DataTypes.Exec, self.compute)
         self.beginPin = self.addInputPin("Begin", DataTypes.Exec, self.start)
         self.stopPin = self.addInputPin("Stop", DataTypes.Exec, self.stop)

@@ -3,11 +3,11 @@ from ..Core.Settings import *
 from ..Core import Node
 
 
-class deltaTime(Node):
-    def __init__(self, name, graph):
-        super(deltaTime, self).__init__(name, graph)
+class deltaTime(NodeBase):
+    def __init__(self, name):
+        super(deltaTime, self).__init__(name)
         self._deltaTime = 0.0
-        self._out0 = self.addOutputPin('out0', DataTypes.Float, hideLabel=True)
+        self._out0 = self.addOutputPin('out0', DataTypes.Float)
 
     @staticmethod
     def pinTypeHints():

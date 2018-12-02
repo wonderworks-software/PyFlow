@@ -4,13 +4,13 @@ from ..Core import Node
 from Qt.QtCore import QTimer
 
 
-class retriggerableDelay(Node, NodeBase):
-    def __init__(self, name, graph):
-        super(retriggerableDelay, self).__init__(name, graph)
-        self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute, hideLabel=True)
+class retriggerableDelay(NodeBase):
+    def __init__(self, name):
+        super(retriggerableDelay, self).__init__(name)
+        self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute)
         self.delay = self.addInputPin('Delay(s)', DataTypes.Float)
         self.delay.setDefaultValue(0.2)
-        self.out0 = self.addOutputPin('out0', DataTypes.Exec, hideLabel=True)
+        self.out0 = self.addOutputPin('out0', DataTypes.Exec)
         self.process = False
         self.timer = QTimer()
         self.timer.timeout.connect(self.callAndReset)

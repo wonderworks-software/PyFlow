@@ -37,7 +37,7 @@ class NodeName(QGraphicsTextItem):
         self.width = 50
         self.document().contentsChanged.connect(self.onDocContentsChanged)
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        self.desc = parent.description()
+        self.desc = parent._rawNode.description()
         self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
         self.defaultHeight = 30
         self.h = self.defaultHeight
@@ -109,13 +109,13 @@ class NodeName(QGraphicsTextItem):
         self.setTextCursor(cursor)
 
 
-class Node(QGraphicsItem, NodeBase):
+class Node(QGraphicsItem):
     """
     Default node description
     """
-    def __init__(self, name, graph, w=80, color=Colors.NodeBackgrounds, headColor=Colors.NodeNameRect, bUseTextureBg=True):
-        QGraphicsItem.__init__(self)
-        NodeBase.__init__(self, name, graph)
+    def __init__(self, raw_node, w=80, color=Colors.NodeBackgrounds, headColor=Colors.NodeNameRect, bUseTextureBg=True):
+        super(Node, self).__init__()
+        self._rawNode = raw_node
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.opt_node_base_color = Colors.NodeBackgrounds
         self.opt_selected_pen_color = Colors.NodeSelectedPenColor
@@ -124,7 +124,7 @@ class Node(QGraphicsItem, NodeBase):
         self.color = color
         self.height_offset = 3
         self.nodeMainGWidget = QGraphicsWidget()
-        self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(name))
+        self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(self._rawNode.__class__.__name__))
         self._w = 0
         self.h = 40
         self.sizes = [0, 0, self.w, self.h, 1, 1]
@@ -181,17 +181,17 @@ class Node(QGraphicsItem, NodeBase):
 
     def call(self, name):
         if pinName in [p.name for p in self.outputs.values() if p.dataType is DataTypes.Exec]:
-            p = self.getPinByName(pinName)
+            p = self._rawNode.getPinByName(pinName)
             return p.call()
 
     def getData(self, pinName):
         if pinName in [p.name for p in self.inputs.values()]:
-            p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
+            p = self._rawNode.getPinByName(pinName, PinSelectionGroup.Inputs)
             return p.getData()
 
     def setData(self, pinName, data):
         if pinName in [p.name for p in self.outputs.values()]:
-            p = self.getPinByName(pinName, PinSelectionGroup.Outputs)
+            p = self._rawNode.getPinByName(pinName, PinSelectionGroup.Outputs)
             p.setData(data)
 
     @staticmethod
@@ -228,9 +228,9 @@ class Node(QGraphicsItem, NodeBase):
 
         if returnType is not None:
             structClass = type(returnDefaultValue) if returnType == DataTypes.Enum else ENone
-            p = inst.addOutputPin('out', returnType, userStructClass=structClass)
+            p = inst.addOutputPin('out', returnType, returnDefaultValue, userStructClass=structClass)
             p.setData(returnDefaultValue)
-            p.setDefaultValue(returnDefaultValue)
+            # p.setDefaultValue(returnDefaultValue)
 
         # this is array of 'references' outputs will be created for
         refs = []
@@ -310,8 +310,8 @@ class Node(QGraphicsItem, NodeBase):
 
     def tweakPosition(self):
         value = self.scenePos()
-        self.setX(roundup(value.x() - self.graph().grid_size, self.graph().grid_size))
-        self.setY(roundup(value.y() - self.graph().grid_size, self.graph().grid_size))
+        self.setX(roundup(value.x() - GRID_SIZE, GRID_SIZE))
+        self.setY(roundup(value.y() - GRID_SIZE, GRID_SIZE))
 
     def boundingRect(self):
         return self.childrenBoundingRect()
@@ -319,19 +319,21 @@ class Node(QGraphicsItem, NodeBase):
     def itemChange(self, change, value):
         if change == self.ItemPositionChange:
             # grid snapping
-            value.setX(roundup(value.x() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
-            value.setY(roundup(value.y() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
+            value.setX(roundup(value.x() - GRID_SIZE + GRID_SIZE / 3.0, GRID_SIZE))
+            value.setY(roundup(value.y() - GRID_SIZE + GRID_SIZE / 3.0, GRID_SIZE))
             value.setY(value.y() - 2)
             return value
         return QGraphicsItem.itemChange(self, change, value)
 
-    @staticmethod
-    def description():
-        return "Default node description"
+    @property
+    def uid(self):
+        return self._rawNode._uid
 
-    @staticmethod
-    def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
+    @uid.setter
+    def uid(self, value):
+        if self._rawNode._uid in self.graph().nodes:
+            self.graph().nodes[value] = self.graph().nodes.pop(self._rawNode._uid)
+            self._rawNode._uid = value
 
     def updateNodeShape(self, label=None):
         for i in range(0, self.inputsLayout.count()):
@@ -356,19 +358,20 @@ class Node(QGraphicsItem, NodeBase):
         self.w = self.getWidth() + Spacings.kPinOffset
         self.nodeMainGWidget.setMaximumWidth(self.w)
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
-        if self.isCallable():
-            if 'flow' not in self.category().lower():
+        if self._rawNode.isCallable():
+            if 'flow' not in self._rawNode.category().lower():
                 if self.label().bUseTextureBg:
                     self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
         else:
             if self.label().bUseTextureBg:
                 self.label().bg = QtGui.QImage(':/icons/resources/green.png')
-        self.setToolTip(self.description())
+        self.setToolTip(self._rawNode.description())
         self.update()
 
     def postCreate(self, jsonTemplate=None):
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
-        NodeBase.postCreate(self, jsonTemplate)
+        self._rawNode.postCreate(jsonTemplate)
+        
 
     def getWidth(self):
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.label().toPlainText()) + Spacings.kPinSpacing
@@ -408,11 +411,8 @@ class Node(QGraphicsItem, NodeBase):
     def propertyView(self):
         return self.graph().parent.dockWidgetNodeView
 
-    def Tick(self, delta):
-        pass
-
     def setName(self, name):
-        NodeBase.setName(self, name)
+        self._rawNode.setName(self, name)
 
     def clone(self):
         templ = self.serialize()
@@ -445,14 +445,6 @@ class Node(QGraphicsItem, NodeBase):
         p = self._addPin(PinDirection.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass, defaultValue=defaultValue)
         return p
 
-    @staticmethod
-    def category():
-        return "Default"
-
-    @staticmethod
-    def keywords():
-        return []
-
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()
         if isinstance(le, QLineEdit):
@@ -462,11 +454,11 @@ class Node(QGraphicsItem, NodeBase):
 
     def onUpdatePropertyView(self, formLayout):
         # name
-        le_name = QLineEdit(self.getName())
+        le_name = QLineEdit(self._rawNode.getName())
         le_name.setReadOnly(True)
         if self.label().IsRenamable():
             le_name.setReadOnly(False)
-            le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
+            le_name.returnPressed.connect(lambda: self._rawNode.setName(le_name.text()))
         formLayout.addRow("Name", le_name)
 
         # uid
@@ -484,13 +476,13 @@ class Node(QGraphicsItem, NodeBase):
         formLayout.addRow("Pos", le_pos)
 
         # inputs
-        if len([i for i in self.inputs.values()]) != 0:
+        if len([i for i in self._rawNode.inputs.values()]) != 0:
             sep_inputs = QLabel()
             sep_inputs.setStyleSheet("background-color: black;")
             sep_inputs.setText("INPUTS")
             formLayout.addRow("", sep_inputs)
 
-            for inp in self.inputs.values():
+            for inp in self._rawNode.inputs.values():
                 dataSetter = inp.call if inp.dataType == DataTypes.Exec else inp.setData
                 w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
@@ -501,12 +493,12 @@ class Node(QGraphicsItem, NodeBase):
                         w.setEnabled(False)
 
         # outputs
-        if len([i for i in self.outputs.values()]) != 0:
+        if len([i for i in self._rawNode.outputs.values()]) != 0:
             sep_outputs = QLabel()
             sep_outputs.setStyleSheet("background-color: black;")
             sep_outputs.setText("OUTPUTS")
             formLayout.addRow("", sep_outputs)
-            for out in self.outputs.values():
+            for out in self._rawNode.outputs.values():
                 if out.dataType == DataTypes.Exec:
                     continue
                 w = getInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
@@ -523,7 +515,7 @@ class Node(QGraphicsItem, NodeBase):
         formLayout.addRow("", doc_lb)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
-        doc.setHtml(self.description())
+        doc.setHtml(self._rawNode.description())
         formLayout.addRow("", doc)
 
     def addContainer(self, portType, head=False):
@@ -544,7 +536,7 @@ class Node(QGraphicsItem, NodeBase):
 
     def kill(self):
         # disconnect edges
-        for i in self.inputs.values() + self.outputs.values():
+        for i in self._rawNode.inputs.values() + self._rawNode.outputs.values():
             i.kill()
 
         if self.uid in self.graph().nodes:
@@ -554,8 +546,11 @@ class Node(QGraphicsItem, NodeBase):
             self.scene().removeItem(self)
             del(self)
 
+    def Tick(self, delta):
+        self._rawNode.Tick(delta)
+
     def setPosition(self, x, y):
-        NodeBase.setPosition(self, x, y)
+        self._rawNode.setPosition(x, y)
         self.setPos(QtCore.QPointF(x, y))
 
     @staticmethod

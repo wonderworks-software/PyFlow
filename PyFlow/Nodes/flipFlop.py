@@ -3,11 +3,11 @@ from ..Core.Settings import *
 from ..Core import Node
 
 
-class flipFlop(Node, NodeBase):
-    def __init__(self, name, graph):
-        super(flipFlop, self).__init__(name, graph)
+class flipFlop(NodeBase):
+    def __init__(self, name):
+        super(flipFlop, self).__init__(name)
         self.bState = True
-        self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute, hideLabel=True)
+        self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute)
         self.outA = self.addOutputPin('A', DataTypes.Exec)
         self.outB = self.addOutputPin('B', DataTypes.Exec)
         self.bIsA = self.addOutputPin('IsA', DataTypes.Bool)

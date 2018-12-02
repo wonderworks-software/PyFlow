@@ -3,11 +3,11 @@ from ..Core.Settings import *
 from ..Core import Node
 
 
-class forLoopWithBreak(Node, NodeBase):
-    def __init__(self, name, graph):
-        super(forLoopWithBreak, self).__init__(name, graph)
+class forLoopWithBreak(Node):
+    def __init__(self, name):
+        super(forLoopWithBreak, self).__init__(name)
         self.stop = False
-        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
+        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute)
         self.firstIndex = self.addInputPin('Start', DataTypes.Int)
         self.lastIndex = self.addInputPin('Stop', DataTypes.Int)
         self.lastIndex.setDefaultValue(10)

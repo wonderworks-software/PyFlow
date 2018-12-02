@@ -1,8 +1,5 @@
 from PyFlow.Core.AbstractGraph import *
 
-# class TestGraph(Core.AbstractGraph.Graph):
-#     def __init__(self, name):
-#         super(TestGraph, self).__init__(name)
 
 G = Graph("TestGraph")
 

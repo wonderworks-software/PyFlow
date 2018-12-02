@@ -8,10 +8,10 @@ from ..Core import Node
 # Each time node called it accumulates the step value.
 # When accumulated value reaches "amount" - completed pin called.
 # Useful when you need to wait some time inside some tick function.
-class charge(Node):
-    def __init__(self, name, graph):
-        super(charge, self).__init__(name, graph)
-        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
+class charge(NodeBase):
+    def __init__(self, name):
+        super(charge, self).__init__(name)
+        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute)
         self.amount = self.addInputPin('Amount', DataTypes.Float)
         self.amount.setDefaultValue(1.0)
 

@@ -401,17 +401,16 @@ class PinBase(IPin):
 
 
 class NodeBase(INode):
-    def __init__(self, name, graph):
+    def __init__(self, name):
         super(NodeBase, self).__init__()
         self._uid = uuid.uuid4()
-        self.graph = weakref.ref(graph)
+        self.graph = None
         self.name = name
         self.inputs = OrderedDict()
         self.outputs = OrderedDict()
         self.x = 0.0
         self.y = 0.0
         self.bCallable = False
-        self.graph().addNode(self)
 
     # IItemBase interface
 
@@ -424,6 +423,25 @@ class NodeBase(INode):
         if self._uid in self.graph().nodes:
             self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
             self._uid = value
+
+    def Tick(self, delta):
+        pass
+
+    @staticmethod
+    def category():
+        return "Default"
+
+    @staticmethod
+    def keywords():
+        return []
+
+    @staticmethod
+    def pinTypeHints():
+        return {'inputs': [], 'outputs': []}
+
+    @staticmethod
+    def description():
+        return "Default node description"
 
     def getName(self):
         return self.name

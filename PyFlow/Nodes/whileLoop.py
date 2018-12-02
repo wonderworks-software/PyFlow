@@ -1,12 +1,12 @@
 from ..Core.AbstractGraph import *
 from ..Core.Settings import *
-from ..Core import Node
+# from ..Core import Node
 
 
-class whileLoop(Node):
-    def __init__(self, name, graph):
-        super(whileLoop, self).__init__(name, graph)
-        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.begin, hideLabel=True)
+class whileLoop(NodeBase):
+    def __init__(self, name):
+        super(whileLoop, self).__init__(name)
+        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.begin)
         self.bCondition = self.addInputPin('Condition', DataTypes.Bool)
         self.loopBody = self.addOutputPin('LoopBody', DataTypes.Exec)
         self.completed = self.addOutputPin('Completed', DataTypes.Exec)

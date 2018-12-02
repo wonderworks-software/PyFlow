@@ -73,7 +73,9 @@ def getNodeInstance(module, class_name, nodeName, graph):
     # Check in Nodes module first
     mod = Nodes.getNode(class_name)
     if mod is not None:
-        instance = mod(nodeName, graph)
+        raw_instance = mod(nodeName)
+        instance = Node(raw_instance)
+        graph.addNode(instance)
         return instance
 
     # if not found - continue searching in FunctionLibraries

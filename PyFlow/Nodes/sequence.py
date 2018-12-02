@@ -5,10 +5,10 @@ from Qt.QtWidgets import QMenu
 from ..Core.Pin import PinWidgetBase
 
 
-class sequence(Node):
-    def __init__(self, name, graph):
-        super(sequence, self).__init__(name, graph)
-        self.inExecPin = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
+class sequence(NodeBase):
+    def __init__(self, name):
+        super(sequence, self).__init__(name)
+        self.inExecPin = self.addInputPin('inExec', DataTypes.Exec, self.compute)
         self.menu = QMenu()
         self.action = self.menu.addAction('add pin')
         self.action.triggered.connect(self.addOutPin)

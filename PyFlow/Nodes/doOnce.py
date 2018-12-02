@@ -3,10 +3,10 @@ from ..Core.Settings import *
 from ..Core import Node
 
 
-class doOnce(Node):
-    def __init__(self, name, graph):
-        super(doOnce, self).__init__(name, graph)
-        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute, hideLabel=True)
+class doOnce(NodeBase):
+    def __init__(self, name):
+        super(doOnce, self).__init__(name)
+        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute)
         self.reset = self.addInputPin('Reset', DataTypes.Exec, self.OnReset)
         self.bStartClosed = self.addInputPin('Start closed', DataTypes.Bool)
         self.completed = self.addOutputPin('Completed', DataTypes.Exec)
