@@ -28,7 +28,8 @@ class Edge(QGraphicsPathItem):
 
         self.setZValue(-1)
 
-        self.color = self.source().color()
+        c = self.source().color()
+        self.color = QtGui.QColor(c[0], c[1], c[2], c[3])
 
         self.thikness = 1
         if source.dataType == DataTypes.Exec and destination.dataType == DataTypes.Exec:

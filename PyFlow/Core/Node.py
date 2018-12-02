@@ -217,21 +217,22 @@ class Node(QGraphicsItem):
         def keywords():
             return meta['Keywords']
 
-        def constructor(self, name, graph, **kwargs):
-            Node.__init__(self, name, graph, **kwargs)
+        def constructor(self, name, **kwargs):
+            NodeBase.__init__(self, name, **kwargs)
 
-        nodeClass = type(foo.__name__, (Node,), {'__init__': constructor,
-                                                 'category': category,
-                                                 'keywords': keywords,
-                                                 'description': description
-                                                 })
-        inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
+        nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
+                                                     'category': category,
+                                                     'keywords': keywords,
+                                                     'description': description
+                                                     })
+        raw_inst = nodeClass(graph.getUniqNodeName(foo.__name__))
+        # inst = Node(raw_inst)
 
         if returnType is not None:
             structClass = type(returnDefaultValue) if returnType == DataTypes.Enum else ENone
-            p = inst.addOutputPin('out', returnType, returnDefaultValue, userStructClass=structClass)
+            p = raw_inst.addOutputPin('out', returnType, returnDefaultValue)
             p.setData(returnDefaultValue)
-            # p.setDefaultValue(returnDefaultValue)
+            p.setDefaultValue(returnDefaultValue)
 
         # this is array of 'references' outputs will be created for
         refs = []
@@ -245,18 +246,20 @@ class Node(QGraphicsItem):
             structClass = type(argDefaultValue) if dataType == DataTypes.Enum else ENone
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
-                outRef = inst.addOutputPin(argName, dataType[0], userStructClass=structClass)
+                outRef = raw_inst.addOutputPin(argName, dataType[0])
+                graph.pins[outRef.uid] = outRef
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 refs.append(outRef)
             else:
-                inp = inst.addInputPin(argName, dataType, userStructClass=structClass)
+                inp = raw_inst.addInputPin(argName, dataType)
+                graph.pins[inp.uid] = inp
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
 
         # all inputs affects on all outputs
-        for i in inst.inputs.values():
-            for o in inst.outputs.values():
+        for i in raw_inst.inputs.values():
+            for o in raw_inst.outputs.values():
                 pinAffects(i, o)
 
         # generate compute method from function
@@ -275,13 +278,13 @@ class Node(QGraphicsItem):
             if nodeType == NodeTypes.Callable:
                 outExec.call()
 
-        inst.compute = MethodType(compute, inst, Node)
+        raw_inst.compute = MethodType(compute, raw_inst, Node)
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
-            inst.addInputPin('inExec', DataTypes.Exec, inst.compute, True, index=0)
-            outExec = inst.addOutputPin('outExec', DataTypes.Exec, inst.compute, True, index=0)
-        return inst
+            inputExec = raw_inst.addInputPin('inExec', DataTypes.Exec, None, raw_inst.compute)
+            outExec = raw_inst.addOutputPin('outExec', DataTypes.Exec, None)
+        return raw_inst
 
     @staticmethod
     def deserialize(data, graph):
@@ -374,7 +377,11 @@ class Node(QGraphicsItem):
 
         # create pins
         for i in self._rawNode.inputs.values():
-            self.addInputPin(i.getName(), i.dataType)
+            self.addInputPin(i)
+
+        # create outputs
+        for o in self._rawNode.outputs.values():
+            self.addOutputPin(o)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
@@ -407,7 +414,7 @@ class Node(QGraphicsItem):
         template['x'] = self.scenePos().x()
         template['y'] = self.scenePos().y()
         template['uuid'] = str(self.uid)
-        template['computeCode'] = self.computeCode()
+        template['computeCode'] = self._rawNode.computeCode()
         template['inputs'] = [i.serialize() for i in self.inputs.values()]
         template['outputs'] = [o.serialize() for o in self.outputs.values()]
         template['meta']['label'] = self.label().toPlainText()
@@ -442,13 +449,17 @@ class Node(QGraphicsItem):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def addInputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone, defaultValue=None):
-        p = self._addPin(PinDirection.Input, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass, defaultValue=defaultValue)
+    def addInputPin(self, rawPin, hideLabel=False, index=-1):
+        p = self._addPin(rawPin, PinDirection.Input, index=index)
         return p
 
-    def addOutputPin(self, pinName, dataType, foo=None, hideLabel=False, bCreateInputWidget=True, index=-1, userStructClass=ENone, defaultValue=None):
-        p = self._addPin(PinDirection.Output, dataType, foo, hideLabel, bCreateInputWidget, pinName, index=index, userStructClass=userStructClass, defaultValue=defaultValue)
+    def addOutputPin(self, rawPin, hideLabel=False, index=-1):
+        p = self._addPin(rawPin, PinDirection.Output, index=index)
         return p
+
+    @property
+    def name(self):
+        return self._rawNode.name
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()
@@ -525,7 +536,7 @@ class Node(QGraphicsItem):
 
     def addContainer(self, portType, head=False):
         container = QGraphicsWidget()
-        container.setObjectName('{0}PinContainerWidget'.format(self.name))
+        container.setObjectName('{0}PinContainerWidget'.format(self._rawNode.name))
         container.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         container.sizeHint(QtCore.Qt.MinimumSize, QtCore.QSizeF(50.0, 10.0))
 
@@ -564,12 +575,14 @@ class Node(QGraphicsItem):
         if pin:
             pin.kill()
 
-    def _addPin(self, pinDirection, dataType, foo, hideLabel=False, bCreateInputWidget=True, name='', index=-1, userStructClass=ENone, defaultValue=None):
+    def _addPin(self, rawPin, pinDirection, hideLabel=False, index=-1):
         # TODO: create wrapper for raw pin
-        # p = PinWidgetBase(self, rp)
+        p = PinWidgetBase(self, rawPin)
 
         # if pinDirection == PinDirection.Input and foo is not None:
         #     p.call = foo
+
+        name = rawPin.name
 
         connector_name = QGraphicsProxyWidget()
         connector_name.setObjectName('{0}PinConnector'.format(name))
@@ -604,7 +617,7 @@ class Node(QGraphicsItem):
             p._container = container
             container.layout().addItem(connector_name)
 
-            self.inputs[p.uid] = p
+            self._rawNode.inputs[rawPin.uid] = rawPin
             self.inputsLayout.insertItem(index, container)
             container.adjustSize()
         elif pinDirection == PinDirection.Output:
@@ -615,7 +628,7 @@ class Node(QGraphicsItem):
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
             p._container = container
-            self.outputs[p.uid] = p
+            self._rawNode.outputs[rawPin.uid] = rawPin
             self.outputsLayout.insertItem(index, container)
             container.adjustSize()
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)

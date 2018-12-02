@@ -277,7 +277,7 @@ class PinBase(IPin):
     # IPin interface
 
     def color(self):
-        return None
+        return (125, 125, 200, 255)
 
     ## This used by node box to suggest nodes by type
     @staticmethod
@@ -298,7 +298,7 @@ class PinBase(IPin):
                 return []
             if self.dirty:
                 self.owningNode().compute()
-            self.setClean()
+                self.setClean()
             return self.currentData()
 
         if self.direction == PinDirection.Output:
@@ -680,11 +680,6 @@ class Graph(object):
             print('dst not in graph.pins')
             return False
 
-        # if src.dataType == DataTypes.Enum and dst.dataType == DataTypes.Enum:
-        #     if src.getUserStruct() != dst.getUserStruct():
-        #         print('{0} and {1} structures are not supported'.format(src.getUserStruct().__name__, dst.getUserStruct().__name__))
-        #         return False
-
         if src.dataType not in dst.supportedDataTypes():
             print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
             return False
@@ -702,7 +697,7 @@ class Graph(object):
             if debug:
                 print('same types can not be connected')
             return False
-        if src.parent == dst.parent:
+        if src.owningNode == dst.owningNode:
             if debug:
                 print('can not connect to self')
             return False

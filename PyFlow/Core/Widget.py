@@ -40,6 +40,7 @@ from .. import Commands
 from .. import FunctionLibraries
 from .. import Nodes
 from .. import Pins
+from .. Core.Pin import PinWidgetBase
 from os import listdir, path
 from .Variable import VariableBase
 from time import ctime
@@ -81,7 +82,9 @@ def getNodeInstance(module, class_name, nodeName, graph):
     # if not found - continue searching in FunctionLibraries
     foo = FunctionLibraries.findFunctionByName(class_name)
     if foo:
-        instance = Node.initializeFromFunction(foo, graph)
+        raw_instance = Node.initializeFromFunction(foo, graph)
+        instance = Node(raw_instance)
+        graph.addNode(instance)
         return instance
     return None
 
@@ -910,10 +913,10 @@ class GraphWidget(QGraphicsView, Graph):
 
         if self.pressed_item and isinstance(self.pressed_item, QGraphicsItem):
             self.autoPanController.start()
-            if isinstance(self.pressed_item, PinBase):
+            if isinstance(self.pressed_item, PinWidgetBase):
                 if event.button() == QtCore.Qt.LeftButton:
-                    self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsMovable, False)
-                    self.pressed_item.parent().setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
+                    self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
                     self._draw_real_time_line = True
                 if modifiers == QtCore.Qt.AltModifier:
                     self.removeEdgeCmd(self.pressed_item.edge_list)
@@ -1019,11 +1022,11 @@ class GraphWidget(QGraphicsView, Graph):
             if not i:
                 do_connect = False
                 break
-            if not isinstance(i, PinBase):
+            if not isinstance(i, PinWidgetBase):
                 do_connect = False
                 break
         if p_itm and r_itm:
-            if isinstance(p_itm, PinBase) and isinstance(r_itm, PinBase):
+            if isinstance(p_itm, PinWidgetBase) and isinstance(r_itm, PinWidgetBase):
                 if cycle_check(p_itm, r_itm):
                     print('cycles are not allowed')
                     do_connect = False

@@ -63,6 +63,21 @@ class PinWidgetBase(QGraphicsWidget):
         self._val = 0
 
     @property
+    def owningNode(self):
+        return self._rawPin.owningNode
+
+    @property
+    def direction(self):
+        return self._rawPin.direction
+
+    @property
+    def affected_by(self):
+        return self._rawPin.affected_by
+
+    def supportedDataTypes(self):
+        return self._rawPin.supportedDataTypes()
+
+    @property
     def uid(self):
         return self._rawPin._uid
 
@@ -119,7 +134,7 @@ class PinWidgetBase(QGraphicsWidget):
             delattr(self.parent(), self.name)
         if self._container is not None:
             self.parent().graph().scene().removeItem(self._container)
-            if self.direction == PinDirection.Input:
+            if self._rawPin.direction == PinDirection.Input:
                 self.parent().inputsLayout.removeItem(self._container)
             else:
                 self.parent().outputsLayout.removeItem(self._container)

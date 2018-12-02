@@ -23,6 +23,8 @@ class ConnectPin(QUndoCommand):
 
         self.graph.scene().blockSignals(True)
 
+        # TODO: return UI widgets here
+        # Store UI pins in self.graph.pins which implement pin interface
         src = self.graph.pins[self.srcUid]
         dst = self.graph.pins[self.dstUid]
         edge = self.graph._addEdge(src, dst)
