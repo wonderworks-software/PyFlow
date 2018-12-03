@@ -240,25 +240,6 @@ class Node(QGraphicsItem):
         refs = []
         outExec = None
 
-        # iterate over function arguments and create pins according to data types
-        for index in range(len(fooArgNames)):
-            argName = fooArgNames[index]
-            argDefaultValue = foo.__defaults__[index]
-            dataType = foo.__annotations__[argName]
-            structClass = type(argDefaultValue) if dataType == DataTypes.Enum else ENone
-            # tuple means this is reference pin with default value eg - (dataType, defaultValue)
-            if isinstance(dataType, tuple):
-                outRef = raw_inst.addOutputPin(argName, dataType[0])
-                graph.pins[outRef.uid] = outRef
-                outRef.setDefaultValue(argDefaultValue)
-                outRef.setData(dataType[1])
-                refs.append(outRef)
-            else:
-                inp = raw_inst.addInputPin(argName, dataType)
-                graph.pins[inp.uid] = inp
-                inp.setData(argDefaultValue)
-                inp.setDefaultValue(argDefaultValue)
-
         # all inputs affects on all outputs
         for i in raw_inst.inputs.values():
             for o in raw_inst.outputs.values():
@@ -286,6 +267,26 @@ class Node(QGraphicsItem):
         if nodeType == NodeTypes.Callable:
             inputExec = raw_inst.addInputPin('inExec', DataTypes.Exec, None, raw_inst.compute)
             outExec = raw_inst.addOutputPin('outExec', DataTypes.Exec, None)
+
+        # iterate over function arguments and create pins according to data types
+        for index in range(len(fooArgNames)):
+            argName = fooArgNames[index]
+            argDefaultValue = foo.__defaults__[index]
+            dataType = foo.__annotations__[argName]
+            structClass = type(argDefaultValue) if dataType == DataTypes.Enum else ENone
+            # tuple means this is reference pin with default value eg - (dataType, defaultValue)
+            if isinstance(dataType, tuple):
+                outRef = raw_inst.addOutputPin(argName, dataType[0])
+                graph.pins[outRef.uid] = outRef
+                outRef.setDefaultValue(argDefaultValue)
+                outRef.setData(dataType[1])
+                refs.append(outRef)
+            else:
+                inp = raw_inst.addInputPin(argName, dataType)
+                graph.pins[inp.uid] = inp
+                inp.setData(argDefaultValue)
+                inp.setDefaultValue(argDefaultValue)
+
         return raw_inst
 
     @staticmethod
