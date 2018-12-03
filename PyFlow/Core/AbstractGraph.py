@@ -658,6 +658,11 @@ class Graph(object):
             node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
         else:
             node.setPosition(0, 0)
+        # add pins
+        for i in node.inputs.values():
+            self.pins[i.uid] = i
+        for o in node.outputs.values():
+            self.pins[o.uid] = o
         return True
 
     def removeNode(self, node):

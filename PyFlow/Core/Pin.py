@@ -62,6 +62,24 @@ class PinWidgetBase(QGraphicsWidget):
         self.bAnimate = False
         self._val = 0
 
+    def hasConnections(self):
+        return self._rawPin.hasConnections()
+
+    def setDirty(self):
+        self._rawPin.setDirty()
+
+    @property
+    def _data(self):
+        return self._rawPin._data
+
+    @_data.setter
+    def _data(self, value):
+        self._rawPin._data = value
+
+    @property
+    def affects(self):
+        return self._rawPin.affects
+
     @property
     def owningNode(self):
         return self._rawPin.owningNode
@@ -76,6 +94,10 @@ class PinWidgetBase(QGraphicsWidget):
 
     def supportedDataTypes(self):
         return self._rawPin.supportedDataTypes()
+
+    @property
+    def edge_list(self):
+        return self._rawPin.edge_list
 
     @property
     def uid(self):

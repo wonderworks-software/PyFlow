@@ -162,6 +162,9 @@ class Node(QGraphicsItem):
         self.tweakPosition()
         self.icon = None
 
+        self.inputs = {}
+        self.outputs = {}
+
     @staticmethod
     def recreate(node):
         templ = node.serialize()
@@ -226,7 +229,6 @@ class Node(QGraphicsItem):
                                                      'description': description
                                                      })
         raw_inst = nodeClass(graph.getUniqNodeName(foo.__name__))
-        # inst = Node(raw_inst)
 
         if returnType is not None:
             structClass = type(returnDefaultValue) if returnType == DataTypes.Enum else ENone
@@ -449,11 +451,11 @@ class Node(QGraphicsItem):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def addInputPin(self, rawPin, hideLabel=False, index=-1):
+    def addInputPin(self, rawPin, hideLabel=False, index=-1, foo=None):
         p = self._addPin(rawPin, PinDirection.Input, index=index)
         return p
 
-    def addOutputPin(self, rawPin, hideLabel=False, index=-1):
+    def addOutputPin(self, rawPin, hideLabel=False, index=-1, foo=None):
         p = self._addPin(rawPin, PinDirection.Output, index=index)
         return p
 
@@ -575,12 +577,14 @@ class Node(QGraphicsItem):
         if pin:
             pin.kill()
 
-    def _addPin(self, rawPin, pinDirection, hideLabel=False, index=-1):
+    def _addPin(self, rawPin, pinDirection, hideLabel=False, index=-1, foo=None):
         # TODO: create wrapper for raw pin
         p = PinWidgetBase(self, rawPin)
-
-        # if pinDirection == PinDirection.Input and foo is not None:
-        #     p.call = foo
+        if pinDirection == PinDirection.Input:
+            self.inputs[p.uid] = p
+            p.call = rawPin.call
+        if pinDirection == PinDirection.Output:
+            self.outputs[p.uid] = p
 
         name = rawPin.name
 

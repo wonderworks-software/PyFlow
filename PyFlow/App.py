@@ -394,6 +394,9 @@ if __name__ == '__main__':
 
     instance = PyFlow()
     instance.applySettings(settings)
+    # fetch plugins
+    # ...
+
     instance.startMainLoop()
 
     app.setActiveWindow(instance)
