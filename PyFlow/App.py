@@ -73,41 +73,41 @@ class {0}(Node):
 
     @staticmethod
     def pinTypeHints():
-        '''
+        \"\"\"
             used by nodebox to suggest supported pins
             when drop wire from pin into empty space
-        '''
+        \"\"\"
         return {{'inputs': [DataTypes.Bool], 'outputs': [DataTypes.Bool]}}
 
     @staticmethod
     def category():
-        '''
+        \"\"\"
             used by nodebox to place in tree
             to make nested one - use '|' like this ( 'CatName|SubCatName' )
-        '''
+        \"\"\"
         return 'Common'
 
     @staticmethod
     def keywords():
-        '''
+        \"\"\"
             used by nodebox filter while typing
-        '''
+        \"\"\"
         return []
 
     @staticmethod
     def description():
-        '''
+        \"\"\"
             used by property view and node box widgets
-        '''
+        \"\"\"
         return 'default description'
 
     def compute(self):
-        '''
+        \"\"\"
             1) get data from inputs
             2) do stuff
             3) put data to outputs
             4) call output execs
-        '''
+        \"\"\"
 
         str_data = self.inp0.getData()
         try:
@@ -124,20 +124,26 @@ from ..Core.AGraphCommon import *
 
 
 class {0}(FunctionLibraryBase):
-    '''doc string for {0}'''
+    \"\"\"
+        doc string for {0}
+    \"\"\"
     def __init__(self):
         super({0}, self).__init__()
 
     @staticmethod
     @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={{'Category': 'CategoryName|SubCategory name', 'Keywords': ['+', 'append', 'sum']}})
     def add(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0)):
-        '''Sum of two ints.'''
+        \"\"\"
+            Sum of two ints.
+        \"\"\"
         return A + B
 
     @staticmethod
     @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={{'Category': 'CategoryName', 'Keywords': ['/']}})
     def divide(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
-        '''Integer devision.'''
+        \"\"\"
+            Integer devision.
+        \"\"\"
         try:
             d = A / B
             result(True)
@@ -153,7 +159,9 @@ from ..Core.AGraphCommon import *
 
 
 class {0}(PinWidgetBase):
-    '''doc string for {0}'''
+    '''
+        doc string for {0}
+    '''
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super({0}, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(False)

@@ -101,7 +101,7 @@ class VariableBase(QWidget):
         self._value = value
         self.dataType = dataType
         self._uid = uid
-        if self._uid is None:
+        if not self._uid:
             self._uid = uuid4()
         self.graph = graph
         self.setName(name)
@@ -144,7 +144,7 @@ class VariableBase(QWidget):
         template['uuid'] = str(self.uid)
         template['value'] = self.value
         template['type'] = self.dataType
-        template['accessLevel'] = self.accessLevel
+        template['accessLevel'] = str(self.accessLevel)
         return template
 
     @staticmethod
@@ -168,6 +168,8 @@ class VariableBase(QWidget):
     ## Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
     # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
     def setDataType(self, dataType, _bJustSpawned=False):
+        if not dataType:
+            return
         self.dataType = dataType
         self.widget.color = Pins.findPinClassByType(self.dataType).color()
         self.value = Pins.findPinClassByType(self.dataType).pinDataTypeHint()[1]

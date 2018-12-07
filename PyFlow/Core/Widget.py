@@ -647,7 +647,7 @@ class GraphWidget(QGraphicsView, Graph):
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
                 graphData = self.getGraphSaveData()
-                json.dump(graphData, f)
+                json.dump(graphData, f, indent=4)
 
             self._file_name_label.setPlainText(self._current_file_name)
             print(str("// saved: '{0}'".format(self._current_file_name)))
@@ -919,9 +919,9 @@ class GraphWidget(QGraphicsView, Graph):
                 self.pressed_item.setSelected(True)
 
         if not self.pressed_item:
-            if event.button() == QtCore.Qt.LeftButton:
+            if event.button() == QtCore.Qt.LeftButton and QtCore.Qt.NoModifier:
                 self._is_rubber_band_selection = True
-            if event.button() == QtCore.Qt.RightButton and modifiers == QtCore.Qt.NoModifier:
+            if event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.AltModifier:
                 self.bPanMode = True
             self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
 

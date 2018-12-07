@@ -180,8 +180,8 @@ class Node(QGraphicsItem, NodeBase):
         self.sizes[2] = value
 
     def call(self, name):
-        if pinName in [p.name for p in self.outputs.values() if p.dataType is DataTypes.Exec]:
-            p = self.getPinByName(pinName)
+        if name in [p.name for p in self.outputs.values() if p.dataType is DataTypes.Exec]:
+            p = self.getPinByName(name)
             return p.call()
 
     def getData(self, pinName):
@@ -394,7 +394,7 @@ class Node(QGraphicsItem, NodeBase):
 
     def serialize(self):
         template = Node.jsonTemplate()
-        template['type'] = self.__class__.__name__
+        template['type'] = str(self.__class__.__name__)
         template['name'] = self.name
         template['x'] = self.scenePos().x()
         template['y'] = self.scenePos().y()
