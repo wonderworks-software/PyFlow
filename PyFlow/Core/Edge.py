@@ -85,17 +85,17 @@ class Edge(QGraphicsPathItem):
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
-                  'sourceName': self.source().getName(),
-                  'destinationName': self.destination().getName(),
+                  'sourceName': self.source()._rawPin.getName(),
+                  'destinationName': self.destination()._rawPin.getName(),
                   'uuid': str(self.uid)
                   }
         return script
 
     def __str__(self):
         return '{0}.{1} >>> {2}.{3}'.format(self.source().parent().name,
-                                            self.source().name,
+                                            self.source()._rawPin.name,
                                             self.destination().parent().name,
-                                            self.destination().name)
+                                            self.destination()._rawPin.name)
 
     def hoverEnterEvent(self, event):
         super(Edge, self).hoverEnterEvent(event)

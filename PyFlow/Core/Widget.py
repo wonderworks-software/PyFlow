@@ -74,7 +74,7 @@ def getNodeInstance(module, class_name, nodeName, graph):
     # Check in Nodes module first
     mod = Nodes.getNode(class_name)
     if mod is not None:
-        raw_instance = mod(nodeName)
+        raw_instance = mod(nodeName, self)
         instance = Node(raw_instance)
         graph.addNode(instance)
         return instance
@@ -837,9 +837,9 @@ class GraphWidget(QGraphicsView, Graph):
 
             for n in selectedNodes:
                 new_node = n.clone()
-                n.setSelected(False)
-                new_node.setSelected(True)
-                new_node.setPos(new_node.scenePos() + diff)
+            #     n.setSelected(False)
+            #     new_node.setSelected(True)
+            #     new_node.setPos(new_node.scenePos() + diff)
 
     def alignSelectedNodes(self, direction):
         ls = [n for n in self.getNodes() if n.isSelected()]
@@ -1223,28 +1223,6 @@ class GraphWidget(QGraphicsView, Graph):
 
     def plot(self):
         Graph.plot(self)
-        print('>>>>>>> {0} <<<<<<<\n{1}\n'.format(self.name, ctime()))
-        if self.parent:
-            for n in self.getNodes():
-                print(n.name)
-                for i in n.inputs.values() + n.outputs.values():
-                    print('|--- {0} data - {1} affects on {2} affected by {3} DIRTY {4}, uid - {5}'.format(i.getName(),
-                          i.currentData(),
-                          [p.getName() for p in i.affects],
-                          [p.getName() for p in i.affected_by],
-                          i.dirty,
-                          str(i.uid)))
-            print('Variables\n----------')
-            for k, v in self.vars.iteritems():
-                msg = '{0} - {1}, uid - {2}'.format(v.name, v.value, str(v.uid))
-                print(msg)
-            print('Pins\n-----------------')
-            for pinUid, pin in self.pins.iteritems():
-                msg = '{0} - {1}'.format(pinUid, pin.name, str(pin.uid))
-                print(msg)
-            print('Edges\n-----------------')
-            for edgeUid, edge in self.edges.iteritems():
-                print(edgeUid, edge)
 
     def zoomDelta(self, direction):
         current_factor = self.factor

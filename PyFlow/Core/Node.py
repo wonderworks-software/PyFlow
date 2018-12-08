@@ -220,21 +220,22 @@ class Node(QGraphicsItem):
         def keywords():
             return meta['Keywords']
 
-        def constructor(self, name, **kwargs):
-            NodeBase.__init__(self, name, **kwargs)
+        def constructor(self, name, graph, **kwargs):
+            NodeBase.__init__(self, name, graph, **kwargs)
 
         nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
                                                      'category': category,
                                                      'keywords': keywords,
                                                      'description': description
                                                      })
-        raw_inst = nodeClass(graph.getUniqNodeName(foo.__name__))
+        raw_inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
             structClass = type(returnDefaultValue) if returnType == DataTypes.Enum else ENone
             p = raw_inst.addOutputPin('out', returnType, returnDefaultValue)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
+            graph.pins[p.uid] = p
 
         # this is array of 'references' outputs will be created for
         refs = []
@@ -431,13 +432,13 @@ class Node(QGraphicsItem):
 
     def clone(self):
         templ = self.serialize()
-        templ['name'] = self.graph().getUniqNodeName(self.name)
+        templ['name'] = self._rawNode.graph().getUniqNodeName(self._rawNode.name)
         templ['uuid'] = str(uuid.uuid4())
         for inp in templ['inputs']:
             inp['uuid'] = str(uuid.uuid4())
         for out in templ['outputs']:
             out['uuid'] = str(uuid.uuid4())
-        new_node = self.graph().createNode(templ)
+        new_node = self._rawNode.graph().createNode(templ)
         return new_node
 
     def paint(self, painter, option, widget):
