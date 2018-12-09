@@ -3,6 +3,10 @@ import sys
 import subprocess
 from Qt import QtGui
 from Qt import QtCore
+import Pins
+import FunctionLibraries
+import Nodes
+import Commands
 from Qt.QtWidgets import QMainWindow
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QStyleFactory
@@ -16,10 +20,6 @@ from Core.Widget import GraphWidget
 from Core.Widget import Direction
 from Core.Widget import NodesBox
 from Core.VariablesWidget import VariablesWidget
-import Nodes
-import Commands
-import FunctionLibraries
-import Pins
 from UI import GraphEditor_ui
 import json
 from time import clock

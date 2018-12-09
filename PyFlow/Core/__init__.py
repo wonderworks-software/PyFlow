@@ -3,12 +3,19 @@
 
 Core functionality of the PyFlow.
 """
-from Pin import PinWidgetBase
-from Edge import Edge
-from Node import Node
-from Node import NodeName
-from GetVarNode import GetVarNode
-from SetVarNode import SetVarNode
-import FunctionLibrary
-import Variable
-import VariablesWidget
+
+from __future__ import absolute_import
+
+__all__ = [
+    "PinBase",
+    "NodeBase",
+    "GraphBase",
+    "FunctionLibraryBase",
+    "AGraphCommon"
+]
+
+from .PinBase import PinBase
+from .NodeBase import NodeBase
+from .GraphBase import GraphBase
+from .FunctionLibrary import FunctionLibraryBase
+from . import AGraphCommon

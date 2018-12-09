@@ -8,7 +8,7 @@
             "name": "Python: PyFlow no ui debug",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/no_ui.py",
+            "program": "${workspaceFolder}/launcher.py",
             "console": "integratedTerminal"
         },
         {
