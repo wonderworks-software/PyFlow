@@ -1,5 +1,5 @@
-from ..Core.AbstractGraph import PinBase
-from ..Core.AGraphCommon import *
+from PyFlow.Core import PinBase
+from PyFlow.Core.AGraphCommon import *
 from pyrr import Matrix44
 
 

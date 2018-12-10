@@ -1,7 +1,6 @@
-from ..Core.AbstractGraph import PinBase
-from ..Core.AGraphCommon import *
-from ..Core.Enums import ENone
-from ..Core.Enums import findByName
+from PyFlow.Core import PinBase
+from PyFlow.Core.AGraphCommon import *
+# from ..Core.Enums import ENone
 
 
 class EnumPin(PinBase):

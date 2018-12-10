@@ -179,7 +179,7 @@ class NodeBase(INode):
         raw_inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
-            structClass = type(returnDefaultValue) if returnType == DataTypes.Enum else ENone
+            # structClass = type(returnDefaultValue) if returnType == DataTypes.Enum else ENone
             p = raw_inst.addOutputPin('out', returnType, returnDefaultValue)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
@@ -222,7 +222,7 @@ class NodeBase(INode):
             argName = fooArgNames[index]
             argDefaultValue = foo.__defaults__[index]
             dataType = foo.__annotations__[argName]
-            structClass = type(argDefaultValue) if dataType == DataTypes.Enum else ENone
+            # structClass = type(argDefaultValue) if dataType == DataTypes.Enum else ENone
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
                 outRef = raw_inst.addOutputPin(argName, dataType[0])

@@ -1,6 +1,8 @@
-# -*- coding: utf-8 -*-
-from ..Core.FunctionLibrary import *
-from ..Core.AGraphCommon import *
+from PyFlow.Core import(
+    FunctionLibraryBase,
+    IMPLEMENT_NODE
+)
+from PyFlow.Core.AGraphCommon import *
 import pyrr
 
 

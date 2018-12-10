@@ -1,5 +1,8 @@
-from ..Core.FunctionLibrary import *
-from ..Core.AGraphCommon import *
+from PyFlow.Core import(
+    FunctionLibraryBase,
+    IMPLEMENT_NODE
+)
+from PyFlow.Core.AGraphCommon import *
 import math
 import random
 import pyrr

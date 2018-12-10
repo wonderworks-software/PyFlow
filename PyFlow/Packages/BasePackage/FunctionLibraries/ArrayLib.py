@@ -1,4 +1,7 @@
-from PyFlow.Core import FunctionLibraryBase
+from PyFlow.Core import(
+    FunctionLibraryBase,
+    IMPLEMENT_NODE
+)
 from PyFlow.Core.AGraphCommon import *
 
 

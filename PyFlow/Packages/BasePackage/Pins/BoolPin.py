@@ -1,8 +1,8 @@
-from PyFlow import AbstractGraph
-from ..Core.AGraphCommon import *
+from PyFlow.Core import PinBase
+from PyFlow.Core.AGraphCommon import *
 
 
-class BoolPin(AbstractGraph.PinBase):
+class BoolPin(PinBase):
     """doc string for BoolPin"""
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(BoolPin, self).__init__(name, parent, dataType, direction, **kwargs)
