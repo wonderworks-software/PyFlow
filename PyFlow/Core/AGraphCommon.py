@@ -15,9 +15,10 @@ import uuid
 import sys
 from enum import IntEnum
 import Enums
+import struct
 
 ## determines int maximum value
-INT_RANGE_MAX = 99999
+INT_RANGE_MAX = 2 ** (struct.Struct('i').size * 8 - 1) - 1  # Added in cross platform sys.maxint solution provided by melMass
 ## determines int minimum value
 INT_RANGE_MIN = -INT_RANGE_MAX
 ## determines step for all floating point input widgets
