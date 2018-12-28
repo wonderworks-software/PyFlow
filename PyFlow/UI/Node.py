@@ -21,9 +21,9 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 from Pin import PinWidgetBase
-from .InputWidgets import getInputWidget
-from NodePainter import NodePainter
-from Enums import ENone
+from PyFlow.UI.InputWidgets import getInputWidget
+from PyFlow.UI.NodePainter import NodePainter
+from PyFlow.Core.Enums import ENone
 
 
 class NodeName(QGraphicsTextItem):

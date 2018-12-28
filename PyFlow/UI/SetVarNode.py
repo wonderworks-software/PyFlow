@@ -2,20 +2,23 @@
 
 Builtin node to set variable value.
 """
-from AbstractGraph import *
-from Settings import *
-from . import Node
+from PyFlow.Core.NodeBase import NodeBase
+from Settings import (
+    Spacings,
+    Colors
+)
+from PyFlow.UI import Node
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QLineEdit
 from Qt import QtCore
 from Qt import QtGui
-from ..Commands import RemoveNodes
+from PyFlow.Commands import RemoveNodes
 from InputWidgets import getInputWidget
 
 
 ## Variable setter node
-class SetVarNode(Node, NodeBase):
+class SetVarNode(NodeBase):
     """docstring for SetVarNode"""
     def __init__(self, name, graph, var):
         super(SetVarNode, self).__init__(name, graph)

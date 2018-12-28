@@ -1,6 +1,7 @@
+from pyrr import Matrix44
+
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
-from pyrr import Matrix44
 
 
 class Matrix44Pin(PinBase):

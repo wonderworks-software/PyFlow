@@ -6,7 +6,7 @@ this file is imported in almost all others files of the program
 """
 import math
 import time
-from Settings import *
+# from Settings import *
 import inspect
 from threading import Thread
 from functools import wraps
@@ -135,6 +135,7 @@ class REGISTER_ENUM(object):
 
 
 ## Data types identifires.
+# TODO: this is bad. Each package should define it's own data types
 class DataTypes(IntEnum):
     Float = 0
     Int = 1

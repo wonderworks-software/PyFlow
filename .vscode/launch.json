@@ -15,7 +15,7 @@
             "name": "Python: PyFlow debug",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/launcher.py",
+            "program": "${workspaceFolder}/launcherUI.py",
             "console": "integratedTerminal"
         },
         {

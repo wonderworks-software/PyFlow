@@ -1,4 +1,4 @@
-from . import _PINS
+from PyFlow import _PINS
 
 
 def findPinClassByType(dataType):

@@ -2,15 +2,16 @@
 
 Variables input widget. Container for [VariableBase](@ref PyFlow.Core.Variable.VariableBase)
 """
+from types import MethodType
+
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QListWidget
 from Qt.QtWidgets import QListWidgetItem
-from ..UI import VariablesWidget_ui
-from Variable import VariableBase
-from types import MethodType
-from AbstractGraph import *
+
+from PyFlow.UI.Widgets import VariablesWidget_ui
+from PyFlow.UI.Variable import VariableBase
 
 
 def lwMousePressEvent(self, event):

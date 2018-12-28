@@ -1,11 +1,12 @@
-from Interfaces import INode
 import weakref
 import uuid
 import keyword
 from collections import OrderedDict
 from inspect import getargspec
 from types import MethodType
-from AGraphCommon import *
+
+from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Interfaces import INode
 
 
 class NodeBase(INode):

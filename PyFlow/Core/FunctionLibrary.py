@@ -7,7 +7,7 @@ The main idea is to describe argument types and default values.
 Using this information it becomes possible to create pins according to arguments types.
 """
 from inspect import getargspec
-from AGraphCommon import *
+from PyFlow.Core.AGraphCommon import *
 
 empty = {}
 

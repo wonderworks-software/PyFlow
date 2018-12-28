@@ -2,11 +2,13 @@ from __future__ import absolute_import
 import importlib
 from .Packages import *
 import pkgutil
+from PyFlow import Core
 
 __all__ = [
     "INITIALIZE",
     "GET_PACKAGES",
-    "GET_PINS"
+    "GET_PINS",
+    "Core"
 ]
 
 __PACKAGES = {}

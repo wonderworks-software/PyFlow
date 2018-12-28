@@ -15,9 +15,9 @@ from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
 from uuid import uuid4
 import inspect
-from AbstractGraph import *
-import InputWidgets
-from .. import Pins
+from PyFlow.UI import InputWidgets
+from PyFlow.Core import PinUtils
+from PyFlow.Core.AGraphCommon import DataTypes
 
 
 ## Colored rounded rect

@@ -13,12 +13,10 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QGridLayout
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QSizePolicy
-from AGraphCommon import *
-# from AbstractGraph import PinBase
-from ..UI import FloatVector3InputWidget_ui
-from ..UI import FloatVector4InputWidget_ui
-from ..UI import Matrix33InputWidget_ui
-from ..UI import Matrix44InputWidget_ui
+from PyFlow.UI.Widgets import FloatVector3InputWidget_ui
+from PyFlow.UI.Widgets import FloatVector4InputWidget_ui
+from PyFlow.UI.Widgets import Matrix33InputWidget_ui
+from PyFlow.UI.Widgets import Matrix44InputWidget_ui
 import pyrr
 
 

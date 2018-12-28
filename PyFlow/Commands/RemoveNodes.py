@@ -1,5 +1,6 @@
-from Qt.QtWidgets import QUndoCommand
 from uuid import UUID
+
+from Qt.QtWidgets import QUndoCommand
 
 
 class RemoveNodes(QUndoCommand):

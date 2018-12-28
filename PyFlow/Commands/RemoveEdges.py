@@ -1,6 +1,8 @@
-from Qt.QtWidgets import QUndoCommand
-from ..Core import Edge
 from uuid import UUID
+
+from Qt.QtWidgets import QUndoCommand
+
+from PyFlow.UI import Edge
 
 
 class RemoveEdges(QUndoCommand):

@@ -1,4 +1,4 @@
-from AGraphCommon import *
+from PyFlow.Core.AGraphCommon import *
 
 
 class GraphBase(object):

@@ -1,6 +1,7 @@
-from Interfaces import IPin
 import uuid
 from copy import deepcopy
+
+from Interfaces import IPin
 
 
 class PinBase(IPin):

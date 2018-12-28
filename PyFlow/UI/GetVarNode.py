@@ -2,18 +2,20 @@
 
 Builtin node to acess variable value.
 """
-from AbstractGraph import *
-from Settings import *
-from . import Node
+from PyFlow.Core.NodeBase import NodeBase
+from PyFlow.UI.Settings import (
+    Spacings, Colors
+)
+from PyFlow.UI import Node
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore
 from Qt import QtGui
-from ..Commands import RemoveNodes
+from PyFlow.Commands import RemoveNodes
 
 
 ## Variable getter node
-class GetVarNode(Node, NodeBase):
+class GetVarNode(NodeBase):
     def __init__(self, name, graph, var):
         super(GetVarNode, self).__init__(name, graph)
         self.var = var

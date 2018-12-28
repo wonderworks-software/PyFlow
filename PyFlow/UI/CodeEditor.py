@@ -50,6 +50,12 @@ When save button is pressed, function with code you wrote will be generated and 
 
 """
 
+import weakref
+from keyword import kwlist
+import __builtin__
+import inspect
+from types import MethodType
+
 from Qt import QtGui
 from Qt import QtCore
 from Qt.QtWidgets import QWidget
@@ -60,19 +66,17 @@ from Qt.QtWidgets import QListWidgetItem
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QCompleter
 from Qt.QtWidgets import QPlainTextEdit
-from ..UI import CodeEditor_ui
-import PythonSyntax
-from ..UI import PinWidget_ui
-from AbstractGraph import *
-import inspect
-from types import MethodType
-from ..Core import Node
-import weakref
-from keyword import kwlist
-import __builtin__
+
+from PyFlow.UI.Widgets import CodeEditor_ui
+import PyFlow.UI.PythonSyntax as PythonSyntax
+from PyFlow.UI.Widgets.UI import PinWidget_ui
+from PyFlow.UI.Node import Node
 
 
 _defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()', 'setDirty()'] + dir(__builtin__)
+
+
+# TODO: Rewrite this
 
 
 class WCompletionTextEdit(QPlainTextEdit):

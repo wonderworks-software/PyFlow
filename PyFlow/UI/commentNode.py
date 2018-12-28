@@ -1,10 +1,7 @@
 """@file CommentNode.py
 """
-from ..Core.AbstractGraph import *
-from ..Core.Settings import *
-from ..Core import Node
-from ..Core import NodeName
 from types import MethodType
+
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QGraphicsItemGroup
@@ -18,6 +15,10 @@ from Qt.QtWidgets import QColorDialog
 from Qt import QtGui
 from Qt import QtCore
 
+from PyFlow.Core.AbstractGraph import *
+from PyFlow.UI.Settings import (Spacings, Colors)
+from PyFlow.UI.Node import Node
+from PyFlow.UI.Node import NodeName
 
 class commentNodeName(NodeName):
     """doc string for commentNodeName"""
@@ -88,7 +89,7 @@ class commentNodeName(NodeName):
 #
 # Can drag intersected nodes.
 # You can also specify color and resize it.
-class commentNode(Node, NodeBase):
+class commentNode(Node):
     def __init__(self, name, graph, bUseTextureBg=False, headColor=Colors.AbsoluteBlack):
         super(commentNode, self).__init__(name, graph, headColor=headColor)
         self.color = Colors.AbsoluteBlack
