@@ -11,15 +11,14 @@ class FloatVector4Pin(PinBase):
         self.setDefaultValue(Vector4())
 
     def supportedDataTypes(self):
-        return (DataTypes.FloatVector4,)
+        return ('FloatVector4Pin',)
 
     @staticmethod
     def pinDataTypeHint():
-        return DataTypes.FloatVector4, Vector4()
+        return 'FloatVector4Pin', Vector4()
 
-    @staticmethod
-    def color():
-        return Colors.FloatVector4
+    def color(self):
+        return (173, 216, 230, 255)
 
     def serialize(self):
         data = PinBase.serialize(self)

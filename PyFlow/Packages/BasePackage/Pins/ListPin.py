@@ -9,15 +9,14 @@ class ListPin(PinBase):
         self.setDefaultValue([])
 
     def supportedDataTypes(self):
-        return (DataTypes.Array,)
+        return ('ListPin',)
 
-    @staticmethod
-    def color():
-        return Colors.Array
+    def color(self):
+        return (110, 110, 110, 255)
 
     @staticmethod
     def pinDataTypeHint():
-        return DataTypes.Array, []
+        return 'ListPin', []
 
     def setData(self, data):
         if isinstance(data, list):

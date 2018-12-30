@@ -2,20 +2,20 @@ from PyFlow.Core import NodeBase
 
 
 class forLoopWithBreak(NodeBase):
-    def __init__(self, name):
-        super(forLoopWithBreak, self).__init__(name)
+    def __init__(self, name, graph):
+        super(forLoopWithBreak, self).__init__(name, graph)
         self.stop = False
-        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute)
-        self.firstIndex = self.addInputPin('Start', DataTypes.Int)
-        self.lastIndex = self.addInputPin('Stop', DataTypes.Int)
+        self.inExec = self.addInputPin('inExec', 'ExecPin', self.compute)
+        self.firstIndex = self.addInputPin('Start', 'IntPin')
+        self.lastIndex = self.addInputPin('Stop', 'IntPin')
         self.lastIndex.setDefaultValue(10)
-        self.step = self.addInputPin('Step', DataTypes.Int)
+        self.step = self.addInputPin('Step', 'IntPin')
         self.step.setDefaultValue(1)
-        self.breakExec = self.addInputPin('Break', DataTypes.Exec, self.interrupt)
+        self.breakExec = self.addInputPin('Break', 'ExecPin', self.interrupt)
 
-        self.loopBody = self.addOutputPin('LoopBody', DataTypes.Exec)
-        self.index = self.addOutputPin('Index', DataTypes.Int)
-        self.completed = self.addOutputPin('Completed', DataTypes.Exec)
+        self.loopBody = self.addOutputPin('LoopBody', 'ExecPin')
+        self.index = self.addOutputPin('Index', 'IntPin')
+        self.completed = self.addOutputPin('Completed', 'ExecPin')
 
         pinAffects(self.firstIndex, self.index)
         pinAffects(self.lastIndex, self.index)
@@ -23,7 +23,7 @@ class forLoopWithBreak(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Exec, DataTypes.Int], 'outputs': [DataTypes.Exec, DataTypes.Int]}
+        return {'inputs': ['ExecPin', 'IntPin'], 'outputs': ['ExecPin', 'IntPin']}
 
     def interrupt(self):
         self.stop = True

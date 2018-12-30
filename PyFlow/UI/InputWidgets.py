@@ -1,4 +1,6 @@
 import weakref
+
+import pyrr
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QDoubleSpinBox
@@ -13,12 +15,12 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QGridLayout
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QSizePolicy
+
 from PyFlow.UI.Widgets import FloatVector3InputWidget_ui
 from PyFlow.UI.Widgets import FloatVector4InputWidget_ui
 from PyFlow.UI.Widgets import Matrix33InputWidget_ui
 from PyFlow.UI.Widgets import Matrix44InputWidget_ui
-import pyrr
-
+from PyFlow.Core.AGraphCommon import *
 
 def _configDoubleSpinBox(sb):
     sb.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
@@ -538,26 +540,26 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
     '''
     factory method
     '''
-    if dataType == DataTypes.Float:
+    if dataType == 'FloatPin':
         return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == DataTypes.Int:
+    if dataType == 'IntPin':
         return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == DataTypes.String:
+    if dataType == 'StringPin':
         return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == DataTypes.Bool:
+    if dataType == 'BoolPin':
         return BoolInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == DataTypes.FloatVector3:
+    if dataType == 'FloatVector3Pin':
         return FloatVector3InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == DataTypes.FloatVector4:
+    if dataType == 'FloatVector4Pin':
         return FloatVector4InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == DataTypes.Quaternion:
+    if dataType == 'QuatlPin':
         return QuatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == DataTypes.Matrix33:
+    if dataType == 'Matrix33Pin':
         return Matrix33InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == DataTypes.Matrix44:
+    if dataType == 'Matrix44Pin':
         return Matrix44InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == DataTypes.Exec:
+    if dataType == 'ExecPin':
         return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None)
-    if dataType == DataTypes.Enum:
+    if dataType == 'EnumPin':
         return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, userStructClass=userStructClass)
     return None

@@ -10,15 +10,14 @@ class QuatPin(PinBase):
         self.setDefaultValue(Quaternion())
 
     def supportedDataTypes(self):
-        return (DataTypes.Quaternion,)
+        return ('QuatlPin',)
 
-    @staticmethod
-    def color():
-        return Colors.Quaternion
+    def color(self):
+        return (32, 178, 170, 255)
 
     @staticmethod
     def pinDataTypeHint():
-        return DataTypes.Quaternion, Quaternion()
+        return 'QuatlPin', Quaternion()
 
     def serialize(self):
         # note how custom class can be serialized

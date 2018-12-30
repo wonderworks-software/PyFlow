@@ -2,14 +2,14 @@ from PyFlow.Core import NodeBase
 
 
 class deltaTime(NodeBase):
-    def __init__(self, name):
-        super(deltaTime, self).__init__(name)
+    def __init__(self, name, graph):
+        super(deltaTime, self).__init__(name, graph)
         self._deltaTime = 0.0
-        self._out0 = self.addOutputPin('out0', DataTypes.Float)
+        self._out0 = self.addOutputPin('out0', 'FloatPin')
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [], 'outputs': [DataTypes.Float]}
+        return {'inputs': [], 'outputs': ['FloatPin']}
 
     @staticmethod
     def category():

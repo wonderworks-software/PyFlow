@@ -246,7 +246,7 @@ class commentNode(Node):
             value.setY(value.y() - 2)
             try:
                 deltaPos = value - self.lastNodePos
-                for node, initialPos in self.nodesToMove.iteritems():
+                for node, initialPos in self.nodesToMove.items():
                     nodePos = node.scenePos()
                     newPos = nodePos + deltaPos
                     node.setPos(newPos)

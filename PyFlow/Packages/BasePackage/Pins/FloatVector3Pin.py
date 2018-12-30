@@ -10,15 +10,14 @@ class FloatVector3Pin(PinBase):
         self.setDefaultValue(Vector3())
 
     def supportedDataTypes(self):
-        return (DataTypes.FloatVector3,)
+        return ('FloatVector3Pin',)
 
-    @staticmethod
-    def color():
-        return Colors.FloatVector3
+    def color(self):
+        return (170, 100, 200, 255)
 
     @staticmethod
     def pinDataTypeHint():
-        return DataTypes.FloatVector3, Vector3()
+        return 'FloatVector3Pin', Vector3()
 
     def serialize(self):
         data = PinBase.serialize(self)

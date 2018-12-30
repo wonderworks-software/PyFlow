@@ -5,14 +5,14 @@ from PyFlow.Core import NodeBase
 class branch(NodeBase):
     def __init__(self, name, graph):
         super(branch, self).__init__(name, graph)
-        self.trueExec = self.addOutputPin("True", DataTypes.Exec)
-        self.falseExec = self.addOutputPin("False", DataTypes.Exec)
-        self.inExec = self.addInputPin("In", DataTypes.Exec, self.compute)
-        self.condition = self.addInputPin("Condition", DataTypes.Bool)
+        self.trueExec = self.addOutputPin("True", 'ExecPin')
+        self.falseExec = self.addOutputPin("False", 'ExecPin')
+        self.inExec = self.addInputPin("In", 'ExecPin', self.compute)
+        self.condition = self.addInputPin("Condition", 'BoolPin')
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Exec, DataTypes.Bool], 'outputs': [DataTypes.Bool]}
+        return {'inputs': ['ExecPin', 'BoolPin'], 'outputs': ['BoolPin']}
 
     @staticmethod
     def category():

@@ -38,7 +38,7 @@ class RemoveNodes(QUndoCommand):
                 node = self.graph.nodes[uid]
 
                 # store connecton info
-                for pin in node.inputs.values() + node.outputs.values():
+                for pin in list(node.inputs.values()) + list(node.outputs.values()):
                     for e in pin.edge_list:
                         self.connectionInfo.append(e.serialize())
                     pin.disconnectAll()

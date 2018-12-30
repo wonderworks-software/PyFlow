@@ -1,4 +1,4 @@
-from Qt.QtWidgets import QApplication
+from Qt.QtWidgets import (QApplication, QStyleFactory)
 from Qt import QtGui
 from Qt import QtCore
 import sys
@@ -39,6 +39,8 @@ except Exception as e:
 instance = PyFlow.instance()
 app.setActiveWindow(instance)
 instance.show()
+
+QApplication.setStyle(QStyleFactory.create("Fusion"))
 
 try:
     sys.exit(app.exec_())

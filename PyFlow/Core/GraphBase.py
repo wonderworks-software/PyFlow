@@ -39,7 +39,7 @@ class GraphBase(object):
 
     def setDebug(self, state):
         if not isinstance(state, bool):
-            print 'bool expected. skipped'
+            print('bool expected. skipped')
             return
         self._debug = state
 
@@ -56,7 +56,7 @@ class GraphBase(object):
                 return
             next_layer_nodes = self.getNextLayerNodes(n, PinDirection.Input)
 
-            layer_idx = max(order.iterkeys()) + 1
+            layer_idx = max(order.keys()) + 1
             for n in next_layer_nodes:
                 if layer_idx not in order:
                     order[layer_idx] = []
@@ -66,7 +66,7 @@ class GraphBase(object):
         foo(node)
 
         # make sure no copies of nodes in higher layers (non directional cycles)
-        for i in reversed(sorted([i for i in order.iterkeys()])):
+        for i in reversed(sorted([i for i in order.keys()])):
             for iD in range(i - 1, -1, -1):
                 for check_node in order[i]:
                     if check_node in order[iD]:
@@ -147,8 +147,8 @@ class GraphBase(object):
             print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
             return False
         else:
-            if src.dataType is DataTypes.Exec:
-                if dst.dataType is not DataTypes.Exec:
+            if src.dataType is 'ExecPin':
+                if dst.dataType is not 'ExecPin':
                     print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
                     return False
 
@@ -179,11 +179,11 @@ class GraphBase(object):
 
         # input value pins can have one output connection
         # output value pins can have any number of connections
-        if not src.dataType == DataTypes.Exec and dst.hasConnections():
+        if not src.dataType == 'ExecPin' and dst.hasConnections():
             dst.disconnectAll()
         # input execs can have any number of connections
         # output execs can have only one connection
-        if src.dataType == DataTypes.Exec and dst.dataType == DataTypes.Exec and src.hasConnections():
+        if src.dataType == 'ExecPin' and dst.dataType == 'ExecPin' and src.hasConnections():
             src.disconnectAll()
 
         pinAffects(src, dst)
@@ -204,20 +204,20 @@ class GraphBase(object):
         push(edge.destination())
 
     def plot(self):
-        print self.name + '\n----------\n'
+        print(self.name + '\n----------\n')
         for n in self.getNodes():
             print(n.name)
             for inp in n.inputs.values():
-                print '|---', inp._rawPin.name, 'data - {0}'.format(inp._rawPin.currentData()), \
-                    'affects on', [i._rawPin.name for i in inp._rawPin.affects], \
-                    'affected_by ', [p._rawPin.name for p in inp._rawPin.affected_by], \
-                    'DIRTY ', inp._rawPin.dirty
+                print('|---', inp._rawPin.name, 'data - {0}'.format(inp._rawPin.currentData()),
+                      'affects on', [i._rawPin.name for i in inp._rawPin.affects],
+                      'affected_by ', [p._rawPin.name for p in inp._rawPin.affected_by],
+                      'DIRTY ', inp._rawPin.dirty)
                 for e in inp._rawPin.edge_list:
-                    print '\t|---', e.__str__()
+                    print('\t|---', e.__str__())
             for out in n.outputs.values():
-                print '|---' + out._rawPin.name, 'data - {0}'.format(out._rawPin.currentData()), \
-                    'affects on', [i._rawPin.name for i in out._rawPin.affects], \
-                    'affected_by ', [p._rawPin.name for p in out._rawPin.affected_by], \
-                    'DIRTY', out._rawPin.dirty
+                print('|---' + out._rawPin.name, 'data - {0}'.format(out._rawPin.currentData()),
+                      'affects on', [i._rawPin.name for i in out._rawPin.affects],
+                      'affected_by ', [p._rawPin.name for p in out._rawPin.affected_by],
+                      'DIRTY', out._rawPin.dirty)
                 for e in out._rawPin.edge_list:
-                    print '\t|---', e.__str__()
+                    print('\t|---', e.__str__())

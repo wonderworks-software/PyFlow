@@ -21,6 +21,7 @@ from PyFlow.Core.AGraphCommon import Direction
 from PyFlow.UI.Widget import NodesBox
 from PyFlow.UI.VariablesWidget import VariablesWidget
 from PyFlow.UI.Widgets import GraphEditor_ui
+from PyFlow import INITIALIZE
 
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -167,51 +168,5 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         instance = PyFlow(parent)
         instance.applySettings(settings)
         instance.startMainLoop()
+        INITIALIZE()
         return instance
-
-
-if __name__ == '__main__':
-
-    app = QApplication(sys.argv)
-
-    dark_palette = app.palette()
-
-    dark_palette.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
-    dark_palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
-    dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
-    dark_palette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53, 53, 53))
-    dark_palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
-    dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
-    dark_palette.setColor(QtGui.QPalette.Text, QtCore.Qt.black)
-    dark_palette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
-    dark_palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.black)
-    dark_palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
-    dark_palette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-    dark_palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-    dark_palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
-
-    app.setPalette(dark_palette)
-
-    try:
-        with open(STYLE_PATH, 'r') as f:
-            styleString = f.read()
-            app.setStyleSheet(styleString)
-    except:
-        pass
-
-    settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
-
-    instance = PyFlow()
-    instance.applySettings(settings)
-    # fetch plugins
-    # ...
-
-    instance.startMainLoop()
-
-    app.setActiveWindow(instance)
-    instance.show()
-
-    try:
-        sys.exit(app.exec_())
-    except Exception as e:
-        print(e)

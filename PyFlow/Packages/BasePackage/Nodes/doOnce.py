@@ -2,12 +2,12 @@ from PyFlow.Core import NodeBase
 
 
 class doOnce(NodeBase):
-    def __init__(self, name):
-        super(doOnce, self).__init__(name)
-        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute)
-        self.reset = self.addInputPin('Reset', DataTypes.Exec, self.OnReset)
-        self.bStartClosed = self.addInputPin('Start closed', DataTypes.Bool)
-        self.completed = self.addOutputPin('Completed', DataTypes.Exec)
+    def __init__(self, name, graph):
+        super(doOnce, self).__init__(name, graph)
+        self.inExec = self.addInputPin('inExec', 'ExecPin', self.compute)
+        self.reset = self.addInputPin('Reset', 'ExecPin', self.OnReset)
+        self.bStartClosed = self.addInputPin('Start closed', 'BoolPin')
+        self.completed = self.addOutputPin('Completed', 'ExecPin')
         self.bClosed = False
 
     def OnReset(self):
@@ -16,7 +16,7 @@ class doOnce(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Exec, DataTypes.Bool], 'outputs': [DataTypes.Exec]}
+        return {'inputs': ['ExecPin', 'BoolPin'], 'outputs': ['ExecPin']}
 
     @staticmethod
     def category():

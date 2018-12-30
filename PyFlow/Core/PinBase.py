@@ -1,7 +1,9 @@
 import uuid
 from copy import deepcopy
+import weakref
 
-from Interfaces import IPin
+from PyFlow.Core.Interfaces import IPin
+from PyFlow.Core.AGraphCommon import *
 
 
 class PinBase(IPin):
@@ -34,7 +36,7 @@ class PinBase(IPin):
     # ISerializable interface
     def serialize(self):
         data = {'name': self.name,
-                'dataType': int(self.dataType),
+                'dataType': self.dataType,
                 'direction': int(self.direction),
                 'value': self.currentData(),
                 'uuid': str(self.uid),
@@ -83,8 +85,8 @@ class PinBase(IPin):
     def getData(self):
         # if not connected - compute and return
         if not self.hasConnections():
-            if self.dataType == DataTypes.Array:
-                return []
+            # if self.dataType == 'ListPin':
+            #     return []
             if self.dirty:
                 self.owningNode().compute()
                 self.setClean()
@@ -99,7 +101,7 @@ class PinBase(IPin):
             if self.dirty or self.owningNode().bCallable:
                 out = [i for i in self.affected_by if i.direction == PinDirection.Output]
                 if not out == []:
-                    compute_order = self.owningNode().graph().getEvaluationOrder(out[0].parent())
+                    compute_order = self.owningNode().graph().getEvaluationOrder(out[0]._rawPin.owningNode())
                     # call from left to right
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
                         for node in compute_order[layer]:
@@ -176,7 +178,7 @@ class PinBase(IPin):
             return True
 
     def setDirty(self):
-        if self.dataType == DataTypes.Exec:
+        if self.dataType == 'ExecPin':
             return
         self.dirty = True
         for i in self.affects:

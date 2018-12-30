@@ -13,7 +13,7 @@ class RandomLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
     ## Return a random integer N such that a <= N <= b
-    def randint(start=(DataTypes.Int, 0), end=(DataTypes.Int, 10), Result=(DataTypes.Reference, (DataTypes.Int, 0))):
+    def randint(start=('IntPin', 0), end=('IntPin', 10), Result=(DataTypes.Reference, ('IntPin', 0))):
         '''
         Return a random integer N such that a <= N <= b
         '''
@@ -23,7 +23,7 @@ class RandomLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
     ## Shuffle the sequence x in place
-    def shuffle(seq=(DataTypes.Array, []), Result=(DataTypes.Reference, (DataTypes.Array, []))):
+    def shuffle(seq=('ListPin', []), Result=(DataTypes.Reference, ('ListPin', []))):
         '''
         Shuffle the sequence x in place
         '''

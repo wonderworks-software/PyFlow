@@ -23,8 +23,8 @@ class SetVarNode(NodeBase):
     def __init__(self, name, graph, var):
         super(SetVarNode, self).__init__(name, graph)
         self.var = var
-        self.inExec = self.addInputPin('in0', DataTypes.Exec, self.compute, hideLabel=True)
-        self.outExec = self.addOutputPin('out0', DataTypes.Exec, hideLabel=True)
+        self.inExec = self.addInputPin('in0', 'ExecPin', self.compute, hideLabel=True)
+        self.outExec = self.addOutputPin('out0', 'ExecPin', hideLabel=True)
         self.value = self.addInputPin('inp', self.var.dataType)
         self.outValue = self.addOutputPin('out', self.var.dataType)
         self.var.nameChanged.connect(self.onVarNameChanged)

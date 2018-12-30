@@ -184,6 +184,7 @@ class IPin(IItemBase):
 
 
 class INode(IItemBase):
+
     def __init__(self):
         super(INode, self).__init__()
 
@@ -204,3 +205,20 @@ class INode(IItemBase):
 
     def postCreate(self, jsonTemplate=None):
         raise NotImplementedError('postCreate method of INode is not implemented')
+
+
+class IPackage(object):
+    def __init__(self):
+        super(IPackage, self).__init__()
+
+    @staticmethod
+    def GetFunctionLibraries():
+        pass
+
+    @staticmethod
+    def GetNodeClasses():
+        pass
+
+    @staticmethod
+    def GetPinClasses():
+        pass

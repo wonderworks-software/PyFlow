@@ -1,5 +1,6 @@
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
+from PyFlow.UI.Settings import Colors
 
 
 class FloatPin(PinBase):
@@ -9,16 +10,15 @@ class FloatPin(PinBase):
         self.setDefaultValue(0.0)
 
     @staticmethod
-    def color():
-        return Colors.Float
-
-    @staticmethod
     def pinDataTypeHint():
         '''data type index and default value'''
-        return DataTypes.Float, 0.0
+        return 'FloatPin', 0.0
+
+    def color(self):
+        return (96, 169, 23, 255)
 
     def supportedDataTypes(self):
-        return (DataTypes.Float, DataTypes.Int)
+        return ('FloatPin', 'IntPin')
 
     def setData(self, data):
         try:

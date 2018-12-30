@@ -10,15 +10,14 @@ class Matrix33Pin(PinBase):
         self.setDefaultValue(Matrix33())
 
     def supportedDataTypes(self):
-        return (DataTypes.Matrix33,)
+        return ('Matrix33Pin',)
 
-    @staticmethod
-    def color():
-        return Colors.Matrix33
+    def color(self):
+        return (150, 69, 20, 255)
 
     @staticmethod
     def pinDataTypeHint():
-        return DataTypes.Matrix33, Matrix33()
+        return 'Matrix33Pin', Matrix33()
 
     def serialize(self):
         data = PinBase.serialize(self)

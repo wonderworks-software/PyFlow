@@ -1,5 +1,6 @@
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
+from PyFlow.UI.Settings import Colors
 
 
 ## Execution pin
@@ -10,22 +11,21 @@ class ExecPin(PinBase):
         self.dirty = False
 
     def supportedDataTypes(self):
-        return (DataTypes.Exec,)
+        return ('ExecPin',)
 
     ## Controls execution flow
     def call(self):
         super(ExecPin, self).call()
         # pass execution flow forward
-        for p in [pin for pin in self.affects if pin.dataType == DataTypes.Exec]:
+        for p in [pin for pin in self.affects if pin.dataType == 'ExecPin']:
             p.call()
 
     @staticmethod
-    def color():
-        return Colors.Exec
-
-    @staticmethod
     def pinDataTypeHint():
-        return DataTypes.Exec, None
+        return 'ExecPin', None
+
+    def color(self):
+        return (255, 255, 255, 255)
 
     def setData(self, data):
         pass

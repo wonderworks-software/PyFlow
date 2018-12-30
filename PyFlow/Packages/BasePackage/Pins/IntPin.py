@@ -9,15 +9,14 @@ class IntPin(PinBase):
         self.setDefaultValue(0)
 
     @staticmethod
-    def color():
-        return Colors.Int
-
-    @staticmethod
     def pinDataTypeHint():
-        return DataTypes.Int, 0
+        return 'IntPin', 0
+
+    def color(self):
+        return (0, 168, 107, 255)
 
     def supportedDataTypes(self):
-        return (DataTypes.Int, DataTypes.Float)
+        return ('IntPin', 'FloatPin')
 
     def setData(self, data):
         try:

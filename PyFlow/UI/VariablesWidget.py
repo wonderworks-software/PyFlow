@@ -34,7 +34,7 @@ class VariablesWidget(QWidget, VariablesWidget_ui.Ui_Form):
         self.app = app
         self.pbNewVar.clicked.connect(self.createVariable)
         self.pbKillVar.clicked.connect(self.killVar)
-        self.listWidget.mousePressEvent = MethodType(lwMousePressEvent, self.listWidget, QListWidget)
+        self.listWidget.mousePressEvent = MethodType(lwMousePressEvent, self.listWidget)
         self.listWidget.setDragDropMode(self.listWidget.InternalMove)
 
     def killVar(self):
@@ -48,7 +48,7 @@ class VariablesWidget(QWidget, VariablesWidget_ui.Ui_Form):
         self.graph._clearPropertiesView()
 
     def createVariable(self, uid=None):
-        var = VariableBase(self.graph.getUniqVarName('NewVar'), False, self.graph, self, DataTypes.Bool, uid=uid)
+        var = VariableBase(self.graph.getUniqVarName('NewVar'), False, self.graph, self, 'BoolPin', uid=uid)
         item = QListWidgetItem(self.listWidget)
         item.setSizeHint(QtCore.QSize(60, 38))
         self.listWidget.setItemWidget(item, var)

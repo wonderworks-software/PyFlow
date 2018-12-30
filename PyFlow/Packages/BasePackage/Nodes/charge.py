@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.AGraphCommon import *
 
 
 ## charge node
@@ -7,21 +8,21 @@ from PyFlow.Core import NodeBase
 # When accumulated value reaches "amount" - completed pin called.
 # Useful when you need to wait some time inside some tick function.
 class charge(NodeBase):
-    def __init__(self, name):
-        super(charge, self).__init__(name)
-        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.compute)
-        self.amount = self.addInputPin('Amount', DataTypes.Float)
+    def __init__(self, name, graph):
+        super(charge, self).__init__(name, graph)
+        self.inExec = self.addInputPin('inExec', 'ExecPin', self.compute)
+        self.amount = self.addInputPin('Amount', 'FloatPin')
         self.amount.setDefaultValue(1.0)
 
-        self.step = self.addInputPin('Step', DataTypes.Float)
+        self.step = self.addInputPin('Step', 'FloatPin')
         self.step.setDefaultValue(0.1)
 
-        self.completed = self.addOutputPin('completed', DataTypes.Exec)
+        self.completed = self.addOutputPin('completed', 'ExecPin')
         self._currentAmount = 0
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Float, DataTypes.Exec], 'outputs': [DataTypes.Exec]}
+        return {'inputs': ['FloatPin', 'ExecPin'], 'outputs': ['ExecPin']}
 
     @staticmethod
     def category():

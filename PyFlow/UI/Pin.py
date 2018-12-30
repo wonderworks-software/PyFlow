@@ -5,7 +5,9 @@ from Qt import QtGui
 from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QApplication
-from Settings import *
+
+from PyFlow.Core.AGraphCommon import *
+from PyFlow.UI.Settings import *
 
 
 class PinWidgetBase(QGraphicsWidget):
@@ -52,7 +54,7 @@ class PinWidgetBase(QGraphicsWidget):
         self.startPos = None
         self.endPos = None
         self._container = None
-        self._execPen = QtGui.QPen(Colors.Exec, 0.5, QtCore.Qt.SolidLine)
+        self._execPen = QtGui.QPen(Colors.White, 0.5, QtCore.Qt.SolidLine)
         self.setGeometry(0, 0, self.width, self.height)
         self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
@@ -63,6 +65,9 @@ class PinWidgetBase(QGraphicsWidget):
 
     def hasConnections(self):
         return self._rawPin.hasConnections()
+
+    def setClean(self):
+        self._rawPin.setClean()
 
     def setDirty(self):
         self._rawPin.setDirty()
@@ -197,7 +202,7 @@ class PinWidgetBase(QGraphicsWidget):
         self._rawPin._dataType = value
 
     def boundingRect(self):
-        if not self.dataType == DataTypes.Exec:
+        if not self.dataType == 'ExecPin':
             return QtCore.QRectF(0, -0.5, 8 * 1.5, 8 + 1.0)
         else:
             return QtCore.QRectF(0, -0.5, 10 * 1.5, 10 + 1.0)
@@ -243,14 +248,14 @@ class PinWidgetBase(QGraphicsWidget):
 
         if self.hovered:
             linearGrad.setColorAt(1, self.color().lighter(200))
-        if self.dataType == DataTypes.Array:
+        if self.dataType == 'ListPin':
             if self.pinImage:
                 painter.drawImage(background_rect, self.pinImage)
             else:
                 painter.setBrush(Colors.Array)
                 rect = background_rect
                 painter.drawRect(rect)
-        elif self.dataType == DataTypes.Exec:
+        elif self.dataType == 'ExecPin':
             painter.setPen(self._execPen)
             if self._rawPin._connected:
                 painter.setBrush(QtGui.QBrush(self.color()))

@@ -4,12 +4,12 @@ from Qt.QtCore import QTimer
 
 
 class retriggerableDelay(NodeBase):
-    def __init__(self, name):
-        super(retriggerableDelay, self).__init__(name)
-        self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute)
-        self.delay = self.addInputPin('Delay(s)', DataTypes.Float)
+    def __init__(self, name, graph):
+        super(retriggerableDelay, self).__init__(name, graph)
+        self.inp0 = self.addInputPin('in0', 'ExecPin', self.compute)
+        self.delay = self.addInputPin('Delay(s)', 'FloatPin')
         self.delay.setDefaultValue(0.2)
-        self.out0 = self.addOutputPin('out0', DataTypes.Exec)
+        self.out0 = self.addOutputPin('out0', 'ExecPin')
         self.process = False
         self.timer = QTimer()
         self.timer.timeout.connect(self.callAndReset)
@@ -21,7 +21,7 @@ class retriggerableDelay(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Exec, DataTypes.Float], 'outputs': [DataTypes.Exec]}
+        return {'inputs': ['ExecPin', 'FloatPin'], 'outputs': ['ExecPin']}
 
     @staticmethod
     def category():

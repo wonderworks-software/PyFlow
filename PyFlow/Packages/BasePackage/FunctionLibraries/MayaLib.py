@@ -15,17 +15,17 @@ class MayaLib(FunctionLibraryBase):
         super(MayaLib, self).__init__()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
-    def objExists(DagPath=(DataTypes.String, "")):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
+    def objExists(DagPath=('StringPin', "")):
         return pm.objExists(DagPath)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
-    def setTransform(DagPath=(DataTypes.String, ""),
-                     Location=(DataTypes.FloatVector3, pyrr.Vector3()),
-                     Rotation=(DataTypes.FloatVector3, pyrr.Vector3()),
-                     Scale=(DataTypes.FloatVector3, pyrr.Vector3([1.0, 1.0, 1.0])),
-                     Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    def setTransform(DagPath=('StringPin', ""),
+                     Location=('FloatVector3Pin', pyrr.Vector3()),
+                     Rotation=('FloatVector3Pin', pyrr.Vector3()),
+                     Scale=('FloatVector3Pin', pyrr.Vector3([1.0, 1.0, 1.0])),
+                     Result=(DataTypes.Reference, ('BoolPin', False))):
         '''
         Sets transform to PyNode
         '''
@@ -39,12 +39,12 @@ class MayaLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Array, []), meta={'Category': 'Maya', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('ListPin', []), meta={'Category': 'Maya', 'Keywords': []})
     def listSelection():
         return pm.ls(sl=True)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Maya', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Maya', 'Keywords': []})
     def currentFrame():
         return pm.currentTime(q=True)
 
@@ -52,13 +52,13 @@ class MayaLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=None,
                     nodeType=NodeTypes.Callable,
                     meta={'Category': 'Maya', 'Keywords': []})
-    def setCurrentFrame(CurrentFrame=(DataTypes.Int, 0)):
+    def setCurrentFrame(CurrentFrame=('IntPin', 0)):
         pm.setCurrentTime(CurrentFrame)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, meta={'Category': 'Maya', 'Keywords': []})
-    def frameRange(Min=(DataTypes.Reference, (DataTypes.Int, 0)),
-                   Max=(DataTypes.Reference, (DataTypes.Int, 0))):
+    def frameRange(Min=(DataTypes.Reference, ('IntPin', 0)),
+                   Max=(DataTypes.Reference, ('IntPin', 0))):
         '''
         Returns time slader min and max.
         '''
@@ -67,9 +67,9 @@ class MayaLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
-    def setKeyFrame(DagPath=(DataTypes.String, ''),
-                    AttributeName=(DataTypes.String, ''),
-                    Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    def setKeyFrame(DagPath=('StringPin', ''),
+                    AttributeName=('StringPin', ''),
+                    Result=(DataTypes.Reference, ('BoolPin', False))):
 
         if not pm.objExists(DagPath):
             Result(False)

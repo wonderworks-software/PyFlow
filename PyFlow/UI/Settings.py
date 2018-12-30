@@ -43,16 +43,3 @@ class Colors:
     Gray = QtGui.QColor(110, 110, 110)
     DarkGray = QtGui.QColor(60, 60, 60)
     LimeGreen = QtGui.QColor(0, 168, 107)
-
-    Float = Green
-    Int = LimeGreen
-    Array = Gray
-    Bool = Red
-    Exec = QtGui.QColor(255, 255, 255)
-    String = Pink
-    FloatVector2 = QtGui.QColor(0, 0, 255)
-    FloatVector3 = QtGui.QColor(170, 100, 200)
-    FloatVector4 = QtGui.QColor(173, 216, 230)
-    Quaternion = QtGui.QColor(32, 178, 170)
-    Matrix33 = QtGui.QColor(150, 69, 20)
-    Matrix44 = QtGui.QColor(150, 0, 20)

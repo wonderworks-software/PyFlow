@@ -12,72 +12,72 @@ class IntLib(FunctionLibraryBase):
         super(IntLib, self).__init__()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Int', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []})
     ## Is two integers equal
-    def isequal(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    def isequal(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Ints equal
         '''
         return a == b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Int', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []})
     ## Is a > b
-    def isGreater(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    def isGreater(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Is a > b
         '''
         return a > b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Int', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []})
     ## Is a >= b
-    def isGreaterOrEqual(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    def isGreaterOrEqual(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Is a >= b
         '''
         return a >= b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Int', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []})
     ## Is a < b
-    def isLess(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    def isLess(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Is a < b
         '''
         return a < b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Int', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []})
     ## Is a <= b
-    def isLessOrEqual(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    def isLessOrEqual(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Is a <= b
         '''
         return a <= b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Int', 'Keywords': ['+', 'append']})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': ['+', 'append']})
     ## Sum of two ints
-    def add(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    def add(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Sum of two ints
         '''
         return a + b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Int', 'Keywords': ['-']})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': ['-']})
     ## Int substraction
-    def substract(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    def substract(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Int substraction
         '''
         return a - b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Float, 0.0), meta={'Category': 'Math|Int', 'Keywords': ['/']})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Int', 'Keywords': ['/']})
     ## Integer devision
-    def divide(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0), result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    def divide(a=('IntPin', 0), b=('IntPin', 0), result=(DataTypes.Reference, ('BoolPin', False))):
         '''
         Integer devision
         '''
@@ -90,73 +90,73 @@ class IntLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Int', 'Keywords': ['*']})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': ['*']})
     ## Integer multiplication
-    def mult(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    def mult(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Integer multiplication
         '''
         return a * b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Int', 'Keywords': []})
-    def modulo(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []})
+    def modulo(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Modulo (A % B)
         '''
         return (a % b) if b != 0 else 0
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def bitwiseAnd(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def bitwiseAnd(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Bitwise AND (A & B)
         '''
         return a & b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def bitwiseNot(a=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def bitwiseNot(a=('IntPin', 0)):
         '''
         Bitwise NOT (~A)
         '''
         return ~a
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def bitwiseOr(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def bitwiseOr(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Bitwise OR (A | B)
         '''
         return a | b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def bitwiseXor(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def bitwiseXor(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Bitwise XOR (A ^ B)
         '''
         return a ^ b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def binaryLeftShift(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def binaryLeftShift(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Binary left shift a << b
         '''
         return a << b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def binaryRightShift(a=(DataTypes.Int, 0), b=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def binaryRightShift(a=('IntPin', 0), b=('IntPin', 0)):
         '''
         Binary right shift a << b
         '''
         return a >> b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def testBit(intType=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def testBit(intType=('IntPin', 0), offset=('IntPin', 0)):
         '''
         Returns a nonzero result, 2**offset, if the bit at 'offset' is one
         '''
@@ -164,8 +164,8 @@ class IntLib(FunctionLibraryBase):
         return(intType & mask)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def setBit(intType=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def setBit(intType=('IntPin', 0), offset=('IntPin', 0)):
         '''
         Returns an integer with the bit at 'offset' set to 1'
         '''
@@ -173,8 +173,8 @@ class IntLib(FunctionLibraryBase):
         return(intType | mask)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def clearBit(intType=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def clearBit(intType=('IntPin', 0), offset=('IntPin', 0)):
         '''
         Returns an integer with the bit at 'offset' cleared.
         '''
@@ -182,8 +182,8 @@ class IntLib(FunctionLibraryBase):
         return(intType & mask)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
-    def toggleBit(intType=(DataTypes.Int, 0), offset=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
+    def toggleBit(intType=('IntPin', 0), offset=('IntPin', 0)):
         '''
         Returns an integer with the bit at 'offset' inverted, 0 -> 1 and 1 -> 0.
         '''
@@ -191,36 +191,36 @@ class IntLib(FunctionLibraryBase):
         return(intType ^ mask)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Int', 'Keywords': []})
-    def clampInt(Value=(DataTypes.Int, 0), Min=(DataTypes.Int, 0), Max=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []})
+    def clampInt(Value=('IntPin', 0), Min=('IntPin', 0), Max=('IntPin', 0)):
         '''
         Returns Value clamped to be between A and B (inclusive)
         '''
         return clamp(Value, Min, Max)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Int', 'Keywords': []})
-    def inRange(Value=(DataTypes.Int, 0),
-                RangeMin=(DataTypes.Int, 0),
-                RangeMax=(DataTypes.Int, 0),
-                InclusiveMin=(DataTypes.Bool, False),
-                InclusiveMax=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []})
+    def inRange(Value=('IntPin', 0),
+                RangeMin=('IntPin', 0),
+                RangeMax=('IntPin', 0),
+                InclusiveMin=('BoolPin', False),
+                InclusiveMax=('BoolPin', False)):
         '''
         Returns true if value is between Min and Max (V &gt;= Min && V &lt;= Max) If InclusiveMin is true, value needs to be equal or larger than Min, else it needs to be larger If InclusiveMax is true, value needs to be smaller or equal than Max, else it needs to be smaller
         '''
         return ((Value >= RangeMin) if InclusiveMin else (Value > RangeMin)) and ((Value <= RangeMax) if InclusiveMax else (Value < RangeMax))
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Int', 'Keywords': []})
-    def selectInt(A=(DataTypes.Int, 0), B=(DataTypes.Int, 0), PickA=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []})
+    def selectInt(A=('IntPin', 0), B=('IntPin', 0), PickA=('BoolPin', False)):
         '''
         If bPickA is true, A is returned, otherwise B is
         '''
         return A if PickA else B
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Int', 'Keywords': []})
-    def sign(a=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []})
+    def sign(a=('IntPin', 0)):
         '''
         Sign (integer, returns -1 if A &lt; 0, 0 if A is zero, and +1 if A &gt; 0)
         '''

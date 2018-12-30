@@ -9,11 +9,14 @@ class BoolPin(PinBase):
         self.setDefaultValue(False)
 
     def supportedDataTypes(self):
-        return (DataTypes.Bool, DataTypes.Int,)
+        return ('BoolPin', 'IntPin',)
 
     @staticmethod
     def pinDataTypeHint():
-        return DataTypes.Bool, False
+        return 'BoolPin', False
+
+    def color(self):
+        return (255, 0, 0, 255)
 
     def setData(self, data):
         try:

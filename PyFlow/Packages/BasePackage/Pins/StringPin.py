@@ -9,15 +9,14 @@ class StringPin(PinBase):
         self.setDefaultValue("")
 
     def supportedDataTypes(self):
-        return (DataTypes.String,)
+        return ('StringPin',)
 
-    @staticmethod
-    def color():
-        return Colors.String
+    def color(self):
+        return (255, 8, 127, 255)
 
     @staticmethod
     def pinDataTypeHint():
-        return DataTypes.String, ''
+        return 'StringPin', ''
 
     def setData(self, data):
         try:

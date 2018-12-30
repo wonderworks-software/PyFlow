@@ -10,16 +10,15 @@ class Matrix44Pin(PinBase):
         super(Matrix44Pin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(Matrix44())
 
-    def supportedDataTypes(self):
-        return (DataTypes.Matrix44,)
+    def color(self):
+        return (150, 0, 20, 255)
 
-    @staticmethod
-    def color():
-        return Colors.Matrix44
+    def supportedDataTypes(self):
+        return ('Matrix44Pin',)
 
     @staticmethod
     def pinDataTypeHint():
-        return DataTypes.Matrix44, Matrix44()
+        return 'Matrix44Pin', Matrix44()
 
     def serialize(self):
         data = PinBase.serialize(self)

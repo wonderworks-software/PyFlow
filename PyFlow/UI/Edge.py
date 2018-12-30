@@ -31,7 +31,7 @@ class Edge(QGraphicsPathItem):
         self.color = self.source().color()
 
         self.thikness = 1
-        if source.dataType == DataTypes.Exec and destination.dataType == DataTypes.Exec:
+        if source.dataType == 'ExecPin' and destination.dataType == 'ExecPin':
             self.thikness = 2
 
         self.pen = QtGui.QPen(self.color, self.thikness, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)

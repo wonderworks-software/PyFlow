@@ -5,17 +5,17 @@ from Qt.QtCore import QTimer
 
 
 class delay(NodeBase):
-    def __init__(self, name):
-        super(delay, self).__init__(name)
-        self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute)
-        self.delay = self.addInputPin('Delay(s)', DataTypes.Float)
+    def __init__(self, name, graph):
+        super(delay, self).__init__(name, graph)
+        self.inp0 = self.addInputPin('in0', 'ExecPin', self.compute)
+        self.delay = self.addInputPin('Delay(s)', 'FloatPin')
         self.delay.setDefaultValue(0.2)
-        self.out0 = self.addOutputPin('out0', DataTypes.Exec)
+        self.out0 = self.addOutputPin('out0', 'ExecPin')
         self.process = False
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Exec, DataTypes.Float], 'outputs': [DataTypes.Exec]}
+        return {'inputs': ['ExecPin', 'FloatPin'], 'outputs': ['ExecPin']}
 
     @staticmethod
     def category():

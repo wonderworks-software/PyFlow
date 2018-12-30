@@ -5,12 +5,12 @@ from PyFlow.Core import PinBase
 
 
 class switchOnString(NodeBase):
-    def __init__(self, name):
-        super(switchOnString, self).__init__(name)
-        self.inExecPin = self.addInputPin('inExec', DataTypes.Exec, self.compute)
+    def __init__(self, name, graph):
+        super(switchOnString, self).__init__(name, graph)
+        self.inExecPin = self.addInputPin('inExec', 'ExecPin', self.compute)
         self.defaultPin = None
         self.outString = None
-        self.inString = self.addInputPin('String', DataTypes.String)
+        self.inString = self.addInputPin('String', 'StringPin')
         self.menu = QMenu()
         self.action = self.menu.addAction('add pin')
         self.action.triggered.connect(self.addOutPin)
@@ -27,7 +27,7 @@ class switchOnString(NodeBase):
 
     def addOutPin(self):
         name = self.getUniqPinName("option")
-        p = self.addOutputPin(name, DataTypes.Exec)
+        p = self.addOutputPin(name, 'ExecPin')
         renameAction = p.menu.addAction("rename")
         killAction = p.menu.addAction("kill")
 
@@ -51,7 +51,7 @@ class switchOnString(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Exec, DataTypes.String], 'outputs': [DataTypes.Exec]}
+        return {'inputs': ['ExecPin', 'StringPin'], 'outputs': ['ExecPin']}
 
     @staticmethod
     def category():
@@ -70,8 +70,8 @@ class switchOnString(NodeBase):
 
         # restore dynamically created  outputs
         if len(jsonTemplate['outputs']) == 0:
-            self.defaultPin = self.addOutputPin('Default', DataTypes.Exec)
-            self.outString = self.addOutputPin('stringOut', DataTypes.String, hideLabel=True)
+            self.defaultPin = self.addOutputPin('Default', 'ExecPin')
+            self.outString = self.addOutputPin('stringOut', 'StringPin', hideLabel=True)
             self.addOutPin()
             self.addOutPin()
         else:

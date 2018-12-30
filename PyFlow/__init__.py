@@ -1,55 +1,56 @@
 from __future__ import absolute_import
 import importlib
-from .Packages import *
+from PyFlow.Packages import *
 import pkgutil
-from PyFlow import Core
 
 __all__ = [
     "INITIALIZE",
     "GET_PACKAGES",
-    "GET_PINS",
-    "Core"
+    "GET_PACKAGE_CHECKED",
+    "CreateRawPin",
+    "getPinDefaultValueByType",
+    "findPinClassByType"
 ]
 
+
 __PACKAGES = {}
-_PINS = {}
-
-
-def GET_PINS(PackageName=None):
-    if PackageName is None:
-        return _PINS
-
-    try:
-        return _PINS[PackageName]
-    except Exception("Package not found") as e:
-        raise e
-
-
-def REGISTER_PIN_TYPE(PackageName, pinSubclass):
-    '''
-    pin registration
-    '''
-    # Create subdict for package if not exists
-    if PackageName not in _PINS:
-        _PINS[PackageName] = {}
-
-    dType = pinSubclass.pinDataTypeHint()[0]
-    if dType not in _PINS[PackageName]:
-        _PINS[PackageName][pinSubclass.pinDataTypeHint()[0]] = pinSubclass
-    else:
-        raise Exception("Error registering pin type {0}\n pin with ID [{1}] already registered".format(pinSubclass.__name__))
 
 
 def INITIALIZE():
-    # Check for duplicated package names
-    # ...
-
-    # import packages
+    # TODO: Check for duplicated package names
     for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
         if ispkg:
             mod = importer.find_module(modname).load_module(modname)
-            __PACKAGES[modname] = mod
+            __PACKAGES[modname] = getattr(mod, modname)()
 
 
 def GET_PACKAGES():
     return __PACKAGES
+
+
+def GET_PACKAGE_CHECKED(package_name):
+    assert package_name in __PACKAGES
+    return __PACKAGES[package_name]
+
+
+def findPinClassByType(dataType):
+    for package_name, package in GET_PACKAGES().items():
+        pins = package.GetPinClasses()
+        if dataType in pins:
+            return pins[dataType]
+    return None
+
+
+def getPinDefaultValueByType(dataType):
+    pin = findPinClassByType(dataType)
+    if pin:
+        return pin.pinDataTypeHint()[1]
+    return None
+
+
+def CreateRawPin(name, owningNode, dataType, direction, **kwds):
+    pinClass = findPinClassByType(dataType)
+    if pinClass is None:
+        return None
+    inst = pinClass(name, owningNode, dataType, direction, **kwds)
+    return inst

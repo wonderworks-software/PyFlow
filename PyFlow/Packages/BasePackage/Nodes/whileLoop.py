@@ -2,12 +2,12 @@ from PyFlow.Core import NodeBase
 
 
 class whileLoop(NodeBase):
-    def __init__(self, name):
-        super(whileLoop, self).__init__(name)
-        self.inExec = self.addInputPin('inExec', DataTypes.Exec, self.begin)
-        self.bCondition = self.addInputPin('Condition', DataTypes.Bool)
-        self.loopBody = self.addOutputPin('LoopBody', DataTypes.Exec)
-        self.completed = self.addOutputPin('Completed', DataTypes.Exec)
+    def __init__(self, name, graph):
+        super(whileLoop, self).__init__(name, graph)
+        self.inExec = self.addInputPin('inExec', 'ExecPin', self.begin)
+        self.bCondition = self.addInputPin('Condition', 'BoolPin')
+        self.loopBody = self.addOutputPin('LoopBody', 'ExecPin')
+        self.completed = self.addOutputPin('Completed', 'ExecPin')
         self.bProcess = False
         self._dirty = False
 
@@ -16,7 +16,7 @@ class whileLoop(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Bool, DataTypes.Exec], 'outputs': [DataTypes.Exec]}
+        return {'inputs': ['BoolPin', 'ExecPin'], 'outputs': ['ExecPin']}
 
     @staticmethod
     def category():

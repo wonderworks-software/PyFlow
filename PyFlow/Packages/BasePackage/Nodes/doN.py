@@ -2,15 +2,15 @@ from PyFlow.Core import NodeBase
 
 
 class doN(NodeBase):
-    def __init__(self, name):
-        super(doN, self).__init__(name)
-        self.enter = self.addInputPin('Enter', DataTypes.Exec, self.compute)
-        self._N = self.addInputPin('N', DataTypes.Int)
+    def __init__(self, name, graph):
+        super(doN, self).__init__(name, graph)
+        self.enter = self.addInputPin('Enter', 'ExecPin', self.compute)
+        self._N = self.addInputPin('N', 'IntPin')
         self._N.setData(10)
-        self.reset = self.addInputPin('Reset', DataTypes.Exec, self.OnReset)
+        self.reset = self.addInputPin('Reset', 'ExecPin', self.OnReset)
 
-        self.completed = self.addOutputPin('Exit', DataTypes.Exec)
-        self.counter = self.addOutputPin('Counter', DataTypes.Int)
+        self.completed = self.addOutputPin('Exit', 'ExecPin')
+        self.counter = self.addOutputPin('Counter', 'IntPin')
         self.bClosed = False
         self._numCalls = 0
 
@@ -20,7 +20,7 @@ class doN(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Exec, DataTypes.Int], 'outputs': [DataTypes.Exec, DataTypes.Int]}
+        return {'inputs': ['ExecPin', 'IntPin'], 'outputs': ['ExecPin', 'IntPin']}
 
     @staticmethod
     def category():

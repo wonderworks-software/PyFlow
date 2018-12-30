@@ -6,15 +6,15 @@ from Qt.QtWidgets import QMenu
 
 
 class sequence(NodeBase):
-    def __init__(self, name):
-        super(sequence, self).__init__(name)
-        self.inExecPin = self.addInputPin('inExec', DataTypes.Exec, self.compute)
+    def __init__(self, name, graph):
+        super(sequence, self).__init__(name, graph)
+        self.inExecPin = self.addInputPin('inExec', 'ExecPin', self.compute)
         self.menu = QMenu()
         self.action = self.menu.addAction('add pin')
         self.action.triggered.connect(self.addOutPin)
 
     def addOutPin(self):
-        p = self.addOutputPin(str(len(self.outputs)), DataTypes.Exec)
+        p = self.addOutputPin(str(len(self.outputs)), 'ExecPin')
         pinAffects(self.inExecPin, p)
 
     def contextMenuEvent(self, event):
@@ -22,7 +22,7 @@ class sequence(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Exec], 'outputs': [DataTypes.Exec]}
+        return {'inputs': ['ExecPin'], 'outputs': ['ExecPin']}
 
     @staticmethod
     def category():

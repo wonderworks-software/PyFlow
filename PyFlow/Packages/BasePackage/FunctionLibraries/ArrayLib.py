@@ -11,13 +11,13 @@ class ArrayLib(FunctionLibraryBase):
         super(ArrayLib, self).__init__()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.String, ''), meta={'Category': 'Array', 'Keywords': []})
-    def arrayToString(arr=(DataTypes.Array, [])):
+    @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def arrayToString(arr=('ListPin', [])):
         return str(arr)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.String, ''), meta={'Category': 'Array', 'Keywords': []})
-    def getStringFromList(arr=(DataTypes.Array, []), Index=(DataTypes.Int, 0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def getStringFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -26,18 +26,18 @@ class ArrayLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Array', 'Keywords': []})
-    def arrayLen(arr=(DataTypes.Array, [])):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Array', 'Keywords': []})
+    def arrayLen(arr=('ListPin', [])):
         return len(arr)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Array', 'Keywords': []})
-    def isIntInList(List=(DataTypes.Array, []), Value=(DataTypes.Int, 0)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': []})
+    def isIntInList(List=('ListPin', []), Value=('IntPin', 0)):
         return Value in List
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, ''), meta={'Category': 'Array', 'Keywords': []})
-    def getIntFromList(arr=(DataTypes.Array, []), Index=(DataTypes.Int, 0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    @IMPLEMENT_NODE(returns=('IntPin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def getIntFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -46,13 +46,13 @@ class ArrayLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Array', 'Keywords': []})
-    def isFloatInList(List=(DataTypes.Array, []), Value=(DataTypes.Float, 0.0)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': []})
+    def isFloatInList(List=('ListPin', []), Value=('FloatPin', 0.0)):
         return Value in List
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Float, ''), meta={'Category': 'Array', 'Keywords': []})
-    def getFloatFromList(arr=(DataTypes.Array, []), Index=(DataTypes.Int, 0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    @IMPLEMENT_NODE(returns=('FloatPin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def getFloatFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -61,23 +61,23 @@ class ArrayLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Array', 'Keywords': []})
-    def isStringInList(List=(DataTypes.Array, []), Value=(DataTypes.String, "")):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': []})
+    def isStringInList(List=('ListPin', []), Value=('StringPin', "")):
         return Value in List
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Array', 'Keywords': []})
-    def Any(List=(DataTypes.Array, [])):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': []})
+    def Any(List=('ListPin', [])):
         return any(List)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Array', 'Keywords': []})
-    def All(List=(DataTypes.Array, [])):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': []})
+    def All(List=('ListPin', [])):
         return all(List)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Quaternion, ''), meta={'Category': 'Array', 'Keywords': []})
-    def getQuatFromList(arr=(DataTypes.Array, []), Index=(DataTypes.Int, 0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    @IMPLEMENT_NODE(returns=('QuatPin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def getQuatFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -86,8 +86,8 @@ class ArrayLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.FloatVector3, ''), meta={'Category': 'Array', 'Keywords': []})
-    def getVector3FromList(arr=(DataTypes.Array, []), Index=(DataTypes.Int, 0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    @IMPLEMENT_NODE(returns=('FloatVector3Pin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def getVector3FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -96,8 +96,8 @@ class ArrayLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.FloatVector4, ''), meta={'Category': 'Array', 'Keywords': []})
-    def getVector4FromList(arr=(DataTypes.Array, []), Index=(DataTypes.Int, 0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    @IMPLEMENT_NODE(returns=('FloatVector4Pin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def getVector4FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -106,8 +106,8 @@ class ArrayLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Matrix33, ''), meta={'Category': 'Array', 'Keywords': []})
-    def getM33FromList(arr=(DataTypes.Array, []), Index=(DataTypes.Int, 0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    @IMPLEMENT_NODE(returns=('Matrix33Pin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def getM33FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -116,8 +116,8 @@ class ArrayLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Matrix44, ''), meta={'Category': 'Array', 'Keywords': []})
-    def getM44FromList(arr=(DataTypes.Array, []), Index=(DataTypes.Int, 0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    @IMPLEMENT_NODE(returns=('Matrix44Pin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def getM44FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -126,8 +126,8 @@ class ArrayLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, ''), meta={'Category': 'Array', 'Keywords': []})
-    def getBoolFromList(arr=(DataTypes.Array, []), Index=(DataTypes.Int, 0), Result=(DataTypes.Reference, (DataTypes.Bool, False))):
+    @IMPLEMENT_NODE(returns=('BoolPin', ''), meta={'Category': 'Array', 'Keywords': []})
+    def getBoolFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)

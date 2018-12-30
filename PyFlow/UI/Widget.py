@@ -6,6 +6,10 @@ from time import ctime
 import json
 import re
 import weakref
+try:
+    from inspect import getfullargspec as getargspec
+except:
+    from inspect import getargspec
 
 from Qt import QtCore
 from Qt import QtGui
@@ -41,10 +45,18 @@ from PyFlow.UI.Edge import Edge
 from PyFlow.UI.Node import Node
 from PyFlow.UI.GetVarNode import GetVarNode
 from PyFlow.UI.SetVarNode import SetVarNode
-from PyFlow import Commands
+from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
+from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
+from PyFlow.Commands.Move import Move as cmdMove
+from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
+from PyFlow.Commands.RemoveEdges import RemoveEdges as cmdRemoveEdges
 from PyFlow.UI.Pin import PinWidgetBase
 from PyFlow.UI.Variable import VariableBase
 from PyFlow.Core.GraphBase import GraphBase
+from PyFlow.Core.PinBase import PinBase
+from PyFlow.Core.NodeBase import NodeBase
+from PyFlow import GET_PACKAGES
+from PyFlow.Core.AGraphCommon import *
 
 
 def clearLayout(layout):
@@ -69,23 +81,24 @@ def importByName(module, name):
         print("error", name)
 
 
-def getNodeInstance(module, class_name, nodeName, graph):
-    #TODO: Rewrite t owork with hpackages
-    # Check in Nodes module first
-    # mod = Nodes.getNode(class_name)
-    # if mod is not None:
-    #     raw_instance = mod(nodeName, graph)
-    #     instance = Node(raw_instance)
-    #     graphBase.addNode(instance)
-    #     return instance
+def getNodeInstance(class_name, nodeName, graph):
+    for pkg in GET_PACKAGES().values():
+        if class_name in pkg.GetNodeClasses():
+            # Check in Nodes module first
+            node_class = pkg.GetNodeClasses()[class_name]
+            raw_instance = node_class(nodeName, graph)
+            instance = Node(raw_instance)
+            graph.addNode(instance)
+            return instance
 
-    # # if not found - continue searching in FunctionLibraries
-    # foo = FunctionLibraries.findFunctionByName(class_name)
-    # if foo:
-    #     raw_instance = Node.initializeFromFunction(foo, graph)
-    #     instance = Node(raw_instance)
-    #     graphBase.addNode(instance)
-    #     return instance
+        # if not found - continue searching in FunctionLibraries
+        for lib in pkg.GetFunctionLibraries().values():
+            for fooName, foo in lib.getFunctions():
+                if fooName == class_name:
+                    raw_instance = NodeBase.initializeFromFunction(foo, graph)
+                    instance = Node(raw_instance)
+                    graph.addNode(instance)
+                    return instance
     return None
 
 
@@ -322,69 +335,71 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.clear()
         self.categoryPaths = {}
 
-        #TODO: Rewrite. This should work with packages
-        # for libName in FunctionLibraries.libs():
-        #     foos = FunctionLibraries.getLib(libName)
-        #     for name, foo in foos:
-        #         fooArgNames = inspect.getargspec(foo).args
-        #         fooInpTypes = []
-        #         fooOutTypes = []
-        #         if foo.__annotations__['nodeType'] == NodeTypes.Callable:
-        #             fooInpTypes.append(DataTypes.Exec)
-        #             fooOutTypes.append(DataTypes.Exec)
+        # TODO: Add package name to category tree
+        for package_name, package in GET_PACKAGES().items():
+            # annotated functions
+            for libName, lib in package.GetFunctionLibraries().items():
+                foos = lib.getFunctions()
+                for name, foo in foos:
+                    fooArgNames = getargspec(foo).args
+                    fooInpTypes = []
+                    fooOutTypes = []
+                    if foo.__annotations__['nodeType'] == NodeTypes.Callable:
+                        fooInpTypes.append('ExecPin')
+                        fooOutTypes.append('ExecPin')
 
-        #         # consider return type if not None
-        #         if foo.__annotations__['return'] is not None:
-        #             fooOutTypes.append(foo.__annotations__['return'][0])
+                    # consider return type if not None
+                    if foo.__annotations__['return'] is not None:
+                        fooOutTypes.append(foo.__annotations__['return'][0])
 
-        #         for index in range(len(fooArgNames)):
-        #             dType = foo.__annotations__[fooArgNames[index]]
-        #             # if tuple - this means ref pin type (output) + default value
-        #             # eg: (3, True) - bool with True default val
-        #             if isinstance(dType, tuple):
-        #                 fooOutTypes.append(dType[0])
-        #             else:
-        #                 fooInpTypes.append(dType)
+                    for index in range(len(fooArgNames)):
+                        dType = foo.__annotations__[fooArgNames[index]]
+                        # if tuple - this means ref pin type (output) + default value
+                        # eg: (3, True) - bool with True default val
+                        if isinstance(dType, tuple):
+                            fooOutTypes.append(dType[0])
+                        else:
+                            fooInpTypes.append(dType)
 
-        #         nodeCategoryPath = foo.__annotations__['meta']['Category']
-        #         keywords = foo.__annotations__['meta']['Keywords']
-        #         checkString = name + nodeCategoryPath + ''.join(keywords)
-        #         if pattern.lower() in checkString.lower():
-        #             # create all nodes items if clicked on canvas
-        #             if dataType is None:
-        #                 self.insertNode(nodeCategoryPath, name, foo.__doc__)
-        #             else:
-        #                 if pinType == PinDirection.Output:
-        #                     if dataType in fooInpTypes:
-        #                         self.insertNode(nodeCategoryPath, name, foo.__doc__)
-        #                 else:
-        #                     if dataType in fooOutTypes:
-        #                         self.insertNode(nodeCategoryPath, name, foo.__doc__)
+                    nodeCategoryPath = "{0}|{1}".format(package_name, foo.__annotations__['meta']['Category'])
+                    keywords = foo.__annotations__['meta']['Keywords']
+                    checkString = name + nodeCategoryPath + ''.join(keywords)
+                    if pattern.lower() in checkString.lower():
+                        # create all nodes items if clicked on canvas
+                        if dataType is None:
+                            self.insertNode(nodeCategoryPath, name, foo.__doc__)
+                        else:
+                            if pinType == PinDirection.Output:
+                                if dataType in fooInpTypes:
+                                    self.insertNode(nodeCategoryPath, name, foo.__doc__)
+                            else:
+                                if dataType in fooOutTypes:
+                                    self.insertNode(nodeCategoryPath, name, foo.__doc__)
 
-        # for node_file_name in Nodes.getNodeNames():
-        #     node_class = Nodes.getNode(node_file_name)
-        #     nodeCategoryPath = node_class.category()
+            # class based nodes
+            for node_class in package.GetNodeClasses().values():
+                nodeCategoryPath = "{0}|{1}".format(package_name, node_class.category())
 
-        #     checkString = node_file_name + nodeCategoryPath + ''.join(node_class.keywords())
-        #     if pattern.lower() not in checkString.lower():
-        #         continue
-        #     if dataType is None:
-        #         self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
-        #     else:
-        #         # if pressed pin is output pin
-        #         # filter by nodes input types
-        #         if pinType == PinDirection.Output:
-        #             if dataType in node_class.pinTypeHints()['inputs']:
-        #                 self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
-        #         else:
-        #             # if pressed pin is input pin
-        #             # filter by nodes output types
-        #             if dataType in node_class.pinTypeHints()['outputs']:
-        #                 self.insertNode(nodeCategoryPath, node_file_name, node_class.description())
-        # # expand all categories
-        # if dataType is not None:
-        #     for categoryItem in self.categoryPaths.values():
-        #         categoryItem.setExpanded(True)
+                checkString = node_class.__name__ + nodeCategoryPath + ''.join(node_class.keywords())
+                if pattern.lower() not in checkString.lower():
+                    continue
+                if dataType is None:
+                    self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
+                else:
+                    # if pressed pin is output pin
+                    # filter by nodes input types
+                    if pinType == PinDirection.Output:
+                        if dataType in node_class.pinTypeHints()['inputs']:
+                            self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
+                    else:
+                        # if pressed pin is input pin
+                        # filter by nodes output types
+                        if dataType in node_class.pinTypeHints()['outputs']:
+                            self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
+            # expand all categories
+            if dataType is not None:
+                for categoryItem in self.categoryPaths.values():
+                    categoryItem.setExpanded(True)
 
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
@@ -744,7 +759,7 @@ class GraphWidget(QGraphicsView, GraphBase):
     def killSelectedNodes(self):
         selectedNodes = self.selectedNodes()
         if self.isShortcutsEnabled() and len(selectedNodes) > 0:
-            cmdRemove = Commands.RemoveNodes(selectedNodes, self)
+            cmdRemove = cmdRemoveNodes(selectedNodes, self)
             self.undoStack.push(cmdRemove)
             clearLayout(self.parent.formLayout)
 
@@ -888,7 +903,7 @@ class GraphWidget(QGraphicsView, GraphBase):
                 p.setY(y)
                 nodesMoveInfo[n.uid]['to'] = p
 
-        self.undoStack.push(Commands.Move(dict(nodesMoveInfo), self))
+        self.undoStack.push(cmdMove(dict(nodesMoveInfo), self))
 
     def findGoodPlaceForNewNode(self):
         polygon = self.mapToScene(self.viewport().rect())
@@ -914,7 +929,7 @@ class GraphWidget(QGraphicsView, GraphBase):
 
         if self.pressed_item and isinstance(self.pressed_item, QGraphicsItem):
             self.autoPanController.start()
-            if isinstance(self.pressed_item, PinWidgetBase):
+            if self.pressed_item.__class__.__name__ ==  PinWidgetBase.__name__:
                 if event.button() == QtCore.Qt.LeftButton:
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
@@ -1023,11 +1038,11 @@ class GraphWidget(QGraphicsView, GraphBase):
             if not i:
                 do_connect = False
                 break
-            if not isinstance(i, PinWidgetBase):
+            if not i.__class__.__name__ == PinWidgetBase.__name__:
                 do_connect = False
                 break
         if p_itm and r_itm:
-            if isinstance(p_itm, PinWidgetBase) and isinstance(r_itm, PinWidgetBase):
+            if p_itm.__class__.__name__ == PinWidgetBase.__name__ and r_itm.__class__.__name__ == PinWidgetBase.__name__:
                 if cycle_check(p_itm, r_itm):
                     print('cycles are not allowed')
                     do_connect = False
@@ -1040,14 +1055,14 @@ class GraphWidget(QGraphicsView, GraphBase):
             self.nodesMoveInfo[nodeUid]['to'] = self.nodes[nodeUid].scenePos()
         #  check if nodes moved
         bMoved = False
-        for nodeUid, v in self.nodesMoveInfo.iteritems():
+        for nodeUid, v in self.nodesMoveInfo.items():
             if not v['from'] == v['to']:
                 bMoved = True
 
         # pass copy
         if bMoved:
-            cmdMove = Commands.Move(dict(self.nodesMoveInfo), self)
-            self.undoStack.push(cmdMove)
+            cmdMoveInstance = cmdMove(dict(self.nodesMoveInfo), self)
+            self.undoStack.push(cmdMoveInstance)
         self.nodesMoveInfo.clear()
 
         selectedNodes = self.selectedNodes()
@@ -1093,7 +1108,7 @@ class GraphWidget(QGraphicsView, GraphBase):
 
         # draw grid vertical lines
         scaleMult = 1.0
-        for x in xrange(left, int(scene_rect.right()), self.drawGrigSize):
+        for x in range(left, int(scene_rect.right()), self.drawGrigSize):
             if x % (self.drawGrigSize * 10.0) == 0.0:
                 painter.setPen(QtGui.QPen(Colors.GridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             else:
@@ -1101,7 +1116,7 @@ class GraphWidget(QGraphicsView, GraphBase):
             painter.drawLine(x, scene_rect.top(), x, scene_rect.bottom())
 
         # draw grid horizontal lines
-        for y in xrange(top, int(scene_rect.bottom()), self.drawGrigSize):
+        for y in range(top, int(scene_rect.bottom()), self.drawGrigSize):
             if y % (self.drawGrigSize * 10.0) == 0.0:
                 painter.setPen(QtGui.QPen(Colors.GridColorDarker, 1.0 / (self.factor * scaleMult), QtCore.Qt.SolidLine))
             else:
@@ -1146,7 +1161,7 @@ class GraphWidget(QGraphicsView, GraphBase):
         return instance
 
     def _createNode(self, jsonTemplate):
-        nodeInstance = getNodeInstance(Nodes, jsonTemplate['type'], jsonTemplate['name'], self)
+        nodeInstance = getNodeInstance(jsonTemplate['type'], jsonTemplate['name'], self)
         nodeInstance.setPosition(jsonTemplate["x"], jsonTemplate["y"])
 
         # If not found, check variables
@@ -1184,7 +1199,7 @@ class GraphWidget(QGraphicsView, GraphBase):
         return nodeInstance
 
     def createNode(self, jsonTemplate):
-        cmd = Commands.CreateNode(self, jsonTemplate)
+        cmd = cmdCreateNode(self, jsonTemplate)
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
@@ -1207,12 +1222,11 @@ class GraphWidget(QGraphicsView, GraphBase):
 
     def addEdge(self, src, dst):
         if self.canConnectPins(src, dst):
-            cmd = Commands.ConnectPin(self, src, dst)
+            cmd = cmdConnectPin(self, src, dst)
             self.undoStack.push(cmd)
 
     def removeEdgeCmd(self, edges):
-        cmdRemoveEdges = Commands.RemoveEdges(self, [e.serialize() for e in edges])
-        self.undoStack.push(cmdRemoveEdges)
+        self.undoStack.push(cmdRemoveEdges(self, [e.serialize() for e in edges]))
 
     def removeEdge(self, edge):
         GraphBase.removeEdge(self, edge)

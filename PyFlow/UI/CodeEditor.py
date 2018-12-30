@@ -161,14 +161,14 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
         self.editor = weakref.ref(editor)
         self.lePinName.setText('pinName')
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.items = [v for v in DataTypes if v not in [DataTypes.Reference, DataTypes.Enum]]
+        self.items = [v for v in DataTypes if v not in [DataTypes.Reference, 'EnumPin']]
         self.cbType.clear()
 
         for i in self.items:
             self.cbType.addItem(i.name, i.value)
 
     @staticmethod
-    def construct(name='pinName', hideLabel=False, dataType=DataTypes.Float, editor=None):
+    def construct(name='pinName', hideLabel=False, dataType='FloatPin', editor=None):
         w = WPinWidget(editor)
         w.lePinName.setText(name)
 
@@ -335,7 +335,7 @@ class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         for index in range(self.lwInputs.count()):
             w = self.lwInputs.itemWidget(self.lwInputs.item(index))
             if isinstance(w, WPinWidget):
-                if w.dataType() == DataTypes.Exec:
+                if w.dataType() == 'ExecPin':
                     p = node.addInputPin(w.name(), w.dataType(), node.compute, w.shouldHideLabel())
                     w.lePinName.setText(p.name)
                 else:

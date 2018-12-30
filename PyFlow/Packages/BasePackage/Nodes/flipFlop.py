@@ -2,17 +2,17 @@ from PyFlow.Core import NodeBase
 
 
 class flipFlop(NodeBase):
-    def __init__(self, name):
-        super(flipFlop, self).__init__(name)
+    def __init__(self, name, graph):
+        super(flipFlop, self).__init__(name, graph)
         self.bState = True
-        self.inp0 = self.addInputPin('in0', DataTypes.Exec, self.compute)
-        self.outA = self.addOutputPin('A', DataTypes.Exec)
-        self.outB = self.addOutputPin('B', DataTypes.Exec)
-        self.bIsA = self.addOutputPin('IsA', DataTypes.Bool)
+        self.inp0 = self.addInputPin('in0', 'ExecPin', self.compute)
+        self.outA = self.addOutputPin('A', 'ExecPin')
+        self.outB = self.addOutputPin('B', 'ExecPin')
+        self.bIsA = self.addOutputPin('IsA', 'BoolPin')
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.Exec], 'outputs': [DataTypes.Exec, DataTypes.Bool]}
+        return {'inputs': ['ExecPin'], 'outputs': ['ExecPin', 'BoolPin']}
 
     @staticmethod
     def category():

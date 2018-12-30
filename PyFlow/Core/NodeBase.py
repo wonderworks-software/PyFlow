@@ -2,11 +2,15 @@ import weakref
 import uuid
 import keyword
 from collections import OrderedDict
-from inspect import getargspec
+try:
+    from inspect import getfullargspec as getargspec
+except:
+    from inspect import getargspec
 from types import MethodType
 
 from PyFlow.Core.AGraphCommon import *
 from PyFlow.Core.Interfaces import INode
+from PyFlow import CreateRawPin
 
 
 class NodeBase(INode):
@@ -74,8 +78,8 @@ class NodeBase(INode):
     # INode interface end
 
     def isCallable(self):
-        for p in self.inputs.values() + self.outputs.values():
-            if p.dataType == DataTypes.Exec:
+        for p in list(self.inputs.values()) + list(self.outputs.values()):
+            if p.dataType == 'ExecPin':
                 return True
         return False
 
@@ -86,7 +90,7 @@ class NodeBase(INode):
     def addInputPin(self, pinName, dataType, defaultValue=None, foo=None):
         # check unique name
         pinName = self.getUniqPinName(pinName)
-        p = PinUtils.CreateRawPin(pinName, self, dataType, PinDirection.Input)
+        p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
         # p = PinBase(pinName, self, dataType, foo)
         self.inputs[p.uid] = p
         self.graph().pins[p.uid] = p
@@ -99,7 +103,7 @@ class NodeBase(INode):
         return p
 
     def addOutputPin(self, pinName, dataType, defaultValue=None, foo=None):
-        p = PinUtils.CreateRawPin(pinName, self, dataType, PinDirection.Output)
+        p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         # p = PinBase(pinName, self, dataType, foo)
         self.outputs[p.uid] = p
         self.graph().pins[p.uid] = p
@@ -112,7 +116,7 @@ class NodeBase(INode):
         return p
 
     def getUniqPinName(self, name):
-        pinNames = [i.name for i in self.inputs.values() + self.outputs.values()] + dir(self) + keyword.kwlist
+        pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))] + dir(self) + keyword.kwlist
         if name not in pinNames:
             return name
         idx = 0
@@ -131,15 +135,15 @@ class NodeBase(INode):
 
     def getPinByName(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
         if pinsSelectionGroup == PinSelectionGroup.BothSides:
-            for p in self.inputs.values() + self.outputs.values():
+            for p in list(self.inputs.values()) + list(self.outputs.values()):
                 if p.name == name:
                     return p
         elif pinsSelectionGroup == PinSelectionGroup.Inputs:
-            for p in self.inputs.values():
+            for p in list(self.inputs.values()):
                 if p.name == name:
                     return p
         else:
-            for p in self.outputs.values():
+            for p in list(self.outputs.values()):
                 if p.name == name:
                     return p
 
@@ -172,15 +176,27 @@ class NodeBase(INode):
         def constructor(self, name, graph, **kwargs):
             NodeBase.__init__(self, name, graph, **kwargs)
 
+        def setData(self, pinName, data):
+            if pinName in [p.name for p in self.outputs.values()]:
+                p = self.getPinByName(pinName, PinSelectionGroup.Outputs)
+                p.setData(data)
+
+        def getData(self, pinName):
+            if pinName in [p.name for p in self.inputs.values()]:
+                p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
+                return p.getData()
+
         nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
                                                      'category': category,
                                                      'keywords': keywords,
-                                                     'description': description
+                                                     'description': description,
+                                                     'setData': setData,
+                                                     'getData': getData
                                                      })
         raw_inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
-            # structClass = type(returnDefaultValue) if returnType == DataTypes.Enum else ENone
+            # structClass = type(returnDefaultValue) if returnType == 'EnumPin' else ENone
             p = raw_inst.addOutputPin('out', returnType, returnDefaultValue)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
@@ -199,11 +215,11 @@ class NodeBase(INode):
         def compute(self):
             # arguments will be taken from inputs
             kwargs = {}
-            for i in self.inputs.values():
-                if i.dataType is not DataTypes.Exec:
+            for i in list(self.inputs.values()):
+                if i.dataType is not 'ExecPin':
                     kwargs[i.name] = i.getData()
             for ref in refs:
-                if ref.dataType is not DataTypes.Exec:
+                if ref.dataType is not 'ExecPin':
                     kwargs[ref.name] = ref.setData
             result = foo(**kwargs)
             if returnType is not None:
@@ -211,19 +227,19 @@ class NodeBase(INode):
             if nodeType == NodeTypes.Callable:
                 outExec.call()
 
-        raw_inst.compute = MethodType(compute, raw_inst, Node)
+        raw_inst.compute = MethodType(compute, raw_inst)
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
-            inputExec = raw_inst.addInputPin('inExec', DataTypes.Exec, None, raw_inst.compute)
-            outExec = raw_inst.addOutputPin('outExec', DataTypes.Exec, None)
+            inputExec = raw_inst.addInputPin('inExec', 'ExecPin', None, raw_inst.compute)
+            outExec = raw_inst.addOutputPin('outExec', 'ExecPin', None)
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
             argName = fooArgNames[index]
             argDefaultValue = foo.__defaults__[index]
             dataType = foo.__annotations__[argName]
-            # structClass = type(argDefaultValue) if dataType == DataTypes.Enum else ENone
+            # structClass = type(argDefaultValue) if dataType == 'EnumPin' else ENone
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
                 outRef = raw_inst.addOutputPin(argName, dataType[0])

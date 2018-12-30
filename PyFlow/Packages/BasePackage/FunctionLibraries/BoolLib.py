@@ -11,83 +11,83 @@ class BoolLib(FunctionLibraryBase):
         super(BoolLib, self).__init__()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
     ## make simple boolean
-    def makeBool(b=(DataTypes.Bool, False)):
+    def makeBool(b=('BoolPin', False)):
         '''
         make boolean
         '''
         return b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Int, 0), meta={'Category': 'Math|Bool|Conversion', 'Keywords': []})
-    def boolToInt(b=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bool|Conversion', 'Keywords': []})
+    def boolToInt(b=('BoolPin', False)):
         return int(b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.String, ''), meta={'Category': 'Math|Bool|Conversion', 'Keywords': []})
-    def boolToString(b=(DataTypes.Bool, str(False))):
+    @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'Math|Bool|Conversion', 'Keywords': []})
+    def boolToString(b=('BoolPin', str(False))):
         return str(b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
-    def boolAnd(a=(DataTypes.Bool, False), b=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    def boolAnd(a=('BoolPin', False), b=('BoolPin', False)):
         '''
         Returns the logical AND of two values (A AND B)
         '''
         return a and b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
-    def boolEquals(a=(DataTypes.Bool, False), b=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    def boolEquals(a=('BoolPin', False), b=('BoolPin', False)):
         '''
         Returns true if the values are equal (A == B)
         '''
         return a == b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
-    def boolNotEquals(a=(DataTypes.Bool, False), b=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    def boolNotEquals(a=('BoolPin', False), b=('BoolPin', False)):
         '''
         Returns true if the values are not equal (A != B)
         '''
         return a != b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
-    def boolNot(a=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    def boolNot(a=('BoolPin', False)):
         '''
         Returns the logical complement of the Boolean value (NOT A)
         '''
         return not a
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
-    def boolNand(a=(DataTypes.Bool, False), b=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    def boolNand(a=('BoolPin', False), b=('BoolPin', False)):
         '''
         Returns the logical NAND of two values (A AND B)
         '''
         return not (a and b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
-    def boolNor(a=(DataTypes.Bool, False), b=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    def boolNor(a=('BoolPin', False), b=('BoolPin', False)):
         '''
         Returns the logical Not OR of two values (A NOR B)
         '''
         return not (a or b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
-    def boolOr(a=(DataTypes.Bool, False), b=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    def boolOr(a=('BoolPin', False), b=('BoolPin', False)):
         '''
         Returns the logical OR of two values (A OR B)
         '''
         return a or b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(DataTypes.Bool, False), meta={'Category': 'Math|Bool', 'Keywords': []})
-    def boolXor(a=(DataTypes.Bool, False), b=(DataTypes.Bool, False)):
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    def boolXor(a=('BoolPin', False), b=('BoolPin', False)):
         '''
         Returns the logical eXclusive OR of two values (A XOR B)
         '''

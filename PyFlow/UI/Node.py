@@ -5,6 +5,9 @@ Node is a base class for all ui nodes. This is actually a QGraphicsItem with all
 Also, it implements [initializeFromFunction](@ref PyFlow.Core.Node.initializeFromFunction) method which constructs node from given annotated function.
 @sa FunctionLibrary.py
 """
+
+import weakref
+
 from Settings import *
 from Qt import QtCore
 from Qt import QtGui
@@ -20,10 +23,12 @@ from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
+
 from Pin import PinWidgetBase
 from PyFlow.UI.InputWidgets import getInputWidget
 from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.Core.Enums import ENone
+from PyFlow.Core.AGraphCommon import *
 
 
 class NodeName(QGraphicsTextItem):
@@ -180,7 +185,7 @@ class Node(QGraphicsItem):
         self.sizes[2] = value
 
     def call(self, name):
-        if pinName in [p.name for p in self.outputs.values() if p.dataType is DataTypes.Exec]:
+        if pinName in [p.name for p in self.outputs.values() if p.dataType is 'ExecPin']:
             p = self._rawNode.getPinByName(pinName)
             return p.call()
 
@@ -198,7 +203,6 @@ class Node(QGraphicsItem):
     def deserialize(data, graph):
         node = graph.createNode(data)
         node.uid = uuid.UUID(data['uuid'])
-        node.currentComputeCode = data['computeCode']
 
         # set pins data
         for inpJson in data['inputs']:
@@ -303,12 +307,12 @@ class Node(QGraphicsItem):
         doc += '''\n\t# self.getData(name) to get data from input pin by name'''
         doc += '''\n\t# self.setData(name, data) to set data to output pin by name\n'''
 
-        template = {'type': None,
+        template = {'package': None,
+                    'type': None,
                     'x': None,
                     'y': None,
                     'name': None,
                     'uuid': None,
-                    'computeCode': doc + "\nprint('Hello world')\n",
                     'inputs': [],
                     'outputs': [],
                     'meta': {'label': 'Node', 'var': {}}
@@ -316,13 +320,13 @@ class Node(QGraphicsItem):
         return template
 
     def serialize(self):
-        template = Node.jsonTemplate()
+        template = Node.jsonTemplate()  # move this to raw node
+        template['package'] = ""
         template['type'] = self._rawNode.__class__.__name__
         template['name'] = self.name
         template['x'] = self.scenePos().x()
         template['y'] = self.scenePos().y()
         template['uuid'] = str(self.uid)
-        template['computeCode'] = self._rawNode.computeCode()
         template['inputs'] = [i.serialize() for i in self.inputs.values()]
         template['outputs'] = [o.serialize() for o in self.outputs.values()]
         template['meta']['label'] = self.label().toPlainText()
@@ -411,7 +415,7 @@ class Node(QGraphicsItem):
             formLayout.addRow("", sep_inputs)
 
             for inp in self._rawNode.inputs.values():
-                dataSetter = inp.call if inp.dataType == DataTypes.Exec else inp.setData
+                dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
                 w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
                     w.setWidgetValue(inp.currentData())
@@ -427,7 +431,7 @@ class Node(QGraphicsItem):
             sep_outputs.setText("OUTPUTS")
             formLayout.addRow("", sep_outputs)
             for out in self._rawNode.outputs.values():
-                if out.dataType == DataTypes.Exec:
+                if out.dataType == 'ExecPin':
                     continue
                 w = getInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
                 if w:
@@ -464,7 +468,7 @@ class Node(QGraphicsItem):
 
     def kill(self):
         # disconnect edges
-        for i in self._rawNode.inputs.values() + self._rawNode.outputs.values():
+        for i in list(self._rawNode.inputs.values()) + list(self._rawNode.outputs.values()):
             i.kill()
 
         if self.uid in self.graph().nodes:

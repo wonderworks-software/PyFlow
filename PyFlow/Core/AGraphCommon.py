@@ -10,11 +10,16 @@ import time
 import inspect
 from threading import Thread
 from functools import wraps
-from Queue import Queue
+try:
+    from queue import Queue
+except:
+    from Queue import Queue
 import uuid
 import sys
 from enum import IntEnum
-import Enums
+from PyFlow.Core import Enums
+import struct
+maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 
 
 ## determines step for all floating point input widgets
@@ -22,13 +27,13 @@ FLOAT_SINGLE_STEP = 0.01
 ## determines floating precision
 FLOAT_DECIMALS = 10
 ## determines floating minimum value
-FLOAT_RANGE_MIN = 0.1 + (-sys.maxint - 1.0)
+FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
 ## determines floating maximum value
-FLOAT_RANGE_MAX = sys.maxint + 0.1
+FLOAT_RANGE_MAX = maxint + 0.1
 ## determines int minimum value
-INT_RANGE_MIN = -sys.maxint + 0
+INT_RANGE_MIN = -maxint + 0
 ## determines int maximum value
-INT_RANGE_MAX = sys.maxint + 0
+INT_RANGE_MAX = maxint + 0
 
 GRID_SIZE = 20
 
@@ -72,7 +77,7 @@ def pinAffects(affects_pin, affected_pin):
 # @returns bool
 def cycle_check(src, dst):
     # allow cycles on execs
-    if src.dataType == DataTypes.Exec or dst.dataType == DataTypes.Exec:
+    if src.dataType == 'ExecPin' or dst.dataType == 'ExecPin':
         return False
 
     if src.direction == PinDirection.Input:
@@ -137,25 +142,14 @@ class REGISTER_ENUM(object):
 ## Data types identifires.
 # TODO: this is bad. Each package should define it's own data types
 class DataTypes(IntEnum):
-    Float = 0
-    Int = 1
-    String = 2
-    Bool = 3
-    Array = 4
     ## This type represents Execution pins.
     # It doesn't carry any data, but it implements [call](@ref PyFlow.Pins.ExecPin.ExecPin#call) method.
     # Using pins of this type we can control execution flow of graph.
-    Exec = 5
+    Exec = 0
     ## Special type of data which represents value passed by reference using [IMPLEMENT_NODE](@ref PyFlow.Core.FunctionLibrary.IMPLEMENT_NODE) decorator.
     # For example see [factorial](@ref FunctionLibraries.MathLib.MathLib.factorial) function.
     # Here along with computation results we return additional info, whether function call succeeded or not.
-    Reference = 6
-    FloatVector3 = 7
-    FloatVector4 = 8
-    Matrix33 = 9
-    Matrix44 = 10
-    Quaternion = 11
-    Enum = 12
+    Reference = 1
 
 
 ## Returns string representation of the data type identifier

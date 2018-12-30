@@ -5,11 +5,11 @@ from Qt.QtWidgets import QMenu
 
 
 class implicitPinCall(NodeBase):
-    def __init__(self, name):
-        super(implicitPinCall, self).__init__(name)
-        self.inExec = self.addInputPin('inp', DataTypes.Exec, self.compute)
-        self.uidInp = self.addInputPin('UUID', DataTypes.String)
-        self.outExec = self.addOutputPin('out', DataTypes.Exec)
+    def __init__(self, name, graph):
+        super(implicitPinCall, self).__init__(name, graph)
+        self.inExec = self.addInputPin('inp', 'ExecPin', self.compute)
+        self.uidInp = self.addInputPin('UUID', 'StringPin')
+        self.outExec = self.addOutputPin('out', 'ExecPin')
         self.menu = QMenu()
         self.actionFindPin = self.menu.addAction('Find pin')
         self.actionFindPin.triggered.connect(self.OnFindPin)
@@ -19,7 +19,7 @@ class implicitPinCall(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [DataTypes.String, DataTypes.Exec], 'outputs': [DataTypes.Exec]}
+        return {'inputs': ['StringPin', 'ExecPin'], 'outputs': ['ExecPin']}
 
     @staticmethod
     def category():

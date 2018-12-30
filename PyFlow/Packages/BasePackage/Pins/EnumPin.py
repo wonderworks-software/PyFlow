@@ -15,12 +15,15 @@ class EnumPin(PinBase):
         dt['value'] = int(dt['value'])
         return dt
 
+    def color(self):
+        return (255, 211, 25, 255)
+
     def supportedDataTypes(self):
-        return (DataTypes.Int, DataTypes.Enum,)
+        return ('IntPin', 'EnumPin',)
 
     @staticmethod
     def pinDataTypeHint():
-        return DataTypes.Enum, ENone
+        return 'EnumPin', ENone
 
     def setData(self, data):
         if isinstance(data, self._userStruct) and data != self._userStruct:

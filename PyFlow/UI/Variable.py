@@ -2,6 +2,9 @@
 
 Variable related classes.
 """
+from uuid import uuid4
+import inspect
+
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QWidget
@@ -13,12 +16,11 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
-from uuid import uuid4
-import inspect
 from PyFlow.UI import InputWidgets
 from PyFlow.Core import PinUtils
-from PyFlow.Core.AGraphCommon import DataTypes
-
+# from PyFlow.Core.AGraphCommon import DataTypes
+from PyFlow import getPinDefaultValueByType
+from PyFlow import findPinClassByType
 
 ## Colored rounded rect
 # color corresponds to pin data type color
@@ -48,8 +50,8 @@ class VarTypeComboBox(QComboBox):
         super(VarTypeComboBox, self).__init__(parent)
         self._bJustSpawned = True
         self.var = var
-        for i in self.var.types:
-            self.addItem(i, DataTypes[i].value)
+        # for i in self.var.types:
+        #     self.addItem(i, DataTypes[i].value)
         self.currentIndexChanged.connect(self.onCurrentIndexChanged)
         self.setCurrentIndex(self.findData(var.dataType))
         self._bJustSpawned = False
@@ -77,7 +79,7 @@ class VariableBase(QWidget):
     ## executed when variable access level been changed
     accessLevelChanged = QtCore.Signal(int)
 
-    def __init__(self, name, value, graph, varsListWidget, dataType=DataTypes.Bool, uid=None):
+    def __init__(self, name, value, graph, varsListWidget, dataType='BoolPin', uid=None):
         super(VariableBase, self).__init__()
         self._accessLevel = AccessLevel.public
         # ui
@@ -105,7 +107,7 @@ class VariableBase(QWidget):
             self._uid = uuid4()
         self.graph = graph
         self.setName(name)
-        self.types = [v.name for v in list(DataTypes) if v not in [DataTypes.Reference, DataTypes.Exec, DataTypes.Enum]]
+        self.types = [v.name for v in list(DataTypes) if v not in [DataTypes.Reference, 'ExecPin', 'EnumPin']]
         self.graph.vars[self.uid] = self
 
     @property
@@ -169,8 +171,8 @@ class VariableBase(QWidget):
     # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
     def setDataType(self, dataType, _bJustSpawned=False):
         self.dataType = dataType
-        self.widget.color = Pins.findPinClassByType(self.dataType).color()
-        self.value = Pins.findPinClassByType(self.dataType).pinDataTypeHint()[1]
+        self.widget.color = findPinClassByType(self.dataType).color()
+        self.value = findPinClassByType(self.dataType).pinDataTypeHint()[1]
         self.widget.update()
         if _bJustSpawned:
             return
@@ -200,7 +202,7 @@ class VariableBase(QWidget):
         # current value
         def valSetter(x):
             self.value = x
-        w = InputWidgets.getInputWidget(self.dataType, valSetter, Pins.getPinDefaultValueByType(self.dataType), None)
+        w = InputWidgets.getInputWidget(self.dataType, valSetter, getPinDefaultValueByType(self.dataType), None)
         if w:
             w.setWidgetValue(self.value)
             w.setObjectName(self.name)
