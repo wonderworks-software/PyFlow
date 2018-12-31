@@ -163,8 +163,21 @@ class Node(QGraphicsItem):
         self.tweakPosition()
         self.icon = None
 
-        self.inputs = {}
-        self.outputs = {}
+    @property
+    def inputs(self):
+        return self._rawNode.inputs
+
+    @inputs.setter
+    def inputs(self, value):
+        self._rawNode.inputs = value
+
+    @property
+    def outputs(self):
+        return self._rawNode.outputs
+
+    @outputs.setter
+    def outputs(self, value):
+        self._rawNode.outputs = value
 
     @staticmethod
     def recreate(node):
@@ -174,6 +187,9 @@ class Node(QGraphicsItem):
         newNode = node.graph().createNode(templ)
         newNode.uid = uid
         return newNode
+
+    def getPinByName(self, name):
+        return self._rawNode.getPinByName(name)
 
     @property
     def w(self):
@@ -186,17 +202,17 @@ class Node(QGraphicsItem):
 
     def call(self, name):
         if pinName in [p.name for p in self.outputs.values() if p.dataType is 'ExecPin']:
-            p = self._rawNode.getPinByName(pinName)
+            p = self.getPinByName(pinName)
             return p.call()
 
     def getData(self, pinName):
         if pinName in [p.name for p in self.inputs.values()]:
-            p = self._rawNode.getPinByName(pinName, PinSelectionGroup.Inputs)
+            p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
             return p.getData()
 
     def setData(self, pinName, data):
         if pinName in [p.name for p in self.outputs.values()]:
-            p = self._rawNode.getPinByName(pinName, PinSelectionGroup.Outputs)
+            p = self.getPinByName(pinName, PinSelectionGroup.Outputs)
             p.setData(data)
 
     @staticmethod
@@ -224,6 +240,9 @@ class Node(QGraphicsItem):
                 pin.setClean()
         return node
 
+    def isCallable(self):
+        return self._rawNode.isCallable()
+
     def tweakPosition(self):
         value = self.scenePos()
         self.setX(roundup(value.x() - GRID_SIZE, GRID_SIZE))
@@ -247,9 +266,12 @@ class Node(QGraphicsItem):
 
     @uid.setter
     def uid(self, value):
-        if self._rawNode._uid in self.graph().nodes:
-            self.graph().nodes[value] = self.graph().nodes.pop(self._rawNode._uid)
-            self._rawNode._uid = value
+        if self.uid in self.graph().nodes:
+            self.graph().nodes[value] = self.graph().nodes.pop(self.uid)
+            self.uid = value
+
+    def category(self):
+        return self._rawNode.category()
 
     def updateNodeShape(self, label=None):
         for i in range(0, self.inputsLayout.count()):
@@ -274,25 +296,28 @@ class Node(QGraphicsItem):
         self.w = self.getWidth() + Spacings.kPinOffset
         self.nodeMainGWidget.setMaximumWidth(self.w)
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
-        if self._rawNode.isCallable():
-            if 'flow' not in self._rawNode.category().lower():
+        if self.isCallable():
+            if 'flow' not in self.category().lower():
                 if self.label().bUseTextureBg:
                     self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
         else:
             if self.label().bUseTextureBg:
                 self.label().bg = QtGui.QImage(':/icons/resources/green.png')
-        self.setToolTip(self._rawNode.description())
+        self.setToolTip(self.description())
         self.update()
+
+    def description(self):
+        return self._rawNode.description()
 
     def postCreate(self, jsonTemplate=None):
         self._rawNode.postCreate(jsonTemplate)
 
         # create pins
-        for i in self._rawNode.inputs.values():
+        for i in self.inputs.values():
             self.addInputPin(i)
 
         # create outputs
-        for o in self._rawNode.outputs.values():
+        for o in self.outputs.values():
             self.addOutputPin(o)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
@@ -303,10 +328,6 @@ class Node(QGraphicsItem):
 
     @staticmethod
     def jsonTemplate():
-        doc = '''# access pins like this\n\t# self.pinName.getData()\n\t# self.pinName.setData()'''
-        doc += '''\n\t# self.getData(name) to get data from input pin by name'''
-        doc += '''\n\t# self.setData(name, data) to set data to output pin by name\n'''
-
         template = {'package': None,
                     'type': None,
                     'x': None,
@@ -358,7 +379,6 @@ class Node(QGraphicsItem):
 
     def mousePressEvent(self, event):
         self.update()
-        # self.setCursor(QtCore.Qt.ClosedHandCursor)
         QGraphicsItem.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
@@ -384,13 +404,19 @@ class Node(QGraphicsItem):
             Pin = self.getPinByName(attr)
             Pin.setData(le.text())
 
+    def getName(self):
+        return self._rawNode.getName()
+
+    def setName(self, name):
+        self._rawNode.setName(name)
+
     def onUpdatePropertyView(self, formLayout):
         # name
-        le_name = QLineEdit(self._rawNode.getName())
+        le_name = QLineEdit(self.getName())
         le_name.setReadOnly(True)
         if self.label().IsRenamable():
             le_name.setReadOnly(False)
-            le_name.returnPressed.connect(lambda: self._rawNode.setName(le_name.text()))
+            le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
         formLayout.addRow("Name", le_name)
 
         # uid
@@ -408,13 +434,13 @@ class Node(QGraphicsItem):
         formLayout.addRow("Pos", le_pos)
 
         # inputs
-        if len([i for i in self._rawNode.inputs.values()]) != 0:
+        if len([i for i in self.inputs.values()]) != 0:
             sep_inputs = QLabel()
             sep_inputs.setStyleSheet("background-color: black;")
             sep_inputs.setText("INPUTS")
             formLayout.addRow("", sep_inputs)
 
-            for inp in self._rawNode.inputs.values():
+            for inp in self.inputs.values():
                 dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
                 w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
@@ -425,12 +451,12 @@ class Node(QGraphicsItem):
                         w.setEnabled(False)
 
         # outputs
-        if len([i for i in self._rawNode.outputs.values()]) != 0:
+        if len([i for i in self.outputs.values()]) != 0:
             sep_outputs = QLabel()
             sep_outputs.setStyleSheet("background-color: black;")
             sep_outputs.setText("OUTPUTS")
             formLayout.addRow("", sep_outputs)
-            for out in self._rawNode.outputs.values():
+            for out in self.outputs.values():
                 if out.dataType == 'ExecPin':
                     continue
                 w = getInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
@@ -447,12 +473,12 @@ class Node(QGraphicsItem):
         formLayout.addRow("", doc_lb)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
-        doc.setHtml(self._rawNode.description())
+        doc.setHtml(self.description())
         formLayout.addRow("", doc)
 
     def addContainer(self, portType, head=False):
         container = QGraphicsWidget()
-        container.setObjectName('{0}PinContainerWidget'.format(self._rawNode.name))
+        container.setObjectName('{0}PinContainerWidget'.format(self.name))
         container.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         container.sizeHint(QtCore.Qt.MinimumSize, QtCore.QSizeF(50.0, 10.0))
 
@@ -468,7 +494,7 @@ class Node(QGraphicsItem):
 
     def kill(self):
         # disconnect edges
-        for i in list(self._rawNode.inputs.values()) + list(self._rawNode.outputs.values()):
+        for i in list(self.inputs.values()) + list(self.outputs.values()):
             i.kill()
 
         if self.uid in self.graph().nodes:
@@ -535,7 +561,7 @@ class Node(QGraphicsItem):
             p._container = container
             container.layout().addItem(connector_name)
 
-            self._rawNode.inputs[rawPin.uid] = rawPin
+            self.inputs[rawPin.uid] = rawPin
             self.inputsLayout.insertItem(index, container)
             container.adjustSize()
         elif pinDirection == PinDirection.Output:
@@ -546,7 +572,7 @@ class Node(QGraphicsItem):
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
             p._container = container
-            self._rawNode.outputs[rawPin.uid] = rawPin
+            self.outputs[rawPin.uid] = rawPin
             self.outputsLayout.insertItem(index, container)
             container.adjustSize()
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
