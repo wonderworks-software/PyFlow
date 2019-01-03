@@ -85,11 +85,9 @@ class PinBase(IPin):
     def getData(self):
         # if not connected - compute and return
         if not self.hasConnections():
-            # if self.dataType == 'ListPin':
-            #     return []
             if self.dirty:
-                self.owningNode().compute()
                 self.setClean()
+                self.owningNode().compute()
             return self.currentData()
 
         if self.direction == PinDirection.Output:
@@ -125,6 +123,15 @@ class PinBase(IPin):
     def call(self):
         pass
 
+    def disconnectAll(self):
+        trash = []
+        for e in self.edge_list:
+            if self.uid == e.destination().uid:
+                trash.append(e)
+            if self.uid == e.source().uid:
+                trash.append(e)
+        return trash
+
     ## Describes, what data type is this pin.
     @property
     def dataType(self):
@@ -158,10 +165,10 @@ class PinBase(IPin):
             return self._defaultValue
         return self._data
 
-    def pinConnected(self, other):
+    def pinConnected(self):
         self._connected = True
 
-    def pinDisconnected(self, other):
+    def pinDisconnected(self):
         if not self.hasConnections():
             self._connected = False
 

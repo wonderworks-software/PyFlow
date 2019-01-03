@@ -17,8 +17,6 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
 from PyFlow.UI import InputWidgets
-from PyFlow.Core import PinUtils
-# from PyFlow.Core.AGraphCommon import DataTypes
 from PyFlow import getPinDefaultValueByType
 from PyFlow import findPinClassByType
 

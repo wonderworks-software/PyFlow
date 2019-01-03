@@ -6,7 +6,7 @@ from Qt.QtCore import QTimer
 class timer(NodeBase):
     def __init__(self, name, graph):
         super(timer, self).__init__(name, graph)
-        self.out = self.addOutputPin("OUT", 'ExecPin', None, self.compute)
+        self.out = self.addOutputPin("OUT", 'ExecPin')
         self.beginPin = self.addInputPin("Begin", 'ExecPin', None, self.start)
         self.stopPin = self.addInputPin("Stop", 'ExecPin', None, self.stop)
         self.resetPin = self.addInputPin("Reset", 'ExecPin', None, self.reset)

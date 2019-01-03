@@ -7,7 +7,6 @@ class GraphBase(object):
         self._debug = False
         self.name = name
         self.nodes = {}
-        self.nodesPendingKill = []
         self.edges = {}
         self.pins = {}
         self.vars = {}
@@ -208,16 +207,16 @@ class GraphBase(object):
         for n in self.getNodes():
             print(n.name)
             for inp in n.inputs.values():
-                print('|---', inp._rawPin.name, 'data - {0}'.format(inp._rawPin.currentData()),
-                      'affects on', [i._rawPin.name for i in inp._rawPin.affects],
-                      'affected_by ', [p._rawPin.name for p in inp._rawPin.affected_by],
-                      'DIRTY ', inp._rawPin.dirty)
-                for e in inp._rawPin.edge_list:
+                print('|---', inp.name, 'data - {0}'.format(inp.currentData()),
+                      'affects on', [i.name for i in inp.affects],
+                      'affected_by ', [p.name for p in inp.affected_by],
+                      'DIRTY ', inp.dirty)
+                for e in inp.edge_list:
                     print('\t|---', e.__str__())
             for out in n.outputs.values():
-                print('|---' + out._rawPin.name, 'data - {0}'.format(out._rawPin.currentData()),
-                      'affects on', [i._rawPin.name for i in out._rawPin.affects],
-                      'affected_by ', [p._rawPin.name for p in out._rawPin.affected_by],
-                      'DIRTY', out._rawPin.dirty)
-                for e in out._rawPin.edge_list:
+                print('|---' + out.name, 'data - {0}'.format(out.currentData()),
+                      'affects on', [i.name for i in out.affects],
+                      'affected_by ', [p.name for p in out.affected_by],
+                      'DIRTY', out.dirty)
+                for e in out.edge_list:
                     print('\t|---', e.__str__())

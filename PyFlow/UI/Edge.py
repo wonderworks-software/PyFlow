@@ -149,6 +149,9 @@ class Edge(QGraphicsPathItem):
 
         self.setPath(self.mPath)
 
+    def kill(self):
+        self.graph().removeEdge(self)
+
     def destination_port_name(self):
         return self.destination().getName()
 

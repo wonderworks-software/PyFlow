@@ -631,7 +631,7 @@ class GraphWidget(QGraphicsView, GraphBase):
     def findPin(self, pinName):
         node = self.getNodeByName(pinName.split(".")[0])
         if node:
-            attr = node._rawNode.getPinByName(pinName.split(".")[1])
+            attr = node.getPinByName(pinName.split(".")[1])
             return attr
         return None
 
@@ -853,6 +853,8 @@ class GraphWidget(QGraphicsView, GraphBase):
 
             for n in selectedNodes:
                 new_node = n.clone()
+                assert(new_node is not None)
+
                 n.setSelected(False)
                 new_node.setSelected(True)
                 new_node.setPos(new_node.scenePos() + diff)
@@ -1173,7 +1175,7 @@ class GraphWidget(QGraphicsView, GraphBase):
 
         # set pins data
         for inpJson in jsonTemplate['inputs']:
-            pin = nodeInstance._rawNode.getPinByName(inpJson['name'], PinSelectionGroup.Inputs)
+            pin = nodeInstance.getPinByName(inpJson['name'], PinSelectionGroup.Inputs)
             if pin:
                 pin.uid = uuid.UUID(inpJson['uuid'])
                 pin.setData(inpJson['value'])
@@ -1183,7 +1185,7 @@ class GraphWidget(QGraphicsView, GraphBase):
                     pin.setClean()
 
         for outJson in jsonTemplate['outputs']:
-            pin = nodeInstance._rawNode.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
+            pin = nodeInstance.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
             if pin:
                 pin.uid = uuid.UUID(outJson['uuid'])
                 pin.setData(outJson['value'])

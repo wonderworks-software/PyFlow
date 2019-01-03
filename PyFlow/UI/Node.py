@@ -188,8 +188,8 @@ class Node(QGraphicsItem):
         newNode.uid = uid
         return newNode
 
-    def getPinByName(self, name):
-        return self._rawNode.getPinByName(name)
+    def getPinByName(self, name, pinsGroup):
+        return self._rawNode.getPinByName(name, pinsGroup)
 
     @property
     def w(self):
@@ -312,13 +312,12 @@ class Node(QGraphicsItem):
     def postCreate(self, jsonTemplate=None):
         self._rawNode.postCreate(jsonTemplate)
 
-        # create pins
+        # create ui pin wrappers
         for i in self.inputs.values():
-            self.addInputPin(i)
+            self._addUIPin(i)
 
-        # create outputs
         for o in self.outputs.values():
-            self.addOutputPin(o)
+            self._addUIPin(o)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
@@ -384,14 +383,6 @@ class Node(QGraphicsItem):
     def mouseReleaseEvent(self, event):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
-
-    def addInputPin(self, rawPin, hideLabel=False, index=-1, foo=None):
-        p = self._addPin(rawPin, PinDirection.Input, index=index)
-        return p
-
-    def addOutputPin(self, rawPin, hideLabel=False, index=-1, foo=None):
-        p = self._addPin(rawPin, PinDirection.Output, index=index)
-        return p
 
     @property
     def name(self):
@@ -493,16 +484,12 @@ class Node(QGraphicsItem):
         return container
 
     def kill(self):
-        # disconnect edges
         for i in list(self.inputs.values()) + list(self.outputs.values()):
-            i.kill()
-
-        if self.uid in self.graph().nodes:
-            self.graph().nodes.pop(self.uid)
-            self.graph().nodesPendingKill.append(self)
-
-            self.scene().removeItem(self)
-            del(self)
+            for edge in i.edge_list:
+                edge.kill()
+        self._rawNode.kill()
+        self.scene().removeItem(self)
+        del(self)
 
     def Tick(self, delta):
         self._rawNode.Tick(delta)
@@ -517,14 +504,10 @@ class Node(QGraphicsItem):
         if pin:
             pin.kill()
 
-    def _addPin(self, rawPin, pinDirection, hideLabel=False, index=-1, foo=None):
-        # TODO: create wrapper for raw pin
+    def _addUIPin(self, rawPin, index=-1):
         p = PinWidgetBase(self, rawPin)
-        if pinDirection == PinDirection.Input:
-            self.inputs[p.uid] = p
+        if rawPin.direction == PinDirection.Input:
             p.call = rawPin.call
-        if pinDirection == PinDirection.Output:
-            self.outputs[p.uid] = p
 
         name = rawPin.name
 
@@ -533,9 +516,6 @@ class Node(QGraphicsItem):
         connector_name.setContentsMargins(0, 0, 0, 0)
 
         lblName = name
-        if hideLabel:
-            lblName = ''
-            p.bLabelHidden = True
 
         lbl = QLabel(lblName)
         p.nameChanged.connect(lbl.setText)
@@ -552,32 +532,28 @@ class Node(QGraphicsItem):
             color.alpha())
         lbl.setStyleSheet(style)
         connector_name.setWidget(lbl)
-        if pinDirection == PinDirection.Input:
-            container = self.addContainer(pinDirection)
-            if hideLabel:
-                container.setMinimumWidth(15)
+        if rawPin.direction == PinDirection.Input:
+            container = self.addContainer(rawPin.direction)
             lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
             container.layout().addItem(p)
             p._container = container
             container.layout().addItem(connector_name)
 
-            self.inputs[rawPin.uid] = rawPin
             self.inputsLayout.insertItem(index, container)
             container.adjustSize()
-        elif pinDirection == PinDirection.Output:
-            container = self.addContainer(pinDirection)
-            if hideLabel:
-                container.setMinimumWidth(15)
+        elif rawPin.direction == PinDirection.Output:
+            container = self.addContainer(rawPin.direction)
             lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
             p._container = container
-            self.outputs[rawPin.uid] = rawPin
             self.outputsLayout.insertItem(index, container)
             container.adjustSize()
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
         # create member if created in runtime
-        if not hasattr(self, name):
-            setattr(self, name, p)
+
+        # TODO: Avoid runtime class modification. Rewrite to map meber (sequence node)
+        # if not hasattr(self, name):
+        #     setattr(self, name, p)
         return p

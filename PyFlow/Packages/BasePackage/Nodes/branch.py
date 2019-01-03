@@ -7,7 +7,7 @@ class branch(NodeBase):
         super(branch, self).__init__(name, graph)
         self.trueExec = self.addOutputPin("True", 'ExecPin')
         self.falseExec = self.addOutputPin("False", 'ExecPin')
-        self.inExec = self.addInputPin("In", 'ExecPin', self.compute)
+        self.inExec = self.addInputPin("In", 'ExecPin', defaultValue=None, foo=self.compute)
         self.condition = self.addInputPin("Condition", 'BoolPin')
 
     @staticmethod

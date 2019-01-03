@@ -89,6 +89,9 @@ class IItemBase(ISerializable):
         '''
         raise NotImplementedError('setName method of IItemBase is not implemented')
 
+    def kill(self):
+        raise NotImplementedError('kill method of IItemBase is not implemented')
+
 
 class IPin(IItemBase):
     """

@@ -63,6 +63,10 @@ class PinWidgetBase(QGraphicsWidget):
         self.bAnimate = False
         self._val = 0
 
+    @property
+    def name(self):
+        return self._rawPin.name
+
     def hasConnections(self):
         return self._rawPin.hasConnections()
 
@@ -148,9 +152,10 @@ class PinWidgetBase(QGraphicsWidget):
 
     def call(self):
         self._rawPin.call()
+        for e in self.edge_list:
+            e.highlight()
 
     def kill(self):
-        self._rawPin.kill()
         self.disconnectAll()
         if hasattr(self.parent(), self.name):
             delattr(self.parent(), self.name)
@@ -160,6 +165,7 @@ class PinWidgetBase(QGraphicsWidget):
                 self.parent().inputsLayout.removeItem(self._container)
             else:
                 self.parent().outputsLayout.removeItem(self._container)
+        self._rawPin.kill()
 
     @staticmethod
     def deserialize(owningNode, jsonData):
@@ -216,12 +222,7 @@ class PinWidgetBase(QGraphicsWidget):
         clipboard.setText(str(self.uid))
 
     def disconnectAll(self):
-        trash = []
-        for e in self._rawPin.edge_list:
-            if self.uid == e.destination().uid:
-                trash.append(e)
-            if self.uid == e.source().uid:
-                trash.append(e)
+        trash = self._rawPin.disconnectAll()
         for e in trash:
             self.parent().graph().removeEdge(e)
 
@@ -298,9 +299,11 @@ class PinWidgetBase(QGraphicsWidget):
         self.hovered = False
 
     def pinConnected(self, other):
-        self._rawPin.pinConnected(other)
+        self._rawPin.pinConnected()
         self.OnPinConnected.emit(other)
+        self.update()
 
     def pinDisconnected(self, other):
-        self._rawPin.pinDisconnected(other)
+        self._rawPin.pinDisconnected()
         self.OnPinDisconnected.emit(other)
+        self.update()

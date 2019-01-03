@@ -37,6 +37,10 @@ class NodeBase(INode):
             self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
             self._uid = value
 
+    def kill(self):
+        if self.uid in self.graph().nodes:
+            self.graph().nodes.pop(self.uid)
+
     def Tick(self, delta):
         pass
 
@@ -91,7 +95,6 @@ class NodeBase(INode):
         # check unique name
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
-        # p = PinBase(pinName, self, dataType, foo)
         self.inputs[p.uid] = p
         self.graph().pins[p.uid] = p
         p.direction = PinDirection.Input
@@ -103,8 +106,8 @@ class NodeBase(INode):
         return p
 
     def addOutputPin(self, pinName, dataType, defaultValue=None, foo=None):
+        pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
-        # p = PinBase(pinName, self, dataType, foo)
         self.outputs[p.uid] = p
         self.graph().pins[p.uid] = p
         p.direction = PinDirection.Output
@@ -116,7 +119,7 @@ class NodeBase(INode):
         return p
 
     def getUniqPinName(self, name):
-        pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))] + dir(self) + keyword.kwlist
+        pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))] + dir(self)
         if name not in pinNames:
             return name
         idx = 0
