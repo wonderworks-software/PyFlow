@@ -4,3 +4,4 @@
 *.xml
 PyFlow/appConfig.ini
 .vscode/.ropeproject/objectdb
+nodes.log

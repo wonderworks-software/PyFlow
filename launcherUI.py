@@ -40,8 +40,6 @@ instance = PyFlow.instance()
 app.setActiveWindow(instance)
 instance.show()
 
-QApplication.setStyle(QStyleFactory.create("Fusion"))
-
 try:
     sys.exit(app.exec_())
 except Exception as e:
