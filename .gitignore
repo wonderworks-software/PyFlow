@@ -3,3 +3,4 @@
 *.name
 *.xml
 PyFlow/appConfig.ini
+.vscode/.ropeproject/objectdb
