@@ -165,10 +165,10 @@ class PinBase(IPin):
             return self._defaultValue
         return self._data
 
-    def pinConnected(self):
+    def pinConnected(self, other):
         self._connected = True
 
-    def pinDisconnected(self):
+    def pinDisconnected(self, other):
         if not self.hasConnections():
             self._connected = False
 

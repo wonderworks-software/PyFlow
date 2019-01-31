@@ -1,13 +1,14 @@
 """@file Edge.py
 Edge is a cubic spline curve. It represents connecton between two pins.
 """
+import weakref
+from uuid import UUID, uuid4
+
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsPathItem
+
 from Settings import Colors
-# from AbstractGraph import *
-import weakref
-from uuid import UUID, uuid4
 
 
 ## Connection between pins
@@ -77,10 +78,10 @@ class Edge(QGraphicsPathItem):
         srcUUID = UUID(data['sourceUUID'])
         dstUUID = UUID(data['destinationUUID'])
         # if srcUUID in graph.pins and dstUUID in graph.pins:
-        srcPin = graph.pins[srcUUID]
-        dstPin = graph.pins[dstUUID]
+        srcPin = graph.findUIPinByUID(srcUUID)
+        dstPin = graph.findUIPinByUID(dstUUID)
         edge = graph._addEdge(srcPin, dstPin)
-        edge.uid = uuid.UUID(data['uuid'])
+        edge.uid = UUID(data['uuid'])
 
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),

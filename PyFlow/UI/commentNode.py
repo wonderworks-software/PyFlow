@@ -15,7 +15,6 @@ from Qt.QtWidgets import QColorDialog
 from Qt import QtGui
 from Qt import QtCore
 
-from PyFlow.Core.AbstractGraph import *
 from PyFlow.UI.Settings import (Spacings, Colors)
 from PyFlow.UI.Node import Node
 from PyFlow.UI.Node import NodeName

@@ -43,15 +43,11 @@ from Qt.QtWidgets import QUndoStack
 from Settings import Colors
 from PyFlow.UI.Edge import Edge
 from PyFlow.UI.Node import Node
-from PyFlow.UI.GetVarNode import GetVarNode
-from PyFlow.UI.SetVarNode import SetVarNode
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
-from PyFlow.Commands.Move import Move as cmdMove
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
 from PyFlow.Commands.RemoveEdges import RemoveEdges as cmdRemoveEdges
 from PyFlow.UI.Pin import PinWidgetBase
-from PyFlow.UI.Variable import VariableBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
@@ -197,7 +193,7 @@ class SceneClass(QGraphicsScene):
             tag, mimeText = event.mimeData().text().split('|')
             name = self.parent().getUniqNodeName(mimeText)
             dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
-            if not dropItem or isinstance(dropItem, Nodes.commentNode.commentNode):
+            if not dropItem:
                 nodeTemplate = Node.jsonTemplate()
                 nodeTemplate['type'] = mimeText
                 nodeTemplate['name'] = name
@@ -205,37 +201,6 @@ class SceneClass(QGraphicsScene):
                 nodeTemplate['y'] = event.scenePos().y()
                 nodeTemplate['meta']['label'] = mimeText
                 nodeTemplate['uuid'] = None
-
-                if tag == 'Var':
-                    modifiers = event.modifiers()
-                    if modifiers == QtCore.Qt.NoModifier:
-                        nodeTemplate['uuid'] = mimeText
-                        nodeTemplate['meta']['var']['uuid'] = mimeText
-                        m = QMenu()
-                        getterAction = m.addAction('Get')
-                        nodeTemplate['type'] = 'GetVarNode'
-
-                        def varGetterCreator():
-                            n = self.parent().createNode(nodeTemplate)
-                            n.updateNodeShape(label=n.var.name)
-                        getterAction.triggered.connect(varGetterCreator)
-
-                        setNodeTemplate = dict(nodeTemplate)
-                        setterAction = m.addAction('Set')
-                        setNodeTemplate['type'] = 'SetVarNode'
-                        setterAction.triggered.connect(lambda: self.parent().createNode(setNodeTemplate))
-                        m.exec_(QtGui.QCursor.pos(), None)
-                        return
-                    if modifiers == QtCore.Qt.ControlModifier:
-                        nodeTemplate['type'] = 'GetVarNode'
-                        nodeTemplate['uuid'] = mimeText
-                        nodeTemplate['meta']['var']['uuid'] = mimeText
-                        nodeTemplate['meta']['label'] = self.parent().vars[uuid.UUID(mimeText)].name
-                    if modifiers == QtCore.Qt.AltModifier:
-                        nodeTemplate['type'] = 'SetVarNode'
-                        nodeTemplate['uuid'] = mimeText
-                        nodeTemplate['meta']['var']['uuid'] = mimeText
-                        nodeTemplate['meta']['label'] = self.parent().vars[uuid.UUID(mimeText)].name
 
                 self.parent().createNode(nodeTemplate)
         else:
@@ -472,6 +437,7 @@ class NodesBox(QWidget):
         self.expandCategory()
 
 
+# TODO: aggregate GraphBase
 class GraphWidget(QGraphicsView, GraphBase):
     def __init__(self, name, parent=None):
         super(GraphWidget, self).__init__()
@@ -543,7 +509,7 @@ class GraphWidget(QGraphicsView, GraphBase):
         self.node_box = NodesBox(None, self)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
-        self.nodesMoveInfo = {}
+        self.UIPins = {}
 
     def showNodeBox(self, dataType=None, pinType=None):
         self.node_box.show()
@@ -555,7 +521,8 @@ class GraphWidget(QGraphicsView, GraphBase):
     def shoutDown(self):
         for ed in self.codeEditors.values():
             ed.deleteLater()
-        for node in self.getNodes():
+        nodes = list(self.getNodes())
+        for node in nodes:
             node.kill()
         self.scene().shoutDown()
         self.scene().clear()
@@ -635,14 +602,26 @@ class GraphWidget(QGraphicsView, GraphBase):
             return attr
         return None
 
+    def findUIPinByUID(self, uid):
+            uiPin = None
+            if uid in self.UIPins:
+                uiPin = self.UIPins[uid]
+            return uiPin
+
+    def findUIPinByName(self, pinName):
+        uiPin = None
+        for pin in self.UIPins.values():
+            if pinName == pin.getName():
+                uiPin = pin
+                break
+        return uiPin
+
     def getGraphSaveData(self):
-        data = {self.name: {'nodes': [], 'edges': [], 'variables': []}}
+        data = {self.name: {'nodes': [], 'edges': []}}
         # save nodes
         data[self.name]['nodes'] = [node.serialize() for node in self.getNodes()]
         # save edges
         data[self.name]['edges'] = [e.serialize() for e in self.edges.values()]
-        # variables
-        data[self.name]['variables'] = [v.serialize() for v in self.vars.values()]
         return data
 
     def save(self, save_as=False):
@@ -679,10 +658,9 @@ class GraphWidget(QGraphicsView, GraphBase):
     def new_file(self):
         self._current_file_name = 'Untitled'
         self._file_name_label.setPlainText('Untitled')
-        for node in self.getNodes():
+        nodes = list(self.getNodes())
+        for node in nodes:
             node.kill()
-        self.vars.clear()
-        self.parent.variablesWidget.listWidget.clear()
         self.undoStack.clear()
         self._clearPropertiesView()
 
@@ -693,9 +671,6 @@ class GraphWidget(QGraphicsView, GraphBase):
             with open(fpath[0], 'r') as f:
                 data = json.load(f)
                 self.new_file()
-                # vars
-                for varJson in data[self.name]['variables']:
-                    VariableBase.deserialize(varJson, self)
                 # nodes
                 for nodeJson in data[self.name]['nodes']:
                     try:
@@ -767,36 +742,6 @@ class GraphWidget(QGraphicsView, GraphBase):
         modifiers = event.modifiers()
         if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
             self.new_file()
-        if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
-            if self.isShortcutsEnabled():
-                # create comment node
-                rect = Nodes.commentNode.commentNode.getNodesRect(self.selectedNodes())
-                if rect:
-                    rect.setTop(rect.top() - 20)
-                    rect.setLeft(rect.left() - 20)
-
-                    rect.setRight(rect.right() + 20)
-                    rect.setBottom(rect.bottom() + 20)
-
-                nodeTemplate = Node.jsonTemplate()
-                nodeTemplate['type'] = Nodes.commentNode.commentNode.__name__
-                nodeTemplate['name'] = self.getUniqNodeName(Nodes.commentNode.commentNode.__name__)
-
-                if rect:
-                    nodeTemplate['x'] = rect.topLeft().x()
-                    nodeTemplate['y'] = rect.topLeft().y()
-                else:
-                    nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
-                    nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
-                nodeTemplate['meta']['label'] = Nodes.commentNode.commentNode.__name__
-                nodeTemplate['uuid'] = None
-                instance = self.createNode(nodeTemplate)
-                if rect:
-                    instance.rect.setRight(rect.width())
-                    instance.rect.setBottom(rect.height())
-                    instance.label().width = rect.width()
-                    instance.label().adjustSizes()
-
         if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             self.alignSelectedNodes(Direction.Left)
             return
@@ -861,10 +806,6 @@ class GraphWidget(QGraphicsView, GraphBase):
 
     def alignSelectedNodes(self, direction):
         ls = [n for n in self.getNodes() if n.isSelected()]
-        nodesMoveInfo = {}
-        # {'from': [], 'to': []}
-        for node in ls:
-            nodesMoveInfo[node.uid] = {'from': node.scenePos(), 'to': QtCore.QPointF()}
 
         x_positions = [p.scenePos().x() for p in ls]
         y_positions = [p.scenePos().y() for p in ls]
@@ -876,7 +817,6 @@ class GraphWidget(QGraphicsView, GraphBase):
             for n in ls:
                 p = n.scenePos()
                 p.setX(x)
-                nodesMoveInfo[n.uid]['to'] = p
 
         if direction == Direction.Right:
             if len(x_positions) == 0:
@@ -885,7 +825,6 @@ class GraphWidget(QGraphicsView, GraphBase):
             for n in ls:
                 p = n.scenePos()
                 p.setX(x)
-                nodesMoveInfo[n.uid]['to'] = p
 
         if direction == Direction.Up:
             if len(y_positions) == 0:
@@ -894,7 +833,6 @@ class GraphWidget(QGraphicsView, GraphBase):
             for n in ls:
                 p = n.scenePos()
                 p.setY(y)
-                nodesMoveInfo[n.uid]['to'] = p
 
         if direction == Direction.Down:
             if len(y_positions) == 0:
@@ -903,9 +841,6 @@ class GraphWidget(QGraphicsView, GraphBase):
             for n in ls:
                 p = n.scenePos()
                 p.setY(y)
-                nodesMoveInfo[n.uid]['to'] = p
-
-        self.undoStack.push(cmdMove(dict(nodesMoveInfo), self))
 
     def findGoodPlaceForNewNode(self):
         polygon = self.mapToScene(self.viewport().rect())
@@ -947,12 +882,6 @@ class GraphWidget(QGraphicsView, GraphBase):
             if event.button() == QtCore.Qt.RightButton and modifiers == QtCore.Qt.NoModifier:
                 self.bPanMode = True
             self.initialScrollBarsPos = QtGui.QVector2D(self.horizontalScrollBar().value(), self.verticalScrollBar().value())
-
-        selectedNodes = self.selectedNodes()
-        if len(selectedNodes) > 0:
-            self.nodesMoveInfo.clear()
-            for n in self.getNodes():
-                self.nodesMoveInfo[n.uid] = {'from': n.scenePos(), 'to': None}
 
     def pan(self, delta):
         delta *= self._scale * -1
@@ -1022,7 +951,7 @@ class GraphWidget(QGraphicsView, GraphBase):
 
         if event.button() == QtCore.Qt.RightButton:
             # show nodebox only if drag is small and no items under cursor
-            if self.pressed_item is None or isinstance(self.pressed_item, Nodes.commentNode.commentNode):
+            if self.pressed_item is None:
                 dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
                 if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
@@ -1052,20 +981,6 @@ class GraphWidget(QGraphicsView, GraphBase):
         if do_connect:
             if p_itm is not r_itm:
                 self.addEdge(p_itm, r_itm)
-
-        for nodeUid in self.nodesMoveInfo:
-            self.nodesMoveInfo[nodeUid]['to'] = self.nodes[nodeUid].scenePos()
-        #  check if nodes moved
-        bMoved = False
-        for nodeUid, v in self.nodesMoveInfo.items():
-            if not v['from'] == v['to']:
-                bMoved = True
-
-        # pass copy
-        if bMoved:
-            cmdMoveInstance = cmdMove(dict(self.nodesMoveInfo), self)
-            self.undoStack.push(cmdMoveInstance)
-        self.nodesMoveInfo.clear()
 
         selectedNodes = self.selectedNodes()
         if len(selectedNodes) != 0 and event.button() == QtCore.Qt.LeftButton:
@@ -1145,33 +1060,9 @@ class GraphWidget(QGraphicsView, GraphBase):
         if self.parent:
             print(msg)
 
-    def getVarByName(self, name):
-        var = None
-        for v in self.vars.values():
-            if v.name == name:
-                var = v
-        return var
-
-    def createVariableSetter(self, jsonTemplate):
-        var = self.vars[uuid.UUID(jsonTemplate['meta']['var']['uuid'])]
-        instance = SetVarNode(var.name, self, var)
-        return instance
-
-    def createVariableGetter(self, jsonTemplate):
-        var = self.vars[uuid.UUID(jsonTemplate['meta']['var']['uuid'])]
-        instance = GetVarNode(var.name, self, var)
-        return instance
-
     def _createNode(self, jsonTemplate):
         nodeInstance = getNodeInstance(jsonTemplate['type'], jsonTemplate['name'], self)
         nodeInstance.setPosition(jsonTemplate["x"], jsonTemplate["y"])
-
-        # If not found, check variables
-        if nodeInstance is None:
-            if jsonTemplate['type'] == 'GetVarNode':
-                nodeInstance = self.createVariableGetter(jsonTemplate)
-            if jsonTemplate['type'] == 'SetVarNode':
-                nodeInstance = self.createVariableSetter(jsonTemplate)
 
         # set pins data
         for inpJson in jsonTemplate['inputs']:

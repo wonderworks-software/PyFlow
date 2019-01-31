@@ -8,8 +8,6 @@ class ConnectPin(QUndoCommand):
     def __init__(self, graph, src, dst):
         super(ConnectPin, self).__init__()
         self.graph = graph
-        self.src = src
-        self.dst = dst
         self.srcUid = src.uid
         self.dstUid = dst.uid
         self.setText('connect edges')
@@ -22,14 +20,17 @@ class ConnectPin(QUndoCommand):
             self.graph.scene().blockSignals(False)
 
     def redo(self):
-
         self.graph.scene().blockSignals(True)
 
-        # TODO: return UI widgets here
-        # Store UI pins in self.graph.pins which implement pin interface
-        # src = self.graph.pins[self.srcUid]
-        # dst = self.graph.pins[self.dstUid]
-        edge = self.graph._addEdge(self.src, self.dst)
+        srcPin = self.graph.findUIPinByUID(self.srcUid)
+        if srcPin is None:
+            print(self.srcUid, "not found")
+
+        dstPin = self.graph.findUIPinByUID(self.dstUid)
+        if dstPin is None:
+            print(self.dstUid, "not found")
+
+        edge = self.graph._addEdge(srcPin, dstPin)
 
         # recreate the same edge with same uuid
         # if it was deleted

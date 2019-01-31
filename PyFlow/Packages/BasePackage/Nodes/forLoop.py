@@ -4,7 +4,7 @@ from PyFlow.Core import NodeBase
 class forLoop(NodeBase):
     def __init__(self, name, graph):
         super(forLoop, self).__init__(name, graph)
-        self.inExec = self.addInputPin('inExec', 'ExecPin', self.compute)
+        self.inExec = self.addInputPin('inExec', 'ExecPin', None, self.compute)
         self.firstIndex = self.addInputPin('Start', 'IntPin')
         self.lastIndex = self.addInputPin('Stop', 'IntPin')
         self.step = self.addInputPin('Step', 'IntPin')
@@ -13,10 +13,6 @@ class forLoop(NodeBase):
         self.loopBody = self.addOutputPin('LoopBody', 'ExecPin')
         self.index = self.addOutputPin('Index', 'IntPin')
         self.completed = self.addOutputPin('Completed', 'ExecPin')
-
-        pinAffects(self.firstIndex, self.index)
-        pinAffects(self.lastIndex, self.index)
-        pinAffects(self.step, self.index)
 
     @staticmethod
     def pinTypeHints():

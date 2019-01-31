@@ -8,14 +8,13 @@ from Qt.QtWidgets import QMenu
 class sequence(NodeBase):
     def __init__(self, name, graph):
         super(sequence, self).__init__(name, graph)
-        self.inExecPin = self.addInputPin('inExec', 'ExecPin', self.compute)
+        self.inExecPin = self.addInputPin('inExec', 'ExecPin', None, self.compute)
         self.menu = QMenu()
         self.action = self.menu.addAction('add pin')
         self.action.triggered.connect(self.addOutPin)
 
     def addOutPin(self):
         p = self.addOutputPin(str(len(self.outputs)), 'ExecPin')
-        pinAffects(self.inExecPin, p)
 
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())

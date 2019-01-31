@@ -84,16 +84,16 @@ class GraphBase(object):
                 for i in node.inputs.values():
                     if not len(i.affected_by) == 0:
                         for a in i.affected_by:
-                            if not a.parent().bCallable:
-                                nodes.append(a.parent())
+                            if not a.owningNode().bCallable:
+                                nodes.append(a.owningNode())
             return nodes
         if direction == PinDirection.Output:
             if not len(node.outputs) == 0:
                 for i in node.outputs.values():
                     if not len(i.affects) == 0:
                         for p in i.affects:
-                            if not p.parent().bCallable:
-                                nodes.append(p.parent())
+                            if not p.owningNode().bCallable:
+                                nodes.append(p.owningNode())
             return nodes
 
     def getNodes(self):
@@ -132,6 +132,9 @@ class GraphBase(object):
 
     def canConnectPins(self, src, dst):
         debug = self.isDebug()
+        if src is None or dst is None:
+            print("can not connect pins")
+            return False
         if src.direction == PinDirection.Input:
             src, dst = dst, src
 

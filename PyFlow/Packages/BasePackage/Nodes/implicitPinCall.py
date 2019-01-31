@@ -1,13 +1,15 @@
+import uuid
+
 from PyFlow.Core import NodeBase
 
-# remove menu
+# TODO: remove menu. This is raw class whicj should work from concole without dependencies
 from Qt.QtWidgets import QMenu
 
 
 class implicitPinCall(NodeBase):
     def __init__(self, name, graph):
         super(implicitPinCall, self).__init__(name, graph)
-        self.inExec = self.addInputPin('inp', 'ExecPin', self.compute)
+        self.inExec = self.addInputPin('inp', 'ExecPin', None, self.compute)
         self.uidInp = self.addInputPin('UUID', 'StringPin')
         self.outExec = self.addOutputPin('out', 'ExecPin')
         self.menu = QMenu()

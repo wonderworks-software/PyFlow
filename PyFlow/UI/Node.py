@@ -162,6 +162,7 @@ class Node(QGraphicsItem):
 
         self.tweakPosition()
         self.icon = None
+        self.UIPins = {}
 
     @property
     def inputs(self):
@@ -188,7 +189,7 @@ class Node(QGraphicsItem):
         newNode.uid = uid
         return newNode
 
-    def getPinByName(self, name, pinsGroup):
+    def getPinByName(self, name, pinsGroup=PinSelectionGroup.BothSides):
         return self._rawNode.getPinByName(name, pinsGroup)
 
     @property
@@ -550,6 +551,9 @@ class Node(QGraphicsItem):
             self.outputsLayout.insertItem(index, container)
             container.adjustSize()
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+
+        self.UIPins[rawPin.uid] = p
+        self.graph().UIPins[rawPin.uid] = p
 
         # create member if created in runtime
 

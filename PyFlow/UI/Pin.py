@@ -67,6 +67,9 @@ class PinWidgetBase(QGraphicsWidget):
     def name(self):
         return self._rawPin.name
 
+    def getName(self):
+        return self._rawPin.getName()
+
     def hasConnections(self):
         return self._rawPin.hasConnections()
 
@@ -157,14 +160,14 @@ class PinWidgetBase(QGraphicsWidget):
 
     def kill(self):
         self.disconnectAll()
-        if hasattr(self.parent(), self.name):
-            delattr(self.parent(), self.name)
+        if hasattr(self.owningNode(), self.name):
+            delattr(self.owningNode(), self.name)
         if self._container is not None:
-            self.parent().graph().scene().removeItem(self._container)
+            self.owningNode().graph().scene().removeItem(self._container)
             if self._rawPin.direction == PinDirection.Input:
-                self.parent().inputsLayout.removeItem(self._container)
+                self.owningNode().inputsLayout.removeItem(self._container)
             else:
-                self.parent().outputsLayout.removeItem(self._container)
+                self.owningNode().outputsLayout.removeItem(self._container)
         self._rawPin.kill()
 
     @staticmethod
@@ -224,7 +227,7 @@ class PinWidgetBase(QGraphicsWidget):
     def disconnectAll(self):
         trash = self._rawPin.disconnectAll()
         for e in trash:
-            self.parent().graph().removeEdge(e)
+            self.owningNode().graph().removeEdge(e)
 
     def shape(self):
         path = QtGui.QPainterPath()
@@ -282,9 +285,9 @@ class PinWidgetBase(QGraphicsWidget):
 
     def getLayout(self):
         if self.direction == PinDirection.Input:
-            return self.parent().inputsLayout
+            return self.owningNode().inputsLayout
         else:
-            return self.parent().outputsLayout
+            return self.owningNode().outputsLayout
 
     def hoverEnterEvent(self, event):
         super(PinWidgetBase, self).hoverEnterEvent(event)
@@ -299,11 +302,11 @@ class PinWidgetBase(QGraphicsWidget):
         self.hovered = False
 
     def pinConnected(self, other):
-        self._rawPin.pinConnected()
+        self._rawPin.pinConnected(other)
         self.OnPinConnected.emit(other)
         self.update()
 
     def pinDisconnected(self, other):
-        self._rawPin.pinDisconnected()
+        self._rawPin.pinDisconnected(other)
         self.OnPinDisconnected.emit(other)
         self.update()
