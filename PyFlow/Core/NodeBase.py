@@ -40,6 +40,9 @@ class NodeBase(INode):
     def kill(self):
         if self.uid in self.graph().nodes:
             self.graph().nodes.pop(self.uid)
+            print(self.getName(), "removed from graph")
+        else:
+            print(self.getName(), "Error killing. Not in graph")
 
     def Tick(self, delta):
         pass
@@ -118,6 +121,16 @@ class NodeBase(INode):
             p.setData(defaultValue)
         return p
 
+    def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):
+        p = self.getPinByName(pinName, pinSelectionGroup)
+        assert(p is not None), "Failed to find pin by name: {}".format(pinName)
+        p.setData(data)
+
+    def getData(self, pinName, pinSelectionGroup=PinSelectionGroup.BothSides):
+        p = self.getPinByName(pinName, pinSelectionGroup)
+        assert(p is not None), "Failed to find pin by name: {}".format(pinName)
+        return p.getData()
+
     def getUniqPinName(self, name):
         pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))] + dir(self)
         if name not in pinNames:
@@ -179,27 +192,15 @@ class NodeBase(INode):
         def constructor(self, name, graph, **kwargs):
             NodeBase.__init__(self, name, graph, **kwargs)
 
-        def setData(self, pinName, data):
-            if pinName in [p.name for p in self.outputs.values()]:
-                p = self.getPinByName(pinName, PinSelectionGroup.Outputs)
-                p.setData(data)
-
-        def getData(self, pinName):
-            if pinName in [p.name for p in self.inputs.values()]:
-                p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
-                return p.getData()
-
         nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
                                                      'category': category,
                                                      'keywords': keywords,
-                                                     'description': description,
-                                                     'setData': setData,
-                                                     'getData': getData
+                                                     'description': description
                                                      })
+
         raw_inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
 
         if returnType is not None:
-            # structClass = type(returnDefaultValue) if returnType == 'EnumPin' else ENone
             p = raw_inst.addOutputPin('out', returnType, returnDefaultValue)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
@@ -208,11 +209,6 @@ class NodeBase(INode):
         # this is array of 'references' outputs will be created for
         refs = []
         outExec = None
-
-        # all inputs affects on all outputs
-        for i in raw_inst.inputs.values():
-            for o in raw_inst.outputs.values():
-                pinAffects(i, o)
 
         # generate compute method from function
         def compute(self):
@@ -242,7 +238,6 @@ class NodeBase(INode):
             argName = fooArgNames[index]
             argDefaultValue = foo.__defaults__[index]
             dataType = foo.__annotations__[argName]
-            # structClass = type(argDefaultValue) if dataType == 'EnumPin' else ENone
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
                 outRef = raw_inst.addOutputPin(argName, dataType[0])
@@ -255,5 +250,10 @@ class NodeBase(INode):
                 graph.pins[inp.uid] = inp
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
+
+        # all inputs affects on all outputs
+        for i in raw_inst.inputs.values():
+            for o in raw_inst.outputs.values():
+                pinAffects(i, o)
 
         return raw_inst

@@ -267,9 +267,7 @@ class Node(QGraphicsItem):
 
     @uid.setter
     def uid(self, value):
-        if self.uid in self.graph().nodes:
-            self.graph().nodes[value] = self.graph().nodes.pop(self.uid)
-            self.uid = value
+        self._rawNode.uid = value
 
     def category(self):
         return self._rawNode.category()

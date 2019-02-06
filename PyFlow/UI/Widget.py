@@ -866,7 +866,7 @@ class GraphWidget(QGraphicsView, GraphBase):
 
         if self.pressed_item and isinstance(self.pressed_item, QGraphicsItem):
             self.autoPanController.start()
-            if self.pressed_item.__class__.__name__ ==  PinWidgetBase.__name__:
+            if self.pressed_item.__class__.__name__ == PinWidgetBase.__name__:
                 if event.button() == QtCore.Qt.LeftButton:
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
@@ -1062,6 +1062,7 @@ class GraphWidget(QGraphicsView, GraphBase):
 
     def _createNode(self, jsonTemplate):
         nodeInstance = getNodeInstance(jsonTemplate['type'], jsonTemplate['name'], self)
+        assert(nodeInstance is not None), "Node instance is not found!"
         nodeInstance.setPosition(jsonTemplate["x"], jsonTemplate["y"])
 
         # set pins data

@@ -43,6 +43,10 @@ class PinWidgetBase(QGraphicsWidget):
         ## Call exec pin
         self.actionCall = self.menu.addAction('execute')
         self.actionCall.triggered.connect(self.call)
+
+        self.getDataAction = self.menu.addAction('get data')
+        self.getDataAction.triggered.connect(lambda: print(self.getData()))
+
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
@@ -134,6 +138,9 @@ class PinWidgetBase(QGraphicsWidget):
     def setData(self, value):
         self._rawPin.setData(value)
         self.dataBeenSet.emit(value)
+
+    def getData(self):
+        return self._rawPin.getData()
 
     def highlight(self):
         self.bAnimate = True
@@ -293,7 +300,8 @@ class PinWidgetBase(QGraphicsWidget):
         super(PinWidgetBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        self.setToolTip(str(self._rawPin.currentData()))
+        hoverMessage = "Data: {0}\r\nDirty: {1}".format(str(self._rawPin.currentData()), self._rawPin.dirty)
+        self.setToolTip(hoverMessage)
         event.accept()
 
     def hoverLeaveEvent(self, event):

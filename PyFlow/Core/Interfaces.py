@@ -209,6 +209,12 @@ class INode(IItemBase):
     def postCreate(self, jsonTemplate=None):
         raise NotImplementedError('postCreate method of INode is not implemented')
 
+    def setData(self, pinName, data, pinSelectionGroup):
+        raise NotImplementedError('setData method of INode is not implemented')
+
+    def getData(self, pinName, pinSelectionGroup):
+        raise NotImplementedError('getData method of INode is not implemented')
+
 
 class IPackage(object):
     def __init__(self):
