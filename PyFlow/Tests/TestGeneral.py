@@ -19,3 +19,7 @@ class TestGeneral(unittest.TestCase):
         edge = g.addEdge(addNode1.getPinByName('out', PinSelectionGroup.Outputs), addNode2.getPinByName('a', PinSelectionGroup.Inputs))
         self.assertIsNotNone(edge, "FAILED TO ADD EDGE")
         self.assertEqual(addNode2.getData('out'), 5, "NODES EVALUATION IS INCORRECT")
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,3 +1,12 @@
 {
-    "python.pythonPath": "C:\\Python3\\python.exe"
+    "python.pythonPath": "C:\\Python37\\python.exe",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.pyd": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/__pycache__": true,
+    }
 }
