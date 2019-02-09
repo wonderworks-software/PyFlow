@@ -4,6 +4,7 @@ from PyFlow.Core import(
 )
 from PyFlow.Core.AGraphCommon import *
 import os
+import platform
 
 
 class DefaultLib(FunctionLibraryBase):
@@ -25,9 +26,12 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})
     ## cls cmd call.
-    def cls():
-        '''cls cmd call.'''
-        os.system('cls')
+    def clearConsole():
+        '''clears console.'''
+        if platform.system() == "Windows":
+            os.system('cls')
+        if platform.system() == "Linux":
+            os.system('clear')
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'GenericTypes', 'Keywords': []})

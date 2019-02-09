@@ -45,7 +45,7 @@ class PinWidgetBase(QGraphicsWidget):
         self.actionCall.triggered.connect(self.call)
 
         self.getDataAction = self.menu.addAction('get data')
-        self.getDataAction.triggered.connect(lambda: print(self.getData()))
+        self.getDataAction.triggered.connect(self.getData)
 
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
@@ -67,6 +67,8 @@ class PinWidgetBase(QGraphicsWidget):
         self.bAnimate = False
         self._val = 0
 
+    def currentData(self):
+        return self._rawPin.currentData()
     @property
     def name(self):
         return self._rawPin.name

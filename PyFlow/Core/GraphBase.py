@@ -120,6 +120,7 @@ class GraphBase(object):
             self.pins[i.uid] = i
         for o in node.outputs.values():
             self.pins[o.uid] = o
+        node.setName(self.getUniqNodeName(node.name))
         return True
 
     def removeNode(self, node):
@@ -208,18 +209,14 @@ class GraphBase(object):
     def plot(self):
         print(self.name + '\n----------\n')
         for n in self.getNodes():
-            print(n.name)
+            print("Node:", n.name)
             for inp in n.inputs.values():
-                print('|---', inp.name, 'data - {0}'.format(inp.currentData()),
-                      'affects on', [i.name for i in inp.affects],
-                      'affected_by ', [p.name for p in inp.affected_by],
+                print(inp.getName(), 'data - {0}'.format(inp.currentData()),
+                      'affects on', [i.getName() for i in inp.affects],
+                      'affected_by ', [p.getName() for p in inp.affected_by],
                       'DIRTY ', inp.dirty)
-                for e in inp.edge_list:
-                    print('\t|---', e.__str__())
             for out in n.outputs.values():
-                print('|---' + out.name, 'data - {0}'.format(out.currentData()),
-                      'affects on', [i.name for i in out.affects],
-                      'affected_by ', [p.name for p in out.affected_by],
+                print(out.getName(), 'data - {0}'.format(out.currentData()),
+                      'affects on', [i.getName() for i in out.affects],
+                      'affected_by ', [p.getName() for p in out.affected_by],
                       'DIRTY', out.dirty)
-                for e in out.edge_list:
-                    print('\t|---', e.__str__())

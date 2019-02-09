@@ -434,7 +434,11 @@ class Node(QGraphicsItem):
                 dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
                 w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
+                    # TODO: setWidgetValie causes changes dirty flag on pins
+                    # it should not happen
+                    w.blockWidgetSignals(True)
                     w.setWidgetValue(inp.currentData())
+                    w.blockWidgetSignals(False)
                     w.setObjectName(inp.getName())
                     formLayout.addRow(inp.name, w)
                     if inp.hasConnections():
@@ -451,7 +455,9 @@ class Node(QGraphicsItem):
                     continue
                 w = getInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
                 if w:
+                    w.blockWidgetSignals(True)
                     w.setWidgetValue(out.currentData())
+                    w.blockWidgetSignals(False)
                     w.setObjectName(out.getName())
                     formLayout.addRow(out.name, w)
                     if out.hasConnections():

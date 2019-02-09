@@ -83,41 +83,38 @@ class PinBase(IPin):
 
     ## retrieving the data
     def getData(self):
-        # if not connected - compute and return
-        if not self.hasConnections():
-            if self.dirty:
-                self.setClean()
-                self.owningNode().compute()
-            return self.currentData()
-
         if self.direction == PinDirection.Output:
             if self.dirty:
                 self.owningNode().compute()
             self.setClean()
-            return self._data
+            return self.currentData()
         if self.direction == PinDirection.Input:
+            if not self.dirty:
+                return self.currentData()
+            # TODO: turn .bCallable to .isCallable(), cache internally
             if self.dirty or self.owningNode().bCallable:
                 out = [i for i in self.affected_by if i.direction == PinDirection.Output]
                 if not out == []:
-                    compute_order = self.owningNode().graph().getEvaluationOrder(out[0]._rawPin.owningNode())
+                    compute_order = self.owningNode().graph().getEvaluationOrder(out[0].owningNode())
                     # call from left to right
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
                         for node in compute_order[layer]:
                             node.compute()
                     self.setClean()
-                    return out[0]._data
-            else:
-                self.setClean()
-                return self._data
+                    return self.currentData()
+                else:
+                    self.setClean()
+                    return self.currentData()
 
     ## Setting the data
     def setData(self, data):
         self.setClean()
-        self._data = data
         if self.direction == PinDirection.Output:
             for i in self.affects:
-                i._data = data
+                i._data = self.currentData()
                 i.setClean()
+        if self.direction == PinDirection.Input:
+            push(self)
 
     ## Calling execution pin
     def call(self):

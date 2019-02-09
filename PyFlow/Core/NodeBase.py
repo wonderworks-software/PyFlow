@@ -38,11 +38,9 @@ class NodeBase(INode):
             self._uid = value
 
     def kill(self):
-        if self.uid in self.graph().nodes:
-            self.graph().nodes.pop(self.uid)
-            print(self.getName(), "removed from graph")
-        else:
-            print(self.getName(), "Error killing. Not in graph")
+        assert(self.uid in self.graph().nodes), "Error killing node. \
+            Node {0} not in graph".format(self.getName())
+        self.graph().nodes.pop(self.uid)
 
     def Tick(self, delta):
         pass
