@@ -51,7 +51,10 @@ from PyFlow.UI.Pin import PinWidgetBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow import GET_PACKAGES
+from PyFlow import (
+    getRawNodeInstance,
+    GET_PACKAGES
+)
 from PyFlow.Core.AGraphCommon import *
 
 
@@ -77,25 +80,12 @@ def importByName(module, name):
         print("error", name)
 
 
-def getNodeInstance(class_name, nodeName, graph):
-    for pkg in GET_PACKAGES().values():
-        if class_name in pkg.GetNodeClasses():
-            # Check in Nodes module first
-            node_class = pkg.GetNodeClasses()[class_name]
-            raw_instance = node_class(nodeName, graph)
-            instance = Node(raw_instance)
-            graph.addNode(instance)
-            return instance
-
-        # if not found - continue searching in FunctionLibraries
-        for lib in pkg.GetFunctionLibraries().values():
-            for fooName, foo in lib.getFunctions():
-                if fooName == class_name:
-                    raw_instance = NodeBase.initializeFromFunction(foo, graph)
-                    instance = Node(raw_instance)
-                    graph.addNode(instance)
-                    return instance
-    return None
+def getNodeInstance(nodeClassName, nodeName, graph, packageName=None):
+    raw_instance = getRawNodeInstance(nodeClassName, packageName)
+    assert(raw_instance is not None)
+    instance = Node(raw_instance)
+    graph.addNode(instance)
+    return instance
 
 
 class AutoPanController(object):
@@ -190,16 +180,19 @@ class SceneClass(QGraphicsScene):
 
     def dropEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
-            tag, mimeText = event.mimeData().text().split('|')
-            name = self.parent().getUniqNodeName(mimeText)
+            data = json.loads(event.mimeData().text())
+            packageName = data["Package"]
+            pressedText = data["PressedText"]
+            name = self.parent().getUniqNodeName(pressedText)
             dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
             if not dropItem:
                 nodeTemplate = Node.jsonTemplate()
-                nodeTemplate['type'] = mimeText
+                nodeTemplate['package'] = packageName
+                nodeTemplate['type'] = pressedText
                 nodeTemplate['name'] = name
                 nodeTemplate['x'] = event.scenePos().x()
                 nodeTemplate['y'] = event.scenePos().y()
-                nodeTemplate['meta']['label'] = mimeText
+                nodeTemplate['meta']['label'] = pressedText
                 nodeTemplate['uuid'] = None
 
                 self.parent().createNode(nodeTemplate)
@@ -305,7 +298,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             # annotated functions
             for libName, lib in package.GetFunctionLibraries().items():
                 foos = lib.getFunctions()
-                for name, foo in foos:
+                for name, foo in foos.iteritems():
                     fooArgNames = getargspec(foo).args
                     fooInpTypes = []
                     fooOutTypes = []
@@ -390,6 +383,15 @@ class NodeBoxTreeWidget(QTreeWidget):
         if not item_clicked:
             event.ignore()
             return
+        # check if clicked item is a category
+        if item_clicked.bCategory:
+            event.ignore()
+            return
+        # find top level parent
+        rootItem = item_clicked
+        while not rootItem.parent() is None:
+            rootItem = rootItem.parent()
+        packageName = rootItem.text(0)
         pressed_text = item_clicked.text(0)
 
         if pressed_text in self.categoryPaths.keys():
@@ -397,7 +399,8 @@ class NodeBoxTreeWidget(QTreeWidget):
             return
         drag = QtGui.QDrag(self)
         mime_data = QtCore.QMimeData()
-        pressed_text = "Node|" + pressed_text
+        data = {"Type": "Node", "Package": packageName, "PressedText": pressed_text}
+        pressed_text = json.dumps(data)
         mime_data.setText(pressed_text)
         drag.setMimeData(mime_data)
         drag.exec_()
@@ -1061,7 +1064,7 @@ class GraphWidget(QGraphicsView, GraphBase):
             print(msg)
 
     def _createNode(self, jsonTemplate):
-        nodeInstance = getNodeInstance(jsonTemplate['type'], jsonTemplate['name'], self)
+        nodeInstance = getNodeInstance(jsonTemplate['type'], jsonTemplate['name'], self, jsonTemplate['package'])
         assert(nodeInstance is not None), "Node instance is not found!"
         nodeInstance.setPosition(jsonTemplate["x"], jsonTemplate["y"])
 
@@ -1085,9 +1088,6 @@ class GraphWidget(QGraphicsView, GraphBase):
                     pin.setDirty()
                 else:
                     pin.setClean()
-
-        if nodeInstance is None:
-            raise ValueError("node class not found!")
 
         nodeInstance.postCreate(jsonTemplate)
         return nodeInstance

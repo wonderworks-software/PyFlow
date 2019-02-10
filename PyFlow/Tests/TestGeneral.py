@@ -8,8 +8,8 @@ class TestGeneral(unittest.TestCase):
         intlib = packages['BasePackage'].GetFunctionLibraries()["IntLib"]
         mathFoos = intlib.getFunctions()
 
-        addNode1 = NodeBase.initializeFromFunction(dict(mathFoos)["add"], g)
-        addNode2 = NodeBase.initializeFromFunction(dict(mathFoos)["add"], g)
+        addNode1 = NodeBase.initializeFromFunction(dict(mathFoos)["add"])
+        addNode2 = NodeBase.initializeFromFunction(dict(mathFoos)["add"])
 
         g.addNode(addNode1)
         g.addNode(addNode2)

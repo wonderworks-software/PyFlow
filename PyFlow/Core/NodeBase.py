@@ -14,10 +14,10 @@ from PyFlow import CreateRawPin
 
 
 class NodeBase(INode):
-    def __init__(self, name, graph):
+    def __init__(self, name):
         super(NodeBase, self).__init__()
         self._uid = uuid.uuid4()
-        self.graph = weakref.ref(graph)
+        self.graph = None
         self.name = name
         self.inputs = OrderedDict()
         self.outputs = OrderedDict()
@@ -97,7 +97,6 @@ class NodeBase(INode):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
         self.inputs[p.uid] = p
-        self.graph().pins[p.uid] = p
         p.direction = PinDirection.Input
         if foo:
             p.call = foo
@@ -110,7 +109,6 @@ class NodeBase(INode):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         self.outputs[p.uid] = p
-        self.graph().pins[p.uid] = p
         p.direction = PinDirection.Output
         if foo:
             p.call = foo
@@ -167,7 +165,7 @@ class NodeBase(INode):
 
     @staticmethod
     ## Constructs a node from given annotated function
-    def initializeFromFunction(foo, graph):
+    def initializeFromFunction(foo):
         meta = foo.__annotations__['meta']
         returnType = returnDefaultValue = None
         if foo.__annotations__['return'] is not None:
@@ -187,22 +185,22 @@ class NodeBase(INode):
         def keywords():
             return meta['Keywords']
 
-        def constructor(self, name, graph, **kwargs):
-            NodeBase.__init__(self, name, graph, **kwargs)
+        def constructor(self, name, **kwargs):
+            NodeBase.__init__(self, name, **kwargs)
 
+        # TODO: add packageName() static method
         nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
                                                      'category': category,
                                                      'keywords': keywords,
                                                      'description': description
                                                      })
 
-        raw_inst = nodeClass(graph.getUniqNodeName(foo.__name__), graph)
+        raw_inst = nodeClass(foo.__name__)
 
         if returnType is not None:
             p = raw_inst.addOutputPin('out', returnType, returnDefaultValue)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
-            graph.pins[p.uid] = p
 
         # this is array of 'references' outputs will be created for
         refs = []
@@ -239,13 +237,11 @@ class NodeBase(INode):
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
                 outRef = raw_inst.addOutputPin(argName, dataType[0])
-                graph.pins[outRef.uid] = outRef
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 refs.append(outRef)
             else:
                 inp = raw_inst.addInputPin(argName, dataType)
-                graph.pins[inp.uid] = inp
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
 

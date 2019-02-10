@@ -3,25 +3,19 @@ import importlib
 from PyFlow.Packages import *
 import pkgutil
 
+
 __all__ = [
     "INITIALIZE",
     "GET_PACKAGES",
     "GET_PACKAGE_CHECKED",
     "CreateRawPin",
     "getPinDefaultValueByType",
-    "findPinClassByType"
+    "findPinClassByType",
+    "getRawNodeInstance"
 ]
 
 
 __PACKAGES = {}
-
-
-def INITIALIZE():
-    # TODO: Check for duplicated package names
-    for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
-        if ispkg:
-            mod = importer.find_module(modname).load_module(modname)
-            __PACKAGES[modname] = getattr(mod, modname)()
 
 
 def GET_PACKAGES():
@@ -54,3 +48,28 @@ def CreateRawPin(name, owningNode, dataType, direction, **kwds):
         return None
     inst = pinClass(name, owningNode, dataType, direction, **kwds)
     return inst
+
+
+def getRawNodeInstance(nodeClassName, packageName=None):
+    from PyFlow.Core.NodeBase import NodeBase
+    package = GET_PACKAGE_CHECKED(packageName)
+    # try find function first
+    # TODO: convert functions to nodes on initialization
+    for lib in package.GetFunctionLibraries().values():
+        foos = lib.getFunctions()
+        if nodeClassName in foos:
+            return NodeBase.initializeFromFunction(foos[nodeClassName])
+
+    # try find node class
+    nodes = package.GetNodeClasses()
+    if nodeClassName in nodes:
+        return nodes[nodeClassName](nodeClassName)
+
+
+def INITIALIZE():
+    # TODO: Check for duplicated package names
+    for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
+        if ispkg:
+            mod = importer.find_module(modname).load_module(modname)
+            package = getattr(mod, modname)()
+            __PACKAGES[modname] = package

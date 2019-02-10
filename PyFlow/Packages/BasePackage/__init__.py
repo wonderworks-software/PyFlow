@@ -8,13 +8,7 @@ from PyFlow.Packages.BasePackage.Pins.ExecPin import ExecPin
 from PyFlow.Packages.BasePackage.Pins.FloatPin import FloatPin
 from PyFlow.Packages.BasePackage.Pins.IntPin import IntPin
 from PyFlow.Packages.BasePackage.Pins.ListPin import ListPin
-from PyFlow.Packages.BasePackage.Pins.QuatPin import QuatPin
 from PyFlow.Packages.BasePackage.Pins.StringPin import StringPin
-# TODO: move vector math to separate package
-from PyFlow.Packages.BasePackage.Pins.FloatVector3Pin import FloatVector3Pin
-from PyFlow.Packages.BasePackage.Pins.FloatVector4Pin import FloatVector4Pin
-from PyFlow.Packages.BasePackage.Pins.Matrix33Pin import Matrix33Pin
-from PyFlow.Packages.BasePackage.Pins.Matrix44Pin import Matrix44Pin
 
 # Function based nodes
 from PyFlow.Packages.BasePackage.FunctionLibraries.ArrayLib import ArrayLib
@@ -23,12 +17,7 @@ from PyFlow.Packages.BasePackage.FunctionLibraries.DefaultLib import DefaultLib
 from PyFlow.Packages.BasePackage.FunctionLibraries.FloatLib import FloatLib
 from PyFlow.Packages.BasePackage.FunctionLibraries.IntLib import IntLib
 from PyFlow.Packages.BasePackage.FunctionLibraries.MathLib import MathLib
-from PyFlow.Packages.BasePackage.FunctionLibraries.Matrix33 import Matrix33
-from PyFlow.Packages.BasePackage.FunctionLibraries.Matrix44 import Matrix44
-from PyFlow.Packages.BasePackage.FunctionLibraries.QuatLib import QuatLib
 from PyFlow.Packages.BasePackage.FunctionLibraries.RandomLib import RandomLib
-from PyFlow.Packages.BasePackage.FunctionLibraries.Vector3 import Vector3
-from PyFlow.Packages.BasePackage.FunctionLibraries.Vector4 import Vector4
 
 # Class based nodes
 from PyFlow.Packages.BasePackage.Nodes.branch import branch
@@ -55,12 +44,7 @@ _FOO_LIBS = {
     FloatLib.__name__: FloatLib(),
     IntLib.__name__: IntLib(),
     MathLib.__name__: MathLib(),
-    Matrix33.__name__: Matrix33(),
-    Matrix44.__name__: Matrix44(),
-    QuatLib.__name__: QuatLib(),
     RandomLib.__name__: RandomLib(),
-    Vector3.__name__: Vector3(),
-    Vector4.__name__: Vector4()
 }
 
 _NODES = {
@@ -86,13 +70,8 @@ _PINS = {
     EnumPin.__name__: EnumPin,
     ExecPin.__name__: ExecPin,
     FloatPin.__name__: FloatPin,
-    FloatVector3Pin.__name__: FloatVector3Pin,
-    FloatVector4Pin.__name__: FloatVector4Pin,
     IntPin.__name__: IntPin,
     ListPin.__name__: ListPin,
-    Matrix33Pin.__name__: Matrix33Pin,
-    Matrix44Pin.__name__: Matrix44Pin,
-    QuatPin.__name__: QuatPin,
     StringPin.__name__: StringPin
 }
 

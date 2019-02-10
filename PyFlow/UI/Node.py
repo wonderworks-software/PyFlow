@@ -340,7 +340,7 @@ class Node(QGraphicsItem):
 
     def serialize(self):
         template = Node.jsonTemplate()  # move this to raw node
-        template['package'] = ""
+        template['package'] = self._rawNode.packageName()
         template['type'] = self._rawNode.__class__.__name__
         template['name'] = self.name
         template['x'] = self.scenePos().x()
@@ -360,6 +360,10 @@ class Node(QGraphicsItem):
     @property
     def graph(self):
         return self._rawNode.graph
+
+    @graph.setter
+    def graph(self, value):
+        self._rawNode.graph = value
 
     def clone(self):
         templ = self.serialize()

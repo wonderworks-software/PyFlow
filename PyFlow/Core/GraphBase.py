@@ -1,4 +1,5 @@
 from PyFlow.Core.AGraphCommon import *
+import weakref
 
 
 class GraphBase(object):
@@ -106,11 +107,11 @@ class GraphBase(object):
         return None
 
     def addNode(self, node, jsonTemplate=None):
-        if not node:
-            return False
+        assert(node is not None), "failed to add node, None is passed"
         if node.uid in self.nodes:
             return False
         self.nodes[node.uid] = node
+        node.graph = weakref.ref(self)
         if jsonTemplate is not None:
             node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
         else:

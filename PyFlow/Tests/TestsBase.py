@@ -23,5 +23,5 @@ INITIALIZE()
 # mathNodes = []
 # foos = lib.getFunctions()
 # for fooName, foo in foos:
-#     n = NodeBase.initializeFromFunction(foo, g)
+#     n = NodeBase.initializeFromFunction(foo)
 #     mathNodes.append(n)
