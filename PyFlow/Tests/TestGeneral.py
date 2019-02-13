@@ -2,14 +2,14 @@ from TestsBase import *
 
 
 class TestGeneral(unittest.TestCase):
-    def test_add_int(self):
+    def test_add_int_no_exec(self):
         packages = GET_PACKAGES()
         g = GraphBase("testGraph")
         intlib = packages['BasePackage'].GetFunctionLibraries()["IntLib"]
         mathFoos = intlib.getFunctions()
 
-        addNode1 = NodeBase.initializeFromFunction(dict(mathFoos)["add"])
-        addNode2 = NodeBase.initializeFromFunction(dict(mathFoos)["add"])
+        addNode1 = NodeBase.initializeFromFunction(mathFoos["add"])
+        addNode2 = NodeBase.initializeFromFunction(mathFoos["add"])
 
         g.addNode(addNode1)
         g.addNode(addNode2)

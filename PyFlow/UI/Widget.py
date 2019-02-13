@@ -293,7 +293,6 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.clear()
         self.categoryPaths = {}
 
-        # TODO: Add package name to category tree
         for package_name, package in GET_PACKAGES().items():
             # annotated functions
             for libName, lib in package.GetFunctionLibraries().items():
@@ -993,7 +992,7 @@ class GraphWidget(QGraphicsView, GraphBase):
 
     def tryFillPropertiesView(self, obj):
         '''
-            toDO: obj should implement interface class
+            TODO: obj should implement interface class
             with onUpdatePropertyView method
         '''
         if hasattr(obj, 'onUpdatePropertyView'):

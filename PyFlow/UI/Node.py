@@ -562,10 +562,4 @@ class Node(QGraphicsItem):
 
         self.UIPins[rawPin.uid] = p
         self.graph().UIPins[rawPin.uid] = p
-
-        # create member if created in runtime
-
-        # TODO: Avoid runtime class modification. Rewrite to map meber (sequence node)
-        # if not hasattr(self, name):
-        #     setattr(self, name, p)
         return p
