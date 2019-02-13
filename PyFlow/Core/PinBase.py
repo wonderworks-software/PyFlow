@@ -33,6 +33,12 @@ class PinBase(IPin):
         ## Defines is this input pin or output
         self.direction = direction
 
+        self._alwaysPushDirty = False
+
+    def setAlwaysPushDirty(self, bValue=False):
+        assert(isinstance(bValue, bool))
+        self._alwaysPushDirty = bValue
+
     # ISerializable interface
     def serialize(self):
         data = {'name': self.name,
@@ -113,7 +119,7 @@ class PinBase(IPin):
             for i in self.affects:
                 i._data = self.currentData()
                 i.setClean()
-        if self.direction == PinDirection.Input:
+        if self.direction == PinDirection.Input or self._alwaysPushDirty:
             push(self)
 
     ## Calling execution pin

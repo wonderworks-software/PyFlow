@@ -2,8 +2,8 @@ from PyFlow.Core import NodeBase
 
 
 class forLoopWithBreak(NodeBase):
-    def __init__(self, name, graph):
-        super(forLoopWithBreak, self).__init__(name, graph)
+    def __init__(self, name):
+        super(forLoopWithBreak, self).__init__(name)
         self.stop = False
         self.inExec = self.addInputPin('inExec', 'ExecPin', None, self.compute)
         self.firstIndex = self.addInputPin('Start', 'IntPin')

@@ -6,8 +6,8 @@ from Qt.QtWidgets import QMenu
 
 
 class sequence(NodeBase):
-    def __init__(self, name, graph):
-        super(sequence, self).__init__(name, graph)
+    def __init__(self, name):
+        super(sequence, self).__init__(name)
         self.inExecPin = self.addInputPin('inExec', 'ExecPin', None, self.compute)
         self.menu = QMenu()
         self.action = self.menu.addAction('add pin')

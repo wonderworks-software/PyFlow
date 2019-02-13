@@ -439,11 +439,11 @@ class NodesBox(QWidget):
         self.expandCategory()
 
 
-# TODO: aggregate GraphBase
-class GraphWidget(QGraphicsView, GraphBase):
-    def __init__(self, name, parent=None):
-        super(GraphWidget, self).__init__()
-        GraphBase.__init__(self, name)
+class GraphWidgetUI(QGraphicsView):
+    def __init__(self, parent=None, graphBase=None):
+        super(GraphWidgetUI, self).__init__()
+        assert(isinstance(graphBase, GraphBase))
+        self._GraphBase = graphBase
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent
@@ -473,7 +473,7 @@ class GraphWidget(QGraphicsView, GraphBase):
         self._grid_spacing = 50
         self.factor = 1
         self.factor_diff = 0
-        self.setWindowTitle(self.tr(name))
+        self.setWindowTitle(self._GraphBase.name)
 
         self._current_file_name = 'Untitled'
         self._file_name_label = QGraphicsTextItem()
@@ -530,6 +530,16 @@ class GraphWidget(QGraphicsView, GraphBase):
         self.scene().clear()
         self.node_box.hide()
         self.node_box.lineEdit.clear()
+
+    def getUniqNodeName(self, name):
+        return self._GraphBase.getUniqNodeName(name)
+
+    @property
+    def edges(self):
+        return self._GraphBase.edges
+
+    def getNodes(self):
+        return self._GraphBase.getNodes()
 
     def moveScrollbar(self, delta):
         x = self.horizontalScrollBar().value() + delta.x()
@@ -857,7 +867,7 @@ class GraphWidget(QGraphicsView, GraphBase):
         QGraphicsView.keyReleaseEvent(self, event)
 
     def mousePressEvent(self, event):
-        super(GraphWidget, self).mousePressEvent(event)
+        super(GraphWidgetUI, self).mousePressEvent(event)
         self.pressed_item = self.itemAt(event.pos())
         self.mousePressPose = event.pos()
         if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
@@ -892,7 +902,7 @@ class GraphWidget(QGraphicsView, GraphBase):
         self.verticalScrollBar().setValue(self.verticalScrollBar().value() + delta.y())
 
     def mouseMoveEvent(self, event):
-        super(GraphWidget, self).mouseMoveEvent(event)
+        super(GraphWidgetUI, self).mouseMoveEvent(event)
         self.mousePos = event.pos()
 
         if self.bPanMode:
@@ -928,7 +938,7 @@ class GraphWidget(QGraphicsView, GraphBase):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def mouseReleaseEvent(self, event):
-        super(GraphWidget, self).mouseReleaseEvent(event)
+        super(GraphWidgetUI, self).mouseReleaseEvent(event)
 
         self.autoPanController.stop()
         self.mouseReleasePos = event.pos()
@@ -1014,7 +1024,7 @@ class GraphWidget(QGraphicsView, GraphBase):
         self.zoom(math.pow(2.0, event.delta() / 240.0))
 
     def drawBackground(self, painter, rect):
-        super(GraphWidget, self).drawBackground(painter, rect)
+        super(GraphWidgetUI, self).drawBackground(painter, rect)
 
         polygon = self.mapToScene(self.viewport().rect())
         self._file_name_label.setPos(polygon[0])
@@ -1097,11 +1107,12 @@ class GraphWidget(QGraphicsView, GraphBase):
         return cmd.nodeInstance
 
     def addNode(self, node, jsonTemplate=None):
-        GraphBase.addNode(self, node, jsonTemplate)
+        self._GraphBase.addNode(node, jsonTemplate)
+        node.graph = weakref.ref(self)
         self.scene().addItem(node)
 
     def _addEdge(self, src, dst):
-        result = GraphBase.addEdge(self, src, dst)
+        result = self._GraphBase.addEdge(src, dst)
         if result:
             if src.direction == PinDirection.Input:
                 src, dst = dst, src
@@ -1113,6 +1124,9 @@ class GraphWidget(QGraphicsView, GraphBase):
             return edge
         return None
 
+    def canConnectPins(self, src, dst):
+        return self._GraphBase.canConnectPins(src, dst)
+
     def addEdge(self, src, dst):
         if self.canConnectPins(src, dst):
             cmd = cmdConnectPin(self, src, dst)
@@ -1122,15 +1136,36 @@ class GraphWidget(QGraphicsView, GraphBase):
         self.undoStack.push(cmdRemoveEdges(self, [e.serialize() for e in edges]))
 
     def removeEdge(self, edge):
-        GraphBase.removeEdge(self, edge)
+        self._GraphBase.removeEdge(edge)
         edge.source().update()
         edge.destination().update()
         self.edges.pop(edge.uid)
         edge.prepareGeometryChange()
         self.scene().removeItem(edge)
 
+    def removeNode(self, node):
+        self._GraphBase.removeNode(node)
+
+    def count(self):
+        return self._GraphBase.count()
+
+    def getUniqVarName(self, name):
+        return self._GraphBase.getUniqVarName(name)
+
+    def getNodeByName(self, name):
+        return self._GraphBase.getNodeByName(name)
+
+    def isDebug(self):
+        return self._GraphBase.isDebug()
+
+    def getNextLayerNodes(node, direction=PinDirection.Input):
+        return self._GraphBase.getNextLayerNodes(node, direction)
+
+    def getEvaluationOrder(self, node):
+        return self._GraphBase.getEvaluationOrder(node)
+
     def plot(self):
-        GraphBase.plot(self)
+        self._GraphBase.plot()
 
     def zoomDelta(self, direction):
         current_factor = self.factor

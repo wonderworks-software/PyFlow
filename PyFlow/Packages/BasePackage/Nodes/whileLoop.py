@@ -2,8 +2,8 @@ from PyFlow.Core import NodeBase
 
 
 class whileLoop(NodeBase):
-    def __init__(self, name, graph):
-        super(whileLoop, self).__init__(name, graph)
+    def __init__(self, name):
+        super(whileLoop, self).__init__(name)
         self.inExec = self.addInputPin('inExec', 'ExecPin', self.begin)
         self.bCondition = self.addInputPin('Condition', 'BoolPin')
         self.loopBody = self.addOutputPin('LoopBody', 'ExecPin')

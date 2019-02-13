@@ -16,8 +16,9 @@ from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QUndoView
 
-from PyFlow.UI.Widget import GraphWidget
+from PyFlow.UI.Widget import GraphWidgetUI
 from PyFlow.Core.AGraphCommon import Direction
+from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.UI.Widget import NodesBox
 from PyFlow.UI.Widgets import GraphEditor_ui
 from PyFlow import INITIALIZE
@@ -57,7 +58,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.listViewUndoStack.setObjectName("listViewUndoStack")
         self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
 
-        self.G = GraphWidget('root', self)
+        self.rawGraph = GraphBase('root')
+        self.G = GraphWidgetUI(self, graphBase=self.rawGraph)
         self.SceneLayout.addWidget(self.G)
 
         self.actionVariables.triggered.connect(self.toggleVariables)

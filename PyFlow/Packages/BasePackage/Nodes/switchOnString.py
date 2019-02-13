@@ -1,12 +1,13 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core import PinBase
+# TODO: remove this imports
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QInputDialog
-from PyFlow.Core import PinBase
 
 
 class switchOnString(NodeBase):
-    def __init__(self, name, graph):
-        super(switchOnString, self).__init__(name, graph)
+    def __init__(self, name):
+        super(switchOnString, self).__init__(name)
         self.inExecPin = self.addInputPin('inExec', 'ExecPin', self.compute)
         self.defaultPin = None
         self.outString = None

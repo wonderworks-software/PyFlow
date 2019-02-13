@@ -2,7 +2,7 @@ import uuid
 
 from PyFlow.Core import NodeBase
 
-# TODO: remove menu. This is raw class whicj should work from concole without dependencies
+# TODO: Move menu to ui node class. This is raw class which should work from concole without dependencies. Ui node class should be chosen here through the interface
 from Qt.QtWidgets import QMenu
 
 

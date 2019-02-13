@@ -1,12 +1,12 @@
 from PyFlow.Core import NodeBase
 
-# remove QTimer
+# TODO: remove QTimer since this is a dependency
 from Qt.QtCore import QTimer
 
 
 class delay(NodeBase):
-    def __init__(self, name, graph):
-        super(delay, self).__init__(name, graph)
+    def __init__(self, name):
+        super(delay, self).__init__(name)
         self.inp0 = self.addInputPin('in0', 'ExecPin', self.compute)
         self.delay = self.addInputPin('Delay(s)', 'FloatPin')
         self.delay.setDefaultValue(0.2)

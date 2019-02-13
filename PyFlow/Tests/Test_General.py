@@ -20,6 +20,25 @@ class TestGeneral(unittest.TestCase):
         self.assertIsNotNone(edge, "FAILED TO ADD EDGE")
         self.assertEqual(addNode2.getData('out'), 5, "NODES EVALUATION IS INCORRECT")
 
+    def test_foo_node_ref_set_data(self):
+        packages = GET_PACKAGES()
+        g = GraphBase("testGraph")
+        randomLib = packages['BasePackage'].GetFunctionLibraries()["RandomLib"]
+        defaultLib = packages['BasePackage'].GetFunctionLibraries()["DefaultLib"]
+        randomLibFoos = randomLib.getFunctions()
+        defaultLibFoos = defaultLib.getFunctions()
+
+        randintNode = NodeBase.initializeFromFunction(randomLibFoos["randint"])
+        printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
+        converterNode = NodeBase.initializeFromFunction(defaultLibFoos["intToString"])
+
+        self.assertIsNotNone(randintNode)
+        self.assertIsNotNone(printNode)
+        self.assertIsNotNone(converterNode)
+
+        edge1 = g.addEdge(randintNode.getPinByName('out', PinSelectionGroup.Outputs), converterNode.getPinByName('i', PinSelectionGroup.Inputs))
+        self.assertIsNotNone(edge1)
+
 
 if __name__ == '__main__':
     unittest.main()

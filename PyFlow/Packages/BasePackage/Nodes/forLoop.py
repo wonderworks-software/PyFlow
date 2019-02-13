@@ -1,9 +1,10 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.AGraphCommon import push
 
 
 class forLoop(NodeBase):
-    def __init__(self, name, graph):
-        super(forLoop, self).__init__(name, graph)
+    def __init__(self, name):
+        super(forLoop, self).__init__(name)
         self.inExec = self.addInputPin('inExec', 'ExecPin', None, self.compute)
         self.firstIndex = self.addInputPin('Start', 'IntPin')
         self.lastIndex = self.addInputPin('Stop', 'IntPin')
@@ -39,5 +40,6 @@ class forLoop(NodeBase):
         else:
             for i in range(indexFrom, indexTo, step):
                 self.index.setData(i)
+                push(self.index)
                 self.loopBody.call()
             self.completed.call()

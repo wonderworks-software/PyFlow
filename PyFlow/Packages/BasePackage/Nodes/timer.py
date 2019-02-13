@@ -4,8 +4,8 @@ from Qt.QtCore import QTimer
 
 ## Timer node
 class timer(NodeBase):
-    def __init__(self, name, graph):
-        super(timer, self).__init__(name, graph)
+    def __init__(self, name):
+        super(timer, self).__init__(name)
         self.out = self.addOutputPin("OUT", 'ExecPin')
         self.beginPin = self.addInputPin("Begin", 'ExecPin', None, self.start)
         self.stopPin = self.addInputPin("Stop", 'ExecPin', None, self.stop)

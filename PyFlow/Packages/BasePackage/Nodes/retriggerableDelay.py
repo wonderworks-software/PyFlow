@@ -4,8 +4,8 @@ from Qt.QtCore import QTimer
 
 
 class retriggerableDelay(NodeBase):
-    def __init__(self, name, graph):
-        super(retriggerableDelay, self).__init__(name, graph)
+    def __init__(self, name):
+        super(retriggerableDelay, self).__init__(name)
         self.inp0 = self.addInputPin('in0', 'ExecPin', self.compute)
         self.delay = self.addInputPin('Delay(s)', 'FloatPin')
         self.delay.setDefaultValue(0.2)

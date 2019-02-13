@@ -1,3 +1,5 @@
+import random
+
 from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
@@ -11,13 +13,12 @@ class RandomLib(FunctionLibraryBase):
         super(RandomLib, self).__init__()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Math|random', 'Keywords': []})
     ## Return a random integer N such that a <= N <= b
     def randint(start=('IntPin', 0), end=('IntPin', 10), Result=("Reference", ('IntPin', 0))):
         '''
         Return a random integer N such that a <= N <= b
         '''
-        push(Result)
         Result(random.randint(start, end))
 
     @staticmethod
