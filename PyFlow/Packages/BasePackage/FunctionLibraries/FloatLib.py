@@ -83,7 +83,7 @@ class FloatLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Float', 'Keywords': ['/']})
     ## Float devision
-    def dividef(a=('FloatPin', 0.0), b=('FloatPin', 0.0), result=(DataTypes.Reference, ('BoolPin', False))):
+    def dividef(a=('FloatPin', 0.0), b=('FloatPin', 0.0), result=("Reference", ('BoolPin', False))):
         '''
         Float devision
         '''

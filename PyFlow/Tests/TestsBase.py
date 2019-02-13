@@ -13,15 +13,3 @@ from PyFlow.Core import(
 )
 
 INITIALIZE()
-
-# packages = GET_PACKAGES()
-# lib = packages['BasePackage'].GetFunctionLibraries()["MathLib"]
-# pins = packages['BasePackage'].GetPinClasses()
-
-# g = GraphBase("Test")
-
-# mathNodes = []
-# foos = lib.getFunctions()
-# for fooName, foo in foos:
-#     n = NodeBase.initializeFromFunction(foo)
-#     mathNodes.append(n)

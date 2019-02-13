@@ -41,7 +41,7 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
             for (i, name) in enumerate(spec.args[-nanno:]):
                 if len(defaults[i]) < 1 or defaults[i][0] is empty:
                     continue
-                if defaults[i][0] == DataTypes.Reference:
+                if defaults[i][0] == "Reference":
                     func.__annotations__[name] = defaults[i][1]
                 else:
                     func.__annotations__[name] = defaults[i][0]

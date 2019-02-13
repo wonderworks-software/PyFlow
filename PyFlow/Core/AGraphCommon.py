@@ -139,30 +139,6 @@ class REGISTER_ENUM(object):
         return cls
 
 
-## Data types identifires.
-# TODO: this is bad. Each package should define it's own data types
-class DataTypes(IntEnum):
-    ## This type represents Execution pins.
-    # It doesn't carry any data, but it implements [call](@ref PyFlow.Pins.ExecPin.ExecPin#call) method.
-    # Using pins of this type we can control execution flow of graph.
-    Exec = 0
-    ## Special type of data which represents value passed by reference using [IMPLEMENT_NODE](@ref PyFlow.Core.FunctionLibrary.IMPLEMENT_NODE) decorator.
-    # For example see [factorial](@ref FunctionLibraries.MathLib.MathLib.factorial) function.
-    # Here along with computation results we return additional info, whether function call succeeded or not.
-    Reference = 1
-
-
-## Returns string representation of the data type identifier
-# See [DataTypes](@ref PyFlow.Core.AGraphCommon.DataTypes)
-# @param[in] data type identifier (int)
-def getDataTypeName(inValue):
-    for name, value in inspect.getmembers(DataTypes):
-        if isinstance(value, int):
-            if inValue == value:
-                return name
-    return None
-
-
 class asynchronous(object):
     def __init__(self, func):
         self.func = func

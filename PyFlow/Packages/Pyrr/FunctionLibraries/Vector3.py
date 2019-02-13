@@ -38,7 +38,7 @@ class Vector3(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatVector3Pin', pyrr.Vector3()), nodeType=NodeTypes.Pure, meta={'Category': 'Math|Vector3', 'Keywords': ['vector3', 'vector4']})
-    def v3FromVector4(v4=('FloatVector4Pin', pyrr.Vector4()), W=(DataTypes.Reference, ('FloatPin', 0.0))):
+    def v3FromVector4(v4=('FloatVector4Pin', pyrr.Vector4()), W=("Reference", ('FloatPin', 0.0))):
         '''Returns a vector3 and the W component.'''
         arrV3, _w = pyrr.vector3.create_from_vector4(v4)
         W(_w)
@@ -117,7 +117,7 @@ class Vector3(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatVector3Pin', pyrr.Vector3()), meta={'Category': 'Math|Vector3', 'Keywords': ['vector3']})
-    def v3Normalize(v=('FloatVector3Pin', pyrr.Vector3()), result=(DataTypes.Reference, ('BoolPin', False))):
+    def v3Normalize(v=('FloatVector3Pin', pyrr.Vector3()), result=("Reference", ('BoolPin', False))):
         '''Normalizes a single vector to unit length.\nIf zero-length - returns original one.'''
         try:
             res = pyrr.Vector3(pyrr.vector.normalize(v))

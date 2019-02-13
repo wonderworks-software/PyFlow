@@ -48,7 +48,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
     ## Return x factorial. Raises ValueError if x is not integral or is negative
-    def factorial(a=('IntPin', 0), result=(DataTypes.Reference, ('BoolPin', False))):
+    def factorial(a=('IntPin', 0), result=("Reference", ('BoolPin', False))):
         '''
         Return x factorial. Raises ValueError if x is not integral or is negative
         '''
@@ -90,7 +90,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
     ## Return the mantissa and exponent of x as the pair (m, e). m is a float and e is an integer such that x == m * 2**e exactly
-    def frexp(a=('FloatPin', 0.0), m=(DataTypes.Reference, ('FloatPin', 0.0)), e=(DataTypes.Reference, ('IntPin', 0))):
+    def frexp(a=('FloatPin', 0.0), m=("Reference", ('FloatPin', 0.0)), e=("Reference", ('IntPin', 0))):
         '''
         Return the mantissa and exponent of x as the pair (m, e). m is a float and e is an integer such that x == m * 2**e exactly
         '''
@@ -101,7 +101,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
     ## Return an accurate floating point sum of values in the iterable. Avoids loss of precision by tracking multiple intermediate partial sums
-    def fsum(arr=('ListPin', []), result=(DataTypes.Reference, ('BoolPin', False))):
+    def fsum(arr=('ListPin', []), result=("Reference", ('BoolPin', False))):
         '''
         Return an accurate floating point sum of values in the iterable. Avoids loss of precision by tracking multiple intermediate partial sums
         '''
@@ -143,7 +143,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
     ## Return the fractional and integer parts of x. Both results carry the sign of x and are floats
-    def modf(a=('IntPin', 0), f=(DataTypes.Reference, ('FloatPin', 0.0)), i=(DataTypes.Reference, ('IntPin', 0))):
+    def modf(a=('IntPin', 0), f=("Reference", ('FloatPin', 0.0)), i=("Reference", ('IntPin', 0))):
         '''
         Return the fractional and integer parts of x. Both results carry the sign of x and are floats
         '''
@@ -154,7 +154,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
     ## Return the fractional and integer parts of x. Both results carry the sign of x and are floats
-    def fmodf(a=('FloatPin', 0), f=(DataTypes.Reference, ('FloatPin', 0.0)), i=(DataTypes.Reference, ('IntPin', 0))):
+    def fmodf(a=('FloatPin', 0), f=("Reference", ('FloatPin', 0.0)), i=("Reference", ('IntPin', 0))):
         '''
         Return the fractional and integer parts of x. Both results carry the sign of x and are floats
         '''
@@ -192,7 +192,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
     ## Return the logarithm of x to the given base, calculated as log(x)/log(base)
-    def log(a=('FloatPin', 1.0), base=('FloatPin', math.e), result=(DataTypes.Reference, ('BoolPin', False))):
+    def log(a=('FloatPin', 1.0), base=('FloatPin', math.e), result=("Reference", ('BoolPin', False))):
         '''
         Return the logarithm of x to the given base, calculated as log(x)/log(base)
         '''
@@ -206,7 +206,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
     ## Return the natural logarithm of 1+x (base e). The result is calculated in a way which is accurate for x near zero
-    def log1p(a=('FloatPin', 1.0), result=(DataTypes.Reference, ('BoolPin', False))):
+    def log1p(a=('FloatPin', 1.0), result=("Reference", ('BoolPin', False))):
         '''
         Return the natural logarithm of 1+x (base e). The result is calculated in a way which is accurate for x near zero
         '''
@@ -220,7 +220,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
     ## Return the base-10 logarithm of x. This is usually more accurate than log(x, 10)
-    def log10(a=('FloatPin', 1.0), result=(DataTypes.Reference, ('BoolPin', False))):
+    def log10(a=('FloatPin', 1.0), result=("Reference", ('BoolPin', False))):
         '''
         Return the base-10 logarithm of x. This is usually more accurate than log(x, 10)
         '''
@@ -234,7 +234,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
     ## Return x raised to the power y
-    def power(a=('FloatPin', 0.0), b=('FloatPin', 0.0), result=(DataTypes.Reference, ('BoolPin', False))):
+    def power(a=('FloatPin', 0.0), b=('FloatPin', 0.0), result=("Reference", ('BoolPin', False))):
         '''
         Return x raised to the power y
         '''
@@ -248,7 +248,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
     ## Return the square root of x
-    def sqrt(a=('FloatPin', 0.0), result=(DataTypes.Reference, ('BoolPin', False))):
+    def sqrt(a=('FloatPin', 0.0), result=("Reference", ('BoolPin', False))):
         '''
         Return the square root of x
         '''
@@ -262,7 +262,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Bult-in functions', 'Keywords': ['+']})
     ## Sums start and the items of an iterable from left to right and returns the total
-    def Sum(arr=('ListPin', []), result=(DataTypes.Reference, ('BoolPin', False))):
+    def Sum(arr=('ListPin', []), result=("Reference", ('BoolPin', False))):
         '''
         Sums start and the items of an iterable from left to right and returns the total
         '''
@@ -381,7 +381,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
     ## Return the inverse hyperbolic cosine of x
-    def acosh(a=('FloatPin', 0.0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def acosh(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
         Return the inverse hyperbolic cosine of x
         '''
@@ -404,7 +404,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
     ## Return the inverse hyperbolic tangent of x
-    def atanh(a=('FloatPin', 0.0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def atanh(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
         Return the inverse hyperbolic tangent of x
         '''
@@ -418,7 +418,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
     ## Return the hyperbolic cosine of x
-    def cosh(a=('FloatPin', 0.0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def cosh(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
         Return the hyperbolic cosine of x
         '''
@@ -432,7 +432,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
     ## Return the hyperbolic sine of x
-    def sinh(a=('FloatPin', 0.0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def sinh(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
         Return the hyperbolic sine of x
         '''
@@ -473,7 +473,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []})
     ## Return the Gamma function at x
-    def gamma(a=('FloatPin', 0.0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def gamma(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
         Return the Gamma function at x
         '''
@@ -487,7 +487,7 @@ class MathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []})
     ## Return the natural logarithm of the absolute value of the Gamma function at x
-    def lgamma(a=('FloatPin', 0.0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def lgamma(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
         Return the natural logarithm of the absolute value of the Gamma function at x
         '''

@@ -17,7 +17,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def getStringFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def getStringFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -37,7 +37,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def getIntFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def getIntFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -52,7 +52,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def getFloatFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def getFloatFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -77,7 +77,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('QuatPin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def getQuatFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def getQuatFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -87,7 +87,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatVector3Pin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def getVector3FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def getVector3FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -97,7 +97,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatVector4Pin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def getVector4FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def getVector4FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -107,7 +107,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('Matrix33Pin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def getM33FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def getM33FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -117,7 +117,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('Matrix44Pin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def getM44FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def getM44FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)
@@ -127,7 +127,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def getBoolFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=(DataTypes.Reference, ('BoolPin', False))):
+    def getBoolFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
         try:
             string = arr[Index]
             Result(True)

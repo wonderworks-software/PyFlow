@@ -1,12 +1,111 @@
 {
-    "python.pythonPath": "C:\\Python37\\python.exe",
+    "editor.mouseWheelZoom": true,
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
-        "**/.pyd": true,
         "**/.hg": true,
+        "**/__pycache__": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "**/__pycache__": true,
-    }
+        "**/*.pyc": true,
+    },
+    "python.linting.pep8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.pep8Args": [
+        "--ignore=E501,E402,E266,E302",
+    ],
+    "editor.renderWhitespace": "all",
+    "git.enableSmartCommit": true,
+    "editor.tokenColorCustomizations": {
+        "[One Dark Pro Vivid]": {
+            "types": "#eeff00",
+            "functions": "#FF8000",
+            "variables": "#BDB76B",
+            "numbers": "#b5cea8",
+            "keywords": "#569cd6",
+            "textMateRules": [
+                {
+                    "scope": "entity.name.type.class",
+                    "settings": {
+                    "foreground": "#eeff00",
+                    "fontStyle": "bold"
+                    }
+                },
+                {
+                    "scope": "meta.function-call.generic.python",
+                    "settings": {
+                        "foreground": "#FF8000"
+                    }
+                },
+                {
+                    "scope": "entity.other.inherited-class",
+                    "settings": {
+                    "foreground": "#eeff00"
+                    }
+                },
+                {
+                    "scope": "keyword.operator.logical.python",
+                    "settings": {
+                        "foreground": "#569cd6",
+                    }
+                },
+                {
+                    "scope": "string",
+                    "settings": {
+                        "foreground": "#d69d85",
+                    }
+                },
+                {
+                    "scope": "punctuation.definition.string.end",
+                    "settings": {
+                        "foreground": "#d69d85",
+                    }
+                },
+                {
+                    "scope": "punctuation.definition.string.begin",
+                    "settings": {
+                        "foreground": "#d69d85",
+                    }
+                },
+                {
+                    "scope": "comment",
+                    "settings": {
+                        "foreground": "#57a64a",
+                        "fontStyle": ""
+                    }
+                },
+                {
+                    "scope": "punctuation.definition.comment",
+                    "settings": {
+                        "foreground": "#57a64a"
+                    }
+                },
+                {
+                    "scope": "constant.language",
+                    "settings": {
+                        "foreground": "#569cd6"
+                    }
+                },
+                {
+                    "scope": "constant.other",
+                    "settings": {
+                        "foreground": "#d1d1d1",
+                        "fontStyle": "bold"
+                    }
+                },
+            ]
+        },
+    },
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\cmd.exe",
+    "window.zoomLevel": 0,
+    "workbench.colorTheme": "One Dark Pro Vivid",
+    "workbench.colorCustomizations": {
+        "[One Dark Pro Vivid]": {
+            "editor.background": "#292929"
+        }
+    },
+    "cmake.configureOnOpen": true,
+    "xmlTools.enableXmlTreeViewCursorSync": true,
+    "xmlTools.enforcePrettySelfClosingTagOnFormat": true,
+    "python.unitTest.unittestEnabled": true
 }

@@ -25,7 +25,7 @@ class MayaLib(FunctionLibraryBase):
                      Location=('FloatVector3Pin', pyrr.Vector3()),
                      Rotation=('FloatVector3Pin', pyrr.Vector3()),
                      Scale=('FloatVector3Pin', pyrr.Vector3([1.0, 1.0, 1.0])),
-                     Result=(DataTypes.Reference, ('BoolPin', False))):
+                     Result=("Reference", ('BoolPin', False))):
         '''
         Sets transform to PyNode
         '''
@@ -57,8 +57,8 @@ class MayaLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, meta={'Category': 'Maya', 'Keywords': []})
-    def frameRange(Min=(DataTypes.Reference, ('IntPin', 0)),
-                   Max=(DataTypes.Reference, ('IntPin', 0))):
+    def frameRange(Min=("Reference", ('IntPin', 0)),
+                   Max=("Reference", ('IntPin', 0))):
         '''
         Returns time slader min and max.
         '''
@@ -69,7 +69,7 @@ class MayaLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
     def setKeyFrame(DagPath=('StringPin', ''),
                     AttributeName=('StringPin', ''),
-                    Result=(DataTypes.Reference, ('BoolPin', False))):
+                    Result=("Reference", ('BoolPin', False))):
 
         if not pm.objExists(DagPath):
             Result(False)

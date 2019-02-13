@@ -161,7 +161,7 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
         self.editor = weakref.ref(editor)
         self.lePinName.setText('pinName')
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.items = [v for v in DataTypes if v not in [DataTypes.Reference, 'EnumPin']]
+        self.items = [v for v in DataTypes if v not in ["Reference", 'EnumPin']]
         self.cbType.clear()
 
         for i in self.items:

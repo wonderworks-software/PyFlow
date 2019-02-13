@@ -77,7 +77,7 @@ class IntLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Int', 'Keywords': ['/']})
     ## Integer devision
-    def divide(a=('IntPin', 0), b=('IntPin', 0), result=(DataTypes.Reference, ('BoolPin', False))):
+    def divide(a=('IntPin', 0), b=('IntPin', 0), result=("Reference", ('BoolPin', False))):
         '''
         Integer devision
         '''
