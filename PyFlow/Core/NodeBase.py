@@ -245,9 +245,14 @@ class NodeBase(INode):
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
 
-        # all inputs affects on all outputs
+        # all value inputs affects on all value outputs
+        # all exec inputs affects on all exec outputs
         for i in raw_inst.inputs.values():
             for o in raw_inst.outputs.values():
+                if i.dataType == 'ExecPin' and o.dataType != 'ExecPin':
+                    continue
+                if i.dataType != 'ExecPin' and o.dataType == 'ExecPin':
+                    continue
                 pinAffects(i, o)
 
         return raw_inst

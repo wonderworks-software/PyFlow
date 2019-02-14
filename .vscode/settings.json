@@ -105,18 +105,16 @@
         }
     },
     "cmake.configureOnOpen": true,
-    "xmlTools.enableXmlTreeViewCursorSync": true,
-    "xmlTools.enforcePrettySelfClosingTagOnFormat": true,
-    "python.unitTest.unittestEnabled": true,
-    "python.unitTest.cwd": "PyFlow/Tests",
+    "python.unitTest.pyTestEnabled": false,
+    "python.unitTest.nosetestsEnabled": false,
     "python.unitTest.unittestArgs": [
         "-v",
         "-s",
-        "PyFlow/Tests",
+        "./PyFlow/Tests",
         "-p",
         "Test_*.py"
     ],
-    "python.unitTest.pyTestEnabled": false,
-    "python.unitTest.nosetestsEnabled": false,
-    "python.pythonPath": "C:\\Python37 (x64)\\python.exe"
+    "python.pythonPath": "C:\\Python37 (x64)\\python.exe",
+    "python.unitTest.unittestEnabled": false,
+    "python.unitTest.cwd": "PyFlow/Tests"
 }
