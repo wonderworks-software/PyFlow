@@ -1,11 +1,12 @@
+import math
+import random
+
 from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-import math
-import random
-import pyrr
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 
 
 class MathLib(FunctionLibraryBase):
@@ -19,7 +20,7 @@ class MathLib(FunctionLibraryBase):
     # builtin python math
     # ###################
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the ceiling of x as a float, the smallest integer value greater than or equal to x
     def ceil(a=('FloatPin', 0.0)):
         '''
@@ -28,7 +29,7 @@ class MathLib(FunctionLibraryBase):
         return math.ceil(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0
     def copysignf(a=('FloatPin', 0.0), b=('FloatPin', 0.0)):
         '''
@@ -37,7 +38,7 @@ class MathLib(FunctionLibraryBase):
         return math.copysign(a, b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0
     def copysign(a=('IntPin', 0), b=('IntPin', 0)):
         '''
@@ -46,7 +47,7 @@ class MathLib(FunctionLibraryBase):
         return math.copysign(a, b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return x factorial. Raises ValueError if x is not integral or is negative
     def factorial(a=('IntPin', 0), result=("Reference", ('BoolPin', False))):
         '''
@@ -61,7 +62,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the floor of x as a float, the largest integer value less than or equal to x
     def floor(a=('FloatPin', 0.0)):
         '''
@@ -70,7 +71,7 @@ class MathLib(FunctionLibraryBase):
         return math.floor(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return fmod(x, y), as defined by the platform C library
     def fmodf(a=('FloatPin', 0.0), b=('FloatPin', 0.0)):
         '''
@@ -79,7 +80,7 @@ class MathLib(FunctionLibraryBase):
         return math.fmod(a, b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Python x % y operator
     def fmod(a=('IntPin', 0), b=('IntPin', 0)):
         '''
@@ -88,7 +89,7 @@ class MathLib(FunctionLibraryBase):
         return a % b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the mantissa and exponent of x as the pair (m, e). m is a float and e is an integer such that x == m * 2**e exactly
     def frexp(a=('FloatPin', 0.0), m=("Reference", ('FloatPin', 0.0)), e=("Reference", ('IntPin', 0))):
         '''
@@ -99,7 +100,7 @@ class MathLib(FunctionLibraryBase):
         e(t[1])
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return an accurate floating point sum of values in the iterable. Avoids loss of precision by tracking multiple intermediate partial sums
     def fsum(arr=('ListPin', []), result=("Reference", ('BoolPin', False))):
         '''
@@ -114,7 +115,7 @@ class MathLib(FunctionLibraryBase):
             return 0.0
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Check if the float x is positive or negative infinity
     def isinf(a=('FloatPin', 0.0)):
         '''
@@ -123,7 +124,7 @@ class MathLib(FunctionLibraryBase):
         return math.isinf(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Check if the float x is a NaN (not a number)
     def isnan(a=('FloatPin', 0.0)):
         '''
@@ -132,7 +133,7 @@ class MathLib(FunctionLibraryBase):
         return math.isnan(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return x * (2**i). This is essentially the inverse of function frexp()
     def ldexp(a=('FloatPin', 0.0), i=('IntPin', 0)):
         '''
@@ -141,7 +142,7 @@ class MathLib(FunctionLibraryBase):
         return math.ldexp(a, i)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the fractional and integer parts of x. Both results carry the sign of x and are floats
     def modf(a=('IntPin', 0), f=("Reference", ('FloatPin', 0.0)), i=("Reference", ('IntPin', 0))):
         '''
@@ -152,7 +153,7 @@ class MathLib(FunctionLibraryBase):
         i(t[1])
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the fractional and integer parts of x. Both results carry the sign of x and are floats
     def fmodf(a=('FloatPin', 0), f=("Reference", ('FloatPin', 0.0)), i=("Reference", ('IntPin', 0))):
         '''
@@ -163,7 +164,7 @@ class MathLib(FunctionLibraryBase):
         i(t[1])
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the Real value x truncated to an Integral (usually a long integer)
     def trunc(a=('FloatPin', 0.0)):
         '''
@@ -172,7 +173,7 @@ class MathLib(FunctionLibraryBase):
         return math.trunc(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return e**x
     def exp(a=('FloatPin', 0.0)):
         '''
@@ -181,7 +182,7 @@ class MathLib(FunctionLibraryBase):
         return math.exp(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return e**x - 1. For small floats x, the subtraction in exp(x) - 1 can result in a significant loss of precision
     def expm1(a=('FloatPin', 0.1)):
         '''
@@ -190,7 +191,7 @@ class MathLib(FunctionLibraryBase):
         return math.expm1(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the logarithm of x to the given base, calculated as log(x)/log(base)
     def log(a=('FloatPin', 1.0), base=('FloatPin', math.e), result=("Reference", ('BoolPin', False))):
         '''
@@ -204,7 +205,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the natural logarithm of 1+x (base e). The result is calculated in a way which is accurate for x near zero
     def log1p(a=('FloatPin', 1.0), result=("Reference", ('BoolPin', False))):
         '''
@@ -218,7 +219,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the base-10 logarithm of x. This is usually more accurate than log(x, 10)
     def log10(a=('FloatPin', 1.0), result=("Reference", ('BoolPin', False))):
         '''
@@ -232,7 +233,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return x raised to the power y
     def power(a=('FloatPin', 0.0), b=('FloatPin', 0.0), result=("Reference", ('BoolPin', False))):
         '''
@@ -246,7 +247,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Power and logarithmic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the square root of x
     def sqrt(a=('FloatPin', 0.0), result=("Reference", ('BoolPin', False))):
         '''
@@ -260,7 +261,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Bult-in functions', 'Keywords': ['+']})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Bult-in functions', 'Keywords': ['+']}, packageName=PACKAGE_NAME)
     ## Sums start and the items of an iterable from left to right and returns the total
     def Sum(arr=('ListPin', []), result=("Reference", ('BoolPin', False))):
         '''
@@ -275,7 +276,7 @@ class MathLib(FunctionLibraryBase):
             return 0
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Bult-in functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Bult-in functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the absolute value of a number
     def absint(inp=('IntPin', 0)):
         '''
@@ -284,7 +285,7 @@ class MathLib(FunctionLibraryBase):
         return abs(inp)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the cosine of x radians
     def cos(rad=('FloatPin', 0.0)):
         '''
@@ -293,7 +294,7 @@ class MathLib(FunctionLibraryBase):
         return math.cos(rad)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the arc cosine of x, in radians
     def acos(rad=('FloatPin', 0.0)):
         '''
@@ -302,7 +303,7 @@ class MathLib(FunctionLibraryBase):
         return math.acos(rad)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the sine of x radians
     def sin(rad=('FloatPin', 0.0)):
         '''
@@ -311,7 +312,7 @@ class MathLib(FunctionLibraryBase):
         return math.sin(rad)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the arc sine of x, in radians
     def asin(rad=('FloatPin', 0.0)):
         '''
@@ -320,7 +321,7 @@ class MathLib(FunctionLibraryBase):
         return math.asin(rad)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the tangent of x radians
     def tan(rad=('FloatPin', 0.0)):
         '''
@@ -329,7 +330,7 @@ class MathLib(FunctionLibraryBase):
         return math.tan(rad)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the arc tangent of x, in radians
     def atan(rad=('FloatPin', 0.0)):
         '''
@@ -338,7 +339,7 @@ class MathLib(FunctionLibraryBase):
         return math.atan(rad)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return atan(a / b), in radians. The result is between -pi and pi.
     #  The vector in the plane from the origin to point (a, b) makes this angle
     #  with the positive X axis. The point of atan2() is that the signs of both
@@ -351,7 +352,7 @@ class MathLib(FunctionLibraryBase):
         return math.atan2(a, b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the Euclidean norm, sqrt(x*x + y*y).
     #  This is the length of the vector from the origin to point (x, y)
     def hypot(a=('FloatPin', 0.0), b=('FloatPin', 0.0)):
@@ -361,7 +362,7 @@ class MathLib(FunctionLibraryBase):
         return math.hypot(a, b)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Angular conversion', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Angular conversion', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Convert angle x from degrees to radians
     def degtorad(deg=('FloatPin', 0.0)):
         '''
@@ -370,7 +371,7 @@ class MathLib(FunctionLibraryBase):
         return math.radians(deg)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Angular conversion', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Angular conversion', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Convert angle x from radians to degrees
     def radtodeg(rad=('FloatPin', 0.0)):
         '''
@@ -379,7 +380,7 @@ class MathLib(FunctionLibraryBase):
         return math.degrees(rad)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the inverse hyperbolic cosine of x
     def acosh(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
@@ -393,7 +394,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the inverse hyperbolic sine of x
     def asinh(a=('FloatPin', 0.0)):
         '''
@@ -402,7 +403,7 @@ class MathLib(FunctionLibraryBase):
         return math.asinh(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the inverse hyperbolic tangent of x
     def atanh(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
@@ -416,7 +417,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the hyperbolic cosine of x
     def cosh(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
@@ -430,7 +431,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the hyperbolic sine of x
     def sinh(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
@@ -444,7 +445,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Hyperbolic functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the hyperbolic tangent of x
     def tanh(a=('FloatPin', 0.0)):
         '''
@@ -453,7 +454,7 @@ class MathLib(FunctionLibraryBase):
         return math.tanh(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the error function at x
     def erf(a=('FloatPin', 0.0)):
         '''
@@ -462,7 +463,7 @@ class MathLib(FunctionLibraryBase):
         return math.erf(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the complementary error function at x
     def erfc(a=('FloatPin', 0.0)):
         '''
@@ -471,7 +472,7 @@ class MathLib(FunctionLibraryBase):
         return math.erfc(a)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the Gamma function at x
     def gamma(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
@@ -485,7 +486,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Special functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the natural logarithm of the absolute value of the Gamma function at x
     def lgamma(a=('FloatPin', 0.0), Result=("Reference", ('BoolPin', False))):
         '''
@@ -499,7 +500,7 @@ class MathLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Constants', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Constants', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## The mathematical constant e = 2.718281, to available precision
     def e():
         '''
@@ -508,7 +509,7 @@ class MathLib(FunctionLibraryBase):
         return math.e
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Constants', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Constants', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## The mathematical constant = 3.141592, to available precision
     def pi():
         '''

@@ -21,11 +21,12 @@ empty = {}
 # @param[in] meta dictionary with category path, keywords and any additional info
 # @param[in] nodeType determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created
 # @sa [NodeTypes](@ref PyFlow.Core.AGraphCommon.NodeTypes) FunctionLibraries
-# TODO: add packageName parameter and update all functions in function libraries
-def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
+def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure, packageName=None):
     def wrapper(func):
+        assert(packageName is not None), "package name is not defined for function"
         func.__annotations__ = getattr(func, '__annotations__', {})
         func.__annotations__['nodeType'] = nodeType
+        func.__annotations__['packageName'] = packageName
 
         if not meta == empty:
             func.__annotations__['meta'] = meta
@@ -46,7 +47,6 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
                 else:
                     func.__annotations__[name] = defaults[i][0]
 
-            # defaults = tuple((d[1] for d in func.__defaults__ if len(d) > 1))
             customDefaults = []
             for d in func.__defaults__:
                 if len(d) > 1:
@@ -54,7 +54,6 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
                         customDefaults.append(d[1][1])
                     else:
                         customDefaults.append(d[1])
-            # func.__defaults__ = defaults or None
             func.__defaults__ = tuple(customDefaults) or None
         return func
 

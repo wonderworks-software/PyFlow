@@ -67,8 +67,23 @@ class PinWidgetBase(QGraphicsWidget):
         self.bAnimate = False
         self._val = 0
 
+    @property
+    def dirty(self):
+        return self._rawPin.dirty
+
+    @dirty.setter
+    def dirty(self, value):
+        self._rawPin.dirty = value
+
+    def defaultValue(self):
+        return self._rawPin.defaultValue()
+
+    def getUserStruct(self):
+        return self._rawPin.getUserStruct()
+
     def currentData(self):
         return self._rawPin.currentData()
+
     @property
     def name(self):
         return self._rawPin.name

@@ -37,6 +37,29 @@ class NodeBase(INode):
             self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
             self._uid = value
 
+    @staticmethod
+    def jsonTemplate():
+        template = {'package': None,
+                    'type': None,
+                    'name': None,
+                    'uuid': None,
+                    'inputs': [],
+                    'outputs': [],
+                    'meta': {}
+                    }
+        return template
+
+    def serialize(self):
+        template = NodeBase.jsonTemplate()
+        template['package'] = self.packageName()
+        template['type'] = self.__class__.__name__
+        template['name'] = self.name
+        template['uuid'] = str(self.uid)
+        template['inputs'] = [i.serialize() for i in self.inputs.values()]
+        template['outputs'] = [o.serialize() for o in self.outputs.values()]
+        template['meta']['label'] = self.name
+        return template
+
     def kill(self):
         assert(self.uid in self.graph().nodes), "Error killing node. \
             Node {0} not in graph".format(self.getName())
@@ -171,6 +194,7 @@ class NodeBase(INode):
         if foo.__annotations__['return'] is not None:
             returnType, returnDefaultValue = foo.__annotations__['return']
         nodeType = foo.__annotations__['nodeType']
+        _packageName = foo.__annotations__['packageName']
         fooArgNames = getargspec(foo).args
 
         @staticmethod
@@ -185,6 +209,10 @@ class NodeBase(INode):
         def keywords():
             return meta['Keywords']
 
+        @staticmethod
+        def packageName():
+            return _packageName
+
         def constructor(self, name, **kwargs):
             NodeBase.__init__(self, name, **kwargs)
 
@@ -192,7 +220,8 @@ class NodeBase(INode):
         nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
                                                      'category': category,
                                                      'keywords': keywords,
-                                                     'description': description
+                                                     'description': description,
+                                                     'packageName': packageName
                                                      })
 
         raw_inst = nodeClass(foo.__name__)
@@ -228,6 +257,7 @@ class NodeBase(INode):
         if nodeType == NodeTypes.Callable:
             inputExec = raw_inst.addInputPin('inExec', 'ExecPin', None, raw_inst.compute)
             outExec = raw_inst.addOutputPin('outExec', 'ExecPin', None)
+            raw_inst.bCallable = True
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
@@ -239,11 +269,17 @@ class NodeBase(INode):
                 outRef = raw_inst.addOutputPin(argName, dataType[0])
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
+                if PROPAGATE_DIRTY in meta:
+                    if argName in meta[PROPAGATE_DIRTY]:
+                        outRef.setAlwaysPushDirty(True)
                 refs.append(outRef)
             else:
                 inp = raw_inst.addInputPin(argName, dataType)
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
+                if PROPAGATE_DIRTY in meta:
+                    if argName in meta[PROPAGATE_DIRTY]:
+                        inp.setAlwaysPushDirty(True)
 
         # all value inputs affects on all value outputs
         # all exec inputs affects on all exec outputs
@@ -254,5 +290,4 @@ class NodeBase(INode):
                 if i.dataType != 'ExecPin' and o.dataType == 'ExecPin':
                     continue
                 pinAffects(i, o)
-
         return raw_inst

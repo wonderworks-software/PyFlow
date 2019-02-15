@@ -1,3 +1,5 @@
+PACKAGE_NAME = 'Pyrr'
+
 from PyFlow.Core.Interfaces import IPackage
 
 # Pins

@@ -106,16 +106,27 @@ class GraphBase(object):
                 return i
         return None
 
-    def addNode(self, node, jsonTemplate=None):
+    def findPinByUID(self, uid):
+        uiPin = None
+        if uid in self.pins:
+            uiPin = self.pins[uid]
+        return uiPin
+
+    def findPinByName(self, pinName):
+        uiPin = None
+        for pin in self.pins.values():
+            if pinName == pin.getName():
+                uiPin = pin
+                break
+        return uiPin
+
+    def addNode(self, node):
         assert(node is not None), "failed to add node, None is passed"
         if node.uid in self.nodes:
             return False
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)
-        if jsonTemplate is not None:
-            node.setPosition(jsonTemplate['x'], jsonTemplate['y'])
-        else:
-            node.setPosition(0, 0)
+
         # add pins
         for i in node.inputs.values():
             self.pins[i.uid] = i

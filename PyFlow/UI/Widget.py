@@ -82,7 +82,7 @@ def importByName(module, name):
 
 def getNodeInstance(nodeClassName, nodeName, graph, packageName=None):
     raw_instance = getRawNodeInstance(nodeClassName, packageName)
-    assert(raw_instance is not None)
+    assert(raw_instance is not None), "Node {0} not found in package {1}".format(nodeClassName, packageName)
     instance = Node(raw_instance)
     graph.addNode(instance)
     return instance
@@ -186,7 +186,7 @@ class SceneClass(QGraphicsScene):
             name = self.parent().getUniqNodeName(pressedText)
             dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
             if not dropItem:
-                nodeTemplate = Node.jsonTemplate()
+                nodeTemplate = NodeBase.jsonTemplate()
                 nodeTemplate['package'] = packageName
                 nodeTemplate['type'] = pressedText
                 nodeTemplate['name'] = name
@@ -443,7 +443,7 @@ class GraphWidgetUI(QGraphicsView):
     def __init__(self, parent=None, graphBase=None):
         super(GraphWidgetUI, self).__init__()
         assert(isinstance(graphBase, GraphBase))
-        self._GraphBase = graphBase
+        self._graphBase = graphBase
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent
@@ -473,7 +473,7 @@ class GraphWidgetUI(QGraphicsView):
         self._grid_spacing = 50
         self.factor = 1
         self.factor_diff = 0
-        self.setWindowTitle(self._GraphBase.name)
+        self.setWindowTitle(self._graphBase.name)
 
         self._current_file_name = 'Untitled'
         self._file_name_label = QGraphicsTextItem()
@@ -513,6 +513,14 @@ class GraphWidgetUI(QGraphicsView):
         self.codeEditors = {}
         self.UIPins = {}
 
+    @property
+    def nodes(self):
+        return self._graphBase.nodes
+
+    @property
+    def pins(self):
+        return self._graphBase.pins
+
     def showNodeBox(self, dataType=None, pinType=None):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
@@ -532,14 +540,14 @@ class GraphWidgetUI(QGraphicsView):
         self.node_box.lineEdit.clear()
 
     def getUniqNodeName(self, name):
-        return self._GraphBase.getUniqNodeName(name)
+        return self._graphBase.getUniqNodeName(name)
 
     @property
     def edges(self):
-        return self._GraphBase.edges
+        return self._graphBase.edges
 
     def getNodes(self):
-        return self._GraphBase.getNodes()
+        return self._graphBase.getNodes()
 
     def moveScrollbar(self, delta):
         x = self.horizontalScrollBar().value() + delta.x()
@@ -606,13 +614,6 @@ class GraphWidgetUI(QGraphicsView):
 
     def enableSortcuts(self):
         self._sortcuts_enabled = True
-
-    def findPin(self, pinName):
-        node = self.getNodeByName(pinName.split(".")[0])
-        if node:
-            attr = node.getPinByName(pinName.split(".")[1])
-            return attr
-        return None
 
     def findUIPinByUID(self, uid):
             uiPin = None
@@ -1106,13 +1107,13 @@ class GraphWidgetUI(QGraphicsView):
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
-    def addNode(self, node, jsonTemplate=None):
-        self._GraphBase.addNode(node, jsonTemplate)
+    def addNode(self, node):
+        self._graphBase.addNode(node)
         node.graph = weakref.ref(self)
         self.scene().addItem(node)
 
     def _addEdge(self, src, dst):
-        result = self._GraphBase.addEdge(src, dst)
+        result = self._graphBase.addEdge(src, dst)
         if result:
             if src.direction == PinDirection.Input:
                 src, dst = dst, src
@@ -1125,7 +1126,7 @@ class GraphWidgetUI(QGraphicsView):
         return None
 
     def canConnectPins(self, src, dst):
-        return self._GraphBase.canConnectPins(src, dst)
+        return self._graphBase.canConnectPins(src, dst)
 
     def addEdge(self, src, dst):
         if self.canConnectPins(src, dst):
@@ -1136,7 +1137,7 @@ class GraphWidgetUI(QGraphicsView):
         self.undoStack.push(cmdRemoveEdges(self, [e.serialize() for e in edges]))
 
     def removeEdge(self, edge):
-        self._GraphBase.removeEdge(edge)
+        self._graphBase.removeEdge(edge)
         edge.source().update()
         edge.destination().update()
         self.edges.pop(edge.uid)
@@ -1144,28 +1145,28 @@ class GraphWidgetUI(QGraphicsView):
         self.scene().removeItem(edge)
 
     def removeNode(self, node):
-        self._GraphBase.removeNode(node)
+        self._graphBase.removeNode(node)
 
     def count(self):
-        return self._GraphBase.count()
+        return self._graphBase.count()
 
     def getUniqVarName(self, name):
-        return self._GraphBase.getUniqVarName(name)
+        return self._graphBase.getUniqVarName(name)
 
     def getNodeByName(self, name):
-        return self._GraphBase.getNodeByName(name)
+        return self._graphBase.getNodeByName(name)
 
     def isDebug(self):
-        return self._GraphBase.isDebug()
+        return self._graphBase.isDebug()
 
     def getNextLayerNodes(node, direction=PinDirection.Input):
         return self._GraphBase.getNextLayerNodes(node, direction)
 
     def getEvaluationOrder(self, node):
-        return self._GraphBase.getEvaluationOrder(node)
+        return self._graphBase.getEvaluationOrder(node)
 
     def plot(self):
-        self._GraphBase.plot()
+        self._graphBase.plot()
 
     def zoomDelta(self, direction):
         current_factor = self.factor

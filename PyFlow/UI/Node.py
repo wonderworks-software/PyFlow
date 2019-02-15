@@ -165,6 +165,10 @@ class Node(QGraphicsItem):
         self.UIPins = {}
 
     @property
+    def pins(self):
+        return self._rawNode.pins
+
+    @property
     def inputs(self):
         return self._rawNode.inputs
 
@@ -287,10 +291,7 @@ class Node(QGraphicsItem):
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
 
-        if label is None:
-            self.label().setPlainText(self.__class__.__name__)
-        else:
-            self.label().setPlainText(label)
+        self.label().setPlainText(self._rawNode.__class__.__name__)
 
         self.w = self.getWidth() + Spacings.kPinOffset
         self.nodeMainGWidget.setMaximumWidth(self.w)
@@ -312,11 +313,11 @@ class Node(QGraphicsItem):
         self._rawNode.postCreate(jsonTemplate)
 
         # create ui pin wrappers
-        for i in self.inputs.values():
-            self._addUIPin(i)
+        for uid, i in self.inputs.items():
+            self._createUIPinWrapper(i)
 
-        for o in self.outputs.values():
-            self._addUIPin(o)
+        for uid, o in self.outputs.items():
+            self._createUIPinWrapper(o)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
@@ -324,31 +325,19 @@ class Node(QGraphicsItem):
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.label().toPlainText()) + Spacings.kPinSpacing
         return fontWidth if fontWidth > 25 else 25
 
-    @staticmethod
-    def jsonTemplate():
-        template = {'package': None,
-                    'type': None,
-                    'x': None,
-                    'y': None,
-                    'name': None,
-                    'uuid': None,
-                    'inputs': [],
-                    'outputs': [],
-                    'meta': {'label': 'Node', 'var': {}}
-                    }
+    def jsonTemplate(self):
+        template = NodeBase.jsonTemplate()
+        template['x'] = 0
+        template['y'] = 0
         return template
 
+    def packageName(self):
+        return self._rawNode.packageName()
+
     def serialize(self):
-        template = Node.jsonTemplate()  # move this to raw node
-        template['package'] = self._rawNode.packageName()
-        template['type'] = self._rawNode.__class__.__name__
-        template['name'] = self.name
+        template = self._rawNode.serialize()
         template['x'] = self.scenePos().x()
         template['y'] = self.scenePos().y()
-        template['uuid'] = str(self.uid)
-        template['inputs'] = [i.serialize() for i in self.inputs.values()]
-        template['outputs'] = [o.serialize() for o in self.outputs.values()]
-        template['meta']['label'] = self.label().toPlainText()
         return template
 
     def propertyView(self):
@@ -513,7 +502,7 @@ class Node(QGraphicsItem):
         if pin:
             pin.kill()
 
-    def _addUIPin(self, rawPin, index=-1):
+    def _createUIPinWrapper(self, rawPin, index=-1):
         p = PinWidgetBase(self, rawPin)
         if rawPin.direction == PinDirection.Input:
             p.call = rawPin.call

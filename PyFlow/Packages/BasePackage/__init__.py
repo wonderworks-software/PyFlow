@@ -1,3 +1,5 @@
+PACKAGE_NAME = 'BasePackage'
+
 from PyFlow.Core.Interfaces import IPackage
 
 # Pins

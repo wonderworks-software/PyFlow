@@ -37,6 +37,10 @@ INT_RANGE_MAX = maxint + 0
 
 GRID_SIZE = 20
 
+## Used in function library decorator to mark pins as always dirty
+# for example random integer node should always mark dirty all upper branches of graph
+PROPAGATE_DIRTY = 'PropagateDirty'
+
 ## Performs a linear interpolation
 # @param[in] start the value to interpolate from
 # @param[in] end the value to interpolate to
@@ -113,22 +117,6 @@ def clearLayout(layout):
             clearLayout(child.layout())
 
 
-##  Decorator from <a href="https://wiki.python.org/moin/PythonDecoratorLibrary#Memoize">Python decorator library</a>
-# @param[in] foo function to memorize
-def memoize(foo):
-    memo = {}
-
-    @wraps(foo)
-    def wrapper(*args):
-        if args in memo:
-            return memo[args]
-        else:
-            rv = foo(*args)
-            memo[args] = rv
-            return rv
-    return wrapper
-
-
 class REGISTER_ENUM(object):
     def __init__(self, *args, **kwargs):
         self.args = args
@@ -137,75 +125,6 @@ class REGISTER_ENUM(object):
     def __call__(self, cls):
         Enums.appendEnumInstance(cls)
         return cls
-
-
-class asynchronous(object):
-    def __init__(self, func):
-        self.func = func
-
-        def threaded(*args, **kwargs):
-            self.queue.put(self.func(*args, **kwargs))
-
-        self.threaded = threaded
-
-    def __call__(self, *args, **kwargs):
-        return self.func(*args, **kwargs)
-
-    def start(self, *args, **kwargs):
-        self.queue = Queue()
-        thread = Thread(target=self.threaded, args=args, kwargs=kwargs)
-        thread.start()
-        return asynchronous.Result(self.queue, thread)
-
-    class NotYetDoneException(Exception):
-        def __init__(self, message):
-            self.message = message
-
-    class Result(object):
-        def __init__(self, queue, thread):
-            self.queue = queue
-            self.thread = thread
-
-        def is_done(self):
-            return not self.thread.is_alive()
-
-        def get_result(self):
-            if not self.is_done():
-                raise asynchronous.NotYetDoneException('the call has not yet completed its task')
-
-            if not hasattr(self, 'result'):
-                self.result = self.queue.get()
-
-            return self.result
-
-
-## [Circular buffer](https://en.wikipedia.org/wiki/Circular_buffer) container class.
-# Useful for processing streaming data.
-class CircularBuffer(object):
-    def __init__(self, capacity):
-        super(CircularBuffer, self).__init__()
-        self._capacity = capacity
-        self._ls = []
-        self._current = 0
-
-    def _is_full(self):
-        return len(self._ls) == self.capacity()
-
-    def append(self, item):
-        if self._is_full():
-            self._ls[self._current] = item
-            self._current = (self._current + 1) % self.capacity()
-        else:
-            self._ls.append(item)
-
-    def get(self):
-        if self._is_full():
-            return self._ls[self._current:] + self._ls[:self._current]
-        else:
-            return self._ls
-
-    def capacity(self):
-        return self._capacity
 
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPinByName for optimization purposes
