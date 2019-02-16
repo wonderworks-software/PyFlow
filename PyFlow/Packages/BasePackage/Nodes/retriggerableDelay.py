@@ -19,7 +19,7 @@ class retriggerableDelay(NodeBase):
     def kill(self):
         self.timer.stop()
         self.timer.timeout.disconnect()
-        Node.kill(self)
+        NodeBase.kill(self)
 
     @staticmethod
     def packageName():
