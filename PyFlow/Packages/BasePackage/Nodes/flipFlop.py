@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 
@@ -9,6 +10,10 @@ class flipFlop(NodeBase):
         self.outA = self.addOutputPin('A', 'ExecPin')
         self.outB = self.addOutputPin('B', 'ExecPin')
         self.bIsA = self.addOutputPin('IsA', 'BoolPin')
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     @staticmethod
     def pinTypeHints():

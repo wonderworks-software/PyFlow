@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 
@@ -16,6 +17,10 @@ class forLoopWithBreak(NodeBase):
         self.loopBody = self.addOutputPin('LoopBody', 'ExecPin')
         self.index = self.addOutputPin('Index', 'IntPin')
         self.completed = self.addOutputPin('Completed', 'ExecPin')
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     @staticmethod
     def pinTypeHints():

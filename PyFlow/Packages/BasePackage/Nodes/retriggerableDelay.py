@@ -1,6 +1,8 @@
-from PyFlow.Core import NodeBase
 # TODO: remove QTimer
 from Qt.QtCore import QTimer
+
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
+from PyFlow.Core import NodeBase
 
 
 class retriggerableDelay(NodeBase):
@@ -18,6 +20,10 @@ class retriggerableDelay(NodeBase):
         self.timer.stop()
         self.timer.timeout.disconnect()
         Node.kill(self)
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     @staticmethod
     def pinTypeHints():

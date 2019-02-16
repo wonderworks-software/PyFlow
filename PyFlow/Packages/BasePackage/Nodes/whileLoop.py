@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 
@@ -10,6 +11,10 @@ class whileLoop(NodeBase):
         self.completed = self.addOutputPin('Completed', 'ExecPin')
         self.bProcess = False
         self._dirty = False
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def begin(self):
         self.bProcess = True

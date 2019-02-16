@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 # TODO: remove this. custom nodes like this should have another ui base class, with custom ui stuff (pins creation etc.)
@@ -12,6 +13,10 @@ class sequence(NodeBase):
         self.menu = QMenu()
         self.action = self.menu.addAction('add pin')
         self.action.triggered.connect(self.addOutPin)
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def addOutPin(self):
         p = self.addOutputPin(str(len(self.outputs)), 'ExecPin')

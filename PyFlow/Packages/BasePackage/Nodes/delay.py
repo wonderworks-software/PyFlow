@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 # TODO: remove QTimer since this is a dependency
@@ -12,6 +13,10 @@ class delay(NodeBase):
         self.delay.setDefaultValue(0.2)
         self.out0 = self.addOutputPin('out0', 'ExecPin')
         self.process = False
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     @staticmethod
     def pinTypeHints():

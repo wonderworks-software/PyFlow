@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 
@@ -9,6 +10,10 @@ class doOnce(NodeBase):
         self.bStartClosed = self.addInputPin('Start closed', 'BoolPin')
         self.completed = self.addOutputPin('Completed', 'ExecPin')
         self.bClosed = False
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def OnReset(self):
         self.bClosed = False

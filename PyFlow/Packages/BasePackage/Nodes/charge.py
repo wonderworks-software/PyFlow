@@ -21,6 +21,10 @@ class charge(NodeBase):
         self._currentAmount = 0
 
     @staticmethod
+    def packageName():
+        return PACKAGE_NAME
+
+    @staticmethod
     def pinTypeHints():
         return {'inputs': ['FloatPin', 'ExecPin'], 'outputs': ['ExecPin']}
 

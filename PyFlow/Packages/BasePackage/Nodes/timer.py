@@ -1,5 +1,7 @@
-from PyFlow.Core import NodeBase
 from Qt.QtCore import QTimer
+
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
+from PyFlow.Core import NodeBase
 
 
 ## Timer node
@@ -14,6 +16,10 @@ class timer(NodeBase):
         self.interval.setDefaultValue(0.2)
         self._timer = QTimer()
         self._timer.timeout.connect(self.compute)
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def kill(self):
         self._timer.stop()

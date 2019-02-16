@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 
@@ -12,7 +13,7 @@ class branch(NodeBase):
 
     @staticmethod
     def packageName():
-        return 'BasePackage'
+        return PACKAGE_NAME
 
     @staticmethod
     def pinTypeHints():

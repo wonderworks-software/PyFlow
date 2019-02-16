@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 
@@ -13,6 +14,10 @@ class doN(NodeBase):
         self.counter = self.addOutputPin('Counter', 'IntPin')
         self.bClosed = False
         self._numCalls = 0
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def OnReset(self):
         self.bClosed = False

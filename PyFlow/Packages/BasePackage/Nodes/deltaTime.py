@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 
@@ -6,6 +7,10 @@ class deltaTime(NodeBase):
         super(deltaTime, self).__init__(name)
         self._deltaTime = 0.0
         self._out0 = self.addOutputPin('out0', 'FloatPin')
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     @staticmethod
     def pinTypeHints():

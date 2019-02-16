@@ -1,5 +1,6 @@
 import uuid
 
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 # TODO: Move menu to ui node class. This is raw class which should work from concole without dependencies. Ui node class should be chosen here through the interface
@@ -15,6 +16,10 @@ class implicitPinCall(NodeBase):
         self.menu = QMenu()
         self.actionFindPin = self.menu.addAction('Find pin')
         self.actionFindPin.triggered.connect(self.OnFindPin)
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())
