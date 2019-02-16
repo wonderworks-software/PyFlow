@@ -61,8 +61,11 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(edge2Created, True, "FAILED TO ADD EDGE 2")
         self.assertEqual(edge3Created, True, "FAILED TO ADD EDGE 3")
 
+        values = set()
         for i in range(10):
             pRandIntInExecPin.call()
+            values.add(pPrintInputValuePin.currentData())
+        self.assertGreater(len(values), 1)
 
 
 if __name__ == '__main__':
