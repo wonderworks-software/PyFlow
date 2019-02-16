@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 from PyFlow.UI.Settings import Colors
@@ -9,6 +10,10 @@ class ExecPin(PinBase):
         super(ExecPin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.width = self.height = 10.0
         self.dirty = False
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('ExecPin',)

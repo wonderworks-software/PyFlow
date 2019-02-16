@@ -1,6 +1,8 @@
+from pyrr import Quaternion
+
+from PyFlow.Packages.Pyrr import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
-from pyrr import Quaternion
 
 
 class QuatPin(PinBase):
@@ -8,6 +10,10 @@ class QuatPin(PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(QuatPin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(Quaternion())
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('QuatlPin',)

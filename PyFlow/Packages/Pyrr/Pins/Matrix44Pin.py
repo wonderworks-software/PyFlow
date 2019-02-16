@@ -1,5 +1,6 @@
 from pyrr import Matrix44
 
+from PyFlow.Packages.Pyrr import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 
@@ -9,6 +10,10 @@ class Matrix44Pin(PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(Matrix44Pin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(Matrix44())
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def color(self):
         return (150, 0, 20, 255)

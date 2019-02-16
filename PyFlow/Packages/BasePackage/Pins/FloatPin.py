@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 from PyFlow.UI.Settings import Colors
@@ -8,6 +9,10 @@ class FloatPin(PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(FloatPin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(0.0)
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     @staticmethod
     def pinDataTypeHint():

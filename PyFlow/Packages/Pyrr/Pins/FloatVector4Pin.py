@@ -1,5 +1,6 @@
 from pyrr import Vector4
 
+from PyFlow.Packages.Pyrr import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 
@@ -9,6 +10,10 @@ class FloatVector4Pin(PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(FloatVector4Pin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(Vector4())
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('FloatVector4Pin',)

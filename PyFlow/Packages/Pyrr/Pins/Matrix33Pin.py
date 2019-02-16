@@ -1,6 +1,8 @@
+from pyrr import Matrix33
+
+from PyFlow.Packages.Pyrr import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
-from pyrr import Matrix33
 
 
 class Matrix33Pin(PinBase):
@@ -8,6 +10,10 @@ class Matrix33Pin(PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(Matrix33Pin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(Matrix33())
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('Matrix33Pin',)

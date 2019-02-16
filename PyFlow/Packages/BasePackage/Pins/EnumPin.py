@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 # from ..Core.Enums import ENone
@@ -9,6 +10,10 @@ class EnumPin(PinBase):
         super(EnumPin, self).__init__(name, parent, dataType, direction, **kwargs)
         self._userStruct = kwargs['userStructClass']
         self.setDefaultValue(self._userStruct(0))
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def serialize(self):
         dt = super(PinWidgetBase, self).serialize()

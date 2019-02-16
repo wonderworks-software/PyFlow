@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 
@@ -7,6 +8,10 @@ class IntPin(PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(IntPin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(0)
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     @staticmethod
     def pinDataTypeHint():

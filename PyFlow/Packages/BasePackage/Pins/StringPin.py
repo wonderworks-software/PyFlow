@@ -1,3 +1,4 @@
+from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 
@@ -7,6 +8,10 @@ class StringPin(PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(StringPin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue("")
+
+    @staticmethod
+    def packageName():
+        return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('StringPin',)
