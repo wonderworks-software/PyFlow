@@ -1,7 +1,7 @@
 from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
-# from ..Core.Enums import ENone
+from PyFlow.Core.Enums import ENone
 
 
 class EnumPin(PinBase):

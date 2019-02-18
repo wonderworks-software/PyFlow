@@ -9,7 +9,6 @@ from PyFlow.Packages.BasePackage.Pins.EnumPin import EnumPin
 from PyFlow.Packages.BasePackage.Pins.ExecPin import ExecPin
 from PyFlow.Packages.BasePackage.Pins.FloatPin import FloatPin
 from PyFlow.Packages.BasePackage.Pins.IntPin import IntPin
-from PyFlow.Packages.BasePackage.Pins.ListPin import ListPin
 from PyFlow.Packages.BasePackage.Pins.StringPin import StringPin
 
 # Function based nodes
@@ -73,7 +72,6 @@ _PINS = {
     ExecPin.__name__: ExecPin,
     FloatPin.__name__: FloatPin,
     IntPin.__name__: IntPin,
-    ListPin.__name__: ListPin,
     StringPin.__name__: StringPin
 }
 

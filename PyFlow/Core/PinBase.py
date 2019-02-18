@@ -97,7 +97,6 @@ class PinBase(IPin):
         if self.direction == PinDirection.Input:
             if not self.dirty:
                 return self.currentData()
-            # TODO: turn .bCallable to .isCallable(), cache internally
             if self.dirty or self.owningNode().bCallable:
                 out = [i for i in self.affected_by if i.direction == PinDirection.Output]
                 if not out == []:

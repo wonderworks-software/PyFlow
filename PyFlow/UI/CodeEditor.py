@@ -73,7 +73,7 @@ from PyFlow.UI.Widgets.UI import PinWidget_ui
 from PyFlow.UI.Node import Node
 
 
-_defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()', 'setDirty()'] + dir(__builtin__)
+_defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()'] + dir(__builtin__)
 
 
 # TODO: Rewrite this

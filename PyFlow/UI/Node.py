@@ -25,7 +25,7 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 
 from Pin import PinWidgetBase
-from PyFlow.UI.InputWidgets import getInputWidget
+# from PyFlow.UI.InputWidgets import getInputWidget
 from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.Core.Enums import ENone
 from PyFlow.Core.AGraphCommon import *
@@ -425,10 +425,10 @@ class Node(QGraphicsItem):
 
             for inp in self.inputs.values():
                 dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
-                w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
+                # TODO: iterate over registered factories and create pin
+                # w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
+                w = None
                 if w:
-                    # TODO: setWidgetValie causes changes dirty flag on pins
-                    # it should not happen
                     w.blockWidgetSignals(True)
                     w.setWidgetValue(inp.currentData())
                     w.blockWidgetSignals(False)
@@ -446,7 +446,9 @@ class Node(QGraphicsItem):
             for out in self.outputs.values():
                 if out.dataType == 'ExecPin':
                     continue
-                w = getInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
+                # TODO: iterate over registered factories and create pin
+                # w = getInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
+                w = None
                 if w:
                     w.blockWidgetSignals(True)
                     w.setWidgetValue(out.currentData())

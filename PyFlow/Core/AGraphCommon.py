@@ -6,10 +6,7 @@ this file is imported in almost all others files of the program
 """
 import math
 import time
-# from Settings import *
 import inspect
-from threading import Thread
-from functools import wraps
 try:
     from queue import Queue
 except:
@@ -18,23 +15,9 @@ import uuid
 import sys
 from enum import IntEnum
 from PyFlow.Core import Enums
-import struct
-maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 
 
-## determines step for all floating point input widgets
-FLOAT_SINGLE_STEP = 0.01
-## determines floating precision
-FLOAT_DECIMALS = 10
-## determines floating minimum value
-FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
-## determines floating maximum value
-FLOAT_RANGE_MAX = maxint + 0.1
-## determines int minimum value
-INT_RANGE_MIN = -maxint + 0
-## determines int maximum value
-INT_RANGE_MAX = maxint + 0
-
+# TODO: Move to config
 GRID_SIZE = 20
 
 ## Used in function library decorator to mark pins as always dirty

@@ -216,7 +216,6 @@ class NodeBase(INode):
         def constructor(self, name, **kwargs):
             NodeBase.__init__(self, name, **kwargs)
 
-        # TODO: add packageName() static method
         nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
                                                      'category': category,
                                                      'keywords': keywords,

@@ -185,7 +185,6 @@ class IPin(IItemBase):
     def setUserStruct(self, inStruct):
         raise NotImplementedError('setUserStruct method of IPin is not implemented')
 
-    # TODO: update all pins
     @staticmethod
     def packageName():
         raise NotImplementedError('packageName method of IPin is not implemented')
@@ -220,7 +219,6 @@ class INode(IItemBase):
     def getData(self, pinName, pinSelectionGroup):
         raise NotImplementedError('getData method of INode is not implemented')
 
-    # TODO: update all nodes
     @staticmethod
     def packageName():
         raise NotImplementedError('packageName method of INode is not implemented')
