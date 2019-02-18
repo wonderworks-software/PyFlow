@@ -171,4 +171,5 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         instance.applySettings(settings)
         instance.startMainLoop()
         INITIALIZE()
+        # fetch input widgets
         return instance

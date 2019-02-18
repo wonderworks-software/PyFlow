@@ -8,6 +8,9 @@ from Qt.QtWidgets import QWidget
 from PyFlow.Core.AGraphCommon import *
 
 
+UI_PINS_FACTORIES = {}
+
+
 class IInputWidget(object):
     def __init__(self):
         super(IInputWidget, self).__init__()
@@ -89,3 +92,18 @@ class InputWidgetSingle(InputWidgetRaw):
     def setWidget(self, widget):
         InputWidgetRaw.setWidget(self, widget)
         self.horizontalLayout.insertWidget(self._index, self.getWidget())
+
+
+def REGISTER_UI_PIN_FACTORY(packageName, foo):
+    if packageName not in UI_PINS_FACTORIES:
+        UI_PINS_FACTORIES[packageName] = foo
+        print("registering", packageName, "input widgets")
+
+
+def createInputWidget(dataType, dataSetter, defaultValue, userStruct):
+    pinInputWidget = None
+    for packageName, factory in UI_PINS_FACTORIES.items():
+        pinInputWidget = factory(dataType, dataSetter, defaultValue, userStruct)
+        if pinInputWidget is not None:
+            return pinInputWidget
+    assert(pinInputWidget is not None), "failed to create pin. No input widget found for type '{}'".format(dataType)

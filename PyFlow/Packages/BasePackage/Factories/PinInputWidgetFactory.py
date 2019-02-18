@@ -166,3 +166,5 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
     if dataType == 'EnumPin':
         return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     return None
+
+REGISTER_UI_PIN_FACTORY(getInputWidget)

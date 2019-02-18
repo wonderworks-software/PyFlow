@@ -404,3 +404,5 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
     if dataType == 'Matrix44Pin':
         return Matrix44InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     return None
+
+REGISTER_UI_PIN_FACTORY(getInputWidget)

@@ -25,7 +25,7 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 
 from Pin import PinWidgetBase
-# from PyFlow.UI.InputWidgets import getInputWidget
+from PyFlow.UI.InputWidgets import createInputWidget
 from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.Core.Enums import ENone
 from PyFlow.Core.AGraphCommon import *
@@ -426,8 +426,7 @@ class Node(QGraphicsItem):
             for inp in self.inputs.values():
                 dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
                 # TODO: iterate over registered factories and create pin
-                # w = getInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
-                w = None
+                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
                     w.blockWidgetSignals(True)
                     w.setWidgetValue(inp.currentData())
@@ -447,8 +446,7 @@ class Node(QGraphicsItem):
                 if out.dataType == 'ExecPin':
                     continue
                 # TODO: iterate over registered factories and create pin
-                # w = getInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
-                w = None
+                w = createInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
                 if w:
                     w.blockWidgetSignals(True)
                     w.setWidgetValue(out.currentData())
