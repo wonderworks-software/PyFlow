@@ -19,6 +19,11 @@ from PyFlow.Core import Enums
 
 maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 
+FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
+FLOAT_RANGE_MAX = maxint + 0.1
+INT_RANGE_MIN = -maxint + 0
+INT_RANGE_MAX = maxint + 0
+
 # TODO: Move to config
 GRID_SIZE = 20
 

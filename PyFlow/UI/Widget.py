@@ -43,6 +43,7 @@ from Qt.QtWidgets import QUndoStack
 from Settings import Colors
 from PyFlow.UI.Edge import Edge
 from PyFlow.UI.Node import Node
+from PyFlow.UI.Node import NodeName
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin

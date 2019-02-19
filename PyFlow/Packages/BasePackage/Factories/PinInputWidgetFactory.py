@@ -17,10 +17,6 @@ from PyFlow.UI.InputWidgets import *
 
 FLOAT_SINGLE_STEP = 0.01
 FLOAT_DECIMALS = 10
-FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
-FLOAT_RANGE_MAX = maxint + 0.1
-INT_RANGE_MIN = -maxint + 0
-INT_RANGE_MAX = maxint + 0
 
 
 def _configDoubleSpinBox(sb):
