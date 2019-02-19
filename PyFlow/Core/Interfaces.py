@@ -230,12 +230,16 @@ class IPackage(object):
 
     @staticmethod
     def GetFunctionLibraries():
-        pass
+        raise NotImplementedError('GetFunctionLibraries method of IPackage is not implemented')
 
     @staticmethod
     def GetNodeClasses():
-        pass
+        raise NotImplementedError('GetNodeClasses method of IPackage is not implemented')
 
     @staticmethod
     def GetPinClasses():
-        pass
+        raise NotImplementedError('GetPinClasses method of IPackage is not implemented')
+
+    @staticmethod
+    def DependsOn():
+        raise NotImplementedError('dependsOn method of IPackage is not implemented')

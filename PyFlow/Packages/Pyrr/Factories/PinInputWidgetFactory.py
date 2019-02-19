@@ -401,7 +401,7 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
         return FloatVector3InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'FloatVector4Pin':
         return FloatVector4InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    if dataType == 'QuatlPin':
+    if dataType == 'QuatPin':
         return QuatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'Matrix33Pin':
         return Matrix33InputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
