@@ -4,6 +4,12 @@ import pyrr
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QWidget
+from Qt.QtWidgets import QGridLayout
+from Qt.QtWidgets import QHBoxLayout
+from Qt.QtWidgets import QSpacerItem
+from Qt.QtWidgets import QSizePolicy
+from Qt.QtWidgets import QPushButton
+
 
 from PyFlow.Core.AGraphCommon import *
 

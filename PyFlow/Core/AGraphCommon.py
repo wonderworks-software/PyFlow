@@ -7,6 +7,7 @@ this file is imported in almost all others files of the program
 import math
 import time
 import inspect
+import struct
 try:
     from queue import Queue
 except:
@@ -16,6 +17,7 @@ import sys
 from enum import IntEnum
 from PyFlow.Core import Enums
 
+maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 
 # TODO: Move to config
 GRID_SIZE = 20

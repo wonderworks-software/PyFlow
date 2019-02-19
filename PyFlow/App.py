@@ -3,6 +3,7 @@ import sys
 import subprocess
 import json
 from time import clock
+import pkgutil
 
 from Qt import QtGui
 from Qt import QtCore
@@ -16,6 +17,7 @@ from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QUndoView
 
+from PyFlow import Packages
 from PyFlow.UI.Widget import GraphWidgetUI
 from PyFlow.Core.AGraphCommon import Direction
 from PyFlow.Core.GraphBase import GraphBase
@@ -171,5 +173,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         instance.applySettings(settings)
         instance.startMainLoop()
         INITIALIZE()
+
         # fetch input widgets
+        # do it separately from raw classes, since this is ui related code
+        for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
+            if ispkg:
+                mod = importer.find_module(modname).load_module(modname)
+                FactoriesPath = mod.__path__[0]
+                FactoriesImporter = pkgutil.get_importer(FactoriesPath)
+                FactoriesModuleLoader = FactoriesImporter.find_module('Factories')
+                if FactoriesModuleLoader is not None:
+                    FactoriesModule = FactoriesModuleLoader.load_module('Factories')
         return instance

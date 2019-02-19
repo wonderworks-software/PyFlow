@@ -1,5 +1,4 @@
 # Input widgets for pins
-import struct
 import weakref
 
 from Qt import QtCore
@@ -10,25 +9,17 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QComboBox
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QCheckBox
+from Qt.QtWidgets import QGridLayout
 
 from PyFlow.Core.AGraphCommon import *
 from PyFlow.UI.InputWidgets import *
 
 
-maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
-
-
-## determines step for all floating point input widgets
 FLOAT_SINGLE_STEP = 0.01
-## determines floating precision
 FLOAT_DECIMALS = 10
-## determines floating minimum value
 FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
-## determines floating maximum value
 FLOAT_RANGE_MAX = maxint + 0.1
-## determines int minimum value
 INT_RANGE_MIN = -maxint + 0
-## determines int maximum value
 INT_RANGE_MAX = maxint + 0
 
 
@@ -166,5 +157,3 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
     if dataType == 'EnumPin':
         return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     return None
-
-REGISTER_UI_PIN_FACTORY(getInputWidget)
