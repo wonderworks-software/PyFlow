@@ -239,7 +239,3 @@ class IPackage(object):
     @staticmethod
     def GetPinClasses():
         raise NotImplementedError('GetPinClasses method of IPackage is not implemented')
-
-    @staticmethod
-    def DependsOn():
-        raise NotImplementedError('dependsOn method of IPackage is not implemented')

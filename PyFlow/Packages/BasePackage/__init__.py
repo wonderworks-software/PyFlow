@@ -81,10 +81,6 @@ class BasePackage(IPackage):
         super(BasePackage, self).__init__()
 
     @staticmethod
-    def DependsOn():
-        return []
-
-    @staticmethod
     def GetFunctionLibraries():
         return _FOO_LIBS
 
