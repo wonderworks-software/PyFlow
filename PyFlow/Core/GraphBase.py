@@ -106,6 +106,9 @@ class GraphBase(object):
                 return i
         return None
 
+    def findPin(self, uid):
+        return self.findPinByUID(uid)
+
     def findPinByUID(self, uid):
         uiPin = None
         if uid in self.pins:

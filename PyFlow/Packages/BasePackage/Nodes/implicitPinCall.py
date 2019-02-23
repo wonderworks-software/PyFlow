@@ -1,21 +1,22 @@
 import uuid
 
+from PyFlow.UI.IContextMenu import IContextMenu
 from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
-# TODO: Move menu to ui node class. This is raw class which should work from concole without dependencies. Ui node class should be chosen here through the interface
-from Qt.QtWidgets import QMenu
 
-
-class implicitPinCall(NodeBase):
-    def __init__(self, name, graph):
-        super(implicitPinCall, self).__init__(name, graph)
+class implicitPinCall(NodeBase, IContextMenu):
+    def __init__(self, name):
+        super(implicitPinCall, self).__init__(name)
         self.inExec = self.addInputPin('inp', 'ExecPin', None, self.compute)
         self.uidInp = self.addInputPin('UUID', 'StringPin')
         self.outExec = self.addOutputPin('out', 'ExecPin')
-        self.menu = QMenu()
-        self.actionFindPin = self.menu.addAction('Find pin')
-        self.actionFindPin.triggered.connect(self.OnFindPin)
+
+    def getActions(self):
+        contextMenuData = {
+            "Find pin": self.OnFindPin
+        }
+        return contextMenuData
 
     @staticmethod
     def packageName():
@@ -46,9 +47,7 @@ class implicitPinCall(NodeBase):
             return
         try:
             uid = uuid.UUID(uidStr)
-            pin = self.graph().pins[uid]
-            self.graph().centerOn(pin)
-            pin.highlight()
+            self.graph().findPin(uid)
         except Exception as e:
             print(e)
             pass

@@ -23,10 +23,12 @@ from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
+from Qt.QtWidgets import QMenu
 
 from Pin import PinWidgetBase
 from PyFlow.UI.InputWidgets import createInputWidget
 from PyFlow.UI.NodePainter import NodePainter
+from PyFlow.UI.IContextMenu import IContextMenu
 from PyFlow.Core.Enums import ENone
 from PyFlow.Core.AGraphCommon import *
 
@@ -163,6 +165,10 @@ class Node(QGraphicsItem):
         self.tweakPosition()
         self.icon = None
         self.UIPins = {}
+        self._menu = QMenu()
+
+    def contextMenuEvent(self, event):
+        self._menu.exec_(event.screenPos())
 
     @property
     def pins(self):
@@ -320,6 +326,11 @@ class Node(QGraphicsItem):
             self._createUIPinWrapper(o)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
+
+        if isinstance(self._rawNode, IContextMenu):
+            for label, foo in self._rawNode.getActions().items():
+                action = self._menu.addAction(label)
+                action.triggered.connect(foo)
 
     def getWidth(self):
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.label().toPlainText()) + Spacings.kPinSpacing

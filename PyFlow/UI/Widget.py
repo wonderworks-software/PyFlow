@@ -585,9 +585,10 @@ class GraphWidgetUI(QGraphicsView):
     def __del__(self):
         self.tick_timer.stop()
 
+    # find pin and frame
     def findPin(self, uid):
-        if uid in self.pins:
-            pin = self.pins[uid]
+        pin = self.findUIPinByUID(uid)
+        if pin:
             self.centerOn(pin)
             pin.highlight()
 
@@ -621,10 +622,10 @@ class GraphWidgetUI(QGraphicsView):
         self._sortcuts_enabled = True
 
     def findUIPinByUID(self, uid):
-            uiPin = None
-            if uid in self.UIPins:
-                uiPin = self.UIPins[uid]
-            return uiPin
+        uiPin = None
+        if uid in self.UIPins:
+            uiPin = self.UIPins[uid]
+        return uiPin
 
     def findUIPinByName(self, pinName):
         uiPin = None

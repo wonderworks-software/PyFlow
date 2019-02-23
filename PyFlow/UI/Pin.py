@@ -160,6 +160,7 @@ class PinWidgetBase(QGraphicsWidget):
         return self._rawPin.getData()
 
     def highlight(self):
+        # TODO: draw svg arrow instead
         self.bAnimate = True
         t = QtCore.QTimeLine(900, self)
         t.setFrameRange(0, 100)
