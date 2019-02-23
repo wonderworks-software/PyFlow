@@ -33,6 +33,9 @@ from PyFlow.Core.Enums import ENone
 from PyFlow.Core.AGraphCommon import *
 
 
+UI_NODES_FACTORIES = {}
+
+
 class NodeName(QGraphicsTextItem):
     def __init__(self, parent, bUseTextureBg=True, color=Colors.Green):
         super(NodeName, self).__init__(parent)
@@ -563,3 +566,18 @@ class Node(QGraphicsItem):
         self.UIPins[rawPin.uid] = p
         self.graph().UIPins[rawPin.uid] = p
         return p
+
+
+def REGISTER_UI_NODE_FACTORY(packageName, factory):
+    if packageName not in UI_NODES_FACTORIES:
+        UI_NODES_FACTORIES[packageName] = factory
+        print("registering", packageName, "ui nodes")
+
+
+def getUINodeInstance(raw_instance):
+    packageName = raw_instance.packageName()
+    instance = None
+    if packageName in UI_NODES_FACTORIES:
+        instance = UI_NODES_FACTORIES[packageName](raw_instance)
+    assert(instance is not None)
+    return instance

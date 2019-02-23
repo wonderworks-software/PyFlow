@@ -14,7 +14,7 @@ from Qt.QtWidgets import QPushButton
 from PyFlow.Core.AGraphCommon import *
 
 
-UI_PINS_FACTORIES = {}
+UI_INPUT_WIDGET_PINS_FACTORIES = {}
 
 
 class IInputWidget(object):
@@ -100,15 +100,15 @@ class InputWidgetSingle(InputWidgetRaw):
         self.horizontalLayout.insertWidget(self._index, self.getWidget())
 
 
-def REGISTER_UI_PIN_FACTORY(packageName, foo):
-    if packageName not in UI_PINS_FACTORIES:
-        UI_PINS_FACTORIES[packageName] = foo
+def REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, factory):
+    if packageName not in UI_INPUT_WIDGET_PINS_FACTORIES:
+        UI_INPUT_WIDGET_PINS_FACTORIES[packageName] = factory
         print("registering", packageName, "input widgets")
 
 
 def createInputWidget(dataType, dataSetter, defaultValue, userStruct):
     pinInputWidget = None
-    for packageName, factory in UI_PINS_FACTORIES.items():
+    for packageName, factory in UI_INPUT_WIDGET_PINS_FACTORIES.items():
         pinInputWidget = factory(dataType, dataSetter, defaultValue, userStruct)
         if pinInputWidget is not None:
             return pinInputWidget

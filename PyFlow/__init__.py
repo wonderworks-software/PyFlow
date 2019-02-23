@@ -54,7 +54,6 @@ def getRawNodeInstance(nodeClassName, packageName=None):
     from PyFlow.Core.NodeBase import NodeBase
     package = GET_PACKAGE_CHECKED(packageName)
     # try find function first
-    # TODO: convert functions to nodes on initialization
     for lib in package.GetFunctionLibraries().values():
         foos = lib.getFunctions()
         if nodeClassName in foos:
@@ -64,14 +63,6 @@ def getRawNodeInstance(nodeClassName, packageName=None):
     nodes = package.GetNodeClasses()
     if nodeClassName in nodes:
         return nodes[nodeClassName](nodeClassName)
-
-
-def getUINodeInstance(raw_instance):
-    packageName = raw_instance.packageName()
-    print(packageName)
-    # TODO: create UI node here and return
-    assert(False)
-    return None
 
 
 def INITIALIZE():

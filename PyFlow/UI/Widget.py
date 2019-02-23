@@ -44,6 +44,7 @@ from Settings import Colors
 from PyFlow.UI.Edge import Edge
 from PyFlow.UI.Node import Node
 from PyFlow.UI.Node import NodeName
+from PyFlow.UI.Node import getUINodeInstance
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
@@ -54,7 +55,6 @@ from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow import (
     getRawNodeInstance,
-    getUINodeInstance,
     GET_PACKAGES
 )
 from PyFlow.Core.AGraphCommon import *
