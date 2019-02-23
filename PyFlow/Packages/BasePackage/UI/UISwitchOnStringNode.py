@@ -1,5 +1,4 @@
 from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.Settings import *
 
 
 class UISwitchOnString(UINodeBase):
