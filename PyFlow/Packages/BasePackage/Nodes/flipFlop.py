@@ -6,7 +6,7 @@ class flipFlop(NodeBase):
     def __init__(self, name):
         super(flipFlop, self).__init__(name)
         self.bState = True
-        self.inp0 = self.addInputPin('in0', 'ExecPin', self.compute)
+        self.inp0 = self.addInputPin('in0', 'ExecPin', None,  self.compute)
         self.outA = self.addOutputPin('A', 'ExecPin')
         self.outB = self.addOutputPin('B', 'ExecPin')
         self.bIsA = self.addOutputPin('IsA', 'BoolPin')
