@@ -20,7 +20,9 @@ class NodeBase(INode):
         self.graph = None
         self.name = name
         self.inputs = OrderedDict()
+        self.namePinInputsMap = OrderedDict()
         self.outputs = OrderedDict()
+        self.namePinOutputsMap = OrderedDict()
         self.x = 0.0
         self.y = 0.0
         self.bCallable = False
@@ -120,6 +122,7 @@ class NodeBase(INode):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
         self.inputs[p.uid] = p
+        self.namePinInputsMap[pinName] = p
         p.direction = PinDirection.Input
         if foo:
             p.call = foo
@@ -132,6 +135,7 @@ class NodeBase(INode):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         self.outputs[p.uid] = p
+        self.namePinOutputsMap[pinName] = p
         p.direction = PinDirection.Output
         if foo:
             p.call = foo

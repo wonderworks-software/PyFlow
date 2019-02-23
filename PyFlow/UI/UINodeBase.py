@@ -13,6 +13,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem
+from Qt.QtWidgets import QGraphicsObject
 from Qt.QtWidgets import QLabel
 from Qt.QtWidgets import QTextBrowser
 from Qt.QtWidgets import QGraphicsWidget
@@ -116,7 +117,7 @@ class NodeName(QGraphicsTextItem):
         self.setTextCursor(cursor)
 
 
-class UINodeBase(QGraphicsItem):
+class UINodeBase(QGraphicsObject):
     """
     Default node description
     """
@@ -329,11 +330,6 @@ class UINodeBase(QGraphicsItem):
             self._createUIPinWrapper(o)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
-
-        if isinstance(self._rawNode, IContextMenu):
-            for label, foo in self._rawNode.getActions().items():
-                action = self._menu.addAction(label)
-                action.triggered.connect(foo)
 
     def getWidth(self):
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.label().toPlainText()) + Spacings.kPinSpacing
