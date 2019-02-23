@@ -116,12 +116,12 @@ class NodeName(QGraphicsTextItem):
         self.setTextCursor(cursor)
 
 
-class Node(QGraphicsItem):
+class UINodeBase(QGraphicsItem):
     """
     Default node description
     """
     def __init__(self, raw_node, w=80, color=Colors.NodeBackgrounds, headColor=Colors.NodeNameRect, bUseTextureBg=True):
-        super(Node, self).__init__()
+        super(UINodeBase, self).__init__()
         self._rawNode = raw_node
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.opt_node_base_color = Colors.NodeBackgrounds

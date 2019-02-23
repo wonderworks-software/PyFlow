@@ -1,6 +1,6 @@
 from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.UI.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
-from PyFlow.UI.Node import REGISTER_UI_NODE_FACTORY
+from PyFlow.UI.UINodeBase import REGISTER_UI_NODE_FACTORY
 from PyFlow.Packages.BasePackage.Factories.PinInputWidgetFactory import getInputWidget
 from PyFlow.Packages.BasePackage.Factories.UINodeFactory import createUINode
 

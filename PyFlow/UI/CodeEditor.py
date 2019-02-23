@@ -70,7 +70,7 @@ from Qt.QtWidgets import QPlainTextEdit
 from PyFlow.UI.Widgets import CodeEditor_ui
 import PyFlow.UI.PythonSyntax as PythonSyntax
 from PyFlow.UI.Widgets.UI import PinWidget_ui
-from PyFlow.UI.Node import Node
+from PyFlow.UI.UINodeBase import UINodeBase
 
 
 _defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()'] + dir(__builtin__)
@@ -322,7 +322,7 @@ class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         code = self.plainTextEdit.toPlainText()
         foo = WCodeEditor.wrapCodeToFunction('compute', code)
         exec(foo)
-        node.compute = MethodType(compute, node, Node)
+        node.compute = MethodType(compute, node, UINodeBase)
         node.currentComputeCode = code
 
         for index in range(self.lwOutputs.count()):

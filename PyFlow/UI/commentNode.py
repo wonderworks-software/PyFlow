@@ -16,8 +16,8 @@ from Qt import QtGui
 from Qt import QtCore
 
 from PyFlow.UI.Settings import (Spacings, Colors)
-from PyFlow.UI.Node import Node
-from PyFlow.UI.Node import NodeName
+from PyFlow.UI.UINodeBase import UINodeBase
+from PyFlow.UI.UINodeBase import NodeName
 
 class commentNodeName(NodeName):
     """doc string for commentNodeName"""
@@ -88,7 +88,7 @@ class commentNodeName(NodeName):
 #
 # Can drag intersected nodes.
 # You can also specify color and resize it.
-class commentNode(Node):
+class commentNode(UINodeBase):
     def __init__(self, name, graph, bUseTextureBg=False, headColor=Colors.AbsoluteBlack):
         super(commentNode, self).__init__(name, graph, headColor=headColor)
         self.color = Colors.AbsoluteBlack
@@ -117,7 +117,7 @@ class commentNode(Node):
             self.label().update()
 
     def serialize(self):
-        template = Node.serialize(self)
+        template = UINodeBase.serialize(self)
         template['meta']['commentNode'] = {
             'w': self.rect.right(),
             'h': self.rect.bottom(),
@@ -128,7 +128,7 @@ class commentNode(Node):
         return template
 
     def postCreate(self, jsonTemplate):
-        Node.postCreate(self, jsonTemplate)
+        UINodeBase.postCreate(self, jsonTemplate)
         # restore text and size
         width = self.minWidth
         height = self.minHeight
@@ -197,7 +197,7 @@ class commentNode(Node):
             self.bResize = True
 
         self.nodesToMove.clear()
-        for node in [i for i in self.collidingItems() if isinstance(i, Node) and not isinstance(i, commentNode)]:
+        for node in [i for i in self.collidingItems() if isinstance(i, UINodeBase) and not isinstance(i, commentNode)]:
             self.nodesToMove[node] = node.scenePos()
 
     def mouseMoveEvent(self, event):

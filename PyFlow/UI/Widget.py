@@ -42,9 +42,9 @@ from Qt.QtWidgets import QUndoStack
 
 from Settings import Colors
 from PyFlow.UI.Edge import Edge
-from PyFlow.UI.Node import Node
-from PyFlow.UI.Node import NodeName
-from PyFlow.UI.Node import getUINodeInstance
+from PyFlow.UI.UINodeBase import UINodeBase
+from PyFlow.UI.UINodeBase import NodeName
+from PyFlow.UI.UINodeBase import getUINodeInstance
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
@@ -369,7 +369,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                 nodeClassName = self.currentItem().text(0)
                 name = self.parent().graph().getUniqNodeName(nodeClassName)
                 pos = self.parent().graph().mapToScene(self.parent().graph().mouseReleasePos)
-                nodeTemplate = Node.jsonTemplate()
+                nodeTemplate = UINodeBase.jsonTemplate()
                 nodeTemplate['type'] = nodeClassName
                 nodeTemplate['name'] = name
                 nodeTemplate['x'] = pos.x()
@@ -694,7 +694,7 @@ class GraphWidgetUI(QGraphicsView):
                 # nodes
                 for nodeJson in data[self.name]['nodes']:
                     try:
-                        Node.deserialize(nodeJson, self)
+                        UINodeBase.deserialize(nodeJson, self)
                     except Exception as e:
                         print(nodeJson)
                         print(e)
