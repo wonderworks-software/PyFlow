@@ -49,7 +49,7 @@ from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
 from PyFlow.Commands.RemoveEdges import RemoveEdges as cmdRemoveEdges
-from PyFlow.UI.Pin import PinWidgetBase
+from PyFlow.UI.UIPinBase import UIPinBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
@@ -886,7 +886,7 @@ class GraphWidgetUI(QGraphicsView):
 
         if self.pressed_item and isinstance(self.pressed_item, QGraphicsItem):
             self.autoPanController.start()
-            if self.pressed_item.__class__.__name__ == PinWidgetBase.__name__:
+            if self.pressed_item.__class__.__name__ == UIPinBase.__name__:
                 if event.button() == QtCore.Qt.LeftButton:
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
@@ -975,8 +975,8 @@ class GraphWidgetUI(QGraphicsView):
                 dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
                 if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
-        if event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, PinWidgetBase):
-            if isinstance(self.pressed_item, PinWidgetBase):
+        if event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, UIPinBase):
+            if isinstance(self.pressed_item, UIPinBase):
                 # node box tree pops up
                 # with nodes taking supported data types of pressed Pin as input
                 self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction)
@@ -989,11 +989,11 @@ class GraphWidgetUI(QGraphicsView):
             if not i:
                 do_connect = False
                 break
-            if not i.__class__.__name__ == PinWidgetBase.__name__:
+            if not i.__class__.__name__ == UIPinBase.__name__:
                 do_connect = False
                 break
         if p_itm and r_itm:
-            if p_itm.__class__.__name__ == PinWidgetBase.__name__ and r_itm.__class__.__name__ == PinWidgetBase.__name__:
+            if p_itm.__class__.__name__ == UIPinBase.__name__ and r_itm.__class__.__name__ == UIPinBase.__name__:
                 if cycle_check(p_itm, r_itm):
                     print('cycles are not allowed')
                     do_connect = False

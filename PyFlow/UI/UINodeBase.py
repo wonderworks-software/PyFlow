@@ -26,7 +26,7 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 from Qt.QtWidgets import QMenu
 
-from Pin import PinWidgetBase
+from PyFlow.UI.UIPinBase import UIPinBase
 from PyFlow.UI.InputWidgets import createInputWidget
 from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.UI.IContextMenu import IContextMenu
@@ -124,6 +124,7 @@ class UINodeBase(QGraphicsObject):
     def __init__(self, raw_node, w=80, color=Colors.NodeBackgrounds, headColor=Colors.NodeNameRect, bUseTextureBg=True):
         super(UINodeBase, self).__init__()
         self._rawNode = raw_node
+        self._rawNode.setWrapper(self)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.opt_node_base_color = Colors.NodeBackgrounds
         self.opt_selected_pen_color = Colors.NodeSelectedPenColor
@@ -513,7 +514,7 @@ class UINodeBase(QGraphicsObject):
             pin.kill()
 
     def _createUIPinWrapper(self, rawPin, index=-1):
-        p = PinWidgetBase(self, rawPin)
+        p = UIPinBase(self, rawPin)
         if rawPin.direction == PinDirection.Input:
             p.call = rawPin.call
 

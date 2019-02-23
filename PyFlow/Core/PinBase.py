@@ -24,16 +24,40 @@ class PinBase(IPin):
         self.affected_by = []
         ## List of connections
         self.edge_list = []
-
         ## Access to the node
         self.owningNode = weakref.ref(owningNode)
-        self.setName(name)
-        self.dataType = dataType
 
+        self.name = name
+        self.dataType = dataType
         ## Defines is this input pin or output
         self.direction = direction
-
+        ## For rand int node
         self._alwaysPushDirty = False
+        ## Can be renamed or not (for switch on string node)
+        self._renamingEnabled = False
+        ## For examle sequence nodes output execs are dynamically created and can be deleted from node as well
+        self._dynamic = False
+
+        # gui class weak ref
+        self._wrapper = None
+
+    def setWrapper(self, wrapper):
+        self._wrapper = weakref.ref(wrapper)
+
+    def getWrapper(self):
+        return self._wrapper
+
+    def setRenamingEnabled(self, bEnabled):
+        self._renamingEnabled = bEnabled
+
+    def canBeRenamed(self):
+        return self._renamingEnabled
+
+    def setDynamic(self, bDynamic):
+        self._dynamic = bDynamic
+
+    def isDynamic(self):
+        return self._dynamic
 
     def setAlwaysPushDirty(self, bValue=False):
         assert(isinstance(bValue, bool))
@@ -66,7 +90,12 @@ class PinBase(IPin):
         self._uid = value
 
     def setName(self, name):
+        oldName = self.name
         self.name = name.replace(" ", "_")
+        if self.direction == PinDirection.Input:
+            self.owningNode().namePinInputsMap[self.name] = self.owningNode().namePinInputsMap.pop(oldName)
+        if self.direction == PinDirection.Output:
+            self.owningNode().namePinOutputsMap[self.name] = self.owningNode().namePinOutputsMap.pop(oldName)
 
     def getName(self):
         return self.owningNode().name + '.' + self.name

@@ -3,7 +3,7 @@ from PyFlow.Core import NodeBase
 
 # TODO: remove this. custom nodes like this should have another ui base class, with custom ui stuff (pins creation etc.)
 from Qt.QtWidgets import QMenu
-# from ..Core.Pin import PinWidgetBase
+# from ..Core.UIPinBase import PinWidgetBase
 
 
 class sequence(NodeBase):

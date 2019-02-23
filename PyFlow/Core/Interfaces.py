@@ -36,6 +36,12 @@ class IItemBase(ISerializable):
     def __init__(self):
         super(IItemBase, self).__init__()
 
+    def getWrapper(self):
+        return None
+
+    def setWrapper(self, wrapper):
+        pass
+
     @property
     def uid(self):
         '''
@@ -47,7 +53,7 @@ class IItemBase(ISerializable):
         Returns:
             universally unique identifier UUID class.
         '''
-        pass
+        raise NotImplementedError('uid property of IItemBase can not be deleted')
 
     @uid.setter
     def uid(self, value):
@@ -57,7 +63,7 @@ class IItemBase(ISerializable):
         Args:
             value:  uuid4 universally unique identifier
         '''
-        pass
+        raise NotImplementedError('uid property of IItemBase can not be deleted')
 
     @uid.deleter
     def uid(self):
@@ -188,6 +194,18 @@ class IPin(IItemBase):
     @staticmethod
     def packageName():
         raise NotImplementedError('packageName method of IPin is not implemented')
+
+    def setRenamingEnabled(self, bEnabled):
+        raise NotImplementedError('setRenamingEnabled method of IPin is not implemented')
+
+    def setDynamic(self, bDynamic):
+        raise NotImplementedError('setDynamic method of IPin is not implemented')
+
+    def canBeRenamed(self):
+        raise NotImplementedError('canBeRenamed method of IPin is not implemented')
+
+    def isDynamic(self):
+        raise NotImplementedError('isDynamic method of IPin is not implemented')
 
 
 class INode(IItemBase):

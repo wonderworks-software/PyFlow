@@ -5,12 +5,13 @@ from Qt import QtGui
 from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QApplication
+from Qt.QtWidgets import QInputDialog
 
 from PyFlow.Core.AGraphCommon import *
 from PyFlow.UI.Settings import *
 
 
-class PinWidgetBase(QGraphicsWidget):
+class UIPinBase(QGraphicsWidget):
     '''
     Pin ui wrapper
     '''
@@ -27,25 +28,20 @@ class PinWidgetBase(QGraphicsWidget):
     # used by enums
     userStructChanged = QtCore.Signal(object)
 
-    def __init__(self, owningNode, raw_pin, **kwargs):
-        super(PinWidgetBase, self).__init__()
+    def __init__(self, owningNode, raw_pin):
+        super(UIPinBase, self).__init__()
         self._rawPin = raw_pin
+        self._rawPin.setWrapper(self)
         self.setParentItem(owningNode)
         self.setCursor(QtCore.Qt.CrossCursor)
         ## context menu for pin
         self.menu = QMenu()
         ## Disconnect all connections
-        self.actionDisconnect = self.menu.addAction('disconnect all')
+        self.actionDisconnect = self.menu.addAction('Disconnect all')
         self.actionDisconnect.triggered.connect(self.disconnectAll)
         ## Copy UUID to buffer
-        self.actionCopyUid = self.menu.addAction('copy uid')
+        self.actionCopyUid = self.menu.addAction('Copy uid')
         self.actionCopyUid.triggered.connect(self.saveUidToClipboard)
-        ## Call exec pin
-        self.actionCall = self.menu.addAction('execute')
-        self.actionCall.triggered.connect(self.call)
-
-        self.getDataAction = self.menu.addAction('get data')
-        self.getDataAction.triggered.connect(self.getData)
 
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
@@ -66,6 +62,35 @@ class PinWidgetBase(QGraphicsWidget):
         self.bLabelHidden = False
         self.bAnimate = False
         self._val = 0
+
+    @property
+    def owningNode(self):
+        return self._rawPin.owningNode
+
+    def setRenamingEnabled(self, bEnabled):
+        self._rawPin.setRenamingEnabled(bEnabled)
+        actionsNames = [a.text() for a in self.menu.actions()]
+        if bEnabled and "Rename" not in actionsNames:
+            renameAction = self.menu.addAction("Rename")
+            renameAction.triggered.connect(self.onRename)
+
+    def canBeRenamed(self):
+        return self._rawPin.canBeRenamed()
+
+    def onRename(self):
+        name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
+        if confirmed and name != self.name and name != "":
+            self.setName(name)
+
+    def setDynamic(self, bDynamic):
+        self._rawPin.setDynamic(bDynamic)
+        actionsNames = [a.text() for a in self.menu.actions()]
+        if bDynamic and "Remove" not in actionsNames:
+            removeAction = self.menu.addAction("Remove")
+            removeAction.triggered.connect(self.kill)
+
+    def isDynamic(self):
+        return self._rawPin.isDynamic()
 
     @property
     def dirty(self):
@@ -111,10 +136,6 @@ class PinWidgetBase(QGraphicsWidget):
     @property
     def affects(self):
         return self._rawPin.affects
-
-    @property
-    def owningNode(self):
-        return self._rawPin.owningNode
 
     @property
     def direction(self):
@@ -188,11 +209,11 @@ class PinWidgetBase(QGraphicsWidget):
         if hasattr(self.owningNode(), self.name):
             delattr(self.owningNode(), self.name)
         if self._container is not None:
-            self.owningNode().graph().scene().removeItem(self._container)
+            self.owningNode().getWrapper()().graph().scene().removeItem(self._container)
             if self._rawPin.direction == PinDirection.Input:
-                self.owningNode().inputsLayout.removeItem(self._container)
+                self.owningNode().getWrapper()().inputsLayout.removeItem(self._container)
             else:
-                self.owningNode().outputsLayout.removeItem(self._container)
+                self.owningNode().getWrapper()().outputsLayout.removeItem(self._container)
         self._rawPin.kill()
 
     @staticmethod
@@ -222,7 +243,7 @@ class PinWidgetBase(QGraphicsWidget):
         return data
 
     def ungrabMouseEvent(self, event):
-        super(PinWidgetBase, self).ungrabMouseEvent(event)
+        super(UIPinBase, self).ungrabMouseEvent(event)
 
     def get_container(self):
         return self._container
@@ -315,7 +336,7 @@ class PinWidgetBase(QGraphicsWidget):
             return self.owningNode().outputsLayout
 
     def hoverEnterEvent(self, event):
-        super(PinWidgetBase, self).hoverEnterEvent(event)
+        super(UIPinBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
         hoverMessage = "Data: {0}\r\nDirty: {1}".format(str(self._rawPin.currentData()), self._rawPin.dirty)
@@ -323,7 +344,7 @@ class PinWidgetBase(QGraphicsWidget):
         event.accept()
 
     def hoverLeaveEvent(self, event):
-        super(PinWidgetBase, self).hoverLeaveEvent(event)
+        super(UIPinBase, self).hoverLeaveEvent(event)
         self.update()
         self.hovered = False
 

@@ -26,8 +26,15 @@ class NodeBase(INode):
         self.x = 0.0
         self.y = 0.0
         self.bCallable = False
+        self._wrapper = None
 
     # IItemBase interface
+
+    def setWrapper(self, wrapper):
+        self._wrapper = weakref.ref(wrapper)
+
+    def getWrapper(self):
+        return self._wrapper
 
     @property
     def uid(self):
