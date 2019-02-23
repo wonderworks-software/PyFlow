@@ -10,6 +10,8 @@ class delay(NodeBase):
         self.delay.setDefaultValue(0.2)
         self.out0 = self.addOutputPin('out0', 'ExecPin')
         self.process = False
+        self._total = 0.0
+        self._currentDelay = 0.0
 
     @staticmethod
     def packageName():
@@ -34,9 +36,15 @@ class delay(NodeBase):
     def callAndReset(self):
         self.out0.call()
         self.process = False
+        self._total = 0.0
+
+    def Tick(self, delta):
+        if self.process:
+            self._total += delta
+            if self._total >= self._currentDelay:
+                self.callAndReset()
 
     def compute(self):
+        self._currentDelay = self.delay.getData()
         if not self.process:
             self.process = True
-            delay = self.delay.getData() * 1000.0
-            # call delayed callAndReset
