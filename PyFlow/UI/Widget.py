@@ -54,6 +54,7 @@ from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow import (
     getRawNodeInstance,
+    getUINodeInstance,
     GET_PACKAGES
 )
 from PyFlow.Core.AGraphCommon import *
@@ -84,7 +85,7 @@ def importByName(module, name):
 def getNodeInstance(nodeClassName, nodeName, graph, packageName=None):
     raw_instance = getRawNodeInstance(nodeClassName, packageName)
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(nodeClassName, packageName)
-    instance = Node(raw_instance)
+    instance = getUINodeInstance(raw_instance)
     graph.addNode(instance)
     return instance
 

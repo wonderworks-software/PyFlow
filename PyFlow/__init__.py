@@ -66,6 +66,14 @@ def getRawNodeInstance(nodeClassName, packageName=None):
         return nodes[nodeClassName](nodeClassName)
 
 
+def getUINodeInstance(raw_instance):
+    packageName = raw_instance.packageName()
+    print(packageName)
+    # TODO: create UI node here and return
+    assert(False)
+    return None
+
+
 def INITIALIZE():
     # TODO: Check for duplicated package names
     for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):

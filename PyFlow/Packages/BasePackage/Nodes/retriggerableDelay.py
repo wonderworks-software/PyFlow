@@ -1,6 +1,3 @@
-# TODO: remove QTimer
-from Qt.QtCore import QTimer
-
 from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
@@ -8,18 +5,13 @@ from PyFlow.Core import NodeBase
 class retriggerableDelay(NodeBase):
     def __init__(self, name):
         super(retriggerableDelay, self).__init__(name)
-        self.inp0 = self.addInputPin('in0', 'ExecPin', self.compute)
+        self.inp0 = self.addInputPin('in0', 'ExecPin', None, self.compute)
         self.delay = self.addInputPin('Delay(s)', 'FloatPin')
-        self.delay.setDefaultValue(0.2)
+        self.delay.setDefaultValue(0.5)
         self.out0 = self.addOutputPin('out0', 'ExecPin')
         self.process = False
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.callAndReset)
-
-    def kill(self):
-        self.timer.stop()
-        self.timer.timeout.disconnect()
-        NodeBase.kill(self)
+        self._total = 0.0
+        self._currentDelay = 0.0
 
     @staticmethod
     def packageName():
@@ -41,15 +33,18 @@ class retriggerableDelay(NodeBase):
     def description():
         return 'Delayed call. With ability to reset.'
 
+    def Tick(self, delta):
+        if self.process:
+            self._total += delta
+            if self._total >= self._currentDelay:
+                self.callAndReset()
+
     def callAndReset(self):
         self.out0.call()
         self.process = False
-        self.timer.stop()
-
-    def restart(self):
-        delay = self.delay.getData() * 1000.0
-        self.timer.stop()
-        self.timer.start(delay)
+        self._total = 0.0
 
     def compute(self):
-        self.restart()
+        self._total = 0.0
+        self.process = True
+        self._currentDelay = self.delay.getData()
