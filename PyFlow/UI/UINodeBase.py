@@ -456,7 +456,6 @@ class UINodeBase(QGraphicsObject):
             for out in self.outputs.values():
                 if out.dataType == 'ExecPin':
                     continue
-                # TODO: iterate over registered factories and create pin
                 w = createInputWidget(out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
                 if w:
                     w.blockWidgetSignals(True)
