@@ -91,6 +91,7 @@ class UIPinBase(QGraphicsWidget):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
             self.setName(name)
+            self.setDisplayName(name)
 
     def setDynamic(self, bDynamic):
         self._rawPin.setDynamic(bDynamic)
@@ -251,6 +252,7 @@ class UIPinBase(QGraphicsWidget):
     def serialize(self):
         data = self._rawPin.serialize()
         data['bLabelHidden'] = self.bLabelHidden
+        data['displayName'] = self.displayName()
         return data
 
     def ungrabMouseEvent(self, event):

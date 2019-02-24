@@ -21,6 +21,7 @@ from PyFlow import Packages
 from PyFlow.UI.Widget import GraphWidgetUI
 from PyFlow.Core.AGraphCommon import Direction
 from PyFlow.Core.GraphBase import GraphBase
+from PyFlow.UI.InspectorWidget import InspectorWidget
 from PyFlow.UI.Widget import NodesBox
 from PyFlow.UI.Widgets import GraphEditor_ui
 from PyFlow import INITIALIZE
@@ -64,6 +65,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.G = GraphWidgetUI(self, graphBase=self.rawGraph)
         self.SceneLayout.addWidget(self.G)
 
+        self._inspectorWidget = InspectorWidget(self.G)
+
         self.actionVariables.triggered.connect(self.toggleVariables)
         self.actionPlot_graph.triggered.connect(self.G.plot)
         self.actionDelete.triggered.connect(self.on_delete)
@@ -84,6 +87,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionHistory.triggered.connect(self.toggleHistory)
         self.actionNew.triggered.connect(self.G.new_file)
         self.dockWidgetUndoStack.setVisible(False)
+        self.actionSpawnInspector.triggered.connect(self.onSpawnInspectorWindow)
 
         self.setMouseTracking(True)
 
@@ -95,6 +99,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.mainLoop)
+
+    def onSpawnInspectorWindow(self):
+        self._inspectorWidget.show()
 
     def startMainLoop(self):
         self.tick_timer.start(1000 / EDITOR_TARGET_FPS)

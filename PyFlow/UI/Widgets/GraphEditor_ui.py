@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:/GIT/PyFlow/PyFlow/UI/GraphEditor_ui.ui'
+# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui',
+# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui' applies.
 #
-# Created: Mon Jul 30 21:57:13 2018
-#      by: pyside2-uic 2.0.0 running on PySide2 5.6.0~a1
+# Created: Sun Feb 24 19:25:32 2019
+#      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -233,6 +234,11 @@ class Ui_MainWindow(object):
         icon20.addPixmap(QtGui.QPixmap(":/icons/resources/new_file_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionNew.setIcon(icon20)
         self.actionNew.setObjectName("actionNew")
+        self.actionSpawnInspector = QtWidgets.QAction(MainWindow)
+        icon21 = QtGui.QIcon()
+        icon21.addPixmap(QtGui.QPixmap(":/icons/resources/debug_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionSpawnInspector.setIcon(icon21)
+        self.actionSpawnInspector.setObjectName("actionSpawnInspector")
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionClear_history)
@@ -266,6 +272,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionAlignBottom)
         self.toolBar.addAction(self.actionAlignRight)
         self.toolBar.addSeparator()
+        self.toolBar.addAction(self.actionSpawnInspector)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -307,5 +314,7 @@ class Ui_MainWindow(object):
         self.actionHistory.setText(QtCompat.translate("MainWindow", "History", None, -1))
         self.actionNew_pin.setText(QtCompat.translate("MainWindow", "New pin", None, -1))
         self.actionNew.setText(QtCompat.translate("MainWindow", "New", None, -1))
+        self.actionSpawnInspector.setText(QtCompat.translate("MainWindow", "spawnInspector", None, -1))
+        self.actionSpawnInspector.setToolTip(QtCompat.translate("MainWindow", "Inspector window", None, -1))
 
 import nodes_res_rc
