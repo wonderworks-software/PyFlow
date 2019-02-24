@@ -1,18 +1,12 @@
 from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
-
-# TODO: remove this. custom nodes like this should have another ui base class, with custom ui stuff (pins creation etc.)
-from Qt.QtWidgets import QMenu
-# from ..Core.UIPinBase import PinWidgetBase
+from PyFlow.Core.AGraphCommon import *
 
 
 class sequence(NodeBase):
     def __init__(self, name):
         super(sequence, self).__init__(name)
         self.inExecPin = self.addInputPin('inExec', 'ExecPin', None, self.compute)
-        self.menu = QMenu()
-        self.action = self.menu.addAction('add pin')
-        self.action.triggered.connect(self.addOutPin)
 
     @staticmethod
     def packageName():
@@ -20,9 +14,6 @@ class sequence(NodeBase):
 
     def addOutPin(self):
         p = self.addOutputPin(str(len(self.outputs)), 'ExecPin')
-
-    def contextMenuEvent(self, event):
-        self.menu.exec_(event.screenPos())
 
     @staticmethod
     def pinTypeHints():
@@ -40,17 +31,13 @@ class sequence(NodeBase):
     def description():
         return 'The Sequence node allows for a single execution pulse to trigger a series of events in order. The node may have any number of outputs, all of which get called as soon as the Sequence node receives an input. They will always get called in order, but without any delay. To a typical user, the outputs will likely appear to have been triggered simultaneously.'
 
-    def postCreate(self, jsonTemplate):
-        Node.postCreate(self, jsonTemplate)
-
-        # restore dynamically created  outputs
-        if len(jsonTemplate['outputs']) == 0:
-            self.addOutPin()
-            self.addOutPin()
-        else:
-            # for out in jsonTemplate['outputs']:
-            #     PinWidgetBase.deserialize(self, out)
-            pass
+    def addOutPin(self):
+        name = str(len(self.outputs))
+        p = self.addOutputPin(name, 'ExecPin')
+        pinAffects(self.inExecPin, p)
+        if p.uid not in self.graph().pins:
+            self.graph().pins[p.uid] = p
+        return p
 
     def compute(self):
         for out in self.outputs.values():

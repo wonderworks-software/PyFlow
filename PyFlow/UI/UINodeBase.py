@@ -526,7 +526,7 @@ class UINodeBase(QGraphicsObject):
         lblName = name
 
         lbl = QLabel(lblName)
-        p.nameChanged.connect(lbl.setText)
+        p.displayNameChanged.connect(lbl.setText)
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         font = QtGui.QFont('Consolas')

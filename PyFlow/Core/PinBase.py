@@ -186,8 +186,10 @@ class PinBase(IPin):
     def kill(self):
         if self.direction == PinDirection.Input and self.uid in self.owningNode().inputs:
             self.owningNode().inputs.pop(self.uid)
+            self.owningNode().namePinInputsMap.pop(self.name)
         if self.direction == PinDirection.Output and self.uid in self.owningNode().outputs:
             self.owningNode().outputs.pop(self.uid)
+            self.owningNode().namePinOutputsMap.pop(self.name)
         if self.uid in self.owningNode().graph().pins:
             self.owningNode().graph().pins.pop(self.uid)
 

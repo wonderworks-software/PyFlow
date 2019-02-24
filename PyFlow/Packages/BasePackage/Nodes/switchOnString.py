@@ -39,11 +39,6 @@ class switchOnString(NodeBase):
     def description():
         return 'Execute output depending on input string'
 
-    def postCreate(self, jsonTemplate):
-        NodeBase.postCreate(self, jsonTemplate)
-        for out in jsonTemplate['outputs']:
-            PinBase.deserialize(self, out)
-
     def compute(self):
         string = self.inString.getData()
         if string in self.namePinOutputsMap:

@@ -24,6 +24,8 @@ class UIPinBase(QGraphicsWidget):
     dataBeenSet = QtCore.Signal(object)
     ## Event called when pin name changes
     nameChanged = QtCore.Signal(str)
+    ## Event called when pin name changes
+    displayNameChanged = QtCore.Signal(str)
     ## Event called when setUserStruct called
     # used by enums
     userStructChanged = QtCore.Signal(object)
@@ -62,6 +64,14 @@ class UIPinBase(QGraphicsWidget):
         self.bLabelHidden = False
         self.bAnimate = False
         self._val = 0
+        self._displayName = self.name
+
+    def displayName(self):
+        return self._displayName
+
+    def setDisplayName(self, displayName):
+        self._displayName = displayName
+        self.displayNameChanged.emit(self._displayName)
 
     @property
     def owningNode(self):
@@ -215,6 +225,7 @@ class UIPinBase(QGraphicsWidget):
             else:
                 self.owningNode().getWrapper()().outputsLayout.removeItem(self._container)
         self._rawPin.kill()
+        self.owningNode().getWrapper()().updateNodeShape()
 
     @staticmethod
     def deserialize(owningNode, jsonData):
