@@ -24,6 +24,7 @@ from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.UI.InspectorWidget import InspectorWidget
 from PyFlow.UI.Widget import NodesBox
 from PyFlow.UI.Widgets import GraphEditor_ui
+from PyFlow.UI.VariablesWidget import VariablesWidget
 from PyFlow import INITIALIZE
 
 
@@ -91,9 +92,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         self.setMouseTracking(True)
 
-        # TODO: reimplement variables
-        # self.variablesWidget = VariablesWidget(self, self.G)
-        # self.leftDockGridLayout.addWidget(self.variablesWidget)
+        self.variablesWidget = VariablesWidget(self, self.G)
+        self.leftDockGridLayout.addWidget(self.variablesWidget)
 
         self._lastClock = 0.0
         self.fps = EDITOR_TARGET_FPS

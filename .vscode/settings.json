@@ -17,7 +17,7 @@
         "-p",
         "Test_*.py"
     ],
-    "python.pythonPath": "C:\\Python37\\python.exe",
+    "python.pythonPath": "C:\\Python3\\python.exe",
     "python.unitTest.unittestEnabled": true,
     "python.unitTest.pyTestEnabled": false,
     "python.unitTest.nosetestsEnabled": false,

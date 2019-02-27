@@ -516,6 +516,10 @@ class GraphWidgetUI(QGraphicsView):
         self.UIPins = {}
 
     @property
+    def vars(self):
+        return self._graphBase.vars
+
+    @property
     def name(self):
         return self._graphBase.name
 
