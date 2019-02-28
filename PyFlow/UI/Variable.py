@@ -109,8 +109,7 @@ class VariableBase(QWidget):
             self._uid = uuid4()
         self.graph = graph
         self.setName(name)
-        # self.types = [v.name for v in list(DataTypes) if v not in [DataTypes.Reference, DataTypes.Exec, DataTypes.Enum]]
-        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]  # TODO: list of all value pins class names
+        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
         self.graph.vars[self.uid] = self
 
     @property
