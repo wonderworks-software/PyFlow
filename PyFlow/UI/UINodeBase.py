@@ -38,7 +38,7 @@ UI_NODES_FACTORIES = {}
 
 
 class NodeName(QGraphicsTextItem):
-    def __init__(self, parent, bUseTextureBg=True, color=Colors.Green):
+    def __init__(self, parent, bUseTextureBg=True, color=Colors.NodeNameRectGreen):
         super(NodeName, self).__init__(parent)
         self.setParentItem(parent)
         self.bUseTextureBg = bUseTextureBg
@@ -83,27 +83,28 @@ class NodeName(QGraphicsTextItem):
         return QtCore.QRectF(0, 0, self.width + 5.0, self.h)
 
     def paint(self, painter, option, widget):
-        r = QtCore.QRectF(option.rect)
-        r.setWidth(self.parentItem().childrenBoundingRect().width() - 0.25)
-        r.setX(0.25)
-        r.setY(0.25)
-        b = QtGui.QLinearGradient(0, 0, 0, r.height())
-        b.setColorAt(0, QtGui.QColor(0, 0, 0, 0))
-        b.setColorAt(0.25, self.color)
-        b.setColorAt(1, self.color)
-        painter.setPen(QtCore.Qt.NoPen)
-        if self.bUseTextureBg:
-            b = QtGui.QBrush(self.bg)
-            b.setStyle(QtCore.Qt.TexturePattern)
-            painter.setBrush(b)
-        else:
-            painter.setBrush(self.color)
-            b.setStyle(QtCore.Qt.SolidPattern)
-        painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
-        parentRet = self.parentItem().childrenBoundingRect()
-        if self.icon:
-            painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
+        if self.parentItem().bUseTextureBg:
 
+            r = QtCore.QRectF(option.rect)
+            r.setWidth(self.parentItem().childrenBoundingRect().width() - 0.25)
+            r.setX(0.25)
+            r.setY(0.25)
+            b = QtGui.QLinearGradient(0, 0, r.width(), r.height())
+            b.setColorAt(0, self.color.lighter(60))
+            b.setColorAt(0.5, self.color)
+            b.setColorAt(1, self.color.darker(50))
+            painter.setPen(QtCore.Qt.NoPen)
+            path = QtGui.QPainterPath()
+            path.addRoundedRect(r, self.parentItem().sizes[4],self.parentItem().sizes[5]);
+            painter.fillPath(path, b)
+            painter.drawPath(path)           
+            parentRet = self.parentItem().childrenBoundingRect()
+            if self.icon:
+                painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
+        else:
+            parentRet = self.parentItem().childrenBoundingRect()
+            if self.icon:
+                painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))            
         super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):
@@ -121,7 +122,7 @@ class UINodeBase(QGraphicsObject):
     """
     Default node description
     """
-    def __init__(self, raw_node, w=80, color=Colors.NodeBackgrounds, headColor=Colors.NodeNameRect, bUseTextureBg=True):
+    def __init__(self, raw_node, w=80, color=Colors.NodeBackgrounds, headColor=Colors.NodeNameRectGreen, bUseTextureBg=True):
         super(UINodeBase, self).__init__()
         self._rawNode = raw_node
         self._rawNode.setWrapper(self)
@@ -136,7 +137,11 @@ class UINodeBase(QGraphicsObject):
         self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(self._rawNode.__class__.__name__))
         self._w = 0
         self.h = 40
-        self.sizes = [0, 0, self.w, self.h, 1, 1]
+        self.bUseTextureBg = bUseTextureBg#self.graph().styleSheetEditor.USETEXTUREBG
+        if self.bUseTextureBg:
+            self.sizes = [0, 0, self.w, self.h, 2, 2]
+        else:
+            self.sizes = [0, 0, self.w, self.h, 10, 10]
         self.w = w
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsFocusable)
@@ -144,7 +149,7 @@ class UINodeBase(QGraphicsObject):
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
-        self.label = weakref.ref(NodeName(self, bUseTextureBg, headColor))
+        self.label = weakref.ref(NodeName(self, self.bUseTextureBg, headColor))
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
         # main
@@ -166,11 +171,14 @@ class UINodeBase(QGraphicsObject):
 
         self.setZValue(1)
         self.setCursor(QtCore.Qt.OpenHandCursor)
-
-        self.tweakPosition()
+        
         self.icon = None
         self.UIPins = {}
         self._menu = QMenu()
+
+        self.isTemp = False
+        self.isCommentNode = False
+        
 
     def contextMenuEvent(self, event):
         self._menu.exec_(event.screenPos())
@@ -259,21 +267,16 @@ class UINodeBase(QGraphicsObject):
     def isCallable(self):
         return self._rawNode.isCallable()
 
-    def tweakPosition(self):
-        value = self.scenePos()
-        self.setX(roundup(value.x() - GRID_SIZE, GRID_SIZE))
-        self.setY(roundup(value.y() - GRID_SIZE, GRID_SIZE))
-
     def boundingRect(self):
         return self.childrenBoundingRect()
 
     def itemChange(self, change, value):
-        if change == self.ItemPositionChange:
-            # grid snapping
-            value.setX(roundup(value.x() - GRID_SIZE + GRID_SIZE / 3.0, GRID_SIZE))
-            value.setY(roundup(value.y() - GRID_SIZE + GRID_SIZE / 3.0, GRID_SIZE))
-            value.setY(value.y() - 2)
-            return value
+        #if change == self.ItemPositionChange:
+        #    # grid snapping
+        #    value.setX(roundup(value.x() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
+        #    value.setY(roundup(value.y() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
+        #    value.setY(value.y() - 2)
+        #    return value
         return QGraphicsItem.itemChange(self, change, value)
 
     @property
@@ -310,10 +313,7 @@ class UINodeBase(QGraphicsObject):
         if self.isCallable():
             if 'flow' not in self.category().lower():
                 if self.label().bUseTextureBg:
-                    self.label().bg = QtGui.QImage(':/icons/resources/blue.png')
-        else:
-            if self.label().bUseTextureBg:
-                self.label().bg = QtGui.QImage(':/icons/resources/green.png')
+                    self.label().color = Colors.NodeNameRectBlue
         self.setToolTip(self.description())
         self.update()
 
@@ -403,6 +403,18 @@ class UINodeBase(QGraphicsObject):
 
     def setName(self, name):
         self._rawNode.setName(name)
+
+    def translate(self, x, y):
+        super(UINodeBase, self).moveBy(x, y)
+
+    def getChainedNodes(self):
+        nodes = []
+        for pin in self.inputs.values():
+            for edge in pin.edge_list:
+                node =  edge.source().topLevelItem()#topLevelItem
+                nodes.append(node)
+                nodes += node.getChainedNodes()
+        return nodes
 
     def onUpdatePropertyView(self, formLayout):
         # name
