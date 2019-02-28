@@ -172,9 +172,9 @@ class UIPinBase(QGraphicsWidget):
         self.owningNode().graph().pins[value] = self.owningNode().graph().pins.pop(self._rawPin._uid)
         self._rawPin._uid = value
 
-    def color(self):
-        colorData = self._rawPin.color()
-        return QtGui.QColor(colorData[0], colorData[1], colorData[2], colorData[3])
+    @staticmethod
+    def color():
+        return QtGui.QColor(255, 0, 0, 255)
 
     def setUserStruct(self, inStruct):
         self._rawPin.setUserStruct(inStruct)

@@ -21,6 +21,7 @@ from PyFlow.UI.InputWidgets import createInputWidget
 from PyFlow.Core.AGraphCommon import *
 from PyFlow import getPinDefaultValueByType
 from PyFlow import findPinClassByType
+from PyFlow import getAllPinClasses
 from PyFlow.UI.Settings import Colors
 
 ## Colored rounded rect
@@ -35,7 +36,7 @@ class TypeWidget(QWidget):
         painter = QtGui.QPainter()
         painter.begin(self)
 
-        painter.setBrush(QtGui.QColor(self.color))
+        painter.setBrush(QtGui.QColor.fromRgb(*self.color))
         rect = event.rect()
         rect.setHeight(10)
         rect.setWidth(20)
@@ -52,16 +53,16 @@ class VarTypeComboBox(QComboBox):
         self._bJustSpawned = True
         self.var = var
         for i in self.var.types:
-            self.addItem(i, DataTypes[i].value)
+            self.addItem(i)
         self.currentIndexChanged.connect(self.onCurrentIndexChanged)
-        self.setCurrentIndex(self.findData(var.dataType))
+        self.setCurrentIndex(self.findText(var.dataType))
         self._bJustSpawned = False
 
     def onCurrentIndexChanged(self, index):
         if self._bJustSpawned:
             val = self.var.value
 
-        self.var.setDataType(self.itemData(index), self._bJustSpawned)
+        self.var.setDataType(self.itemText(index), self._bJustSpawned)
 
         if self._bJustSpawned:
             self.var.value = val
@@ -88,7 +89,7 @@ class VariableBase(QWidget):
         self.horizontalLayout.setSpacing(1)
         self.horizontalLayout.setContentsMargins(1, 1, 1, 1)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.widget = TypeWidget('BoolPin', self)
+        self.widget = TypeWidget(findPinClassByType('BoolPin').color(), self)
         self.widget.setObjectName("widget")
         self.horizontalLayout.addWidget(self.widget)
         self.labelName = QLabel(self)
@@ -109,7 +110,7 @@ class VariableBase(QWidget):
         self.graph = graph
         self.setName(name)
         # self.types = [v.name for v in list(DataTypes) if v not in [DataTypes.Reference, DataTypes.Exec, DataTypes.Enum]]
-        self.types = []
+        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]  # TODO: list of all value pins class names
         self.graph.vars[self.uid] = self
 
     @property

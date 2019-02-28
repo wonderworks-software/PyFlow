@@ -11,6 +11,10 @@ class FloatPin(PinBase):
         self.setDefaultValue(0.0)
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
@@ -19,7 +23,8 @@ class FloatPin(PinBase):
         '''data type index and default value'''
         return 'FloatPin', 0.0
 
-    def color(self):
+    @staticmethod
+    def color():
         return (96, 169, 23, 255)
 
     def supportedDataTypes(self):

@@ -12,6 +12,10 @@ class FloatVector4Pin(PinBase):
         self.setDefaultValue(Vector4())
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
@@ -22,7 +26,8 @@ class FloatVector4Pin(PinBase):
     def pinDataTypeHint():
         return 'FloatVector4Pin', Vector4()
 
-    def color(self):
+    @staticmethod
+    def color():
         return (173, 216, 230, 255)
 
     def serialize(self):

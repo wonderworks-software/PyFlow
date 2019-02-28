@@ -10,13 +10,18 @@ class StringPin(PinBase):
         self.setDefaultValue("")
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('StringPin',)
 
-    def color(self):
+    @staticmethod
+    def color():
         return (255, 8, 127, 255)
 
     @staticmethod

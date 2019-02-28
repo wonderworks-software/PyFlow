@@ -12,13 +12,18 @@ class QuatPin(PinBase):
         self.setDefaultValue(Quaternion())
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('QuatlPin',)
 
-    def color(self):
+    @staticmethod
+    def color():
         return (32, 178, 170, 255)
 
     @staticmethod

@@ -12,10 +12,15 @@ class Matrix44Pin(PinBase):
         self.setDefaultValue(Matrix44())
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
-    def color(self):
+    @staticmethod
+    def color():
         return (150, 0, 20, 255)
 
     def supportedDataTypes(self):

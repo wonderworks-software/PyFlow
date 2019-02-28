@@ -12,13 +12,18 @@ class FloatVector3Pin(PinBase):
         self.setDefaultValue(Vector3())
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('FloatVector3Pin',)
 
-    def color(self):
+    @staticmethod
+    def color():
         return (170, 100, 200, 255)
 
     @staticmethod

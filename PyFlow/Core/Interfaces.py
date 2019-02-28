@@ -108,12 +108,14 @@ class IPin(IItemBase):
         super(IPin, self).__init__()
 
     @staticmethod
-    def color():
+    def IsValuePin():
         '''
-        Defines what color pin will be drawn.
+        Defines is this pin is holding some data or not
+
+        For example, ExecPin is not a value pin
 
         Returns:
-            QColor class.
+            bool
         '''
         raise NotImplementedError('color method of IPin is not implemented')
 

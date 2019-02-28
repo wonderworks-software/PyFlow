@@ -12,6 +12,10 @@ class ExecPin(PinBase):
         self.dirty = False
 
     @staticmethod
+    def IsValuePin():
+        return False
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
@@ -29,7 +33,8 @@ class ExecPin(PinBase):
     def pinDataTypeHint():
         return 'ExecPin', None
 
-    def color(self):
+    @staticmethod
+    def color():
         return (255, 255, 255, 255)
 
     def setData(self, data):

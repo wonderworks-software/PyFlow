@@ -567,7 +567,7 @@ class GraphWidgetUI(QGraphicsView):
         self.maximum_scale = 2.0
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
-        ##Antialias -- Change to styleSheetEditor
+        ## Antialias -- Change to styleSheetEditor
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setRenderHint(QtGui.QPainter.TextAntialiasing)
         ##
@@ -622,7 +622,8 @@ class GraphWidgetUI(QGraphicsView):
         self.installEventFilter(self)
 
     def __del__(self):
-        self.tick_timer.stop()
+        # self.tick_timer.stop()
+        pass
 
     @property
     def vars(self):

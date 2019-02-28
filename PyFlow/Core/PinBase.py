@@ -41,6 +41,10 @@ class PinBase(IPin):
         # gui class weak ref
         self._wrapper = None
 
+    @staticmethod
+    def IsValuePin():
+        return True
+
     def setWrapper(self, wrapper):
         self._wrapper = weakref.ref(wrapper)
 
@@ -101,9 +105,6 @@ class PinBase(IPin):
         return self.owningNode().name + '.' + self.name
 
     # IPin interface
-
-    def color(self):
-        return (125, 125, 200, 255)
 
     ## This used by node box to suggest nodes by type
     @staticmethod

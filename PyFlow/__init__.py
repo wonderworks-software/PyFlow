@@ -11,7 +11,8 @@ __all__ = [
     "CreateRawPin",
     "getPinDefaultValueByType",
     "findPinClassByType",
-    "getRawNodeInstance"
+    "getRawNodeInstance",
+    "getAllPinClasses"
 ]
 
 
@@ -26,6 +27,12 @@ def GET_PACKAGE_CHECKED(package_name):
     assert package_name in __PACKAGES
     return __PACKAGES[package_name]
 
+
+def getAllPinClasses():
+    result = []
+    for package in list(__PACKAGES.values()):
+        result += list(package.GetPinClasses().values())
+    return result
 
 def findPinClassByType(dataType):
     for package_name, package in GET_PACKAGES().items():

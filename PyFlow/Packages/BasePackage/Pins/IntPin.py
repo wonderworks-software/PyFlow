@@ -10,6 +10,10 @@ class IntPin(PinBase):
         self.setDefaultValue(0)
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
@@ -17,7 +21,8 @@ class IntPin(PinBase):
     def pinDataTypeHint():
         return 'IntPin', 0
 
-    def color(self):
+    @staticmethod
+    def color():
         return (0, 168, 107, 255)
 
     def supportedDataTypes(self):

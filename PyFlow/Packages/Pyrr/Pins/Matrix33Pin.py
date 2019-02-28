@@ -12,13 +12,18 @@ class Matrix33Pin(PinBase):
         self.setDefaultValue(Matrix33())
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('Matrix33Pin',)
 
-    def color(self):
+    @staticmethod
+    def color():
         return (150, 69, 20, 255)
 
     @staticmethod

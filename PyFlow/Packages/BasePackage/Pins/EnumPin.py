@@ -12,6 +12,10 @@ class EnumPin(PinBase):
         self.setDefaultValue(self._userStruct(0))
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
@@ -20,7 +24,8 @@ class EnumPin(PinBase):
         dt['value'] = int(dt['value'])
         return dt
 
-    def color(self):
+    @staticmethod
+    def color():
         return (255, 211, 25, 255)
 
     def supportedDataTypes(self):

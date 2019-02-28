@@ -10,6 +10,10 @@ class BoolPin(PinBase):
         self.setDefaultValue(False)
 
     @staticmethod
+    def IsValuePin():
+        return True
+
+    @staticmethod
     def packageName():
         return PACKAGE_NAME
 
@@ -20,7 +24,8 @@ class BoolPin(PinBase):
     def pinDataTypeHint():
         return 'BoolPin', False
 
-    def color(self):
+    @staticmethod
+    def color():
         return (255, 0, 0, 255)
 
     def setData(self, data):
