@@ -1205,7 +1205,7 @@ class GraphWidgetUI(QGraphicsView):
                                 n.setSelected(True)
                             snode.setSelected(True)                     
                 else:
-                    if modifiers == QtCore.Qt.NoModifier:
+                    if modifiers in [QtCore.Qt.NoModifier,QtCore.Qt.AltModifier]:
                         super(GraphWidgetUI, self).mousePressEvent(event)
                     if modifiers == QtCore.Qt.ControlModifier:
                         node.setSelected(not node.isSelected())
