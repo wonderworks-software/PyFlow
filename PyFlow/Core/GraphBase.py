@@ -162,12 +162,12 @@ class GraphBase(object):
             return False
 
         if src.dataType not in dst.supportedDataTypes():
-            print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
+            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
             return False
         else:
             if src.dataType is 'ExecPin':
                 if dst.dataType is not 'ExecPin':
-                    print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
+                    print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                     return False
 
         if src in dst.affected_by:
