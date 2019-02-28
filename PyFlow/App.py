@@ -155,18 +155,25 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def shortcuts_info(self):
 
-        data = "Ctrl+Shift+N - togle node box\n"
+        data = "Tab - togle node box\n"
         data += "Ctrl+N - new file\n"
         data += "Ctrl+S - save\n"
         data += "Ctrl+Shift+S - save as\n"
         data += "Ctrl+O - open file\n"
-        data += "Ctrl+F - frame\n"
+        data += "F - frame selected\n"
+        data += "H - frame all\n"
         data += "C - comment selected nodes\n"
         data += "Delete - kill selected nodes\n"
+        data += "Ctrl+C - Copy\n"
+        data += "Ctrl+V - Paste\n"
+        data += "Alt+Drag - Duplicate\n"
+        data += "Ctrl+Z - Undo\n"
+        data += "Ctrl+Y - Redo\n"        
+        data += "Alt+Click - Disconect Pin\n"
         data += "Ctrl+Shift+ArrowLeft - Align left\n"
         data += "Ctrl+Shift+ArrowUp - Align Up\n"
         data += "Ctrl+Shift+ArrowRight - Align right\n"
-        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"
+        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"        
 
         QMessageBox.information(self, "Shortcuts", data)
 
