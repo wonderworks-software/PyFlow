@@ -47,13 +47,13 @@ class NodeName(QGraphicsTextItem):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.desc = parent._rawNode.description()
         self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
-        self.defaultHeight = 30
-        self.h = self.defaultHeight
         self.text_color = Colors.PinNameColor
         self.setDefaultTextColor(self.text_color)
         self.opt_font = QtGui.QFont('Consolas')
         self.opt_font_size = 8
         self.opt_font.setPointSize(self.opt_font_size)
+        self.defaultHeight = self.opt_font_size*2.5
+        self.h = self.defaultHeight        
         self.setFont(self.opt_font)
         self.descFont = QtGui.QFont("Consolas", self.opt_font.pointSize() / 2.0, 2, True)
         self.setPos(0, -self.boundingRect().height() - 8)
@@ -84,15 +84,18 @@ class NodeName(QGraphicsTextItem):
 
     def paint(self, painter, option, widget):
         if self.parentItem().bUseTextureBg:
-
+            color = self.color
+            if self.parentItem().isTemp:
+                color = color.lighter(50)
+                color.setAlpha(50)
             r = QtCore.QRectF(option.rect)
             r.setWidth(self.parentItem().childrenBoundingRect().width() - 0.25)
             r.setX(0.25)
             r.setY(0.25)
             b = QtGui.QLinearGradient(0, 0, r.width(), r.height())
-            b.setColorAt(0, self.color.lighter(60))
-            b.setColorAt(0.5, self.color)
-            b.setColorAt(1, self.color.darker(50))
+            b.setColorAt(0, color.lighter(60))
+            b.setColorAt(0.5, color)
+            b.setColorAt(1, color.darker(50))
             painter.setPen(QtCore.Qt.NoPen)
             path = QtGui.QPainterPath()
             path.addRoundedRect(r, self.parentItem().sizes[4],self.parentItem().sizes[5]);

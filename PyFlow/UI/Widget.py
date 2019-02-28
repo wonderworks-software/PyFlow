@@ -186,9 +186,10 @@ class SceneClass(QGraphicsScene):
             except:
                 pass
             self.tempnode = getNodeInstance(nodeTemplate['type'], nodeTemplate['name'], self.parent(), nodeTemplate['package'])
-            self.tempnode.isTemp = True
+            
             self.tempnode.update()
-            self.tempnode.postCreate(nodeTemplate)  
+            self.tempnode.postCreate(nodeTemplate) 
+            self.tempnode.isTemp = True 
             #self.addItem(self.tempnode)              
         else:
             event.ignore()
