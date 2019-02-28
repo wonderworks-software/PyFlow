@@ -117,7 +117,7 @@ class IPin(IItemBase):
         Returns:
             bool
         '''
-        raise NotImplementedError('color method of IPin is not implemented')
+        raise NotImplementedError('IsValuePin method of IPin is not implemented')
 
     @staticmethod
     def pinDataTypeHint():
