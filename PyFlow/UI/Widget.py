@@ -1411,8 +1411,8 @@ class GraphWidgetUI(QGraphicsView):
                 dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
                 if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
-        elif event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, PinBase):
-            if isinstance(self.pressed_item, PinBase):
+        elif event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, UIPinBase):
+            if isinstance(self.pressed_item, UIPinBase):
                 # node box tree pops up
                 # with nodes taking supported data types of pressed Pin as input
                 self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction)
