@@ -47,13 +47,14 @@ class NodeName(QGraphicsTextItem):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.desc = parent._rawNode.description()
         self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
+        self.defaultPen = QtGui.QPen(QtCore.Qt.white, 0.5)
         self.text_color = Colors.PinNameColor
         self.setDefaultTextColor(self.text_color)
         self.opt_font = QtGui.QFont('Consolas')
         self.opt_font_size = 8
         self.opt_font.setPointSize(self.opt_font_size)
-        self.defaultHeight = self.opt_font_size*2.5
-        self.h = self.defaultHeight        
+        self.defaultHeight = self.opt_font_size * 2.5
+        self.h = self.defaultHeight
         self.setFont(self.opt_font)
         self.descFont = QtGui.QFont("Consolas", self.opt_font.pointSize() / 2.0, 2, True)
         self.setPos(0, -self.boundingRect().height() - 8)
@@ -65,6 +66,7 @@ class NodeName(QGraphicsTextItem):
 
     def onDocContentsChanged(self):
         self.width = QtGui.QFontMetricsF(self.font()).width(self.toPlainText()) + 5.0
+        self.document().setTextWidth(self.width)
 
     @staticmethod
     def IsRenamable():
@@ -98,17 +100,23 @@ class NodeName(QGraphicsTextItem):
             b.setColorAt(1, color.darker(50))
             painter.setPen(QtCore.Qt.NoPen)
             path = QtGui.QPainterPath()
-            path.addRoundedRect(r, self.parentItem().sizes[4],self.parentItem().sizes[5]);
+            path.addRoundedRect(r, self.parentItem().sizes[4], self.parentItem().sizes[5])
             painter.fillPath(path, b)
-            painter.drawPath(path)           
+            painter.drawPath(path)
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
                 painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
         else:
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
-                painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))            
+                painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
         super(NodeName, self).paint(painter, option, widget)
+        painter.setPen(self.defaultPen)
+        nameRect = QtCore.QRectF(self.boundingRect().topLeft(),
+                                 QtCore.QPointF(self.parentItem().boundingRect().right(),
+                                 self.boundingRect().bottom())
+                                 )
+        painter.drawText(nameRect, QtCore.Qt.AlignCenter, self.parentItem()._rawNode.__class__.__name__)
 
     def focusInEvent(self, event):
         self.parentItem().graph().disableSortcuts()
@@ -140,7 +148,7 @@ class UINodeBase(QGraphicsObject):
         self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(self._rawNode.__class__.__name__))
         self._w = 0
         self.h = 40
-        self.bUseTextureBg = bUseTextureBg#self.graph().styleSheetEditor.USETEXTUREBG
+        self.bUseTextureBg = bUseTextureBg  # self.graph().styleSheetEditor.USETEXTUREBG
         if self.bUseTextureBg:
             self.sizes = [0, 0, self.w, self.h, 2, 2]
         else:
