@@ -114,7 +114,7 @@ class NodeName(QGraphicsTextItem):
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
                 painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
-        super(NodeName, self).paint(painter, option, widget)
+        #super(NodeName, self).paint(painter, option, widget)
         painter.setPen(self.defaultPen)
         nameRect = QtCore.QRectF(self.boundingRect().topLeft(),
                                  QtCore.QPointF(self.parentItem().boundingRect().right(),
