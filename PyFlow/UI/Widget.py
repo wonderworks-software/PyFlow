@@ -1414,7 +1414,7 @@ class GraphWidgetUI(QGraphicsView):
             self._manipulationMode = MANIP_MODE_NONE
         if event.button() == QtCore.Qt.RightButton:
             # show nodebox only if drag is small and no items under cursor
-            if self.pressed_item is None or isinstance(self.pressed_item, Nodes.commentNode.commentNode):
+            if self.pressed_item is None or (isinstance(self.pressed_item, UINodeBase) and self.nodeFromInstance(self.pressed_item).isCommentNode):
                 dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
                 if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
