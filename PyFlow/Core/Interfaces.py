@@ -120,6 +120,10 @@ class IPin(IItemBase):
         raise NotImplementedError('IsValuePin method of IPin is not implemented')
 
     @staticmethod
+    def color():
+        return (255, 0, 0, 255)
+
+    @staticmethod
     def pinDataTypeHint():
         """
         Static hint of what data type is this pin, as well as default value for this data type.

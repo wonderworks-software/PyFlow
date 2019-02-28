@@ -11,6 +11,9 @@ from PyFlow.Core.AGraphCommon import *
 from PyFlow.UI.Settings import *
 
 
+UI_PINS_FACTORIES = {}
+
+
 class UIPinBase(QGraphicsWidget):
     '''
     Pin ui wrapper
@@ -65,6 +68,7 @@ class UIPinBase(QGraphicsWidget):
         self.bAnimate = False
         self._val = 0
         self._displayName = self.name
+        self._color = QtGui.QColor(*self._rawPin.color())
 
     def displayName(self):
         return self._displayName
@@ -172,9 +176,8 @@ class UIPinBase(QGraphicsWidget):
         self.owningNode().graph().pins[value] = self.owningNode().graph().pins.pop(self._rawPin._uid)
         self._rawPin._uid = value
 
-    @staticmethod
-    def color():
-        return QtGui.QColor(255, 0, 0, 255)
+    def color(self):
+        return self._color
 
     def setUserStruct(self, inStruct):
         self._rawPin.setUserStruct(inStruct)
@@ -366,3 +369,18 @@ class UIPinBase(QGraphicsWidget):
         self._rawPin.pinDisconnected(other)
         self.OnPinDisconnected.emit(other)
         self.update()
+
+
+def REGISTER_UI_PIN_FACTORY(packageName, factory):
+    if packageName not in UI_PINS_FACTORIES:
+        UI_PINS_FACTORIES[packageName] = factory
+        print("registering", packageName, "ui pins")
+
+
+def getUIPinInstance(owningNode, raw_instance):
+    packageName = raw_instance.packageName()
+    instance = None
+    if packageName in UI_PINS_FACTORIES:
+        instance = UI_PINS_FACTORIES[packageName](owningNode, raw_instance)
+    assert(instance is not None)
+    return instance

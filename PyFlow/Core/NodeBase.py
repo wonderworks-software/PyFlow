@@ -54,7 +54,7 @@ class NodeBase(INode):
                     'uuid': None,
                     'inputs': [],
                     'outputs': [],
-                    'meta': {}
+                    'meta': {'var': {}}
                     }
         return template
 

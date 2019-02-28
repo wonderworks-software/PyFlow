@@ -3,6 +3,7 @@
 Variables input widget. Container for [VariableBase](@ref PyFlow.Core.Variable.VariableBase)
 """
 from types import MethodType
+import json
 
 from Qt import QtCore
 from Qt import QtGui
@@ -13,6 +14,9 @@ from Qt.QtWidgets import QListWidgetItem
 from PyFlow.UI.Widgets.VariablesWidget_ui import Ui_Form
 from Variable import VariableBase
 
+VARIABLE_TAG = "VAR"
+VARIABLE_NODE_UID_TAG = "UID"
+
 
 def lwMousePressEvent(self, event):
     QListWidget.mousePressEvent(self, event)
@@ -20,7 +24,8 @@ def lwMousePressEvent(self, event):
     if w:
         drag = QtGui.QDrag(self)
         mime_data = QtCore.QMimeData()
-        mime_data.setText("Var|" + str(w.uid))
+        dataJson = {VARIABLE_TAG: True, VARIABLE_NODE_UID_TAG: str(w.uid), "Package": None, "PressedText": None}
+        mime_data.setText(json.dumps(dataJson))
         drag.setMimeData(mime_data)
         drag.exec_()
 

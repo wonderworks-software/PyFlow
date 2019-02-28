@@ -26,10 +26,14 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
 from Qt.QtWidgets import QMenu
 
-from PyFlow.UI.UIPinBase import UIPinBase
+from PyFlow.UI.UIPinBase import (
+    UIPinBase,
+    getUIPinInstance
+)
 from PyFlow.UI.InputWidgets import createInputWidget
 from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.UI.IContextMenu import IContextMenu
+from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Enums import ENone
 from PyFlow.Core.AGraphCommon import *
 
@@ -182,14 +186,13 @@ class UINodeBase(QGraphicsObject):
 
         self.setZValue(1)
         self.setCursor(QtCore.Qt.OpenHandCursor)
-        
+
         self.icon = None
         self.UIPins = {}
         self._menu = QMenu()
 
         self.isTemp = False
         self.isCommentNode = False
-        
 
     def contextMenuEvent(self, event):
         self._menu.exec_(event.screenPos())
@@ -347,7 +350,8 @@ class UINodeBase(QGraphicsObject):
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.label().toPlainText()) + Spacings.kPinSpacing
         return fontWidth if fontWidth > 25 else 25
 
-    def jsonTemplate(self):
+    @staticmethod
+    def jsonTemplate():
         template = NodeBase.jsonTemplate()
         template['x'] = 0
         template['y'] = 0
@@ -535,7 +539,7 @@ class UINodeBase(QGraphicsObject):
             pin.kill()
 
     def _createUIPinWrapper(self, rawPin, index=-1):
-        p = UIPinBase(self, rawPin)
+        p = getUIPinInstance(self, rawPin)
         if rawPin.direction == PinDirection.Input:
             p.call = rawPin.call
 
