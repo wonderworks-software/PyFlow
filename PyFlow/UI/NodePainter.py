@@ -13,6 +13,7 @@ class NodePainter(object):
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
             pen.setColor(Colors.Yellow)
+            #pen.setColor(node.graph().window().styleSheetEditor.style.MainColor)
             pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)
         painter.setBrush(node.bg)
@@ -23,10 +24,13 @@ class NodePainter(object):
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtCore.Qt.darkGray)
 
-        color = Colors.NodeBackgrounds
+        color = node.color
+        color.setAlpha(230)
         if node.isSelected():
             color = color.lighter(150)
-
+        if node.isTemp:
+            color = color.lighter(50)
+            color.setAlpha(50)
         linearGrad = QtGui.QRadialGradient(QtCore.QPointF(40, 40), 300)
         linearGrad.setColorAt(0, color)
         linearGrad.setColorAt(1, color.lighter(180))
@@ -34,7 +38,29 @@ class NodePainter(object):
         painter.setBrush(br)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
+            #pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
             pen.setColor(Colors.Yellow)
             pen.setStyle(node.opt_pen_selected_type)
         painter.setPen(pen)
-        painter.drawRoundedRect(node.childrenBoundingRect(), node.sizes[4], node.sizes[5])
+        rect = node.childrenBoundingRect()
+        rect.setWidth(node.childrenBoundingRect().width())
+        rect.setX(node.childrenBoundingRect().x())
+        painter.drawRoundedRect(rect, node.sizes[4], node.sizes[5])
+
+    @staticmethod
+    def asGraphSides(node, painter, option, widget):
+        painter.setPen(QtCore.Qt.NoPen)
+        painter.setBrush(QtCore.Qt.darkGray)
+
+        color = Colors.NodeBackgrounds
+        #if node.isSelected():
+        #    color = color.lighter(150)
+
+        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(40, 40), 300)
+        linearGrad.setColorAt(0, color)
+        linearGrad.setColorAt(1, color.lighter(180))
+        br = QtGui.QBrush(linearGrad)
+        painter.setBrush(br)
+        pen = QtGui.QPen(node.graph().parent.styleSheetEditor.style.MainColor, 0.5)
+        painter.setPen(pen)
+        painter.drawRoundedRect(node.boundingRect(), node.sizes[4], node.sizes[5])

@@ -332,12 +332,8 @@ class UIPinBase(QGraphicsWidget):
             painter.drawPolygon(arrow)
         else:
             painter.setBrush(QtGui.QBrush(linearGrad))
+            rect = background_rect.setX(background_rect.x())
             painter.drawEllipse(background_rect)
-            arrow = QtGui.QPolygonF([QtCore.QPointF(self.width, self.height * 0.7),
-                                    QtCore.QPointF(self.width * 1.15, self.height / 2.0),
-                                    QtCore.QPointF(self.width, self.height * 0.3),
-                                    QtCore.QPointF(self.width, self.height * 0.7)])
-            painter.drawPolygon(arrow)
 
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())
