@@ -1,4 +1,4 @@
-"""@file GetVarNode.py
+"""@file UIGetVarNode.py
 
 Builtin node to acess variable value.
 """
@@ -14,15 +14,14 @@ from PyFlow.Commands.RemoveNodes import RemoveNodes
 
 
 ## Variable getter node
-class GetVarNode(UINodeBase):
-    def __init__(self, name, graph, var):
-        super(GetVarNode, self).__init__(name, graph)
-        self.var = var
-        self.out = self.addOutputPin('val', self.var.dataType, hideLabel=True)
-        self.var.valueChanged.connect(self.onVarValueChanged)
-        self.var.nameChanged.connect(self.onVarNameChanged)
-        self.var.killed.connect(self.kill)
-        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+class UIGetVarNode(UINodeBase):
+    def __init__(self, raw_node):
+        super(UIGetVarNode, self).__init__(name, graph)
+        # self.out = self.addOutputPin('val', self.var.dataType)
+        # self.var.valueChanged.connect(self.onVarValueChanged)
+        # self.var.nameChanged.connect(self.onVarNameChanged)
+        # self.var.killed.connect(self.kill)
+        # self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
         self.label().hide()
         self.label().opt_font.setPointSizeF(6.5)
 
@@ -31,7 +30,7 @@ class GetVarNode(UINodeBase):
 
     def serialize(self):
         template = Node.serialize(self)
-        template['meta']['var'] = self.var.serialize()
+        # template['meta']['var'] = self.var.serialize()
         return template
 
     def onUpdatePropertyView(self, formLayout):
@@ -41,10 +40,6 @@ class GetVarNode(UINodeBase):
         cmd = RemoveNodes([self], self.graph())
         self.graph().undoStack.push(cmd)
 
-    def postCreate(self, template):
-        self.label().setPlainText(self.var.name)
-        Node.postCreate(self, template)
-
     def onVarNameChanged(self, newName):
         self.label().setPlainText(newName)
         self.setName(newName)
@@ -52,10 +47,6 @@ class GetVarNode(UINodeBase):
 
     def onVarValueChanged(self):
         push(self.out)
-
-    @staticmethod
-    def category():
-        return 'Variables'
 
     def paint(self, painter, option, widget):
         painter.setPen(QtCore.Qt.NoPen)
@@ -80,6 +71,3 @@ class GetVarNode(UINodeBase):
         pen.setColor(self.var.widget.color)
         painter.setPen(pen)
         painter.drawText(self.boundingRect(), QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, self.name)
-
-    def compute(self):
-        self.out.setData(self.var.value)

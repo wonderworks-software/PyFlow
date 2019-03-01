@@ -19,6 +19,7 @@ VARIABLE_NODE_UID_TAG = "UID"
 
 
 def lwMousePressEvent(self, event):
+    # TODO: create json template here for node creation
     QListWidget.mousePressEvent(self, event)
     w = self.itemWidget(self.currentItem())
     if w:

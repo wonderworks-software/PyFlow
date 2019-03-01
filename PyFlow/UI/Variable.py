@@ -105,7 +105,7 @@ class VariableBase(QWidget):
         self._value = value
         self.dataType = dataType
         self._uid = uid
-        if self._uid is None:
+        if not isinstance(self._uid, uuid.UUID):
             self._uid = uuid4()
         self.graph = graph
         self.setName(name)

@@ -12,6 +12,9 @@ class GraphBase(object):
         self.pins = {}
         self.vars = {}
 
+    def getVars(self):
+        return self.vars.values()
+
     def getUniqVarName(self, name):
         names = [v.name for v in self.vars.values()]
         if name not in names:

@@ -53,8 +53,6 @@ from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
 from PyFlow.Commands.RemoveEdges import RemoveEdges as cmdRemoveEdges
 from PyFlow.UI.UIPinBase import UIPinBase
-from PyFlow.UI.GetVarNode import GetVarNode
-from PyFlow.UI.SetVarNode import SetVarNode
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
@@ -224,6 +222,9 @@ class SceneClass(QGraphicsScene):
         # self.parent().undoStack.push(cmdSelect)
         pass
 
+    def createVariableGetter(self):
+        pass
+
     def dropEvent(self, event):
         if self.tempnode:
             x = self.tempnode.scenePos().x()
@@ -262,7 +263,7 @@ class SceneClass(QGraphicsScene):
                             nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
                             m = QMenu()
                             getterAction = m.addAction('Get')
-                            nodeTemplate['type'] = 'GetVarNode'
+                            nodeTemplate['type'] = 'getVar'
 
                             def varGetterCreator():
                                 n = self.parent().createNode(nodeTemplate)
@@ -274,17 +275,17 @@ class SceneClass(QGraphicsScene):
                             setNodeTemplate['type'] = 'SetVarNode'
                             setterAction.triggered.connect(lambda: self.parent().createNode(setNodeTemplate))
                             m.exec_(QtGui.QCursor.pos(), None)
-                            return
                         if modifiers == QtCore.Qt.ControlModifier:
                             nodeTemplate['type'] = GetVarNode.__name__
                             nodeTemplate['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
                             nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                            nodeTemplate['meta']['label'] = self.parent().vars[uuid.UUID(mimeText)].name
+                            nodeTemplate['meta']['label'] = self.getVars()[varGuid].name
                         if modifiers == QtCore.Qt.AltModifier:
                             nodeTemplate['type'] = SetVarNode.__name__
                             nodeTemplate['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
                             nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                            nodeTemplate['meta']['label'] = self.parent().vars[uuid.UUID(mimeText)].name
+                            nodeTemplate['meta']['label'] = self.getVars[varGuid].name
+                        super(SceneClass, self).dropEvent(event)
                 except Exception as e:
                     print(e)
 
@@ -1698,6 +1699,9 @@ class GraphWidgetUI(QGraphicsView):
 
     def count(self):
         return self._graphBase.count()
+
+    def getVars(self):
+        return self._graphBase.getVars()
 
     def getUniqVarName(self, name):
         return self._graphBase.getUniqVarName(name)
