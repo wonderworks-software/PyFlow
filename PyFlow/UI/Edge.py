@@ -164,7 +164,7 @@ class Edge(QGraphicsPathItem):
         vDistance = p2.y() - p1.y()
 
         offset = abs(xDistance) * 0.5
-        defOffset = 200
+        defOffset = 150
         if abs(xDistance) < defOffset:
             offset = defOffset / 2
 
