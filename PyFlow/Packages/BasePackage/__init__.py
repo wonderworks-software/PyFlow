@@ -36,7 +36,7 @@ from PyFlow.Packages.BasePackage.Nodes.sequence import sequence
 from PyFlow.Packages.BasePackage.Nodes.switchOnString import switchOnString
 from PyFlow.Packages.BasePackage.Nodes.timer import timer
 from PyFlow.Packages.BasePackage.Nodes.whileLoop import whileLoop
-
+from PyFlow.Packages.BasePackage.Nodes.commentNode import commentNode
 
 _FOO_LIBS = {
     ArrayLib.__name__: ArrayLib(),
@@ -63,7 +63,8 @@ _NODES = {
     sequence.__name__: sequence,
     switchOnString.__name__: switchOnString,
     timer.__name__: timer,
-    whileLoop.__name__: whileLoop
+    whileLoop.__name__: whileLoop,
+    commentNode.__name__: commentNode
 }
 
 _PINS = {
