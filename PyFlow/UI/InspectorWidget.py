@@ -29,7 +29,7 @@ class InspectorWidget(QWidget, Ui_Form):
 
         data = "<font color='white'><b>NODES</b></font><br>"
         for node in self._graph.getNodes():
-            data += '<font color="white"><b>{}</b></font><br>'.format(node.getName())
+            data += '<font color="white"><b>{0} - {1}</b></font><br>'.format(node.getName(), str(node.uid))
             data += '<font color="red">&nbsp;&nbsp;&nbsp;&nbsp;INPUTS</font><br>'
             for uid, pin in node.inputs.items():
                 uiPin = pin.getWrapper()()
@@ -48,7 +48,8 @@ class InspectorWidget(QWidget, Ui_Form):
 
         data += "<font color='white'><b>VARS</b></font><br>"
         for var in self._graph.getVars():
-            data += '<font color="white"><b>{}</b></font><br>'.format(var.name)
+            data += '<font color="white"><b>{0} - {1}</b></font><br>'.format(var.name, str(var.uid))
+            data += '<font color="white">type - {}</b></font><br>'.format(var.dataType)
             data += "<br>"
 
         self.textEdit.setHtml(data)

@@ -39,6 +39,7 @@ from PyFlow.Packages.BasePackage.Nodes.timer import timer
 from PyFlow.Packages.BasePackage.Nodes.whileLoop import whileLoop
 from PyFlow.Packages.BasePackage.Nodes.commentNode import commentNode
 from PyFlow.Packages.BasePackage.Nodes.getVar import getVar
+from PyFlow.Packages.BasePackage.Nodes.setVar import setVar
 
 _FOO_LIBS = {
     ArrayLib.__name__: ArrayLib(),
@@ -67,7 +68,8 @@ _NODES = {
     timer.__name__: timer,
     whileLoop.__name__: whileLoop,
     commentNode.__name__: commentNode,
-    getVar.__name__: getVar
+    getVar.__name__: getVar,
+    setVar.__name__: setVar
 }
 
 _PINS = {

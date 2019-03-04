@@ -10,6 +10,7 @@ from Qt import QtGui
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.Settings import *
 from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
 
 
@@ -19,19 +20,19 @@ class UIGetVarNode(UINodeBase):
         super(UIGetVarNode, self).__init__(raw_node)
         self.label().hide()
         self.label().opt_font.setPointSizeF(6.5)
-        self.out = None
+        self.UIOut = None
 
     @property
     def var(self):
         return self._rawNode.var
 
     def postCreate(self, jsonTemplate=None):
-        # create self.var and raw self.out pin
+        # create self._rawNode.var and raw self._rawNode.out pin
         self._rawNode.postCreate(jsonTemplate)
 
-        self.out = self._createUIPinWrapper(self._rawNode.out)
-        self.out.getLabel()().hide()
-        self.UIoutputs[self.out.uid] = self.out
+        self.UIOut = self._createUIPinWrapper(self._rawNode.out)
+        self.UIOut.getLabel()().hide()
+        self.UIoutputs[self.UIOut.uid] = self.UIOut
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
@@ -44,8 +45,8 @@ class UIGetVarNode(UINodeBase):
         return QtCore.QRectF(-5, -3, self.w, 20)
 
     def serialize(self):
-        template = Node.serialize(self)
-        # template['meta']['var'] = self.var.serialize()
+        template = UINodeBase.serialize(self)
+        template['meta']['var'] = self.var.serialize()
         return template
 
     def onUpdatePropertyView(self, formLayout):
@@ -61,7 +62,7 @@ class UIGetVarNode(UINodeBase):
         self.updateNodeShape(label=self.label().toPlainText())
 
     def onVarValueChanged(self):
-        push(self.out)
+        push(self.UIOut)
 
     def paint(self, painter, option, widget):
         painter.setPen(QtCore.Qt.NoPen)

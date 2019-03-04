@@ -168,6 +168,6 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
     if dataType == 'ExecPin':
         return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None)
     if dataType == 'EnumPin':
-        return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, userStructClass=userStructClass)
     if dataType == 'AnyPin':
         return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None)

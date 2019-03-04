@@ -176,7 +176,7 @@ class UINodeBase(QGraphicsObject):
         self.icon = None
         self.UIPins = {}
         self.UIinputs = {}
-        self.UIoutputs = {}        
+        self.UIoutputs = {}
         self._menu = QMenu()
 
         self.isTemp = False

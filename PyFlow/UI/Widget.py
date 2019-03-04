@@ -5,6 +5,7 @@ from os import listdir, path
 from time import ctime
 import json
 import re
+import uuid
 import weakref
 try:
     from inspect import getfullargspec as getargspec
@@ -184,34 +185,34 @@ class SceneClass(QGraphicsScene):
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
             event.accept()
-            # jsonData = json.loads(event.mimeData().text())
+            jsonData = json.loads(event.mimeData().text())
 
-            # if VARIABLE_TAG in jsonData:
-            #     return
+            if VARIABLE_TAG in jsonData:
+                return
 
-            # packageName = jsonData["package"]
-            # nodeType = jsonData["type"]
-            # name = self.parent().getUniqNodeName(nodeType)
+            packageName = jsonData["package"]
+            nodeType = jsonData["type"]
+            name = self.parent().getUniqNodeName(nodeType)
 
-            # nodeTemplate = NodeBase.jsonTemplate()
-            # nodeTemplate['package'] = packageName
-            # nodeTemplate['type'] = nodeType
-            # nodeTemplate['name'] = name
-            # nodeTemplate['x'] = event.scenePos().x()
-            # nodeTemplate['y'] = event.scenePos().y()
-            # nodeTemplate['meta']['label'] = nodeType
-            # nodeTemplate['uuid'] = None
+            nodeTemplate = NodeBase.jsonTemplate()
+            nodeTemplate['package'] = packageName
+            nodeTemplate['type'] = nodeType
+            nodeTemplate['name'] = name
+            nodeTemplate['x'] = event.scenePos().x()
+            nodeTemplate['y'] = event.scenePos().y()
+            nodeTemplate['meta']['label'] = nodeType
+            nodeTemplate['uuid'] = None
 
-            # try:
-            #     self.tempnode.kill()
-            #     self.tempnode.scene().removeItem(self.tempnode)
-            # except Exception as e:
-            #     print(e)
-            # self.tempnode = getNodeInstance(nodeTemplate, self.parent())
+            try:
+                self.tempnode.kill()
+                self.tempnode.scene().removeItem(self.tempnode)
+            except Exception as e:
+                pass
+            self.tempnode = getNodeInstance(nodeTemplate, self.parent())
 
-            # self.tempnode.update()
-            # self.tempnode.postCreate(nodeTemplate)
-            # self.tempnode.isTemp = True
+            self.tempnode.update()
+            self.tempnode.postCreate(nodeTemplate)
+            self.tempnode.isTemp = True
         else:
             event.ignore()
 
@@ -242,7 +243,10 @@ class SceneClass(QGraphicsScene):
         if self.tempnode:
             x = self.tempnode.scenePos().x()
             y = self.tempnode.scenePos().y()
-            self.tempnode.kill()
+            try:
+                self.tempnode.kill()
+            except:
+                pass
         else:
             x = event.scenePos().x()
             y = event.scenePos().y()
@@ -259,15 +263,15 @@ class SceneClass(QGraphicsScene):
                 modifiers = event.modifiers()
                 varData = jsonData[VARIABLE_DATA_TAG]
                 nodeTemplate = NodeBase.jsonTemplate()
+                nodeTemplate['name'] = varData['name']
+                nodeTemplate['x'] = x
+                nodeTemplate['y'] = y
+                nodeTemplate['package'] = varData['package']
                 if modifiers == QtCore.Qt.NoModifier:
                     nodeTemplate['type'] = 'getVar'
-                    nodeTemplate['name'] = varData['name']
-                    nodeTemplate['x'] = x
-                    nodeTemplate['y'] = y
                     nodeTemplate['meta']['label'] = varData['name']
                     nodeTemplate['uuid'] = varData['uuid']
                     nodeTemplate['meta']['var']['uuid'] = varData['uuid']
-                    nodeTemplate['package'] = varData['package']
                     m = QMenu()
                     getterAction = m.addAction('Get')
 
@@ -278,20 +282,25 @@ class SceneClass(QGraphicsScene):
 
                     setNodeTemplate = dict(nodeTemplate)
                     setterAction = m.addAction('Set')
-                    setNodeTemplate['type'] = 'SetVarNode'
+                    setNodeTemplate['type'] = 'setVar'
                     setterAction.triggered.connect(lambda: self.parent().createNode(setNodeTemplate))
                     m.exec_(QtGui.QCursor.pos(), None)
                 if modifiers == QtCore.Qt.ControlModifier:
-                    nodeTemplate['type'] = GetVarNode.__name__
-                    nodeTemplate['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                    nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                    nodeTemplate['meta']['label'] = self.getVars()[
-                        varGuid].name
+                    nodeTemplate['type'] = 'getVar'
+                    nodeTemplate['uuid'] = varData['uuid']
+                    nodeTemplate['meta']['var']['uuid'] = varData['uuid']
+                    nodeTemplate['meta']['label'] = varData['name']
+                    self.parent().createNode(nodeTemplate)
+                    return
                 if modifiers == QtCore.Qt.AltModifier:
-                    nodeTemplate['type'] = SetVarNode.__name__
-                    nodeTemplate['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                    nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                    nodeTemplate['meta']['label'] = self.getVars[varGuid].name
+                    nodeTemplate['package'] = varData['package']
+                    nodeTemplate['type'] = 'setVar'
+                    nodeTemplate['uuid'] = varData['uuid']
+                    nodeTemplate['meta']['var']['uuid'] = varData['uuid']
+                    nodeTemplate['meta']['label'] = varData['name']
+                    self.parent().createNode(nodeTemplate)
+                    return
+
             else:
                 packageName = jsonData["package"]
                 nodeType = jsonData["type"]

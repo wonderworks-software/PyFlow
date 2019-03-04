@@ -106,7 +106,7 @@ def REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, factory):
         print("registering", packageName, "input widgets")
 
 
-def createInputWidget(dataType, dataSetter, defaultValue, userStruct):
+def createInputWidget(dataType, dataSetter, defaultValue=None, userStruct=None):
     pinInputWidget = None
     for packageName, factory in UI_INPUT_WIDGET_PINS_FACTORIES.items():
         pinInputWidget = factory(dataType, dataSetter, defaultValue, userStruct)
