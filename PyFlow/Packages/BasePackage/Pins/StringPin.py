@@ -28,9 +28,13 @@ class StringPin(PinBase):
     def pinDataTypeHint():
         return 'StringPin', ''
 
+    @staticmethod
+    def processData( data):
+        return str(data)
+
     def setData(self, data):
         try:
-            self._data = str(data)
+            self._data = self.processData(data)
         except:
             self._data = self.defaultValue()
         PinBase.setData(self, self._data)

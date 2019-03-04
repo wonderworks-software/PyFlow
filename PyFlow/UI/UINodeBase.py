@@ -37,7 +37,7 @@ from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Enums import ENone
 from PyFlow.Core.AGraphCommon import *
 
-
+from collections import OrderedDict
 UI_NODES_FACTORIES = {}
 
 
@@ -91,22 +91,8 @@ class NodeName(QGraphicsTextItem):
     def paint(self, painter, option, widget):
         if self.parentItem().bUseTextureBg:
             color = self.color
-            if self.parentItem().isTemp:
-                color = color.lighter(50)
-                color.setAlpha(50)
-            r = QtCore.QRectF(option.rect)
-            r.setWidth(self.parentItem().childrenBoundingRect().width() - 0.25)
-            r.setX(0.25)
-            r.setY(0.25)
-            b = QtGui.QLinearGradient(0, 0, r.width(), r.height())
-            b.setColorAt(0, color.lighter(60))
-            b.setColorAt(0.5, color)
-            b.setColorAt(1, color.darker(50))
-            painter.setPen(QtCore.Qt.NoPen)
-            path = QtGui.QPainterPath()
-            path.addRoundedRect(r, self.parentItem().sizes[4], self.parentItem().sizes[5])
-            painter.fillPath(path, b)
-            painter.drawPath(path)
+            
+            
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
                 painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
@@ -147,6 +133,7 @@ class UINodeBase(QGraphicsObject):
         self.opt_pen_selected_type = QtCore.Qt.SolidLine
         self._left_stretch = 0
         self.color = color
+        self.headColor = headColor
         self.height_offset = 3
         self.nodeMainGWidget = QGraphicsWidget()
         self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(self._rawNode.__class__.__name__))
@@ -164,7 +151,7 @@ class UINodeBase(QGraphicsObject):
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
-        self.label = weakref.ref(NodeName(self, self.bUseTextureBg, headColor))
+        self.label = weakref.ref(NodeName(self, self.bUseTextureBg, self.headColor))
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
         # main
@@ -185,10 +172,11 @@ class UINodeBase(QGraphicsObject):
         self.portsMainLayout.addItem(self.outputsLayout)
 
         self.setZValue(1)
-        self.setCursor(QtCore.Qt.OpenHandCursor)
 
         self.icon = None
         self.UIPins = {}
+        self.UIinputs = {}
+        self.UIoutputs = {}        
         self._menu = QMenu()
 
         self.isTemp = False
@@ -327,6 +315,7 @@ class UINodeBase(QGraphicsObject):
         if self.isCallable():
             if 'flow' not in self.category().lower():
                 if self.label().bUseTextureBg:
+                    self.headColor = Colors.NodeNameRectBlue
                     self.label().color = Colors.NodeNameRectBlue
         self.setToolTip(self.description())
         self.update()
@@ -339,10 +328,12 @@ class UINodeBase(QGraphicsObject):
 
         # create ui pin wrappers
         for uid, i in self.inputs.items():
-            self._createUIPinWrapper(i)
+            p = self._createUIPinWrapper(i)
+            self.UIinputs[uid] = p
 
         for uid, o in self.outputs.items():
-            self._createUIPinWrapper(o)
+            p= self._createUIPinWrapper(o)
+            self.UIoutputs[uid] = p
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 

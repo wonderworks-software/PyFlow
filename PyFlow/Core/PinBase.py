@@ -40,6 +40,9 @@ class PinBase(IPin):
 
         # gui class weak ref
         self._wrapper = None
+        #Constraint ports
+        self.constraint = None
+        self.isAny = False
 
     @staticmethod
     def IsValuePin():

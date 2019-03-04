@@ -28,9 +28,27 @@ class commentNodeName(NodeName):
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.setDefaultTextColor(QtGui.QColor(255, 255, 255, 255))
-        self.roundCornerFactor = 1.0
-        self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
+        self.roundCornerFactor = 5
+        self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.width = self.document().documentLayout().documentSize().width()
+        self.icon = QtGui.QImage(':/icons/resources/py.png')
+    def mousePressEvent(self, event):
+        if not self.parentItem().isSelected():
+            self.parentItem().graph().clearSelection()
+        if self.parentItem().expanded:
+            self.parentItem().nodesToMove.clear()
+            self.parentItem().updateChildrens(self.parentItem().collidingItems())
+        self.parentItem().setSelected(True)
+        #NodeName.mousePressEvent(self, event)
+     
+    def mouseDoubleClickEvent(self, event):
+        super(commentNodeName, self).mouseDoubleClickEvent( event)
+        event.accept()
+        self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
+
+    def focusOutEvent(self,event):
+        super(commentNodeName, self).focusOutEvent( event)
+        self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
 
     def keyPressEvent(self, event):
 
@@ -44,8 +62,8 @@ class commentNodeName(NodeName):
             cursor.clearSelection()
             self.setTextCursor(cursor)
             # finish editing
-            self.setEnabled(False)
-            self.setEnabled(True)
+            self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+
         elif not key == QtCore.Qt.Key_Backspace:
             # if backspace is pressed do not change width
             width = self.document().documentLayout().documentSize().width()
@@ -58,6 +76,7 @@ class commentNodeName(NodeName):
         self.width = self.parentItem().rect.width()
         self.setTextWidth(self.width)
         self.update()
+
 
     def adjustSizes(self):
         self.parentItem().rect.setRight(self.width)
@@ -78,22 +97,34 @@ class commentNodeName(NodeName):
         b.setColorAt(1, self.color)
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(b)
-        painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
+
+        r.setHeight(r.height()-1)  
+        painter.drawRoundedRect(1, 1, r.width(), r.height(), self.roundCornerFactor, self.roundCornerFactor, QtCore.Qt.AbsoluteSize)
+        painter.drawRect(1, r.height() * 0.5 + 2, r.width(), r.height() * 0.5)
+        parentRet = self.parentItem().childrenBoundingRect()
+
+        #painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
 
     def hoverEnterEvent(self, event):
         NodeName.hoverEnterEvent(self, event)
 
 
+import weakref
 ## Comment node
 #
 # Can drag intersected nodes.
 # You can also specify color and resize it.
-class commentNode(UINodeBase):
-    def __init__(self, name, graph, bUseTextureBg=False, headColor=Colors.AbsoluteBlack):
-        super(commentNode, self).__init__(name, graph, headColor=headColor)
+class UIcommentNode(UINodeBase):
+    def __init__(self, raw_node):
+        super(UIcommentNode, self).__init__(raw_node)
         self.color = Colors.AbsoluteBlack
         self.color.setAlpha(80)
         self.nodesToMove = {}
+        self.edgesToHide = []       
+        self.nodesNamesToMove = []
+        self.pinsToMove = {}
+        self.commentInputs = []
+        self.commentOutpus = []
         self.lastNodePos = self.scenePos()
         self.rect = self.childrenBoundingRect()
         self.initialRectWidth = 0.0
@@ -106,6 +137,8 @@ class commentNode(UINodeBase):
         self.minHeight = 100.0
         self.lastMousePos = QtCore.QPointF()
         self.setZValue(-2)
+        self.expanded = True
+        self.isCommentNode = True
 
     def onChangeColor(self):
         res = QColorDialog.getColor(self.color, None, 'Comment node color setup')
@@ -118,12 +151,18 @@ class commentNode(UINodeBase):
 
     def serialize(self):
         template = UINodeBase.serialize(self)
+        if self.expanded:
+            bottom = self.rect.bottom()
+        else:
+            bottom = self.prevRect        
         template['meta']['commentNode'] = {
             'w': self.rect.right(),
-            'h': self.rect.bottom(),
+            'h': bottom,
             'labelHeight': self.label().h,
             'text': self.label().toPlainText(),
-            'color': (self.color.toTuple())
+            'color': (self.color.toTuple()),
+            'expanded':self.expanded,
+            'nodesToMove':[str(n.uid) for n in self.nodesToMove]            
         }
         return template
 
@@ -136,6 +175,8 @@ class commentNode(UINodeBase):
         text = self.__class__.__name__
         # initial color is black
         color = self.color
+        self.rect.setBottom(height)
+        self.rect.setRight(width)        
         try:
             # if copied in runtime
             width = jsonTemplate['meta']['commentNode']['w']
@@ -143,11 +184,22 @@ class commentNode(UINodeBase):
             labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
             text = jsonTemplate['meta']['commentNode']['text']
             color = QtGui.QColor(*jsonTemplate['meta']['commentNode']['color'])
+            self.rect.setBottom(height)
+            self.rect.setRight(width)
+            if "nodesToMove" in jsonTemplate['meta']['commentNode']:
+                self.nodesNamesToMove =  jsonTemplate['meta']['commentNode']["nodesToMove"]   
+                for nodename in  self.nodesNamesToMove:
+                    n = self.graph().nodes[uuid.UUID(nodename)]
+                    uuid.UUID(nodename)
+                    if n != None and n not in self.nodesToMove:
+                        self.nodesToMove[n]=n.scenePos()
+                self.nodesNamesToMove = []                      
+            if "expanded" in jsonTemplate['meta']['commentNode']:
+                self.expanded = jsonTemplate['meta']['commentNode']["expanded"]            
+
         except:
             pass
 
-        self.rect.setRight(width)
-        self.rect.setBottom(height)
         self.color = color
         self.update()
         self.scene().removeItem(self.label())
@@ -163,7 +215,6 @@ class commentNode(UINodeBase):
     @staticmethod
     def isInRange(mid, val, width=10):
         '''check if val inside strip'''
-
         leftEdge = mid - width
         rightEdge = mid + width
         return leftEdge <= val <= rightEdge
@@ -171,89 +222,107 @@ class commentNode(UINodeBase):
     def boundingRect(self):
         return self.rect
 
+    def updateChildrens(self,nodes):
+        self.commentInputs =[]
+        self.commentOutpus = []
+        self.edgesToHide = []   
+        self.pinsToMove.clear()  
+        self.nodesNamesToMove = []
+        edges = []   
+        for node in [i for i in nodes if isinstance(i, UINodeBase) and not i.isCommentNode and i.isVisible()]:
+            self.nodesNamesToMove.append(node.uid)
+            self.nodesToMove[node] = node.scenePos()
+            node.groupNode = self
+            for i in node.UIinputs.values() :
+                self.pinsToMove[i] = i.scenePos()
+                self.commentInputs.append(i)
+            for i in node.UIoutputs.values():
+                self.pinsToMove[i] = i.scenePos()
+                self.commentOutpus.append(i)
+        for node in self.nodesToMove:
+            for i in node.UIinputs.values()+node.UIoutputs.values():
+                for edg in i.edge_list:
+                    if edg.source().UiNode in self.nodesToMove and edg.destination().UiNode in self.nodesToMove:
+                        self.edgesToHide.append(edg) 
+
     def mousePressEvent(self, event):
+        margin = 4
         QGraphicsItem.mousePressEvent(self, event)
         self.mousePressPos = event.scenePos()
-
+        self.lastNodePos = self.scenePos()
         pBottomRight = self.rect.bottomRight()
+        pBottomLeft = self.rect.bottomLeft()
         bottomRightRect = QtCore.QRectF(pBottomRight.x() - 6, pBottomRight.y() - 6, 5, 5)
-
+        bottomLeftRect = QtCore.QRectF(pBottomLeft.x() - 6, pBottomLeft.y() - 6, 5, 5)
         # detect where on the node
-        if bottomRightRect.contains(event.pos()):
+        self.initialRect = self.rect
+        if bottomRightRect.contains(event.pos()) and self.expanded:
             self.initialRectWidth = self.rect.width()
             self.initialRectHeight = self.rect.height()
-            self.resizeDirection = (1, 1)
+            self.resizeDirection = (1, -1)
             self.setFlag(QGraphicsItem.ItemIsMovable, False)
             self.bResize = True
-        elif event.pos().x() > (self.rect.width() - 20):
+        elif event.pos().x() > (self.rect.width() - margin) and self.expanded:
             self.initialRectWidth = self.rect.width()
             self.resizeDirection = (1, 0)
             self.setFlag(QGraphicsItem.ItemIsMovable, False)
-            self.bResize = True
-        elif (event.pos().y() + self.label().defaultHeight) > (self.rect.height() - 30):
+            self.bResize = True         
+        elif (event.pos().y() + self.label().defaultHeight) > (self.rect.height() - 10) and self.expanded:
             self.initialRectHeight = self.rect.height()
-            self.resizeDirection = (0, 1)
+            self.resizeDirection = (0, -1)
             self.setFlag(QGraphicsItem.ItemIsMovable, False)
             self.bResize = True
+        #elif event.pos().x() < (self.rect.x() + margin):
+        #    self.initialRectWidth = self.rect.width()
+        #    self.resizeDirection = (-1, 0)
+        #    self.setFlag(QGraphicsItem.ItemIsMovable, False)
+        #    self.bResize = True   
 
-        self.nodesToMove.clear()
-        for node in [i for i in self.collidingItems() if isinstance(i, UINodeBase) and not isinstance(i, commentNode)]:
-            self.nodesToMove[node] = node.scenePos()
+        if self.expanded:
+            self.nodesToMove.clear()
+            self.updateChildrens(self.collidingItems())                         
+        else:
+            nodes = []
+            for nodename in  self.nodesNamesToMove:
+                nodes.append(self.graph().nodes[nodename])            
+            self.updateChildrens(nodes)
+        #for node in [i for i in self.collidingItems() if isinstance(i, UINodeBase) and not isinstance(i, UIcommentNode)]:
+        #    self.nodesToMove[node] = node.scenePos()
 
     def mouseMoveEvent(self, event):
         QGraphicsItem.mouseMoveEvent(self, event)
         delta = self.lastMousePos - event.pos()
+        self.lastNodePos = self.scenePos()
         # resize
         if self.bResize:
             delta = event.scenePos() - self.mousePressPos
             if self.resizeDirection == (1, 0):
                 # right edge resize
                 newWidth = delta.x() + self.initialRectWidth
-                newWidth = roundup(newWidth, self.graph().grid_size)
                 if newWidth > self.minWidth:
                     self.label().width = newWidth
                     self.rect.setRight(newWidth)
                     self.label().adjustSizes()
-
-            elif self.resizeDirection == (0, 1):
+            elif self.resizeDirection == (0, -1):
                 newHeight = delta.y() + self.initialRectHeight
-                newHeight = max(roundup(newHeight, self.graph().grid_size), self.label().h + 20.0)
+                newHeight = max(newHeight, self.label().h + 20.0)
                 if newHeight > self.minHeight:
                     # bottom edge resize
                     self.rect.setHeight(newHeight)
-            elif self.resizeDirection == (1, 1):
+            elif self.resizeDirection == (1, -1):
                 newWidth = delta.x() + self.initialRectWidth
-                newWidth = roundup(newWidth, self.graph().grid_size)
-
                 newHeight = delta.y() + self.initialRectHeight
-                newHeight = max(roundup(newHeight, self.graph().grid_size), self.label().h + 20.0)
+                newHeight = max(newHeight, self.label().h + 20.0)
                 if newHeight > self.minHeight and newWidth > self.minWidth:
                     self.label().width = newWidth
                     self.rect.setRight(newWidth)
                     self.label().setTextWidth(newWidth)
-                    self.rect.setHeight(newHeight)
+                    self.rect.setHeight(newHeight)                   
 
             self.update()
             self.label().update()
         self.lastMousePos = event.pos()
 
-    def itemChange(self, change, value):
-        if change == self.ItemPositionChange:
-            # grid snapping
-            value.setX(roundup(value.x() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
-            value.setY(roundup(value.y() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
-            value.setY(value.y() - 2)
-            try:
-                deltaPos = value - self.lastNodePos
-                for node, initialPos in self.nodesToMove.items():
-                    nodePos = node.scenePos()
-                    newPos = nodePos + deltaPos
-                    node.setPos(newPos)
-                self.lastNodePos = value
-            except:
-                pass
-            return value
-        return QGraphicsItem.itemChange(self, change, value)
 
     @staticmethod
     def getNodesRect(nodes):
@@ -278,9 +347,70 @@ class commentNode(UINodeBase):
 
         return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
 
+    def getCursorResizing(self,cursorPos):
+        pBottomRight = self.rect.bottomRight()
+        pBottomLeft = self.rect.bottomLeft()
+        margin = 4
+        bottomRightRect = QtCore.QRectF(pBottomRight.x() - margin, pBottomRight.y() - margin,margin,margin)
+        bottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y()+margin, 5, 5)
+        # detect where on the node
+        self.cursorResize = False
+        self.resizeDirectionArrow = 0
+        if self.expanded:
+            cursor = self.mapFromScene(cursorPos)
+            if bottomRightRect.contains(cursor): 
+                self.resizeDirectionArrow = 0
+                self.cursorResize = True
+            elif cursor.x() > (self.rect.width() - margin):
+                self.resizeDirectionArrow = 1
+                self.cursorResize = True
+            elif (cursor.y() + self.label().defaultHeight) > (self.rect.height() - 10):
+                self.resizeDirectionArrow = 2
+                self.cursorResize = True
     def mouseReleaseEvent(self, event):
         QGraphicsItem.mouseReleaseEvent(self, event)
         self.bResize = False
+
+    def mouseDoubleClickEvent(self, event):
+        super(UIcommentNode, self).mouseDoubleClickEvent( event)
+        self.OnDoubleClick(self.mapToScene(event.pos()))
+        event.accept()  
+
+    def OnDoubleClick(self, pos):
+        if self.expanded:
+            self.expanded = False
+            self.prevRect = self.rect.bottom()
+            self.rect.setBottom(self.label().h/2)
+
+            for node in self.nodesToMove:
+                node.hide()
+            
+            for pin in self.pinsToMove:
+                if pin in self.commentInputs:
+                    pin.prevPos = QtCore.QPointF(self.scenePos().x()-8,self.scenePos().y())-pin.scenePos()
+                elif pin in self.commentOutpus:
+                    pin.prevPos = QtCore.QPointF(self.scenePos().x()+self.boundingRect().width()-8,self.scenePos().y())-pin.scenePos()
+                pin.moveBy(pin.prevPos.x(),pin.prevPos.y()) 
+                pin.update()
+            
+            for edge in self.edgesToHide:
+                edge.hide()
+        else:
+            self.expanded = True
+            self.rect.setBottom(self.prevRect)
+            for node in self.nodesToMove:
+                node.show() 
+            for pin in self.pinsToMove:
+                pin.moveBy(-pin.prevPos.x(),-pin.prevPos.y())  
+            for edge in self.edgesToHide:
+                edge.show()                               
+        self.update() 
+
+    def translate(self,x,y):
+        for n in self.nodesToMove:
+            if not n.isSelected():
+                n.translate(x, y)
+        super(UIcommentNode, self).translate( x,y)  
 
     def paint(self, painter, option, widget):
         painter.setPen(QtCore.Qt.NoPen)
@@ -293,6 +423,7 @@ class commentNode(UINodeBase):
         painter.setBrush(self.color)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
+            #pen.setColor(self.graph().window().styleSheetEditor.style.MainColor)
             pen.setColor(Colors.Yellow)
             pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)

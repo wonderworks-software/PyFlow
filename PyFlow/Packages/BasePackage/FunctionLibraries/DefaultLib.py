@@ -88,3 +88,8 @@ class DefaultLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'Conversion', 'Keywords': []}, packageName=PACKAGE_NAME)
     def floatToString(f=('FloatPin', 0.0)):
         return str(f)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('AnyPin',''), meta={'Category': 'Conversion', 'Keywords': []},packageName=PACKAGE_NAME)
+    def passtrhough(input=('AnyPin','')):
+        return input

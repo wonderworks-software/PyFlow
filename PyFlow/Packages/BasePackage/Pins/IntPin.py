@@ -28,9 +28,13 @@ class IntPin(PinBase):
     def supportedDataTypes(self):
         return ('IntPin', 'FloatPin')
 
+    @staticmethod
+    def processData( data):
+        return int(data)
+        
     def setData(self, data):
         try:
-            self._data = int(data)
+            self._data = self.processData(data)
         except:
             self._data = self.defaultValue()
         PinBase.setData(self, self._data)

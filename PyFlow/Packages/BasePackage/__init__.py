@@ -3,6 +3,7 @@ PACKAGE_NAME = 'BasePackage'
 from PyFlow.Core.Interfaces import IPackage
 
 # Pins
+from PyFlow.Packages.BasePackage.Pins.AnyPin import AnyPin
 from PyFlow.Packages.BasePackage.Pins.BoolPin import BoolPin
 # TODO: Enums not working for now, fix this.
 from PyFlow.Packages.BasePackage.Pins.EnumPin import EnumPin
@@ -36,7 +37,7 @@ from PyFlow.Packages.BasePackage.Nodes.sequence import sequence
 from PyFlow.Packages.BasePackage.Nodes.switchOnString import switchOnString
 from PyFlow.Packages.BasePackage.Nodes.timer import timer
 from PyFlow.Packages.BasePackage.Nodes.whileLoop import whileLoop
-
+from PyFlow.Packages.BasePackage.Nodes.commentNode import commentNode
 
 _FOO_LIBS = {
     ArrayLib.__name__: ArrayLib(),
@@ -63,10 +64,12 @@ _NODES = {
     sequence.__name__: sequence,
     switchOnString.__name__: switchOnString,
     timer.__name__: timer,
-    whileLoop.__name__: whileLoop
+    whileLoop.__name__: whileLoop,
+    commentNode.__name__: commentNode
 }
 
 _PINS = {
+    AnyPin.__name__: AnyPin,
     BoolPin.__name__: BoolPin,
     EnumPin.__name__: EnumPin,
     ExecPin.__name__: ExecPin,
