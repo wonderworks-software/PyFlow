@@ -90,6 +90,6 @@ class DefaultLib(FunctionLibraryBase):
         return str(f)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin',''), meta={'Category': 'Conversion', 'Keywords': []},packageName=PACKAGE_NAME)
-    def passtrhough(input=('AnyPin','')):
+    @IMPLEMENT_NODE(returns=('AnyPin','',{"constraint":"1"}), meta={'Category': 'Conversion', 'Keywords': []},packageName=PACKAGE_NAME)
+    def passtrhough(input=('AnyPin','',{"constraint":"1"})):
         return input

@@ -45,7 +45,11 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
                 if defaults[i][0] == "Reference":
                     func.__annotations__[name] = defaults[i][1]
                 else:
-                    func.__annotations__[name] = defaults[i][0]
+                    if defaults[i][0] == "AnyPin":
+                        func.__annotations__[name] = [defaults[i]]
+                    else:
+                        func.__annotations__[name] = defaults[i][0]                    
+                    #func.__annotations__[name] = defaults[i][0]
 
             customDefaults = []
             for d in func.__defaults__:

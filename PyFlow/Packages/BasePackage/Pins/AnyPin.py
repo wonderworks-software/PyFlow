@@ -1,9 +1,8 @@
 from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.UI.Settings import Colors
 from PyFlow import getAllPinClasses
-
+from PyFlow import CreateRawPin
 
 class AnyPin(PinBase):
     """doc string for SgPin"""
@@ -49,41 +48,31 @@ class AnyPin(PinBase):
         PinBase.setData(self, self._data)
     
     def serialize(self):
-        from PyFlow import CreateRawPin
-        dt = super(PinBase, self).serialize()
-        if self.dataType !=  DataTypes.Any:
+        dt = super(AnyPin, self).serialize()
+        if self.dataType !=  "AnyPin":
             a = CreateRawPin("", None, self.dataType, 0)
             a.setData(self._data)
             data = a.serialize()
             dt['value'] =data["value"]
             del a                            
         return dt
-    def pinConnected(self, other):
-        self.updateOnConnection(other)
-        PinBase.pinConnected(self, other)
-        #self.OnPinConnected.emit(other)
 
-    def pinDisconnected(self, other):
-        PinBase.pinDisconnected(self, other)
-        #self.OnPinConnected.emit(other)   
-        self.updateOnDisconnection()      
-        
     def updateOnConnection(self,other):
         if self.constraint == None:
             self.setType(other)
             self._free = False 
         else:
-            if other.dataType != DataTypes.Any:
+            if other.dataType != "AnyPin":
                 self._free = False
                 self.setType(other)
-                for port in self.parent()._Constraints[self.constraint]:
+                for port in self.owningNode()._Constraints[self.constraint]:
                     if port != self:
                         port.setType(other)
                         port._free = False
                         for e in port.edge_list:
-                            for p in [e.source(),e.destination()]:
+                            for p in [e.source()._rawPin,e.destination()._rawPin]:
                                 if p != port:
-                                    if p.dataType == DataTypes.Any and p.dataType != self.dataType:
+                                    if p.dataType == "AnyPin" and p.dataType != self.dataType:
                                         p.updateOnConnection(port)       
 
     def updateOnDisconnection(self):
@@ -94,17 +83,17 @@ class AnyPin(PinBase):
             self._free = self.checkFree([])
             if self._free:
                 self.setDefault()
-                for port in self.parent()._Constraints[self.constraint]:
+                for port in self.owningNode()._Constraints[self.constraint]:
                     if port != self:
                         port.setDefault()
                         port._free = True
                         for e in port.edge_list:
-                            for p in [e.source(),e.destination()]:
+                            for p in [e.source()._rawPin,e.destination()._rawPin]:
                                 if p != port:
                                     p.updateOnDisconnection()    
                         
     def checkFree(self,checked=[],selfChek=True):
-        if self.constraint == None or self.dataType == DataTypes.Any:
+        if self.constraint == None or self.dataType == "AnyPin":
             return True
         else:
             con  = []
@@ -112,7 +101,7 @@ class AnyPin(PinBase):
                 free = not self.hasConnections()
                 if not free:
                     for edge in self.edge_list:
-                        for c in [edge.source(),edge.destination()]:
+                        for c in [edge.source()._rawPin,edge.destination()._rawPin]:
                             if c != self:
                                 if c not in checked:
                                     con.append(c)
@@ -120,7 +109,7 @@ class AnyPin(PinBase):
                 free = True
                 checked.append(self)
             free = True    
-            for port in self.parent()._Constraints[self.constraint]+con:
+            for port in self.owningNode()._Constraints[self.constraint]+con:
                 if port not in checked:
                     checked.append(port)
                     if not isinstance(port,AnyPin):
@@ -133,7 +122,7 @@ class AnyPin(PinBase):
     def call(self):
         super(AnyPin, self).call()
         # pass execution flow forward
-        for p in [pin for pin in self.affects if pin.dataType == DataTypes.Exec]:
+        for p in [pin for pin in self.affects if pin.dataType == 'ExecPin']:
             p.call()
         # highlight wire
         for e in self.edge_list:
@@ -142,25 +131,21 @@ class AnyPin(PinBase):
     def setDefault(self):
         self.super = None
         self.dataType = "AnyPin"
-        self.color = self.defcolor
+        self._wrapper().setDefault(self.defcolor())
         self.setDefaultValue(None)
-        for e in self.edge_list:
-            e.setColor( self.color())
-        #self.OnPinChanged.emit(self)   
-        #self.update()
+
 
     def setType(self,other):
-        self.super = other.__class__
-        self.dataType = other.dataType
-        self.color = other.color
-        if str(type(self._data)) == "<type 'unicode'>":
-            self._data = str(self._data)
-        if type(self._data) != type(other._data):
-            self.setData(other.defaultValue())
-        self.setDefaultValue(other.defaultValue()) 
-        for e in self.edge_list:
-            e.setColor( self.color())
-        #self.OnPinChanged.emit(self)         
-        #self.update()     
+        if self.dataType == "AnyPin" or self.dataType not in other.supportedDataTypes():
+            self.super = other.__class__
+            self.dataType = other.dataType
+            self.color = other.color
+            self._wrapper().setType(other.color())
+            if str(type(self._data)) == "<type 'unicode'>":
+                self._data = str(self._data)
+            if type(self._data) != type(other._data):
+                self.setData(other.defaultValue())
+            self.setDefaultValue(other.defaultValue())
+ 
 
     
