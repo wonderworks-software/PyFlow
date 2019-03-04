@@ -32,7 +32,7 @@ class UIPinBase(QGraphicsWidget):
     ## Event called when setUserStruct called
     # used by enums
     userStructChanged = QtCore.Signal(object)
-
+    OnPinChanged = QtCore.Signal(object)
     def __init__(self, owningNode, raw_pin):
         super(UIPinBase, self).__init__()
         self._rawPin = raw_pin
@@ -70,6 +70,7 @@ class UIPinBase(QGraphicsWidget):
         self._val = 0
         self._displayName = self.name
         self._color = QtGui.QColor(*self._rawPin.color())
+        self.constraint = None
 
     def displayName(self):
         return self._displayName

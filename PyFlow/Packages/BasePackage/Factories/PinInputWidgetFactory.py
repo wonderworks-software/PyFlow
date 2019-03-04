@@ -135,6 +135,21 @@ class BoolInputWidget(InputWidgetSingle):
         else:
             self.cb.setCheckState(QtCore.Qt.Unchecked)
 
+class NoneInputWidget(InputWidgetSingle):
+    """
+    String data input widget
+    """
+    def __init__(self, parent=None, **kwds):
+        super(NoneInputWidget, self).__init__(parent=parent, **kwds)
+        self.le = QLineEdit(self)
+        self.le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+        self.setWidget(self.le)
+        self.le.textChanged.connect(lambda val: self.dataSetCallback(val))
+        self.le.setEnabled(False)
+    def blockWidgetSignals(self, bLocked):
+        self.le.blockSignals(bLocked)
+    def setWidgetValue(self, val):
+        self.le.setText(str(val))
 
 def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
     '''
@@ -152,4 +167,5 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
         return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None)
     if dataType == 'EnumPin':
         return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-    return None
+    if dataType == 'AnyPin':
+        return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None)

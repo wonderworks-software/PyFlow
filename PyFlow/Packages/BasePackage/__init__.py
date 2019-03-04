@@ -3,6 +3,7 @@ PACKAGE_NAME = 'BasePackage'
 from PyFlow.Core.Interfaces import IPackage
 
 # Pins
+from PyFlow.Packages.BasePackage.Pins.AnyPin import AnyPin
 from PyFlow.Packages.BasePackage.Pins.BoolPin import BoolPin
 # TODO: Enums not working for now, fix this.
 from PyFlow.Packages.BasePackage.Pins.EnumPin import EnumPin
@@ -68,6 +69,7 @@ _NODES = {
 }
 
 _PINS = {
+    AnyPin.__name__: AnyPin,
     BoolPin.__name__: BoolPin,
     EnumPin.__name__: EnumPin,
     ExecPin.__name__: ExecPin,
