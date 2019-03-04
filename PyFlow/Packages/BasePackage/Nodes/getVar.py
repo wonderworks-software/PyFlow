@@ -2,13 +2,20 @@ from copy import copy
 
 from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
+import uuid
 
 
 class getVar(NodeBase):
     def __init__(self, name):
         super(getVar, self).__init__(name)
         self.var = None
-        # self.out = self.addOutputPin('value', self.var.dataType)
+        self.out = None
+
+    def postCreate(self, jsonTemplate=None):
+        super(getVar, self).postCreate(jsonTemplate)
+        self.var = self.graph().vars[uuid.UUID(jsonTemplate['uuid'])]
+        self.out = self.addOutputPin('val', self.var.dataType)
+        self.graph().pins[self.out.uid] = self.out
 
     @staticmethod
     def packageName():
@@ -31,5 +38,4 @@ class getVar(NodeBase):
         return 'Access variable value'
 
     def compute(self):
-        # self._out0.setData(copy(self.var.value))
-        pass
+        self.out.setData(copy(self.var.value))

@@ -15,7 +15,7 @@ from PyFlow.UI.Widgets.VariablesWidget_ui import Ui_Form
 from Variable import VariableBase
 
 VARIABLE_TAG = "VAR"
-VARIABLE_NODE_UID_TAG = "UID"
+VARIABLE_DATA_TAG = "VAR_DATA"
 
 
 def lwMousePressEvent(self, event):
@@ -25,7 +25,8 @@ def lwMousePressEvent(self, event):
     if w:
         drag = QtGui.QDrag(self)
         mime_data = QtCore.QMimeData()
-        dataJson = {VARIABLE_TAG: True, VARIABLE_NODE_UID_TAG: str(w.uid), "Package": None, "PressedText": None}
+        varJson = w.serialize()
+        dataJson = {VARIABLE_TAG: True, VARIABLE_DATA_TAG: varJson}
         mime_data.setText(json.dumps(dataJson))
         drag.setMimeData(mime_data)
         drag.exec_()

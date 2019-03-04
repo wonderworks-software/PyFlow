@@ -16,14 +16,28 @@ from PyFlow.Commands.RemoveNodes import RemoveNodes
 ## Variable getter node
 class UIGetVarNode(UINodeBase):
     def __init__(self, raw_node):
-        super(UIGetVarNode, self).__init__(name, graph)
-        # self.out = self.addOutputPin('val', self.var.dataType)
-        # self.var.valueChanged.connect(self.onVarValueChanged)
-        # self.var.nameChanged.connect(self.onVarNameChanged)
-        # self.var.killed.connect(self.kill)
-        # self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+        super(UIGetVarNode, self).__init__(raw_node)
         self.label().hide()
         self.label().opt_font.setPointSizeF(6.5)
+        self.out = None
+
+    @property
+    def var(self):
+        return self._rawNode.var
+
+    def postCreate(self, jsonTemplate=None):
+        # create self.var and raw self.out pin
+        self._rawNode.postCreate(jsonTemplate)
+
+        self.out = self._createUIPinWrapper(self._rawNode.out)
+        self.UIoutputs[self.out.uid] = self.out
+
+        self.updateNodeShape(label=jsonTemplate['meta']['label'])
+
+        self.var.valueChanged.connect(self.onVarValueChanged)
+        self.var.nameChanged.connect(self.onVarNameChanged)
+        self.var.killed.connect(self.kill)
+        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
     def boundingRect(self):
         return QtCore.QRectF(-5, -3, self.w, 20)
@@ -68,6 +82,6 @@ class UIGetVarNode(UINodeBase):
         painter.setPen(pen)
         painter.drawRoundedRect(self.boundingRect(), 7, 7)
         painter.setFont(self.label().opt_font)
-        pen.setColor(self.var.widget.color)
+        pen.setColor(QtGui.QColor(*self.var.widget.color))
         painter.setPen(pen)
         painter.drawText(self.boundingRect(), QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, self.name)

@@ -46,7 +46,7 @@ class InspectorWidget(QWidget, Ui_Form):
                     data += '<font color="white">&nbsp;&nbsp;&nbsp;&nbsp;{0}: {1}</font><br>'.format(k, v)
             data += "<br>"
 
-        data = "<font color='white'><b>VARS</b></font><br>"
+        data += "<font color='white'><b>VARS</b></font><br>"
         for var in self._graph.getVars():
             data += '<font color="white"><b>{}</b></font><br>'.format(var.name)
             data += "<br>"

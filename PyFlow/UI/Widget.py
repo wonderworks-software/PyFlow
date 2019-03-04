@@ -58,7 +58,7 @@ from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.UI.VariablesWidget import (
     VARIABLE_TAG,
-    VARIABLE_NODE_UID_TAG
+    VARIABLE_DATA_TAG
 )
 from PyFlow import (
     getRawNodeInstance,
@@ -92,7 +92,11 @@ def importByName(module, name):
         print("error", name)
 
 
-def getNodeInstance(nodeClassName, nodeName, graph, packageName=None):
+def getNodeInstance(jsonTemplate, graph):
+    nodeClassName = jsonTemplate['type']
+    nodeName = jsonTemplate['name']
+    packageName = jsonTemplate['package']
+
     raw_instance = getRawNodeInstance(nodeClassName, packageName)
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
@@ -180,35 +184,34 @@ class SceneClass(QGraphicsScene):
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
             event.accept()
-            jsonData = json.loads(event.mimeData().text())
+            # jsonData = json.loads(event.mimeData().text())
 
-            if VARIABLE_TAG in jsonData:
-                return
+            # if VARIABLE_TAG in jsonData:
+            #     return
 
-            packageName = jsonData["Package"]
-            pressedText = jsonData["PressedText"]
-            name = self.parent().getUniqNodeName(pressedText)
+            # packageName = jsonData["package"]
+            # nodeType = jsonData["type"]
+            # name = self.parent().getUniqNodeName(nodeType)
 
-            nodeTemplate = NodeBase.jsonTemplate()
-            nodeTemplate['package'] = packageName
-            nodeTemplate['type'] = pressedText
-            nodeTemplate['name'] = name
-            nodeTemplate['x'] = event.scenePos().x()
-            nodeTemplate['y'] = event.scenePos().y()
-            nodeTemplate['meta']['label'] = pressedText
-            nodeTemplate['uuid'] = None
+            # nodeTemplate = NodeBase.jsonTemplate()
+            # nodeTemplate['package'] = packageName
+            # nodeTemplate['type'] = nodeType
+            # nodeTemplate['name'] = name
+            # nodeTemplate['x'] = event.scenePos().x()
+            # nodeTemplate['y'] = event.scenePos().y()
+            # nodeTemplate['meta']['label'] = nodeType
+            # nodeTemplate['uuid'] = None
 
-            try:
-                self.tempnode.kill()
-                self.tempnode.scene().removeItem(self.tempnode)
-            except:
-                pass
-            self.tempnode = getNodeInstance(
-                nodeTemplate['type'], nodeTemplate['name'], self.parent(), nodeTemplate['package'])
+            # try:
+            #     self.tempnode.kill()
+            #     self.tempnode.scene().removeItem(self.tempnode)
+            # except Exception as e:
+            #     print(e)
+            # self.tempnode = getNodeInstance(nodeTemplate, self.parent())
 
-            self.tempnode.update()
-            self.tempnode.postCreate(nodeTemplate)
-            self.tempnode.isTemp = True
+            # self.tempnode.update()
+            # self.tempnode.postCreate(nodeTemplate)
+            # self.tempnode.isTemp = True
         else:
             event.ignore()
 
@@ -243,86 +246,90 @@ class SceneClass(QGraphicsScene):
         else:
             x = event.scenePos().x()
             y = event.scenePos().y()
+
         if event.mimeData().hasFormat('text/plain'):
             jsonData = json.loads(event.mimeData().text())
-            packageName = jsonData["Package"]
-            pressedText = jsonData["PressedText"]
-            name = self.parent().getUniqNodeName(pressedText)
-            dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
-            if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, Edge):
+
+            # try load mime data text as json
+            # in case if it is a variable { VAR: bool, UID: str }
+            # if no keyboard modifires create context menu with two actions
+            # for creating getter or setter
+            # if control - create getter, if alt - create setter
+            if VARIABLE_TAG in jsonData:
+                modifiers = event.modifiers()
+                varData = jsonData[VARIABLE_DATA_TAG]
                 nodeTemplate = NodeBase.jsonTemplate()
-                nodeTemplate['package'] = packageName
-                nodeTemplate['type'] = pressedText
-                nodeTemplate['name'] = name
-                nodeTemplate['x'] = x
-                nodeTemplate['y'] = y
-                nodeTemplate['meta']['label'] = pressedText
-                nodeTemplate['uuid'] = None
+                if modifiers == QtCore.Qt.NoModifier:
+                    nodeTemplate['type'] = 'getVar'
+                    nodeTemplate['name'] = varData['name']
+                    nodeTemplate['x'] = x
+                    nodeTemplate['y'] = y
+                    nodeTemplate['meta']['label'] = varData['name']
+                    nodeTemplate['uuid'] = varData['uuid']
+                    nodeTemplate['meta']['var']['uuid'] = varData['uuid']
+                    nodeTemplate['package'] = varData['package']
+                    m = QMenu()
+                    getterAction = m.addAction('Get')
 
-                try:
-                    # try load mime data text as json
-                    # in case if it is a variable { VAR: bool, UID: str }
-                    # if no keyboard modifires create context menu with two actions
-                    # for creating getter or setter
-                    # if control - create getter, if alt - create setter
-                    if VARIABLE_TAG in jsonData:
-                        modifiers = event.modifiers()
-                        varGuid = uuid.UUID(jsonData[VARIABLE_NODE_UID_TAG])
-                        if modifiers == QtCore.Qt.NoModifier:
-                            nodeTemplate['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                            nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                            m = QMenu()
-                            getterAction = m.addAction('Get')
-                            nodeTemplate['type'] = 'getVar'
+                    def varGetterCreator():
+                        n = self.parent().createNode(nodeTemplate)
+                        n.updateNodeShape(label=n.var.name)
+                    getterAction.triggered.connect(varGetterCreator)
 
-                            def varGetterCreator():
-                                n = self.parent().createNode(nodeTemplate)
-                                n.updateNodeShape(label=n.var.name)
-                            getterAction.triggered.connect(varGetterCreator)
+                    setNodeTemplate = dict(nodeTemplate)
+                    setterAction = m.addAction('Set')
+                    setNodeTemplate['type'] = 'SetVarNode'
+                    setterAction.triggered.connect(lambda: self.parent().createNode(setNodeTemplate))
+                    m.exec_(QtGui.QCursor.pos(), None)
+                if modifiers == QtCore.Qt.ControlModifier:
+                    nodeTemplate['type'] = GetVarNode.__name__
+                    nodeTemplate['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
+                    nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
+                    nodeTemplate['meta']['label'] = self.getVars()[
+                        varGuid].name
+                if modifiers == QtCore.Qt.AltModifier:
+                    nodeTemplate['type'] = SetVarNode.__name__
+                    nodeTemplate['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
+                    nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
+                    nodeTemplate['meta']['label'] = self.getVars[varGuid].name
+            else:
+                packageName = jsonData["package"]
+                nodeType = jsonData["type"]
 
-                            setNodeTemplate = dict(nodeTemplate)
-                            setterAction = m.addAction('Set')
-                            setNodeTemplate['type'] = 'SetVarNode'
-                            setterAction.triggered.connect(
-                                lambda: self.parent().createNode(setNodeTemplate))
-                            m.exec_(QtGui.QCursor.pos(), None)
-                        if modifiers == QtCore.Qt.ControlModifier:
-                            nodeTemplate['type'] = GetVarNode.__name__
-                            nodeTemplate['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                            nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                            nodeTemplate['meta']['label'] = self.getVars()[
-                                varGuid].name
-                        if modifiers == QtCore.Qt.AltModifier:
-                            nodeTemplate['type'] = SetVarNode.__name__
-                            nodeTemplate['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                            nodeTemplate['meta']['var']['uuid'] = jsonData[VARIABLE_NODE_UID_TAG]
-                            nodeTemplate['meta']['label'] = self.getVars[varGuid].name
-                        super(SceneClass, self).dropEvent(event)
-                except Exception as e:
-                    print(e)
+                name = self.parent().getUniqNodeName(nodeType)
+                dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
+                if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, Edge):
+                    nodeTemplate = NodeBase.jsonTemplate()
+                    nodeTemplate['package'] = packageName
+                    nodeTemplate['type'] = nodeType
+                    nodeTemplate['name'] = name
+                    nodeTemplate['x'] = x
+                    nodeTemplate['y'] = y
+                    nodeTemplate['meta']['label'] = nodeType
+                    nodeTemplate['uuid'] = None
 
-                node = self.parent().createNode(nodeTemplate)
-                if isinstance(dropItem, UIPinBase):
-                    node.setPos(x - node.boundingRect().width(), y)
-                    for inp in node.inputs.values():
-                        if self.parent().canConnectPins(dropItem, inp):
-                            self.parent().addEdge(dropItem, inp)
-                            node.setPos(x + node.boundingRect().width(), y)
-                            break
-                    for out in node.outputs.values():
-                        if self.parent().canConnectPins(out, dropItem):
-                            self.parent().addEdge(out, dropItem)
-                            node.setPos(x - node.boundingRect().width(), y)
-                            break
-                if isinstance(dropItem, Edge):
-                    for inp in node.inputs.values():
-                        if self.parent().canConnectPins(dropItem.source(), inp):
-                            self.parent().addEdge(dropItem.source(), inp)
-                            break
-                    for out in node.outputs.values():
-                        if self.parent().canConnectPins(out, dropItem.destination()):
-                            self.parent().addEdge(out, dropItem.destination())
-                            break
+                    node = self.parent().createNode(nodeTemplate)
+                    if isinstance(dropItem, UIPinBase):
+                        node.setPos(x - node.boundingRect().width(), y)
+                        for inp in node.inputs.values():
+                            if self.parent().canConnectPins(dropItem, inp):
+                                self.parent().addEdge(dropItem, inp)
+                                node.setPos(x + node.boundingRect().width(), y)
+                                break
+                        for out in node.outputs.values():
+                            if self.parent().canConnectPins(out, dropItem):
+                                self.parent().addEdge(out, dropItem)
+                                node.setPos(x - node.boundingRect().width(), y)
+                                break
+                    if isinstance(dropItem, Edge):
+                        for inp in node.inputs.values():
+                            if self.parent().canConnectPins(dropItem.source(), inp):
+                                self.parent().addEdge(dropItem.source(), inp)
+                                break
+                        for out in node.outputs.values():
+                            if self.parent().canConnectPins(out, dropItem.destination()):
+                                self.parent().addEdge(out, dropItem.destination())
+                                break
         else:
             super(SceneClass, self).dropEvent(event)
 
@@ -556,9 +563,12 @@ class NodeBoxTreeWidget(QTreeWidget):
             return
         drag = QtGui.QDrag(self)
         mime_data = QtCore.QMimeData()
-        data = {"Type": "Node", "Package": packageName,
-                "PressedText": pressed_text}
-        pressed_text = json.dumps(data)
+        jsonTemplate = NodeBase.jsonTemplate()
+        jsonTemplate['package'] = packageName
+        jsonTemplate['type'] = pressed_text
+        jsonTemplate['name'] = pressed_text
+
+        pressed_text = json.dumps(jsonTemplate)
         mime_data.setText(pressed_text)
         drag.setMimeData(mime_data)
         drag.exec_()
@@ -1711,8 +1721,7 @@ class GraphWidgetUI(QGraphicsView):
             print(msg)
 
     def _createNode(self, jsonTemplate):
-        nodeInstance = getNodeInstance(
-            jsonTemplate['type'], jsonTemplate['name'], self, jsonTemplate['package'])
+        nodeInstance = getNodeInstance(jsonTemplate, self)
         assert(nodeInstance is not None), "Node instance is not found!"
         nodeInstance.setPosition(jsonTemplate["x"], jsonTemplate["y"])
 

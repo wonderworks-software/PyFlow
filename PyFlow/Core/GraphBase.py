@@ -159,13 +159,13 @@ class GraphBase(object):
             src, dst = dst, src
 
         if src.uid not in self.pins:
-            print('scr not in graph.pins')
+            print('scr ({}) not in graph.pins'.format(src.getName()))
             return False
         if dst.uid not in self.pins:
-            print('dst not in graph.pins')
+            print('dst ({}) not in graph.pins'.format(dst.getName()))
             return False
 
-        if src.dataType == "AnyPin" and not  cycle_check(src, dst) and not src.direction == dst.direction:
+        if src.dataType == "AnyPin" and not cycle_check(src, dst) and not src.direction == dst.direction:
             return True
 
         if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":

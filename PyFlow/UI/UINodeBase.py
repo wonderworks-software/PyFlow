@@ -332,7 +332,7 @@ class UINodeBase(QGraphicsObject):
             self.UIinputs[uid] = p
 
         for uid, o in self.outputs.items():
-            p= self._createUIPinWrapper(o)
+            p = self._createUIPinWrapper(o)
             self.UIoutputs[uid] = p
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])

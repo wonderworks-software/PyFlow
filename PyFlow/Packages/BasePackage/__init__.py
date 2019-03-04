@@ -38,6 +38,7 @@ from PyFlow.Packages.BasePackage.Nodes.switchOnString import switchOnString
 from PyFlow.Packages.BasePackage.Nodes.timer import timer
 from PyFlow.Packages.BasePackage.Nodes.whileLoop import whileLoop
 from PyFlow.Packages.BasePackage.Nodes.commentNode import commentNode
+from PyFlow.Packages.BasePackage.Nodes.getVar import getVar
 
 _FOO_LIBS = {
     ArrayLib.__name__: ArrayLib(),
@@ -65,7 +66,8 @@ _NODES = {
     switchOnString.__name__: switchOnString,
     timer.__name__: timer,
     whileLoop.__name__: whileLoop,
-    commentNode.__name__: commentNode
+    commentNode.__name__: commentNode,
+    getVar.__name__: getVar
 }
 
 _PINS = {

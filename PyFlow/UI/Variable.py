@@ -111,6 +111,12 @@ class VariableBase(QWidget):
         self.setName(name)
         self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
         self.graph.vars[self.uid] = self
+        self._packageName = None
+        self.updatePackageName()
+
+    @property
+    def packageName(self):
+        return self._packageName
 
     @property
     def accessLevel(self):
@@ -138,7 +144,9 @@ class VariableBase(QWidget):
             'name': None,
             'uuid': None,
             'value': None,
-            'type': None
+            'type': None,
+            'package': None,
+            'accessLevel': None
         }
         return template
 
@@ -148,6 +156,7 @@ class VariableBase(QWidget):
         template['uuid'] = str(self.uid)
         template['value'] = self.value
         template['type'] = self.dataType
+        template['package'] = self._packageName
         template['accessLevel'] = self.accessLevel
         return template
 
@@ -169,6 +178,9 @@ class VariableBase(QWidget):
         self._value = data
         self.valueChanged.emit()
 
+    def updatePackageName(self):
+        self._packageName = findPinClassByType(self.dataType).packageName()
+
     ## Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
     # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
     def setDataType(self, dataType, _bJustSpawned=False):
@@ -180,6 +192,7 @@ class VariableBase(QWidget):
             return
         self.dataTypeChanged.emit(self.dataType)
         self.graph.undoStack.clear()
+        self.updatePackageName()
         self.graph.tryFillPropertiesView(self)
 
     def mousePressEvent(self, event):
