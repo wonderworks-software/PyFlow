@@ -29,7 +29,7 @@ class BoolPin(PinBase):
         return (255, 0, 0, 255)
 
     @staticmethod
-    def processData( data):
+    def processData(data):
         return bool(data)
 
     def setData(self, data):
