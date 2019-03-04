@@ -12,7 +12,7 @@ from PyFlow.UI.Settings import *
 from PyFlow.Core.AGraphCommon import *
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
-
+from PyFlow.UI.NodePainter import NodePainter
 
 ## Variable getter node
 class UIGetVarNode(UINodeBase):
@@ -42,7 +42,7 @@ class UIGetVarNode(UINodeBase):
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
     def boundingRect(self):
-        return QtCore.QRectF(-5, -3, self.w, 20)
+        return QtCore.QRectF(0, -3, self.w, 20)
 
     def serialize(self):
         template = UINodeBase.serialize(self)
@@ -63,27 +63,7 @@ class UIGetVarNode(UINodeBase):
 
     def onVarValueChanged(self):
         push(self.UIOut)
-
+       
     def paint(self, painter, option, widget):
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(QtCore.Qt.darkGray)
-
-        color = Colors.NodeBackgrounds.lighter(150)
-        if self.isSelected():
-            color = color.lighter(150)
-
-        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(40, 40), 300)
-        linearGrad.setColorAt(0, color)
-        linearGrad.setColorAt(1, color.lighter(180))
-        br = QtGui.QBrush(linearGrad)
-        painter.setBrush(br)
-        pen = QtGui.QPen(QtCore.Qt.black, 0.5)
-        if option.state & QStyle.State_Selected:
-            pen.setColor(Colors.Yellow)
-            pen.setStyle(self.opt_pen_selected_type)
-        painter.setPen(pen)
-        painter.drawRoundedRect(self.boundingRect(), 7, 7)
-        painter.setFont(self.label().opt_font)
-        pen.setColor(QtGui.QColor(*self.var.widget.color))
-        painter.setPen(pen)
-        painter.drawText(self.boundingRect(), QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, self.name)
+        NodePainter.asVariableGetter(self, painter, option, widget)
+    

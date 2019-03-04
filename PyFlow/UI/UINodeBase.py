@@ -306,8 +306,10 @@ class UINodeBase(QGraphicsObject):
             if lyt:
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-
-        self.label().setPlainText(self._rawNode.__class__.__name__)
+        if label == None:            
+            self.label().setPlainText(self._rawNode.__class__.__name__)
+        else:
+            self.label().setPlainText(label)
 
         self.w = self.getWidth() + Spacings.kPinOffset
         self.nodeMainGWidget.setMaximumWidth(self.w)
