@@ -146,8 +146,10 @@ class NoneInputWidget(InputWidgetSingle):
         self.setWidget(self.le)
         self.le.textChanged.connect(lambda val: self.dataSetCallback(val))
         self.le.setEnabled(False)
+
     def blockWidgetSignals(self, bLocked):
         self.le.blockSignals(bLocked)
+
     def setWidgetValue(self, val):
         self.le.setText(str(val))
 

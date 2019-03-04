@@ -1513,7 +1513,7 @@ class GraphWidgetUI(QGraphicsView):
             if not i:
                 do_connect = False
                 break
-            if not i.__class__.__name__ == UIPinBase.__name__:
+            if not isinstance(i, UIPinBase):
                 do_connect = False
                 break
         if p_itm and r_itm:
