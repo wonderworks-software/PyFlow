@@ -10,7 +10,7 @@ class AnyPin(PinBase):
         super(AnyPin, self).__init__(name, parent, dataType, direction, **kwargs)
         
         self.setDefaultValue(None)
-        self.supportedDataTypesList = tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
+        self.supportedDataTypesList = tuple([pin.__name__ for pin in getAllPinClasses()])
         self.origDataType = "AnyPin"
         self._free = True
         self.isAny = True
