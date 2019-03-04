@@ -1,4 +1,5 @@
 from PyFlow.Core.AGraphCommon import *
+from PyFlow import CreateRawPin 
 import weakref
 
 
@@ -161,12 +162,15 @@ class GraphBase(object):
             print('dst not in graph.pins')
             return False
 
-        if src.dataType not in dst.supportedDataTypes():
+        if src.dataType == "AnyPin" and not  cycle_check(src, dst) and not src.direction == dst.direction:
+            return True
+
+        if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
             print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
             return False
         else:
             if src.dataType is 'ExecPin':
-                if dst.dataType is not 'ExecPin':
+                if dst.dataType is not 'ExecPin' and dst.dataType is not "AnyPin":
                     print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                     return False
 
@@ -186,6 +190,18 @@ class GraphBase(object):
             if debug:
                 print('cycles are not allowed')
             return False
+
+        if dst.constraint != None:
+            if dst.dataType != "AnyPin":
+                cheked = []
+                if dst.isAny:
+                    free = dst.checkFree([],False)
+                    if not free:
+                        a = CreateRawPin("", None, dst.dataType, 0)
+                        if src.dataType not in a.supportedDataTypes():
+                            print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
+                            return False
+                        del a                
         return True
 
     def addEdge(self, src, dst):
