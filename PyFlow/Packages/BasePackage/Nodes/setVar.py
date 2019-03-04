@@ -49,3 +49,4 @@ class setVar(NodeBase):
         newValue = self.inp.getData()
         self.var.value = newValue
         self.out.setData(copy(self.var.value))
+        self.outExec.call()
