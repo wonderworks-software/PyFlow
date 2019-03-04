@@ -162,6 +162,7 @@ class VariableBase(QWidget):
 
     @staticmethod
     def deserialize(data, graph):
+        # TODO: this is probably bad
         var = graph.parent.variablesWidget.createVariable(uuid.UUID(data['uuid']))
         var.setName(data['name'])
         var.setDataType(data['type'])

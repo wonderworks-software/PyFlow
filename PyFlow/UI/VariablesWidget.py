@@ -44,6 +44,11 @@ class VariablesWidget(QWidget, Ui_Form):
         self.listWidget.mousePressEvent = MethodType(lwMousePressEvent, self.listWidget)
         self.listWidget.setDragDropMode(self.listWidget.InternalMove)
 
+    def killAll(self):
+        self.listWidget.clear()
+        self.graph.vars.clear()
+        self.graph._clearPropertiesView()
+
     def killVar(self):
         for i in self.listWidget.selectedItems():
             w = self.listWidget.itemWidget(i)

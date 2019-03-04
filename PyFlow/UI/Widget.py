@@ -57,6 +57,7 @@ from PyFlow.UI.UIPinBase import UIPinBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
+from PyFlow.UI.Variable import VariableBase
 from PyFlow.UI.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
@@ -860,12 +861,14 @@ class GraphWidgetUI(QGraphicsView):
         return uiPin
 
     def getGraphSaveData(self):
-        data = {self.name: {'nodes': [], 'edges': []}}
+        data = {self.name: {'nodes': [], 'edges': [], 'vars': []}}
         # save nodes
         data[self.name]['nodes'] = [node.serialize() for node in self.getNodes(
         ) if not node.isCommentNode] + [node.serialize() for node in self.getNodes() if node.isCommentNode]
         # save edges
         data[self.name]['edges'] = [e.serialize() for e in self.edges.values()]
+        # variables
+        data[self.name]['vars'] = [v.serialize() for v in self.vars.values()]
         return data
 
     def save(self, save_as=False):
@@ -899,7 +902,7 @@ class GraphWidgetUI(QGraphicsView):
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
                 graphData = self.getGraphSaveData()
-                json.dump(graphData, f)
+                json.dump(graphData, f, indent=4)
 
             self._file_name_label.setPlainText(self._current_file_name)
             print(str("// saved: '{0}'".format(self._current_file_name)))
@@ -913,6 +916,7 @@ class GraphWidgetUI(QGraphicsView):
         nodes = list(self.getNodes())
         for node in nodes:
             node.kill()
+        self.parent.variablesWidget.killAll()
         self.undoStack.clear()
         self._clearPropertiesView()
         # Scene Inputs Will be added
@@ -930,6 +934,9 @@ class GraphWidgetUI(QGraphicsView):
             with open(fpath, 'r') as f:
                 data = json.load(f)
                 self.new_file()
+                # vars
+                for varJson in data[self.name]['vars']:
+                    VariableBase.deserialize(varJson, self)
                 # nodes
                 for nodeJson in data[self.name]['nodes']:
                     try:

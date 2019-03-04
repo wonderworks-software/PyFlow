@@ -79,8 +79,11 @@ class Edge(QGraphicsPathItem):
         dstUUID = UUID(data['destinationUUID'])
         # if srcUUID in graph.pins and dstUUID in graph.pins:
         srcPin = graph.findUIPinByUID(srcUUID)
+        assert(srcPin is not None)
         dstPin = graph.findUIPinByUID(dstUUID)
+        assert(dstPin is not None)
         edge = graph._addEdge(srcPin, dstPin)
+        assert(edge is not None)
         edge.uid = UUID(data['uuid'])
 
     def serialize(self):
