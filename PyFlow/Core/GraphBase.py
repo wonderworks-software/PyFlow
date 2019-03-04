@@ -193,16 +193,15 @@ class GraphBase(object):
             if debug:
                 print('cycles are not allowed')
             return False
-
+    
         if dst.constraint != None:
             if dst.dataType != "AnyPin":
-                cheked = []
                 if dst.isAny:
                     free = dst.checkFree([],False)
                     if not free:
                         a = CreateRawPin("", None, dst.dataType, 0)
                         if src.dataType not in a.supportedDataTypes():
-                            print("[{0}] is not conmpatible with [{1}]".format(getDataTypeName(src.dataType), getDataTypeName(dst.dataType)))
+                            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                             return False
                         del a                
         return True

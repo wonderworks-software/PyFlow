@@ -152,7 +152,16 @@ class IPin(IItemBase):
         @sa [DataTypes](@ref AGraphCommon.DataTypes)
         """
         raise NotImplementedError('pinDataTypeHint method of IPin is not implemented')
+    @staticmethod
+    def processData( data):
+        '''
+        Defines how data is processed.
 
+        Returns:
+            procesed data
+        '''        
+        
+        return data
     def supportedDataTypes(self):
         '''
         An array of supported data types.

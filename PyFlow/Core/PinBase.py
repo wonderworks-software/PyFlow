@@ -25,7 +25,8 @@ class PinBase(IPin):
         ## List of connections
         self.edge_list = []
         ## Access to the node
-        self.owningNode = weakref.ref(owningNode)
+        if owningNode != None:
+            self.owningNode = weakref.ref(owningNode)
 
         self.name = name
         self.dataType = dataType
@@ -233,3 +234,10 @@ class PinBase(IPin):
         # So make sure to store sepatrate copy of value
         # For example if this is a Matrix, default value will be changed each time data has been set in original Matrix
         self._defaultValue = deepcopy(val)
+
+    def updateConstraint(self,constraint):
+        self.constraint = constraint
+        if self.owningNode()._Constraints.has_key(constraint):
+            self.owningNode()._Constraints[constraint].append(self)
+        else:
+            self.owningNode()._Constraints[constraint] = [self]
