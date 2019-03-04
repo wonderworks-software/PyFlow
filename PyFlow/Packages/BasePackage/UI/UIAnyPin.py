@@ -12,8 +12,8 @@ class UIAnyPin(UIPinBase):
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
         self._defaultColor = self._color
 
-    def checkFree(self,checked=[],selfChek=True):
-        return self._rawPin.checkFree(checked,selfChek)
+    def checkFree(self, checked=[], selfChek=True):
+        return self._rawPin.checkFree(checked, selfChek)
 
     def pinConnected(self, other):
         self._rawPin.updateOnConnection(other._rawPin)
@@ -22,18 +22,19 @@ class UIAnyPin(UIPinBase):
 
     def pinDisconnected(self, other):
         UIPinBase.pinDisconnected(self, other._rawPin)
-        self.OnPinConnected.emit(other)   
-        self._rawPin.updateOnDisconnection() 
+        self.OnPinConnected.emit(other)
+        self._rawPin.updateOnDisconnection()
 
-    def setDefault(self,defcolor):
-    	self._color = QtGui.QColor(*defcolor)
+    def setDefault(self, defcolor):
+        self._color = QtGui.QColor(*defcolor)
         for e in self.edge_list:
-            e.setColor( QtGui.QColor(*defcolor))    	
-        self.OnPinChanged.emit(self)   
-        self.update()    	
-    def setType(self,otherColor):
-    	self._color = QtGui.QColor(*otherColor)
+            e.setColor(QtGui.QColor(*defcolor))
+        self.OnPinChanged.emit(self)
+        self.update()
+
+    def setType(self, otherColor):
+        self._color = QtGui.QColor(*otherColor)
         for e in self.edge_list:
-            e.setColor( self._color)
-        self.OnPinChanged.emit(self)         
-        self.update()        	
+            e.setColor(self._color)
+        self.OnPinChanged.emit(self)
+        self.update()

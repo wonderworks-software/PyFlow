@@ -235,9 +235,9 @@ class PinBase(IPin):
         # For example if this is a Matrix, default value will be changed each time data has been set in original Matrix
         self._defaultValue = deepcopy(val)
 
-    def updateConstraint(self,constraint):
+    def updateConstraint(self, constraint):
         self.constraint = constraint
-        if self.owningNode()._Constraints.has_key(constraint):
+        if constraint in self.owningNode()._Constraints:
             self.owningNode()._Constraints[constraint].append(self)
         else:
             self.owningNode()._Constraints[constraint] = [self]

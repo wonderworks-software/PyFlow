@@ -486,6 +486,9 @@ class NodeBoxTreeWidget(QTreeWidget):
 
             # class based nodes
             for node_class in package.GetNodeClasses().values():
+                if node_class.__name__ in ('setVar', 'getVar'):
+                    continue
+
                 nodeCategoryPath = "{0}|{1}".format(
                     package_name, node_class.category())
 

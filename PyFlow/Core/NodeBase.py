@@ -125,7 +125,7 @@ class NodeBase(INode):
         self.x = x
         self.y = y
 
-    def addInputPin(self, pinName, dataType, defaultValue=None, foo=None,constraint=None,allowedPins=[]):
+    def addInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
         # check unique name
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
@@ -139,11 +139,11 @@ class NodeBase(INode):
             p.setData(defaultValue)
         if dataType == "AnyPin" and allowedPins:
             p.supportedDataTypesList = allowedPins
-        if constraint != None:
-            p.updateConstraint(constraint)           
+        if constraint is not None:
+            p.updateConstraint(constraint)
         return p
 
-    def addOutputPin(self, pinName, dataType, defaultValue=None, foo=None,constraint=None,allowedPins=[]):
+    def addOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         self.outputs[p.uid] = p
@@ -155,9 +155,9 @@ class NodeBase(INode):
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
         if dataType == "AnyPin" and allowedPins:
-            p.supportedDataTypesList = allowedPins            
-        if constraint != None:
-            p.updateConstraint(constraint)             
+            p.supportedDataTypesList = allowedPins
+        if constraint is not None:
+            p.updateConstraint(constraint)
         return p
 
     def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):
@@ -209,25 +209,26 @@ class NodeBase(INode):
     def updateConstraints(self):
         self._Constraints = {}
         for pin in self.inputs.values() + self.outputs.values():
-            if pin.constraint != None:
-                if self._Constraints.has_key(pin.constraint):
+            if pin.constraint is not None:
+                if pin.constraint in self._Constraints:
                     self._Constraints[pin.constraint].append(pin)
                 else:
                     self._Constraints[pin.constraint] = [pin]
+
     @staticmethod
     ## Constructs a node from given annotated function
     def initializeFromFunction(foo):
         retAnyOpts = None
-        retConstraint = None        
+        retConstraint = None
         meta = foo.__annotations__['meta']
         returnType = returnDefaultValue = None
         if foo.__annotations__['return'] is not None:
             returnType = foo.__annotations__['return'][0]
-            returnDefaultValue =  foo.__annotations__['return'][1]
-            if len(foo.__annotations__['return'])>2:
-                if foo.__annotations__['return'][2].has_key("supportedDataTypes"):
+            returnDefaultValue = foo.__annotations__['return'][1]
+            if len(foo.__annotations__['return']) > 2:
+                if "supportedDataTypes" in foo.__annotations__['return'][2]:
                     retAnyOpts = foo.__annotations__['return'][2]["supportedDataTypes"]
-                if foo.__annotations__['return'][2].has_key("constraint"):
+                if "constraint" in foo.__annotations__['return'][2]:
                     retConstraint = foo.__annotations__['return'][2]["constraint"]
 
         nodeType = foo.__annotations__['nodeType']
@@ -263,7 +264,7 @@ class NodeBase(INode):
         raw_inst = nodeClass(foo.__name__)
 
         if returnType is not None:
-            p = raw_inst.addOutputPin('out', returnType, returnDefaultValue,allowedPins=retAnyOpts,constraint=retConstraint)
+            p = raw_inst.addOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
 
@@ -301,22 +302,22 @@ class NodeBase(INode):
             argDefaultValue = foo.__defaults__[index]
             dataType = foo.__annotations__[argName]
             anyOpts = None
-            constraint = None  
+            constraint = None
             if isinstance(dataType, list):
-                if dataType[0][0] == "AnyPin" and len(dataType[0])>2:
-                    if dataType[0][2].has_key("supportedDataTypes"):
+                if dataType[0][0] == "AnyPin" and len(dataType[0]) > 2:
+                    if "supportedDataTypes" in dataType[0][2]:
                         anyOpts = dataType[0][2]["supportedDataTypes"]
-                    if dataType[0][2].has_key("constraint"):
-                        constraint = dataType[0][2]["constraint"]                        
+                    if "constraint" in dataType[0][2]:
+                        constraint = dataType[0][2]["constraint"]
                 dataType = dataType[0][0]
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
-                if dataType[0] == "AnyPin" and len(dataType)>2:
-                    if dataType[2].has_key("supportedDataTypes"):
+                if dataType[0] == "AnyPin" and len(dataType) > 2:
+                    if "supportedDataTypes" in dataType[2]:
                         anyOpts = dataType[2]["supportedDataTypes"]
-                    if dataType[2].has_key("constraint"):
-                        constraint = dataType[2]["constraint"]                 
-                outRef = raw_inst.addOutputPin(argName, dataType[0],allowedPins=anyOpts,constraint=constraint)
+                    if "constraint" in dataType[2]:
+                        constraint = dataType[2]["constraint"]
+                outRef = raw_inst.addOutputPin(argName, dataType[0], allowedPins=anyOpts, constraint=constraint)
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 if PROPAGATE_DIRTY in meta:
@@ -324,7 +325,7 @@ class NodeBase(INode):
                         outRef.setAlwaysPushDirty(True)
                 refs.append(outRef)
             else:
-                inp = raw_inst.addInputPin(argName, dataType,allowedPins=anyOpts,constraint=constraint)
+                inp = raw_inst.addInputPin(argName, dataType, allowedPins=anyOpts, constraint=constraint)
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
                 if PROPAGATE_DIRTY in meta:
