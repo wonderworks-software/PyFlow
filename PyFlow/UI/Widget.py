@@ -1124,9 +1124,10 @@ class GraphWidgetUI(QGraphicsView):
                 fullEdges.append({"full": True, "sourcenode": e.source().UiNode.name, "sourcePin": e.source().name, "destinationNode": e.destination().UiNode.name, "destinationPin": e.destination().name})
             elif e.source().UiNode not in oldNodes and e.source().dataType != "ExecPin":
                 fullEdges.append({"full": False, "sourcenode": e.source().UiNode.name, "sourcePin": e.source().name, "destinationNode": e.destination().UiNode.name, "destinationPin": e.destination().name})
-        ret = {"nodes": nodes, "edges": fullEdges}
-        n = json.dumps(ret)
-        QApplication.clipboard().setText(n)
+        if len(nodes)>0:
+            ret = {"nodes": nodes, "edges": fullEdges}
+            n = json.dumps(ret)
+            QApplication.clipboard().setText(n)
 
     def pasteNodes(self, move=True):
         nodes = json.loads(QApplication.clipboard().text())
