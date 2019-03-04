@@ -185,7 +185,8 @@ class SceneClass(QGraphicsScene):
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('text/plain'):
             event.accept()
-            jsonData = json.loads(event.mimeData().text())
+            mime = str(event.mimeData().text())
+            jsonData = json.loads(mime)
 
             if VARIABLE_TAG in jsonData:
                 return

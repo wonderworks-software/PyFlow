@@ -157,7 +157,7 @@ class VariableBase(QWidget):
         template['value'] = self.value
         template['type'] = self.dataType
         template['package'] = self._packageName
-        template['accessLevel'] = self.accessLevel
+        template['accessLevel'] = self.accessLevel.value
         return template
 
     @staticmethod
@@ -166,7 +166,7 @@ class VariableBase(QWidget):
         var.setName(data['name'])
         var.setDataType(data['type'])
         var.value = data['value']
-        var.accessLevel = data['accessLevel']
+        var.accessLevel = AccessLevel(data['accessLevel'])
         return var
 
     @property
