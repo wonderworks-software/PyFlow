@@ -19,6 +19,7 @@ from PyFlow.Packages.BasePackage.FunctionLibraries.DefaultLib import DefaultLib
 from PyFlow.Packages.BasePackage.FunctionLibraries.FloatLib import FloatLib
 from PyFlow.Packages.BasePackage.FunctionLibraries.IntLib import IntLib
 from PyFlow.Packages.BasePackage.FunctionLibraries.MathLib import MathLib
+from PyFlow.Packages.BasePackage.FunctionLibraries.MathAbstractLib import MathAbstractLib
 from PyFlow.Packages.BasePackage.FunctionLibraries.RandomLib import RandomLib
 
 # Class based nodes
@@ -46,6 +47,7 @@ _FOO_LIBS = {
     FloatLib.__name__: FloatLib(),
     IntLib.__name__: IntLib(),
     MathLib.__name__: MathLib(),
+    MathAbstractLib.__name__: MathAbstractLib(),
     RandomLib.__name__: RandomLib(),
 }
 

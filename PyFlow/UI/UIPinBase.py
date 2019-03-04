@@ -70,7 +70,6 @@ class UIPinBase(QGraphicsWidget):
         self._val = 0
         self._displayName = self.name
         self._color = QtGui.QColor(*self._rawPin.color())
-        self.constraint = None
 
     def displayName(self):
         return self._displayName
@@ -83,6 +82,13 @@ class UIPinBase(QGraphicsWidget):
     def owningNode(self):
         return self._rawPin.owningNode
 
+    @property
+    def constraint(self):
+        return self._rawPin.constraint
+    @property
+    def isAny(self):
+        return self._rawPin.isAny
+    
     def setRenamingEnabled(self, bEnabled):
         self._rawPin.setRenamingEnabled(bEnabled)
         actionsNames = [a.text() for a in self.menu.actions()]

@@ -12,6 +12,9 @@ class UIAnyPin(UIPinBase):
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
         self._defaultColor = self._color
 
+    def checkFree(self,checked=[],selfChek=True):
+        return self._rawPin.checkFree(checked,selfChek)
+
     def pinConnected(self, other):
         self._rawPin.updateOnConnection(other._rawPin)
         UIPinBase.pinConnected(self, other)

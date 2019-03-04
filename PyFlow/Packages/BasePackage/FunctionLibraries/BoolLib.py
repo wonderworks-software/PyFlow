@@ -21,16 +21,6 @@ class BoolLib(FunctionLibraryBase):
         return b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bool|Conversion', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def boolToInt(b=('BoolPin', False)):
-        return int(b)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'Math|Bool|Conversion', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def boolToString(b=('BoolPin', str(False))):
-        return str(b)
-
-    @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []}, packageName=PACKAGE_NAME)
     def boolAnd(a=('BoolPin', False), b=('BoolPin', False)):
         '''

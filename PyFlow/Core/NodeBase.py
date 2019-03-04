@@ -309,7 +309,6 @@ class NodeBase(INode):
                     if dataType[0][2].has_key("constraint"):
                         constraint = dataType[0][2]["constraint"]                        
                 dataType = dataType[0][0]
-
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if isinstance(dataType, tuple):
                 if dataType[0] == "AnyPin" and len(dataType)>2:
@@ -317,7 +316,7 @@ class NodeBase(INode):
                         anyOpts = dataType[2]["supportedDataTypes"]
                     if dataType[2].has_key("constraint"):
                         constraint = dataType[2]["constraint"]                 
-                outRef = raw_inst.addOutputPin(argName, dataType[0],constraint=constraint)
+                outRef = raw_inst.addOutputPin(argName, dataType[0],allowedPins=anyOpts,constraint=constraint)
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 if PROPAGATE_DIRTY in meta:
