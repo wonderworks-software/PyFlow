@@ -30,6 +30,7 @@ class UIGetVarNode(UINodeBase):
         self._rawNode.postCreate(jsonTemplate)
 
         self.out = self._createUIPinWrapper(self._rawNode.out)
+        self.out.getLabel()().hide()
         self.UIoutputs[self.out.uid] = self.out
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])

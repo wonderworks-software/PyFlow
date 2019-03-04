@@ -40,7 +40,7 @@ class PinBase(IPin):
 
         # gui class weak ref
         self._wrapper = None
-        #Constraint ports
+        # Constraint ports
         self.constraint = None
         self.isAny = False
 

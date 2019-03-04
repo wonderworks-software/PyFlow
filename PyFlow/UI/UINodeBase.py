@@ -536,6 +536,7 @@ class UINodeBase(QGraphicsObject):
 
         name = rawPin.name
 
+        # TODO: do not use Proxy widget. Use QGraphicsTextItem instead
         connector_name = QGraphicsProxyWidget()
         connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)
@@ -561,6 +562,7 @@ class UINodeBase(QGraphicsObject):
             container = self.addContainer(rawPin.direction)
             lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
             container.layout().addItem(p)
+            p.setLabel(connector_name)
             p._container = container
             container.layout().addItem(connector_name)
 
@@ -571,6 +573,7 @@ class UINodeBase(QGraphicsObject):
             lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
+            p.setLabel(connector_name)
             p._container = container
             self.outputsLayout.insertItem(index, container)
             container.adjustSize()

@@ -1,5 +1,7 @@
 """@file Pin.py
 """
+import weakref
+
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsWidget
@@ -33,6 +35,7 @@ class UIPinBase(QGraphicsWidget):
     # used by enums
     userStructChanged = QtCore.Signal(object)
     OnPinChanged = QtCore.Signal(object)
+
     def __init__(self, owningNode, raw_pin):
         super(UIPinBase, self).__init__()
         self._rawPin = raw_pin
@@ -48,6 +51,9 @@ class UIPinBase(QGraphicsWidget):
         ## Copy UUID to buffer
         self.actionCopyUid = self.menu.addAction('Copy uid')
         self.actionCopyUid.triggered.connect(self.saveUidToClipboard)
+
+        # label item weak ref
+        self._label = None
 
         self.newPos = QtCore.QPointF()
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
@@ -71,6 +77,14 @@ class UIPinBase(QGraphicsWidget):
         self._displayName = self.name
         self._color = QtGui.QColor(*self._rawPin.color())
         self.constraint = None
+
+    def setLabel(self, labelItem):
+        if self._label is None:
+            self._label = weakref.ref(labelItem)
+
+    def getLabel(self):
+        assert(self._label is not None)
+        return self._label
 
     def displayName(self):
         return self._displayName
