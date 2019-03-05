@@ -1416,6 +1416,10 @@ class GraphWidgetUI(QGraphicsView):
                     self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
                 elif node.resizeDirectionArrow == 2:
                     self.viewport().setCursor(QtCore.Qt.SizeVerCursor)
+                elif node.resizeDirectionArrow == 3:
+                    self.viewport().setCursor(QtCore.Qt.SizeHorCursor)   
+                elif node.resizeDirectionArrow == 4:
+                    self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)                                      
             else:
                 self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         else:

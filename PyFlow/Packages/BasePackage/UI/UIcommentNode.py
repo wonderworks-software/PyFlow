@@ -90,16 +90,20 @@ class commentNodeName(NodeName):
         r.setWidth(self.width)
         r.setX(0.25)
         r.setY(0.25)
-        b = QtGui.QLinearGradient(0, 0, 0, r.height())
-        b.setColorAt(0, QtGui.QColor(0, 0, 0, 0))
-        b.setColorAt(0.25, self.color)
-        b.setColorAt(1, self.color)
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(b)
-
         r.setHeight(r.height() - 1)
-        painter.drawRoundedRect(1, 1, r.width(), r.height(), self.roundCornerFactor, self.roundCornerFactor, QtCore.Qt.AbsoluteSize)
-        painter.drawRect(1, r.height() * 0.5 + 2, r.width(), r.height() * 0.5)
+        b = QtGui.QLinearGradient(0, 0, 0, r.height())
+        b.setColorAt(0, self.color)
+        b.setColorAt(0.25, self.color.lighter(1))
+        #b.setColorAt(0.5, self.color)
+        b.setColorAt(1, self.color.lighter(100))
+        painter.setPen(QtCore.Qt.NoPen)
+        color = QtGui.QColor(self.color)
+        #color.setAlpha(150)
+        painter.setBrush(color)
+
+        
+        painter.drawRoundedRect(0, 0, r.width(), r.height(), self.parentItem().sizes[4], self.parentItem().sizes[5], QtCore.Qt.AbsoluteSize)
+        #painter.drawRect(1, r.height() * 0.5 + 2, r.width(), r.height() * 0.5)
         parentRet = self.parentItem().childrenBoundingRect()
 
         # painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
@@ -248,36 +252,43 @@ class UIcommentNode(UINodeBase):
         margin = 4
         QGraphicsItem.mousePressEvent(self, event)
         self.mousePressPos = event.scenePos()
+        self.origPos = self.pos()
         self.lastNodePos = self.scenePos()
         pBottomRight = self.rect.bottomRight()
         pBottomLeft = self.rect.bottomLeft()
-        bottomRightRect = QtCore.QRectF(pBottomRight.x() - 6, pBottomRight.y() - 6, 5, 5)
-        bottomLeftRect = QtCore.QRectF(pBottomLeft.x() - 6, pBottomLeft.y() - 6, 5, 5)
+        bottomRightRect = QtCore.QRectF(pBottomRight.x() - margin, pBottomRight.y() - margin, margin, margin)
+        bottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - margin, 5, 5)
         # detect where on the node
         self.initialRect = self.rect
-        if bottomRightRect.contains(event.pos()) and self.expanded:
-            self.initialRectWidth = self.rect.width()
-            self.initialRectHeight = self.rect.height()
-            self.resizeDirection = (1, -1)
-            self.setFlag(QGraphicsItem.ItemIsMovable, False)
-            self.bResize = True
-        elif event.pos().x() > (self.rect.width() - margin) and self.expanded:
-            self.initialRectWidth = self.rect.width()
-            self.resizeDirection = (1, 0)
-            self.setFlag(QGraphicsItem.ItemIsMovable, False)
-            self.bResize = True
-        elif (event.pos().y() + self.label().defaultHeight) > (self.rect.height() - 10) and self.expanded:
-            self.initialRectHeight = self.rect.height()
-            self.resizeDirection = (0, -1)
-            self.setFlag(QGraphicsItem.ItemIsMovable, False)
-            self.bResize = True
-        # elif event.pos().x() < (self.rect.x() + margin):
-        #    self.initialRectWidth = self.rect.width()
-        #    self.resizeDirection = (-1, 0)
-        #    self.setFlag(QGraphicsItem.ItemIsMovable, False)
-        #    self.bResize = True
-
         if self.expanded:
+            if bottomRightRect.contains(event.pos()):
+                self.initialRectWidth = self.rect.width()
+                self.initialRectHeight = self.rect.height()
+                self.resizeDirection = (1, -1)
+                self.setFlag(QGraphicsItem.ItemIsMovable, False)
+                self.bResize = True
+            elif bottomLeftRect.contains(event.pos()):
+                self.initialRectWidth = self.rect.width()
+                self.initialRectHeight = self.rect.height()
+                self.resizeDirection = (-1, -1)
+                self.setFlag(QGraphicsItem.ItemIsMovable, False)
+                self.bResize = True                
+            elif event.pos().x() > (self.rect.width() - margin):
+                self.initialRectWidth = self.rect.width()
+                self.resizeDirection = (1, 0)
+                self.setFlag(QGraphicsItem.ItemIsMovable, False)
+                self.bResize = True
+            elif event.pos().y()>(self.rect.bottom()-margin):#elif (event.pos().y() + self.label().defaultHeight) > (self.rect.height() - 15):
+                self.initialRectHeight = self.rect.height()
+                self.resizeDirection = (0, -1)
+                self.setFlag(QGraphicsItem.ItemIsMovable, False)
+                self.bResize = True
+            elif event.pos().x() < (self.rect.x() + margin):
+                self.initialRectWidth = self.rect.width()
+                self.resizeDirection = (-1, 0)
+                self.setFlag(QGraphicsItem.ItemIsMovable, False)
+                self.bResize = True
+
             self.nodesToMove.clear()
             self.updateChildrens(self.collidingItems())
         else:
@@ -300,7 +311,7 @@ class UIcommentNode(UINodeBase):
                 newWidth = delta.x() + self.initialRectWidth
                 if newWidth > self.minWidth:
                     self.label().width = newWidth
-                    self.rect.setRight(newWidth)
+                    self.rect.setWidth(newWidth)
                     self.label().adjustSizes()
             elif self.resizeDirection == (0, -1):
                 newHeight = delta.y() + self.initialRectHeight
@@ -314,10 +325,30 @@ class UIcommentNode(UINodeBase):
                 newHeight = max(newHeight, self.label().h + 20.0)
                 if newHeight > self.minHeight and newWidth > self.minWidth:
                     self.label().width = newWidth
-                    self.rect.setRight(newWidth)
+                    self.rect.setWidth(newWidth)
                     self.label().setTextWidth(newWidth)
                     self.rect.setHeight(newHeight)
-
+            elif self.resizeDirection == (-1, 0):
+                # left edge resize
+                newWidth = (1-delta.x()) + self.initialRectWidth
+                posdelta = event.scenePos() - self.origPos
+                if newWidth > self.minWidth:
+                    self.translate(posdelta.x(),0,False)
+                    self.origPos = self.pos()
+                    self.label().width = newWidth
+                    self.label().adjustSizes()    
+            elif self.resizeDirection == (-1, -1):            
+                newWidth = (1-delta.x()) + self.initialRectWidth
+                newHeight = delta.y() + self.initialRectHeight
+                newHeight = max(newHeight, self.label().h + 20.0)
+                posdelta = event.scenePos() - self.origPos
+                if newHeight > self.minHeight and newWidth > self.minWidth:
+                    self.translate(posdelta.x(),0,False)
+                    self.origPos = self.pos()                    
+                    self.label().width = newWidth
+                    self.rect.setWidth(newWidth)
+                    self.label().setTextWidth(newWidth)
+                    self.rect.setHeight(newHeight)
             self.update()
             self.label().update()
         self.lastMousePos = event.pos()
@@ -350,22 +381,32 @@ class UIcommentNode(UINodeBase):
         pBottomLeft = self.rect.bottomLeft()
         margin = 4
         bottomRightRect = QtCore.QRectF(pBottomRight.x() - margin, pBottomRight.y() - margin, margin, margin)
-        bottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() + margin, 5, 5)
+        bottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - margin, 5, 5)
         # detect where on the node
-        self.cursorResize = False
-        self.resizeDirectionArrow = 0
+       
         if self.expanded:
             cursor = self.mapFromScene(cursorPos)
-            if bottomRightRect.contains(cursor):
-                self.resizeDirectionArrow = 0
-                self.cursorResize = True
-            elif cursor.x() > (self.rect.width() - margin):
-                self.resizeDirectionArrow = 1
-                self.cursorResize = True
-            elif (cursor.y() + self.label().defaultHeight) > (self.rect.height() - 10):
-                self.resizeDirectionArrow = 2
-                self.cursorResize = True
-
+            if not self.bResize:
+                if bottomRightRect.contains(cursor):
+                    self.resizeDirectionArrow = 0
+                    self.cursorResize = True
+                elif bottomLeftRect.contains(cursor):
+                    self.resizeDirectionArrow = 4
+                    self.cursorResize = True      
+                elif cursor.x() > (self.rect.width() - margin):
+                    self.resizeDirectionArrow = 1
+                    self.cursorResize = True
+                elif cursor.y()>(self.rect.bottom()-margin):
+                    self.resizeDirectionArrow = 2
+                    self.cursorResize = True
+                elif cursor.x() < (self.rect.x() + margin):
+                    self.resizeDirectionArrow = 3
+                    self.cursorResize = True   
+                else:
+                    self.cursorResize = False
+                    self.resizeDirectionArrow = 0                      
+                
+                    
     def mouseReleaseEvent(self, event):
         QGraphicsItem.mouseReleaseEvent(self, event)
         self.bResize = False
@@ -405,10 +446,11 @@ class UIcommentNode(UINodeBase):
                 edge.show()
         self.update()
 
-    def translate(self, x, y):
-        for n in self.nodesToMove:
-            if not n.isSelected():
-                n.translate(x, y)
+    def translate(self, x, y,moveChildren=True):
+        if moveChildren:
+            for n in self.nodesToMove:
+                if not n.isSelected():
+                    n.translate(x, y)
         super(UIcommentNode, self).translate(x, y)
 
     def paint(self, painter, option, widget):
@@ -439,21 +481,15 @@ class UIcommentNode(UINodeBase):
         bottomRightRect.setRight(bottomRightRect.left() + bottomRightRect.width() / 2)
         bottomRightRect.setBottom(bottomRightRect.top() + bottomRightRect.height() / 2)
         painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
+        # draw bottom left resizer
+        pBottomLeft = self.rect.bottomLeft()
+        pBottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - 6, 5, 5)
+        painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
 
-        pen.setWidth(1)
-        painter.setPen(pen)
+        pBottomLeftRect.setLeft(pBottomLeftRect.left() + pBottomLeftRect.width() / 2)
+        pBottomLeftRect.setBottom(pBottomLeftRect.top() + pBottomLeftRect.height() / 2)
+        painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
 
-        # draw right resizer
-        midY = self.rect.center().y()
-        pTop = QtCore.QPoint(self.rect.width() - 5, midY - 5)
-        pBottom = QtCore.QPoint(self.rect.width() - 5, midY + 5)
-        painter.drawLine(pTop, pBottom)
-
-        # draw bottom resizer
-        midX = self.rect.center().x()
-        pLeft = QtCore.QPoint(midX - 5, self.rect.bottom() - 5)
-        pRight = QtCore.QPoint(midX + 5, self.rect.bottom() - 5)
-        painter.drawLine(pLeft, pRight)
 
     def onUpdatePropertyView(self, formLayout):
 
