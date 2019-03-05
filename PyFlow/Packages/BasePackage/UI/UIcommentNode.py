@@ -434,6 +434,7 @@ class UIcommentNode(UINodeBase):
 
     def toogleCollapsed(self, ):
         if self.expanded:
+            self.updateChildrens(self.collidingItems())
             self.hideButton.setText("+")
             self.expanded = False
             self.prevRect = self.rect.bottom()
