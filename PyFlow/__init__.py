@@ -65,7 +65,7 @@ def getRawNodeInstance(nodeClassName, packageName=None,libName=None):
         foos = lib.getFunctions()
         if libName != None:
             if libName == key and nodeClassName in foos:
-                return NodeBase.initializeFromFunction(foos[nodeClassName])
+                return NodeBase.initializeFromFunction(foos[nodeClassName])          
 
     # try find node class
     nodes = package.GetNodeClasses()

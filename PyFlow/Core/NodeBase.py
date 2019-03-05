@@ -28,6 +28,7 @@ class NodeBase(INode):
         self.bCallable = False
         self._wrapper = None
         self._Constraints = {}
+        self.lib = None
 
     # IItemBase interface
 
@@ -62,6 +63,7 @@ class NodeBase(INode):
     def serialize(self):
         template = NodeBase.jsonTemplate()
         template['package'] = self.packageName()
+        template['lib'] = self.lib
         template['type'] = self.__class__.__name__
         template['name'] = self.name
         template['uuid'] = str(self.uid)
@@ -220,6 +222,8 @@ class NodeBase(INode):
     def initializeFromFunction(foo):
         retAnyOpts = None
         retConstraint = None
+        libName = foo[1]
+        foo = foo[0]
         meta = foo.__annotations__['meta']
         returnType = returnDefaultValue = None
         if foo.__annotations__['return'] is not None:
@@ -262,7 +266,7 @@ class NodeBase(INode):
                                                      })
 
         raw_inst = nodeClass(foo.__name__)
-
+        raw_inst.lib = libName
         if returnType is not None:
             p = raw_inst.addOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
             p.setData(returnDefaultValue)

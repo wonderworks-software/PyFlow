@@ -27,7 +27,7 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
         func.__annotations__ = getattr(func, '__annotations__', {})
         func.__annotations__['nodeType'] = nodeType
         func.__annotations__['packageName'] = packageName
-
+        
         if not meta == empty:
             func.__annotations__['meta'] = meta
 
@@ -37,7 +37,6 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
         defaults = func.__defaults__
         if defaults:
             spec = getargspec(func)
-
             nanno = len(defaults)
             for (i, name) in enumerate(spec.args[-nanno:]):
                 if len(defaults[i]) < 1 or defaults[i][0] is empty:
@@ -71,7 +70,8 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
 class FunctionLibraryBase(object):
     def __init__(self):
         super(FunctionLibraryBase, self).__init__()
-        self.__foos = dict(inspect.getmembers(self, inspect.isfunction))
+        #self.__foos = dict(inspect.getmembers(self, inspect.isfunction))
+        self.__foos = dict([(name,[function,self.__class__.__name__])for name,function in inspect.getmembers(self, inspect.isfunction)])
 
     def getFunctions(self):
         return self.__foos
