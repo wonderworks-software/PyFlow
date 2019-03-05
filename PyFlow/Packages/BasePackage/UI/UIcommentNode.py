@@ -5,6 +5,7 @@ from types import MethodType
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QGraphicsItemGroup
+from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QLabel
 from Qt.QtWidgets import QLineEdit
@@ -18,7 +19,7 @@ from Qt import QtCore
 from PyFlow.UI.Settings import (Spacings, Colors)
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.UINodeBase import NodeName
-
+import weakref
 class commentNodeName(NodeName):
     """doc string for commentNodeName"""
     def __init__(self, parent, bUseTextureBg=False, color=Colors.AbsoluteBlack):
@@ -32,7 +33,8 @@ class commentNodeName(NodeName):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.width = self.document().documentLayout().documentSize().width()
         self.icon = QtGui.QImage(':/icons/resources/py.png')
-
+        self.setPos(15, -self.boundingRect().height() - 8)  
+        self.drawH = self.h     
     def mousePressEvent(self, event):
         if not self.parentItem().isSelected():
             self.parentItem().graph().clearSelection()
@@ -81,38 +83,44 @@ class commentNodeName(NodeName):
         self.parentItem().rect.setRight(self.width)
         self.setTextWidth(self.width)
         self.h = self.document().documentLayout().documentSize().height()
+        if not self.parentItem().expanded:
+            self.parentItem().rect.setHeight(self.h )        
         self.update()
         self.parentItem().update()
 
+
     def paint(self, painter, option, widget):
-        QGraphicsTextItem.paint(self, painter, option, widget)
         r = QtCore.QRectF(option.rect)
         r.setWidth(self.width)
         r.setX(0.25)
         r.setY(0.25)
-        r.setHeight(r.height() - 1)
-        b = QtGui.QLinearGradient(0, 0, 0, r.height())
-        b.setColorAt(0, self.color)
-        b.setColorAt(0.25, self.color.lighter(1))
-        #b.setColorAt(0.5, self.color)
-        b.setColorAt(1, self.color.lighter(100))
+        r.setHeight(r.height())
         painter.setPen(QtCore.Qt.NoPen)
         color = QtGui.QColor(self.color)
-        #color.setAlpha(150)
         painter.setBrush(color)
-
-        
-        painter.drawRoundedRect(0, 0, r.width(), r.height(), self.parentItem().sizes[4], self.parentItem().sizes[5], QtCore.Qt.AbsoluteSize)
-        #painter.drawRect(1, r.height() * 0.5 + 2, r.width(), r.height() * 0.5)
+        painter.drawRoundedRect(-15, 0, r.width(), r.height(), self.parentItem().sizes[4], self.parentItem().sizes[5], QtCore.Qt.AbsoluteSize)
         parentRet = self.parentItem().childrenBoundingRect()
-
-        # painter.drawRoundedRect(r, self.roundCornerFactor, self.roundCornerFactor)
-
+        QGraphicsTextItem.paint(self, painter, option, widget)
     def hoverEnterEvent(self, event):
         NodeName.hoverEnterEvent(self, event)
 
 
-import weakref
+buttonStyle="""
+QPushButton{color : rgba(255,255,255,255);
+    background-color: rgba(0,0,0,0);
+    border-width: 0px;
+    border-color: transparent;
+    border-style: solid;
+    font-family: Microsoft YaHei;
+    font-size: 20px;
+    font-weight: bold;}
+QPushButton:hover{
+    color: rgba(255, 211, 25, 255);
+}
+QPushButton:pressed{
+    color: rgba(255, 160, 47, 255)
+}
+"""
 ## Comment node
 #
 # Can drag intersected nodes.
@@ -142,6 +150,7 @@ class UIcommentNode(UINodeBase):
         self.setZValue(-2)
         self.expanded = True
         self.isCommentNode = True
+        self.cursorResize = False
 
     def onChangeColor(self):
         res = QColorDialog.getColor(self.color, None, 'Comment node color setup')
@@ -214,7 +223,14 @@ class UIcommentNode(UINodeBase):
         self.label().color = color
         self.label().update()
         self.label().adjustSizes()
-
+        self.hideButtomProxy = QGraphicsProxyWidget(self)
+        self.hideButton = QPushButton("-")
+        self.hideButtomProxy.setWidget(self.hideButton)
+        self.hideButton.setStyleSheet(buttonStyle)
+        self.hideButtomProxy.setPos(-2, - 31 )  
+        self.hideButton.pressed.connect(self.toogleCollapsed)
+        self.hideButton.setFixedHeight(25)
+        self.hideButton.setFixedWidth(25)      
     @staticmethod
     def isInRange(mid, val, width=10):
         '''check if val inside strip'''
@@ -413,29 +429,31 @@ class UIcommentNode(UINodeBase):
 
     def mouseDoubleClickEvent(self, event):
         super(UIcommentNode, self).mouseDoubleClickEvent(event)
-        self.OnDoubleClick(self.mapToScene(event.pos()))
+        self.toogleCollapsed()
         event.accept()
 
-    def OnDoubleClick(self, pos):
+    def toogleCollapsed(self, ):
         if self.expanded:
+            self.hideButton.setText("+")
             self.expanded = False
             self.prevRect = self.rect.bottom()
-            self.rect.setBottom(self.label().h / 2)
+            self.rect.setHeight(self.label().h )
 
             for node in self.nodesToMove:
                 node.hide()
 
             for pin in self.pinsToMove:
                 if pin in self.commentInputs:
-                    pin.prevPos = QtCore.QPointF(self.scenePos().x() - 8, self.scenePos().y()) - pin.scenePos()
+                    pin.prevPos = QtCore.QPointF(self.scenePos().x() - 4, self.scenePos().y()-13) - pin.scenePos()
                 elif pin in self.commentOutpus:
-                    pin.prevPos = QtCore.QPointF(self.scenePos().x() + self.boundingRect().width() - 8, self.scenePos().y()) - pin.scenePos()
+                    pin.prevPos = QtCore.QPointF(self.scenePos().x() + self.boundingRect().width() - 8, self.scenePos().y()-13) - pin.scenePos()
                 pin.moveBy(pin.prevPos.x(), pin.prevPos.y())
                 pin.update()
 
             for edge in self.edgesToHide:
                 edge.hide()
         else:
+            self.hideButton.setText("-")
             self.expanded = True
             self.rect.setBottom(self.prevRect)
             for node in self.nodesToMove:
@@ -473,22 +491,23 @@ class UIcommentNode(UINodeBase):
         pen.setColor(Colors.White)
         painter.setPen(pen)
 
-        # draw bottom right resizer
-        pBottomRight = self.rect.bottomRight()
-        bottomRightRect = QtCore.QRectF(pBottomRight.x() - 6, pBottomRight.y() - 6, 5, 5)
-        painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
+        if self.expanded:
+            # draw bottom right resizer
+            pBottomRight = self.rect.bottomRight()
+            bottomRightRect = QtCore.QRectF(pBottomRight.x() - 6, pBottomRight.y() - 6, 5, 5)
+            painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
 
-        bottomRightRect.setRight(bottomRightRect.left() + bottomRightRect.width() / 2)
-        bottomRightRect.setBottom(bottomRightRect.top() + bottomRightRect.height() / 2)
-        painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
-        # draw bottom left resizer
-        pBottomLeft = self.rect.bottomLeft()
-        pBottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - 6, 5, 5)
-        painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
+            bottomRightRect.setRight(bottomRightRect.left() + bottomRightRect.width() / 2)
+            bottomRightRect.setBottom(bottomRightRect.top() + bottomRightRect.height() / 2)
+            painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
+            # draw bottom left resizer
+            pBottomLeft = self.rect.bottomLeft()
+            pBottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - 6, 5, 5)
+            painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
 
-        pBottomLeftRect.setLeft(pBottomLeftRect.left() + pBottomLeftRect.width() / 2)
-        pBottomLeftRect.setBottom(pBottomLeftRect.top() + pBottomLeftRect.height() / 2)
-        painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
+            pBottomLeftRect.setLeft(pBottomLeftRect.left() + pBottomLeftRect.width() / 2)
+            pBottomLeftRect.setBottom(pBottomLeftRect.top() + pBottomLeftRect.height() / 2)
+            painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
 
 
     def onUpdatePropertyView(self, formLayout):

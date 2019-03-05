@@ -960,7 +960,7 @@ class GraphWidgetUI(QGraphicsView):
                         if not node.expanded:
                             node.expanded = True
                             node.updateChildrens(node.nodesToMove.keys())
-                            node.OnDoubleClick(None)
+                            node.toogleCollapsed()
 
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
