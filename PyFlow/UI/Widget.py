@@ -98,8 +98,12 @@ def getNodeInstance(jsonTemplate, graph):
     nodeClassName = jsonTemplate['type']
     nodeName = jsonTemplate['name']
     packageName = jsonTemplate['package']
+    if 'lib' in jsonTemplate:
+        libName = jsonTemplate['lib']
+    else:
+        libName = None
 
-    raw_instance = getRawNodeInstance(nodeClassName, packageName)
+    raw_instance = getRawNodeInstance(nodeClassName, packageName,libName)
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
@@ -194,10 +198,12 @@ class SceneClass(QGraphicsScene):
 
             packageName = jsonData["package"]
             nodeType = jsonData["type"]
+            libName = jsonData["lib"]
             name = self.parent().getUniqNodeName(nodeType)
 
             nodeTemplate = NodeBase.jsonTemplate()
             nodeTemplate['package'] = packageName
+            nodeTemplate['lib'] = libName
             nodeTemplate['type'] = nodeType
             nodeTemplate['name'] = name
             nodeTemplate['x'] = event.scenePos().x()
@@ -306,12 +312,13 @@ class SceneClass(QGraphicsScene):
             else:
                 packageName = jsonData["package"]
                 nodeType = jsonData["type"]
-
+                libName = jsonData['lib']
                 name = self.parent().getUniqNodeName(nodeType)
                 dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
                 if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, Edge):
                     nodeTemplate = NodeBase.jsonTemplate()
                     nodeTemplate['package'] = packageName
+                    nodeTemplate['lib'] = libName
                     nodeTemplate['type'] = nodeType
                     nodeTemplate['name'] = name
                     nodeTemplate['x'] = x
@@ -401,7 +408,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                         sepCatNames.pop()
         return False
 
-    def insertNode(self, nodeCategoryPath, name, doc=None):
+    def insertNode(self, nodeCategoryPath, name, doc=None,libName=None):
         nodePath = nodeCategoryPath.split('|')
         categoryPath = ''
         # walk from tree top to bottom, creating folders if needed
@@ -434,6 +441,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
         nodeItem.bCategory = False
         nodeItem.setText(0, name)
+        nodeItem.libName = libName
         if doc:
             nodeItem.setToolTip(0, doc)
 
@@ -474,16 +482,16 @@ class NodeBoxTreeWidget(QTreeWidget):
                         # create all nodes items if clicked on canvas
                         if dataType is None:
                             self.insertNode(nodeCategoryPath,
-                                            name, foo.__doc__)
+                                            name, foo.__doc__,libName)
                         else:
                             if pinType == PinDirection.Output:
                                 if dataType in fooInpTypes:
                                     self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__)
+                                        nodeCategoryPath, name, foo.__doc__,libName)
                             else:
                                 if dataType in fooOutTypes:
                                     self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__)
+                                        nodeCategoryPath, name, foo.__doc__,libName)
 
             # class based nodes
             for node_class in package.GetNodeClasses().values():
@@ -536,7 +544,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                 rootItem = rootItem.parent()
             packageName = rootItem.text(0)
             pressed_text = item_clicked.text(0)
-
+            libName = item_clicked.libName
             if pressed_text in self.categoryPaths.keys():
                 event.ignore()
                 return
@@ -546,6 +554,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             pos = self.parent().graph().mapToScene(self.parent().graph().mouseReleasePos)
             nodeTemplate = NodeBase.jsonTemplate()
             nodeTemplate['package'] = packageName
+            nodeTemplate['lib'] = libName
             nodeTemplate['type'] = pressed_text
             nodeTemplate['name'] = name
             nodeTemplate['x'] = pos.x()
@@ -571,6 +580,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             rootItem = rootItem.parent()
         packageName = rootItem.text(0)
         pressed_text = item_clicked.text(0)
+        libName = item_clicked.libName
 
         if pressed_text in self.categoryPaths.keys():
             event.ignore()
@@ -579,6 +589,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         mime_data = QtCore.QMimeData()
         jsonTemplate = NodeBase.jsonTemplate()
         jsonTemplate['package'] = packageName
+        jsonTemplate['lib'] = libName
         jsonTemplate['type'] = pressed_text
         jsonTemplate['name'] = pressed_text
 
