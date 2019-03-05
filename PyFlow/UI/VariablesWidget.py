@@ -19,7 +19,6 @@ VARIABLE_DATA_TAG = "VAR_DATA"
 
 
 def lwMousePressEvent(self, event):
-    # TODO: create json template here for node creation
     QListWidget.mousePressEvent(self, event)
     w = self.itemWidget(self.currentItem())
     if w:
