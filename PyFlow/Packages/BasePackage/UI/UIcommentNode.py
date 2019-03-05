@@ -323,10 +323,11 @@ class UIcommentNode(UINodeBase):
                 newWidth = delta.x() + self.initialRectWidth
                 newHeight = delta.y() + self.initialRectHeight
                 newHeight = max(newHeight, self.label().h + 20.0)
-                if newHeight > self.minHeight and newWidth > self.minWidth:
+                if newWidth > self.minWidth:
                     self.label().width = newWidth
                     self.rect.setWidth(newWidth)
                     self.label().setTextWidth(newWidth)
+                if newHeight > self.minHeight:                    
                     self.rect.setHeight(newHeight)
             elif self.resizeDirection == (-1, 0):
                 # left edge resize
@@ -342,12 +343,13 @@ class UIcommentNode(UINodeBase):
                 newHeight = delta.y() + self.initialRectHeight
                 newHeight = max(newHeight, self.label().h + 20.0)
                 posdelta = event.scenePos() - self.origPos
-                if newHeight > self.minHeight and newWidth > self.minWidth:
+                if newWidth > self.minWidth:
                     self.translate(posdelta.x(),0,False)
                     self.origPos = self.pos()                    
                     self.label().width = newWidth
                     self.rect.setWidth(newWidth)
                     self.label().setTextWidth(newWidth)
+                if newHeight > self.minHeight :                    
                     self.rect.setHeight(newHeight)
             self.update()
             self.label().update()
@@ -475,7 +477,7 @@ class UIcommentNode(UINodeBase):
         pBottomRight = self.rect.bottomRight()
         bottomRightRect = QtCore.QRectF(pBottomRight.x() - 6, pBottomRight.y() - 6, 5, 5)
         painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
-        
+
         bottomRightRect.setRight(bottomRightRect.left() + bottomRightRect.width() / 2)
         bottomRightRect.setBottom(bottomRightRect.top() + bottomRightRect.height() / 2)
         painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
