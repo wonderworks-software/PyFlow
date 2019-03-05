@@ -30,36 +30,27 @@ class TestGeneral(unittest.TestCase):
 
         randintNode = NodeBase.initializeFromFunction(randomLibFoos["randint"])
         printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
-        converterNode = NodeBase.initializeFromFunction(defaultLibFoos["intToString"])
 
         g.addNode(randintNode)
         g.addNode(printNode)
-        g.addNode(converterNode)
 
         self.assertIsNotNone(randintNode)
         self.assertIsNotNone(printNode)
-        self.assertIsNotNone(converterNode)
 
         pRandIntResultPin = randintNode.getPinByName('Result', PinSelectionGroup.Outputs)
         pRandIntOutExecPin = randintNode.getPinByName('outExec', PinSelectionGroup.Outputs)
         pRandIntInExecPin = randintNode.getPinByName('inExec', PinSelectionGroup.Inputs)
-        pConverterInputPin = converterNode.getPinByName('i', PinSelectionGroup.Inputs)
-        pConverterOutPin = converterNode.getPinByName('out', PinSelectionGroup.Outputs)
         pPrintInputValuePin = printNode.getPinByName('entity', PinSelectionGroup.Inputs)
         pPrintInputExecPin = printNode.getPinByName('inExec', PinSelectionGroup.Inputs)
         self.assertIsNotNone(pRandIntResultPin)
-        self.assertIsNotNone(pConverterInputPin)
-        self.assertIsNotNone(pConverterOutPin)
         self.assertIsNotNone(pPrintInputValuePin)
         self.assertIsNotNone(pRandIntOutExecPin)
         self.assertIsNotNone(pPrintInputExecPin)
 
-        edge1Created = g.addEdge(pRandIntResultPin, pConverterInputPin)
-        edge2Created = g.addEdge(pConverterOutPin, pPrintInputValuePin)
-        edge3Created = g.addEdge(pRandIntOutExecPin, pPrintInputExecPin)
-        self.assertEqual(edge1Created, True, "FAILED TO ADD EDGE 1")
-        self.assertEqual(edge2Created, True, "FAILED TO ADD EDGE 2")
-        self.assertEqual(edge3Created, True, "FAILED TO ADD EDGE 3")
+        edge1Created = g.addEdge(pRandIntOutExecPin, pPrintInputExecPin)
+        edge2Created = g.addEdge(pRandIntResultPin, pPrintInputValuePin)
+        self.assertEqual(edge1Created, True, "FAILED TO CONNECT EXECS")
+        self.assertEqual(edge2Created, True, "FAILED TO CONNECT INT AND ANY")
 
         values = set()
         for i in range(10):
