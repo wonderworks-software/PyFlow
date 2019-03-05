@@ -841,9 +841,7 @@ class GraphWidgetUI(QGraphicsView):
 
     def findUIPinByUID(self, uid):
         uiPin = None
-        if uid in self.UIPins:
-            uiPin = self.UIPins[uid]
-        elif uid in self.pins:
+        if uid in self.pins:
             return self.pins[uid].getWrapper()()
         return uiPin
 

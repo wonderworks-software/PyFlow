@@ -301,7 +301,10 @@ class UIPinBase(QGraphicsWidget):
             return QtCore.QRectF(0, -0.5, 10 * 1.5, 10 + 1.0)
 
     def sizeHint(self, which, constraint):
-        return QtCore.QSizeF(self.width, self.height)
+        try:
+            return QtCore.QSizeF(self.width, self.height)
+        except:
+            return QGraphicsWidget.sizeHint(self, which, constraint)
 
     def saveUidToClipboard(self):
         clipboard = QApplication.clipboard()
