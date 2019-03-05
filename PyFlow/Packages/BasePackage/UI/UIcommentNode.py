@@ -383,7 +383,6 @@ class UIcommentNode(UINodeBase):
         bottomRightRect = QtCore.QRectF(pBottomRight.x() - margin, pBottomRight.y() - margin, margin, margin)
         bottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - margin, 5, 5)
         # detect where on the node
-       
         if self.expanded:
             cursor = self.mapFromScene(cursorPos)
             if not self.bResize:
@@ -405,8 +404,7 @@ class UIcommentNode(UINodeBase):
                 else:
                     self.cursorResize = False
                     self.resizeDirectionArrow = 0                      
-                
-                    
+
     def mouseReleaseEvent(self, event):
         QGraphicsItem.mouseReleaseEvent(self, event)
         self.bResize = False
@@ -477,7 +475,7 @@ class UIcommentNode(UINodeBase):
         pBottomRight = self.rect.bottomRight()
         bottomRightRect = QtCore.QRectF(pBottomRight.x() - 6, pBottomRight.y() - 6, 5, 5)
         painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
-
+        
         bottomRightRect.setRight(bottomRightRect.left() + bottomRightRect.width() / 2)
         bottomRightRect.setBottom(bottomRightRect.top() + bottomRightRect.height() / 2)
         painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
