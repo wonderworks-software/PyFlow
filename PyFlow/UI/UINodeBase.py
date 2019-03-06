@@ -180,7 +180,7 @@ class UINodeBase(QGraphicsObject):
 
         self.isTemp = False
         self.isCommentNode = False
-        self._displayName = self.__class__.__name__
+        self._displayName = self._rawNode.__class__.__name__
 
     @property
     def displayName(self):
