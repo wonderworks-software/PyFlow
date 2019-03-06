@@ -89,7 +89,6 @@ def INITIALIZE():
             def packageName():
                 return nodepackName  
             node.packageName=staticmethod(packageName)
-            print node.__name__,node.packageName()
 
     for name2,package2 in __PACKAGES.items():            
         for pin in package.GetPinClasses().values():
@@ -97,4 +96,3 @@ def INITIALIZE():
             def packageName():
                 return pinpackName  
             pin.packageName=staticmethod(packageName) 
-            print pin.__name__,pin.packageName()              
