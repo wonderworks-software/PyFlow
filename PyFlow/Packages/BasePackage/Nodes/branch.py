@@ -12,10 +12,6 @@ class branch(NodeBase):
         self.condition = self.addInputPin("Condition", 'BoolPin')
 
     @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
-    @staticmethod
     def pinTypeHints():
         return {'inputs': ['ExecPin', 'BoolPin'], 'outputs': ['BoolPin']}
 

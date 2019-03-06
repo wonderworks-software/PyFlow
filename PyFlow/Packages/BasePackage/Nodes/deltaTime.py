@@ -9,10 +9,6 @@ class deltaTime(NodeBase):
         self._out0 = self.addOutputPin('out0', 'FloatPin')
 
     @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
-    @staticmethod
     def pinTypeHints():
         return {'inputs': [], 'outputs': ['FloatPin']}
 

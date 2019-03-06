@@ -21,10 +21,6 @@ class getVar(NodeBase):
         self.graph().pins[self.out.uid] = self.out
 
     @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
-    @staticmethod
     def pinTypeHints():
         return {'inputs': [], 'outputs': []}
 

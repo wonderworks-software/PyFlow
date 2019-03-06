@@ -11,10 +11,6 @@ class doOnce(NodeBase):
         self.completed = self.addOutputPin('Completed', 'ExecPin')
         self.bClosed = False
 
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
     def OnReset(self):
         self.bClosed = False
         self.bStartClosed.setData(False)

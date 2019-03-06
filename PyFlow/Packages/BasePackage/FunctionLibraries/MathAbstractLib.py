@@ -3,8 +3,6 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
-
 
 ## Calculates the percentage along a line from MinValue to MaxValue that Value is.
 def GetRangePct(MinValue, MaxValue, Value):
@@ -12,11 +10,11 @@ def GetRangePct(MinValue, MaxValue, Value):
 
 class MathAbstractLib(FunctionLibraryBase):
     '''doc string for MathAbstractLib'''
-    def __init__(self):
-        super(MathAbstractLib, self).__init__()
+    def __init__(self,packageName):
+        super(MathAbstractLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["="]}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["="]})
     ## Is a equal b
     def isequal(a=("AnyPin", 0,{"constraint":"1"}),
                 b=("AnyPin", 0,{"constraint":"1"})):
@@ -26,7 +24,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return a == b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': [">"]}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': [">"]})
     ## Is a > b
     def isGreater(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["BoolPin","FloatPin","IntPin",
                                                                               "Matrix33Pin","Matrix44Pin","QuatlPin",
@@ -40,7 +38,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return a > b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': [">"]}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': [">"]})
     ## Is a >= b
     def isGreaterOrEqual(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["BoolPin","FloatPin","IntPin",
                                                                               "Matrix33Pin","Matrix44Pin","QuatlPin",
@@ -54,7 +52,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return a >= b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["<"]}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["<"]})
     ## Is a < b
     def isLess(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["BoolPin","FloatPin","IntPin",
                                                                               "Matrix33Pin","Matrix44Pin","QuatlPin",
@@ -68,7 +66,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return a < b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["<"]}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["<"]})
     ## Is a <= b
     def isLessOrEqual(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["BoolPin","FloatPin","IntPin",
                                                                               "Matrix33Pin","Matrix44Pin","QuatlPin",
@@ -82,7 +80,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return a <= b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(("AnyPin", 0,{"constraint":"1"})), meta={'Category': 'Math|Basic', 'Keywords': ['+', 'append',"sum"]}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=(("AnyPin", 0,{"constraint":"1"})), meta={'Category': 'Math|Basic', 'Keywords': ['+', 'append',"sum"]})
     ## Basic Sum 
     def add(a=("AnyPin", 0,{"constraint":"1"}), b=("AnyPin", 0,{"constraint":"1"})):
         '''
@@ -91,7 +89,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return a + b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(("AnyPin", 0,{"constraint":"1"})), meta={'Category': 'Math|Basic', 'Keywords': ['-']}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=(("AnyPin", 0,{"constraint":"1"})), meta={'Category': 'Math|Basic', 'Keywords': ['-']})
     ## Basic subtraction
     def subtract(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["BoolPin","FloatPin","IntPin",
                                                                               "Matrix33Pin","Matrix44Pin","QuatlPin",
@@ -105,7 +103,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return a - b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("AnyPin", 0.0,{"constraint":"1"}), meta={'Category': 'Math|Basic', 'Keywords': ['/',"divide"]}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("AnyPin", 0.0,{"constraint":"1"}), meta={'Category': 'Math|Basic', 'Keywords': ['/',"divide"]})
     ## Basic division
     def divide(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["BoolPin","FloatPin","IntPin",
                                                                               "Matrix33Pin","Matrix44Pin","QuatlPin",
@@ -126,7 +124,7 @@ class MathAbstractLib(FunctionLibraryBase):
             return -1
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=(("AnyPin", 0,{"constraint":"1"})), meta={'Category': 'Math|Basic', 'Keywords': ['*',"multiply"]}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=(("AnyPin", 0,{"constraint":"1"})), meta={'Category': 'Math|Basic', 'Keywords': ['*',"multiply"]})
     ## Basic multiplication
     def multiply(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["BoolPin","FloatPin","IntPin",
                                                                               "Matrix33Pin","Matrix44Pin","QuatlPin",
@@ -141,7 +139,7 @@ class MathAbstractLib(FunctionLibraryBase):
        
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("FloatPin", 0.0), meta={'Category': 'Math|Basic', 'Keywords': ['vector', '|','dot','product']}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("FloatPin", 0.0), meta={'Category': 'Math|Basic', 'Keywords': ['vector', '|','dot','product']})
     def dotProduct(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatVector4Pin","FloatVector3Pin","QuatlPin"]}),
               b=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatVector4Pin","FloatVector3Pin","QuatlPin"]})):
         '''Dot product'''
@@ -150,7 +148,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return a | b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["inrange","range"]}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["inrange","range"]})
     def inRange(Value=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["BoolPin","FloatPin","IntPin",
                                                                               "Matrix33Pin","Matrix44Pin","QuatlPin",
                                                                               "FloatVector3Pin","FloatVector4Pin"]}),
@@ -168,7 +166,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return ((Value >= RangeMin) if InclusiveMin else (Value > RangeMin)) and ((Value <= RangeMax) if InclusiveMax else (Value < RangeMax))        
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Basic', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Basic', 'Keywords': []})
     def mapRangeClamped(Value=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}),
                         InRangeA=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}),
                         InRangeB=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}),
@@ -181,7 +179,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return lerp(OutRangeA, OutRangeB, ClampedPct)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Basic', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Basic', 'Keywords': []})
     def mapRangeUnclamped(Value=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}),
                         InRangeA=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}),
                         InRangeB=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}),
@@ -193,7 +191,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))        
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), meta={'Category': 'Math|Basic', 'Keywords': ['clamp']}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), meta={'Category': 'Math|Basic', 'Keywords': ['clamp']})
     ## Clamp
     def clamp(i=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), imin=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), imax=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}, 0.0)):
         '''
@@ -202,7 +200,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return clamp(i, imin, imax)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), meta={'Category': 'Math|Basic', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), meta={'Category': 'Math|Basic', 'Keywords': []})
     def modulo(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), b=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]})):
         '''
         Modulo (A % B)
@@ -210,7 +208,7 @@ class MathAbstractLib(FunctionLibraryBase):
         return a % b        
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), meta={'Category': 'Math|Basic', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), meta={'Category': 'Math|Basic', 'Keywords': []})
     ## Return the absolute value of a number
     def abs(inp=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]})):
         '''

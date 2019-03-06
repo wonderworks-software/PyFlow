@@ -18,11 +18,11 @@ from PyFlow.Packages.Pyrr.FunctionLibraries.Vector4 import Vector4
 
 
 _FOO_LIBS = {
-    Matrix33.__name__: Matrix33(),
-    Matrix44.__name__: Matrix44(),
-    QuatLib.__name__: QuatLib(),
-    Vector3.__name__: Vector3(),
-    Vector4.__name__: Vector4()
+    Matrix33.__name__: Matrix33(PACKAGE_NAME),
+    Matrix44.__name__: Matrix44(PACKAGE_NAME),
+    QuatLib.__name__: QuatLib(PACKAGE_NAME),
+    Vector3.__name__: Vector3(PACKAGE_NAME),
+    Vector4.__name__: Vector4(PACKAGE_NAME)
 }
 
 _NODES = {

@@ -43,14 +43,14 @@ from PyFlow.Packages.BasePackage.Nodes.getVar import getVar
 from PyFlow.Packages.BasePackage.Nodes.setVar import setVar
 
 _FOO_LIBS = {
-    ArrayLib.__name__: ArrayLib(),
-    BoolLib.__name__: BoolLib(),
-    DefaultLib.__name__: DefaultLib(),
-    FloatLib.__name__: FloatLib(),
-    IntLib.__name__: IntLib(),
-    MathLib.__name__: MathLib(),
-    MathAbstractLib.__name__: MathAbstractLib(),
-    RandomLib.__name__: RandomLib(),
+    ArrayLib.__name__: ArrayLib(PACKAGE_NAME),
+    BoolLib.__name__: BoolLib(PACKAGE_NAME),
+    DefaultLib.__name__: DefaultLib(PACKAGE_NAME),
+    FloatLib.__name__: FloatLib(PACKAGE_NAME),
+    IntLib.__name__: IntLib(PACKAGE_NAME),
+    MathLib.__name__: MathLib(PACKAGE_NAME),
+    MathAbstractLib.__name__: MathAbstractLib(PACKAGE_NAME),
+    RandomLib.__name__: RandomLib(PACKAGE_NAME),
 }
 
 _NODES = {

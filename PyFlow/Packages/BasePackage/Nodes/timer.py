@@ -17,10 +17,6 @@ class timer(NodeBase):
         self._timer = QTimer()
         self._timer.timeout.connect(self.compute)
 
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
     def kill(self):
         self._timer.stop()
         self._timer.timeout.disconnect()

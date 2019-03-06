@@ -12,10 +12,6 @@ class whileLoop(NodeBase):
         self.bProcess = False
         self._dirty = False
 
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
     def begin(self):
         self.bProcess = True
 

@@ -11,10 +11,6 @@ class implicitPinCall(NodeBase):
         self.uidInp = self.addInputPin('UUID', 'StringPin')
         self.outExec = self.addOutputPin('out', 'ExecPin')
 
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())
 

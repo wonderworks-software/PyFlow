@@ -80,3 +80,8 @@ def INITIALIZE():
             mod = importer.find_module(modname).load_module(modname)
             package = getattr(mod, modname)()
             __PACKAGES[modname] = package
+            packName = modname
+            for node in package.GetNodeClasses().values():
+                def packageName():
+                    return packName  
+                node.packageName=staticmethod(packageName)

@@ -14,10 +14,6 @@ class delay(NodeBase):
         self._currentDelay = 0.0
 
     @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
-    @staticmethod
     def pinTypeHints():
         return {'inputs': ['ExecPin', 'FloatPin'], 'outputs': ['ExecPin']}
 
