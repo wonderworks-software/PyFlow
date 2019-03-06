@@ -3,14 +3,12 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
-
 
 class ArrayLib(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
+    #packageName = PACKAGE_NAME
     '''doc string for ArrayLib'''
-    def __init__(self):
-        super(ArrayLib, self).__init__()
+    def __init__(self,packageName):
+        super(ArrayLib, self).__init__(packageName)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'Array', 'Keywords': []})

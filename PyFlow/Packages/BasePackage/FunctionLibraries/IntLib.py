@@ -5,14 +5,11 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
-
 
 class IntLib(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
     '''doc string for IntLib'''
-    def __init__(self):
-        super(IntLib, self).__init__()
+    def __init__(self,packageName):
+        super(IntLib, self).__init__(packageName)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': ['+', 'append']})

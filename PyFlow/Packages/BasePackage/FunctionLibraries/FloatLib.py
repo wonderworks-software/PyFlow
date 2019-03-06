@@ -6,15 +6,11 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
-
-
 
 class FloatLib(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
     '''doc string for FloatLib'''
-    def __init__(self):
-        super(FloatLib, self).__init__()
+    def __init__(self,packageName):
+        super(FloatLib, self).__init__(packageName)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Float', 'Keywords': ['lerp']})

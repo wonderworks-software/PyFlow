@@ -5,14 +5,11 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.Pyrr import PACKAGE_NAME
-
 
 class Matrix44(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
     '''doc string for Matrix44'''
-    def __init__(self):
-        super(Matrix44, self).__init__()
+    def __init__(self,packageName):
+        super(Matrix44, self).__init__(packageName)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('Matrix44Pin', pyrr.Matrix44()), nodeType=NodeTypes.Pure, meta={'Category': 'Math|Matrix44', 'Keywords': []})

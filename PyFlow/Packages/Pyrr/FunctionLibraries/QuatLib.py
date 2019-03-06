@@ -5,14 +5,11 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.Pyrr import PACKAGE_NAME
-
 
 class QuatLib(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
     '''doc string for QuatLib'''
-    def __init__(self):
-        super(QuatLib, self).__init__()
+    def __init__(self,packageName):
+        super(QuatLib, self).__init__(packageName)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('QuatPin', pyrr.Quaternion()), nodeType=NodeTypes.Pure, meta={'Category': 'Math|Quaternion', 'Keywords': []})

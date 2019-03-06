@@ -6,16 +6,13 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
-
 
 class MayaLib(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
     '''
     Autodesk maya
     '''
-    def __init__(self):
-        super(MayaLib, self).__init__()
+    def __init__(self,packageName):
+        super(MayaLib, self).__init__(packageName)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})

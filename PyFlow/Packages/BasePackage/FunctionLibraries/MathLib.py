@@ -6,16 +6,13 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
-
 
 class MathLib(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
     """
     Python builtin math module wrapper
     """
-    def __init__(self):
-        super(MathLib, self).__init__()
+    def __init__(self,packageName):
+        super(MathLib, self).__init__(packageName)
 
     # ###################
     # builtin python math

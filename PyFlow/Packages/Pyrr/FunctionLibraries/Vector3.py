@@ -5,14 +5,11 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.Pyrr import PACKAGE_NAME
-
 
 class Vector3(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
     '''doc string for Vector3'''
-    def __init__(self):
-        super(Vector3, self).__init__()
+    def __init__(self,packageName):
+        super(Vector3, self).__init__(packageName)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatVector3Pin', pyrr.Vector3()), nodeType=NodeTypes.Pure, meta={'Category': 'Math|Vector3', 'Keywords': ['vector3']})

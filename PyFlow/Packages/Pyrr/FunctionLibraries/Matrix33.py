@@ -5,14 +5,12 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.Pyrr import PACKAGE_NAME
 
 
 class Matrix33(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
     '''doc string for Matrix33'''
-    def __init__(self):
-        super(Matrix33, self).__init__()
+    def __init__(self,packageName):
+        super(Matrix33, self).__init__(packageName)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('Matrix33Pin', pyrr.Matrix33()), meta={'Category': 'Math|Matrix33', 'Keywords': ['create', 'matrix33']})

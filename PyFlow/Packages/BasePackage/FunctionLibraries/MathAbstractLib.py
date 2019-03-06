@@ -3,18 +3,15 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.AGraphCommon import *
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
-
 
 ## Calculates the percentage along a line from MinValue to MaxValue that Value is.
 def GetRangePct(MinValue, MaxValue, Value):
     return (Value - MinValue) / (MaxValue - MinValue)
 
 class MathAbstractLib(FunctionLibraryBase):
-    packageName = PACKAGE_NAME
     '''doc string for MathAbstractLib'''
-    def __init__(self):
-        super(MathAbstractLib, self).__init__()
+    def __init__(self,packageName):
+        super(MathAbstractLib, self).__init__(packageName)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["="]})
