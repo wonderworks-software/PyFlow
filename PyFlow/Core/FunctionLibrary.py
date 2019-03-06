@@ -21,12 +21,10 @@ empty = {}
 # @param[in] meta dictionary with category path, keywords and any additional info
 # @param[in] nodeType determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created
 # @sa [NodeTypes](@ref PyFlow.Core.AGraphCommon.NodeTypes) FunctionLibraries
-def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure, packageName=None):
+def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     def wrapper(func):
-        assert(packageName is not None), "package name is not defined for function"
         func.__annotations__ = getattr(func, '__annotations__', {})
         func.__annotations__['nodeType'] = nodeType
-        func.__annotations__['packageName'] = packageName
 
         if not meta == empty:
             func.__annotations__['meta'] = meta
@@ -71,6 +69,7 @@ class FunctionLibraryBase(object):
         super(FunctionLibraryBase, self).__init__()
         self.__foos = {}
         for name, function in inspect.getmembers(self, inspect.isfunction):
+            function.__annotations__["packageName"] = self.packageName
             function.__annotations__["lib"] = self.__class__.__name__
             self.__foos[name] = function
 

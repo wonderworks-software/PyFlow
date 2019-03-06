@@ -10,6 +10,7 @@ from PyFlow.Packages.BasePackage import PACKAGE_NAME
 
 
 class MayaLib(FunctionLibraryBase):
+    packageName = PACKAGE_NAME
     '''
     Autodesk maya
     '''
@@ -17,12 +18,12 @@ class MayaLib(FunctionLibraryBase):
         super(MayaLib, self).__init__()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=('BoolPin', False), nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
     def objExists(DagPath=('StringPin', "")):
         return pm.objExists(DagPath)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
     def setTransform(DagPath=('StringPin', ""),
                      Location=('FloatVector3Pin', pyrr.Vector3()),
                      Rotation=('FloatVector3Pin', pyrr.Vector3()),
@@ -41,24 +42,24 @@ class MayaLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('ListPin', []), meta={'Category': 'Maya', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=('ListPin', []), meta={'Category': 'Maya', 'Keywords': []})
     def listSelection():
         return pm.ls(sl=True)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Maya', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Maya', 'Keywords': []})
     def currentFrame():
         return pm.currentTime(q=True)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None,
                     nodeType=NodeTypes.Callable,
-                    meta={'Category': 'Maya', 'Keywords': []}, packageName=PACKAGE_NAME)
+                    meta={'Category': 'Maya', 'Keywords': []})
     def setCurrentFrame(CurrentFrame=('IntPin', 0)):
         pm.setCurrentTime(CurrentFrame)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Maya', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Maya', 'Keywords': []})
     def frameRange(Min=("Reference", ('IntPin', 0)),
                    Max=("Reference", ('IntPin', 0))):
         '''
@@ -68,7 +69,7 @@ class MayaLib(FunctionLibraryBase):
         Max(pm.playbackOptions(q=True, max=True))
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []}, packageName=PACKAGE_NAME)
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Maya', 'Keywords': []})
     def setKeyFrame(DagPath=('StringPin', ''),
                     AttributeName=('StringPin', ''),
                     Result=("Reference", ('BoolPin', False))):

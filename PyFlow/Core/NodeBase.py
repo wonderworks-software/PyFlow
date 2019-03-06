@@ -29,6 +29,7 @@ class NodeBase(INode):
         self._wrapper = None
         self._Constraints = {}
         self.lib = None
+        self._packageName = None
 
     # IItemBase interface
 
