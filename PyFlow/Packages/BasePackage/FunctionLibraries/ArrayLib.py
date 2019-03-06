@@ -17,54 +17,9 @@ class ArrayLib(FunctionLibraryBase):
         return str(arr)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def getStringFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
-        try:
-            string = arr[Index]
-            Result(True)
-            return string
-        except:
-            Result(False)
-
-    @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
     def arrayLen(arr=('ListPin', [])):
         return len(arr)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def isIntInList(List=('ListPin', []), Value=('IntPin', 0)):
-        return Value in List
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def getIntFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
-        try:
-            string = arr[Index]
-            Result(True)
-            return string
-        except:
-            Result(False)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def isFloatInList(List=('ListPin', []), Value=('FloatPin', 0.0)):
-        return Value in List
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def getFloatFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
-        try:
-            string = arr[Index]
-            Result(True)
-            return string
-        except:
-            Result(False)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def isStringInList(List=('ListPin', []), Value=('StringPin', "")):
-        return Value in List
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
@@ -77,61 +32,22 @@ class ArrayLib(FunctionLibraryBase):
         return all(List)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('QuatPin', ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def getQuatFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
+    @IMPLEMENT_NODE(returns=("AnyPin", ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
+    def selectInArray(arr=('ListPin', []), Index=("IntPin", 0), Result=("Reference", ("BoolPin", False))):
         try:
-            string = arr[Index]
+            element = arr[Index]
             Result(True)
-            return string
+            return element
         except:
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatVector3Pin', ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def getVector3FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
-        try:
-            string = arr[Index]
+    @IMPLEMENT_NODE(returns=("IntPin", False), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
+    def findInArray(List=('ListPin', []), Value=("AnyPin", 0),Result=("Reference", ("BoolPin", False))):
+        find = Value in List
+        if find:
             Result(True)
-            return string
-        except:
+            return List.index(Value)
+        else:
             Result(False)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatVector4Pin', ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def getVector4FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
-        try:
-            string = arr[Index]
-            Result(True)
-            return string
-        except:
-            Result(False)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('Matrix33Pin', ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def getM33FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
-        try:
-            string = arr[Index]
-            Result(True)
-            return string
-        except:
-            Result(False)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('Matrix44Pin', ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def getM44FromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
-        try:
-            string = arr[Index]
-            Result(True)
-            return string
-        except:
-            Result(False)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', ''), meta={'Category': 'Array', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def getBoolFromList(arr=('ListPin', []), Index=('IntPin', 0), Result=("Reference", ('BoolPin', False))):
-        try:
-            string = arr[Index]
-            Result(True)
-            return string
-        except:
-            Result(False)
+            return -1

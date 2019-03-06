@@ -41,20 +41,26 @@ class DefaultLib(FunctionLibraryBase):
     def makeInt(i=('IntPin', 0)):
         '''make integer'''
         return i
-
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'GenericTypes', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## make floating point number
     def makeFloat(f=('FloatPin', 0.0)):
         '''make floating point number'''
         return f
-
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'GenericTypes', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## make string
     def makeString(s=('StringPin', '')):
         '''make string'''
         return s
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []}, packageName=PACKAGE_NAME)
+    ## make simple boolean
+    def makeBool(b=('BoolPin', False)):
+        '''
+        make boolean
+        '''
+        return b
 
     # Conversions
     @staticmethod

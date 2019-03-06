@@ -13,36 +13,11 @@ class BoolLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## make simple boolean
-    def makeBool(b=('BoolPin', False)):
-        '''
-        make boolean
-        '''
-        return b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []}, packageName=PACKAGE_NAME)
     def boolAnd(a=('BoolPin', False), b=('BoolPin', False)):
         '''
         Returns the logical AND of two values (A AND B)
         '''
         return a and b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def boolEquals(a=('BoolPin', False), b=('BoolPin', False)):
-        '''
-        Returns true if the values are equal (A == B)
-        '''
-        return a == b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def boolNotEquals(a=('BoolPin', False), b=('BoolPin', False)):
-        '''
-        Returns true if the values are not equal (A != B)
-        '''
-        return a != b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []}, packageName=PACKAGE_NAME)

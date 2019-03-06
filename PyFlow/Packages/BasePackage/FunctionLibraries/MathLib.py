@@ -20,6 +20,35 @@ class MathLib(FunctionLibraryBase):
     # builtin python math
     # ###################
     @staticmethod
+    @IMPLEMENT_NODE(returns=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
+    ## Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0
+    def copysign(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), b=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]})):
+        '''
+        Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0
+        '''
+        return math.copysign(a, b)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
+    ## Return fmod(x, y), as defined by the platform C library
+    def fmod(a=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]}), b=("AnyPin", 0,{"constraint":"1","supportedDataTypes":["FloatPin","IntPin"]})):
+        '''
+        Return fmod(x, y), as defined by the platform C library
+        '''
+        return math.fmod(a, b)
+        
+    @staticmethod
+    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
+    ## Return the fractional and integer parts of x. Both results carry the sign of x and are floats
+    def modf(a=("AnyPin", 0,{"supportedDataTypes":["FloatPin","IntPin"]}), f=("Reference", ('FloatPin', 0.0)), i=("Reference", ('IntPin', 0))):
+        '''
+        Return the fractional and integer parts of x. Both results carry the sign of x and are floats
+        '''
+        t = math.modf(a)
+        f(t[0])
+        i(t[1])
+            
+    @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
     ## Return the ceiling of x as a float, the smallest integer value greater than or equal to x
     def ceil(a=('FloatPin', 0.0)):
@@ -27,24 +56,6 @@ class MathLib(FunctionLibraryBase):
         Return the ceiling of x as a float, the smallest integer value greater than or equal to x
         '''
         return math.ceil(a)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0
-    def copysignf(a=('FloatPin', 0.0), b=('FloatPin', 0.0)):
-        '''
-        Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0
-        '''
-        return math.copysign(a, b)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0
-    def copysign(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Return x with the sign of y. On a platform that supports signed zeros, copysign(1.0, -0.0) returns -1.0
-        '''
-        return math.copysign(a, b)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
@@ -69,24 +80,6 @@ class MathLib(FunctionLibraryBase):
         Return the floor of x as a float, the largest integer value less than or equal to x
         '''
         return math.floor(a)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Return fmod(x, y), as defined by the platform C library
-    def fmodf(a=('FloatPin', 0.0), b=('FloatPin', 0.0)):
-        '''
-        Return fmod(x, y), as defined by the platform C library
-        '''
-        return math.fmod(a, b)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Python x % y operator
-    def fmod(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Python x % y
-        '''
-        return a % b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
@@ -140,28 +133,6 @@ class MathLib(FunctionLibraryBase):
         Return x * (2**i). This is essentially the inverse of function frexp()
         '''
         return math.ldexp(a, i)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Return the fractional and integer parts of x. Both results carry the sign of x and are floats
-    def modf(a=('IntPin', 0), f=("Reference", ('FloatPin', 0.0)), i=("Reference", ('IntPin', 0))):
-        '''
-        Return the fractional and integer parts of x. Both results carry the sign of x and are floats
-        '''
-        t = math.modf(a)
-        f(t[0])
-        i(t[1])
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Return the fractional and integer parts of x. Both results carry the sign of x and are floats
-    def fmodf(a=('FloatPin', 0), f=("Reference", ('FloatPin', 0.0)), i=("Reference", ('IntPin', 0))):
-        '''
-        Return the fractional and integer parts of x. Both results carry the sign of x and are floats
-        '''
-        t = math.modf(a)
-        f(t[0])
-        i(t[1])
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Number-theoretic and representation functions', 'Keywords': []}, packageName=PACKAGE_NAME)
@@ -274,15 +245,6 @@ class MathLib(FunctionLibraryBase):
         except:
             result(False)
             return 0
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Python math|Bult-in functions', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Return the absolute value of a number
-    def absint(inp=('IntPin', 0)):
-        '''
-        Return the absolute value of a number
-        '''
-        return abs(inp)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Python math|Trigonometry', 'Keywords': []}, packageName=PACKAGE_NAME)

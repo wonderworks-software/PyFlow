@@ -14,51 +14,6 @@ class IntLib(FunctionLibraryBase):
         super(IntLib, self).__init__()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Is two integers equal
-    def isequal(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Ints equal
-        '''
-        return a == b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Is a > b
-    def isGreater(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Is a > b
-        '''
-        return a > b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Is a >= b
-    def isGreaterOrEqual(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Is a >= b
-        '''
-        return a >= b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Is a < b
-    def isLess(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Is a < b
-        '''
-        return a < b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []}, packageName=PACKAGE_NAME)
-    ## Is a <= b
-    def isLessOrEqual(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Is a <= b
-        '''
-        return a <= b
-
-    @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': ['+', 'append']}, packageName=PACKAGE_NAME)
     ## Sum of two ints
     def add(a=('IntPin', 0), b=('IntPin', 0)):
@@ -66,47 +21,6 @@ class IntLib(FunctionLibraryBase):
         Sum of two ints
         '''
         return a + b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': ['-']}, packageName=PACKAGE_NAME)
-    ## Int substraction
-    def substract(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Int substraction
-        '''
-        return a - b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Int', 'Keywords': ['/']}, packageName=PACKAGE_NAME)
-    ## Integer devision
-    def divide(a=('IntPin', 0), b=('IntPin', 0), result=("Reference", ('BoolPin', False))):
-        '''
-        Integer devision
-        '''
-        try:
-            d = a / b
-            result(True)
-            return d
-        except:
-            result(False)
-            return -1
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': ['*']}, packageName=PACKAGE_NAME)
-    ## Integer multiplication
-    def mult(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Integer multiplication
-        '''
-        return a * b
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def modulo(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Modulo (A % B)
-        '''
-        return (a % b) if b != 0 else 0
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []}, packageName=PACKAGE_NAME)
@@ -191,26 +105,6 @@ class IntLib(FunctionLibraryBase):
         '''
         mask = 1 << offset
         return(intType ^ mask)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def clampInt(Value=('IntPin', 0), Min=('IntPin', 0), Max=('IntPin', 0)):
-        '''
-        Returns Value clamped to be between A and B (inclusive)
-        '''
-        return clamp(Value, Min, Max)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Int', 'Keywords': []}, packageName=PACKAGE_NAME)
-    def inRange(Value=('IntPin', 0),
-                RangeMin=('IntPin', 0),
-                RangeMax=('IntPin', 0),
-                InclusiveMin=('BoolPin', False),
-                InclusiveMax=('BoolPin', False)):
-        '''
-        Returns true if value is between Min and Max (V &gt;= Min && V &lt;= Max) If InclusiveMin is true, value needs to be equal or larger than Min, else it needs to be larger If InclusiveMax is true, value needs to be smaller or equal than Max, else it needs to be smaller
-        '''
-        return ((Value >= RangeMin) if InclusiveMin else (Value > RangeMin)) and ((Value <= RangeMax) if InclusiveMax else (Value < RangeMax))
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []}, packageName=PACKAGE_NAME)
