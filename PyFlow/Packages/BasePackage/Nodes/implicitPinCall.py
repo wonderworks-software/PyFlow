@@ -1,6 +1,5 @@
 import uuid
 
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 

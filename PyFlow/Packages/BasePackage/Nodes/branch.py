@@ -1,8 +1,6 @@
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 
-## If else node
 class branch(NodeBase):
     def __init__(self, name):
         super(branch, self).__init__(name)

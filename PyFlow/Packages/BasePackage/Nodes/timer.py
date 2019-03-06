@@ -1,6 +1,5 @@
 from Qt.QtCore import QTimer
 
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 
 
