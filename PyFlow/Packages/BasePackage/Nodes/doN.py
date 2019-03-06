@@ -15,10 +15,6 @@ class doN(NodeBase):
         self.bClosed = False
         self._numCalls = 0
 
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
     def OnReset(self):
         self.bClosed = False
         self._numCalls = 0

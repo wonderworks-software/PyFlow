@@ -11,10 +11,6 @@ class switchOnString(NodeBase):
         self.inString = self.addInputPin('String', 'StringPin')
         self.defaultPin = self.addOutputPin('Default', 'ExecPin')
 
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
     def addOutPin(self):
         name = self.getUniqPinName("option")
         p = self.addOutputPin(name, 'ExecPin')

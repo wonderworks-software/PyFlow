@@ -17,10 +17,6 @@ class forLoop(NodeBase):
         self.completed = self.addOutputPin('Completed', 'ExecPin')
 
     @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
-    @staticmethod
     def pinTypeHints():
         return {'inputs': ['ExecPin', 'IntPin'], 'outputs': ['ExecPin', 'IntPin']}
 

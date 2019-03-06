@@ -8,9 +8,5 @@ class commentNode(NodeBase):
         super(commentNode, self).__init__(name)
 
     @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
-    @staticmethod
     def category():
         return 'Common'

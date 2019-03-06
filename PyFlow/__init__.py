@@ -72,7 +72,6 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None):
     if nodeClassName in nodes:
         return nodes[nodeClassName](nodeClassName)
 
-
 def INITIALIZE():
     # TODO: Check for duplicated package names
     for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
@@ -80,3 +79,8 @@ def INITIALIZE():
             mod = importer.find_module(modname).load_module(modname)
             package = getattr(mod, modname)()
             __PACKAGES[modname] = package
+            for node in package.GetNodeClasses().values():
+                packName = modname
+                def packageName():
+                    return packName  
+                node.packageName=staticmethod(packageName)

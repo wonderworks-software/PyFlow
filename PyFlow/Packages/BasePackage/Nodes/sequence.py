@@ -8,10 +8,6 @@ class sequence(NodeBase):
         super(sequence, self).__init__(name)
         self.inExecPin = self.addInputPin('inExec', 'ExecPin', None, self.compute)
 
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
     def addOutPin(self):
         p = self.addOutputPin(str(len(self.outputs)), 'ExecPin')
 

@@ -29,7 +29,6 @@ class NodeBase(INode):
         self._wrapper = None
         self._Constraints = {}
         self.lib = None
-        self._packageName = None
 
     # IItemBase interface
 
@@ -63,6 +62,7 @@ class NodeBase(INode):
         return template
 
     def serialize(self):
+        print self.packageName()
         template = NodeBase.jsonTemplate()
         template['package'] = self.packageName()
         template['lib'] = self.lib

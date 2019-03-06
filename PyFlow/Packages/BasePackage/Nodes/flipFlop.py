@@ -12,10 +12,6 @@ class flipFlop(NodeBase):
         self.bIsA = self.addOutputPin('IsA', 'BoolPin')
 
     @staticmethod
-    def packageName():
-        return PACKAGE_NAME
-
-    @staticmethod
     def pinTypeHints():
         return {'inputs': ['ExecPin'], 'outputs': ['ExecPin', 'BoolPin']}
 
