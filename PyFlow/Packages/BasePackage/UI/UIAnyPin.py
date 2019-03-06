@@ -38,3 +38,11 @@ class UIAnyPin(UIPinBase):
             e.setColor(self._color)
         self.OnPinChanged.emit(self)
         self.update()
+
+    def hoverEnterEvent(self, event):
+        super(UIPinBase, self).hoverEnterEvent(event)
+        self.update()
+        self.hovered = True
+        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}".format(str(self._rawPin.currentData()), self._rawPin.dirty,self._rawPin.supportedDataTypesList)
+        self.setToolTip(hoverMessage)
+        event.accept()
