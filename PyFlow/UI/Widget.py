@@ -103,7 +103,7 @@ def getNodeInstance(jsonTemplate, graph):
     else:
         libName = None
 
-    raw_instance = getRawNodeInstance(nodeClassName, packageName,libName)
+    raw_instance = getRawNodeInstance(nodeClassName, packageName, libName)
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
@@ -408,7 +408,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                         sepCatNames.pop()
         return False
 
-    def insertNode(self, nodeCategoryPath, name, doc=None,libName=None):
+    def insertNode(self, nodeCategoryPath, name, doc=None, libName=None):
         nodePath = nodeCategoryPath.split('|')
         categoryPath = ''
         # walk from tree top to bottom, creating folders if needed
@@ -484,16 +484,16 @@ class NodeBoxTreeWidget(QTreeWidget):
                         # create all nodes items if clicked on canvas
                         if dataType is None:
                             self.insertNode(nodeCategoryPath,
-                                            name, foo.__doc__,libName)
+                                            name, foo.__doc__, libName)
                         else:
                             if pinType == PinDirection.Output:
                                 if dataType in fooInpTypes:
                                     self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__,libName)
+                                        nodeCategoryPath, name, foo.__doc__, libName)
                             else:
                                 if dataType in fooOutTypes:
                                     self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__,libName)
+                                        nodeCategoryPath, name, foo.__doc__, libName)
 
             # class based nodes
             for node_class in package.GetNodeClasses().values():
@@ -794,10 +794,10 @@ class GraphWidgetUI(QGraphicsView):
         self.node_box.lineEdit.clear()
 
     def moveScrollbar(self, delta):
-        #delta = self.mapToScene(event.pos()) - self._lastPanPoint
+        # delta = self.mapToScene(event.pos()) - self._lastPanPoint
         rect = self.sceneRect()
         rect.translate(delta.x(), delta.y())
-        self.setSceneRect(rect)        
+        self.setSceneRect(rect)
 
     def mouseDoubleClickEvent(self, event):
         QGraphicsView.mouseDoubleClickEvent(self, event)
@@ -1557,6 +1557,7 @@ class GraphWidgetUI(QGraphicsView):
         # else:
         #    super(GraphWidgetUI, self).mouseMoveEvent(event)
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
+
     def mouseReleaseEvent(self, event):
         super(GraphWidgetUI, self).mouseReleaseEvent(event)
 
@@ -1693,7 +1694,7 @@ class GraphWidgetUI(QGraphicsView):
 
         # Draw horizontal fine lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenS,0.5))
+        painter.setPen(QtGui.QPen(self._gridPenS, 0.5))
         y = float(top)
         while y < float(rect.bottom()):
             gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
@@ -1702,7 +1703,7 @@ class GraphWidgetUI(QGraphicsView):
 
         # Draw vertical fine lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenS,0.5))
+        painter.setPen(QtGui.QPen(self._gridPenS, 0.5))
         x = float(left)
         while x < float(rect.right()):
             gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
@@ -1715,7 +1716,7 @@ class GraphWidgetUI(QGraphicsView):
 
         # Draw vertical thick lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenL,0.75))
+        painter.setPen(QtGui.QPen(self._gridPenL, 0.75))
         x = left
         while x < rect.right():
             gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
@@ -1724,7 +1725,7 @@ class GraphWidgetUI(QGraphicsView):
 
         # Draw horizontal thick lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenL,0.75))
+        painter.setPen(QtGui.QPen(self._gridPenL, 0.75))
         y = top
         while y < rect.bottom():
             gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))

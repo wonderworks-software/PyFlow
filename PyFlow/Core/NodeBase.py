@@ -51,6 +51,7 @@ class NodeBase(INode):
     @staticmethod
     def jsonTemplate():
         template = {'package': None,
+                    'lib': None,
                     'type': None,
                     'name': None,
                     'uuid': None,

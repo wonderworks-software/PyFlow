@@ -7,6 +7,7 @@ from PyFlow import getAllPinClasses
 from PyFlow.UI.UIPinBase import UIPinBase
 from Qt import QtGui
 
+
 class UIAnyPin(UIPinBase):
     def __init__(self, owningNode, raw_pin):
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
@@ -43,6 +44,7 @@ class UIAnyPin(UIPinBase):
         super(UIPinBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}".format(str(self._rawPin.currentData()), self._rawPin.dirty,self._rawPin.supportedDataTypesList)
+        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}".format(str(
+            self._rawPin.currentData()), self._rawPin.dirty, self._rawPin.supportedDataTypesList)
         self.setToolTip(hoverMessage)
         event.accept()
