@@ -223,8 +223,7 @@ class NodeBase(INode):
     def initializeFromFunction(foo):
         retAnyOpts = None
         retConstraint = None
-        libName = foo[1]
-        foo = foo[0]
+        foo = foo
         meta = foo.__annotations__['meta']
         returnType = returnDefaultValue = None
         if foo.__annotations__['return'] is not None:
@@ -238,6 +237,7 @@ class NodeBase(INode):
 
         nodeType = foo.__annotations__['nodeType']
         _packageName = foo.__annotations__['packageName']
+        libName = foo.__annotations__['lib']
         fooArgNames = getargspec(foo).args
 
         @staticmethod
