@@ -38,6 +38,9 @@ def findPinClassByType(dataType):
     for package_name, package in GET_PACKAGES().items():
         pins = package.GetPinClasses()
         if dataType in pins:
+            def packageName():
+                return package_name  
+            pins[dataType].packageName=staticmethod(packageName)             
             return pins[dataType]
     return None
 
@@ -79,8 +82,19 @@ def INITIALIZE():
             mod = importer.find_module(modname).load_module(modname)
             package = getattr(mod, modname)()
             __PACKAGES[modname] = package
-            for node in package.GetNodeClasses().values():
-                packName = modname
-                def packageName():
-                    return packName  
-                node.packageName=staticmethod(packageName)
+
+    for name,package in __PACKAGES.items():
+        for node in package.GetNodeClasses().values():
+            nodepackName = name
+            def packageName():
+                return nodepackName  
+            node.packageName=staticmethod(packageName)
+            print node.__name__,node.packageName()
+
+    for name2,package2 in __PACKAGES.items():            
+        for pin in package.GetPinClasses().values():
+            pinpackName = name2
+            def packageName():
+                return pinpackName  
+            pin.packageName=staticmethod(packageName) 
+            print pin.__name__,pin.packageName()              

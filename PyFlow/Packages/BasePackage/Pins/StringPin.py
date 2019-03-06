@@ -1,4 +1,3 @@
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 
@@ -12,10 +11,6 @@ class StringPin(PinBase):
     @staticmethod
     def IsValuePin():
         return True
-
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('StringPin',)

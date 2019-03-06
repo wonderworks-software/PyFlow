@@ -1,4 +1,3 @@
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 from PyFlow import getAllPinClasses
@@ -37,10 +36,6 @@ class AnyPin(PinBase):
     @staticmethod
     def pinDataTypeHint():
         return 'AnyPin', ""
-
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
 
     @staticmethod
     def processData(data):

@@ -1,4 +1,3 @@
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 from PyFlow.UI.Settings import Colors
@@ -14,10 +13,6 @@ class ExecPin(PinBase):
     @staticmethod
     def IsValuePin():
         return False
-
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
 
     def supportedDataTypes(self):
         return ('ExecPin',)

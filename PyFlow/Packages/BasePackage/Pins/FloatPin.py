@@ -1,4 +1,3 @@
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 from PyFlow.UI.Settings import Colors
@@ -13,10 +12,6 @@ class FloatPin(PinBase):
     @staticmethod
     def IsValuePin():
         return True
-
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
 
     @staticmethod
     def pinDataTypeHint():

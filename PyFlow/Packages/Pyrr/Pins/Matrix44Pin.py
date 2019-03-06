@@ -1,6 +1,5 @@
 from pyrr import Matrix44
 
-from PyFlow.Packages.Pyrr import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 
@@ -14,10 +13,6 @@ class Matrix44Pin(PinBase):
     @staticmethod
     def IsValuePin():
         return True
-
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
 
     @staticmethod
     def color():

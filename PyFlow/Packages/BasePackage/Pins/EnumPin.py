@@ -1,4 +1,3 @@
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.AGraphCommon import *
 from PyFlow.Core.Enums import ENone
@@ -14,10 +13,6 @@ class EnumPin(PinBase):
     @staticmethod
     def IsValuePin():
         return True
-
-    @staticmethod
-    def packageName():
-        return PACKAGE_NAME
 
     def serialize(self):
         dt = super(PinWidgetBase, self).serialize()
