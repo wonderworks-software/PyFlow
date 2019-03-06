@@ -91,8 +91,7 @@ class NodeName(QGraphicsTextItem):
     def paint(self, painter, option, widget):
         if self.parentItem().bUseTextureBg:
             color = self.color
-            
-            
+
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
                 painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
@@ -100,13 +99,13 @@ class NodeName(QGraphicsTextItem):
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
                 painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
-        #super(NodeName, self).paint(painter, option, widget)
+        # super(NodeName, self).paint(painter, option, widget)
         painter.setPen(self.defaultPen)
         nameRect = QtCore.QRectF(self.boundingRect().topLeft(),
                                  QtCore.QPointF(self.parentItem().boundingRect().right(),
                                  self.boundingRect().bottom())
                                  )
-        painter.drawText(nameRect, QtCore.Qt.AlignCenter, self.parentItem()._rawNode.__class__.__name__)
+        painter.drawText(nameRect, QtCore.Qt.AlignCenter, self.parentItem().displayName)
 
     def focusInEvent(self, event):
         self.parentItem().graph().disableSortcuts()
@@ -181,6 +180,15 @@ class UINodeBase(QGraphicsObject):
 
         self.isTemp = False
         self.isCommentNode = False
+        self._displayName = self.__class__.__name__
+
+    @property
+    def displayName(self):
+        return self._displayName
+
+    @displayName.setter
+    def displayName(self, value):
+        self._displayName = value
 
     def contextMenuEvent(self, event):
         self._menu.exec_(event.screenPos())
@@ -306,7 +314,7 @@ class UINodeBase(QGraphicsObject):
             if lyt:
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-        if label == None:            
+        if label is None:
             self.label().setPlainText(self._rawNode.__class__.__name__)
         else:
             self.label().setPlainText(label)
@@ -340,7 +348,7 @@ class UINodeBase(QGraphicsObject):
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
     def getWidth(self):
-        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.label().toPlainText()) + Spacings.kPinSpacing
+        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.displayName) + Spacings.kPinSpacing
         return fontWidth if fontWidth > 25 else 25
 
     @staticmethod
@@ -361,9 +369,6 @@ class UINodeBase(QGraphicsObject):
 
     def propertyView(self):
         return self.graph().parent.dockWidgetNodeView
-
-    def setName(self, name):
-        self._rawNode.setName(self, name)
 
     @property
     def graph(self):
@@ -419,7 +424,7 @@ class UINodeBase(QGraphicsObject):
         nodes = []
         for pin in self.inputs.values():
             for edge in pin.edge_list:
-                node =  edge.source().topLevelItem()#topLevelItem
+                node = edge.source().topLevelItem()#topLevelItem
                 nodes.append(node)
                 nodes += node.getChainedNodes()
         return nodes

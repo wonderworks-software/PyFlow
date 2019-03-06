@@ -12,9 +12,9 @@ class NodePainter(object):
     @staticmethod
     def default(node, painter, option, widget):
 
-        #painter.setPen(QtCore.Qt.NoPen)
-        #painter.setBrush(QtCore.Qt.darkGray)
-        
+        # painter.setPen(QtCore.Qt.NoPen)
+        # painter.setBrush(QtCore.Qt.darkGray)
+
         color = node.color
         color.setAlpha(230)
         if node.isSelected():
@@ -27,10 +27,10 @@ class NodePainter(object):
         linearGrad.setColorAt(1, color.lighter(180))
         br = QtGui.QBrush(linearGrad)
         painter.setBrush(br)
-        
+
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            #pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
+            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
             pen.setColor(Colors.Yellow)
             pen.setStyle(node.opt_pen_selected_type)
         painter.setPen(pen)
@@ -38,7 +38,7 @@ class NodePainter(object):
         rect.setWidth(node.childrenBoundingRect().width())
         rect.setX(node.childrenBoundingRect().x())
         painter.drawRoundedRect(rect, node.sizes[4], node.sizes[5])
-        
+
         br = QtGui.QBrush()
         painter.setBrush(br)
         headColor = node.headColor
@@ -82,11 +82,11 @@ class NodePainter(object):
         painter.setPen(pen)
         painter.drawRoundedRect(node.boundingRect(), 7, 7)
         painter.setFont(node.label().opt_font)
-        #pen.setColor(QtGui.QColor(*node.var.widget.color))
+        # pen.setColor(QtGui.QColor(*node.var.widget.color))
         painter.setPen(QtGui.QPen(QtCore.Qt.white, 0.5))
         textRect = node.boundingRect()
-        textRect.setWidth(textRect.width()-10)
-        painter.drawText(textRect, QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, node.name)
+        textRect.setWidth(textRect.width() - 10)
+        painter.drawText(textRect, QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, node.displayName)
 
     @staticmethod
     def asGraphSides(node, painter, option, widget):
@@ -94,7 +94,7 @@ class NodePainter(object):
         painter.setBrush(QtCore.Qt.darkGray)
 
         color = Colors.NodeBackgrounds
-        #if node.isSelected():
+        # if node.isSelected():
         #    color = color.lighter(150)
 
         linearGrad = QtGui.QRadialGradient(QtCore.QPointF(40, 40), 300)

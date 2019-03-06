@@ -40,6 +40,7 @@ class UIGetVarNode(UINodeBase):
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+        self.onVarNameChanged(self.var.name)
 
     def boundingRect(self):
         return QtCore.QRectF(0, -3, self.w, 20)
@@ -57,13 +58,13 @@ class UIGetVarNode(UINodeBase):
         self.graph().undoStack.push(cmd)
 
     def onVarNameChanged(self, newName):
+        self.displayName = newName
         self.label().setPlainText(newName)
         self.setName(newName)
         self.updateNodeShape(label=self.label().toPlainText())
 
     def onVarValueChanged(self):
         push(self.UIOut)
-       
+
     def paint(self, painter, option, widget):
         NodePainter.asVariableGetter(self, painter, option, widget)
-    

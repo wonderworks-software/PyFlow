@@ -76,9 +76,13 @@ class UISetVarNode(UINodeBase):
             if uiPin.dataType == 'ExecPin':
                 uiPin.setDisplayName("")
 
+        self.onVarNameChanged(self.var.name)
+
     def onVarNameChanged(self, newName):
+        self.displayName = 'Set {}'.format(newName)
+        self.label().setPlainText(self.displayName)
         self.setName(newName)
-        self.updateNodeShape(label='Set {}'.format(newName))
+        self.updateNodeShape(label=self.displayName)
 
     @staticmethod
     def category():
