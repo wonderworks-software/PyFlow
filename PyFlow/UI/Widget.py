@@ -454,8 +454,8 @@ class NodeBoxTreeWidget(QTreeWidget):
             for libName, lib in package.GetFunctionLibraries().items():
                 foos = lib.getFunctions()
                 for name, foo in foos.items():
-                    libName = foo[1]
-                    foo = foo[0]
+                    foo = foo
+                    libName = foo.__annotations__["lib"]
                     fooArgNames = getargspec(foo).args
                     fooInpTypes = []
                     fooOutTypes = []

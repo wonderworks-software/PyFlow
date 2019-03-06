@@ -69,8 +69,11 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
 class FunctionLibraryBase(object):
     def __init__(self):
         super(FunctionLibraryBase, self).__init__()
-        self.__foos = dict([(name, [function, self.__class__.__name__])
-                            for name, function in inspect.getmembers(self, inspect.isfunction)])
+        self.__foos = {}
+        for name, function in inspect.getmembers(self, inspect.isfunction):
+            function.__annotations__["lib"] = self.__class__.__name__
+            self.__foos[name] = function
+
 
     def getFunctions(self):
         return self.__foos
