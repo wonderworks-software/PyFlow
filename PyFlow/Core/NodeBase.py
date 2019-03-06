@@ -62,7 +62,6 @@ class NodeBase(INode):
         return template
 
     def serialize(self):
-        print self.packageName()
         template = NodeBase.jsonTemplate()
         template['package'] = self.packageName()
         template['lib'] = self.lib
