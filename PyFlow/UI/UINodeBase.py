@@ -165,7 +165,7 @@ class UINodeBase(QGraphicsObject):
         self.custom_widget_data = {}
         # node name
         self.label = weakref.ref(NodeName(self, self.bUseTextureBg, self.headColor))
-        self._displayName = self._rawNode.__class__.__name__
+        self._displayName = self.name
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
         # main
@@ -352,7 +352,7 @@ class UINodeBase(QGraphicsObject):
             self.resizable = True
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])         
-
+        self._displayName = self.name
     def isCallable(self):
         return self._rawNode.isCallable()
 
@@ -594,7 +594,11 @@ class UINodeBase(QGraphicsObject):
         formLayout.addRow("Uuid", leUid)
 
         # type
-        leType = QLineEdit(self.__class__.__name__)
+        text = "{0}".format(self.packageName())
+        if self._rawNode.lib:
+            text +=" | {0}".format(self._rawNode.lib)
+        text += " | {0}".format(self._rawNode.__class__.__name__)
+        leType = QLineEdit(text)
         leType.setReadOnly(True)
         formLayout.addRow("Type", leType)
 
