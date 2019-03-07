@@ -317,11 +317,13 @@ class UINodeBase(QGraphicsObject):
         template = self._rawNode.serialize()
         template['x'] = self.scenePos().x()
         template['y'] = self.scenePos().y()
+        if self.resizable:
+            template['meta']['resize']={'w' : self._rect.right(),'h' : self._rect.bottom() }
+   
         return template
 
     def postCreate(self, jsonTemplate=None):
-        self._rawNode.postCreate(jsonTemplate)
-
+        self._rawNode.postCreate(jsonTemplate)           
         # create ui pin wrappers
         for uid, i in self.inputs.items():
             p = self._createUIPinWrapper(i)
@@ -333,6 +335,10 @@ class UINodeBase(QGraphicsObject):
         
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
         self._rect = self.childrenBoundingRect()
+        if "resize" in jsonTemplate['meta']:
+            self.resizable = True
+            self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
+            self._rect.setRight(jsonTemplate['meta']['resize']['w'])         
 
     def isCallable(self):
         return self._rawNode.isCallable()

@@ -179,14 +179,13 @@ class UIcommentNode(UINodeBase):
         else:
             bottom = self.prevRect
         template['meta']['commentNode'] = {
-            'w': self._rect.right(),
-            'h': bottom,
             'labelHeight': self.label().h,
             'text': self.label().toPlainText(),
             'color': (self.color.toTuple()),
             'expanded': self.expanded,
             'nodesToMove': [str(n.uid) for n in self.nodesToMove]
         }
+        template['meta']['resize']={'h' : bottom,'w' : self._rect.right()}
         return template
 
     def postCreate(self, jsonTemplate):
@@ -202,8 +201,8 @@ class UIcommentNode(UINodeBase):
         self._rect.setRight(width)
         try:
             # if copied in runtime
-            width = jsonTemplate['meta']['commentNode']['w']
-            height = jsonTemplate['meta']['commentNode']['h']
+            width = jsonTemplate['meta']['resize']['w']
+            height = jsonTemplate['meta']['resize']['h']
             labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
             text = jsonTemplate['meta']['commentNode']['text']
             color = QtGui.QColor(*jsonTemplate['meta']['commentNode']['color'])
