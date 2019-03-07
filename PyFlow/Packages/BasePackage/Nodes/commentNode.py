@@ -8,3 +8,11 @@ class commentNode(NodeBase):
     @staticmethod
     def category():
         return 'Common'
+
+    @staticmethod
+    def keywords():
+        return []
+
+    @staticmethod
+    def description():
+        return 'Can drag intersected nodes. You can also specify color and resize it.'

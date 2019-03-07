@@ -24,6 +24,7 @@ from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QTreeWidgetItem
+from Qt.QtWidgets import QColorDialog
 from Qt.QtWidgets import QMenu
 
 from PyFlow.UI.UIPinBase import (
@@ -151,6 +152,7 @@ class UINodeBase(QGraphicsObject):
         self.custom_widget_data = {}
         # node name
         self.label = weakref.ref(NodeName(self, self.bUseTextureBg, self.headColor))
+        self._displayName = self._rawNode.__class__.__name__
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
         # main
@@ -177,10 +179,35 @@ class UINodeBase(QGraphicsObject):
         self.UIinputs = {}
         self.UIoutputs = {}
         self._menu = QMenu()
+        # Resizing Options 
+        self.rect = self.childrenBoundingRect()
+        self.initialRectWidth = 0.0
+        self.initialRectHeight = 0.0
+        self.expanded = True
+        self.resizable = False
+        self.bResize = False
+        self.resizeDirection = (0, 0)
+        self.lastMousePos = QtCore.QPointF()
 
+        # Core Nodes Support            
         self.isTemp = False
         self.isCommentNode = False
-        self._displayName = self._rawNode.__class__.__name__
+
+    @property
+    def graph(self):
+        return self._rawNode.graph
+
+    @graph.setter
+    def graph(self, value):
+        self._rawNode.graph = value
+
+    @property
+    def uid(self):
+        return self._rawNode._uid
+
+    @uid.setter
+    def uid(self, value):
+        self._rawNode.uid = value
 
     @property
     def displayName(self):
@@ -189,9 +216,6 @@ class UINodeBase(QGraphicsObject):
     @displayName.setter
     def displayName(self, value):
         self._displayName = value
-
-    def contextMenuEvent(self, event):
-        self._menu.exec_(event.screenPos())
 
     @property
     def pins(self):
@@ -222,9 +246,6 @@ class UINodeBase(QGraphicsObject):
         newNode.uid = uid
         return newNode
 
-    def getPinByName(self, name, pinsGroup=PinSelectionGroup.BothSides):
-        return self._rawNode.getPinByName(name, pinsGroup)
-
     @property
     def w(self):
         return self._w
@@ -233,6 +254,9 @@ class UINodeBase(QGraphicsObject):
     def w(self, value):
         self._w = value
         self.sizes[2] = value
+
+    def getPinByName(self, name, pinsGroup=PinSelectionGroup.BothSides):
+        return self._rawNode.getPinByName(name, pinsGroup)
 
     def call(self, name):
         if pinName in [p.name for p in self.outputs.values() if p.dataType is 'ExecPin']:
@@ -288,14 +312,6 @@ class UINodeBase(QGraphicsObject):
         #    value.setY(value.y() - 2)
         #    return value
         return QGraphicsItem.itemChange(self, change, value)
-
-    @property
-    def uid(self):
-        return self._rawNode._uid
-
-    @uid.setter
-    def uid(self, value):
-        self._rawNode.uid = value
 
     def category(self):
         return self._rawNode.category()
@@ -367,16 +383,11 @@ class UINodeBase(QGraphicsObject):
         template['y'] = self.scenePos().y()
         return template
 
+    def contextMenuEvent(self, event):
+        self._menu.exec_(event.screenPos())
+
     def propertyView(self):
         return self.graph().parent.dockWidgetNodeView
-
-    @property
-    def graph(self):
-        return self._rawNode.graph
-
-    @graph.setter
-    def graph(self, value):
-        self._rawNode.graph = value
 
     def clone(self):
         templ = self.serialize()
@@ -389,15 +400,121 @@ class UINodeBase(QGraphicsObject):
         new_node = self.graph().createNode(templ)
         return new_node
 
+    def onChangeColor(self,label=False):
+        res = QColorDialog.getColor(self.color, None, 'Node color setup')
+        if res.isValid():
+            res.setAlpha(80)
+            self.color = res
+            if label:
+                self.label().color = res
+                self.update()
+                self.label().update()
+
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)
+
+    def shouldResize(self,cursorPos):
+        cursorPos = self.mapFromScene(cursorPos)
+        margin = 4
+        if self.isCommentNode:
+            rect = self.rect
+        else:
+            rect = self.boundingRect()
+        pBottomRight = rect.bottomRight()
+        pBottomLeft = rect.bottomLeft()            
+        bottomRightRect = QtCore.QRectF(pBottomRight.x() - margin, pBottomRight.y() - margin, margin, margin)
+        bottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - margin, 5, 5)
+        result = {"resize":False,"direction":0}
+        if bottomRightRect.contains(cursorPos):
+            result["resize"] = True
+            result["direction"] = (1, -1)
+        elif bottomLeftRect.contains(cursorPos):
+            result["resize"] = True
+            result["direction"] = (-1, -1)
+        elif cursorPos.x() > (rect.width() - margin):
+            result["resize"] = True
+            result["direction"] = (1, 0)
+        elif cursorPos.y()>(rect.bottom()-margin):
+            result["resize"] = True
+            result["direction"] = (0, -1)
+        elif cursorPos.x() < (rect.x() + margin):
+            result["resize"] = True
+            result["direction"] = (-1, 0)
+        return result
 
     def mousePressEvent(self, event):
         self.update()
         QGraphicsItem.mousePressEvent(self, event)
+        self.mousePressPos = event.scenePos()
+        self.origPos = self.pos()
+        self.initialRect = self.rect
+        if self.expanded and self.resizable:
+            resizeOpts = self.shouldResize(self.mapToScene(event.pos()))
+            if resizeOpts["resize"]:
+                self.resizeDirection = resizeOpts["direction"]
+                self.initialRectWidth = self.rect.width()
+                self.initialRectHeight = self.rect.height()
+                self.setFlag(QGraphicsItem.ItemIsMovable, False)
+                self.bResize = True
+
+    def mouseMoveEvent(self, event):
+        QGraphicsItem.mouseMoveEvent(self, event)
+        delta = self.lastMousePos - event.pos()
+        # resize
+        if self.bResize:
+            delta = event.scenePos() - self.mousePressPos
+            if self.resizeDirection == (1, 0):
+                # right edge resize
+                newWidth = delta.x() + self.initialRectWidth
+                if newWidth > self.minWidth:
+                    self.label().width = newWidth
+                    self.rect.setWidth(newWidth)
+                    self.label().adjustSizes()
+            elif self.resizeDirection == (0, -1):
+                newHeight = delta.y() + self.initialRectHeight
+                newHeight = max(newHeight, self.label().h + 20.0)
+                if newHeight > self.minHeight:
+                    # bottom edge resize
+                    self.rect.setHeight(newHeight)
+            elif self.resizeDirection == (1, -1):
+                newWidth = delta.x() + self.initialRectWidth
+                newHeight = delta.y() + self.initialRectHeight
+                newHeight = max(newHeight, self.label().h + 20.0)
+                if newWidth > self.minWidth:
+                    self.label().width = newWidth
+                    self.rect.setWidth(newWidth)
+                    self.label().setTextWidth(newWidth)
+                if newHeight > self.minHeight:                    
+                    self.rect.setHeight(newHeight)
+            elif self.resizeDirection == (-1, 0):
+                # left edge resize
+                newWidth = (1-delta.x()) + self.initialRectWidth
+                posdelta = event.scenePos() - self.origPos
+                if newWidth > self.minWidth:
+                    self.translate(posdelta.x(),0,False)
+                    self.origPos = self.pos()
+                    self.label().width = newWidth
+                    self.label().adjustSizes()    
+            elif self.resizeDirection == (-1, -1):            
+                newWidth = (1-delta.x()) + self.initialRectWidth
+                newHeight = delta.y() + self.initialRectHeight
+                newHeight = max(newHeight, self.label().h + 20.0)
+                posdelta = event.scenePos() - self.origPos
+                if newWidth > self.minWidth:
+                    self.translate(posdelta.x(),0,False)
+                    self.origPos = self.pos()                    
+                    self.label().width = newWidth
+                    self.rect.setWidth(newWidth)
+                    self.label().setTextWidth(newWidth)
+                if newHeight > self.minHeight :                    
+                    self.rect.setHeight(newHeight)
+            self.update()
+            self.label().update()
+        self.lastMousePos = event.pos()
 
     def mouseReleaseEvent(self, event):
         self.update()
+        self.bResize = False
         QGraphicsItem.mouseReleaseEvent(self, event)
 
     @property

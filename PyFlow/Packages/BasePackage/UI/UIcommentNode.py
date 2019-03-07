@@ -12,7 +12,6 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QTextBrowser
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QMenu
-from Qt.QtWidgets import QColorDialog
 from Qt import QtGui
 from Qt import QtCore
 
@@ -136,30 +135,47 @@ class UIcommentNode(UINodeBase):
         self.pinsToMove = {}
         self.commentInputs = []
         self.commentOutpus = []
-        self.lastNodePos = self.scenePos()
         self.rect = self.childrenBoundingRect()
-        self.initialRectWidth = 0.0
-        self.initialRectHeight = 0.0
         self.mousePressPos = self.scenePos()
-        self.resizeDirection = (0, 0)
-        self.bResize = False
-        self.bMove = False
+        self.resizable = True
         self.minWidth = 100.0
         self.minHeight = 100.0
-        self.lastMousePos = QtCore.QPointF()
         self.setZValue(-2)
         self.expanded = True
         self.isCommentNode = True
-        self.cursorResize = False
 
-    def onChangeColor(self):
-        res = QColorDialog.getColor(self.color, None, 'Comment node color setup')
-        if res.isValid():
-            res.setAlpha(80)
-            self.color = res
-            self.label().color = res
-            self.update()
-            self.label().update()
+    @staticmethod
+    def isInRange(mid, val, width=10):
+        '''check if val inside strip'''
+        leftEdge = mid - width
+        rightEdge = mid + width
+        return leftEdge <= val <= rightEdge
+
+    @staticmethod
+    def getNodesRect(nodes):
+        rectangles = []
+
+        if len(nodes) == 0:
+            return None
+
+        for n in nodes:
+            rectangles.append(n.sceneBoundingRect())
+
+        minx_arr = [i.left() for i in rectangles]
+        maxx_arr = [i.right() for i in rectangles]
+        miny_arr = [i.top() for i in rectangles]
+        maxy_arr = [i.bottom() for i in rectangles]
+
+        min_x = min(minx_arr)
+        min_y = min(miny_arr)
+
+        max_x = max(maxx_arr)
+        max_y = max(maxy_arr)
+
+        return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
+
+    def boundingRect(self):
+        return self.rect
 
     def serialize(self):
         template = UINodeBase.serialize(self)
@@ -231,15 +247,6 @@ class UIcommentNode(UINodeBase):
         self.hideButton.pressed.connect(self.toogleCollapsed)
         self.hideButton.setFixedHeight(25)
         self.hideButton.setFixedWidth(25)      
-    @staticmethod
-    def isInRange(mid, val, width=10):
-        '''check if val inside strip'''
-        leftEdge = mid - width
-        rightEdge = mid + width
-        return leftEdge <= val <= rightEdge
-
-    def boundingRect(self):
-        return self.rect
 
     def updateChildrens(self, nodes):
         self.commentInputs = []
@@ -263,169 +270,6 @@ class UIcommentNode(UINodeBase):
                 for edg in i.edge_list:
                     if edg.source().UiNode in self.nodesToMove and edg.destination().UiNode in self.nodesToMove:
                         self.edgesToHide.append(edg)
-
-    def mousePressEvent(self, event):
-        margin = 4
-        QGraphicsItem.mousePressEvent(self, event)
-        self.mousePressPos = event.scenePos()
-        self.origPos = self.pos()
-        self.lastNodePos = self.scenePos()
-        pBottomRight = self.rect.bottomRight()
-        pBottomLeft = self.rect.bottomLeft()
-        bottomRightRect = QtCore.QRectF(pBottomRight.x() - margin, pBottomRight.y() - margin, margin, margin)
-        bottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - margin, 5, 5)
-        # detect where on the node
-        self.initialRect = self.rect
-        if self.expanded:
-            if bottomRightRect.contains(event.pos()):
-                self.initialRectWidth = self.rect.width()
-                self.initialRectHeight = self.rect.height()
-                self.resizeDirection = (1, -1)
-                self.setFlag(QGraphicsItem.ItemIsMovable, False)
-                self.bResize = True
-            elif bottomLeftRect.contains(event.pos()):
-                self.initialRectWidth = self.rect.width()
-                self.initialRectHeight = self.rect.height()
-                self.resizeDirection = (-1, -1)
-                self.setFlag(QGraphicsItem.ItemIsMovable, False)
-                self.bResize = True                
-            elif event.pos().x() > (self.rect.width() - margin):
-                self.initialRectWidth = self.rect.width()
-                self.resizeDirection = (1, 0)
-                self.setFlag(QGraphicsItem.ItemIsMovable, False)
-                self.bResize = True
-            elif event.pos().y()>(self.rect.bottom()-margin):#elif (event.pos().y() + self.label().defaultHeight) > (self.rect.height() - 15):
-                self.initialRectHeight = self.rect.height()
-                self.resizeDirection = (0, -1)
-                self.setFlag(QGraphicsItem.ItemIsMovable, False)
-                self.bResize = True
-            elif event.pos().x() < (self.rect.x() + margin):
-                self.initialRectWidth = self.rect.width()
-                self.resizeDirection = (-1, 0)
-                self.setFlag(QGraphicsItem.ItemIsMovable, False)
-                self.bResize = True
-
-            self.nodesToMove.clear()
-            self.updateChildrens(self.collidingItems())
-        else:
-            nodes = []
-            for nodename in self.nodesNamesToMove:
-                nodes.append(self.graph().nodes[nodename])
-            self.updateChildrens(nodes)
-        # for node in [i for i in self.collidingItems() if isinstance(i, UINodeBase) and not isinstance(i, UIcommentNode)]:
-        #    self.nodesToMove[node] = node.scenePos()
-
-    def mouseMoveEvent(self, event):
-        QGraphicsItem.mouseMoveEvent(self, event)
-        delta = self.lastMousePos - event.pos()
-        self.lastNodePos = self.scenePos()
-        # resize
-        if self.bResize:
-            delta = event.scenePos() - self.mousePressPos
-            if self.resizeDirection == (1, 0):
-                # right edge resize
-                newWidth = delta.x() + self.initialRectWidth
-                if newWidth > self.minWidth:
-                    self.label().width = newWidth
-                    self.rect.setWidth(newWidth)
-                    self.label().adjustSizes()
-            elif self.resizeDirection == (0, -1):
-                newHeight = delta.y() + self.initialRectHeight
-                newHeight = max(newHeight, self.label().h + 20.0)
-                if newHeight > self.minHeight:
-                    # bottom edge resize
-                    self.rect.setHeight(newHeight)
-            elif self.resizeDirection == (1, -1):
-                newWidth = delta.x() + self.initialRectWidth
-                newHeight = delta.y() + self.initialRectHeight
-                newHeight = max(newHeight, self.label().h + 20.0)
-                if newWidth > self.minWidth:
-                    self.label().width = newWidth
-                    self.rect.setWidth(newWidth)
-                    self.label().setTextWidth(newWidth)
-                if newHeight > self.minHeight:                    
-                    self.rect.setHeight(newHeight)
-            elif self.resizeDirection == (-1, 0):
-                # left edge resize
-                newWidth = (1-delta.x()) + self.initialRectWidth
-                posdelta = event.scenePos() - self.origPos
-                if newWidth > self.minWidth:
-                    self.translate(posdelta.x(),0,False)
-                    self.origPos = self.pos()
-                    self.label().width = newWidth
-                    self.label().adjustSizes()    
-            elif self.resizeDirection == (-1, -1):            
-                newWidth = (1-delta.x()) + self.initialRectWidth
-                newHeight = delta.y() + self.initialRectHeight
-                newHeight = max(newHeight, self.label().h + 20.0)
-                posdelta = event.scenePos() - self.origPos
-                if newWidth > self.minWidth:
-                    self.translate(posdelta.x(),0,False)
-                    self.origPos = self.pos()                    
-                    self.label().width = newWidth
-                    self.rect.setWidth(newWidth)
-                    self.label().setTextWidth(newWidth)
-                if newHeight > self.minHeight :                    
-                    self.rect.setHeight(newHeight)
-            self.update()
-            self.label().update()
-        self.lastMousePos = event.pos()
-
-    @staticmethod
-    def getNodesRect(nodes):
-        rectangles = []
-
-        if len(nodes) == 0:
-            return None
-
-        for n in nodes:
-            rectangles.append(n.sceneBoundingRect())
-
-        minx_arr = [i.left() for i in rectangles]
-        maxx_arr = [i.right() for i in rectangles]
-        miny_arr = [i.top() for i in rectangles]
-        maxy_arr = [i.bottom() for i in rectangles]
-
-        min_x = min(minx_arr)
-        min_y = min(miny_arr)
-
-        max_x = max(maxx_arr)
-        max_y = max(maxy_arr)
-
-        return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
-
-    def getCursorResizing(self, cursorPos):
-        pBottomRight = self.rect.bottomRight()
-        pBottomLeft = self.rect.bottomLeft()
-        margin = 4
-        bottomRightRect = QtCore.QRectF(pBottomRight.x() - margin, pBottomRight.y() - margin, margin, margin)
-        bottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - margin, 5, 5)
-        # detect where on the node
-        if self.expanded:
-            cursor = self.mapFromScene(cursorPos)
-            if not self.bResize:
-                if bottomRightRect.contains(cursor):
-                    self.resizeDirectionArrow = 0
-                    self.cursorResize = True
-                elif bottomLeftRect.contains(cursor):
-                    self.resizeDirectionArrow = 4
-                    self.cursorResize = True      
-                elif cursor.x() > (self.rect.width() - margin):
-                    self.resizeDirectionArrow = 1
-                    self.cursorResize = True
-                elif cursor.y()>(self.rect.bottom()-margin):
-                    self.resizeDirectionArrow = 2
-                    self.cursorResize = True
-                elif cursor.x() < (self.rect.x() + margin):
-                    self.resizeDirectionArrow = 3
-                    self.cursorResize = True   
-                else:
-                    self.cursorResize = False
-                    self.resizeDirectionArrow = 0                      
-
-    def mouseReleaseEvent(self, event):
-        QGraphicsItem.mouseReleaseEvent(self, event)
-        self.bResize = False
 
     def mouseDoubleClickEvent(self, event):
         super(UIcommentNode, self).mouseDoubleClickEvent(event)
@@ -510,7 +354,6 @@ class UIcommentNode(UINodeBase):
             pBottomLeftRect.setBottom(pBottomLeftRect.top() + pBottomLeftRect.height() / 2)
             painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
 
-
     def onUpdatePropertyView(self, formLayout):
 
         # name
@@ -536,7 +379,7 @@ class UIcommentNode(UINodeBase):
         formLayout.addRow("Pos", le_pos)
 
         pb = QPushButton("...")
-        pb.clicked.connect(self.onChangeColor)
+        pb.clicked.connect(lambda:self.onChangeColor(True))
         formLayout.addRow("Color", pb)
 
         doc_lb = QLabel()
@@ -548,14 +391,3 @@ class UIcommentNode(UINodeBase):
         doc.setHtml(self.description())
         formLayout.addRow("", doc)
 
-    @staticmethod
-    def category():
-        return 'Common'
-
-    @staticmethod
-    def keywords():
-        return []
-
-    @staticmethod
-    def description():
-        return 'Can drag intersected nodes. You can also specify color and resize it.'

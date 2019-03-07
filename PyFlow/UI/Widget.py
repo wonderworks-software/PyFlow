@@ -1414,18 +1414,17 @@ class GraphWidgetUI(QGraphicsView):
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
         node = self.nodeFromInstance(self.itemAt(event.pos()))
-        if self.itemAt(event.pos()) and isinstance(self.itemAt(event.pos()), UINodeBase) and node.isCommentNode:
-            node.getCursorResizing(self.mapToScene(event.pos()))
-            if node.cursorResize:
-                if node.resizeDirectionArrow == 0:
+        if self.itemAt(event.pos()) and isinstance(self.itemAt(event.pos()), UINodeBase) and node.resizable:
+            resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
+
+            if resizeOpts["resize"]:
+                if resizeOpts["direction"] == (1,-1):
                     self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
-                elif node.resizeDirectionArrow == 1:
+                elif resizeOpts["direction"] in [(1 , 0),(-1, 0)]:
                     self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
-                elif node.resizeDirectionArrow == 2:
-                    self.viewport().setCursor(QtCore.Qt.SizeVerCursor)
-                elif node.resizeDirectionArrow == 3:
-                    self.viewport().setCursor(QtCore.Qt.SizeHorCursor)   
-                elif node.resizeDirectionArrow == 4:
+                elif resizeOpts["direction"] == (0,-1):
+                    self.viewport().setCursor(QtCore.Qt.SizeVerCursor) 
+                elif resizeOpts["direction"] == (-1,-1):
                     self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)                                      
             else:
                 self.viewport().setCursor(QtCore.Qt.ArrowCursor)
