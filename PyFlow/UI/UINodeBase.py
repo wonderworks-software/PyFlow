@@ -102,11 +102,24 @@ class NodeName(QGraphicsTextItem):
                 painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
         # super(NodeName, self).paint(painter, option, widget)
         painter.setPen(self.defaultPen)
+        font = painter.font()
         nameRect = QtCore.QRectF(self.boundingRect().topLeft(),
+                                 QtCore.QPointF(self.parentItem().boundingRect().right()-15,
+                                 self.boundingRect().bottom()-font.pointSize()*0.65)
+                                 )
+        painter.drawText(nameRect, QtCore.Qt.AlignCenter, self.parentItem().displayName)
+        packageRect = QtCore.QRectF(self.boundingRect().topLeft(),
                                  QtCore.QPointF(self.parentItem().boundingRect().right(),
                                  self.boundingRect().bottom())
                                  )
-        painter.drawText(nameRect, QtCore.Qt.AlignCenter, self.parentItem().displayName)
+        font = painter.font()
+        font.setPointSize(font.pointSize() * 0.65)
+        painter.setFont(font)
+        painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.5))
+        text = self.parentItem().packageName()
+        #if self.parentItem()._rawNode.lib:
+        #    text += "|{0}".format(self.parentItem()._rawNode.lib)
+        painter.drawText(packageRect, QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom,text )
 
     def focusInEvent(self, event):
         self.parentItem().graph().disableSortcuts()
