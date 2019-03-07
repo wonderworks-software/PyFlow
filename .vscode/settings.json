@@ -17,8 +17,12 @@
         "-p",
         "Test_*.py"
     ],
-    "python.pythonPath": "C:\\Python3\\python.exe",
+    "python.pythonPath": "C:\\Python37-32\\python.exe",
     "python.unitTest.unittestEnabled": true,
     "python.unitTest.pyTestEnabled": false,
+    "python.linting.pep8Enabled": true,
+    "python.linting.pep8Args": [
+        "--ignore=E501,E402"
+    ],
     "python.unitTest.nosetestsEnabled": false,
 }
