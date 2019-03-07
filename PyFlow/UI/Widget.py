@@ -1138,6 +1138,7 @@ class GraphWidgetUI(QGraphicsView):
         #    self.parent.toggle_multithreaded()
         # if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
         #    self.parent.toggle_debug()
+
         if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             self.parent.togglePropertyView()
 
@@ -1185,8 +1186,7 @@ class GraphWidgetUI(QGraphicsView):
                         e.destination().name)
                     self.addEdge(nsrc, ndst)
 
-    def copyNodes(self):
-        QApplication.clipboard().clear()
+    def copyNodes(self,toClipboard = True):
         nodes = []
         oldNodes = []
         selectedNodes = [i for i in self.getNodes() if i.isSelected()]
@@ -1207,10 +1207,17 @@ class GraphWidgetUI(QGraphicsView):
         if len(nodes) > 0:
             ret = {"nodes": nodes, "edges": fullEdges}
             n = json.dumps(ret)
-            QApplication.clipboard().setText(n)
+            if toClipboard:
+                QApplication.clipboard().clear()
+                QApplication.clipboard().setText(n)
+            else:
+                return n
 
-    def pasteNodes(self, move=True):
-        nodes = json.loads(QApplication.clipboard().text())
+    def pasteNodes(self, move=True,data=None):
+        if not data:
+            nodes = json.loads(QApplication.clipboard().text())
+        else:
+            nodes = json.loads(data)
         if "nodes" not in nodes or "edges" not in nodes:
             return
 
@@ -1396,8 +1403,8 @@ class GraphWidgetUI(QGraphicsView):
                         self._lastDragPoint = self.mapToScene(event.pos())
                         selectedNodes = self.selectedNodes()
                         newNodes = []
-                        self.copyNodes()
-                        self.pasteNodes(False)
+                        copiedNodes = self.copyNodes(toClipboard=False)
+                        self.pasteNodes(move=False,data=copiedNodes)
 
         # else:
         #    super(GraphWidgetUI, self).mousePressEvent(event)
