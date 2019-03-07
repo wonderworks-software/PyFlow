@@ -210,6 +210,10 @@ class UINodeBase(QGraphicsObject):
         self._rawNode.uid = value
 
     @property
+    def name(self):
+        return self._rawNode.name
+
+    @property
     def displayName(self):
         return self._displayName
 
@@ -237,15 +241,6 @@ class UINodeBase(QGraphicsObject):
     def outputs(self, value):
         self._rawNode.outputs = value
 
-    @staticmethod
-    def recreate(node):
-        templ = node.serialize()
-        uid = node.uid
-        node.kill()
-        newNode = node.graph().createNode(templ)
-        newNode.uid = uid
-        return newNode
-
     @property
     def w(self):
         return self._w
@@ -255,23 +250,36 @@ class UINodeBase(QGraphicsObject):
         self._w = value
         self.sizes[2] = value
 
+    def getName(self):
+        return self._rawNode.getName()
+
+    def setName(self, name):
+        self._rawNode.setName(name)
+
     def getPinByName(self, name, pinsGroup=PinSelectionGroup.BothSides):
         return self._rawNode.getPinByName(name, pinsGroup)
 
-    def call(self, name):
-        if pinName in [p.name for p in self.outputs.values() if p.dataType is 'ExecPin']:
-            p = self.getPinByName(pinName)
-            return p.call()
+    @staticmethod
+    def removePinByName(node, name):
+        pin = node.getPinByName(name)
+        if pin:
+            pin.kill()
 
-    def getData(self, pinName):
-        if pinName in [p.name for p in self.inputs.values()]:
-            p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
-            return p.getData()
+    @staticmethod
+    def recreate(node):
+        templ = node.serialize()
+        uid = node.uid
+        node.kill()
+        newNode = node.graph().createNode(templ)
+        newNode.uid = uid
+        return newNode
 
-    def setData(self, pinName, data):
-        if pinName in [p.name for p in self.outputs.values()]:
-            p = self.getPinByName(pinName, PinSelectionGroup.Outputs)
-            p.setData(data)
+    @staticmethod
+    def jsonTemplate():
+        template = NodeBase.jsonTemplate()
+        template['x'] = 0
+        template['y'] = 0
+        return template
 
     @staticmethod
     def deserialize(data, graph):
@@ -296,7 +304,27 @@ class UINodeBase(QGraphicsObject):
                 pin.setDirty()
             else:
                 pin.setClean()
-        return node
+        return node        
+
+    def serialize(self):
+        template = self._rawNode.serialize()
+        template['x'] = self.scenePos().x()
+        template['y'] = self.scenePos().y()
+        return template
+
+    def postCreate(self, jsonTemplate=None):
+        self._rawNode.postCreate(jsonTemplate)
+
+        # create ui pin wrappers
+        for uid, i in self.inputs.items():
+            p = self._createUIPinWrapper(i)
+            self.UIinputs[uid] = p
+
+        for uid, o in self.outputs.items():
+            p = self._createUIPinWrapper(o)
+            self.UIoutputs[uid] = p
+
+        self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
     def isCallable(self):
         return self._rawNode.isCallable()
@@ -304,17 +332,33 @@ class UINodeBase(QGraphicsObject):
     def boundingRect(self):
         return self.childrenBoundingRect()
 
-    def itemChange(self, change, value):
-        #if change == self.ItemPositionChange:
-        #    # grid snapping
-        #    value.setX(roundup(value.x() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
-        #    value.setY(roundup(value.y() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
-        #    value.setY(value.y() - 2)
-        #    return value
-        return QGraphicsItem.itemChange(self, change, value)
-
     def category(self):
         return self._rawNode.category()
+
+    def description(self):
+        return self._rawNode.description()
+
+    def packageName(self):
+        return self._rawNode.packageName()
+
+    def call(self, name):
+        if pinName in [p.name for p in self.outputs.values() if p.dataType is 'ExecPin']:
+            p = self.getPinByName(pinName)
+            return p.call()
+
+    def getData(self, pinName):
+        if pinName in [p.name for p in self.inputs.values()]:
+            p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
+            return p.getData()
+
+    def setData(self, pinName, data):
+        if pinName in [p.name for p in self.outputs.values()]:
+            p = self.getPinByName(pinName, PinSelectionGroup.Outputs)
+            p.setData(data)
+
+    def getWidth(self):
+        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.displayName) + Spacings.kPinSpacing
+        return fontWidth if fontWidth > 25 else 25
 
     def updateNodeShape(self, label=None):
         for i in range(0, self.inputsLayout.count()):
@@ -346,60 +390,6 @@ class UINodeBase(QGraphicsObject):
         self.setToolTip(self.description())
         self.update()
 
-    def description(self):
-        return self._rawNode.description()
-
-    def postCreate(self, jsonTemplate=None):
-        self._rawNode.postCreate(jsonTemplate)
-
-        # create ui pin wrappers
-        for uid, i in self.inputs.items():
-            p = self._createUIPinWrapper(i)
-            self.UIinputs[uid] = p
-
-        for uid, o in self.outputs.items():
-            p = self._createUIPinWrapper(o)
-            self.UIoutputs[uid] = p
-
-        self.updateNodeShape(label=jsonTemplate['meta']['label'])
-
-    def getWidth(self):
-        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.displayName) + Spacings.kPinSpacing
-        return fontWidth if fontWidth > 25 else 25
-
-    @staticmethod
-    def jsonTemplate():
-        template = NodeBase.jsonTemplate()
-        template['x'] = 0
-        template['y'] = 0
-        return template
-
-    def packageName(self):
-        return self._rawNode.packageName()
-
-    def serialize(self):
-        template = self._rawNode.serialize()
-        template['x'] = self.scenePos().x()
-        template['y'] = self.scenePos().y()
-        return template
-
-    def contextMenuEvent(self, event):
-        self._menu.exec_(event.screenPos())
-
-    def propertyView(self):
-        return self.graph().parent.dockWidgetNodeView
-
-    def clone(self):
-        templ = self.serialize()
-        templ['name'] = self.graph().getUniqNodeName(self.name)
-        templ['uuid'] = str(uuid.uuid4())
-        for inp in templ['inputs']:
-            inp['uuid'] = str(uuid.uuid4())
-        for out in templ['outputs']:
-            out['uuid'] = str(uuid.uuid4())
-        new_node = self.graph().createNode(templ)
-        return new_node
-
     def onChangeColor(self,label=False):
         res = QColorDialog.getColor(self.color, None, 'Node color setup')
         if res.isValid():
@@ -409,6 +399,22 @@ class UINodeBase(QGraphicsObject):
                 self.label().color = res
                 self.update()
                 self.label().update()
+
+    def itemChange(self, change, value):
+        #if change == self.ItemPositionChange:
+        #    # grid snapping
+        #    value.setX(roundup(value.x() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
+        #    value.setY(roundup(value.y() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
+        #    value.setY(value.y() - 2)
+        #    return value
+        return QGraphicsItem.itemChange(self, change, value)
+
+    def setPosition(self, x, y):
+        self._rawNode.setPosition(x, y)
+        self.setPos(QtCore.QPointF(x, y))
+        
+    def translate(self, x, y):
+        super(UINodeBase, self).moveBy(x, y)
 
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)
@@ -441,6 +447,9 @@ class UINodeBase(QGraphicsObject):
             result["resize"] = True
             result["direction"] = (-1, 0)
         return result
+
+    def contextMenuEvent(self, event):
+        self._menu.exec_(event.screenPos())
 
     def mousePressEvent(self, event):
         self.update()
@@ -517,34 +526,19 @@ class UINodeBase(QGraphicsObject):
         self.bResize = False
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    @property
-    def name(self):
-        return self._rawNode.name
+    def clone(self):
+        templ = self.serialize()
+        templ['name'] = self.graph().getUniqNodeName(self.name)
+        templ['uuid'] = str(uuid.uuid4())
+        for inp in templ['inputs']:
+            inp['uuid'] = str(uuid.uuid4())
+        for out in templ['outputs']:
+            out['uuid'] = str(uuid.uuid4())
+        new_node = self.graph().createNode(templ)
+        return new_node
 
-    def propertyEditingFinished(self):
-        le = QApplication.instance().focusWidget()
-        if isinstance(le, QLineEdit):
-            nodeName, attr = le.objectName().split('.')
-            Pin = self.getPinByName(attr)
-            Pin.setData(le.text())
-
-    def getName(self):
-        return self._rawNode.getName()
-
-    def setName(self, name):
-        self._rawNode.setName(name)
-
-    def translate(self, x, y):
-        super(UINodeBase, self).moveBy(x, y)
-
-    def getChainedNodes(self):
-        nodes = []
-        for pin in self.inputs.values():
-            for edge in pin.edge_list:
-                node = edge.source().topLevelItem()#topLevelItem
-                nodes.append(node)
-                nodes += node.getChainedNodes()
-        return nodes
+    def propertyView(self):
+        return self.graph().parent.dockWidgetNodeView
 
     def onUpdatePropertyView(self, formLayout):
         # name
@@ -616,6 +610,33 @@ class UINodeBase(QGraphicsObject):
         doc.setHtml(self.description())
         formLayout.addRow("", doc)
 
+    def propertyEditingFinished(self):
+        le = QApplication.instance().focusWidget()
+        if isinstance(le, QLineEdit):
+            nodeName, attr = le.objectName().split('.')
+            Pin = self.getPinByName(attr)
+            Pin.setData(le.text())
+
+    def getChainedNodes(self):
+        nodes = []
+        for pin in self.inputs.values():
+            for edge in pin.edge_list:
+                node = edge.source().topLevelItem()#topLevelItem
+                nodes.append(node)
+                nodes += node.getChainedNodes()
+        return nodes
+
+    def kill(self):
+        for i in list(self.inputs.values()) + list(self.outputs.values()):
+            for edge in i.edge_list:
+                edge.kill()
+        self._rawNode.kill()
+        self.scene().removeItem(self)
+        del(self)
+
+    def Tick(self, delta):
+        self._rawNode.Tick(delta)
+
     def addContainer(self, portType, head=False):
         container = QGraphicsWidget()
         container.setObjectName('{0}PinContainerWidget'.format(self.name))
@@ -631,27 +652,6 @@ class UINodeBase(QGraphicsObject):
         else:
             self.outputsLayout.addItem(container)
         return container
-
-    def kill(self):
-        for i in list(self.inputs.values()) + list(self.outputs.values()):
-            for edge in i.edge_list:
-                edge.kill()
-        self._rawNode.kill()
-        self.scene().removeItem(self)
-        del(self)
-
-    def Tick(self, delta):
-        self._rawNode.Tick(delta)
-
-    def setPosition(self, x, y):
-        self._rawNode.setPosition(x, y)
-        self.setPos(QtCore.QPointF(x, y))
-
-    @staticmethod
-    def removePinByName(node, name):
-        pin = node.getPinByName(name)
-        if pin:
-            pin.kill()
 
     def _createUIPinWrapper(self, rawPin, index=-1):
         p = getUIPinInstance(self, rawPin)
