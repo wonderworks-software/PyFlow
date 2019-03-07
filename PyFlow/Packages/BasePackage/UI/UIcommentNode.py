@@ -70,20 +70,20 @@ class commentNodeName(NodeName):
             width = self.document().documentLayout().documentSize().width()
             self.h = self.document().documentLayout().documentSize().height()
             # change width if needed
-            if width >= self.parentItem().rect.width():
+            if width >= self.parentItem()._rect.width():
                 self.width = width
                 self.adjustSizes()
 
-        self.width = self.parentItem().rect.width()
+        self.width = self.parentItem()._rect.width()
         self.setTextWidth(self.width)
         self.update()
 
     def adjustSizes(self):
-        self.parentItem().rect.setRight(self.width)
+        self.parentItem()._rect.setRight(self.width)
         self.setTextWidth(self.width)
         self.h = self.document().documentLayout().documentSize().height()
         if not self.parentItem().expanded:
-            self.parentItem().rect.setHeight(self.h )        
+            self.parentItem()._rect.setHeight(self.h )        
         self.update()
         self.parentItem().update()
 
@@ -129,14 +129,9 @@ class UIcommentNode(UINodeBase):
         super(UIcommentNode, self).__init__(raw_node)
         self.color = Colors.AbsoluteBlack
         self.color.setAlpha(80)
-        self.nodesToMove = {}
-        self.edgesToHide = []       
-        self.nodesNamesToMove = []
-        self.pinsToMove = {}
         self.commentInputs = []
         self.commentOutpus = []
-        self.rect = self.childrenBoundingRect()
-        self.mousePressPos = self.scenePos()
+        self._rect = self.childrenBoundingRect()
         self.resizable = True
         self.minWidth = 100.0
         self.minHeight = 100.0
@@ -175,16 +170,16 @@ class UIcommentNode(UINodeBase):
         return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
 
     def boundingRect(self):
-        return self.rect
+        return self._rect
 
     def serialize(self):
         template = UINodeBase.serialize(self)
         if self.expanded:
-            bottom = self.rect.bottom()
+            bottom = self._rect.bottom()
         else:
             bottom = self.prevRect
         template['meta']['commentNode'] = {
-            'w': self.rect.right(),
+            'w': self._rect.right(),
             'h': bottom,
             'labelHeight': self.label().h,
             'text': self.label().toPlainText(),
@@ -203,8 +198,8 @@ class UIcommentNode(UINodeBase):
         text = self.__class__.__name__
         # initial color is black
         color = self.color
-        self.rect.setBottom(height)
-        self.rect.setRight(width)
+        self._rect.setBottom(height)
+        self._rect.setRight(width)
         try:
             # if copied in runtime
             width = jsonTemplate['meta']['commentNode']['w']
@@ -212,8 +207,8 @@ class UIcommentNode(UINodeBase):
             labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
             text = jsonTemplate['meta']['commentNode']['text']
             color = QtGui.QColor(*jsonTemplate['meta']['commentNode']['color'])
-            self.rect.setBottom(height)
-            self.rect.setRight(width)
+            self._rect.setBottom(height)
+            self._rect.setRight(width)
             if "nodesToMove" in jsonTemplate['meta']['commentNode']:
                 self.nodesNamesToMove = jsonTemplate['meta']['commentNode']["nodesToMove"]   
                 for nodename in self.nodesNamesToMove:
@@ -234,7 +229,7 @@ class UIcommentNode(UINodeBase):
         delattr(self, 'label')
         self.label = weakref.ref(commentNodeName(self, False, Colors.White))
         self.label().setPlainText(text)
-        self.label().width = self.rect.width()
+        self.label().width = self._rect.width()
         self.label().h = labelHeight
         self.label().color = color
         self.label().update()
@@ -281,8 +276,8 @@ class UIcommentNode(UINodeBase):
             self.updateChildrens(self.collidingItems())
             self.hideButton.setText("+")
             self.expanded = False
-            self.prevRect = self.rect.bottom()
-            self.rect.setHeight(self.label().h )
+            self.prevRect = self._rect.bottom()
+            self._rect.setHeight(self.label().h )
 
             for node in self.nodesToMove:
                 node.hide()
@@ -300,7 +295,7 @@ class UIcommentNode(UINodeBase):
         else:
             self.hideButton.setText("-")
             self.expanded = True
-            self.rect.setBottom(self.prevRect)
+            self._rect.setBottom(self.prevRect)
             for node in self.nodesToMove:
                 node.show()
             for pin in self.pinsToMove:
@@ -310,11 +305,7 @@ class UIcommentNode(UINodeBase):
         self.update()
 
     def translate(self, x, y,moveChildren=True):
-        if moveChildren:
-            for n in self.nodesToMove:
-                if not n.isSelected():
-                    n.translate(x, y)
-        super(UIcommentNode, self).translate(x, y)
+        super(UIcommentNode, self).translate(x, y,moveChildren)
 
     def paint(self, painter, option, widget):
         painter.setPen(QtCore.Qt.NoPen)
@@ -331,14 +322,14 @@ class UIcommentNode(UINodeBase):
             pen.setColor(Colors.Yellow)
             pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)
-        painter.drawRoundedRect(self.rect, self.sizes[4], self.sizes[5])
+        painter.drawRoundedRect(self._rect, self.sizes[4], self.sizes[5])
 
         pen.setColor(Colors.White)
         painter.setPen(pen)
 
         if self.expanded:
             # draw bottom right resizer
-            pBottomRight = self.rect.bottomRight()
+            pBottomRight = self._rect.bottomRight()
             bottomRightRect = QtCore.QRectF(pBottomRight.x() - 6, pBottomRight.y() - 6, 5, 5)
             painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
 
@@ -346,7 +337,7 @@ class UIcommentNode(UINodeBase):
             bottomRightRect.setBottom(bottomRightRect.top() + bottomRightRect.height() / 2)
             painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
             # draw bottom left resizer
-            pBottomLeft = self.rect.bottomLeft()
+            pBottomLeft = self._rect.bottomLeft()
             pBottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - 6, 5, 5)
             painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
 

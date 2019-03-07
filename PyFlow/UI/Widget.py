@@ -1314,9 +1314,9 @@ class GraphWidgetUI(QGraphicsView):
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         node = self.nodeFromInstance(self.pressed_item)
-        if any([not self.pressed_item, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode]):
+        if any([not self.pressed_item, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode,isinstance(self.pressed_item, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             resizing = False
-            if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
+            if isinstance(self.pressed_item, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(GraphWidgetUI, self).mousePressEvent(event)
                 resizing = node.bResize
                 node.setSelected(False)

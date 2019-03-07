@@ -158,7 +158,7 @@ class UINodeBase(QGraphicsObject):
         # main
         self.portsMainLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.portsMainLayout.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        self.portsMainLayout.setContentsMargins(1, 1, 1, 1)
+        self.portsMainLayout.setContentsMargins(0, 0, 0, 0)
         self.nodeMainGWidget.setLayout(self.portsMainLayout)
         self.nodeMainGWidget.setX(self.nodeMainGWidget.x())
         # inputs layout
@@ -180,7 +180,8 @@ class UINodeBase(QGraphicsObject):
         self.UIoutputs = {}
         self._menu = QMenu()
         # Resizing Options 
-        self.rect = self.childrenBoundingRect()
+        self.minWidth = 25
+        self.minHeight = self.h      
         self.initialRectWidth = 0.0
         self.initialRectHeight = 0.0
         self.expanded = True
@@ -188,6 +189,12 @@ class UINodeBase(QGraphicsObject):
         self.bResize = False
         self.resizeDirection = (0, 0)
         self.lastMousePos = QtCore.QPointF()
+        ## Hiding/Moving By Group/collapse/By Pin
+        self.nodesToMove = {}
+        self.edgesToHide = []       
+        self.nodesNamesToMove = []
+        self.pinsToMove = {}        
+        self._rect = self.childrenBoundingRect()
 
         # Core Nodes Support            
         self.isTemp = False
@@ -323,14 +330,20 @@ class UINodeBase(QGraphicsObject):
         for uid, o in self.outputs.items():
             p = self._createUIPinWrapper(o)
             self.UIoutputs[uid] = p
-
+        
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
+        self._rect = self.childrenBoundingRect()
 
     def isCallable(self):
         return self._rawNode.isCallable()
 
     def boundingRect(self):
-        return self.childrenBoundingRect()
+        if self.childrenBoundingRect().height() > self._rect.height():
+            self._rect.setHeight(self.childrenBoundingRect().height())
+        if self.childrenBoundingRect().width() > self._rect.width():
+            self._rect.setWidth(self.childrenBoundingRect().width())          
+        
+        return self._rect
 
     def category(self):
         return self._rawNode.category()
@@ -380,7 +393,8 @@ class UINodeBase(QGraphicsObject):
             self.label().setPlainText(label)
 
         self.w = self.getWidth() + Spacings.kPinOffset
-        self.nodeMainGWidget.setMaximumWidth(self.w)
+        #self.minWidth = self.getWidth() + Spacings.kPinOffset
+        #self.nodeMainGWidget.setMaximumWidth(self.w)
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
         if self.isCallable():
             if 'flow' not in self.category().lower():
@@ -413,7 +427,11 @@ class UINodeBase(QGraphicsObject):
         self._rawNode.setPosition(x, y)
         self.setPos(QtCore.QPointF(x, y))
         
-    def translate(self, x, y):
+    def translate(self, x, y,moveChildren=False):
+        if moveChildren:
+            for n in self.nodesToMove:
+                if not n.isSelected():
+                    n.translate(x, y)
         super(UINodeBase, self).moveBy(x, y)
 
     def paint(self, painter, option, widget):
@@ -422,10 +440,7 @@ class UINodeBase(QGraphicsObject):
     def shouldResize(self,cursorPos):
         cursorPos = self.mapFromScene(cursorPos)
         margin = 4
-        if self.isCommentNode:
-            rect = self.rect
-        else:
-            rect = self.boundingRect()
+        rect = self.boundingRect()
         pBottomRight = rect.bottomRight()
         pBottomLeft = rect.bottomLeft()            
         bottomRightRect = QtCore.QRectF(pBottomRight.x() - margin, pBottomRight.y() - margin, margin, margin)
@@ -456,13 +471,13 @@ class UINodeBase(QGraphicsObject):
         QGraphicsItem.mousePressEvent(self, event)
         self.mousePressPos = event.scenePos()
         self.origPos = self.pos()
-        self.initialRect = self.rect
+        self.initialRect = self.boundingRect()
         if self.expanded and self.resizable:
             resizeOpts = self.shouldResize(self.mapToScene(event.pos()))
             if resizeOpts["resize"]:
                 self.resizeDirection = resizeOpts["direction"]
-                self.initialRectWidth = self.rect.width()
-                self.initialRectHeight = self.rect.height()
+                self.initialRectWidth = self.initialRect.width()
+                self.initialRectHeight = self.initialRect.height()
                 self.setFlag(QGraphicsItem.ItemIsMovable, False)
                 self.bResize = True
 
@@ -477,46 +492,51 @@ class UINodeBase(QGraphicsObject):
                 newWidth = delta.x() + self.initialRectWidth
                 if newWidth > self.minWidth:
                     self.label().width = newWidth
-                    self.rect.setWidth(newWidth)
-                    self.label().adjustSizes()
+                    self._rect.setWidth(newWidth)
+                    self.w = newWidth
+                    self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, newWidth, self.boundingRect().height()))
+            elif self.resizeDirection == (-1, 0):
+                # left edge resize
+                newWidth = (1-delta.x()) + self.initialRectWidth
+                posdelta = self.mapToScene(event.pos()) - self.origPos
+                if newWidth > (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()) and newWidth>self.minWidth:
+                    self.translate(posdelta.x(),0,False)
+                    self.origPos = self.pos()
+                    self.label().width = newWidth
+                    self._rect.setRight(newWidth)
+                    self.w = newWidth
+                    self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))                      
             elif self.resizeDirection == (0, -1):
                 newHeight = delta.y() + self.initialRectHeight
                 newHeight = max(newHeight, self.label().h + 20.0)
                 if newHeight > self.minHeight:
                     # bottom edge resize
-                    self.rect.setHeight(newHeight)
+                    self._rect.setHeight(newHeight)
             elif self.resizeDirection == (1, -1):
                 newWidth = delta.x() + self.initialRectWidth
                 newHeight = delta.y() + self.initialRectHeight
                 newHeight = max(newHeight, self.label().h + 20.0)
                 if newWidth > self.minWidth:
                     self.label().width = newWidth
-                    self.rect.setWidth(newWidth)
-                    self.label().setTextWidth(newWidth)
+                    self._rect.setWidth(newWidth)
+                    self.w = newWidth
+                    self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
                 if newHeight > self.minHeight:                    
-                    self.rect.setHeight(newHeight)
-            elif self.resizeDirection == (-1, 0):
-                # left edge resize
-                newWidth = (1-delta.x()) + self.initialRectWidth
-                posdelta = event.scenePos() - self.origPos
-                if newWidth > self.minWidth:
-                    self.translate(posdelta.x(),0,False)
-                    self.origPos = self.pos()
-                    self.label().width = newWidth
-                    self.label().adjustSizes()    
+                    self._rect.setHeight(newHeight)
             elif self.resizeDirection == (-1, -1):            
                 newWidth = (1-delta.x()) + self.initialRectWidth
                 newHeight = delta.y() + self.initialRectHeight
                 newHeight = max(newHeight, self.label().h + 20.0)
                 posdelta = event.scenePos() - self.origPos
-                if newWidth > self.minWidth:
+                if newWidth > (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()) and newWidth>self.minWidth:
                     self.translate(posdelta.x(),0,False)
                     self.origPos = self.pos()                    
                     self.label().width = newWidth
-                    self.rect.setWidth(newWidth)
-                    self.label().setTextWidth(newWidth)
+                    self._rect.setWidth(newWidth)
+                    self.w = newWidth
+                    self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
                 if newHeight > self.minHeight :                    
-                    self.rect.setHeight(newHeight)
+                    self._rect.setHeight(newHeight)
             self.update()
             self.label().update()
         self.lastMousePos = event.pos()

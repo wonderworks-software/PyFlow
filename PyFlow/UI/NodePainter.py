@@ -34,11 +34,8 @@ class NodePainter(object):
             pen.setColor(Colors.Yellow)
             pen.setStyle(node.opt_pen_selected_type)
         painter.setPen(pen)
-        rect = node.childrenBoundingRect()
-        rect.setWidth(node.childrenBoundingRect().width())
-        rect.setX(node.childrenBoundingRect().x())
-        painter.drawRoundedRect(rect, node.sizes[4], node.sizes[5])
-
+        painter.drawRoundedRect(node.boundingRect(), node.sizes[4], node.sizes[5])
+        
         br = QtGui.QBrush()
         painter.setBrush(br)
         headColor = node.headColor
@@ -46,12 +43,11 @@ class NodePainter(object):
             headColor = headColor.lighter(50)
             headColor.setAlpha(50)
 
-        r = node.childrenBoundingRect()
-        r.setWidth(node.childrenBoundingRect().width() - 0.25)
-        r.setX(node.childrenBoundingRect().x())
+        r = QtCore.QRectF(node.boundingRect())
+        r.setWidth(node.boundingRect().width() - 0.25)
         r.setHeight(node.label().h)
         r.setX(0.25)
-        r.moveTop(rect.top())
+        #r.moveTop(rect.top())
         b = QtGui.QLinearGradient(0, 0, r.width(), r.height())
         b.setColorAt(0, headColor.lighter(60))
         b.setColorAt(0.5, headColor)
@@ -60,6 +56,7 @@ class NodePainter(object):
         path = QtGui.QPainterPath()
         path.addRoundedRect(r, node.sizes[4], node.sizes[5])
         painter.fillPath(path, b)
+        
 
     @staticmethod
     def asVariableGetter(node, painter, option, widget):
