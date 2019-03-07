@@ -16,12 +16,12 @@ class UISequenceNode(UINodeBase):
         return uiPin
 
     def updateNodeShape(self, label=None):
-        
+        UINodeBase.updateNodeShape(self, label)
         for i in range(0, len(self.outputs)):
             pin = list(self.outputs.values())[i]
             pin.getWrapper()().setName(str(i))
             pin.getWrapper()().setDisplayName("Then {}".format(i))
-        UINodeBase.updateNodeShape(self, label)
+        
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)

@@ -281,6 +281,7 @@ class UIcommentNode(UINodeBase):
 
             for node in self.nodesToMove:
                 node.hide()
+                node.prevRect = QtCore.QRectF(node._rect)
 
             for pin in self.pinsToMove:
                 if pin in self.commentInputs:
@@ -298,6 +299,7 @@ class UIcommentNode(UINodeBase):
             self._rect.setBottom(self.prevRect)
             for node in self.nodesToMove:
                 node.show()
+                node._rect = node.prevRect
             for pin in self.pinsToMove:
                 pin.moveBy(-pin.prevPos.x(), -pin.prevPos.y())
             for edge in self.edgesToHide:

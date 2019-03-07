@@ -1085,8 +1085,8 @@ class GraphWidgetUI(QGraphicsView):
 
             instance = self.createNode(nodeTemplate)
             if rect:
-                instance.rect.setRight(rect.width())
-                instance.rect.setBottom(rect.height())
+                instance._rect.setRight(rect.width())
+                instance._rect.setBottom(rect.height())
                 instance.label().width = rect.width()
                 instance.label().adjustSizes()
 
