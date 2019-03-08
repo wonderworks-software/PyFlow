@@ -1410,7 +1410,9 @@ class GraphWidgetUI(QGraphicsView):
                         nodeTemplate['uuid'] = None
                         nodeTemplate['meta']['label'] =  "rerute"
                         reruteNode = self.createNode(nodeTemplate)
+                        reruteNode.color = self.pressed_item.color
                         self.clearSelection()
+                        reruteNode.translate(-reruteNode.boundingRect().center().x(),-5)
                         reruteNode.setSelected(True)
                         for inp in reruteNode.inputs.values():
                             if self.canConnectPins(self.pressed_item.source(), inp):
@@ -1510,7 +1512,7 @@ class GraphWidgetUI(QGraphicsView):
         # if not isinstance(self.pressed_item,EditableLabel):
         if self._manipulationMode == MANIP_MODE_SELECT:
             dragPoint = self.mapToScene(event.pos())
-            self._selectionRect.setDragPoint(dragPoint)
+            self._selectionRect.setDragPoint(dragPoint,modifiers)
             # This logic allows users to use ctrl and shift with rectangle
             # select to add / remove nodes.
             node = self.nodeFromInstance(self.pressed_item)

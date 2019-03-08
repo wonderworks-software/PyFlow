@@ -18,7 +18,8 @@ class SelectionRect(QtWidgets.QGraphicsWidget):
         self.setPos(self.__mouseDownPos)
         self.resize(0, 0)
 
-    def setDragPoint(self, dragPoint):
+    def setDragPoint(self, dragPoint,modifiers):
+        self.__modifiers = modifiers
         topLeft = QtCore.QPointF(self.__mouseDownPos)
         bottomRight = QtCore.QPointF(dragPoint)
         if dragPoint.x() < self.__mouseDownPos.x():

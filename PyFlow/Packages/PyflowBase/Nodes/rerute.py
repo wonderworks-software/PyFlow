@@ -11,7 +11,7 @@ class rerute(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['ExecPin', 'BoolPin'], 'outputs': ['BoolPin']}
+        return {'inputs': [], 'outputs': []}
 
     @staticmethod
     def category():
