@@ -19,6 +19,7 @@ from PyFlow.UI.Settings import (Spacings, Colors)
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.UINodeBase import NodeName
 import weakref
+
 class commentNodeName(NodeName):
     """doc string for commentNodeName"""
     def __init__(self, parent, bUseTextureBg=False, color=Colors.AbsoluteBlack):
@@ -32,8 +33,9 @@ class commentNodeName(NodeName):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.width = self.document().documentLayout().documentSize().width()
         self.icon = QtGui.QImage(':/icons/resources/py.png')
-        self.setPos(15, -self.boundingRect().height() - 8)  
-        self.drawH = self.h     
+        self.setPos(15, -self.boundingRect().height() - 8)
+        self.drawH = self.h
+
     def mousePressEvent(self, event):
         if not self.parentItem().isSelected():
             self.parentItem().graph().clearSelection()
@@ -83,10 +85,9 @@ class commentNodeName(NodeName):
         self.setTextWidth(self.width)
         self.h = self.document().documentLayout().documentSize().height()
         if not self.parentItem().expanded:
-            self.parentItem()._rect.setHeight(self.h )        
+            self.parentItem()._rect.setHeight(self.h)
         self.update()
         self.parentItem().update()
-
 
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
@@ -100,9 +101,9 @@ class commentNodeName(NodeName):
         painter.drawRoundedRect(-15, 0, r.width(), r.height(), self.parentItem().sizes[4], self.parentItem().sizes[5], QtCore.Qt.AbsoluteSize)
         parentRet = self.parentItem().childrenBoundingRect()
         QGraphicsTextItem.paint(self, painter, option, widget)
+
     def hoverEnterEvent(self, event):
         NodeName.hoverEnterEvent(self, event)
-
 
 buttonStyle="""
 QPushButton{color : rgba(255,255,255,255);
@@ -185,7 +186,7 @@ class UIcommentNode(UINodeBase):
             'expanded': self.expanded,
             'nodesToMove': [str(n.uid) for n in self.nodesToMove]
         }
-        template['meta']['resize']={'h' : bottom,'w' : self._rect.right()}
+        template['meta']['resize'] = {'h': bottom, 'w': self._rect.right()}
         return template
 
     def postCreate(self, jsonTemplate):
@@ -237,10 +238,10 @@ class UIcommentNode(UINodeBase):
         self.hideButton = QPushButton("-")
         self.hideButtomProxy.setWidget(self.hideButton)
         self.hideButton.setStyleSheet(buttonStyle)
-        self.hideButtomProxy.setPos(-2, - 31 )  
+        self.hideButtomProxy.setPos(-2, - 31)
         self.hideButton.pressed.connect(self.toogleCollapsed)
         self.hideButton.setFixedHeight(25)
-        self.hideButton.setFixedWidth(25)      
+        self.hideButton.setFixedWidth(25)
 
     def updateChildrens(self, nodes):
         self.commentInputs = []
@@ -270,13 +271,13 @@ class UIcommentNode(UINodeBase):
         self.toogleCollapsed()
         event.accept()
 
-    def toogleCollapsed(self, ):
+    def toogleCollapsed(self):
         if self.expanded:
             self.updateChildrens(self.collidingItems())
             self.hideButton.setText("+")
             self.expanded = False
             self.prevRect = self._rect.bottom()
-            self._rect.setHeight(self.label().h )
+            self._rect.setHeight(self.label().h)
 
             for node in self.nodesToMove:
                 node.hide()
@@ -284,9 +285,9 @@ class UIcommentNode(UINodeBase):
 
             for pin in self.pinsToMove:
                 if pin in self.commentInputs:
-                    pin.prevPos = QtCore.QPointF(self.scenePos().x() - 4, self.scenePos().y()-13) - pin.scenePos()
+                    pin.prevPos = QtCore.QPointF(self.scenePos().x() - 4, self.scenePos().y() - 13) - pin.scenePos()
                 elif pin in self.commentOutpus:
-                    pin.prevPos = QtCore.QPointF(self.scenePos().x() + self.boundingRect().width() - 8, self.scenePos().y()-13) - pin.scenePos()
+                    pin.prevPos = QtCore.QPointF(self.scenePos().x() + self.boundingRect().width() - 8, self.scenePos().y() - 13) - pin.scenePos()
                 pin.moveBy(pin.prevPos.x(), pin.prevPos.y())
                 pin.update()
 
@@ -305,8 +306,8 @@ class UIcommentNode(UINodeBase):
                 edge.show()
         self.update()
 
-    def translate(self, x, y,moveChildren=True):
-        super(UIcommentNode, self).translate(x, y,moveChildren)
+    def translate(self, x, y, moveChildren=True):
+        super(UIcommentNode, self).translate(x, y, moveChildren)
 
     def paint(self, painter, option, widget):
         painter.setPen(QtCore.Qt.NoPen)
@@ -371,7 +372,7 @@ class UIcommentNode(UINodeBase):
         formLayout.addRow("Pos", le_pos)
 
         pb = QPushButton("...")
-        pb.clicked.connect(lambda:self.onChangeColor(True))
+        pb.clicked.connect(lambda: self.onChangeColor(True))
         formLayout.addRow("Color", pb)
 
         doc_lb = QLabel()
@@ -382,4 +383,3 @@ class UIcommentNode(UINodeBase):
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())
         formLayout.addRow("", doc)
-

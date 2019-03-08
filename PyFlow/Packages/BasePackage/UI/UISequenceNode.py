@@ -21,7 +21,6 @@ class UISequenceNode(UINodeBase):
             pin = list(self.outputs.values())[i]
             pin.getWrapper()().setName(str(i))
             pin.getWrapper()().setDisplayName("Then {}".format(i))
-        
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
