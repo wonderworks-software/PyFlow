@@ -41,7 +41,7 @@ class commentNodeName(NodeName):
             self.parentItem().graph().clearSelection()
         if self.parentItem().expanded:
             self.parentItem().nodesToMove.clear()
-            self.parentItem().updateChildrens(self.parentItem().collidingItems())
+            self.parentItem().updateChildren(self.parentItem().collidingItems())
         self.parentItem().setSelected(True)
         # NodeName.mousePressEvent(self, event)
 
@@ -243,7 +243,7 @@ class UIcommentNode(UINodeBase):
         self.hideButton.setFixedHeight(25)
         self.hideButton.setFixedWidth(25)
 
-    def updateChildrens(self, nodes):
+    def updateChildren(self, nodes):
         self.commentInputs = []
         self.commentOutpus = []
         self.edgesToHide = []
@@ -273,7 +273,7 @@ class UIcommentNode(UINodeBase):
 
     def toogleCollapsed(self):
         if self.expanded:
-            self.updateChildrens(self.collidingItems())
+            self.updateChildren(self.collidingItems())
             self.hideButton.setText("+")
             self.expanded = False
             self.prevRect = self._rect.bottom()
