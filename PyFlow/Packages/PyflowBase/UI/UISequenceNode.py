@@ -13,6 +13,7 @@ class UISequenceNode(UINodeBase):
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.setDynamic(True)
         uiPin.setDisplayName("Then {}".format(str(len(self.outputs) - 1)))
+        self.updateWidth()
         return uiPin
 
     def updateNodeShape(self, label=None):

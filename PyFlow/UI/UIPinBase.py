@@ -250,8 +250,10 @@ class UIPinBase(QGraphicsWidget):
                 self.owningNode().getWrapper()().inputsLayout.removeItem(self._container)
             else:
                 self.owningNode().getWrapper()().outputsLayout.removeItem(self._container)
+            if self._rawPin.uid in self.owningNode().getWrapper()().UIPins:
+                del self.owningNode().getWrapper()().UIPins[self._rawPin.uid]
         self._rawPin.kill()
-        self.owningNode().getWrapper()().updateNodeShape()
+        self.owningNode().getWrapper()().updateWidth()
 
     @staticmethod
     def deserialize(owningNode, jsonData):

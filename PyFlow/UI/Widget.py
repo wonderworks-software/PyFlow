@@ -1446,8 +1446,7 @@ class GraphWidgetUI(QGraphicsView):
         mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1), QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
         if self.itemAt(event.pos()) and isinstance(self.itemAt(event.pos()), UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
-
-            if resizeOpts["resize"]:
+            if resizeOpts["resize"] or node.bResize:
                 if resizeOpts["direction"] == (1, -1):
                     self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
                 elif resizeOpts["direction"] in [(1, 0), (-1, 0)]:

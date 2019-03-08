@@ -190,9 +190,10 @@ class UIcommentNode(UINodeBase):
         return template
 
     def postCreate(self, jsonTemplate):
+        width = self.minWidth
         UINodeBase.postCreate(self, jsonTemplate)
         # restore text and size
-        width = self.minWidth
+        self.minWidth = width
         height = self.minHeight
         labelHeight = self.label().h
         text = self.__class__.__name__
