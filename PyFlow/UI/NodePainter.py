@@ -89,7 +89,7 @@ class NodePainter(object):
     @staticmethod
     def asReruteNode(node, painter, option, widget):
         color = node.color
-        color.setAlpha(230)
+        color.setAlpha(255)
         #if node.isSelected():
         color = color.lighter(100)
         if node.isTemp:
@@ -102,10 +102,12 @@ class NodePainter(object):
         painter.setBrush(br)
 
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
+        width= pen.width()        
         if option.state & QStyle.State_Selected:
             # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
             pen.setColor(Colors.Yellow)
             pen.setStyle(node.opt_pen_selected_type)
+            pen.setWidth(width*2)
         painter.setPen(pen)
         painter.drawEllipse(node.boundingRect().center(), node.boundingRect().width()/2, node.boundingRect().width()/2)
 

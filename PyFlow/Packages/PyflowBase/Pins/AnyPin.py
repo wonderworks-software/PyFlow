@@ -66,6 +66,11 @@ class AnyPin(PinBase):
             if other.dataType != "AnyPin":
                 self._free = False
                 self.setType(other)
+                for e in self.edge_list:
+                    for p in [e.source()._rawPin, e.destination()._rawPin]:
+                        if p != self:
+                            if p.dataType == "AnyPin" and p.dataType != self.dataType:
+                                p.updateOnConnection(other)                
                 for port in self.owningNode()._Constraints[self.constraint]:
                     if port != self:
                         port.setType(other)
