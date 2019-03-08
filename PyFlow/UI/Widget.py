@@ -1343,13 +1343,13 @@ class GraphWidgetUI(QGraphicsView):
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         node = self.nodeFromInstance(self.pressed_item)
-        if any([not self.pressed_item, isinstance(self.pressed_item, Edge), isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(self.pressed_item, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
-            resizing = False
-            if isinstance(self.pressed_item, UINodeBase) and (node.isCommentNode or node.resizable):
+        if any([not self.pressed_item, isinstance(self.pressed_item, Edge), isinstance(node, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
+            self.resizing = False
+            if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(GraphWidgetUI, self).mousePressEvent(event)
-                resizing = node.bResize
+                self.resizing = True
                 node.setSelected(False)
-            if not resizing:
+            if not self.resizing:
                 if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
                     self._manipulationMode = MANIP_MODE_SELECT
                     self._selectionRect = SelectionRect(
@@ -1444,7 +1444,7 @@ class GraphWidgetUI(QGraphicsView):
         self.mousePos = event.pos()
         node = self.nodeFromInstance(self.itemAt(event.pos()))
         mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1), QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
-        if self.itemAt(event.pos()) and isinstance(self.itemAt(event.pos()), UINodeBase) and node.resizable:
+        if self.itemAt(event.pos()) and isinstance(node, UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
             if resizeOpts["resize"] or node.bResize:
                 if resizeOpts["direction"] == (1, -1):
@@ -1631,38 +1631,38 @@ class GraphWidgetUI(QGraphicsView):
                 if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
         elif event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, UIPinBase):
-            if isinstance(self.pressed_item, UIPinBase):
+            if isinstance(self.pressed_item, UIPinBase) and not self.resizing:
                 # node box tree pops up
                 # with nodes taking supported data types of pressed Pin as input
                 self.showNodeBox(self.pressed_item.dataType,
                                  self.pressed_item.direction)
-
-        p_itm = self.pressed_item
-        r_itm = self.released_item
-        do_connect = True
-        for i in [p_itm, r_itm]:
-            if not i:
-                do_connect = False
-                break
-            if not isinstance(i, UIPinBase):
-                do_connect = False
-                break
-        if p_itm and r_itm:
-            if p_itm.__class__.__name__ == UIPinBase.__name__ and r_itm.__class__.__name__ == UIPinBase.__name__:
-                if cycle_check(p_itm, r_itm):
-                    print('cycles are not allowed')
+        if not self.resizing:
+            p_itm = self.pressed_item
+            r_itm = self.released_item
+            do_connect = True
+            for i in [p_itm, r_itm]:
+                if not i:
                     do_connect = False
+                    break
+                if not isinstance(i, UIPinBase):
+                    do_connect = False
+                    break
+            if p_itm and r_itm:
+                if p_itm.__class__.__name__ == UIPinBase.__name__ and r_itm.__class__.__name__ == UIPinBase.__name__:
+                    if cycle_check(p_itm, r_itm):
+                        print('cycles are not allowed')
+                        do_connect = False
 
-        if do_connect:
-            if p_itm is not r_itm:
-                self.addEdge(p_itm, r_itm)
+            if do_connect:
+                if p_itm is not r_itm:
+                    self.addEdge(p_itm, r_itm)
 
         selectedNodes = self.selectedNodes()
         if len(selectedNodes) != 0 and event.button() == QtCore.Qt.LeftButton:
             self.tryFillPropertiesView(selectedNodes[0])
         elif event.button() == QtCore.Qt.LeftButton:
             self._clearPropertiesView()
-
+        self.resizing = False
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items()
          if hasattr(i, 'name') and i.name == name]
