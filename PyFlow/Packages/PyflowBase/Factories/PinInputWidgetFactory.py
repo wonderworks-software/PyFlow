@@ -135,6 +135,7 @@ class BoolInputWidget(InputWidgetSingle):
         else:
             self.cb.setCheckState(QtCore.Qt.Unchecked)
 
+
 class NoneInputWidget(InputWidgetSingle):
     """
     String data input widget
@@ -153,6 +154,7 @@ class NoneInputWidget(InputWidgetSingle):
     def setWidgetValue(self, val):
         self.le.setText(str(val))
 
+
 def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
     '''
     factory method
@@ -170,4 +172,6 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
     if dataType == 'EnumPin':
         return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, userStructClass=userStructClass)
     if dataType == 'AnyPin':
+        return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None)
+    if dataType == 'ListPin':
         return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None)

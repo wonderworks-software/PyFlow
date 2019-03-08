@@ -1,6 +1,6 @@
 from PyFlow.UI.UIPinBase import UIPinBase
-from PyFlow.Packages.BasePackage.Pins.AnyPin import AnyPin
-from PyFlow.Packages.BasePackage.UI.UIAnyPin import UIAnyPin
+from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
+from PyFlow.Packages.PyflowBase.UI.UIAnyPin import UIAnyPin
 
 
 def createUIPin(owningNode, raw_instance):

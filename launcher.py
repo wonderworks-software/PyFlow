@@ -12,8 +12,8 @@ from PyFlow.Core import(
 
 INITIALIZE()
 packages = GET_PACKAGES()
-lib = packages['BasePackage'].GetFunctionLibraries()["MathLib"]
-pins = packages['BasePackage'].GetPinClasses()
+lib = packages['PyflowBase'].GetFunctionLibraries()["MathLib"]
+pins = packages['PyflowBase'].GetPinClasses()
 
 # g = GraphBase("Test")
 

@@ -5,7 +5,7 @@ class TestGeneral(unittest.TestCase):
     def test_add_int_no_exec(self):
         packages = GET_PACKAGES()
         g = GraphBase("testGraph")
-        intlib = packages['BasePackage'].GetFunctionLibraries()["IntLib"]
+        intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
         mathFoos = intlib.getFunctions()
 
         addNode1 = NodeBase.initializeFromFunction(mathFoos["add"])
@@ -23,8 +23,8 @@ class TestGeneral(unittest.TestCase):
     def test_foo_node_ref_set_data(self):
         packages = GET_PACKAGES()
         g = GraphBase("testGraph")
-        randomLib = packages['BasePackage'].GetFunctionLibraries()["RandomLib"]
-        defaultLib = packages['BasePackage'].GetFunctionLibraries()["DefaultLib"]
+        randomLib = packages['PyflowBase'].GetFunctionLibraries()["RandomLib"]
+        defaultLib = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"]
         randomLibFoos = randomLib.getFunctions()
         defaultLibFoos = defaultLib.getFunctions()
 

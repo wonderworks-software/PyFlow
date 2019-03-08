@@ -1,6 +1,6 @@
 from copy import copy
 
-from PyFlow.Packages.BasePackage import PACKAGE_NAME
+from PyFlow.Packages.PyflowBase import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 import uuid
 

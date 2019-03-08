@@ -68,8 +68,8 @@ from PyFlow import (
 )
 from PyFlow.Core.AGraphCommon import *
 
-from PyFlow.Packages.BasePackage.Nodes.commentNode import commentNode
-from PyFlow.Packages.BasePackage.UI.UIcommentNode import UIcommentNode
+from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
+from PyFlow.Packages.PyflowBase.UI.UIcommentNode import UIcommentNode
 
 
 def clearLayout(layout):
@@ -1093,7 +1093,7 @@ class GraphWidgetUI(QGraphicsView):
                 rect.setBottom(rect.bottom() + 20)
 
             nodeTemplate = NodeBase.jsonTemplate()
-            nodeTemplate['package'] = "BasePackage"
+            nodeTemplate['package'] = "PyflowBase"
             nodeTemplate['type'] = commentNode.__name__
             nodeTemplate['name'] = self.getUniqNodeName(commentNode.__name__)
             if rect:
