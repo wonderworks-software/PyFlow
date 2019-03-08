@@ -172,8 +172,8 @@ class SceneClass(QGraphicsScene):
         self.setItemIndexMethod(self.NoIndex)
         # self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
-
         self.tempnode = None
+        self.thickEdges = []
 
     def shoutDown(self):
         self.selectionChanged.disconnect()
@@ -221,6 +221,7 @@ class SceneClass(QGraphicsScene):
             self.tempnode.update()
             self.tempnode.postCreate(nodeTemplate)
             self.tempnode.isTemp = True
+            self.thickEdges = []
         else:
             event.ignore()
 
@@ -228,14 +229,34 @@ class SceneClass(QGraphicsScene):
         if event.mimeData().hasFormat('text/plain'):
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
-            if self.tempnode is not None:
+            if self.tempnode:
                 self.tempnode.setPosition(
                     (self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
+                mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x(
+                )-1, event.scenePos().y()-1), QtCore.QPoint(event.scenePos().x()+1, event.scenePos().y()+1))
+                hoverItems = self.items(mouseRect)
+                for item in hoverItems:
+                    if isinstance(item, Edge):
+                        valid = False
+                        for inp in self.tempnode.inputs.values():
+                            if self.parent().canConnectPins(item.source(), inp):
+                                valid = True
+                        for out in self.tempnode.outputs.values():
+                            if self.parent().canConnectPins(out, item.destination()):
+                                valid = True
+                        if valid:
+                            self.thickEdges.append(item)
+                            item.drawThick()
+                for item in self.thickEdges:
+                    if item not in hoverItems:
+                        item.restoreThick()
+
+                # self.itemAt(event.pos()).drawThink()
         else:
             event.ignore()
 
     def dragLeaveEvent(self, event):
-        if self.tempnode is not None:
+        if self.tempnode:
             self.removeItem(self.tempnode)
 
     def OnSelectionChanged(self):
@@ -291,7 +312,8 @@ class SceneClass(QGraphicsScene):
                     setNodeTemplate = dict(nodeTemplate)
                     setterAction = m.addAction('Set')
                     setNodeTemplate['type'] = 'setVar'
-                    setterAction.triggered.connect(lambda: self.parent().createNode(setNodeTemplate))
+                    setterAction.triggered.connect(
+                        lambda: self.parent().createNode(setNodeTemplate))
                     m.exec_(QtGui.QCursor.pos(), None)
                 if modifiers == QtCore.Qt.ControlModifier:
                     nodeTemplate['type'] = 'getVar'
@@ -833,7 +855,7 @@ class GraphWidgetUI(QGraphicsView):
         fName = QFileDialog.getSaveFileName(filter=name_filter)
         if not fName[0] == '':
             print("save screen to {0}".format(fName[0]))
-            img = QtGui.QPixmap.grabWidget(self)
+            img = QtGui.QPixmap.grab(self)
             img.save(fName[0], quality=100)
 
     def isShortcutsEnabled(self):
@@ -1085,8 +1107,8 @@ class GraphWidgetUI(QGraphicsView):
 
             instance = self.createNode(nodeTemplate)
             if rect:
-                instance.rect.setRight(rect.width())
-                instance.rect.setBottom(rect.height())
+                instance._rect.setRight(rect.width())
+                instance._rect.setBottom(rect.height())
                 instance.label().width = rect.width()
                 instance.label().adjustSizes()
 
@@ -1138,6 +1160,7 @@ class GraphWidgetUI(QGraphicsView):
         #    self.parent.toggle_multithreaded()
         # if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
         #    self.parent.toggle_debug()
+
         if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
             self.parent.togglePropertyView()
 
@@ -1185,8 +1208,7 @@ class GraphWidgetUI(QGraphicsView):
                         e.destination().name)
                     self.addEdge(nsrc, ndst)
 
-    def copyNodes(self):
-        QApplication.clipboard().clear()
+    def copyNodes(self, toClipboard=True):
         nodes = []
         oldNodes = []
         selectedNodes = [i for i in self.getNodes() if i.isSelected()]
@@ -1207,10 +1229,17 @@ class GraphWidgetUI(QGraphicsView):
         if len(nodes) > 0:
             ret = {"nodes": nodes, "edges": fullEdges}
             n = json.dumps(ret)
-            QApplication.clipboard().setText(n)
+            if toClipboard:
+                QApplication.clipboard().clear()
+                QApplication.clipboard().setText(n)
+            else:
+                return n
 
-    def pasteNodes(self, move=True):
-        nodes = json.loads(QApplication.clipboard().text())
+    def pasteNodes(self, move=True, data=None):
+        if not data:
+            nodes = json.loads(QApplication.clipboard().text())
+        else:
+            nodes = json.loads(data)
         if "nodes" not in nodes or "edges" not in nodes:
             return
 
@@ -1314,17 +1343,17 @@ class GraphWidgetUI(QGraphicsView):
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         node = self.nodeFromInstance(self.pressed_item)
-        if any([not self.pressed_item, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode]):
+        if any([not self.pressed_item, isinstance(self.pressed_item, Edge), isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(self.pressed_item, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             resizing = False
-            if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
+            if isinstance(self.pressed_item, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(GraphWidgetUI, self).mousePressEvent(event)
                 resizing = node.bResize
                 node.setSelected(False)
             if not resizing:
-                if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
+                if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
                     self._manipulationMode = MANIP_MODE_SELECT
                     self._selectionRect = SelectionRect(
-                        graph=self, mouseDownPos=self.mapToScene(event.pos()))
+                        graph=self, mouseDownPos=self.mapToScene(event.pos()), modifiers=modifiers)
                     self._mouseDownSelection = [
                         node for node in self.selectedNodes()]
                     if modifiers not in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
@@ -1396,8 +1425,8 @@ class GraphWidgetUI(QGraphicsView):
                         self._lastDragPoint = self.mapToScene(event.pos())
                         selectedNodes = self.selectedNodes()
                         newNodes = []
-                        self.copyNodes()
-                        self.pasteNodes(False)
+                        copiedNodes = self.copyNodes(toClipboard=False)
+                        self.pasteNodes(move=False, data=copiedNodes)
 
         # else:
         #    super(GraphWidgetUI, self).mousePressEvent(event)
@@ -1414,18 +1443,19 @@ class GraphWidgetUI(QGraphicsView):
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
         node = self.nodeFromInstance(self.itemAt(event.pos()))
+        mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1), QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
         if self.itemAt(event.pos()) and isinstance(self.itemAt(event.pos()), UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
 
             if resizeOpts["resize"]:
-                if resizeOpts["direction"] == (1,-1):
+                if resizeOpts["direction"] == (1, -1):
                     self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
-                elif resizeOpts["direction"] in [(1 , 0),(-1, 0)]:
+                elif resizeOpts["direction"] in [(1, 0), (-1, 0)]:
                     self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
-                elif resizeOpts["direction"] == (0,-1):
-                    self.viewport().setCursor(QtCore.Qt.SizeVerCursor) 
-                elif resizeOpts["direction"] == (-1,-1):
-                    self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)                                      
+                elif resizeOpts["direction"] == (0, -1):
+                    self.viewport().setCursor(QtCore.Qt.SizeVerCursor)
+                elif resizeOpts["direction"] == (-1, -1):
+                    self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)
             else:
                 self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         else:
@@ -1486,6 +1516,11 @@ class GraphWidgetUI(QGraphicsView):
                         if node not in self._mouseDownSelection:
                             node.setSelected(False)
 
+            elif modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
+                for node in nodes:
+                    # if node not in [self.inputsItem,self.outputsItem]:
+                    if self._selectionRect.collidesWithItem(node):
+                        node.setSelected(False)
             else:
                 self.clearSelection()
                 for node in nodes:

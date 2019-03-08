@@ -101,9 +101,21 @@ class Edge(QGraphicsPathItem):
                                             self.destination().parent().name,
                                             self.destination()._rawPin.name)
 
+    def drawThick(self):
+        self.pen.setWidthF(self.thikness + (self.thikness / 1.5))
+        f = 0.5
+        r = abs(lerp(self.color.red(), Colors.Yellow.red(), clamp(f, 0, 1)))
+        g = abs(lerp(self.color.green(), Colors.Yellow.green(), clamp(f, 0, 1)))
+        b = abs(lerp(self.color.blue(), Colors.Yellow.blue(), clamp(f, 0, 1)))
+        self.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
+
+    def restoreThick(self):
+        self.pen.setWidthF(self.thikness)
+        self.pen.setColor(self.color)
+
     def hoverEnterEvent(self, event):
         super(Edge, self).hoverEnterEvent(event)
-        self.pen.setWidthF(self.thikness + (self.thikness / 1.5))
+        self.drawThick()
         self.update()
 
     def getEndPoints(self):
@@ -125,7 +137,7 @@ class Edge(QGraphicsPathItem):
 
     def hoverLeaveEvent(self, event):
         super(Edge, self).hoverLeaveEvent(event)
-        self.pen.setWidthF(self.thikness)
+        self.restoreThick()
         self.update()
 
     def source_port_name(self):

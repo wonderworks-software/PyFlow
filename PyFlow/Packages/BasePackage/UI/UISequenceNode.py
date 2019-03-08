@@ -6,6 +6,7 @@ class UISequenceNode(UINodeBase):
         super(UISequenceNode, self).__init__(raw_node)
         actionAddOut = self._menu.addAction("Add out pin")
         actionAddOut.triggered.connect(self.onAddOutPin)
+        self.resizable = True
 
     def onAddOutPin(self):
         rawPin = self._rawNode.addOutPin()

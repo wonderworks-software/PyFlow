@@ -42,7 +42,7 @@ class UIPinBase(QGraphicsWidget):
         self._rawPin.setWrapper(self)
         self.setParentItem(owningNode)
         self.UiNode = owningNode
-        self.setCursor(QtCore.Qt.CrossCursor)
+        # self.setCursor(QtCore.Qt.CrossCursor)
         ## context menu for pin
         self.menu = QMenu()
         ## Disconnect all connections

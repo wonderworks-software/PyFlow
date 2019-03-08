@@ -141,8 +141,5 @@ class AnyPin(PinBase):
             self.dataType = other.dataType
             self.color = other.color
             self._wrapper().setType(other.color())
-            if str(type(self._data)) == "<type 'unicode'>":
-                self._data = str(self._data)
-            if type(self._data) != type(other._data):
-                self.setData(other.defaultValue())
+            self.setData(other.defaultValue())
             self.setDefaultValue(other.defaultValue())

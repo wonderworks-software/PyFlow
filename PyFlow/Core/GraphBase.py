@@ -169,12 +169,14 @@ class GraphBase(object):
             return True
 
         if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
-            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
+            if debug:
+                print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
             return False
         else:
             if src.dataType is 'ExecPin':
                 if dst.dataType is not 'ExecPin' and dst.dataType is not "AnyPin":
-                    print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
+                    if debug:
+                        print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                     return False
 
         if src in dst.affected_by:
@@ -201,7 +203,8 @@ class GraphBase(object):
                     if not free:
                         a = CreateRawPin("", None, dst.dataType, 0)
                         if src.dataType not in a.supportedDataTypes():
-                            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
+                            if debug:
+                                print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                             return False
                         del a                
         return True
@@ -215,7 +218,9 @@ class GraphBase(object):
 
         # input value pins can have one output connection
         # output value pins can have any number of connections
-        if not src.dataType == 'ExecPin' and dst.hasConnections():
+        if not src.dataType in ['ExecPin','AnyPin'] and dst.hasConnections():
+            dst.disconnectAll()
+        if src.dataType == 'AnyPin' and dst.dataType != 'ExecPin' and dst.hasConnections():
             dst.disconnectAll()
         # input execs can have any number of connections
         # output execs can have only one connection
