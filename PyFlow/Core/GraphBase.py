@@ -215,7 +215,9 @@ class GraphBase(object):
 
         # input value pins can have one output connection
         # output value pins can have any number of connections
-        if not src.dataType == 'ExecPin' and dst.hasConnections():
+        if not src.dataType in ['ExecPin','AnyPin'] and dst.hasConnections():
+            dst.disconnectAll()
+        if src.dataType == 'AnyPin' and dst.dataType != 'ExecPin' and dst.hasConnections():
             dst.disconnectAll()
         # input execs can have any number of connections
         # output execs can have only one connection
