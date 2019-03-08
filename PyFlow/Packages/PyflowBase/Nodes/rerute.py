@@ -15,7 +15,7 @@ class rerute(NodeBase):
 
     @staticmethod
     def category():
-        return 'FlowControl'
+        return 'Common'
 
     def compute(self):
         self.output.setData(copy(self.input.getData()))
