@@ -172,8 +172,8 @@ class SceneClass(QGraphicsScene):
         self.setItemIndexMethod(self.NoIndex)
         # self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
-
         self.tempnode = None
+        self.thickEdges = []
 
     def shoutDown(self):
         self.selectionChanged.disconnect()
@@ -221,6 +221,7 @@ class SceneClass(QGraphicsScene):
             self.tempnode.update()
             self.tempnode.postCreate(nodeTemplate)
             self.tempnode.isTemp = True
+            self.thickEdges = []
         else:
             event.ignore()
 
@@ -228,14 +229,33 @@ class SceneClass(QGraphicsScene):
         if event.mimeData().hasFormat('text/plain'):
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
-            if self.tempnode is not None:
+            if self.tempnode:
                 self.tempnode.setPosition(
                     (self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
+                mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x()-1,event.scenePos().y()-1),QtCore.QPoint(event.scenePos().x()+1,event.scenePos().y()+1))
+                hoverItems = self.items(mouseRect)
+                for item in hoverItems:
+                    if isinstance(item,Edge):
+                        valid = False
+                        for inp in self.tempnode.inputs.values():
+                            if self.parent().canConnectPins(item.source(), inp):
+                                valid = True
+                        for out in self.tempnode.outputs.values():
+                            if self.parent().canConnectPins(out, item.destination()):
+                                valid = True
+                        if valid:                     
+                            self.thickEdges.append(item)
+                            item.drawThick()
+                for item in self.thickEdges:
+                    if item not in hoverItems:
+                        item.restoreThick()
+
+                #self.itemAt(event.pos()).drawThink()                
         else:
             event.ignore()
 
     def dragLeaveEvent(self, event):
-        if self.tempnode is not None:
+        if self.tempnode:
             self.removeItem(self.tempnode)
 
     def OnSelectionChanged(self):
@@ -1321,7 +1341,7 @@ class GraphWidgetUI(QGraphicsView):
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         node = self.nodeFromInstance(self.pressed_item)
-        if any([not self.pressed_item, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode,isinstance(self.pressed_item, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
+        if any([not self.pressed_item,isinstance(self.pressed_item,Edge), isinstance(self.pressed_item, UINodeBase) and node.isCommentNode,isinstance(self.pressed_item, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             resizing = False
             if isinstance(self.pressed_item, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(GraphWidgetUI, self).mousePressEvent(event)
@@ -1421,6 +1441,7 @@ class GraphWidgetUI(QGraphicsView):
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
         node = self.nodeFromInstance(self.itemAt(event.pos()))
+        mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x()-1,event.pos().y()-1),QtCore.QPoint(event.pos().x()+1,event.pos().y()+1))
         if self.itemAt(event.pos()) and isinstance(self.itemAt(event.pos()), UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
 
