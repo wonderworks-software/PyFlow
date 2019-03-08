@@ -249,6 +249,7 @@ class UIcommentNode(UINodeBase):
         self.commentOutpus = []
         self.edgesToHide = []
         self.pinsToMove.clear()
+        self.nodesToMove.clear()
         self.nodesNamesToMove = []
         edges = []
         for node in [i for i in nodes if isinstance(i, UINodeBase) and not i.isCommentNode and i.isVisible()]:
