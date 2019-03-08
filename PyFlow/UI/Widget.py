@@ -360,6 +360,8 @@ class SceneClass(QGraphicsScene):
                         node.setPos(x - node.boundingRect().width(), y)
                         for inp in node.inputs.values():
                             if self.parent().canConnectPins(dropItem, inp):
+                                if dropItem.dataType == 'ExecPin':
+                                    dropItem.disconnectAll()
                                 self.parent().addEdge(dropItem, inp)
                                 node.setPos(x + node.boundingRect().width(), y)
                                 break
@@ -371,6 +373,8 @@ class SceneClass(QGraphicsScene):
                     if isinstance(dropItem, Edge):
                         for inp in node.inputs.values():
                             if self.parent().canConnectPins(dropItem.source(), inp):
+                                if dropItem.source().dataType == 'ExecPin':
+                                    dropItem.source().disconnectAll()                                
                                 self.parent().addEdge(dropItem.source(), inp)
                                 break
                         for out in node.outputs.values():
@@ -1426,6 +1430,8 @@ class GraphWidgetUI(QGraphicsView):
                         reruteNode.setSelected(True)
                         for inp in reruteNode.inputs.values():
                             if self.canConnectPins(self.pressed_item.source(), inp):
+                                if self.pressed_item.source().dataType == 'ExecPin':
+                                    self.pressed_item.source().disconnectAll()
                                 self.addEdge(self.pressed_item.source(), inp)
                                 break
                         for out in reruteNode.outputs.values():
