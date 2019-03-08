@@ -1328,10 +1328,10 @@ class GraphWidgetUI(QGraphicsView):
                 resizing = node.bResize
                 node.setSelected(False)
             if not resizing:
-                if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
+                if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier,QtCore.Qt.ControlModifier|QtCore.Qt.ShiftModifier]:
                     self._manipulationMode = MANIP_MODE_SELECT
                     self._selectionRect = SelectionRect(
-                        graph=self, mouseDownPos=self.mapToScene(event.pos()))
+                        graph=self, mouseDownPos=self.mapToScene(event.pos()),modifiers = modifiers)
                     self._mouseDownSelection = [
                         node for node in self.selectedNodes()]
                     if modifiers not in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
@@ -1493,6 +1493,11 @@ class GraphWidgetUI(QGraphicsView):
                         if node not in self._mouseDownSelection:
                             node.setSelected(False)
 
+            elif modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
+                for node in nodes:
+                    # if node not in [self.inputsItem,self.outputsItem]:
+                    if self._selectionRect.collidesWithItem(node):
+                        node.setSelected(False)
             else:
                 self.clearSelection()
                 for node in nodes:

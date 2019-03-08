@@ -1,22 +1,20 @@
-
-#
-# Copyright 2015-2017 Eric Thivierge
-#
-
 from Qt import QtGui, QtWidgets, QtCore
-
 
 class SelectionRect(QtWidgets.QGraphicsWidget):
     __backgroundColor = QtGui.QColor(100, 100, 100, 50)
+    __backgroundAddColor = QtGui.QColor(0, 100, 0, 50)
+    __backgroundSubColor = QtGui.QColor(100, 0, 0, 50)
+    __backgroundSwitchColor = QtGui.QColor(0, 0, 100, 50)
     __pen =  QtGui.QPen(QtGui.QColor(255, 255, 255), 1.0,  QtCore.Qt.DashLine)
 
-    def __init__(self, graph, mouseDownPos):
+    def __init__(self, graph, mouseDownPos,modifiers):
         super(SelectionRect, self).__init__()
         self.setZValue(-1)
 
         self.__graph = graph
         self.__graph.scene().addItem(self)
         self.__mouseDownPos = mouseDownPos
+        self.__modifiers = modifiers
         self.setPos(self.__mouseDownPos)
         self.resize(0, 0)
 
@@ -35,7 +33,14 @@ class SelectionRect(QtWidgets.QGraphicsWidget):
 
     def paint(self, painter, option, widget):
         rect = self.windowFrameRect()
-        painter.setBrush(self.__backgroundColor)
+        if self.__modifiers == QtCore.Qt.NoModifier:
+            painter.setBrush(self.__backgroundColor)
+        if self.__modifiers == QtCore.Qt.ShiftModifier:
+            painter.setBrush(self.__backgroundAddColor)     
+        elif self.__modifiers == QtCore.Qt.ControlModifier:
+            painter.setBrush(self.__backgroundSwitchColor)
+        elif self.__modifiers == QtCore.Qt.ControlModifier|QtCore.Qt.ShiftModifier:
+            painter.setBrush(self.__backgroundSubColor)                                 
         painter.setPen(self.__pen)
         painter.drawRect(rect)
 
