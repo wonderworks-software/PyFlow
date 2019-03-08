@@ -1338,12 +1338,15 @@ class GraphWidgetUI(QGraphicsView):
             node = node.parentItem()
         return node
 
+
+
+
     def mousePressEvent(self, event):
         self.pressed_item = self.itemAt(event.pos())
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         node = self.nodeFromInstance(self.pressed_item)
-        if any([not self.pressed_item, isinstance(self.pressed_item, Edge), isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
+        if any([not self.pressed_item, isinstance(self.pressed_item, Edge) and modifiers != QtCore.Qt.AltModifier, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(GraphWidgetUI, self).mousePressEvent(event)
@@ -1396,37 +1399,62 @@ class GraphWidgetUI(QGraphicsView):
                         self.removeEdgeCmd(self.pressed_item.edge_list)
                 else:
                     # super(GraphWidgetUI, self).mousePressEvent(event)
-                    if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
-                        if node.bResize:
-                            return
-                    if event.button() == QtCore.Qt.MidButton:
-                        if modifiers != QtCore.Qt.ShiftModifier:
-                            self.clearSelection()
-                        node.setSelected(True)
-                        selectedNodes = self.selectedNodes()
-                        if len(selectedNodes) > 0:
-                            for snode in selectedNodes:
-                                for n in node.getChainedNodes():
-                                    n.setSelected(True)
-                                snode.setSelected(True)
+                    if isinstance(self.pressed_item, Edge) and modifiers == QtCore.Qt.AltModifier:
+                        nodeTemplate = NodeBase.jsonTemplate()
+                        nodeTemplate['package'] = "PyflowBase"
+                        nodeTemplate['lib'] = None
+                        nodeTemplate['type'] = "rerute"
+                        nodeTemplate['name'] = "rerute"
+                        nodeTemplate['x'] = self.mapToScene(event.pos()).x()
+                        nodeTemplate['y'] = self.mapToScene(event.pos()).y()
+                        nodeTemplate['uuid'] = None
+                        nodeTemplate['meta']['label'] =  "rerute"
+                        reruteNode = self.createNode(nodeTemplate)
+                        self.clearSelection()
+                        reruteNode.setSelected(True)
+                        for inp in reruteNode.inputs.values():
+                            if self.canConnectPins(self.pressed_item.source(), inp):
+                                self.addEdge(self.pressed_item.source(), inp)
+                                break
+                        for out in reruteNode.outputs.values():
+                            if self.canConnectPins(out, self.pressed_item.destination()):
+                                self.addEdge(out, self.pressed_item.destination())
+                                break                        
+                        self._manipulationMode = MANIP_MODE_MOVE
+                        self._lastDragPoint = self.mapToScene(event.pos())                        
+
                     else:
-                        if modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.AltModifier]:
-                            super(GraphWidgetUI, self).mousePressEvent(event)
-                        if modifiers == QtCore.Qt.ControlModifier:
-                            node.setSelected(not node.isSelected())
-                        if modifiers == QtCore.Qt.ShiftModifier:
+                        if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
+                            if node.bResize:
+                                return
+                        if event.button() == QtCore.Qt.MidButton:
+                            if modifiers != QtCore.Qt.ShiftModifier:
+                                self.clearSelection()
                             node.setSelected(True)
-                    self.autoPanController.start()
-                    if all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.NoModifier]):
-                        self._manipulationMode = MANIP_MODE_MOVE
-                        self._lastDragPoint = self.mapToScene(event.pos())
-                    elif all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.AltModifier]):
-                        self._manipulationMode = MANIP_MODE_MOVE
-                        self._lastDragPoint = self.mapToScene(event.pos())
-                        selectedNodes = self.selectedNodes()
-                        newNodes = []
-                        copiedNodes = self.copyNodes(toClipboard=False)
-                        self.pasteNodes(move=False, data=copiedNodes)
+                            selectedNodes = self.selectedNodes()
+                            if len(selectedNodes) > 0:
+                                for snode in selectedNodes:
+                                    for n in node.getChainedNodes():
+                                        n.setSelected(True)
+                                    snode.setSelected(True)
+                        else:
+                            if modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.AltModifier]:
+                                super(GraphWidgetUI, self).mousePressEvent(event)
+                            if modifiers == QtCore.Qt.ControlModifier:
+                                node.setSelected(not node.isSelected())
+                            if modifiers == QtCore.Qt.ShiftModifier:
+                                node.setSelected(True)
+                        self.autoPanController.start()
+                        if all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.NoModifier]):
+                            self._manipulationMode = MANIP_MODE_MOVE
+                            self._lastDragPoint = self.mapToScene(event.pos())
+                        elif all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.AltModifier]):
+                            self._manipulationMode = MANIP_MODE_MOVE
+                            self._lastDragPoint = self.mapToScene(event.pos())
+                            selectedNodes = self.selectedNodes()
+                            newNodes = []
+                            copiedNodes = self.copyNodes(toClipboard=False)
+                            self.pasteNodes(move=False, data=copiedNodes)
 
         # else:
         #    super(GraphWidgetUI, self).mousePressEvent(event)

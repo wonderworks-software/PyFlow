@@ -42,6 +42,7 @@ from PyFlow.Packages.PyflowBase.Nodes.whileLoop import whileLoop
 from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyflowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyflowBase.Nodes.setVar import setVar
+from PyFlow.Packages.PyflowBase.Nodes.rerute import rerute
 
 _FOO_LIBS = {
     ArrayLib.__name__: ArrayLib(PACKAGE_NAME),
@@ -72,7 +73,8 @@ _NODES = {
     whileLoop.__name__: whileLoop,
     commentNode.__name__: commentNode,
     getVar.__name__: getVar,
-    setVar.__name__: setVar
+    setVar.__name__: setVar,
+    rerute.__name__: rerute    
 }
 
 _PINS = {

@@ -1,6 +1,6 @@
 import os
 import platform
-
+from copy import copy
 from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
@@ -84,7 +84,7 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', 0,{"constraint":"1"}), meta={'Category': 'Conversion', 'Keywords': []})
     def passtrhough(input=('AnyPin', 0,{"constraint":"1"})):
-        return input  
+        return copy(input)
 
 
     @staticmethod

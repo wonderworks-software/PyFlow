@@ -399,7 +399,7 @@ class UINodeBase(QGraphicsObject):
     def getWidth(self):
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(
             self.displayName) + Spacings.kPinSpacing
-        return fontWidth if fontWidth > 25 else 25
+        return fontWidth #if fontWidth > 25 else 25
 
     def getPinsWidth(self):
         iwidth = 0
@@ -414,6 +414,18 @@ class UINodeBase(QGraphicsObject):
                 owidth = max(owidth,QtGui.QFontMetricsF(i._label().font()).width(i.displayName())) 
                 pinwidth2 = max(pinwidth2,i.width)                                    
         return iwidth+owidth +pinwidth + pinwidth2 + Spacings.kPinOffset
+
+    def getPinsHeight(self):
+        iheight = 0
+        oheight = 0
+        pinheight = 0
+        pinheight2 = 0
+        for i in self.UIPins.values():
+            if i.direction == PinDirection.Input:
+                pinheight = max(pinheight,i.height)  
+            else:
+                pinheight2 = max(pinheight2,i.height)                                    
+        return max(pinheight,pinheight2)
 
     def updateWidth(self):
         self.minWidth = max(self.getPinsWidth() , self.getWidth() + Spacings.kPinOffset)
