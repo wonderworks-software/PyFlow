@@ -105,10 +105,11 @@ class NodeName(QGraphicsTextItem):
         # super(NodeName, self).paint(painter, option, widget)
         painter.setPen(self.defaultPen)
         font = painter.font()
-        nameRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right() - 15,
+        nameRectMargin = 2
+        nameRect = QtCore.QRectF(self.boundingRect().topLeft() + QtCore.QPointF(nameRectMargin, nameRectMargin), QtCore.QPointF(self.parentItem().boundingRect().right() - 15,
                                  self.boundingRect().bottom() - font.pointSize() * 0.65))
         painter.drawText(nameRect, QtCore.Qt.AlignLeft, self.parentItem().displayName)
-        packageRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right(),
+        packageRect = QtCore.QRectF(self.boundingRect().topLeft() + QtCore.QPointF(nameRectMargin, 0), QtCore.QPointF(self.parentItem().boundingRect().right(),
                                     self.boundingRect().bottom()))
         font = painter.font()
         font.setPointSize(font.pointSize() * 0.65)
