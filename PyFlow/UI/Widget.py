@@ -1304,6 +1304,7 @@ class GraphWidgetUI(QGraphicsView):
             for n in ls:
                 p = n.scenePos()
                 p.setX(x)
+                n.setPos(p)
 
         if direction == Direction.Right:
             if len(x_positions) == 0:
@@ -1312,6 +1313,7 @@ class GraphWidgetUI(QGraphicsView):
             for n in ls:
                 p = n.scenePos()
                 p.setX(x)
+                n.setPos(p)
 
         if direction == Direction.Up:
             if len(y_positions) == 0:
@@ -1320,6 +1322,7 @@ class GraphWidgetUI(QGraphicsView):
             for n in ls:
                 p = n.scenePos()
                 p.setY(y)
+                n.setPos(p)
 
         if direction == Direction.Down:
             if len(y_positions) == 0:
@@ -1328,6 +1331,7 @@ class GraphWidgetUI(QGraphicsView):
             for n in ls:
                 p = n.scenePos()
                 p.setY(y)
+                n.setPos(p)
 
     def findGoodPlaceForNewNode(self):
         polygon = self.mapToScene(self.viewport().rect())
