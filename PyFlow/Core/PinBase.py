@@ -3,7 +3,7 @@ from copy import deepcopy
 import weakref
 
 from PyFlow.Core.Interfaces import IPin
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 
 class PinBase(IPin):

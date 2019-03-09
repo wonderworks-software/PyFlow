@@ -4,7 +4,7 @@ from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
 )
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 class Vector3(FunctionLibraryBase):
     '''doc string for Vector3'''

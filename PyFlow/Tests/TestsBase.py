@@ -1,6 +1,6 @@
 import unittest
 
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow import(
     INITIALIZE,
     GET_PACKAGES

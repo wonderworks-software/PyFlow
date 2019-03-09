@@ -8,7 +8,7 @@ except:
     from inspect import getargspec
 from types import MethodType
 
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow.Core.Interfaces import INode
 from PyFlow import CreateRawPin
 

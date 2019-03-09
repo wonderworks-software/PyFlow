@@ -9,7 +9,7 @@ from Qt import QtGui
 
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.Settings import *
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
 from PyFlow.UI.NodePainter import NodePainter

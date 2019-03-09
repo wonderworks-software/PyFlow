@@ -1,5 +1,5 @@
 from PyFlow.Core import NodeBase
-from PyFlow.Core.AGraphCommon import push
+from PyFlow.Core.Common import push
 
 
 class forLoop(NodeBase):

@@ -149,7 +149,7 @@ class IPin(IItemBase):
             >>>     else:
             >>>         raise Exception("Error registering pin type {0}\n pin with ID [{1}] already registered".format(pinSubclass.__name__))
 
-        @sa [DataTypes](@ref AGraphCommon.DataTypes)
+        @sa [DataTypes](@ref Common.DataTypes)
         """
         raise NotImplementedError('pinDataTypeHint method of IPin is not implemented')
     @staticmethod

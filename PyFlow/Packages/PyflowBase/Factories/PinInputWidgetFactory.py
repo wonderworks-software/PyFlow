@@ -11,7 +11,7 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QCheckBox
 from Qt.QtWidgets import QGridLayout
 
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow.UI.InputWidgets import *
 
 

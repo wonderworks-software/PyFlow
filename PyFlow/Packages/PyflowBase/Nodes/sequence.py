@@ -1,5 +1,5 @@
 from PyFlow.Core import NodeBase
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 
 class sequence(NodeBase):

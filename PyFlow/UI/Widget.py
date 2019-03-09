@@ -66,11 +66,13 @@ from PyFlow import (
     getRawNodeInstance,
     GET_PACKAGES
 )
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyflowBase.UI.UIcommentNode import UIcommentNode
 from PyFlow.Packages.PyflowBase.UI.UIReruteNode import UIReruteNode
+from PyFlow.Packages.PyflowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
+
 
 def clearLayout(layout):
     while layout.count():
@@ -230,10 +232,9 @@ class SceneClass(QGraphicsScene):
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
             if self.tempnode:
-                self.tempnode.setPosition(
-                    (self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
-                mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x(
-                )-1, event.scenePos().y()-1), QtCore.QPoint(event.scenePos().x()+1, event.scenePos().y()+1))
+                self.tempnode.setPosition((self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
+                mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x() - 1, event.scenePos().y() - 1),
+                                         QtCore.QPoint(event.scenePos().x() + 1, event.scenePos().y() + 1))
                 hoverItems = self.items(mouseRect)
                 for item in hoverItems:
                     if isinstance(item, Edge):
@@ -247,7 +248,7 @@ class SceneClass(QGraphicsScene):
                         if valid:
                             self.hoverItems.append(item)
                             item.drawThick()
-                    elif isinstance(item,UIReruteNode):
+                    elif isinstance(item, UIReruteNode):
                         self.hoverItems.append(item)
                         item.showPins()
                 for item in self.hoverItems:
@@ -255,7 +256,7 @@ class SceneClass(QGraphicsScene):
                         self.hoverItems.remove(item)
                         if isinstance(item, Edge):
                             item.restoreThick()
-                        elif isinstance(item,UIReruteNode):
+                        elif isinstance(item, UIReruteNode):
                             item.hidePins()
 
                 # self.itemAt(event.pos()).drawThink()
@@ -291,7 +292,7 @@ class SceneClass(QGraphicsScene):
             jsonData = json.loads(event.mimeData().text())
 
             # try load mime data text as json
-            # in case if it is a variable { VAR: bool, UID: str }
+            # in case if it is a variable
             # if no keyboard modifires create context menu with two actions
             # for creating getter or setter
             # if control - create getter, if alt - create setter
@@ -302,7 +303,7 @@ class SceneClass(QGraphicsScene):
                 nodeTemplate['name'] = varData['name']
                 nodeTemplate['x'] = x
                 nodeTemplate['y'] = y
-                nodeTemplate['package'] = varData['package']
+                nodeTemplate['package'] = PYFLOW_BASE_PACKAGE_NAME
                 if modifiers == QtCore.Qt.NoModifier:
                     nodeTemplate['type'] = 'getVar'
                     nodeTemplate['meta']['label'] = varData['name']
@@ -330,7 +331,6 @@ class SceneClass(QGraphicsScene):
                     self.parent().createNode(nodeTemplate)
                     return
                 if modifiers == QtCore.Qt.AltModifier:
-                    nodeTemplate['package'] = varData['package']
                     nodeTemplate['type'] = 'setVar'
                     nodeTemplate['uuid'] = varData['uuid']
                     nodeTemplate['meta']['var']['uuid'] = varData['uuid']
@@ -1351,8 +1351,7 @@ class GraphWidgetUI(QGraphicsView):
             node = node.parentItem()
         return node
 
-
-    def getReruteNode(self,pos):
+    def getReruteNode(self, pos):
         nodeTemplate = NodeBase.jsonTemplate()
         nodeTemplate['package'] = "PyflowBase"
         nodeTemplate['lib'] = None
@@ -1361,10 +1360,10 @@ class GraphWidgetUI(QGraphicsView):
         nodeTemplate['x'] = self.mapToScene(pos).x()
         nodeTemplate['y'] = self.mapToScene(pos).y()
         nodeTemplate['uuid'] = None
-        nodeTemplate['meta']['label'] =  "rerute"
+        nodeTemplate['meta']['label'] = "rerute"
         reruteNode = self.createNode(nodeTemplate)
         reruteNode.color = self.pressed_item.color
-        reruteNode.translate(-reruteNode.boundingRect().center().x(),-5)
+        reruteNode.translate(-reruteNode.boundingRect().center().x(), -5)
         return reruteNode
 
     def mousePressEvent(self, event):
@@ -1524,18 +1523,19 @@ class GraphWidgetUI(QGraphicsView):
             path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()),
                          QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
             self.real_time_line.setPath(path)
-            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x()-2, event.pos().y()-2), QtCore.QPoint(event.pos().x()+2, event.pos().y()+2))
+            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 2, event.pos().y() - 2),
+                                     QtCore.QPoint(event.pos().x() + 2, event.pos().y() + 2))
             hoverItems = self.items(mouseRect)
             for item in hoverItems:
-                if isinstance(item,UIReruteNode):
+                if isinstance(item, UIReruteNode):
                     self.hoverItems.append(item)
-                    item.showPins()   
+                    item.showPins()
             for item in self.hoverItems:
                 if item not in hoverItems:
                     self.hoverItems.remove(item)
-                    if isinstance(item,UIReruteNode):
-                        item.hidePins() 
-            if modifiers ==  QtCore.Qt.AltModifier:
+                    if isinstance(item, UIReruteNode):
+                        item.hidePins()
+            if modifiers == QtCore.Qt.AltModifier:
                 self._draw_real_time_line = False
                 if self.real_time_line in self.scene().items():
                     self.removeItemByName('RealTimeLine')
@@ -1547,11 +1547,11 @@ class GraphWidgetUI(QGraphicsView):
                         self.addEdge(self.pressed_item, inp)
                         break
                 self._manipulationMode = MANIP_MODE_MOVE
-                self._lastDragPoint = self.mapToScene(event.pos()) 
+                self._lastDragPoint = self.mapToScene(event.pos())
         # if not isinstance(self.pressed_item,EditableLabel):
         if self._manipulationMode == MANIP_MODE_SELECT:
             dragPoint = self.mapToScene(event.pos())
-            self._selectionRect.setDragPoint(dragPoint,modifiers)
+            self._selectionRect.setDragPoint(dragPoint, modifiers)
             # This logic allows users to use ctrl and shift with rectangle
             # select to add / remove nodes.
             node = self.nodeFromInstance(self.pressed_item)
@@ -1732,6 +1732,7 @@ class GraphWidgetUI(QGraphicsView):
         elif event.button() == QtCore.Qt.LeftButton:
             self._clearPropertiesView()
         self.resizing = False
+
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items()
          if hasattr(i, 'name') and i.name == name]

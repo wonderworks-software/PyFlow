@@ -1,7 +1,7 @@
 from pyrr import Vector3
 
 from PyFlow.Core import PinBase
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 
 class FloatVector3Pin(PinBase):

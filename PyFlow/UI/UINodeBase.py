@@ -36,7 +36,7 @@ from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.UI.IContextMenu import IContextMenu
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Enums import ENone
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 from collections import OrderedDict
 UI_NODES_FACTORIES = {}

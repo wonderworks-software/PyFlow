@@ -1,6 +1,6 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core import PinBase
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 
 class switchOnString(NodeBase):

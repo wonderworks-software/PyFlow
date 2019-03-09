@@ -18,7 +18,7 @@ from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
 
 from PyFlow.UI.InputWidgets import createInputWidget
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow import getPinDefaultValueByType
 from PyFlow import findPinClassByType
 from PyFlow import getAllPinClasses
@@ -154,7 +154,7 @@ class VariableBase(QWidget):
         template = VariableBase.jsonTemplate()
         template['name'] = self.name
         template['uuid'] = str(self.uid)
-        template['value'] = self.value
+        # template['value'] = self.value
         template['type'] = self.dataType
         template['package'] = self._packageName
         template['accessLevel'] = self.accessLevel.value

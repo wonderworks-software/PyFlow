@@ -1,4 +1,4 @@
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow import CreateRawPin
 import weakref
 

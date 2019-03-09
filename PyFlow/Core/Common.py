@@ -1,6 +1,6 @@
-"""@file AGraphCommon.py
+"""@file Common.py
 
-**AGraphCommon.py** is a common definitions file
+**Common.py** is a common definitions file
 
 this file is imported in almost all others files of the program
 """

@@ -1,7 +1,7 @@
 import weakref
 import pyrr
 
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow.UI.InputWidgets import *
 
 from PyFlow.Packages.Pyrr.Widgets import FloatVector3InputWidget_ui

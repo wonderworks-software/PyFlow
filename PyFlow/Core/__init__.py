@@ -10,7 +10,7 @@ __all__ = [
     "GraphBase",
     "FunctionLibraryBase",
     "IMPLEMENT_NODE",
-    "AGraphCommon",
+    "Common",
     "PinUtils"
 ]
 
@@ -19,4 +19,4 @@ from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.FunctionLibrary import FunctionLibraryBase
 from PyFlow.Core.FunctionLibrary import IMPLEMENT_NODE
-from PyFlow.Core import AGraphCommon
+from PyFlow.Core import Common

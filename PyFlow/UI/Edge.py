@@ -9,7 +9,7 @@ from Qt import QtGui
 from Qt.QtWidgets import QGraphicsPathItem
 
 from Settings import Colors
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 ## Connection between pins
 class Edge(QGraphicsPathItem):

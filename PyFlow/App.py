@@ -19,7 +19,7 @@ from Qt.QtWidgets import QUndoView
 
 from PyFlow import Packages
 from PyFlow.UI.Widget import GraphWidgetUI
-from PyFlow.Core.AGraphCommon import Direction
+from PyFlow.Core.Common import Direction
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.UI.InspectorWidget import InspectorWidget
 from PyFlow.UI.Widget import NodesBox

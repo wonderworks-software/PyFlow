@@ -9,7 +9,7 @@ from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QInputDialog
 
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow.UI.Settings import *
 
 

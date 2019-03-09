@@ -2,7 +2,7 @@ from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
 )
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 ## Calculates the percentage along a line from MinValue to MaxValue that Value is.
 def GetRangePct(MinValue, MaxValue, Value):

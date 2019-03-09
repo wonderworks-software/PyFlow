@@ -1,6 +1,6 @@
 from PyFlow.Packages.PyflowBase import PACKAGE_NAME
 from PyFlow.Core import PinBase
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow.UI.Settings import Colors
 from PyFlow import getAllPinClasses
 

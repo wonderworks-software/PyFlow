@@ -1,5 +1,5 @@
 from PyFlow.Core import NodeBase
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from copy import copy
 
 class rerute(NodeBase):

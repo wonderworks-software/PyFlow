@@ -1,5 +1,5 @@
 from PyFlow.Core import PinBase
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 from PyFlow import getAllPinClasses
 from PyFlow import CreateRawPin
 
@@ -148,3 +148,5 @@ class AnyPin(PinBase):
             self._wrapper().setType(other.color())
             self.setData(other.defaultValue())
             self.setDefaultValue(other.defaultValue())
+            if other.dirty:
+                self.setDirty()

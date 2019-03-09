@@ -11,7 +11,7 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QPushButton
 
 
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 
 UI_INPUT_WIDGET_PINS_FACTORIES = {}
