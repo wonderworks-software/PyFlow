@@ -1943,6 +1943,9 @@ class GraphWidgetUI(QGraphicsView):
     def getNodeByName(self, name):
         return self._graphBase.getNodeByName(name)
 
+    def getNodesByClassName(self,className):
+        return [node._wrapper() for node in self._graphBase.getNodesByClassName(className)]
+        
     def isDebug(self):
         return self._graphBase.isDebug()
 

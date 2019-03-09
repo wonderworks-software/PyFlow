@@ -94,7 +94,6 @@ class NodeName(QGraphicsTextItem):
     def paint(self, painter, option, widget):
         if self.parentItem().bUseTextureBg:
             color = self.color
-
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
                 painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
@@ -359,7 +358,7 @@ class UINodeBase(QGraphicsObject):
             self.resizable = True
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
-        self._displayName = self.name
+        #self._displayName = self.name
 
     def isCallable(self):
         return self._rawNode.isCallable()
