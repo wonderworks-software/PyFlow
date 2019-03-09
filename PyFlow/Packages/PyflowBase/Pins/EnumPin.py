@@ -31,7 +31,7 @@ class EnumPin(PinBase):
         return 'EnumPin', ENone
 
     @staticmethod
-    def processData( data):
+    def processData(data):
         return data
 
     def setData(self, data):

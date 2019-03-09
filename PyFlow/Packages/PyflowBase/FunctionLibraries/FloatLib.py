@@ -7,9 +7,10 @@ from PyFlow.Core import(
 )
 from PyFlow.Core.Common import *
 
+
 class FloatLib(FunctionLibraryBase):
     '''doc string for FloatLib'''
-    def __init__(self,packageName):
+    def __init__(self, packageName):
         super(FloatLib, self).__init__(packageName)
 
     @staticmethod
@@ -20,7 +21,6 @@ class FloatLib(FunctionLibraryBase):
         Linear interpolate
         '''
         return lerp(a, b, clamp(alpha, 0.0, 1.0))
-
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Float', 'Keywords': []})

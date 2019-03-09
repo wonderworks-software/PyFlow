@@ -26,7 +26,7 @@ class FloatPin(PinBase):
         return ('FloatPin', 'IntPin')
 
     @staticmethod
-    def processData( data):
+    def processData(data):
         return float(data)
 
     def setData(self, data):

@@ -4,10 +4,10 @@ from PyFlow.Core import(
 )
 from PyFlow.Core.Common import *
 
+
 class ArrayLib(FunctionLibraryBase):
-    #packageName = PACKAGE_NAME
     '''doc string for ArrayLib'''
-    def __init__(self,packageName):
+    def __init__(self, packageName):
         super(ArrayLib, self).__init__(packageName)
 
     @staticmethod
@@ -42,7 +42,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("IntPin", False), meta={'Category': 'Array', 'Keywords': []})
-    def findInArray(List=('ListPin', []), Value=("AnyPin", 0),Result=("Reference", ("BoolPin", False))):
+    def findInArray(List=('ListPin', []), Value=("AnyPin", 0), Result=("Reference", ("BoolPin", False))):
         find = Value in List
         if find:
             Result(True)

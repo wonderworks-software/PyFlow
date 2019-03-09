@@ -65,7 +65,7 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
 # Base class for all function libraries
 # some common utilities can be moved here in future
 class FunctionLibraryBase(object):
-    def __init__(self,packageName):
+    def __init__(self, packageName):
         super(FunctionLibraryBase, self).__init__()
         self.__foos = {}
         for name, function in inspect.getmembers(self, inspect.isfunction):

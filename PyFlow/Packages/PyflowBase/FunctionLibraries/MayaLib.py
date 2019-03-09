@@ -7,11 +7,13 @@ from PyFlow.Core import(
 )
 from PyFlow.Core.Common import *
 
+
 class MayaLib(FunctionLibraryBase):
     '''
     Autodesk maya
     '''
-    def __init__(self,packageName):
+
+    def __init__(self, packageName):
         super(MayaLib, self).__init__(packageName)
 
     @staticmethod

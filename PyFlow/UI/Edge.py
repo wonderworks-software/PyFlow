@@ -11,6 +11,7 @@ from Qt.QtWidgets import QGraphicsPathItem
 from Settings import Colors
 from PyFlow.Core.Common import *
 
+
 ## Connection between pins
 class Edge(QGraphicsPathItem):
     def __init__(self, source, destination, graph):

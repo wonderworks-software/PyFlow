@@ -24,6 +24,7 @@ from PyFlow import findPinClassByType
 from PyFlow import getAllPinClasses
 from PyFlow.UI.Settings import Colors
 
+
 ## Colored rounded rect
 # color corresponds to pin data type color
 class TypeWidget(QWidget):

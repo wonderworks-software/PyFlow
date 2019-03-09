@@ -24,7 +24,7 @@ class StringPin(PinBase):
         return 'StringPin', ''
 
     @staticmethod
-    def processData( data):
+    def processData(data):
         return str(data)
 
     def setData(self, data):

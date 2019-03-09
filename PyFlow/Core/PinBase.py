@@ -25,7 +25,7 @@ class PinBase(IPin):
         ## List of connections
         self.edge_list = []
         ## Access to the node
-        if owningNode != None:
+        if owningNode is not None:
             self.owningNode = weakref.ref(owningNode)
 
         self.name = name

@@ -14,6 +14,7 @@ from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
 from PyFlow.UI.NodePainter import NodePainter
 
+
 ## Variable getter node
 class UIGetVarNode(UINodeBase):
     def __init__(self, raw_node):

@@ -7,11 +7,12 @@ from PyFlow.Core import(
 )
 from PyFlow.Core.Common import *
 
+
 class DefaultLib(FunctionLibraryBase):
     '''
     Default library builting stuff, variable types and conversions
     '''
-    def __init__(self,packageName):
+    def __init__(self, packageName):
         super(DefaultLib, self).__init__(packageName)
 
     @staticmethod
@@ -39,18 +40,21 @@ class DefaultLib(FunctionLibraryBase):
     def makeInt(i=('IntPin', 0)):
         '''make integer'''
         return i
+
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'GenericTypes', 'Keywords': []})
     ## make floating point number
     def makeFloat(f=('FloatPin', 0.0)):
         '''make floating point number'''
         return f
+
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'GenericTypes', 'Keywords': []})
     ## make string
     def makeString(s=('StringPin', '')):
         '''make string'''
         return s
+
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
     ## make simple boolean
@@ -63,17 +67,17 @@ class DefaultLib(FunctionLibraryBase):
     # Conversions
     @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Conversion', 'Keywords': ["Bool"]})
-    def toBool(i=('AnyPin', 0,{"supportedDataTypes":["BoolPin","FloatPin","IntPin"]})):
+    def toBool(i=('AnyPin', 0, {"supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
         return bool(i)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("IntPin", 0), meta={'Category': 'Conversion', 'Keywords': []})
-    def toInt(i=('AnyPin', 0,{"supportedDataTypes":["BoolPin","FloatPin","IntPin"]})):
+    def toInt(i=('AnyPin', 0, {"supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
         return int(f)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("FloatPin", False), meta={'Category': 'Conversion', 'Keywords': []})
-    def toFloat(i=('AnyPin', 0,{"supportedDataTypes":["BoolPin","FloatPin","IntPin"]})):
+    def toFloat(i=('AnyPin', 0, {"supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
         return float(i)
 
     @staticmethod
@@ -82,10 +86,9 @@ class DefaultLib(FunctionLibraryBase):
         return str(i)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', 0,{"constraint":"1"}), meta={'Category': 'Conversion', 'Keywords': []})
-    def passtrhough(input=('AnyPin', 0,{"constraint":"1"})):
+    @IMPLEMENT_NODE(returns=('AnyPin', 0, {"constraint": "1"}), meta={'Category': 'Conversion', 'Keywords': []})
+    def passtrhough(input=('AnyPin', 0, {"constraint": "1"})):
         return copy(input)
-
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Utils', 'Keywords': []})

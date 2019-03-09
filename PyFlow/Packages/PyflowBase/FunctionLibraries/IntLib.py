@@ -6,9 +6,10 @@ from PyFlow.Core import(
 )
 from PyFlow.Core.Common import *
 
+
 class IntLib(FunctionLibraryBase):
     '''doc string for IntLib'''
-    def __init__(self,packageName):
+    def __init__(self, packageName):
         super(IntLib, self).__init__(packageName)
 
     @staticmethod

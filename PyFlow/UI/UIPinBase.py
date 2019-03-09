@@ -99,10 +99,11 @@ class UIPinBase(QGraphicsWidget):
     @property
     def constraint(self):
         return self._rawPin.constraint
+
     @property
     def isAny(self):
         return self._rawPin.isAny
-    
+
     def setRenamingEnabled(self, bEnabled):
         self._rawPin.setRenamingEnabled(bEnabled)
         actionsNames = [a.text() for a in self.menu.actions()]

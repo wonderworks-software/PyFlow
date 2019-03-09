@@ -24,9 +24,9 @@ class IntPin(PinBase):
         return ('IntPin', 'FloatPin')
 
     @staticmethod
-    def processData( data):
+    def processData(data):
         return int(data)
-        
+
     def setData(self, data):
         try:
             self._data = self.processData(data)

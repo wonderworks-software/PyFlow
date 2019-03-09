@@ -4,9 +4,10 @@ from PyFlow.Core import(
 )
 from PyFlow.Core.Common import *
 
+
 class BoolLib(FunctionLibraryBase):
     '''doc string for BoolLib'''
-    def __init__(self,packageName):
+    def __init__(self, packageName):
         super(BoolLib, self).__init__(packageName)
 
     @staticmethod

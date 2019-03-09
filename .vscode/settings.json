@@ -22,7 +22,7 @@
     "python.unitTest.pyTestEnabled": false,
     "python.linting.pep8Enabled": true,
     "python.linting.pep8Args": [
-        "--ignore=E501,E402"
+        "--ignore=E501,E402,E266"
     ],
     "python.unitTest.nosetestsEnabled": false,
 }

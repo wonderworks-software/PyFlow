@@ -219,7 +219,7 @@ class NodeBase(INode):
                     self._Constraints[pin.constraint] = [pin]
 
     @staticmethod
-    ## Constructs a node from given annotated function
+    # Constructs a node from given annotated function
     def initializeFromFunction(foo):
         retAnyOpts = None
         retConstraint = None
