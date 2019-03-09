@@ -287,9 +287,9 @@ class UIcommentNode(UINodeBase):
 
             for pin in self.pinsToMove:
                 if pin in self.commentInputs:
-                    pin.prevPos = QtCore.QPointF(self.scenePos().x() - 4, self.scenePos().y() - 13) - pin.scenePos()
+                    pin.prevPos = QtCore.QPointF(self.sceneBoundingRect().x()-6.5, self.label().sceneBoundingRect().center().y()) - pin.scenePos()
                 elif pin in self.commentOutpus:
-                    pin.prevPos = QtCore.QPointF(self.scenePos().x() + self.boundingRect().width() - 8, self.scenePos().y() - 13) - pin.scenePos()
+                    pin.prevPos = QtCore.QPointF(self.sceneBoundingRect().right()-4.5,  self.label().sceneBoundingRect().center().y()) - pin.scenePos()
                 pin.moveBy(pin.prevPos.x(), pin.prevPos.y())
                 pin.update()
 
