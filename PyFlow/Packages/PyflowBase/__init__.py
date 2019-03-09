@@ -43,7 +43,8 @@ from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyflowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyflowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyflowBase.Nodes.rerute import rerute
-
+from PyFlow.Packages.PyflowBase.Nodes.graphNodes import graphInputs,graphOutputs
+from PyFlow.Packages.PyflowBase.Nodes.subgraph import subgraph
 _FOO_LIBS = {
     ArrayLib.__name__: ArrayLib(PACKAGE_NAME),
     BoolLib.__name__: BoolLib(PACKAGE_NAME),
@@ -74,7 +75,10 @@ _NODES = {
     commentNode.__name__: commentNode,
     getVar.__name__: getVar,
     setVar.__name__: setVar,
-    rerute.__name__: rerute    
+    rerute.__name__: rerute,
+    graphInputs.__name__: graphInputs,
+    graphOutputs.__name__ : graphOutputs,
+    subgraph.__name__ : subgraph
 }
 
 _PINS = {

@@ -25,6 +25,7 @@ class graphInputs(NodeBase):
     def addOutPin(self):
         name = str(len(self.outputs))
         p = self.addOutputPin(name, 'AnyPin')
+        p.setAlwaysPushDirty(True)
         if p.uid not in self.graph().pins:
             self.graph().pins[p.uid] = p
         return p
@@ -52,6 +53,7 @@ class graphOutputs(NodeBase):
     def addInPin(self):
         name = str(len(self.outputs))
         p = self.addInputPin(name, 'AnyPin')
+        p.setAlwaysPushDirty(True)
         if p.uid not in self.graph().pins:
             self.graph().pins[p.uid] = p
         return p

@@ -31,6 +31,7 @@ class subgraph(NodeBase):
 
     def addInPin(self,pin):
         p = self.addInputPin(pin.name, 'AnyPin',constraint="in%s"%pin.name)
+        p.setAlwaysPushDirty(True)
         if p.uid not in self.graph().pins:
             self.graph().pins[p.uid] = p
         pin.constraint = "in%s"%pin.name
@@ -41,6 +42,7 @@ class subgraph(NodeBase):
 
     def addOutPin(self,pin):
         p = self.addOutputPin(pin.name, 'AnyPin',constraint="out%s"%pin.name)
+        p.setAlwaysPushDirty(True)
         if p.uid not in self.graph().pins:
             self.graph().pins[p.uid] = p
         pin.constraint = "out%s"%pin.name
