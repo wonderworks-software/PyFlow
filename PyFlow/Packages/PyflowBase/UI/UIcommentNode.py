@@ -186,6 +186,7 @@ class UIcommentNode(UINodeBase):
             'expanded': self.expanded,
             'nodesToMove': [str(n.uid) for n in self.nodesToMove]
         }
+        print bottom
         template['meta']['resize'] = {'h': bottom, 'w': self._rect.right()}
         return template
 
@@ -199,30 +200,29 @@ class UIcommentNode(UINodeBase):
         text = self.__class__.__name__
         # initial color is black
         color = self.color
-        self._rect.setBottom(height)
-        self._rect.setRight(width)
-        try:
-            # if copied in runtime
+
+        if 'resize' in jsonTemplate['meta']:
             width = jsonTemplate['meta']['resize']['w']
             height = jsonTemplate['meta']['resize']['h']
+            print height
+        if 'commentNode' in jsonTemplate['meta']:
             labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
             text = jsonTemplate['meta']['commentNode']['text']
             color = QtGui.QColor(*jsonTemplate['meta']['commentNode']['color'])
-            self._rect.setBottom(height)
-            self._rect.setRight(width)
+
             if "nodesToMove" in jsonTemplate['meta']['commentNode']:
                 self.nodesNamesToMove = jsonTemplate['meta']['commentNode']["nodesToMove"]   
                 for nodename in self.nodesNamesToMove:
-                    n = self.graph().nodes[uuid.UUID(nodename)]
-                    uuid.UUID(nodename)
-                    if n is not None and n not in self.nodesToMove:
-                        self.nodesToMove[n] = n.scenePos()
+                    for n in self.graph().nodes:
+                        if str(n) == str(nodename):
+                            print n
+                            self.nodesToMove[self.graph().nodes[n]] = self.graph().nodes[n].scenePos()
                 self.nodesNamesToMove = []
-            if "expanded" in jsonTemplate['meta']['commentNode']:
-                self.expanded = jsonTemplate['meta']['commentNode']["expanded"]
+            #if "expanded" in jsonTemplate['meta']['commentNode']:
+            #    self.expanded = jsonTemplate['meta']['commentNode']["expanded"]
 
-        except:
-            pass
+        self._rect.setBottom(height)
+        self._rect.setRight(width)
 
         self.color = color
         self.update()
@@ -243,6 +243,7 @@ class UIcommentNode(UINodeBase):
         self.hideButton.pressed.connect(self.toogleCollapsed)
         self.hideButton.setFixedHeight(25)
         self.hideButton.setFixedWidth(25)
+        self.prevRect = self._rect.bottom()
 
     def updateChildren(self, nodes):
         self.commentInputs = []

@@ -707,6 +707,7 @@ class GraphWidgetUI(QGraphicsView):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pressed_item = None
         self.released_item = None
+        self.resizing = False
         self.hoverItems = []
         self.bPanMode = False
         self.groupers = []
@@ -1002,12 +1003,12 @@ class GraphWidgetUI(QGraphicsView):
                 self._file_name_label.setPlainText(self._current_file_name)
                 self.frameAllNodes()
                 self.undoStack.clear()
-                for node in self.getNodes():
-                    if node.isCommentNode:
-                        if not node.expanded:
-                            node.expanded = True
-                            node.updateChildrens(node.nodesToMove.keys())
-                            node.toogleCollapsed()
+                #for node in self.getNodes():
+                #    if node.isCommentNode:
+                #        if not node.expanded:
+                #            node.expanded = True
+                            #node.updateChildren(node.nodesToMove.keys())
+                            #node.toogleCollapsed()
 
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
