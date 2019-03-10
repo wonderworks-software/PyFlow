@@ -11,6 +11,10 @@ class ExecPin(PinBase):
         self.dirty = False
 
     @staticmethod
+    def isPrimitiveType():
+        return True
+
+    @staticmethod
     def IsValuePin():
         return False
 

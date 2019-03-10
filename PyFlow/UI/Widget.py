@@ -1009,6 +1009,7 @@ class GraphWidgetUI(QGraphicsView):
                 #             node.expanded = True
                 #             node.updateChildren(node.nodesToMove.keys())
                 #             node.toogleCollapsed()
+        self._clearPropertiesView()
 
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]

@@ -1,7 +1,23 @@
 from pyrr import Matrix44
+import json
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
+
+
+class M44Encoder(json.JSONEncoder):
+    def default(self, m44):
+        if isinstance(m44, Matrix44):
+            return {Matrix44.__name__: m44.tolist()}
+        json.JSONEncoder.default(self, m44)
+
+
+class M44Decoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        super(M44Decoder, self).__init__(object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, m44Dict):
+        return Matrix44(m44Dict[Matrix44.__name__])
 
 
 class Matrix44Pin(PinBase):
@@ -13,6 +29,18 @@ class Matrix44Pin(PinBase):
     @staticmethod
     def IsValuePin():
         return True
+
+    @staticmethod
+    def isPrimitiveType():
+        return False
+
+    @staticmethod
+    def jsonEncoderClass():
+        return M44Encoder
+
+    @staticmethod
+    def jsonDecoderClass():
+        return M44Decoder
 
     @staticmethod
     def color():
@@ -31,11 +59,17 @@ class Matrix44Pin(PinBase):
         data['value'] = [m.c1.tolist(), m.c2.tolist(), m.c3.tolist(), m.c4.tolist()]
         return data
 
-    def setData(self, data):
+    @staticmethod
+    def processData(data):
         if isinstance(data, Matrix44):
-            self._data = data
+            return data
         elif isinstance(data, list) and len(data) == 4:
-            self._data = Matrix44([data[0], data[1], data[2], data[3]])
-        else:
+            return Matrix44([data[0], data[1], data[2], data[3]])
+        raise(Exception('Invalid Matrix44 data'))
+
+    def setData(self, data):
+        try:
+            self._data = self.processData(data)
+        except:
             self._data = self.defaultValue()
         PinBase.setData(self, self._data)

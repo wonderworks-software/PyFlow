@@ -1,7 +1,23 @@
 from pyrr import Vector3
+import json
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
+
+
+class Vector3Encoder(json.JSONEncoder):
+    def default(self, vec3):
+        if isinstance(vec3, Vector3):
+            return {Vector3.__name__: vec3.xyz.tolist()}
+        json.JSONEncoder.default(self, vec3)
+
+
+class Vector3Decoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        super(Vector3Decoder, self).__init__(object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, vec3Dict):
+        return Vector3(vec3Dict[Vector3.__name__])
 
 
 class FloatVector3Pin(PinBase):
@@ -30,11 +46,29 @@ class FloatVector3Pin(PinBase):
         data['value'] = self.currentData().xyz.tolist()
         return data
 
-    def setData(self, data):
+    @staticmethod
+    def isPrimitiveType():
+        return False
+
+    @staticmethod
+    def jsonEncoderClass():
+        return Vector3Encoder
+
+    @staticmethod
+    def jsonDecoderClass():
+        return Vector3Decoder
+
+    @staticmethod
+    def processData(data):
         if isinstance(data, Vector3):
-            self._data = data
+            return data
         elif isinstance(data, list) and len(data) == 3:
-            self._data = Vector3(data)
-        else:
+            return Vector3(data)
+        raise(Exception('Invalid Vector3 data'))
+
+    def setData(self, data):
+        try:
+            self._data = self.processData(data)
+        except:
             self._data = self.defaultValue()
         PinBase.setData(self, self._data)

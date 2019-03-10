@@ -5,7 +5,7 @@ from PyFlow import CreateRawPin
 
 
 class AnyPin(PinBase):
-    """doc string for SgPin"""
+    """doc string for AnyPin"""
 
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(AnyPin, self).__init__(name, parent, dataType, direction, **kwargs)
@@ -43,7 +43,7 @@ class AnyPin(PinBase):
 
     def setData(self, data):
         if self.dataType != "AnyPin":
-            if self.super != None:
+            if self.super is not None:
                 data = self.super.processData(data)
         self._data = data
         PinBase.setData(self, self._data)
@@ -150,3 +150,6 @@ class AnyPin(PinBase):
             self.setDefaultValue(other.defaultValue())
             self.call = other.call
             self.dirty = other.dirty
+            self.isPrimitiveType = other.isPrimitiveType
+            self.jsonEncoderClass = other.jsonEncoderClass
+            self.jsonDecoderClass = other.jsonDecoderClass

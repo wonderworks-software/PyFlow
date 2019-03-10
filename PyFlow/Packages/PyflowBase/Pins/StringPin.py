@@ -9,6 +9,10 @@ class StringPin(PinBase):
         self.setDefaultValue("")
 
     @staticmethod
+    def isPrimitiveType():
+        return True
+
+    @staticmethod
     def IsValuePin():
         return True
 

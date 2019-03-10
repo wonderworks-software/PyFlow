@@ -1,7 +1,23 @@
 from pyrr import Vector4
+import json
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
+
+
+class Vector4Encoder(json.JSONEncoder):
+    def default(self, vec4):
+        if isinstance(vec4, Vector4):
+            return {Vector4.__name__: vec4.xyzw.tolist()}
+        json.JSONEncoder.default(self, vec4)
+
+
+class Vector4Decoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        super(Vector4Decoder, self).__init__(object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, vec4Dict):
+        return Vector4(vec4Dict[Vector4.__name__])
 
 
 class FloatVector4Pin(PinBase):
@@ -13,6 +29,18 @@ class FloatVector4Pin(PinBase):
     @staticmethod
     def IsValuePin():
         return True
+
+    @staticmethod
+    def isPrimitiveType():
+        return False
+
+    @staticmethod
+    def jsonEncoderClass():
+        return Vector4Encoder
+
+    @staticmethod
+    def jsonDecoderClass():
+        return Vector4Decoder
 
     def supportedDataTypes(self):
         return ('FloatVector4Pin',)
@@ -30,11 +58,17 @@ class FloatVector4Pin(PinBase):
         data['value'] = self.currentData().xyzw.tolist()
         return data
 
-    def setData(self, data):
+    @staticmethod
+    def processData(data):
         if isinstance(data, Vector4):
-            self._data = data
+            return data
         elif isinstance(data, list) and len(data) == 4:
-            self._data = Vector4(data)
-        else:
+            return Vector4(data)
+        raise(Exception('Invalid Vector4 data'))
+
+    def setData(self, data):
+        try:
+            self._data = self.processData(data)
+        except:
             self._data = self.defaultValue()
         PinBase.setData(self, self._data)

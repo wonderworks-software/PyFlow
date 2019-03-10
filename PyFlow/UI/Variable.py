@@ -4,6 +4,7 @@ Variable related classes.
 """
 from uuid import uuid4
 import inspect
+import json
 
 from Qt import QtCore
 from Qt import QtGui
@@ -23,6 +24,7 @@ from PyFlow import getPinDefaultValueByType
 from PyFlow import findPinClassByType
 from PyFlow import getAllPinClasses
 from PyFlow.UI.Settings import Colors
+from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
 
 
 ## Colored rounded rect
@@ -110,7 +112,9 @@ class VariableBase(QWidget):
             self._uid = uuid4()
         self.graph = graph
         self.setName(name)
-        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
+        # TODO: allow Any type for variable??
+        # self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
+        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() and not pin.__name__ == AnyPin.__name__]
         self.graph.vars[self.uid] = self
         self._packageName = None
         self.updatePackageName()
@@ -152,10 +156,14 @@ class VariableBase(QWidget):
         return template
 
     def serialize(self):
+        pinClass = findPinClassByType(self.dataType)
+
         template = VariableBase.jsonTemplate()
         template['name'] = self.name
         template['uuid'] = str(self.uid)
-        # template['value'] = self.value
+
+        template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass()) if not pinClass.isPrimitiveType() else self.value
+
         template['type'] = self.dataType
         template['package'] = self._packageName
         template['accessLevel'] = self.accessLevel.value
@@ -163,11 +171,15 @@ class VariableBase(QWidget):
 
     @staticmethod
     def deserialize(data, graph):
+        pinClass = findPinClassByType(data['type'])
+
         # TODO: this is probably bad
         var = graph.parent.variablesWidget.createVariable(uuid.UUID(data['uuid']))
         var.setName(data['name'])
         var.setDataType(data['type'])
-        var.value = data['value']
+
+        var.value = data['value'] if pinClass.isPrimitiveType() else json.loads(data['value'], cls=pinClass.jsonDecoderClass())
+
         var.accessLevel = AccessLevel(data['accessLevel'])
         return var
 
@@ -231,7 +243,7 @@ class VariableBase(QWidget):
         cb.addItem('protected', 2)
 
         def accessLevelChanged(x):
-            self.accessLevel = x
-        cb.currentIndexChanged[int].connect(accessLevelChanged)
+            self.accessLevel = AccessLevel[x]
+        cb.currentTextChanged.connect(accessLevelChanged)
         cb.setCurrentIndex(self.accessLevel)
         formLayout.addRow('Access level', cb)
