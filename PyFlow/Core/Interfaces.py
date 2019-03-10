@@ -123,6 +123,12 @@ class IPin(IItemBase):
     def color():
         return (255, 0, 0, 255)
 
+    def isArray(self):
+        '''
+        is this pin holds an array of values or not
+        '''
+        raise NotImplementedError('isArray method of IPin is not implemented')
+
     @staticmethod
     def pinDataTypeHint():
         """

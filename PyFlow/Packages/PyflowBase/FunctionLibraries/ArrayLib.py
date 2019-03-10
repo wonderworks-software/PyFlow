@@ -12,7 +12,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'Array', 'Keywords': []})
-    def arrayToString(arr=('ListPin', [])):
+    def arrayToString(arr=('AnyPin', [])):
         return str(arr)
 
     @staticmethod
@@ -31,7 +31,7 @@ class ArrayLib(FunctionLibraryBase):
         return all(List)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("AnyPin", ''), meta={'Category': 'Array', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('AnyPin', ''), meta={'Category': 'Array', 'Keywords': []})
     def selectInArray(arr=('ListPin', []), Index=("IntPin", 0), Result=("Reference", ("BoolPin", False))):
         try:
             element = arr[Index]
@@ -42,7 +42,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("IntPin", False), meta={'Category': 'Array', 'Keywords': []})
-    def findInArray(List=('ListPin', []), Value=("AnyPin", 0), Result=("Reference", ("BoolPin", False))):
+    def findInArray(List=('ListPin', []), Value=('AnyPin', 0), Result=("Reference", ("BoolPin", False))):
         find = Value in List
         if find:
             Result(True)

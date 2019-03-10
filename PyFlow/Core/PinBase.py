@@ -44,6 +44,13 @@ class PinBase(IPin):
         # Constraint ports
         self.constraint = None
         self.isAny = False
+        self._isArray = False
+
+    def setAsArray(self, bIsArray):
+        self._isArray = bool(bIsArray)
+
+    def isArray(self):
+        return self._isArray
 
     @staticmethod
     def IsValuePin():

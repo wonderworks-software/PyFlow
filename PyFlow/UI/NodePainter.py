@@ -9,7 +9,6 @@ from Settings import *
 ## Determines how to paint the node
 class NodePainter(object):
 
-
     @staticmethod
     def default(node, painter, option, widget):
 
@@ -36,7 +35,7 @@ class NodePainter(object):
             pen.setStyle(node.opt_pen_selected_type)
         painter.setPen(pen)
         painter.drawRoundedRect(node.boundingRect(), node.sizes[4], node.sizes[5])
-        
+
         br = QtGui.QBrush()
         painter.setBrush(br)
         if node.label().isVisible():
@@ -57,7 +56,6 @@ class NodePainter(object):
             path = QtGui.QPainterPath()
             path.addRoundedRect(r, node.sizes[4], node.sizes[5])
             painter.fillPath(path, b)
-        
 
     @staticmethod
     def asVariableGetter(node, painter, option, widget):
@@ -102,15 +100,14 @@ class NodePainter(object):
         painter.setBrush(br)
 
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
-        width= pen.width()        
+        width = pen.width()
         if option.state & QStyle.State_Selected:
             # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
             pen.setColor(Colors.Yellow)
             pen.setStyle(node.opt_pen_selected_type)
-            pen.setWidth(width*2)
+            pen.setWidth(width * 2)
         painter.setPen(pen)
-        painter.drawEllipse(node.boundingRect().center(), node.boundingRect().width()/2, node.boundingRect().width()/2)
-
+        painter.drawEllipse(node.boundingRect().center(), node.boundingRect().width() / 2, node.boundingRect().width() / 2)
 
     @staticmethod
     def asGraphSides(node, painter, option, widget):
@@ -126,7 +123,7 @@ class NodePainter(object):
         linearGrad.setColorAt(1, color.lighter(180))
         br = QtGui.QBrush(linearGrad)
         painter.setBrush(br)
-        #pen = QtGui.QPen(node.graph().parent.styleSheetEditor.style.MainColor, 0.5)
+        # pen = QtGui.QPen(node.graph().parent.styleSheetEditor.style.MainColor, 0.5)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         painter.setPen(pen)
         painter.drawRoundedRect(node.boundingRect(), node.sizes[4], node.sizes[5])
@@ -134,5 +131,5 @@ class NodePainter(object):
         painter.setPen(pen)
         font = painter.font()
         nameRect = QtCore.QRectF(node.boundingRect())
-        nameRect.setTop(node.boundingRect().top()+font.pointSize())
-        painter.drawText(nameRect,  QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter , node.displayName)
+        nameRect.setTop(node.boundingRect().top() + font.pointSize())
+        painter.drawText(nameRect, QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter, node.displayName)

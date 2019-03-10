@@ -323,6 +323,7 @@ class NodeBase(INode):
                     if "constraint" in dataType[2]:
                         constraint = dataType[2]["constraint"]
                 outRef = raw_inst.addOutputPin(argName, dataType[0], allowedPins=anyOpts, constraint=constraint)
+                outRef.setAsArray(isinstance(argDefaultValue, list))
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 if PROPAGATE_DIRTY in meta:
@@ -331,6 +332,7 @@ class NodeBase(INode):
                 refs.append(outRef)
             else:
                 inp = raw_inst.addInputPin(argName, dataType, allowedPins=anyOpts, constraint=constraint)
+                inp.setAsArray(isinstance(argDefaultValue, list))
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
                 if PROPAGATE_DIRTY in meta:

@@ -9,6 +9,11 @@ class ExecPin(PinBase):
         super(ExecPin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.width = self.height = 10.0
         self.dirty = False
+        self._isArray = False
+
+    def setAsArray(self, bIsArray):
+        # exec is not a type, it cannot be an array
+        self._isArray = False
 
     @staticmethod
     def isPrimitiveType():

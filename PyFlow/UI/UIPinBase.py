@@ -11,6 +11,7 @@ from Qt.QtWidgets import QInputDialog
 
 from PyFlow.Core.Common import *
 from PyFlow.UI.Settings import *
+from PyFlow.UI.PinPainter import PinPainter
 
 
 UI_PINS_FACTORIES = {}
@@ -36,6 +37,7 @@ class UIPinBase(QGraphicsWidget):
     userStructChanged = QtCore.Signal(object)
     OnPinChanged = QtCore.Signal(object)
     OnPinDeleted = QtCore.Signal(object)
+
     def __init__(self, owningNode, raw_pin):
         super(UIPinBase, self).__init__()
         self._rawPin = raw_pin
@@ -325,47 +327,14 @@ class UIPinBase(QGraphicsWidget):
         path.addEllipse(self.boundingRect())
         return path
 
+    def isArray(self):
+        return self._rawPin.isArray()
+
     def paint(self, painter, option, widget):
-        background_rect = QtCore.QRectF(0, 0, self.width, self.width)
-
-        w = background_rect.width() / 2
-        h = background_rect.height() / 2
-
-        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), self.width / 2.5)
-        if not self._rawPin._connected:
-            linearGrad.setColorAt(0, self.color().darker(280))
-            linearGrad.setColorAt(0.5, self.color().darker(280))
-            linearGrad.setColorAt(0.65, self.color().lighter(130))
-            linearGrad.setColorAt(1, self.color().lighter(70))
+        if self.isArray():
+            PinPainter.asArrayPin(self, painter, option, widget)
         else:
-            linearGrad.setColorAt(0, self.color())
-            linearGrad.setColorAt(1, self.color())
-
-        if self.hovered:
-            linearGrad.setColorAt(1, self.color().lighter(200))
-        if self.dataType == 'ListPin':
-            if self.pinImage:
-                painter.drawImage(background_rect, self.pinImage)
-            else:
-                painter.setBrush(Colors.Array)
-                rect = background_rect
-                painter.drawRect(rect)
-        elif self.dataType == 'ExecPin':
-            painter.setPen(self._execPen)
-            if self._rawPin._connected:
-                painter.setBrush(QtGui.QBrush(self.color()))
-            else:
-                painter.setBrush(QtCore.Qt.NoBrush)
-            arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
-                                    QtCore.QPointF(self.width / 2.0, 0.0),
-                                    QtCore.QPointF(self.width, self.height / 2.0),
-                                    QtCore.QPointF(self.width / 2.0, self.height),
-                                    QtCore.QPointF(0, self.height)])
-            painter.drawPolygon(arrow)
-        else:
-            painter.setBrush(QtGui.QBrush(linearGrad))
-            rect = background_rect.setX(background_rect.x())
-            painter.drawEllipse(background_rect)
+            PinPainter.asValuePin(self, painter, option, widget)
 
     def contextMenuEvent(self, event):
         self.menu.exec_(event.screenPos())
