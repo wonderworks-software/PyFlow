@@ -9,6 +9,7 @@ class rerute(NodeBase):
         self.input = self.addInputPin("in", 'AnyPin', constraint="1")
         self.output = self.addOutputPin("out", 'AnyPin', constraint="1")
         pinAffects(self.input, self.output)
+        self.input.call = self.output.call
 
     @staticmethod
     def pinTypeHints():
