@@ -35,7 +35,7 @@ class UIPinBase(QGraphicsWidget):
     # used by enums
     userStructChanged = QtCore.Signal(object)
     OnPinChanged = QtCore.Signal(object)
-
+    OnPinDeleted = QtCore.Signal(object)
     def __init__(self, owningNode, raw_pin):
         super(UIPinBase, self).__init__()
         self._rawPin = raw_pin
@@ -242,6 +242,7 @@ class UIPinBase(QGraphicsWidget):
             e.highlight()
 
     def kill(self):
+        self.OnPinDeleted.emit(self)
         self.disconnectAll()
         if hasattr(self.owningNode(), self.name):
             delattr(self.owningNode(), self.name)

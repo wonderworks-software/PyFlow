@@ -110,6 +110,13 @@ class GraphBase(object):
                 return i
         return None
 
+    def getNodesByClassName(self, className):
+        nodes = []
+        for i in self.nodes.values():
+            if i.__class__.__name__ == className:
+                nodes.append(i)
+        return nodes
+
     def findPin(self, uid):
         return self.findPinByUID(uid)
 

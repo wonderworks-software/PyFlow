@@ -36,7 +36,7 @@ from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.UI.IContextMenu import IContextMenu
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Enums import ENone
-from PyFlow.Core.Common import *
+from PyFlow.Core.AGraphCommon import *
 
 from collections import OrderedDict
 UI_NODES_FACTORIES = {}
@@ -94,26 +94,22 @@ class NodeName(QGraphicsTextItem):
     def paint(self, painter, option, widget):
         if self.parentItem().bUseTextureBg:
             color = self.color
-
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
-                painter.drawImage(QtCore.QRect(parentRet.width(
-                ) - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
+                painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
         else:
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
-                painter.drawImage(QtCore.QRect(parentRet.width(
-                ) - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
+                painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
         # super(NodeName, self).paint(painter, option, widget)
         painter.setPen(self.defaultPen)
         font = painter.font()
         nameRectMargin = 2
         nameRect = QtCore.QRectF(self.boundingRect().topLeft() + QtCore.QPointF(nameRectMargin, nameRectMargin), QtCore.QPointF(self.parentItem().boundingRect().right() - 15,
-                                                                                                                                self.boundingRect().bottom() - font.pointSize() * 0.65))
-        painter.drawText(nameRect, QtCore.Qt.AlignLeft,
-                         self.parentItem().displayName)
+                                 self.boundingRect().bottom() - font.pointSize() * 0.65))
+        painter.drawText(nameRect, QtCore.Qt.AlignLeft, self.parentItem().displayName)
         packageRect = QtCore.QRectF(self.boundingRect().topLeft() + QtCore.QPointF(nameRectMargin, 0), QtCore.QPointF(self.parentItem().boundingRect().right(),
-                                                                                                                      self.boundingRect().bottom()))
+                                    self.boundingRect().bottom()))
         font = painter.font()
         font.setPointSize(font.pointSize() * 0.65)
         font.setItalic(True)
@@ -122,8 +118,7 @@ class NodeName(QGraphicsTextItem):
         text = self.parentItem().packageName()
         # if self.parentItem()._rawNode.lib:
         #    text += "|{0}".format(self.parentItem()._rawNode.lib)
-        painter.drawText(packageRect, QtCore.Qt.AlignLeft |
-                         QtCore.Qt.AlignBottom, text)
+        painter.drawText(packageRect, QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom, text)
 
     def focusInEvent(self, event):
         self.parentItem().graph().disableSortcuts()
@@ -363,7 +358,7 @@ class UINodeBase(QGraphicsObject):
             self.resizable = True
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
-        self._displayName = self.name
+        # self._displayName = self.name
 
     def isCallable(self):
         return self._rawNode.isCallable()
@@ -412,12 +407,10 @@ class UINodeBase(QGraphicsObject):
         pinwidth2 = 0
         for i in self.UIPins.values():
             if i.direction == PinDirection.Input:
-                iwidth = max(iwidth, QtGui.QFontMetricsF(
-                    i._label().font()).width(i.displayName()))
+                iwidth = max(iwidth, QtGui.QFontMetricsF(i._label().font()).width(i.displayName()))
                 pinwidth = max(pinwidth, i.width)
             else:
-                owidth = max(owidth, QtGui.QFontMetricsF(
-                    i._label().font()).width(i.displayName()))
+                owidth = max(owidth, QtGui.QFontMetricsF(i._label().font()).width(i.displayName()))
                 pinwidth2 = max(pinwidth2, i.width)
         return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
 
@@ -434,8 +427,7 @@ class UINodeBase(QGraphicsObject):
         return max(pinheight, pinheight2)
 
     def updateWidth(self):
-        self.minWidth = max(self.getPinsWidth(),
-                            self.getWidth() + Spacings.kPinOffset)
+        self.minWidth = max(self.getPinsWidth(), self.getWidth() + Spacings.kPinOffset)
         self.w = self.minWidth  # ,self.getWidth() + Spacings.kPinOffset)
 
     def updateNodeShape(self, label=None):
@@ -444,8 +436,7 @@ class UINodeBase(QGraphicsObject):
             lyt = container.layout()
             if lyt:
                 for j in range(0, lyt.count()):
-                    lyt.setAlignment(lyt.itemAt(
-                        j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+                    lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 
         for i in range(0, self.outputsLayout.count()):
             container = self.outputsLayout.itemAt(i)
@@ -460,8 +451,7 @@ class UINodeBase(QGraphicsObject):
             self.label().setPlainText(label)
 
         self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-            0, 0, self.w, self.childrenBoundingRect().height()))
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
         if self.isCallable():
             if 'flow' not in self.category().lower():
                 if self.label().bUseTextureBg:
@@ -569,8 +559,7 @@ class UINodeBase(QGraphicsObject):
                 posdelta = self.mapToScene(event.pos()) - self.origPos
                 posdelta2 = self.mapToScene(event.pos()) - self.initPos
                 newWidth = -posdelta2.x() + self.initialRectWidth
-                # (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()) and newWidth > self.minWidth:
-                if newWidth > self.minWidth:
+                if newWidth > self.minWidth:  # (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()) and newWidth > self.minWidth:
                     # if newWidth > (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()):
                     self.translate(posdelta.x(), 0, False)
                     self.origPos = self.pos()
