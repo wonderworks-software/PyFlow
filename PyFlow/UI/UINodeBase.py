@@ -358,7 +358,7 @@ class UINodeBase(QGraphicsObject):
             self.resizable = True
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
-        #self._displayName = self.name
+        # self._displayName = self.name
 
     def isCallable(self):
         return self._rawNode.isCallable()
@@ -398,7 +398,7 @@ class UINodeBase(QGraphicsObject):
     def getWidth(self):
         fontWidth = QtGui.QFontMetricsF(self.label().font()).width(
             self.displayName) + Spacings.kPinSpacing
-        return fontWidth #if fontWidth > 25 else 25
+        return fontWidth  # if fontWidth > 25 else 25
 
     def getPinsWidth(self):
         iwidth = 0
@@ -407,12 +407,12 @@ class UINodeBase(QGraphicsObject):
         pinwidth2 = 0
         for i in self.UIPins.values():
             if i.direction == PinDirection.Input:
-                iwidth = max(iwidth,QtGui.QFontMetricsF(i._label().font()).width(i.displayName())) 
-                pinwidth = max(pinwidth,i.width)  
+                iwidth = max(iwidth, QtGui.QFontMetricsF(i._label().font()).width(i.displayName()))
+                pinwidth = max(pinwidth, i.width)
             else:
-                owidth = max(owidth,QtGui.QFontMetricsF(i._label().font()).width(i.displayName())) 
-                pinwidth2 = max(pinwidth2,i.width)                                    
-        return iwidth+owidth +pinwidth + pinwidth2 + Spacings.kPinOffset
+                owidth = max(owidth, QtGui.QFontMetricsF(i._label().font()).width(i.displayName()))
+                pinwidth2 = max(pinwidth2, i.width)
+        return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
 
     def getPinsHeight(self):
         iheight = 0
@@ -421,15 +421,14 @@ class UINodeBase(QGraphicsObject):
         pinheight2 = 0
         for i in self.UIPins.values():
             if i.direction == PinDirection.Input:
-                pinheight = max(pinheight,i.height)  
+                pinheight = max(pinheight, i.height)
             else:
-                pinheight2 = max(pinheight2,i.height)                                    
-        return max(pinheight,pinheight2)
+                pinheight2 = max(pinheight2, i.height)
+        return max(pinheight, pinheight2)
 
     def updateWidth(self):
-        self.minWidth = max(self.getPinsWidth() , self.getWidth() + Spacings.kPinOffset)
-        self.w = self.minWidth#,self.getWidth() + Spacings.kPinOffset)
-
+        self.minWidth = max(self.getPinsWidth(), self.getWidth() + Spacings.kPinOffset)
+        self.w = self.minWidth  # ,self.getWidth() + Spacings.kPinOffset)
 
     def updateNodeShape(self, label=None):
         for i in range(0, self.inputsLayout.count()):
@@ -437,8 +436,7 @@ class UINodeBase(QGraphicsObject):
             lyt = container.layout()
             if lyt:
                 for j in range(0, lyt.count()):
-                    lyt.setAlignment(lyt.itemAt(
-                        j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+                    lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 
         for i in range(0, self.outputsLayout.count()):
             container = self.outputsLayout.itemAt(i)
@@ -453,8 +451,7 @@ class UINodeBase(QGraphicsObject):
             self.label().setPlainText(label)
 
         self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-            0, 0, self.w, self.childrenBoundingRect().height()))        
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
         if self.isCallable():
             if 'flow' not in self.category().lower():
                 if self.label().bUseTextureBg:
@@ -516,7 +513,7 @@ class UINodeBase(QGraphicsObject):
         elif cursorPos.x() > (rect.width() - margin):
             result["resize"] = True
             result["direction"] = (1, 0)
-        elif cursorPos.y() > (rect.bottom()-margin):
+        elif cursorPos.y() > (rect.bottom() - margin):
             result["resize"] = True
             result["direction"] = (0, -1)
         elif cursorPos.x() < (rect.x() + margin):
@@ -561,9 +558,9 @@ class UINodeBase(QGraphicsObject):
                 # left edge resize
                 posdelta = self.mapToScene(event.pos()) - self.origPos
                 posdelta2 = self.mapToScene(event.pos()) - self.initPos
-                newWidth = -posdelta2.x()+self.initialRectWidth
-                if newWidth > self.minWidth:#(self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()) and newWidth > self.minWidth:
-                    #if newWidth > (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()):
+                newWidth = -posdelta2.x() + self.initialRectWidth
+                if newWidth > self.minWidth:  # (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()) and newWidth > self.minWidth:
+                    # if newWidth > (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()):
                     self.translate(posdelta.x(), 0, False)
                     self.origPos = self.pos()
                     self.label().width = newWidth
@@ -591,11 +588,11 @@ class UINodeBase(QGraphicsObject):
                     self._rect.setHeight(newHeight)
             elif self.resizeDirection == (-1, -1):
                 posdelta2 = self.mapToScene(event.pos()) - self.initPos
-                newWidth = -posdelta2.x()+self.initialRectWidth
+                newWidth = -posdelta2.x() + self.initialRectWidth
                 newHeight = delta.y() + self.initialRectHeight
                 newHeight = max(newHeight, self.label().h + 20.0)
                 posdelta = event.scenePos() - self.origPos
-                if newWidth > self.minWidth:# and newWidth > self.minWidth:
+                if newWidth > self.minWidth:  # and newWidth > self.minWidth:
                     self.translate(posdelta.x(), 0, False)
                     self.origPos = self.pos()
                     self.label().width = newWidth

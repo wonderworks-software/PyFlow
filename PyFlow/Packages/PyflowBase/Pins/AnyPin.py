@@ -59,7 +59,7 @@ class AnyPin(PinBase):
         return dt
 
     def updateOnConnection(self, other):
-        if self.constraint == None:
+        if self.constraint is None:
             self.setType(other)
             self._free = False
         else:
@@ -70,7 +70,7 @@ class AnyPin(PinBase):
                     for p in [e.source()._rawPin, e.destination()._rawPin]:
                         if p != self:
                             if p.dataType == "AnyPin" and p.dataType != self.dataType:
-                                p.updateOnConnection(other)                
+                                p.updateOnConnection(other)
                 for port in self.owningNode()._Constraints[self.constraint]:
                     if port != self:
                         port.setType(other)
@@ -82,7 +82,7 @@ class AnyPin(PinBase):
                                         p.updateOnConnection(port)
 
     def updateOnDisconnection(self):
-        if self.constraint == None:
+        if self.constraint is None:
             self.setDefault()
             self._free = True
         elif not self._free:
@@ -99,7 +99,7 @@ class AnyPin(PinBase):
                                     p.updateOnDisconnection()
 
     def checkFree(self, checked=[], selfChek=True):
-        if self.constraint == None or self.dataType == "AnyPin":
+        if self.constraint is None or self.dataType == "AnyPin":
             return True
         else:
             con = []
@@ -148,3 +148,5 @@ class AnyPin(PinBase):
             self._wrapper().setType(other.color())
             self.setData(other.defaultValue())
             self.setDefaultValue(other.defaultValue())
+            self.call = other.call
+            self.dirty = other.dirty

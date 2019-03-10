@@ -186,7 +186,7 @@ class UIcommentNode(UINodeBase):
             'expanded': self.expanded,
             'nodesToMove': [str(n.uid) for n in self.nodesToMove]
         }
-        print bottom
+        print(bottom)
         template['meta']['resize'] = {'h': bottom, 'w': self._rect.right()}
         return template
 
@@ -204,7 +204,7 @@ class UIcommentNode(UINodeBase):
         if 'resize' in jsonTemplate['meta']:
             width = jsonTemplate['meta']['resize']['w']
             height = jsonTemplate['meta']['resize']['h']
-            print height
+            print(height)
         if 'commentNode' in jsonTemplate['meta']:
             labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
             text = jsonTemplate['meta']['commentNode']['text']
@@ -215,7 +215,7 @@ class UIcommentNode(UINodeBase):
                 for nodename in self.nodesNamesToMove:
                     for n in self.graph().nodes:
                         if str(n) == str(nodename):
-                            print n
+                            print(n)
                             self.nodesToMove[self.graph().nodes[n]] = self.graph().nodes[n].scenePos()
                 self.nodesNamesToMove = []
             #if "expanded" in jsonTemplate['meta']['commentNode']:

@@ -202,18 +202,18 @@ class GraphBase(object):
             if debug:
                 print('cycles are not allowed')
             return False
-    
-        if dst.constraint != None:
+
+        if dst.constraint is not None:
             if dst.dataType != "AnyPin":
                 if dst.isAny:
-                    free = dst.checkFree([],False)
+                    free = dst.checkFree([], False)
                     if not free:
                         a = CreateRawPin("", None, dst.dataType, 0)
                         if src.dataType not in a.supportedDataTypes():
                             if debug:
                                 print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                             return False
-                        del a                
+                        del a
         return True
 
     def addEdge(self, src, dst):
@@ -225,7 +225,7 @@ class GraphBase(object):
 
         # input value pins can have one output connection
         # output value pins can have any number of connections
-        if not src.dataType in ['ExecPin','AnyPin'] and dst.hasConnections():
+        if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections():
             dst.disconnectAll()
         if src.dataType == 'AnyPin' and dst.dataType != 'ExecPin' and dst.hasConnections():
             dst.disconnectAll()

@@ -1,22 +1,23 @@
+from Qt import QtCore
+
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.NodePainter import NodePainter
 
-from Qt import QtCore
-    
-#self.graph().inPinCreated.connect(self.printTest)
+
+# self.graph().inPinCreated.connect(self.printTest)
 class UIGraphInputs(UINodeBase):
     pinCreated = QtCore.Signal(object)
 
     def __init__(self, raw_node):
         super(UIGraphInputs, self).__init__(raw_node)
         actionAddOut = self._menu.addAction("Add pin")
-        actionAddOut.triggered.connect(self.onAddOutPin)       
-        self.label().hide() 
-        #self.sender = sender()        
+        actionAddOut.triggered.connect(self.onAddOutPin)
+        self.label().hide()
+        # self.sender = sender()
         self.resizable = True
         self.inputsLayout.setGeometry(QtCore.QRectF(0, 0, 0, 0))
         self.minWidth = 25
-        
+
     def onAddOutPin(self):
         rawPin = self._rawNode.addOutPin()
         uiPin = self._createUIPinWrapper(rawPin)
@@ -51,14 +52,16 @@ class UIGraphInputs(UINodeBase):
     def paint(self, painter, option, widget):
         NodePainter.asGraphSides(self, painter, option, widget) 
 
+
 class UIGraphOutputs(UINodeBase):
     pinCreated = QtCore.Signal(object)
+
     def __init__(self, raw_node):
         super(UIGraphOutputs, self).__init__(raw_node)
         actionAddOut = self._menu.addAction("Add pin")
-        actionAddOut.triggered.connect(self.onAddInPin)       
-        self.label().hide() 
-        #self.sender = sender()        
+        actionAddOut.triggered.connect(self.onAddInPin)
+        self.label().hide()
+        # self.sender = sender()
         self.resizable = True
         self.inputsLayout.setGeometry(QtCore.QRectF(0, 0, 0, 0))
         self.minWidth = 25
@@ -92,7 +95,7 @@ class UIGraphOutputs(UINodeBase):
         self.label().setPlainText("outputs")
         self._rect.setWidth(25)
         self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))   
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
 
     def paint(self, painter, option, widget):
-        NodePainter.asGraphSides(self, painter, option, widget) 
+        NodePainter.asGraphSides(self, painter, option, widget)
