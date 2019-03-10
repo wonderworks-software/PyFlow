@@ -58,7 +58,7 @@ class NodeName(QGraphicsTextItem):
         self.opt_font = QtGui.QFont('Consolas')
         self.opt_font_size = 8
         self.opt_font.setPointSize(self.opt_font_size)
-        self.defaultHeight = self.opt_font_size * 2.5
+        self.defaultHeight = self.opt_font_size * 3.3
         self.h = self.defaultHeight
         self.setFont(self.opt_font)
         self.descFont = QtGui.QFont(
@@ -69,6 +69,8 @@ class NodeName(QGraphicsTextItem):
         self.roundCornerFactor = 1.0
         self.bg = QtGui.QImage(':/icons/resources/white.png')
         self.icon = None
+        self.nodeLabelMargin = QtCore.QMargins(2, 0, 0, 0)
+        self.nodePackageMargin = QtCore.QMargins(2, 2, 0, 3)
 
     def onDocContentsChanged(self):
         self.width = QtGui.QFontMetricsF(
@@ -104,14 +106,16 @@ class NodeName(QGraphicsTextItem):
         # super(NodeName, self).paint(painter, option, widget)
         painter.setPen(self.defaultPen)
         font = painter.font()
-        nameRectMargin = 2
-        nameRect = QtCore.QRectF(self.boundingRect().topLeft() + QtCore.QPointF(nameRectMargin, nameRectMargin), QtCore.QPointF(self.parentItem().boundingRect().right() - 15,
-                                 self.boundingRect().bottom() - font.pointSize() * 0.65))
+
+        nameRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right(),
+                                 self.boundingRect().bottom()))
+        nameRect -= self.nodeLabelMargin
         painter.drawText(nameRect, QtCore.Qt.AlignLeft, self.parentItem().displayName)
-        packageRect = QtCore.QRectF(self.boundingRect().topLeft() + QtCore.QPointF(nameRectMargin, 0), QtCore.QPointF(self.parentItem().boundingRect().right(),
+        packageRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right(),
                                     self.boundingRect().bottom()))
+        packageRect -= self.nodePackageMargin
         font = painter.font()
-        font.setPointSize(font.pointSize() * 0.65)
+        font.setPointSize(font.pointSize() * 0.5)
         font.setItalic(True)
         painter.setFont(font)
         painter.setPen(QtGui.QPen(QtCore.Qt.gray, 0.5))

@@ -4,8 +4,8 @@ import pyrr
 from PyFlow.Core.Common import *
 from PyFlow.UI.InputWidgets import *
 
-from PyFlow.Packages.Pyrr.Widgets import FloatVector3InputWidget_ui
-from PyFlow.Packages.Pyrr.Widgets import FloatVector4InputWidget_ui
+from PyFlow.Packages.Pyrr.Widgets import Ui_FloatVector3InputWidget_ui
+from PyFlow.Packages.Pyrr.Widgets import Ui_FloatVector4InputWidget_ui
 from PyFlow.Packages.Pyrr.Widgets import Matrix33InputWidget_ui
 from PyFlow.Packages.Pyrr.Widgets import Matrix44InputWidget_ui
 
@@ -14,7 +14,7 @@ FLOAT_SINGLE_STEP = 0.01
 FLOAT_DECIMALS = 10
 
 
-class FloatVector3InputWidget(InputWidgetRaw, FloatVector3InputWidget_ui.Ui_Form):
+class FloatVector3InputWidget(InputWidgetRaw, Ui_FloatVector3InputWidget_ui.Ui_Form):
     """Vector3 data input widget"""
     def __init__(self, **kwds):
         super(FloatVector3InputWidget, self).__init__(**kwds)
@@ -66,7 +66,7 @@ class FloatVector3InputWidget(InputWidgetRaw, FloatVector3InputWidget_ui.Ui_Form
         self.dsbZ.setValue(val.z)
 
 
-class FloatVector4InputWidget(InputWidgetRaw, FloatVector4InputWidget_ui.Ui_Form):
+class FloatVector4InputWidget(InputWidgetRaw, Ui_FloatVector4InputWidget_ui.Ui_Form):
     """Vector4 data input widget"""
     def __init__(self, **kwds):
         super(FloatVector4InputWidget, self).__init__(**kwds)
