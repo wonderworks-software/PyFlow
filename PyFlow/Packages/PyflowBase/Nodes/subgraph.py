@@ -3,7 +3,7 @@ import json
 
 from PyFlow.Core import NodeBase
 from PyFlow.Core import GraphBase
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 
 class subgraph(NodeBase):

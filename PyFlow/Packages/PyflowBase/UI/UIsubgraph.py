@@ -2,7 +2,7 @@ from Qt import QtWidgets
 
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.Widget import GraphWidgetUI
-from PyFlow.Core.AGraphCommon import *
+from PyFlow.Core.Common import *
 
 
 class UIsubgraph(UINodeBase):
