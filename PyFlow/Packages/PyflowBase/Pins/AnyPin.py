@@ -125,12 +125,6 @@ class AnyPin(PinBase):
 
             return free
 
-    def call(self):
-        super(AnyPin, self).call()
-        # highlight wire
-        for e in self.edge_list:
-            e.highlight()
-
     def setDefault(self):
         self.super = None
         self.dataType = "AnyPin"
