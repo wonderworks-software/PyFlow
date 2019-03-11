@@ -52,7 +52,11 @@ When save button is pressed, function with code you wrote will be generated and 
 
 import weakref
 from keyword import kwlist
-import __builtin__
+try:
+    # python 2 support
+    import __builtin__ as builtins
+except:
+    import builtins
 import inspect
 from types import MethodType
 
@@ -69,11 +73,12 @@ from Qt.QtWidgets import QPlainTextEdit
 
 from PyFlow.UI.Widgets import CodeEditor_ui
 import PyFlow.UI.PythonSyntax as PythonSyntax
-from PyFlow.UI.Widgets.UI import PinWidget_ui
+from PyFlow.UI.Widgets import PinWidget_ui
 from PyFlow.UI.UINodeBase import UINodeBase
+from PyFlow import getAllPinClasses
 
 
-_defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()'] + dir(__builtin__)
+_defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()'] + dir(builtins)
 
 
 # TODO: Rewrite this
@@ -161,11 +166,11 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
         self.editor = weakref.ref(editor)
         self.lePinName.setText('pinName')
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.items = [v for v in DataTypes if v not in ["Reference", 'EnumPin']]
+        self.items = [t.__name__ for t in getAllPinClasses()]
         self.cbType.clear()
 
         for i in self.items:
-            self.cbType.addItem(i.name, i.value)
+            self.cbType.addItem(i)
 
     @staticmethod
     def construct(name='pinName', hideLabel=False, dataType='FloatPin', editor=None):
@@ -187,14 +192,14 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
         return self.lePinName.text()
 
     def dataType(self):
-        return getattr(DataTypes, self.cbType.currentText())
+        return self.cbType.currentText()
 
 
 ## @brief Used to write code into pythonNode
 # @details See [Package description](@ref CodeEditor) for details
-class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
+class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     def __init__(self, graph, node, uid):
-        super(WCodeEditor, self).__init__()
+        super(CodeEditor, self).__init__()
         self.setupUi(self)
         self.graph = graph
         self.nodeUid = node.uid
@@ -303,7 +308,11 @@ class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         lines = [i for i in code.split('\n') if len(i) > 0]
         for line in lines:
             foo += '\n\t{}'.format(line)
-        return foo
+        if len(lines) == 0:
+            foo += "\n\tpass"
+        codeObject = compile(foo, "fake", "exec")
+        exec(codeObject, globals())
+        return globals()[fooName]
 
     ## slot called when Save button is pressed
     # @sa CodeEditor
@@ -316,31 +325,32 @@ class WCodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         lbText = self.leLabel.text()
         if not lbText == '':
             node.label().setPlainText(lbText)
-            node.name = lbText
+            node.displayName = lbText
 
         # assign compute method
         code = self.plainTextEdit.toPlainText()
-        foo = WCodeEditor.wrapCodeToFunction('compute', code)
-        exec(foo)
-        node.compute = MethodType(compute, node, UINodeBase)
+        foo = CodeEditor.wrapCodeToFunction('compute', code)
+        node.compute = MethodType(foo, node)
         node.currentComputeCode = code
 
         for index in range(self.lwOutputs.count()):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
-            if isinstance(w, WPinWidget):
-                p = node.addOutputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
-                w.lePinName.setText(p.name)
+            # if isinstance(w, WPinWidget):
+            #     p = node.addOutputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
+            #     w.lePinName.setText(p.name)
+            print("create input", w)
 
         # recreate pins from editor data
         for index in range(self.lwInputs.count()):
             w = self.lwInputs.itemWidget(self.lwInputs.item(index))
-            if isinstance(w, WPinWidget):
-                if w.dataType() == 'ExecPin':
-                    p = node.addInputPin(w.name(), w.dataType(), node.compute, w.shouldHideLabel())
-                    w.lePinName.setText(p.name)
-                else:
-                    p = node.addInputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
-                    w.lePinName.setText(p.name)
+            print("create output", w)
+            # if isinstance(w, WPinWidget):
+            #     if w.dataType() == 'ExecPin':
+            #         p = node.addInputPin(w.name(), w.dataType(), node.compute, w.shouldHideLabel())
+            #         w.lePinName.setText(p.name)
+            #     else:
+            #         p = node.addInputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
+            #         w.lePinName.setText(p.name)
 
         for i in node.inputs.values():
             for o in node.outputs.values():

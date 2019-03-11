@@ -1,6 +1,10 @@
 from Qt.QtCore import QRegExp
 from Qt.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
-import __builtin__
+try:
+    # python 2 support
+    import __builtin__ as builtins
+except:
+    import builtins
 
 
 def format(color, style=''):
@@ -80,7 +84,7 @@ class PythonHighlighter (QSyntaxHighlighter):
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in PythonHighlighter.keywords]
         rules += [(r'%s' % o, 0, STYLES['operator']) for o in PythonHighlighter.operators]
         rules += [(r'%s' % b, 0, STYLES['brace']) for b in PythonHighlighter.braces]
-        rules += [(r'%s' % b, 0, STYLES['builtinFunction']) for b in dir(__builtin__)]
+        rules += [(r'%s' % b, 0, STYLES['builtinFunction']) for b in dir(builtins)]
 
         # All other rules
         rules += [

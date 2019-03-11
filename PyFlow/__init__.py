@@ -34,13 +34,14 @@ def getAllPinClasses():
         result += list(package.GetPinClasses().values())
     return result
 
+
 def findPinClassByType(dataType):
     for package_name, package in GET_PACKAGES().items():
         pins = package.GetPinClasses()
         if dataType in pins:
             def packageName():
-                return package_name  
-            pins[dataType].packageName=staticmethod(packageName)             
+                return package_name
+            pins[dataType].packageName = staticmethod(packageName)
             return pins[dataType]
     return None
 
@@ -75,6 +76,7 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None):
     if nodeClassName in nodes:
         return nodes[nodeClassName](nodeClassName)
 
+
 def INITIALIZE():
     # TODO: Check for duplicated package names
     for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
@@ -83,16 +85,18 @@ def INITIALIZE():
             package = getattr(mod, modname)()
             __PACKAGES[modname] = package
 
-    for name,package in __PACKAGES.items():
+    for name, package in __PACKAGES.items():
         for node in package.GetNodeClasses().values():
             nodepackName = name
-            def packageName():
-                return nodepackName  
-            node.packageName=staticmethod(packageName)
 
-    for name2,package2 in __PACKAGES.items():            
+            def packageName():
+                return nodepackName
+            node.packageName = staticmethod(packageName)
+
+    for name2, package2 in __PACKAGES.items():
         for pin in package.GetPinClasses().values():
             pinpackName = name2
+
             def packageName():
-                return pinpackName  
-            pin.packageName=staticmethod(packageName) 
+                return pinpackName
+            pin.packageName = staticmethod(packageName)
