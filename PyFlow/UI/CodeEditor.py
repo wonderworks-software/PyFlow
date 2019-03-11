@@ -71,11 +71,15 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QCompleter
 from Qt.QtWidgets import QPlainTextEdit
 
-from PyFlow.UI.Widgets import CodeEditor_ui
+from PyFlow.UI import Ui_CodeEditor_ui
 import PyFlow.UI.PythonSyntax as PythonSyntax
 from PyFlow.UI.Widgets import PinWidget_ui
 from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow import getAllPinClasses
+from PyFlow.Core.Common import pinAffects
+from PyFlow import (
+    getAllPinClasses,
+    getPinDefaultValueByType
+)
 
 
 _defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()'] + dir(builtins)
@@ -197,7 +201,7 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
 
 ## @brief Used to write code into pythonNode
 # @details See [Package description](@ref CodeEditor) for details
-class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
+class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
     def __init__(self, graph, node, uid):
         super(CodeEditor, self).__init__()
         self.setupUi(self)
@@ -228,7 +232,8 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.pbAddInput.clicked.connect(self.addDefaultInput)
         self.pbAddOutput.clicked.connect(self.addDefaultOutput)
         self.pbSave.clicked.connect(self.applyData)
-        self.pbReset.clicked.connect(self.resetUiData)
+        self.pbResetUI.clicked.connect(self.resetUiData)
+        self.pbResetNode.clicked.connect(self.resetNode)
         self.pbKillSelectedItems.clicked.connect(self.onKillSelectedPins)
         self.resetUiData()
         self.populate()
@@ -286,10 +291,12 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     # @details kills all inputs and outputs including all containers etc.
     def resetNode(self):
         node = self.graph.nodes[self.nodeUid]
-        for i in node.inputs.values():
+        for i in list(node.inputs.values()):
             i.kill()
-        for o in node.outputs.values():
+            self.graph.scene().removeItem(i.getWrapper()().getContainer())
+        for o in list(node.outputs.values()):
             o.kill()
+            self.graph.scene().removeItem(o.getWrapper()().getContainer())
         node.inputs.clear()
         node.outputs.clear()
 
@@ -297,6 +304,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             node.inputsLayout.removeAt(0)
         for i in range(node.outputsLayout.count()):
             node.outputsLayout.removeAt(0)
+        # TODO: Reset node size
 
     @staticmethod
     ## this method wraps code into the function
@@ -335,22 +343,26 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
 
         for index in range(self.lwOutputs.count()):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
-            # if isinstance(w, WPinWidget):
-            #     p = node.addOutputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
-            #     w.lePinName.setText(p.name)
-            print("create input", w)
+            if isinstance(w, WPinWidget):
+                dataType = w.dataType()
+                rawPin = node._rawNode.addOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType))
+                uiPin = node._createUIPinWrapper(rawPin)
+                w.lePinName.setText(uiPin.name)
+                if w.shouldHideLabel():
+                    uiPin.setDisplayName("")
 
         # recreate pins from editor data
         for index in range(self.lwInputs.count()):
             w = self.lwInputs.itemWidget(self.lwInputs.item(index))
-            print("create output", w)
-            # if isinstance(w, WPinWidget):
-            #     if w.dataType() == 'ExecPin':
-            #         p = node.addInputPin(w.name(), w.dataType(), node.compute, w.shouldHideLabel())
-            #         w.lePinName.setText(p.name)
-            #     else:
-            #         p = node.addInputPin(w.name(), w.dataType(), None, w.shouldHideLabel())
-            #         w.lePinName.setText(p.name)
+            if isinstance(w, WPinWidget):
+                dataType = w.dataType()
+                compute = node.compute if dataType == "ExecPin" else None
+                rawPin = node._rawNode.addInputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), compute)
+                uiPin = node._createUIPinWrapper(rawPin)
+                # TODO: add in graph pins!
+                w.lePinName.setText(uiPin.name)
+                if w.shouldHideLabel():
+                    uiPin.setDisplayName("")
 
         for i in node.inputs.values():
             for o in node.outputs.values():

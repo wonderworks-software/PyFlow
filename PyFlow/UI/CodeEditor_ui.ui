@@ -305,9 +305,16 @@
       <number>1</number>
      </property>
      <item>
-      <widget class="QPushButton" name="pbReset">
+      <widget class="QPushButton" name="pbResetUI">
        <property name="text">
-        <string>reset</string>
+        <string>reset ui</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pbResetNode">
+       <property name="text">
+        <string>reset node</string>
        </property>
       </widget>
      </item>

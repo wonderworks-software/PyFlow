@@ -13,6 +13,7 @@ class UIPythonNode(UINodeBase):
         actionAddOut.triggered.connect(self.onEdit)
         self.label().icon = QtGui.QImage(':/icons/resources/py.png')
         self.editorUUID = None
+        self.resizable = True
 
     @property
     def compute(self):

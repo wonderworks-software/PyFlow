@@ -289,7 +289,7 @@ class UIPinBase(QGraphicsWidget):
     def ungrabMouseEvent(self, event):
         super(UIPinBase, self).ungrabMouseEvent(event)
 
-    def get_container(self):
+    def getContainer(self):
         return self._container
 
     @property
