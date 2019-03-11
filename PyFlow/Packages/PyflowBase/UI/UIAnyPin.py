@@ -2,6 +2,7 @@ from PyFlow.Packages.PyflowBase import PACKAGE_NAME
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 from PyFlow.UI.Settings import Colors
+from PyFlow.UI.PinPainter import PinPainter
 from PyFlow import getAllPinClasses
 
 from PyFlow.UI.UIPinBase import UIPinBase
@@ -48,3 +49,12 @@ class UIAnyPin(UIPinBase):
             self._rawPin.currentData()), self._rawPin.dirty, self._rawPin.supportedDataTypesList)
         self.setToolTip(hoverMessage)
         event.accept()
+
+    def paint(self, painter, option, widget):
+        if self.dataType == "ExecPin":
+            PinPainter.asExecPin(self, painter, option, widget)
+        elif self.isArray():
+            PinPainter.asArrayPin(self, painter, option, widget)
+        else:
+            PinPainter.asValuePin(self, painter, option, widget)
+
