@@ -26,13 +26,6 @@ class ExecPin(PinBase):
     def supportedDataTypes(self):
         return ('ExecPin',)
 
-    ## Controls execution flow
-    def call(self):
-        super(ExecPin, self).call()
-        # pass execution flow forward
-        for p in [pin for pin in self.affects if pin.dataType == 'ExecPin']:
-            p.call()
-
     @staticmethod
     def pinDataTypeHint():
         return 'ExecPin', None

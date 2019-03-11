@@ -115,7 +115,7 @@ class AnyPin(PinBase):
                 free = True
                 checked.append(self)
             free = True
-            for port in self.owningNode()._Constraints[self.constraint]+con:
+            for port in self.owningNode()._Constraints[self.constraint] + con:
                 if port not in checked:
                     checked.append(port)
                     if not isinstance(port, AnyPin):
@@ -127,9 +127,6 @@ class AnyPin(PinBase):
 
     def call(self):
         super(AnyPin, self).call()
-        # pass execution flow forward
-        for p in [pin for pin in self.affects if pin.dataType == 'ExecPin']:
-            p.call()
         # highlight wire
         for e in self.edge_list:
             e.highlight()
