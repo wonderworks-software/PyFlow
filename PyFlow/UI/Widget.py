@@ -1427,6 +1427,7 @@ class GraphWidgetUI(QGraphicsView):
                         self._draw_real_time_line = True
                     if modifiers == QtCore.Qt.AltModifier:
                         self.removeEdgeCmd(self.pressed_item.edge_list)
+                        self._draw_real_time_line = False
                 else:
                     # super(GraphWidgetUI, self).mousePressEvent(event)
                     if isinstance(self.pressed_item, Edge) and modifiers == QtCore.Qt.AltModifier:
