@@ -192,7 +192,7 @@ class GraphBase(object):
             return False
         else:
             if src.dataType is 'ExecPin':
-                if dst.dataType is not 'ExecPin' and dst.dataType is not "AnyPin":
+                if dst.dataType != 'ExecPin' and dst.dataType != 'AnyPin':
                     if debug:
                         print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                     return False

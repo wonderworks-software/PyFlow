@@ -1,7 +1,10 @@
+import json
+
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 from PyFlow import getAllPinClasses
 from PyFlow import CreateRawPin
+from PyFlow import findPinClassByType
 
 
 class AnyPin(PinBase):
@@ -9,10 +12,8 @@ class AnyPin(PinBase):
 
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(AnyPin, self).__init__(name, parent, dataType, direction, **kwargs)
-
         self.setDefaultValue(None)
         self.supportedDataTypesList = tuple([pin.__name__ for pin in getAllPinClasses()])
-        self.origDataType = "AnyPin"
         self._free = True
         self.isAny = True
         self.origSetData = self.setData
@@ -50,12 +51,19 @@ class AnyPin(PinBase):
 
     def serialize(self):
         dt = super(AnyPin, self).serialize()
+        # store current active data type, to serialize value
+        # and restore it correctly
+        activeType = self.dataType
+        dt['dataType'] = "AnyPin"
+        dt['activeDataType'] = activeType
         if self.dataType != "AnyPin":
-            a = CreateRawPin("", None, self.dataType, 0)
-            a.setData(self._data)
-            data = a.serialize()
-            dt['value'] = data["value"]
-            del a
+            pinClass = findPinClassByType(activeType)
+            # serialize with active type's encoder
+            if not pinClass.isPrimitiveType():
+                encodedValue = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
+            else:
+                encodedValue = json.dumps(self.currentData())
+            dt['value'] = encodedValue
         return dt
 
     def updateOnConnection(self, other):
@@ -127,14 +135,12 @@ class AnyPin(PinBase):
 
     def setDefault(self):
         self.super = None
-        self.dataType = "AnyPin"
         self._wrapper().setDefault(self.defcolor())
         self.setDefaultValue(None)
 
     def setType(self, other):
         if self.dataType == "AnyPin" or self.dataType not in other.supportedDataTypes():
             self.super = other.__class__
-            self.dataType = other.dataType
             self.color = other.color
             self._wrapper().setType(other.color())
             self.setData(other.defaultValue())

@@ -7,10 +7,10 @@ from PyFlow.Core.Common import *
 
 
 class PinBase(IPin):
+    # TODO: remove dataType argument. This is redundant. We use __class__.__name__ wrapped in property
     def __init__(self, name, owningNode, dataType, direction, userStructClass=None):
         super(PinBase, self).__init__()
         self._uid = uuid.uuid4()
-        self._dataType = None
         self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
@@ -29,7 +29,6 @@ class PinBase(IPin):
             self.owningNode = weakref.ref(owningNode)
 
         self.name = name
-        self.dataType = dataType
         ## Defines is this input pin or output
         self.direction = direction
         ## For rand int node
@@ -179,11 +178,11 @@ class PinBase(IPin):
     ## Describes, what data type is this pin.
     @property
     def dataType(self):
-        return self._dataType
+        return self.__class__.__name__
 
-    @dataType.setter
-    def dataType(self, value):
-        self._dataType = value
+    # @dataType.setter
+    # def dataType(self, value):
+    #     self._dataType = value
 
     def isUserStruct(self):
         return self._userStructClass is not None

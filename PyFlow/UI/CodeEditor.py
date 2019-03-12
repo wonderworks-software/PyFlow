@@ -178,6 +178,8 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
         for i in self.items:
             self.cbType.addItem(i)
 
+        self.cbType.setCurrentIndex(self.cbType.findText('AnyPin'))
+
     @staticmethod
     def construct(name='pinName', hideLabel=False, dataType='FloatPin', editor=None):
         w = WPinWidget(editor)
@@ -273,10 +275,10 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
     def populate(self):
         node = self.graph.nodes[self.nodeUid]
         for i in node.inputs.values():
-            pw = WPinWidget.construct(i.name, i.getWrapper()().getLabel()().isVisible(), i.dataType, self)
+            pw = WPinWidget.construct(i.name, i.getWrapper()().getLabel()().isVisible(), i.__class__.__name__, self)
             self.appendInput(pw)
         for o in node.outputs.values():
-            pw = WPinWidget.construct(o.name, o.getWrapper()().getLabel()().isVisible(), o.dataType, self)
+            pw = WPinWidget.construct(o.name, o.getWrapper()().getLabel()().isVisible(), o.__class__.__name__, self)
             self.appendOutput(pw)
         self.leLabel.setText(node.label().toPlainText())
         code = ""
