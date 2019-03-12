@@ -164,7 +164,8 @@ class PinBase(IPin):
 
     ## Calling execution pin
     def call(self):
-        pass
+        for i in self.affects:
+            i.call()
 
     def disconnectAll(self):
         trash = []

@@ -129,6 +129,9 @@ class NodeBase(INode):
         self.y = y
 
     def addInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
+        if dataType == 'ExecPin':
+            assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
+
         # check unique name
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)

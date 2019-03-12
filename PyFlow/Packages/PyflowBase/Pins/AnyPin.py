@@ -139,7 +139,10 @@ class AnyPin(PinBase):
             self._wrapper().setType(other.color())
             self.setData(other.defaultValue())
             self.setDefaultValue(other.defaultValue())
-            self.call = other.call
+            if self.direction == PinDirection.Input:
+                self.call = other.call
+            if self.direction == PinDirection.Output:
+                other.call = self.call
             self.dirty = other.dirty
             self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass
