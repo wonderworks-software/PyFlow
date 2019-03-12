@@ -33,12 +33,12 @@ from PyFlow.UI.UIPinBase import (
 )
 from PyFlow.UI.InputWidgets import createInputWidget
 from PyFlow.UI.NodePainter import NodePainter
-from PyFlow.UI.IContextMenu import IContextMenu
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Enums import ENone
 from PyFlow.Core.Common import *
 
 from collections import OrderedDict
+
 UI_NODES_FACTORIES = {}
 
 
@@ -384,11 +384,6 @@ class UINodeBase(QGraphicsObject):
     def packageName(self):
         return self._rawNode.packageName()
 
-    def call(self, name):
-        if pinName in [p.name for p in self.outputs.values() if p.dataType is 'ExecPin']:
-            p = self.getPinByName(pinName)
-            return p.call()
-
     def getData(self, pinName):
         if pinName in [p.name for p in self.inputs.values()]:
             p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
@@ -625,6 +620,9 @@ class UINodeBase(QGraphicsObject):
             out['uuid'] = str(uuid.uuid4())
         new_node = self.graph().createNode(templ)
         return new_node
+
+    def call(self, name):
+        self._rawNode.call(name)
 
     def propertyView(self):
         return self.graph().parent.dockWidgetNodeView

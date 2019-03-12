@@ -194,6 +194,12 @@ class NodeBase(INode):
             return self.outputs[uid]
         return None
 
+    def call(self, name):
+        if name in self.namePinOutputsMap:
+            p = self.namePinOutputsMap[name]
+            if p.dataType == 'ExecPin':
+                p.call()
+
     def getPinByName(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
         if pinsSelectionGroup == PinSelectionGroup.BothSides:
             for p in list(self.inputs.values()) + list(self.outputs.values()):

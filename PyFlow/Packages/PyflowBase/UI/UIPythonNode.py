@@ -15,6 +15,9 @@ class UIPythonNode(UINodeBase):
         self.editorUUID = None
         self.resizable = True
 
+    def postCreate(self, jsonTemplate):
+        super(UIPythonNode, self).postCreate(jsonTemplate)
+
     @property
     def compute(self):
         return self._rawNode.compute
@@ -29,7 +32,6 @@ class UIPythonNode(UINodeBase):
 
     @currentComputeCode.setter
     def currentComputeCode(self, value):
-        assert(isinstance(value, str))
         self._rawNode.currentComputeCode = value
 
     def onEdit(self):

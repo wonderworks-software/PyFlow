@@ -121,18 +121,18 @@ class GraphBase(object):
         return self.findPinByUID(uid)
 
     def findPinByUID(self, uid):
-        uiPin = None
+        pin = None
         if uid in self.pins:
-            uiPin = self.pins[uid]
-        return uiPin
+            pin = self.pins[uid]
+        return pin
 
     def findPinByName(self, pinName):
-        uiPin = None
+        pin = None
         for pin in self.pins.values():
             if pinName == pin.getName():
-                uiPin = pin
+                pin = pin
                 break
-        return uiPin
+        return pin
 
     def addNode(self, node):
         assert(node is not None), "failed to add node, None is passed"
@@ -158,10 +158,21 @@ class GraphBase(object):
         return self.nodes.__len__()
 
     def canConnectPins(self, src, dst):
+
         debug = self.isDebug()
+
         if src is None or dst is None:
             print("can not connect pins")
+            if src is None:
+                print("src is None")
+            if dst is None:
+                print("dst is None")
             return False
+
+        # same types are always supported
+        if src.dataType == dst.dataType:
+            return True
+
         if src.direction == PinDirection.Input:
             src, dst = dst, src
 

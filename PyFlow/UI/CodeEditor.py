@@ -52,6 +52,7 @@ When save button is pressed, function with code you wrote will be generated and 
 
 import weakref
 from keyword import kwlist
+import sys
 try:
     # python 2 support
     import __builtin__ as builtins
@@ -80,6 +81,7 @@ from PyFlow import (
     getAllPinClasses,
     getPinDefaultValueByType
 )
+from PyFlow.Core.PyCodeCompiler import Py3FunctionCompiler
 
 
 _defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()'] + dir(builtins)
@@ -181,12 +183,12 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
         w = WPinWidget(editor)
         w.lePinName.setText(name)
 
-        if hideLabel:
+        if not hideLabel:
             w.cbHideLabel.setCheckState(QtCore.Qt.Checked)
         else:
             w.cbHideLabel.setCheckState(QtCore.Qt.Unchecked)
 
-        w.cbType.setCurrentIndex(w.cbType.findData(dataType))
+        w.cbType.setCurrentIndex(w.cbType.findText(dataType))
         return w
 
     def shouldHideLabel(self):
@@ -223,7 +225,7 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
         self.gridLayout.addWidget(self.plainTextEdit, 0, 0, 1, 1)
         PythonSyntax.PythonHighlighter(self.plainTextEdit.document())
         option = QtGui.QTextOption()
-        option.setFlags(option.Flags() | QtGui.QTextOption.ShowTabsAndSpaces)
+        # option.setFlags(option.Flags() | QtGui.QTextOption.ShowTabsAndSpaces)
         self.plainTextEdit.document().setDefaultTextOption(option)
         self.tabWidget.currentChanged.connect(self.OnCurrentTabChanged)
         self.setFontSize(10)
@@ -271,10 +273,10 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
     def populate(self):
         node = self.graph.nodes[self.nodeUid]
         for i in node.inputs.values():
-            pw = WPinWidget.construct(i.name, i.bLabelHidden, i.dataType, self)
+            pw = WPinWidget.construct(i.name, i.getWrapper()().getLabel()().isVisible(), i.dataType, self)
             self.appendInput(pw)
         for o in node.outputs.values():
-            pw = WPinWidget.construct(o.name, o.bLabelHidden, o.dataType, self)
+            pw = WPinWidget.construct(o.name, o.getWrapper()().getLabel()().isVisible(), o.dataType, self)
             self.appendOutput(pw)
         self.leLabel.setText(node.label().toPlainText())
         code = ""
@@ -306,26 +308,11 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
             node.outputsLayout.removeAt(0)
         # TODO: Reset node size
 
-    @staticmethod
-    ## this method wraps code into the function
-    # @param fooName function name (string)
-    # @param code python code (string)
-    # @returns function object
-    def wrapCodeToFunction(fooName, code):
-        foo = "def {}(self):".format(fooName)
-        lines = [i for i in code.split('\n') if len(i) > 0]
-        for line in lines:
-            foo += '\n\t{}'.format(line)
-        if len(lines) == 0:
-            foo += "\n\tpass"
-        codeObject = compile(foo, "fake", "exec")
-        exec(codeObject, globals())
-        return globals()[fooName]
-
     ## slot called when Save button is pressed
     # @sa CodeEditor
     def applyData(self):
         # reset node
+        # TODO: do not remove pins if data is the same
         self.resetNode()
         node = self.graph.nodes[self.nodeUid]
 
@@ -337,7 +324,8 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
 
         # assign compute method
         code = self.plainTextEdit.toPlainText()
-        foo = CodeEditor.wrapCodeToFunction('compute', code)
+        # Py3FunctionCompiler works for python 2 as well
+        foo = Py3FunctionCompiler('compute').compile(code)
         node.compute = MethodType(foo, node)
         node.currentComputeCode = code
 
@@ -347,9 +335,9 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
                 dataType = w.dataType()
                 rawPin = node._rawNode.addOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType))
                 uiPin = node._createUIPinWrapper(rawPin)
+                rawPin.owningNode().graph().pins[rawPin.uid] = rawPin
                 w.lePinName.setText(uiPin.name)
-                if w.shouldHideLabel():
-                    uiPin.setDisplayName("")
+                uiPin.getLabel()().setVisible(not w.shouldHideLabel())
 
         # recreate pins from editor data
         for index in range(self.lwInputs.count()):
@@ -359,10 +347,9 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
                 compute = node.compute if dataType == "ExecPin" else None
                 rawPin = node._rawNode.addInputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), compute)
                 uiPin = node._createUIPinWrapper(rawPin)
-                # TODO: add in graph pins!
+                rawPin.owningNode().graph().pins[rawPin.uid] = rawPin
                 w.lePinName.setText(uiPin.name)
-                if w.shouldHideLabel():
-                    uiPin.setDisplayName("")
+                uiPin.getLabel()().setVisible(not w.shouldHideLabel())
 
         for i in node.inputs.values():
             for o in node.outputs.values():

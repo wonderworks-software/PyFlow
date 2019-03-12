@@ -258,6 +258,12 @@ class INode(IItemBase):
     def isCallable(self):
         raise NotImplementedError('isCallable method of INode is not implemented')
 
+    def call(self, outPinName):
+        """
+            call out exec pin by name
+        """
+        raise NotImplementedError('call method of INode is not implemented')
+
     def addInputPin(self, pinName, dataType, foo=None):
         raise NotImplementedError('addInputPin method of INode is not implemented')
 
@@ -296,3 +302,11 @@ class IPackage(object):
     @staticmethod
     def GetPinClasses():
         raise NotImplementedError('GetPinClasses method of IPackage is not implemented')
+
+
+class ICodeCompiler(object):
+    def __init__(self, *args, **kwags):
+        super(ICodeCompiler, self).__init__(*args, **kwags)
+
+    def compile(self, code):
+        raise NotImplementedError('compile method of ICodeCompiler is not implemented')
