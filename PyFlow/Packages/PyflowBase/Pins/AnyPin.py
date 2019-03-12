@@ -141,8 +141,6 @@ class AnyPin(PinBase):
             self.setDefaultValue(other.defaultValue())
             if self.direction == PinDirection.Input:
                 self.call = other.call
-            if self.direction == PinDirection.Output:
-                other.call = self.call
             self.dirty = other.dirty
             self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass
