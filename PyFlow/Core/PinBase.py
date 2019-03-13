@@ -11,6 +11,7 @@ class PinBase(IPin):
     def __init__(self, name, owningNode, dataType, direction, userStructClass=None):
         super(PinBase, self).__init__()
         self._uid = uuid.uuid4()
+        self._dataType = None
         self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
@@ -28,6 +29,7 @@ class PinBase(IPin):
         if owningNode is not None:
             self.owningNode = weakref.ref(owningNode)
 
+        self.dataType = dataType
         self.name = name
         ## Defines is this input pin or output
         self.direction = direction
@@ -178,11 +180,11 @@ class PinBase(IPin):
     ## Describes, what data type is this pin.
     @property
     def dataType(self):
-        return self.__class__.__name__
+        return self._dataType
 
-    # @dataType.setter
-    # def dataType(self, value):
-    #     self._dataType = value
+    @dataType.setter
+    def dataType(self, value):
+        self._dataType = value
 
     def isUserStruct(self):
         return self._userStructClass is not None

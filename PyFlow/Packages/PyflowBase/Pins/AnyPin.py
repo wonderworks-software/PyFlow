@@ -52,13 +52,8 @@ class AnyPin(PinBase):
 
     def serialize(self):
         dt = super(AnyPin, self).serialize()
-        # store current active data type, to serialize value
-        # and restore it correctly
-        activeType = self.dataType
-        dt['dataType'] = "AnyPin"
-        dt['activeDataType'] = activeType
         if self.dataType != "AnyPin":
-            pinClass = findPinClassByType(activeType)
+            pinClass = findPinClassByType(self.dataType)
             # serialize with active type's encoder
             if not pinClass.isPrimitiveType():
                 encodedValue = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
@@ -135,20 +130,16 @@ class AnyPin(PinBase):
 
     def setDefault(self):
         self.super = None
-        # TODO: move this call to UI class
+        self.dataType = "AnyPin"
         self._wrapper().setDefault(self.defColor())
-
         self.setDefaultValue(None)
 
     def setType(self, other):
-        if self.activeDataType == "AnyPin" or self.activeDataType not in other.supportedDataTypes():
-            self.activeDataType = other.dataType
+        if self.dataType == "AnyPin" or self.dataType not in other.supportedDataTypes():
             self.super = other.__class__
+            self.dataType = other.dataType
             self.color = other.color
-
-            # TODO: move this call to UI class
             self._wrapper().setType(other.color())
-
             self.setData(other.defaultValue())
             self.setDefaultValue(other.defaultValue())
             if self.direction == PinDirection.Input:

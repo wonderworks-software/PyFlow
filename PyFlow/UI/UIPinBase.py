@@ -294,11 +294,11 @@ class UIPinBase(QGraphicsWidget):
 
     @property
     def dataType(self):
-        return self._rawPin.dataType
+        return self._rawPin._dataType
 
-    # @dataType.setter
-    # def dataType(self, value):
-    #     self._rawPin._dataType = value
+    @dataType.setter
+    def dataType(self, value):
+        self._rawPin._dataType = value
 
     def boundingRect(self):
         if not self.dataType == 'ExecPin':
