@@ -1026,32 +1026,33 @@ class GraphWidgetUI(QGraphicsView):
         if not fpath == '':
             with open(fpath, 'r') as f:
                 data = json.load(f)
-                self.new_file()
-                # vars
-                for varJson in data[self.name]['vars']:
-                    VariableBase.deserialize(varJson, self)
-                # nodes
-                for nodeJson in data[self.name]['nodes']:
-                    try:
-                        UINodeBase.deserialize(nodeJson, self)
-                    except Exception as e:
-                        print(nodeJson)
-                        print(e)
-                # connections
-                for edgeJson in data[self.name]['connections']:
-                    UIConnection.deserialize(edgeJson, self)
-                self._current_file_name = fpath
-                self._file_name_label.setPlainText(self._current_file_name)
-                self.frameAllNodes()
-                self.undoStack.clear()
-                # for node in self.getNodes():
-                #     if node.isCommentNode:
-                #         if not node.expanded:
-                #             node.expanded = True
-                #             node.updateChildren(node.nodesToMove.keys())
-                #             node.toogleCollapsed()
-        self._clearPropertiesView()
-
+                self.loadFromData(data,fpath)
+    def loadFromData(self,data,fpath=""):
+        self.new_file()
+        # vars
+        for varJson in data[self.name]['vars']:
+            VariableBase.deserialize(varJson, self)
+        # nodes
+        for nodeJson in data[self.name]['nodes']:
+            #try:
+            UINodeBase.deserialize(nodeJson, self)
+            #except Exception as e:
+            #    print(nodeJson)
+            #    print(e)
+        # connections
+        for edgeJson in data[self.name]['connections']:
+            UIConnection.deserialize(edgeJson, self)
+        self._current_file_name = fpath
+        self._file_name_label.setPlainText(self._current_file_name)
+        self.frameAllNodes()
+        self.undoStack.clear()
+        # for node in self.getNodes():
+        #     if node.isCommentNode:
+        #         if not node.expanded:
+        #             node.expanded = True
+        #             node.updateChildren(node.nodesToMove.keys())
+        #             node.toogleCollapsed()
+        self._clearPropertiesView()        
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
         pinName = full_name.split('.')[1]

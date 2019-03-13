@@ -56,6 +56,11 @@ class UIsubgraph(UINodeBase):
         graphData = self._graph.getGraphSaveData()
         template["graphData"] = graphData
         return template
+        
+    @staticmethod
+    def deserialize(data, graph):
+        node = graph.createNode(data)
+        node.uid = uuid.UUID(data['uuid'])
 
     def postCreate(self, jsonTemplate):
         super(UIsubgraph, self).postCreate(jsonTemplate)
