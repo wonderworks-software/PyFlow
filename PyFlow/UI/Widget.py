@@ -50,6 +50,7 @@ from PyFlow.UI.UIConnection import UIConnection
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.UINodeBase import NodeName
 from PyFlow.UI.UINodeBase import getUINodeInstance
+from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
@@ -63,6 +64,7 @@ from PyFlow.UI.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
 )
+
 from PyFlow import (
     getRawNodeInstance,
     GET_PACKAGES
@@ -761,45 +763,28 @@ class GraphWidgetUI(QGraphicsView):
             QGraphicsTextItem.ItemIgnoresTransformations)
         self._file_name_label.setDefaultTextColor(Colors.White)
         self._file_name_label.setPlainText(self._current_file_name)
-
         self.scene().addItem(self._file_name_label)
-        self.buttons = []
         if self._parentGraph:
             graph = self
-            graphName = "root"
-            graphName += " | %s" % graph._parentNode.name
-            offset = 0
-            GoUpButtonProxy = QGraphicsProxyWidget()
-            GoUpButton = QPushButton("root")
-            GoUpButtonProxy.setWidget(GoUpButton)
-            GoUpButton.setStyleSheet(buttonStyle)
-            GoUpButtonProxy.setFlag(
+            graphName = []
+            graphName.append(graph._parentNode.name)
+            self.GoUpButtonProxy = QGraphicsProxyWidget()
+            self.GoUpButton = QPushButton("Go Up")
+            self.GoUpButtonProxy.setWidget(self.GoUpButton)
+            self.GoUpButton.setStyleSheet(buttonStyle)
+            self.GoUpButton.clicked.connect(self.goUp)
+            self.GoUpButtonProxy.setFlag(
                 QGraphicsTextItem.ItemIgnoresTransformations)
-            GoUpButtonProxy.offset = offset
-            offset += GoUpButton.width()
-            self.buttons.append(GoUpButtonProxy)
-            self.scene().addItem(GoUpButtonProxy)
-            pgraph = graph._parentGraph
-            GoUpButton.clicked.connect(lambda: self.goUp(pgraph))
+            self.scene().addItem(self.GoUpButtonProxy)
+            graph = graph._parentGraph
             while graph._parentGraph:
-                graphName += " | %s" % graph._parentNode.name
-                GoUpButtonProxy = QGraphicsProxyWidget()
-                GoUpButton = QPushButton(graph._parentNode.name)
-                GoUpButtonProxy.setWidget(GoUpButton)
-                GoUpButton.setStyleSheet(buttonStyle)
-                GoUpButtonProxy.setFlag(
-                    QGraphicsTextItem.ItemIgnoresTransformations)
-                GoUpButtonProxy.offset = offset
-                offset += GoUpButton.width()
-                self.buttons.append(GoUpButtonProxy)
-                self.scene().addItem(GoUpButtonProxy)
-                pgraph = graph._parentGraph
-                GoUpButton.clicked.connect(lambda: self.goUp(pgraph))
+                graphName.append(graph._parentNode.name)
                 graph = graph._parentGraph
+            graphName.append("root")
+            graphName = graphName[::-1]
+            graphName = " | ".join(graphName)
             self._file_name_label.setPlainText(graphName)
-
         self.real_time_line = QGraphicsPathItem(None, self.scene())
-
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.setPen(QtGui.QPen(
             Colors.Green, 1.0, QtCore.Qt.DashLine))
@@ -871,12 +856,12 @@ class GraphWidgetUI(QGraphicsView):
         if dataType is None:
             self.node_box.lineEdit.setFocus()
 
-    def goUp(self, graph):
+    def goUp(self):
         if self._parentGraph:
-            self.parent.currentGraph = graph
-            graph.show()
+            self.parent.currentGraph = self._parentGraph
+            self._parentGraph.show()
             self.hide()
-            self.parent.variablesWidget.setGraph(graph)
+            self.parent.variablesWidget.setGraph(self._parentGraph)
 
     def shoutDown(self):
         for ed in self.codeEditors.values():
@@ -909,8 +894,8 @@ class GraphWidgetUI(QGraphicsView):
                     self.pressed_item.parentItem().setName(name)
                     self.updatePropertyView(self.pressed_item.parentItem())
         # Update when Editable Labels are added
-        # elif self.pressed_item and isinstance(self.pressed_item,EditableLabel):
-        #    self.pressed_item.start_edit_name()
+        elif self.pressed_item and isinstance(self.pressed_item,EditableLabel):
+            self.pressed_item.start_edit_name()
 
     def Tick(self, deltaTime):
         if self.autoPanController.isActive():
@@ -1873,9 +1858,8 @@ class GraphWidgetUI(QGraphicsView):
         self._file_name_label.setPos(polygon[0])
 
         if self._parentGraph:
-            for but in self.buttons:
-                but.setPos(polygon[0].x() + but.offset, polygon[0].y())
-            self._file_name_label.hide()  # moveBy(self.GoUpButton.width(),0)
+            self.GoUpButtonProxy.setPos(polygon[0].x(), polygon[0].y())
+            self._file_name_label.moveBy(self.GoUpButton.width(),0)
         # self.inputsItem.setPos(self.mapToScene(self.viewport().rect().x(),self.viewport().rect().y()+50) )
         # self.inputsItem.setPos(self.boundingRect.topLeft().x(),self.boundingRect.topLeft().y()+50)
         # self.inputsItem.update()

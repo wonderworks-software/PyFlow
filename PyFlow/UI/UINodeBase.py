@@ -33,6 +33,7 @@ from PyFlow.UI.UIPinBase import (
 )
 from PyFlow.UI.InputWidgets import createInputWidget
 from PyFlow.UI.NodePainter import NodePainter
+from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Enums import ENone
 from PyFlow.Core.Common import *
@@ -362,7 +363,7 @@ class UINodeBase(QGraphicsObject):
             self.resizable = True
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
-        # self._displayName = self.name
+        self._displayName = self.name
 
     def isCallable(self):
         return self._rawNode.isCallable()
@@ -449,8 +450,10 @@ class UINodeBase(QGraphicsObject):
                         j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
         if label is None:
             self.label().setPlainText(self._rawNode.__class__.__name__)
+            self.displayName = self.name
         else:
             self.label().setPlainText(label)
+            self.displayName = label
 
         self.updateWidth()
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
@@ -755,14 +758,12 @@ class UINodeBase(QGraphicsObject):
             p.call = rawPin.call
 
         name = rawPin.name
-
+        lblName = name
         # TODO: do not use Proxy widget. Use QGraphicsTextItem instead
+        """
         connector_name = QGraphicsProxyWidget()
         connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)
-
-        lblName = name
-
         lbl = QLabel(lblName)
         p.displayNameChanged.connect(lbl.setText)
         p.displayNameChanged.connect(self.updateWidth)
@@ -779,19 +780,31 @@ class UINodeBase(QGraphicsObject):
             color.alpha())
         lbl.setStyleSheet(style)
         connector_name.setWidget(lbl)
+        """
+        connector_name = EditableLabel(name=lblName,node=self,graph=self.graph())
+        connector_name.setObjectName('{0}PinConnector'.format(name))
+        connector_name.setContentsMargins(0, 0, 0, 0)
+
+        connector_name.setColor(Colors.PinNameColor)
+        p.nameChanged.connect(connector_name.setText)
+        p.displayNameChanged.connect(connector_name.setText)
+        connector_name.nameChanged.connect(p.setName)
+        connector_name.nameChanged.connect(p.setDisplayName)
+        p.displayNameChanged.connect(self.updateWidth)
         if rawPin.direction == PinDirection.Input:
             container = self.addContainer(rawPin.direction)
-            lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+            #lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+            connector_name.nameLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
             container.layout().addItem(p)
             p.setLabel(connector_name)
             p._container = container
             container.layout().addItem(connector_name)
-
             self.inputsLayout.insertItem(index, container)
             container.adjustSize()
         elif rawPin.direction == PinDirection.Output:
             container = self.addContainer(rawPin.direction)
-            lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+            #lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+            connector_name.nameLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
             p.setLabel(connector_name)

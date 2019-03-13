@@ -108,6 +108,7 @@ class UIPinBase(QGraphicsWidget):
 
     def setRenamingEnabled(self, bEnabled):
         self._rawPin.setRenamingEnabled(bEnabled)
+        self._label()._isEditable = bEnabled
         actionsNames = [a.text() for a in self.menu.actions()]
         if bEnabled and "Rename" not in actionsNames:
             renameAction = self.menu.addAction("Rename")
