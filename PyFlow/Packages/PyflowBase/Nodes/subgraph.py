@@ -9,7 +9,7 @@ from PyFlow.Core.Common import *
 class subgraph(NodeBase):
     def __init__(self, name):
         super(subgraph, self).__init__(name)
-        self.rawGraph = GraphBase('graph')
+        self.rawGraph = GraphBase(name)
         self.dinOutputs = {}
         self.dinInputs = {}
         # self.bCallable = True
@@ -31,24 +31,24 @@ class subgraph(NodeBase):
         return 'Encapsulate a graph inside a node'
 
     def addInPin(self, pin):
-        p = self.addInputPin(pin.name, 'AnyPin', constraint="in%s" % pin.name)
+        p = self.addInputPin(pin.name, 'AnyPin', constraint="%s%s" % (pin.owningNode().name,pin.name))
         p.setAlwaysPushDirty(True)
         if p.uid not in self.graph().pins:
             self.graph().pins[p.uid] = p
-        pin.constraint = "in%s" % pin.name
-        self._Constraints["in%s" % pin.name].append(pin)
-        pin.owningNode()._Constraints["in%s" % pin.name] = [pin, p]
+        pin.constraint = "%s%s" % (pin.owningNode().name,pin.name)
+        self._Constraints["%s%s" % (pin.owningNode().name,pin.name)].append(pin)
+        pin.owningNode()._Constraints[ "%s%s" % (pin.owningNode().name,pin.name)] = [pin, p]
         self.dinInputs[pin] = p
         return p
 
     def addOutPin(self, pin):
-        p = self.addOutputPin(pin.name, 'AnyPin', constraint="out%s" % pin.name)
+        p = self.addOutputPin(pin.name, 'AnyPin', constraint="%s%s" % (pin.owningNode().name,pin.name))
         p.setAlwaysPushDirty(True)
         if p.uid not in self.graph().pins:
             self.graph().pins[p.uid] = p
-        pin.constraint = "out%s" % pin.name
-        self._Constraints["out%s" % pin.name].append(pin)
-        pin.owningNode()._Constraints["out%s" % pin.name] = [pin, p]
+        pin.constraint = "%s%s" % (pin.owningNode().name,pin.name)
+        self._Constraints["%s%s" % (pin.owningNode().name,pin.name)].append(pin)
+        pin.owningNode()._Constraints["%s%s" % (pin.owningNode().name,pin.name)] = [pin, p]
         self.dinOutputs[pin] = p
         return p
 

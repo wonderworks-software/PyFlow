@@ -14,20 +14,19 @@ class UIsubgraph(UINodeBase):
         self._category = "CustomGraphs"
         self._keywords = "CustomGraphs"
         self._description = "Custom SubGraph"
-        # self.bCallable = True
         self.dinOutputs = {}
         self.dinInputs = {}
-        # self.label().hide()
 
     def onAddInPin(self, pin):
         rawPin = self._rawNode.addInPin(pin=pin._rawPin)
         uiPin = self._createUIPinWrapper(rawPin)
+        uiPin.setDisplayName(pin.displayName())
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
         pin.nameChanged.connect(uiPin.setName)
+        pin.displayNameChanged.connect(uiPin.setDisplayName)
         pin.OnPinDeleted.connect(self.deletePort)
         pin.dataBeenSet.connect(uiPin.setData)
-        pin.dataBeenSet.connect(self.test)
         pinAffects(uiPin._rawPin, pin._rawPin)
         self.dinInputs[pin] = uiPin
         for i in self.inputs.values():
@@ -36,14 +35,14 @@ class UIsubgraph(UINodeBase):
         self.updateWidth()
         return uiPin
 
-    def test(self, data):
-        print(data)
-
     def onAddOutPin(self, pin):
         rawPin = self._rawNode.addOutPin(pin=pin._rawPin)
         uiPin = self._createUIPinWrapper(rawPin)
+        uiPin.setDisplayName(pin.displayName())
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
+        pin.nameChanged.connect(uiPin.setName)
+        pin.displayNameChanged.connect(uiPin.setDisplayName)        
         pin.OnPinDeleted.connect(self.deletePort)
         pin.dataBeenSet.connect(uiPin.setData)
         pinAffects(pin._rawPin, uiPin._rawPin)
@@ -62,15 +61,14 @@ class UIsubgraph(UINodeBase):
 
     def postCreate(self, jsonTemplate):
         super(UIsubgraph, self).postCreate(jsonTemplate)
-        self._graph = GraphWidgetUI(self.graph().parent, graphBase=self._rawNode.rawGraph)
+        self._graph = GraphWidgetUI(self.graph().parent, graphBase=self._rawNode.rawGraph,parentGraph=self.graph(),parentNode = self)
         self._graph.outPinCreated.connect(self.onAddOutPin)
         self._graph.inPinCreated.connect(self.onAddInPin)
+        self._graph.hide()
+        self._graph.getInputNode()
+        self._graph.getOutputNode()      
+        self.graph().parent.SceneLayout.addWidget(self._graph)
 
-        self.dlg = MyDialog()
-        # self.styleSheetEditor = self.graph().styleSheetEditor
-        # self.dlg.setStyleSheet(self.styleSheetEditor.getStyleSheet())
-        self.dlg.setLayout(QtWidgets.QHBoxLayout())
-        self.dlg.layout().addWidget(self._graph)
         if "graphData" in jsonTemplate:
             self._graph.loadFromData(jsonTemplate["graphData"])
         # restore pins
@@ -95,7 +93,15 @@ class UIsubgraph(UINodeBase):
         event.accept()
 
     def OnDoubleClick(self, pos):
-        self.dlg.show()
+        self.graph().parent.currentGraph = self._graph 
+        self._graph._parentGraph.hide()  
+        self._graph.show()
+        self._graph.frameAllNodes()
+        self.graph().parent.variablesWidget.setGraph(self._graph)
+
+    def kill(self):
+        self._graph.shoutDown()
+        super(UIsubgraph, self).kill()
 
     def export(self):
         from . import _nodeClasses
@@ -131,19 +137,3 @@ class UIsubgraph(UINodeBase):
                 json.dump(graphData, f, skipkeys=True, default=to_serializable, indent=2)
             reload(SubGraphs)
             SubGraphs._getClasses()
-
-
-class MyDialog(QtWidgets.QDialog):
-    # ...
-    def __init__(self, parent=None):
-        super(MyDialog, self).__init__(parent)
-
-        # when you want to destroy the dialog set this to True
-        self._want_to_close = False
-
-    def closeEvent(self, evnt):
-        if self._want_to_close:
-            super(MyDialog, self).closeEvent(evnt)
-        else:
-            evnt.ignore()
-            self.hide()

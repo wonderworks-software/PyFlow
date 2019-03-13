@@ -13,9 +13,8 @@ class UIGraphInputs(UINodeBase):
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.onAddOutPin)
         self.label().hide()
-        # self.sender = sender()
         self.resizable = True
-        self.inputsLayout.setGeometry(QtCore.QRectF(0, 0, 0, 0))
+        self.portsMainLayout.removeItem(self.inputsLayout)
         self.minWidth = 25
 
     def onAddOutPin(self):
@@ -23,7 +22,7 @@ class UIGraphInputs(UINodeBase):
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
-        uiPin.setDisplayName("Input {}".format(str(len(self.outputs) - 1)))
+        uiPin.setDisplayName("Input_{}".format(str(len(self.outputs) - 1)))
         self.updateWidth()
         self.pinCreated.emit(uiPin)
         return uiPin
@@ -33,7 +32,7 @@ class UIGraphInputs(UINodeBase):
         for i in range(0, len(self.outputs)):
             pin = list(self.outputs.values())[i]
             pin.getWrapper()().setName(str(i))
-            pin.getWrapper()().setDisplayName("Input {}".format(i))
+            pin.getWrapper()().setDisplayName("Input_{}".format(i))
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
@@ -61,9 +60,8 @@ class UIGraphOutputs(UINodeBase):
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.onAddInPin)
         self.label().hide()
-        # self.sender = sender()
         self.resizable = True
-        self.inputsLayout.setGeometry(QtCore.QRectF(0, 0, 0, 0))
+        self.portsMainLayout.removeItem(self.outputsLayout)
         self.minWidth = 25
 
     def onAddInPin(self):
@@ -71,7 +69,7 @@ class UIGraphOutputs(UINodeBase):
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
-        uiPin.setDisplayName("Output {}".format(str(len(self.inputs) - 1)))
+        uiPin.setDisplayName("Output_{}".format(str(len(self.inputs) - 1)))
         self.updateWidth()
         self.pinCreated.emit(uiPin)
         return uiPin
@@ -81,7 +79,7 @@ class UIGraphOutputs(UINodeBase):
         for i in range(0, len(self.inputs)):
             pin = list(self.inputs.values())[i]
             pin.getWrapper()().setName(str(i))
-            pin.getWrapper()().setDisplayName("Input {}".format(i))
+            pin.getWrapper()().setDisplayName("Input_{}".format(i))
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
@@ -90,7 +88,7 @@ class UIGraphOutputs(UINodeBase):
         createdPinNames = [pin.name for pin in self.inputs.values()]
         for inPin in jsonTemplate["inputs"]:
             if inPin['name'] not in createdPinNames:
-                uiPin = self.onAddOutPin()
+                uiPin = self.onAddInPin()
         self._displayName = "outputs"
         self.label().setPlainText("outputs")
         self._rect.setWidth(25)

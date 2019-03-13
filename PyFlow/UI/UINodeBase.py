@@ -368,10 +368,13 @@ class UINodeBase(QGraphicsObject):
         return self._rawNode.isCallable()
 
     def boundingRect(self):
-        if self.childrenBoundingRect().height() > self._rect.height():
-            self._rect.setHeight(self.childrenBoundingRect().height())
-        if self.minWidth > self._rect.width():
-            self._rect.setWidth(self.minWidth)
+        if self.resizable:
+            if self.childrenBoundingRect().height() > self._rect.height():
+                self._rect.setHeight(self.childrenBoundingRect().height())
+            if self.minWidth > self._rect.width():
+                self._rect.setWidth(self.minWidth)
+        else:
+            self._rect = self.childrenBoundingRect() 
 
         return self._rect
 
@@ -762,6 +765,7 @@ class UINodeBase(QGraphicsObject):
 
         lbl = QLabel(lblName)
         p.displayNameChanged.connect(lbl.setText)
+        p.displayNameChanged.connect(self.updateWidth)
         lbl.setContentsMargins(0, 0, 0, 0)
         lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         font = QtGui.QFont('Consolas')

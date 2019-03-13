@@ -42,7 +42,18 @@ class VariablesWidget(QWidget, Ui_Form):
         self.pbKillVar.clicked.connect(self.killVar)
         self.listWidget.mousePressEvent = MethodType(lwMousePressEvent, self.listWidget)
         self.listWidget.setDragDropMode(self.listWidget.InternalMove)
+        self.notVisVars = []
 
+    def setGraph(self,graph):
+        self.graph = graph
+        for i in range(self.listWidget.count()):
+            item = self.listWidget.item(i)
+            w = self.listWidget.itemWidget(item)
+            if w.uid not in self.graph.vars:
+                item.setHidden(True)
+            else:
+                item.setHidden(False)
+        
     def killAll(self):
         self.listWidget.clear()
         self.graph.vars.clear()
