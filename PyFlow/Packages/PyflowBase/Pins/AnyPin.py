@@ -141,7 +141,7 @@ class AnyPin(PinBase):
         self.setDefaultValue(None)
 
     def setType(self, other):
-        if self.dataType == "AnyPin" and other.dataType in self.supportedDataTypes():
+        if self.activeDataType == "AnyPin" or self.activeDataType not in other.supportedDataTypes():
             self.activeDataType = other.dataType
             self.super = other.__class__
             self.color = other.color
