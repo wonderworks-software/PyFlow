@@ -245,7 +245,6 @@ class UIPinBase(QGraphicsWidget):
             e.highlight()
 
     def kill(self):
-        self.OnPinDeleted.emit(self)
         self.disconnectAll()
         if hasattr(self.owningNode(), self.name):
             delattr(self.owningNode(), self.name)
@@ -258,7 +257,8 @@ class UIPinBase(QGraphicsWidget):
             if self._rawPin.uid in self.owningNode().getWrapper()().UIPins:
                 del self.owningNode().getWrapper()().UIPins[self._rawPin.uid]
         self._rawPin.kill()
-        self.owningNode().getWrapper()().updateWidth()
+        self.OnPinDeleted.emit(self)
+        #self.owningNode().getWrapper()().updateWidth()
 
     @staticmethod
     def deserialize(owningNode, jsonData):

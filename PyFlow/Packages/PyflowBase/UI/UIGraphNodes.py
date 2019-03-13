@@ -29,10 +29,6 @@ class UIGraphInputs(UINodeBase):
 
     def updateNodeShape(self, label=None):
         UINodeBase.updateNodeShape(self, label)
-        for i in range(0, len(self.outputs)):
-            pin = list(self.outputs.values())[i]
-            pin.getWrapper()().setName(str(i))
-            pin.getWrapper()().setDisplayName("Input_{}".format(i))
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
@@ -44,8 +40,13 @@ class UIGraphInputs(UINodeBase):
                 uiPin = self.onAddOutPin()
         self._displayName = "Inputs"
         self.label().setPlainText("Inputs")
-        self._rect.setWidth(25)
-        self.updateWidth()
+        if "resize" in jsonTemplate['meta']:
+            self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
+            self._rect.setRight(jsonTemplate['meta']['resize']['w'])
+            self.w = self._rect.width()
+        else:       
+            self._rect.setWidth(25)
+            self.updateWidth()
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height())) 
 
     def paint(self, painter, option, widget):
@@ -76,10 +77,6 @@ class UIGraphOutputs(UINodeBase):
 
     def updateNodeShape(self, label=None):
         UINodeBase.updateNodeShape(self, label)
-        for i in range(0, len(self.inputs)):
-            pin = list(self.inputs.values())[i]
-            pin.getWrapper()().setName(str(i))
-            pin.getWrapper()().setDisplayName("Input_{}".format(i))
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)

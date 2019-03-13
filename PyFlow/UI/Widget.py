@@ -1485,7 +1485,7 @@ class GraphWidgetUI(QGraphicsView):
             #    super(GraphWidgetUI, self).mousePressEvent(event)
             self.node_box.hide()
 
-        elif not isinstance(self.pressed_item,EditableLabel):
+        elif not isinstance(self.pressed_item,EditableLabel) or (isinstance(self.pressed_item,EditableLabel) and not self.pressed_item._beingEdited):
             #else:
             if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
                 self.node_box.hide()

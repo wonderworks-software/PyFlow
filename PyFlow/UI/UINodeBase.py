@@ -163,7 +163,6 @@ class UINodeBase(QGraphicsObject):
             self.sizes = [0, 0, self.w, self.h, 2, 2]
         else:
             self.sizes = [0, 0, self.w, self.h, 10, 10]
-        self.w = w
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsFocusable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -428,11 +427,11 @@ class UINodeBase(QGraphicsObject):
             else:
                 pinheight2 = max(pinheight2, i.height)
         return max(pinheight, pinheight2)
-
+       
     def updateWidth(self):
         self.minWidth = max(self.getPinsWidth(), self.getWidth() + Spacings.kPinOffset)
-        self.w = self.minWidth  # ,self.getWidth() + Spacings.kPinOffset)
-
+        self.w = self.minWidth 
+                  
     def updateNodeShape(self, label=None):
         for i in range(0, self.inputsLayout.count()):
             container = self.inputsLayout.itemAt(i)
@@ -448,10 +447,10 @@ class UINodeBase(QGraphicsObject):
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(
                         j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-        if label is None:
-            self.label().setPlainText(self._rawNode.__class__.__name__)
-            self.displayName = self.name
-        else:
+        if label:# is None:
+            #self.label().setPlainText(self._rawNode.__class__.__name__)
+            #self.displayName = self.name
+            #else:
             self.label().setPlainText(label)
             self.displayName = label
 
@@ -474,15 +473,6 @@ class UINodeBase(QGraphicsObject):
                 self.label().color = res
                 self.update()
                 self.label().update()
-
-    def itemChange(self, change, value):
-        # if change == self.ItemPositionChange:
-        #    # grid snapping
-        #    value.setX(roundup(value.x() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
-        #    value.setY(roundup(value.y() - self.graph().grid_size + self.graph().grid_size / 3.0, self.graph().grid_size))
-        #    value.setY(value.y() - 2)
-        #    return value
-        return QGraphicsItem.itemChange(self, change, value)
 
     def setPosition(self, x, y):
         self._rawNode.setPosition(x, y)
@@ -557,22 +547,17 @@ class UINodeBase(QGraphicsObject):
                     self.label().width = newWidth
                     self._rect.setWidth(newWidth)
                     self.w = newWidth
-                    self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-                        0, 0, newWidth, self.boundingRect().height()))
             elif self.resizeDirection == (-1, 0):
                 # left connection resize
                 posdelta = self.mapToScene(event.pos()) - self.origPos
                 posdelta2 = self.mapToScene(event.pos()) - self.initPos
                 newWidth = -posdelta2.x() + self.initialRectWidth
-                if newWidth > self.minWidth:  # (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()) and newWidth > self.minWidth:
-                    # if newWidth > (self.inputsLayout.geometry().width()+self.outputsLayout.geometry().width()):
+                if newWidth > self.minWidth:
                     self.translate(posdelta.x(), 0, False)
                     self.origPos = self.pos()
                     self.label().width = newWidth
                     self._rect.setWidth(newWidth)
                     self.w = newWidth
-                    self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-                        0, 0, self.w, self.boundingRect().height()))
             elif self.resizeDirection == (0, -1):
                 newHeight = delta.y() + self.initialRectHeight
                 newHeight = max(newHeight, self.label().h + 20.0)
@@ -587,8 +572,6 @@ class UINodeBase(QGraphicsObject):
                     self.label().width = newWidth
                     self._rect.setWidth(newWidth)
                     self.w = newWidth
-                    self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-                        0, 0, self.w, self.boundingRect().height()))
                 if newHeight > self.minHeight:
                     self._rect.setHeight(newHeight)
             elif self.resizeDirection == (-1, -1):
@@ -603,10 +586,10 @@ class UINodeBase(QGraphicsObject):
                     self.label().width = newWidth
                     self._rect.setWidth(newWidth)
                     self.w = newWidth
-                    self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-                        0, 0, self.w, self.boundingRect().height()))
                 if newHeight > self.minHeight:
                     self._rect.setHeight(newHeight)
+            self.nodeMainGWidget.setGeometry(QtCore.QRectF(
+                0, 0, self.w, self.boundingRect().height()))                    
             self.update()
             self.label().update()
         self.lastMousePos = event.pos()
@@ -760,27 +743,7 @@ class UINodeBase(QGraphicsObject):
         name = rawPin.name
         lblName = name
         # TODO: do not use Proxy widget. Use QGraphicsTextItem instead
-        """
-        connector_name = QGraphicsProxyWidget()
-        connector_name.setObjectName('{0}PinConnector'.format(name))
-        connector_name.setContentsMargins(0, 0, 0, 0)
-        lbl = QLabel(lblName)
-        p.displayNameChanged.connect(lbl.setText)
-        p.displayNameChanged.connect(self.updateWidth)
-        lbl.setContentsMargins(0, 0, 0, 0)
-        lbl.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        font = QtGui.QFont('Consolas')
-        color = Colors.PinNameColor
-        font.setPointSize(6)
-        lbl.setFont(font)
-        style = 'color: rgb({0}, {1}, {2}, {3});'.format(
-            color.red(),
-            color.green(),
-            color.blue(),
-            color.alpha())
-        lbl.setStyleSheet(style)
-        connector_name.setWidget(lbl)
-        """
+
         connector_name = EditableLabel(name=lblName,node=self,graph=self.graph())
         connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)
@@ -790,7 +753,10 @@ class UINodeBase(QGraphicsObject):
         p.displayNameChanged.connect(connector_name.setText)
         connector_name.nameChanged.connect(p.setName)
         connector_name.nameChanged.connect(p.setDisplayName)
+        connector_name.nameChanged.connect(self.updateWidth)
+        p.nameChanged.connect(self.updateWidth)
         p.displayNameChanged.connect(self.updateWidth)
+        p.OnPinDeleted.connect(self.updateWidth)
         if rawPin.direction == PinDirection.Input:
             container = self.addContainer(rawPin.direction)
             #lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
@@ -812,9 +778,11 @@ class UINodeBase(QGraphicsObject):
             self.outputsLayout.insertItem(index, container)
             container.adjustSize()
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-
         self.UIPins[rawPin.uid] = p
         self.graph().UIPins[rawPin.uid] = p
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self._rect.width(), self.childrenBoundingRect().height()))
+        self.update()
+        self.nodeMainGWidget.update()        
         return p
 
 

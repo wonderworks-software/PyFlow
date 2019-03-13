@@ -1,6 +1,10 @@
 from Qt import QtWidgets
 from Qt import QtCore,QtGui
 
+from Qt.QtCore import QRegExp
+from Qt.QtGui import QRegExpValidator, QValidator
+
+
 class EditableLabel(QtWidgets.QGraphicsProxyWidget):
     nameChanged = QtCore.Signal(str)
     def __init__(self, name="",parent=None,node=None,graph=None):
@@ -19,7 +23,9 @@ class EditableLabel(QtWidgets.QGraphicsProxyWidget):
         self.prevName = name
         self.nameEdit = None
         self._isEditable = False
-
+        self._beingEdited = False
+        self.regex = QRegExp("^[A-Za-z0-9_-]+$")
+               
     def font(self):
         return self._font
 
@@ -39,14 +45,17 @@ class EditableLabel(QtWidgets.QGraphicsProxyWidget):
 
     def start_edit_name(self):
         if self._isEditable:
+            self._beingEdited = True
             self.graph._sortcuts_enabled = False
             self.nameEdit = QtWidgets.QLineEdit(self.nameLabel.text())
-            self.nameEdit.setContentsMargins(0, 0, 0, 0)
+            self.__validator = QRegExpValidator(self.regex, self.nameEdit) 
+            self.nameEdit.setValidator(self.__validator)
+            self.nameEdit.setContentsMargins(0,-2, -5,-8)
             self.nameEdit.setAlignment(self.nameLabel.alignment())
-            #self.nameEdit.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             self.nameEdit.setText(self.nameLabel.text())
             self.nameEdit.setFont(self._font)
-            self.nameEdit.setMaximumWidth( self.nameLabel.fontMetrics().boundingRect(self.nameLabel.text()).width()*1.5)
+            self.nameEdit.setMaximumWidth(self.nameLabel.frameGeometry().width())
+            #self.nameEdit.setMaximumHeight(self.nameLabel.frameGeometry().height())
             #self.nameEdit.setMaximumWidth( self.nameLabel.fontMetrics().boundingRect(self.nameLabel.text()).width()+3)
             style ="""
 background-color: transparent;
@@ -59,9 +68,10 @@ border-style: transparent;
             self.nameLabel.hide()
 
     def setOutFocus(self):
-        self.clearFocus ()
+        self.clearFocus()
   
     def restoreGraph(self):
+        self.node.graph().enableSortcuts()
         if self._isEditable:
             if self.nameEdit:
                 if self.nameEdit.text() != "":
@@ -71,17 +81,16 @@ border-style: transparent;
                 self.nameEdit.hide()
                 self.nameLabel.show()
                 self.graph._sortcuts_enabled = True
+                self._beingEdited = False
                 self.nameChanged.emit(self.prevName)
-
-    def focusInEvent(self, event):
-        self.node.graph().disableSortcuts()
 
     def eventFilter(self, object, event):
         if self._isEditable:
             if event.type()== QtCore.QEvent.WindowDeactivate:
                 self.restoreGraph()
+            elif event.type()== QtCore.QEvent.FocusIn:
+                self.node.graph().disableSortcuts()
             elif event.type()== QtCore.QEvent.FocusOut:
-                self.node.graph().enableSortcuts()
                 self.restoreGraph()
 
         return super(EditableLabel,self).eventFilter(object, event)
