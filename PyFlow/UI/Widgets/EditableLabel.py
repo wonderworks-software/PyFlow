@@ -43,10 +43,11 @@ class EditableLabel(QtWidgets.QGraphicsProxyWidget):
             self.nameEdit = QtWidgets.QLineEdit(self.nameLabel.text())
             self.nameEdit.setContentsMargins(0, 0, 0, 0)
             self.nameEdit.setAlignment(self.nameLabel.alignment())
+            #self.nameEdit.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             self.nameEdit.setText(self.nameLabel.text())
             self.nameEdit.setFont(self._font)
-            #self.nameEdit.setMaximumWidth( self.nameLabel.fontMetrics().boundingRect(self.nameLabel.text()).width()*1.5)
-            self.nameEdit.setMaximumWidth( self.nameLabel.fontMetrics().boundingRect(self.nameLabel.text()).width()+3)
+            self.nameEdit.setMaximumWidth( self.nameLabel.fontMetrics().boundingRect(self.nameLabel.text()).width()*1.5)
+            #self.nameEdit.setMaximumWidth( self.nameLabel.fontMetrics().boundingRect(self.nameLabel.text()).width()+3)
             style ="""
 background-color: transparent;
 border-style: transparent;

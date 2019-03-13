@@ -893,7 +893,6 @@ class GraphWidgetUI(QGraphicsView):
                 if result:
                     self.pressed_item.parentItem().setName(name)
                     self.updatePropertyView(self.pressed_item.parentItem())
-        # Update when Editable Labels are added
         elif self.pressed_item and isinstance(self.pressed_item,EditableLabel):
             if self.pressed_item._isEditable:
                 self.pressed_item.start_edit_name()
@@ -1034,11 +1033,11 @@ class GraphWidgetUI(QGraphicsView):
             VariableBase.deserialize(varJson, self)
         # nodes
         for nodeJson in data[self.name]['nodes']:
-            #try:
-            UINodeBase.deserialize(nodeJson, self)
-            #except Exception as e:
-            #    print(nodeJson)
-            #    print(e)
+            try:
+                UINodeBase.deserialize(nodeJson, self)
+            except Exception as e:
+                print(nodeJson)
+                print(e)
         # connections
         for edgeJson in data[self.name]['connections']:
             UIConnection.deserialize(edgeJson, self)
