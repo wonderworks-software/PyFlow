@@ -16,7 +16,8 @@ class BoolPin(PinBase):
     def IsValuePin():
         return True
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('BoolPin', 'IntPin',)
 
     @staticmethod

@@ -144,7 +144,9 @@ class NodeBase(INode):
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
         if dataType == "AnyPin" and allowedPins:
-            p.supportedDataTypesList = allowedPins
+            def supportedDataTypes():
+                return allowedPins
+            p.supportedDataTypes = staticmethod(supportedDataTypes)
         if constraint is not None:
             p.updateConstraint(constraint)
         return p
@@ -161,7 +163,9 @@ class NodeBase(INode):
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
         if dataType == "AnyPin" and allowedPins:
-            p.supportedDataTypesList = allowedPins
+            def supportedDataTypes():
+                return allowedPins
+            p.supportedDataTypes = staticmethod(supportedDataTypes)
         if constraint is not None:
             p.updateConstraint(constraint)
         return p

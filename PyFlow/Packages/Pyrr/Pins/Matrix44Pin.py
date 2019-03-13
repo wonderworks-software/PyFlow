@@ -46,7 +46,8 @@ class Matrix44Pin(PinBase):
     def color():
         return (150, 0, 20, 255)
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('Matrix44Pin',)
 
     @staticmethod

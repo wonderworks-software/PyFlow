@@ -24,7 +24,8 @@ class IntPin(PinBase):
     def color():
         return (0, 168, 107, 255)
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('IntPin', 'FloatPin')
 
     @staticmethod

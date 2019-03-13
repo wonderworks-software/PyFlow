@@ -50,7 +50,7 @@ def clamp(n, vmin, vmax):
     return max(min(n, vmax), vmin)
 
 
-## Rounding up to sertain value.Used in grid snapping
+## Rounding up to sertain value. Used in grid snapping
 # @param[in] x value to round
 # @param[in] to value x will be rounded to
 # @returns rounded value of x
@@ -67,9 +67,11 @@ def pinAffects(affects_pin, affected_pin):
 
 
 ## Check for cycle connected nodes
-# @param[in] src pin
-# @param[in] dst pin
+# @param[in] left hand side pin
+# @param[in] right hand side pin
 # @returns bool
+# TODO: remove this, need to find leafs first
+# then build recursion stack
 def cycle_check(src, dst):
     # allow cycles on execs
     if src.dataType == 'ExecPin' or dst.dataType == 'ExecPin':

@@ -13,21 +13,22 @@ class AnyPin(PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(AnyPin, self).__init__(name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(None)
-        self.supportedDataTypesList = tuple([pin.__name__ for pin in getAllPinClasses()])
         self._free = True
         self.isAny = True
         self.origSetData = self.setData
         self.super = None
+        self.activeDataType = self.dataType
 
-    def supportedDataTypes(self):
-        return self.supportedDataTypesList
+    @staticmethod
+    def supportedDataTypes():
+        return tuple([pin.__name__ for pin in getAllPinClasses()])
 
     @staticmethod
     def IsValuePin():
         return True
 
     @staticmethod
-    def defcolor():
+    def defColor():
         return (255, 255, 255, 255)
 
     @staticmethod
@@ -89,7 +90,8 @@ class AnyPin(PinBase):
                                     if p.dataType == "AnyPin" and p.dataType != self.dataType:
                                         p.updateOnConnection(port)
 
-    def updateOnDisconnection(self):
+    def pinDisconnected(self, other):
+        super(AnyPin, self).pinDisconnected(other)
         if self.constraint is None:
             self.setDefault()
             self._free = True
@@ -97,14 +99,12 @@ class AnyPin(PinBase):
             self._free = self.checkFree([])
             if self._free:
                 self.setDefault()
-                for port in self.owningNode()._Constraints[self.constraint]:
-                    if port != self:
-                        port.setDefault()
-                        port._free = True
-                        for e in port.edge_list:
-                            for p in [e.source()._rawPin, e.destination()._rawPin]:
-                                if p != port:
-                                    p.updateOnDisconnection()
+                for pin in self.owningNode()._Constraints[self.constraint]:
+                    if pin != self:
+                        pin.setDefault()
+                        pin._free = True
+                        for pin in pin.affected_by + pin.affects:
+                            pin.pinDisconnected(other)
 
     def checkFree(self, checked=[], selfChek=True):
         if self.constraint is None or self.dataType == "AnyPin":
@@ -135,14 +135,20 @@ class AnyPin(PinBase):
 
     def setDefault(self):
         self.super = None
-        self._wrapper().setDefault(self.defcolor())
+        # TODO: move this call to UI class
+        self._wrapper().setDefault(self.defColor())
+
         self.setDefaultValue(None)
 
     def setType(self, other):
-        if self.dataType == "AnyPin" or self.dataType not in other.supportedDataTypes():
+        if self.dataType == "AnyPin" and other.dataType in self.supportedDataTypes():
+            self.activeDataType = other.dataType
             self.super = other.__class__
             self.color = other.color
+
+            # TODO: move this call to UI class
             self._wrapper().setType(other.color())
+
             self.setData(other.defaultValue())
             self.setDefaultValue(other.defaultValue())
             if self.direction == PinDirection.Input:

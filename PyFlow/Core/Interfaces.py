@@ -170,7 +170,8 @@ class IPin(IItemBase):
 
         return data
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         '''
         An array of supported data types.
 

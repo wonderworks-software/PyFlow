@@ -42,7 +42,8 @@ class QuatPin(PinBase):
     def jsonDecoderClass():
         return QuatDecoder
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('QuatlPin',)
 
     @staticmethod

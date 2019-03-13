@@ -42,7 +42,8 @@ class FloatVector4Pin(PinBase):
     def jsonDecoderClass():
         return Vector4Decoder
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('FloatVector4Pin',)
 
     @staticmethod

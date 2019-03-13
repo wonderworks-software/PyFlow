@@ -42,7 +42,8 @@ class Matrix33Pin(PinBase):
     def jsonDecoderClass():
         return M33Decoder
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('Matrix33Pin',)
 
     @staticmethod

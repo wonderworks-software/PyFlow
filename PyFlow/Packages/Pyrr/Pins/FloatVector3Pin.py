@@ -30,7 +30,8 @@ class FloatVector3Pin(PinBase):
     def IsValuePin():
         return True
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('FloatVector3Pin',)
 
     @staticmethod

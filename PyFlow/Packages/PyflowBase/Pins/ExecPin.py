@@ -23,7 +23,8 @@ class ExecPin(PinBase):
     def IsValuePin():
         return False
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('ExecPin',)
 
     @staticmethod

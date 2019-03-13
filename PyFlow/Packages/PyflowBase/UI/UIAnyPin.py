@@ -4,6 +4,7 @@ from PyFlow.Core.Common import *
 from PyFlow.UI.Settings import Colors
 from PyFlow.UI.PinPainter import PinPainter
 from PyFlow import getAllPinClasses
+from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
 
 from PyFlow.UI.UIPinBase import UIPinBase
 from Qt import QtGui
@@ -17,6 +18,10 @@ class UIAnyPin(UIPinBase):
     def checkFree(self, checked=[], selfChek=True):
         return self._rawPin.checkFree(checked, selfChek)
 
+    @property
+    def activeDataType(self):
+        return self._rawPin.activeDataType
+
     def pinConnected(self, other):
         self._rawPin.updateOnConnection(other._rawPin)
         UIPinBase.pinConnected(self, other)
@@ -25,7 +30,6 @@ class UIAnyPin(UIPinBase):
     def pinDisconnected(self, other):
         UIPinBase.pinDisconnected(self, other._rawPin)
         self.OnPinConnected.emit(other)
-        self._rawPin.updateOnDisconnection()
 
     def setDefault(self, defcolor):
         self._color = QtGui.QColor(*defcolor)
@@ -46,7 +50,7 @@ class UIAnyPin(UIPinBase):
         self.update()
         self.hovered = True
         hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}".format(str(
-            self._rawPin.currentData()), self._rawPin.dirty, self._rawPin.supportedDataTypesList)
+            self._rawPin.currentData()), self._rawPin.dirty, AnyPin.supportedDataTypes())
         self.setToolTip(hoverMessage)
         event.accept()
 
@@ -57,4 +61,3 @@ class UIAnyPin(UIPinBase):
             PinPainter.asArrayPin(self, painter, option, widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)
-

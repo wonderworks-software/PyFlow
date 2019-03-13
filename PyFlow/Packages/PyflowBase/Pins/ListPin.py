@@ -13,7 +13,8 @@ class ListPin(PinBase):
     def IsValuePin():
         return True
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('ListPin',)
 
     @staticmethod

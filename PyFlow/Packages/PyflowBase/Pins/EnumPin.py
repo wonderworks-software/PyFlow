@@ -23,7 +23,8 @@ class EnumPin(PinBase):
     def color():
         return (255, 211, 25, 255)
 
-    def supportedDataTypes(self):
+    @staticmethod
+    def supportedDataTypes():
         return ('IntPin', 'EnumPin',)
 
     @staticmethod

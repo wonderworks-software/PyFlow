@@ -1,6 +1,8 @@
+import weakref
+
 from PyFlow.Core.Common import *
 from PyFlow import CreateRawPin
-import weakref
+from PyFlow import findPinClassByType
 
 
 class GraphBase(object):
@@ -169,12 +171,16 @@ class GraphBase(object):
                 print("dst is None")
             return False
 
-        # same types are always supported
-        if src.dataType == dst.dataType:
-            return True
-
         if src.direction == PinDirection.Input:
             src, dst = dst, src
+
+        if src.direction == dst.direction:
+            return False
+
+        if cycle_check(src, dst):
+            if debug:
+                print('cycles are not allowed')
+            return False
 
         if src.uid not in self.pins:
             print('scr ({}) not in graph.pins'.format(src.getName()))
@@ -183,8 +189,12 @@ class GraphBase(object):
             print('dst ({}) not in graph.pins'.format(dst.getName()))
             return False
 
-        if src.dataType == "AnyPin" and not cycle_check(src, dst) and not src.direction == dst.direction:
+        if src.dataType == "AnyPin" and not cycle_check(src, dst):
             return True
+
+        if dst.dataType == "AnyPin":
+            if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
+                return False
 
         if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
             if debug:
@@ -203,15 +213,11 @@ class GraphBase(object):
             return False
         if src.direction == dst.direction:
             if debug:
-                print('same types can not be connected')
+                print('same side pins can not be connected')
             return False
         if src.owningNode == dst.owningNode:
             if debug:
-                print('can not connect to self')
-            return False
-        if cycle_check(src, dst):
-            if debug:
-                print('cycles are not allowed')
+                print('can not connect to owning node')
             return False
 
         if dst.constraint is not None:
@@ -219,12 +225,11 @@ class GraphBase(object):
                 if dst.isAny:
                     free = dst.checkFree([], False)
                     if not free:
-                        a = CreateRawPin("", None, dst.dataType, 0)
-                        if src.dataType not in a.supportedDataTypes():
+                        pinClass = findPinClassByType(dst.dataType)
+                        if src.dataType not in pinClass.supportedDataTypes():
                             if debug:
                                 print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                             return False
-                        del a
         return True
 
     def addEdge(self, src, dst):
