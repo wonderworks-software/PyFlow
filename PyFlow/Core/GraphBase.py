@@ -11,7 +11,7 @@ class GraphBase(object):
         self._debug = False
         self.name = name
         self.nodes = {}
-        self.edges = {}
+        self.connections = {}
         self.pins = {}
         self.vars = {}
 
@@ -258,14 +258,16 @@ class GraphBase(object):
         push(dst)
         return True
 
-    def removeEdge(self, edge):
-        edge.source().affects.remove(edge.destination())
-        edge.source().edge_list.remove(edge)
-        edge.destination().affected_by.remove(edge.source())
-        edge.destination().edge_list.remove(edge)
-        edge.destination().pinDisconnected(edge.source())
-        edge.source().pinDisconnected(edge.destination())
-        push(edge.destination())
+    # TODO: create raw class for connection
+    def removeEdge(self, connection):
+        # TODO: this is UI call, move it
+        connection.source().affects.remove(connection.destination())
+        connection.source().edge_list.remove(connection)
+        connection.destination().affected_by.remove(connection.source())
+        connection.destination().edge_list.remove(connection)
+        connection.destination().pinDisconnected(connection.source())
+        connection.source().pinDisconnected(connection.destination())
+        push(connection.destination())
 
     def plot(self):
         print(self.name + '\n----------\n')

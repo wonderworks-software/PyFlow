@@ -1,5 +1,5 @@
-"""@file Edge.py
-Edge is a cubic spline curve. It represents connecton between two pins.
+"""@file UIConnection.py
+UIConnection is a cubic spline curve. It represents connecton between two pins.
 """
 import weakref
 from uuid import UUID, uuid4
@@ -12,8 +12,8 @@ from Settings import Colors
 from PyFlow.Core.Common import *
 
 
-## Connection between pins
-class Edge(QGraphicsPathItem):
+## UIConnection between pins
+class UIConnection(QGraphicsPathItem):
     def __init__(self, source, destination, graph):
         QGraphicsPathItem.__init__(self)
         self._uid = uuid4()
@@ -70,8 +70,8 @@ class Edge(QGraphicsPathItem):
 
     @uid.setter
     def uid(self, value):
-        if self._uid in self.graph().edges:
-            self.graph().edges[value] = self.graph().edges.pop(self._uid)
+        if self._uid in self.graph().connections:
+            self.graph().connections[value] = self.graph().connections.pop(self._uid)
             self._uid = value
 
     @staticmethod
@@ -83,9 +83,9 @@ class Edge(QGraphicsPathItem):
         assert(srcPin is not None)
         dstPin = graph.findUIPinByUID(dstUUID)
         assert(dstPin is not None)
-        edge = graph._addEdge(srcPin, dstPin)
-        assert(edge is not None)
-        edge.uid = UUID(data['uuid'])
+        connection = graph._addConnection(srcPin, dstPin)
+        assert(connection is not None)
+        connection.uid = UUID(data['uuid'])
 
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
@@ -115,7 +115,7 @@ class Edge(QGraphicsPathItem):
         self.pen.setColor(self.color)
 
     def hoverEnterEvent(self, event):
-        super(Edge, self).hoverEnterEvent(event)
+        super(UIConnection, self).hoverEnterEvent(event)
         self.drawThick()
         self.update()
 
@@ -125,19 +125,19 @@ class Edge(QGraphicsPathItem):
         return p1, p2
 
     def mousePressEvent(self, event):
-        super(Edge, self).mousePressEvent(event)
+        super(UIConnection, self).mousePressEvent(event)
         event.accept()
 
     def mouseReleaseEvent(self, event):
-        super(Edge, self).mouseReleaseEvent(event)
+        super(UIConnection, self).mouseReleaseEvent(event)
         event.accept()
 
     def mouseMoveEvent(self, event):
-        super(Edge, self).mouseMoveEvent(event)
+        super(UIConnection, self).mouseMoveEvent(event)
         event.accept()
 
     def hoverLeaveEvent(self, event):
-        super(Edge, self).hoverLeaveEvent(event)
+        super(UIConnection, self).hoverLeaveEvent(event)
         self.restoreThick()
         self.update()
 
@@ -200,4 +200,4 @@ class Edge(QGraphicsPathItem):
 
         self.mPath.cubicTo(self.cp1, self.cp2, p2)
         self.setPath(self.mPath)
-        super(Edge, self).paint(painter, option, widget)
+        super(UIConnection, self).paint(painter, option, widget)

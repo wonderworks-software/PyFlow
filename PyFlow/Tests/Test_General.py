@@ -16,8 +16,8 @@ class TestGeneral(unittest.TestCase):
 
         addNode1.setData('a', 5)
 
-        edge = g.addEdge(addNode1.getPinByName('out', PinSelectionGroup.Outputs), addNode2.getPinByName('a', PinSelectionGroup.Inputs))
-        self.assertEqual(edge, True, "FAILED TO ADD EDGE")
+        connection = g.addEdge(addNode1.getPinByName('out', PinSelectionGroup.Outputs), addNode2.getPinByName('a', PinSelectionGroup.Inputs))
+        self.assertEqual(connection, True, "FAILED TO ADD EDGE")
         self.assertEqual(addNode2.getData('out'), 5, "NODES EVALUATION IS INCORRECT")
 
     def test_foo_node_ref_set_data(self):

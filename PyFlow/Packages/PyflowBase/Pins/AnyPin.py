@@ -52,8 +52,10 @@ class AnyPin(PinBase):
 
     def serialize(self):
         dt = super(AnyPin, self).serialize()
-        if self.dataType != "AnyPin":
-            pinClass = findPinClassByType(self.dataType)
+        activeType = self.dataType
+        dt['dataType'] = "AnyPin"
+        if activeType != "AnyPin":
+            pinClass = findPinClassByType(activeType)
             # serialize with active type's encoder
             if not pinClass.isPrimitiveType():
                 encodedValue = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
@@ -109,8 +111,8 @@ class AnyPin(PinBase):
             if selfChek:
                 free = not self.hasConnections()
                 if not free:
-                    for edge in self.edge_list:
-                        for c in [edge.source()._rawPin, edge.destination()._rawPin]:
+                    for connection in self.edge_list:
+                        for c in [connection.source()._rawPin, connection.destination()._rawPin]:
                             if c != self:
                                 if c not in checked:
                                     con.append(c)

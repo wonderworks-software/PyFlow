@@ -548,7 +548,7 @@ class UINodeBase(QGraphicsObject):
         if self.bResize:
             delta = event.scenePos() - self.mousePressPos
             if self.resizeDirection == (1, 0):
-                # right edge resize
+                # right connection resize
                 newWidth = delta.x() + self.initialRectWidth
                 if newWidth > self.minWidth:
                     self.label().width = newWidth
@@ -557,7 +557,7 @@ class UINodeBase(QGraphicsObject):
                     self.nodeMainGWidget.setGeometry(QtCore.QRectF(
                         0, 0, newWidth, self.boundingRect().height()))
             elif self.resizeDirection == (-1, 0):
-                # left edge resize
+                # left connection resize
                 posdelta = self.mapToScene(event.pos()) - self.origPos
                 posdelta2 = self.mapToScene(event.pos()) - self.initPos
                 newWidth = -posdelta2.x() + self.initialRectWidth
@@ -574,7 +574,7 @@ class UINodeBase(QGraphicsObject):
                 newHeight = delta.y() + self.initialRectHeight
                 newHeight = max(newHeight, self.label().h + 20.0)
                 if newHeight > self.minHeight:
-                    # bottom edge resize
+                    # bottom connection resize
                     self._rect.setHeight(newHeight)
             elif self.resizeDirection == (1, -1):
                 newWidth = delta.x() + self.initialRectWidth
@@ -716,16 +716,16 @@ class UINodeBase(QGraphicsObject):
     def getChainedNodes(self):
         nodes = []
         for pin in self.inputs.values():
-            for edge in pin.edge_list:
-                node = edge.source().topLevelItem()  # topLevelItem
+            for connection in pin.edge_list:
+                node = connection.source().topLevelItem()  # topLevelItem
                 nodes.append(node)
                 nodes += node.getChainedNodes()
         return nodes
 
     def kill(self):
         for i in list(self.inputs.values()) + list(self.outputs.values()):
-            for edge in i.edge_list:
-                edge.kill()
+            for connection in i.edge_list:
+                connection.kill()
         self._rawNode.kill()
         self.scene().removeItem(self)
         del(self)

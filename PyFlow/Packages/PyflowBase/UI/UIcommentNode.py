@@ -252,7 +252,7 @@ class UIcommentNode(UINodeBase):
         self.pinsToMove.clear()
         self.nodesToMove.clear()
         self.nodesNamesToMove = []
-        edges = []
+        connections = []
         for node in [i for i in nodes if isinstance(i, UINodeBase) and not i.isCommentNode and i.isVisible()]:
             self.nodesNamesToMove.append(node.uid)
             self.nodesToMove[node] = node.scenePos()
@@ -294,8 +294,8 @@ class UIcommentNode(UINodeBase):
                 pin.moveBy(pin.prevPos.x(), pin.prevPos.y())
                 pin.update()
 
-            for edge in self.edgesToHide:
-                edge.hide()
+            for connection in self.edgesToHide:
+                connection.hide()
         else:
             self.hideButton.setText("-")
             self.expanded = True
@@ -305,8 +305,8 @@ class UIcommentNode(UINodeBase):
                 node._rect = node.prevRect
             for pin in self.pinsToMove:
                 pin.moveBy(-pin.prevPos.x(), -pin.prevPos.y())
-            for edge in self.edgesToHide:
-                edge.show()
+            for connection in self.edgesToHide:
+                connection.show()
         self.update()
 
     def translate(self, x, y, moveChildren=True):

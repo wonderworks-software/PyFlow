@@ -10,13 +10,13 @@ class ConnectPin(QUndoCommand):
         self.graph = graph
         self.srcUid = src.uid
         self.dstUid = dst.uid
-        self.setText('connect edges')
+        self.setText('connect connections')
         self.edgeUid = None
 
     def undo(self):
-        if self.edgeUid in self.graph.edges:
+        if self.edgeUid in self.graph.connections:
             self.graph.scene().blockSignals(True)
-            self.graph.removeEdge(self.graph.edges[self.edgeUid])
+            self.graph.removeEdge(self.graph.connections[self.edgeUid])
             self.graph.scene().blockSignals(False)
 
     def redo(self):
@@ -30,16 +30,16 @@ class ConnectPin(QUndoCommand):
         if dstPin is None:
             print(self.dstUid, "not found")
 
-        edge = self.graph._addEdge(srcPin, dstPin)
+        connection = self.graph._addConnection(srcPin, dstPin)
 
-        # recreate the same edge with same uuid
+        # recreate the same connection with same uuid
         # if it was deleted
-        if edge and self.edgeUid:
-            edge.uid = self.edgeUid
+        if connection and self.edgeUid:
+            connection.uid = self.edgeUid
 
         # if first created store connection uuid
         # of this particular connection
-        if edge and self.edgeUid is None:
-            self.edgeUid = edge.uid
+        if connection and self.edgeUid is None:
+            self.edgeUid = connection.uid
 
         self.graph.scene().blockSignals(False)

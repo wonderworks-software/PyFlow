@@ -28,7 +28,7 @@ class UIAnyPin(UIPinBase):
         self.OnPinConnected.emit(other)
 
     def pinDisconnected(self, other):
-        UIPinBase.pinDisconnected(self, other._rawPin)
+        UIPinBase.pinDisconnected(self, other)
         self.OnPinConnected.emit(other)
 
     def setDefault(self, defcolor):
