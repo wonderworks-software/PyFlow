@@ -1,4 +1,3 @@
-
 from Qt import QtWidgets
 from Qt import QtCore,QtGui
 
@@ -15,7 +14,6 @@ class EditableLabel(QtWidgets.QGraphicsProxyWidget):
         self._font = QtGui.QFont('Consolas')
         self._font.setPointSize(6)
         self.nameLabel.setFont(self._font)
-        
         self.setWidget(self.nameLabel)
         self.installEventFilter(self)
         self.prevName = name
@@ -58,6 +56,7 @@ border-style: transparent;
             self.setWidget(self.nameEdit)
             self.nameEdit.returnPressed.connect(self.setOutFocus)
             self.nameLabel.hide()
+
     def setOutFocus(self):
         self.clearFocus ()
   
@@ -73,11 +72,15 @@ border-style: transparent;
                 self.graph._sortcuts_enabled = True
                 self.nameChanged.emit(self.prevName)
 
+    def focusInEvent(self, event):
+        self.node.graph().disableSortcuts()
+
     def eventFilter(self, object, event):
         if self._isEditable:
             if event.type()== QtCore.QEvent.WindowDeactivate:
                 self.restoreGraph()
             elif event.type()== QtCore.QEvent.FocusOut:
+                self.node.graph().enableSortcuts()
                 self.restoreGraph()
 
         return super(EditableLabel,self).eventFilter(object, event)

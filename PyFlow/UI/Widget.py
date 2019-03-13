@@ -895,7 +895,8 @@ class GraphWidgetUI(QGraphicsView):
                     self.updatePropertyView(self.pressed_item.parentItem())
         # Update when Editable Labels are added
         elif self.pressed_item and isinstance(self.pressed_item,EditableLabel):
-            self.pressed_item.start_edit_name()
+            if self.pressed_item._isEditable:
+                self.pressed_item.start_edit_name()
 
     def Tick(self, deltaTime):
         if self.autoPanController.isActive():
@@ -1136,97 +1137,96 @@ class GraphWidgetUI(QGraphicsView):
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
-        if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
-            # create comment node
-            rect = UIcommentNode.getNodesRect(self.selectedNodes())
-            if rect:
-                rect.setTop(rect.top() - 20)
-                rect.setLeft(rect.left() - 20)
+        if self.isShortcutsEnabled():
+            if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
+                # create comment node
+                rect = UIcommentNode.getNodesRect(self.selectedNodes())
+                if rect:
+                    rect.setTop(rect.top() - 20)
+                    rect.setLeft(rect.left() - 20)
 
-                rect.setRight(rect.right() + 20)
-                rect.setBottom(rect.bottom() + 20)
+                    rect.setRight(rect.right() + 20)
+                    rect.setBottom(rect.bottom() + 20)
 
-            nodeTemplate = NodeBase.jsonTemplate()
-            nodeTemplate['package'] = "PyflowBase"
-            nodeTemplate['type'] = commentNode.__name__
-            nodeTemplate['name'] = self.getUniqNodeName(commentNode.__name__)
-            if rect:
-                nodeTemplate['x'] = rect.topLeft().x()
-                nodeTemplate['y'] = rect.topLeft().y()
-            else:
-                nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
-                nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
-            nodeTemplate['meta']['label'] = commentNode.__name__
-            nodeTemplate['uuid'] = None
+                nodeTemplate = NodeBase.jsonTemplate()
+                nodeTemplate['package'] = "PyflowBase"
+                nodeTemplate['type'] = commentNode.__name__
+                nodeTemplate['name'] = self.getUniqNodeName(commentNode.__name__)
+                if rect:
+                    nodeTemplate['x'] = rect.topLeft().x()
+                    nodeTemplate['y'] = rect.topLeft().y()
+                else:
+                    nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
+                    nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
+                nodeTemplate['meta']['label'] = commentNode.__name__
+                nodeTemplate['uuid'] = None
 
-            instance = self.createNode(nodeTemplate)
-            if rect:
-                instance._rect.setRight(rect.width())
-                instance._rect.setBottom(rect.height())
-                instance.label().width = rect.width()
-                instance.label().adjustSizes()
+                instance = self.createNode(nodeTemplate)
+                if rect:
+                    instance._rect.setRight(rect.width())
+                    instance._rect.setBottom(rect.height())
+                    instance.label().width = rect.width()
+                    instance.label().adjustSizes()
 
-        if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            self.alignSelectedNodes(Direction.Left)
-            return
-        if all([event.key() == QtCore.Qt.Key_Up, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            self.alignSelectedNodes(Direction.Up)
-            return
-        if all([event.key() == QtCore.Qt.Key_Right, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            self.alignSelectedNodes(Direction.Right)
-            return
-        if all([event.key() == QtCore.Qt.Key_Down, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            self.alignSelectedNodes(Direction.Down)
-            return
+            if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+                self.alignSelectedNodes(Direction.Left)
+                return
+            if all([event.key() == QtCore.Qt.Key_Up, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+                self.alignSelectedNodes(Direction.Up)
+                return
+            if all([event.key() == QtCore.Qt.Key_Right, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+                self.alignSelectedNodes(Direction.Right)
+                return
+            if all([event.key() == QtCore.Qt.Key_Down, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+                self.alignSelectedNodes(Direction.Down)
+                return
 
-        if all([event.key() == QtCore.Qt.Key_Z, modifiers == QtCore.Qt.ControlModifier]):
-            if self.isShortcutsEnabled():
-                self.undoStack.undo()
-        if all([event.key() == QtCore.Qt.Key_Y, modifiers == QtCore.Qt.ControlModifier]):
-            if self.isShortcutsEnabled():
-                self.undoStack.redo()
+            if all([event.key() == QtCore.Qt.Key_Z, modifiers == QtCore.Qt.ControlModifier]):
+                    self.undoStack.undo()
+            if all([event.key() == QtCore.Qt.Key_Y, modifiers == QtCore.Qt.ControlModifier]):
+                    self.undoStack.redo()
 
-        if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
-            self.new_file()
-        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
-            self.save()
-        if all([event.key() == QtCore.Qt.Key_O, modifiers == QtCore.Qt.ControlModifier]):
-            self.load()
-        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            self.save_as()
+            if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
+                self.new_file()
+            if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
+                self.save()
+            if all([event.key() == QtCore.Qt.Key_O, modifiers == QtCore.Qt.ControlModifier]):
+                self.load()
+            if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+                self.save_as()
 
-        if all([event.key() == QtCore.Qt.Key_F, modifiers == QtCore.Qt.NoModifier]):
-            self.frameSelectedNodes()
-        if all([event.key() == QtCore.Qt.Key_H, modifiers == QtCore.Qt.NoModifier]):
-            self.frameAllNodes()
+            if all([event.key() == QtCore.Qt.Key_F, modifiers == QtCore.Qt.NoModifier]):
+                self.frameSelectedNodes()
+            if all([event.key() == QtCore.Qt.Key_H, modifiers == QtCore.Qt.NoModifier]):
+                self.frameAllNodes()
 
-        if all([event.key() == QtCore.Qt.Key_Equal, modifiers == QtCore.Qt.ControlModifier]):
-            self.zoomDelta(True)
-        if all([event.key() == QtCore.Qt.Key_Minus, modifiers == QtCore.Qt.ControlModifier]):
-            self.zoomDelta(False)
-        if all([event.key() == QtCore.Qt.Key_R, modifiers == QtCore.Qt.ControlModifier]):
-            self.reset_scale()
+            if all([event.key() == QtCore.Qt.Key_Equal, modifiers == QtCore.Qt.ControlModifier]):
+                self.zoomDelta(True)
+            if all([event.key() == QtCore.Qt.Key_Minus, modifiers == QtCore.Qt.ControlModifier]):
+                self.zoomDelta(False)
+            if all([event.key() == QtCore.Qt.Key_R, modifiers == QtCore.Qt.ControlModifier]):
+                self.reset_scale()
 
-        # if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-        #    if self.parent:
-        #        self.parent.toggle_node_box()
-        # if all([event.key() == QtCore.Qt.Key_M, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
-        #    self.parent.toggle_multithreaded()
-        # if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
-        #    self.parent.toggle_debug()
+            # if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            #    if self.parent:
+            #        self.parent.toggle_node_box()
+            # if all([event.key() == QtCore.Qt.Key_M, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
+            #    self.parent.toggle_multithreaded()
+            # if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
+            #    self.parent.toggle_debug()
 
-        if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            self.parent.togglePropertyView()
+            if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+                self.parent.togglePropertyView()
 
-        if event.key() == QtCore.Qt.Key_Delete:
-            self.killSelectedNodes()
+            if event.key() == QtCore.Qt.Key_Delete:
+                self.killSelectedNodes()
 
-        if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier]):
-            self.duplicateNodes()
-        if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier]):
-            self.copyNodes()
-        if all([event.key() == QtCore.Qt.Key_V, modifiers == QtCore.Qt.ControlModifier]):
-            self.pasteNodes()
+            if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier]):
+                self.duplicateNodes()
+            if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier]):
+                self.copyNodes()
+            if all([event.key() == QtCore.Qt.Key_V, modifiers == QtCore.Qt.ControlModifier]):
+                self.pasteNodes()
 
         QGraphicsView.keyPressEvent(self, event)
 
@@ -1440,6 +1440,9 @@ class GraphWidgetUI(QGraphicsView):
         return node
 
     def mousePressEvent(self, event):
+        if self.pressed_item and isinstance(self.pressed_item,EditableLabel):
+            if self.pressed_item != self.itemAt(event.pos()):
+                self.pressed_item.setOutFocus()
         self.pressed_item = self.itemAt(event.pos())
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
@@ -1482,8 +1485,8 @@ class GraphWidgetUI(QGraphicsView):
             #    super(GraphWidgetUI, self).mousePressEvent(event)
             self.node_box.hide()
 
-        # elif not isinstance(self.pressed_item,EditableLabel):
-        else:
+        elif not isinstance(self.pressed_item,EditableLabel):
+            #else:
             if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
                 self.node_box.hide()
                 self.node_box.lineEdit.clear()
@@ -1548,8 +1551,8 @@ class GraphWidgetUI(QGraphicsView):
                             copiedNodes = self.copyNodes(toClipboard=False)
                             self.pasteNodes(move=False, data=copiedNodes)
 
-        # else:
-        #    super(GraphWidgetUI, self).mousePressEvent(event)
+        else:
+            super(GraphWidgetUI, self).mousePressEvent(event)
 
     def pan(self, delta):
         rect = self.sceneRect()
