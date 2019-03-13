@@ -12,7 +12,7 @@ class graphInputs(NodeBase):
 
     @staticmethod
     def category():
-        return '__hiden__'
+        return 'Common'
 
     @staticmethod
     def keywords():
@@ -49,7 +49,7 @@ class graphOutputs(NodeBase):
 
     @staticmethod
     def category():
-        return '__hiden__'
+        return 'Common'
 
     @staticmethod
     def keywords():

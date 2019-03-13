@@ -64,7 +64,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         self.rawGraph = GraphBase('root')
         self.G = GraphWidgetUI(self, graphBase=self.rawGraph)
-        self.SceneLayout.addWidget(self.G)
+        self._currentGraph = self.G
+        self.SceneLayout.addWidget(self._currentGraph)
 
         self._inspectorWidget = InspectorWidget(self.G)
 
@@ -77,10 +78,10 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionSave.triggered.connect(self.G.save)
         self.actionLoad.triggered.connect(self.G.load)
         self.actionSave_as.triggered.connect(self.G.save_as)
-        self.actionAlignLeft.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Left))
-        self.actionAlignUp.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Up))
-        self.actionAlignBottom.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Down))
-        self.actionAlignRight.triggered.connect(lambda: self.G.alignSelectedNodes(Direction.Right))
+        self.actionAlignLeft.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Left))
+        self.actionAlignUp.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Up))
+        self.actionAlignBottom.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Down))
+        self.actionAlignRight.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Right))
         self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
         self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
         self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
@@ -99,6 +100,13 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.mainLoop)
+
+    @property
+    def currentGraph(self):
+        return self._currentGraph
+    @currentGraph.setter
+    def currentGraph(self,graph):
+        self._currentGraph = graph
 
     def onSpawnInspectorWindow(self):
         self._inspectorWidget.show()
@@ -178,7 +186,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         QMessageBox.information(self, "Shortcuts", data)
 
     def on_delete(self):
-        self.G.killSelectedNodes()
+        self.currentGraph.killSelectedNodes()
 
     @staticmethod
     def instance(parent=None):

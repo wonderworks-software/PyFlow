@@ -6,7 +6,7 @@ class UISwitchOnString(UINodeBase):
         super(UISwitchOnString, self).__init__(raw_node)
         actionAddOut = self._menu.addAction("add out pin")
         actionAddOut.triggered.connect(self.onAddOutPin)
-
+        self.resizable = True
     def onAddOutPin(self):
         rawPin = self._rawNode.addOutPin()
         uiPin = self._createUIPinWrapper(rawPin)

@@ -42,6 +42,7 @@ from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QUndoStack
 from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QGraphicsProxyWidget
+from Qt.QtWidgets import QPushButton
 
 from Settings import Colors
 from SelectionRect import SelectionRect
@@ -677,7 +678,21 @@ MANIP_MODE_MOVE = 3
 MANIP_MODE_ZOOM = 4
 MANIP_MODE_COPY = 5
 
-
+buttonStyle="""
+QPushButton{color : rgba(255,255,255,255);
+    background-color: rgba(150,150,150,150);
+    border-width: 0px;
+    border-color: transparent;
+    border-style: solid;
+    font-size: 10px;
+    font-weight: bold;}
+QPushButton:hover{
+    color: rgba(255, 211, 25, 255);
+}
+QPushButton:pressed{
+    color: rgba(255, 160, 47, 255)
+}
+"""
 class GraphWidgetUI(QGraphicsView):
     _manipulationMode = MANIP_MODE_NONE
 
@@ -693,10 +708,12 @@ class GraphWidgetUI(QGraphicsView):
     inPinCreated = QtCore.Signal(object)
     inPinDeleted = QtCore.Signal(object)
 
-    def __init__(self, parent=None, graphBase=None):
+    def __init__(self, parent=None, graphBase=None,parentGraph=None,parentNode=None):
         super(GraphWidgetUI, self).__init__()
         assert(isinstance(graphBase, GraphBase))
         self._graphBase = graphBase
+        self._parentGraph = parentGraph
+        self._parentNode = parentNode
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent
@@ -744,6 +761,41 @@ class GraphWidgetUI(QGraphicsView):
         self._file_name_label.setPlainText(self._current_file_name)
 
         self.scene().addItem(self._file_name_label)
+        self.buttons = []
+        if self._parentGraph:
+            graph = self
+            graphName = "root"
+            graphName += " | %s"%graph._parentNode.name
+            offset = 0
+            GoUpButtonProxy = QGraphicsProxyWidget()
+            GoUpButton = QPushButton("root")
+            GoUpButtonProxy.setWidget(GoUpButton)
+            GoUpButton.setStyleSheet(buttonStyle)
+            GoUpButtonProxy.setFlag(
+                QGraphicsTextItem.ItemIgnoresTransformations)
+            GoUpButtonProxy.offset = offset
+            offset += GoUpButton.width()        
+            self.buttons.append(GoUpButtonProxy)                    
+            self.scene().addItem(GoUpButtonProxy)
+            pgraph = graph._parentGraph
+            GoUpButton.clicked.connect(lambda: self.goUp(pgraph))             
+            while graph._parentGraph:
+                graphName += " | %s"%graph._parentNode.name
+                GoUpButtonProxy = QGraphicsProxyWidget()
+                GoUpButton = QPushButton(graph._parentNode.name)
+                GoUpButtonProxy.setWidget(GoUpButton)
+                GoUpButton.setStyleSheet(buttonStyle)
+                GoUpButtonProxy.setFlag(
+                    QGraphicsTextItem.ItemIgnoresTransformations)
+                GoUpButtonProxy.offset = offset
+                offset += GoUpButton.width()  
+                self.buttons.append(GoUpButtonProxy)                                              
+                self.scene().addItem(GoUpButtonProxy)
+                pgraph = graph._parentGraph
+                GoUpButton.clicked.connect(lambda: self.goUp(pgraph)) 
+                graph = graph._parentGraph               
+            self._file_name_label.setPlainText(graphName)              
+
 
         self.real_time_line = QGraphicsPathItem(None, self.scene())
 
@@ -777,6 +829,7 @@ class GraphWidgetUI(QGraphicsView):
         self.codeEditors = {}
         self.UIPins = {}
         self.boundingRect = self.rect()
+        self._storedVars = []
         self.installEventFilter(self)
 
     def __del__(self):
@@ -816,6 +869,14 @@ class GraphWidgetUI(QGraphicsView):
         self.node_box.lineEdit.setText("")
         if dataType is None:
             self.node_box.lineEdit.setFocus()
+
+    def goUp(self,graph):
+        if self._parentGraph:
+            self.parent.currentGraph = graph
+            graph.show()
+            self.hide()
+            self.parent.variablesWidget.setGraph(graph)  
+            
 
     def shoutDown(self):
         for ed in self.codeEditors.values():
@@ -912,6 +973,13 @@ class GraphWidgetUI(QGraphicsView):
         data[self.name]['vars'] = [v.serialize() for v in self.vars.values()]
         return data
 
+    def storeVars(self):
+        self._storedVars = self.vars
+    def restoreVars(self):
+        if self._storedVars:
+            self._graphBase.vars = self._storedVars
+                #VariableBase.deserialize(var, self)
+
     def save(self, save_as=False):
         if save_as:
             name_filter = "Graph files (*.json)"
@@ -960,9 +1028,6 @@ class GraphWidgetUI(QGraphicsView):
         self.parent.variablesWidget.killAll()
         self.undoStack.clear()
         self._clearPropertiesView()
-        # Scene Inputs Will be added
-        # self.addInputNode()
-        # self.addOutputNode()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -982,17 +1047,6 @@ class GraphWidgetUI(QGraphicsView):
                 for nodeJson in data[self.name]['nodes']:
                     try:
                         UINodeBase.deserialize(nodeJson, self)
-                        # Scene Inputs Will be added
-                        # if nodeJson["name"] not in ["__scene_inputs__","__scene_outputs__"]:
-                        #    Node.deserialize(nodeJson, self)
-                        # elif nodeJson["name"] == "__scene_inputs__":
-                        #    self.inputsItem.kill()
-                        #    self.inputsItem = Node.deserialize(nodeJson, self)
-                        #    self.inputsItem.sender.pinCreated.connect(self.inPinCreated.emit)
-                        # elif nodeJson["name"] == "__scene_outputs__":
-                        #    self.outputsItem.kill()
-                        #    self.outputsItem = Node.deserialize(nodeJson, self)
-                        #    self.outputsItem.sender.pinCreated.connect(self.outPinCreated.emit)
                     except Exception as e:
                         print(nodeJson)
                         print(e)
@@ -1370,6 +1424,34 @@ class GraphWidgetUI(QGraphicsView):
         reruteNode.color = self.pressed_item.color
         reruteNode.translate(-reruteNode.boundingRect().center().x(), -5)
         return reruteNode
+
+    def getInputNode(self):
+        nodeTemplate = NodeBase.jsonTemplate()
+        nodeTemplate['package'] = "PyflowBase"
+        nodeTemplate['lib'] = None
+        nodeTemplate['type'] = "graphInputs"
+        nodeTemplate['name'] = self.getUniqNodeName("graphInputs")
+        nodeTemplate['x'] = self.boundingRect.left()+50
+        nodeTemplate['y'] = self.boundingRect.center().y()+50
+        nodeTemplate['uuid'] = None
+        nodeTemplate['meta']['label'] = "rerute"
+        node = self.createNode(nodeTemplate)
+        node.translate(-20,0)
+        return node
+
+    def getOutputNode(self):
+        nodeTemplate = NodeBase.jsonTemplate()
+        nodeTemplate['package'] = "PyflowBase"
+        nodeTemplate['lib'] = None
+        nodeTemplate['type'] = "graphOutputs"
+        nodeTemplate['name'] = self.getUniqNodeName("graphOutputs")
+        nodeTemplate['x'] = self.boundingRect.width()-50
+        nodeTemplate['y'] = self.boundingRect.center().y()+50
+        nodeTemplate['uuid'] = None
+        nodeTemplate['meta']['label'] = "rerute"
+        node = self.createNode(nodeTemplate)
+        node.translate(-20,0)
+        return node
 
     def mousePressEvent(self, event):
         self.pressed_item = self.itemAt(event.pos())
@@ -1789,6 +1871,10 @@ class GraphWidgetUI(QGraphicsView):
         polygon = self.mapToScene(self.viewport().rect())
         self._file_name_label.setPos(polygon[0])
 
+        if self._parentGraph:
+            for but in self.buttons:
+                but.setPos(polygon[0].x()+but.offset,polygon[0].y())
+            self._file_name_label.hide()#moveBy(self.GoUpButton.width(),0)
         # self.inputsItem.setPos(self.mapToScene(self.viewport().rect().x(),self.viewport().rect().y()+50) )
         # self.inputsItem.setPos(self.boundingRect.topLeft().x(),self.boundingRect.topLeft().y()+50)
         # self.inputsItem.update()
