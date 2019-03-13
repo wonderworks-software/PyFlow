@@ -958,14 +958,6 @@ class GraphWidgetUI(QGraphicsView):
         data[self.name]['vars'] = [v.serialize() for v in self.vars.values()]
         return data
 
-    def storeVars(self):
-        self._storedVars = self.vars
-
-    def restoreVars(self):
-        if self._storedVars:
-            self._graphBase.vars = self._storedVars
-            # VariableBase.deserialize(var, self)
-
     def save(self, save_as=False):
         if save_as:
             name_filter = "Graph files (*.json)"
