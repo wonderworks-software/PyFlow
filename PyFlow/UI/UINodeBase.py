@@ -749,12 +749,10 @@ class UINodeBase(QGraphicsObject):
         lyt.addItem(grpCon)
         container.setLayout(lyt)  
         if portType == PinDirection.Input:
-            self.inputGroupPins[groupName] = container
             container.group_name.nameLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
             grpCon.layout().addItem(container.groupIcon)               
             grpCon.layout().addItem(container.group_name)          
         else:
-            self.outputGroupPins[groupName] = container
             container.group_name.nameLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             grpCon.layout().addItem(container.group_name)
             grpCon.layout().addItem(container.groupIcon)            
@@ -799,22 +797,29 @@ class UINodeBase(QGraphicsObject):
             p._container = container
             container.layout().addItem(connector_name)
             container.adjustSize()
-            if group == None:            
+            if not group:            
                 self.inputsLayout.insertItem(index, container)
             else:
-                if group in self.inputGroupPins:
-                    self.inputGroupPins[group].layout().insertItem(index, container)
-                    p._groupContainer = self.inputGroupPins[group]
+                groupName = group
+                node = group
+                if linkedPin:
+                    node = linkedPin.owningNode()._wrapper()
+                    groupName = node.displayName
+
+                if node in self.inputGroupPins:
+                    self.inputGroupPins[node].layout().insertItem(index, container)
+                    p._groupContainer = self.inputGroupPins[node]
                 else:
-                    groupContainer = self.addGroupContainer(rawPin.direction,groupName=group)
+                    groupContainer = self.addGroupContainer(rawPin.direction,groupName=groupName)
                     groupContainer.groupIcon.onCollapsed.connect(self.collapsePinGroup)
                     groupContainer.groupIcon.onExpanded.connect(self.expandPinGroup)
                     groupContainer.layout().insertItem(index, container)
                     p._groupContainer = groupContainer
+                    self.inputGroupPins[node] = groupContainer
                     self.inputsLayout.insertItem(index, groupContainer)
                     if linkedPin:
-                        #groupContainer.group_name.nameChanged.connect(linkedPin.owningNode().setDisplayName())
-                        linkedPin.owningNode()._wrapper().displayNameChanged.connect(groupContainer.group_name.setText)                    
+                        #groupContainer.group_name.nameChanged.connect(node.setDisplayName())
+                        node.displayNameChanged.connect(groupContainer.group_name.setText)                    
 
         elif rawPin.direction == PinDirection.Output:
             container = self.addContainer()
@@ -824,22 +829,28 @@ class UINodeBase(QGraphicsObject):
             p.setLabel(connector_name)
             p._container = container
             container.adjustSize()
-            if group == None:            
+            if not group:            
                 self.outputsLayout.insertItem(index, container)
             else:
-                if group in self.outputGroupPins:
-                    self.outputGroupPins[group].layout().insertItem(index, container)
-                    p._groupContainer = self.outputGroupPins[group]
+                groupName = group
+                node = group                
+                if linkedPin:
+                    node = linkedPin.owningNode()._wrapper()
+                    groupName = node.displayName               
+                if node in self.outputGroupPins:
+                    self.outputGroupPins[node].layout().insertItem(index, container)
+                    p._groupContainer = self.outputGroupPins[node]
                 else:
-                    groupContainer = self.addGroupContainer(rawPin.direction,groupName=group)
+                    groupContainer = self.addGroupContainer(rawPin.direction,groupName=groupName)
                     groupContainer.groupIcon.onCollapsed.connect(self.collapsePinGroup)
                     groupContainer.groupIcon.onExpanded.connect(self.expandPinGroup)                    
                     groupContainer.layout().insertItem(index, container)    
                     p._groupContainer = groupContainer
+                    self.outputGroupPins[node] = groupContainer
                     self.outputsLayout.insertItem(index, groupContainer) 
                     if linkedPin:
-                        #groupContainer.group_name.nameChanged.connect(linkedPin.owningNode().setDisplayName())
-                        linkedPin.owningNode()._wrapper().displayNameChanged.connect(groupContainer.group_name.setText)                            
+                        #groupContainer.group_name.nameChanged.connect(node.setDisplayName())
+                        node.displayNameChanged.connect(groupContainer.group_name.setText)                            
             
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.UIPins[rawPin.uid] = p
