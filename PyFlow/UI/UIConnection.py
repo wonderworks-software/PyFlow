@@ -20,6 +20,8 @@ class UIConnection(QGraphicsPathItem):
         self.graph = weakref.ref(graph)
         self.source = weakref.ref(source)
         self.destination = weakref.ref(destination)
+        self.drawSource = self.source()
+        self.drawDestination = self.destination()
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 
@@ -120,8 +122,8 @@ class UIConnection(QGraphicsPathItem):
         self.update()
 
     def getEndPoints(self):
-        p1 = self.source().boundingRect().center() + self.source().scenePos()
-        p2 = self.destination().boundingRect().center() + self.destination().scenePos()
+        p1 = self.drawSource.boundingRect().center() + self.drawSource.scenePos()
+        p2 = self.drawDestination.boundingRect().center() + self.drawDestination.scenePos()
         return p1, p2
 
     def mousePressEvent(self, event):

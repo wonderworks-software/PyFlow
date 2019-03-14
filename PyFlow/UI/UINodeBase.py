@@ -843,10 +843,26 @@ class UINodeBase(QGraphicsObject):
     def collapsePinGroup(self,container):
         for i in range(1,container.layout().count()):
             item = container.layout().itemAt(i)
+            pin = item.layout().itemAt(0) if isinstance(item.layout().itemAt(0),UIPinBase) else item.layout().itemAt(1)
+            if pin.hasConnections:
+                if pin.direction == PinDirection.Input:
+                    for ege in pin.edge_list:
+                        ege.drawDestination = container.layout().itemAt(0).layout().itemAt(0)
+                if pin.direction == PinDirection.Output:
+                    for ege in pin.edge_list:
+                        ege.drawSource = container.layout().itemAt(0).layout().itemAt(1)                        
             item.hide()
     def expandPinGroup(self,container):
         for i in range(1,container.layout().count()):
             item = container.layout().itemAt(i)
+            pin = item.layout().itemAt(0) if isinstance(item.layout().itemAt(0),UIPinBase) else item.layout().itemAt(1)
+            if pin.hasConnections:
+                if pin.direction == PinDirection.Input:
+                    for ege in pin.edge_list:
+                        ege.drawDestination = pin
+                if pin.direction == PinDirection.Output:
+                    for ege in pin.edge_list:
+                        ege.drawSource = pin             
             item.show()
 
 def REGISTER_UI_NODE_FACTORY(packageName, factory):
