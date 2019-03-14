@@ -43,7 +43,10 @@ class UIGraphInputs(UINodeBase):
         for outPin in jsonTemplate["outputs"]:
             if outPin['name'] not in createdPinNames:
                 uiPin = self.onAddOutPin()
-        self.displayName = self.graph().getUniqNodeDisplayName("Inputs")
+        try:
+            self.displayName = jsonTemplate['meta']['label']
+        except:
+            self.displayName = self.graph().getUniqNodeDisplayName("Inputs")
         self.label().setPlainText(self.displayName)
         if "resize" in jsonTemplate['meta']:
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
@@ -97,7 +100,10 @@ class UIGraphOutputs(UINodeBase):
         for inPin in jsonTemplate["inputs"]:
             if inPin['name'] not in createdPinNames:
                 uiPin = self.onAddInPin()
-        self.displayName = self.graph().getUniqNodeDisplayName("Outputs")
+        try:
+            self.displayName = jsonTemplate['meta']['label']
+        except:
+            self.displayName = self.graph().getUniqNodeDisplayName("Outputs")
         self.label().setPlainText(self.displayName)
         if "resize" in jsonTemplate['meta']:
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])

@@ -1423,7 +1423,7 @@ class GraphWidgetUI(QGraphicsView):
         nodeTemplate['x'] = self.boundingRect.left() + 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
         nodeTemplate['uuid'] = None
-        nodeTemplate['meta']['label'] = "rerute"
+        nodeTemplate['meta']['label'] = "Inputs"
         node = self.createNode(nodeTemplate)
         node.translate(-20, 0)
         return node
@@ -1437,7 +1437,7 @@ class GraphWidgetUI(QGraphicsView):
         nodeTemplate['x'] = self.boundingRect.width() - 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
         nodeTemplate['uuid'] = None
-        nodeTemplate['meta']['label'] = "rerute"
+        nodeTemplate['meta']['label'] = "Outputs"
         node = self.createNode(nodeTemplate)
         node.translate(-20, 0)
         return node

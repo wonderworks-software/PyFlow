@@ -345,6 +345,7 @@ class UINodeBase(QGraphicsObject):
         template = self._rawNode.serialize()
         template['x'] = self.scenePos().x()
         template['y'] = self.scenePos().y()
+        template['meta']['label'] = self.displayName
         if self.resizable:
             template['meta']['resize'] = {
                 'w': self._rect.right(), 'h': self._rect.bottom()}
