@@ -29,7 +29,8 @@ from Qt.QtWidgets import QMenu
 
 from PyFlow.UI.UIPinBase import (
     UIPinBase,
-    getUIPinInstance
+    getUIPinInstance,
+    UIGroupPinBase
 )
 from PyFlow.UI.InputWidgets import createInputWidget
 from PyFlow.UI.NodePainter import NodePainter
@@ -218,6 +219,9 @@ class UINodeBase(QGraphicsObject):
         self.pinsToMove = {}
         self._rect = self.childrenBoundingRect()
 
+        # Group Pins
+        self.inputGroupPins = {}
+        self.outputGroupPins = {}
         # Core Nodes Support
         self.isTemp = False
         self.isCommentNode = False
@@ -430,7 +434,7 @@ class UINodeBase(QGraphicsObject):
        
     def updateWidth(self):
         self.minWidth = max(self.getPinsWidth(), self.getWidth() + Spacings.kPinOffset)
-        self.w = self.minWidth 
+        self.w = self.minWidth
                   
     def updateNodeShape(self, label=None):
         for i in range(0, self.inputsLayout.count()):
@@ -712,6 +716,8 @@ class UINodeBase(QGraphicsObject):
         for i in list(self.inputs.values()) + list(self.outputs.values()):
             for connection in i.edge_list:
                 connection.kill()
+        for i in list(self.UIPins.values()):
+            i.kill()
         self._rawNode.kill()
         self.scene().removeItem(self)
         del(self)
@@ -719,23 +725,50 @@ class UINodeBase(QGraphicsObject):
     def Tick(self, delta):
         self._rawNode.Tick(delta)
 
-    def addContainer(self, portType, head=False):
+    def addGroupContainer(self, portType, groupName="group"):
+        container = QGraphicsWidget()
+        container.setObjectName('{0}PinGroupContainerWidget'.format(self.name))
+        lyt = QGraphicsLinearLayout()
+        lyt.setOrientation(QtCore.Qt.Vertical)
+        lyt.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        lyt.setContentsMargins(1, 1, 1, 1)
+        group_name = EditableLabel(name=groupName,node=self,graph=self.graph())
+        font = QtGui.QFont('Consolas')
+        font.setBold(True)
+        font.setPointSize(500)
+        group_name._font = font
+        group_name.nameLabel.setFont(font)
+        group_name.nameLabel.update()
+        group_name.setObjectName('{0}_GroupConnector'.format(group_name))
+        group_name.setContentsMargins(0, 0, 0, 0)
+        group_name.setColor(Colors.AbsoluteBlack)
+        grpCon = self.addContainer()
+        container.groupIcon = UIGroupPinBase(container)
+        lyt.addItem(grpCon)
+        container.setLayout(lyt)  
+        if portType == PinDirection.Input:
+            self.inputGroupPins[groupName] = container
+            group_name.nameLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+            grpCon.layout().addItem(container.groupIcon)               
+            grpCon.layout().addItem(group_name)          
+        else:
+            self.outputGroupPins[groupName] = container
+            group_name.nameLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+            grpCon.layout().addItem(group_name)
+            grpCon.layout().addItem(container.groupIcon)            
+        return container
+    def addContainer(self):
         container = QGraphicsWidget()
         container.setObjectName('{0}PinContainerWidget'.format(self.name))
         container.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         container.sizeHint(QtCore.Qt.MinimumSize, QtCore.QSizeF(50.0, 10.0))
-
         lyt = QGraphicsLinearLayout()
         lyt.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         lyt.setContentsMargins(1, 1, 1, 1)
         container.setLayout(lyt)
-        if portType == PinDirection.Input:
-            self.inputsLayout.addItem(container)
-        else:
-            self.outputsLayout.addItem(container)
         return container
 
-    def _createUIPinWrapper(self, rawPin, index=-1):
+    def _createUIPinWrapper(self, rawPin, index=-1,group=None):
         p = getUIPinInstance(self, rawPin)
         if rawPin.direction == PinDirection.Input:
             p.call = rawPin.call
@@ -747,7 +780,6 @@ class UINodeBase(QGraphicsObject):
         connector_name = EditableLabel(name=lblName,node=self,graph=self.graph())
         connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)
-
         connector_name.setColor(Colors.PinNameColor)
         p.nameChanged.connect(connector_name.setText)
         p.displayNameChanged.connect(connector_name.setText)
@@ -758,25 +790,49 @@ class UINodeBase(QGraphicsObject):
         p.displayNameChanged.connect(self.updateWidth)
         p.OnPinDeleted.connect(self.updateWidth)
         if rawPin.direction == PinDirection.Input:
-            container = self.addContainer(rawPin.direction)
-            #lbl.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+            container = self.addContainer()
             connector_name.nameLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
             container.layout().addItem(p)
             p.setLabel(connector_name)
             p._container = container
             container.layout().addItem(connector_name)
-            self.inputsLayout.insertItem(index, container)
             container.adjustSize()
+            if group == None:            
+                self.inputsLayout.insertItem(index, container)
+            else:
+                if group in self.inputGroupPins:
+                    self.inputGroupPins[group].layout().insertItem(index, container)
+                    p._groupContainer = self.inputGroupPins[group]
+                else:
+                    groupContainer = self.addGroupContainer(rawPin.direction,groupName=group)
+                    groupContainer.groupIcon.onCollapsed.connect(self.collapsePinGroup)
+                    groupContainer.groupIcon.onExpanded.connect(self.expandPinGroup)
+                    groupContainer.layout().insertItem(index, container)
+                    p._groupContainer = groupContainer
+                    self.inputsLayout.insertItem(index, groupContainer)
+
         elif rawPin.direction == PinDirection.Output:
-            container = self.addContainer(rawPin.direction)
-            #lbl.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+            container = self.addContainer()
             connector_name.nameLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             container.layout().addItem(connector_name)
             container.layout().addItem(p)
             p.setLabel(connector_name)
             p._container = container
-            self.outputsLayout.insertItem(index, container)
             container.adjustSize()
+            if group == None:            
+                self.outputsLayout.insertItem(index, container)
+            else:
+                if group in self.outputGroupPins:
+                    self.outputGroupPins[group].layout().insertItem(index, container)
+                    p._groupContainer = self.outputGroupPins[group]
+                else:
+                    groupContainer = self.addGroupContainer(rawPin.direction,groupName=group)
+                    groupContainer.groupIcon.onCollapsed.connect(self.collapsePinGroup)
+                    groupContainer.groupIcon.onExpanded.connect(self.expandPinGroup)                    
+                    groupContainer.layout().insertItem(index, container)    
+                    p._groupContainer = groupContainer
+                    self.outputsLayout.insertItem(index, groupContainer)        
+            
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.UIPins[rawPin.uid] = p
         self.graph().UIPins[rawPin.uid] = p
@@ -784,7 +840,14 @@ class UINodeBase(QGraphicsObject):
         self.update()
         self.nodeMainGWidget.update()        
         return p
-
+    def collapsePinGroup(self,container):
+        for i in range(1,container.layout().count()):
+            item = container.layout().itemAt(i)
+            item.hide()
+    def expandPinGroup(self,container):
+        for i in range(1,container.layout().count()):
+            item = container.layout().itemAt(i)
+            item.show()
 
 def REGISTER_UI_NODE_FACTORY(packageName, factory):
     if packageName not in UI_NODES_FACTORIES:

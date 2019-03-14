@@ -19,11 +19,13 @@ class UIsubgraph(UINodeBase):
 
     def onAddInPin(self, pin):
         rawPin = self._rawNode.addInPin(pin=pin._rawPin)
-        uiPin = self._createUIPinWrapper(rawPin)
+        uiPin = self._createUIPinWrapper(rawPin,group=pin.owningNode().name)
         uiPin.setDisplayName(pin.displayName())
         uiPin.setDynamic(True)
         pin.nameChanged.connect(uiPin.setName)
         pin.displayNameChanged.connect(uiPin.setDisplayName)
+        pin.nameChanged.connect(self.updateSize)
+        pin.displayNameChanged.connect(self.updateSize)        
         pin.OnPinDeleted.connect(self.deletePort)
         pin.dataBeenSet.connect(uiPin.setData)
         pinAffects(uiPin._rawPin, pin._rawPin)
@@ -36,11 +38,13 @@ class UIsubgraph(UINodeBase):
 
     def onAddOutPin(self, pin):
         rawPin = self._rawNode.addOutPin(pin=pin._rawPin)
-        uiPin = self._createUIPinWrapper(rawPin)
+        uiPin = self._createUIPinWrapper(rawPin,group=pin.owningNode().name)
         uiPin.setDisplayName(pin.displayName())
         uiPin.setDynamic(True)
         pin.nameChanged.connect(uiPin.setName)
-        pin.displayNameChanged.connect(uiPin.setDisplayName)        
+        pin.displayNameChanged.connect(uiPin.setDisplayName) 
+        pin.nameChanged.connect(self.updateSize)
+        pin.displayNameChanged.connect(self.updateSize)                  
         pin.OnPinDeleted.connect(self.deletePort)
         pin.dataBeenSet.connect(uiPin.setData)
         pinAffects(pin._rawPin, uiPin._rawPin)
@@ -50,7 +54,9 @@ class UIsubgraph(UINodeBase):
                 pinAffects(i, o)
         self.updateWidth()
         return uiPin
-
+    def updateSize(self,name):
+        self.updateWidth()
+        self.updateNodeShape()
     def serialize(self):
         template = super(UIsubgraph, self).serialize()
         graphData = self._graph.getGraphSaveData()

@@ -16,6 +16,41 @@ from PyFlow.UI.PinPainter import PinPainter
 
 UI_PINS_FACTORIES = {}
 
+class UIGroupPinBase(QGraphicsWidget):
+    
+    onCollapsed = QtCore.Signal(object)
+    onExpanded = QtCore.Signal(object)
+    def __init__(self,container):
+        super(UIGroupPinBase, self).__init__()
+        self._container = container
+        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
+        self.width = 8 + 1
+        self.height = 8 + 1   
+        self.setGeometry(0, 0, self.width, self.height)
+        self.expanded = True
+    def boundingRect(self):
+        return QtCore.QRectF(0, 0, 8 , 8)
+
+    def sizeHint(self, which, constraint):
+        try:
+            return QtCore.QSizeF(self.width, self.height)
+        except:
+            return QGraphicsWidget.sizeHint(self, which, constraint)
+    def shape(self):
+        path = QtGui.QPainterPath()
+        path.addEllipse(self.boundingRect())
+        return path        
+    def paint(self, painter, option, widget):
+        PinPainter.asGroupPin(self, painter, option, widget)    
+    def mousePressEvent(self, event):
+        QGraphicsWidget.mousePressEvent(self, event)
+        if self.expanded:
+            self.onCollapsed.emit(self._container)
+        else:
+            self.onExpanded.emit(self._container)
+        self.expanded = not self.expanded
+        self.update()
+        
 
 class UIPinBase(QGraphicsWidget):
     '''
@@ -68,6 +103,7 @@ class UIPinBase(QGraphicsWidget):
         self.startPos = None
         self.endPos = None
         self._container = None
+        self._groupContainer = None
         self._execPen = QtGui.QPen(Colors.White, 0.5, QtCore.Qt.SolidLine)
         self.setGeometry(0, 0, self.width, self.height)
         self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
@@ -245,19 +281,26 @@ class UIPinBase(QGraphicsWidget):
             e.highlight()
 
     def kill(self):
+        self.OnPinDeleted.emit(self)
         self.disconnectAll()
         if hasattr(self.owningNode(), self.name):
             delattr(self.owningNode(), self.name)
         if self._container is not None:
             self.owningNode().getWrapper()().graph().scene().removeItem(self._container)
-            if self._rawPin.direction == PinDirection.Input:
-                self.owningNode().getWrapper()().inputsLayout.removeItem(self._container)
+            if not self._groupContainer :
+                if self._rawPin.direction == PinDirection.Input:
+                    self.owningNode().getWrapper()().inputsLayout.removeItem(self._container)
+                else:
+                    self.owningNode().getWrapper()().outputsLayout.removeItem(self._container)
             else:
-                self.owningNode().getWrapper()().outputsLayout.removeItem(self._container)
+                self.owningNode().getWrapper()().graph().scene().removeItem(self._groupContainer)
+                if self._rawPin.direction == PinDirection.Input:
+                    self.owningNode().getWrapper()().inputsLayout.removeItem(self._groupContainer)
+                else:
+                    self.owningNode().getWrapper()().outputsLayout.removeItem(self._groupContainer)                
             if self._rawPin.uid in self.owningNode().getWrapper()().UIPins:
-                del self.owningNode().getWrapper()().UIPins[self._rawPin.uid]
+                del self.owningNode().getWrapper()().UIPins[self._rawPin.uid]                
         self._rawPin.kill()
-        self.OnPinDeleted.emit(self)
         #self.owningNode().getWrapper()().updateWidth()
 
     @staticmethod

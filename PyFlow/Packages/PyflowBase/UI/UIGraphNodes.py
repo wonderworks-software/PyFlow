@@ -43,6 +43,7 @@ class UIGraphInputs(UINodeBase):
         if "resize" in jsonTemplate['meta']:
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
+            self.updateWidth()
             self.w = self._rect.width()
         else:       
             self._rect.setWidth(25)
@@ -88,8 +89,14 @@ class UIGraphOutputs(UINodeBase):
                 uiPin = self.onAddInPin()
         self._displayName = "outputs"
         self.label().setPlainText("outputs")
-        self._rect.setWidth(25)
-        self.updateWidth()
+        if "resize" in jsonTemplate['meta']:
+            self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
+            self._rect.setRight(jsonTemplate['meta']['resize']['w'])
+            self.updateWidth()
+            self.w = self._rect.width()
+        else:       
+            self._rect.setWidth(25)
+            self.updateWidth()
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
 
     def paint(self, painter, option, widget):

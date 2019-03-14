@@ -10,6 +10,7 @@ from Settings import *
 class PinPainter(object):
 
     _execPen = QtGui.QPen(Colors.White, 0.5, QtCore.Qt.SolidLine)
+    _groupPen = QtGui.QPen(Colors.AbsoluteBlack, 0.5, QtCore.Qt.SolidLine)
 
     @staticmethod
     def asValuePin(pin, painter, option, widget):
@@ -49,6 +50,21 @@ class PinPainter(object):
                                 QtCore.QPointF(0, pin.height)])
         painter.drawPolygon(arrow)
 
+    @staticmethod
+    def asGroupPin(pin, painter, option, widget):
+        painter.setPen(PinPainter._groupPen)
+        painter.setBrush(QtGui.QBrush(Colors.AbsoluteBlack))
+        #painter.setBrush(QtCore.Qt.NoBrush)
+        if not pin.expanded:
+            arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
+                                    QtCore.QPointF(pin.width, pin.height / 2.0),
+                                    QtCore.QPointF(0, pin.height)])
+        else:
+            arrow = QtGui.QPolygonF([QtCore.QPointF(pin.width/2, pin.height),
+                                    QtCore.QPointF(0, 0),
+                                    QtCore.QPointF(pin.width, 0)])                    
+        painter.drawPolygon(arrow)
+        #painter.drawRect(0,0,pin.width,pin.height)
     @staticmethod
     def asArrayPin(pin, painter, option, widget):
         painter.setBrush(QtGui.QBrush(pin.color()))

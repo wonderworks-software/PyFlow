@@ -12,7 +12,6 @@ class EditableLabel(QtWidgets.QGraphicsProxyWidget):
         self.node=node
         self.graph = graph
         self.nameLabel = QtWidgets.QLabel(name)
-        
         self.nameLabel.setContentsMargins(0, 0, 0, 0)
         self.nameLabel.setAttribute(QtCore.Qt.WA_TranslucentBackground)  
         self._font = QtGui.QFont('Consolas')
@@ -55,8 +54,6 @@ class EditableLabel(QtWidgets.QGraphicsProxyWidget):
             self.nameEdit.setText(self.nameLabel.text())
             self.nameEdit.setFont(self._font)
             self.nameEdit.setMaximumWidth(self.nameLabel.frameGeometry().width())
-            #self.nameEdit.setMaximumHeight(self.nameLabel.frameGeometry().height())
-            #self.nameEdit.setMaximumWidth( self.nameLabel.fontMetrics().boundingRect(self.nameLabel.text()).width()+3)
             style ="""
 background-color: transparent;
 border-style: transparent;
