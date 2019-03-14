@@ -1,5 +1,5 @@
 from Qt import QtCore
-
+from Qt.QtWidgets import QInputDialog
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.NodePainter import NodePainter
 
@@ -10,12 +10,20 @@ class UIGraphInputs(UINodeBase):
 
     def __init__(self, raw_node):
         super(UIGraphInputs, self).__init__(raw_node)
+        actionRename = self._menu.addAction("Rename")
+        actionRename.triggered.connect(self.rename)         
         actionAddOut = self._menu.addAction("Add pin")
-        actionAddOut.triggered.connect(self.onAddOutPin)
+        actionAddOut.triggered.connect(self.onAddOutPin)       
         self.label().hide()
         self.resizable = True
         self.portsMainLayout.removeItem(self.inputsLayout)
         self.minWidth = 25
+
+    def rename(self):
+        name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
+        if confirmed and name != self.name and name != "":
+            self.displayName = self.graph().getUniqNodeDisplayName(name)
+            self.update()
 
     def onAddOutPin(self):
         rawPin = self._rawNode.addOutPin()
@@ -27,9 +35,6 @@ class UIGraphInputs(UINodeBase):
         self.pinCreated.emit(uiPin)
         return uiPin
 
-    def updateNodeShape(self, label=None):
-        UINodeBase.updateNodeShape(self, label)
-
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
         # recreate dynamically created pins
@@ -38,8 +43,8 @@ class UIGraphInputs(UINodeBase):
         for outPin in jsonTemplate["outputs"]:
             if outPin['name'] not in createdPinNames:
                 uiPin = self.onAddOutPin()
-        self._displayName = "Inputs"
-        self.label().setPlainText("Inputs")
+        self.displayName = self.graph().getUniqNodeDisplayName("Inputs")
+        self.label().setPlainText(self.displayName)
         if "resize" in jsonTemplate['meta']:
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
@@ -59,12 +64,20 @@ class UIGraphOutputs(UINodeBase):
 
     def __init__(self, raw_node):
         super(UIGraphOutputs, self).__init__(raw_node)
+        actionRename = self._menu.addAction("Rename")
+        actionRename.triggered.connect(self.rename)          
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.onAddInPin)
         self.label().hide()
         self.resizable = True
         self.portsMainLayout.removeItem(self.outputsLayout)
         self.minWidth = 25
+
+    def rename(self):
+        name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
+        if confirmed and name != self.name and name != "":
+            self.displayName = self.graph().getUniqNodeDisplayName(name)
+            self.update()
 
     def onAddInPin(self):
         rawPin = self._rawNode.addInPin()
@@ -76,9 +89,6 @@ class UIGraphOutputs(UINodeBase):
         self.pinCreated.emit(uiPin)
         return uiPin
 
-    def updateNodeShape(self, label=None):
-        UINodeBase.updateNodeShape(self, label)
-
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
         # recreate dynamically created pins
@@ -87,8 +97,8 @@ class UIGraphOutputs(UINodeBase):
         for inPin in jsonTemplate["inputs"]:
             if inPin['name'] not in createdPinNames:
                 uiPin = self.onAddInPin()
-        self._displayName = "outputs"
-        self.label().setPlainText("outputs")
+        self.displayName = self.graph().getUniqNodeDisplayName("Outputs")
+        self.label().setPlainText(self.displayName)
         if "resize" in jsonTemplate['meta']:
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])

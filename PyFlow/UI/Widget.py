@@ -848,6 +848,17 @@ class GraphWidgetUI(QGraphicsView):
     def getUniqNodeName(self, name):
         return self._graphBase.getUniqNodeName(name)
 
+    def getUniqNodeDisplayName(self, name):
+        nodes_names = [n.displayName for n in self.nodes.values()]
+        if name not in nodes_names:
+            return name
+        idx = 0
+        tmp = name
+        while tmp in nodes_names:
+            idx += 1
+            tmp = name + str(idx)
+        return name + str(idx)
+
     def showNodeBox(self, dataType=None, pinType=None):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
