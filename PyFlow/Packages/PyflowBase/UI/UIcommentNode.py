@@ -251,8 +251,11 @@ class UIcommentNode(UINodeBase):
         self.label().color = color
         self.label().update()
         self.label().adjustSizes()
-        if "expanded" in jsonTemplate['meta']['commentNode']:
-            self.expanded = jsonTemplate['meta']['commentNode']["expanded"]
+        try:
+            if "expanded" in jsonTemplate['meta']['commentNode']:
+                self.expanded = jsonTemplate['meta']['commentNode']["expanded"]
+        except:
+            self.expanded = True
         self.prevRect = self._rect.bottom()
 
     def updateChildren(self, nodes):
