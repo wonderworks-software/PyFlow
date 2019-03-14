@@ -1517,7 +1517,8 @@ class GraphWidgetUI(QGraphicsView):
                         for out in reruteNode.outputs.values():
                             if self.canConnectPins(out, self.pressed_item.destination()):
                                 self.addEdge(out, self.pressed_item.destination())
-                                break                        
+                                break      
+                        self.pressed_item = reruteNode                
                         self._manipulationMode = MANIP_MODE_MOVE
                         self._lastDragPoint = self.mapToScene(event.pos())                        
 
@@ -1626,6 +1627,10 @@ class GraphWidgetUI(QGraphicsView):
                     if self.canConnectPins(self.pressed_item, inp):
                         self.addEdge(self.pressed_item, inp)
                         break
+                for out in reruteNode.outputs.values():
+                    if self.canConnectPins(self.pressed_item, out):
+                        self.addEdge(self.pressed_item, out)
+                        break                        
                 self._manipulationMode = MANIP_MODE_MOVE
                 self._lastDragPoint = self.mapToScene(event.pos())
         # if not isinstance(self.pressed_item,EditableLabel):
@@ -1687,6 +1692,19 @@ class GraphWidgetUI(QGraphicsView):
             for node in selectedNodes:
                 # if node not in [self.inputsItem,self.outputsItem]:
                 node.translate(delta.x(), delta.y())
+            if isinstance(node,UIReruteNode) and modifiers == QtCore.Qt.AltModifier:
+                mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
+                                         QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
+                hoverItems = self.items(mouseRect)
+                newOuts = []
+                for item in hoverItems:
+                    if isinstance(item,UIConnection):
+                        if node.inputs.values()[0].edge_list and node.outputs.values()[0].edge_list:
+                            if item.source() == node.inputs.values()[0].edge_list[0].source():
+                                newOuts.append(item.destination())
+                for out in newOuts:
+                    self.addEdge(node.outputs.values()[0].edge_list[0].source(),out)
+
 
         elif self._manipulationMode == MANIP_MODE_PAN:
             delta = self.mapToScene(event.pos()) - self._lastPanPoint

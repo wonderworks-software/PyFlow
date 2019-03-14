@@ -13,6 +13,30 @@ class UIReruteNode(UINodeBase):
         self.minWidth = 0
         self.setAcceptHoverEvents(True)
         
+    def kill(self):
+        inp = self.inputs.values()[0]
+        out = self.outputs.values()[0]
+        if inp.dataType == "ExecPin":
+            newIns = []
+            for i in self.inputs.values():  
+                for connection in i.edge_list:
+                    newIns.append(connection.source())
+            if out.edge_list:
+                dst = out.edge_list[0].destination()
+                for inpt in newIns:
+                    self.graph().addEdge(inpt,dst)            
+        else:
+            newOuts = []      
+            for i in self.outputs.values():  
+                for connection in i.edge_list:
+                    newOuts.append(connection.destination())
+            if inp.edge_list:
+                source = inp.edge_list[0].source()
+                for out in newOuts:
+                    self.graph().addEdge(source,out)
+
+
+        super(UIReruteNode, self).kill()
 
     def boundingRect(self):
         self._rect.setWidth((self.getPinsWidth()+2)/2)

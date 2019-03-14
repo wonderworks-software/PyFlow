@@ -99,9 +99,9 @@ class UIConnection(QGraphicsPathItem):
         return script
 
     def __str__(self):
-        return '{0}.{1} >>> {2}.{3}'.format(self.source().parent().name,
+        return '{0}.{1} >>> {2}.{3}'.format(self.source().owningNode().name,
                                             self.source()._rawPin.name,
-                                            self.destination().parent().name,
+                                            self.destination().owningNode().name,
                                             self.destination()._rawPin.name)
 
     def drawThick(self):
