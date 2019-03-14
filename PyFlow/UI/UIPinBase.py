@@ -16,6 +16,31 @@ from PyFlow.UI.PinPainter import PinPainter
 
 UI_PINS_FACTORIES = {}
 
+class UICommentPinBase(QGraphicsWidget):
+    
+    def __init__(self,parent):
+        super(UICommentPinBase, self).__init__(parent)
+        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
+        self.width = 8 + 1
+        self.height = 8 + 1   
+        self.setGeometry(0, 0, self.width, self.height)
+        self.expanded = True
+    def boundingRect(self):
+        return QtCore.QRectF(0, 0, 8 , 8)
+
+    def sizeHint(self, which, constraint):
+        try:
+            return QtCore.QSizeF(self.width, self.height)
+        except:
+            return QGraphicsWidget.sizeHint(self, which, constraint)
+    def shape(self):
+        path = QtGui.QPainterPath()
+        path.addEllipse(self.boundingRect())
+        return path        
+    def paint(self, painter, option, widget):
+        pass
+        #PinPainter.asGroupPin(self, painter, option, widget)
+
 class UIGroupPinBase(QGraphicsWidget):
     
     onCollapsed = QtCore.Signal(object)

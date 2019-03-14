@@ -1037,12 +1037,12 @@ class GraphWidgetUI(QGraphicsView):
         self._file_name_label.setPlainText(self._current_file_name)
         self.frameAllNodes()
         self.undoStack.clear()
-        # for node in self.getNodes():
-        #     if node.isCommentNode:
-        #         if not node.expanded:
-        #             node.expanded = True
-        #             node.updateChildren(node.nodesToMove.keys())
-        #             node.toogleCollapsed()
+        for node in self.getNodes():
+            if node.isCommentNode:
+                if not node.expanded:
+                    node.expanded = True
+                    node.updateChildren(node.nodesToMove.keys())
+                    node.toogleCollapsed()
         self._clearPropertiesView()        
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]

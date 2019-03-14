@@ -4,6 +4,7 @@ from types import MethodType
 
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem
+from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QGraphicsItemGroup
 from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QStyle
@@ -18,8 +19,25 @@ from Qt import QtCore
 from PyFlow.UI.Settings import (Spacings, Colors)
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.UINodeBase import NodeName
+from PyFlow.UI.UIPinBase import UICommentPinBase
 import weakref
 
+buttonStyle="""
+QPushButton{color : rgba(255,255,255,255);
+    background-color: rgba(0,0,0,0);
+    border-width: 0px;
+    border-color: transparent;
+    border-style: solid;
+    font-family: Microsoft YaHei;
+    font-size: 20px;
+    font-weight: bold;}
+QPushButton:hover{
+    color: rgba(255, 211, 25, 255);
+}
+QPushButton:pressed{
+    color: rgba(255, 160, 47, 255)
+}
+"""
 class commentNodeName(NodeName):
     """doc string for commentNodeName"""
     def __init__(self, parent, bUseTextureBg=False, color=Colors.AbsoluteBlack):
@@ -35,6 +53,17 @@ class commentNodeName(NodeName):
         self.icon = QtGui.QImage(':/icons/resources/py.png')
         self.setPos(15, -self.boundingRect().height() - 8)
         self.drawH = self.h
+
+        self.hideButtomProxy = QGraphicsProxyWidget(self)
+        self.hideButton = QPushButton("-")
+        self.hideButtomProxy.setWidget(self.hideButton)
+        self.hideButton.setStyleSheet(buttonStyle)
+        self.hideButtomProxy.setPos(-15, self.boundingRect().center().y())
+        self.hideButton.pressed.connect(self.parentItem().toogleCollapsed)
+        self.hideButton.setFixedHeight(25)
+        self.hideButton.setFixedWidth(25)
+        self.leftWidget = UICommentPinBase(self)#QGraphicsWidget(self)
+        self.rigttWidget = UICommentPinBase(self)#QGraphicsWidget(self)
 
     def mousePressEvent(self, event):
         if not self.parentItem().isSelected():
@@ -74,7 +103,7 @@ class commentNodeName(NodeName):
             # change width if needed
             if width >= self.parentItem()._rect.width():
                 self.width = width
-                self.adjustSizes()
+            self.adjustSizes()
 
         self.width = self.parentItem()._rect.width()
         self.setTextWidth(self.width)
@@ -88,6 +117,12 @@ class commentNodeName(NodeName):
             self.parentItem()._rect.setHeight(self.h)
         self.update()
         self.parentItem().update()
+        self.leftWidget.setPos(-20, self.boundingRect().center().y())
+        self.rigttWidget.setPos(self.boundingRect().right()-4.5,self.boundingRect().center().y())   
+        self.hideButtomProxy.setPos(-20, self.boundingRect().center().y()-15)     
+
+    def boundingRect(self):
+        return QtCore.QRectF(0, 0, self.width - 15.0, self.h)
 
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
@@ -105,22 +140,6 @@ class commentNodeName(NodeName):
     def hoverEnterEvent(self, event):
         NodeName.hoverEnterEvent(self, event)
 
-buttonStyle="""
-QPushButton{color : rgba(255,255,255,255);
-    background-color: rgba(0,0,0,0);
-    border-width: 0px;
-    border-color: transparent;
-    border-style: solid;
-    font-family: Microsoft YaHei;
-    font-size: 20px;
-    font-weight: bold;}
-QPushButton:hover{
-    color: rgba(255, 211, 25, 255);
-}
-QPushButton:pressed{
-    color: rgba(255, 160, 47, 255)
-}
-"""
 ## Comment node
 #
 # Can drag intersected nodes.
@@ -175,10 +194,10 @@ class UIcommentNode(UINodeBase):
 
     def serialize(self):
         template = UINodeBase.serialize(self)
-        if self.expanded:
-            bottom = self._rect.bottom()
-        else:
-            bottom = self.prevRect
+        #if self.expanded:
+        #    bottom = self._rect.bottom()
+        #else:
+        bottom = self.prevRect
         template['meta']['commentNode'] = {
             'labelHeight': self.label().h,
             'text': self.label().toPlainText(),
@@ -186,7 +205,6 @@ class UIcommentNode(UINodeBase):
             'expanded': self.expanded,
             'nodesToMove': [str(n.uid) for n in self.nodesToMove]
         }
-        print(bottom)
         template['meta']['resize'] = {'h': bottom, 'w': self._rect.right()}
         return template
 
@@ -204,7 +222,7 @@ class UIcommentNode(UINodeBase):
         if 'resize' in jsonTemplate['meta']:
             width = jsonTemplate['meta']['resize']['w']
             height = jsonTemplate['meta']['resize']['h']
-            print(height)
+
         if 'commentNode' in jsonTemplate['meta']:
             labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
             text = jsonTemplate['meta']['commentNode']['text']
@@ -215,11 +233,9 @@ class UIcommentNode(UINodeBase):
                 for nodename in self.nodesNamesToMove:
                     for n in self.graph().nodes:
                         if str(n) == str(nodename):
-                            print(n)
                             self.nodesToMove[self.graph().nodes[n]] = self.graph().nodes[n].scenePos()
                 self.nodesNamesToMove = []
-            #if "expanded" in jsonTemplate['meta']['commentNode']:
-            #    self.expanded = jsonTemplate['meta']['commentNode']["expanded"]
+
 
         self._rect.setBottom(height)
         self._rect.setRight(width)
@@ -235,14 +251,8 @@ class UIcommentNode(UINodeBase):
         self.label().color = color
         self.label().update()
         self.label().adjustSizes()
-        self.hideButtomProxy = QGraphicsProxyWidget(self)
-        self.hideButton = QPushButton("-")
-        self.hideButtomProxy.setWidget(self.hideButton)
-        self.hideButton.setStyleSheet(buttonStyle)
-        self.hideButtomProxy.setPos(-2, - 31)
-        self.hideButton.pressed.connect(self.toogleCollapsed)
-        self.hideButton.setFixedHeight(25)
-        self.hideButton.setFixedWidth(25)
+        if "expanded" in jsonTemplate['meta']['commentNode']:
+            self.expanded = jsonTemplate['meta']['commentNode']["expanded"]
         self.prevRect = self._rect.bottom()
 
     def updateChildren(self, nodes):
@@ -273,38 +283,44 @@ class UIcommentNode(UINodeBase):
         super(UIcommentNode, self).mouseDoubleClickEvent(event)
         self.toogleCollapsed()
         event.accept()
+    def mouseMoveEvent(self,event):
+        super(UIcommentNode, self).mouseMoveEvent(event)
+        self.label().adjustSizes()
 
     def toogleCollapsed(self):
         if self.expanded:
             self.updateChildren(self.collidingItems())
-            self.hideButton.setText("+")
+            self.label().hideButton.setText("+")
             self.expanded = False
             self.prevRect = self._rect.bottom()
             self._rect.setHeight(self.label().h)
 
             for node in self.nodesToMove:
                 node.hide()
-                node.prevRect = QtCore.QRectF(node._rect)
 
             for pin in self.pinsToMove:
                 if pin in self.commentInputs:
-                    pin.prevPos = QtCore.QPointF(self.sceneBoundingRect().x()-6.5, self.label().sceneBoundingRect().center().y()) - pin.scenePos()
+                    for ege in pin.edge_list:
+                        ege.drawDestination = self.label().leftWidget
                 elif pin in self.commentOutpus:
-                    pin.prevPos = QtCore.QPointF(self.sceneBoundingRect().right()-4.5,  self.label().sceneBoundingRect().center().y()) - pin.scenePos()
-                pin.moveBy(pin.prevPos.x(), pin.prevPos.y())
-                pin.update()
+                    for ege in pin.edge_list:
+                        ege.drawSource = self.label().rigttWidget                     
 
             for connection in self.edgesToHide:
                 connection.hide()
         else:
-            self.hideButton.setText("-")
+            self.label().hideButton.setText("-")
             self.expanded = True
             self._rect.setBottom(self.prevRect)
             for node in self.nodesToMove:
                 node.show()
-                node._rect = node.prevRect
             for pin in self.pinsToMove:
-                pin.moveBy(-pin.prevPos.x(), -pin.prevPos.y())
+                if pin in self.commentInputs:
+                    for ege in pin.edge_list: 
+                        ege.drawDestination = pin  
+                elif pin in self.commentOutpus:
+                    for ege in pin.edge_list:
+                        ege.drawSource = pin                                 
             for connection in self.edgesToHide:
                 connection.show()
         self.update()
