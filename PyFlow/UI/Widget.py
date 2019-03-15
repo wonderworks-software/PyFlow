@@ -1582,12 +1582,9 @@ class GraphWidgetUI(QGraphicsView):
                     self.viewport().setCursor(QtCore.Qt.SizeVerCursor)
                 elif resizeOpts["direction"] == (-1, -1):
                     self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)
-            else:
-                self.viewport().setCursor(QtCore.Qt.ArrowCursor)
-        else:
-            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
         if self._draw_real_time_line:
+            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
             if isinstance(self.pressed_item, PinBase):
                 if self.pressed_item.parentItem().isSelected():
                     self.pressed_item.parentItem().setSelected(False)
@@ -1630,11 +1627,13 @@ class GraphWidgetUI(QGraphicsView):
                 for out in reruteNode.outputs.values():
                     if self.canConnectPins(self.pressed_item, out):
                         self.addEdge(self.pressed_item, out)
-                        break                        
+                        break    
+                self.pressed_item = reruteNode                     
                 self._manipulationMode = MANIP_MODE_MOVE
                 self._lastDragPoint = self.mapToScene(event.pos())
         # if not isinstance(self.pressed_item,EditableLabel):
         if self._manipulationMode == MANIP_MODE_SELECT:
+            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
             dragPoint = self.mapToScene(event.pos())
             self._selectionRect.setDragPoint(dragPoint, modifiers)
             # This logic allows users to use ctrl and shift with rectangle
@@ -1684,6 +1683,7 @@ class GraphWidgetUI(QGraphicsView):
                         node.setSelected(False)
 
         elif self._manipulationMode == MANIP_MODE_MOVE:
+            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
             newPos = self.mapToScene(event.pos())
             delta = newPos - self._lastDragPoint
             self._lastDragPoint = self.mapToScene(event.pos())
@@ -1697,16 +1697,21 @@ class GraphWidgetUI(QGraphicsView):
                                          QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
                 hoverItems = self.items(mouseRect)
                 newOuts = []
+                newIns = []
                 for item in hoverItems:
                     if isinstance(item,UIConnection):
                         if node.inputs.values()[0].edge_list and node.outputs.values()[0].edge_list:
                             if item.source() == node.inputs.values()[0].edge_list[0].source():
                                 newOuts.append(item.destination())
+                            if item.destination() == node.outputs.values()[0].edge_list[0].destination():
+                                newIns.append(item.source())                                
                 for out in newOuts:
-                    self.addEdge(node.outputs.values()[0].edge_list[0].source(),out)
-
+                    self.addEdge(node.outputs.values()[0],out)
+                for inp in newIns:
+                    self.addEdge(inp,node.inputs.values()[0])
 
         elif self._manipulationMode == MANIP_MODE_PAN:
+            self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
             delta = self.mapToScene(event.pos()) - self._lastPanPoint
             rect = self.sceneRect()
             rect.translate(-delta.x(), -delta.y())
@@ -1714,7 +1719,7 @@ class GraphWidgetUI(QGraphicsView):
             self._lastPanPoint = self.mapToScene(event.pos())
 
         elif self._manipulationMode == MANIP_MODE_ZOOM:
-
+            self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
             # How much
             delta = event.pos() - self._lastMousePos
             # self._lastMousePos = event.pos()
@@ -1765,7 +1770,7 @@ class GraphWidgetUI(QGraphicsView):
         self.mouseReleasePos = event.pos()
         self.released_item = self.itemAt(event.pos())
         self._resize_group_mode = False
-
+        self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         for n in self.getNodes():
             if not n.isCommentNode:
                 n.setFlag(QGraphicsItem.ItemIsMovable)
@@ -1775,21 +1780,11 @@ class GraphWidgetUI(QGraphicsView):
             self._draw_real_time_line = False
             if self.real_time_line in self.scene().items():
                 self.removeItemByName('RealTimeLine')
-        elif self._manipulationMode == MANIP_MODE_PAN:
-            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
-            self._manipulationMode = MANIP_MODE_NONE
 
-        elif self._manipulationMode == MANIP_MODE_SELECT:
+        if self._manipulationMode == MANIP_MODE_SELECT:
             self._selectionRect.destroy()
             self._selectionRect = None
-            self._manipulationMode = MANIP_MODE_NONE
 
-        elif self._manipulationMode == MANIP_MODE_MOVE:
-            self._manipulationMode = MANIP_MODE_NONE
-
-        elif self._manipulationMode == MANIP_MODE_ZOOM:
-            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
-            self._manipulationMode = MANIP_MODE_NONE
         if event.button() == QtCore.Qt.RightButton:
             # show nodebox only if drag is small and no items under cursor
             if self.pressed_item is None or (isinstance(self.pressed_item, UINodeBase) and self.nodeFromInstance(self.pressed_item).isCommentNode):
@@ -1803,6 +1798,7 @@ class GraphWidgetUI(QGraphicsView):
                 # with nodes taking supported data types of pressed Pin as input
                 self.showNodeBox(self.pressed_item.dataType,
                                  self.pressed_item.direction)
+        self._manipulationMode = MANIP_MODE_NONE
         if not self.resizing:
             p_itm = self.pressed_item
             r_itm = self.released_item
