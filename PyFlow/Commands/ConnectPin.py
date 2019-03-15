@@ -30,7 +30,7 @@ class ConnectPin(QUndoCommand):
         if dstPin is None:
             print(self.dstUid, "not found")
 
-        connection = self.graph._addConnection(srcPin, dstPin)
+        connection = self.graph.connectPinsInternal(srcPin, dstPin)
 
         # recreate the same connection with same uuid
         # if it was deleted

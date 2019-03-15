@@ -48,6 +48,8 @@ class UIConnection(QGraphicsPathItem):
         self.source().update()
         self.destination().update()
         self.fade = 0.0
+        self.source().uiConnectionList.append(self)
+        self.destination().uiConnectionList.append(self)
 
     def setColor(self, color):
         self.pen.setColor(color)
@@ -85,7 +87,7 @@ class UIConnection(QGraphicsPathItem):
         assert(srcPin is not None)
         dstPin = graph.findUIPinByUID(dstUUID)
         assert(dstPin is not None)
-        connection = graph._addConnection(srcPin, dstPin)
+        connection = graph.connectPinsInternal(srcPin, dstPin)
         assert(connection is not None)
         connection.uid = UUID(data['uuid'])
 

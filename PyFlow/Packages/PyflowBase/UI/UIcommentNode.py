@@ -281,7 +281,7 @@ class UIcommentNode(UINodeBase):
                 self.commentOutpus.append(i)
         for node in self.nodesToMove:
             for i in list(node.UIinputs.values()) + list(node.UIoutputs.values()):
-                for edg in i.edge_list:
+                for edg in i.connections:
                     if edg.source().UiNode in self.nodesToMove and edg.destination().UiNode in self.nodesToMove:
                         self.edgesToHide.append(edg)
 
@@ -307,10 +307,10 @@ class UIcommentNode(UINodeBase):
 
             for pin in self.pinsToMove:
                 if pin in self.commentInputs:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawDestination = self.label().leftWidget
                 elif pin in self.commentOutpus:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawSource = self.label().rigttWidget
 
             for connection in self.edgesToHide:
@@ -323,10 +323,10 @@ class UIcommentNode(UINodeBase):
                 node.show()
             for pin in self.pinsToMove:
                 if pin in self.commentInputs:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawDestination = pin
                 elif pin in self.commentOutpus:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawSource = pin
             for connection in self.edgesToHide:
                 connection.show()

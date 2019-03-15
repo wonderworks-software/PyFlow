@@ -23,13 +23,13 @@ class RemoveNodes(QUndoCommand):
         for nodeJson in self.jsonData:
             nodeInstance = self.graph._createNode(nodeJson)
             nodeInstance.uid = UUID(nodeJson['uuid'])
-        # restore connection info
-        for edgeJson in self.connectionInfo:
-            src = self.graph.findUIPinByUID(UUID(edgeJson['sourceUUID']))
-            dst = self.graph.findUIPinByUID(UUID(edgeJson['destinationUUID']))
-            connection = self.graph._addConnection(src, dst)
-            if connection:
-                connection.uid = UUID(edgeJson['uuid'])
+        # # restore connection info
+        # for edgeJson in self.connectionInfo:
+        #     src = self.graph.findUIPinByUID(UUID(edgeJson['sourceUUID']))
+        #     dst = self.graph.findUIPinByUID(UUID(edgeJson['destinationUUID']))
+        #     connection = self.graph.connectPinsInternal(src, dst)
+        #     if connection:
+        #         connection.uid = UUID(edgeJson['uuid'])
 
     def redo(self):
         for nodeData in self.jsonData:
@@ -38,9 +38,9 @@ class RemoveNodes(QUndoCommand):
                 node = self.graph.nodes[uid]
 
                 # store connecton info
-                for pin in list(node.inputs.values()) + list(node.outputs.values()):
-                    for e in pin.edge_list:
-                        self.connectionInfo.append(e.serialize())
-                    pin.disconnectAll()
+                # for pin in list(node.inputs.values()) + list(node.outputs.values()):
+                #     for e in pin.connections:
+                #         self.connectionInfo.append(e.serialize())
+                #     pin.disconnectAll()
 
                 node.kill()

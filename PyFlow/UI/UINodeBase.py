@@ -709,7 +709,7 @@ class UINodeBase(QGraphicsObject):
     def getChainedNodes(self):
         nodes = []
         for pin in self.inputs.values():
-            for connection in pin.edge_list:
+            for connection in pin.connections:
                 node = connection.source().topLevelItem()  # topLevelItem
                 nodes.append(node)
                 nodes += node.getChainedNodes()
@@ -717,7 +717,7 @@ class UINodeBase(QGraphicsObject):
 
     def kill(self):
         for i in list(self.inputs.values()) + list(self.outputs.values()):
-            for connection in i.edge_list:
+            for connection in i.connections:
                 connection.kill()
         for i in list(self.UIPins.values()):
             i.kill()
@@ -868,10 +868,10 @@ class UINodeBase(QGraphicsObject):
             pin = item.layout().itemAt(0) if isinstance(item.layout().itemAt(0), UIPinBase) else item.layout().itemAt(1)
             if pin.hasConnections:
                 if pin.direction == PinDirection.Input:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawDestination = container.layout().itemAt(0).layout().itemAt(0)
                 if pin.direction == PinDirection.Output:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawSource = container.layout().itemAt(0).layout().itemAt(1)
             item.hide()
 
@@ -881,10 +881,10 @@ class UINodeBase(QGraphicsObject):
             pin = item.layout().itemAt(0) if isinstance(item.layout().itemAt(0), UIPinBase) else item.layout().itemAt(1)
             if pin.hasConnections:
                 if pin.direction == PinDirection.Input:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawDestination = pin
                 if pin.direction == PinDirection.Output:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawSource = pin
             item.show()
 

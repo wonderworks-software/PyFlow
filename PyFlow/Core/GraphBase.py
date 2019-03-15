@@ -232,7 +232,7 @@ class GraphBase(object):
                             return False
         return True
 
-    def addEdge(self, src, dst):
+    def addConnection(self, src, dst):
         if not self.canConnectPins(src, dst):
             return False
 
@@ -262,9 +262,9 @@ class GraphBase(object):
     def removeEdge(self, connection):
         # TODO: this is UI call, move it
         connection.source().affects.remove(connection.destination())
-        connection.source().edge_list.remove(connection)
+        connection.source().connections.remove(connection)
         connection.destination().affected_by.remove(connection.source())
-        connection.destination().edge_list.remove(connection)
+        connection.destination().connections.remove(connection)
         connection.destination().pinDisconnected(connection.source())
         connection.source().pinDisconnected(connection.destination())
         push(connection.destination())

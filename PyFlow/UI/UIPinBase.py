@@ -149,6 +149,7 @@ class UIPinBase(QGraphicsWidget):
         self._val = 0
         self._displayName = self.name
         self._color = QtGui.QColor(*self._rawPin.color())
+        self.uiConnectionList = []
 
     def setLabel(self, labelItem):
         if self._label is None:
@@ -261,8 +262,8 @@ class UIPinBase(QGraphicsWidget):
         return self._rawPin.supportedDataTypes()
 
     @property
-    def edge_list(self):
-        return self._rawPin.edge_list
+    def connections(self):
+        return self._rawPin.connections
 
     @property
     def uid(self):
@@ -312,7 +313,7 @@ class UIPinBase(QGraphicsWidget):
 
     def call(self):
         self._rawPin.call()
-        for e in self.edge_list:
+        for e in self.connections:
             e.highlight()
 
     def kill(self):
@@ -397,9 +398,10 @@ class UIPinBase(QGraphicsWidget):
         clipboard.setText(str(self.uid))
 
     def disconnectAll(self):
-        trash = self._rawPin.disconnectAll()
-        for e in trash:
-            self.owningNode().graph().removeEdge(e)
+        self._rawPin.disconnectAll()
+        while not len(self.uiConnectionList) == 0:
+            item = self.uiConnectionList.pop(0)
+            self.scene().removeItem(item)
 
     def shape(self):
         path = QtGui.QPainterPath()

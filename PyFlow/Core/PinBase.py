@@ -24,7 +24,7 @@ class PinBase(IPin):
         ## Lsit of pins connected to this pin
         self.affected_by = []
         ## List of connections
-        self.edge_list = []
+        self.connections = []
         ## Access to the node
         if owningNode is not None:
             self.owningNode = weakref.ref(owningNode)
@@ -169,13 +169,27 @@ class PinBase(IPin):
             i.call()
 
     def disconnectAll(self):
-        trash = []
-        for e in self.edge_list:
-            if self.uid == e.destination().uid:
-                trash.append(e)
-            if self.uid == e.source().uid:
-                trash.append(e)
-        return trash
+        # if input pin
+        # 1) loop connected output pins of left connected node
+        # 2) call events
+        # 3) remove self from other's affection list
+        # clear affected_by list
+        if self.direction == PinDirection.Input:
+            for o in self.affected_by:
+                o.pinDisconnected(self)
+                o.affects.remove(self)
+            self.affected_by.clear()
+
+        # if output pin
+        # 1) loop connected input pins of right connected node
+        # 2) call events
+        # 3) remove self from other's affection list
+        # clear afects list
+        if self.direction == PinDirection.Output:
+            for i in self.affects:
+                i.pinDisconnected(self)
+                i.affected_by.remove(self)
+            self.affects.clear()
 
     ## Describes, what data type is this pin.
     @property
@@ -226,7 +240,7 @@ class PinBase(IPin):
                 i.dirty = False
 
     def hasConnections(self):
-        if len(self.edge_list) == 0:
+        if len(self.affected_by + self.affects) == 0:
             return False
         else:
             return True

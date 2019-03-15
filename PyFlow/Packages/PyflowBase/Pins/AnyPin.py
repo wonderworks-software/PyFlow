@@ -72,7 +72,7 @@ class AnyPin(PinBase):
             if other.dataType != "AnyPin":
                 self._free = False
                 self.setType(other)
-                for e in self.edge_list:
+                for e in self.connections:
                     for p in [e.source()._rawPin, e.destination()._rawPin]:
                         if p != self:
                             if p.dataType == "AnyPin" and p.dataType != self.dataType:
@@ -81,7 +81,7 @@ class AnyPin(PinBase):
                     if port != self:
                         port.setType(other)
                         port._free = False
-                        for e in port.edge_list:
+                        for e in port.connections:
                             for p in [e.source()._rawPin, e.destination()._rawPin]:
                                 if p != port:
                                     if p.dataType == "AnyPin" and p.dataType != self.dataType:
@@ -111,7 +111,7 @@ class AnyPin(PinBase):
             if selfChek:
                 free = not self.hasConnections()
                 if not free:
-                    for connection in self.edge_list:
+                    for connection in self.connections:
                         for c in [connection.source()._rawPin, connection.destination()._rawPin]:
                             if c != self:
                                 if c not in checked:

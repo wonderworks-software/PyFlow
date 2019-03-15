@@ -19,21 +19,21 @@ class UIReruteNode(UINodeBase):
         if inp.dataType == "ExecPin":
             newIns = []
             for i in self.inputs.values():
-                for connection in i.edge_list:
+                for connection in i.connections:
                     newIns.append(connection.source())
-            if out.edge_list:
-                dst = out.edge_list[0].destination()
+            if out.connections:
+                dst = out.connections[0].destination()
                 for inpt in newIns:
-                    self.graph().addEdge(inpt, dst)
+                    self.graph().addConnection(inpt, dst)
         else:
             newOuts = []
             for i in self.outputs.values():
-                for connection in i.edge_list:
+                for connection in i.connections:
                     newOuts.append(connection.destination())
-            if inp.edge_list:
-                source = inp.edge_list[0].source()
+            if inp.connections:
+                source = inp.connections[0].source()
                 for out in newOuts:
-                    self.graph().addEdge(source, out)
+                    self.graph().addConnection(source, out)
 
         super(UIReruteNode, self).kill()
 
