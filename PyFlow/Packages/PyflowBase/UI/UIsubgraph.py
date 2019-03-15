@@ -19,13 +19,13 @@ class UIsubgraph(UINodeBase):
 
     def onAddInPin(self, pin):
         rawPin = self._rawNode.addInPin(pin=pin._rawPin)
-        uiPin = self._createUIPinWrapper(rawPin,group=pin.owningNode()._wrapper().displayName,linkedPin=pin)
+        uiPin = self._createUIPinWrapper(rawPin, group=pin.owningNode()._wrapper().displayName, linkedPin=pin)
         uiPin.setDisplayName(pin.displayName())
         uiPin.setDynamic(True)
         pin.nameChanged.connect(uiPin.setName)
         pin.displayNameChanged.connect(uiPin.setDisplayName)
         pin.nameChanged.connect(self.updateSize)
-        pin.displayNameChanged.connect(self.updateSize)        
+        pin.displayNameChanged.connect(self.updateSize)
         pin.OnPinDeleted.connect(self.deletePort)
         pin.dataBeenSet.connect(uiPin.setData)
         pinAffects(uiPin._rawPin, pin._rawPin)
@@ -38,13 +38,13 @@ class UIsubgraph(UINodeBase):
 
     def onAddOutPin(self, pin):
         rawPin = self._rawNode.addOutPin(pin=pin._rawPin)
-        uiPin = self._createUIPinWrapper(rawPin,group=pin.owningNode()._wrapper().displayName,linkedPin=pin)
+        uiPin = self._createUIPinWrapper(rawPin, group=pin.owningNode()._wrapper().displayName, linkedPin=pin)
         uiPin.setDisplayName(pin.displayName())
         uiPin.setDynamic(True)
         pin.nameChanged.connect(uiPin.setName)
-        pin.displayNameChanged.connect(uiPin.setDisplayName) 
+        pin.displayNameChanged.connect(uiPin.setDisplayName)
         pin.nameChanged.connect(self.updateSize)
-        pin.displayNameChanged.connect(self.updateSize)                  
+        pin.displayNameChanged.connect(self.updateSize)
         pin.OnPinDeleted.connect(self.deletePort)
         pin.dataBeenSet.connect(uiPin.setData)
         pinAffects(pin._rawPin, uiPin._rawPin)
@@ -54,15 +54,17 @@ class UIsubgraph(UINodeBase):
                 pinAffects(i, o)
         self.updateWidth()
         return uiPin
-    def updateSize(self,name):
+
+    def updateSize(self, name):
         self.updateWidth()
         self.updateNodeShape()
+
     def serialize(self):
         template = super(UIsubgraph, self).serialize()
         graphData = self._graph.getGraphSaveData()
         template["graphData"] = graphData
         return template
-        
+
     @staticmethod
     def deserialize(data, graph):
         node = graph.createNode(data)
@@ -70,12 +72,12 @@ class UIsubgraph(UINodeBase):
 
     def postCreate(self, jsonTemplate):
         super(UIsubgraph, self).postCreate(jsonTemplate)
-        self._graph = GraphWidgetUI(self.graph().parent, graphBase=self._rawNode.rawGraph,parentGraph=self.graph(),parentNode = self)
+        self._graph = GraphWidgetUI(self.graph().parent, graphBase=self._rawNode.rawGraph, parentGraph=self.graph(), parentNode=self)
         self._graph.outPinCreated.connect(self.onAddOutPin)
         self._graph.inPinCreated.connect(self.onAddInPin)
         self._graph.hide()
         self._graph.getInputNode()
-        self._graph.getOutputNode()      
+        self._graph.getOutputNode()
         self.graph().parent.SceneLayout.addWidget(self._graph)
 
         if "graphData" in jsonTemplate:
@@ -102,8 +104,8 @@ class UIsubgraph(UINodeBase):
         event.accept()
 
     def OnDoubleClick(self, pos):
-        self.graph().parent.currentGraph = self._graph 
-        self._graph._parentGraph.hide()  
+        self.graph().parent.currentGraph = self._graph
+        self._graph._parentGraph.hide()
         self._graph.show()
         self._graph.frameAllNodes()
         self.graph().parent.variablesWidget.setGraph(self._graph)

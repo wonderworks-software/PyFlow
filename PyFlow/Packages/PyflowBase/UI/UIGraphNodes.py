@@ -11,9 +11,9 @@ class UIGraphInputs(UINodeBase):
     def __init__(self, raw_node):
         super(UIGraphInputs, self).__init__(raw_node)
         actionRename = self._menu.addAction("Rename")
-        actionRename.triggered.connect(self.rename)         
+        actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
-        actionAddOut.triggered.connect(self.onAddOutPin)       
+        actionAddOut.triggered.connect(self.onAddOutPin)
         self.label().hide()
         self.resizable = True
         self.portsMainLayout.removeItem(self.inputsLayout)
@@ -53,13 +53,13 @@ class UIGraphInputs(UINodeBase):
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
             self.updateWidth()
             self.w = self._rect.width()
-        else:       
+        else:
             self._rect.setWidth(25)
             self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height())) 
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
 
     def paint(self, painter, option, widget):
-        NodePainter.asGraphSides(self, painter, option, widget) 
+        NodePainter.asGraphSides(self, painter, option, widget)
 
 
 class UIGraphOutputs(UINodeBase):
@@ -68,7 +68,7 @@ class UIGraphOutputs(UINodeBase):
     def __init__(self, raw_node):
         super(UIGraphOutputs, self).__init__(raw_node)
         actionRename = self._menu.addAction("Rename")
-        actionRename.triggered.connect(self.rename)          
+        actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.onAddInPin)
         self.label().hide()
@@ -110,7 +110,7 @@ class UIGraphOutputs(UINodeBase):
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
             self.updateWidth()
             self.w = self._rect.width()
-        else:       
+        else:
             self._rect.setWidth(25)
             self.updateWidth()
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))

@@ -16,57 +16,67 @@ from PyFlow.UI.PinPainter import PinPainter
 
 UI_PINS_FACTORIES = {}
 
+
 class UICommentPinBase(QGraphicsWidget):
-    
-    def __init__(self,parent):
+
+    def __init__(self, parent):
         super(UICommentPinBase, self).__init__(parent)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.width = 8 + 1
-        self.height = 8 + 1   
+        self.height = 8 + 1
         self.setGeometry(0, 0, self.width, self.height)
         self.expanded = True
+
     def boundingRect(self):
-        return QtCore.QRectF(0, 0, 8 , 8)
+        return QtCore.QRectF(0, 0, 8, 8)
 
     def sizeHint(self, which, constraint):
         try:
             return QtCore.QSizeF(self.width, self.height)
         except:
             return QGraphicsWidget.sizeHint(self, which, constraint)
+
     def shape(self):
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
-        return path        
+        return path
+
     def paint(self, painter, option, widget):
         pass
-        #PinPainter.asGroupPin(self, painter, option, widget)
+        # PinPainter.asGroupPin(self, painter, option, widget)
+
 
 class UIGroupPinBase(QGraphicsWidget):
-    
+
     onCollapsed = QtCore.Signal(object)
     onExpanded = QtCore.Signal(object)
-    def __init__(self,container):
+
+    def __init__(self, container):
         super(UIGroupPinBase, self).__init__()
         self._container = container
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.width = 8 + 1
-        self.height = 8 + 1   
+        self.height = 8 + 1
         self.setGeometry(0, 0, self.width, self.height)
         self.expanded = True
+
     def boundingRect(self):
-        return QtCore.QRectF(0, 0, 8 , 8)
+        return QtCore.QRectF(0, 0, 8, 8)
 
     def sizeHint(self, which, constraint):
         try:
             return QtCore.QSizeF(self.width, self.height)
         except:
             return QGraphicsWidget.sizeHint(self, which, constraint)
+
     def shape(self):
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
-        return path        
+        return path
+
     def paint(self, painter, option, widget):
-        PinPainter.asGroupPin(self, painter, option, widget)    
+        PinPainter.asGroupPin(self, painter, option, widget)
+
     def mousePressEvent(self, event):
         QGraphicsWidget.mousePressEvent(self, event)
         if self.expanded:
@@ -75,7 +85,7 @@ class UIGroupPinBase(QGraphicsWidget):
             self.onExpanded.emit(self._container)
         self.expanded = not self.expanded
         self.update()
-        
+
 
 class UIPinBase(QGraphicsWidget):
     '''
@@ -312,7 +322,7 @@ class UIPinBase(QGraphicsWidget):
             delattr(self.owningNode(), self.name)
         if self._container is not None:
             self.owningNode().getWrapper()().graph().scene().removeItem(self._container)
-            if not self._groupContainer :
+            if not self._groupContainer:
                 if self._rawPin.direction == PinDirection.Input:
                     self.owningNode().getWrapper()().inputsLayout.removeItem(self._container)
                 else:
@@ -322,11 +332,11 @@ class UIPinBase(QGraphicsWidget):
                 if self._rawPin.direction == PinDirection.Input:
                     self.owningNode().getWrapper()().inputsLayout.removeItem(self._groupContainer)
                 else:
-                    self.owningNode().getWrapper()().outputsLayout.removeItem(self._groupContainer)                
+                    self.owningNode().getWrapper()().outputsLayout.removeItem(self._groupContainer)
             if self._rawPin.uid in self.owningNode().getWrapper()().UIPins:
-                del self.owningNode().getWrapper()().UIPins[self._rawPin.uid]                
+                del self.owningNode().getWrapper()().UIPins[self._rawPin.uid]
         self._rawPin.kill()
-        #self.owningNode().getWrapper()().updateWidth()
+        # self.owningNode().getWrapper()().updateWidth()
 
     @staticmethod
     def deserialize(owningNode, jsonData):
