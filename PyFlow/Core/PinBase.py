@@ -240,10 +240,12 @@ class PinBase(IPin):
                 i.dirty = False
 
     def hasConnections(self):
-        if len(self.affected_by + self.affects) == 0:
-            return False
-        else:
-            return True
+        numConnections = 0
+        if self.direction == PinDirection.Input:
+            numConnections += len(self.affected_by)
+        elif self.direction == PinDirection.Output:
+            numConnections += len(self.affects)
+        return numConnections > 0
 
     def setDirty(self):
         if self.dataType == 'ExecPin':

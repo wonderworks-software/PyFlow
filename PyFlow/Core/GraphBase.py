@@ -232,7 +232,28 @@ class GraphBase(object):
                             return False
         return True
 
-    def addConnection(self, src, dst):
+    def disconnectPins(self, src, dst):
+        if self.arePinsConnected(src, dst):
+            if src.direction == PinDirection.Input:
+                src, dst = dst, src
+            src.affects.remove(dst)
+            dst.affected_by.remove(src)
+            src.pinDisconnected(dst)
+            dst.pinDisconnected(src)
+            push(dst)
+
+    def arePinsConnected(self, src, dst):
+        if src.owningNode() == dst.owningNode():
+            return False
+        if src.direction == dst.direction:
+            return False
+        if src.direction == PinDirection.Input:
+            src, dst = dst, src
+        if dst in src.affects and src in dst.affected_by:
+            return True
+        return False
+
+    def connectPins(self, src, dst):
         if not self.canConnectPins(src, dst):
             return False
 
@@ -257,17 +278,6 @@ class GraphBase(object):
         src.pinConnected(dst)
         push(dst)
         return True
-
-    # TODO: create raw class for connection
-    def removeEdge(self, connection):
-        # TODO: this is UI call, move it
-        connection.source().affects.remove(connection.destination())
-        connection.source().connections.remove(connection)
-        connection.destination().affected_by.remove(connection.source())
-        connection.destination().connections.remove(connection)
-        connection.destination().pinDisconnected(connection.source())
-        connection.source().pinDisconnected(connection.destination())
-        push(connection.destination())
 
     def plot(self):
         print(self.name + '\n----------\n')

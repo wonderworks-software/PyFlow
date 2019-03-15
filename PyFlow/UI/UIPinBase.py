@@ -263,7 +263,7 @@ class UIPinBase(QGraphicsWidget):
 
     @property
     def connections(self):
-        return self._rawPin.connections
+        return self.uiConnectionList
 
     @property
     def uid(self):

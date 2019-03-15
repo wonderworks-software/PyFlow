@@ -16,7 +16,7 @@ class TestGeneral(unittest.TestCase):
 
         addNode1.setData('a', 5)
 
-        connection = g.addConnection(addNode1.getPinByName('out', PinSelectionGroup.Outputs), addNode2.getPinByName('a', PinSelectionGroup.Inputs))
+        connection = g.connectPins(addNode1.getPinByName('out', PinSelectionGroup.Outputs), addNode2.getPinByName('a', PinSelectionGroup.Inputs))
         self.assertEqual(connection, True, "FAILED TO ADD EDGE")
         self.assertEqual(addNode2.getData('out'), 5, "NODES EVALUATION IS INCORRECT")
 
@@ -47,8 +47,8 @@ class TestGeneral(unittest.TestCase):
         self.assertIsNotNone(pRandIntOutExecPin)
         self.assertIsNotNone(pPrintInputExecPin)
 
-        edge1Created = g.addConnection(pRandIntOutExecPin, pPrintInputExecPin)
-        edge2Created = g.addConnection(pRandIntResultPin, pPrintInputValuePin)
+        edge1Created = g.connectPins(pRandIntOutExecPin, pPrintInputExecPin)
+        edge2Created = g.connectPins(pRandIntResultPin, pPrintInputValuePin)
         self.assertEqual(edge1Created, True, "FAILED TO CONNECT EXECS")
         self.assertEqual(edge2Created, True, "FAILED TO CONNECT INT AND ANY")
 
@@ -75,7 +75,7 @@ class TestGeneral(unittest.TestCase):
         n1Out = n1.getPinByName('out', PinSelectionGroup.Outputs)
         n3b = n3.getPinByName('b', PinSelectionGroup.Inputs)
         # connect n1.out and n3.b
-        c1 = g.addConnection(n1Out, n3b)
+        c1 = g.connectPins(n1Out, n3b)
         # check connection was created
         self.assertEqual(c1, True)
         # check n1.out affects on n3.b
@@ -87,7 +87,7 @@ class TestGeneral(unittest.TestCase):
         # connect n2.out to n3.b
         # n3.b is connected with n1.out
         # we expect n3.b breaks all connections before connecting with n2.out
-        c2 = g.addConnection(n2Out, n3b)
+        c2 = g.connectPins(n2Out, n3b)
         # check connections successfull
         self.assertEqual(c2, True)
         # check n2.out afffects on n3.b
@@ -96,6 +96,28 @@ class TestGeneral(unittest.TestCase):
         self.assertListEqual(n3b.affected_by, [n2Out], "incorrect")
         # check n1.out really disconnected
         self.assertListEqual(n1Out.affects, [], "not cleared")
+
+    def test_are_pins_connected(self):
+        packages = GET_PACKAGES()
+        g = GraphBase("testGraph")
+        intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
+        mathFoos = intlib.getFunctions()
+
+        addNode1 = NodeBase.initializeFromFunction(mathFoos["add"])
+        addNode2 = NodeBase.initializeFromFunction(mathFoos["add"])
+
+        g.addNode(addNode1)
+        g.addNode(addNode2)
+
+        pinOut = addNode1.getPinByName('out', PinSelectionGroup.Outputs)
+        pinInp = addNode2.getPinByName('a', PinSelectionGroup.Inputs)
+        bConnected = g.connectPins(pinOut, pinInp)
+        self.assertEqual(bConnected, True, "FAILED TO ADD EDGE")
+        self.assertEqual(g.arePinsConnected(pinOut, pinInp), True)
+
+        g.disconnectPins(pinInp, pinOut)
+        self.assertEqual(g.arePinsConnected(pinOut, pinInp), False)
+
 
 if __name__ == '__main__':
     unittest.main()

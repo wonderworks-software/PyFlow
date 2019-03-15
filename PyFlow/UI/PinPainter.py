@@ -20,7 +20,7 @@ class PinPainter(object):
         h = background_rect.height() / 2
 
         linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), pin.width / 2.5)
-        if not pin._rawPin._connected:
+        if not pin._rawPin.hasConnections():
             linearGrad.setColorAt(0, pin.color().darker(280))
             linearGrad.setColorAt(0.5, pin.color().darker(280))
             linearGrad.setColorAt(0.65, pin.color().lighter(130))

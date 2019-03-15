@@ -14,8 +14,8 @@ class UIReruteNode(UINodeBase):
         self.setAcceptHoverEvents(True)
 
     def kill(self):
-        inp = self.inputs.values()[0]
-        out = self.outputs.values()[0]
+        inp = list(self.inputs.values())[0]
+        out = list(self.outputs.values())[0]
         if inp.dataType == "ExecPin":
             newIns = []
             for i in self.inputs.values():
@@ -24,7 +24,7 @@ class UIReruteNode(UINodeBase):
             if out.connections:
                 dst = out.connections[0].destination()
                 for inpt in newIns:
-                    self.graph().addConnection(inpt, dst)
+                    self.graph().connectPins(inpt, dst)
         else:
             newOuts = []
             for i in self.outputs.values():
@@ -33,7 +33,7 @@ class UIReruteNode(UINodeBase):
             if inp.connections:
                 source = inp.connections[0].source()
                 for out in newOuts:
-                    self.graph().addConnection(source, out)
+                    self.graph().connectPins(source, out)
 
         super(UIReruteNode, self).kill()
 

@@ -365,24 +365,24 @@ class SceneClass(QGraphicsScene):
                             if self.parent().canConnectPins(dropItem, inp):
                                 if dropItem.dataType == 'ExecPin':
                                     dropItem.disconnectAll()
-                                self.parent().addConnection(dropItem, inp)
+                                self.parent().connectPins(dropItem, inp)
                                 node.setPos(x + node.boundingRect().width(), y)
                                 break
                         for out in node.outputs.values():
                             if self.parent().canConnectPins(out, dropItem):
-                                self.parent().addConnection(out, dropItem)
+                                self.parent().connectPins(out, dropItem)
                                 node.setPos(x - node.boundingRect().width(), y)
                                 break
                     if isinstance(dropItem, UIConnection):
                         for inp in node.inputs.values():
                             if self.parent().canConnectPins(dropItem.source(), inp):
                                 if dropItem.source().dataType == 'ExecPin':
-                                    dropItem.source().disconnectAll()                                
-                                self.parent().addConnection(dropItem.source(), inp)
+                                    dropItem.source().disconnectAll()
+                                self.parent().connectPins(dropItem.source(), inp)
                                 break
                         for out in node.outputs.values():
                             if self.parent().canConnectPins(out, dropItem.destination()):
-                                self.parent().addConnection(out, dropItem.destination())
+                                self.parent().connectPins(out, dropItem.destination())
                                 break
         else:
             super(SceneClass, self).dropEvent(event)
@@ -1259,12 +1259,12 @@ class GraphWidgetUI(QGraphicsView):
                         e.source().UiNode)].getPinByName(e.source().name)
                     ndst = newNodes[oldNodes.index(e.destination().UiNode)].getPinByName(
                         e.destination().name)
-                    self.addConnection(nsrc, ndst)
+                    self.connectPins(nsrc, ndst)
                 elif e.source().UiNode not in oldNodes and e.source().dataType != "ExecPin":
                     nsrc = e.source()
                     ndst = newNodes[oldNodes.index(e.destination().UiNode)].getPinByName(
                         e.destination().name)
-                    self.addConnection(nsrc, ndst)
+                    self.connectPins(nsrc, ndst)
 
     def copyNodes(self, toClipboard=True):
         nodes = []
@@ -1326,7 +1326,7 @@ class GraphWidgetUI(QGraphicsView):
                                 ].getPinByName(connection["sourcePin"])
                 ndst = newNodes[connection["destinationNode"]
                                 ].getPinByName(connection["destinationPin"])
-                self.addConnection(nsrc, ndst)
+                self.connectPins(nsrc, ndst)
             else:
                 nsrc = self.getNodeByName(connection["sourcenode"])
                 if nsrc is not None:
@@ -1334,7 +1334,7 @@ class GraphWidgetUI(QGraphicsView):
                     if nsrc is not None:
                         ndst = newNodes[connection["destinationNode"]
                                         ].getPinByName(connection["destinationPin"])
-                        self.addConnection(nsrc, ndst)
+                        self.connectPins(nsrc, ndst)
 
     def alignSelectedNodes(self, direction):
         ls = [n for n in self.getNodes() if n.isSelected()]
@@ -1444,7 +1444,7 @@ class GraphWidgetUI(QGraphicsView):
         return node
 
     def mousePressEvent(self, event):
-        if self.pressed_item and isinstance(self.pressed_item,EditableLabel):
+        if self.pressed_item and isinstance(self.pressed_item, EditableLabel):
             if self.pressed_item != self.itemAt(event.pos()):
                 self.pressed_item.setOutFocus()
         self.pressed_item = self.itemAt(event.pos())
@@ -1489,8 +1489,8 @@ class GraphWidgetUI(QGraphicsView):
             #    super(GraphWidgetUI, self).mousePressEvent(event)
             self.node_box.hide()
 
-        elif not isinstance(self.pressed_item,EditableLabel) or (isinstance(self.pressed_item,EditableLabel) and not self.pressed_item._beingEdited):
-            #else:
+        elif not isinstance(self.pressed_item, EditableLabel) or (isinstance(self.pressed_item, EditableLabel) and not self.pressed_item._beingEdited):
+            # else:
             if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
                 self.node_box.hide()
                 self.node_box.lineEdit.clear()
@@ -1513,16 +1513,15 @@ class GraphWidgetUI(QGraphicsView):
                             if self.canConnectPins(self.pressed_item.source(), inp):
                                 if self.pressed_item.source().dataType == 'ExecPin':
                                     self.pressed_item.source().disconnectAll()
-                                self.addConnection(self.pressed_item.source(), inp)
+                                self.connectPins(self.pressed_item.source(), inp)
                                 break
                         for out in reruteNode.outputs.values():
                             if self.canConnectPins(out, self.pressed_item.destination()):
-                                self.addConnection(out, self.pressed_item.destination())
-                                break      
-                        self.pressed_item = reruteNode                
+                                self.connectPins(out, self.pressed_item.destination())
+                                break
+                        self.pressed_item = reruteNode
                         self._manipulationMode = MANIP_MODE_MOVE
-                        self._lastDragPoint = self.mapToScene(event.pos())                        
-
+                        self._lastDragPoint = self.mapToScene(event.pos())
                     else:
                         if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
                             if node.bResize:
@@ -1626,11 +1625,11 @@ class GraphWidgetUI(QGraphicsView):
                 reruteNode.setSelected(True)
                 for inp in reruteNode.inputs.values():
                     if self.canConnectPins(self.pressed_item, inp):
-                        self.addConnection(self.pressed_item, inp)
+                        self.connectPins(self.pressed_item, inp)
                         break
                 for out in reruteNode.outputs.values():
                     if self.canConnectPins(self.pressed_item, out):
-                        self.addConnection(self.pressed_item, out)
+                        self.connectPins(self.pressed_item, out)
                         break                        
                 self._manipulationMode = MANIP_MODE_MOVE
                 self._lastDragPoint = self.mapToScene(event.pos())
@@ -1704,7 +1703,7 @@ class GraphWidgetUI(QGraphicsView):
                             if item.source() == node.inputs.values()[0].connections[0].source():
                                 newOuts.append(item.destination())
                 for out in newOuts:
-                    self.addConnection(node.outputs.values()[0].connections[0].source(),out)
+                    self.connectPins(node.outputs.values()[0].connections[0].source(),out)
 
 
         elif self._manipulationMode == MANIP_MODE_PAN:
@@ -1823,7 +1822,7 @@ class GraphWidgetUI(QGraphicsView):
 
             if do_connect:
                 if p_itm is not r_itm:
-                    self.addConnection(p_itm, r_itm)
+                    self.connectPins(p_itm, r_itm)
 
         selectedNodes = self.selectedNodes()
         if len(selectedNodes) != 0 and event.button() == QtCore.Qt.LeftButton:
@@ -1999,7 +1998,7 @@ class GraphWidgetUI(QGraphicsView):
         self.scene().addItem(node)
 
     def connectPinsInternal(self, src, dst):
-        result = self._graphBase.addConnection(src._rawPin, dst._rawPin)
+        result = self._graphBase.connectPins(src._rawPin, dst._rawPin)
         if result:
             if src.direction == PinDirection.Input:
                 src, dst = dst, src
@@ -2012,13 +2011,22 @@ class GraphWidgetUI(QGraphicsView):
     def canConnectPins(self, src, dst):
         return self._graphBase.canConnectPins(src, dst)
 
-    def addConnection(self, src, dst):
+    def connectPins(self, src, dst):
         if self.canConnectPins(src, dst):
             cmd = cmdConnectPin(self, src, dst)
             self.undoStack.push(cmd)
 
     def removeEdgeCmd(self, connections):
         self.undoStack.push(cmdRemoveEdges(self, [e.serialize() for e in connections]))
+
+    # def removeEdge(self, connection):
+    #     connection.source().affects.remove(connection.destination())
+    #     connection.source().connections.remove(connection)
+    #     connection.destination().affected_by.remove(connection.source())
+    #     connection.destination().connections.remove(connection)
+    #     connection.destination().pinDisconnected(connection.source())
+    #     connection.source().pinDisconnected(connection.destination())
+    #     push(connection.destination())
 
     def removeEdge(self, connection):
         self._graphBase.removeEdge(connection)
