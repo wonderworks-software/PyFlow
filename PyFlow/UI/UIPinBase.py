@@ -400,8 +400,8 @@ class UIPinBase(QGraphicsWidget):
     def disconnectAll(self):
         self._rawPin.disconnectAll()
         while not len(self.uiConnectionList) == 0:
-            item = self.uiConnectionList.pop(0)
-            self.scene().removeItem(item)
+            self.owningNode().graph().removeEdge(self.uiConnectionList[0])
+        self.update()
 
     def shape(self):
         path = QtGui.QPainterPath()

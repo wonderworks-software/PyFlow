@@ -1692,19 +1692,18 @@ class GraphWidgetUI(QGraphicsView):
             for node in selectedNodes:
                 # if node not in [self.inputsItem,self.outputsItem]:
                 node.translate(delta.x(), delta.y())
-            if isinstance(node,UIReruteNode) and modifiers == QtCore.Qt.AltModifier:
+            if isinstance(node, UIReruteNode) and modifiers == QtCore.Qt.AltModifier:
                 mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
                                          QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
                 hoverItems = self.items(mouseRect)
                 newOuts = []
                 for item in hoverItems:
-                    if isinstance(item,UIConnection):
-                        if node.inputs.values()[0].connections and node.outputs.values()[0].connections:
-                            if item.source() == node.inputs.values()[0].connections[0].source():
+                    if isinstance(item, UIConnection):
+                        if list(node.inputs.values())[0].connections and list(node.outputs.values())[0].connections:
+                            if item.source() == list(node.inputs.values())[0].connections[0].source():
                                 newOuts.append(item.destination())
                 for out in newOuts:
-                    self.connectPins(node.outputs.values()[0].connections[0].source(),out)
-
+                    self.connectPins(node.outputs.values()[0].connections[0].source(), out)
 
         elif self._manipulationMode == MANIP_MODE_PAN:
             delta = self.mapToScene(event.pos()) - self._lastPanPoint
@@ -2019,20 +2018,15 @@ class GraphWidgetUI(QGraphicsView):
     def removeEdgeCmd(self, connections):
         self.undoStack.push(cmdRemoveEdges(self, [e.serialize() for e in connections]))
 
-    # def removeEdge(self, connection):
-    #     connection.source().affects.remove(connection.destination())
-    #     connection.source().connections.remove(connection)
-    #     connection.destination().affected_by.remove(connection.source())
-    #     connection.destination().connections.remove(connection)
-    #     connection.destination().pinDisconnected(connection.source())
-    #     connection.source().pinDisconnected(connection.destination())
-    #     push(connection.destination())
-
     def removeEdge(self, connection):
-        self._graphBase.removeEdge(connection)
+        src = connection.source()._rawPin
+        dst = connection.destination()._rawPin
+        self._graphBase.disconnectPins(src, dst)
         connection.source().update()
         connection.destination().update()
         self.connections.pop(connection.uid)
+        connection.source().uiConnectionList.remove(connection)
+        connection.destination().uiConnectionList.remove(connection)
         connection.prepareGeometryChange()
         self.scene().removeItem(connection)
 

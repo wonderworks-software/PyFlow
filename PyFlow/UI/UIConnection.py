@@ -51,6 +51,9 @@ class UIConnection(QGraphicsPathItem):
         self.source().uiConnectionList.append(self)
         self.destination().uiConnectionList.append(self)
 
+    def __repr__(self):
+        return "{0} -> {1}".format(self.source().getName(), self.destination().getName())
+
     def setColor(self, color):
         self.pen.setColor(color)
         self.color = color
