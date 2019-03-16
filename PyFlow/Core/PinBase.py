@@ -227,11 +227,10 @@ class PinBase(IPin):
         return self._data
 
     def pinConnected(self, other):
-        self._connected = True
+        self._connected = self.hasConnections()
 
     def pinDisconnected(self, other):
-        if not self.hasConnections():
-            self._connected = False
+        self._connected = self.hasConnections()
 
     def setClean(self):
         self.dirty = False

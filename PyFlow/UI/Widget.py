@@ -1999,6 +1999,8 @@ class GraphWidgetUI(QGraphicsView):
         self.scene().addItem(node)
 
     def connectPinsInternal(self, src, dst):
+        # reconnection may occur in raw connections
+        # need to know it and remove invalid ui connections
         result = self._graphBase.connectPins(src._rawPin, dst._rawPin)
         if result:
             if src.direction == PinDirection.Input:
@@ -2023,7 +2025,13 @@ class GraphWidgetUI(QGraphicsView):
     def removeEdge(self, connection):
         src = connection.source()._rawPin
         dst = connection.destination()._rawPin
+        # this will remove raw pins from affection lists
+        # will call pinDisconnected for raw pins
         self._graphBase.disconnectPins(src, dst)
+
+        # call disconnection events for ui pins
+        connection.source().pinDisconnected(connection.destination())
+        connection.destination().pinDisconnected(connection.source())
         connection.source().update()
         connection.destination().update()
         self.connections.pop(connection.uid)

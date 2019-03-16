@@ -65,6 +65,7 @@ class UIConnection(QGraphicsPathItem):
         self.color = color
 
     def Tick(self):
+        # check if connection is not valid and kill
         if self.fade > 0:
             self.pen.setWidthF(self.thikness + self.fade * 2)
             r = abs(lerp(self.color.red(), Colors.Yellow.red(), clamp(self.fade, 0, 1)))

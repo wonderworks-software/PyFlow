@@ -440,12 +440,12 @@ class UIPinBase(QGraphicsWidget):
         self.hovered = False
 
     def pinConnected(self, other):
-        self._rawPin.pinConnected(other)
+        # self._rawPin.pinConnected(other)
         self.OnPinConnected.emit(other)
         self.update()
 
     def pinDisconnected(self, other):
-        self._rawPin.pinDisconnected(other)
+        # self._rawPin.pinDisconnected(other)
         self.OnPinDisconnected.emit(other)
         self.update()
 
