@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsPathItem
+from Qt.QtWidgets import QMenu
 
 from Settings import Colors
 from PyFlow.Core.Common import *
@@ -16,6 +17,9 @@ from PyFlow.Core.Common import *
 class UIConnection(QGraphicsPathItem):
     def __init__(self, source, destination, graph):
         QGraphicsPathItem.__init__(self)
+        self._menu = QMenu()
+        self.actionDisconnect = self._menu.addAction("Disconnect")
+        self.actionDisconnect.triggered.connect(self.kill)
         self._uid = uuid4()
         self.graph = weakref.ref(graph)
         self.source = weakref.ref(source)
@@ -50,6 +54,8 @@ class UIConnection(QGraphicsPathItem):
         self.fade = 0.0
         self.source().uiConnectionList.append(self)
         self.destination().uiConnectionList.append(self)
+        self.source().pinConnected(self.destination())
+        self.destination().pinConnected(self.source())
 
     def __repr__(self):
         return "{0} -> {1}".format(self.source().getName(), self.destination().getName())
@@ -67,6 +73,9 @@ class UIConnection(QGraphicsPathItem):
             self.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
             self.fade -= 0.1
             self.update()
+
+    def contextMenuEvent(self, event):
+        self._menu.exec_(event.screenPos())
 
     def highlight(self):
         self.fade = 1.0
