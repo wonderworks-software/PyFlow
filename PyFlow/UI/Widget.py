@@ -905,7 +905,7 @@ class GraphWidgetUI(QGraphicsView):
                 if result:
                     self.pressed_item.parentItem().setName(name)
                     self.updatePropertyView(self.pressed_item.parentItem())
-        elif self.pressed_item and isinstance(self.pressed_item,EditableLabel):
+        elif self.pressed_item and isinstance(self.pressed_item, EditableLabel):
             if self.pressed_item._isEditable:
                 self.pressed_item.start_edit_name()
 
@@ -1029,8 +1029,9 @@ class GraphWidgetUI(QGraphicsView):
         if not fpath == '':
             with open(fpath, 'r') as f:
                 data = json.load(f)
-                self.loadFromData(data,fpath)
-    def loadFromData(self,data,fpath=""):
+                self.loadFromData(data, fpath)
+
+    def loadFromData(self, data, fpath=""):
         self.new_file()
         # vars
         for varJson in data[self.name]['vars']:
@@ -1055,7 +1056,8 @@ class GraphWidgetUI(QGraphicsView):
                     node.expanded = True
                     node.updateChildren(node.nodesToMove.keys())
                     node.toogleCollapsed()
-        self._clearPropertiesView()        
+        self._clearPropertiesView()
+
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
         pinName = full_name.split('.')[1]
@@ -1630,7 +1632,7 @@ class GraphWidgetUI(QGraphicsView):
                 for out in reruteNode.outputs.values():
                     if self.canConnectPins(self.pressed_item, out):
                         self.connectPins(self.pressed_item, out)
-                        break                        
+                        break
                 self._manipulationMode = MANIP_MODE_MOVE
                 self._lastDragPoint = self.mapToScene(event.pos())
         # if not isinstance(self.pressed_item,EditableLabel):
@@ -1882,7 +1884,7 @@ class GraphWidgetUI(QGraphicsView):
 
         if self._parentGraph:
             self.GoUpButtonProxy.setPos(polygon[0].x(), polygon[0].y())
-            self._file_name_label.moveBy(self.GoUpButton.width(),0)
+            self._file_name_label.moveBy(self.GoUpButton.width(), 0)
         # self.inputsItem.setPos(self.mapToScene(self.viewport().rect().x(),self.viewport().rect().y()+50) )
         # self.inputsItem.setPos(self.boundingRect.topLeft().x(),self.boundingRect.topLeft().y()+50)
         # self.inputsItem.update()
