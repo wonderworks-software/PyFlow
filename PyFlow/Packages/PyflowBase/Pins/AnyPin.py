@@ -144,8 +144,16 @@ class AnyPin(PinBase):
             self._wrapper().setType(other.color())
             self.setData(other.defaultValue())
             self.setDefaultValue(other.defaultValue())
-            if self.direction == PinDirection.Input:
+
+            # GOLDEN RULE OF EXEC PINS: Input execs calls output execs. Output execs calls compute on owning node
+            #
+            # if owning node is graphInputs node - its output pins acts like inputs on parent subgraph node,
+            # this is for actLikeDirection is used.
+            # If 'other.call' will be accidentally assigned to output pin this will cause infinite recursion.
+            # So make sure self.direction is always 'PinDirection.Input' and it acts like input
+            if self.direction == PinDirection.Input and self.actLikeDirection == PinDirection.Input:
                 self.call = other.call
+
             self.dirty = other.dirty
             self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass

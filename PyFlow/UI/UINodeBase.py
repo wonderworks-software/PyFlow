@@ -331,6 +331,7 @@ class UINodeBase(QGraphicsObject):
                 pin.setDirty()
             else:
                 pin.setClean()
+            pin.actLikeDirection = PinDirection(inpJson['actLikeDirection'])
 
         for outJson in data['outputs']:
             pin = node.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
@@ -340,6 +341,8 @@ class UINodeBase(QGraphicsObject):
                 pin.setDirty()
             else:
                 pin.setClean()
+            pin.actLikeDirection = PinDirection(outJson['actLikeDirection'])
+
         return node
 
     def serialize(self):

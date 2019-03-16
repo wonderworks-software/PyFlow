@@ -1,10 +1,10 @@
 from Qt import QtCore
 from Qt.QtWidgets import QInputDialog
+
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.NodePainter import NodePainter
 
 
-# self.graph().inPinCreated.connect(self.printTest)
 class UIGraphInputs(UINodeBase):
     pinCreated = QtCore.Signal(object)
 
