@@ -88,6 +88,41 @@ def cycle_check(src, dst):
     return False
 
 
+def arePinsConnected(src, dst):
+    """Checks if two pins are connected
+
+    Arguments:
+        src PinBase -- left hand side pin
+        dst PinBase -- right hand side pin
+    """
+    if src.owningNode() == dst.owningNode():
+        return False
+    if src.direction == dst.direction:
+        return False
+    if src.direction == PinDirection.Input:
+        src, dst = dst, src
+    if dst in src.affects and src in dst.affected_by:
+        return True
+    return False
+
+
+def disconnectPins(src, dst):
+    """Disconnects two pins
+
+    Arguments:
+        src PinBase -- left hand side pin
+        dst PinBase -- right hand side pin
+    """
+    if arePinsConnected(src, dst):
+        if src.direction == PinDirection.Input:
+            src, dst = dst, src
+        src.affects.remove(dst)
+        dst.affected_by.remove(src)
+        src.pinDisconnected(dst)
+        dst.pinDisconnected(src)
+        push(dst)
+
+
 ## marks dirty all ports from start to the right
 # this part of graph will be recomputed every tick
 # @param[in] start_from pin from which recursion begins

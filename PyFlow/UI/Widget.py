@@ -914,7 +914,7 @@ class GraphWidgetUI(QGraphicsView):
             self.moveScrollbar(self.autoPanController.getDelta())
         for n in self.getNodes():
             n.Tick(deltaTime)
-        for e in self.connections.values():
+        for e in list(self.connections.values()):
             e.Tick()
 
     def notify(self, message, duration):
@@ -2022,12 +2022,12 @@ class GraphWidgetUI(QGraphicsView):
     def removeEdgeCmd(self, connections):
         self.undoStack.push(cmdRemoveEdges(self, [e.serialize() for e in connections]))
 
-    def removeEdge(self, connection):
+    def removeConnection(self, connection):
         src = connection.source()._rawPin
         dst = connection.destination()._rawPin
         # this will remove raw pins from affection lists
         # will call pinDisconnected for raw pins
-        self._graphBase.disconnectPins(src, dst)
+        disconnectPins(src, dst)
 
         # call disconnection events for ui pins
         connection.source().pinDisconnected(connection.destination())

@@ -23,4 +23,4 @@ class RemoveEdges(QUndoCommand):
         for edgeJson in self.jsonTemplates:
             uid = UUID(edgeJson['uuid'])
             if uid in self.graph.connections:
-                self.graph.removeEdge(self.graph.connections[uid])
+                self.graph.removeConnection(self.graph.connections[uid])

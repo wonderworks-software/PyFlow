@@ -113,10 +113,10 @@ class TestGeneral(unittest.TestCase):
         pinInp = addNode2.getPinByName('a', PinSelectionGroup.Inputs)
         bConnected = g.connectPins(pinOut, pinInp)
         self.assertEqual(bConnected, True, "FAILED TO ADD EDGE")
-        self.assertEqual(g.arePinsConnected(pinOut, pinInp), True)
+        self.assertEqual(arePinsConnected(pinOut, pinInp), True)
 
-        g.disconnectPins(pinInp, pinOut)
-        self.assertEqual(g.arePinsConnected(pinOut, pinInp), False)
+        disconnectPins(pinInp, pinOut)
+        self.assertEqual(arePinsConnected(pinOut, pinInp), False)
 
 
 if __name__ == '__main__':

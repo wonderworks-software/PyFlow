@@ -12,6 +12,13 @@ class Py3FunctionCompiler(ICodeCompiler):
         self._fooName = fooName
 
     def compile(self, code):
+        """wraps code to function def
+
+        Arguments:
+            code [str] -- code to wrap
+        Returns:
+            function object
+        """
         foo = "def {}(self):".format(self._fooName)
         lines = [i for i in code.split('\n') if len(i) > 0]
         for line in lines:

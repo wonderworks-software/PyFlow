@@ -65,7 +65,11 @@ class UIConnection(QGraphicsPathItem):
         self.color = color
 
     def Tick(self):
-        # check if connection is not valid and kill
+        # check if this instance represents existing connection
+        # if not - destroy
+        if not arePinsConnected(self.source()._rawPin, self.destination()._rawPin):
+            self.graph().removeConnection(self)
+
         if self.fade > 0:
             self.pen.setWidthF(self.thikness + self.fade * 2)
             r = abs(lerp(self.color.red(), Colors.Yellow.red(), clamp(self.fade, 0, 1)))
@@ -184,7 +188,7 @@ class UIConnection(QGraphicsPathItem):
         self.setPath(self.mPath)
 
     def kill(self):
-        self.graph().removeEdge(self)
+        self.graph().removeConnection(self)
 
     def destination_port_name(self):
         return self.destination().getName()

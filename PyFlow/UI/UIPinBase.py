@@ -400,7 +400,7 @@ class UIPinBase(QGraphicsWidget):
     def disconnectAll(self):
         self._rawPin.disconnectAll()
         while not len(self.uiConnectionList) == 0:
-            self.owningNode().graph().removeEdge(self.uiConnectionList[0])
+            self.owningNode().graph().removeConnection(self.uiConnectionList[0])
         self.update()
 
     def shape(self):
@@ -440,12 +440,10 @@ class UIPinBase(QGraphicsWidget):
         self.hovered = False
 
     def pinConnected(self, other):
-        # self._rawPin.pinConnected(other)
         self.OnPinConnected.emit(other)
         self.update()
 
     def pinDisconnected(self, other):
-        # self._rawPin.pinDisconnected(other)
         self.OnPinDisconnected.emit(other)
         self.update()
 
