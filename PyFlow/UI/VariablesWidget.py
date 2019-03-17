@@ -1,6 +1,6 @@
 """@file VariablesWidget.py
 
-Variables input widget. Container for [VariableBase](@ref PyFlow.Core.Variable.VariableBase)
+Variables input widget. Container for [UIVariable](@ref PyFlow.Core.Variable.UIVariable)
 """
 from types import MethodType
 import json
@@ -12,7 +12,7 @@ from Qt.QtWidgets import QListWidget
 from Qt.QtWidgets import QListWidgetItem
 
 from PyFlow.UI.Widgets.VariablesWidget_ui import Ui_Form
-from Variable import VariableBase
+from Variable import UIVariable
 
 VARIABLE_TAG = "VAR"
 VARIABLE_DATA_TAG = "VAR_DATA"
@@ -44,7 +44,7 @@ class VariablesWidget(QWidget, Ui_Form):
         self.listWidget.setDragDropMode(self.listWidget.InternalMove)
         self.notVisVars = []
 
-    def setGraph(self,graph):
+    def setGraph(self, graph):
         self.graph = graph
         for i in range(self.listWidget.count()):
             item = self.listWidget.item(i)
@@ -70,7 +70,7 @@ class VariablesWidget(QWidget, Ui_Form):
         self.graph._clearPropertiesView()
 
     def createVariable(self, uid=None):
-        var = VariableBase(self.graph.getUniqVarName('NewVar'), False, self.graph, self, 'BoolPin', uid=uid)
+        var = UIVariable(self.graph.getUniqVarName('NewVar'), False, self.graph, self, 'BoolPin', uid=uid)
         item = QListWidgetItem(self.listWidget)
         item.setSizeHint(QtCore.QSize(60, 38))
         self.listWidget.setItemWidget(item, var)

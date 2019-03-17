@@ -3,6 +3,7 @@ import weakref
 from PyFlow.Core.Common import *
 from PyFlow import CreateRawPin
 from PyFlow import findPinClassByType
+from PyFlow.Core.Variable import Variable
 
 
 class GraphBase(object):
@@ -14,6 +15,17 @@ class GraphBase(object):
         self.connections = {}
         self.pins = {}
         self.vars = {}
+
+    def createVariable(self):
+        var = Variable(None, self.getUniqVarName('var'), 'AnyPin')
+        self.vars[var.uid] = var
+        return var
+
+    def killVariable(self, var):
+        assert(isinstance(var, Variable))
+        if var.uid in self.vars:
+            popped = self.vars.pop(var.uid)
+            del popped
 
     def getVars(self):
         return self.vars.values()
@@ -149,6 +161,7 @@ class GraphBase(object):
         for o in node.outputs.values():
             self.pins[o.uid] = o
         node.setName(self.getUniqNodeName(node.name))
+        node.postCreate()
         return True
 
     def removeNode(self, node):

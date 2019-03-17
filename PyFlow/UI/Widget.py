@@ -59,7 +59,7 @@ from PyFlow.UI.UIPinBase import UIPinBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.UI.Variable import VariableBase
+from PyFlow.UI.Variable import UIVariable
 from PyFlow.UI.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
@@ -1035,7 +1035,7 @@ class GraphWidgetUI(QGraphicsView):
         self.new_file()
         # vars
         for varJson in data[self.name]['vars']:
-            VariableBase.deserialize(varJson, self)
+            UIVariable.deserialize(varJson, self)
         # nodes
         for nodeJson in data[self.name]['nodes']:
             try:

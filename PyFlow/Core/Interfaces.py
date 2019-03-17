@@ -16,7 +16,8 @@ class ISerializable(object):
         '''
         raise NotImplementedError('serialize method of ISerializable is not implemented')
 
-    def deserialize(self, *args, **Kwargs):
+    @staticmethod
+    def deserialize(*args, **Kwargs):
         '''
         Implements how item should be deserialized.
 

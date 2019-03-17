@@ -58,6 +58,35 @@ def roundup(x, to):
     return int(math.ceil(x / to)) * to
 
 
+def findGoodId(ids):
+    """Finds good minimum unique int from iterable. Starting from 1
+
+    Arguments:
+        ids {list|set|tuple} -- a collection of occupied ids
+
+    Returns:
+        [int]
+    """
+
+    if len(ids) == 0:
+        return 1
+
+    ids = sorted(set(ids))
+    lastID = min(ids)
+
+    if lastID > 1:
+        return 1
+
+    for ID in ids:
+        diff = ID - lastID
+        if diff > 1:
+            return lastID + 1
+            break
+        lastID = ID
+    else:
+        return ID + 1
+
+
 ## This function for establish dependencies bitween pins
 # @param[in] affects_pin this pin affects other pins
 # @param[in] affected_pin this pin affected by other pin
@@ -121,6 +150,8 @@ def disconnectPins(src, dst):
         src.pinDisconnected(dst)
         dst.pinDisconnected(src)
         push(dst)
+        return True
+    return False
 
 
 ## marks dirty all ports from start to the right
@@ -169,13 +200,13 @@ class AccessLevel(IntEnum):
     protected = 2
 
 
-## Determines wheter it is input pin or output.
+## Determines whether it is input pin or output.
 class PinDirection(IntEnum):
     Input = 0
     Output = 1
 
 
-## Determines wheter it is callable node or pure.
+## Determines whether it is callable node or pure.
 # Callable node is a node with Exec pins
 class NodeTypes(IntEnum):
     Callable = 0
@@ -183,7 +214,7 @@ class NodeTypes(IntEnum):
 
 
 @REGISTER_ENUM()
-## Direction identifires. Used in [alignSelectedNodes](@ref PyFlow.Core.Widget.GraphWidget.alignSelectedNodes)
+## Direction identifiers. Used in [alignSelectedNodes](@ref PyFlow.Core.Widget.GraphWidget.alignSelectedNodes)
 class Direction(IntEnum):
     Left = 0
     Right = 1

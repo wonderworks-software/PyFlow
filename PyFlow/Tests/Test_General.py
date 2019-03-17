@@ -2,6 +2,14 @@ from TestsBase import *
 
 
 class TestGeneral(unittest.TestCase):
+
+    def setUp(self):
+        print('\t[BEGIN TEST]', self._testMethodName)
+
+    def tearDown(self):
+        print('\t[END TEST]', self._testMethodName)
+        print('\n')
+
     def test_add_int_no_exec(self):
         packages = GET_PACKAGES()
         g = GraphBase("testGraph")
@@ -115,8 +123,51 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(bConnected, True, "FAILED TO ADD EDGE")
         self.assertEqual(arePinsConnected(pinOut, pinInp), True)
 
-        disconnectPins(pinInp, pinOut)
+        disconnected = disconnectPins(pinInp, pinOut)
+        self.assertEqual(disconnected, True, "pins are not disconnected")
         self.assertEqual(arePinsConnected(pinOut, pinInp), False)
+
+    def test_create_var(self):
+        g = GraphBase("testGraph")
+        v1 = g.createVariable()
+        self.assertEqual(v1.uid in g.vars, True)
+
+    def test_get_any_var(self):
+        packages = GET_PACKAGES()
+        g = GraphBase("testGraph")
+
+        # create any type variable
+        v1 = g.createVariable()
+        v1.value = False
+
+        # create variable getter node
+        varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
+        varGetterInstance = varGetterClass('v1Getter', v1.uid)
+        g.addNode(varGetterInstance)
+
+        # create print node
+        defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
+        printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
+        g.addNode(printerInstance)
+
+        # connect to print node input
+        varOutPin = varGetterInstance.getPinByName('val', PinSelectionGroup.Outputs)
+        printInPin = printerInstance.getPinByName('entity', PinSelectionGroup.Inputs)
+        printInExecPin = printerInstance.getPinByName('inExec', PinSelectionGroup.Inputs)
+        connected = g.connectPins(varOutPin, printInPin)
+        self.assertEqual(connected, True, "var getter is not connected")
+
+        # print variable value and check it
+        printInExecPin.call()
+        self.assertEqual(printInPin.currentData(), False)
+        # next, change variable value (Not varGetterInstance varOutPin! Note we are not touching it anymore)
+        # this will broadcast valueChanged on v1, which will trigger dirty propagation from varOutPin
+        # varGetterInstance.onVarValueChanged and v1.valueChanged were connected in getVar.postCreate
+        v1.value = True
+        # following line will trigger compute on print node, which will ask data on it's inputs
+        # Inputs on print node will be dirty, data will be asked on varGetterInstance varOutPin
+        printInExecPin.call()
+        self.assertEqual(printInPin.currentData(), True)
 
 
 if __name__ == '__main__':

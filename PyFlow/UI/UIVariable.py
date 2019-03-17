@@ -72,7 +72,7 @@ class VarTypeComboBox(QComboBox):
 
 
 ## Variable class
-class VariableBase(QWidget):
+class UIVariable(QWidget):
     ## executed when value been set
     valueChanged = QtCore.Signal()
     ## executed when name been changed
@@ -84,9 +84,9 @@ class VariableBase(QWidget):
     ## executed when variable access level been changed
     accessLevelChanged = QtCore.Signal(int)
 
-    def __init__(self, name, value, graph, varsListWidget, dataType='BoolPin', uid=None):
-        super(VariableBase, self).__init__()
-        self._accessLevel = AccessLevel.public
+    def __init__(self, rawVariable=None, graph=None):
+        super(UIVariable, self).__init__()
+        self._rawVariable = rawVariable
         # ui
         self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setSpacing(1)
@@ -102,26 +102,16 @@ class VariableBase(QWidget):
         self.horizontalLayout.addItem(spacerItem)
 
         QtCore.QMetaObject.connectSlotsByName(self)
-        # body
-        self.varsListWidget = varsListWidget
-        self.name = None
-        self._value = value
-        self.dataType = dataType
-        self._uid = uid
-        if not isinstance(self._uid, uuid.UUID):
-            self._uid = uuid4()
         self.graph = graph
-        self.setName(name)
         # TODO: allow Any type for variable??
         # self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
         self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() and not pin.__name__ == AnyPin.__name__]
         self.graph.vars[self.uid] = self
         self._packageName = None
-        self.updatePackageName()
 
     @property
     def packageName(self):
-        return self._packageName
+        return self._rawVariable.packageName
 
     @property
     def accessLevel(self):
@@ -158,7 +148,7 @@ class VariableBase(QWidget):
     def serialize(self):
         pinClass = findPinClassByType(self.dataType)
 
-        template = VariableBase.jsonTemplate()
+        template = UIVariable.jsonTemplate()
         template['name'] = self.name
         template['uuid'] = str(self.uid)
 
@@ -191,9 +181,6 @@ class VariableBase(QWidget):
     def value(self, data):
         self._value = data
         self.valueChanged.emit()
-
-    def updatePackageName(self):
-        self._packageName = findPinClassByType(self.dataType).packageName()
 
     ## Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
     # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
