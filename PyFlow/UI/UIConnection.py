@@ -100,9 +100,9 @@ class UIConnection(QGraphicsPathItem):
         srcUUID = UUID(data['sourceUUID'])
         dstUUID = UUID(data['destinationUUID'])
         # if srcUUID in graph.pins and dstUUID in graph.pins:
-        srcPin = graph.findUIPinByUID(srcUUID)
+        srcPin = graph.findPinByUID(srcUUID)
         assert(srcPin is not None)
-        dstPin = graph.findUIPinByUID(dstUUID)
+        dstPin = graph.findPinByUID(dstUUID)
         assert(dstPin is not None)
         connection = graph.connectPinsInternal(srcPin, dstPin)
         assert(connection is not None)

@@ -17,7 +17,9 @@ class UIImplicitPinCall(UINodeBase):
             return
         try:
             uid = uuid.UUID(uidStr)
-            self.graph().findPin(uid)
+            pin = self.graph().findPinByUID(uid)
+            self.graph().centerOn(pin)
+            pin.highlight()
         except Exception as e:
             print(e)
             pass

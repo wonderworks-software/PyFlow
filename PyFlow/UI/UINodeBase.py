@@ -243,7 +243,7 @@ class UINodeBase(QGraphicsObject):
 
     @uid.setter
     def uid(self, value):
-        self._rawNode.uid = value
+        self._rawNode._uid = value
 
     @property
     def name(self):
@@ -853,7 +853,7 @@ class UINodeBase(QGraphicsObject):
 
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.UIPins[rawPin.uid] = p
-        self.graph().UIPins[rawPin.uid] = p
+        self.graph().pins[rawPin.uid] = p
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self._rect.width(), self.childrenBoundingRect().height()))
         self.update()
         self.nodeMainGWidget.update()

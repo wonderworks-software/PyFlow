@@ -113,7 +113,7 @@ class UIPinBase(QGraphicsWidget):
         self._rawPin = raw_pin
         self._rawPin.setWrapper(self)
         self.setParentItem(owningNode)
-        self.UiNode = owningNode
+        self.UiNode = weakref.ref(owningNode)
         # self.setCursor(QtCore.Qt.CrossCursor)
         ## context menu for pin
         self.menu = QMenu()
@@ -168,7 +168,7 @@ class UIPinBase(QGraphicsWidget):
 
     @property
     def owningNode(self):
-        return self._rawPin.owningNode
+        return self.UiNode
 
     @property
     def constraint(self):
@@ -330,22 +330,22 @@ class UIPinBase(QGraphicsWidget):
         if hasattr(self.owningNode(), self.name):
             delattr(self.owningNode(), self.name)
         if self._container is not None:
-            self.owningNode().getWrapper()().graph().scene().removeItem(self._container)
+            self.owningNode().graph().scene().removeItem(self._container)
             if not self._groupContainer:
                 if self._rawPin.direction == PinDirection.Input:
-                    self.owningNode().getWrapper()().inputsLayout.removeItem(self._container)
+                    self.owningNode().inputsLayout.removeItem(self._container)
                 else:
-                    self.owningNode().getWrapper()().outputsLayout.removeItem(self._container)
+                    self.owningNode().outputsLayout.removeItem(self._container)
             else:
-                self.owningNode().getWrapper()().graph().scene().removeItem(self._groupContainer)
+                self.owningNode().graph().scene().removeItem(self._groupContainer)
                 if self._rawPin.direction == PinDirection.Input:
-                    self.owningNode().getWrapper()().inputsLayout.removeItem(self._groupContainer)
+                    self.owningNode().inputsLayout.removeItem(self._groupContainer)
                 else:
-                    self.owningNode().getWrapper()().outputsLayout.removeItem(self._groupContainer)
-            if self._rawPin.uid in self.owningNode().getWrapper()().UIPins:
-                del self.owningNode().getWrapper()().UIPins[self._rawPin.uid]
+                    self.owningNode().outputsLayout.removeItem(self._groupContainer)
+            if self._rawPin.uid in self.owningNode().UIPins:
+                del self.owningNode().UIPins[self._rawPin.uid]
         self._rawPin.kill()
-        # self.owningNode().getWrapper()().updateWidth()
+        # self.owningNode().updateWidth()
 
     @staticmethod
     def deserialize(owningNode, jsonData):

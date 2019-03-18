@@ -14,9 +14,9 @@ from PyFlow import CreateRawPin
 
 
 class NodeBase(INode):
-    def __init__(self, name):
+    def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
-        self._uid = uuid.uuid4()
+        self._uid = uuid.uuid4() if uid is None else uid
         self.graph = None
         self.name = name
         self.inputs = OrderedDict()
@@ -44,9 +44,7 @@ class NodeBase(INode):
 
     @uid.setter
     def uid(self, value):
-        if self._uid in self.graph().nodes:
-            self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
-            self._uid = value
+        self._uid = value
 
     @staticmethod
     def jsonTemplate():

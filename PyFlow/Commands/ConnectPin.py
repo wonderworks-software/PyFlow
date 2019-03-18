@@ -22,11 +22,11 @@ class ConnectPin(QUndoCommand):
     def redo(self):
         self.graph.scene().blockSignals(True)
 
-        srcPin = self.graph.findUIPinByUID(self.srcUid)
+        srcPin = self.graph.findPinByUID(self.srcUid)
         if srcPin is None:
             print(self.srcUid, "not found")
 
-        dstPin = self.graph.findUIPinByUID(self.dstUid)
+        dstPin = self.graph.findPinByUID(self.dstUid)
         if dstPin is None:
             print(self.dstUid, "not found")
 

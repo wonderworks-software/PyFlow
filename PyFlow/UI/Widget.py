@@ -109,6 +109,7 @@ def getNodeInstance(jsonTemplate, graph):
         libName = None
 
     raw_instance = getRawNodeInstance(nodeClassName, packageName, libName)
+    raw_instance.uid = uuid.UUID(jsonTemplate['uuid'])
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
@@ -357,7 +358,7 @@ class SceneClass(QGraphicsScene):
                     nodeTemplate['x'] = x
                     nodeTemplate['y'] = y
                     nodeTemplate['meta']['label'] = nodeType
-                    nodeTemplate['uuid'] = None
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
 
                     node = self.parent().createNode(nodeTemplate)
                     if isinstance(dropItem, UIPinBase):
@@ -814,7 +815,7 @@ class GraphWidgetUI(QGraphicsView):
         self.node_box.setWindowFlags(
             QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
-        self.UIPins = {}
+        self._UIPins = {}
         self._UIConnections = {}
         self._UINodes = {}
         self.boundingRect = self.rect()
@@ -839,7 +840,7 @@ class GraphWidgetUI(QGraphicsView):
 
     @property
     def pins(self):
-        return self.UIPins
+        return self._UIPins
 
     @property
     def connections(self):
@@ -940,22 +941,15 @@ class GraphWidgetUI(QGraphicsView):
     def enableSortcuts(self):
         self._sortcuts_enabled = True
 
-    # find pin and frame
-    def findPin(self, uid):
-        pin = self.findUIPinByUID(uid)
-        if pin:
-            self.centerOn(pin)
-            pin.highlight()
-
-    def findUIPinByUID(self, uid):
+    def findPinByUID(self, uid):
         uiPin = None
         if uid in self.pins:
             return self.pins[uid]
         return uiPin
 
-    def findUIPinByName(self, pinName):
+    def findPinByName(self, pinName):
         uiPin = None
-        for pin in self.UIPins.values():
+        for pin in self.pins.values():
             if pinName == pin.getName():
                 uiPin = pin
                 break
@@ -1992,10 +1986,18 @@ class GraphWidgetUI(QGraphicsView):
         return cmd.nodeInstance
 
     def addNode(self, node):
+        """Adds node to a graph
+
+        Arguments:
+            node UINodeBase -- raw node wrapper
+        """
+        # Put raw node to raw graph
+        # Put uinode to uigraph.uinodes
+        # assign uinode.uigraph
         self._graphBase.addNode(node._rawNode)
         node.graph = weakref.ref(self)
-        self.scene().addItem(node)
         self._UINodes[node.uid] = node
+        self.scene().addItem(node)
 
     def connectPinsInternal(self, src, dst):
         # reconnection may occur in raw connections

@@ -131,9 +131,6 @@ class GraphBase(object):
                 nodes.append(i)
         return nodes
 
-    def findPin(self, uid):
-        return self.findPinByUID(uid)
-
     def findPinByUID(self, uid):
         pin = None
         if uid in self.pins:
@@ -274,7 +271,7 @@ class GraphBase(object):
     def plot(self):
         print(self.name + '\n----------\n')
         for n in self.getNodes():
-            print("Node:", n.name)
+            print("Node:", n.name, n.uid)
             for inp in n.inputs.values():
                 print(inp.getName(), 'data - {0}'.format(inp.currentData()),
                       'affects on', [i.getName() for i in inp.affects],

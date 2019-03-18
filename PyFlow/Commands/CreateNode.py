@@ -1,3 +1,5 @@
+import uuid
+
 from Qt.QtWidgets import QUndoCommand
 
 
@@ -11,25 +13,18 @@ class CreateNode(QUndoCommand):
         self.nodeInstance = None
         self.jsonTemplate = jsonTemplate
         self.setText("create {} node".format(jsonTemplate['type']))
-        self.uid = None
+        self.uid = uuid.UUID(jsonTemplate['uuid'])
 
     def undo(self):
         self.graph.scene().blockSignals(True)
 
         self.jsonTemplate.clear()
         self.jsonTemplate = self.nodeInstance.serialize()
-        if self.uid in self.graph.nodes:
-            self.graph.nodes[self.uid].kill()
-
+        self.graph.nodes[self.uid].kill()
         self.graph.scene().blockSignals(False)
 
     def redo(self):
         self.graph.scene().blockSignals(True)
-
+        self.jsonTemplate['uuid'] = str(self.uid)
         self.nodeInstance = self.graph._createNode(self.jsonTemplate)
-        if self.uid:
-            self.nodeInstance.uid = self.uid
-        else:
-            self.uid = self.nodeInstance.uid
-
         self.graph.scene().blockSignals(False)
