@@ -30,7 +30,7 @@ class UIGraphInputs(UINodeBase):
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
-        uiPin.setDisplayName("Input_{}".format(str(len(self.outputs) - 1)))
+        uiPin.setDisplayName("Input_{}".format(str(len(self._rawNode.outputs) - 1)))
         self.updateWidth()
         self.pinCreated.emit(uiPin)
         return uiPin
@@ -87,7 +87,7 @@ class UIGraphOutputs(UINodeBase):
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
-        uiPin.setDisplayName("Output_{}".format(str(len(self.inputs) - 1)))
+        uiPin.setDisplayName("Output_{}".format(str(len(self._rawNode.inputs) - 1)))
         self.updateWidth()
         self.pinCreated.emit(uiPin)
         return uiPin

@@ -19,7 +19,8 @@ class UIsubgraph(UINodeBase):
 
     def onAddInPin(self, pin):
         rawPin = self._rawNode.addInPin(pin=pin._rawPin)
-        uiPin = self._createUIPinWrapper(rawPin, group=pin.owningNode()._wrapper().displayName, linkedPin=pin)
+        uiPin = self._createUIPinWrapper(rawPin, group=pin.owningNode().displayName, linkedPin=pin)
+        self.UIPins[uiPin.uid] = uiPin
         uiPin.setDisplayName(pin.displayName())
         uiPin.setDynamic(True)
         pin.nameChanged.connect(uiPin.setName)
@@ -38,7 +39,8 @@ class UIsubgraph(UINodeBase):
 
     def onAddOutPin(self, pin):
         rawPin = self._rawNode.addOutPin(pin=pin._rawPin)
-        uiPin = self._createUIPinWrapper(rawPin, group=pin.owningNode()._wrapper().displayName, linkedPin=pin)
+        uiPin = self._createUIPinWrapper(rawPin, group=pin.owningNode().displayName, linkedPin=pin)
+        self.UIPins[uiPin.uid] = uiPin
         uiPin.setDisplayName(pin.displayName())
         uiPin.setDynamic(True)
         pin.nameChanged.connect(uiPin.setName)

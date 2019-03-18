@@ -802,7 +802,7 @@ class UINodeBase(QGraphicsObject):
                 groupName = group
                 node = group
                 if linkedPin:
-                    node = linkedPin.owningNode()._wrapper()
+                    node = linkedPin.owningNode()
                     groupName = node.displayName
 
                 if node in self.inputGroupPins:
@@ -834,7 +834,7 @@ class UINodeBase(QGraphicsObject):
                 groupName = group
                 node = group
                 if linkedPin:
-                    node = linkedPin.owningNode()._wrapper()
+                    node = linkedPin.owningNode()
                     groupName = node.displayName
                 if node in self.outputGroupPins:
                     self.outputGroupPins[node].layout().insertItem(index, container)

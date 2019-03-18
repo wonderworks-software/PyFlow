@@ -18,7 +18,7 @@ class UIImplicitPinCall(UINodeBase):
         try:
             uid = uuid.UUID(uidStr)
             pin = self.graph().findPinByUID(uid)
-            self.graph().centerOn(pin)
+            self.graph().frameRect(pin.owningNode().sceneBoundingRect())
             pin.highlight()
         except Exception as e:
             print(e)

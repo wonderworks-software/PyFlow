@@ -1063,7 +1063,7 @@ class GraphWidgetUI(QGraphicsView):
             if Pin:
                 return Pin
 
-    def frameNodes(self, nodesRect):
+    def frameRect(self, nodesRect):
         if nodesRect is None:
             return
         windowRect = self.rect()
@@ -1088,10 +1088,10 @@ class GraphWidgetUI(QGraphicsView):
         self.update()
 
     def frameSelectedNodes(self):
-        self.frameNodes(self.getNodesRect(True))
+        self.frameRect(self.getNodesRect(True))
 
     def frameAllNodes(self):
-        self.frameNodes(self.getNodesRect())
+        self.frameRect(self.getNodesRect())
 
     def getNodesRect(self, selected=False):
         rectangles = []
@@ -1276,12 +1276,12 @@ class GraphWidgetUI(QGraphicsView):
                 connections += i.connections
         fullEdges = []
         for e in connections:
-            if e.source().UiNode in oldNodes and e.destination().UiNode in oldNodes:
-                fullEdges.append({"full": True, "sourcenode": e.source().UiNode.name, "sourcePin": e.source(
-                ).name, "destinationNode": e.destination().UiNode.name, "destinationPin": e.destination().name})
-            elif e.source().UiNode not in oldNodes and e.source().dataType != "ExecPin":
-                fullEdges.append({"full": False, "sourcenode": e.source().UiNode.name, "sourcePin": e.source(
-                ).name, "destinationNode": e.destination().UiNode.name, "destinationPin": e.destination().name})
+            if e.source().owningNode() in oldNodes and e.destination().owningNode() in oldNodes:
+                fullEdges.append({"full": True, "sourcenode": e.source().owningNode().name, "sourcePin": e.source(
+                ).name, "destinationNode": e.destination().owningNode().name, "destinationPin": e.destination().name})
+            elif e.source().owningNode() not in oldNodes and e.source().dataType != "ExecPin":
+                fullEdges.append({"full": False, "sourcenode": e.source().owningNode().name, "sourcePin": e.source(
+                ).name, "destinationNode": e.destination().owningNode().name, "destinationPin": e.destination().name})
         if len(nodes) > 0:
             ret = {"nodes": nodes, "connections": fullEdges}
             n = json.dumps(ret)
@@ -1406,7 +1406,7 @@ class GraphWidgetUI(QGraphicsView):
         nodeTemplate['name'] = "rerute"
         nodeTemplate['x'] = self.mapToScene(pos).x()
         nodeTemplate['y'] = self.mapToScene(pos).y()
-        nodeTemplate['uuid'] = None
+        nodeTemplate['uuid'] = str(uuid.uuid4())
         nodeTemplate['meta']['label'] = "rerute"
         reruteNode = self.createNode(nodeTemplate)
         reruteNode.color = self.pressed_item.color
@@ -1421,7 +1421,7 @@ class GraphWidgetUI(QGraphicsView):
         nodeTemplate['name'] = self.getUniqNodeName("graphInputs")
         nodeTemplate['x'] = self.boundingRect.left() + 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
-        nodeTemplate['uuid'] = None
+        nodeTemplate['uuid'] = str(uuid.uuid4())
         nodeTemplate['meta']['label'] = "Inputs"
         node = self.createNode(nodeTemplate)
         node.translate(-20, 0)
@@ -1435,7 +1435,7 @@ class GraphWidgetUI(QGraphicsView):
         nodeTemplate['name'] = self.getUniqNodeName("graphOutputs")
         nodeTemplate['x'] = self.boundingRect.width() - 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
-        nodeTemplate['uuid'] = None
+        nodeTemplate['uuid'] = str(uuid.uuid4())
         nodeTemplate['meta']['label'] = "Outputs"
         node = self.createNode(nodeTemplate)
         node.translate(-20, 0)
