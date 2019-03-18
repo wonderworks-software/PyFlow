@@ -20,6 +20,10 @@ class AnyPin(PinBase):
         self.activeDataType = self.dataType
 
     @staticmethod
+    def isPrimitiveType():
+        return False
+
+    @staticmethod
     def supportedDataTypes():
         return tuple([pin.__name__ for pin in getAllPinClasses()])
 

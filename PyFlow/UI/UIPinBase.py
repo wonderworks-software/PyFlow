@@ -327,8 +327,6 @@ class UIPinBase(QGraphicsWidget):
     def kill(self):
         self.OnPinDeleted.emit(self)
         self.disconnectAll()
-        if hasattr(self.owningNode(), self.name):
-            delattr(self.owningNode(), self.name)
         if self._container is not None:
             self.owningNode().graph().scene().removeItem(self._container)
             if not self._groupContainer:
@@ -344,6 +342,10 @@ class UIPinBase(QGraphicsWidget):
                     self.owningNode().outputsLayout.removeItem(self._groupContainer)
             if self._rawPin.uid in self.owningNode().UIPins:
                 del self.owningNode().UIPins[self._rawPin.uid]
+        if self.direction == PinDirection.Input:
+            self.owningNode().UIinputs.pop(self.uid)
+        if self.direction == PinDirection.Output:
+            self.owningNode().UIoutputs.pop(self.uid)
         self._rawPin.kill()
         # self.owningNode().updateWidth()
 

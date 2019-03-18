@@ -18,6 +18,14 @@ class getVar(NodeBase):
         self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.killed.connect(self.kill)
 
+    def recreateOutput(self, dataType):
+        self.out.kill()
+        del self.out
+        self.out = None
+        self.out = CreateRawPin('value', self, dataType, PinDirection.Output)
+        self.graph().pins[self.out.uid] = self.out
+        return True
+
     def onVarValueChanged(self, *args, **kwargs):
         push(self.out)
 

@@ -50,8 +50,10 @@ class PinBase(IPin):
         self._isArray = False
         if self.direction == PinDirection.Input:
             owningNode.inputs[self.uid] = self
+            owningNode.namePinInputsMap[self.name] = self
         if self.direction == PinDirection.Output:
             owningNode.outputs[self.uid] = self
+            owningNode.namePinOutputsMap[self.name] = self
 
     def setAsArray(self, bIsArray):
         self._isArray = bool(bIsArray)

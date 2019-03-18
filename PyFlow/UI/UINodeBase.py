@@ -354,11 +354,9 @@ class UINodeBase(QGraphicsObject):
         # create ui pin wrappers
         for uid, i in self._rawNode.inputs.items():
             p = self._createUIPinWrapper(i)
-            self.UIinputs[uid] = p
 
         for uid, o in self._rawNode.outputs.items():
             p = self._createUIPinWrapper(o)
-            self.UIoutputs[uid] = p
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
         self._rect = self.childrenBoundingRect()
@@ -853,6 +851,12 @@ class UINodeBase(QGraphicsObject):
 
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.UIPins[rawPin.uid] = p
+
+        if rawPin.direction == PinDirection.Input:
+            self.UIinputs[rawPin.uid] = p
+        if rawPin.direction == PinDirection.Output:
+            self.UIoutputs[rawPin.uid] = p
+
         self.graph().pins[rawPin.uid] = p
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self._rect.width(), self.childrenBoundingRect().height()))
         self.update()

@@ -83,10 +83,11 @@ class Variable(ISerializable):
     @dataType.setter
     def dataType(self, value):
         assert(isinstance(value, str))
-        self._dataType = value
-        self.updatePackageName()
-        self.value = getPinDefaultValueByType(self._dataType)
-        self.dataTypeChanged.send(value)
+        if value != self._dataType:
+            self._dataType = value
+            self.updatePackageName()
+            self.value = getPinDefaultValueByType(self._dataType)
+            self.dataTypeChanged.send(value)
 
     @property
     def uid(self):

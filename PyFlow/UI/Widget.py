@@ -108,7 +108,12 @@ def getNodeInstance(jsonTemplate, graph):
     else:
         libName = None
 
-    raw_instance = getRawNodeInstance(nodeClassName, packageName, libName)
+    kwargs = {}
+    # if get var or set var, construct additional keyword arguments
+    if jsonTemplate['type'] in ('getVar', 'setVar'):
+        kwargs['var'] = graph.vars[uuid.UUID(jsonTemplate['meta']['var']['uuid'])]
+
+    raw_instance = getRawNodeInstance(nodeClassName, packageName, libName, **kwargs)
     raw_instance.uid = uuid.UUID(jsonTemplate['uuid'])
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
@@ -825,6 +830,9 @@ class GraphWidgetUI(QGraphicsView):
     def __del__(self):
         # self.tick_timer.stop()
         pass
+
+    def createVariable(self, dataType="AnyPin"):
+        return self._graphBase.createVariable(dataType=dataType)
 
     @property
     def vars(self):
@@ -1980,8 +1988,8 @@ class GraphWidgetUI(QGraphicsView):
         nodeInstance.postCreate(jsonTemplate)
         return nodeInstance
 
-    def createNode(self, jsonTemplate):
-        cmd = cmdCreateNode(self, jsonTemplate)
+    def createNode(self, jsonTemplate, **kwags):
+        cmd = cmdCreateNode(self, jsonTemplate, **kwags)
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 

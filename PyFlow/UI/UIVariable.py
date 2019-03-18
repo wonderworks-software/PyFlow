@@ -92,7 +92,7 @@ class UIVariable(QWidget):
         self.horizontalLayout.setSpacing(1)
         self.horizontalLayout.setContentsMargins(1, 1, 1, 1)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.widget = TypeWidget(findPinClassByType('BoolPin').color(), self)
+        self.widget = TypeWidget(findPinClassByType(self._rawVariable.dataType).color(), self)
         self.widget.setObjectName("widget")
         self.horizontalLayout.addWidget(self.widget)
         self.labelName = QLabel(self)
@@ -103,11 +103,16 @@ class UIVariable(QWidget):
 
         QtCore.QMetaObject.connectSlotsByName(self)
         self.graph = graph
-        # TODO: allow Any type for variable??
-        # self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
-        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() and not pin.__name__ == AnyPin.__name__]
-        self.graph.vars[self.uid] = self
-        self._packageName = None
+        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
+        self.setName(self._rawVariable.name)
+
+    @property
+    def dataType(self):
+        return self._rawVariable.dataType
+
+    @ dataType.setter
+    def dataType(self, value):
+        self._rawVariable.dataType = value
 
     @property
     def packageName(self):
@@ -115,23 +120,23 @@ class UIVariable(QWidget):
 
     @property
     def accessLevel(self):
-        return self._accessLevel
+        return self._rawVariable.accessLevel
 
     @accessLevel.setter
     def accessLevel(self, value):
-        self._accessLevel = value
+        self._rawVariable.accessLevel = value
         self.accessLevelChanged.emit(value)
 
     @property
     def uid(self):
-        return self._uid
+        return self._rawVariable.uid
 
     @uid.setter
     def uid(self, value):
-        self._uid = value
-        if self._uid in self.graph.vars:
-            self.graph.vars.pop(self._uid)
-            self.graph.vars[self._uid] = self
+        self._rawVariable.uid = value
+        if self._rawVariable.uid in self.graph.vars:
+            self.graph.vars.pop(self._rawVariable.uid)
+            self.graph.vars[self._rawVariable.uid] = self._rawVariable
 
     @staticmethod
     def jsonTemplate():
@@ -146,27 +151,32 @@ class UIVariable(QWidget):
         return template
 
     def serialize(self):
-        pinClass = findPinClassByType(self.dataType)
+        pinClass = findPinClassByType(self._rawVariable.dataType)
 
         template = UIVariable.jsonTemplate()
-        template['name'] = self.name
-        template['uuid'] = str(self.uid)
+        template['name'] = self._rawVariable.name
+        template['uuid'] = str(self._rawVariable.uid)
 
-        template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass()) if not pinClass.isPrimitiveType() else self.value
+        if self._rawVariable.dataType == "AnyPin":
+            # don't save any variables
+            # value will be calculated for this type of variables
+            template['value'] = None
+        else:
+            template['value'] = json.dumps(self._rawVariable.value, cls=pinClass.jsonEncoderClass()) if not pinClass.isPrimitiveType() else self._rawVariable.value
 
-        template['type'] = self.dataType
-        template['package'] = self._packageName
-        template['accessLevel'] = self.accessLevel.value
+        template['type'] = self._rawVariable.dataType
+        template['package'] = self._rawVariable.packageName
+        template['accessLevel'] = self._rawVariable.accessLevel.value
         return template
 
     @staticmethod
     def deserialize(data, graph):
-        pinClass = findPinClassByType(data['type'])
+        pinClass = findPinClassByType(data['dataType'])
 
         # TODO: this is probably bad
         var = graph.parent.variablesWidget.createVariable(uuid.UUID(data['uuid']))
         var.setName(data['name'])
-        var.setDataType(data['type'])
+        var.setDataType(data['dataType'])
 
         var.value = data['value'] if pinClass.isPrimitiveType() else json.loads(data['value'], cls=pinClass.jsonDecoderClass())
 
@@ -175,25 +185,24 @@ class UIVariable(QWidget):
 
     @property
     def value(self):
-        return self._value
+        return self._rawVariable.value
 
     @value.setter
     def value(self, data):
-        self._value = data
+        self._rawVariable.value = data
         self.valueChanged.emit()
 
     ## Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
     # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
     def setDataType(self, dataType, _bJustSpawned=False):
-        self.dataType = dataType
+        self._rawVariable.dataType = dataType
         self.widget.color = findPinClassByType(self.dataType).color()
-        self.value = findPinClassByType(self.dataType).pinDataTypeHint()[1]
+        # self.value = findPinClassByType(self.dataType).pinDataTypeHint()[1]
         self.widget.update()
         if _bJustSpawned:
             return
         self.dataTypeChanged.emit(self.dataType)
-        self.graph.undoStack.clear()
-        self.updatePackageName()
+        # self.graph.undoStack.clear()
         self.graph.tryFillPropertiesView(self)
 
     def mousePressEvent(self, event):

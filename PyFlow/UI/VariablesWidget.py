@@ -2,17 +2,15 @@
 
 Variables input widget. Container for [UIVariable](@ref PyFlow.Core.Variable.UIVariable)
 """
-from types import MethodType
 import json
+from types import MethodType
+import uuid
 
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QListWidget
-from Qt.QtWidgets import QListWidgetItem
+from Qt import QtCore, QtGui
+from Qt.QtWidgets import QListWidget, QListWidgetItem, QWidget
 
+from PyFlow.UI.UIVariable import UIVariable
 from PyFlow.UI.Widgets.VariablesWidget_ui import Ui_Form
-from UIVariable import UIVariable
 
 VARIABLE_TAG = "VAR"
 VARIABLE_DATA_TAG = "VAR_DATA"
@@ -44,6 +42,7 @@ class VariablesWidget(QWidget, Ui_Form):
         self.listWidget.setDragDropMode(self.listWidget.InternalMove)
         self.notVisVars = []
 
+    # TODO: this will be removed when scopes will be done
     def setGraph(self, graph):
         self.graph = graph
         for i in range(self.listWidget.count()):
@@ -53,7 +52,7 @@ class VariablesWidget(QWidget, Ui_Form):
                 item.setHidden(True)
             else:
                 item.setHidden(False)
-        
+
     def killAll(self):
         self.listWidget.clear()
         self.graph.vars.clear()
@@ -70,8 +69,12 @@ class VariablesWidget(QWidget, Ui_Form):
         self.graph._clearPropertiesView()
 
     def createVariable(self, uid=None):
-        var = UIVariable(self.graph.getUniqVarName('NewVar'), False, self.graph, self, 'BoolPin', uid=uid)
+        rawVariable = self.graph.createVariable()
+        # when graph is opened we need to restore guids
+        if isinstance(uid, uuid.UUID):
+            rawVariable.uid = uid
+        uiVariable = UIVariable(rawVariable, self.graph)
         item = QListWidgetItem(self.listWidget)
         item.setSizeHint(QtCore.QSize(60, 38))
-        self.listWidget.setItemWidget(item, var)
-        return var
+        self.listWidget.setItemWidget(item, uiVariable)
+        return uiVariable
