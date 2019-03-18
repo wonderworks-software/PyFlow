@@ -44,3 +44,5 @@ class RemoveNodes(QUndoCommand):
                 #     pin.disconnectAll()
 
                 node.kill()
+            else:
+                assert(False)

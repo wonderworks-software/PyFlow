@@ -19,8 +19,9 @@ class getVar(NodeBase):
         # connect to data changed event and dirty propagate the graph
         assert(self.varUid in self.graph().vars), "var {0} is not in graph {1}".format(
             str(self.varUid), self.graph().name)
-        self.graph().vars[self.varUid].valueChanged.connect(
-            self.onVarValueChanged)
+        var = self.graph().vars[self.varUid]
+        var.valueChanged.connect(self.onVarValueChanged)
+        var.killed.connect(self.kill)
 
     def onVarValueChanged(self, *args, **kwargs):
         push(self.out)

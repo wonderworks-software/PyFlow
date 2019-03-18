@@ -59,7 +59,7 @@ from PyFlow.UI.UIPinBase import UIPinBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.UI.Variable import UIVariable
+from PyFlow.UI.UIVariable import UIVariable
 from PyFlow.UI.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
@@ -177,7 +177,7 @@ class SceneClass(QGraphicsScene):
         self.setItemIndexMethod(self.NoIndex)
         # self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
-        self.tempnode = None
+        # self.tempnode = None
         self.hoverItems = []
 
     def shoutDown(self):
@@ -201,32 +201,32 @@ class SceneClass(QGraphicsScene):
             if VARIABLE_TAG in jsonData:
                 return
 
-            packageName = jsonData["package"]
-            nodeType = jsonData["type"]
-            libName = jsonData["lib"]
-            name = self.parent().getUniqNodeName(nodeType)
+            # packageName = jsonData["package"]
+            # nodeType = jsonData["type"]
+            # libName = jsonData["lib"]
+            # name = self.parent().getUniqNodeName(nodeType)
 
-            nodeTemplate = NodeBase.jsonTemplate()
-            nodeTemplate['package'] = packageName
-            nodeTemplate['lib'] = libName
-            nodeTemplate['type'] = nodeType
-            nodeTemplate['name'] = name
-            nodeTemplate['x'] = event.scenePos().x()
-            nodeTemplate['y'] = event.scenePos().y()
-            nodeTemplate['meta']['label'] = nodeType
-            nodeTemplate['uuid'] = None
+            # nodeTemplate = NodeBase.jsonTemplate()
+            # nodeTemplate['package'] = packageName
+            # nodeTemplate['lib'] = libName
+            # nodeTemplate['type'] = nodeType
+            # nodeTemplate['name'] = name
+            # nodeTemplate['x'] = event.scenePos().x()
+            # nodeTemplate['y'] = event.scenePos().y()
+            # nodeTemplate['meta']['label'] = nodeType
+            # nodeTemplate['uuid'] = None
 
-            try:
-                self.tempnode.kill()
-                self.tempnode.scene().removeItem(self.tempnode)
-            except Exception as e:
-                pass
-            self.tempnode = getNodeInstance(nodeTemplate, self.parent())
+            # try:
+            #     self.tempnode.kill()
+            #     self.tempnode.scene().removeItem(self.tempnode)
+            # except Exception as e:
+            #     pass
+            # self.tempnode = getNodeInstance(nodeTemplate, self.parent())
 
-            self.tempnode.update()
-            self.tempnode.postCreate(nodeTemplate)
-            self.tempnode.isTemp = True
-            self.hoverItems = []
+            # self.tempnode.update()
+            # self.tempnode.postCreate(nodeTemplate)
+            # self.tempnode.isTemp = True
+            # self.hoverItems = []
         else:
             event.ignore()
 
@@ -234,41 +234,42 @@ class SceneClass(QGraphicsScene):
         if event.mimeData().hasFormat('text/plain'):
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
-            if self.tempnode:
-                self.tempnode.setPosition((self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
-                mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x() - 1, event.scenePos().y() - 1),
-                                         QtCore.QPoint(event.scenePos().x() + 1, event.scenePos().y() + 1))
-                hoverItems = self.items(mouseRect)
-                for item in hoverItems:
-                    if isinstance(item, UIConnection):
-                        valid = False
-                        for inp in self.tempnode.inputs.values():
-                            if self.parent().canConnectPins(item.source(), inp):
-                                valid = True
-                        for out in self.tempnode.outputs.values():
-                            if self.parent().canConnectPins(out, item.destination()):
-                                valid = True
-                        if valid:
-                            self.hoverItems.append(item)
-                            item.drawThick()
-                    elif isinstance(item, UIReruteNode):
-                        self.hoverItems.append(item)
-                        item.showPins()
-                for item in self.hoverItems:
-                    if item not in hoverItems:
-                        self.hoverItems.remove(item)
-                        if isinstance(item, UIConnection):
-                            item.restoreThick()
-                        elif isinstance(item, UIReruteNode):
-                            item.hidePins()
+            # if self.tempnode:
+            #     self.tempnode.setPosition((self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
+            #     mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x() - 1, event.scenePos().y() - 1),
+            #                              QtCore.QPoint(event.scenePos().x() + 1, event.scenePos().y() + 1))
+            #     hoverItems = self.items(mouseRect)
+            #     for item in hoverItems:
+            #         if isinstance(item, UIConnection):
+            #             valid = False
+            #             for inp in self.tempnode.inputs.values():
+            #                 if self.parent().canConnectPins(item.source(), inp):
+            #                     valid = True
+            #             for out in self.tempnode.outputs.values():
+            #                 if self.parent().canConnectPins(out, item.destination()):
+            #                     valid = True
+            #             if valid:
+            #                 self.hoverItems.append(item)
+            #                 item.drawThick()
+            #         elif isinstance(item, UIReruteNode):
+            #             self.hoverItems.append(item)
+            #             item.showPins()
+            #     for item in self.hoverItems:
+            #         if item not in hoverItems:
+            #             self.hoverItems.remove(item)
+            #             if isinstance(item, UIConnection):
+            #                 item.restoreThick()
+            #             elif isinstance(item, UIReruteNode):
+            #                 item.hidePins()
 
                 # self.itemAt(event.pos()).drawThink()
         else:
             event.ignore()
 
     def dragLeaveEvent(self, event):
-        if self.tempnode:
-            self.removeItem(self.tempnode)
+        # if self.tempnode:
+        #     self.removeItem(self.tempnode)
+        event.accept()
 
     def OnSelectionChanged(self):
         # selectedNodesUids = self.parent().selectedNodes()
@@ -280,16 +281,16 @@ class SceneClass(QGraphicsScene):
         pass
 
     def dropEvent(self, event):
-        if self.tempnode:
-            x = self.tempnode.scenePos().x()
-            y = self.tempnode.scenePos().y()
-            try:
-                self.tempnode.kill()
-            except:
-                pass
-        else:
-            x = event.scenePos().x()
-            y = event.scenePos().y()
+        # if self.tempnode:
+        #     x = self.tempnode.scenePos().x()
+        #     y = self.tempnode.scenePos().y()
+        #     try:
+        #         self.tempnode.kill()
+        #     except:
+        #         pass
+        # else:
+        x = event.scenePos().x()
+        y = event.scenePos().y()
 
         if event.mimeData().hasFormat('text/plain'):
             jsonData = json.loads(event.mimeData().text())
@@ -815,6 +816,7 @@ class GraphWidgetUI(QGraphicsView):
         self.codeEditors = {}
         self.UIPins = {}
         self._UIConnections = {}
+        self._UINodes = {}
         self.boundingRect = self.rect()
         self._storedVars = []
         self.installEventFilter(self)
@@ -833,18 +835,18 @@ class GraphWidgetUI(QGraphicsView):
 
     @property
     def nodes(self):
-        return self._graphBase.nodes
+        return self._UINodes
 
     @property
     def pins(self):
-        return self._graphBase.pins
+        return self.UIPins
 
     @property
     def connections(self):
         return self._UIConnections
 
     def getNodes(self):
-        return self._graphBase.getNodes()
+        return list(self._UINodes.values())
 
     def getUniqNodeName(self, name):
         return self._graphBase.getUniqNodeName(name)
@@ -948,7 +950,7 @@ class GraphWidgetUI(QGraphicsView):
     def findUIPinByUID(self, uid):
         uiPin = None
         if uid in self.pins:
-            return self.pins[uid].getWrapper()()
+            return self.pins[uid]
         return uiPin
 
     def findUIPinByName(self, pinName):
@@ -1990,9 +1992,10 @@ class GraphWidgetUI(QGraphicsView):
         return cmd.nodeInstance
 
     def addNode(self, node):
-        self._graphBase.addNode(node)
+        self._graphBase.addNode(node._rawNode)
         node.graph = weakref.ref(self)
         self.scene().addItem(node)
+        self._UINodes[node.uid] = node
 
     def connectPinsInternal(self, src, dst):
         # reconnection may occur in raw connections
@@ -2036,8 +2039,9 @@ class GraphWidgetUI(QGraphicsView):
         connection.prepareGeometryChange()
         self.scene().removeItem(connection)
 
-    def removeNode(self, node):
-        self._graphBase.removeNode(node)
+    # def removeNode(self, node):
+    #     self._graphBase.removeNode(node._rawNode)
+    #     self._UINodes.pop(node.uid)
 
     def count(self):
         return self._graphBase.count()

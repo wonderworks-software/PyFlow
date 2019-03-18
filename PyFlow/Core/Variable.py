@@ -30,9 +30,6 @@ class Variable(ISerializable):
         assert(isinstance(self._uid, uuid.UUID))
         self.updatePackageName()
 
-    def __del__(self):
-        self.killed.send()
-
     def updatePackageName(self):
         self._packageName = findPinClassByType(self._dataType).packageName()
 

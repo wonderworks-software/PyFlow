@@ -7,8 +7,7 @@ class TestGeneral(unittest.TestCase):
         print('\t[BEGIN TEST]', self._testMethodName)
 
     def tearDown(self):
-        print('\t[END TEST]', self._testMethodName)
-        print('\n')
+        print('--------------------------------\n')
 
     def test_add_int_no_exec(self):
         packages = GET_PACKAGES()
@@ -168,6 +167,37 @@ class TestGeneral(unittest.TestCase):
         # Inputs on print node will be dirty, data will be asked on varGetterInstance varOutPin
         printInExecPin.call()
         self.assertEqual(printInPin.currentData(), True)
+
+    def test_kill_variable(self):
+        packages = GET_PACKAGES()
+        g = GraphBase("testGraph")
+
+        # create any type variable
+        v1 = g.createVariable()
+        v1.value = False
+
+        # create variable getter node
+        varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
+        varGetterInstance = varGetterClass('v1Getter', v1.uid)
+        g.addNode(varGetterInstance)
+
+        # create print node
+        defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
+        printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
+        g.addNode(printerInstance)
+
+        # connect to print node input
+        varOutPin = varGetterInstance.getPinByName('val', PinSelectionGroup.Outputs)
+        printInPin = printerInstance.getPinByName('entity', PinSelectionGroup.Inputs)
+        printInExecPin = printerInstance.getPinByName('inExec', PinSelectionGroup.Inputs)
+        connected = g.connectPins(varOutPin, printInPin)
+        self.assertEqual(connected, True, "var getter is not connected")
+
+        g.killVariable(v1)
+        self.assertEqual(v1 not in g.vars, True, "variable not killed")
+        self.assertEqual(varGetterInstance.uid not in g.nodes, True, "get var not killed")
+        connected = arePinsConnected(varOutPin, printInPin)
+        self.assertEqual(connected, False, "get var node is removed, but pins are still connected")
 
 
 if __name__ == '__main__':

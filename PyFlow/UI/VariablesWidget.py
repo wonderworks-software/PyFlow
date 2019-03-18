@@ -12,7 +12,7 @@ from Qt.QtWidgets import QListWidget
 from Qt.QtWidgets import QListWidgetItem
 
 from PyFlow.UI.Widgets.VariablesWidget_ui import Ui_Form
-from Variable import UIVariable
+from UIVariable import UIVariable
 
 VARIABLE_TAG = "VAR"
 VARIABLE_DATA_TAG = "VAR_DATA"

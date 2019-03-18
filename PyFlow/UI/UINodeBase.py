@@ -203,6 +203,7 @@ class UINodeBase(QGraphicsObject):
         self.UIPins = {}
         self.UIinputs = {}
         self.UIoutputs = {}
+        self.UIGraph = None
         self._menu = QMenu()
         # Resizing Options
         self.minWidth = 25
@@ -230,11 +231,11 @@ class UINodeBase(QGraphicsObject):
 
     @property
     def graph(self):
-        return self._rawNode.graph
+        return self.UIGraph
 
     @graph.setter
     def graph(self, value):
-        self._rawNode.graph = value
+        self.UIGraph = value
 
     @property
     def uid(self):
@@ -263,19 +264,11 @@ class UINodeBase(QGraphicsObject):
 
     @property
     def inputs(self):
-        return self._rawNode.inputs
-
-    @inputs.setter
-    def inputs(self, value):
-        self._rawNode.inputs = value
+        return self.UIinputs
 
     @property
     def outputs(self):
-        return self._rawNode.outputs
-
-    @outputs.setter
-    def outputs(self, value):
-        self._rawNode.outputs = value
+        return self.UIoutputs
 
     @property
     def w(self):
@@ -359,11 +352,11 @@ class UINodeBase(QGraphicsObject):
     def postCreate(self, jsonTemplate=None):
         self._rawNode.postCreate(jsonTemplate)
         # create ui pin wrappers
-        for uid, i in self.inputs.items():
+        for uid, i in self._rawNode.inputs.items():
             p = self._createUIPinWrapper(i)
             self.UIinputs[uid] = p
 
-        for uid, o in self.outputs.items():
+        for uid, o in self._rawNode.outputs.items():
             p = self._createUIPinWrapper(o)
             self.UIoutputs[uid] = p
 
@@ -719,12 +712,13 @@ class UINodeBase(QGraphicsObject):
         return nodes
 
     def kill(self):
-        for i in list(self.inputs.values()) + list(self.outputs.values()):
-            for connection in i.connections:
-                connection.kill()
+        # for i in list(self.inputs.values()) + list(self.outputs.values()):
+        #     for connection in i.connections:
+        #         connection.kill()
+        self._rawNode.kill()
         for i in list(self.UIPins.values()):
             i.kill()
-        self._rawNode.kill()
+        self.graph()._UINodes.pop(self.uid)
         self.scene().removeItem(self)
         del(self)
 

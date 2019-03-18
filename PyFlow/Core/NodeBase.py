@@ -73,9 +73,13 @@ class NodeBase(INode):
         template['meta']['label'] = self.name
         return template
 
-    def kill(self):
+    def kill(self, *args, **kwargs):
         assert(self.uid in self.graph().nodes), "Error killing node. \
             Node {0} not in graph".format(self.getName())
+        for pin in self.inputs.values():
+            pin.disconnectAll()
+        for pin in self.outputs.values():
+            pin.disconnectAll()
         self.graph().nodes.pop(self.uid)
 
     def Tick(self, delta):

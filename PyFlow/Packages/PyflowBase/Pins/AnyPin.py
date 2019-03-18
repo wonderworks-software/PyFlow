@@ -133,7 +133,10 @@ class AnyPin(PinBase):
     def setDefault(self):
         self.super = None
         self.dataType = "AnyPin"
-        self._wrapper().setDefault(self.defColor())
+
+        if self.getWrapper() is not None:
+            self.getWrapper()().setDefault(self.defColor())
+
         self.setDefaultValue(None)
 
     def setType(self, other):

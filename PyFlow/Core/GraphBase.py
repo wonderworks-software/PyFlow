@@ -25,7 +25,7 @@ class GraphBase(object):
         assert(isinstance(var, Variable))
         if var.uid in self.vars:
             popped = self.vars.pop(var.uid)
-            del popped
+            popped.killed.send()
 
     def getVars(self):
         return self.vars.values()
@@ -164,10 +164,10 @@ class GraphBase(object):
         node.postCreate()
         return True
 
-    def removeNode(self, node):
-        uid = node.uid
-        node.kill()
-        self.nodes.pop(uid)
+    # def removeNode(self, node):
+    #     uid = node.uid
+    #     node.kill()
+    #     self.nodes.pop(uid)
 
     def count(self):
         return self.nodes.__len__()
