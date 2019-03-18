@@ -141,7 +141,7 @@ class TestGeneral(unittest.TestCase):
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
-        varGetterInstance = varGetterClass('v1Getter', v1.uid)
+        varGetterInstance = varGetterClass('v1Getter', v1)
         g.addNode(varGetterInstance)
 
         # create print node
@@ -150,7 +150,46 @@ class TestGeneral(unittest.TestCase):
         g.addNode(printerInstance)
 
         # connect to print node input
-        varOutPin = varGetterInstance.getPinByName('val', PinSelectionGroup.Outputs)
+        varOutPin = varGetterInstance.getPinByName('value', PinSelectionGroup.Outputs)
+        self.assertIsNotNone(varOutPin)
+        printInPin = printerInstance.getPinByName('entity', PinSelectionGroup.Inputs)
+        printInExecPin = printerInstance.getPinByName('inExec', PinSelectionGroup.Inputs)
+        connected = g.connectPins(varOutPin, printInPin)
+        self.assertEqual(connected, True, "var getter is not connected")
+
+        # print variable value and check it
+        printInExecPin.call()
+        self.assertEqual(printInPin.currentData(), False)
+        # next, change variable value (Not varGetterInstance varOutPin! Note we are not touching it anymore)
+        # this will broadcast valueChanged on v1, which will trigger dirty propagation from varOutPin
+        # varGetterInstance.onVarValueChanged and v1.valueChanged were connected in getVar.postCreate
+        v1.value = True
+        # following line will trigger compute on print node, which will ask data on it's inputs
+        # Inputs on print node will be dirty, data will be asked on varGetterInstance varOutPin
+        printInExecPin.call()
+        self.assertEqual(printInPin.currentData(), True)
+
+    def test_get_bool_var(self):
+        packages = GET_PACKAGES()
+        g = GraphBase("testGraph")
+
+        # create bool variable
+        v1 = g.createVariable('BoolPin')
+        v1.value = False
+
+        # create variable getter node
+        varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
+        # since variable is bool, bool pin will be created
+        varGetterInstance = varGetterClass('v1Getter', v1)
+        g.addNode(varGetterInstance)
+
+        # create print node
+        defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
+        printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
+        g.addNode(printerInstance)
+
+        # connect to print node input
+        varOutPin = varGetterInstance.getPinByName('value', PinSelectionGroup.Outputs)
         printInPin = printerInstance.getPinByName('entity', PinSelectionGroup.Inputs)
         printInExecPin = printerInstance.getPinByName('inExec', PinSelectionGroup.Inputs)
         connected = g.connectPins(varOutPin, printInPin)
@@ -178,7 +217,7 @@ class TestGeneral(unittest.TestCase):
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
-        varGetterInstance = varGetterClass('v1Getter', v1.uid)
+        varGetterInstance = varGetterClass('v1Getter', v1)
         g.addNode(varGetterInstance)
 
         # create print node
@@ -187,7 +226,7 @@ class TestGeneral(unittest.TestCase):
         g.addNode(printerInstance)
 
         # connect to print node input
-        varOutPin = varGetterInstance.getPinByName('val', PinSelectionGroup.Outputs)
+        varOutPin = varGetterInstance.getPinByName('value', PinSelectionGroup.Outputs)
         printInPin = printerInstance.getPinByName('entity', PinSelectionGroup.Inputs)
         printInExecPin = printerInstance.getPinByName('inExec', PinSelectionGroup.Inputs)
         connected = g.connectPins(varOutPin, printInPin)
@@ -199,6 +238,68 @@ class TestGeneral(unittest.TestCase):
         connected = arePinsConnected(varOutPin, printInPin)
         self.assertEqual(connected, False, "get var node is removed, but pins are still connected")
 
+    def test_set_any_var(self):
+        packages = GET_PACKAGES()
+        g = GraphBase("testGraph")
+
+        # create any type variable
+        v1 = g.createVariable()
+        # type checking will not be performed since this is any type
+        v1.value = False
+
+        # create variable setter node
+        varSetterClass = packages["PyflowBase"].GetNodeClasses()['setVar']
+        varSetterInstance = varSetterClass('v1Setter', v1)
+        setterAdded = g.addNode(varSetterInstance)
+        self.assertEqual(setterAdded, True)
+
+        # set new value to setter node input pin
+        inExecPin = varSetterInstance.getPinByName('exec', PinSelectionGroup.Inputs)
+        inPin = varSetterInstance.getPinByName('inp', PinSelectionGroup.Inputs)
+        outPin = varSetterInstance.getPinByName('out', PinSelectionGroup.Outputs)
+        self.assertIsNotNone(inExecPin)
+        self.assertIsNotNone(inPin)
+        self.assertIsNotNone(outPin)
+        # next we set data to setter node
+        inPin.setData(True)
+        # And fire input exec pin.
+        # We expect it will call compute
+        # which will update variable value
+        inExecPin.call()
+        # check variable value
+        self.assertEqual(v1.value, True, "variable value is not set")
+
+    def test_set_bool_var(self):
+        import pyrr
+        packages = GET_PACKAGES()
+        g = GraphBase("testGraph")
+
+        # create bool type variable
+        v1 = g.createVariable('BoolPin')
+        # this will accept only bools
+        v1.value = False
+
+        # create variable setter node
+        varSetterClass = packages["PyflowBase"].GetNodeClasses()['setVar']
+        varSetterInstance = varSetterClass('v1Setter', v1)
+        setterAdded = g.addNode(varSetterInstance)
+        self.assertEqual(setterAdded, True)
+
+        # set new value to setter node input pin
+        inExecPin = varSetterInstance.getPinByName('exec', PinSelectionGroup.Inputs)
+        inPin = varSetterInstance.getPinByName('inp', PinSelectionGroup.Inputs)
+        outPin = varSetterInstance.getPinByName('out', PinSelectionGroup.Outputs)
+        self.assertIsNotNone(inExecPin)
+        self.assertIsNotNone(inPin)
+        self.assertIsNotNone(outPin)
+        # next we set data to setter node
+        inPin.setData(True)
+        # And fire input exec pin.
+        # We expect it will call compute
+        # which will update variable value
+        inExecPin.call()
+        # check variable value
+        self.assertEqual(v1.value, True, "variable value is not set")
 
 if __name__ == '__main__':
     unittest.main()

@@ -3,25 +3,20 @@ import uuid
 
 from PyFlow.Packages.PyflowBase import PACKAGE_NAME
 from PyFlow.Core import NodeBase
-from PyFlow.Core.Common import push
+from PyFlow.Core.Variable import Variable
+from PyFlow.Core.Common import *
+from PyFlow import CreateRawPin
 
 
 class getVar(NodeBase):
-    def __init__(self, name, varUid=None):
+    def __init__(self, name, var=None):
         super(getVar, self).__init__(name)
-        assert(isinstance(varUid, uuid.UUID))
-        self.varUid = varUid
-        self.out = self.addOutputPin('val', 'AnyPin')
-
-    def postCreate(self, jsonTemplate=None):
-        super(getVar, self).postCreate(jsonTemplate=jsonTemplate)
-        # var already created and uid is saved in constructor
-        # connect to data changed event and dirty propagate the graph
-        assert(self.varUid in self.graph().vars), "var {0} is not in graph {1}".format(
-            str(self.varUid), self.graph().name)
-        var = self.graph().vars[self.varUid]
-        var.valueChanged.connect(self.onVarValueChanged)
-        var.killed.connect(self.kill)
+        assert(isinstance(var, Variable))
+        self.varUid = var.uid
+        self.var = var
+        self.out = CreateRawPin('value', self, var.dataType, PinDirection.Output)
+        self.var.valueChanged.connect(self.onVarValueChanged)
+        self.var.killed.connect(self.kill)
 
     def onVarValueChanged(self, *args, **kwargs):
         push(self.out)
