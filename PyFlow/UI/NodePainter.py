@@ -29,12 +29,8 @@ class NodePainter(object):
         painter.setBrush(br)
 
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
-        if option.state & QStyle.State_Selected:
-            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
-            pen.setColor(Colors.Yellow)
-            pen.setStyle(node.opt_pen_selected_type)
         painter.setPen(pen)
-        painter.drawRoundedRect(node.boundingRect(), node.sizes[4], node.sizes[5])
+        painter.drawRoundedRect(node.boundingRect(), node.sizes[4], node.sizes[5])        
 
         br = QtGui.QBrush()
         painter.setBrush(br)
@@ -60,7 +56,15 @@ class NodePainter(object):
             r.setY(r.y()+node.sizes[5])
             path.addRect(r)
             painter.fillPath(path, b)
-
+        if option.state & QStyle.State_Selected:
+            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
+            pen.setColor(Colors.Yellow)
+            pen.setStyle(node.opt_pen_selected_type)
+            pen.setWidth(pen.width()*2)
+            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
+            painter.setPen(pen)
+            painter.setBrush(QtGui.QColor(0,0,0,0))
+            painter.drawRoundedRect(node.boundingRect(), node.sizes[4], node.sizes[5])  
     @staticmethod
     def asVariableGetter(node, painter, option, widget):
         painter.setPen(QtCore.Qt.NoPen)
@@ -137,3 +141,12 @@ class NodePainter(object):
         nameRect = QtCore.QRectF(node.boundingRect())
         nameRect.setTop(node.boundingRect().top() + font.pointSize())
         painter.drawText(nameRect, QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter, node.displayName)
+        if option.state & QStyle.State_Selected:
+            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
+            pen.setColor(Colors.Yellow)
+            pen.setStyle(node.opt_pen_selected_type)
+            pen.setWidth(pen.width()*2)
+            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
+            painter.setPen(pen)
+            painter.setBrush(QtGui.QColor(0,0,0,0))
+            painter.drawRoundedRect(node.boundingRect(), node.sizes[4], node.sizes[5])  
