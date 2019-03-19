@@ -1894,7 +1894,7 @@ class GraphWidgetUI(QGraphicsView):
 
         # Draw horizontal fine lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenS, 0.5))
+        painter.setPen(QtGui.QPen(self._gridPenS, 1))
         y = float(top)
         while y < float(rect.bottom()):
             gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
@@ -1903,7 +1903,7 @@ class GraphWidgetUI(QGraphicsView):
 
         # Draw vertical fine lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenS, 0.5))
+        painter.setPen(QtGui.QPen(self._gridPenS, 1))
         x = float(left)
         while x < float(rect.right()):
             gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
@@ -1916,7 +1916,7 @@ class GraphWidgetUI(QGraphicsView):
 
         # Draw vertical thick lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenL, 0.75))
+        painter.setPen(QtGui.QPen(self._gridPenL, 1.5))
         x = left
         while x < rect.right():
             gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
@@ -1925,7 +1925,7 @@ class GraphWidgetUI(QGraphicsView):
 
         # Draw horizontal thick lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenL, 0.75))
+        painter.setPen(QtGui.QPen(self._gridPenL, 1.5))
         y = top
         while y < rect.bottom():
             gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))

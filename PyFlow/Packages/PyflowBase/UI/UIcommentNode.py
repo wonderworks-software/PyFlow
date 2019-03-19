@@ -51,14 +51,13 @@ class commentNodeName(NodeName):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.width = self.document().documentLayout().documentSize().width()
         self.icon = QtGui.QImage(':/icons/resources/py.png')
-        self.setPos(15, -self.boundingRect().height() - 8)
+        self.setPos(15, -self.boundingRect().height() - 4)
         self.drawH = self.h
 
         self.hideButtomProxy = QGraphicsProxyWidget(self)
         self.hideButton = QPushButton("-")
         self.hideButtomProxy.setWidget(self.hideButton)
         self.hideButton.setStyleSheet(buttonStyle)
-        self.hideButtomProxy.setPos(-15, self.boundingRect().center().y())
         self.hideButton.pressed.connect(self.parentItem().toogleCollapsed)
         self.hideButton.setFixedHeight(25)
         self.hideButton.setFixedWidth(25)
@@ -106,12 +105,12 @@ class commentNodeName(NodeName):
             self.adjustSizes()
 
         self.width = self.parentItem()._rect.width()
-        self.setTextWidth(self.width)
+        self.setTextWidth(self.width-15)
         self.update()
 
     def adjustSizes(self):
         self.parentItem()._rect.setRight(self.width)
-        self.setTextWidth(self.width)
+        self.setTextWidth(self.width-15)
         self.h = self.document().documentLayout().documentSize().height()
         if not self.parentItem().expanded:
             self.parentItem()._rect.setHeight(self.h)
@@ -119,7 +118,7 @@ class commentNodeName(NodeName):
         self.parentItem().update()
         self.leftWidget.setPos(-20, self.boundingRect().center().y())
         self.rigttWidget.setPos(self.boundingRect().right()-4.5,self.boundingRect().center().y())   
-        self.hideButtomProxy.setPos(-20, self.boundingRect().center().y()-15)     
+        self.hideButtomProxy.setPos(-18, self.boundingRect().center().y()-15)     
 
     def boundingRect(self):
         return QtCore.QRectF(0, 0, self.width - 15.0, self.h)
@@ -127,14 +126,23 @@ class commentNodeName(NodeName):
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
         r.setWidth(self.width)
-        r.setX(0.25)
-        r.setY(0.25)
-        r.setHeight(r.height())
+        r.setY(0.25+1)
+        #r.setHeight(r.height())
         painter.setPen(QtCore.Qt.NoPen)
         color = QtGui.QColor(self.color)
         painter.setBrush(color)
-        painter.drawRoundedRect(-15, 0, r.width(), r.height(), self.parentItem().sizes[4], self.parentItem().sizes[5], QtCore.Qt.AbsoluteSize)
-        parentRet = self.parentItem().childrenBoundingRect()
+        r.setX(-13.5)
+        r.setWidth(r.width()-16.5)
+        if self.parentItem().expanded:
+            path = QtGui.QPainterPath()
+            path.setFillRule( QtCore.Qt.WindingFill )
+            path.addRoundedRect(r, self.parentItem().sizes[4], self.parentItem().sizes[5])
+            r.setY(r.y()+self.parentItem().sizes[5])
+            path.addRect(r)
+            painter.fillPath(path, color)   
+        else:     
+            r.setHeight(r.height()-1)
+            #painter.drawRoundedRect(r, self.parentItem().sizes[4], self.parentItem().sizes[5])
         QGraphicsTextItem.paint(self, painter, option, widget)
 
     def hoverEnterEvent(self, event):
@@ -153,8 +161,9 @@ class UIcommentNode(UINodeBase):
         self.commentOutpus = []
         self._rect = self.childrenBoundingRect()
         self.resizable = True
-        self.minWidth = 100.0
+        self.minWidth = 105.0
         self.minHeight = 100.0
+        self.sizes = [0, 0, self.w, self.h, 2, 2]
         self.setZValue(-2)
         self.expanded = True
         self.isCommentNode = True
@@ -340,34 +349,27 @@ class UIcommentNode(UINodeBase):
             color = color.lighter(150)
 
         painter.setBrush(self.color)
-        pen = QtGui.QPen(QtCore.Qt.black, 0.5)
+        pen = QtGui.QPen(QtCore.Qt.black, 0.75)
         if option.state & QStyle.State_Selected:
             # pen.setColor(self.graph().window().styleSheetEditor.style.MainColor)
             pen.setColor(Colors.Yellow)
             pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)
-        painter.drawRoundedRect(self._rect, self.sizes[4], self.sizes[5])
+        r = QtCore.QRectF(self._rect)
+        r.setWidth(r.width() - pen.width())
+        r.setHeight(r.height()-pen.width())
+        r.setX(pen.width()) 
+        r.setY(r.y()+pen.width())           
+        painter.drawRoundedRect(r, self.sizes[4], self.sizes[5])
 
-        pen.setColor(Colors.White)
+        if option.state & QStyle.State_Selected:
+            pen.setColor(Colors.Yellow)
+            pen.setStyle(self.opt_pen_selected_type)
+            pen.setWidth(pen.width()*1.5)
+            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
         painter.setPen(pen)
-
-        if self.expanded:
-            # draw bottom right resizer
-            pBottomRight = self._rect.bottomRight()
-            bottomRightRect = QtCore.QRectF(pBottomRight.x() - 6, pBottomRight.y() - 6, 5, 5)
-            painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
-
-            bottomRightRect.setRight(bottomRightRect.left() + bottomRightRect.width() / 2)
-            bottomRightRect.setBottom(bottomRightRect.top() + bottomRightRect.height() / 2)
-            painter.drawLine(bottomRightRect.bottomLeft(), bottomRightRect.topRight())
-            # draw bottom left resizer
-            pBottomLeft = self._rect.bottomLeft()
-            pBottomLeftRect = QtCore.QRectF(pBottomLeft.x(), pBottomLeft.y() - 6, 5, 5)
-            painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
-
-            pBottomLeftRect.setLeft(pBottomLeftRect.left() + pBottomLeftRect.width() / 2)
-            pBottomLeftRect.setBottom(pBottomLeftRect.top() + pBottomLeftRect.height() / 2)
-            painter.drawLine(pBottomLeftRect.bottomRight(), pBottomLeftRect.topLeft())
+        painter.setBrush(QtGui.QColor(0,0,0,0)) 
+        painter.drawRoundedRect(r, self.sizes[4], self.sizes[5]) 
 
     def onUpdatePropertyView(self, formLayout):
 

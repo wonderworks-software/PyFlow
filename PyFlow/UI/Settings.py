@@ -46,7 +46,7 @@ class Colors:
 
     SceneBackground = QtGui.QColor(35, 35, 35)
 
-    GridColor = QtGui.QColor(100, 100, 100, 100)
+    GridColor = QtGui.QColor(20, 20, 20, 100)
     GridColorDarker = QtGui.QColor(20, 20, 20)
 
     ConnectionLines = QtGui.QColor(255, 255, 255, 255)
