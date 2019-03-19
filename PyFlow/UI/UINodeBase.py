@@ -65,14 +65,14 @@ class NodeName(QGraphicsTextItem):
         self.setFont(self.opt_font)
         self.descFont = QtGui.QFont(
             "Consolas", self.opt_font.pointSize() / 2.0, 2, True)
-        self.setPos(0, -self.boundingRect().height() - 8)
+        self.setPos(0, -self.boundingRect().height() - 4)
         self.color = color
         self.clipRect = None
         self.roundCornerFactor = 1.0
         self.bg = QtGui.QImage(':/icons/resources/white.png')
         self.icon = None
-        self.nodeLabelMargin = QtCore.QMargins(2, 0, 0, 0)
-        self.nodePackageMargin = QtCore.QMargins(2, 2, 0, 3)
+        self.nodeLabelMargin = QtCore.QMargins(4, 2, 0, 0)
+        self.nodePackageMargin = QtCore.QMargins(4, 2, 0, 3)
 
     def onDocContentsChanged(self):
         self.width = QtGui.QFontMetricsF(
@@ -784,7 +784,7 @@ class UINodeBase(QGraphicsObject):
         container.setLayout(lyt)
         return container
 
-    def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None):
+    def _createUIPinWrapper(self, rawPin, index=-1,group=None,linkedPin=None,color=None):
         p = getUIPinInstance(self, rawPin)
         if rawPin.direction == PinDirection.Input:
             p.call = rawPin.call
@@ -796,7 +796,10 @@ class UINodeBase(QGraphicsObject):
         connector_name = EditableLabel(name=lblName, node=self, graph=self.graph())
         connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)
-        connector_name.setColor(Colors.PinNameColor)
+        if not color:
+            connector_name.setColor(Colors.PinNameColor)
+        else:
+            connector_name.setColor(color)
         p.nameChanged.connect(connector_name.setText)
         p.displayNameChanged.connect(connector_name.setText)
         connector_name.nameChanged.connect(p.setName)
