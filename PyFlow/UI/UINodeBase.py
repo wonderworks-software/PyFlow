@@ -162,7 +162,7 @@ class UINodeBase(QGraphicsObject):
         self.h = 40
         self.bUseTextureBg = bUseTextureBg  # self.graph().styleSheetEditor.USETEXTUREBG
         if self.bUseTextureBg:
-            self.sizes = [0, 0, self.w, self.h, 2, 2]
+            self.sizes = [0, 0, self.w, self.h, 5, 5]
         else:
             self.sizes = [0, 0, self.w, self.h, 10, 10]
         self.setFlag(QGraphicsItem.ItemIsMovable)

@@ -54,7 +54,11 @@ class NodePainter(object):
             b.setColorAt(1, headColor.darker(50))
             painter.setPen(QtCore.Qt.NoPen)
             path = QtGui.QPainterPath()
+            path.setFillRule( QtCore.Qt.WindingFill )
             path.addRoundedRect(r, node.sizes[4], node.sizes[5])
+            #r.setHeight(node.label().h-node.sizes[5])
+            r.setY(r.y()+node.sizes[5])
+            path.addRect(r)
             painter.fillPath(path, b)
 
     @staticmethod
