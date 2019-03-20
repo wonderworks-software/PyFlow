@@ -264,14 +264,14 @@ class UINodeBase(QGraphicsObject):
 
     @property
     def UIPins(self):
-        result = {}
+        result = OrderedDict()
         for rawPin in self._rawNode.pins.values():
             result[rawPin.uid] = rawPin.getWrapper()()
         return result
 
     @property
     def UIinputs(self):
-        result = {}
+        result = OrderedDict()
         for rawPin in self._rawNode.pins.values():
             if rawPin.direction == PinDirection.Input:
                 result[rawPin.uid] = rawPin.getWrapper()()
@@ -279,7 +279,7 @@ class UINodeBase(QGraphicsObject):
 
     @property
     def UIoutputs(self):
-        result = {}
+        result = OrderedDict()
         for rawPin in self._rawNode.pins.values():
             if rawPin.direction == PinDirection.Output:
                 result[rawPin.uid] = rawPin.getWrapper()()
@@ -292,6 +292,22 @@ class UINodeBase(QGraphicsObject):
     @property
     def outputs(self):
         return self.UIoutputs
+
+    @property
+    def namePinOutputsMap(self):
+        result = OrderedDict()
+        for rawPin in self._rawNode.pins.values():
+            if rawPin.direction == PinDirection.Output:
+                result[rawPin.name] = rawPin.getWrapper()()
+        return result
+
+    @property
+    def namePinInputsMap(self):
+        result = OrderedDict()
+        for rawPin in self._rawNode.pins.values():
+            if rawPin.direction == PinDirection.Input:
+                result[rawPin.name] = rawPin.getWrapper()()
+        return result
 
     @property
     def w(self):

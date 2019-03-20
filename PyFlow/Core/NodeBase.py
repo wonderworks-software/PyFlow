@@ -37,7 +37,7 @@ class NodeBase(INode):
         Returns:
             dict(uuid: PinBase)
         """
-        result = {}
+        result = OrderedDict()
         for pin in self.pins.values():
             if pin.direction == PinDirection.Input:
                 result[pin.uid] = pin
@@ -49,7 +49,7 @@ class NodeBase(INode):
         Returns:
             dict(str: PinBase)
         """
-        result = {}
+        result = OrderedDict()
         for pin in self.pins.values():
             if pin.direction == PinDirection.Input:
                 result[pin.name] = pin
@@ -61,7 +61,7 @@ class NodeBase(INode):
         Returns:
             dict(uuid: PinBase)
         """
-        result = {}
+        result = OrderedDict()
         for pin in self.pins.values():
             if pin.direction == PinDirection.Output:
                 result[pin.uid] = pin
@@ -73,7 +73,7 @@ class NodeBase(INode):
         Returns:
             dict(str: PinBase)
         """
-        result = {}
+        result = OrderedDict()
         for pin in self.pins.values():
             if pin.direction == PinDirection.Output:
                 result[pin.name] = pin

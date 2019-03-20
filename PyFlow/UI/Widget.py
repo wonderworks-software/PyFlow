@@ -370,8 +370,8 @@ class SceneClass(QGraphicsScene):
 
                     node = self.parent().createNode(nodeTemplate)
 
-                    nodeInputs = node.inputs
-                    nodeOutputs = node.outputs
+                    nodeInputs = node.namePinInputsMap
+                    nodeOutputs = node.namePinOutputsMap
                     if isinstance(dropItem, UIPinBase):
                         node.setPos(x - node.boundingRect().width(), y)
                         for inp in nodeInputs.values():
