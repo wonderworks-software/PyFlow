@@ -826,9 +826,7 @@ class GraphWidgetUI(QGraphicsView):
         self.node_box.setWindowFlags(
             QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
-        # self._UIPins = {}
         self._UIConnections = {}
-        # self._UINodes = {}
         self.boundingRect = self.rect()
         self._storedVars = []
         self.installEventFilter(self)
@@ -2058,10 +2056,6 @@ class GraphWidgetUI(QGraphicsView):
         connection.destination().uiConnectionList.remove(connection)
         connection.prepareGeometryChange()
         self.scene().removeItem(connection)
-
-    # def removeNode(self, node):
-    #     self._graphBase.removeNode(node._rawNode)
-    #     self._UINodes.pop(node.uid)
 
     def count(self):
         return self._graphBase.count()
