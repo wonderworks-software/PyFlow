@@ -43,11 +43,11 @@ class PinPainter(object):
             painter.setBrush(QtGui.QBrush(pin.color()))
         else:
             painter.setBrush(QtCore.Qt.NoBrush)
-        arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
-                                QtCore.QPointF(pin.width / 2.0, 0.0),
-                                QtCore.QPointF(pin.width, pin.height / 2.0),
-                                QtCore.QPointF(pin.width / 2.0, pin.height),
-                                QtCore.QPointF(0, pin.height)])
+        arrow = QtGui.QPolygonF([QtCore.QPointF(2, 0.0),
+                                QtCore.QPointF(2+pin.width / 2.0, 0.0),
+                                QtCore.QPointF(2+pin.width, pin.height / 2.0),
+                                QtCore.QPointF(2+pin.width / 2.0, pin.height),
+                                QtCore.QPointF(2, pin.height)])
         painter.drawPolygon(arrow)
 
     @staticmethod
