@@ -39,10 +39,10 @@ class UIReruteNode(UINodeBase):
         super(UIReruteNode, self).kill()
 
     def boundingRect(self):
-        self._rect.setWidth((self.getPinsWidth()+2)/2)
+        self._rect.setWidth((self.getPinsWidth()+4)/2)
         self._rect.setTop(self.getPinsWidth()/-3)
-        self._rect.setHeight(self.getPinsWidth()+2)
-        self._rect.moveLeft((self.getPinsWidth()+2)/4)
+        self._rect.setHeight(self.getPinsWidth()+4)
+        self._rect.moveLeft((self.getPinsWidth()+4)/4)
         return self._rect
   
     def postCreate(self, jsonTemplate=None):
