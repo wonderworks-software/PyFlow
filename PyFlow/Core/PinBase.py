@@ -174,18 +174,24 @@ class PinBase(IPin):
             for o in self.affected_by:
                 o.pinDisconnected(self)
                 o.affects.remove(self)
-            self.affected_by.clear()
+            if sys.version_info.major == 3:
+                self.affected_by.clear()
+            if sys.version_info.major == 2:
+                del self.affected_by[:]
 
         # if output pin
         # 1) loop connected input pins of right connected node
         # 2) call events
         # 3) remove self from other's affection list
-        # clear afects list
+        # clear affects list
         if self.direction == PinDirection.Output:
             for i in self.affects:
                 i.pinDisconnected(self)
                 i.affected_by.remove(self)
-            self.affects.clear()
+            if sys.version_info.major == 3:
+                self.affects.clear()
+            if sys.version_info.major == 2:
+                del self.affects[:]
 
     ## Describes, what data type is this pin.
     @property
