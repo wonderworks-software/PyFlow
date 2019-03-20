@@ -23,7 +23,6 @@ class getVar(NodeBase):
         del self.out
         self.out = None
         self.out = CreateRawPin('value', self, dataType, PinDirection.Output)
-        self.graph().pins[self.out.uid] = self.out
         return True
 
     def onVarValueChanged(self, *args, **kwargs):

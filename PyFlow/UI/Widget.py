@@ -268,7 +268,7 @@ class SceneClass(QGraphicsScene):
             #             elif isinstance(item, UIReruteNode):
             #                 item.hidePins()
 
-                # self.itemAt(event.pos()).drawThink()
+            # self.itemAt(event.pos()).drawThink()
         else:
             event.ignore()
 
@@ -317,7 +317,9 @@ class SceneClass(QGraphicsScene):
                 if modifiers == QtCore.Qt.NoModifier:
                     nodeTemplate['type'] = 'getVar'
                     nodeTemplate['meta']['label'] = varData['name']
-                    nodeTemplate['uuid'] = varData['uuid']
+                    # node uid should be unique, different from var
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
+
                     nodeTemplate['meta']['var']['uuid'] = varData['uuid']
                     m = QMenu()
                     getterAction = m.addAction('Get')
@@ -335,7 +337,8 @@ class SceneClass(QGraphicsScene):
                     m.exec_(QtGui.QCursor.pos(), None)
                 if modifiers == QtCore.Qt.ControlModifier:
                     nodeTemplate['type'] = 'getVar'
-                    nodeTemplate['uuid'] = varData['uuid']
+                    # node uid should be unique, different from var
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
                     nodeTemplate['meta']['var']['uuid'] = varData['uuid']
                     nodeTemplate['meta']['label'] = varData['name']
                     self.parent().createNode(nodeTemplate)
@@ -366,28 +369,31 @@ class SceneClass(QGraphicsScene):
                     nodeTemplate['uuid'] = str(uuid.uuid4())
 
                     node = self.parent().createNode(nodeTemplate)
+
+                    nodeInputs = node.inputs
+                    nodeOutputs = node.outputs
                     if isinstance(dropItem, UIPinBase):
                         node.setPos(x - node.boundingRect().width(), y)
-                        for inp in node.inputs.values():
+                        for inp in nodeInputs.values():
                             if self.parent().canConnectPins(dropItem, inp):
                                 if dropItem.dataType == 'ExecPin':
                                     dropItem.disconnectAll()
                                 self.parent().connectPins(dropItem, inp)
                                 node.setPos(x + node.boundingRect().width(), y)
                                 break
-                        for out in node.outputs.values():
+                        for out in nodeOutputs.values():
                             if self.parent().canConnectPins(out, dropItem):
                                 self.parent().connectPins(out, dropItem)
                                 node.setPos(x - node.boundingRect().width(), y)
                                 break
                     if isinstance(dropItem, UIConnection):
-                        for inp in node.inputs.values():
+                        for inp in nodeInputs.values():
                             if self.parent().canConnectPins(dropItem.source(), inp):
                                 if dropItem.source().dataType == 'ExecPin':
                                     dropItem.source().disconnectAll()
                                 self.parent().connectPins(dropItem.source(), inp)
                                 break
-                        for out in node.outputs.values():
+                        for out in nodeOutputs.values():
                             if self.parent().canConnectPins(out, dropItem.destination()):
                                 self.parent().connectPins(out, dropItem.destination())
                                 break
@@ -820,9 +826,9 @@ class GraphWidgetUI(QGraphicsView):
         self.node_box.setWindowFlags(
             QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
-        self._UIPins = {}
+        # self._UIPins = {}
         self._UIConnections = {}
-        self._UINodes = {}
+        # self._UINodes = {}
         self.boundingRect = self.rect()
         self._storedVars = []
         self.installEventFilter(self)
@@ -831,8 +837,8 @@ class GraphWidgetUI(QGraphicsView):
         # self.tick_timer.stop()
         pass
 
-    def createVariable(self, dataType="AnyPin"):
-        return self._graphBase.createVariable(dataType=dataType)
+    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
+        return self._graphBase.createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
 
     @property
     def vars(self):
@@ -844,18 +850,26 @@ class GraphWidgetUI(QGraphicsView):
 
     @property
     def nodes(self):
-        return self._UINodes
+        result = {}
+        for rawNode in self._graphBase.getNodes():
+            result[rawNode.uid] = rawNode.getWrapper()()
+        return result
 
     @property
     def pins(self):
-        return self._UIPins
+        """Returns UI pins dict {uuid: UIPinBase}
+        """
+        result = {}
+        for rawPin in self._graphBase.pins.values():
+            result[rawPin.uid] = rawPin.getWrapper()()
+        return result
 
     @property
     def connections(self):
         return self._UIConnections
 
     def getNodes(self):
-        return list(self._UINodes.values())
+        return list(self.nodes.values())
 
     def getUniqNodeName(self, name):
         return self._graphBase.getUniqNodeName(name)
@@ -1632,7 +1646,7 @@ class GraphWidgetUI(QGraphicsView):
                 for out in reruteNode.outputs.values():
                     if self.canConnectPins(self.pressed_item, out):
                         self.connectPins(self.pressed_item, out)
-                        break    
+                        break
                 self.pressed_item = reruteNode
                 self._manipulationMode = MANIP_MODE_MOVE
                 self._lastDragPoint = self.mapToScene(event.pos())
@@ -1709,7 +1723,7 @@ class GraphWidgetUI(QGraphicsView):
                             if item.source() == list(node.inputs.values())[0].connections[0].source():
                                 newOuts.append(item.destination())
                             if item.destination() == list(node.outputs.values())[0].connections[0].destination():
-                                newIns.append(item.source())                                
+                                newIns.append(item.source())
                 for out in newOuts:
                     self.connectPins(node.outputs.values()[0], out)
                 for inp in newIns:
@@ -1999,12 +2013,8 @@ class GraphWidgetUI(QGraphicsView):
         Arguments:
             node UINodeBase -- raw node wrapper
         """
-        # Put raw node to raw graph
-        # Put uinode to uigraph.uinodes
-        # assign uinode.uigraph
         self._graphBase.addNode(node._rawNode)
         node.graph = weakref.ref(self)
-        self._UINodes[node.uid] = node
         self.scene().addItem(node)
 
     def connectPinsInternal(self, src, dst):

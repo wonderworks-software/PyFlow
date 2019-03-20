@@ -27,8 +27,6 @@ class graphInputs(NodeBase):
         p = self.addOutputPin(name, 'AnyPin')
         p.setAlwaysPushDirty(True)
         p.actLikeDirection = PinDirection.Input
-        if p.uid not in self.graph().pins:
-            self.graph().pins[p.uid] = p
         return p
 
     def compute(self):
@@ -65,6 +63,4 @@ class graphOutputs(NodeBase):
         p = self.addInputPin(name, 'AnyPin')
         p.actLikeDirection = PinDirection.Output
         p.setAlwaysPushDirty(True)
-        if p.uid not in self.graph().pins:
-            self.graph().pins[p.uid] = p
         return p

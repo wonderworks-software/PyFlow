@@ -11,6 +11,7 @@ from Qt.QtWidgets import QListWidget, QListWidgetItem, QWidget
 
 from PyFlow.UI.UIVariable import UIVariable
 from PyFlow.UI.Widgets.VariablesWidget_ui import Ui_Form
+from PyFlow.Core.Common import *
 
 VARIABLE_TAG = "VAR"
 VARIABLE_DATA_TAG = "VAR_DATA"
@@ -68,11 +69,8 @@ class VariablesWidget(QWidget, Ui_Form):
                 var.killed.emit()
         self.graph._clearPropertiesView()
 
-    def createVariable(self, uid=None):
-        rawVariable = self.graph.createVariable()
-        # when graph is opened we need to restore guids
-        if isinstance(uid, uuid.UUID):
-            rawVariable.uid = uid
+    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
+        rawVariable = self.graph.createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
         uiVariable = UIVariable(rawVariable, self.graph)
         item = QListWidgetItem(self.listWidget)
         item.setSizeHint(QtCore.QSize(60, 38))

@@ -279,7 +279,6 @@ class UIPinBase(QGraphicsWidget):
 
     @uid.setter
     def uid(self, value):
-        self.owningNode().graph().pins[value] = self.owningNode().graph().pins.pop(self._rawPin._uid)
         self._rawPin._uid = value
 
     def color(self):
@@ -325,7 +324,6 @@ class UIPinBase(QGraphicsWidget):
             e.highlight()
 
     def kill(self):
-        self.OnPinDeleted.emit(self)
         self.disconnectAll()
         if self._container is not None:
             self.owningNode().graph().scene().removeItem(self._container)
@@ -340,14 +338,9 @@ class UIPinBase(QGraphicsWidget):
                     self.owningNode().inputsLayout.removeItem(self._groupContainer)
                 else:
                     self.owningNode().outputsLayout.removeItem(self._groupContainer)
-            if self._rawPin.uid in self.owningNode().UIPins:
-                del self.owningNode().UIPins[self._rawPin.uid]
-        if self.direction == PinDirection.Input:
-            self.owningNode().UIinputs.pop(self.uid)
-        if self.direction == PinDirection.Output:
-            self.owningNode().UIoutputs.pop(self.uid)
         self._rawPin.kill()
-        # self.owningNode().updateWidth()
+        self.OnPinDeleted.emit(self)
+        self.update()
 
     @staticmethod
     def deserialize(owningNode, jsonData):

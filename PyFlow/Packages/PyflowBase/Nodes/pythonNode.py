@@ -46,14 +46,11 @@ class pythonNode(NodeBase):
                                      compute)
             inPin.setData(i['value'])
             inPin.dirty = i['bDirty']
-            self.graph().pins[inPin.uid] = inPin
 
         for o in jsonTemplate['outputs']:
             outPin = self.addOutputPin(o['name'],
                                        o['dataType'],
                                        getPinDefaultValueByType(o['dataType']))
-            self.graph().pins[outPin.uid] = outPin
-
 
     @staticmethod
     def category():

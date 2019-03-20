@@ -173,14 +173,17 @@ class UIVariable(QWidget):
     def deserialize(data, graph):
         pinClass = findPinClassByType(data['dataType'])
 
-        # TODO: this is probably bad
-        var = graph.parent.variablesWidget.createVariable(uuid.UUID(data['uuid']))
+        varUid = uuid.UUID(data['uuid'])
+        # TODO: this is probably bad. Too long call chain
+        var = graph.parent.variablesWidget.createVariable(dataType=data['dataType'], accessLevel=AccessLevel(data['accessLevel']), uid=varUid)
         var.setName(data['name'])
         var.setDataType(data['dataType'])
 
-        var.value = data['value'] if pinClass.isPrimitiveType() else json.loads(data['value'], cls=pinClass.jsonDecoderClass())
+        if data['dataType'] == 'AnyPin':
+            var.value = getPinDefaultValueByType('AnyPin')
+        else:
+            var.value = data['value'] if pinClass.isPrimitiveType() else json.loads(data['value'], cls=pinClass.jsonDecoderClass())
 
-        var.accessLevel = AccessLevel(data['accessLevel'])
         return var
 
     @property

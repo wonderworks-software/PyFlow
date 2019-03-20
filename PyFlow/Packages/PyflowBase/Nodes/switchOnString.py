@@ -14,8 +14,6 @@ class switchOnString(NodeBase):
         name = self.getUniqPinName("option")
         p = self.addOutputPin(name, 'ExecPin')
         pinAffects(self.inExecPin, p)
-        if p.uid not in self.graph().pins:
-            self.graph().pins[p.uid] = p
         return p
 
     @staticmethod
@@ -36,7 +34,8 @@ class switchOnString(NodeBase):
 
     def compute(self):
         string = self.inString.getData()
-        if string in self.namePinOutputsMap:
-            self.namePinOutputsMap[string].call()
+        namePinOutputsMap = self.namePinOutputsMap
+        if string in namePinOutputsMap:
+            namePinOutputsMap[string].call()
         else:
             self.defaultPin.call()

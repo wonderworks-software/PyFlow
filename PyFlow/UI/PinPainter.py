@@ -39,7 +39,7 @@ class PinPainter(object):
     @staticmethod
     def asExecPin(pin, painter, option, widget):
         painter.setPen(PinPainter._execPen)
-        if pin._rawPin._connected:
+        if pin._rawPin.hasConnections():
             painter.setBrush(QtGui.QBrush(pin.color()))
         else:
             painter.setBrush(QtCore.Qt.NoBrush)
@@ -54,17 +54,18 @@ class PinPainter(object):
     def asGroupPin(pin, painter, option, widget):
         painter.setPen(PinPainter._groupPen)
         painter.setBrush(QtGui.QBrush(Colors.AbsoluteBlack))
-        #painter.setBrush(QtCore.Qt.NoBrush)
+        # painter.setBrush(QtCore.Qt.NoBrush)
         if not pin.expanded:
             arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
                                     QtCore.QPointF(pin.width, pin.height / 2.0),
                                     QtCore.QPointF(0, pin.height)])
         else:
-            arrow = QtGui.QPolygonF([QtCore.QPointF(pin.width/2, pin.height),
+            arrow = QtGui.QPolygonF([QtCore.QPointF(pin.width / 2, pin.height),
                                     QtCore.QPointF(0, 0),
-                                    QtCore.QPointF(pin.width, 0)])                    
+                                    QtCore.QPointF(pin.width, 0)])
         painter.drawPolygon(arrow)
-        #painter.drawRect(0,0,pin.width,pin.height)
+        # painter.drawRect(0,0,pin.width,pin.height)
+
     @staticmethod
     def asArrayPin(pin, painter, option, widget):
         painter.setBrush(QtGui.QBrush(pin.color()))

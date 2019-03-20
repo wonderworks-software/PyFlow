@@ -21,13 +21,12 @@ class PinBase(IPin):
         self._connected = False
         ## List of pins this pin connected to
         self.affects = []
-        ## Lsit of pins connected to this pin
+        ## List of pins connected to this pin
         self.affected_by = []
         ## List of connections
         self.connections = []
         ## Access to the node
-        if owningNode is not None:
-            self.owningNode = weakref.ref(owningNode)
+        self.owningNode = weakref.ref(owningNode)
 
         self.dataType = dataType
         self.name = name
@@ -39,7 +38,7 @@ class PinBase(IPin):
         self._alwaysPushDirty = False
         ## Can be renamed or not (for switch on string node)
         self._renamingEnabled = False
-        ## For examle sequence nodes output execs are dynamically created and can be deleted from node as well
+        ## For example sequence nodes output execs are dynamically created and can be deleted from node as well
         self._dynamic = False
 
         # gui class weak ref
@@ -48,12 +47,6 @@ class PinBase(IPin):
         self.constraint = None
         self.isAny = False
         self._isArray = False
-        if self.direction == PinDirection.Input:
-            owningNode.inputs[self.uid] = self
-            owningNode.namePinInputsMap[self.name] = self
-        if self.direction == PinDirection.Output:
-            owningNode.outputs[self.uid] = self
-            owningNode.namePinOutputsMap[self.name] = self
 
     def setAsArray(self, bIsArray):
         self._isArray = bool(bIsArray)
@@ -111,16 +104,11 @@ class PinBase(IPin):
 
     @uid.setter
     def uid(self, value):
-        self.owningNode().graph().pins[value] = self.owningNode().graph().pins.pop(self._uid)
         self._uid = value
 
     def setName(self, name):
         oldName = self.name
         self.name = name.replace(" ", "_")
-        if self.direction == PinDirection.Input:
-            self.owningNode().namePinInputsMap[self.name] = self.owningNode().namePinInputsMap.pop(oldName)
-        if self.direction == PinDirection.Output:
-            self.owningNode().namePinOutputsMap[self.name] = self.owningNode().namePinOutputsMap.pop(oldName)
 
     def getName(self):
         return self.owningNode().name + '.' + self.name
@@ -221,14 +209,7 @@ class PinBase(IPin):
     # PinBase methods
 
     def kill(self):
-        if self.direction == PinDirection.Input and self.uid in self.owningNode().inputs:
-            self.owningNode().inputs.pop(self.uid)
-            self.owningNode().namePinInputsMap.pop(self.name)
-        if self.direction == PinDirection.Output and self.uid in self.owningNode().outputs:
-            self.owningNode().outputs.pop(self.uid)
-            self.owningNode().namePinOutputsMap.pop(self.name)
-        if self.uid in self.owningNode().graph().pins:
-            self.owningNode().graph().pins.pop(self.uid)
+        self.owningNode().pins.pop(self.uid)
 
     def currentData(self):
         if self._data is None:

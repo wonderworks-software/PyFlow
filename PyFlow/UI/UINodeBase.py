@@ -200,9 +200,9 @@ class UINodeBase(QGraphicsObject):
         self.setZValue(1)
 
         self.icon = None
-        self.UIPins = {}
-        self.UIinputs = {}
-        self.UIoutputs = {}
+        # self.UIPins = {}
+        # self.UIinputs = {}
+        # self.UIoutputs = {}
         self.UIGraph = None
         self._menu = QMenu()
         # Resizing Options
@@ -261,6 +261,29 @@ class UINodeBase(QGraphicsObject):
     @property
     def pins(self):
         return self._rawNode.pins
+
+    @property
+    def UIPins(self):
+        result = {}
+        for rawPin in self._rawNode.pins.values():
+            result[rawPin.uid] = rawPin.getWrapper()()
+        return result
+
+    @property
+    def UIinputs(self):
+        result = {}
+        for rawPin in self._rawNode.pins.values():
+            if rawPin.direction == PinDirection.Input:
+                result[rawPin.uid] = rawPin.getWrapper()()
+        return result
+
+    @property
+    def UIoutputs(self):
+        result = {}
+        for rawPin in self._rawNode.pins.values():
+            if rawPin.direction == PinDirection.Output:
+                result[rawPin.uid] = rawPin.getWrapper()()
+        return result
 
     @property
     def inputs(self):
@@ -352,11 +375,13 @@ class UINodeBase(QGraphicsObject):
     def postCreate(self, jsonTemplate=None):
         self._rawNode.postCreate(jsonTemplate)
         # create ui pin wrappers
-        for uid, i in self._rawNode.inputs.items():
-            p = self._createUIPinWrapper(i)
+        for uid, i in self._rawNode.pins.items():
+            self._createUIPinWrapper(i)
+        # for uid, i in self._rawNode.inputs.items():
+        #     p = self._createUIPinWrapper(i)
 
-        for uid, o in self._rawNode.outputs.items():
-            p = self._createUIPinWrapper(o)
+        # for uid, o in self._rawNode.outputs.items():
+        #     p = self._createUIPinWrapper(o)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
         self._rect = self.childrenBoundingRect()
@@ -710,13 +735,7 @@ class UINodeBase(QGraphicsObject):
         return nodes
 
     def kill(self):
-        # for i in list(self.inputs.values()) + list(self.outputs.values()):
-        #     for connection in i.connections:
-        #         connection.kill()
         self._rawNode.kill()
-        for i in list(self.UIPins.values()):
-            i.kill()
-        self.graph()._UINodes.pop(self.uid)
         self.scene().removeItem(self)
         del(self)
 
@@ -850,14 +869,7 @@ class UINodeBase(QGraphicsObject):
                         node.displayNameChanged.connect(groupContainer.group_name.setText)
 
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        self.UIPins[rawPin.uid] = p
 
-        if rawPin.direction == PinDirection.Input:
-            self.UIinputs[rawPin.uid] = p
-        if rawPin.direction == PinDirection.Output:
-            self.UIoutputs[rawPin.uid] = p
-
-        self.graph().pins[rawPin.uid] = p
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self._rect.width(), self.childrenBoundingRect().height()))
         self.update()
         self.nodeMainGWidget.update()
