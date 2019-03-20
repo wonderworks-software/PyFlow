@@ -9,47 +9,46 @@ class UIReruteNode(UINodeBase):
         super(UIReruteNode, self).__init__(raw_node)
         self.label().hide()
         self.hover = False
-        self.color = QtGui.QColor(255, 255, 255, 255)
+        self.color = QtGui.QColor(255, 255, 255,255)
         self.minWidth = 0
         self.setAcceptHoverEvents(True)
-
+        
     def kill(self):
-        inputs = self.inputs
-        outputs = self.outputs
-        inp = list(inputs.values())[0]
-        out = list(outputs.values())[0]
+        inp = self.inputs.values()[0]
+        out = self.outputs.values()[0]
         if inp.dataType == "ExecPin":
             newIns = []
-            for i in inputs.values():
-                for connection in i.connections:
+            for i in self.inputs.values():  
+                for connection in i.edge_list:
                     newIns.append(connection.source())
-            if out.connections:
-                dst = out.connections[0].destination()
+            if out.edge_list:
+                dst = out.edge_list[0].destination()
                 for inpt in newIns:
-                    self.graph().connectPins(inpt, dst)
+                    self.graph().addEdge(inpt,dst)            
         else:
-            newOuts = []
-            for i in outputs.values():
-                for connection in i.connections:
+            newOuts = []      
+            for i in self.outputs.values():  
+                for connection in i.edge_list:
                     newOuts.append(connection.destination())
-            if inp.connections:
-                source = inp.connections[0].source()
+            if inp.edge_list:
+                source = inp.edge_list[0].source()
                 for out in newOuts:
-                    self.graph().connectPins(source, out)
+                    self.graph().addEdge(source,out)
+
 
         super(UIReruteNode, self).kill()
 
     def boundingRect(self):
-        self._rect.setWidth((self.getPinsWidth() + 2) / 2)
-        self._rect.setTop(self.getPinsWidth() / -3)
-        self._rect.setHeight(self.getPinsWidth() + 2)
-        self._rect.moveLeft((self.getPinsWidth() + 2) / 4)
+        self._rect.setWidth((self.getPinsWidth()+4)/2)
+        self._rect.setTop(self.getPinsWidth()/-3)
+        self._rect.setHeight(self.getPinsWidth()+4)
+        self._rect.moveLeft((self.getPinsWidth()+4)/4)
         return self._rect
-
+  
     def postCreate(self, jsonTemplate=None):
         super(UIReruteNode, self).postCreate(jsonTemplate)
         self.input = self.getPinByName("in").getWrapper()()
-        self.input.getLabel()().hide()
+        self.input.getLabel()().hide()  
         self.input.setDisplayName("")
         self.output = self.getPinByName("out").getWrapper()()
         self.output.getLabel()().hide()
@@ -61,19 +60,19 @@ class UIReruteNode(UINodeBase):
         self.updateNodeShape("")
         self.hidePins()
 
-    def setColor(self, item):
+    def setColor(self,item):
         self.color = item._color
         self.update()
-
+        
     def showPins(self):
         self.input.show()
         self.output.show()
 
     def hidePins(self):
         self.input.hide()
-        self.output.hide()
+        self.output.hide() 
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self,event):
         super(UIReruteNode, self).mousePressEvent(event)
         self.hidePins()
 

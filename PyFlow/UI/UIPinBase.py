@@ -132,8 +132,8 @@ class UIPinBase(QGraphicsWidget):
         self.setCacheMode(self.DeviceCoordinateCache)
         self.setAcceptHoverEvents(True)
         self.setZValue(2)
-        self.width = 8 + 1
-        self.height = 8 + 1
+        self.width = 6 + 1
+        self.height = 6 + 1
         self.hovered = False
         self.startPos = None
         self.endPos = None

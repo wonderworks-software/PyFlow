@@ -14,13 +14,13 @@ class PinPainter(object):
 
     @staticmethod
     def asValuePin(pin, painter, option, widget):
-        background_rect = QtCore.QRectF( pin.width/3,1, pin.width/1.5, pin.width/1.5)
+        background_rect = QtCore.QRectF(1, 1, pin.width, pin.width)
 
         w = background_rect.width() / 2
         h = background_rect.height() / 2
 
-        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w+pin.width/3, h+1), pin.width / 2.5)
-        if not pin._rawPin.hasConnections():
+        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w+1, h+1), pin.width / 2.5)
+        if not pin._rawPin._connected:
             linearGrad.setColorAt(0, pin.color().darker(280))
             linearGrad.setColorAt(0.5, pin.color().darker(280))
             linearGrad.setColorAt(0.65, pin.color().lighter(130))
@@ -33,36 +33,36 @@ class PinPainter(object):
             linearGrad.setColorAt(1, pin.color().lighter(200))
 
         painter.setBrush(QtGui.QBrush(linearGrad))
-        painter.setPen(QtCore.Qt.NoPen)
+        rect = background_rect.setX(background_rect.x())
         painter.drawEllipse(background_rect)
 
     @staticmethod
     def asExecPin(pin, painter, option, widget):
         painter.setPen(PinPainter._execPen)
-        if pin._rawPin.hasConnections():
+        if pin._rawPin._connected:
             painter.setBrush(QtGui.QBrush(pin.color()))
         else:
             painter.setBrush(QtCore.Qt.NoBrush)
-        arrow = QtGui.QPolygonF([QtCore.QPointF(pin.width/1.5 / 2.0, 0.0),
-                                QtCore.QPointF(pin.width/1.5 , 0.0),
-                                QtCore.QPointF(pin.width, pin.width/1.5 / 2.0),
-                                QtCore.QPointF(pin.width/1.5 , pin.width/1.5),
-                                QtCore.QPointF(pin.width/1.5 / 2.0, pin.width/1.5)])
+        arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
+                                QtCore.QPointF(pin.width / 2.0, 0.0),
+                                QtCore.QPointF(pin.width, pin.height / 2.0),
+                                QtCore.QPointF(pin.width / 2.0, pin.height),
+                                QtCore.QPointF(0, pin.height)])
         painter.drawPolygon(arrow)
 
     @staticmethod
     def asGroupPin(pin, painter, option, widget):
         painter.setPen(PinPainter._groupPen)
         painter.setBrush(QtGui.QBrush(Colors.AbsoluteBlack))
-        # painter.setBrush(QtCore.Qt.NoBrush)
+        #painter.setBrush(QtCore.Qt.NoBrush)
         if not pin.expanded:
             arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
                                     QtCore.QPointF(pin.width, pin.height / 2.0),
                                     QtCore.QPointF(0, pin.height)])
         else:
-            arrow = QtGui.QPolygonF([QtCore.QPointF(pin.width / 2, pin.height),
+            arrow = QtGui.QPolygonF([QtCore.QPointF(pin.width/2, pin.height),
                                     QtCore.QPointF(0, 0),
-                                    QtCore.QPointF(pin.width, 0)])
+                                    QtCore.QPointF(pin.width, 0)])                    
         painter.drawPolygon(arrow)
         #painter.drawRect(0,0,pin.width,pin.height)
     @staticmethod
