@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsPathItem
+from Qt.QtWidgets import QMenu
 
 from Settings import Colors
 from PyFlow.Core.Common import *
@@ -16,6 +17,9 @@ from PyFlow.Core.Common import *
 class UIConnection(QGraphicsPathItem):
     def __init__(self, source, destination, graph):
         QGraphicsPathItem.__init__(self)
+        self._menu = QMenu()
+        self.actionDisconnect = self._menu.addAction("Disconnect")
+        self.actionDisconnect.triggered.connect(self.kill)
         self._uid = uuid4()
         self.graph = weakref.ref(graph)
         self.source = weakref.ref(source)
@@ -48,12 +52,24 @@ class UIConnection(QGraphicsPathItem):
         self.source().update()
         self.destination().update()
         self.fade = 0.0
+        self.source().uiConnectionList.append(self)
+        self.destination().uiConnectionList.append(self)
+        self.source().pinConnected(self.destination())
+        self.destination().pinConnected(self.source())
+
+    def __repr__(self):
+        return "{0} -> {1}".format(self.source().getName(), self.destination().getName())
 
     def setColor(self, color):
         self.pen.setColor(color)
         self.color = color
 
     def Tick(self):
+        # check if this instance represents existing connection
+        # if not - destroy
+        if not arePinsConnected(self.source()._rawPin, self.destination()._rawPin):
+            self.graph().removeConnection(self)
+
         if self.fade > 0:
             self.pen.setWidthF(self.thikness + self.fade * 2)
             r = abs(lerp(self.color.red(), Colors.Yellow.red(), clamp(self.fade, 0, 1)))
@@ -62,6 +78,9 @@ class UIConnection(QGraphicsPathItem):
             self.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
             self.fade -= 0.1
             self.update()
+
+    def contextMenuEvent(self, event):
+        self._menu.exec_(event.screenPos())
 
     def highlight(self):
         self.fade = 1.0
@@ -81,11 +100,11 @@ class UIConnection(QGraphicsPathItem):
         srcUUID = UUID(data['sourceUUID'])
         dstUUID = UUID(data['destinationUUID'])
         # if srcUUID in graph.pins and dstUUID in graph.pins:
-        srcPin = graph.findUIPinByUID(srcUUID)
+        srcPin = graph.findPinByUID(srcUUID)
         assert(srcPin is not None)
-        dstPin = graph.findUIPinByUID(dstUUID)
+        dstPin = graph.findPinByUID(dstUUID)
         assert(dstPin is not None)
-        connection = graph._addConnection(srcPin, dstPin)
+        connection = graph.connectPinsInternal(srcPin, dstPin)
         assert(connection is not None)
         connection.uid = UUID(data['uuid'])
 
@@ -169,7 +188,7 @@ class UIConnection(QGraphicsPathItem):
         self.setPath(self.mPath)
 
     def kill(self):
-        self.graph().removeEdge(self)
+        self.graph().removeConnection(self)
 
     def destination_port_name(self):
         return self.destination().getName()

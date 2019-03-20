@@ -1,19 +1,19 @@
 from Qt import QtCore
 from Qt.QtWidgets import QInputDialog
+
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.UI.Settings import *
 
-# self.graph().inPinCreated.connect(self.printTest)
 class UIGraphInputs(UINodeBase):
     pinCreated = QtCore.Signal(object)
 
     def __init__(self, raw_node):
         super(UIGraphInputs, self).__init__(raw_node)
         actionRename = self._menu.addAction("Rename")
-        actionRename.triggered.connect(self.rename)         
+        actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
-        actionAddOut.triggered.connect(self.onAddOutPin)       
+        actionAddOut.triggered.connect(self.onAddOutPin)
         self.label().hide()
         self.resizable = True
         self.portsMainLayout.removeItem(self.inputsLayout)
@@ -30,7 +30,7 @@ class UIGraphInputs(UINodeBase):
         uiPin = self._createUIPinWrapper(rawPin,color=Colors.AbsoluteBlack)
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
-        uiPin.setDisplayName("Input_{}".format(str(len(self.outputs) - 1)))
+        uiPin.setDisplayName("Input_{}".format(str(len(self._rawNode.outputs) - 1)))
         self.updateWidth()
         self.pinCreated.emit(uiPin)
         return uiPin
@@ -53,13 +53,13 @@ class UIGraphInputs(UINodeBase):
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
             self.updateWidth()
             self.w = self._rect.width()
-        else:       
+        else:
             self._rect.setWidth(25)
             self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height())) 
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
 
     def paint(self, painter, option, widget):
-        NodePainter.asGraphSides(self, painter, option, widget) 
+        NodePainter.asGraphSides(self, painter, option, widget)
 
 
 class UIGraphOutputs(UINodeBase):
@@ -68,7 +68,7 @@ class UIGraphOutputs(UINodeBase):
     def __init__(self, raw_node):
         super(UIGraphOutputs, self).__init__(raw_node)
         actionRename = self._menu.addAction("Rename")
-        actionRename.triggered.connect(self.rename)          
+        actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.onAddInPin)
         self.label().hide()
@@ -87,7 +87,7 @@ class UIGraphOutputs(UINodeBase):
         uiPin = self._createUIPinWrapper(rawPin,color=Colors.AbsoluteBlack)
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
-        uiPin.setDisplayName("Output_{}".format(str(len(self.inputs) - 1)))
+        uiPin.setDisplayName("Output_{}".format(str(len(self._rawNode.inputs) - 1)))
         self.updateWidth()
         self.pinCreated.emit(uiPin)
         return uiPin
@@ -110,7 +110,7 @@ class UIGraphOutputs(UINodeBase):
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
             self.updateWidth()
             self.w = self._rect.width()
-        else:       
+        else:
             self._rect.setWidth(25)
             self.updateWidth()
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))

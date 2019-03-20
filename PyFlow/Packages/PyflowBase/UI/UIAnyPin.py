@@ -33,14 +33,14 @@ class UIAnyPin(UIPinBase):
 
     def setDefault(self, defcolor):
         self._color = QtGui.QColor(*defcolor)
-        for e in self.edge_list:
+        for e in self.connections:
             e.setColor(QtGui.QColor(*defcolor))
         self.OnPinChanged.emit(self)
         self.update()
 
     def setType(self, otherColor):
         self._color = QtGui.QColor(*otherColor)
-        for e in self.edge_list:
+        for e in self.connections:
             e.setColor(self._color)
         self.OnPinChanged.emit(self)
         self.update()

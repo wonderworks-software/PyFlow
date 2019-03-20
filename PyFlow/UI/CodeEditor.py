@@ -301,8 +301,6 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
         for o in list(node.outputs.values()):
             o.kill()
             self.graph.scene().removeItem(o.getWrapper()().getContainer())
-        node.inputs.clear()
-        node.outputs.clear()
 
         for i in range(node.inputsLayout.count()):
             node.inputsLayout.removeAt(0)
@@ -337,7 +335,6 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
                 dataType = w.dataType()
                 rawPin = node._rawNode.addOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType))
                 uiPin = node._createUIPinWrapper(rawPin)
-                rawPin.owningNode().graph().pins[rawPin.uid] = rawPin
                 w.lePinName.setText(uiPin.name)
                 uiPin.getLabel()().setVisible(not w.shouldHideLabel())
 
@@ -349,7 +346,6 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
                 compute = node.compute if dataType == "ExecPin" else None
                 rawPin = node._rawNode.addInputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), compute)
                 uiPin = node._createUIPinWrapper(rawPin)
-                rawPin.owningNode().graph().pins[rawPin.uid] = rawPin
                 w.lePinName.setText(uiPin.name)
                 uiPin.getLabel()().setVisible(not w.shouldHideLabel())
 

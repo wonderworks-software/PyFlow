@@ -18,7 +18,7 @@ from PyFlow.Packages.PyflowBase.UI.UISetVarNode import UISetVarNode
 from PyFlow.Packages.PyflowBase.UI.UIImplicitPinCallNode import UIImplicitPinCall
 from PyFlow.Packages.PyflowBase.UI.UISequenceNode import UISequenceNode
 from PyFlow.Packages.PyflowBase.UI.UIcommentNode import UIcommentNode
-from PyFlow.Packages.PyflowBase.UI.UIReruteNode import UIReruteNode
+from PyFlow.Packages.PyflowBase.UI.UIRerouteNode import UIRerouteNode
 from PyFlow.Packages.PyflowBase.UI.UIPythonNode import UIPythonNode
 from PyFlow.Packages.PyflowBase.UI.UIGraphNodes import (
     UIGraphInputs,
@@ -42,7 +42,7 @@ def createUINode(raw_instance):
     if isinstance(raw_instance, commentNode):
         return UIcommentNode(raw_instance)
     if isinstance(raw_instance, rerute):
-        return UIReruteNode(raw_instance)
+        return UIRerouteNode(raw_instance)
     if isinstance(raw_instance, graphInputs):
         return UIGraphInputs(raw_instance)
     if isinstance(raw_instance, graphOutputs):

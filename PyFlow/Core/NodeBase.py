@@ -14,21 +14,70 @@ from PyFlow import CreateRawPin
 
 
 class NodeBase(INode):
-    def __init__(self, name):
+    def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
-        self._uid = uuid.uuid4()
+        self._uid = uuid.uuid4() if uid is None else uid
         self.graph = None
         self.name = name
-        self.inputs = OrderedDict()
-        self.namePinInputsMap = OrderedDict()
-        self.outputs = OrderedDict()
-        self.namePinOutputsMap = OrderedDict()
+        self._pins = OrderedDict()
         self.x = 0.0
         self.y = 0.0
         self.bCallable = False
         self._wrapper = None
         self._Constraints = {}
         self.lib = None
+
+    @property
+    def pins(self):
+        return self._pins
+
+    @property
+    def inputs(self):
+        """Returns all input pins. Dictionary generated every time property called, so cache it when possible
+        Returns:
+            dict(uuid: PinBase)
+        """
+        result = {}
+        for pin in self.pins.values():
+            if pin.direction == PinDirection.Input:
+                result[pin.uid] = pin
+        return result
+
+    @property
+    def namePinInputsMap(self):
+        """Returns all input pins. Dictionary generated every time property called, so cache it when possible
+        Returns:
+            dict(str: PinBase)
+        """
+        result = {}
+        for pin in self.pins.values():
+            if pin.direction == PinDirection.Input:
+                result[pin.name] = pin
+        return result
+
+    @property
+    def outputs(self):
+        """Returns all output pins. Dictionary generated every time property called, so cache it when possible
+        Returns:
+            dict(uuid: PinBase)
+        """
+        result = {}
+        for pin in self.pins.values():
+            if pin.direction == PinDirection.Output:
+                result[pin.uid] = pin
+        return result
+
+    @property
+    def namePinOutputsMap(self):
+        """Returns all output pins. Dictionary generated every time property called, so cache it when possible
+        Returns:
+            dict(str: PinBase)
+        """
+        result = {}
+        for pin in self.pins.values():
+            if pin.direction == PinDirection.Output:
+                result[pin.name] = pin
+        return result
 
     # IItemBase interface
 
@@ -44,9 +93,7 @@ class NodeBase(INode):
 
     @uid.setter
     def uid(self, value):
-        if self._uid in self.graph().nodes:
-            self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
-            self._uid = value
+        self._uid = value
 
     @staticmethod
     def jsonTemplate():
@@ -73,9 +120,13 @@ class NodeBase(INode):
         template['meta']['label'] = self.name
         return template
 
-    def kill(self):
+    def kill(self, *args, **kwargs):
         assert(self.uid in self.graph().nodes), "Error killing node. \
             Node {0} not in graph".format(self.getName())
+        for pin in self.inputs.values():
+            pin.disconnectAll()
+        for pin in self.outputs.values():
+            pin.disconnectAll()
         self.graph().nodes.pop(self.uid)
 
     def Tick(self, delta):
@@ -135,8 +186,6 @@ class NodeBase(INode):
         # check unique name
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
-        self.inputs[p.uid] = p
-        self.namePinInputsMap[pinName] = p
         p.direction = PinDirection.Input
         if foo:
             p.call = foo
@@ -154,8 +203,6 @@ class NodeBase(INode):
     def addOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
-        self.outputs[p.uid] = p
-        self.namePinOutputsMap[pinName] = p
         p.direction = PinDirection.Output
         if foo:
             p.call = foo
@@ -192,29 +239,35 @@ class NodeBase(INode):
         return name + str(idx)
 
     def getPinByUUID(self, uid):
-        if uid in self.inputs:
-            return self.inputs[uid]
-        if uid in self.outputs:
-            return self.outputs[uid]
+        inputs = self.inputs
+        outputs = self.outputs
+
+        if uid in inputs:
+            return inputs[uid]
+        if uid in outputs:
+            return outputs[uid]
         return None
 
     def call(self, name):
-        if name in self.namePinOutputsMap:
-            p = self.namePinOutputsMap[name]
+        namePinOutputsMap = self.namePinOutputsMap
+        if name in namePinOutputsMap:
+            p = namePinOutputsMap[name]
             if p.dataType == 'ExecPin':
                 p.call()
 
     def getPinByName(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
+        inputs = self.inputs
+        outputs = self.outputs
         if pinsSelectionGroup == PinSelectionGroup.BothSides:
-            for p in list(self.inputs.values()) + list(self.outputs.values()):
+            for p in list(inputs.values()) + list(outputs.values()):
                 if p.name == name:
                     return p
         elif pinsSelectionGroup == PinSelectionGroup.Inputs:
-            for p in list(self.inputs.values()):
+            for p in list(inputs.values()):
                 if p.name == name:
                     return p
         else:
-            for p in list(self.outputs.values()):
+            for p in list(outputs.values()):
                 if p.name == name:
                     return p
 

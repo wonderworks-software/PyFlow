@@ -88,7 +88,7 @@ class NodePainter(object):
         painter.drawText(textRect, QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, node.displayName)
 
     @staticmethod
-    def asReruteNode(node, painter, option, widget):
+    def asRerouteNode(node, painter, option, widget):
         color = node.color
         color.setAlpha(255)
         #if node.isSelected():

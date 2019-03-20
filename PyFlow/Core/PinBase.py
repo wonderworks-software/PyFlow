@@ -18,26 +18,26 @@ class PinBase(IPin):
         ## This flag for lazy evaluation
         # @sa @ref PinBase::getData
         self.dirty = True
-        self._connected = False
         ## List of pins this pin connected to
         self.affects = []
-        ## Lsit of pins connected to this pin
+        ## List of pins connected to this pin
         self.affected_by = []
         ## List of connections
-        self.edge_list = []
+        self.connections = []
         ## Access to the node
-        if owningNode is not None:
-            self.owningNode = weakref.ref(owningNode)
+        self.owningNode = weakref.ref(owningNode)
 
         self.dataType = dataType
         self.name = name
         ## Defines is this input pin or output
         self.direction = direction
+        ## This flag is for subgraph input nodes, to correctly establish connections
+        self.actLikeDirection = direction
         ## For rand int node
         self._alwaysPushDirty = False
         ## Can be renamed or not (for switch on string node)
         self._renamingEnabled = False
-        ## For examle sequence nodes output execs are dynamically created and can be deleted from node as well
+        ## For example sequence nodes output execs are dynamically created and can be deleted from node as well
         self._dynamic = False
 
         # gui class weak ref
@@ -84,6 +84,7 @@ class PinBase(IPin):
         data = {'name': self.name,
                 'dataType': self.dataType,
                 'direction': int(self.direction),
+                'actLikeDirection': int(self.actLikeDirection),
                 'value': self.currentData(),
                 'uuid': str(self.uid),
                 'bDirty': self.dirty
@@ -102,16 +103,11 @@ class PinBase(IPin):
 
     @uid.setter
     def uid(self, value):
-        self.owningNode().graph().pins[value] = self.owningNode().graph().pins.pop(self._uid)
         self._uid = value
 
     def setName(self, name):
         oldName = self.name
         self.name = name.replace(" ", "_")
-        if self.direction == PinDirection.Input:
-            self.owningNode().namePinInputsMap[self.name] = self.owningNode().namePinInputsMap.pop(oldName)
-        if self.direction == PinDirection.Output:
-            self.owningNode().namePinOutputsMap[self.name] = self.owningNode().namePinOutputsMap.pop(oldName)
 
     def getName(self):
         return self.owningNode().name + '.' + self.name
@@ -169,13 +165,27 @@ class PinBase(IPin):
             i.call()
 
     def disconnectAll(self):
-        trash = []
-        for e in self.edge_list:
-            if self.uid == e.destination().uid:
-                trash.append(e)
-            if self.uid == e.source().uid:
-                trash.append(e)
-        return trash
+        # if input pin
+        # 1) loop connected output pins of left connected node
+        # 2) call events
+        # 3) remove self from other's affection list
+        # clear affected_by list
+        if self.direction == PinDirection.Input:
+            for o in self.affected_by:
+                o.pinDisconnected(self)
+                o.affects.remove(self)
+            self.affected_by.clear()
+
+        # if output pin
+        # 1) loop connected input pins of right connected node
+        # 2) call events
+        # 3) remove self from other's affection list
+        # clear afects list
+        if self.direction == PinDirection.Output:
+            for i in self.affects:
+                i.pinDisconnected(self)
+                i.affected_by.remove(self)
+            self.affects.clear()
 
     ## Describes, what data type is this pin.
     @property
@@ -198,14 +208,7 @@ class PinBase(IPin):
     # PinBase methods
 
     def kill(self):
-        if self.direction == PinDirection.Input and self.uid in self.owningNode().inputs:
-            self.owningNode().inputs.pop(self.uid)
-            self.owningNode().namePinInputsMap.pop(self.name)
-        if self.direction == PinDirection.Output and self.uid in self.owningNode().outputs:
-            self.owningNode().outputs.pop(self.uid)
-            self.owningNode().namePinOutputsMap.pop(self.name)
-        if self.uid in self.owningNode().graph().pins:
-            self.owningNode().graph().pins.pop(self.uid)
+        self.owningNode().pins.pop(self.uid)
 
     def currentData(self):
         if self._data is None:
@@ -213,11 +216,10 @@ class PinBase(IPin):
         return self._data
 
     def pinConnected(self, other):
-        self._connected = True
+        pass
 
     def pinDisconnected(self, other):
-        if not self.hasConnections():
-            self._connected = False
+        pass
 
     def setClean(self):
         self.dirty = False
@@ -226,10 +228,12 @@ class PinBase(IPin):
                 i.dirty = False
 
     def hasConnections(self):
-        if len(self.edge_list) == 0:
-            return False
-        else:
-            return True
+        numConnections = 0
+        if self.direction == PinDirection.Input:
+            numConnections += len(self.affected_by)
+        elif self.direction == PinDirection.Output:
+            numConnections += len(self.affects)
+        return numConnections > 0
 
     def setDirty(self):
         if self.dataType == 'ExecPin':

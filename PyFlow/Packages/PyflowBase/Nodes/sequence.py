@@ -30,8 +30,6 @@ class sequence(NodeBase):
         name = str(len(self.outputs))
         p = self.addOutputPin(name, 'ExecPin')
         pinAffects(self.inExecPin, p)
-        if p.uid not in self.graph().pins:
-            self.graph().pins[p.uid] = p
         return p
 
     def compute(self):

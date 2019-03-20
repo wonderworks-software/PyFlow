@@ -143,6 +143,7 @@ class UINodeBase(QGraphicsObject):
     """
     ## Event called when node name changes
     displayNameChanged = QtCore.Signal(str)
+
     def __init__(self, raw_node, w=80, color=Colors.NodeBackgrounds, headColor=Colors.NodeNameRectGreen, bUseTextureBg=True):
         super(UINodeBase, self).__init__()
         self._rawNode = raw_node
@@ -199,9 +200,10 @@ class UINodeBase(QGraphicsObject):
         self.setZValue(1)
 
         self.icon = None
-        self.UIPins = {}
-        self.UIinputs = {}
-        self.UIoutputs = {}
+        # self.UIPins = {}
+        # self.UIinputs = {}
+        # self.UIoutputs = {}
+        self.UIGraph = None
         self._menu = QMenu()
         # Resizing Options
         self.minWidth = 25
@@ -229,11 +231,11 @@ class UINodeBase(QGraphicsObject):
 
     @property
     def graph(self):
-        return self._rawNode.graph
+        return self.UIGraph
 
     @graph.setter
     def graph(self, value):
-        self._rawNode.graph = value
+        self.UIGraph = value
 
     @property
     def uid(self):
@@ -241,7 +243,7 @@ class UINodeBase(QGraphicsObject):
 
     @uid.setter
     def uid(self, value):
-        self._rawNode.uid = value
+        self._rawNode._uid = value
 
     @property
     def name(self):
@@ -261,20 +263,35 @@ class UINodeBase(QGraphicsObject):
         return self._rawNode.pins
 
     @property
-    def inputs(self):
-        return self._rawNode.inputs
+    def UIPins(self):
+        result = {}
+        for rawPin in self._rawNode.pins.values():
+            result[rawPin.uid] = rawPin.getWrapper()()
+        return result
 
-    @inputs.setter
-    def inputs(self, value):
-        self._rawNode.inputs = value
+    @property
+    def UIinputs(self):
+        result = {}
+        for rawPin in self._rawNode.pins.values():
+            if rawPin.direction == PinDirection.Input:
+                result[rawPin.uid] = rawPin.getWrapper()()
+        return result
+
+    @property
+    def UIoutputs(self):
+        result = {}
+        for rawPin in self._rawNode.pins.values():
+            if rawPin.direction == PinDirection.Output:
+                result[rawPin.uid] = rawPin.getWrapper()()
+        return result
+
+    @property
+    def inputs(self):
+        return self.UIinputs
 
     @property
     def outputs(self):
-        return self._rawNode.outputs
-
-    @outputs.setter
-    def outputs(self, value):
-        self._rawNode.outputs = value
+        return self.UIoutputs
 
     @property
     def w(self):
@@ -330,6 +347,7 @@ class UINodeBase(QGraphicsObject):
                 pin.setDirty()
             else:
                 pin.setClean()
+            pin.actLikeDirection = PinDirection(inpJson['actLikeDirection'])
 
         for outJson in data['outputs']:
             pin = node.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
@@ -339,6 +357,8 @@ class UINodeBase(QGraphicsObject):
                 pin.setDirty()
             else:
                 pin.setClean()
+            pin.actLikeDirection = PinDirection(outJson['actLikeDirection'])
+
         return node
 
     def serialize(self):
@@ -355,13 +375,13 @@ class UINodeBase(QGraphicsObject):
     def postCreate(self, jsonTemplate=None):
         self._rawNode.postCreate(jsonTemplate)
         # create ui pin wrappers
-        for uid, i in self.inputs.items():
-            p = self._createUIPinWrapper(i)
-            self.UIinputs[uid] = p
+        for uid, i in self._rawNode.pins.items():
+            self._createUIPinWrapper(i)
+        # for uid, i in self._rawNode.inputs.items():
+        #     p = self._createUIPinWrapper(i)
 
-        for uid, o in self.outputs.items():
-            p = self._createUIPinWrapper(o)
-            self.UIoutputs[uid] = p
+        # for uid, o in self._rawNode.outputs.items():
+        #     p = self._createUIPinWrapper(o)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
         self._rect = self.childrenBoundingRect()
@@ -381,7 +401,7 @@ class UINodeBase(QGraphicsObject):
             if self.minWidth > self._rect.width():
                 self._rect.setWidth(self.minWidth)
         else:
-            self._rect = self.childrenBoundingRect() 
+            self._rect = self.childrenBoundingRect()
 
         return self._rect
 
@@ -434,11 +454,11 @@ class UINodeBase(QGraphicsObject):
             else:
                 pinheight2 = max(pinheight2, i.height)
         return max(pinheight, pinheight2)
-       
+
     def updateWidth(self):
         self.minWidth = max(self.getPinsWidth(), self.getWidth() + Spacings.kPinOffset)
         self.w = self.minWidth
-                  
+
     def updateNodeShape(self, label=None):
         for i in range(0, self.inputsLayout.count()):
             container = self.inputsLayout.itemAt(i)
@@ -454,10 +474,10 @@ class UINodeBase(QGraphicsObject):
                 for j in range(0, lyt.count()):
                     lyt.setAlignment(lyt.itemAt(
                         j), QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-        if label:# is None:
-            #self.label().setPlainText(self._rawNode.__class__.__name__)
-            #self.displayName = self.name
-            #else:
+        if label:  # is None:
+            # self.label().setPlainText(self._rawNode.__class__.__name__)
+            # self.displayName = self.name
+            # else:
             self.label().setPlainText(label)
             self.displayName = label
 
@@ -595,8 +615,7 @@ class UINodeBase(QGraphicsObject):
                     self.w = newWidth
                 if newHeight > self.minHeight:
                     self._rect.setHeight(newHeight)
-            self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-                0, 0, self.w, self.boundingRect().height()))                    
+            self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
             self.update()
             self.label().update()
         self.lastMousePos = event.pos()
@@ -709,18 +728,13 @@ class UINodeBase(QGraphicsObject):
     def getChainedNodes(self):
         nodes = []
         for pin in self.inputs.values():
-            for connection in pin.edge_list:
+            for connection in pin.connections:
                 node = connection.source().topLevelItem()  # topLevelItem
                 nodes.append(node)
                 nodes += node.getChainedNodes()
         return nodes
 
     def kill(self):
-        for i in list(self.inputs.values()) + list(self.outputs.values()):
-            for connection in i.edge_list:
-                connection.kill()
-        for i in list(self.UIPins.values()):
-            i.kill()
         self._rawNode.kill()
         self.scene().removeItem(self)
         del(self)
@@ -735,7 +749,7 @@ class UINodeBase(QGraphicsObject):
         lyt.setOrientation(QtCore.Qt.Vertical)
         lyt.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         lyt.setContentsMargins(1, 1, 1, 1)
-        container.group_name = EditableLabel(name=groupName,node=self,graph=self.graph())
+        container.group_name = EditableLabel(name=groupName, node=self, graph=self.graph())
         font = QtGui.QFont('Consolas')
         font.setBold(True)
         font.setPointSize(500)
@@ -748,16 +762,17 @@ class UINodeBase(QGraphicsObject):
         grpCon = self.addContainer()
         container.groupIcon = UIGroupPinBase(container)
         lyt.addItem(grpCon)
-        container.setLayout(lyt)  
+        container.setLayout(lyt)
         if portType == PinDirection.Input:
             container.group_name.nameLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-            grpCon.layout().addItem(container.groupIcon)               
-            grpCon.layout().addItem(container.group_name)          
+            grpCon.layout().addItem(container.groupIcon)
+            grpCon.layout().addItem(container.group_name)
         else:
             container.group_name.nameLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
             grpCon.layout().addItem(container.group_name)
-            grpCon.layout().addItem(container.groupIcon)            
+            grpCon.layout().addItem(container.groupIcon)
         return container
+
     def addContainer(self):
         container = QGraphicsWidget()
         container.setObjectName('{0}PinContainerWidget'.format(self.name))
@@ -778,7 +793,7 @@ class UINodeBase(QGraphicsObject):
         lblName = name
         # TODO: do not use Proxy widget. Use QGraphicsTextItem instead
 
-        connector_name = EditableLabel(name=lblName,node=self,graph=self.graph())
+        connector_name = EditableLabel(name=lblName, node=self, graph=self.graph())
         connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)
         if not color:
@@ -801,20 +816,20 @@ class UINodeBase(QGraphicsObject):
             p._container = container
             container.layout().addItem(connector_name)
             container.adjustSize()
-            if not group:            
+            if not group:
                 self.inputsLayout.insertItem(index, container)
             else:
                 groupName = group
                 node = group
                 if linkedPin:
-                    node = linkedPin.owningNode()._wrapper()
+                    node = linkedPin.owningNode()
                     groupName = node.displayName
 
                 if node in self.inputGroupPins:
                     self.inputGroupPins[node].layout().insertItem(index, container)
                     p._groupContainer = self.inputGroupPins[node]
                 else:
-                    groupContainer = self.addGroupContainer(rawPin.direction,groupName=groupName)
+                    groupContainer = self.addGroupContainer(rawPin.direction, groupName=groupName)
                     groupContainer.groupIcon.onCollapsed.connect(self.collapsePinGroup)
                     groupContainer.groupIcon.onExpanded.connect(self.expandPinGroup)
                     groupContainer.layout().insertItem(index, container)
@@ -822,8 +837,8 @@ class UINodeBase(QGraphicsObject):
                     self.inputGroupPins[node] = groupContainer
                     self.inputsLayout.insertItem(index, groupContainer)
                     if linkedPin:
-                        #groupContainer.group_name.nameChanged.connect(node.setDisplayName())
-                        node.displayNameChanged.connect(groupContainer.group_name.setText)                    
+                        # groupContainer.group_name.nameChanged.connect(node.setDisplayName())
+                        node.displayNameChanged.connect(groupContainer.group_name.setText)
 
         elif rawPin.direction == PinDirection.Output:
             container = self.addContainer()
@@ -833,62 +848,62 @@ class UINodeBase(QGraphicsObject):
             p.setLabel(connector_name)
             p._container = container
             container.adjustSize()
-            if not group:            
+            if not group:
                 self.outputsLayout.insertItem(index, container)
             else:
                 groupName = group
-                node = group                
+                node = group
                 if linkedPin:
-                    node = linkedPin.owningNode()._wrapper()
-                    groupName = node.displayName               
+                    node = linkedPin.owningNode()
+                    groupName = node.displayName
                 if node in self.outputGroupPins:
                     self.outputGroupPins[node].layout().insertItem(index, container)
                     p._groupContainer = self.outputGroupPins[node]
                 else:
-                    groupContainer = self.addGroupContainer(rawPin.direction,groupName=groupName)
+                    groupContainer = self.addGroupContainer(rawPin.direction, groupName=groupName)
                     groupContainer.groupIcon.onCollapsed.connect(self.collapsePinGroup)
-                    groupContainer.groupIcon.onExpanded.connect(self.expandPinGroup)                    
-                    groupContainer.layout().insertItem(index, container)    
+                    groupContainer.groupIcon.onExpanded.connect(self.expandPinGroup)
+                    groupContainer.layout().insertItem(index, container)
                     p._groupContainer = groupContainer
                     self.outputGroupPins[node] = groupContainer
-                    self.outputsLayout.insertItem(index, groupContainer) 
+                    self.outputsLayout.insertItem(index, groupContainer)
                     if linkedPin:
-                        #groupContainer.group_name.nameChanged.connect(node.setDisplayName())
-                        node.displayNameChanged.connect(groupContainer.group_name.setText)                            
-            
+                        # groupContainer.group_name.nameChanged.connect(node.setDisplayName())
+                        node.displayNameChanged.connect(groupContainer.group_name.setText)
+
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        self.UIPins[rawPin.uid] = p
-        self.graph().UIPins[rawPin.uid] = p
+
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self._rect.width(), self.childrenBoundingRect().height()))
         self.update()
-        self.nodeMainGWidget.update()        
+        self.nodeMainGWidget.update()
         return p
-    def test(self):
-        print "eyooo"
-    def collapsePinGroup(self,container):
-        for i in range(1,container.layout().count()):
+
+    def collapsePinGroup(self, container):
+        for i in range(1, container.layout().count()):
             item = container.layout().itemAt(i)
-            pin = item.layout().itemAt(0) if isinstance(item.layout().itemAt(0),UIPinBase) else item.layout().itemAt(1)
+            pin = item.layout().itemAt(0) if isinstance(item.layout().itemAt(0), UIPinBase) else item.layout().itemAt(1)
             if pin.hasConnections:
                 if pin.direction == PinDirection.Input:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawDestination = container.layout().itemAt(0).layout().itemAt(0)
                 if pin.direction == PinDirection.Output:
-                    for ege in pin.edge_list:
-                        ege.drawSource = container.layout().itemAt(0).layout().itemAt(1)                        
+                    for ege in pin.connections:
+                        ege.drawSource = container.layout().itemAt(0).layout().itemAt(1)
             item.hide()
-    def expandPinGroup(self,container):
-        for i in range(1,container.layout().count()):
+
+    def expandPinGroup(self, container):
+        for i in range(1, container.layout().count()):
             item = container.layout().itemAt(i)
-            pin = item.layout().itemAt(0) if isinstance(item.layout().itemAt(0),UIPinBase) else item.layout().itemAt(1)
+            pin = item.layout().itemAt(0) if isinstance(item.layout().itemAt(0), UIPinBase) else item.layout().itemAt(1)
             if pin.hasConnections:
                 if pin.direction == PinDirection.Input:
-                    for ege in pin.edge_list:
+                    for ege in pin.connections:
                         ege.drawDestination = pin
                 if pin.direction == PinDirection.Output:
-                    for ege in pin.edge_list:
-                        ege.drawSource = pin             
+                    for ege in pin.connections:
+                        ege.drawSource = pin
             item.show()
+
 
 def REGISTER_UI_NODE_FACTORY(packageName, factory):
     if packageName not in UI_NODES_FACTORIES:

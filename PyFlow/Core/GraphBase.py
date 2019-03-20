@@ -3,17 +3,36 @@ import weakref
 from PyFlow.Core.Common import *
 from PyFlow import CreateRawPin
 from PyFlow import findPinClassByType
+from PyFlow import getPinDefaultValueByType
+from PyFlow.Core.Variable import Variable
 
 
 class GraphBase(object):
     def __init__(self, name):
         super(GraphBase, self).__init__()
-        self._debug = False
         self.name = name
         self.nodes = {}
         self.connections = {}
-        self.pins = {}
         self.vars = {}
+
+    @property
+    def pins(self):
+        result = {}
+        for n in self.getNodes():
+            for pin in tuple(n.inputs.values()) + tuple(n.outputs.values()):
+                result[pin.uid] = pin
+        return result
+
+    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
+        var = Variable(getPinDefaultValueByType(dataType), self.getUniqVarName('var'), dataType, accessLevel=accessLevel, uid=uid)
+        self.vars[var.uid] = var
+        return var
+
+    def killVariable(self, var):
+        assert(isinstance(var, Variable))
+        if var.uid in self.vars:
+            popped = self.vars.pop(var.uid)
+            popped.killed.send()
 
     def getVars(self):
         return self.vars.values()
@@ -39,15 +58,6 @@ class GraphBase(object):
             idx += 1
             tmp = name + str(idx)
         return name + str(idx)
-
-    def isDebug(self):
-        return self._debug
-
-    def setDebug(self, state):
-        if not isinstance(state, bool):
-            print('bool expected. skipped')
-            return
-        self._debug = state
 
     def getEvaluationOrder(self, node):
 
@@ -87,16 +97,18 @@ class GraphBase(object):
             because execution flow is defined by execution wires
         '''
         if direction == PinDirection.Input:
-            if not len(node.inputs) == 0:
-                for i in node.inputs.values():
+            nodeInputs = node.inputs
+            if not len(nodeInputs) == 0:
+                for i in nodeInputs.values():
                     if not len(i.affected_by) == 0:
                         for a in i.affected_by:
                             if not a.owningNode().bCallable:
                                 nodes.append(a.owningNode())
             return nodes
         if direction == PinDirection.Output:
-            if not len(node.outputs) == 0:
-                for i in node.outputs.values():
+            nodeOutputs = node.outputs
+            if not len(nodeOutputs) == 0:
+                for i in nodeOutputs.values():
                     if not len(i.affects) == 0:
                         for p in i.affects:
                             if not p.owningNode().bCallable:
@@ -119,9 +131,6 @@ class GraphBase(object):
                 nodes.append(i)
         return nodes
 
-    def findPin(self, uid):
-        return self.findPinByUID(uid)
-
     def findPinByUID(self, uid):
         pin = None
         if uid in self.pins:
@@ -142,26 +151,14 @@ class GraphBase(object):
             return False
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)
-
-        # add pins
-        for i in node.inputs.values():
-            self.pins[i.uid] = i
-        for o in node.outputs.values():
-            self.pins[o.uid] = o
         node.setName(self.getUniqNodeName(node.name))
+        node.postCreate()
         return True
-
-    def removeNode(self, node):
-        uid = node.uid
-        node.kill()
-        self.nodes.pop(uid)
 
     def count(self):
         return self.nodes.__len__()
 
     def canConnectPins(self, src, dst):
-
-        debug = self.isDebug()
 
         if src is None or dst is None:
             print("can not connect pins")
@@ -178,14 +175,14 @@ class GraphBase(object):
             return False
 
         if cycle_check(src, dst):
-            if debug:
-                print('cycles are not allowed')
+            print('cycles are not allowed')
             return False
 
-        if src.uid not in self.pins:
+        allPins = self.pins
+        if src.uid not in allPins:
             print('scr ({}) not in graph.pins'.format(src.getName()))
             return False
-        if dst.uid not in self.pins:
+        if dst.uid not in allPins:
             print('dst ({}) not in graph.pins'.format(dst.getName()))
             return False
 
@@ -197,27 +194,22 @@ class GraphBase(object):
                 return False
 
         if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
-            if debug:
-                print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
+            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
             return False
         else:
             if src.dataType is 'ExecPin':
                 if dst.dataType != 'ExecPin' and dst.dataType != 'AnyPin':
-                    if debug:
-                        print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
+                    print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                     return False
 
         if src in dst.affected_by:
-            if debug:
-                print('already connected. skipped')
+            print('already connected. skipped')
             return False
         if src.direction == dst.direction:
-            if debug:
-                print('same side pins can not be connected')
+            print('same side pins can not be connected')
             return False
         if src.owningNode == dst.owningNode:
-            if debug:
-                print('can not connect to owning node')
+            print('can not connect to owning node')
             return False
 
         if dst.constraint is not None:
@@ -227,12 +219,11 @@ class GraphBase(object):
                     if not free:
                         pinClass = findPinClassByType(dst.dataType)
                         if src.dataType not in pinClass.supportedDataTypes():
-                            if debug:
-                                print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
+                            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
                             return False
         return True
 
-    def addEdge(self, src, dst):
+    def connectPins(self, src, dst):
         if not self.canConnectPins(src, dst):
             return False
 
@@ -258,21 +249,10 @@ class GraphBase(object):
         push(dst)
         return True
 
-    # TODO: create raw class for connection
-    def removeEdge(self, connection):
-        # TODO: this is UI call, move it
-        connection.source().affects.remove(connection.destination())
-        connection.source().edge_list.remove(connection)
-        connection.destination().affected_by.remove(connection.source())
-        connection.destination().edge_list.remove(connection)
-        connection.destination().pinDisconnected(connection.source())
-        connection.source().pinDisconnected(connection.destination())
-        push(connection.destination())
-
     def plot(self):
         print(self.name + '\n----------\n')
         for n in self.getNodes():
-            print("Node:", n.name)
+            print("Node:", n.name, n.uid)
             for inp in n.inputs.values():
                 print(inp.getName(), 'data - {0}'.format(inp.currentData()),
                       'affects on', [i.getName() for i in inp.affects],

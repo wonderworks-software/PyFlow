@@ -1,24 +1,37 @@
 from copy import copy
+import uuid
 
 from PyFlow.Packages.PyflowBase import PACKAGE_NAME
 from PyFlow.Core import NodeBase
-import uuid
+from PyFlow.Core.Variable import Variable
+from PyFlow.Core.Common import *
+from PyFlow import CreateRawPin
 
 
 class getVar(NodeBase):
-    def __init__(self, name):
+    def __init__(self, name, var=None):
         super(getVar, self).__init__(name)
-        self.var = None
+        assert(isinstance(var, Variable))
+        self.varUid = var.uid
+        self.var = var
+        self.out = CreateRawPin('value', self, var.dataType, PinDirection.Output)
+        self.var.valueChanged.connect(self.onVarValueChanged)
+        self.var.killed.connect(self.kill)
+
+    def recreateOutput(self, dataType):
+        self.out.kill()
+        del self.out
         self.out = None
+        self.out = CreateRawPin('value', self, dataType, PinDirection.Output)
+        return True
 
-    def postCreate(self, jsonTemplate=None):
-        super(getVar, self).postCreate(jsonTemplate)
+    def onVarValueChanged(self, *args, **kwargs):
+        push(self.out)
 
-        varUid = uuid.UUID(jsonTemplate['meta']['var']['uuid'])
-        self.var = self.graph().vars[varUid]
-
-        self.out = self.addOutputPin('val', self.var.dataType)
-        self.graph().pins[self.out.uid] = self.out
+    def serialize(self):
+        default = NodeBase.serialize(self)
+        default['varUid'] = str(self.varUid)
+        return default
 
     @staticmethod
     def pinTypeHints():
@@ -37,4 +50,5 @@ class getVar(NodeBase):
         return 'Access variable value'
 
     def compute(self):
-        self.out.setData(copy(self.var.value))
+        var = self.graph().vars[self.varUid]
+        self.out.setData(copy(var.value))

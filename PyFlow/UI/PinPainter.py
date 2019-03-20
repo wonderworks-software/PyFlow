@@ -20,7 +20,7 @@ class PinPainter(object):
         h = background_rect.height() / 2
 
         linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w+1, h+1), pin.width / 2.5)
-        if not pin._rawPin._connected:
+        if not pin._rawPin.hasConnections():
             linearGrad.setColorAt(0, pin.color().darker(280))
             linearGrad.setColorAt(0.5, pin.color().darker(280))
             linearGrad.setColorAt(0.65, pin.color().lighter(130))
@@ -39,7 +39,7 @@ class PinPainter(object):
     @staticmethod
     def asExecPin(pin, painter, option, widget):
         painter.setPen(PinPainter._execPen)
-        if pin._rawPin._connected:
+        if pin._rawPin.hasConnections():
             painter.setBrush(QtGui.QBrush(pin.color()))
         else:
             painter.setBrush(QtCore.Qt.NoBrush)

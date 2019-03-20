@@ -16,57 +16,67 @@ from PyFlow.UI.PinPainter import PinPainter
 
 UI_PINS_FACTORIES = {}
 
+
 class UICommentPinBase(QGraphicsWidget):
-    
-    def __init__(self,parent):
+
+    def __init__(self, parent):
         super(UICommentPinBase, self).__init__(parent)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.width = 8 + 1
-        self.height = 8 + 1   
+        self.height = 8 + 1
         self.setGeometry(0, 0, self.width, self.height)
         self.expanded = True
+
     def boundingRect(self):
-        return QtCore.QRectF(0, 0, 8 , 8)
+        return QtCore.QRectF(0, 0, 8, 8)
 
     def sizeHint(self, which, constraint):
         try:
             return QtCore.QSizeF(self.width, self.height)
         except:
             return QGraphicsWidget.sizeHint(self, which, constraint)
+
     def shape(self):
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
-        return path        
+        return path
+
     def paint(self, painter, option, widget):
         pass
-        #PinPainter.asGroupPin(self, painter, option, widget)
+        # PinPainter.asGroupPin(self, painter, option, widget)
+
 
 class UIGroupPinBase(QGraphicsWidget):
-    
+
     onCollapsed = QtCore.Signal(object)
     onExpanded = QtCore.Signal(object)
-    def __init__(self,container):
+
+    def __init__(self, container):
         super(UIGroupPinBase, self).__init__()
         self._container = container
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.width = 8 + 1
-        self.height = 8 + 1   
+        self.height = 8 + 1
         self.setGeometry(0, 0, self.width, self.height)
         self.expanded = True
+
     def boundingRect(self):
-        return QtCore.QRectF(0, 0, 8 , 8)
+        return QtCore.QRectF(0, 0, 8, 8)
 
     def sizeHint(self, which, constraint):
         try:
             return QtCore.QSizeF(self.width, self.height)
         except:
             return QGraphicsWidget.sizeHint(self, which, constraint)
+
     def shape(self):
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
-        return path        
+        return path
+
     def paint(self, painter, option, widget):
-        PinPainter.asGroupPin(self, painter, option, widget)    
+        PinPainter.asGroupPin(self, painter, option, widget)
+
     def mousePressEvent(self, event):
         QGraphicsWidget.mousePressEvent(self, event)
         if self.expanded:
@@ -75,7 +85,7 @@ class UIGroupPinBase(QGraphicsWidget):
             self.onExpanded.emit(self._container)
         self.expanded = not self.expanded
         self.update()
-        
+
 
 class UIPinBase(QGraphicsWidget):
     '''
@@ -103,7 +113,7 @@ class UIPinBase(QGraphicsWidget):
         self._rawPin = raw_pin
         self._rawPin.setWrapper(self)
         self.setParentItem(owningNode)
-        self.UiNode = owningNode
+        self.UiNode = weakref.ref(owningNode)
         # self.setCursor(QtCore.Qt.CrossCursor)
         ## context menu for pin
         self.menu = QMenu()
@@ -139,6 +149,7 @@ class UIPinBase(QGraphicsWidget):
         self._val = 0
         self._displayName = self.name
         self._color = QtGui.QColor(*self._rawPin.color())
+        self.uiConnectionList = []
 
     def setLabel(self, labelItem):
         if self._label is None:
@@ -157,7 +168,7 @@ class UIPinBase(QGraphicsWidget):
 
     @property
     def owningNode(self):
-        return self._rawPin.owningNode
+        return self.UiNode
 
     @property
     def constraint(self):
@@ -244,6 +255,14 @@ class UIPinBase(QGraphicsWidget):
         return self._rawPin.direction
 
     @property
+    def actLikeDirection(self):
+        return self._rawPin.actLikeDirection
+
+    @actLikeDirection.setter
+    def actLikeDirection(self, value):
+        self._rawPin.actLikeDirection = value
+
+    @property
     def affected_by(self):
         return self._rawPin.affected_by
 
@@ -251,8 +270,8 @@ class UIPinBase(QGraphicsWidget):
         return self._rawPin.supportedDataTypes()
 
     @property
-    def edge_list(self):
-        return self._rawPin.edge_list
+    def connections(self):
+        return self.uiConnectionList
 
     @property
     def uid(self):
@@ -260,7 +279,6 @@ class UIPinBase(QGraphicsWidget):
 
     @uid.setter
     def uid(self, value):
-        self.owningNode().graph().pins[value] = self.owningNode().graph().pins.pop(self._rawPin._uid)
         self._rawPin._uid = value
 
     def color(self):
@@ -302,31 +320,27 @@ class UIPinBase(QGraphicsWidget):
 
     def call(self):
         self._rawPin.call()
-        for e in self.edge_list:
+        for e in self.connections:
             e.highlight()
 
     def kill(self):
-        self.OnPinDeleted.emit(self)
         self.disconnectAll()
-        if hasattr(self.owningNode(), self.name):
-            delattr(self.owningNode(), self.name)
         if self._container is not None:
-            self.owningNode().getWrapper()().graph().scene().removeItem(self._container)
-            if not self._groupContainer :
+            self.owningNode().graph().scene().removeItem(self._container)
+            if not self._groupContainer:
                 if self._rawPin.direction == PinDirection.Input:
-                    self.owningNode().getWrapper()().inputsLayout.removeItem(self._container)
+                    self.owningNode().inputsLayout.removeItem(self._container)
                 else:
-                    self.owningNode().getWrapper()().outputsLayout.removeItem(self._container)
+                    self.owningNode().outputsLayout.removeItem(self._container)
             else:
-                self.owningNode().getWrapper()().graph().scene().removeItem(self._groupContainer)
+                self.owningNode().graph().scene().removeItem(self._groupContainer)
                 if self._rawPin.direction == PinDirection.Input:
-                    self.owningNode().getWrapper()().inputsLayout.removeItem(self._groupContainer)
+                    self.owningNode().inputsLayout.removeItem(self._groupContainer)
                 else:
-                    self.owningNode().getWrapper()().outputsLayout.removeItem(self._groupContainer)                
-            if self._rawPin.uid in self.owningNode().getWrapper()().UIPins:
-                del self.owningNode().getWrapper()().UIPins[self._rawPin.uid]                
+                    self.owningNode().outputsLayout.removeItem(self._groupContainer)
         self._rawPin.kill()
-        #self.owningNode().getWrapper()().updateWidth()
+        self.OnPinDeleted.emit(self)
+        self.update()
 
     @staticmethod
     def deserialize(owningNode, jsonData):
@@ -387,9 +401,10 @@ class UIPinBase(QGraphicsWidget):
         clipboard.setText(str(self.uid))
 
     def disconnectAll(self):
-        trash = self._rawPin.disconnectAll()
-        for e in trash:
-            self.owningNode().graph().removeEdge(e)
+        self._rawPin.disconnectAll()
+        while not len(self.uiConnectionList) == 0:
+            self.owningNode().graph().removeConnection(self.uiConnectionList[0])
+        self.update()
 
     def shape(self):
         path = QtGui.QPainterPath()
@@ -428,12 +443,10 @@ class UIPinBase(QGraphicsWidget):
         self.hovered = False
 
     def pinConnected(self, other):
-        self._rawPin.pinConnected(other)
         self.OnPinConnected.emit(other)
         self.update()
 
     def pinDisconnected(self, other):
-        self._rawPin.pinDisconnected(other)
         self.OnPinDisconnected.emit(other)
         self.update()
 

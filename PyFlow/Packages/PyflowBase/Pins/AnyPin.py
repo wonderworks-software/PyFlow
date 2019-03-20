@@ -20,6 +20,10 @@ class AnyPin(PinBase):
         self.activeDataType = self.dataType
 
     @staticmethod
+    def isPrimitiveType():
+        return False
+
+    @staticmethod
     def supportedDataTypes():
         return tuple([pin.__name__ for pin in getAllPinClasses()])
 
@@ -72,7 +76,7 @@ class AnyPin(PinBase):
             if other.dataType != "AnyPin":
                 self._free = False
                 self.setType(other)
-                for e in self.edge_list:
+                for e in self.connections:
                     for p in [e.source()._rawPin, e.destination()._rawPin]:
                         if p != self:
                             if p.dataType == "AnyPin" and p.dataType != self.dataType:
@@ -81,7 +85,7 @@ class AnyPin(PinBase):
                     if port != self:
                         port.setType(other)
                         port._free = False
-                        for e in port.edge_list:
+                        for e in port.connections:
                             for p in [e.source()._rawPin, e.destination()._rawPin]:
                                 if p != port:
                                     if p.dataType == "AnyPin" and p.dataType != self.dataType:
@@ -111,7 +115,7 @@ class AnyPin(PinBase):
             if selfChek:
                 free = not self.hasConnections()
                 if not free:
-                    for connection in self.edge_list:
+                    for connection in self.connections:
                         for c in [connection.source()._rawPin, connection.destination()._rawPin]:
                             if c != self:
                                 if c not in checked:
@@ -127,13 +131,15 @@ class AnyPin(PinBase):
                         free = False
                     elif free:
                         free = port.checkFree(checked)
-
             return free
 
     def setDefault(self):
         self.super = None
         self.dataType = "AnyPin"
-        self._wrapper().setDefault(self.defColor())
+
+        if self.getWrapper() is not None:
+            self.getWrapper()().setDefault(self.defColor())
+
         self.setDefaultValue(None)
 
     def setType(self, other):
@@ -144,8 +150,16 @@ class AnyPin(PinBase):
             self._wrapper().setType(other.color())
             self.setData(other.defaultValue())
             self.setDefaultValue(other.defaultValue())
-            if self.direction == PinDirection.Input:
+
+            # GOLDEN RULE OF EXEC PINS: Input execs calls output execs. Output execs calls compute on owning node
+            #
+            # if owning node is graphInputs node - its output pins acts like inputs on parent subgraph node,
+            # this is for actLikeDirection is used.
+            # If 'other.call' will be accidentally assigned to output pin this will cause infinite recursion.
+            # So make sure self.direction is always 'PinDirection.Input' and it acts like input
+            if self.direction == PinDirection.Input and self.actLikeDirection == PinDirection.Input:
                 self.call = other.call
+
             self.dirty = other.dirty
             self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass

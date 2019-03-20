@@ -33,7 +33,6 @@ class UIGetVarNode(UINodeBase):
 
         self.UIOut = self._createUIPinWrapper(self._rawNode.out)
         self.UIOut.getLabel()().hide()
-        self.UIoutputs[self.UIOut.uid] = self.UIOut
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
@@ -52,11 +51,22 @@ class UIGetVarNode(UINodeBase):
         return template
 
     def onUpdatePropertyView(self, formLayout):
-        self.var.onUpdatePropertyView(formLayout)
+        # TODO: fill properties here
+        pass
 
     def onVarDataTypeChanged(self, dataType):
-        cmd = RemoveNodes([self], self.graph())
-        self.graph().undoStack.push(cmd)
+        # TODO: inform user if something is connected to output pin
+        # Offer choices what to do with references. Remove nodes or just disconnect them
+
+        # kill ui and raw pin
+        self.UIOut.kill()
+        # recreate pin
+        bRecreated = self._rawNode.recreateOutput(dataType)
+        assert(bRecreated)
+        self.UIOut = self._createUIPinWrapper(self._rawNode.out)
+        self.UIOut.getLabel()().hide()
+        self.updateNodeShape(self.var.name)
+        self.onVarNameChanged(self.var.name)
 
     def onVarNameChanged(self, newName):
         self.displayName = newName
@@ -64,7 +74,7 @@ class UIGetVarNode(UINodeBase):
         self.setName(newName)
         self.updateNodeShape(label=self.label().toPlainText())
 
-    def onVarValueChanged(self):
+    def onVarValueChanged(self, *args, **kwargs):
         push(self.UIOut)
 
     def paint(self, painter, option, widget):

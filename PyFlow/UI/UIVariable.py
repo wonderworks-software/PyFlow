@@ -72,7 +72,7 @@ class VarTypeComboBox(QComboBox):
 
 
 ## Variable class
-class VariableBase(QWidget):
+class UIVariable(QWidget):
     ## executed when value been set
     valueChanged = QtCore.Signal()
     ## executed when name been changed
@@ -84,15 +84,15 @@ class VariableBase(QWidget):
     ## executed when variable access level been changed
     accessLevelChanged = QtCore.Signal(int)
 
-    def __init__(self, name, value, graph, varsListWidget, dataType='BoolPin', uid=None):
-        super(VariableBase, self).__init__()
-        self._accessLevel = AccessLevel.public
+    def __init__(self, rawVariable=None, graph=None):
+        super(UIVariable, self).__init__()
+        self._rawVariable = rawVariable
         # ui
         self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setSpacing(1)
         self.horizontalLayout.setContentsMargins(1, 1, 1, 1)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.widget = TypeWidget(findPinClassByType('BoolPin').color(), self)
+        self.widget = TypeWidget(findPinClassByType(self._rawVariable.dataType).color(), self)
         self.widget.setObjectName("widget")
         self.horizontalLayout.addWidget(self.widget)
         self.labelName = QLabel(self)
@@ -102,46 +102,41 @@ class VariableBase(QWidget):
         self.horizontalLayout.addItem(spacerItem)
 
         QtCore.QMetaObject.connectSlotsByName(self)
-        # body
-        self.varsListWidget = varsListWidget
-        self.name = None
-        self._value = value
-        self.dataType = dataType
-        self._uid = uid
-        if not isinstance(self._uid, uuid.UUID):
-            self._uid = uuid4()
         self.graph = graph
-        self.setName(name)
-        # TODO: allow Any type for variable??
-        # self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
-        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() and not pin.__name__ == AnyPin.__name__]
-        self.graph.vars[self.uid] = self
-        self._packageName = None
-        self.updatePackageName()
+        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
+        self.setName(self._rawVariable.name)
+
+    @property
+    def dataType(self):
+        return self._rawVariable.dataType
+
+    @ dataType.setter
+    def dataType(self, value):
+        self._rawVariable.dataType = value
 
     @property
     def packageName(self):
-        return self._packageName
+        return self._rawVariable.packageName
 
     @property
     def accessLevel(self):
-        return self._accessLevel
+        return self._rawVariable.accessLevel
 
     @accessLevel.setter
     def accessLevel(self, value):
-        self._accessLevel = value
+        self._rawVariable.accessLevel = value
         self.accessLevelChanged.emit(value)
 
     @property
     def uid(self):
-        return self._uid
+        return self._rawVariable.uid
 
     @uid.setter
     def uid(self, value):
-        self._uid = value
-        if self._uid in self.graph.vars:
-            self.graph.vars.pop(self._uid)
-            self.graph.vars[self._uid] = self
+        self._rawVariable.uid = value
+        if self._rawVariable.uid in self.graph.vars:
+            self.graph.vars.pop(self._rawVariable.uid)
+            self.graph.vars[self._rawVariable.uid] = self._rawVariable
 
     @staticmethod
     def jsonTemplate():
@@ -156,57 +151,61 @@ class VariableBase(QWidget):
         return template
 
     def serialize(self):
-        pinClass = findPinClassByType(self.dataType)
+        pinClass = findPinClassByType(self._rawVariable.dataType)
 
-        template = VariableBase.jsonTemplate()
-        template['name'] = self.name
-        template['uuid'] = str(self.uid)
+        template = UIVariable.jsonTemplate()
+        template['name'] = self._rawVariable.name
+        template['uuid'] = str(self._rawVariable.uid)
 
-        template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass()) if not pinClass.isPrimitiveType() else self.value
+        if self._rawVariable.dataType == "AnyPin":
+            # don't save any variables
+            # value will be calculated for this type of variables
+            template['value'] = None
+        else:
+            template['value'] = json.dumps(self._rawVariable.value, cls=pinClass.jsonEncoderClass()) if not pinClass.isPrimitiveType() else self._rawVariable.value
 
-        template['type'] = self.dataType
-        template['package'] = self._packageName
-        template['accessLevel'] = self.accessLevel.value
+        template['type'] = self._rawVariable.dataType
+        template['package'] = self._rawVariable.packageName
+        template['accessLevel'] = self._rawVariable.accessLevel.value
         return template
 
     @staticmethod
     def deserialize(data, graph):
-        pinClass = findPinClassByType(data['type'])
+        pinClass = findPinClassByType(data['dataType'])
 
-        # TODO: this is probably bad
-        var = graph.parent.variablesWidget.createVariable(uuid.UUID(data['uuid']))
+        varUid = uuid.UUID(data['uuid'])
+        # TODO: this is probably bad. Too long call chain
+        var = graph.parent.variablesWidget.createVariable(dataType=data['dataType'], accessLevel=AccessLevel(data['accessLevel']), uid=varUid)
         var.setName(data['name'])
-        var.setDataType(data['type'])
+        var.setDataType(data['dataType'])
 
-        var.value = data['value'] if pinClass.isPrimitiveType() else json.loads(data['value'], cls=pinClass.jsonDecoderClass())
+        if data['dataType'] == 'AnyPin':
+            var.value = getPinDefaultValueByType('AnyPin')
+        else:
+            var.value = data['value'] if pinClass.isPrimitiveType() else json.loads(data['value'], cls=pinClass.jsonDecoderClass())
 
-        var.accessLevel = AccessLevel(data['accessLevel'])
         return var
 
     @property
     def value(self):
-        return self._value
+        return self._rawVariable.value
 
     @value.setter
     def value(self, data):
-        self._value = data
+        self._rawVariable.value = data
         self.valueChanged.emit()
-
-    def updatePackageName(self):
-        self._packageName = findPinClassByType(self.dataType).packageName()
 
     ## Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
     # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
     def setDataType(self, dataType, _bJustSpawned=False):
-        self.dataType = dataType
+        self._rawVariable.dataType = dataType
         self.widget.color = findPinClassByType(self.dataType).color()
-        self.value = findPinClassByType(self.dataType).pinDataTypeHint()[1]
+        # self.value = findPinClassByType(self.dataType).pinDataTypeHint()[1]
         self.widget.update()
         if _bJustSpawned:
             return
         self.dataTypeChanged.emit(self.dataType)
-        self.graph.undoStack.clear()
-        self.updatePackageName()
+        # self.graph.undoStack.clear()
         self.graph.tryFillPropertiesView(self)
 
     def mousePressEvent(self, event):
