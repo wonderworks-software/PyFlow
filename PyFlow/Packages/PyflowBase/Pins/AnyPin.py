@@ -85,7 +85,7 @@ class AnyPin(PinBase):
                     if port != self:
                         port.setType(other)
                         port._free = False
-                        for e in port.connections:
+                        for e in port.getWrapper()().connections:
                             for p in [e.source()._rawPin, e.destination()._rawPin]:
                                 if p != port:
                                     if p.dataType == "AnyPin" and p.dataType != self.dataType:

@@ -250,7 +250,7 @@ class PinBase(IPin):
 
     def setDefaultValue(self, val):
         # In python, all user-defined classes are mutable
-        # So make sure to store sepatrate copy of value
+        # So make sure to store separate copy of value
         # For example if this is a Matrix, default value will be changed each time data has been set in original Matrix
         self._defaultValue = deepcopy(val)
 
