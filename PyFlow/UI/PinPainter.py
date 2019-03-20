@@ -14,12 +14,12 @@ class PinPainter(object):
 
     @staticmethod
     def asValuePin(pin, painter, option, widget):
-        background_rect = QtCore.QRectF(0, 0, pin.width, pin.width)
+        background_rect = QtCore.QRectF( pin.width/3,1, pin.width/1.5, pin.width/1.5)
 
         w = background_rect.width() / 2
         h = background_rect.height() / 2
 
-        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w, h), pin.width / 2.5)
+        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(w+pin.width/3, h+1), pin.width / 2.5)
         if not pin._rawPin._connected:
             linearGrad.setColorAt(0, pin.color().darker(280))
             linearGrad.setColorAt(0.5, pin.color().darker(280))
@@ -33,7 +33,7 @@ class PinPainter(object):
             linearGrad.setColorAt(1, pin.color().lighter(200))
 
         painter.setBrush(QtGui.QBrush(linearGrad))
-        rect = background_rect.setX(background_rect.x())
+        painter.setPen(QtCore.Qt.NoPen)
         painter.drawEllipse(background_rect)
 
     @staticmethod
@@ -43,11 +43,11 @@ class PinPainter(object):
             painter.setBrush(QtGui.QBrush(pin.color()))
         else:
             painter.setBrush(QtCore.Qt.NoBrush)
-        arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
-                                QtCore.QPointF(pin.width / 2.0, 0.0),
-                                QtCore.QPointF(pin.width, pin.height / 2.0),
-                                QtCore.QPointF(pin.width / 2.0, pin.height),
-                                QtCore.QPointF(0, pin.height)])
+        arrow = QtGui.QPolygonF([QtCore.QPointF(pin.width/1.5 / 2.0, 0.0),
+                                QtCore.QPointF(pin.width/1.5 , 0.0),
+                                QtCore.QPointF(pin.width, pin.width/1.5 / 2.0),
+                                QtCore.QPointF(pin.width/1.5 , pin.width/1.5),
+                                QtCore.QPointF(pin.width/1.5 / 2.0, pin.width/1.5)])
         painter.drawPolygon(arrow)
 
     @staticmethod
@@ -65,6 +65,7 @@ class PinPainter(object):
                                     QtCore.QPointF(pin.width, 0)])                    
         painter.drawPolygon(arrow)
         #painter.drawRect(0,0,pin.width,pin.height)
+
     @staticmethod
     def asArrayPin(pin, painter, option, widget):
         painter.setBrush(QtGui.QBrush(pin.color()))
