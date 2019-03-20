@@ -1181,7 +1181,7 @@ class GraphWidgetUI(QGraphicsView):
                     nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
                     nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
                 nodeTemplate['meta']['label'] = commentNode.__name__
-                nodeTemplate['uuid'] = None
+                nodeTemplate['uuid'] = str(uuid.uuid4())
 
                 instance = self.createNode(nodeTemplate)
                 if rect:

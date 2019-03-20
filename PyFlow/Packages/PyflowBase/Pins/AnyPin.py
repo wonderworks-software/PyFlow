@@ -131,7 +131,6 @@ class AnyPin(PinBase):
                         free = False
                     elif free:
                         free = port.checkFree(checked)
-
             return free
 
     def setDefault(self):
