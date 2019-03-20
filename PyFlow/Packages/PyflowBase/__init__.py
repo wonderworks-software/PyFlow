@@ -42,7 +42,7 @@ from PyFlow.Packages.PyflowBase.Nodes.whileLoop import whileLoop
 from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyflowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyflowBase.Nodes.setVar import setVar
-from PyFlow.Packages.PyflowBase.Nodes.rerute import rerute
+from PyFlow.Packages.PyflowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
     graphInputs,
     graphOutputs
@@ -79,7 +79,7 @@ _NODES = {
     commentNode.__name__: commentNode,
     getVar.__name__: getVar,
     setVar.__name__: setVar,
-    rerute.__name__: rerute,
+    reroute.__name__: reroute,
     graphInputs.__name__: graphInputs,
     graphOutputs.__name__: graphOutputs,
     subgraph.__name__: subgraph,

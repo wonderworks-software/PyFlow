@@ -24,7 +24,7 @@ class UIRerouteNode(UINodeBase):
             if out.connections:
                 dst = out.connections[0].destination()
                 for inpt in newIns:
-                    self.graph().addEdge(inpt, dst)
+                    self.graph().connectPins(inpt, dst)
         else:
             newOuts = []
             for i in self.outputs.values():
@@ -33,7 +33,7 @@ class UIRerouteNode(UINodeBase):
             if inp.connections:
                 source = inp.connections[0].source()
                 for out in newOuts:
-                    self.graph().addEdge(source, out)
+                    self.graph().connectPins(source, out)
         super(UIRerouteNode, self).kill()
 
     def boundingRect(self):

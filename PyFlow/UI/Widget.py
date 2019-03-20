@@ -1422,12 +1422,12 @@ class GraphWidgetUI(QGraphicsView):
         nodeTemplate = NodeBase.jsonTemplate()
         nodeTemplate['package'] = "PyflowBase"
         nodeTemplate['lib'] = None
-        nodeTemplate['type'] = "rerute"
-        nodeTemplate['name'] = "rerute"
+        nodeTemplate['type'] = "reroute"
+        nodeTemplate['name'] = "reroute"
         nodeTemplate['x'] = self.mapToScene(pos).x()
         nodeTemplate['y'] = self.mapToScene(pos).y()
         nodeTemplate['uuid'] = str(uuid.uuid4())
-        nodeTemplate['meta']['label'] = "rerute"
+        nodeTemplate['meta']['label'] = "reroute"
         reruteNode = self.createNode(nodeTemplate)
         reruteNode.color = self.pressed_item.color
         reruteNode.translate(-reruteNode.boundingRect().center().x(), -5)
