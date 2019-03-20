@@ -82,22 +82,24 @@ border-style: transparent;
                 self.nameChanged.emit(self.prevName)
 
     def eventFilter(self, object, event):
-        if self._isEditable:
-            if event.type()== QtCore.QEvent.WindowDeactivate:
-                self.restoreGraph()
-            elif event.type()== QtCore.QEvent.FocusIn:
-                self.node.graph().disableSortcuts()
-            elif event.type()== QtCore.QEvent.FocusOut:
-                self.restoreGraph()
+        try:
+            if self._isEditable:
+                if event.type() == QtCore.QEvent.WindowDeactivate:
+                    self.restoreGraph()
+                elif event.type() == QtCore.QEvent.FocusIn:
+                    self.node.graph().disableSortcuts()
+                elif event.type() == QtCore.QEvent.FocusOut:
+                    self.restoreGraph()
+        except Exception as e:
+            pass
 
-        return super(EditableLabel,self).eventFilter(object, event)
+        return super(EditableLabel, self).eventFilter(object, event)
 
 if __name__ == '__main__':
     import sys
     app = QtWidgets.QApplication(sys.argv)
 
-    ex = EditableLabel("test",None)
+    ex = EditableLabel("test", None)
     ex.setStyle(QtWidgets.QStyleFactory.create("motif"))
-    ex.show() 
-    sys.exit(app.exec_())      
-  
+    ex.show()
+    sys.exit(app.exec_())

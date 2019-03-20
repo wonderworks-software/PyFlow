@@ -73,7 +73,7 @@ from PyFlow.Core.Common import *
 
 from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyflowBase.UI.UIcommentNode import UIcommentNode
-from PyFlow.Packages.PyflowBase.UI.UIReruteNode import UIReruteNode
+from PyFlow.Packages.PyflowBase.UI.UIRerouteNode import UIRerouteNode
 from PyFlow.Packages.PyflowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
 
 
@@ -257,7 +257,7 @@ class SceneClass(QGraphicsScene):
             #             if valid:
             #                 self.hoverItems.append(item)
             #                 item.drawThick()
-            #         elif isinstance(item, UIReruteNode):
+            #         elif isinstance(item, UIRerouteNode):
             #             self.hoverItems.append(item)
             #             item.showPins()
             #     for item in self.hoverItems:
@@ -265,7 +265,7 @@ class SceneClass(QGraphicsScene):
             #             self.hoverItems.remove(item)
             #             if isinstance(item, UIConnection):
             #                 item.restoreThick()
-            #             elif isinstance(item, UIReruteNode):
+            #             elif isinstance(item, UIRerouteNode):
             #                 item.hidePins()
 
             # self.itemAt(event.pos()).drawThink()
@@ -1622,13 +1622,13 @@ class GraphWidgetUI(QGraphicsView):
                                      QtCore.QPoint(event.pos().x() + 2, event.pos().y() + 2))
             hoverItems = self.items(mouseRect)
             for item in hoverItems:
-                if isinstance(item, UIReruteNode):
+                if isinstance(item, UIRerouteNode):
                     self.hoverItems.append(item)
                     item.showPins()
             for item in self.hoverItems:
                 if item not in hoverItems:
                     self.hoverItems.remove(item)
-                    if isinstance(item, UIReruteNode):
+                    if isinstance(item, UIRerouteNode):
                         item.hidePins()
             if modifiers == QtCore.Qt.AltModifier:
                 self._draw_real_time_line = False
@@ -1709,7 +1709,7 @@ class GraphWidgetUI(QGraphicsView):
             for node in selectedNodes:
                 # if node not in [self.inputsItem,self.outputsItem]:
                 node.translate(delta.x(), delta.y())
-            if isinstance(node, UIReruteNode) and modifiers == QtCore.Qt.AltModifier:
+            if isinstance(node, UIRerouteNode) and modifiers == QtCore.Qt.AltModifier:
                 mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
                                          QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
                 hoverItems = self.items(mouseRect)
@@ -1723,9 +1723,9 @@ class GraphWidgetUI(QGraphicsView):
                             if item.destination() == list(node.outputs.values())[0].connections[0].destination():
                                 newIns.append(item.source())
                 for out in newOuts:
-                    self.connectPins(node.outputs.values()[0], out)
+                    self.connectPins(list(node.outputs.values())[0], out)
                 for inp in newIns:
-                    self.connectPins(inp, node.inputs.values()[0])
+                    self.connectPins(inp, list(node.inputs.values())[0])
 
         elif self._manipulationMode == MANIP_MODE_PAN:
             self.viewport().setCursor(QtCore.Qt.OpenHandCursor)

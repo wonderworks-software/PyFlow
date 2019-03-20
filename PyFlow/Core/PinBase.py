@@ -18,7 +18,6 @@ class PinBase(IPin):
         ## This flag for lazy evaluation
         # @sa @ref PinBase::getData
         self.dirty = True
-        self._connected = False
         ## List of pins this pin connected to
         self.affects = []
         ## List of pins connected to this pin
@@ -217,10 +216,10 @@ class PinBase(IPin):
         return self._data
 
     def pinConnected(self, other):
-        self._connected = self.hasConnections()
+        pass
 
     def pinDisconnected(self, other):
-        self._connected = self.hasConnections()
+        pass
 
     def setClean(self):
         self.dirty = False
