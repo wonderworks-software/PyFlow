@@ -8,12 +8,17 @@ from PyFlow.Core.Variable import Variable
 
 
 class GraphBase(object):
-    def __init__(self, name):
+    def __init__(self, name, parentGraph=None):
         super(GraphBase, self).__init__()
+        self._parentGraph = parentGraph
         self.name = name
         self.nodes = {}
         self.connections = {}
         self.vars = {}
+
+    @property
+    def parentGraph(self):
+        return self._parentGraph
 
     @property
     def pins(self):
@@ -34,8 +39,23 @@ class GraphBase(object):
             popped = self.vars.pop(var.uid)
             popped.killed.send()
 
+    def isRoot(self):
+        return self._parentGraph is None
+
     def getVars(self):
-        return self.vars.values()
+        """Returns this graph variables as well as all parent graph's ones
+
+        returns:
+            {'graphName': varsDict, ...}
+        """
+        result = dict()
+        result[self.name] = self.vars
+        parent = self.parentGraph
+        while parent is not None:
+            # TODO: check for unique graph names
+            result[parent.name] = parent.vars
+            parent = parent.parent
+        return result
 
     def getUniqVarName(self, name):
         names = [v.name for v in self.vars.values()]
@@ -145,14 +165,14 @@ class GraphBase(object):
                 break
         return pin
 
-    def addNode(self, node):
+    def addNode(self, node, jsonTemplate=None):
         assert(node is not None), "failed to add node, None is passed"
         if node.uid in self.nodes:
             return False
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)
         node.setName(self.getUniqNodeName(node.name))
-        node.postCreate()
+        node.postCreate(jsonTemplate)
         return True
 
     def count(self):
@@ -194,12 +214,12 @@ class GraphBase(object):
                 return False
 
         if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
-            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
+            print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
             return False
         else:
             if src.dataType is 'ExecPin':
                 if dst.dataType != 'ExecPin' and dst.dataType != 'AnyPin':
-                    print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
+                    print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
                     return False
 
         if src in dst.affected_by:
@@ -219,7 +239,7 @@ class GraphBase(object):
                     if not free:
                         pinClass = findPinClassByType(dst.dataType)
                         if src.dataType not in pinClass.supportedDataTypes():
-                            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
+                            print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
                             return False
         return True
 

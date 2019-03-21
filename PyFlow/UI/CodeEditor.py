@@ -72,7 +72,7 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QCompleter
 from Qt.QtWidgets import QPlainTextEdit
 
-from PyFlow.UI import Ui_CodeEditor_ui
+from PyFlow.UI.Widgets import CodeEditor_ui
 import PyFlow.UI.PythonSyntax as PythonSyntax
 from PyFlow.UI.Widgets import PinWidget_ui
 from PyFlow.UI.UINodeBase import UINodeBase
@@ -205,7 +205,7 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
 
 ## @brief Used to write code into pythonNode
 # @details See [Package description](@ref CodeEditor) for details
-class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
+class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     def __init__(self, graph, node, uid):
         super(CodeEditor, self).__init__()
         self.setupUi(self)
@@ -236,8 +236,8 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
         self.pbAddInput.clicked.connect(self.addDefaultInput)
         self.pbAddOutput.clicked.connect(self.addDefaultOutput)
         self.pbSave.clicked.connect(self.applyData)
-        self.pbResetUI.clicked.connect(self.resetUiData)
-        self.pbResetNode.clicked.connect(self.resetNode)
+        # self.pbResetUI.clicked.connect(self.resetUiData)
+        # self.pbResetNode.clicked.connect(self.resetNode)
         self.pbKillSelectedItems.clicked.connect(self.onKillSelectedPins)
         self.resetUiData()
         self.populate()
@@ -275,10 +275,10 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
     def populate(self):
         node = self.graph.nodes[self.nodeUid]
         for i in node.inputs.values():
-            pw = WPinWidget.construct(i.name, i.getWrapper()().getLabel()().isVisible(), i.__class__.__name__, self)
+            pw = WPinWidget.construct(i.name, i.getLabel()().isVisible(), i.__class__.__name__, self)
             self.appendInput(pw)
         for o in node.outputs.values():
-            pw = WPinWidget.construct(o.name, o.getWrapper()().getLabel()().isVisible(), o.__class__.__name__, self)
+            pw = WPinWidget.construct(o.name, o.getLabel()().isVisible(), o.__class__.__name__, self)
             self.appendOutput(pw)
         self.leLabel.setText(node.label().toPlainText())
         code = ""
@@ -297,15 +297,9 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
         node = self.graph.nodes[self.nodeUid]
         for i in list(node.inputs.values()):
             i.kill()
-            self.graph.scene().removeItem(i.getWrapper()().getContainer())
         for o in list(node.outputs.values()):
             o.kill()
-            self.graph.scene().removeItem(o.getWrapper()().getContainer())
 
-        for i in range(node.inputsLayout.count()):
-            node.inputsLayout.removeAt(0)
-        for i in range(node.outputsLayout.count()):
-            node.outputsLayout.removeAt(0)
         # TODO: Reset node size
 
     ## slot called when Save button is pressed
@@ -333,7 +327,7 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
             if isinstance(w, WPinWidget):
                 dataType = w.dataType()
-                rawPin = node._rawNode.addOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType))
+                rawPin = node._rawNode.addOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), foo=node.compute)
                 uiPin = node._createUIPinWrapper(rawPin)
                 w.lePinName.setText(uiPin.name)
                 uiPin.getLabel()().setVisible(not w.shouldHideLabel())
@@ -349,9 +343,7 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
                 w.lePinName.setText(uiPin.name)
                 uiPin.getLabel()().setVisible(not w.shouldHideLabel())
 
-        for i in node.inputs.values():
-            for o in node.outputs.values():
-                pinAffects(i, o)
+        node.autoAffectPins()
 
         # reset node shape
         node.updateNodeShape(lbText)

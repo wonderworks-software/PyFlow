@@ -35,7 +35,7 @@ class graphInputs(NodeBase):
         for valuePin in [p for p in self.outputs.values() if p.IsValuePin()]:
             # this can be changed to support multiple connections later
             # affected_by is list of connected pins
-            valuePin.setData(valuePin.affected_by[0].getData())
+            valuePin.setData(list(valuePin.affected_by)[0].getData())
 
 
 class graphOutputs(NodeBase):

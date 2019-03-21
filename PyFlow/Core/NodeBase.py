@@ -179,6 +179,18 @@ class NodeBase(INode):
         self.x = x
         self.y = y
 
+    def autoAffectPins(self):
+        """All value inputs affects on all value outputs. All exec inputs affects on all exec outputs
+        """
+        for i in self.inputs.values():
+            for o in self.outputs.values():
+                assert(i is not o)
+                if not i.IsValuePin() and o.IsValuePin():
+                    continue
+                if i.IsValuePin() and not o.IsValuePin():
+                    continue
+                pinAffects(i, o)
+
     def addInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
         if dataType == 'ExecPin':
             assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
@@ -405,13 +417,5 @@ class NodeBase(INode):
                     if argName in meta[PROPAGATE_DIRTY]:
                         inp.setAlwaysPushDirty(True)
 
-        # all value inputs affects on all value outputs
-        # all exec inputs affects on all exec outputs
-        for i in raw_inst.inputs.values():
-            for o in raw_inst.outputs.values():
-                if i.dataType == 'ExecPin' and o.dataType != 'ExecPin':
-                    continue
-                if i.dataType != 'ExecPin' and o.dataType == 'ExecPin':
-                    continue
-                pinAffects(i, o)
+        raw_inst.autoAffectPins()
         return raw_inst

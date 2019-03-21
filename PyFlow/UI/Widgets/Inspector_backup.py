@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'e:\GIT\PyFlow\PyFlow\UI\Widgets\Inspector.ui',
-# licensing of 'e:\GIT\PyFlow\PyFlow\UI\Widgets\Inspector.ui' applies.
+# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\Inspector.ui',
+# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\Inspector.ui' applies.
 #
-# Created: Tue Mar  5 07:46:01 2019
+# Created: Thu Mar 21 09:10:08 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!

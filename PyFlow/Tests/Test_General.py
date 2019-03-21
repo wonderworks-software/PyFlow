@@ -86,9 +86,9 @@ class TestGeneral(unittest.TestCase):
         # check connection was created
         self.assertEqual(c1, True)
         # check n1.out affects on n3.b
-        self.assertListEqual(n1Out.affects, [n3b])
+        self.assertEqual(n3b in n1Out.affects, True)
         # check n3.b affected by n1.out
-        self.assertListEqual(n3b.affected_by, [n1Out])
+        self.assertEqual(n1Out in n3b.affected_by, True)
 
         n2Out = n2.getPinByName('out', PinSelectionGroup.Outputs)
         # connect n2.out to n3.b
@@ -98,11 +98,11 @@ class TestGeneral(unittest.TestCase):
         # check connections successfull
         self.assertEqual(c2, True)
         # check n2.out afffects on n3.b
-        self.assertListEqual(n2Out.affects, [n3b], "incorrect connection")
+        self.assertEqual(n3b in n2Out.affects, True, "incorrect connection")
         # check n3.b affected by n2.out
-        self.assertListEqual(n3b.affected_by, [n2Out], "incorrect")
+        self.assertEqual(n2Out in n3b.affected_by, True, "incorrect")
         # check n1.out really disconnected
-        self.assertListEqual(n1Out.affects, [], "not cleared")
+        self.assertEqual(n1Out.affects, set(), "not cleared")
 
     def test_are_pins_connected(self):
         packages = GET_PACKAGES()

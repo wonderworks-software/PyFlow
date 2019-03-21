@@ -401,9 +401,8 @@ class UIPinBase(QGraphicsWidget):
         clipboard.setText(str(self.uid))
 
     def disconnectAll(self):
-        self._rawPin.disconnectAll()
-        while not len(self.uiConnectionList) == 0:
-            self.owningNode().graph().removeConnection(self.uiConnectionList[0])
+        if len(self.uiConnectionList) > 0:
+            self.owningNode().graph().removeEdgeCmd(self.uiConnectionList)
         self.update()
 
     def shape(self):

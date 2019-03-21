@@ -5,6 +5,7 @@ from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.UI.Settings import *
 
+
 class UIGraphInputs(UINodeBase):
     pinCreated = QtCore.Signal(object)
 
@@ -27,7 +28,7 @@ class UIGraphInputs(UINodeBase):
 
     def onAddOutPin(self):
         rawPin = self._rawNode.addOutPin()
-        uiPin = self._createUIPinWrapper(rawPin,color=Colors.AbsoluteBlack)
+        uiPin = self._createUIPinWrapper(rawPin, color=Colors.AbsoluteBlack)
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
         uiPin.setDisplayName("Input_{}".format(str(len(self._rawNode.outputs) - 1)))
@@ -84,7 +85,7 @@ class UIGraphOutputs(UINodeBase):
 
     def onAddInPin(self):
         rawPin = self._rawNode.addInPin()
-        uiPin = self._createUIPinWrapper(rawPin,color=Colors.AbsoluteBlack)
+        uiPin = self._createUIPinWrapper(rawPin, color=Colors.AbsoluteBlack)
         uiPin.setDynamic(True)
         uiPin.setRenamingEnabled(True)
         uiPin.setDisplayName("Output_{}".format(str(len(self._rawNode.inputs) - 1)))

@@ -3,15 +3,14 @@ import json
 
 from PyFlow.Core import NodeBase
 from PyFlow.Core import GraphBase
+from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.Common import *
 
 
 class subgraph(NodeBase):
     def __init__(self, name):
         super(subgraph, self).__init__(name)
-        self.rawGraph = GraphBase(name)
-        self.dinOutputs = {}
-        self.dinInputs = {}
+        self.rawGraph = None
 
     @staticmethod
     def pinTypeHints():
@@ -29,26 +28,6 @@ class subgraph(NodeBase):
     def description():
         return 'Encapsulate a graph inside a node'
 
-    def addInPin(self, pin):
-        p = self.addInputPin(pin.name, 'AnyPin', constraint="%s%s" % (pin.owningNode().name, pin.name))
-        p.setAlwaysPushDirty(True)
-        pin.constraint = "%s%s" % (pin.owningNode().name, pin.name)
-        self._Constraints["%s%s" % (pin.owningNode().name, pin.name)].append(pin)
-        pin.owningNode()._Constraints["%s%s" % (pin.owningNode().name, pin.name)] = [pin, p]
-        self.dinInputs[pin] = p
-        return p
-
-    def addOutPin(self, pin):
-        p = self.addOutputPin(pin.name, 'AnyPin', constraint="%s%s" % (pin.owningNode().name, pin.name))
-        p.setAlwaysPushDirty(True)
-        pin.constraint = "%s%s" % (pin.owningNode().name, pin.name)
-        self._Constraints["%s%s" % (pin.owningNode().name, pin.name)].append(pin)
-        pin.owningNode()._Constraints["%s%s" % (pin.owningNode().name, pin.name)] = [pin, p]
-        self.dinOutputs[pin] = p
-        return p
-
-    def compute(self):
-        for key, value in self.dinInputs.items():
-            key.setData(value.getData())
-        for key, value in self.dinOutputs.items():
-            value.setData(key.getData())
+    def postCreate(self, jsonTemplate=None):
+        self.rawGraph = GraphBase(self.name, self.graph())
+        GraphTree().addChildGraph(self.rawGraph)

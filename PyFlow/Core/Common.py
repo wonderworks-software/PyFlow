@@ -8,6 +8,7 @@ import math
 import time
 import inspect
 import struct
+from treelib import Node, Tree
 try:
     from queue import Queue
 except:
@@ -87,14 +88,6 @@ def findGoodId(ids):
         return ID + 1
 
 
-## This function for establish dependencies bitween pins
-# @param[in] affects_pin this pin affects other pins
-# @param[in] affected_pin this pin affected by other pin
-def pinAffects(affects_pin, affected_pin):
-    affects_pin.affects.append(affected_pin)
-    affected_pin.affected_by.append(affects_pin)
-
-
 ## Check for cycle connected nodes
 # @param[in] left hand side pin
 # @param[in] right hand side pin
@@ -133,6 +126,13 @@ def arePinsConnected(src, dst):
     if dst in src.affects and src in dst.affected_by:
         return True
     return False
+
+
+## This function for establish dependencies bitween pins
+def pinAffects(lhs, rhs):
+    assert(lhs is not rhs), "pin can not affect itself"
+    lhs.affects.add(rhs)
+    rhs.affected_by.add(lhs)
 
 
 def disconnectPins(src, dst):
@@ -174,6 +174,17 @@ def clearLayout(layout):
             child.widget().deleteLater()
         elif child.layout() is not None:
             clearLayout(child.layout())
+
+
+class SingletonDecorator:
+    def __init__(self, cls):
+        self.cls = cls
+        self.instance = None
+
+    def __call__(self, *args, **kwds):
+        if self.instance is None:
+            self.instance = self.cls(*args, **kwds)
+        return self.instance
 
 
 class REGISTER_ENUM(object):

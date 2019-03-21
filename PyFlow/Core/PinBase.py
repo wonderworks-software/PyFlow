@@ -19,9 +19,9 @@ class PinBase(IPin):
         # @sa @ref PinBase::getData
         self.dirty = True
         ## List of pins this pin connected to
-        self.affects = []
+        self.affects = set()
         ## List of pins connected to this pin
-        self.affected_by = []
+        self.affected_by = set()
         ## List of connections
         self.connections = []
         ## Access to the node
@@ -174,10 +174,7 @@ class PinBase(IPin):
             for o in self.affected_by:
                 o.pinDisconnected(self)
                 o.affects.remove(self)
-            if sys.version_info.major == 3:
-                self.affected_by.clear()
-            if sys.version_info.major == 2:
-                del self.affected_by[:]
+            self.affected_by.clear()
 
         # if output pin
         # 1) loop connected input pins of right connected node
@@ -188,10 +185,7 @@ class PinBase(IPin):
             for i in self.affects:
                 i.pinDisconnected(self)
                 i.affected_by.remove(self)
-            if sys.version_info.major == 3:
-                self.affects.clear()
-            if sys.version_info.major == 2:
-                del self.affects[:]
+            self.affects.clear()
 
     ## Describes, what data type is this pin.
     @property

@@ -15,8 +15,8 @@ class UIPythonNode(UINodeBase):
         self.editorUUID = None
         self.resizable = True
 
-    def postCreate(self, jsonTemplate):
-        super(UIPythonNode, self).postCreate(jsonTemplate)
+    # def postCreate(self, jsonTemplate):
+    #     super(UIPythonNode, self).postCreate(jsonTemplate)
 
     @property
     def compute(self):

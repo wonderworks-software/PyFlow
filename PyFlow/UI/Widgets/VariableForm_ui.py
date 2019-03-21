@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\VariableForm_ui.ui',
 # licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\VariableForm_ui.ui' applies.
 #
-# Created: Sun Feb 24 19:25:32 2019
+# Created: Thu Mar 21 09:15:34 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!

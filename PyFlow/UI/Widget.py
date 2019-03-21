@@ -118,7 +118,7 @@ def getNodeInstance(jsonTemplate, graph):
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
-    graph.addNode(instance)
+    graph.addNode(instance, jsonTemplate)
     return instance
 
 
@@ -2005,13 +2005,13 @@ class GraphWidgetUI(QGraphicsView):
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
-    def addNode(self, node):
+    def addNode(self, node, jsonTemplate=None):
         """Adds node to a graph
 
         Arguments:
             node UINodeBase -- raw node wrapper
         """
-        self._graphBase.addNode(node._rawNode)
+        self._graphBase.addNode(node._rawNode, jsonTemplate)
         node.graph = weakref.ref(self)
         self.scene().addItem(node)
 
@@ -2049,8 +2049,6 @@ class GraphWidgetUI(QGraphicsView):
         # call disconnection events for ui pins
         connection.source().pinDisconnected(connection.destination())
         connection.destination().pinDisconnected(connection.source())
-        connection.source().update()
-        connection.destination().update()
         self.connections.pop(connection.uid)
         connection.source().uiConnectionList.remove(connection)
         connection.destination().uiConnectionList.remove(connection)

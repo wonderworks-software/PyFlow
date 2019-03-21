@@ -388,16 +388,14 @@ class UINodeBase(QGraphicsObject):
 
         return template
 
+    def autoAffectPins(self):
+        self._rawNode.autoAffectPins()
+
     def postCreate(self, jsonTemplate=None):
-        self._rawNode.postCreate(jsonTemplate)
+        # self._rawNode.postCreate(jsonTemplate)
         # create ui pin wrappers
         for uid, i in self._rawNode.pins.items():
             self._createUIPinWrapper(i)
-        # for uid, i in self._rawNode.inputs.items():
-        #     p = self._createUIPinWrapper(i)
-
-        # for uid, o in self._rawNode.outputs.items():
-        #     p = self._createUIPinWrapper(o)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
         self._rect = self.childrenBoundingRect()
@@ -800,10 +798,10 @@ class UINodeBase(QGraphicsObject):
         container.setLayout(lyt)
         return container
 
-    def _createUIPinWrapper(self, rawPin, index=-1,group=None,linkedPin=None,color=None):
+    def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None, color=None):
         p = getUIPinInstance(self, rawPin)
-        if rawPin.direction == PinDirection.Input:
-            p.call = rawPin.call
+        # if rawPin.direction == PinDirection.Input:
+        p.call = rawPin.call
 
         name = rawPin.name
         lblName = name
