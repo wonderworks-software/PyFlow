@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'e:\GIT\PyFlow\PyFlow\UI\Widgets\GraphEditor.ui',
 # licensing of 'e:\GIT\PyFlow\PyFlow\UI\Widgets\GraphEditor.ui' applies.
 #
-# Created: Thu Mar 21 20:21:35 2019
+# Created: Thu Mar 21 21:00:10 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -53,10 +53,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.layoutGraphPath = QtWidgets.QHBoxLayout()
         self.layoutGraphPath.setSpacing(2)
-        self.layoutGraphPath.setContentsMargins(-1, 2, -1, 2)
+        self.layoutGraphPath.setContentsMargins(-1, 0, -1, 0)
         self.layoutGraphPath.setObjectName("layoutGraphPath")
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.layoutGraphPath.addItem(spacerItem)
         self.horizontalLayout_3.addLayout(self.layoutGraphPath)
         self.gridLayout.addWidget(self.widgetCurrentGraphPath, 0, 0, 1, 1)
         self.gridLayout_3.addWidget(self.horizontal_splitter, 1, 0, 1, 1)

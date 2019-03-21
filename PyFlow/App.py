@@ -108,8 +108,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
     def onRawGraphSwitched(self, *args, **kwargs):
         old = kwargs['old']
         new = kwargs['new']
-        # hide old graphBase
-        # show new graph base
+        # TODO: hide old graphBase
+        # TODO: show new graph base
         self.updateGraphTreeLocation()
 
     def updateGraphTreeLocation(self):
