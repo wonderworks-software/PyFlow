@@ -38,11 +38,11 @@ class UIConnection(QGraphicsPathItem):
 
         self.color = self.source().color()
 
-        self.thikness = 1
-        if source.dataType == 'ExecPin' and destination.dataType == 'ExecPin':
-            self.thikness = 2
+        self.thickness = 1
+        if source.dataType == 'ExecPin':
+            self.thickness = 2
 
-        self.pen = QtGui.QPen(self.color, self.thikness, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        self.pen = QtGui.QPen(self.color, self.thickness, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
         points = self.getEndPoints()
         self.updateCurve(points[0], points[1])
@@ -71,7 +71,7 @@ class UIConnection(QGraphicsPathItem):
             self.graph().removeConnection(self)
 
         if self.fade > 0:
-            self.pen.setWidthF(self.thikness + self.fade * 2)
+            self.pen.setWidthF(self.thickness + self.fade * 2)
             r = abs(lerp(self.color.red(), Colors.Yellow.red(), clamp(self.fade, 0, 1)))
             g = abs(lerp(self.color.green(), Colors.Yellow.green(), clamp(self.fade, 0, 1)))
             b = abs(lerp(self.color.blue(), Colors.Yellow.blue(), clamp(self.fade, 0, 1)))
@@ -124,7 +124,7 @@ class UIConnection(QGraphicsPathItem):
                                             self.destination()._rawPin.name)
 
     def drawThick(self):
-        self.pen.setWidthF(self.thikness + (self.thikness / 1.5))
+        self.pen.setWidthF(self.thickness + (self.thickness / 1.5))
         f = 0.5
         r = abs(lerp(self.color.red(), Colors.Yellow.red(), clamp(f, 0, 1)))
         g = abs(lerp(self.color.green(), Colors.Yellow.green(), clamp(f, 0, 1)))
@@ -132,7 +132,7 @@ class UIConnection(QGraphicsPathItem):
         self.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
 
     def restoreThick(self):
-        self.pen.setWidthF(self.thikness)
+        self.pen.setWidthF(self.thickness)
         self.pen.setColor(self.color)
 
     def hoverEnterEvent(self, event):
