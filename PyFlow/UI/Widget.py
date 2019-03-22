@@ -1232,6 +1232,7 @@ class GraphWidgetUI(QGraphicsView):
                         self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
                         self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
                         self._draw_real_time_line = True
+                        self.autoPanController.start()
                     if modifiers == QtCore.Qt.AltModifier:
                         self.removeEdgeCmd(self.pressed_item.connections)
                         self._draw_real_time_line = False
@@ -1243,13 +1244,19 @@ class GraphWidgetUI(QGraphicsView):
                         reruteNode.setSelected(True)
                         for inp in reruteNode.inputs.values():
                             if self.canConnectPins(self.pressed_item.source(), inp):
+                                drawPin = self.pressed_item.drawSource
                                 if self.pressed_item.source().dataType == 'ExecPin':
                                     self.pressed_item.source().disconnectAll()
                                 self.connectPins(self.pressed_item.source(), inp)
+                                for conection in inp.connections:
+                                    conection.drawSource = drawPin
                                 break
                         for out in reruteNode.outputs.values():
+                            drawPin = self.pressed_item.drawDestination
                             if self.canConnectPins(out, self.pressed_item.destination()):
                                 self.connectPins(out, self.pressed_item.destination())
+                                for conection in out.connections:
+                                    conection.drawDestination = drawPin                                
                                 break
                         self.pressed_item = reruteNode
                         self._manipulationMode = MANIP_MODE_MOVE
@@ -1298,6 +1305,7 @@ class GraphWidgetUI(QGraphicsView):
         self.mousePos = event.pos()
         modifiers = event.modifiers()
         node = self.nodeFromInstance(self.itemAt(event.pos()))
+        self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         if self.itemAt(event.pos()) and isinstance(node, UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
             if resizeOpts["resize"] or node.bResize:
@@ -1428,13 +1436,13 @@ class GraphWidgetUI(QGraphicsView):
                     if isinstance(item, UIConnection):
                         if list(node.inputs.values())[0].connections and list(node.outputs.values())[0].connections:
                             if item.source() == list(node.inputs.values())[0].connections[0].source():
-                                newOuts.append(item.destination())
+                                newOuts.append([item.destination(),item.drawDestination])
                             if item.destination() == list(node.outputs.values())[0].connections[0].destination():
-                                newIns.append(item.source())
+                                newIns.append([item.source(),item.drawSource])
                 for out in newOuts:
-                    self.connectPins(list(node.outputs.values())[0], out)
+                    self.connectPins(list(node.outputs.values())[0], out[0])                  
                 for inp in newIns:
-                    self.connectPins(inp, list(node.inputs.values())[0])
+                    self.connectPins(inp[0], list(node.inputs.values())[0])                  
 
         elif self._manipulationMode == MANIP_MODE_PAN:
             self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
