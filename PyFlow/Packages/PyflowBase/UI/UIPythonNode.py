@@ -3,7 +3,7 @@ import uuid
 from Qt import QtGui
 
 from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.CodeEditor import CodeEditor
+from PyFlow.UI.Widgets.CodeEditor import CodeEditor
 
 
 class UIPythonNode(UINodeBase):

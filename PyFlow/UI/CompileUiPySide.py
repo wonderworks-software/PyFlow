@@ -3,7 +3,7 @@ import pyside2uic
 import subprocess
 
 
-CURRENT_DIR = os.path.dirname(__file__).replace('\\', '/') + '/'
+CURRENT_DIR = os.path.join(os.path.dirname(__file__).replace('\\', '/') + '/',"Widgets")
 INTERPRETER_PATH = 'python.exe'
 
 

@@ -72,9 +72,10 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QCompleter
 from Qt.QtWidgets import QPlainTextEdit
 
-from PyFlow.UI import Ui_CodeEditor_ui
+
 import PyFlow.UI.PythonSyntax as PythonSyntax
 from PyFlow.UI.Widgets import PinWidget_ui
+from PyFlow.UI.Widgets import Ui_CodeEditor_ui
 from PyFlow.UI.UINodeBase import UINodeBase
 from PyFlow.Core.Common import pinAffects
 from PyFlow import (

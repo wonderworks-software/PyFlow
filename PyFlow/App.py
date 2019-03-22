@@ -21,10 +21,10 @@ from PyFlow import Packages
 from PyFlow.UI.Widget import GraphWidgetUI
 from PyFlow.Core.Common import Direction
 from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.UI.InspectorWidget import InspectorWidget
+from PyFlow.UI.Widgets.InspectorWidget import InspectorWidget
 from PyFlow.UI.Widget import NodesBox
 from PyFlow.UI.Widgets import GraphEditor_ui
-from PyFlow.UI.VariablesWidget import VariablesWidget
+from PyFlow.UI.Widgets.VariablesWidget import VariablesWidget
 from PyFlow import INITIALIZE
 
 
