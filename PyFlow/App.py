@@ -25,6 +25,7 @@ from PyFlow.UI.Widgets.InspectorWidget import InspectorWidget
 from PyFlow.UI.Widget import NodesBox
 from PyFlow.UI.Widgets import GraphEditor_ui
 from PyFlow.UI.Widgets.VariablesWidget import VariablesWidget
+from PyFlow.UI.StyleSheetEditor import StyleSheetEditor
 from PyFlow import INITIALIZE
 
 
@@ -53,7 +54,7 @@ def _implementPlugin(name, pluginType):
     pass
 
 
-## App itself
+# App itself
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
@@ -62,6 +63,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.listViewUndoStack.setObjectName("listViewUndoStack")
         self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
 
+        self.styleSheetEditor = StyleSheetEditor()
         self.rawGraph = GraphBase('root')
         self.G = GraphWidgetUI(self, graphBase=self.rawGraph)
         self._currentGraph = self.G
@@ -78,19 +80,28 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionSave.triggered.connect(self.G.save)
         self.actionLoad.triggered.connect(self.G.load)
         self.actionSave_as.triggered.connect(self.G.save_as)
-        self.actionAlignLeft.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Left))
-        self.actionAlignUp.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Up))
-        self.actionAlignBottom.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Down))
-        self.actionAlignRight.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Right))
-        self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
-        self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
-        self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
-        self.actionNew_pin.triggered.connect(lambda: self.newPlugin(PluginType.pPin))
+        self.actionAlignLeft.triggered.connect(
+            lambda: self.currentGraph.alignSelectedNodes(Direction.Left))
+        self.actionAlignUp.triggered.connect(
+            lambda: self.currentGraph.alignSelectedNodes(Direction.Up))
+        self.actionAlignBottom.triggered.connect(
+            lambda: self.currentGraph.alignSelectedNodes(Direction.Down))
+        self.actionAlignRight.triggered.connect(
+            lambda: self.currentGraph.alignSelectedNodes(Direction.Right))
+        self.actionNew_Node.triggered.connect(
+            lambda: self.newPlugin(PluginType.pNode))
+        self.actionNew_Command.triggered.connect(
+            lambda: self.newPlugin(PluginType.pCommand))
+        self.actionFunction_Library.triggered.connect(
+            lambda: self.newPlugin(PluginType.pFunctionLibrary))
+        self.actionNew_pin.triggered.connect(
+            lambda: self.newPlugin(PluginType.pPin))
         self.actionHistory.triggered.connect(self.toggleHistory)
         self.actionNew.triggered.connect(self.G.new_file)
         self.dockWidgetUndoStack.setVisible(False)
-        self.actionSpawnInspector.triggered.connect(self.onSpawnInspectorWindow)
-
+        self.actionSpawnInspector.triggered.connect(
+            self.onSpawnInspectorWindow)
+        self.actionEdit_Theme.triggered.connect(self.editTheme)
         self.setMouseTracking(True)
 
         self.variablesWidget = VariablesWidget(self, self.G)
@@ -101,11 +112,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.mainLoop)
 
+        self.styleSheetEditor.Updated.connect(self.updateStyle)
+        #self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
+
     @property
     def currentGraph(self):
         return self._currentGraph
+
     @currentGraph.setter
-    def currentGraph(self,graph):
+    def currentGraph(self, graph):
         self._currentGraph = graph
 
     def onSpawnInspectorWindow(self):
@@ -126,10 +141,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         pass
 
     def toggleHistory(self):
-        self.dockWidgetUndoStack.setVisible(not self.dockWidgetUndoStack.isVisible())
+        self.dockWidgetUndoStack.setVisible(
+            not self.dockWidgetUndoStack.isVisible())
 
     def newPlugin(self, pluginType):
-        name, result = QInputDialog.getText(self, 'Plugin name', 'Enter plugin name')
+        name, result = QInputDialog.getText(
+            self, 'Plugin name', 'Enter plugin name')
         if result:
             _implementPlugin(name, pluginType)
 
@@ -138,7 +155,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer.timeout.disconnect()
         self.G.shoutDown()
         # save editor config
-        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
+        settings = QtCore.QSettings(
+            SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
         settings.beginGroup('Editor')
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("windowState", self.saveState())
@@ -148,6 +166,14 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def applySettings(self, settings):
         self.restoreGeometry(settings.value('Editor/geometry'))
         self.restoreState(settings.value('Editor/windowState'))
+
+    def editTheme(self):
+        self.styleSheetEditor.show()
+
+    def updateStyle(self):
+        pass
+        #if self.styleSheetEditor:
+        #    self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
 
     def togglePropertyView(self):
         if self.dockWidgetNodeView.isVisible():
@@ -176,12 +202,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         data += "Ctrl+V - Paste\n"
         data += "Alt+Drag - Duplicate\n"
         data += "Ctrl+Z - Undo\n"
-        data += "Ctrl+Y - Redo\n"        
+        data += "Ctrl+Y - Redo\n"
         data += "Alt+Click - Disconect Pin\n"
         data += "Ctrl+Shift+ArrowLeft - Align left\n"
         data += "Ctrl+Shift+ArrowUp - Align Up\n"
         data += "Ctrl+Shift+ArrowRight - Align right\n"
-        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"        
+        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"
 
         QMessageBox.information(self, "Shortcuts", data)
 
@@ -203,7 +229,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 mod = importer.find_module(modname).load_module(modname)
                 FactoriesPath = mod.__path__[0]
                 FactoriesImporter = pkgutil.get_importer(FactoriesPath)
-                FactoriesModuleLoader = FactoriesImporter.find_module('Factories')
+                FactoriesModuleLoader = FactoriesImporter.find_module(
+                    'Factories')
                 if FactoriesModuleLoader is not None:
-                    FactoriesModule = FactoriesModuleLoader.load_module('Factories')
+                    FactoriesModule = FactoriesModuleLoader.load_module(
+                        'Factories')
         return instance

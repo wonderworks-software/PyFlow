@@ -52,10 +52,11 @@ class NodePainter(object):
             painter.fillPath(path, b)
 
         if option.state & QStyle.State_Selected:
-            pen.setColor(Colors.Yellow)
+            # pen.setColor(Colors.Yellow)
+            pen.setColor(
+                node.graph().window().styleSheetEditor.style.MainColor)
             pen.setStyle(node.opt_pen_selected_type)
             pen.setWidth(pen.width() * 1.5)
-            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
         painter.drawRoundedRect(r, node.sizes[4], node.sizes[5])
@@ -76,7 +77,9 @@ class NodePainter(object):
         painter.setBrush(br)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            pen.setColor(Colors.Yellow)
+            # pen.setColor(Colors.Yellow)
+            pen.setColor(
+                node.graph().window().styleSheetEditor.style.MainColor)
             pen.setStyle(node.opt_pen_selected_type)
         painter.setPen(pen)
         painter.drawRoundedRect(node.boundingRect(), 7, 7)
@@ -106,8 +109,9 @@ class NodePainter(object):
         pen = QtGui.QPen(QtCore.Qt.black, 0.75)
         width = pen.width()
         if option.state & QStyle.State_Selected:
-            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
-            pen.setColor(Colors.Yellow)
+            # pen.setColor(Colors.Yellow)
+            pen.setColor(
+                node.graph().window().styleSheetEditor.style.MainColor)
             pen.setStyle(node.opt_pen_selected_type)
             pen.setWidth(width * 1.5)
         painter.setPen(pen)
@@ -142,10 +146,11 @@ class NodePainter(object):
         painter.drawText(nameRect, QtCore.Qt.AlignTop |
                          QtCore.Qt.AlignHCenter, node.displayName)
         if option.state & QStyle.State_Selected:
-            pen.setColor(Colors.Yellow)
+            # pen.setColor(Colors.Yellow)
+            pen.setColor(
+                node.graph().window().styleSheetEditor.style.MainColor)
             pen.setStyle(node.opt_pen_selected_type)
             pen.setWidth(pen.width() * 1.5)
-            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
             painter.setPen(pen)
             painter.setBrush(QtGui.QColor(0, 0, 0, 0))
             r = QtCore.QRectF(node.boundingRect())

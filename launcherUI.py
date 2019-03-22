@@ -1,4 +1,4 @@
-from Qt.QtWidgets import QApplication
+from Qt.QtWidgets import QApplication, QStyleFactory
 from Qt import QtGui
 from Qt import QtCore
 import sys
@@ -10,6 +10,7 @@ SETTINGS_PATH = os.path.join(FILE_DIR, "PyFlow", "appConfig.ini")
 STYLE_PATH = os.path.join(FILE_DIR, "PyFlow", "style.css")
 
 app = QApplication(sys.argv)
+app.setStyle(QStyleFactory.create("plastique"))
 
 dark_palette = app.palette()
 
