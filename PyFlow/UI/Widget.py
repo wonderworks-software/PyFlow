@@ -11,25 +11,11 @@ except:
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsScene
-from Qt.QtWidgets import QAbstractItemView
-from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QListWidget
-from Qt.QtWidgets import QFrame
 from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QStyle
-from Qt.QtWidgets import QScrollArea
-from Qt.QtWidgets import QRubberBand
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QAction
-from Qt.QtWidgets import QTreeWidget, QTreeWidgetItem
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QLabel
-from Qt.QtWidgets import QMainWindow
-from Qt.QtWidgets import QVBoxLayout
 from Qt.QtWidgets import QGraphicsItem
-from Qt.QtWidgets import QGraphicsRectItem
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QGraphicsView
@@ -1281,7 +1267,6 @@ class GraphWidgetUI(QGraphicsView):
                             self._manipulationMode = MANIP_MODE_MOVE
                             self._lastDragPoint = self.mapToScene(event.pos())
                             selectedNodes = self.selectedNodes()
-                            newNodes = []
                             copiedNodes = self.copyNodes(toClipboard=False)
                             self.pasteNodes(move=False, data=copiedNodes)
 
@@ -1797,7 +1782,6 @@ class GraphWidgetUI(QGraphicsView):
         self._graphBase.plot()
 
     def zoomDelta(self, direction):
-        current_factor = self.factor
         if direction:
             self.zoom(1 + 0.1)
         else:

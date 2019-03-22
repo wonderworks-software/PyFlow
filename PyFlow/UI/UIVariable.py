@@ -2,8 +2,6 @@
 
 Variable related classes.
 """
-from uuid import uuid4
-import inspect
 import json
 
 from Qt import QtCore
@@ -13,8 +11,6 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QComboBox
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QLabel
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
 
@@ -23,11 +19,9 @@ from PyFlow.Core.Common import *
 from PyFlow import getPinDefaultValueByType
 from PyFlow import findPinClassByType
 from PyFlow import getAllPinClasses
-from PyFlow.UI.Settings import Colors
-from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
 
 
-## Colored rounded rect
+# Colored rounded rect
 # color corresponds to pin data type color
 class TypeWidget(QWidget):
     def __init__(self, color, parent=None):
@@ -49,7 +43,7 @@ class TypeWidget(QWidget):
         painter.end()
 
 
-## Changes type of variable
+# Changes type of variable
 class VarTypeComboBox(QComboBox):
     def __init__(self, var, parent=None):
         super(VarTypeComboBox, self).__init__(parent)
@@ -71,17 +65,17 @@ class VarTypeComboBox(QComboBox):
             self.var.value = val
 
 
-## Variable class
+# Variable class
 class UIVariable(QWidget):
-    ## executed when value been set
+    # executed when value been set
     valueChanged = QtCore.Signal()
-    ## executed when name been changed
+    # executed when name been changed
     nameChanged = QtCore.Signal(str)
-    ## executed when variable been killed
+    # executed when variable been killed
     killed = QtCore.Signal()
-    ## executed when variable data type been changed
+    # executed when variable data type been changed
     dataTypeChanged = QtCore.Signal(int)
-    ## executed when variable access level been changed
+    # executed when variable access level been changed
     accessLevelChanged = QtCore.Signal(int)
 
     def __init__(self, rawVariable=None, graph=None):
@@ -92,18 +86,21 @@ class UIVariable(QWidget):
         self.horizontalLayout.setSpacing(1)
         self.horizontalLayout.setContentsMargins(1, 1, 1, 1)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.widget = TypeWidget(findPinClassByType(self._rawVariable.dataType).color(), self)
+        self.widget = TypeWidget(findPinClassByType(
+            self._rawVariable.dataType).color(), self)
         self.widget.setObjectName("widget")
         self.horizontalLayout.addWidget(self.widget)
         self.labelName = QLabel(self)
         self.labelName.setObjectName("labelName")
         self.horizontalLayout.addWidget(self.labelName)
-        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        spacerItem = QSpacerItem(
+            40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
 
         QtCore.QMetaObject.connectSlotsByName(self)
         self.graph = graph
-        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
+        self.types = [pin.__name__ for pin in getAllPinClasses()
+                      if pin.IsValuePin()]
         self.setName(self._rawVariable.name)
 
     @property
@@ -162,7 +159,8 @@ class UIVariable(QWidget):
             # value will be calculated for this type of variables
             template['value'] = None
         else:
-            template['value'] = json.dumps(self._rawVariable.value, cls=pinClass.jsonEncoderClass()) if not pinClass.isPrimitiveType() else self._rawVariable.value
+            template['value'] = json.dumps(self._rawVariable.value, cls=pinClass.jsonEncoderClass(
+            )) if not pinClass.isPrimitiveType() else self._rawVariable.value
 
         template['type'] = self._rawVariable.dataType
         template['package'] = self._rawVariable.packageName
@@ -175,14 +173,16 @@ class UIVariable(QWidget):
 
         varUid = uuid.UUID(data['uuid'])
         # TODO: this is probably bad. Too long call chain
-        var = graph.parent.variablesWidget.createVariable(dataType=data['dataType'], accessLevel=AccessLevel(data['accessLevel']), uid=varUid)
+        var = graph.parent.variablesWidget.createVariable(
+            dataType=data['dataType'], accessLevel=AccessLevel(data['accessLevel']), uid=varUid)
         var.setName(data['name'])
         var.setDataType(data['dataType'])
 
         if data['dataType'] == 'AnyPin':
             var.value = getPinDefaultValueByType('AnyPin')
         else:
-            var.value = data['value'] if pinClass.isPrimitiveType() else json.loads(data['value'], cls=pinClass.jsonDecoderClass())
+            var.value = data['value'] if pinClass.isPrimitiveType() else json.loads(
+                data['value'], cls=pinClass.jsonDecoderClass())
 
         return var
 
@@ -195,7 +195,7 @@ class UIVariable(QWidget):
         self._rawVariable.value = data
         self.valueChanged.emit()
 
-    ## Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
+    # Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
     # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
     def setDataType(self, dataType, _bJustSpawned=False):
         self._rawVariable.dataType = dataType
@@ -230,7 +230,8 @@ class UIVariable(QWidget):
         # current value
         def valSetter(x):
             self.value = x
-        w = createInputWidget(self.dataType, valSetter, getPinDefaultValueByType(self.dataType), None)
+        w = createInputWidget(self.dataType, valSetter,
+                              getPinDefaultValueByType(self.dataType), None)
         if w:
             w.setWidgetValue(self.value)
             w.setObjectName(self.name)
