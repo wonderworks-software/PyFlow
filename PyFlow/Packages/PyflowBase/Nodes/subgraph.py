@@ -29,5 +29,5 @@ class subgraph(NodeBase):
         return 'Encapsulate a graph inside a node'
 
     def postCreate(self, jsonTemplate=None):
-        self.rawGraph = GraphBase(self.name, self.graph())
+        self.rawGraph = GraphBase(self.name)
         GraphTree().addChildGraph(self.rawGraph)

@@ -130,7 +130,10 @@ class NodeBase(INode):
         self.graph().nodes.pop(self.uid)
 
     def Tick(self, delta):
-        pass
+        # call UI wrapper tick if exists
+        wrapper = self.getWrapper()()
+        if wrapper is not None:
+            wrapper.Tick(delta)
 
     @staticmethod
     def category():
@@ -241,14 +244,7 @@ class NodeBase(INode):
 
     def getUniqPinName(self, name):
         pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))] + dir(self)
-        if name not in pinNames:
-            return name
-        idx = 0
-        tmp = name
-        while tmp in pinNames:
-            idx += 1
-            tmp = name + str(idx)
-        return name + str(idx)
+        return getUniqNameFromList(pinNames, name)
 
     def getPinByUUID(self, uid):
         inputs = self.inputs

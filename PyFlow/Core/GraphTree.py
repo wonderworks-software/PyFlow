@@ -1,11 +1,15 @@
+from multipledispatch import dispatch
 from blinker import Signal
 from treelib import Tree
 
 from PyFlow.Core.Common import SingletonDecorator
+from PyFlow.Core.Common import getUniqNameFromList
 
 
 @SingletonDecorator
 class GraphTree:
+    """Graph tree. Here is all the data
+    """
 
     onGraphSwitched = Signal()
 
@@ -16,6 +20,34 @@ class GraphTree:
 
     def addChildGraph(self, rawGraph=None):
         self.getTree().create_node(rawGraph.name, rawGraph.name, self.activeGraph().name, rawGraph)
+
+    def getUniqNodeName(self, name):
+        existingNodeNames = []
+        for treeNode in self.getTree().all_nodes():
+            for rawNode in treeNode.data.getNodes():
+                existingNodeNames.append(rawNode.getName())
+        return getUniqNameFromList(existingNodeNames, name)
+
+    def getVars(self, graph=None):
+        """Returns this graph variables as well as all parent graph's ones
+
+        returns:
+            {'graphName': varsDict, ...}
+        """
+        if graph is None:
+            graph = self.activeGraph()
+        result = dict()
+        result[graph.name] = graph.vars
+        parent = self.getParentGraph(graph)
+        while parent is not None:
+            # TODO: check for unique graph names
+            result[parent.name] = parent.vars
+            parent = self.getParentGraph(parent)
+        return result
+
+    def Tick(self, deltaTime):
+        for node in self.getTree().all_nodes():
+            node.data.Tick(deltaTime)
 
     def switchGraph(self, newGraphName):
         old = self.activeGraph()
@@ -44,6 +76,26 @@ class GraphTree:
     def activeGraph(self):
         return self.__activeGraph
 
+    def getAllNodes(self):
+        nodes = []
+        for treeNode in self.getTree().all_nodes():
+            nodes += list(treeNode.data.nodes.values())
+        return nodes
+
+    def getAllGraphs(self):
+        graphs = []
+        for treeNode in self.getTree().all_nodes():
+            graphs.append(treeNode.data)
+        return graphs
+
+    @dispatch(object)
+    def getParentGraph(self, graph):
+        parentNodeName = self.getTree()[graph.name].bpointer
+        if parentNodeName is not None:
+            return self.getTree()[parentNodeName].data
+        return None
+
+    @dispatch()
     def getParentGraph(self):
         parentNodeName = self.getTree()[self.activeGraph().name].bpointer
         if parentNodeName is not None:

@@ -37,6 +37,7 @@ from PyFlow.UI.NodePainter import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Enums import ENone
+from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.Common import *
 
 from collections import OrderedDict
@@ -200,9 +201,6 @@ class UINodeBase(QGraphicsObject):
         self.setZValue(1)
 
         self.icon = None
-        # self.UIPins = {}
-        # self.UIinputs = {}
-        # self.UIoutputs = {}
         self.UIGraph = None
         self._menu = QMenu()
         # Resizing Options
@@ -641,7 +639,7 @@ class UINodeBase(QGraphicsObject):
 
     def clone(self):
         templ = self.serialize()
-        templ['name'] = self.graph().getUniqNodeName(self.name)
+        templ['name'] = GraphTree().getUniqNodeName(self.name)
         templ['uuid'] = str(uuid.uuid4())
         for inp in templ['inputs']:
             inp['uuid'] = str(uuid.uuid4())
@@ -754,7 +752,10 @@ class UINodeBase(QGraphicsObject):
         del(self)
 
     def Tick(self, delta):
-        self._rawNode.Tick(delta)
+        # NOTE: Do not call wrapped raw node Tick method here!
+        # this ui node tick called from underlined raw node's tick
+        # do here only UI stuff
+        pass
 
     def addGroupContainer(self, portType, groupName="group"):
         container = QGraphicsWidget()

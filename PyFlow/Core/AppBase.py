@@ -8,3 +8,6 @@ class AppBase(object):
         super(AppBase, self).__init__()
         # initialize GraphTree singleton
         GraphTree(GraphBase('root'))
+
+    def Tick(self, deltaTime):
+        GraphTree().Tick(deltaTime)

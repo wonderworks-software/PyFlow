@@ -108,8 +108,14 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
     def onRawGraphSwitched(self, *args, **kwargs):
         old = kwargs['old']
         new = kwargs['new']
-        # TODO: hide old graphBase
-        # TODO: show new graph base
+        # TODO: hide current graph contents
+        for node in old.nodes.values():
+            uiNode = node.getWrapper()()
+            uiNode.hide()
+        # TODO: show new graph contents
+        for node in new.nodes.values():
+            uiNode = node.getWrapper()()
+            uiNode.show()
         self.updateGraphTreeLocation()
 
     def updateGraphTreeLocation(self):
@@ -145,7 +151,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         ds = (deltaTime * 1000.0)
         if ds > 0:
             self.fps = int(1000.0 / ds)
-        self._currentGraph.Tick(deltaTime)
+
+        # Tick UI graph
+        self.currentGraph.Tick(deltaTime)
+
+        # Tick all graphs
+        # each graph will tick owning raw nodes
+        # each raw node will tick it's ui wrapper if it exists
+        AppBase.Tick(self, deltaTime)
+
         self._lastClock = clock()
 
     def createPopupMenu(self):
@@ -202,12 +216,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         data += "Ctrl+V - Paste\n"
         data += "Alt+Drag - Duplicate\n"
         data += "Ctrl+Z - Undo\n"
-        data += "Ctrl+Y - Redo\n"        
-        data += "Alt+Click - Disconect Pin\n"
+        data += "Ctrl+Y - Redo\n"
+        data += "Alt+Click - Disconnect Pin\n"
         data += "Ctrl+Shift+ArrowLeft - Align left\n"
         data += "Ctrl+Shift+ArrowUp - Align Up\n"
         data += "Ctrl+Shift+ArrowRight - Align right\n"
-        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"        
+        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"
 
         QMessageBox.information(self, "Shortcuts", data)
 

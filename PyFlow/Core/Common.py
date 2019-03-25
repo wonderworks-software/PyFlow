@@ -17,6 +17,7 @@ import uuid
 import sys
 from enum import IntEnum
 from PyFlow.Core import Enums
+from PyFlow import findPinClassByType
 
 maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 
@@ -135,6 +136,102 @@ def pinAffects(lhs, rhs):
     rhs.affected_by.add(lhs)
 
 
+def canConnectPins(src, dst):
+    if src is None or dst is None:
+        print("can not connect pins")
+        if src is None:
+            print("src is None")
+        if dst is None:
+            print("dst is None")
+        return False
+
+    if src.direction == PinDirection.Input:
+        src, dst = dst, src
+
+    if src.direction == dst.direction:
+        return False
+
+    if src.graph is None or dst.graph is None:
+        return False
+
+    if src.graph() != dst.graph():
+        return False
+
+    if cycle_check(src, dst):
+        print('cycles are not allowed')
+        return False
+
+    if src.dataType == "AnyPin" and not cycle_check(src, dst):
+        return True
+
+    if dst.dataType == "AnyPin":
+        if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
+            return False
+
+    if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
+        print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
+        return False
+    else:
+        if src.dataType is 'ExecPin':
+            if dst.dataType != 'ExecPin' and dst.dataType != 'AnyPin':
+                print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
+                return False
+
+    if src in dst.affected_by:
+        print('already connected. skipped')
+        return False
+    if src.direction == dst.direction:
+        print('same side pins can not be connected')
+        return False
+    if src.owningNode == dst.owningNode:
+        print('can not connect to owning node')
+        return False
+
+    if dst.constraint is not None:
+        if dst.dataType != "AnyPin":
+            if dst.isAny:
+                free = dst.checkFree([], False)
+                if not free:
+                    pinClass = findPinClassByType(dst.dataType)
+                    if src.dataType not in pinClass.supportedDataTypes():
+                        print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
+                        return False
+    return True
+
+
+def connectPins(src, dst):
+    """Connects two pins
+
+    Arguments:
+        src PinBase -- left hand side pin
+        dst PinBase -- right hand side pin
+    """
+    if not canConnectPins(src, dst):
+        return False
+
+    if src.direction == PinDirection.Input:
+        src, dst = dst, src
+
+    # input value pins can have one output connection
+    # output value pins can have any number of connections
+    if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections():
+        dst.disconnectAll()
+    if src.dataType == 'AnyPin' and dst.dataType != 'ExecPin' and dst.hasConnections():
+        dst.disconnectAll()
+    # input execs can have any number of connections
+    # output execs can have only one connection
+    if src.dataType == 'ExecPin' and dst.dataType == 'ExecPin' and src.hasConnections():
+        src.disconnectAll()
+
+    pinAffects(src, dst)
+    src.setDirty()
+    dst._data = src._data
+    dst.pinConnected(src)
+    src.pinConnected(dst)
+    push(dst)
+    return True
+
+
 def disconnectPins(src, dst):
     """Disconnects two pins
 
@@ -174,6 +271,17 @@ def clearLayout(layout):
             child.widget().deleteLater()
         elif child.layout() is not None:
             clearLayout(child.layout())
+
+
+def getUniqNameFromList(existingNames, name):
+    if name not in existingNames:
+        return name
+    idx = 0
+    tmp = name
+    while tmp in existingNames:
+        idx += 1
+        tmp = name + str(idx)
+    return name + str(idx)
 
 
 class SingletonDecorator:

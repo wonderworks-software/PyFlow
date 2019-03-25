@@ -57,6 +57,7 @@ from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
 from PyFlow.Commands.RemoveEdges import RemoveEdges as cmdRemoveEdges
 from PyFlow.UI.UIPinBase import UIPinBase
 from PyFlow.Core.GraphBase import GraphBase
+from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.UI.UIVariable import UIVariable
@@ -355,7 +356,7 @@ class SceneClass(QGraphicsScene):
                 packageName = jsonData["package"]
                 nodeType = jsonData["type"]
                 libName = jsonData['lib']
-                name = self.parent().getUniqNodeName(nodeType)
+                name = GraphTree().getUniqNodeName(nodeType)
                 dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
                 if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
                     nodeTemplate = NodeBase.jsonTemplate()
@@ -601,7 +602,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                 return
 
             nodeClassName = self.currentItem().text(0)
-            name = self.parent().graph().getUniqNodeName(nodeClassName)
+            name = GraphTree().getUniqNodeName(nodeClassName)
             pos = self.parent().graph().mapToScene(self.parent().graph().mouseReleasePos)
             nodeTemplate = NodeBase.jsonTemplate()
             nodeTemplate['package'] = packageName
@@ -766,7 +767,6 @@ class GraphWidgetUI(QGraphicsView):
         self._grid_spacing = 50
         self.factor = 1
         self.factor_diff = 0
-        self.setWindowTitle(self._graphBase.name)
 
         self._current_file_name = 'Untitled'
         self._file_name_label = QGraphicsTextItem()
@@ -836,20 +836,20 @@ class GraphWidgetUI(QGraphicsView):
         pass
 
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
-        return self._graphBase.createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+        return GraphTree().activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
 
-    @property
-    def vars(self):
-        return self._graphBase.vars
+    # @property
+    # def vars(self):
+    #     return self._graphBase.vars
 
-    @property
-    def name(self):
-        return self._graphBase.name
+    # @property
+    # def name(self):
+    #     return self._graphBase.name
 
     @property
     def nodes(self):
         result = {}
-        for rawNode in self._graphBase.getNodes():
+        for rawNode in GraphTree().activeGraph().getNodes():
             result[rawNode.uid] = rawNode.getWrapper()()
         return result
 
@@ -866,11 +866,8 @@ class GraphWidgetUI(QGraphicsView):
     def connections(self):
         return self._UIConnections
 
-    def getNodes(self):
-        return list(self.nodes.values())
-
-    def getUniqNodeName(self, name):
-        return self._graphBase.getUniqNodeName(name)
+    # def getNodes(self):
+    #     return list(self.nodes.values())
 
     def getUniqNodeDisplayName(self, name):
         nodes_names = [n.displayName for n in self.nodes.values()]
@@ -901,7 +898,7 @@ class GraphWidgetUI(QGraphicsView):
     def shoutDown(self):
         for ed in self.codeEditors.values():
             ed.deleteLater()
-        nodes = list(self.getNodes())
+        nodes = list(self.nodes.values())
         for node in nodes:
             node.kill()
         self.scene().shoutDown()
@@ -935,8 +932,7 @@ class GraphWidgetUI(QGraphicsView):
     def Tick(self, deltaTime):
         if self.autoPanController.isActive():
             self.moveScrollbar(self.autoPanController.getDelta())
-        for n in self.getNodes():
-            n.Tick(deltaTime)
+
         for e in list(self.connections.values()):
             e.Tick()
 
@@ -976,10 +972,17 @@ class GraphWidgetUI(QGraphicsView):
         return uiPin
 
     def getGraphSaveData(self):
+        """Everything what is needed for saving
+
+        All nodes from all subgraphs
+        Connections
+        Variables
+        """
         data = {self.name: {'nodes': [], 'connections': [], 'vars': []}}
         # save nodes
-        data[self.name]['nodes'] = [node.serialize() for node in self.getNodes(
-        ) if not node.isCommentNode] + [node.serialize() for node in self.getNodes() if node.isCommentNode]
+        nodeList = [n.getWrapper()() for n in GraphTree().getAllNodes()]
+        assert(None not in nodeList)
+        data[self.name]['nodes'] = [node.serialize() for node in nodeList if not node.isCommentNode] + [node.serialize() for node in nodeList if node.isCommentNode]
         # save connections
         data[self.name]['connections'] = [e.serialize() for e in self.connections.values()]
         # variables
@@ -1173,7 +1176,7 @@ class GraphWidgetUI(QGraphicsView):
                 nodeTemplate = NodeBase.jsonTemplate()
                 nodeTemplate['package'] = "PyflowBase"
                 nodeTemplate['type'] = commentNode.__name__
-                nodeTemplate['name'] = self.getUniqNodeName(commentNode.__name__)
+                nodeTemplate['name'] = GraphTree().getUniqNodeName(commentNode.__name__)
                 if rect:
                     nodeTemplate['x'] = rect.topLeft().x()
                     nodeTemplate['y'] = rect.topLeft().y()
@@ -1326,7 +1329,7 @@ class GraphWidgetUI(QGraphicsView):
 
         for node in nodes["nodes"]:
             oldName = node["name"]
-            node["name"] = self.getUniqNodeName(node["name"])
+            node["name"] = GraphTree().getUniqNodeName(node["name"])
             node['uuid'] = str(uuid.uuid4())
             for inp in node['inputs']:
                 inp['uuid'] = str(uuid.uuid4())
@@ -1438,7 +1441,7 @@ class GraphWidgetUI(QGraphicsView):
         nodeTemplate['package'] = "PyflowBase"
         nodeTemplate['lib'] = None
         nodeTemplate['type'] = "graphInputs"
-        nodeTemplate['name'] = self.getUniqNodeName("graphInputs")
+        nodeTemplate['name'] = GraphTree().getUniqNodeName("graphInputs")
         nodeTemplate['x'] = self.boundingRect.left() + 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
         nodeTemplate['uuid'] = str(uuid.uuid4())
@@ -1452,7 +1455,7 @@ class GraphWidgetUI(QGraphicsView):
         nodeTemplate['package'] = "PyflowBase"
         nodeTemplate['lib'] = None
         nodeTemplate['type'] = "graphOutputs"
-        nodeTemplate['name'] = self.getUniqNodeName("graphOutputs")
+        nodeTemplate['name'] = GraphTree().getUniqNodeName("graphOutputs")
         nodeTemplate['x'] = self.boundingRect.width() - 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
         nodeTemplate['uuid'] = str(uuid.uuid4())
@@ -2011,14 +2014,14 @@ class GraphWidgetUI(QGraphicsView):
         Arguments:
             node UINodeBase -- raw node wrapper
         """
-        self._graphBase.addNode(node._rawNode, jsonTemplate)
+        graphBase = GraphTree().activeGraph()
+        print('add', node.name, 'to', graphBase.name)
+        graphBase.addNode(node._rawNode, jsonTemplate)
         node.graph = weakref.ref(self)
         self.scene().addItem(node)
 
     def connectPinsInternal(self, src, dst):
-        # reconnection may occur in raw connections
-        # need to know it and remove invalid ui connections
-        result = self._graphBase.connectPins(src._rawPin, dst._rawPin)
+        result = GraphTree().activeGraph().connectPins(src._rawPin, dst._rawPin)
         if result:
             if src.direction == PinDirection.Input:
                 src, dst = dst, src
@@ -2028,11 +2031,9 @@ class GraphWidgetUI(QGraphicsView):
             return uiConnection
         return None
 
-    def canConnectPins(self, src, dst):
-        return self._graphBase.canConnectPins(src, dst)
-
     def connectPins(self, src, dst):
-        if self.canConnectPins(src, dst):
+        # Highest level connect pins function
+        if canConnectPins(src, dst):
             cmd = cmdConnectPin(self, src, dst)
             self.undoStack.push(cmd)
 
