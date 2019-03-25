@@ -6,7 +6,7 @@ from Qt import (
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 from PyFlow.UI.Graph.UIPinBase import UIPinBase
-from PyFlow.UI.Graph.PinPainter import PinPainter
+from PyFlow.UI.Graph.Painters import PinPainter
 
 
 class UIExecPin(UIPinBase):

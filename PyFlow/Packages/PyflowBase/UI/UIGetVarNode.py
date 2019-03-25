@@ -12,7 +12,7 @@ from PyFlow.UI.Utils.Settings import *
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
-from PyFlow.UI.Graph.NodePainter import NodePainter
+from PyFlow.UI.Graph.Painters import NodePainter
 
 
 # Variable getter node

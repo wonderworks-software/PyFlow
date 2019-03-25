@@ -22,7 +22,7 @@ from PyFlow.UI.Graph.Widget import GraphWidgetUI
 from PyFlow.Core.Common import Direction
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.UI.Views.InspectorWidget import InspectorWidget
-from PyFlow.UI.Graph.NodeBox import NodesBox
+from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Views import GraphEditor_ui
 from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor

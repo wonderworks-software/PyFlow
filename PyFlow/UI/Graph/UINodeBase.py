@@ -31,7 +31,7 @@ from PyFlow.UI.Graph.UIPinBase import (
     UIGroupPinBase
 )
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
-from PyFlow.UI.Graph.NodePainter import NodePainter
+from PyFlow.UI.Graph.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *

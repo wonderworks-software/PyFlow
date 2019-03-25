@@ -11,7 +11,7 @@ from Qt.QtWidgets import QInputDialog
 
 from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.Settings import *
-from PyFlow.UI.Graph.PinPainter import PinPainter
+from PyFlow.UI.Graph.Painters import PinPainter
 
 
 UI_PINS_FACTORIES = {}
