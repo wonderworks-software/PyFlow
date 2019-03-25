@@ -14,7 +14,7 @@ from Qt.QtWidgets import QLabel
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
 
-from PyFlow.UI.InputWidgets import createInputWidget
+from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.Core.Common import *
 from PyFlow import getPinDefaultValueByType
 from PyFlow import findPinClassByType

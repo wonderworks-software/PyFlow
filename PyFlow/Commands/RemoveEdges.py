@@ -2,13 +2,14 @@ from uuid import UUID
 
 from Qt.QtWidgets import QUndoCommand
 
-from PyFlow.UI.UIConnection import UIConnection
+from PyFlow.UI.Graph.UIConnection import UIConnection
 
 
 class RemoveEdges(QUndoCommand):
     '''
     Disconnects pins
     '''
+
     def __init__(self, graph, jsonTemplates):
         super(RemoveEdges, self).__init__()
         self.setText('Remove connections')

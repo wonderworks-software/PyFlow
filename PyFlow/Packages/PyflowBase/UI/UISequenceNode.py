@@ -1,4 +1,4 @@
-from PyFlow.UI.UINodeBase import UINodeBase
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
 
 
 class UISequenceNode(UINodeBase):

@@ -10,8 +10,8 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QInputDialog
 
 from PyFlow.Core.Common import *
-from PyFlow.UI.Settings import *
-from PyFlow.UI.PinPainter import PinPainter
+from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Graph.PinPainter import PinPainter
 
 
 UI_PINS_FACTORIES = {}
@@ -92,17 +92,17 @@ class UIPinBase(QGraphicsWidget):
     Pin ui wrapper
     '''
 
-    ## Event called when pin is connected
+    # Event called when pin is connected
     OnPinConnected = QtCore.Signal(object)
-    ## Event called when pin is disconnected
+    # Event called when pin is disconnected
     OnPinDisconnected = QtCore.Signal(object)
-    ## Event called when data been set
+    # Event called when data been set
     dataBeenSet = QtCore.Signal(object)
-    ## Event called when pin name changes
+    # Event called when pin name changes
     nameChanged = QtCore.Signal(str)
-    ## Event called when pin name changes
+    # Event called when pin name changes
     displayNameChanged = QtCore.Signal(str)
-    ## Event called when setUserStruct called
+    # Event called when setUserStruct called
     # used by enums
     userStructChanged = QtCore.Signal(object)
     OnPinChanged = QtCore.Signal(object)
@@ -115,12 +115,12 @@ class UIPinBase(QGraphicsWidget):
         self.setParentItem(owningNode)
         self.UiNode = weakref.ref(owningNode)
         # self.setCursor(QtCore.Qt.CrossCursor)
-        ## context menu for pin
+        # context menu for pin
         self.menu = QMenu()
-        ## Disconnect all connections
+        # Disconnect all connections
         self.actionDisconnect = self.menu.addAction('Disconnect all')
         self.actionDisconnect.triggered.connect(self.disconnectAll)
-        ## Copy UUID to buffer
+        # Copy UUID to buffer
         self.actionCopyUid = self.menu.addAction('Copy uid')
         self.actionCopyUid.triggered.connect(self.saveUidToClipboard)
 
@@ -141,7 +141,8 @@ class UIPinBase(QGraphicsWidget):
         self._groupContainer = None
         self._execPen = QtGui.QPen(Colors.White, 0.5, QtCore.Qt.SolidLine)
         self.setGeometry(0, 0, self.width, self.height)
-        self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        self._dirty_pen = QtGui.QPen(
+            Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
         self.pinImage = QtGui.QImage(':/icons/resources/array.png')
         self.bLabelHidden = False
@@ -190,7 +191,8 @@ class UIPinBase(QGraphicsWidget):
         return self._rawPin.canBeRenamed()
 
     def onRename(self):
-        name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
+        name, confirmed = QInputDialog.getText(
+            None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
             self.setName(name)
             self.setDisplayName(name)
@@ -403,7 +405,8 @@ class UIPinBase(QGraphicsWidget):
     def disconnectAll(self):
         self._rawPin.disconnectAll()
         while not len(self.uiConnectionList) == 0:
-            self.owningNode().graph().removeConnection(self.uiConnectionList[0])
+            self.owningNode().graph().removeConnection(
+                self.uiConnectionList[0])
         self.update()
 
     def shape(self):
@@ -433,7 +436,8 @@ class UIPinBase(QGraphicsWidget):
         super(UIPinBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        hoverMessage = "Data: {0}\r\nDirty: {1}".format(str(self._rawPin.currentData()), self._rawPin.dirty)
+        hoverMessage = "Data: {0}\r\nDirty: {1}".format(
+            str(self._rawPin.currentData()), self._rawPin.dirty)
         self.setToolTip(hoverMessage)
         event.accept()
 

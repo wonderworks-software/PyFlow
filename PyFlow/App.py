@@ -18,14 +18,14 @@ from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QUndoView
 
 from PyFlow import Packages
-from PyFlow.UI.Widget import GraphWidgetUI
+from PyFlow.UI.Graph.Widget import GraphWidgetUI
 from PyFlow.Core.Common import Direction
 from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.UI.Widgets.InspectorWidget import InspectorWidget
-from PyFlow.UI.Widget import NodesBox
-from PyFlow.UI.Widgets import GraphEditor_ui
-from PyFlow.UI.Widgets.VariablesWidget import VariablesWidget
-from PyFlow.UI.StyleSheetEditor import StyleSheetEditor
+from PyFlow.UI.Views.InspectorWidget import InspectorWidget
+from PyFlow.UI.Graph.NodeBox import NodesBox
+from PyFlow.UI.Views import GraphEditor_ui
+from PyFlow.UI.Views.VariablesWidget import VariablesWidget
+from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
 from PyFlow import INITIALIZE
 
 
@@ -113,7 +113,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer.timeout.connect(self.mainLoop)
 
         self.styleSheetEditor.Updated.connect(self.updateStyle)
-        #self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
+        # self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
 
     @property
     def currentGraph(self):
@@ -172,7 +172,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def updateStyle(self):
         pass
-        #if self.styleSheetEditor:
+        # if self.styleSheetEditor:
         #    self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
 
     def togglePropertyView(self):

@@ -9,11 +9,11 @@ from Qt import QtGui
 from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QMenu
 
-from Settings import Colors
+from PyFlow.UI.Utils.Settings import Colors
 from PyFlow.Core.Common import *
 
 
-## UIConnection between pins
+# UIConnection between pins
 class UIConnection(QGraphicsPathItem):
     def __init__(self, source, destination, graph):
         QGraphicsPathItem.__init__(self)
@@ -42,7 +42,8 @@ class UIConnection(QGraphicsPathItem):
         if source.dataType == 'ExecPin':
             self.thickness = 2
 
-        self.pen = QtGui.QPen(self.color, self.thickness, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        self.pen = QtGui.QPen(self.color, self.thickness,
+                              QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
         points = self.getEndPoints()
         self.updateCurve(points[0], points[1])
@@ -72,9 +73,12 @@ class UIConnection(QGraphicsPathItem):
 
         if self.fade > 0:
             self.pen.setWidthF(self.thickness + self.fade * 2)
-            r = abs(lerp(self.color.red(), Colors.Yellow.red(), clamp(self.fade, 0, 1)))
-            g = abs(lerp(self.color.green(), Colors.Yellow.green(), clamp(self.fade, 0, 1)))
-            b = abs(lerp(self.color.blue(), Colors.Yellow.blue(), clamp(self.fade, 0, 1)))
+            r = abs(lerp(self.color.red(), Colors.Yellow.red(),
+                         clamp(self.fade, 0, 1)))
+            g = abs(lerp(self.color.green(),
+                         Colors.Yellow.green(), clamp(self.fade, 0, 1)))
+            b = abs(lerp(self.color.blue(), Colors.Yellow.blue(),
+                         clamp(self.fade, 0, 1)))
             self.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
             self.fade -= 0.1
             self.update()
@@ -92,7 +96,8 @@ class UIConnection(QGraphicsPathItem):
     @uid.setter
     def uid(self, value):
         if self._uid in self.graph().connections:
-            self.graph().connections[value] = self.graph().connections.pop(self._uid)
+            self.graph().connections[value] = self.graph(
+            ).connections.pop(self._uid)
             self._uid = value
 
     @staticmethod
@@ -181,9 +186,11 @@ class UIConnection(QGraphicsPathItem):
 
         self.mPath.moveTo(p1)
         if xDistance < 0:
-            self.mPath.cubicTo(QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y()), QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y()), p2)
+            self.mPath.cubicTo(QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y()),
+                               QtCore.QPoint(p2.x() - xDistance / -multiply, p2.y()), p2)
         else:
-            self.mPath.cubicTo(QtCore.QPoint(p1.x() + xDistance / multiply, p1.y()), QtCore.QPoint(p2.x() - xDistance / 2, p2.y()), p2)
+            self.mPath.cubicTo(QtCore.QPoint(p1.x() + xDistance / multiply,
+                                             p1.y()), QtCore.QPoint(p2.x() - xDistance / 2, p2.y()), p2)
 
         self.setPath(self.mPath)
 

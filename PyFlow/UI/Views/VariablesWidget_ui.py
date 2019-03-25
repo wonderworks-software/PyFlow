@@ -10,6 +10,7 @@
 
 from Qt import QtCompat, QtCore, QtGui, QtWidgets
 
+
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -23,7 +24,8 @@ class Ui_Form(object):
         self.label = QtWidgets.QLabel(Form)
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.pbNewVar = QtWidgets.QPushButton(Form)
         self.pbNewVar.setMaximumSize(QtCore.QSize(50, 16777215))
@@ -31,9 +33,11 @@ class Ui_Form(object):
         self.horizontalLayout.addWidget(self.pbNewVar)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.listWidget = QtWidgets.QListWidget(Form)
-        self.listWidget.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+        self.listWidget.setDragDropMode(
+            QtWidgets.QAbstractItemView.InternalMove)
         self.listWidget.setDefaultDropAction(QtCore.Qt.MoveAction)
-        self.listWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.listWidget.setSelectionMode(
+            QtWidgets.QAbstractItemView.SingleSelection)
         self.listWidget.setSelectionRectVisible(True)
         self.listWidget.setObjectName("listWidget")
         self.verticalLayout.addWidget(self.listWidget)
@@ -42,13 +46,15 @@ class Ui_Form(object):
         self.label_2 = QtWidgets.QLabel(Form)
         self.label_2.setObjectName("label_2")
         self.horizontalLayout_2.addWidget(self.label_2)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
         self.pbKillVar = QtWidgets.QPushButton(Form)
         self.pbKillVar.setMaximumSize(QtCore.QSize(50, 16777215))
         self.pbKillVar.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/resources/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pbKillVar.setIcon(icon)
         self.pbKillVar.setObjectName("pbKillVar")
         self.horizontalLayout_2.addWidget(self.pbKillVar)
@@ -61,6 +67,8 @@ class Ui_Form(object):
         Form.setWindowTitle(QtCompat.translate("Form", "Form", None, -1))
         self.label.setText(QtCompat.translate("Form", "Create var", None, -1))
         self.pbNewVar.setText(QtCompat.translate("Form", "+", None, -1))
-        self.label_2.setText(QtCompat.translate("Form", "Kill selected var", None, -1))
+        self.label_2.setText(QtCompat.translate(
+            "Form", "Kill selected var", None, -1))
 
-import nodes_res_rc
+
+import PyFlow.UI.Utils.nodes_res_rc

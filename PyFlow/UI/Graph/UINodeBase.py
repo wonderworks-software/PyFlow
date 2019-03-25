@@ -8,7 +8,7 @@ Also, it implements [initializeFromFunction](@ref PyFlow.Core.Node.initializeFro
 
 import weakref
 
-from Settings import *
+
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsTextItem
@@ -24,13 +24,14 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QColorDialog
 from Qt.QtWidgets import QMenu
 
-from PyFlow.UI.UIPinBase import (
+from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Graph.UIPinBase import (
     UIPinBase,
     getUIPinInstance,
     UIGroupPinBase
 )
-from PyFlow.UI.InputWidgets import createInputWidget
-from PyFlow.UI.NodePainter import NodePainter
+from PyFlow.UI.Widgets.InputWidgets import createInputWidget
+from PyFlow.UI.Graph.NodePainter import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *

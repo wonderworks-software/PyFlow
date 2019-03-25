@@ -26,24 +26,24 @@ from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QPushButton
 
-from Settings import Colors
-from SelectionRect import SelectionRect
-from PyFlow.UI.UIConnection import UIConnection
-from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.UINodeBase import NodeName
-from PyFlow.UI.UINodeBase import getUINodeInstance
-from PyFlow.UI.NodeBox import NodesBox
+from PyFlow.UI.Utils.Settings import Colors
+from PyFlow.UI.Graph.SelectionRect import SelectionRect
+from PyFlow.UI.Graph.UIConnection import UIConnection
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Graph.UINodeBase import NodeName
+from PyFlow.UI.Graph.UINodeBase import getUINodeInstance
+from PyFlow.UI.Graph.NodeBox import NodesBox
+from PyFlow.UI.Graph.UIPinBase import UIPinBase
+from PyFlow.UI.Graph.UIVariable import UIVariable
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
 from PyFlow.Commands.RemoveEdges import RemoveEdges as cmdRemoveEdges
-from PyFlow.UI.UIPinBase import UIPinBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.UI.UIVariable import UIVariable
-from PyFlow.UI.Widgets.VariablesWidget import (
+from PyFlow.UI.Views.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
 )

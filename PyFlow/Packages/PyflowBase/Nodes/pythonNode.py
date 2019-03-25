@@ -9,7 +9,7 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QMenu
 
 from PyFlow.Core.Common import *
-from PyFlow.UI.Settings import *
+from PyFlow.UI.Utils.Settings import *
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.PyCodeCompiler import Py3FunctionCompiler
@@ -34,7 +34,8 @@ class pythonNode(NodeBase):
 
         if 'computeCode' in jsonTemplate:
             self.currentComputeCode = jsonTemplate['computeCode']
-            compute = Py3FunctionCompiler('compute').compile(self.currentComputeCode)
+            compute = Py3FunctionCompiler(
+                'compute').compile(self.currentComputeCode)
             self.compute = MethodType(compute, self)
 
         # recreate pins

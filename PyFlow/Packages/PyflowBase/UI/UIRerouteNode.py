@@ -1,5 +1,5 @@
-from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.NodePainter import NodePainter
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Graph.NodePainter import NodePainter
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsItem
 

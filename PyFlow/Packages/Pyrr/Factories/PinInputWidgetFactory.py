@@ -2,7 +2,7 @@ import weakref
 import pyrr
 
 from PyFlow.Core.Common import *
-from PyFlow.UI.InputWidgets import *
+from PyFlow.UI.Widgets.InputWidgets import *
 
 from PyFlow.Packages.Pyrr.Widgets import Ui_FloatVector3InputWidget_ui
 from PyFlow.Packages.Pyrr.Widgets import Ui_FloatVector4InputWidget_ui

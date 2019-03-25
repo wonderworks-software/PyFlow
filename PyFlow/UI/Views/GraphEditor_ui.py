@@ -404,4 +404,4 @@ class Ui_MainWindow(object):
             "MainWindow", "Inspector window", None, -1))
 
 
-import nodes_res_rc
+import PyFlow.UI.Utils.nodes_res_rc

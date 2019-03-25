@@ -9,8 +9,8 @@ import uuid
 from Qt import QtCore, QtGui
 from Qt.QtWidgets import QListWidget, QListWidgetItem, QWidget
 
-from PyFlow.UI.UIVariable import UIVariable
-from PyFlow.UI.Widgets.VariablesWidget_ui import Ui_Form
+from PyFlow.UI.Graph.UIVariable import UIVariable
+from PyFlow.UI.Views.VariablesWidget_ui import Ui_Form
 from PyFlow.Core.Common import *
 
 VARIABLE_TAG = "VAR"
@@ -32,6 +32,7 @@ def lwMousePressEvent(self, event):
 
 class VariablesWidget(QWidget, Ui_Form):
     """docstring for VariablesWidget"""
+
     def __init__(self, app, graph, parent=None):
         super(VariablesWidget, self).__init__(parent)
         self.setupUi(self)
@@ -39,7 +40,8 @@ class VariablesWidget(QWidget, Ui_Form):
         self.app = app
         self.pbNewVar.clicked.connect(self.createVariable)
         self.pbKillVar.clicked.connect(self.killVar)
-        self.listWidget.mousePressEvent = MethodType(lwMousePressEvent, self.listWidget)
+        self.listWidget.mousePressEvent = MethodType(
+            lwMousePressEvent, self.listWidget)
         self.listWidget.setDragDropMode(self.listWidget.InternalMove)
         self.notVisVars = []
 
@@ -70,7 +72,8 @@ class VariablesWidget(QWidget, Ui_Form):
         self.graph._clearPropertiesView()
 
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
-        rawVariable = self.graph.createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+        rawVariable = self.graph.createVariable(
+            dataType=dataType, accessLevel=accessLevel, uid=uid)
         uiVariable = UIVariable(rawVariable, self.graph)
         item = QListWidgetItem(self.listWidget)
         item.setSizeHint(QtCore.QSize(60, 38))

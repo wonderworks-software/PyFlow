@@ -3,7 +3,8 @@
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QStyle
-from Settings import *
+
+from PyFlow.UI.Utils.Settings import *
 
 
 # Determines how to paint the node

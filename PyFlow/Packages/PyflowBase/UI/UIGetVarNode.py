@@ -7,15 +7,15 @@ from Qt.QtWidgets import QGraphicsItem
 from Qt import QtCore
 from Qt import QtGui
 
-from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.Settings import *
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Utils.Settings import *
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
-from PyFlow.UI.NodePainter import NodePainter
+from PyFlow.UI.Graph.NodePainter import NodePainter
 
 
-## Variable getter node
+# Variable getter node
 class UIGetVarNode(UINodeBase):
     def __init__(self, raw_node):
         super(UIGetVarNode, self).__init__(raw_node)

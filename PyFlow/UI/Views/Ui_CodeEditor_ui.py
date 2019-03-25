@@ -149,4 +149,4 @@ class Ui_CodeEditorWidget(object):
         self.pbResetNode.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "reset node", None, -1))
         self.pbSave.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "save", None, -1))
 
-import nodes_res_rc
+import PyFlow.UI.Utils.nodes_res_rc
