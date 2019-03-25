@@ -32,9 +32,9 @@ from PyFlow.UI.Graph.UIConnection import UIConnection
 from PyFlow.UI.Graph.UINodeBase import UINodeBase
 from PyFlow.UI.Graph.UINodeBase import NodeName
 from PyFlow.UI.Graph.UINodeBase import getUINodeInstance
-from PyFlow.UI.Graph.NodeBox import NodesBox
 from PyFlow.UI.Graph.UIPinBase import UIPinBase
 from PyFlow.UI.Graph.UIVariable import UIVariable
+from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
@@ -103,7 +103,7 @@ def getNodeInstance(jsonTemplate, graph):
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
-    graph.addNode(instance)
+    graph.addNode(instance,jsonTemplate)
     return instance
 
 
@@ -210,8 +210,9 @@ class SceneClass(QGraphicsScene):
                 self.tempnode = None
             except Exception as e:
                 pass
-            self.tempnode = self.parent().createNode(nodeTemplate) 
-            self.tempnode.isTemp = True
+            self.tempnode = self.parent().createNode(nodeTemplate)
+            if self.tempnode: 
+                self.tempnode.isTemp = True
             self.hoverItems = []
         else:
             event.ignore()
@@ -1722,13 +1723,13 @@ class GraphWidgetUI(QGraphicsView):
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
-    def addNode(self, node):
+    def addNode(self, node,jsonTemplate=None):
         """Adds node to a graph
 
         Arguments:
             node UINodeBase -- raw node wrapper
         """
-        self._graphBase.addNode(node._rawNode)
+        self._graphBase.addNode(node._rawNode,jsonTemplate)
         node.graph = weakref.ref(self)
         self.scene().addItem(node)
 

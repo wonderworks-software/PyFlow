@@ -285,12 +285,10 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
     def populate(self):
         node = self.graph.nodes[self.nodeUid]
         for i in node.inputs.values():
-            pw = WPinWidget.construct(i.name, i.getWrapper()(
-            ).getLabel()().isVisible(), i.__class__.__name__, self)
+            pw = WPinWidget.construct(i.name, i.getLabel()().isVisible(), i.__class__.__name__, self)
             self.appendInput(pw)
         for o in node.outputs.values():
-            pw = WPinWidget.construct(o.name, o.getWrapper()(
-            ).getLabel()().isVisible(), o.__class__.__name__, self)
+            pw = WPinWidget.construct(o.name, o.getLabel()().isVisible(), o.__class__.__name__, self)
             self.appendOutput(pw)
         self.leLabel.setText(node.label().toPlainText())
         code = ""
@@ -309,10 +307,10 @@ class CodeEditor(QWidget, Ui_CodeEditor_ui.Ui_CodeEditorWidget):
         node = self.graph.nodes[self.nodeUid]
         for i in list(node.inputs.values()):
             i.kill()
-            self.graph.scene().removeItem(i.getWrapper()().getContainer())
+            self.graph.scene().removeItem(i.getContainer())
         for o in list(node.outputs.values()):
             o.kill()
-            self.graph.scene().removeItem(o.getWrapper()().getContainer())
+            self.graph.scene().removeItem(o.getContainer())
 
         for i in range(node.inputsLayout.count()):
             node.inputsLayout.removeAt(0)

@@ -145,14 +145,14 @@ class GraphBase(object):
                 break
         return pin
 
-    def addNode(self, node):
+    def addNode(self, node,jsonTemplate=None):
         assert(node is not None), "failed to add node, None is passed"
         if node.uid in self.nodes:
             return False
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)
         node.setName(self.getUniqNodeName(node.name))
-        node.postCreate()
+        node.postCreate(jsonTemplate)
         return True
 
     def count(self):
