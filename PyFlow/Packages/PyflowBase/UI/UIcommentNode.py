@@ -16,13 +16,13 @@ from Qt.QtWidgets import QMenu
 from Qt import QtGui
 from Qt import QtCore
 
-from PyFlow.UI.Settings import (Spacings, Colors)
-from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.UINodeBase import NodeName
-from PyFlow.UI.UIPinBase import UICommentPinBase
+from PyFlow.UI.Utils.Settings import (Spacings, Colors)
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Graph.UINodeBase import NodeName
+from PyFlow.UI.Graph.UIPinBase import UICommentPinBase
 import weakref
 
-buttonStyle="""
+buttonStyle = """
 QPushButton{color : rgba(255,255,255,255);
     background-color: rgba(0,0,0,0);
     border-width: 0px;
@@ -38,10 +38,14 @@ QPushButton:pressed{
     color: rgba(255, 160, 47, 255)
 }
 """
+
+
 class commentNodeName(NodeName):
     """doc string for commentNodeName"""
+
     def __init__(self, parent, bUseTextureBg=False, color=Colors.AbsoluteBlack):
-        super(commentNodeName, self).__init__(parent, bUseTextureBg, color=color)
+        super(commentNodeName, self).__init__(
+            parent, bUseTextureBg, color=color)
         self.color = color
         self.color.setAlpha(80)
         self.setAcceptHoverEvents(True)
@@ -61,8 +65,8 @@ class commentNodeName(NodeName):
         self.hideButton.pressed.connect(self.parentItem().toogleCollapsed)
         self.hideButton.setFixedHeight(25)
         self.hideButton.setFixedWidth(25)
-        self.leftWidget = UICommentPinBase(self)#QGraphicsWidget(self)
-        self.rigttWidget = UICommentPinBase(self)#QGraphicsWidget(self)
+        self.leftWidget = UICommentPinBase(self)  # QGraphicsWidget(self)
+        self.rigttWidget = UICommentPinBase(self)  # QGraphicsWidget(self)
 
     def mousePressEvent(self, event):
         if not self.parentItem().isSelected():
@@ -105,20 +109,21 @@ class commentNodeName(NodeName):
             self.adjustSizes()
 
         self.width = self.parentItem()._rect.width()
-        self.setTextWidth(self.width-15)
+        self.setTextWidth(self.width - 15)
         self.update()
 
     def adjustSizes(self):
         self.parentItem()._rect.setRight(self.width)
-        self.setTextWidth(self.width-15)
+        self.setTextWidth(self.width - 15)
         self.h = self.document().documentLayout().documentSize().height()
         if not self.parentItem().expanded:
             self.parentItem()._rect.setHeight(self.h)
         self.update()
         self.parentItem().update()
         self.leftWidget.setPos(-20, self.boundingRect().center().y())
-        self.rigttWidget.setPos(self.boundingRect().right()-4.5,self.boundingRect().center().y())   
-        self.hideButtomProxy.setPos(-18, self.boundingRect().center().y()-15)     
+        self.rigttWidget.setPos(self.boundingRect().right(
+        ) - 4.5, self.boundingRect().center().y())
+        self.hideButtomProxy.setPos(-18, self.boundingRect().center().y() - 15)
 
     def boundingRect(self):
         return QtCore.QRectF(0, 0, self.width - 15.0, self.h)
@@ -126,32 +131,35 @@ class commentNodeName(NodeName):
     def paint(self, painter, option, widget):
         r = QtCore.QRectF(option.rect)
         r.setWidth(self.width)
-        r.setY(0.25+1)
-        #r.setHeight(r.height())
+        r.setY(0.25 + 1)
+        # r.setHeight(r.height())
         painter.setPen(QtCore.Qt.NoPen)
         color = QtGui.QColor(self.color)
         painter.setBrush(color)
         r.setX(-13.5)
-        r.setWidth(r.width()-16.5)
+        r.setWidth(r.width() - 16.5)
         if self.parentItem().expanded:
             path = QtGui.QPainterPath()
-            path.setFillRule( QtCore.Qt.WindingFill )
-            path.addRoundedRect(r, self.parentItem().sizes[4], self.parentItem().sizes[5])
-            r.setY(r.y()+self.parentItem().sizes[5])
+            path.setFillRule(QtCore.Qt.WindingFill)
+            path.addRoundedRect(
+                r, self.parentItem().sizes[4], self.parentItem().sizes[5])
+            r.setY(r.y() + self.parentItem().sizes[5])
             path.addRect(r)
-            painter.fillPath(path, color)   
-        else:     
-            r.setHeight(r.height()-1)
+            painter.fillPath(path, color)
+        else:
+            r.setHeight(r.height() - 1)
             #painter.drawRoundedRect(r, self.parentItem().sizes[4], self.parentItem().sizes[5])
         QGraphicsTextItem.paint(self, painter, option, widget)
 
     def hoverEnterEvent(self, event):
         NodeName.hoverEnterEvent(self, event)
 
-## Comment node
+# Comment node
 #
 # Can drag intersected nodes.
 # You can also specify color and resize it.
+
+
 class UIcommentNode(UINodeBase):
     def __init__(self, raw_node):
         super(UIcommentNode, self).__init__(raw_node)
@@ -203,9 +211,9 @@ class UIcommentNode(UINodeBase):
 
     def serialize(self):
         template = UINodeBase.serialize(self)
-        #if self.expanded:
+        # if self.expanded:
         #    bottom = self._rect.bottom()
-        #else:
+        # else:
         bottom = self.prevRect
         template['meta']['commentNode'] = {
             'labelHeight': self.label().h,
@@ -238,13 +246,13 @@ class UIcommentNode(UINodeBase):
             color = QtGui.QColor(*jsonTemplate['meta']['commentNode']['color'])
 
             if "nodesToMove" in jsonTemplate['meta']['commentNode']:
-                self.nodesNamesToMove = jsonTemplate['meta']['commentNode']["nodesToMove"]   
+                self.nodesNamesToMove = jsonTemplate['meta']['commentNode']["nodesToMove"]
                 for nodename in self.nodesNamesToMove:
                     for n in self.graph().nodes:
                         if str(n) == str(nodename):
-                            self.nodesToMove[self.graph().nodes[n]] = self.graph().nodes[n].scenePos()
+                            self.nodesToMove[self.graph().nodes[n]] = self.graph(
+                            ).nodes[n].scenePos()
                 self.nodesNamesToMove = []
-
 
         self._rect.setBottom(height)
         self._rect.setRight(width)
@@ -295,7 +303,8 @@ class UIcommentNode(UINodeBase):
         super(UIcommentNode, self).mouseDoubleClickEvent(event)
         self.toogleCollapsed()
         event.accept()
-    def mouseMoveEvent(self,event):
+
+    def mouseMoveEvent(self, event):
         super(UIcommentNode, self).mouseMoveEvent(event)
         self.label().adjustSizes()
 
@@ -316,7 +325,7 @@ class UIcommentNode(UINodeBase):
                         ege.drawDestination = self.label().leftWidget
                 elif pin in self.commentOutpus:
                     for ege in pin.connections:
-                        ege.drawSource = self.label().rigttWidget                     
+                        ege.drawSource = self.label().rigttWidget
 
             for connection in self.edgesToHide:
                 connection.hide()
@@ -328,11 +337,11 @@ class UIcommentNode(UINodeBase):
                 node.show()
             for pin in self.pinsToMove:
                 if pin in self.commentInputs:
-                    for ege in pin.connections: 
-                        ege.drawDestination = pin  
+                    for ege in pin.connections:
+                        ege.drawDestination = pin
                 elif pin in self.commentOutpus:
                     for ege in pin.connections:
-                        ege.drawSource = pin                                 
+                        ege.drawSource = pin
             for connection in self.edgesToHide:
                 connection.show()
         self.update()
@@ -357,19 +366,19 @@ class UIcommentNode(UINodeBase):
         painter.setPen(pen)
         r = QtCore.QRectF(self._rect)
         r.setWidth(r.width() - pen.width())
-        r.setHeight(r.height()-pen.width())
-        r.setX(pen.width()) 
-        r.setY(r.y()+pen.width())           
+        r.setHeight(r.height() - pen.width())
+        r.setX(pen.width())
+        r.setY(r.y() + pen.width())
         painter.drawRoundedRect(r, self.sizes[4], self.sizes[5])
 
         if option.state & QStyle.State_Selected:
             pen.setColor(Colors.Yellow)
             pen.setStyle(self.opt_pen_selected_type)
-            pen.setWidth(pen.width()*1.5)
+            pen.setWidth(pen.width() * 1.5)
             # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
         painter.setPen(pen)
-        painter.setBrush(QtGui.QColor(0,0,0,0)) 
-        painter.drawRoundedRect(r, self.sizes[4], self.sizes[5]) 
+        painter.setBrush(QtGui.QColor(0, 0, 0, 0))
+        painter.drawRoundedRect(r, self.sizes[4], self.sizes[5])
 
     def onUpdatePropertyView(self, formLayout):
 

@@ -22,15 +22,17 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QSpacerItem
 
 from PyFlow import Packages
-from PyFlow.UI.Widget import GraphWidgetUI
+from PyFlow.UI.Graph.Widget import GraphWidgetUI
 from PyFlow.Core.Common import Direction
 from PyFlow.Core.Common import clearLayout
 from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.AppBase import AppBase
 from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.UI.Widget import NodesBox
-from PyFlow.UI.Widgets import GraphEditor_ui
-from PyFlow.UI.VariablesWidget import VariablesWidget
+from PyFlow.UI.Views.InspectorWidget import InspectorWidget
+from PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.UI.Views import GraphEditor_ui
+from PyFlow.UI.Views.VariablesWidget import VariablesWidget
+from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
 from PyFlow import INITIALIZE
 
 
@@ -69,6 +71,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.listViewUndoStack.setObjectName("listViewUndoStack")
         self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
 
+	self.styleSheetEditor = StyleSheetEditor()
         self._currentGraph = GraphWidgetUI(self, graphBase=GraphTree().getRootGraph())
         self.updateGraphTreeLocation()
         GraphTree().onGraphSwitched.connect(self.onRawGraphSwitched)
@@ -166,10 +169,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         pass
 
     def toggleHistory(self):
-        self.dockWidgetUndoStack.setVisible(not self.dockWidgetUndoStack.isVisible())
+        self.dockWidgetUndoStack.setVisible(
+            not self.dockWidgetUndoStack.isVisible())
 
     def newPlugin(self, pluginType):
-        name, result = QInputDialog.getText(self, 'Plugin name', 'Enter plugin name')
+        name, result = QInputDialog.getText(
+            self, 'Plugin name', 'Enter plugin name')
         if result:
             _implementPlugin(name, pluginType)
 
@@ -178,7 +183,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.tick_timer.timeout.disconnect()
         self._currentGraph.shoutDown()
         # save editor config
-        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
+        settings = QtCore.QSettings(
+            SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
         settings.beginGroup('Editor')
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("windowState", self.saveState())
@@ -188,6 +194,14 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
     def applySettings(self, settings):
         self.restoreGeometry(settings.value('Editor/geometry'))
         self.restoreState(settings.value('Editor/windowState'))
+
+    def editTheme(self):
+        self.styleSheetEditor.show()
+
+    def updateStyle(self):
+        pass
+        # if self.styleSheetEditor:
+        #    self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
 
     def togglePropertyView(self):
         if self.dockWidgetNodeView.isVisible():
@@ -243,7 +257,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
                 mod = importer.find_module(modname).load_module(modname)
                 FactoriesPath = mod.__path__[0]
                 FactoriesImporter = pkgutil.get_importer(FactoriesPath)
-                FactoriesModuleLoader = FactoriesImporter.find_module('Factories')
+                FactoriesModuleLoader = FactoriesImporter.find_module(
+                    'Factories')
                 if FactoriesModuleLoader is not None:
-                    FactoriesModule = FactoriesModuleLoader.load_module('Factories')
+                    FactoriesModule = FactoriesModuleLoader.load_module(
+                        'Factories')
         return instance

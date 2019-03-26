@@ -1,10 +1,6 @@
-import math
-import platform
 import random
 from os import listdir, path
-from time import ctime
 import json
-import re
 import uuid
 import weakref
 try:
@@ -15,25 +11,11 @@ except:
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsScene
-from Qt.QtWidgets import QAbstractItemView
-from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QListWidget
-from Qt.QtWidgets import QFrame
 from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QStyle
-from Qt.QtWidgets import QScrollArea
-from Qt.QtWidgets import QRubberBand
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QAction
-from Qt.QtWidgets import QTreeWidget, QTreeWidgetItem
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QLabel
-from Qt.QtWidgets import QMainWindow
-from Qt.QtWidgets import QVBoxLayout
 from Qt.QtWidgets import QGraphicsItem
-from Qt.QtWidgets import QGraphicsRectItem
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QGraphicsView
@@ -44,24 +26,25 @@ from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QPushButton
 
-from Settings import Colors
-from SelectionRect import SelectionRect
-from PyFlow.UI.UIConnection import UIConnection
-from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.UINodeBase import NodeName
-from PyFlow.UI.UINodeBase import getUINodeInstance
+from PyFlow.UI.Utils.Settings import Colors
+from PyFlow.UI.Graph.SelectionRect import SelectionRect
+from PyFlow.UI.Graph.UIConnection import UIConnection
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Graph.UINodeBase import NodeName
+from PyFlow.UI.Graph.UINodeBase import getUINodeInstance
+from PyFlow.UI.Graph.UIPinBase import UIPinBase
+from PyFlow.UI.Graph.UIVariable import UIVariable
+from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
 from PyFlow.Commands.RemoveEdges import RemoveEdges as cmdRemoveEdges
-from PyFlow.UI.UIPinBase import UIPinBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.UI.UIVariable import UIVariable
-from PyFlow.UI.VariablesWidget import (
+from PyFlow.UI.Views.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
 )
@@ -112,14 +95,20 @@ def getNodeInstance(jsonTemplate, graph):
     kwargs = {}
     # if get var or set var, construct additional keyword arguments
     if jsonTemplate['type'] in ('getVar', 'setVar'):
-        kwargs['var'] = graph.vars[uuid.UUID(jsonTemplate['meta']['var']['uuid'])]
+        kwargs['var'] = graph.vars[uuid.UUID(
+            jsonTemplate['meta']['var']['uuid'])]
 
-    raw_instance = getRawNodeInstance(nodeClassName, packageName, libName, **kwargs)
+    raw_instance = getRawNodeInstance(
+        nodeClassName, packageName, libName, **kwargs)
     raw_instance.uid = uuid.UUID(jsonTemplate['uuid'])
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
+<<<<<<< HEAD:PyFlow/UI/Widget.py
     graph.addNode(instance, jsonTemplate)
+=======
+    graph.addNode(instance,jsonTemplate)
+>>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
     return instance
 
 
@@ -182,9 +171,9 @@ class SceneClass(QGraphicsScene):
     def __init__(self, parent):
         super(SceneClass, self).__init__(parent)
         self.setItemIndexMethod(self.NoIndex)
-        # self.pressed_port = None
+        #self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
-        # self.tempnode = None
+        self.tempnode = None
         self.hoverItems = []
 
     def shoutDown(self):
@@ -207,33 +196,29 @@ class SceneClass(QGraphicsScene):
 
             if VARIABLE_TAG in jsonData:
                 return
+            packageName = jsonData["package"]
+            nodeType = jsonData["type"]
+            libName = jsonData["lib"]
+            name = self.parent().getUniqNodeName(nodeType)
 
-            # packageName = jsonData["package"]
-            # nodeType = jsonData["type"]
-            # libName = jsonData["lib"]
-            # name = self.parent().getUniqNodeName(nodeType)
-
-            # nodeTemplate = NodeBase.jsonTemplate()
-            # nodeTemplate['package'] = packageName
-            # nodeTemplate['lib'] = libName
-            # nodeTemplate['type'] = nodeType
-            # nodeTemplate['name'] = name
-            # nodeTemplate['x'] = event.scenePos().x()
-            # nodeTemplate['y'] = event.scenePos().y()
-            # nodeTemplate['meta']['label'] = nodeType
-            # nodeTemplate['uuid'] = None
-
-            # try:
-            #     self.tempnode.kill()
-            #     self.tempnode.scene().removeItem(self.tempnode)
-            # except Exception as e:
-            #     pass
-            # self.tempnode = getNodeInstance(nodeTemplate, self.parent())
-
-            # self.tempnode.update()
-            # self.tempnode.postCreate(nodeTemplate)
-            # self.tempnode.isTemp = True
-            # self.hoverItems = []
+            nodeTemplate = NodeBase.jsonTemplate()
+            nodeTemplate['package'] = packageName
+            nodeTemplate['lib'] = libName
+            nodeTemplate['type'] = nodeType
+            nodeTemplate['name'] = name
+            nodeTemplate['x'] = event.scenePos().x()
+            nodeTemplate['y'] = event.scenePos().y()
+            nodeTemplate['meta']['label'] = nodeType
+            nodeTemplate['uuid'] = str(uuid.uuid4())           
+            try:
+                self.tempnode.isTemp = False
+                self.tempnode = None
+            except Exception as e:
+                pass
+            self.tempnode = self.parent().createNode(nodeTemplate)
+            if self.tempnode: 
+                self.tempnode.isTemp = True
+            self.hoverItems = []
         else:
             event.ignore()
 
@@ -241,41 +226,44 @@ class SceneClass(QGraphicsScene):
         if event.mimeData().hasFormat('text/plain'):
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
-            # if self.tempnode:
-            #     self.tempnode.setPosition((self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
-            #     mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x() - 1, event.scenePos().y() - 1),
-            #                              QtCore.QPoint(event.scenePos().x() + 1, event.scenePos().y() + 1))
-            #     hoverItems = self.items(mouseRect)
-            #     for item in hoverItems:
-            #         if isinstance(item, UIConnection):
-            #             valid = False
-            #             for inp in self.tempnode.inputs.values():
-            #                 if self.parent().canConnectPins(item.source(), inp):
-            #                     valid = True
-            #             for out in self.tempnode.outputs.values():
-            #                 if self.parent().canConnectPins(out, item.destination()):
-            #                     valid = True
-            #             if valid:
-            #                 self.hoverItems.append(item)
-            #                 item.drawThick()
-            #         elif isinstance(item, UIRerouteNode):
-            #             self.hoverItems.append(item)
-            #             item.showPins()
-            #     for item in self.hoverItems:
-            #         if item not in hoverItems:
-            #             self.hoverItems.remove(item)
-            #             if isinstance(item, UIConnection):
-            #                 item.restoreThick()
-            #             elif isinstance(item, UIRerouteNode):
-            #                 item.hidePins()
-
-            # self.itemAt(event.pos()).drawThink()
+            if self.tempnode:
+                self.tempnode.setPosition(
+                    (self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
+                mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x() - 1, event.scenePos().y() - 1),
+                                         QtCore.QPoint(event.scenePos().x() + 1, event.scenePos().y() + 1))
+                hoverItems = self.items(mouseRect)
+                for item in hoverItems:
+                    if isinstance(item, UIConnection):
+                        valid = False
+                        for inp in self.tempnode.inputs.values():
+                            if self.parent().canConnectPins(item.source(), inp):
+                                valid = True
+                        for out in self.tempnode.outputs.values():
+                            if self.parent().canConnectPins(out, item.destination()):
+                                valid = True
+                        if valid:
+                            self.hoverItems.append(item)
+                            item.drawThick()
+                    elif isinstance(item, UIRerouteNode):
+                        self.hoverItems.append(item)
+                        item.showPins()
+                for item in self.hoverItems:
+                    if item not in hoverItems:
+                        self.hoverItems.remove(item)
+                        if isinstance(item, UIConnection):
+                            item.restoreThick()
+                        elif isinstance(item, UIRerouteNode):
+                            item.hidePins()
+                    else:
+                        if isinstance(item, UIConnection):
+                            item.drawThick()
         else:
             event.ignore()
 
     def dragLeaveEvent(self, event):
-        # if self.tempnode:
-        #     self.removeItem(self.tempnode)
+        #if self.tempnode:
+        #    self.tempnode.isTemp = False
+        #    self.tempnode = None
         event.accept()
 
     def OnSelectionChanged(self):
@@ -356,9 +344,17 @@ class SceneClass(QGraphicsScene):
                 packageName = jsonData["package"]
                 nodeType = jsonData["type"]
                 libName = jsonData['lib']
+<<<<<<< HEAD:PyFlow/UI/Widget.py
                 name = GraphTree().getUniqNodeName(nodeType)
                 dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
                 if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
+=======
+                name = self.parent().getUniqNodeName(nodeType)
+                dropItem = self.parent().nodeFromInstance(self.itemAt(event.scenePos(), QtGui.QTransform()))
+
+                if not dropItem or (isinstance(dropItem, UINodeBase) and (dropItem.isCommentNode or dropItem.isTemp)) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
+                    
+>>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
                     nodeTemplate = NodeBase.jsonTemplate()
                     nodeTemplate['package'] = packageName
                     nodeTemplate['lib'] = libName
@@ -368,11 +364,24 @@ class SceneClass(QGraphicsScene):
                     nodeTemplate['y'] = y
                     nodeTemplate['meta']['label'] = nodeType
                     nodeTemplate['uuid'] = str(uuid.uuid4())
-
-                    node = self.parent().createNode(nodeTemplate)
+                    if self.tempnode:
+                        self.tempnode.isTemp = False
+                        self.tempnode.update()
+                        node = self.tempnode
+                        self.tempnode = None  
+                        for it in self.items(event.scenePos()):
+                            if isinstance(it,UIPinBase):
+                                dropItem = it
+                                break
+                            elif isinstance(it,UIConnection):
+                                dropItem = it
+                                break             
+                    else:
+                        node = self.parent().createNode(nodeTemplate)
 
                     nodeInputs = node.namePinInputsMap
                     nodeOutputs = node.namePinOutputsMap
+
                     if isinstance(dropItem, UIPinBase):
                         node.setPos(x - node.boundingRect().width(), y)
                         for inp in nodeInputs.values():
@@ -402,6 +411,7 @@ class SceneClass(QGraphicsScene):
             super(SceneClass, self).dropEvent(event)
 
 
+<<<<<<< HEAD:PyFlow/UI/Widget.py
 class NodeBoxLineEdit(QLineEdit):
     def __init__(self, parent, events=True):
         super(NodeBoxLineEdit, self).__init__(parent)
@@ -687,6 +697,8 @@ class NodesBox(QWidget):
         self.expandCategory()
 
 
+=======
+>>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
 MANIP_MODE_NONE = 0
 MANIP_MODE_SELECT = 1
 MANIP_MODE_PAN = 2
@@ -737,6 +749,7 @@ class GraphWidgetUI(QGraphicsView):
         self.parent = parent
         self.parent.actionClear_history.triggered.connect(self.undoStack.clear)
         self.parent.listViewUndoStack.setStack(self.undoStack)
+        self.styleSheetEditor = self.parent.styleSheetEditor        
         self.menu = QMenu()
         self.setScene(SceneClass(self))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -1521,6 +1534,7 @@ class GraphWidgetUI(QGraphicsView):
                         self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
                         self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
                         self._draw_real_time_line = True
+                        self.autoPanController.start()
                     if modifiers == QtCore.Qt.AltModifier:
                         self.removeEdgeCmd(self.pressed_item.connections)
                         self._draw_real_time_line = False
@@ -1532,13 +1546,19 @@ class GraphWidgetUI(QGraphicsView):
                         reruteNode.setSelected(True)
                         for inp in reruteNode.inputs.values():
                             if self.canConnectPins(self.pressed_item.source(), inp):
+                                drawPin = self.pressed_item.drawSource
                                 if self.pressed_item.source().dataType == 'ExecPin':
                                     self.pressed_item.source().disconnectAll()
                                 self.connectPins(self.pressed_item.source(), inp)
+                                for conection in inp.connections:
+                                    conection.drawSource = drawPin
                                 break
                         for out in reruteNode.outputs.values():
+                            drawPin = self.pressed_item.drawDestination
                             if self.canConnectPins(out, self.pressed_item.destination()):
                                 self.connectPins(out, self.pressed_item.destination())
+                                for conection in out.connections:
+                                    conection.drawDestination = drawPin                                
                                 break
                         self.pressed_item = reruteNode
                         self._manipulationMode = MANIP_MODE_MOVE
@@ -1572,7 +1592,6 @@ class GraphWidgetUI(QGraphicsView):
                             self._manipulationMode = MANIP_MODE_MOVE
                             self._lastDragPoint = self.mapToScene(event.pos())
                             selectedNodes = self.selectedNodes()
-                            newNodes = []
                             copiedNodes = self.copyNodes(toClipboard=False)
                             self.pasteNodes(move=False, data=copiedNodes)
 
@@ -1583,15 +1602,12 @@ class GraphWidgetUI(QGraphicsView):
         rect = self.sceneRect()
         rect.translate(-delta.x(), -delta.y())
         self.setSceneRect(rect)
-        # delta *= self._scale * -1
-        # delta *= self._panSpeed
-        # self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + delta.x())
-        # self.verticalScrollBar().setValue(self.verticalScrollBar().value() + delta.y())
 
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
         modifiers = event.modifiers()
         node = self.nodeFromInstance(self.itemAt(event.pos()))
+        self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         if self.itemAt(event.pos()) and isinstance(node, UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
             if resizeOpts["resize"] or node.bResize:
@@ -1722,13 +1738,13 @@ class GraphWidgetUI(QGraphicsView):
                     if isinstance(item, UIConnection):
                         if list(node.inputs.values())[0].connections and list(node.outputs.values())[0].connections:
                             if item.source() == list(node.inputs.values())[0].connections[0].source():
-                                newOuts.append(item.destination())
+                                newOuts.append([item.destination(),item.drawDestination])
                             if item.destination() == list(node.outputs.values())[0].connections[0].destination():
-                                newIns.append(item.source())
+                                newIns.append([item.source(),item.drawSource])
                 for out in newOuts:
-                    self.connectPins(list(node.outputs.values())[0], out)
+                    self.connectPins(list(node.outputs.values())[0], out[0])                  
                 for inp in newIns:
-                    self.connectPins(inp, list(node.inputs.values())[0])
+                    self.connectPins(inp[0], list(node.inputs.values())[0])                  
 
         elif self._manipulationMode == MANIP_MODE_PAN:
             self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
@@ -2008,15 +2024,23 @@ class GraphWidgetUI(QGraphicsView):
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
+<<<<<<< HEAD:PyFlow/UI/Widget.py
     def addNode(self, node, jsonTemplate=None):
+=======
+    def addNode(self, node,jsonTemplate=None):
+>>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
         """Adds node to a graph
 
         Arguments:
             node UINodeBase -- raw node wrapper
         """
+<<<<<<< HEAD:PyFlow/UI/Widget.py
         graphBase = GraphTree().activeGraph()
         print('add', node.name, 'to', graphBase.name)
         graphBase.addNode(node._rawNode, jsonTemplate)
+=======
+        self._graphBase.addNode(node._rawNode,jsonTemplate)
+>>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
         node.graph = weakref.ref(self)
         self.scene().addItem(node)
 
@@ -2084,7 +2108,6 @@ class GraphWidgetUI(QGraphicsView):
         self._graphBase.plot()
 
     def zoomDelta(self, direction):
-        current_factor = self.factor
         if direction:
             self.zoom(1 + 0.1)
         else:

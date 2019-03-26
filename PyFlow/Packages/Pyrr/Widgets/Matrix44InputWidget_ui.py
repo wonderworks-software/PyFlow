@@ -116,4 +116,4 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QtCompat.translate("Form", "Form", None, -1))
 
-import nodes_res_rc
+import PyFlow.UI.Utils.nodes_res_rc

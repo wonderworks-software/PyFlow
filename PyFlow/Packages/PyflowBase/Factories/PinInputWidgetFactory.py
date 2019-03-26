@@ -12,7 +12,7 @@ from Qt.QtWidgets import QCheckBox
 from Qt.QtWidgets import QGridLayout
 
 from PyFlow.Core.Common import *
-from PyFlow.UI.InputWidgets import *
+from PyFlow.UI.Widgets.InputWidgets import *
 
 
 FLOAT_SINGLE_STEP = 0.01
@@ -31,6 +31,7 @@ def _configIntSpinBox(sb):
 
 class ExecInputWidget(InputWidgetSingle):
     """docstring for ExecInputWidget"""
+
     def __init__(self, parent=None, **kwds):
         super(ExecInputWidget, self).__init__(parent=parent, **kwds)
         self.pb = QPushButton('execute', self)
@@ -46,6 +47,7 @@ class EnumInputWidget(InputWidgetSingle):
     """
     Enum input widget
     """
+
     def __init__(self, parent=None, **kwds):
         super(EnumInputWidget, self).__init__(parent=parent, **kwds)
         # self._userStruct = kwds['userStructClass']
@@ -86,6 +88,7 @@ class IntInputWidget(InputWidgetSingle):
     """
     Decimal number input widget
     """
+
     def __init__(self, parent=None, **kwds):
         super(IntInputWidget, self).__init__(parent=parent, **kwds)
         self.sb = QSpinBox(self)
@@ -104,6 +107,7 @@ class StringInputWidget(InputWidgetSingle):
     """
     String data input widget
     """
+
     def __init__(self, parent=None, **kwds):
         super(StringInputWidget, self).__init__(parent=parent, **kwds)
         self.le = QLineEdit(self)
@@ -120,11 +124,13 @@ class StringInputWidget(InputWidgetSingle):
 
 class BoolInputWidget(InputWidgetSingle):
     """Boolean data input widget"""
+
     def __init__(self, parent=None, **kwds):
         super(BoolInputWidget, self).__init__(parent=parent, **kwds)
         self.cb = QCheckBox(self)
         self.setWidget(self.cb)
-        self.cb.stateChanged.connect(lambda val: self.dataSetCallback(bool(val)))
+        self.cb.stateChanged.connect(
+            lambda val: self.dataSetCallback(bool(val)))
 
     def blockWidgetSignals(self, bLocked):
         self.cb.blockSignals(bLocked)
@@ -140,6 +146,7 @@ class NoneInputWidget(InputWidgetSingle):
     """
     String data input widget
     """
+
     def __init__(self, parent=None, **kwds):
         super(NoneInputWidget, self).__init__(parent=parent, **kwds)
         self.le = QLineEdit(self)

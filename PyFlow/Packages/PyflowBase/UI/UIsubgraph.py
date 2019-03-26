@@ -1,7 +1,8 @@
 from Qt import QtWidgets
 
-from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.Widget import GraphWidgetUI
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Graph.Widget import GraphWidgetUI
+
 from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.Common import *
 

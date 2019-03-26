@@ -8,7 +8,7 @@ Also, it implements [initializeFromFunction](@ref PyFlow.Core.Node.initializeFro
 
 import weakref
 
-from Settings import *
+
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsTextItem
@@ -17,27 +17,28 @@ from Qt.QtWidgets import QGraphicsObject
 from Qt.QtWidgets import QLabel
 from Qt.QtWidgets import QTextBrowser
 from Qt.QtWidgets import QGraphicsWidget
-from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QGraphicsLinearLayout
 from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
-from Qt.QtWidgets import QTreeWidgetItem
 from Qt.QtWidgets import QColorDialog
 from Qt.QtWidgets import QMenu
 
-from PyFlow.UI.UIPinBase import (
+from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Graph.UIPinBase import (
     UIPinBase,
     getUIPinInstance,
     UIGroupPinBase
 )
-from PyFlow.UI.InputWidgets import createInputWidget
-from PyFlow.UI.NodePainter import NodePainter
+from PyFlow.UI.Widgets.InputWidgets import createInputWidget
+from PyFlow.UI.Graph.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Core.NodeBase import NodeBase
+<<<<<<< HEAD:PyFlow/UI/UINodeBase.py
 from PyFlow.Core.Enums import ENone
 from PyFlow.Core.GraphTree import GraphTree
+=======
+>>>>>>> ui_enhacements:PyFlow/UI/Graph/UINodeBase.py
 from PyFlow.Core.Common import *
 
 from collections import OrderedDict

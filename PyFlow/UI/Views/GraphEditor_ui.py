@@ -10,18 +10,21 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
         MainWindow.resize(996, 650)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/resources/LogoBpApp.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/icons/resources/LogoBpApp.png"),
+                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setDocumentMode(False)
         MainWindow.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        self.centralwidget.setLocale(QtCore.QLocale(
+            QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout_3.setSpacing(1)
@@ -90,26 +93,42 @@ class Ui_MainWindow(object):
         self.dockWidgetVariables = QtWidgets.QDockWidget(MainWindow)
         self.dockWidgetVariables.setMinimumSize(QtCore.QSize(150, 113))
         self.dockWidgetVariables.setFloating(False)
+<<<<<<< HEAD:PyFlow/UI/Widgets/GraphEditor_ui.py
         self.dockWidgetVariables.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
         self.dockWidgetVariables.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea|QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
+=======
+        self.dockWidgetVariables.setFeatures(
+            QtWidgets.QDockWidget.AllDockWidgetFeatures)
+>>>>>>> ui_enhacements:PyFlow/UI/Views/GraphEditor_ui.py
         self.dockWidgetVariables.setObjectName("dockWidgetVariables")
         self.dockWidgetContents_5 = QtWidgets.QWidget()
         self.dockWidgetContents_5.setObjectName("dockWidgetContents_5")
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.dockWidgetContents_5)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(
+            self.dockWidgetContents_5)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.scrollArea_2 = QtWidgets.QScrollArea(self.dockWidgetContents_5)
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
+<<<<<<< HEAD:PyFlow/UI/Widgets/GraphEditor_ui.py
         self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 148, 571))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+=======
+        self.scrollAreaWidgetContents_2.setGeometry(
+            QtCore.QRect(0, 0, 148, 554))
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+>>>>>>> ui_enhacements:PyFlow/UI/Views/GraphEditor_ui.py
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.scrollAreaWidgetContents_2.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.scrollAreaWidgetContents_2.sizePolicy().hasHeightForWidth())
         self.scrollAreaWidgetContents_2.setSizePolicy(sizePolicy)
-        self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
-        self.gridLayout_5 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
+        self.scrollAreaWidgetContents_2.setObjectName(
+            "scrollAreaWidgetContents_2")
+        self.gridLayout_5 = QtWidgets.QGridLayout(
+            self.scrollAreaWidgetContents_2)
         self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_5.setObjectName("gridLayout_5")
         self.leftDockGridLayout = QtWidgets.QGridLayout()
@@ -118,7 +137,8 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
         self.verticalLayout_2.addWidget(self.scrollArea_2)
         self.dockWidgetVariables.setWidget(self.dockWidgetContents_5)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidgetVariables)
+        MainWindow.addDockWidget(
+            QtCore.Qt.DockWidgetArea(2), self.dockWidgetVariables)
         self.dockWidgetNodeView = QtWidgets.QDockWidget(MainWindow)
         self.dockWidgetNodeView.setMinimumSize(QtCore.QSize(80, 93))
         self.dockWidgetNodeView.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea|QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
@@ -133,9 +153,18 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
+<<<<<<< HEAD:PyFlow/UI/Widgets/GraphEditor_ui.py
         self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 78, 396))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_3)
+=======
+        self.scrollAreaWidgetContents_3.setGeometry(
+            QtCore.QRect(0, 0, 78, 383))
+        self.scrollAreaWidgetContents_3.setObjectName(
+            "scrollAreaWidgetContents_3")
+        self.gridLayout_4 = QtWidgets.QGridLayout(
+            self.scrollAreaWidgetContents_3)
+>>>>>>> ui_enhacements:PyFlow/UI/Views/GraphEditor_ui.py
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.formLayout = QtWidgets.QFormLayout()
@@ -144,19 +173,23 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_3)
         self.verticalLayout.addWidget(self.scrollArea)
         self.dockWidgetNodeView.setWidget(self.dockWidgetContents)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetNodeView)
+        MainWindow.addDockWidget(
+            QtCore.Qt.DockWidgetArea(1), self.dockWidgetNodeView)
         self.dockWidgetUndoStack = QtWidgets.QDockWidget(MainWindow)
         self.dockWidgetUndoStack.setEnabled(True)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/icons/resources/history.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(":/icons/resources/history.png"),
+                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.dockWidgetUndoStack.setWindowIcon(icon1)
         self.dockWidgetUndoStack.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea|QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
         self.dockWidgetUndoStack.setObjectName("dockWidgetUndoStack")
         self.dockWidgetContents_3 = QtWidgets.QWidget()
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.dockWidgetContents_3.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.dockWidgetContents_3.sizePolicy().hasHeightForWidth())
         self.dockWidgetContents_3.setSizePolicy(sizePolicy)
         self.dockWidgetContents_3.setObjectName("dockWidgetContents_3")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.dockWidgetContents_3)
@@ -164,90 +197,108 @@ class Ui_MainWindow(object):
         self.gridLayout_6.setContentsMargins(1, 1, 1, 1)
         self.gridLayout_6.setObjectName("gridLayout_6")
         self.dockWidgetUndoStack.setWidget(self.dockWidgetContents_3)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetUndoStack)
+        MainWindow.addDockWidget(
+            QtCore.Qt.DockWidgetArea(1), self.dockWidgetUndoStack)
         self.actionDelete = QtWidgets.QAction(MainWindow)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/icons/resources/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionDelete.setIcon(icon2)
         self.actionDelete.setObjectName("actionDelete")
         self.actionSave = QtWidgets.QAction(MainWindow)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/icons/resources/save_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/save_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionSave.setIcon(icon3)
         self.actionSave.setObjectName("actionSave")
         self.actionLoad = QtWidgets.QAction(MainWindow)
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(":/icons/resources/folder_open_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/folder_open_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionLoad.setIcon(icon4)
         self.actionLoad.setObjectName("actionLoad")
         self.actionSave_as = QtWidgets.QAction(MainWindow)
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(":/icons/resources/save_as_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon5.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/save_as_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionSave_as.setIcon(icon5)
         self.actionSave_as.setObjectName("actionSave_as")
         self.actionPlot_graph = QtWidgets.QAction(MainWindow)
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(":/icons/resources/plot_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon6.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/plot_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPlot_graph.setIcon(icon6)
         self.actionPlot_graph.setObjectName("actionPlot_graph")
         self.actionScreenshot = QtWidgets.QAction(MainWindow)
         icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap(":/icons/resources/screenshot_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon7.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/screenshot_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionScreenshot.setIcon(icon7)
         self.actionScreenshot.setObjectName("actionScreenshot")
         self.actionShortcuts = QtWidgets.QAction(MainWindow)
         icon8 = QtGui.QIcon()
-        icon8.addPixmap(QtGui.QPixmap(":/icons/resources/shortcuts_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon8.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/shortcuts_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionShortcuts.setIcon(icon8)
         self.actionShortcuts.setObjectName("actionShortcuts")
         self.actionAlignLeft = QtWidgets.QAction(MainWindow)
         icon9 = QtGui.QIcon()
-        icon9.addPixmap(QtGui.QPixmap(":/icons/resources/alignleft.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon9.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/alignleft.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionAlignLeft.setIcon(icon9)
         self.actionAlignLeft.setObjectName("actionAlignLeft")
         self.actionAlignUp = QtWidgets.QAction(MainWindow)
         icon10 = QtGui.QIcon()
-        icon10.addPixmap(QtGui.QPixmap(":/icons/resources/aligntop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon10.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/aligntop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionAlignUp.setIcon(icon10)
         self.actionAlignUp.setObjectName("actionAlignUp")
         self.actionPropertyView = QtWidgets.QAction(MainWindow)
         icon11 = QtGui.QIcon()
-        icon11.addPixmap(QtGui.QPixmap(":/icons/resources/property_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon11.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/property_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionPropertyView.setIcon(icon11)
         self.actionPropertyView.setObjectName("actionPropertyView")
         self.actionAlignBottom = QtWidgets.QAction(MainWindow)
         icon12 = QtGui.QIcon()
-        icon12.addPixmap(QtGui.QPixmap(":/icons/resources/alignbottom.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon12.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/alignbottom.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionAlignBottom.setIcon(icon12)
         self.actionAlignBottom.setObjectName("actionAlignBottom")
         self.actionAlignRight = QtWidgets.QAction(MainWindow)
         icon13 = QtGui.QIcon()
-        icon13.addPixmap(QtGui.QPixmap(":/icons/resources/alignright.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon13.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/alignright.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionAlignRight.setIcon(icon13)
         self.actionAlignRight.setObjectName("actionAlignRight")
         self.actionNew_Node = QtWidgets.QAction(MainWindow)
         icon14 = QtGui.QIcon()
-        icon14.addPixmap(QtGui.QPixmap(":/icons/resources/brick.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon14.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/brick.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionNew_Node.setIcon(icon14)
         self.actionNew_Node.setObjectName("actionNew_Node")
         self.actionNew_Command = QtWidgets.QAction(MainWindow)
         icon15 = QtGui.QIcon()
-        icon15.addPixmap(QtGui.QPixmap(":/icons/resources/script.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon15.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/script.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionNew_Command.setIcon(icon15)
         self.actionNew_Command.setObjectName("actionNew_Command")
         self.actionFunction_Library = QtWidgets.QAction(MainWindow)
         icon16 = QtGui.QIcon()
-        icon16.addPixmap(QtGui.QPixmap(":/icons/resources/function.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon16.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/function.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionFunction_Library.setIcon(icon16)
         self.actionFunction_Library.setObjectName("actionFunction_Library")
         self.actionClear_history = QtWidgets.QAction(MainWindow)
         icon17 = QtGui.QIcon()
-        icon17.addPixmap(QtGui.QPixmap(":/icons/resources/clear_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon17.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/clear_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionClear_history.setIcon(icon17)
         self.actionClear_history.setObjectName("actionClear_history")
         self.actionVariables = QtWidgets.QAction(MainWindow)
         icon18 = QtGui.QIcon()
-        icon18.addPixmap(QtGui.QPixmap(":/icons/resources/variable.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon18.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/variable.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionVariables.setIcon(icon18)
         self.actionVariables.setObjectName("actionVariables")
         self.actionHistory = QtWidgets.QAction(MainWindow)
@@ -255,16 +306,34 @@ class Ui_MainWindow(object):
         self.actionHistory.setObjectName("actionHistory")
         self.actionNew_pin = QtWidgets.QAction(MainWindow)
         icon19 = QtGui.QIcon()
-        icon19.addPixmap(QtGui.QPixmap(":/icons/resources/pin.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon19.addPixmap(QtGui.QPixmap(":/icons/resources/pin.png"),
+                         QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionNew_pin.setIcon(icon19)
         self.actionNew_pin.setObjectName("actionNew_pin")
         self.actionNew = QtWidgets.QAction(MainWindow)
         icon20 = QtGui.QIcon()
-        icon20.addPixmap(QtGui.QPixmap(":/icons/resources/new_file_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon20.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/new_file_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionNew.setIcon(icon20)
         self.actionNew.setObjectName("actionNew")
+<<<<<<< HEAD:PyFlow/UI/Widgets/GraphEditor_ui.py
+=======
+        self.actionSpawnInspector = QtWidgets.QAction(MainWindow)
+        icon21 = QtGui.QIcon()
+        icon21.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/debug_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionSpawnInspector.setIcon(icon21)
+        self.actionSpawnInspector.setObjectName("actionSpawnInspector")
+        self.actionEdit_Theme = QtWidgets.QAction(MainWindow)
+        self.actionEdit_Theme.setObjectName("actionEdit_Theme")
+        icon22 = QtGui.QIcon()
+        icon22.addPixmap(QtGui.QPixmap(
+            ":/icons/resources/colors_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionEdit_Theme.setIcon(icon22)
+>>>>>>> ui_enhacements:PyFlow/UI/Views/GraphEditor_ui.py
         self.menuEdit.addAction(self.actionDelete)
         self.menuEdit.addSeparator()
+        self.menuEdit.addAction(self.actionEdit_Theme)
         self.menuEdit.addAction(self.actionClear_history)
         self.menuView.addAction(self.actionVariables)
         self.menuView.addAction(self.actionHistory)
@@ -301,6 +370,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
+<<<<<<< HEAD:PyFlow/UI/Widgets/GraphEditor_ui.py
         MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "PyFlow", None, -1))
         self.menuEdit.setTitle(QtWidgets.QApplication.translate("MainWindow", "Edit", None, -1))
         self.menuView.setTitle(QtWidgets.QApplication.translate("MainWindow", "View", None, -1))
@@ -337,5 +407,86 @@ class Ui_MainWindow(object):
         self.actionHistory.setText(QtWidgets.QApplication.translate("MainWindow", "History", None, -1))
         self.actionNew_pin.setText(QtWidgets.QApplication.translate("MainWindow", "New pin", None, -1))
         self.actionNew.setText(QtWidgets.QApplication.translate("MainWindow", "New", None, -1))
+=======
+        MainWindow.setWindowTitle(QtCompat.translate(
+            "MainWindow", "PyFlow", None, -1))
+        self.menuEdit.setTitle(QtCompat.translate(
+            "MainWindow", "Edit", None, -1))
+        self.menuView.setTitle(QtCompat.translate(
+            "MainWindow", "View", None, -1))
+        self.menuFile.setTitle(QtCompat.translate(
+            "MainWindow", "File", None, -1))
+        self.menuHelp.setTitle(QtCompat.translate(
+            "MainWindow", "Help", None, -1))
+        self.menuPlugins.setTitle(QtCompat.translate(
+            "MainWindow", "Plugins", None, -1))
+        self.toolBar.setWindowTitle(QtCompat.translate(
+            "MainWindow", "toolBar", None, -1))
+        self.dockWidgetVariables.setWindowTitle(
+            QtCompat.translate("MainWindow", "Variables", None, -1))
+        self.dockWidgetNodeView.setWindowTitle(
+            QtCompat.translate("MainWindow", "PropertyView", None, -1))
+        self.dockWidgetUndoStack.setWindowTitle(
+            QtCompat.translate("MainWindow", "History", None, -1))
+        self.actionDelete.setText(QtCompat.translate(
+            "MainWindow", "Delete", None, -1))
+        self.actionSave.setText(QtCompat.translate(
+            "MainWindow", "Save", None, -1))
+        self.actionLoad.setText(QtCompat.translate(
+            "MainWindow", "Load", None, -1))
+        self.actionSave_as.setText(QtCompat.translate(
+            "MainWindow", "Save as", None, -1))
+        self.actionPlot_graph.setText(QtCompat.translate(
+            "MainWindow", "Plot graph", None, -1))
+        self.actionScreenshot.setText(QtCompat.translate(
+            "MainWindow", "Screenshot", None, -1))
+        self.actionShortcuts.setText(QtCompat.translate(
+            "MainWindow", "Shortcuts", None, -1))
+        self.actionAlignLeft.setText(QtCompat.translate(
+            "MainWindow", "AlignLeft", None, -1))
+        self.actionAlignLeft.setToolTip(QtCompat.translate(
+            "MainWindow", "Align selected nodes by the left most", None, -1))
+        self.actionAlignUp.setText(QtCompat.translate(
+            "MainWindow", "AlignUp", None, -1))
+        self.actionAlignUp.setToolTip(QtCompat.translate(
+            "MainWindow", "Align selected nodes by the up most", None, -1))
+        self.actionPropertyView.setText(QtCompat.translate(
+            "MainWindow", "PropertyView", None, -1))
+        self.actionPropertyView.setToolTip(QtCompat.translate(
+            "MainWindow", "toggle property view", None, -1))
+        self.actionAlignBottom.setText(QtCompat.translate(
+            "MainWindow", "AlignBottom", None, -1))
+        self.actionAlignRight.setText(QtCompat.translate(
+            "MainWindow", "alignRight", None, -1))
+        self.actionNew_Node.setText(QtCompat.translate(
+            "MainWindow", "New node", None, -1))
+        self.actionNew_Node.setToolTip(
+            QtCompat.translate("MainWindow", "New node", None, -1))
+        self.actionNew_Command.setText(QtCompat.translate(
+            "MainWindow", "New editor command", None, -1))
+        self.actionNew_Command.setToolTip(QtCompat.translate(
+            "MainWindow", "New editor command", None, -1))
+        self.actionFunction_Library.setText(QtCompat.translate(
+            "MainWindow", "New function library", None, -1))
+        self.actionFunction_Library.setToolTip(QtCompat.translate(
+            "MainWindow", "New function library", None, -1))
+        self.actionClear_history.setText(QtCompat.translate(
+            "MainWindow", "Clear history", None, -1))
+        self.actionEdit_Theme.setText(QtCompat.translate(
+            "MainWindow", "Edit Theme", None, -1))
+        self.actionVariables.setText(QtCompat.translate(
+            "MainWindow", "Variables", None, -1))
+        self.actionHistory.setText(QtCompat.translate(
+            "MainWindow", "History", None, -1))
+        self.actionNew_pin.setText(QtCompat.translate(
+            "MainWindow", "New pin", None, -1))
+        self.actionNew.setText(QtCompat.translate(
+            "MainWindow", "New", None, -1))
+        self.actionSpawnInspector.setText(QtCompat.translate(
+            "MainWindow", "spawnInspector", None, -1))
+        self.actionSpawnInspector.setToolTip(QtCompat.translate(
+            "MainWindow", "Inspector window", None, -1))
 
-import nodes_res_rc
+>>>>>>> ui_enhacements:PyFlow/UI/Views/GraphEditor_ui.py
+
+import PyFlow.UI.Utils.nodes_res_rc

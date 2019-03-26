@@ -72,10 +72,18 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QCompleter
 from Qt.QtWidgets import QPlainTextEdit
 
+<<<<<<< HEAD:PyFlow/UI/CodeEditor.py
 from PyFlow.UI.Widgets import CodeEditor_ui
 import PyFlow.UI.PythonSyntax as PythonSyntax
 from PyFlow.UI.Widgets import PinWidget_ui
 from PyFlow.UI.UINodeBase import UINodeBase
+=======
+
+import PyFlow.UI.Utils.PythonSyntax as PythonSyntax
+from PyFlow.UI.Views import PinWidget_ui
+from PyFlow.UI.Views import Ui_CodeEditor_ui
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+>>>>>>> ui_enhacements:PyFlow/UI/Views/CodeEditor.py
 from PyFlow.Core.Common import pinAffects
 from PyFlow import (
     getAllPinClasses,
@@ -84,7 +92,9 @@ from PyFlow import (
 from PyFlow.Core.PyCodeCompiler import Py3FunctionCompiler
 
 
-_defaultWordList = kwlist + ['setData(', 'getData()', 'currentData()', 'dataType', 'setClean()', 'setDirty()'] + dir(builtins)
+_defaultWordList = kwlist + \
+    ['setData(', 'getData()', 'currentData()', 'dataType',
+     'setClean()', 'setDirty()'] + dir(builtins)
 
 
 # TODO: Rewrite this
@@ -112,7 +122,8 @@ class WCompletionTextEdit(QPlainTextEdit):
         tc = self.textCursor()
         tc.movePosition(QtGui.QTextCursor.Left)
         tc.movePosition(QtGui.QTextCursor.EndOfWord)
-        tc.insertText(completion.replace(self.completer.completionPrefix(), ''))
+        tc.insertText(completion.replace(
+            self.completer.completionPrefix(), ''))
         self.setTextCursor(tc)
 
     def textUnderCursor(self):
@@ -132,12 +143,14 @@ class WCompletionTextEdit(QPlainTextEdit):
                 return
 
         # has ctrl-space been pressed??
-        isShortcut = (event.modifiers() == QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_Space)
+        isShortcut = (event.modifiers(
+        ) == QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_Space)
         if (not self.completer or not isShortcut):
             QPlainTextEdit.keyPressEvent(self, event)
 
         # ctrl or shift key on it's own??
-        ctrlOrShift = event.modifiers() in (QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier)
+        ctrlOrShift = event.modifiers() in (
+            QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier)
         if ctrlOrShift and event.text() == '':
             # ctrl or shift key on it's own
             return
@@ -145,7 +158,8 @@ class WCompletionTextEdit(QPlainTextEdit):
         # end of word
         eow = "~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="
 
-        hasModifier = ((event.modifiers() != QtCore.Qt.NoModifier) and not ctrlOrShift)
+        hasModifier = ((event.modifiers() != QtCore.Qt.NoModifier)
+                       and not ctrlOrShift)
 
         completionPrefix = self.textUnderCursor()
 
@@ -160,7 +174,8 @@ class WCompletionTextEdit(QPlainTextEdit):
                 self.completer.completionModel().index(0, 0))
 
         cr = self.cursorRect()
-        cr.setWidth(self.completer.popup().sizeHintForColumn(0) + self.completer.popup().verticalScrollBar().sizeHint().width())
+        cr.setWidth(self.completer.popup().sizeHintForColumn(
+            0) + self.completer.popup().verticalScrollBar().sizeHint().width())
         # popup it up!
         self.completer.complete(cr)
 
@@ -203,7 +218,7 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
         return self.cbType.currentText()
 
 
-## @brief Used to write code into pythonNode
+# @brief Used to write code into pythonNode
 # @details See [Package description](@ref CodeEditor) for details
 class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     def __init__(self, graph, node, uid):
@@ -218,7 +233,8 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.plainTextEdit.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.plainTextEdit.sizePolicy().hasHeightForWidth())
         self.plainTextEdit.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Consolas")
@@ -232,7 +248,8 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.tabWidget.currentChanged.connect(self.OnCurrentTabChanged)
         self.setFontSize(10)
 
-        self.sbFontSize.valueChanged.connect(lambda: self.setFontSize(self.sbFontSize.value()))
+        self.sbFontSize.valueChanged.connect(
+            lambda: self.setFontSize(self.sbFontSize.value()))
         self.pbAddInput.clicked.connect(self.addDefaultInput)
         self.pbAddOutput.clicked.connect(self.addDefaultOutput)
         self.pbSave.clicked.connect(self.applyData)
@@ -251,7 +268,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             stringList = _defaultWordList + self.gatherPinNames()
             self.plainTextEdit.completer.model().setStringList(stringList)
 
-    ## slot for kill selected pins button
+    # slot for kill selected pins button
     def onKillSelectedPins(self):
         for i in self.lwInputs.selectedItems():
             r = self.lwInputs.row(i)
@@ -271,7 +288,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         except:
             pass
 
-    ##  populte editor ui from node data
+    # populte editor ui from node data
     def populate(self):
         node = self.graph.nodes[self.nodeUid]
         for i in node.inputs.values():
@@ -286,23 +303,30 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             code += line
         self.plainTextEdit.setPlainText(code)
 
-    ## resets ui to defaults
+    # resets ui to defaults
     def resetUiData(self):
         self.lwInputs.clear()
         self.lwOutputs.clear()
 
-    ## @brief this method resets python node to its initial state
+    # @brief this method resets python node to its initial state
     # @details kills all inputs and outputs including all containers etc.
     def resetNode(self):
         node = self.graph.nodes[self.nodeUid]
         for i in list(node.inputs.values()):
             i.kill()
+<<<<<<< HEAD:PyFlow/UI/CodeEditor.py
         for o in list(node.outputs.values()):
             o.kill()
+=======
+            self.graph.scene().removeItem(i.getContainer())
+        for o in list(node.outputs.values()):
+            o.kill()
+            self.graph.scene().removeItem(o.getContainer())
+>>>>>>> ui_enhacements:PyFlow/UI/Views/CodeEditor.py
 
         # TODO: Reset node size
 
-    ## slot called when Save button is pressed
+    # slot called when Save button is pressed
     # @sa CodeEditor
     def applyData(self):
         # reset node
@@ -327,7 +351,12 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
             if isinstance(w, WPinWidget):
                 dataType = w.dataType()
+<<<<<<< HEAD:PyFlow/UI/CodeEditor.py
                 rawPin = node._rawNode.addOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), foo=node.compute)
+=======
+                rawPin = node._rawNode.addOutputPin(
+                    w.name(), w.dataType(), getPinDefaultValueByType(dataType))
+>>>>>>> ui_enhacements:PyFlow/UI/Views/CodeEditor.py
                 uiPin = node._createUIPinWrapper(rawPin)
                 w.lePinName.setText(uiPin.name)
                 uiPin.getLabel()().setVisible(not w.shouldHideLabel())
@@ -338,7 +367,8 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             if isinstance(w, WPinWidget):
                 dataType = w.dataType()
                 compute = node.compute if dataType == "ExecPin" else None
-                rawPin = node._rawNode.addInputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), compute)
+                rawPin = node._rawNode.addInputPin(
+                    w.name(), w.dataType(), getPinDefaultValueByType(dataType), compute)
                 uiPin = node._createUIPinWrapper(rawPin)
                 w.lePinName.setText(uiPin.name)
                 uiPin.getLabel()().setVisible(not w.shouldHideLabel())
@@ -364,7 +394,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
                     names.append(name)
         return names
 
-    ## puts created widget inside input list widget
+    # puts created widget inside input list widget
     def appendInput(self, pw):
         item = QListWidgetItem(self.lwInputs)
         item.setSizeHint(QtCore.QSize(pw.sizeHint().width(), 80))
@@ -372,7 +402,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.lwInputs.setItemWidget(item, pw)
         del item
 
-    ## puts created widget inside output list widget
+    # puts created widget inside output list widget
     def appendOutput(self, pw):
         item = QListWidgetItem(self.lwOutputs)
         item.setSizeHint(QtCore.QSize(pw.sizeHint().width(), 80))
@@ -380,17 +410,17 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.lwOutputs.setItemWidget(item, pw)
         del item
 
-    ## add input pin slot
+    # add input pin slot
     def addDefaultInput(self):
         w = WPinWidget(self)
         self.appendInput(w)
 
-    ## add output pin slot
+    # add output pin slot
     def addDefaultOutput(self):
         w = WPinWidget(self)
         self.appendOutput(w)
 
-    ## changes text editor font size
+    # changes text editor font size
     def setFontSize(self, size):
         f = self.plainTextEdit.font()
         size = abs(size)

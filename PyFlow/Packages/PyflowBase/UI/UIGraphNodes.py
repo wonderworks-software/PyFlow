@@ -1,9 +1,9 @@
 from Qt import QtCore
 from Qt.QtWidgets import QInputDialog
 
-from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.NodePainter import NodePainter
-from PyFlow.UI.Settings import *
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Graph.Painters import NodePainter
+from PyFlow.UI.Utils.Settings import *
 
 
 class UIGraphInputs(UINodeBase):
