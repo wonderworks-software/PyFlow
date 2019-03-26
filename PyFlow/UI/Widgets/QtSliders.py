@@ -4,13 +4,13 @@
 import sys
 from Qt import QtGui, QtCore, QtWidgets
 
+
 class pyf_DoubleSlider(QtWidgets.QSlider):
 
     def __init__(self, *args, **kwargs):
         super(pyf_DoubleSlider, self).__init__(*args, **kwargs)
         self.decimals = 5
         self._max_int = 10 ** self.decimals
-
         super(pyf_DoubleSlider, self).setMinimum(0)
         super(pyf_DoubleSlider, self).setMaximum(self._max_int)
         self._min_value = 0.0
@@ -26,6 +26,14 @@ class pyf_DoubleSlider(QtWidgets.QSlider):
     def setValue(self, value):
         super(pyf_DoubleSlider, self).setValue(
             int((value - self._min_value) / self._value_range * self._max_int))
+
+    def setDecimals(self, decimals):
+        self.decimals = decimals
+        self._max_int = 10 ** self.decimals
+
+    def setRange(self, min, max):
+        self.setMinimum(min)
+        self.setMaximum(max)
 
     def setMinimum(self, value):
         if value > self._max_value:
@@ -62,13 +70,18 @@ class pyf_DoubleSlider(QtWidgets.QSlider):
 
 
 class pyf_FloatSlider(QtWidgets.QWidget):
-    sliderStyleSheet = """
-    QSlider::groove:horizontal,
-    QSlider::sub-page:horizontal {
+    sliderStyleSheetA = """
+    QWidget{
         background: white;
+        border: 1.25 solid black;
+        color : black
+    }
+    QSlider::groove:horizontal,
+        QSlider::sub-page:horizontal {
+        background: orange;
     }
     QSlider::add-page:horizontal,
-    QSlider::sub-page:horizontal:disabled {
+        QSlider::sub-page:horizontal:disabled {
         background: lightgrey;
     }
     QSlider::add-page:horizontal:disabled {
@@ -78,69 +91,175 @@ class pyf_FloatSlider(QtWidgets.QWidget):
         width: 1px;
      }
     """
-    inputStyleSheet = """
-    QWidget{
+    sliderStyleSheetB = """
+    QSlider::groove:horizontal {
+        border: 1px solid #bbb;
         background: white;
-        border: 0px;
+        height: 2px;
+        border-radius: 4px;
     }
-    """    
-    def __init__(self, parent, *args):
+
+    QSlider::sub-page:horizontal {
+        background: orange;
+        border: 1px solid #777;
+        height: 2px;
+        border-radius: 4px;
+    }
+
+    QSlider::add-page:horizontal {
+        background: #fff;
+        border: 1px solid #777;
+        height: 2px;
+        border-radius: 4px;
+    }
+
+    QSlider::handle:horizontal {
+        background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+            stop:0 #eee, stop:1 #ccc);
+        border: 1px solid #777;
+        width: 4px;
+        margin-top: -8px;
+        margin-bottom: -8px;
+        border-radius: 2px;
+        height : 10px;
+    }
+
+    QSlider::handle:horizontal:hover {
+        background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+            stop:0 #fff, stop:1 #ddd);
+        border: 1px solid #444;
+        border-radius: 2px;
+    }
+
+    QSlider::sub-page:horizontal:disabled {
+        background: #bbb;
+        border-color: #999;
+    }
+
+    QSlider::add-page:horizontal:disabled {
+        background: #eee;
+        border-color: #999;
+    }
+
+    QSlider::handle:horizontal:disabled {
+        background: #eee;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        height : 10;
+    }
+    """
+    valueChanged = QtCore.Signal(float)
+
+    def __init__(self, parent, style=1, *args):
         super(pyf_FloatSlider, self).__init__(parent=parent, *args)
         self.parent = parent
         self.setLayout(QtWidgets.QHBoxLayout())
         self.sld = pyf_DoubleSlider(self)
         self.sld.setOrientation(QtCore.Qt.Horizontal)
-        self.sld.setStyleSheet(self.sliderStyleSheet)
-        self.input = QtWidgets.QLineEdit()
-        self.input.setStyleSheet(self.inputStyleSheet)
-        self.input.setMaximumWidth(50)
-        self.layout().setSpacing(0)
-        self.input.setContentsMargins(2,0,0,0)
-        self.sld.setContentsMargins(0,0,0,0)
+        self.input = QtWidgets.QDoubleSpinBox()
+        self.input.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        self.input.setDecimals(3)
+        self.input.setSingleStep(0.1)
+        self.layout().setContentsMargins(10, 0, 0, 0)
+        self.input.setContentsMargins(0, 0, 0, 0)
+        self.sld.setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(self.input)
         self.layout().addWidget(self.sld)
+        h = 20
+        self.input.setMinimumWidth(50)
+        self.input.setMaximumWidth(50)
+        self.setMaximumHeight(h)
+        self.setMinimumHeight(h)
+        self.sld.setMaximumHeight(h)
+        self.sld.setMinimumHeight(h)
+        self.input.setMaximumHeight(h)
+        self.input.setMinimumHeight(h)
+        if style == 0:
+            self.layout().setSpacing(0)
+            self.sld.setStyleSheet(self.sliderStyleSheetA)
+        elif style == 1:
+            self.sld.setStyleSheet(self.sliderStyleSheetB)
+        self.input.setStyleSheet(self.sliderStyleSheetA)
         self.sld.valueChanged.connect(
-            lambda: self.input.setText(str(self.sld.value())))
-        self.sld.setMinimum(0)
-        self.sld.setMaximum(10)
-        self.sld.setValue(5.0)
-        self.radius = 10
-        a = 50
-        self.sld.setMaximumHeight(a)
-        self.input.setMaximumHeight(a)
-        self.setMaximumHeight(a)
+            lambda: self.setValue(self.sld.value()))
+        self.input.editingFinished.connect(
+            lambda: self.setValue(float(self.input.value())))
+        self.setMinimum(0.0)
+        self.setMaximum(100.0)
+        self.setValue(0.5)
+        # self.setDisabled(True)
 
-    def paintEvent(self, event):
-        qp = QtGui.QPainter()
-        qp.begin(self)
-        self.drawWidget(qp)
-        qp.end()
-        super(pyf_FloatSlider, self).paintEvent(event)
+    @property
+    def _value_range(self):
+        return self.minimum - self.maximum
 
-    def drawWidget(self, qp):
-        path = QtGui.QPainterPath()
-        path.addRoundedRect(QtCore.QRectF(self.childrenRect()),self.radius,self.radius)
-        mask = QtGui.QRegion(path.toFillPolygon().toPolygon())
+    @property
+    def minimum(self):
+        return self.input.minimum()
 
-        self.setMask(mask)
+    @property
+    def maximum(self):
+        return self.input.maximum()
+
+    def value(self):
+        self._value = self.sld.value()
+        return self._value
+
+    def setValue(self, value):
+        if value >= self.minimum and value <= self.maximum:
+            if value > self.sld.maximum():
+                self.sld.setMaximum(
+                    min(self.maximum, value * 2))
+            if value < self.sld.minimum():
+                self.sld.setMinimum(
+                    max(self.minimum, value * 2))
+            self.sld.setValue(value)
+            self._value = self.sld.value()
+            self.input.setValue(self.value())
+            self.valueChanged.emit(self._value)
+
+    def setMinimum(self, value):
+        self.input.setMinimum(value)
+        self.setDisplayMinimun(min(self.maximum, -(self._value_range % 10)))
+
+    def setMaximum(self, value):
+        self.input.setMaximum(value)
+        self.setDisplayMaximum(max(self.minimum, self._value_range % 10))
+
+    def setDisplayMinimun(self, value):
+        self.sld.setMinimum(value)
+
+    def setDisplayMaximum(self, value):
+        self.sld.setMaximum(value)
+
+    def setRange(self, min, max):
+        self.setMinimum(min)
+        self.setMaximum(max)
+
+    def setDecimals(self, decimals):
+        self.input.setDecimals(decimals)
+        self.sld.setDecimals(decimals)
+
+    def setSingleStep(self, step):
+        self.input.setSingleStep(step)
 
 
 class pyf_HueSlider(pyf_DoubleSlider):
     styleSheet = """
 
-    QSlider,QSlider:disabled,QSlider:focus     {  
+    QSlider,QSlider:disabled,QSlider:focus     {
                               background: qcolor(0,0,0,0);   }
 
      QSlider::groove:horizontal {
-     
+
         border: 1px solid #999999;
         background: qcolor(0,0,0,0);
      }
     QSlider::handle:horizontal {
         background:  rgba(100,100,100,255);
         width: 6px;
-     } 
-    """    
+     }
+    """
 
     def __init__(self, parent, *args):
         super(pyf_HueSlider, self).__init__(parent=parent, *args)
@@ -195,19 +314,20 @@ class pyf_HueSlider(pyf_DoubleSlider):
 class pyf_GradientSlider(pyf_DoubleSlider):
     styleSheet = """
 
-    QSlider,QSlider:disabled,QSlider:focus     {  
+    QSlider,QSlider:disabled,QSlider:focus     {
                               background: qcolor(0,0,0,0);   }
 
      QSlider::groove:horizontal {
-     
+
         border: 1px solid #999999;
         background: qcolor(0,0,0,0);
      }
     QSlider::handle:horizontal {
         background:  rgba(100,100,100,255);
         width: 6px;
-     } 
-    """      
+     }
+    """
+
     def __init__(self, parent, *args):
         super(pyf_GradientSlider, self).__init__(parent=parent, *args)
         self.parent = parent
@@ -256,9 +376,12 @@ class testWidg(QtWidgets.QWidget):
         super(testWidg, self).__init__(parent)
 
         self.setLayout(QtWidgets.QVBoxLayout())
-        self.sld = pyf_FloatSlider(self)
-        self.layout().addWidget(self.sld)
-        #self.setStyleSheet("background:black")
+
+        self.layout().addWidget(pyf_FloatSlider(self, style=0))
+        self.layout().addWidget(pyf_FloatSlider(self, style=1))
+        self.layout().addWidget(pyf_HueSlider(self))
+        self.layout().addWidget(pyf_GradientSlider(self))
+        # self.setStyleSheet("background:grey")
 
 
 def main():

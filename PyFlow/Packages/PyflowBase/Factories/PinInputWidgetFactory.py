@@ -13,10 +13,10 @@ from Qt.QtWidgets import QGridLayout
 
 from PyFlow.Core.Common import *
 from PyFlow.UI.Widgets.InputWidgets import *
-
+from PyFlow.UI.Widgets.QtSliders import pyf_FloatSlider
 
 FLOAT_SINGLE_STEP = 0.01
-FLOAT_DECIMALS = 10
+FLOAT_DECIMALS = 5
 
 
 def _configDoubleSpinBox(sb):
@@ -71,7 +71,7 @@ class FloatInputWidget(InputWidgetSingle):
 
     def __init__(self, parent=None, **kwds):
         super(FloatInputWidget, self).__init__(parent=parent, **kwds)
-        self.sb = QDoubleSpinBox(self)
+        self.sb = pyf_FloatSlider(self, style=1)
         _configDoubleSpinBox(self.sb)
         self.setWidget(self.sb)
         # when spin box updated call setter function
@@ -81,6 +81,7 @@ class FloatInputWidget(InputWidgetSingle):
         self.sb.blockSignals(bLocked)
 
     def setWidgetValue(self, val):
+        print val
         self.sb.setValue(float(val))
 
 

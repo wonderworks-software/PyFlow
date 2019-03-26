@@ -8,17 +8,30 @@ from PyFlow.Packages.Pyrr.Widgets import Ui_FloatVector3InputWidget_ui
 from PyFlow.Packages.Pyrr.Widgets import Ui_FloatVector4InputWidget_ui
 from PyFlow.Packages.Pyrr.Widgets import Matrix33InputWidget_ui
 from PyFlow.Packages.Pyrr.Widgets import Matrix44InputWidget_ui
+from PyFlow.UI.Widgets.QtSliders import pyf_FloatSlider
 
+from Qt import QtWidgets
 
 FLOAT_SINGLE_STEP = 0.01
-FLOAT_DECIMALS = 10
+FLOAT_DECIMALS = 5
 
 
-class FloatVector3InputWidget(InputWidgetRaw, Ui_FloatVector3InputWidget_ui.Ui_Form):
+class FloatVector3InputWidget(InputWidgetRaw):
     """Vector3 data input widget"""
+
     def __init__(self, **kwds):
         super(FloatVector3InputWidget, self).__init__(**kwds)
-        self.setupUi(self)
+        self.setLayout(QtWidgets.QHBoxLayout())
+
+        self.dsbX = pyf_FloatSlider(self, style=0)
+        self.dsbY = pyf_FloatSlider(self, style=0)
+        self.dsbZ = pyf_FloatSlider(self, style=0)
+        self.pbReset = QtWidgets.QPushButton(self)
+        self.layout().addWidget(self.dsbX)
+        self.layout().addWidget(self.dsbY)
+        self.layout().addWidget(self.dsbZ)
+        self.layout().addWidget(self.pbReset)
+
         self._configSpinBoxes()
         self.dsbX.valueChanged.connect(self._onDataChangedX)
         self.dsbY.valueChanged.connect(self._onDataChangedY)
@@ -61,6 +74,7 @@ class FloatVector3InputWidget(InputWidgetRaw, Ui_FloatVector3InputWidget_ui.Ui_F
         self.dataSetCallback(v)
 
     def setWidgetValue(self, val):
+        print val.x
         self.dsbX.setValue(val.x)
         self.dsbY.setValue(val.y)
         self.dsbZ.setValue(val.z)
@@ -68,6 +82,7 @@ class FloatVector3InputWidget(InputWidgetRaw, Ui_FloatVector3InputWidget_ui.Ui_F
 
 class FloatVector4InputWidget(InputWidgetRaw, Ui_FloatVector4InputWidget_ui.Ui_Form):
     """Vector4 data input widget"""
+
     def __init__(self, **kwds):
         super(FloatVector4InputWidget, self).__init__(**kwds)
         self.setupUi(self)
@@ -128,6 +143,7 @@ class FloatVector4InputWidget(InputWidgetRaw, Ui_FloatVector4InputWidget_ui.Ui_F
 
 class QuatInputWidget(FloatVector4InputWidget):
     """Quaternion data input widget"""
+
     def __init__(self, **kwds):
         super(QuatInputWidget, self).__init__(**kwds)
 
@@ -137,6 +153,7 @@ class QuatInputWidget(FloatVector4InputWidget):
 
 class Matrix33InputWidget(InputWidgetRaw, Matrix33InputWidget_ui.Ui_Form):
     """Matrix33 data input widget"""
+
     def __init__(self, parent=None, **kwds):
         super(Matrix33InputWidget, self).__init__(parent=parent, **kwds)
         self.setupUi(self)
@@ -239,6 +256,7 @@ class Matrix33InputWidget(InputWidgetRaw, Matrix33InputWidget_ui.Ui_Form):
 
 class Matrix44InputWidget(InputWidgetRaw, Matrix44InputWidget_ui.Ui_Form):
     """Matrix44 data input widget"""
+
     def __init__(self, parent=None, **kwds):
         super(Matrix44InputWidget, self).__init__(parent=parent, **kwds)
         self.setupUi(self)
@@ -275,10 +293,14 @@ class Matrix44InputWidget(InputWidgetRaw, Matrix44InputWidget_ui.Ui_Form):
 
     def asDataTypeClass(self):
         return pyrr.Matrix44([
-            [self.dsbm11.value(), self.dsbm12.value(), self.dsbm13.value(), self.dsbm14.value()],
-            [self.dsbm21.value(), self.dsbm22.value(), self.dsbm23.value(), self.dsbm24.value()],
-            [self.dsbm31.value(), self.dsbm32.value(), self.dsbm33.value(), self.dsbm34.value()],
-            [self.dsbm41.value(), self.dsbm42.value(), self.dsbm43.value(), self.dsbm44.value()]
+            [self.dsbm11.value(), self.dsbm12.value(),
+             self.dsbm13.value(), self.dsbm14.value()],
+            [self.dsbm21.value(), self.dsbm22.value(),
+             self.dsbm23.value(), self.dsbm24.value()],
+            [self.dsbm31.value(), self.dsbm32.value(),
+             self.dsbm33.value(), self.dsbm34.value()],
+            [self.dsbm41.value(), self.dsbm42.value(),
+             self.dsbm43.value(), self.dsbm44.value()]
         ])
 
     def _configSpinBoxes(self):
