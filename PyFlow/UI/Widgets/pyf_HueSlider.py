@@ -3,22 +3,6 @@
 
 import sys
 from Qt import QtGui, QtCore, QtWidgets
-styleSheet = """
-
-QSlider,QSlider:disabled,QSlider:focus     {  
-                          background: qcolor(0,0,0,0);   }
-
- QSlider::groove:horizontal {
- 
-    border: 1px solid #999999;
-    background: qcolor(0,0,0,0);
- }
-QSlider::handle:horizontal {
-    background:  rgba(100,100,100,255);
-    width: 6px;
- } 
-"""
-
 
 class pyf_DoubleSlider(QtWidgets.QSlider):
 
@@ -78,57 +62,86 @@ class pyf_DoubleSlider(QtWidgets.QSlider):
 
 
 class pyf_FloatSlider(QtWidgets.QWidget):
-    styleSheet = """
-    QSlider::groove:horizontal {
-        border: 1px solid #bbb;
-        background: white;
-        border-radius: 4px;
-    }
-
+    sliderStyleSheet = """
+    QSlider::groove:horizontal,
     QSlider::sub-page:horizontal {
         background: white;
-        border: 1px solid #777;
     }
-
-    QSlider::add-page:horizontal {
+    QSlider::add-page:horizontal,
+    QSlider::sub-page:horizontal:disabled {
         background: lightgrey;
-        border: 1px solid #777;
     }
-
     QSlider::add-page:horizontal:disabled {
-        background: #eee;
-        border-color: #999;
+        background: grey;
     }
     QSlider::handle:horizontal {
-        background:  rgba(100,100,100,0);
-        width: 3px;
-        border-color: rgba(100,100,100,0);
+        width: 1px;
      }
-
     """
-
+    inputStyleSheet = """
+    QWidget{
+        background: white;
+        border: 0px;
+    }
+    """    
     def __init__(self, parent, *args):
         super(pyf_FloatSlider, self).__init__(parent=parent, *args)
         self.parent = parent
         self.setLayout(QtWidgets.QHBoxLayout())
         self.sld = pyf_DoubleSlider(self)
         self.sld.setOrientation(QtCore.Qt.Horizontal)
-        self.sld.setStyleSheet(self.styleSheet)
+        self.sld.setStyleSheet(self.sliderStyleSheet)
         self.input = QtWidgets.QLineEdit()
-        self.input.setMaximumHeight(self.sld.height() - 8)
+        self.input.setStyleSheet(self.inputStyleSheet)
         self.input.setMaximumWidth(50)
+        self.layout().setSpacing(0)
+        self.input.setContentsMargins(2,0,0,0)
+        self.sld.setContentsMargins(0,0,0,0)
         self.layout().addWidget(self.input)
         self.layout().addWidget(self.sld)
         self.sld.valueChanged.connect(
             lambda: self.input.setText(str(self.sld.value())))
         self.sld.setMinimum(0)
-        self.sld.setMaximum(100)
+        self.sld.setMaximum(10)
+        self.sld.setValue(5.0)
+        self.radius = 10
+        a = 50
+        self.sld.setMaximumHeight(a)
+        self.input.setMaximumHeight(a)
+        self.setMaximumHeight(a)
 
-    def test(self, ints):
-        print ints
+    def paintEvent(self, event):
+        qp = QtGui.QPainter()
+        qp.begin(self)
+        self.drawWidget(qp)
+        qp.end()
+        super(pyf_FloatSlider, self).paintEvent(event)
+
+    def drawWidget(self, qp):
+        path = QtGui.QPainterPath()
+        path.addRoundedRect(QtCore.QRectF(self.childrenRect()),self.radius,self.radius)
+        mask = QtGui.QRegion(path.toFillPolygon().toPolygon())
+
+        self.setMask(mask)
 
 
 class pyf_HueSlider(pyf_DoubleSlider):
+    styleSheet = """
+
+    QSlider,QSlider:disabled,QSlider:focus     {  
+                              background: qcolor(0,0,0,0);   }
+
+     QSlider::groove:horizontal {
+     
+        border: 1px solid #999999;
+        background: qcolor(0,0,0,0);
+     }
+    QSlider::handle:horizontal {
+        background:  rgba(100,100,100,255);
+        width: 6px;
+     } 
+    """    
+
     def __init__(self, parent, *args):
         super(pyf_HueSlider, self).__init__(parent=parent, *args)
         self.parent = parent
@@ -136,7 +149,7 @@ class pyf_HueSlider(pyf_DoubleSlider):
         self.color.setHslF(0, 1, 0.5, 1)
         self.defColor = self.color.name()
         self.setOrientation(QtCore.Qt.Horizontal)
-        self.setStyleSheet(styleSheet)
+        self.setStyleSheet(self.styleSheet)
         self.setMouseTracking(True)
         self.light = 0.5
 
@@ -180,6 +193,21 @@ class pyf_HueSlider(pyf_DoubleSlider):
 
 
 class pyf_GradientSlider(pyf_DoubleSlider):
+    styleSheet = """
+
+    QSlider,QSlider:disabled,QSlider:focus     {  
+                              background: qcolor(0,0,0,0);   }
+
+     QSlider::groove:horizontal {
+     
+        border: 1px solid #999999;
+        background: qcolor(0,0,0,0);
+     }
+    QSlider::handle:horizontal {
+        background:  rgba(100,100,100,255);
+        width: 6px;
+     } 
+    """      
     def __init__(self, parent, *args):
         super(pyf_GradientSlider, self).__init__(parent=parent, *args)
         self.parent = parent
@@ -189,7 +217,7 @@ class pyf_GradientSlider(pyf_DoubleSlider):
         self.color2.setHslF(0, 1, 1, 1)
 
         self.setOrientation(QtCore.Qt.Horizontal)
-        self.setStyleSheet(styleSheet)
+        self.setStyleSheet(self.styleSheet)
         self.setMouseTracking(True)
 
     def getColor(self):
@@ -230,8 +258,7 @@ class testWidg(QtWidgets.QWidget):
         self.setLayout(QtWidgets.QVBoxLayout())
         self.sld = pyf_FloatSlider(self)
         self.layout().addWidget(self.sld)
-
-        self.setGeometry(-800, 300, 390, 80)
+        #self.setStyleSheet("background:black")
 
 
 def main():
