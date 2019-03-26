@@ -304,25 +304,32 @@ class TestGeneral(unittest.TestCase):
 
     def test_subgraph(self):
         packages = GET_PACKAGES()
-        GraphTree(GraphBase("testGraph"))
+        GT = GraphTree(GraphBase("testGraph"))
 
         # create empty subgraph
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['subgraph']
         subgraphNodeInstance = subgraphNodeClass('subgraph')
-        GraphTree().activeGraph().addNode(subgraphNodeInstance)
-        self.assertEqual(GraphTree().getRootGraph().name, "testGraph", "root graph is invalid")
+        GT.activeGraph().addNode(subgraphNodeInstance)
+        self.assertEqual(GT.getRootGraph().name, "testGraph", "root graph is invalid")
+        self.assertEqual(GT.activeGraph().name, "testGraph")
+
+        # try add graph inputs to root. None expected
+        inputsRoot = GT.activeGraph().getInputNode()
+        self.assertEqual(inputsRoot, None, "graph inputs node make no sense in root graph")
 
         # step inside subgraph
-        GraphTree().switchGraph(subgraphNodeInstance.name)
-        self.assertEqual(GraphTree().activeGraph().name, subgraphNodeInstance.name, "failed to enter subgraph")
+        GT.switchGraph(subgraphNodeInstance.name)
+        self.assertEqual(GT.activeGraph().name, subgraphNodeInstance.name, "failed to enter subgraph")
 
         # add input output nodes to expose pins to outer subgraph node
+        inputs1 = GT.activeGraph().getInputNode()
+        self.assertIsNotNone(inputs1, "failed to create graph inputs node")
 
         # add simple calculation
 
         # go back to root graph
-        GraphTree().switchGraph("testGraph")
-        self.assertEqual(GraphTree().activeGraph().name, "testGraph", "failed to return back to root from subgraph node")
+        GT.switchGraph("testGraph")
+        self.assertEqual(GT.activeGraph().name, "testGraph", "failed to return back to root from subgraph node")
 
         # check exposed pins added
 

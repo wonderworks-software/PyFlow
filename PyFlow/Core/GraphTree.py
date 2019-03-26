@@ -14,6 +14,7 @@ class GraphTree:
     onGraphSwitched = Signal()
 
     def __init__(self, rootGraph=None):
+        assert(rootGraph is not None)
         self.__tree = Tree()
         self.__tree.create_node(rootGraph.name, rootGraph.name, data=rootGraph)
         self.__activeGraph = rootGraph

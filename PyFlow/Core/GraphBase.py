@@ -1,7 +1,9 @@
 import weakref
+from blinker import Signal
 
 from PyFlow.Core.Common import *
 from PyFlow import CreateRawPin
+from PyFlow import getRawNodeInstance
 from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Variable import Variable
@@ -9,8 +11,14 @@ from PyFlow.Core.GraphTree import GraphTree
 
 
 class GraphBase(object):
-    def __init__(self, name):
-        super(GraphBase, self).__init__()
+
+    onInputPinCreated = Signal(object)
+    onInputPinDeleted = Signal(object)
+    onOutputPinCreated = Signal(object)
+    onOutputPinDeleted = Signal(object)
+
+    def __init__(self, name, *args, **kwargs):
+        super(GraphBase, self).__init__(*args, **kwargs)
         self.__name = name
         self.nodes = {}
         self.connections = {}
@@ -144,6 +152,17 @@ class GraphBase(object):
                 pin = pin
                 break
         return pin
+
+    def getInputNode(self):
+        """Creates and adds graph inputs node. Note, this works only for graphs which has a parent
+
+        pins on this node will be exposed on subgraph node as input pins
+        """
+        node = None
+        if GraphTree().getParentGraph(self) is not None:
+            node = getRawNodeInstance("graphInputs", "PyflowBase")
+            self.addNode(node)
+        return node
 
     def addNode(self, node, jsonTemplate=None):
         assert(node is not None), "failed to add node, None is passed"

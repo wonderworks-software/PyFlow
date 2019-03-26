@@ -449,7 +449,7 @@ class GraphWidgetUI(QGraphicsView):
         self.parent = parent
         self.parent.actionClear_history.triggered.connect(self.undoStack.clear)
         self.parent.listViewUndoStack.setStack(self.undoStack)
-        self.styleSheetEditor = self.parent.styleSheetEditor        
+        self.styleSheetEditor = self.parent.styleSheetEditor
         self.menu = QMenu()
         self.setScene(SceneClass(self))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)

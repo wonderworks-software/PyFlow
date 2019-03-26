@@ -1,8 +1,14 @@
+from blinker import Signal
+
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
 
 
 class graphInputs(NodeBase):
+    """Represents a group of input pins on subgraph node
+    """
+    onPinCreated = Signal(object)
+
     def __init__(self, name):
         super(graphInputs, self).__init__(name)
 
@@ -27,7 +33,14 @@ class graphInputs(NodeBase):
         p = self.addOutputPin(name, 'AnyPin')
         p.setAlwaysPushDirty(True)
         p.actLikeDirection = PinDirection.Input
+        self.onPinCreated.send(p)
         return p
+
+    def postCreate(self, jsonTemplate=None):
+        super(graphInputs, self).postCreate(jsonTemplate=jsonTemplate)
+        # recreate dynamically created pins
+        # before this, connect with owning graph
+        self.onPinCreated.connect(self.graph().onInputPinCreated.send)
 
     def compute(self):
         # This node is special. Output pins of this node are actually inputs pins in terms of execution and data gathering
@@ -39,6 +52,10 @@ class graphInputs(NodeBase):
 
 
 class graphOutputs(NodeBase):
+    """Represents a group of output pins on subgraph node
+    """
+    onPinCreated = Signal(object)
+
     def __init__(self, name):
         super(graphOutputs, self).__init__(name)
 
@@ -63,4 +80,5 @@ class graphOutputs(NodeBase):
         p = self.addInputPin(name, 'AnyPin')
         p.actLikeDirection = PinDirection.Output
         p.setAlwaysPushDirty(True)
+        self.onPinCreated.send(p)
         return p
