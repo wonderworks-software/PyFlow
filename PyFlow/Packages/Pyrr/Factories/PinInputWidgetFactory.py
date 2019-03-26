@@ -74,7 +74,6 @@ class FloatVector3InputWidget(InputWidgetRaw):
         self.dataSetCallback(v)
 
     def setWidgetValue(self, val):
-        print val.x
         self.dsbX.setValue(val.x)
         self.dsbY.setValue(val.y)
         self.dsbZ.setValue(val.z)
