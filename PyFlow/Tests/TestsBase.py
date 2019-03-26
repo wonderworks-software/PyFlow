@@ -6,6 +6,7 @@ from PyFlow import(
     GET_PACKAGES
 )
 
+from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core import(
     GraphBase,
     PinBase,

@@ -151,10 +151,10 @@ def canConnectPins(src, dst):
     if src.direction == dst.direction:
         return False
 
-    if src.graph is None or dst.graph is None:
+    if src.owningNode().graph() is None or dst.owningNode().graph() is None:
         return False
 
-    if src.graph() != dst.graph():
+    if src.owningNode().graph() != dst.owningNode().graph():
         return False
 
     if cycle_check(src, dst):
