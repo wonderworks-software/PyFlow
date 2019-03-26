@@ -3,7 +3,6 @@
 
 import sys
 from Qt import QtGui, QtCore, QtWidgets
-from PyFlow.UI.Widgets.pyf_DoubleSlider import pyf_DoubleSlider
 styleSheet = """
 
 QSlider,QSlider:disabled,QSlider:focus     {  
@@ -19,6 +18,114 @@ QSlider::handle:horizontal {
     width: 6px;
  } 
 """
+
+
+class pyf_DoubleSlider(QtWidgets.QSlider):
+
+    def __init__(self, *args, **kwargs):
+        super(pyf_DoubleSlider, self).__init__(*args, **kwargs)
+        self.decimals = 5
+        self._max_int = 10 ** self.decimals
+
+        super(pyf_DoubleSlider, self).setMinimum(0)
+        super(pyf_DoubleSlider, self).setMaximum(self._max_int)
+        self._min_value = 0.0
+        self._max_value = 1.0
+
+    @property
+    def _value_range(self):
+        return self._max_value - self._min_value
+
+    def value(self):
+        return float(super(pyf_DoubleSlider, self).value()) / self._max_int * self._value_range + self._min_value
+
+    def setValue(self, value):
+        super(pyf_DoubleSlider, self).setValue(
+            int((value - self._min_value) / self._value_range * self._max_int))
+
+    def setMinimum(self, value):
+        if value > self._max_value:
+            raise ValueError("Minimum limit cannot be higher than maximum")
+
+        self._min_value = value
+        self.setValue(self.value())
+
+    def setMaximum(self, value):
+        if value < self._min_value:
+            raise ValueError("Minimum limit cannot be higher than maximum")
+
+        self._max_value = value
+        self.setValue(self.value())
+
+    def minimum(self):
+        return self._min_value
+
+    def maximum(self):
+        return self._max_value
+
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton:
+            butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
+            try:  # maya PySide?
+                nevent = QtGui.QMouseEvent(event.type(), QtCore.QPointF(event.pos()), QtCore.QPointF(
+                    event.globalPos()), QtCore.Qt.MidButton, butts, event.modifiers())
+            except:
+                nevent = QtGui.QMouseEvent(event.type(), event.pos(), event.globalPos(
+                ), QtCore.Qt.MidButton, butts, event.modifiers())
+            super(pyf_DoubleSlider, self).mousePressEvent(nevent)
+        # else:
+        super(pyf_DoubleSlider, self).mousePressEvent(event)
+
+
+class pyf_FloatSlider(QtWidgets.QWidget):
+    styleSheet = """
+    QSlider::groove:horizontal {
+        border: 1px solid #bbb;
+        background: white;
+        border-radius: 4px;
+    }
+
+    QSlider::sub-page:horizontal {
+        background: white;
+        border: 1px solid #777;
+    }
+
+    QSlider::add-page:horizontal {
+        background: lightgrey;
+        border: 1px solid #777;
+    }
+
+    QSlider::add-page:horizontal:disabled {
+        background: #eee;
+        border-color: #999;
+    }
+    QSlider::handle:horizontal {
+        background:  rgba(100,100,100,0);
+        width: 3px;
+        border-color: rgba(100,100,100,0);
+     }
+
+    """
+
+    def __init__(self, parent, *args):
+        super(pyf_FloatSlider, self).__init__(parent=parent, *args)
+        self.parent = parent
+        self.setLayout(QtWidgets.QHBoxLayout())
+        self.sld = pyf_DoubleSlider(self)
+        self.sld.setOrientation(QtCore.Qt.Horizontal)
+        self.sld.setStyleSheet(self.styleSheet)
+        self.input = QtWidgets.QLineEdit()
+        self.input.setMaximumHeight(self.sld.height() - 8)
+        self.input.setMaximumWidth(50)
+        self.layout().addWidget(self.input)
+        self.layout().addWidget(self.sld)
+        self.sld.valueChanged.connect(
+            lambda: self.input.setText(str(self.sld.value())))
+        self.sld.setMinimum(0)
+        self.sld.setMaximum(100)
+
+    def test(self, ints):
+        print ints
 
 
 class pyf_HueSlider(pyf_DoubleSlider):
@@ -71,19 +178,6 @@ class pyf_HueSlider(pyf_DoubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
-    def mousePressEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton:
-            butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
-            try:  # maya PySide?
-                nevent = QtGui.QMouseEvent(event.type(), QtCore.QPointF(event.pos()), QtCore.QPointF(
-                    event.globalPos()), QtCore.Qt.MidButton, butts, event.modifiers())
-            except:
-                nevent = QtGui.QMouseEvent(event.type(), event.pos(), event.globalPos(
-                ), QtCore.Qt.MidButton, butts, event.modifiers())
-            super(pyf_HueSlider, self).mousePressEvent(nevent)
-        # else:
-        super(pyf_HueSlider, self).mousePressEvent(event)
-
 
 class pyf_GradientSlider(pyf_DoubleSlider):
     def __init__(self, parent, *args):
@@ -127,19 +221,6 @@ class pyf_GradientSlider(pyf_DoubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
-    def mousePressEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton:
-            butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
-            try:  # maya PySide?
-                nevent = QtGui.QMouseEvent(event.type(), QtCore.QPointF(event.pos()), QtCore.QPointF(
-                    event.globalPos()), QtCore.Qt.MidButton, butts, event.modifiers())
-            except:
-                nevent = QtGui.QMouseEvent(event.type(), event.pos(), event.globalPos(
-                ), QtCore.Qt.MidButton, butts, event.modifiers())
-            super(pyf_GradientSlider, self).mousePressEvent(nevent)
-        # else:
-        super(pyf_GradientSlider, self).mousePressEvent(event)
-
 
 class testWidg(QtWidgets.QWidget):
 
@@ -147,7 +228,7 @@ class testWidg(QtWidgets.QWidget):
         super(testWidg, self).__init__(parent)
 
         self.setLayout(QtWidgets.QVBoxLayout())
-        self.sld = pyf_HueSlider(self)
+        self.sld = pyf_FloatSlider(self)
         self.layout().addWidget(self.sld)
 
         self.setGeometry(-800, 300, 390, 80)
