@@ -341,8 +341,8 @@ class SceneClass(QGraphicsScene):
                 nodeType = jsonData["type"]
                 libName = jsonData['lib']
                 name = GraphTree().getUniqNodeName(nodeType)
-                dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
-                if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
+                dropItem = self.parent().nodeFromInstance(self.itemAt(event.scenePos(), QtGui.QTransform()))
+                if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
                     nodeTemplate = NodeBase.jsonTemplate()
                     nodeTemplate['package'] = packageName
                     nodeTemplate['lib'] = libName
