@@ -11,14 +11,23 @@ from PyFlow.Core.GraphTree import GraphTree
 class GraphBase(object):
     def __init__(self, name):
         super(GraphBase, self).__init__()
-        self.name = name
+        self.__name = name
         self.nodes = {}
         self.connections = {}
         self.vars = {}
 
-    def Tick(self, deltTime):
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, value):
+        assert(isinstance(value, str))
+        self.__name = value
+
+    def Tick(self, deltaTime):
         for node in self.nodes.values():
-            node.Tick(deltTime)
+            node.Tick(deltaTime)
 
     @property
     def pins(self):

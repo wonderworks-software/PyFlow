@@ -18,7 +18,13 @@ class GraphTree:
         self.__tree.create_node(rootGraph.name, rootGraph.name, data=rootGraph)
         self.__activeGraph = rootGraph
 
+    def getUniqGraphName(self, name):
+        existingGraphNames = [g.name for g in self.getAllGraphs()]
+        return getUniqNameFromList(existingGraphNames, name)
+
     def addChildGraph(self, rawGraph=None):
+        uniqName = self.getUniqGraphName(rawGraph.name)
+        rawGraph.name = uniqName
         self.getTree().create_node(rawGraph.name, rawGraph.name, self.activeGraph().name, rawGraph)
 
     def getUniqNodeName(self, name):

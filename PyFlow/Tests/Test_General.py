@@ -13,10 +13,10 @@ class TestGeneral(unittest.TestCase):
         packages = GET_PACKAGES()
         GraphTree(GraphBase("testGraph"))
         intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
-        mathFoos = intlib.getFunctions()
+        foos = intlib.getFunctions()
 
-        addNode1 = NodeBase.initializeFromFunction(mathFoos["add"])
-        addNode2 = NodeBase.initializeFromFunction(mathFoos["add"])
+        addNode1 = NodeBase.initializeFromFunction(foos["add"])
+        addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
         GraphTree().activeGraph().addNode(addNode1)
         GraphTree().activeGraph().addNode(addNode2)
@@ -109,10 +109,10 @@ class TestGeneral(unittest.TestCase):
         packages = GET_PACKAGES()
         GraphTree(GraphBase("testGraph"))
         intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
-        mathFoos = intlib.getFunctions()
+        foos = intlib.getFunctions()
 
-        addNode1 = NodeBase.initializeFromFunction(mathFoos["add"])
-        addNode2 = NodeBase.initializeFromFunction(mathFoos["add"])
+        addNode1 = NodeBase.initializeFromFunction(foos["add"])
+        addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
         GraphTree().activeGraph().addNode(addNode1)
         GraphTree().activeGraph().addNode(addNode2)
@@ -301,6 +301,36 @@ class TestGeneral(unittest.TestCase):
         inExecPin.call()
         # check variable value
         self.assertEqual(v1.value, True, "variable value is not set")
+
+    def test_subgraph(self):
+        packages = GET_PACKAGES()
+        GraphTree(GraphBase("testGraph"))
+
+        # create empty subgraph
+        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['subgraph']
+        subgraphNodeInstance = subgraphNodeClass('subgraph')
+        GraphTree().activeGraph().addNode(subgraphNodeInstance)
+        self.assertEqual(GraphTree().getRootGraph().name, "testGraph", "root graph is invalid")
+
+        # step inside subgraph
+        GraphTree().switchGraph(subgraphNodeInstance.name)
+        self.assertEqual(GraphTree().activeGraph().name, subgraphNodeInstance.name, "failed to enter subgraph")
+
+        # add input output nodes to expose pins to outer subgraph node
+
+        # add simple calculation
+
+        # go back to root graph
+        GraphTree().switchGraph("testGraph")
+        self.assertEqual(GraphTree().activeGraph().name, "testGraph", "failed to return back to root from subgraph node")
+
+        # check exposed pins added
+
+        # connect getter to subgraph output pin
+
+        # check value
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
