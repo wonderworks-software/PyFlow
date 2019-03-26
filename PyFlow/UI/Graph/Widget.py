@@ -104,11 +104,7 @@ def getNodeInstance(jsonTemplate, graph):
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
-<<<<<<< HEAD:PyFlow/UI/Widget.py
     graph.addNode(instance, jsonTemplate)
-=======
-    graph.addNode(instance,jsonTemplate)
->>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
     return instance
 
 
@@ -199,7 +195,7 @@ class SceneClass(QGraphicsScene):
             packageName = jsonData["package"]
             nodeType = jsonData["type"]
             libName = jsonData["lib"]
-            name = self.parent().getUniqNodeName(nodeType)
+            name = GraphTree().getUniqNodeName(nodeType)
 
             nodeTemplate = NodeBase.jsonTemplate()
             nodeTemplate['package'] = packageName
@@ -209,14 +205,14 @@ class SceneClass(QGraphicsScene):
             nodeTemplate['x'] = event.scenePos().x()
             nodeTemplate['y'] = event.scenePos().y()
             nodeTemplate['meta']['label'] = nodeType
-            nodeTemplate['uuid'] = str(uuid.uuid4())           
+            nodeTemplate['uuid'] = str(uuid.uuid4())
             try:
                 self.tempnode.isTemp = False
                 self.tempnode = None
             except Exception as e:
                 pass
             self.tempnode = self.parent().createNode(nodeTemplate)
-            if self.tempnode: 
+            if self.tempnode:
                 self.tempnode.isTemp = True
             self.hoverItems = []
         else:
@@ -344,17 +340,9 @@ class SceneClass(QGraphicsScene):
                 packageName = jsonData["package"]
                 nodeType = jsonData["type"]
                 libName = jsonData['lib']
-<<<<<<< HEAD:PyFlow/UI/Widget.py
                 name = GraphTree().getUniqNodeName(nodeType)
                 dropItem = self.itemAt(event.scenePos(), QtGui.QTransform())
                 if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
-=======
-                name = self.parent().getUniqNodeName(nodeType)
-                dropItem = self.parent().nodeFromInstance(self.itemAt(event.scenePos(), QtGui.QTransform()))
-
-                if not dropItem or (isinstance(dropItem, UINodeBase) and (dropItem.isCommentNode or dropItem.isTemp)) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
-                    
->>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
                     nodeTemplate = NodeBase.jsonTemplate()
                     nodeTemplate['package'] = packageName
                     nodeTemplate['lib'] = libName
@@ -368,9 +356,9 @@ class SceneClass(QGraphicsScene):
                         self.tempnode.isTemp = False
                         self.tempnode.update()
                         node = self.tempnode
-                        self.tempnode = None  
+                        self.tempnode = None
                         for it in self.items(event.scenePos()):
-                            if isinstance(it,UIPinBase):
+                            if isinstance(it, UIPinBase):
                                 dropItem = it
                                 break
                             elif isinstance(it,UIConnection):
@@ -411,294 +399,6 @@ class SceneClass(QGraphicsScene):
             super(SceneClass, self).dropEvent(event)
 
 
-<<<<<<< HEAD:PyFlow/UI/Widget.py
-class NodeBoxLineEdit(QLineEdit):
-    def __init__(self, parent, events=True):
-        super(NodeBoxLineEdit, self).__init__(parent)
-        self.setParent(parent)
-        self._events = events
-        self.parent = parent
-        self.setLocale(QtCore.QLocale(QtCore.QLocale.English,
-                                      QtCore.QLocale.UnitedStates))
-        self.setObjectName("le_nodes")
-        style = "background-color: rgb(80, 80, 80);" +\
-                "border-radius: 2px;" +\
-                "font-size: 14px;" +\
-                "border-color: black; border-style: outset; border-width: 1px;"
-        self.setStyleSheet(style)
-        self.setPlaceholderText("enter node name..")
-
-
-class NodeBoxTreeWidget(QTreeWidget):
-    def __init__(self, parent):
-        super(NodeBoxTreeWidget, self).__init__(parent)
-        style = "background-color: rgb(40, 40, 40);" +\
-                "selection-background-color: rgb(50, 50, 50);" +\
-                "border-radius: 2px;" +\
-                "font-size: 14px;" +\
-                "border-color: black; border-style: outset; border-width: 1px;"
-        self.setStyleSheet(style)
-        self.setParent(parent)
-        self.setFrameShape(QFrame.NoFrame)
-        self.setFrameShadow(QFrame.Sunken)
-        self.setObjectName("tree_nodes")
-        self.setSortingEnabled(True)
-        self.setDragEnabled(True)
-        self.setColumnCount(1)
-        self.setHeaderHidden(True)
-        self.setDragDropMode(QAbstractItemView.DragOnly)
-        self.setAnimated(True)
-        self.categoryPaths = {}
-
-    def _isCategoryExists(self, category_name, categories):
-        bFound = False
-        if category_name in categories:
-            return True
-        if not bFound:
-            for c in categories:
-                sepCatNames = c.split('|')
-                if len(sepCatNames) == 1:
-                    if category_name == c:
-                        return True
-                else:
-                    for i in range(0, len(sepCatNames)):
-                        c = '|'.join(sepCatNames)
-                        if category_name == c:
-                            return True
-                        sepCatNames.pop()
-        return False
-
-    def insertNode(self, nodeCategoryPath, name, doc=None, libName=None):
-        nodePath = nodeCategoryPath.split('|')
-        categoryPath = ''
-        # walk from tree top to bottom, creating folders if needed
-        # also writing all paths in dict to avoid duplications
-        for folderId in range(0, len(nodePath)):
-            folderName = nodePath[folderId]
-            if folderId == 0:
-                categoryPath = folderName
-                if categoryPath not in self.categoryPaths:
-                    rootFolderItem = QTreeWidgetItem(self)
-                    rootFolderItem.bCategory = True
-                    rootFolderItem.setFlags(QtCore.Qt.ItemIsEnabled)
-                    rootFolderItem.setText(0, folderName)
-                    rootFolderItem.setBackground(
-                        folderId, QtGui.QColor(80, 85, 80))
-                    self.categoryPaths[categoryPath] = rootFolderItem
-            else:
-                parentCategoryPath = categoryPath
-                categoryPath += '|{}'.format(folderName)
-                if categoryPath not in self.categoryPaths:
-                    childCategoryItem = QTreeWidgetItem(
-                        self.categoryPaths[parentCategoryPath])
-                    childCategoryItem.setFlags(QtCore.Qt.ItemIsEnabled)
-                    childCategoryItem.bCategory = True
-                    childCategoryItem.setText(0, folderName)
-                    childCategoryItem.setBackground(
-                        0, QtGui.QColor(80, 85, 80))
-                    self.categoryPaths[categoryPath] = childCategoryItem
-        # create node under constructed folder
-        nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
-        nodeItem.bCategory = False
-        nodeItem.setText(0, name)
-        nodeItem.libName = libName
-        if doc:
-            nodeItem.setToolTip(0, doc)
-
-    def refresh(self, dataType=None, pattern='', pinType=None):
-        self.clear()
-        self.categoryPaths = {}
-
-        for package_name, package in GET_PACKAGES().items():
-            # annotated functions
-            for libName, lib in package.GetFunctionLibraries().items():
-                foos = lib.getFunctions()
-                for name, foo in foos.items():
-                    foo = foo
-                    libName = foo.__annotations__["lib"]
-                    fooArgNames = getargspec(foo).args
-                    fooInpTypes = []
-                    fooOutTypes = []
-                    if foo.__annotations__['nodeType'] == NodeTypes.Callable:
-                        fooInpTypes.append('ExecPin')
-                        fooOutTypes.append('ExecPin')
-
-                    # consider return type if not None
-                    if foo.__annotations__['return'] is not None:
-                        fooOutTypes.append(foo.__annotations__['return'][0])
-
-                    for index in range(len(fooArgNames)):
-                        dType = foo.__annotations__[fooArgNames[index]]
-                        # if tuple - this means ref pin type (output) + default value
-                        # eg: (3, True) - bool with True default val
-                        if isinstance(dType, tuple):
-                            fooOutTypes.append(dType[0])
-                        else:
-                            fooInpTypes.append(dType)
-
-                    nodeCategoryPath = "{0}|{1}".format(
-                        package_name, foo.__annotations__['meta']['Category'])
-                    keywords = foo.__annotations__['meta']['Keywords']
-                    checkString = name + nodeCategoryPath + ''.join(keywords)
-                    if pattern.lower() in checkString.lower():
-                        # create all nodes items if clicked on canvas
-                        if dataType is None:
-                            self.insertNode(nodeCategoryPath,
-                                            name, foo.__doc__, libName)
-                        else:
-                            if pinType == PinDirection.Output:
-                                if dataType in fooInpTypes:
-                                    self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__, libName)
-                            else:
-                                if dataType in fooOutTypes:
-                                    self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__, libName)
-
-            # class based nodes
-            for node_class in package.GetNodeClasses().values():
-                if node_class.__name__ in ('setVar', 'getVar'):
-                    continue
-
-                nodeCategoryPath = "{0}|{1}".format(
-                    package_name, node_class.category())
-
-                checkString = node_class.__name__ + \
-                    nodeCategoryPath + ''.join(node_class.keywords())
-                if pattern.lower() not in checkString.lower():
-                    continue
-                if dataType is None:
-                    self.insertNode(
-                        nodeCategoryPath, node_class.__name__, node_class.description())
-                else:
-                    # if pressed pin is output pin
-                    # filter by nodes input types
-                    if pinType == PinDirection.Output:
-                        if dataType in node_class.pinTypeHints()['inputs']:
-                            self.insertNode(
-                                nodeCategoryPath, node_class.__name__, node_class.description())
-                    else:
-                        # if pressed pin is input pin
-                        # filter by nodes output types
-                        if dataType in node_class.pinTypeHints()['outputs']:
-                            self.insertNode(
-                                nodeCategoryPath, node_class.__name__, node_class.description())
-            # expand all categories
-            if dataType is not None:
-                for categoryItem in self.categoryPaths.values():
-                    categoryItem.setExpanded(True)
-
-    def keyPressEvent(self, event):
-        super(NodeBoxTreeWidget, self).keyPressEvent(event)
-        key = event.key()
-        if key == QtCore.Qt.Key_Return:
-            item_clicked = self.currentItem()
-            if not item_clicked:
-                event.ignore()
-                return
-            # check if clicked item is a category
-            if item_clicked.bCategory:
-                event.ignore()
-                return
-            # find top level parent
-            rootItem = item_clicked
-            while not rootItem.parent() is None:
-                rootItem = rootItem.parent()
-            packageName = rootItem.text(0)
-            pressed_text = item_clicked.text(0)
-            libName = item_clicked.libName
-            if pressed_text in self.categoryPaths.keys():
-                event.ignore()
-                return
-
-            nodeClassName = self.currentItem().text(0)
-            name = GraphTree().getUniqNodeName(nodeClassName)
-            pos = self.parent().graph().mapToScene(self.parent().graph().mouseReleasePos)
-            nodeTemplate = NodeBase.jsonTemplate()
-            nodeTemplate['package'] = packageName
-            nodeTemplate['lib'] = libName
-            nodeTemplate['type'] = pressed_text
-            nodeTemplate['name'] = name
-            nodeTemplate['x'] = pos.x()
-            nodeTemplate['y'] = pos.y()
-            nodeTemplate['meta']['label'] = nodeClassName
-            nodeTemplate['uuid'] = None
-
-            self.parent().graph().createNode(nodeTemplate)
-
-    def mousePressEvent(self, event):
-        super(NodeBoxTreeWidget, self).mousePressEvent(event)
-        item_clicked = self.currentItem()
-        if not item_clicked:
-            event.ignore()
-            return
-        # check if clicked item is a category
-        if item_clicked.bCategory:
-            event.ignore()
-            return
-        # find top level parent
-        rootItem = item_clicked
-        while not rootItem.parent() is None:
-            rootItem = rootItem.parent()
-        packageName = rootItem.text(0)
-        pressed_text = item_clicked.text(0)
-        libName = item_clicked.libName
-
-        if pressed_text in self.categoryPaths.keys():
-            event.ignore()
-            return
-        drag = QtGui.QDrag(self)
-        mime_data = QtCore.QMimeData()
-        jsonTemplate = NodeBase.jsonTemplate()
-        jsonTemplate['package'] = packageName
-        jsonTemplate['lib'] = libName
-        jsonTemplate['type'] = pressed_text
-        jsonTemplate['name'] = pressed_text
-
-        pressed_text = json.dumps(jsonTemplate)
-        mime_data.setText(pressed_text)
-        drag.setMimeData(mime_data)
-        drag.exec_()
-
-
-class NodesBox(QWidget):
-    """doc string for NodesBox"""
-
-    def __init__(self, parent, graph=None):
-        super(NodesBox, self).__init__(parent)
-        self.graph = weakref.ref(graph)
-        self.verticalLayout = QVBoxLayout(self)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.verticalLayout.setContentsMargins(4, 4, 4, 4)
-        self.lineEdit = NodeBoxLineEdit(self)
-        self.lineEdit.setObjectName("lineEdit")
-        self.verticalLayout.addWidget(self.lineEdit)
-        self.treeWidget = NodeBoxTreeWidget(self)
-        self.treeWidget.setObjectName("treeWidget")
-        self.treeWidget.headerItem().setText(0, "1")
-        self.verticalLayout.addWidget(self.treeWidget)
-        self.lineEdit.textChanged.connect(self.leTextChanged)
-        self.treeWidget.refresh()
-
-    def sizeHint(self):
-        return QtCore.QSize(400, 250)
-
-    def expandCategory(self):
-        for i in self.treeWidget.categoryPaths:
-            self.treeWidget.setItemExpanded(
-                self.treeWidget.categoryPaths[i], True)
-
-    def leTextChanged(self):
-        if self.lineEdit.text() == '':
-            self.lineEdit.setPlaceholderText("enter node name..")
-            self.treeWidget.refresh()
-            return
-        self.treeWidget.refresh(None, self.lineEdit.text())
-        self.expandCategory()
-
-
-=======
->>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
 MANIP_MODE_NONE = 0
 MANIP_MODE_SELECT = 1
 MANIP_MODE_PAN = 2
@@ -879,8 +579,8 @@ class GraphWidgetUI(QGraphicsView):
     def connections(self):
         return self._UIConnections
 
-    # def getNodes(self):
-    #     return list(self.nodes.values())
+    def getAllNodes(self):
+        return list(self.nodes.values())
 
     def getUniqNodeDisplayName(self, name):
         nodes_names = [n.displayName for n in self.nodes.values()]
@@ -1044,7 +744,7 @@ class GraphWidgetUI(QGraphicsView):
     def new_file(self):
         self._current_file_name = 'Untitled'
         self._file_name_label.setPlainText('Untitled')
-        nodes = list(self.getNodes())
+        nodes = list(self.getAllNodes())
         for node in nodes:
             node.kill()
         self.parent.variablesWidget.killAll()
@@ -1082,7 +782,7 @@ class GraphWidgetUI(QGraphicsView):
         self._file_name_label.setPlainText(self._current_file_name)
         self.frameAllNodes()
         self.undoStack.clear()
-        for node in self.getNodes():
+        for node in self.getAllNodes():
             if node.isCommentNode:
                 if not node.expanded:
                     node.expanded = True
@@ -1132,14 +832,14 @@ class GraphWidgetUI(QGraphicsView):
     def getNodesRect(self, selected=False):
         rectangles = []
         if selected:
-            for n in [n for n in self.getNodes() if n.isSelected()]:
+            for n in [n for n in self.getAllNodes() if n.isSelected()]:
                 n_rect = QtCore.QRectF(n.scenePos(),
                                        QtCore.QPointF(n.scenePos().x() + float(n.w),
                                                       n.scenePos().y() + float(n.h)))
                 rectangles.append(
                     [n_rect.x(), n_rect.y(), n_rect.bottomRight().x(), n_rect.bottomRight().y()])
         else:
-            for n in self.getNodes():
+            for n in self.getAllNodes():
                 n_rect = QtCore.QRectF(n.scenePos(),
                                        QtCore.QPointF(n.scenePos().x() + float(n.w),
                                                       n.scenePos().y() + float(n.h)))
@@ -1160,7 +860,7 @@ class GraphWidgetUI(QGraphicsView):
         return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
 
     def selectedNodes(self):
-        return [i for i in self.getNodes() if i.isSelected()]
+        return [i for i in self.getAllNodes() if i.isSelected()]
 
     def clearSelection(self):
         for node in self.selectedNodes():
@@ -1269,7 +969,7 @@ class GraphWidgetUI(QGraphicsView):
         QGraphicsView.keyPressEvent(self, event)
 
     def duplicateNodes(self):
-        selectedNodes = [i for i in self.getNodes() if i.isSelected()]
+        selectedNodes = [i for i in self.getAllNodes() if i.isSelected()]
 
         if len(selectedNodes) > 0:
             diff = QtCore.QPointF(self.mapToScene(
@@ -1303,7 +1003,7 @@ class GraphWidgetUI(QGraphicsView):
     def copyNodes(self, toClipboard=True):
         nodes = []
         oldNodes = []
-        selectedNodes = [i for i in self.getNodes() if i.isSelected()]
+        selectedNodes = [i for i in self.getAllNodes() if i.isSelected()]
         connections = []
         for n in selectedNodes:
             oldNodes.append(n)
@@ -1371,7 +1071,7 @@ class GraphWidgetUI(QGraphicsView):
                         self.connectPins(nsrc, ndst)
 
     def alignSelectedNodes(self, direction):
-        ls = [n for n in self.getNodes() if n.isSelected()]
+        ls = [n for n in self.getAllNodes() if n.isSelected()]
 
         x_positions = [p.scenePos().x() for p in ls]
         y_positions = [p.scenePos().y() for p in ls]
@@ -1676,10 +1376,10 @@ class GraphWidgetUI(QGraphicsView):
             # select to add / remove nodes.
             node = self.nodeFromInstance(self.pressed_item)
             if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
-                nodes = [node for node in self.getNodes()
+                nodes = [node for node in self.getAllNodes()
                          if not node.isCommentNode]
             else:
-                nodes = self.getNodes()
+                nodes = self.getAllNodes()
             if modifiers == QtCore.Qt.ControlModifier:
                 for node in nodes:
                     # if node not in [self.inputsItem,self.outputsItem]:
@@ -1807,7 +1507,7 @@ class GraphWidgetUI(QGraphicsView):
         self.released_item = self.itemAt(event.pos())
         self._resize_group_mode = False
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
-        for n in self.getNodes():
+        for n in self.getAllNodes():
             if not n.isCommentNode:
                 n.setFlag(QGraphicsItem.ItemIsMovable)
                 n.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -2024,23 +1724,15 @@ class GraphWidgetUI(QGraphicsView):
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
-<<<<<<< HEAD:PyFlow/UI/Widget.py
     def addNode(self, node, jsonTemplate=None):
-=======
-    def addNode(self, node,jsonTemplate=None):
->>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
         """Adds node to a graph
 
         Arguments:
             node UINodeBase -- raw node wrapper
         """
-<<<<<<< HEAD:PyFlow/UI/Widget.py
         graphBase = GraphTree().activeGraph()
         print('add', node.name, 'to', graphBase.name)
         graphBase.addNode(node._rawNode, jsonTemplate)
-=======
-        self._graphBase.addNode(node._rawNode,jsonTemplate)
->>>>>>> ui_enhacements:PyFlow/UI/Graph/Widget.py
         node.graph = weakref.ref(self)
         self.scene().addItem(node)
 

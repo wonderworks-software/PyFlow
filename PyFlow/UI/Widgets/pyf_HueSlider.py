@@ -3,7 +3,7 @@
 
 import sys
 from Qt import QtGui, QtCore, QtWidgets
-from pyf_DoubleSlider import pyf_DoubleSlider
+from PyFlow.UI.Widgets.pyf_DoubleSlider import pyf_DoubleSlider
 styleSheet = """
 
 QSlider,QSlider:disabled,QSlider:focus     {  

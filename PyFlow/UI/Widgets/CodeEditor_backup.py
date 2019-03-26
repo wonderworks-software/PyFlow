@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:\GIT\PyFlow\PyFlow\UI\CodeEditor_ui.ui',
-# licensing of 'd:\GIT\PyFlow\PyFlow\UI\CodeEditor_ui.ui' applies.
+# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\CodeEditor.ui',
+# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\CodeEditor.ui' applies.
 #
-# Created: Mon Mar 11 19:08:53 2019
-#      by: pyside2-uic  running on PySide2 5.12.1
+# Created: Tue Mar 26 10:29:41 2019
+#      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -109,12 +109,9 @@ class Ui_CodeEditorWidget(object):
         self.horizontalLayout_4.setSpacing(0)
         self.horizontalLayout_4.setContentsMargins(1, 1, 1, 1)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        self.pbResetUI = QtWidgets.QPushButton(CodeEditorWidget)
-        self.pbResetUI.setObjectName("pbResetUI")
-        self.horizontalLayout_4.addWidget(self.pbResetUI)
-        self.pbResetNode = QtWidgets.QPushButton(CodeEditorWidget)
-        self.pbResetNode.setObjectName("pbResetNode")
-        self.horizontalLayout_4.addWidget(self.pbResetNode)
+        self.pbReset = QtWidgets.QPushButton(CodeEditorWidget)
+        self.pbReset.setObjectName("pbReset")
+        self.horizontalLayout_4.addWidget(self.pbReset)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem2)
         self.pbSave = QtWidgets.QPushButton(CodeEditorWidget)
@@ -145,8 +142,7 @@ class Ui_CodeEditorWidget(object):
         self.pbKillSelectedItems.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "kill selected pins", None, -1))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabPins), QtWidgets.QApplication.translate("CodeEditorWidget", "Pins", None, -1))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabCode), QtWidgets.QApplication.translate("CodeEditorWidget", "Code", None, -1))
-        self.pbResetUI.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "reset ui", None, -1))
-        self.pbResetNode.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "reset node", None, -1))
+        self.pbReset.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "reset", None, -1))
         self.pbSave.setText(QtWidgets.QApplication.translate("CodeEditorWidget", "save", None, -1))
 
-import PyFlow.UI.Utils.nodes_res_rc
+import nodes_res_rc

@@ -72,18 +72,11 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QCompleter
 from Qt.QtWidgets import QPlainTextEdit
 
-<<<<<<< HEAD:PyFlow/UI/CodeEditor.py
-from PyFlow.UI.Widgets import CodeEditor_ui
-import PyFlow.UI.PythonSyntax as PythonSyntax
-from PyFlow.UI.Widgets import PinWidget_ui
-from PyFlow.UI.UINodeBase import UINodeBase
-=======
 
 import PyFlow.UI.Utils.PythonSyntax as PythonSyntax
 from PyFlow.UI.Views import PinWidget_ui
-from PyFlow.UI.Views import Ui_CodeEditor_ui
+from PyFlow.UI.Views import CodeEditor_ui
 from PyFlow.UI.Graph.UINodeBase import UINodeBase
->>>>>>> ui_enhacements:PyFlow/UI/Views/CodeEditor.py
 from PyFlow.Core.Common import pinAffects
 from PyFlow import (
     getAllPinClasses,
@@ -314,15 +307,8 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         node = self.graph.nodes[self.nodeUid]
         for i in list(node.inputs.values()):
             i.kill()
-<<<<<<< HEAD:PyFlow/UI/CodeEditor.py
         for o in list(node.outputs.values()):
             o.kill()
-=======
-            self.graph.scene().removeItem(i.getContainer())
-        for o in list(node.outputs.values()):
-            o.kill()
-            self.graph.scene().removeItem(o.getContainer())
->>>>>>> ui_enhacements:PyFlow/UI/Views/CodeEditor.py
 
         # TODO: Reset node size
 
@@ -351,12 +337,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
             if isinstance(w, WPinWidget):
                 dataType = w.dataType()
-<<<<<<< HEAD:PyFlow/UI/CodeEditor.py
                 rawPin = node._rawNode.addOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), foo=node.compute)
-=======
-                rawPin = node._rawNode.addOutputPin(
-                    w.name(), w.dataType(), getPinDefaultValueByType(dataType))
->>>>>>> ui_enhacements:PyFlow/UI/Views/CodeEditor.py
                 uiPin = node._createUIPinWrapper(rawPin)
                 w.lePinName.setText(uiPin.name)
                 uiPin.getLabel()().setVisible(not w.shouldHideLabel())

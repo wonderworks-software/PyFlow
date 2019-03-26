@@ -28,7 +28,6 @@ from PyFlow.Core.Common import clearLayout
 from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.AppBase import AppBase
 from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.UI.Views.InspectorWidget import InspectorWidget
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Views import GraphEditor_ui
 from PyFlow.UI.Views.VariablesWidget import VariablesWidget
@@ -71,7 +70,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.listViewUndoStack.setObjectName("listViewUndoStack")
         self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
 
-	self.styleSheetEditor = StyleSheetEditor()
+        self.styleSheetEditor = StyleSheetEditor()
         self._currentGraph = GraphWidgetUI(self, graphBase=GraphTree().getRootGraph())
         self.updateGraphTreeLocation()
         GraphTree().onGraphSwitched.connect(self.onRawGraphSwitched)

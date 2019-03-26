@@ -1,9 +1,13 @@
 from Qt import QtGui
 import inspect
-from Settings import Colors
+from PyFlow.UI.Utils.Settings import Colors
+from PyFlow.Core.Common import clamp
 
-def clamp(val,min_value,max_value):
-    return max(min(val, max_value), min_value)
+
+# def clamp(val,min_value,max_value):
+#     return max(min(val, max_value), min_value)
+
+
 class editableStyleSheet():
   def __init__(self):
 

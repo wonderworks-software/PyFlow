@@ -403,15 +403,8 @@ class UIPinBase(QGraphicsWidget):
         clipboard.setText(str(self.uid))
 
     def disconnectAll(self):
-<<<<<<< HEAD:PyFlow/UI/UIPinBase.py
         if len(self.uiConnectionList) > 0:
             self.owningNode().graph().removeEdgeCmd(self.uiConnectionList)
-=======
-        self._rawPin.disconnectAll()
-        while not len(self.uiConnectionList) == 0:
-            self.owningNode().graph().removeConnection(
-                self.uiConnectionList[0])
->>>>>>> ui_enhacements:PyFlow/UI/Graph/UIPinBase.py
         self.update()
 
     def shape(self):

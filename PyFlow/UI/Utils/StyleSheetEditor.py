@@ -8,7 +8,7 @@ if __name__ == '__main__':
     sys.path.append("..")
     import stylesheet
 else:
-    import stylesheet
+    from PyFlow.UI.Utils.stylesheet import editableStyleSheet
     #import resources
 
 
@@ -18,7 +18,7 @@ class StyleSheetEditor(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super(StyleSheetEditor, self).__init__(parent)
-        self.style = stylesheet.editableStyleSheet()
+        self.style = editableStyleSheet()
         self.setLayout(QtWidgets.QVBoxLayout())
         self.mainGroup = QtWidgets.QGroupBox(self)
         self.mainGroupLay = QtWidgets.QVBoxLayout(self.mainGroup)

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\PinWidget_ui.ui',
-# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\PinWidget_ui.ui' applies.
+# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui',
+# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui' applies.
 #
-# Created: Thu Mar 21 09:15:34 2019
+# Created: Tue Mar 26 10:29:41 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -62,4 +62,4 @@ class Ui_Form(object):
         self.cbHideLabel.setToolTip(QtCompat.translate("Form", "should hide label", None, -1))
         self.cbHideLabel.setText(QtCompat.translate("Form", "hide label", None, -1))
 
-import PyFlow.UI.Utils.nodes_res_rc
+import nodes_res_rc

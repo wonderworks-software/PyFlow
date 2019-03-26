@@ -34,11 +34,7 @@ from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Graph.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Core.NodeBase import NodeBase
-<<<<<<< HEAD:PyFlow/UI/UINodeBase.py
-from PyFlow.Core.Enums import ENone
 from PyFlow.Core.GraphTree import GraphTree
-=======
->>>>>>> ui_enhacements:PyFlow/UI/Graph/UINodeBase.py
 from PyFlow.Core.Common import *
 
 from collections import OrderedDict
