@@ -11,14 +11,14 @@ from PyFlow.Core.GraphTree import GraphTree
 
 
 class GraphBase(object):
-
-    onInputPinCreated = Signal(object)
-    onInputPinDeleted = Signal(object)
-    onOutputPinCreated = Signal(object)
-    onOutputPinDeleted = Signal(object)
-
     def __init__(self, name, *args, **kwargs):
         super(GraphBase, self).__init__(*args, **kwargs)
+        # signals
+        self.onInputPinCreated = Signal(object)
+        self.onInputPinDeleted = Signal(object)
+        self.onOutputPinCreated = Signal(object)
+        self.onOutputPinDeleted = Signal(object)
+
         self.__name = name
         self.nodes = {}
         self.connections = {}
@@ -154,13 +154,24 @@ class GraphBase(object):
         return pin
 
     def getInputNode(self):
-        """Creates and adds graph inputs node. Note, this works only for graphs which has a parent
+        """Creates and adds to graph 'graphInputs' node. Note, this works only for graphs which has a parent
 
         pins on this node will be exposed on subgraph node as input pins
         """
         node = None
         if GraphTree().getParentGraph(self) is not None:
             node = getRawNodeInstance("graphInputs", "PyflowBase")
+            self.addNode(node)
+        return node
+
+    def getOutputNode(self):
+        """Creates and adds to graph 'graphOutputs' node. Note, this works only for graphs which has a parent
+
+        pins on this node will be exposed on subgraph node as output pins
+        """
+        node = None
+        if GraphTree().getParentGraph(self) is not None:
+            node = getRawNodeInstance("graphOutputs", "PyflowBase")
             self.addNode(node)
         return node
 

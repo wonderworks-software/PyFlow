@@ -1,3 +1,4 @@
+from blinker import Signal
 import uuid
 from copy import deepcopy
 import weakref
@@ -7,9 +8,15 @@ from PyFlow.Core.Common import *
 
 
 class PinBase(IPin):
-    # TODO: remove dataType argument. This is redundant. We use __class__.__name__ wrapped in property
+    # TODO: remove dataType argument. We should use __class__.__name__
     def __init__(self, name, owningNode, dataType, direction, userStructClass=None):
         super(PinBase, self).__init__()
+        # signals
+        self.onPinConnected = Signal(object)
+        self.onPinDisconnected = Signal(object)
+        self.nameChanged = Signal(str)
+        self.killed = Signal()
+
         self._uid = uuid.uuid4()
         self._dataType = None
         self._userStructClass = userStructClass
@@ -33,7 +40,7 @@ class PinBase(IPin):
         self.direction = direction
         ## This flag is for subgraph input nodes, to correctly establish connections
         self.actLikeDirection = direction
-        ## For rand int node
+        ## For rand int node and stuff like that
         self._alwaysPushDirty = False
         ## Can be renamed or not (for switch on string node)
         self._renamingEnabled = False
@@ -106,8 +113,8 @@ class PinBase(IPin):
         self._uid = value
 
     def setName(self, name):
-        oldName = self.name
         self.name = name.replace(" ", "_")
+        self.nameChanged.send(self.name)
 
     def getName(self):
         return self.owningNode().name + '.' + self.name
@@ -209,6 +216,7 @@ class PinBase(IPin):
 
     def kill(self):
         self.owningNode().pins.pop(self.uid)
+        self.killed.send()
 
     def currentData(self):
         if self._data is None:
@@ -216,10 +224,10 @@ class PinBase(IPin):
         return self._data
 
     def pinConnected(self, other):
-        pass
+        self.onPinConnected.send(other)
 
     def pinDisconnected(self, other):
-        pass
+        self.onPinDisconnected.send(other)
 
     def setClean(self):
         self.dirty = False

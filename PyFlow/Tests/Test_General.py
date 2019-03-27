@@ -323,7 +323,29 @@ class TestGeneral(unittest.TestCase):
 
         # add input output nodes to expose pins to outer subgraph node
         inputs1 = GT.activeGraph().getInputNode()
+        outputs1 = GT.activeGraph().getOutputNode()
         self.assertIsNotNone(inputs1, "failed to create graph inputs node")
+        self.assertIsNotNone(outputs1, "failed to create graph outputs node")
+
+        # create out pin on graphInputs node
+        # this should expose input pin on subgraph node
+        outPin = inputs1.addOutPin()
+        self.assertEqual(len(subgraphNodeInstance.namePinInputsMap), 1, "failed to expose input pin")
+        self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
+
+        # change inner pin name and check it is reflected outside
+        outPin.setName("first")
+        self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name, "name is not synchronized")
+
+        # create input pin on graphOutputs node
+        # this should expose output pin on subgraph node
+        inPin = outputs1.addInPin()
+        self.assertEqual(len(subgraphNodeInstance.namePinOutputsMap), 1, "failed to expose input pin")
+        self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
+
+        # change inner pin name and check it is reflected outside
+        inPin.setName("first")
+        self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name, "name is not synchronized")
 
         # add simple calculation
 

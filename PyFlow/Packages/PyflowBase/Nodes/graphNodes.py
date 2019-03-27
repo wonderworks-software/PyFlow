@@ -7,10 +7,9 @@ from PyFlow.Core.Common import *
 class graphInputs(NodeBase):
     """Represents a group of input pins on subgraph node
     """
-    onPinCreated = Signal(object)
-
     def __init__(self, name):
         super(graphInputs, self).__init__(name)
+        self.onPinCreated = Signal(object)
 
     @staticmethod
     def pinTypeHints():
@@ -39,8 +38,10 @@ class graphInputs(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(graphInputs, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamically created pins
-        # before this, connect with owning graph
+        # connect with owning graph before
         self.onPinCreated.connect(self.graph().onInputPinCreated.send)
+        # add outputs
+        pass
 
     def compute(self):
         # This node is special. Output pins of this node are actually inputs pins in terms of execution and data gathering
@@ -54,10 +55,9 @@ class graphInputs(NodeBase):
 class graphOutputs(NodeBase):
     """Represents a group of output pins on subgraph node
     """
-    onPinCreated = Signal(object)
-
     def __init__(self, name):
         super(graphOutputs, self).__init__(name)
+        self.onPinCreated = Signal(object)
 
     @staticmethod
     def pinTypeHints():
@@ -74,6 +74,14 @@ class graphOutputs(NodeBase):
     @staticmethod
     def description():
         return ''
+
+    def postCreate(self, jsonTemplate=None):
+        super(graphOutputs, self).postCreate(jsonTemplate=jsonTemplate)
+        # recreate dynamically created pins
+        # connect with owning graph before
+        self.onPinCreated.connect(self.graph().onOutputPinCreated.send)
+        # add outputs
+        pass
 
     def addInPin(self):
         name = str(len(self.outputs))

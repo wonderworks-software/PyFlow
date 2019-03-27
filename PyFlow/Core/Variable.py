@@ -8,19 +8,19 @@ from PyFlow.Core.Interfaces import ISerializable
 
 
 class Variable(ISerializable):
-
-    nameChanged = Signal()
-    valueChanged = Signal()
-    dataTypeChanged = Signal()
-    accessLevelChanged = Signal()
-    packageNameChanged = Signal()
-    uuidChanged = Signal()
-    killed = Signal()
-
     def __init__(self, value, name, dataType, accessLevel=AccessLevel.public, uid=None):
         super(Variable, self).__init__()
         assert(isinstance(name, str))
         assert(isinstance(dataType, str))
+        # signals
+        self.nameChanged = Signal()
+        self.valueChanged = Signal()
+        self.dataTypeChanged = Signal()
+        self.accessLevelChanged = Signal()
+        self.packageNameChanged = Signal()
+        self.uuidChanged = Signal()
+        self.killed = Signal()
+
         self._name = name
         self._value = value
         self._dataType = dataType

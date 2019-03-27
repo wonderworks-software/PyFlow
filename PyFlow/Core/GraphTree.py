@@ -10,11 +10,11 @@ from PyFlow.Core.Common import getUniqNameFromList
 class GraphTree:
     """Graph tree. Here is all the data
     """
-
-    onGraphSwitched = Signal()
-
     def __init__(self, rootGraph=None):
         assert(rootGraph is not None)
+        # signals
+        self.onGraphSwitched = Signal()
+
         self.__tree = Tree()
         self.__tree.create_node(rootGraph.name, rootGraph.name, data=rootGraph)
         self.__activeGraph = rootGraph
