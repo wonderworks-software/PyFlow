@@ -46,17 +46,12 @@ class FloatVector3InputWidget(InputWidgetRaw):
         return pyrr.Vector3([self.dsbX.value(), self.dsbY.value(), self.dsbZ.value()])
 
     def _configSpinBoxes(self):
-        self.dsbX.setDecimals(FLOAT_DECIMALS)
-        self.dsbY.setDecimals(FLOAT_DECIMALS)
-        self.dsbZ.setDecimals(FLOAT_DECIMALS)
-
-        self.dsbX.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
-        self.dsbY.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
-        self.dsbZ.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
-
-        self.dsbX.setSingleStep(FLOAT_SINGLE_STEP)
-        self.dsbY.setSingleStep(FLOAT_SINGLE_STEP)
-        self.dsbZ.setSingleStep(FLOAT_SINGLE_STEP)
+        for x in [self.dsbX,self.dsbY,self.dsbZ]:
+            x.setDecimals(FLOAT_DECIMALS)
+            x.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
+            x.setSingleStep(FLOAT_SINGLE_STEP)
+            x.setDisplayMinimun(0)
+            x.setDisplayMaximum(10)
 
     def _onDataChangedX(self, val):
         v = self.asDataTypeClass()

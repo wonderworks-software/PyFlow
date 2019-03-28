@@ -73,6 +73,8 @@ class FloatInputWidget(InputWidgetSingle):
         super(FloatInputWidget, self).__init__(parent=parent, **kwds)
         self.sb = pyf_FloatSlider(self, style=1)
         _configDoubleSpinBox(self.sb)
+        self.sb.setDisplayMinimun(0)
+        self.sb.setDisplayMaximum(10)        
         self.setWidget(self.sb)
         # when spin box updated call setter function
         self.sb.valueChanged.connect(lambda val: self.dataSetCallback(val))
@@ -81,7 +83,6 @@ class FloatInputWidget(InputWidgetSingle):
         self.sb.blockSignals(bLocked)
 
     def setWidgetValue(self, val):
-        print val
         self.sb.setValue(float(val))
 
 
