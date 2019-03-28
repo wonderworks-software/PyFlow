@@ -295,6 +295,14 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(v1.value, True, "variable value is not set")
 
     def test_subgraph_simple(self):
+        """Here we create subgraph node with two add nodes connected inside [add1.out -> add2.a]
+
+        switch active graph to subgraph and back to root
+        check subgraph node exposes pins from underlined graph inputs/outputs nodes
+        add nodes to different graphs of GraphTree
+        check inner pins broadcasts changes to outer companion pins on subgraph node
+
+        """
         packages = GET_PACKAGES()
 
         GT = GraphTree()
@@ -382,8 +390,6 @@ class TestGeneral(unittest.TestCase):
         printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
         GT.activeGraph().addNode(printNode)
 
-        
-
         connected = connectPins(printNode.getPinByName('entity'), subgraphOutPin)
         self.assertEqual(connected, True)
 
@@ -404,6 +410,15 @@ class TestGeneral(unittest.TestCase):
         # check value
         printNode.getPinByName('inExec').call()
         self.assertEqual(printNode.getPinByName('entity').currentData(), 3)
+
+        # kill inner pins and check outer companions killed also
+        self.assertEqual(len(subgraphNodeInstance.pins), 2)
+        inPin.kill()
+        self.assertEqual(len(subgraphNodeInstance.outputs), 0, "outer companion pin is not killed")
+        self.assertEqual(len(subgraphNodeInstance.pins), 1)
+        outPin.kill()
+        self.assertEqual(len(subgraphNodeInstance.inputs), 0, "outer companion pin is not killed")
+        self.assertEqual(len(subgraphNodeInstance.pins), 0, "outer companion pins are not killed")
 
 
 if __name__ == '__main__':

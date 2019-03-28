@@ -53,7 +53,11 @@ class subgraph(NodeBase):
         pinAffects(subgraphInputPin, outPin)
         # connect
         outPin.nameChanged.connect(subgraphInputPin.setName)
-        outPin.killed.connect(subgraphInputPin.kill)
+
+        def onInnerOutKilled(*args, **kwargs):
+            self.__inputsMap.pop(subgraphInputPin)
+            subgraphInputPin.kill()
+        outPin.killed.connect(onInnerOutKilled, weak=False)
 
         # watch if something is connected to inner companion
         # and change default value
@@ -83,7 +87,11 @@ class subgraph(NodeBase):
         pinAffects(inPin, subgraphOutputPin)
         # connect
         inPin.nameChanged.connect(subgraphOutputPin.setName)
-        inPin.killed.connect(subgraphOutputPin.kill)
+
+        def onInnerInpPinKilled(*args, **kwargs):
+            subgraphOutputPin.kill()
+            self.__outputsMap.pop(subgraphOutputPin)
+        inPin.killed.connect(onInnerInpPinKilled, weak=False)
 
         # watch if something is connected to inner companion
         # and change default value
