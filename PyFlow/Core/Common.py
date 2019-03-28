@@ -225,7 +225,7 @@ def connectPins(src, dst):
 
     pinAffects(src, dst)
     src.setDirty()
-    dst._data = src._data
+    dst._data = src.currentData()
     dst.pinConnected(src)
     src.pinConnected(dst)
     push(dst)

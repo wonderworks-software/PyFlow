@@ -160,10 +160,10 @@ class PinBase(IPin):
     ## Setting the data
     def setData(self, data):
         self.setClean()
+        self._data = data
         if self.direction == PinDirection.Output:
             for i in self.affects:
                 i._data = self.currentData()
-                # i.setData(self.currentData())
                 i.setClean()
         if self.direction == PinDirection.Input or self._alwaysPushDirty:
             push(self)

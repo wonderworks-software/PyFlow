@@ -19,6 +19,19 @@ class GraphTree:
         self.__tree.create_node(rootGraph.name, rootGraph.name, data=rootGraph)
         self.__activeGraph = rootGraph
 
+    def clear(self):
+        """remove everything except of root graph
+        """
+        # save root node
+        t = self.getTree()
+        rootNode = t[t.root]
+        # clear everything
+        t._nodes.clear()
+        # reset root pointer
+        t.root = None
+        # add root back
+        t.add_node(rootNode)
+
     def getUniqGraphName(self, name):
         existingGraphNames = [g.name for g in self.getAllGraphs()]
         return getUniqNameFromList(existingGraphNames, name)

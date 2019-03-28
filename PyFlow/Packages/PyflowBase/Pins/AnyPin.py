@@ -5,6 +5,7 @@ from PyFlow.Core.Common import *
 from PyFlow import getAllPinClasses
 from PyFlow import CreateRawPin
 from PyFlow import findPinClassByType
+from PyFlow import getPinDefaultValueByType
 
 
 class AnyPin(PinBase):
@@ -69,8 +70,8 @@ class AnyPin(PinBase):
         return dt
 
     def pinConnected(self, other):
+        self.onPinConnected.send(other)
         self.updateOnConnection(other)
-        super(AnyPin, self).pinConnected(other)
 
     def updateOnConnection(self, other):
         if self.constraint is None:
@@ -153,10 +154,9 @@ class AnyPin(PinBase):
             self.super = other.__class__
             self.dataType = other.dataType
             self.color = other.color
-            self.setData(other.defaultValue())
+            self._data = getPinDefaultValueByType(self.dataType)
             self.setDefaultValue(other.defaultValue())
             self.dirty = other.dirty
             self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
-            # self._wrapper().setType(other.color())

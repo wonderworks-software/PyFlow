@@ -55,6 +55,12 @@ class subgraph(NodeBase):
         outPin.nameChanged.connect(subgraphInputPin.setName)
         outPin.killed.connect(subgraphInputPin.kill)
 
+        # watch if something is connected to inner companion
+        # and change default value
+        def onInnerOutConnected(other):
+            subgraphInputPin._data = other.currentData()
+        outPin.onPinConnected.connect(onInnerOutConnected, weak=False)
+
     def onGraphInputPinDeleted(self, inPin):
         # remove companion pin for inner graphInputs node pin
         print("onGraphInputPinDeleted", inPin.getName())
@@ -78,6 +84,12 @@ class subgraph(NodeBase):
         # connect
         inPin.nameChanged.connect(subgraphOutputPin.setName)
         inPin.killed.connect(subgraphOutputPin.kill)
+
+        # watch if something is connected to inner companion
+        # and change default value
+        def onInnerInpPinConnected(other):
+            subgraphOutputPin._data = other.currentData()
+        inPin.onPinConnected.connect(onInnerInpPinConnected, weak=False)
 
     def onGraphOutputPinDeleted(self, outPin):
         # remove companion pin for inner graphOutputs node pin

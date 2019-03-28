@@ -32,6 +32,8 @@ class graphInputs(NodeBase):
         p = self.addOutputPin(name, 'AnyPin')
         # p.setAlwaysPushDirty(True)
         p.actLikeDirection = PinDirection.Input
+        # this will be passed to subgraph node for companion pin creation
+        # and signals connection
         self.onPinCreated.send(p)
         return p
 
