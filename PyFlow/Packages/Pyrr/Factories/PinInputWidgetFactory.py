@@ -22,7 +22,8 @@ class FloatVector3InputWidget(InputWidgetRaw):
     def __init__(self, **kwds):
         super(FloatVector3InputWidget, self).__init__(**kwds)
         self.setLayout(QtWidgets.QHBoxLayout())
-
+        self.layout().setContentsMargins(1, 1, 1, 1)
+        self.layout().setSpacing(1)
         self.dsbX = pyf_FloatSlider(self, style=0)
         self.dsbY = pyf_FloatSlider(self, style=0)
         self.dsbZ = pyf_FloatSlider(self, style=0)
