@@ -57,10 +57,14 @@ class GraphTree:
             node.data.Tick(deltaTime)
 
     def switchGraph(self, newGraphName):
+        if newGraphName not in self.getTree():
+            return False
+
         old = self.activeGraph()
         new = self.getTree()[newGraphName].data
         if old == new:
             return False
+
         self.__activeGraph = new
         self.onGraphSwitched.send(old=old, new=new)
         return True

@@ -30,10 +30,15 @@ class graphInputs(NodeBase):
     def addOutPin(self):
         name = str(len(self.outputs))
         p = self.addOutputPin(name, 'AnyPin')
-        p.setAlwaysPushDirty(True)
+        # p.setAlwaysPushDirty(True)
         p.actLikeDirection = PinDirection.Input
         self.onPinCreated.send(p)
         return p
+
+    def compute(self):
+        for i in self.outputs.values():
+            for j in i.affected_by:
+                i.setData(j.getData())
 
     def postCreate(self, jsonTemplate=None):
         super(graphInputs, self).postCreate(jsonTemplate=jsonTemplate)
@@ -42,14 +47,6 @@ class graphInputs(NodeBase):
         self.onPinCreated.connect(self.graph().onInputPinCreated.send)
         # add outputs
         pass
-
-    def compute(self):
-        # This node is special. Output pins of this node are actually inputs pins in terms of execution and data gathering
-        # We get data from input pin on subgraphNode and put it to corresponding output pin on graphInputs node
-        for valuePin in [p for p in self.outputs.values() if p.IsValuePin()]:
-            # this can be changed to support multiple connections later
-            # affected_by is list of connected pins
-            valuePin.setData(list(valuePin.affected_by)[0].getData())
 
 
 class graphOutputs(NodeBase):

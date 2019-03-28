@@ -68,6 +68,10 @@ class AnyPin(PinBase):
             dt['value'] = encodedValue
         return dt
 
+    def pinConnected(self, other):
+        self.updateOnConnection(other)
+        super(AnyPin, self).pinConnected(other)
+
     def updateOnConnection(self, other):
         if self.constraint is None:
             self.setType(other)
@@ -149,10 +153,10 @@ class AnyPin(PinBase):
             self.super = other.__class__
             self.dataType = other.dataType
             self.color = other.color
-            self._wrapper().setType(other.color())
             self.setData(other.defaultValue())
             self.setDefaultValue(other.defaultValue())
             self.dirty = other.dirty
             self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
+            # self._wrapper().setType(other.color())

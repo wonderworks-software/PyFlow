@@ -348,17 +348,61 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name, "name is not synchronized")
 
         # add simple calculation
+        foos = packages['PyflowBase'].GetFunctionLibraries()["IntLib"].getFunctions()
+
+        addNode1 = NodeBase.initializeFromFunction(foos["add"])
+        addNode2 = NodeBase.initializeFromFunction(foos["add"])
+        GT.activeGraph().addNode(addNode1)
+        GT.activeGraph().addNode(addNode2)
+        addNode1.setData("b", 1)
+        addNode2.setData("b", 1)
+        connection = connectPins(addNode1.getPinByName('out', PinSelectionGroup.Outputs), addNode2.getPinByName('a', PinSelectionGroup.Inputs))
+        self.assertEqual(connection, True)
+
+        # connect add nodes with graph inputs/outputs
+        connected = connectPins(inputs1.getPinByName('first'), addNode1.getPinByName('a'))
+        self.assertEqual(connected, True)
+        connected = connectPins(outputs1.getPinByName('first'), addNode2.getPinByName('out'))
+        self.assertEqual(connected, True)
 
         # go back to root graph
         GT.switchGraph("testGraph")
         self.assertEqual(GT.activeGraph().name, "testGraph", "failed to return back to root from subgraph node")
 
         # check exposed pins added
+        self.assertEqual(len(subgraphNodeInstance.inputs), 1)
+        self.assertEqual(len(subgraphNodeInstance.outputs), 1)
 
         # connect getter to subgraph output pin
+        defaultLibFoos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
+        printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
+        GT.activeGraph().addNode(printNode)
+
+        subgraphOutPin = subgraphNodeInstance.getPinByName('first', PinSelectionGroup.Outputs)
+        self.assertIsNotNone(subgraphOutPin, "failed to find subgraph out pin")
+
+        connected = connectPins(printNode.getPinByName('entity'), subgraphOutPin)
+        self.assertEqual(connected, True)
 
         # check value
-        pass
+        printNode.getPinByName('inExec').call()
+        self.assertEqual(printNode.getPinByName('entity').currentData(), 2)
+
+        # connect another add node to exposed subgraph input
+        addNode3 = NodeBase.initializeFromFunction(foos["add"])
+        GT.activeGraph().addNode(addNode3)
+        addNode3.setData('a', 1)
+
+        subgraphInPin = subgraphNodeInstance.getPinByName('first', PinSelectionGroup.Inputs)
+        self.assertIsNotNone(subgraphInPin, "failed to find subgraph out pin")
+
+        GT.activeGraph().plot()
+
+        connected = connectPins(addNode3.getPinByName('out'), subgraphInPin)
+        self.assertEqual(connected, True)
+
+        printNode.getPinByName('inExec').call()
+        self.assertEqual(printNode.getPinByName('entity').currentData(), 3)
 
 
 if __name__ == '__main__':

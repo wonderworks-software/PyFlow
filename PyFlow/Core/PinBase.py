@@ -126,8 +126,9 @@ class PinBase(IPin):
     def pinDataTypeHint():
         return None
 
-    def supportedDataTypes(self):
-        return (self.dataType,)
+    @staticmethod
+    def supportedDataTypes():
+        return ()
 
     def defaultValue(self):
         return self._defaultValue
@@ -162,6 +163,7 @@ class PinBase(IPin):
         if self.direction == PinDirection.Output:
             for i in self.affects:
                 i._data = self.currentData()
+                # i.setData(self.currentData())
                 i.setClean()
         if self.direction == PinDirection.Input or self._alwaysPushDirty:
             push(self)

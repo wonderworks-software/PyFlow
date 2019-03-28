@@ -154,8 +154,8 @@ def canConnectPins(src, dst):
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
         return False
 
-    if src.owningNode().graph() != dst.owningNode().graph():
-        return False
+    # if src.owningNode().graph() != dst.owningNode().graph():
+    #     return False
 
     if cycle_check(src, dst):
         print('cycles are not allowed')
