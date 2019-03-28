@@ -10,6 +10,7 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
+
 class DoubleSlider(QtWidgets.QSlider):
 
     doubleValueChanged = QtCore.Signal(float)
@@ -25,7 +26,7 @@ class DoubleSlider(QtWidgets.QSlider):
         self._min_value = 0
         self._max_value = 0
 
-    def setDecimals(self,decimals):
+    def setDecimals(self, decimals):
         self._multi = 10 ** decimals
 
     def emitDoubleValueChanged(self):
@@ -42,12 +43,12 @@ class DoubleSlider(QtWidgets.QSlider):
         return float(super(DoubleSlider, self).maximum()) / self._multi
 
     def setMinimum(self, value):
-        self._min_value = max(INT_RANGE_MIN,value * self._multi)
+        self._min_value = max(INT_RANGE_MIN, value * self._multi)
         return super(DoubleSlider, self).setMinimum(self._min_value)
 
     def setMaximum(self, value):
-        self._max_value = min(INT_RANGE_MAX,value * self._multi)
-        return super(DoubleSlider, self).setMaximum(self._max_value )
+        self._max_value = min(INT_RANGE_MAX, value * self._multi)
+        return super(DoubleSlider, self).setMaximum(self._max_value)
 
     def setSingleStep(self, value):
         return super(DoubleSlider, self).setSingleStep(value * self._multi)
@@ -61,14 +62,14 @@ class DoubleSlider(QtWidgets.QSlider):
     def mousePressEvent(self, event):
         self.prevValue = self.value()
         self.startDragpos = event.pos()
-        if event.button() == QtCore.Qt.LeftButton and event.modifiers() not in  [QtCore.Qt.ControlModifier,QtCore.Qt.ShiftModifier,QtCore.Qt.ControlModifier|QtCore.Qt.ShiftModifier]:
+        if event.button() == QtCore.Qt.LeftButton and event.modifiers() not in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
             butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
             nevent = QtGui.QMouseEvent(event.type(), event.pos(),
                                        QtCore.Qt.MidButton, butts,
                                        event.modifiers())
             super(DoubleSlider, self).mousePressEvent(nevent)
 
-        elif event.modifiers() in [QtCore.Qt.ControlModifier,QtCore.Qt.ShiftModifier,QtCore.Qt.ControlModifier|QtCore.Qt.ShiftModifier]:
+        elif event.modifiers() in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
             st_slider = QtWidgets.QStyleOptionSlider()
             st_slider.initFrom(self)
             st_slider.orientation = self.orientation()
@@ -85,7 +86,7 @@ class DoubleSlider(QtWidgets.QSlider):
             self.startDragpos = newPos
             self.realStartDragpos = event.pos()
             super(DoubleSlider, self).mousePressEvent(nevent)
-            self.deltaValue = self.value()-self.prevValue
+            self.deltaValue = self.value() - self.prevValue
             self.setValue(self.prevValue)
 
         else:
@@ -95,28 +96,31 @@ class DoubleSlider(QtWidgets.QSlider):
         deltaX = event.pos().x() - self.realStartDragpos.x()
         deltaY = event.pos().y() - self.realStartDragpos.y()
         newPos = QtCore.QPointF()
-        if event.modifiers() in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier,QtCore.Qt.ControlModifier|QtCore.Qt.ShiftModifier]:
-            if event.modifiers() == QtCore.Qt.ControlModifier :
+        if event.modifiers() in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
+            if event.modifiers() == QtCore.Qt.ControlModifier:
                 newPos.setX(self.startDragpos.x() + deltaX / 2)
                 newPos.setY(self.startDragpos.y() + deltaY / 2)
             elif event.modifiers() == QtCore.Qt.ShiftModifier:
                 newPos.setX(self.startDragpos.x() + deltaX / 4)
                 newPos.setY(self.startDragpos.y() + deltaY / 4)
-            elif event.modifiers() == QtCore.Qt.ControlModifier|QtCore.Qt.ShiftModifier:
+            elif event.modifiers() == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
                 newPos.setX(self.startDragpos.x() + deltaX / 8)
-                newPos.setY(self.startDragpos.y() + deltaY / 8)        
+                newPos.setY(self.startDragpos.y() + deltaY / 8)
             nevent = QtGui.QMouseEvent(event.type(), newPos,
                                        event.button(), event.buttons(),
                                        event.modifiers())
             super(DoubleSlider, self).mouseMoveEvent(nevent)
-            self.setValue(self.value()-self.deltaValue)
+            self.setValue(self.value() - self.deltaValue)
         else:
             super(DoubleSlider, self).mouseMoveEvent(event)
 
     def keyPressEvent(self, event):
         p = self.mapFromGlobal(QtGui.QCursor.pos())
         self.startDragpos = p
-        self.realStartDragpos= p
+        self.realStartDragpos = p
+        self.deltaValue = 0
+        super(DoubleSlider, self).keyPressEvent(event)
+
 
 class pyf_FloatSlider(QtWidgets.QWidget):
     sliderStyleSheetA = """
@@ -298,12 +302,13 @@ class pyf_FloatSlider(QtWidgets.QWidget):
     def setSingleStep(self, step):
         self.input.setSingleStep(step)
 
-    def resizeEvent(self,event):
-        #if self.width() < 100:
+    def resizeEvent(self, event):
+        # if self.width() < 100:
         #    self.sld.hide()
-        #else:
+        # else:
         #    self.sld.show()
         super(pyf_FloatSlider, self).resizeEvent(event)
+
 
 class pyf_HueSlider(DoubleSlider):
     styleSheet = """
@@ -371,6 +376,7 @@ class pyf_HueSlider(DoubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
+
 class pyf_GradientSlider(DoubleSlider):
     styleSheet = """
     QSlider,QSlider:disabled,QSlider:focus     {
@@ -427,18 +433,19 @@ class pyf_GradientSlider(DoubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
+
 class testWidg(QtWidgets.QWidget):
 
     def __init__(self, parent):
         super(testWidg, self).__init__(parent)
 
         self.setLayout(QtWidgets.QVBoxLayout())
-        #self.layout().addWidget(DoubleSlider())
+        # self.layout().addWidget(DoubleSlider())
         self.layout().addWidget(pyf_FloatSlider(self, style=0))
-        #self.layout().addWidget(pyf_FloatSlider(self, style=1))
-        #self.layout().addWidget(pyf_HueSlider(self))
-        #self.layout().addWidget(pyf_GradientSlider(self))
-        # self.setStyleSheet("background:grey")
+        self.layout().addWidget(pyf_FloatSlider(self, style=1))
+        self.layout().addWidget(pyf_HueSlider(self))
+        self.layout().addWidget(pyf_GradientSlider(self))
+        self.setStyleSheet("background:grey")
 
 
 def main():
