@@ -1,8 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import sys
-from PyFlow.Core.Common import *
+import struct
 from Qt import QtGui, QtCore, QtWidgets
+
+maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
+FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
+FLOAT_RANGE_MAX = maxint + 0.1
+INT_RANGE_MIN = -maxint + 0
+INT_RANGE_MAX = maxint + 0
 
 class DoubleSlider(QtWidgets.QSlider):
 
