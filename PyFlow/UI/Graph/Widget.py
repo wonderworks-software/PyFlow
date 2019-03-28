@@ -1245,7 +1245,7 @@ class GraphWidgetUI(QGraphicsView):
                         self.clearSelection()
                         reruteNode.setSelected(True)
                         for inp in reruteNode.inputs.values():
-                            if self.canConnectPins(self.pressed_item.source(), inp):
+                            if canConnectPins(self.pressed_item.source(), inp):
                                 drawPin = self.pressed_item.drawSource
                                 if self.pressed_item.source().dataType == 'ExecPin':
                                     self.pressed_item.source().disconnectAll()
@@ -1255,7 +1255,7 @@ class GraphWidgetUI(QGraphicsView):
                                 break
                         for out in reruteNode.outputs.values():
                             drawPin = self.pressed_item.drawDestination
-                            if self.canConnectPins(out, self.pressed_item.destination()):
+                            if canConnectPins(out, self.pressed_item.destination()):
                                 self.connectPins(out, self.pressed_item.destination())
                                 for conection in out.connections:
                                     conection.drawDestination = drawPin                                
@@ -1357,11 +1357,11 @@ class GraphWidgetUI(QGraphicsView):
                 self.clearSelection()
                 reruteNode.setSelected(True)
                 for inp in reruteNode.inputs.values():
-                    if self.canConnectPins(self.pressed_item, inp):
+                    if canConnectPins(self.pressed_item, inp):
                         self.connectPins(self.pressed_item, inp)
                         break
                 for out in reruteNode.outputs.values():
-                    if self.canConnectPins(self.pressed_item, out):
+                    if canConnectPins(self.pressed_item, out):
                         self.connectPins(self.pressed_item, out)
                         break
                 self.pressed_item = reruteNode
@@ -1737,7 +1737,7 @@ class GraphWidgetUI(QGraphicsView):
         self.scene().addItem(node)
 
     def connectPinsInternal(self, src, dst):
-        result = GraphTree().activeGraph().connectPins(src._rawPin, dst._rawPin)
+        result = connectPins(src._rawPin, dst._rawPin)
         if result:
             if src.direction == PinDirection.Input:
                 src, dst = dst, src
