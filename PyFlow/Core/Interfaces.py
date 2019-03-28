@@ -312,12 +312,3 @@ class ICodeCompiler(object):
 
     def compile(self, code):
         raise NotImplementedError('compile method of ICodeCompiler is not implemented')
-
-
-class IExecutionEngine(object):
-    def __init__(self):
-        super(IExecutionEngine, self).__init__()
-
-    @staticmethod
-    def getPinData(pin):
-        pass
