@@ -1,32 +1,30 @@
 # Input widgets for pins
-import weakref
-
 from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QDoubleSpinBox
-from Qt.QtWidgets import QSpinBox
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QComboBox
 from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QCheckBox
-from Qt.QtWidgets import QGridLayout
 
 from PyFlow.Core.Common import *
 from PyFlow.UI.Widgets.InputWidgets import *
-from PyFlow.UI.Widgets.QtSliders import pyf_FloatSlider
+from PyFlow.UI.Widgets.QtSliders import pyf_Slider
 
 FLOAT_SINGLE_STEP = 0.01
 FLOAT_DECIMALS = 5
 
 
 def _configDoubleSpinBox(sb):
+    sb.setDecimals(FLOAT_DECIMALS)
     sb.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
     sb.setSingleStep(FLOAT_SINGLE_STEP)
-    sb.setDecimals(FLOAT_DECIMALS)
+    sb.setDisplayMinimun(0)
+    sb.setDisplayMaximum(10)
 
 
 def _configIntSpinBox(sb):
     sb.setRange(INT_RANGE_MIN, INT_RANGE_MAX)
+    sb.setDisplayMinimun(0)
+    sb.setDisplayMaximum(10)
 
 
 class ExecInputWidget(InputWidgetSingle):
@@ -37,7 +35,6 @@ class ExecInputWidget(InputWidgetSingle):
         self.pb = QPushButton('execute', self)
         self.setWidget(self.pb)
         self.pb.clicked.connect(self.dataSetCallback)
-        self.pbReset.deleteLater()
 
     def blockWidgetSignals(self, bLocked):
         pass
@@ -71,10 +68,10 @@ class FloatInputWidget(InputWidgetSingle):
 
     def __init__(self, parent=None, **kwds):
         super(FloatInputWidget, self).__init__(parent=parent, **kwds)
-        self.sb = pyf_FloatSlider(self, style=1)
+        self.sb = pyf_Slider(self, "float", style=1)
         _configDoubleSpinBox(self.sb)
         self.sb.setDisplayMinimun(0)
-        self.sb.setDisplayMaximum(10)        
+        self.sb.setDisplayMaximum(10)
         self.setWidget(self.sb)
         # when spin box updated call setter function
         self.sb.valueChanged.connect(lambda val: self.dataSetCallback(val))
@@ -93,7 +90,7 @@ class IntInputWidget(InputWidgetSingle):
 
     def __init__(self, parent=None, **kwds):
         super(IntInputWidget, self).__init__(parent=parent, **kwds)
-        self.sb = QSpinBox(self)
+        self.sb = pyf_Slider(self, "int", style=1)
         _configIntSpinBox(self.sb)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(lambda val: self.dataSetCallback(val))
