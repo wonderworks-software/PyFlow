@@ -39,7 +39,7 @@ class delay(NodeBase):
             if self._total >= self._currentDelay:
                 self.callAndReset()
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         self._currentDelay = self.delay.getData()
         if not self.process:
             self.process = True

@@ -5,6 +5,7 @@ from PyFlow.Core.Common import *
 from PyFlow import getAllPinClasses
 from PyFlow import CreateRawPin
 from PyFlow import findPinClassByType
+from PyFlow import getPinDefaultValueByType
 
 
 class AnyPin(PinBase):
@@ -18,6 +19,7 @@ class AnyPin(PinBase):
         self.origSetData = self.setData
         self.super = None
         self.activeDataType = self.dataType
+        self.typeChecking = False
 
     @staticmethod
     def isPrimitiveType():
@@ -68,6 +70,10 @@ class AnyPin(PinBase):
             dt['value'] = encodedValue
         return dt
 
+    def pinConnected(self, other):
+        self.onPinConnected.send(other)
+        self.updateOnConnection(other)
+
     def updateOnConnection(self, other):
         if self.constraint is None:
             self.setType(other)
@@ -104,7 +110,7 @@ class AnyPin(PinBase):
                     if pin != self:
                         pin.setDefault()
                         pin._free = True
-                        for pin in pin.affected_by + pin.affects:
+                        for pin in list(pin.affected_by) + list(pin.affects):
                             pin.pinDisconnected(other)
 
     def checkFree(self, checked=[], selfChek=True):
@@ -137,6 +143,8 @@ class AnyPin(PinBase):
         self.super = None
         self.dataType = "AnyPin"
 
+        self.call = lambda: None
+
         if self.getWrapper() is not None:
             self.getWrapper()().setDefault(self.defColor())
 
@@ -147,19 +155,8 @@ class AnyPin(PinBase):
             self.super = other.__class__
             self.dataType = other.dataType
             self.color = other.color
-            self._wrapper().setType(other.color())
-            self.setData(other.defaultValue())
+            self._data = getPinDefaultValueByType(self.dataType)
             self.setDefaultValue(other.defaultValue())
-
-            # GOLDEN RULE OF EXEC PINS: Input execs calls output execs. Output execs calls compute on owning node
-            #
-            # if owning node is graphInputs node - its output pins acts like inputs on parent subgraph node,
-            # this is for actLikeDirection is used.
-            # If 'other.call' will be accidentally assigned to output pin this will cause infinite recursion.
-            # So make sure self.direction is always 'PinDirection.Input' and it acts like input
-            if self.direction == PinDirection.Input and self.actLikeDirection == PinDirection.Input:
-                self.call = other.call
-
             self.dirty = other.dirty
             self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass

@@ -32,8 +32,8 @@ class setVar(NodeBase):
     def description():
         return 'Set variable value'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         newValue = self.inp.getData()
         self.var.value = newValue
         self.out.setData(copy(self.var.value))
-        self.outExec.call()
+        self.outExec.call(*args, **kwargs)

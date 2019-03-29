@@ -32,6 +32,6 @@ class sequence(NodeBase):
         pinAffects(self.inExecPin, p)
         return p
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         for out in self.outputs.values():
-            out.call()
+            out.call(*args, **kwargs)

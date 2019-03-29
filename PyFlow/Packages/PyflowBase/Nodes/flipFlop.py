@@ -26,11 +26,11 @@ class flipFlop(NodeBase):
     def description():
         return 'Changes flow each time called'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         if self.bState:
             self.bIsA.setData(self.bState)
-            self.outA.call()
+            self.outA.call(*args, **kwargs)
         else:
             self.bIsA.setData(self.bState)
-            self.outB.call()
+            self.outB.call(*args, **kwargs)
         self.bState = not self.bState

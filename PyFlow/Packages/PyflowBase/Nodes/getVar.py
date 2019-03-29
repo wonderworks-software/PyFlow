@@ -49,6 +49,6 @@ class getVar(NodeBase):
     def description():
         return 'Access variable value'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         var = self.graph().vars[self.varUid]
         self.out.setData(copy(var.value))

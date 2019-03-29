@@ -1,15 +1,24 @@
+from blinker import Signal
 import uuid
 from copy import deepcopy
 import weakref
 
 from PyFlow.Core.Interfaces import IPin
 from PyFlow.Core.Common import *
+from PyFlow import getPinDefaultValueByType
 
 
 class PinBase(IPin):
-    # TODO: remove dataType argument. This is redundant. We use __class__.__name__ wrapped in property
+    # TODO: remove dataType argument. We should use __class__.__name__
     def __init__(self, name, owningNode, dataType, direction, userStructClass=None):
         super(PinBase, self).__init__()
+        # signals
+        self.onPinConnected = Signal(object)
+        self.onPinDisconnected = Signal(object)
+        self.nameChanged = Signal(str)
+        self.killed = Signal()
+        self.onExecute = Signal(object)
+
         self._uid = uuid.uuid4()
         self._dataType = None
         self._userStructClass = userStructClass
@@ -19,13 +28,16 @@ class PinBase(IPin):
         # @sa @ref PinBase::getData
         self.dirty = True
         ## List of pins this pin connected to
-        self.affects = []
+        self.affects = set()
         ## List of pins connected to this pin
-        self.affected_by = []
+        self.affected_by = set()
         ## List of connections
         self.connections = []
         ## Access to the node
         self.owningNode = weakref.ref(owningNode)
+
+        # enable type checking
+        self._typeChecking = True
 
         self.dataType = dataType
         self.name = name
@@ -33,7 +45,7 @@ class PinBase(IPin):
         self.direction = direction
         ## This flag is for subgraph input nodes, to correctly establish connections
         self.actLikeDirection = direction
-        ## For rand int node
+        ## For rand int node and stuff like that
         self._alwaysPushDirty = False
         ## Can be renamed or not (for switch on string node)
         self._renamingEnabled = False
@@ -46,6 +58,15 @@ class PinBase(IPin):
         self.constraint = None
         self.isAny = False
         self._isArray = False
+
+    @property
+    def typeChecking(self):
+        return self._typeChecking
+
+    @typeChecking.setter
+    def typeChecking(self, bEnabled):
+        assert(bEnabled, bool)
+        self._typeChecking = bEnabled
 
     def setAsArray(self, bIsArray):
         self._isArray = bool(bIsArray)
@@ -106,8 +127,8 @@ class PinBase(IPin):
         self._uid = value
 
     def setName(self, name):
-        oldName = self.name
         self.name = name.replace(" ", "_")
+        self.nameChanged.send(self.name)
 
     def getName(self):
         return self.owningNode().name + '.' + self.name
@@ -119,8 +140,9 @@ class PinBase(IPin):
     def pinDataTypeHint():
         return None
 
-    def supportedDataTypes(self):
-        return (self.dataType,)
+    @staticmethod
+    def supportedDataTypes():
+        return ()
 
     def defaultValue(self):
         return self._defaultValue
@@ -151,7 +173,13 @@ class PinBase(IPin):
 
     ## Setting the data
     def setData(self, data):
+        # type checking
+        if self.typeChecking:
+            thisDefaultValue = getPinDefaultValueByType(self.dataType)
+            assert(type(thisDefaultValue) == type(data)), "invalid type passed! Expected type - [{0}]".format(type(thisDefaultValue).__name__)
+
         self.setClean()
+        self._data = data
         if self.direction == PinDirection.Output:
             for i in self.affects:
                 i._data = self.currentData()
@@ -160,9 +188,8 @@ class PinBase(IPin):
             push(self)
 
     ## Calling execution pin
-    def call(self):
-        for i in self.affects:
-            i.call()
+    def call(self, *args, **kwargs):
+        self.onExecute.send(*args, **kwargs)
 
     def disconnectAll(self):
         # if input pin
@@ -174,10 +201,7 @@ class PinBase(IPin):
             for o in self.affected_by:
                 o.pinDisconnected(self)
                 o.affects.remove(self)
-            if sys.version_info.major == 3:
-                self.affected_by.clear()
-            if sys.version_info.major == 2:
-                del self.affected_by[:]
+            self.affected_by.clear()
 
         # if output pin
         # 1) loop connected input pins of right connected node
@@ -188,10 +212,7 @@ class PinBase(IPin):
             for i in self.affects:
                 i.pinDisconnected(self)
                 i.affected_by.remove(self)
-            if sys.version_info.major == 3:
-                self.affects.clear()
-            if sys.version_info.major == 2:
-                del self.affects[:]
+            self.affects.clear()
 
     ## Describes, what data type is this pin.
     @property
@@ -215,6 +236,7 @@ class PinBase(IPin):
 
     def kill(self):
         self.owningNode().pins.pop(self.uid)
+        self.killed.send()
 
     def currentData(self):
         if self._data is None:
@@ -222,10 +244,10 @@ class PinBase(IPin):
         return self._data
 
     def pinConnected(self, other):
-        pass
+        self.onPinConnected.send(other)
 
     def pinDisconnected(self, other):
-        pass
+        self.onPinDisconnected.send(other)
 
     def setClean(self):
         self.dirty = False

@@ -32,10 +32,10 @@ class switchOnString(NodeBase):
     def description():
         return 'Execute output depending on input string'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         string = self.inString.getData()
         namePinOutputsMap = self.namePinOutputsMap
         if string in namePinOutputsMap:
-            namePinOutputsMap[string].call()
+            namePinOutputsMap[string].call(*args, **kwargs)
         else:
-            self.defaultPin.call()
+            self.defaultPin.call(*args, **kwargs)

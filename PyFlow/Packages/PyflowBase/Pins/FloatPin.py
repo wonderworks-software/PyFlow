@@ -1,12 +1,14 @@
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
-from PyFlow.UI.Settings import Colors
+from PyFlow.UI.Utils.Settings import Colors
 
 
 class FloatPin(PinBase):
     """doc string for FloatPin"""
+
     def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(FloatPin, self).__init__(name, parent, dataType, direction, **kwargs)
+        super(FloatPin, self).__init__(
+            name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(0.0)
 
     @staticmethod
@@ -28,7 +30,7 @@ class FloatPin(PinBase):
 
     @staticmethod
     def supportedDataTypes():
-        return ('FloatPin', 'IntPin')
+        return ('FloatPin', 'IntPin',)
 
     @staticmethod
     def processData(data):

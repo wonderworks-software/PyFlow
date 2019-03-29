@@ -2,8 +2,8 @@ import uuid
 
 from Qt import QtGui
 
-from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.CodeEditor import CodeEditor
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Views.CodeEditor import CodeEditor
 
 
 class UIPythonNode(UINodeBase):
@@ -15,11 +15,11 @@ class UIPythonNode(UINodeBase):
         self.editorUUID = None
         self.resizable = True
 
-    def postCreate(self, jsonTemplate):
-        super(UIPythonNode, self).postCreate(jsonTemplate)
+    # def postCreate(self, jsonTemplate):
+    #     super(UIPythonNode, self).postCreate(jsonTemplate)
 
     @property
-    def compute(self):
+    def compute(self, *args, **kwargs):
         return self._rawNode.compute
 
     @compute.setter
@@ -36,5 +36,6 @@ class UIPythonNode(UINodeBase):
 
     def onEdit(self):
         self.editorUUID = uuid.uuid4()
-        self.graph().codeEditors[self.editorUUID] = CodeEditor(self.graph(), self, self.editorUUID)
+        self.graph().codeEditors[self.editorUUID] = CodeEditor(
+            self.graph(), self, self.editorUUID)
         self.graph().codeEditors[self.editorUUID].show()

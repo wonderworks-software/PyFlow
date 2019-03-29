@@ -8,15 +8,16 @@ from Qt.QtWidgets import QLineEdit
 from Qt import QtCore
 from Qt import QtGui
 
-from PyFlow.UI.Settings import *
-from PyFlow.UI.UINodeBase import UINodeBase
+from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
-from PyFlow.UI.InputWidgets import createInputWidget
+from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 
 
-## Variable setter node
+# Variable setter node
 class UISetVarNode(UINodeBase):
     """docstring for UISetVarNode"""
+
     def __init__(self, raw_node):
         super(UISetVarNode, self).__init__(raw_node)
         self.UIIn = None
@@ -43,7 +44,8 @@ class UISetVarNode(UINodeBase):
         formLayout.addRow("Type", leType)
 
         # exec input
-        inExecWidget = createInputWidget(self._rawNode.inExec.dataType, self._rawNode.inExec.call)
+        inExecWidget = createInputWidget(
+            self._rawNode.inExec.dataType, self._rawNode.inExec.call)
         if inExecWidget:
             inExecWidget.setObjectName(self._rawNode.inExec.getName())
             formLayout.addRow(self._rawNode.inExec.name, inExecWidget)
@@ -51,7 +53,8 @@ class UISetVarNode(UINodeBase):
                 inExecWidget.setEnabled(False)
 
         # input value
-        w = createInputWidget(self._rawNode.inp.dataType, self._rawNode.inp.setData, self.var.value, None)
+        w = createInputWidget(self._rawNode.inp.dataType,
+                              self._rawNode.inp.setData, self.var.value, None)
         if w:
             w.blockWidgetSignals(True)
             w.setWidgetValue(self._rawNode.inp.currentData())

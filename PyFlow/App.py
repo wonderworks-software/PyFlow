@@ -10,21 +10,28 @@ from Qt import QtCore
 from Qt.QtWidgets import QMainWindow
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QStyleFactory
+from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QTextEdit
 from Qt.QtWidgets import QMessageBox
 from Qt.QtWidgets import QAction
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QUndoView
+from Qt.QtWidgets import QToolButton
+from Qt.QtWidgets import QPushButton
+from Qt.QtWidgets import QSpacerItem
 
 from PyFlow import Packages
-from PyFlow.UI.Widget import GraphWidgetUI
+from PyFlow.UI.Graph.Widget import GraphWidgetUI
 from PyFlow.Core.Common import Direction
+from PyFlow.Core.Common import clearLayout
+from PyFlow.Core.GraphTree import GraphTree
+from PyFlow.Core.AppBase import AppBase
 from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.UI.InspectorWidget import InspectorWidget
-from PyFlow.UI.Widget import NodesBox
-from PyFlow.UI.Widgets import GraphEditor_ui
-from PyFlow.UI.VariablesWidget import VariablesWidget
+from PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.UI.Views import GraphEditor_ui
+from PyFlow.UI.Views.VariablesWidget import VariablesWidget
+from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
 from PyFlow import INITIALIZE
 
 
@@ -54,30 +61,30 @@ def _implementPlugin(name, pluginType):
 
 
 ## App itself
-class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
+class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
+        AppBase.__init__(self)
         self.setupUi(self)
         self.listViewUndoStack = QUndoView(self.dockWidgetContents_3)
         self.listViewUndoStack.setObjectName("listViewUndoStack")
         self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
 
-        self.rawGraph = GraphBase('root')
-        self.G = GraphWidgetUI(self, graphBase=self.rawGraph)
-        self._currentGraph = self.G
+        self.styleSheetEditor = StyleSheetEditor()
+        self._currentGraph = GraphWidgetUI(self, graphBase=GraphTree().getRootGraph())
+        self.updateGraphTreeLocation()
+        GraphTree().onGraphSwitched.connect(self.onRawGraphSwitched)
         self.SceneLayout.addWidget(self._currentGraph)
 
-        self._inspectorWidget = InspectorWidget(self.G)
-
         self.actionVariables.triggered.connect(self.toggleVariables)
-        self.actionPlot_graph.triggered.connect(self.G.plot)
+        self.actionPlot_graph.triggered.connect(self._currentGraph.plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionPropertyView.triggered.connect(self.togglePropertyView)
-        self.actionScreenshot.triggered.connect(self.G.screenShot)
+        self.actionScreenshot.triggered.connect(self._currentGraph.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
-        self.actionSave.triggered.connect(self.G.save)
-        self.actionLoad.triggered.connect(self.G.load)
-        self.actionSave_as.triggered.connect(self.G.save_as)
+        self.actionSave.triggered.connect(self._currentGraph.save)
+        self.actionLoad.triggered.connect(self._currentGraph.load)
+        self.actionSave_as.triggered.connect(self._currentGraph.save_as)
         self.actionAlignLeft.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Left))
         self.actionAlignUp.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Up))
         self.actionAlignBottom.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Down))
@@ -87,13 +94,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
         self.actionNew_pin.triggered.connect(lambda: self.newPlugin(PluginType.pPin))
         self.actionHistory.triggered.connect(self.toggleHistory)
-        self.actionNew.triggered.connect(self.G.new_file)
+        self.actionNew.triggered.connect(self._currentGraph.new_file)
         self.dockWidgetUndoStack.setVisible(False)
-        self.actionSpawnInspector.triggered.connect(self.onSpawnInspectorWindow)
 
         self.setMouseTracking(True)
 
-        self.variablesWidget = VariablesWidget(self, self.G)
+        self.variablesWidget = VariablesWidget(self, self._currentGraph)
         self.leftDockGridLayout.addWidget(self.variablesWidget)
 
         self._lastClock = 0.0
@@ -101,15 +107,43 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.mainLoop)
 
+    def onRawGraphSwitched(self, *args, **kwargs):
+        old = kwargs['old']
+        new = kwargs['new']
+        # TODO: hide current graph contents
+        for node in old.nodes.values():
+            uiNode = node.getWrapper()()
+            uiNode.hide()
+        # TODO: show new graph contents
+        for node in new.nodes.values():
+            uiNode = node.getWrapper()()
+            uiNode.show()
+        self.updateGraphTreeLocation()
+
+    def updateGraphTreeLocation(self):
+        location = GraphTree().location()
+        clearLayout(self.layoutGraphPath)
+        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.layoutGraphPath.addItem(spacerItem)
+        for folderName in location.split('|'):
+            index = self.layoutGraphPath.count() - 1
+            btn = QPushButton(folderName)
+
+            def onClicked(checked, name=None):
+                if GraphTree().switchGraph(name):
+                    print('goto', name)
+                else:
+                    print('skip')
+            btn.clicked.connect(lambda chk=False, name=folderName: onClicked(chk, name))
+            self.layoutGraphPath.insertWidget(index, btn)
+
     @property
     def currentGraph(self):
         return self._currentGraph
-    @currentGraph.setter
-    def currentGraph(self,graph):
-        self._currentGraph = graph
 
-    def onSpawnInspectorWindow(self):
-        self._inspectorWidget.show()
+    @currentGraph.setter
+    def currentGraph(self, graph):
+        self._currentGraph = graph
 
     def startMainLoop(self):
         self.tick_timer.start(1000 / EDITOR_TARGET_FPS)
@@ -119,26 +153,37 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         ds = (deltaTime * 1000.0)
         if ds > 0:
             self.fps = int(1000.0 / ds)
-        self.G.Tick(deltaTime)
+
+        # Tick UI graph
+        self.currentGraph.Tick(deltaTime)
+
+        # Tick all graphs
+        # each graph will tick owning raw nodes
+        # each raw node will tick it's ui wrapper if it exists
+        AppBase.Tick(self, deltaTime)
+
         self._lastClock = clock()
 
     def createPopupMenu(self):
         pass
 
     def toggleHistory(self):
-        self.dockWidgetUndoStack.setVisible(not self.dockWidgetUndoStack.isVisible())
+        self.dockWidgetUndoStack.setVisible(
+            not self.dockWidgetUndoStack.isVisible())
 
     def newPlugin(self, pluginType):
-        name, result = QInputDialog.getText(self, 'Plugin name', 'Enter plugin name')
+        name, result = QInputDialog.getText(
+            self, 'Plugin name', 'Enter plugin name')
         if result:
             _implementPlugin(name, pluginType)
 
     def closeEvent(self, event):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
-        self.G.shoutDown()
+        self._currentGraph.shoutDown()
         # save editor config
-        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
+        settings = QtCore.QSettings(
+            SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
         settings.beginGroup('Editor')
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("windowState", self.saveState())
@@ -148,6 +193,14 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def applySettings(self, settings):
         self.restoreGeometry(settings.value('Editor/geometry'))
         self.restoreState(settings.value('Editor/windowState'))
+
+    def editTheme(self):
+        self.styleSheetEditor.show()
+
+    def updateStyle(self):
+        pass
+        # if self.styleSheetEditor:
+        #    self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
 
     def togglePropertyView(self):
         if self.dockWidgetNodeView.isVisible():
@@ -176,12 +229,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         data += "Ctrl+V - Paste\n"
         data += "Alt+Drag - Duplicate\n"
         data += "Ctrl+Z - Undo\n"
-        data += "Ctrl+Y - Redo\n"        
-        data += "Alt+Click - Disconect Pin\n"
+        data += "Ctrl+Y - Redo\n"
+        data += "Alt+Click - Disconnect Pin\n"
         data += "Ctrl+Shift+ArrowLeft - Align left\n"
         data += "Ctrl+Shift+ArrowUp - Align Up\n"
         data += "Ctrl+Shift+ArrowRight - Align right\n"
-        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"        
+        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"
 
         QMessageBox.information(self, "Shortcuts", data)
 
@@ -203,7 +256,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 mod = importer.find_module(modname).load_module(modname)
                 FactoriesPath = mod.__path__[0]
                 FactoriesImporter = pkgutil.get_importer(FactoriesPath)
-                FactoriesModuleLoader = FactoriesImporter.find_module('Factories')
+                FactoriesModuleLoader = FactoriesImporter.find_module(
+                    'Factories')
                 if FactoriesModuleLoader is not None:
-                    FactoriesModule = FactoriesModuleLoader.load_module('Factories')
+                    FactoriesModule = FactoriesModuleLoader.load_module(
+                        'Factories')
         return instance

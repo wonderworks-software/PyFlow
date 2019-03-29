@@ -1,4 +1,4 @@
-from PyFlow.UI.UIPinBase import UIPinBase
+from PyFlow.UI.Graph.UIPinBase import UIPinBase
 
 
 def createUIPin(owningNode, raw_instance):

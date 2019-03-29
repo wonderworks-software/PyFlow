@@ -1,15 +1,22 @@
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
-from PyFlow.UI.Settings import Colors
+from PyFlow.UI.Utils.Settings import Colors
 
 
-## Execution pin
+# Execution pin
 class ExecPin(PinBase):
     def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(ExecPin, self).__init__(name, parent, dataType, direction, **kwargs)
+        super(ExecPin, self).__init__(
+            name, parent, dataType, direction, **kwargs)
         self.width = self.height = 10.0
         self.dirty = False
         self._isArray = False
+
+    def pinConnected(self, other):
+        # connect execution signals
+        if self.direction == PinDirection.Output:
+            self.onExecute.connect(other.call)
+        super(ExecPin, self).pinConnected(other)
 
     def setAsArray(self, bIsArray):
         # exec is not a type, it cannot be an array

@@ -26,7 +26,7 @@ class IntPin(PinBase):
 
     @staticmethod
     def supportedDataTypes():
-        return ('IntPin', 'FloatPin')
+        return ('IntPin', 'FloatPin',)
 
     @staticmethod
     def processData(data):

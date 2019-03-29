@@ -2,3 +2,4 @@ pyrr
 enum34
 Qt.py
 blinker
+treelib

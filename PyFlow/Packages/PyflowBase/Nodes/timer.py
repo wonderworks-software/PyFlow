@@ -40,5 +40,5 @@ class timer(NodeBase):
     def category():
         return 'Utils'
 
-    def compute(self):
-        self.out.call()
+    def compute(self, *args, **kwargs):
+        self.out.call(*args, **kwargs)

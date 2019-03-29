@@ -1,4 +1,4 @@
-from PyFlow.UI.UIPinBase import UIPinBase
+from PyFlow.UI.Graph.UIPinBase import UIPinBase
 from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
 from PyFlow.Packages.PyflowBase.Pins.ListPin import ListPin
 from PyFlow.Packages.PyflowBase.Pins.ExecPin import ExecPin

@@ -1,5 +1,5 @@
-from PyFlow.UI.UINodeBase import UINodeBase
-from PyFlow.UI.NodePainter import NodePainter
+from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Graph.Painters import NodePainter
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsItem
 
@@ -29,11 +29,17 @@ class UIRerouteNode(UINodeBase):
             newOuts = []
             for i in self.outputs.values():
                 for connection in i.connections:
-                    newOuts.append(connection.destination())
+                    newOuts.append([connection.destination(),
+                                    connection.drawDestination])
             if inp.connections:
                 source = inp.connections[0].source()
                 for out in newOuts:
-                    self.graph().connectPins(source, out)
+                    drawSource = inp.connections[0].drawSource
+                    self.graph().connectPins(source, out[0])
+                    for conection in out[0].connections:
+                        if conection.source() == source and conection.destination() == out[0]:
+                            conection.drawSource = drawSource
+                            conection.drawDestination = out[1]
         super(UIRerouteNode, self).kill()
 
     def boundingRect(self):

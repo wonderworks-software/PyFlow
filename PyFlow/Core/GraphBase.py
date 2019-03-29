@@ -1,19 +1,46 @@
 import weakref
+from blinker import Signal
 
 from PyFlow.Core.Common import *
 from PyFlow import CreateRawPin
+from PyFlow import getRawNodeInstance
 from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Variable import Variable
+from PyFlow.Core.GraphTree import GraphTree
 
 
 class GraphBase(object):
-    def __init__(self, name):
-        super(GraphBase, self).__init__()
-        self.name = name
+    def __init__(self, name, *args, **kwargs):
+        super(GraphBase, self).__init__(*args, **kwargs)
+        # signals
+        self.onInputPinCreated = Signal(object)
+        self.onInputPinDeleted = Signal(object)
+        self.onOutputPinCreated = Signal(object)
+        self.onOutputPinDeleted = Signal(object)
+
+        self.__name = name
         self.nodes = {}
         self.connections = {}
         self.vars = {}
+
+    def clear(self):
+        self.nodes.clear()
+        self.vars.clear()
+        self.connections.clear()
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, value):
+        assert(isinstance(value, str))
+        self.__name = value
+
+    def Tick(self, deltaTime):
+        for node in self.nodes.values():
+            node.Tick(deltaTime)
 
     @property
     def pins(self):
@@ -34,9 +61,6 @@ class GraphBase(object):
             popped = self.vars.pop(var.uid)
             popped.killed.send()
 
-    def getVars(self):
-        return self.vars.values()
-
     def getUniqVarName(self, name):
         names = [v.name for v in self.vars.values()]
         if name not in names:
@@ -44,17 +68,6 @@ class GraphBase(object):
         idx = 0
         tmp = name
         while tmp in names:
-            idx += 1
-            tmp = name + str(idx)
-        return name + str(idx)
-
-    def getUniqNodeName(self, name):
-        nodes_names = [n.name for n in self.nodes.values()]
-        if name not in nodes_names:
-            return name
-        idx = 0
-        tmp = name
-        while tmp in nodes_names:
             idx += 1
             tmp = name + str(idx)
         return name + str(idx)
@@ -145,109 +158,40 @@ class GraphBase(object):
                 break
         return pin
 
-    def addNode(self, node):
+    def getInputNode(self):
+        """Creates and adds to graph 'graphInputs' node. Note, this works only for graphs which has a parent
+
+        pins on this node will be exposed on subgraph node as input pins
+        """
+        node = None
+        if GraphTree().getParentGraph(self) is not None:
+            node = getRawNodeInstance("graphInputs", "PyflowBase")
+            self.addNode(node)
+        return node
+
+    def getOutputNode(self):
+        """Creates and adds to graph 'graphOutputs' node. Note, this works only for graphs which has a parent
+
+        pins on this node will be exposed on subgraph node as output pins
+        """
+        node = None
+        if GraphTree().getParentGraph(self) is not None:
+            node = getRawNodeInstance("graphOutputs", "PyflowBase")
+            self.addNode(node)
+        return node
+
+    def addNode(self, node, jsonTemplate=None):
         assert(node is not None), "failed to add node, None is passed"
         if node.uid in self.nodes:
             return False
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)
-        node.setName(self.getUniqNodeName(node.name))
-        node.postCreate()
+        node.setName(GraphTree().getUniqNodeName(node.name))
+        node.postCreate(jsonTemplate)
         return True
 
     def count(self):
         return self.nodes.__len__()
-
-    def canConnectPins(self, src, dst):
-
-        if src is None or dst is None:
-            print("can not connect pins")
-            if src is None:
-                print("src is None")
-            if dst is None:
-                print("dst is None")
-            return False
-
-        if src.direction == PinDirection.Input:
-            src, dst = dst, src
-
-        if src.direction == dst.direction:
-            return False
-
-        if cycle_check(src, dst):
-            print('cycles are not allowed')
-            return False
-
-        allPins = self.pins
-        if src.uid not in allPins:
-            print('scr ({}) not in graph.pins'.format(src.getName()))
-            return False
-        if dst.uid not in allPins:
-            print('dst ({}) not in graph.pins'.format(dst.getName()))
-            return False
-
-        if src.dataType == "AnyPin" and not cycle_check(src, dst):
-            return True
-
-        if dst.dataType == "AnyPin":
-            if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
-                return False
-
-        if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
-            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
-            return False
-        else:
-            if src.dataType is 'ExecPin':
-                if dst.dataType != 'ExecPin' and dst.dataType != 'AnyPin':
-                    print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
-                    return False
-
-        if src in dst.affected_by:
-            print('already connected. skipped')
-            return False
-        if src.direction == dst.direction:
-            print('same side pins can not be connected')
-            return False
-        if src.owningNode == dst.owningNode:
-            print('can not connect to owning node')
-            return False
-
-        if dst.constraint is not None:
-            if dst.dataType != "AnyPin":
-                if dst.isAny:
-                    free = dst.checkFree([], False)
-                    if not free:
-                        pinClass = findPinClassByType(dst.dataType)
-                        if src.dataType not in pinClass.supportedDataTypes():
-                            print("[{0}] is not conmpatible with [{1}]".format(src.dataType, dst.dataType))
-                            return False
-        return True
-
-    def connectPins(self, src, dst):
-        if not self.canConnectPins(src, dst):
-            return False
-
-        if src.direction == PinDirection.Input:
-            src, dst = dst, src
-
-        # input value pins can have one output connection
-        # output value pins can have any number of connections
-        if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections():
-            dst.disconnectAll()
-        if src.dataType == 'AnyPin' and dst.dataType != 'ExecPin' and dst.hasConnections():
-            dst.disconnectAll()
-        # input execs can have any number of connections
-        # output execs can have only one connection
-        if src.dataType == 'ExecPin' and dst.dataType == 'ExecPin' and src.hasConnections():
-            src.disconnectAll()
-
-        pinAffects(src, dst)
-        src.setDirty()
-        dst._data = src._data
-        dst.pinConnected(src)
-        src.pinConnected(dst)
-        push(dst)
-        return True
 
     def plot(self):
         print(self.name + '\n----------\n')
