@@ -50,8 +50,8 @@ class GraphBase(object):
                 result[pin.uid] = pin
         return result
 
-    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
-        var = Variable(getPinDefaultValueByType(dataType), self.getUniqVarName('var'), dataType, accessLevel=accessLevel, uid=uid)
+    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None, name="var"):
+        var = Variable(getPinDefaultValueByType(dataType), self.getUniqVarName(name), dataType, accessLevel=accessLevel, uid=uid)
         self.vars[var.uid] = var
         return var
 

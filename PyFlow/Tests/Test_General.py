@@ -130,6 +130,65 @@ class TestGeneral(unittest.TestCase):
         v1 = GraphTree().activeGraph().createVariable()
         self.assertEqual(v1.uid in GraphTree().activeGraph().vars, True)
 
+    def test_variable_scope(self):
+        from collections import Counter
+
+        GT = GraphTree()
+        # add variable to root graph
+        rootVariable = GT.activeGraph().createVariable(name="v0")
+        rootVariable.value = 0
+        self.assertEqual(rootVariable.uid in GT.activeGraph().vars, True)
+
+        vars = GT.getVarsList()
+        self.assertEqual(len(vars), 1, "failed to gather variables")
+
+        # create two subgraphs and variables inside
+        packages = GET_PACKAGES()
+        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['subgraph']
+
+        subgraphNodeInstance1 = subgraphNodeClass('subgraph1')
+        subgraphNodeInstance2 = subgraphNodeClass('subgraph2')
+        GT.activeGraph().addNode(subgraphNodeInstance1)
+        GT.activeGraph().addNode(subgraphNodeInstance2)
+        self.assertEqual(GT.getRootGraph().name, "root", "root graph is invalid")
+        self.assertEqual(GT.activeGraph().name, "root")
+
+        # goto subgraph1 and create variable
+        GT.switchGraph(subgraphNodeInstance1.name)
+        sg1Var = GT.activeGraph().createVariable(name="v1")
+        sg1Var.value = 1
+        GT.switchGraph('root')
+
+        # goto subgraph2 and create variable there
+        GT.switchGraph(subgraphNodeInstance2.name)
+        sg2Var = GT.activeGraph().createVariable(name="v2")
+        sg2Var.value = 2
+        GT.switchGraph('root')
+
+        # ask variables from rootgraph.
+        vars = GT.getVarsList()
+        self.assertEqual(len(vars), 1, "failed to gather variables")
+        # check variable value is 0
+        self.assertEqual(vars[0].value, 0, "invalid variable")
+
+        # go to subgraph1 and ask variables there
+        GT.switchGraph(subgraphNodeInstance1.name)
+        vars = GT.getVarsList()
+        # two variables. One from subgraph1 + one from root
+        self.assertEqual(len(vars), 2, "failed to gather variables")
+        varsValues = [i.value for i in vars]
+        self.assertEqual(Counter(varsValues) == Counter([0, 1]), True, "variables are incorrect")
+        GT.switchGraph('root')
+
+        # goto subgraph2 and ask variables there
+        GT.switchGraph(subgraphNodeInstance2.name)
+        vars = GT.getVarsList()
+        # two variables. One from subgraph2 + one from root
+        self.assertEqual(len(vars), 2, "failed to gather variables")
+        varsValues = [i.value for i in vars]
+        self.assertEqual(Counter(varsValues) == Counter([0, 2]), True, "variables are incorrect")
+        GT.switchGraph('root')
+
     def test_get_any_var(self):
         packages = GET_PACKAGES()
 

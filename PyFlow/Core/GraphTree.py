@@ -50,19 +50,34 @@ class GraphTree:
                 existingNodeNames.append(rawNode.getName())
         return getUniqNameFromList(existingNodeNames, name)
 
-    def getVars(self, graph=None):
+    def getVarsList(self, graph=None):
         """Returns this graph variables as well as all parent graph's ones
 
         returns:
-            {'graphName': varsDict, ...}
+            [varinstance1, varinstance2, ...]
         """
         if graph is None:
             graph = self.activeGraph()
-        result = dict()
+        result = []
+        result += list(graph.vars.values())
+        parent = self.getParentGraph(graph)
+        while parent is not None:
+            result += list(parent.vars.values())
+            parent = self.getParentGraph(parent)
+        return result
+
+    def getVarsDict(self, graph=None):
+        """Returns this graph variables as well as all parent graph's ones
+
+        returns:
+            {'graphName': { varUid: varInstance1 }, ...}
+        """
+        if graph is None:
+            graph = self.activeGraph()
+        result = {}
         result[graph.name] = graph.vars
         parent = self.getParentGraph(graph)
         while parent is not None:
-            # TODO: check for unique graph names
             result[parent.name] = parent.vars
             parent = self.getParentGraph(parent)
         return result
