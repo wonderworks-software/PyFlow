@@ -196,7 +196,7 @@ class IPin(IItemBase):
     def setData(self, value):
         raise NotImplementedError('setData method of IPin is not implemented')
 
-    def call(self):
+    def call(self, *args, **kwargs):
         raise NotImplementedError('call method of IPin is not implemented')
 
     @property
@@ -254,13 +254,13 @@ class INode(IItemBase):
     def __init__(self):
         super(INode, self).__init__()
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         raise NotImplementedError('compute method of INode is not implemented')
 
     def isCallable(self):
         raise NotImplementedError('isCallable method of INode is not implemented')
 
-    def call(self, outPinName):
+    def call(self, outPinName, *args, **kwargs):
         """
             call out exec pin by name
         """

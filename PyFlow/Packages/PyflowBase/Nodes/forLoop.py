@@ -31,15 +31,15 @@ class forLoop(NodeBase):
     def description():
         return 'For loop'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         indexFrom = self.firstIndex.getData()
         indexTo = self.lastIndex.getData()
         step = self.step.getData()
         if step == 0:
-            self.completed.call()
+            self.completed.call(*args, **kwargs)
         else:
             for i in range(indexFrom, indexTo, step):
                 self.index.setData(i)
                 push(self.index)
-                self.loopBody.call()
-            self.completed.call()
+                self.loopBody.call(*args, **kwargs)
+            self.completed.call(*args, **kwargs)

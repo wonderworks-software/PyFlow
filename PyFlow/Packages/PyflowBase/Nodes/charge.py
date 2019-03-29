@@ -38,10 +38,10 @@ class charge(NodeBase):
         When accumulated value reaches <b>"amount"</b> - completed pin called.\n\
         Useful when you need to wait some time inside some tick function.'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         step = abs(self.step.getData())
         if (self._currentAmount + step) < abs(self.amount.getData()):
             self._currentAmount += step
             return
-        self.completed.call()
+        self.completed.call(*args, **kwargs)
         self._currentAmount = 0.0

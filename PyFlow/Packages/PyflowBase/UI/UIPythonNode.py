@@ -19,7 +19,7 @@ class UIPythonNode(UINodeBase):
     #     super(UIPythonNode, self).postCreate(jsonTemplate)
 
     @property
-    def compute(self):
+    def compute(self, *args, **kwargs):
         return self._rawNode.compute
 
     @compute.setter

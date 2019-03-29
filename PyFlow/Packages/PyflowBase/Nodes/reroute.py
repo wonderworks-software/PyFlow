@@ -19,5 +19,5 @@ class reroute(NodeBase):
     def category():
         return 'Common'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         self.output.setData(copy(self.input.getData()))

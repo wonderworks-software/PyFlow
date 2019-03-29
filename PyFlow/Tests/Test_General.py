@@ -1,11 +1,12 @@
 from TestsBase import *
+from PyFlow.Core.Common import *
 
 
 class TestGeneral(unittest.TestCase):
 
     def setUp(self):
         print('\t[BEGIN TEST]', self._testMethodName)
-        GraphTree(GraphBase("testGraph"))
+        GraphTree(GraphBase("root"))
 
     def tearDown(self):
         print('--------------------------------\n')
@@ -304,15 +305,14 @@ class TestGeneral(unittest.TestCase):
 
         """
         packages = GET_PACKAGES()
-
         GT = GraphTree()
 
         # create empty subgraph
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['subgraph']
         subgraphNodeInstance = subgraphNodeClass('subgraph')
         GT.activeGraph().addNode(subgraphNodeInstance)
-        self.assertEqual(GT.getRootGraph().name, "testGraph", "root graph is invalid")
-        self.assertEqual(GT.activeGraph().name, "testGraph")
+        self.assertEqual(GT.getRootGraph().name, "root", "root graph is invalid")
+        self.assertEqual(GT.activeGraph().name, "root")
 
         # try add graph inputs to root. None expected
         inputsRoot = GT.activeGraph().getInputNode()
@@ -378,8 +378,8 @@ class TestGeneral(unittest.TestCase):
         self.assertIsNotNone(outputs1.getPinByName('first').currentData(), "output companion pin data is incorrect")
 
         # go back to root graph
-        GT.switchGraph("testGraph")
-        self.assertEqual(GT.activeGraph().name, "testGraph", "failed to return back to root from subgraph node")
+        GT.switchGraph("root")
+        self.assertEqual(GT.activeGraph().name, "root", "failed to return back to root from subgraph node")
 
         # check exposed pins added
         self.assertEqual(len(subgraphNodeInstance.inputs), 1)
@@ -420,6 +420,105 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(len(subgraphNodeInstance.inputs), 0, "outer companion pin is not killed")
         self.assertEqual(len(subgraphNodeInstance.pins), 0, "outer companion pins are not killed")
 
+    def test_subgraph_execs(self):
+        packages = GET_PACKAGES()
+
+        GT = GraphTree()
+
+        # create empty subgraph
+        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['subgraph']
+        subgraphNodeInstance = subgraphNodeClass('subgraph')
+        GT.activeGraph().addNode(subgraphNodeInstance)
+        self.assertEqual(GT.getRootGraph().name, "root", "root graph is invalid")
+        self.assertEqual(GT.activeGraph().name, "root")
+
+        # step inside subgraph
+        GT.switchGraph(subgraphNodeInstance.name)
+        self.assertEqual(GT.activeGraph().name, subgraphNodeInstance.name, "failed to enter subgraph")
+
+        # add input output nodes to expose pins to outer subgraph node
+        inputs1 = GT.activeGraph().getInputNode()
+        outputs1 = GT.activeGraph().getOutputNode()
+        self.assertIsNotNone(inputs1, "failed to create graph inputs node")
+        self.assertIsNotNone(outputs1, "failed to create graph outputs node")
+
+        # create out pin on graphInputs node
+        # this should expose input pin on subgraph node
+        outPin = inputs1.addOutPin()
+        self.assertEqual(len(subgraphNodeInstance.namePinInputsMap), 1, "failed to expose input pin")
+        self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
+        outPin.setName('inAnyExec')
+
+        # create input pin on graphOutputs node
+        # this should expose output pin on subgraph node
+        inPin = outputs1.addInPin()
+        self.assertEqual(len(subgraphNodeInstance.namePinOutputsMap), 1, "failed to expose input pin")
+        self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
+        inPin.setName('outAnyExec')
+
+        subgraphInAnyExec = subgraphNodeInstance.getPinByName('inAnyExec', PinSelectionGroup.Inputs)
+        self.assertIsNotNone(subgraphInAnyExec, "failed to find subgraph input exec pin")
+        subgraphOutAnyExec = subgraphNodeInstance.getPinByName('outAnyExec', PinSelectionGroup.Outputs)
+        self.assertIsNotNone(subgraphOutAnyExec, "failed to find subgraph out exec pin")
+
+        # add print node inside
+        foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
+
+        printNode1 = NodeBase.initializeFromFunction(foos["pyprint"])
+        GT.activeGraph().addNode(printNode1)
+        printNode1.setData("entity", "hello from subgraph")
+
+        # connect print node execs to graph input/output
+        # this should change pin types to execs on graph nodes as well as on owning subgraph node
+        connection = connectPins(outPin, printNode1.getPinByName(DEFAULT_IN_EXEC_NAME))
+        self.assertEqual(connection, True)
+        self.assertEqual(subgraphInAnyExec.dataType, "ExecPin", "failed to change data type to exec")
+        # Print in exec connected to subgraph input node. Calling from outside exec
+        # output is not connected
+        subgraphInAnyExec.call(message="TEMP")
+
+        # connect print out exec to graph output
+        connection = connectPins(printNode1.getPinByName(DEFAULT_OUT_EXEC_NAME), inPin)
+        self.assertEqual(connection, True, "failed to connect")
+        self.assertEqual(subgraphOutAnyExec.dataType, "ExecPin", "failed to change data type to exec")
+        self.assertEqual(subgraphOutAnyExec.call, printNode1.getPinByName(DEFAULT_OUT_EXEC_NAME).call, "incorrect call functions on exec pins")
+
+        # go back to root
+        # GT.switchGraph("root")
+        # printNodeAfter = NodeBase.initializeFromFunction(foos["pyprint"])
+        # GT.activeGraph().addNode(printNodeAfter)
+        # printNodeAfter.setData("entity", "hello after subgraph exec")
+        subgraphInAnyExec.call(message="EXECS MSG")
+
+    def test_branch_node(self):
+        packages = GET_PACKAGES()
+        GT = GraphTree()
+        foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
+        nodes = packages['PyflowBase'].GetNodeClasses()
+        printNode1 = NodeBase.initializeFromFunction(foos["pyprint"])
+        GT.activeGraph().addNode(printNode1)
+        printNode1.setData('entity', "first")
+
+        branchNode = nodes["branch"]("branchNODE")
+        self.assertIsNotNone(branchNode, "branch node is not created")
+        GT.activeGraph().addNode(branchNode)
+        branchNode.setData('Condition', True)
+
+        connected = connectPins(printNode1.getPinByName(DEFAULT_OUT_EXEC_NAME), branchNode.getPinByName("In"))
+        self.assertEqual(connected, True, "failed to connect")
+
+        printNodeTrue = NodeBase.initializeFromFunction(foos["pyprint"])
+        GT.activeGraph().addNode(printNodeTrue)
+        printNodeTrue.setData('entity', "True executed")
+
+        printNodeFalse = NodeBase.initializeFromFunction(foos["pyprint"])
+        GT.activeGraph().addNode(printNodeFalse)
+        printNodeFalse.setData('entity', "False executed")
+
+        connectPins(branchNode.getPinByName('True'), printNodeTrue.getPinByName(DEFAULT_IN_EXEC_NAME))
+        connectPins(branchNode.getPinByName('False'), printNodeFalse.getPinByName(DEFAULT_IN_EXEC_NAME))
+
+        printNode1.call(DEFAULT_IN_EXEC_NAME, message="TEST MESSAGE")
 
 if __name__ == '__main__':
     unittest.main()

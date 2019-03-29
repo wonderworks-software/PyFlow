@@ -42,7 +42,7 @@ When save button is pressed, function with code you wrote will be generated and 
         >>> import math
         >>> print(math.pi)
         # will be turned into the following
-        >>> def compute(self):
+        >>> def compute(self, *args, **kwargs):
         >>>     import math
         >>>     print(math.pi)
         # and then used inside the node

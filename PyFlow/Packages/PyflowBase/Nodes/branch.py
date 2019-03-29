@@ -17,9 +17,9 @@ class branch(NodeBase):
     def category():
         return 'FlowControl'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         data = self.condition.getData()
         if data:
-            self.trueExec.call()
+            self.trueExec.call(*args, **kwargs)
         else:
-            self.falseExec.call()
+            self.falseExec.call(*args, **kwargs)

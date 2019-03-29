@@ -26,5 +26,5 @@ class deltaTime(NodeBase):
     def Tick(self, deltaTime):
         self._deltaTime = deltaTime
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         self._out0.setData(self._deltaTime)

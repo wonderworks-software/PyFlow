@@ -35,12 +35,12 @@ class doN(NodeBase):
         return 'The DoN node will fire off an execution pin N times. After the limit has been reached,\
         it will cease all outgoing execution until a pulse is sent into its Reset input.'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         maxCalls = self._N.getData()
         if not self.bClosed and self._numCalls <= maxCalls:
             self._numCalls += 1
             self.counter.setData(self._numCalls)
-            self.completed.call()
+            self.completed.call(*args, **kwargs)
 
             # if next time we will reach the limit - close
             if (self._numCalls + 1) > maxCalls:

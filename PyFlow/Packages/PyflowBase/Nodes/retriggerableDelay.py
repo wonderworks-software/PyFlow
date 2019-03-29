@@ -39,7 +39,7 @@ class retriggerableDelay(NodeBase):
         self.process = False
         self._total = 0.0
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         self._total = 0.0
         self.process = True
         self._currentDelay = self.delay.getData()

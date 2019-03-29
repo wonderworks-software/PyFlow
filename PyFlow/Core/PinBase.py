@@ -5,6 +5,7 @@ import weakref
 
 from PyFlow.Core.Interfaces import IPin
 from PyFlow.Core.Common import *
+from PyFlow import getPinDefaultValueByType
 
 
 class PinBase(IPin):
@@ -16,6 +17,7 @@ class PinBase(IPin):
         self.onPinDisconnected = Signal(object)
         self.nameChanged = Signal(str)
         self.killed = Signal()
+        self.onExecute = Signal(object)
 
         self._uid = uuid.uuid4()
         self._dataType = None
@@ -33,6 +35,9 @@ class PinBase(IPin):
         self.connections = []
         ## Access to the node
         self.owningNode = weakref.ref(owningNode)
+
+        # enable type checking
+        self._typeChecking = True
 
         self.dataType = dataType
         self.name = name
@@ -53,6 +58,15 @@ class PinBase(IPin):
         self.constraint = None
         self.isAny = False
         self._isArray = False
+
+    @property
+    def typeChecking(self):
+        return self._typeChecking
+
+    @typeChecking.setter
+    def typeChecking(self, bEnabled):
+        assert(bEnabled, bool)
+        self._typeChecking = bEnabled
 
     def setAsArray(self, bIsArray):
         self._isArray = bool(bIsArray)
@@ -159,6 +173,11 @@ class PinBase(IPin):
 
     ## Setting the data
     def setData(self, data):
+        # type checking
+        if self.typeChecking:
+            thisDefaultValue = getPinDefaultValueByType(self.dataType)
+            assert(type(thisDefaultValue) == type(data)), "invalid type passed! Expected type - [{0}]".format(type(thisDefaultValue).__name__)
+
         self.setClean()
         self._data = data
         if self.direction == PinDirection.Output:
@@ -169,9 +188,8 @@ class PinBase(IPin):
             push(self)
 
     ## Calling execution pin
-    def call(self):
-        for i in self.affects:
-            i.call()
+    def call(self, *args, **kwargs):
+        self.onExecute.send(*args, **kwargs)
 
     def disconnectAll(self):
         # if input pin

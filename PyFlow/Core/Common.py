@@ -33,6 +33,9 @@ GRID_SIZE = 20
 # for example random integer node should always mark dirty all upper branches of graph
 PROPAGATE_DIRTY = 'PropagateDirty'
 
+DEFAULT_IN_EXEC_NAME = 'inExec'
+DEFAULT_OUT_EXEC_NAME = 'outExec'
+
 
 ## Performs a linear interpolation
 # @param[in] start the value to interpolate from

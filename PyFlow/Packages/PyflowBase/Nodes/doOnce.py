@@ -30,10 +30,10 @@ class doOnce(NodeBase):
     def description():
         return 'Will fire off an execution pin just once. But can reset.'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         bStartClosed = self.bStartClosed.getData()
 
         if not self.bClosed and not bStartClosed:
-            self.completed.call()
+            self.completed.call(*args, **kwargs)
             self.bClosed = True
             self.bStartClosed.setData(False)

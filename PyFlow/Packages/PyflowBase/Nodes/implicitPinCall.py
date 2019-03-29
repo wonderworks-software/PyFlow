@@ -29,7 +29,7 @@ class implicitPinCall(NodeBase):
     def description():
         return 'Implicit execution pin call by provided <a href="https://ru.wikipedia.org/wiki/UUID"> uuid</a>.\nUse this when pins are far from each other.'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         uidStr = self.uidInp.getData()
         if len(uidStr) == 0:
             return
@@ -37,4 +37,4 @@ class implicitPinCall(NodeBase):
         if uid in self.graph().pins:
             pin = self.graph().pins[uid]
             if not pin.hasConnections():
-                pin.call()
+                pin.call(*args, **kwargs)

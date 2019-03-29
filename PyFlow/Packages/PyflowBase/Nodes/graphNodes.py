@@ -37,7 +37,7 @@ class graphInputs(NodeBase):
         self.onPinCreated.send(p)
         return p
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         for i in self.outputs.values():
             for j in i.affected_by:
                 i.setData(j.getData())

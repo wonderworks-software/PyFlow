@@ -159,7 +159,7 @@ class NodeBase(INode):
 
     # INode interface
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         '''
         node calculations here
         '''
@@ -203,7 +203,8 @@ class NodeBase(INode):
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
         p.direction = PinDirection.Input
         if foo:
-            p.call = foo
+            # p.call = foo
+            p.onExecute.connect(foo, weak=False)
         if defaultValue is not None:
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
@@ -220,7 +221,8 @@ class NodeBase(INode):
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         p.direction = PinDirection.Output
         if foo:
-            p.call = foo
+            # p.call = foo
+            p.onExecute.connect(foo, weak=False)
         if defaultValue is not None:
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
@@ -256,12 +258,17 @@ class NodeBase(INode):
             return outputs[uid]
         return None
 
-    def call(self, name):
+    def call(self, name, *args, **kwargs):
         namePinOutputsMap = self.namePinOutputsMap
+        namePinInputsMap = self.namePinInputsMap
         if name in namePinOutputsMap:
             p = namePinOutputsMap[name]
             if p.dataType == 'ExecPin':
-                p.call()
+                p.call(*args, **kwargs)
+        if name in namePinInputsMap:
+            p = namePinInputsMap[name]
+            if p.dataType == 'ExecPin':
+                p.call(*args, **kwargs)
 
     def getPinByName(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
         inputs = self.inputs
@@ -352,27 +359,27 @@ class NodeBase(INode):
         outExec = None
 
         # generate compute method from function
-        def compute(self):
+        def compute(self, *args, **kwargs):
             # arguments will be taken from inputs
-            kwargs = {}
+            kwds = {}
             for i in list(self.inputs.values()):
                 if i.dataType is not 'ExecPin':
-                    kwargs[i.name] = i.getData()
+                    kwds[i.name] = i.getData()
             for ref in refs:
                 if ref.dataType is not 'ExecPin':
-                    kwargs[ref.name] = ref.setData
-            result = foo(**kwargs)
+                    kwds[ref.name] = ref.setData
+            result = foo(**kwds)
             if returnType is not None:
                 self.setData('out', result)
             if nodeType == NodeTypes.Callable:
-                outExec.call()
+                outExec.call(*args, **kwargs)
 
         raw_inst.compute = MethodType(compute, raw_inst)
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
-            inputExec = raw_inst.addInputPin('inExec', 'ExecPin', None, raw_inst.compute)
-            outExec = raw_inst.addOutputPin('outExec', 'ExecPin', None)
+            inputExec = raw_inst.addInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
+            outExec = raw_inst.addOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin', None)
             raw_inst.bCallable = True
 
         # iterate over function arguments and create pins according to data types

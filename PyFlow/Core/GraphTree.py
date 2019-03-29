@@ -31,6 +31,8 @@ class GraphTree:
         t.root = None
         # add root back
         t.add_node(rootNode)
+        self.__activeGraph = rootNode.data
+        self.__activeGraph.clear()
 
     def getUniqGraphName(self, name):
         existingGraphNames = [g.name for g in self.getAllGraphs()]

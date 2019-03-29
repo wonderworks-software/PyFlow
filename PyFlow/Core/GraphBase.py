@@ -24,6 +24,11 @@ class GraphBase(object):
         self.connections = {}
         self.vars = {}
 
+    def clear(self):
+        self.nodes.clear()
+        self.vars.clear()
+        self.connections.clear()
+
     @property
     def name(self):
         return self.__name

@@ -60,9 +60,11 @@ class subgraph(NodeBase):
         outPin.killed.connect(onInnerOutKilled, weak=False)
 
         # watch if something is connected to inner companion
-        # and change default value
         def onInnerOutConnected(other):
             subgraphInputPin._data = other.currentData()
+            subgraphInputPin.setType(other)
+            if other.dataType == "ExecPin":
+                subgraphInputPin.call = other.call
         outPin.onPinConnected.connect(onInnerOutConnected, weak=False)
 
     def onGraphInputPinDeleted(self, inPin):
@@ -97,7 +99,13 @@ class subgraph(NodeBase):
         # and change default value
         def onInnerInpPinConnected(other):
             subgraphOutputPin._data = other.currentData()
+            subgraphOutputPin.setType(other)
+            if other.dataType == "ExecPin":
+                other.call = subgraphOutputPin.call
         inPin.onPinConnected.connect(onInnerInpPinConnected, weak=False)
+
+    def autoAffectPins(self):
+        raise NotImplementedError("Error")
 
     def onGraphOutputPinDeleted(self, outPin):
         # remove companion pin for inner graphOutputs node pin
@@ -113,7 +121,7 @@ class subgraph(NodeBase):
         self.rawGraph.onOutputPinCreated.connect(self.onGraphOutputPinCreated)
         self.rawGraph.onOutputPinDeleted.connect(self.onGraphOutputPinDeleted)
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         # get data from subgraph node input pins and put it to inner companions
         # for inputPin, innerOutPin in self.__inputsMap.items():
         #     innerOutPin.setData(inputPin.getData())

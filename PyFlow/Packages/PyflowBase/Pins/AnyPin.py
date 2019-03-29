@@ -19,6 +19,7 @@ class AnyPin(PinBase):
         self.origSetData = self.setData
         self.super = None
         self.activeDataType = self.dataType
+        self.typeChecking = False
 
     @staticmethod
     def isPrimitiveType():

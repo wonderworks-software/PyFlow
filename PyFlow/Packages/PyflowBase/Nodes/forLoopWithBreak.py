@@ -36,7 +36,7 @@ class forLoopWithBreak(NodeBase):
     def description():
         return 'For loop with ability to break'
 
-    def compute(self):
+    def compute(self, *args, **kwargs):
         indexFrom = self.firstIndex.getData()
         indexTo = self.lastIndex.getData()
         step = self.step.getData()
@@ -44,6 +44,6 @@ class forLoopWithBreak(NodeBase):
             if self.stop:
                 break
             self.index.setData(i)
-            self.loopBody.call()
-        self.completed.call()
+            self.loopBody.call(*args, **kwargs)
+        self.completed.call(*args, **kwargs)
         self.stop = False

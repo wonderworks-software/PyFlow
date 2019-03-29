@@ -12,6 +12,12 @@ class ExecPin(PinBase):
         self.dirty = False
         self._isArray = False
 
+    def pinConnected(self, other):
+        # connect execution signals
+        if self.direction == PinDirection.Output:
+            self.onExecute.connect(other.call)
+        super(ExecPin, self).pinConnected(other)
+
     def setAsArray(self, bIsArray):
         # exec is not a type, it cannot be an array
         self._isArray = False
