@@ -198,9 +198,8 @@ class PinBase(IPin):
         # 3) remove self from other's affection list
         # clear affected_by list
         if self.direction == PinDirection.Input:
-            for o in self.affected_by:
-                o.pinDisconnected(self)
-                o.affects.remove(self)
+            for o in list(self.affected_by):
+                disconnectPins(self, o)
             self.affected_by.clear()
 
         # if output pin
@@ -209,9 +208,8 @@ class PinBase(IPin):
         # 3) remove self from other's affection list
         # clear affects list
         if self.direction == PinDirection.Output:
-            for i in self.affects:
-                i.pinDisconnected(self)
-                i.affected_by.remove(self)
+            for i in list(self.affects):
+                disconnectPins(self, i)
             self.affects.clear()
 
     ## Describes, what data type is this pin.
@@ -235,7 +233,9 @@ class PinBase(IPin):
     # PinBase methods
 
     def kill(self, *args, **kwargs):
-        self.owningNode().pins.pop(self.uid)
+        self.disconnectAll()
+        if self.uid in self.owningNode().pins:
+            self.owningNode().pins.pop(self.uid)
         self.killed.send()
 
     def currentData(self):

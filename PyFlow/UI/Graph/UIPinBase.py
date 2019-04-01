@@ -99,11 +99,8 @@ class UIPinBase(QGraphicsWidget):
     # Event called when data been set
     dataBeenSet = QtCore.Signal(object)
     # Event called when pin name changes
-    nameChanged = QtCore.Signal(str)
-    # Event called when pin name changes
     displayNameChanged = QtCore.Signal(str)
-    # Event called when setUserStruct called
-    # used by enums
+    # Event called when setUserStruct called. Used by enums
     userStructChanged = QtCore.Signal(object)
     OnPinChanged = QtCore.Signal(object)
     OnPinDeleted = QtCore.Signal(object)
@@ -119,7 +116,7 @@ class UIPinBase(QGraphicsWidget):
         self.menu = QMenu()
         # Disconnect all connections
         self.actionDisconnect = self.menu.addAction('Disconnect all')
-        self.actionDisconnect.triggered.connect(self.disconnectAll)
+        self.actionDisconnect.triggered.connect(self._rawPin.disconnectAll)
         # Copy UUID to buffer
         self.actionCopyUid = self.menu.addAction('Copy uid')
         self.actionCopyUid.triggered.connect(self.saveUidToClipboard)
@@ -148,9 +145,12 @@ class UIPinBase(QGraphicsWidget):
         self.bLabelHidden = False
         self.bAnimate = False
         self._val = 0
-        self._displayName = self.name
+        self._displayName = self._rawPin.name
         self._color = QtGui.QColor(*self._rawPin.color())
         self.uiConnectionList = []
+
+        self._rawPin.killed.connect(self.kill)
+        self._rawPin.nameChanged.connect(self.setDisplayName)
 
     def setLabel(self, labelItem):
         if self._label is None:
@@ -202,7 +202,8 @@ class UIPinBase(QGraphicsWidget):
         actionsNames = [a.text() for a in self.menu.actions()]
         if bDynamic and "Remove" not in actionsNames:
             removeAction = self.menu.addAction("Remove")
-            removeAction.triggered.connect(self.kill)
+            # raw pin will send signal `killed` which will be considered by UI pin
+            removeAction.triggered.connect(self._rawPin.kill)
 
     def isDynamic(self):
         return self._rawPin.isDynamic()
@@ -292,7 +293,6 @@ class UIPinBase(QGraphicsWidget):
 
     def setName(self, newName):
         self._rawPin.setName(newName)
-        self.nameChanged.emit(newName)
 
     def setData(self, value):
         self._rawPin.setData(value)
@@ -326,7 +326,8 @@ class UIPinBase(QGraphicsWidget):
             e.highlight()
 
     def kill(self, *args, **kwargs):
-        self.disconnectAll()
+        """this will called after raw pin is deleted
+        """
         if self._container is not None:
             self.scene().removeItem(self._container)
             if not self._groupContainer:
@@ -340,7 +341,6 @@ class UIPinBase(QGraphicsWidget):
                     self.owningNode().inputsLayout.removeItem(self._groupContainer)
                 else:
                     self.owningNode().outputsLayout.removeItem(self._groupContainer)
-        self._rawPin.kill()
         self.OnPinDeleted.emit(self)
         self.update()
 
@@ -401,11 +401,6 @@ class UIPinBase(QGraphicsWidget):
         clipboard = QApplication.clipboard()
         clipboard.clear()
         clipboard.setText(str(self.uid))
-
-    def disconnectAll(self):
-        if len(self.uiConnectionList) > 0:
-            self.owningNode().graph().removeEdgeCmd(self.uiConnectionList)
-        self.update()
 
     def shape(self):
         path = QtGui.QPainterPath()

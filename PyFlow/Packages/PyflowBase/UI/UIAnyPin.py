@@ -1,5 +1,6 @@
 from PyFlow.Packages.PyflowBase import PACKAGE_NAME
 from PyFlow.Core import PinBase
+from PyFlow import findPinClassByType
 from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.Settings import Colors
 from PyFlow.UI.Graph.Painters import PinPainter
@@ -14,6 +15,7 @@ class UIAnyPin(UIPinBase):
     def __init__(self, owningNode, raw_pin):
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
         self._defaultColor = self._color
+        self._rawPin.typeChanged.connect(self.setType)
 
     def checkFree(self, checked=[], selfChek=True):
         return self._rawPin.checkFree(checked, selfChek)
@@ -38,8 +40,9 @@ class UIAnyPin(UIPinBase):
         self.OnPinChanged.emit(self)
         self.update()
 
-    def setType(self, otherColor):
-        self._color = QtGui.QColor(*otherColor)
+    def setType(self, dataType):
+        colorTuple = findPinClassByType(dataType).color()
+        self._color = QtGui.QColor(*colorTuple)
         for e in self.connections:
             e.setColor(self._color)
         self.OnPinChanged.emit(self)

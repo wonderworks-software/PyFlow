@@ -1,3 +1,4 @@
+from blinker import Signal
 import json
 
 from PyFlow.Core import PinBase
@@ -13,6 +14,7 @@ class AnyPin(PinBase):
 
     def __init__(self, name, parent, dataType, direction, **kwargs):
         super(AnyPin, self).__init__(name, parent, dataType, direction, **kwargs)
+        self.typeChanged = Signal(str)
         self.setDefaultValue(None)
         self._free = True
         self.isAny = True
@@ -100,8 +102,9 @@ class AnyPin(PinBase):
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
         if self.constraint is None:
-            self.setDefault()
-            self._free = True
+            if not self.hasConnections():
+                self.setDefault()
+                self._free = True
         elif not self._free:
             self._free = self.checkFree([])
             if self._free:
@@ -161,3 +164,4 @@ class AnyPin(PinBase):
             self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
+            self.typeChanged.send(self.dataType)

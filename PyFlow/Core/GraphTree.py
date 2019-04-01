@@ -50,6 +50,9 @@ class GraphTree:
                 existingNodeNames.append(rawNode.getName())
         return getUniqNameFromList(existingNodeNames, name)
 
+    def plot(self):
+        self.activeGraph().plot()
+
     def getVarsList(self, graph=None):
         """Returns this graph variables as well as all parent graph's ones
 

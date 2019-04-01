@@ -5,32 +5,32 @@ class ConnectPin(QUndoCommand):
     '''
     Connects two pins
     '''
-    def __init__(self, graph, src, dst):
+    def __init__(self, canvas, src, dst):
         super(ConnectPin, self).__init__()
-        self.graph = graph
+        self.canvas = canvas
         self.srcUid = src.uid
         self.dstUid = dst.uid
         self.setText('connect connections')
         self.edgeUid = None
 
     def undo(self):
-        if self.edgeUid in self.graph.connections:
-            self.graph.scene().blockSignals(True)
-            self.graph.removeConnection(self.graph.connections[self.edgeUid])
-            self.graph.scene().blockSignals(False)
+        if self.edgeUid in self.canvas.connections:
+            self.canvas.scene().blockSignals(True)
+            self.canvas.removeConnection(self.canvas.connections[self.edgeUid])
+            self.canvas.scene().blockSignals(False)
 
     def redo(self):
-        self.graph.scene().blockSignals(True)
+        self.canvas.scene().blockSignals(True)
 
-        srcPin = self.graph.findPinByUID(self.srcUid)
+        srcPin = self.canvas.findPin(self.srcUid)
         if srcPin is None:
             print(self.srcUid, "not found")
 
-        dstPin = self.graph.findPinByUID(self.dstUid)
+        dstPin = self.canvas.findPin(self.dstUid)
         if dstPin is None:
             print(self.dstUid, "not found")
 
-        connection = self.graph.connectPinsInternal(srcPin, dstPin)
+        connection = self.canvas.connectPinsInternal(srcPin, dstPin)
 
         # recreate the same connection with same uuid
         # if it was deleted
@@ -42,4 +42,4 @@ class ConnectPin(QUndoCommand):
         if connection and self.edgeUid is None:
             self.edgeUid = connection.uid
 
-        self.graph.scene().blockSignals(False)
+        self.canvas.scene().blockSignals(False)

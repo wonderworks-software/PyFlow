@@ -1,5 +1,6 @@
 import weakref
 from blinker import Signal
+from multipledispatch import dispatch
 
 from PyFlow.Core.Common import *
 from PyFlow import CreateRawPin
@@ -144,13 +145,15 @@ class GraphBase(object):
                 nodes.append(i)
         return nodes
 
-    def findPinByUID(self, uid):
+    @dispatch(uuid.UUID)
+    def findPin(self, uid):
         pin = None
         if uid in self.pins:
             pin = self.pins[uid]
         return pin
 
-    def findPinByName(self, pinName):
+    @dispatch(str)
+    def findPin(self, pinName):
         pin = None
         for pin in self.pins.values():
             if pinName == pin.getName():

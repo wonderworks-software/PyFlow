@@ -40,7 +40,7 @@ class UIGraphInputs(UINodeBase):
         UINodeBase.postCreate(self, jsonTemplate)
         # recreate dynamically created pins
         self.pinCreated.connect(self.graph().inPinCreated.emit)
-        createdPinNames = [pin.name for pin in self.outputs.values()]
+        createdPinNames = [pin.name for pin in self.UIoutputs.values()]
         for outPin in jsonTemplate["outputs"]:
             if outPin['name'] not in createdPinNames:
                 uiPin = self.onAddOutPin()
@@ -97,7 +97,7 @@ class UIGraphOutputs(UINodeBase):
         UINodeBase.postCreate(self, jsonTemplate)
         # recreate dynamically created pins
         self.pinCreated.connect(self.graph().outPinCreated.emit)
-        createdPinNames = [pin.name for pin in self.inputs.values()]
+        createdPinNames = [pin.name for pin in self.UIinputs.values()]
         for inPin in jsonTemplate["inputs"]:
             if inPin['name'] not in createdPinNames:
                 uiPin = self.onAddInPin()

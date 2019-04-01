@@ -282,14 +282,6 @@ class UINodeBase(QGraphicsObject):
         return result
 
     @property
-    def inputs(self):
-        return self.UIinputs
-
-    @property
-    def outputs(self):
-        return self.UIoutputs
-
-    @property
     def namePinOutputsMap(self):
         result = OrderedDict()
         for rawPin in self._rawNode.pins.values():
@@ -680,13 +672,13 @@ class UINodeBase(QGraphicsObject):
         formLayout.addRow("Pos", le_pos)
 
         # inputs
-        if len([i for i in self.inputs.values()]) != 0:
+        if len([i for i in self.UIPins.values()]) != 0:
             sep_inputs = QLabel()
             sep_inputs.setStyleSheet("background-color: black;")
             sep_inputs.setText("INPUTS")
             formLayout.addRow("", sep_inputs)
 
-            for inp in self.inputs.values():
+            for inp in self.UIPins.values():
                 dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
                 w = createInputWidget(
                     inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
@@ -700,12 +692,12 @@ class UINodeBase(QGraphicsObject):
                         w.setEnabled(False)
 
         # outputs
-        if len([i for i in self.outputs.values()]) != 0:
+        if len([i for i in self.UIoutputs.values()]) != 0:
             sep_outputs = QLabel()
             sep_outputs.setStyleSheet("background-color: black;")
             sep_outputs.setText("OUTPUTS")
             formLayout.addRow("", sep_outputs)
-            for out in self.outputs.values():
+            for out in self.UIoutputs.values():
                 if out.dataType == 'ExecPin':
                     continue
                 w = createInputWidget(
@@ -737,7 +729,7 @@ class UINodeBase(QGraphicsObject):
 
     def getChainedNodes(self):
         nodes = []
-        for pin in self.inputs.values():
+        for pin in self.UIinputs.values():
             for connection in pin.connections:
                 node = connection.source().topLevelItem()  # topLevelItem
                 nodes.append(node)
@@ -813,12 +805,10 @@ class UINodeBase(QGraphicsObject):
             connector_name.setColor(Colors.PinNameColor)
         else:
             connector_name.setColor(color)
-        p.nameChanged.connect(connector_name.setText)
         p.displayNameChanged.connect(connector_name.setText)
         connector_name.nameChanged.connect(p.setName)
         connector_name.nameChanged.connect(p.setDisplayName)
         connector_name.nameChanged.connect(self.updateWidth)
-        p.nameChanged.connect(self.updateWidth)
         p.displayNameChanged.connect(self.updateWidth)
         p.OnPinDeleted.connect(self.updateWidth)
         if rawPin.direction == PinDirection.Input:

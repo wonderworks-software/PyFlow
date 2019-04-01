@@ -22,7 +22,7 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QSpacerItem
 
 from PyFlow import Packages
-from PyFlow.UI.Graph.Widget import GraphWidgetUI
+from PyFlow.UI.Graph.Canvas import Canvas
 from PyFlow.Core.Common import Direction
 from PyFlow.Core.Common import clearLayout
 from PyFlow.Core.GraphTree import GraphTree
@@ -71,20 +71,24 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
 
         self.styleSheetEditor = StyleSheetEditor()
-        self._currentGraph = GraphWidgetUI(self, graphBase=GraphTree().getRootGraph())
+        self.canvasWidget = Canvas(self)
         self.updateGraphTreeLocation()
         GraphTree().onGraphSwitched.connect(self.onRawGraphSwitched)
-        self.SceneLayout.addWidget(self._currentGraph)
+        self.SceneLayout.addWidget(self.canvasWidget)
 
         self.actionVariables.triggered.connect(self.toggleVariables)
-        self.actionPlot_graph.triggered.connect(self._currentGraph.plot)
+        self.actionPlot_graph.triggered.connect(GraphTree().plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionPropertyView.triggered.connect(self.togglePropertyView)
-        self.actionScreenshot.triggered.connect(self._currentGraph.screenShot)
+        self.actionScreenshot.triggered.connect(self.canvasWidget.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
-        self.actionSave.triggered.connect(self._currentGraph.save)
-        self.actionLoad.triggered.connect(self._currentGraph.load)
-        self.actionSave_as.triggered.connect(self._currentGraph.save_as)
+
+        # TODO: move this methods to App
+        self.actionSave.triggered.connect(self.canvasWidget.save)
+        self.actionLoad.triggered.connect(self.canvasWidget.load)
+        self.actionSave_as.triggered.connect(self.canvasWidget.save_as)
+        self.actionNew.triggered.connect(self.canvasWidget.new_file)
+
         self.actionAlignLeft.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Left))
         self.actionAlignUp.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Up))
         self.actionAlignBottom.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Down))
@@ -94,12 +98,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
         self.actionNew_pin.triggered.connect(lambda: self.newPlugin(PluginType.pPin))
         self.actionHistory.triggered.connect(self.toggleHistory)
-        self.actionNew.triggered.connect(self._currentGraph.new_file)
         self.dockWidgetUndoStack.setVisible(False)
 
         self.setMouseTracking(True)
 
-        self.variablesWidget = VariablesWidget(self, self._currentGraph)
+        self.variablesWidget = VariablesWidget(self, self.canvasWidget)
         self.leftDockGridLayout.addWidget(self.variablesWidget)
 
         self._lastClock = 0.0
@@ -148,11 +151,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
 
     @property
     def currentGraph(self):
-        return self._currentGraph
+        return self.canvasWidget
 
     @currentGraph.setter
     def currentGraph(self, graph):
-        self._currentGraph = graph
+        self.canvasWidget = graph
 
     def startMainLoop(self):
         self.tick_timer.start(1000 / EDITOR_TARGET_FPS)
@@ -189,7 +192,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
     def closeEvent(self, event):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
-        self._currentGraph.shoutDown()
+        self.canvasWidget.shoutDown()
         # save editor config
         settings = QtCore.QSettings(
             SETTINGS_PATH, QtCore.QSettings.IniFormat, self)

@@ -7,6 +7,7 @@ try:
     from inspect import getfullargspec as getargspec
 except:
     from inspect import getargspec
+from multipledispatch import dispatch
 
 from Qt import QtCore
 from Qt import QtGui
@@ -423,7 +424,7 @@ QPushButton:pressed{
 """
 
 
-class GraphWidgetUI(QGraphicsView):
+class Canvas(QGraphicsView):
     _manipulationMode = MANIP_MODE_NONE
 
     _backgroundColor = Colors.SceneBackground  # QtGui.QColor(50, 50, 50)
@@ -438,12 +439,8 @@ class GraphWidgetUI(QGraphicsView):
     outPinCreated = QtCore.Signal(object)
     outPinDeleted = QtCore.Signal(object)
 
-    def __init__(self, parent=None, graphBase=None, parentGraph=None, parentNode=None):
-        super(GraphWidgetUI, self).__init__()
-        assert(isinstance(graphBase, GraphBase))
-        self._graphBase = graphBase
-        self._parentGraph = parentGraph
-        self._parentNode = parentNode
+    def __init__(self, parent=None):
+        super(Canvas, self).__init__()
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent
@@ -490,26 +487,6 @@ class GraphWidgetUI(QGraphicsView):
         self._file_name_label.setDefaultTextColor(Colors.White)
         self._file_name_label.setPlainText(self._current_file_name)
         self.scene().addItem(self._file_name_label)
-        if self._parentGraph:
-            graph = self
-            graphName = []
-            graphName.append(graph._parentNode.name)
-            self.GoUpButtonProxy = QGraphicsProxyWidget()
-            self.GoUpButton = QPushButton("Go Up")
-            self.GoUpButtonProxy.setWidget(self.GoUpButton)
-            self.GoUpButton.setStyleSheet(buttonStyle)
-            self.GoUpButton.clicked.connect(self.goUp)
-            self.GoUpButtonProxy.setFlag(
-                QGraphicsTextItem.ItemIgnoresTransformations)
-            self.scene().addItem(self.GoUpButtonProxy)
-            graph = graph._parentGraph
-            while graph._parentGraph:
-                graphName.append(graph._parentNode.name)
-                graph = graph._parentGraph
-            graphName.append("root")
-            graphName = graphName[::-1]
-            graphName = " | ".join(graphName)
-            self._file_name_label.setPlainText(graphName)
         self.real_time_line = QGraphicsPathItem(None, self.scene())
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.setPen(QtGui.QPen(
@@ -551,18 +528,10 @@ class GraphWidgetUI(QGraphicsView):
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
         return GraphTree().activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
 
-    # @property
-    # def vars(self):
-    #     return self._graphBase.vars
-
-    # @property
-    # def name(self):
-    #     return self._graphBase.name
-
     @property
     def nodes(self):
         result = {}
-        for rawNode in GraphTree().activeGraph().getNodes():
+        for rawNode in GraphTree().getAllNodes():
             result[rawNode.uid] = rawNode.getWrapper()()
         return result
 
@@ -571,7 +540,7 @@ class GraphWidgetUI(QGraphicsView):
         """Returns UI pins dict {uuid: UIPinBase}
         """
         result = {}
-        for rawPin in self._graphBase.pins.values():
+        for rawPin in GraphTree().activeGraph().pins.values():
             result[rawPin.uid] = rawPin.getWrapper()()
         return result
 
@@ -670,13 +639,15 @@ class GraphWidgetUI(QGraphicsView):
     def enableSortcuts(self):
         self._sortcuts_enabled = True
 
-    def findPinByUID(self, uid):
+    @dispatch(uuid.UUID)
+    def findPin(self, uid):
         uiPin = None
         if uid in self.pins:
             return self.pins[uid]
         return uiPin
 
-    def findPinByName(self, pinName):
+    @dispatch(str)
+    def findPin(self, pinName):
         uiPin = None
         for pin in self.pins.values():
             if pinName == pin.getName():
@@ -750,6 +721,7 @@ class GraphWidgetUI(QGraphicsView):
         self.parent.variablesWidget.killAll()
         self.undoStack.clear()
         self._clearPropertiesView()
+        GraphTree().clear()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -793,7 +765,7 @@ class GraphWidgetUI(QGraphicsView):
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
         pinName = full_name.split('.')[1]
-        node = self.getNodeByName(node_name)
+        node = self.findNode(node_name)
         if node:
             Pin = node.getPinByName(pinName)
             if Pin:
@@ -1008,7 +980,7 @@ class GraphWidgetUI(QGraphicsView):
         for n in selectedNodes:
             oldNodes.append(n)
             nodes.append(n.serialize())
-            for i in list(n.inputs.values()) + list(n.outputs.values()):
+            for i in list(n.UIinputs.values()) + list(n.UIoutputs.values()):
                 connections += i.connections
         fullEdges = []
         for e in connections:
@@ -1062,13 +1034,20 @@ class GraphWidgetUI(QGraphicsView):
                                 ].getPinByName(connection["destinationPin"])
                 self.connectPins(nsrc, ndst)
             else:
-                nsrc = self.getNodeByName(connection["sourcenode"])
+                nsrc = self.findNode(connection["sourcenode"])
                 if nsrc is not None:
                     nsrc = nsrc.getPinByName(connection["sourcePin"])
                     if nsrc is not None:
                         ndst = newNodes[connection["destinationNode"]
                                         ].getPinByName(connection["destinationPin"])
                         self.connectPins(nsrc, ndst)
+
+    @dispatch(str)
+    def findNode(self, name):
+        for node in self.nodes.values():
+            if name == node.name:
+                return node
+        return None
 
     def alignSelectedNodes(self, direction):
         ls = [n for n in self.getAllNodes() if n.isSelected()]
@@ -1188,7 +1167,7 @@ class GraphWidgetUI(QGraphicsView):
         if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
-                super(GraphWidgetUI, self).mousePressEvent(event)
+                super(Canvas, self).mousePressEvent(event)
                 self.resizing = node.bResize
                 node.setSelected(False)
             if not self.resizing:
@@ -1200,7 +1179,7 @@ class GraphWidgetUI(QGraphicsView):
                         node for node in self.selectedNodes()]
                     if modifiers not in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
                         self.clearSelection()
-                        # super(GraphWidgetUI, self).mousePressEvent(event)
+                        # super(Canvas, self).mousePressEvent(event)
                 else:
                     if hasattr(self, "_selectionRect") and self._selectionRect is not None:
                         self._selectionRect.destroy()
@@ -1220,7 +1199,7 @@ class GraphWidgetUI(QGraphicsView):
                     self._lastScenePos = self.mapToScene(event.pos())
                     self._lastOffsetFromSceneCenter = self._lastScenePos - self._lastSceneCenter
             # elif modifiers not in  [QtCore.Qt.ShiftModifier,QtCore.Qt.ControlModifier]:
-            #    super(GraphWidgetUI, self).mousePressEvent(event)
+            #    super(Canvas, self).mousePressEvent(event)
             self.node_box.hide()
 
         elif not isinstance(self.pressed_item, EditableLabel) or (isinstance(self.pressed_item, EditableLabel) and not self.pressed_item._beingEdited):
@@ -1239,13 +1218,13 @@ class GraphWidgetUI(QGraphicsView):
                         self.removeEdgeCmd(self.pressed_item.connections)
                         self._draw_real_time_line = False
                 else:
-                    # super(GraphWidgetUI, self).mousePressEvent(event)
+                    # super(Canvas, self).mousePressEvent(event)
                     if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.AltModifier:
                         reruteNode = self.getReruteNode(event.pos())
                         self.clearSelection()
                         reruteNode.setSelected(True)
-                        for inp in reruteNode.inputs.values():
-                            if self.canConnectPins(self.pressed_item.source(), inp):
+                        for inp in reruteNode.UIinputs.values():
+                            if canConnectPins(self.pressed_item.source()._rawPin, inp._rawPin):
                                 drawPin = self.pressed_item.drawSource
                                 if self.pressed_item.source().dataType == 'ExecPin':
                                     self.pressed_item.source().disconnectAll()
@@ -1253,12 +1232,12 @@ class GraphWidgetUI(QGraphicsView):
                                 for conection in inp.connections:
                                     conection.drawSource = drawPin
                                 break
-                        for out in reruteNode.outputs.values():
+                        for out in reruteNode.UIoutputs.values():
                             drawPin = self.pressed_item.drawDestination
-                            if self.canConnectPins(out, self.pressed_item.destination()):
+                            if canConnectPins(out._rawPin, self.pressed_item.destination()._rawPin):
                                 self.connectPins(out, self.pressed_item.destination())
                                 for conection in out.connections:
-                                    conection.drawDestination = drawPin                                
+                                    conection.drawDestination = drawPin
                                 break
                         self.pressed_item = reruteNode
                         self._manipulationMode = MANIP_MODE_MOVE
@@ -1279,7 +1258,7 @@ class GraphWidgetUI(QGraphicsView):
                                     snode.setSelected(True)
                         else:
                             if modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.AltModifier]:
-                                super(GraphWidgetUI, self).mousePressEvent(event)
+                                super(Canvas, self).mousePressEvent(event)
                             if modifiers == QtCore.Qt.ControlModifier:
                                 node.setSelected(not node.isSelected())
                             if modifiers == QtCore.Qt.ShiftModifier:
@@ -1296,7 +1275,7 @@ class GraphWidgetUI(QGraphicsView):
                             self.pasteNodes(move=False, data=copiedNodes)
 
         else:
-            super(GraphWidgetUI, self).mousePressEvent(event)
+            super(Canvas, self).mousePressEvent(event)
 
     def pan(self, delta):
         rect = self.sceneRect()
@@ -1494,13 +1473,13 @@ class GraphWidgetUI(QGraphicsView):
             self.update()
 
         else:
-            super(GraphWidgetUI, self).mouseMoveEvent(event)
+            super(Canvas, self).mouseMoveEvent(event)
         # else:
-        #    super(GraphWidgetUI, self).mouseMoveEvent(event)
+        #    super(Canvas, self).mouseMoveEvent(event)
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
 
     def mouseReleaseEvent(self, event):
-        super(GraphWidgetUI, self).mouseReleaseEvent(event)
+        super(Canvas, self).mouseReleaseEvent(event)
 
         self.autoPanController.stop()
         self.mouseReleasePos = event.pos()
@@ -1583,7 +1562,7 @@ class GraphWidgetUI(QGraphicsView):
         le = QApplication.instance().focusWidget()
         if isinstance(le, QLineEdit):
             nodeName, attr = le.objectName().split('.')
-            node = self.getNodeByName(nodeName)
+            node = self.findNode(nodeName)
             Pin = node.getPinByName(attr)
             Pin.setData(le.text())
 
@@ -1607,20 +1586,11 @@ class GraphWidgetUI(QGraphicsView):
 
     def drawBackground(self, painter, rect):
 
-        super(GraphWidgetUI, self).drawBackground(painter, rect)
+        super(Canvas, self).drawBackground(painter, rect)
         self.boundingRect = rect
 
         polygon = self.mapToScene(self.viewport().rect())
         self._file_name_label.setPos(polygon[0])
-
-        if self._parentGraph:
-            self.GoUpButtonProxy.setPos(polygon[0].x(), polygon[0].y())
-            self._file_name_label.moveBy(self.GoUpButton.width(), 0)
-        # self.inputsItem.setPos(self.mapToScene(self.viewport().rect().x(),self.viewport().rect().y()+50) )
-        # self.inputsItem.setPos(self.boundingRect.topLeft().x(),self.boundingRect.topLeft().y()+50)
-        # self.inputsItem.update()
-        # self.outputsItem.setPos(self.boundingRect.topRight().x()-self.outputsItem.boundingRect().width(),self.boundingRect.topRight().y()+50)
-        # self.outputsItem.update()
 
         color = self._backgroundColor
         painter.fillRect(rect, QtGui.QBrush(color))
@@ -1668,26 +1638,6 @@ class GraphWidgetUI(QGraphicsView):
             y += self._gridSizeCourse
         painter.drawLines(gridLines)
 
-    def consoleHelp(self):
-        msg = """///// AVAILABLE NODES LIST /////\n\n"""
-
-        for f in listdir(path.dirname(Nodes.__file__)):
-            if f.endswith(".py") and "init" not in f:
-                msg += "{0}\n".format(f.split(".")[0])
-
-        msg += "\n"
-
-        msg += """///// AVAILABLE COMMANDS /////\n"""
-        msg += "\t<<< Builtin >>>\n"
-        for c in self.parent.consoleInput.builtinCommands:
-            msg += (c + "\n")
-        msg += "\t<<< Plugins >>>\n"
-        for c in self.registeredCommands:
-            msg += (c + " - {0}\n".format(self.registeredCommands[c].usage()))
-
-        if self.parent:
-            print(msg)
-
     def _createNode(self, jsonTemplate):
         nodeInstance = getNodeInstance(jsonTemplate, self)
         assert(nodeInstance is not None), "Node instance is not found!"
@@ -1730,9 +1680,8 @@ class GraphWidgetUI(QGraphicsView):
         Arguments:
             node UINodeBase -- raw node wrapper
         """
-        graphBase = GraphTree().activeGraph()
-        print('add', node.name, 'to', graphBase.name)
-        graphBase.addNode(node._rawNode, jsonTemplate)
+        activeGraph = GraphTree().activeGraph()
+        activeGraph.addNode(node._rawNode, jsonTemplate)
         node.graph = weakref.ref(self)
         self.scene().addItem(node)
 
@@ -1771,33 +1720,6 @@ class GraphWidgetUI(QGraphicsView):
         connection.destination().uiConnectionList.remove(connection)
         connection.prepareGeometryChange()
         self.scene().removeItem(connection)
-
-    def count(self):
-        return self._graphBase.count()
-
-    def getVars(self):
-        return self._graphBase.getVars()
-
-    def getUniqVarName(self, name):
-        return self._graphBase.getUniqVarName(name)
-
-    def getNodeByName(self, name):
-        return self._graphBase.getNodeByName(name)
-
-    def getNodesByClassName(self, className):
-        return [node._wrapper() for node in self._graphBase.getNodesByClassName(className)]
-
-    def isDebug(self):
-        return self._graphBase.isDebug()
-
-    def getNextLayerNodes(node, direction=PinDirection.Input):
-        return self._GraphBase.getNextLayerNodes(node, direction)
-
-    def getEvaluationOrder(self, node):
-        return self._graphBase.getEvaluationOrder(node)
-
-    def plot(self):
-        self._graphBase.plot()
 
     def zoomDelta(self, direction):
         if direction:

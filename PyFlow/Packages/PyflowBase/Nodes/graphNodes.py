@@ -9,7 +9,6 @@ class graphInputs(NodeBase):
     """
     def __init__(self, name):
         super(graphInputs, self).__init__(name)
-        self.onPinCreated = Signal(object)
 
     @staticmethod
     def pinTypeHints():
@@ -33,7 +32,8 @@ class graphInputs(NodeBase):
         p.actLikeDirection = PinDirection.Input
         # this will be passed to subgraph node for companion pin creation
         # and signals connection
-        self.onPinCreated.send(p)
+        self.graph().inputPinCreated.send(p)
+        # self.onPinCreated.send(p)
         return p
 
     def compute(self, *args, **kwargs):
@@ -44,9 +44,6 @@ class graphInputs(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(graphInputs, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamically created pins
-        # connect with owning graph before
-        self.onPinCreated.connect(self.graph().inputPinCreated.send)
-        # add outputs
         pass
 
 
@@ -55,7 +52,6 @@ class graphOutputs(NodeBase):
     """
     def __init__(self, name):
         super(graphOutputs, self).__init__(name)
-        self.onPinCreated = Signal(object)
 
     @staticmethod
     def pinTypeHints():
@@ -76,9 +72,6 @@ class graphOutputs(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(graphOutputs, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamically created pins
-        # connect with owning graph before
-        self.onPinCreated.connect(self.graph().outputPinCreated.send)
-        # add outputs
         pass
 
     def addInPin(self):
@@ -86,5 +79,5 @@ class graphOutputs(NodeBase):
         p = self.addInputPin(name, 'AnyPin')
         p.actLikeDirection = PinDirection.Output
         p.setAlwaysPushDirty(True)
-        self.onPinCreated.send(p)
+        self.graph().outputPinCreated.send(p)
         return p

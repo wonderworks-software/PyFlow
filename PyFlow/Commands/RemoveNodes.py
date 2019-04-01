@@ -24,8 +24,8 @@ class RemoveNodes(QUndoCommand):
             nodeInstance.uid = UUID(nodeJson['uuid'])
         # restore connection info
         for edgeJson in self.connectionInfo:
-            src = self.graph.findPinByUID(UUID(edgeJson['sourceUUID']))
-            dst = self.graph.findPinByUID(UUID(edgeJson['destinationUUID']))
+            src = self.graph.findPin(UUID(edgeJson['sourceUUID']))
+            dst = self.graph.findPin(UUID(edgeJson['destinationUUID']))
             connection = self.graph.connectPinsInternal(src, dst)
             if connection:
                 connection.uid = UUID(edgeJson['uuid'])
@@ -37,7 +37,7 @@ class RemoveNodes(QUndoCommand):
                 node = self.graph.nodes[uid]
 
                 # store connecton info
-                for pin in list(node.inputs.values()) + list(node.outputs.values()):
+                for pin in list(node.UIinputs.values()) + list(node.UIoutputs.values()):
                     for e in pin.connections:
                         self.connectionInfo.append(e.serialize())
 

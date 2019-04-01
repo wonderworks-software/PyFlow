@@ -54,21 +54,45 @@ class subgraph(NodeBase):
         # connect
         outPin.nameChanged.connect(subgraphInputPin.setName)
 
-        def onInnerOutKilled(*args, **kwargs):
-            self.__inputsMap.pop(subgraphInputPin)
+        def onInnerKilled(*args, **kwargs):
+            if subgraphInputPin in self.__inputsMap:
+                self.__inputsMap.pop(subgraphInputPin)
             subgraphInputPin.kill()
-        outPin.killed.connect(onInnerOutKilled, weak=False)
-        wrapperRef = self.getWrapper()
-        if wrapperRef is not None:
-            wrapperRef().inputPinExposed(subgraphInputPin)
+        outPin.killed.connect(onInnerKilled, weak=False)
 
-        # watch if something is connected to inner companion
-        def onInnerOutConnected(other):
+        # handle inner connect/disconnect
+        def onInnerConnected(other):
+            if subgraphInputPin.hasConnections() and subgraphInputPin.dataType != other.dataType:
+                subgraphInputPin.disconnectAll()
             subgraphInputPin._data = other.currentData()
             subgraphInputPin.setType(other)
             if other.dataType == "ExecPin":
                 subgraphInputPin.call = other.call
-        outPin.onPinConnected.connect(onInnerOutConnected, weak=False)
+        outPin.onPinConnected.connect(onInnerConnected, weak=False)
+
+        def onInnerDisconnected(other):
+            if not outPin.hasConnections():
+                outPin.kill()
+        outPin.onPinDisconnected.connect(onInnerDisconnected, weak=False)
+
+        # handle outer connect/disconnect
+        def onSubgraphInputConnected(other):
+            if outPin.hasConnections() and outPin.dataType != other.dataType:
+                outPin.disconnectAll()
+                outPin.setDefault()
+            outPin.setType(other)
+        subgraphInputPin.onPinConnected.connect(onSubgraphInputConnected, weak=False)
+
+        def onSubgraphInputDisconnected(other):
+            if outPin.hasConnections():
+                # TODO: preserve subgraphInputPin like on inner pin
+                pass
+        subgraphInputPin.onPinDisconnected.connect(onSubgraphInputDisconnected, weak=False)
+
+        wrapperRef = self.getWrapper()
+        if wrapperRef is not None:
+            # raw subgraph input pin created. Now call UI subgraph node to create UI companion
+            wrapperRef().onGraphInputPinExposed(subgraphInputPin)
 
     def onGraphInputPinDeleted(self, inPin):
         # remove companion pin for inner graphInputs node pin
@@ -94,8 +118,8 @@ class subgraph(NodeBase):
         inPin.nameChanged.connect(subgraphOutputPin.setName)
 
         def onInnerInpPinKilled(*args, **kwargs):
-            subgraphOutputPin.kill()
             self.__outputsMap.pop(subgraphOutputPin)
+            subgraphOutputPin.kill()
         inPin.killed.connect(onInnerInpPinKilled, weak=False)
 
         # watch if something is connected to inner companion
@@ -106,6 +130,16 @@ class subgraph(NodeBase):
             if other.dataType == "ExecPin":
                 other.call = subgraphOutputPin.call
         inPin.onPinConnected.connect(onInnerInpPinConnected, weak=False)
+
+        def onInnerInpDisconnected(other):
+            if not subgraphOutputPin.hasConnections():
+                subgraphOutputPin.setDefault()
+        inPin.onPinDisconnected.connect(onInnerInpDisconnected)
+
+        wrapperRef = self.getWrapper()
+        if wrapperRef is not None:
+            # raw subgraph input pin created. Now call UI subgraph node to create UI companion
+            wrapperRef().onGraphOutputPinExposed(subgraphOutputPin)
 
     def autoAffectPins(self):
         raise NotImplementedError("Error")
@@ -119,6 +153,7 @@ class subgraph(NodeBase):
         GraphTree().addChildGraph(self.rawGraph)
 
         # connect with pin creation events and add dynamic pins
+        # tell subgraph node pins been created
         self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
         self.rawGraph.inputPinDeleted.connect(self.onGraphInputPinDeleted)
         self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)

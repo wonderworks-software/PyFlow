@@ -171,6 +171,10 @@ def canConnectPins(src, dst):
         if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
             return False
 
+    if dst.isAny:
+        if src.dataType not in findPinClassByType(dst.dataType).supportedDataTypes():
+            return False
+
     if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
         print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
         return False
