@@ -325,17 +325,17 @@ class UIPinBase(QGraphicsWidget):
         for e in self.connections:
             e.highlight()
 
-    def kill(self):
+    def kill(self, *args, **kwargs):
         self.disconnectAll()
         if self._container is not None:
-            self.owningNode().graph().scene().removeItem(self._container)
+            self.scene().removeItem(self._container)
             if not self._groupContainer:
                 if self._rawPin.direction == PinDirection.Input:
                     self.owningNode().inputsLayout.removeItem(self._container)
                 else:
                     self.owningNode().outputsLayout.removeItem(self._container)
             else:
-                self.owningNode().graph().scene().removeItem(self._groupContainer)
+                self.scene().removeItem(self._groupContainer)
                 if self._rawPin.direction == PinDirection.Input:
                     self.owningNode().inputsLayout.removeItem(self._groupContainer)
                 else:

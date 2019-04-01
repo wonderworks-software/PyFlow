@@ -25,4 +25,5 @@
         "--ignore=E501,E402,E266"
     ],
     "python.unitTest.nosetestsEnabled": false,
+    "pyside2-vsc.uic.compile.filepath": "${ui_name}_ui.py",
 }

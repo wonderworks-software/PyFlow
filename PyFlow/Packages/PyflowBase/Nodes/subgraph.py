@@ -58,6 +58,9 @@ class subgraph(NodeBase):
             self.__inputsMap.pop(subgraphInputPin)
             subgraphInputPin.kill()
         outPin.killed.connect(onInnerOutKilled, weak=False)
+        wrapperRef = self.getWrapper()
+        if wrapperRef is not None:
+            wrapperRef().inputPinExposed(subgraphInputPin)
 
         # watch if something is connected to inner companion
         def onInnerOutConnected(other):
@@ -116,10 +119,10 @@ class subgraph(NodeBase):
         GraphTree().addChildGraph(self.rawGraph)
 
         # connect with pin creation events and add dynamic pins
-        self.rawGraph.onInputPinCreated.connect(self.onGraphInputPinCreated)
-        self.rawGraph.onInputPinDeleted.connect(self.onGraphInputPinDeleted)
-        self.rawGraph.onOutputPinCreated.connect(self.onGraphOutputPinCreated)
-        self.rawGraph.onOutputPinDeleted.connect(self.onGraphOutputPinDeleted)
+        self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
+        self.rawGraph.inputPinDeleted.connect(self.onGraphInputPinDeleted)
+        self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
+        self.rawGraph.outputPinDeleted.connect(self.onGraphOutputPinDeleted)
 
     def compute(self, *args, **kwargs):
         # get data from subgraph node input pins and put it to inner companions

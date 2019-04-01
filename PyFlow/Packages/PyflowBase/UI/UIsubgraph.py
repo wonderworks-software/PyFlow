@@ -15,12 +15,16 @@ class UIsubgraph(UINodeBase):
         self.updateWidth()
         self.updateNodeShape()
 
-    def mouseDoubleClickEvent(self, event):
-        self.OnDoubleClick(self.mapToScene(event.pos()))
-        event.accept()
+    def inputPinExposed(self, rawPin):
+        # create ui wrapper for raw exposed pin
+        # and connect signals
+        uiCompanionPin = self._createUIPinWrapper(rawPin)
+        rawPin.killed.connect(uiCompanionPin.kill)
+        pass
 
-    def OnDoubleClick(self, pos):
+    def mouseDoubleClickEvent(self, event):
         GraphTree().switchGraph(self._rawNode.rawGraph.name)
+        event.accept()
 
     def kill(self):
         super(UIsubgraph, self).kill()

@@ -125,7 +125,7 @@ class pyf_FloatSlider(QtWidgets.QWidget):
         self.sld.setMaximum(100)
 
     def test(self, ints):
-        print ints
+        print(ints)
 
 
 class pyf_HueSlider(pyf_DoubleSlider):

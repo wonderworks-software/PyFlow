@@ -234,7 +234,7 @@ class PinBase(IPin):
 
     # PinBase methods
 
-    def kill(self):
+    def kill(self, *args, **kwargs):
         self.owningNode().pins.pop(self.uid)
         self.killed.send()
 

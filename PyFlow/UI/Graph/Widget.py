@@ -433,10 +433,10 @@ class GraphWidgetUI(QGraphicsView):
     _gridSizeCourse = 100
 
     _mouseWheelZoomRate = 0.0005
-    outPinCreated = QtCore.Signal(object)
-    outPinDeleted = QtCore.Signal(object)
     inPinCreated = QtCore.Signal(object)
     inPinDeleted = QtCore.Signal(object)
+    outPinCreated = QtCore.Signal(object)
+    outPinDeleted = QtCore.Signal(object)
 
     def __init__(self, parent=None, graphBase=None, parentGraph=None, parentNode=None):
         super(GraphWidgetUI, self).__init__()
@@ -1737,7 +1737,7 @@ class GraphWidgetUI(QGraphicsView):
         self.scene().addItem(node)
 
     def connectPinsInternal(self, src, dst):
-        result = GraphTree().activeGraph().connectPins(src._rawPin, dst._rawPin)
+        result = connectPins(src._rawPin, dst._rawPin)
         if result:
             if src.direction == PinDirection.Input:
                 src, dst = dst, src

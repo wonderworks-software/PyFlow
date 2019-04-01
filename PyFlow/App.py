@@ -110,14 +110,23 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
     def onRawGraphSwitched(self, *args, **kwargs):
         old = kwargs['old']
         new = kwargs['new']
-        # TODO: hide current graph contents
+        # hide current graph contents
         for node in old.nodes.values():
             uiNode = node.getWrapper()()
             uiNode.hide()
-        # TODO: show new graph contents
+            # hide connections
+            for uiPin in uiNode.UIPins.values():
+                for connection in uiPin.uiConnectionList:
+                    connection.hide()
+
+        # show new graph contents
         for node in new.nodes.values():
             uiNode = node.getWrapper()()
             uiNode.show()
+            for uiPin in uiNode.UIPins.values():
+                for connection in uiPin.uiConnectionList:
+                    connection.show()
+
         self.updateGraphTreeLocation()
 
     def updateGraphTreeLocation(self):

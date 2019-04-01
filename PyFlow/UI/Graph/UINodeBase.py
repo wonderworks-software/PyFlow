@@ -261,7 +261,8 @@ class UINodeBase(QGraphicsObject):
     def UIPins(self):
         result = OrderedDict()
         for rawPin in self._rawNode.pins.values():
-            result[rawPin.uid] = rawPin.getWrapper()()
+            uiPinRef = rawPin.getWrapper()
+            result[rawPin.uid] = uiPinRef()
         return result
 
     @property

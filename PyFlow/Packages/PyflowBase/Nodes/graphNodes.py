@@ -30,7 +30,6 @@ class graphInputs(NodeBase):
     def addOutPin(self):
         name = str(len(self.outputs))
         p = self.addOutputPin(name, 'AnyPin')
-        # p.setAlwaysPushDirty(True)
         p.actLikeDirection = PinDirection.Input
         # this will be passed to subgraph node for companion pin creation
         # and signals connection
@@ -46,7 +45,7 @@ class graphInputs(NodeBase):
         super(graphInputs, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamically created pins
         # connect with owning graph before
-        self.onPinCreated.connect(self.graph().onInputPinCreated.send)
+        self.onPinCreated.connect(self.graph().inputPinCreated.send)
         # add outputs
         pass
 
@@ -78,7 +77,7 @@ class graphOutputs(NodeBase):
         super(graphOutputs, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamically created pins
         # connect with owning graph before
-        self.onPinCreated.connect(self.graph().onOutputPinCreated.send)
+        self.onPinCreated.connect(self.graph().outputPinCreated.send)
         # add outputs
         pass
 

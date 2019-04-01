@@ -373,10 +373,6 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(GT.getRootGraph().name, "root", "root graph is invalid")
         self.assertEqual(GT.activeGraph().name, "root")
 
-        # try add graph inputs to root. None expected
-        inputsRoot = GT.activeGraph().getInputNode()
-        self.assertEqual(inputsRoot, None, "graph inputs node make no sense in root graph")
-
         # step inside subgraph
         GT.switchGraph(subgraphNodeInstance.name)
         self.assertEqual(GT.activeGraph().name, subgraphNodeInstance.name, "failed to enter subgraph")

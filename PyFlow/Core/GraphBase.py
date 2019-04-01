@@ -14,10 +14,10 @@ class GraphBase(object):
     def __init__(self, name, *args, **kwargs):
         super(GraphBase, self).__init__(*args, **kwargs)
         # signals
-        self.onInputPinCreated = Signal(object)
-        self.onInputPinDeleted = Signal(object)
-        self.onOutputPinCreated = Signal(object)
-        self.onOutputPinDeleted = Signal(object)
+        self.inputPinCreated = Signal(object)
+        self.inputPinDeleted = Signal(object)
+        self.outputPinCreated = Signal(object)
+        self.outputPinDeleted = Signal(object)
 
         self.__name = name
         self.nodes = {}
@@ -159,25 +159,21 @@ class GraphBase(object):
         return pin
 
     def getInputNode(self):
-        """Creates and adds to graph 'graphInputs' node. Note, this works only for graphs which has a parent
+        """Creates and adds to graph 'graphInputs' node
 
         pins on this node will be exposed on subgraph node as input pins
         """
-        node = None
-        if GraphTree().getParentGraph(self) is not None:
-            node = getRawNodeInstance("graphInputs", "PyflowBase")
-            self.addNode(node)
+        node = getRawNodeInstance("graphInputs", "PyflowBase")
+        self.addNode(node)
         return node
 
     def getOutputNode(self):
-        """Creates and adds to graph 'graphOutputs' node. Note, this works only for graphs which has a parent
+        """Creates and adds to graph 'graphOutputs' node.
 
         pins on this node will be exposed on subgraph node as output pins
         """
-        node = None
-        if GraphTree().getParentGraph(self) is not None:
-            node = getRawNodeInstance("graphOutputs", "PyflowBase")
-            self.addNode(node)
+        node = getRawNodeInstance("graphOutputs", "PyflowBase")
+        self.addNode(node)
         return node
 
     def addNode(self, node, jsonTemplate=None):
