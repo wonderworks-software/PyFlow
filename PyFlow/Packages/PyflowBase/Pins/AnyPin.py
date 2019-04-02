@@ -22,6 +22,8 @@ class AnyPin(PinBase):
         self.super = None
         self.activeDataType = self.dataType
         self.typeChecking = False
+        # if True, setType and setDefault will work only once
+        self.singleInit = False
 
     @staticmethod
     def isPrimitiveType():
@@ -143,6 +145,10 @@ class AnyPin(PinBase):
             return free
 
     def setDefault(self):
+        if self.dataType != "AnyPin" and self.singleInit:
+            # Marked as single init. Type already been set. Skip
+            return
+
         self.super = None
         self.dataType = "AnyPin"
 
@@ -154,6 +160,10 @@ class AnyPin(PinBase):
         self.setDefaultValue(None)
 
     def setType(self, other):
+        if self.dataType != "AnyPin" and self.singleInit:
+            # Marked as single init. Type already been set. Skip
+            return
+
         if self.dataType == "AnyPin" or self.dataType not in other.supportedDataTypes():
             self.super = other.__class__
             self.dataType = other.dataType

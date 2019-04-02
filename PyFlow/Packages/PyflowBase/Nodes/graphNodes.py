@@ -30,10 +30,10 @@ class graphInputs(NodeBase):
         name = str(len(self.outputs))
         p = self.addOutputPin(name, 'AnyPin')
         p.actLikeDirection = PinDirection.Input
+        p.singleInit = True
         # this will be passed to subgraph node for companion pin creation
         # and signals connection
         self.graph().inputPinCreated.send(p)
-        # self.onPinCreated.send(p)
         return p
 
     def compute(self, *args, **kwargs):
@@ -78,6 +78,6 @@ class graphOutputs(NodeBase):
         name = str(len(self.outputs))
         p = self.addInputPin(name, 'AnyPin')
         p.actLikeDirection = PinDirection.Output
-        p.setAlwaysPushDirty(True)
+        # p.setAlwaysPushDirty(True)
         self.graph().outputPinCreated.send(p)
         return p

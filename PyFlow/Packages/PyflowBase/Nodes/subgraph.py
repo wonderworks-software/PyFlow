@@ -49,6 +49,7 @@ class subgraph(NodeBase):
                                             outPin.call,
                                             outPin.constraint)
         subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
+        subgraphInputPin.singleInit = outPin.singleInit
         self.__inputsMap[subgraphInputPin] = outPin
         pinAffects(subgraphInputPin, outPin)
         # connect
@@ -77,26 +78,13 @@ class subgraph(NodeBase):
 
         # handle outer connect/disconnect
         def onSubgraphInputConnected(other):
-            if outPin.hasConnections() and outPin.dataType != other.dataType:
-                outPin.disconnectAll()
-                outPin.setDefault()
             outPin.setType(other)
         subgraphInputPin.onPinConnected.connect(onSubgraphInputConnected, weak=False)
-
-        def onSubgraphInputDisconnected(other):
-            if outPin.hasConnections():
-                # TODO: preserve subgraphInputPin like on inner pin
-                pass
-        subgraphInputPin.onPinDisconnected.connect(onSubgraphInputDisconnected, weak=False)
 
         wrapperRef = self.getWrapper()
         if wrapperRef is not None:
             # raw subgraph input pin created. Now call UI subgraph node to create UI companion
             wrapperRef().onGraphInputPinExposed(subgraphInputPin)
-
-    def onGraphInputPinDeleted(self, inPin):
-        # remove companion pin for inner graphInputs node pin
-        print("onGraphInputPinDeleted", inPin.getName())
 
     def onGraphOutputPinCreated(self, inPin):
         """Reaction when pin added to graphOutputs node
@@ -144,10 +132,6 @@ class subgraph(NodeBase):
     def autoAffectPins(self):
         raise NotImplementedError("Error")
 
-    def onGraphOutputPinDeleted(self, outPin):
-        # remove companion pin for inner graphOutputs node pin
-        print("onGraphOutputPinDeleted", outPin.getName())
-
     def postCreate(self, jsonTemplate=None):
         self.rawGraph = GraphBase(self.name)
         GraphTree().addChildGraph(self.rawGraph)
@@ -155,9 +139,7 @@ class subgraph(NodeBase):
         # connect with pin creation events and add dynamic pins
         # tell subgraph node pins been created
         self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
-        self.rawGraph.inputPinDeleted.connect(self.onGraphInputPinDeleted)
         self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
-        self.rawGraph.outputPinDeleted.connect(self.onGraphOutputPinDeleted)
 
     def compute(self, *args, **kwargs):
         # get data from subgraph node input pins and put it to inner companions

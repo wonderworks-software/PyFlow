@@ -16,9 +16,9 @@ class GraphBase(object):
         super(GraphBase, self).__init__(*args, **kwargs)
         # signals
         self.inputPinCreated = Signal(object)
-        self.inputPinDeleted = Signal(object)
+        # self.inputPinDeleted = Signal(object)
         self.outputPinCreated = Signal(object)
-        self.outputPinDeleted = Signal(object)
+        # self.outputPinDeleted = Signal(object)
 
         self.__name = name
         self.nodes = {}
