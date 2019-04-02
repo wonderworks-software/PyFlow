@@ -168,7 +168,7 @@ class SceneClass(QGraphicsScene):
     def __init__(self, parent):
         super(SceneClass, self).__init__(parent)
         self.setItemIndexMethod(self.NoIndex)
-        #self.pressed_port = None
+        # self.pressed_port = None
         self.selectionChanged.connect(self.OnSelectionChanged)
         self.tempnode = None
         self.hoverItems = []
@@ -258,9 +258,9 @@ class SceneClass(QGraphicsScene):
             event.ignore()
 
     def dragLeaveEvent(self, event):
-        #if self.tempnode:
-        #    self.tempnode.isTemp = False
-        #    self.tempnode = None
+        # if self.tempnode:
+        #     self.tempnode.isTemp = False
+        #     self.tempnode = None
         event.accept()
 
     def OnSelectionChanged(self):
@@ -362,9 +362,9 @@ class SceneClass(QGraphicsScene):
                             if isinstance(it, UIPinBase):
                                 dropItem = it
                                 break
-                            elif isinstance(it,UIConnection):
+                            elif isinstance(it, UIConnection):
                                 dropItem = it
-                                break             
+                                break
                     else:
                         node = self.parent().createNode(nodeTemplate)
 
@@ -1417,13 +1417,13 @@ class Canvas(QGraphicsView):
                     if isinstance(item, UIConnection):
                         if list(node.inputs.values())[0].connections and list(node.outputs.values())[0].connections:
                             if item.source() == list(node.inputs.values())[0].connections[0].source():
-                                newOuts.append([item.destination(),item.drawDestination])
+                                newOuts.append([item.destination(), item.drawDestination])
                             if item.destination() == list(node.outputs.values())[0].connections[0].destination():
-                                newIns.append([item.source(),item.drawSource])
+                                newIns.append([item.source(), item.drawSource])
                 for out in newOuts:
-                    self.connectPins(list(node.outputs.values())[0], out[0])                  
+                    self.connectPins(list(node.outputs.values())[0], out[0])
                 for inp in newIns:
-                    self.connectPins(inp[0], list(node.inputs.values())[0])                  
+                    self.connectPins(inp[0], list(node.inputs.values())[0])
 
         elif self._manipulationMode == MANIP_MODE_PAN:
             self.viewport().setCursor(QtCore.Qt.OpenHandCursor)

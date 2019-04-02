@@ -3,6 +3,7 @@ from blinker import Signal
 from multipledispatch import dispatch
 
 from PyFlow.Core.Common import *
+from PyFlow.Core.NodeBase import NodeBase
 from PyFlow import CreateRawPin
 from PyFlow import getRawNodeInstance
 from PyFlow import findPinClassByType
@@ -42,10 +43,12 @@ class GraphBase(ISerializable):
         # restore nodes
         for nodeJson in jsonData['nodes']:
             # check if variable getter or setter and pass variable
+            nodeArgs = ()
             nodeKwargs = {}
             if nodeJson['type'] in ('getVar', 'setVar'):
                 kwargs['var'] = graph.vars[uuid.UUID(nodeJson['varUid'])]
-            node = getRawNodeInstance(nodeJson['type'], nodeJson['package'], jsonData['lib'], **nodeKwargs)
+            node = NodeBase.deserialize(nodeJson, *nodeArgs, **nodeKwargs)
+            # set pin uids
             graph.addNode(node, nodeJson)
 
         # restore connections

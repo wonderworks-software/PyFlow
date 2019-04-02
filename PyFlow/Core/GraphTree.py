@@ -16,23 +16,20 @@ class GraphTree:
         self.onGraphSwitched = Signal()
 
         self.__tree = Tree()
-        self.__tree.create_node(rootGraph.name, rootGraph.name, data=rootGraph)
-        self.__activeGraph = rootGraph
+        self.__activeGraph = None
+        if self.setRootGraph(rootGraph):
+            self.switchGraph(rootGraph.name)
+        else:
+            assert(False), "Failed to set root graph!"
 
     def clear(self):
         """remove everything except of root graph
         """
-        # save root node
         t = self.getTree()
-        rootNode = t[t.root]
-        # clear everything
         t._nodes.clear()
-        # reset root pointer
         t.root = None
-        # add root back
-        t.add_node(rootNode)
-        self.__activeGraph = rootNode.data
         self.__activeGraph.clear()
+        self.__activeGraph = None
 
     def getUniqGraphName(self, name):
         existingGraphNames = [g.name for g in self.getAllGraphs()]
@@ -145,6 +142,14 @@ class GraphTree:
         if parentNodeName is not None:
             return self.getTree()[parentNodeName].data
         return None
+
+    def setRootGraph(self, graph):
+        t = self.getTree()
+        if t.size() == 0:
+            t.create_node(graph.name, graph.name, data=graph)
+            self.__activeGraph = graph
+            return True
+        return False
 
     def getRootGraph(self):
         return self.__tree[self.__tree.root].data

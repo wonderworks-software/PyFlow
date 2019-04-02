@@ -8,6 +8,7 @@ except:
     from inspect import getargspec
 from types import MethodType
 
+from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
 from PyFlow.Core.Interfaces import INode
 from PyFlow import CreateRawPin
@@ -119,6 +120,31 @@ class NodeBase(INode):
         template['outputs'] = [o.serialize() for o in self.outputs.values()]
         template['meta']['label'] = self.name
         return template
+
+    @staticmethod
+    def deserialize(jsonData, *args, **kwargs):
+        node = getRawNodeInstance(jsonData['type'], packageName=jsonData['package'], libName=jsonData['lib'], *args, **kwargs)
+        node.uid = uuid.UUID(jsonData['uuid'])
+
+        # set pins data
+        for inpJson in jsonData['inputs']:
+            pin = node.getPinByName(inpJson['name'], PinSelectionGroup.Inputs)
+            pin.uid = uuid.UUID(inpJson['uuid'])
+            pin.setData(inpJson['value'])
+            if inpJson['bDirty']:
+                pin.setDirty()
+            else:
+                pin.setClean()
+
+        for outJson in jsonData['outputs']:
+            pin = node.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
+            pin.uid = uuid.UUID(outJson['uuid'])
+            pin.setData(outJson['value'])
+            if outJson['bDirty']:
+                pin.setDirty()
+            else:
+                pin.setClean()
+        return node
 
     def kill(self, *args, **kwargs):
         assert(self.uid in self.graph().nodes), "Error killing node. \

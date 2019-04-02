@@ -6,11 +6,17 @@ class TestGeneral(unittest.TestCase):
 
     def setUp(self):
         print('\t[BEGIN TEST]', self._testMethodName)
-        GraphTree(GraphBase("root"))
+        root = GraphBase("root")
+        GT = GraphTree(root)
+        GT.setRootGraph(root)
+        GT.switchGraph(root)
 
     def tearDown(self):
         print('--------------------------------\n')
-        GraphTree().clear()
+        try:
+            GraphTree().clear()
+        except:
+            pass
 
     def test_add_int_no_exec(self):
         packages = GET_PACKAGES()
@@ -545,35 +551,24 @@ class TestGeneral(unittest.TestCase):
         # printNodeAfter.setData("entity", "hello after subgraph exec")
         subgraphInAnyExec.call(message="EXECS MSG")
 
-    def test_branch_node(self):
-        packages = GET_PACKAGES()
+    def test_graph_serialization(self):
         GT = GraphTree()
-        foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
-        nodes = packages['PyflowBase'].GetNodeClasses()
-        printNode1 = NodeBase.initializeFromFunction(foos["pyprint"])
-        GT.activeGraph().addNode(printNode1)
-        printNode1.setData('entity', "first")
+        packages = GET_PACKAGES()
+        intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
+        foos = intlib.getFunctions()
 
-        branchNode = nodes["branch"]("branchNODE")
-        self.assertIsNotNone(branchNode, "branch node is not created")
-        GT.activeGraph().addNode(branchNode)
-        branchNode.setData('Condition', True)
+        addNode1 = NodeBase.initializeFromFunction(foos["add"])
 
-        connected = connectPins(printNode1.getPinByName(DEFAULT_OUT_EXEC_NAME), branchNode.getPinByName("In"))
-        self.assertEqual(connected, True, "failed to connect")
+        GT.activeGraph().addNode(addNode1)
 
-        printNodeTrue = NodeBase.initializeFromFunction(foos["pyprint"])
-        GT.activeGraph().addNode(printNodeTrue)
-        printNodeTrue.setData('entity', "True executed")
+        addNode1.setData('a', 5)
 
-        printNodeFalse = NodeBase.initializeFromFunction(foos["pyprint"])
-        GT.activeGraph().addNode(printNodeFalse)
-        printNodeFalse.setData('entity', "False executed")
+        graphJson = GT.activeGraph().serialize()
 
-        connectPins(branchNode.getPinByName('True'), printNodeTrue.getPinByName(DEFAULT_IN_EXEC_NAME))
-        connectPins(branchNode.getPinByName('False'), printNodeFalse.getPinByName(DEFAULT_IN_EXEC_NAME))
+        GT.clear()
 
-        printNode1.call(DEFAULT_IN_EXEC_NAME, message="TEST MESSAGE")
+        restoredRoot = GraphBase.deserialize(graphJson)
+        GT.setRootGraph(restoredRoot)
 
 if __name__ == '__main__':
     unittest.main()
