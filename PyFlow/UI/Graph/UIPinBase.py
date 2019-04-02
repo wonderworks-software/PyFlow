@@ -258,14 +258,6 @@ class UIPinBase(QGraphicsWidget):
         return self._rawPin.direction
 
     @property
-    def actLikeDirection(self):
-        return self._rawPin.actLikeDirection
-
-    @actLikeDirection.setter
-    def actLikeDirection(self, value):
-        self._rawPin.actLikeDirection = value
-
-    @property
     def affected_by(self):
         return self._rawPin.affected_by
 

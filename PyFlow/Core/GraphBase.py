@@ -17,25 +17,47 @@ class GraphBase(ISerializable):
         super(GraphBase, self).__init__(*args, **kwargs)
         # signals
         self.inputPinCreated = Signal(object)
-        # self.inputPinDeleted = Signal(object)
         self.outputPinCreated = Signal(object)
-        # self.outputPinDeleted = Signal(object)
 
         self.__name = name
         self.nodes = {}
-        # self.connections = {}
         self.vars = {}
 
     def serialize(self, *args, **Kwargs):
         result = {
+            'name': self.name,
             'vars': [v.serialize() for v in self.vars.values()],
             'nodes': [n.serialize() for n in self.nodes.values()]
         }
         return result
 
     @staticmethod
-    def deserialize(*args, **Kwargs):
-        pass
+    def deserialize(jsonData, *args, **Kwargs):
+        # create graph and return
+        graph = GraphBase(jsonData['name'])
+        # restore vars
+        for varJson in jsonData['vars']:
+            var = Variable.deserialize(varJson)
+            graph.vars[var.uid] = var
+        # restore nodes
+        for nodeJson in jsonData['nodes']:
+            # check if variable getter or setter and pass variable
+            nodeKwargs = {}
+            if nodeJson['type'] in ('getVar', 'setVar'):
+                kwargs['var'] = graph.vars[uuid.UUID(nodeJson['varUid'])]
+            node = getRawNodeInstance(nodeJson['type'], nodeJson['package'], jsonData['lib'], **nodeKwargs)
+            graph.addNode(node, nodeJson)
+
+        # restore connections
+        graphPins = graph.pins
+        for nodeJson in jsonData['nodes']:
+            for nodeOutputJson in nodeJson['outputs']:
+                lhsPin = graphPins[uuid.UUID(nodeOutputJson['uuid'])]
+                for rhsJson in nodeOutputJson['linkedTo']:
+                    rhsPin = graphPins[uuid.UUID(rhsJson['uuid'])]
+                    connected = connectPins(lhsPin, rhsPin)
+                    assert(connected, True), "Failed to restore connection"
+        return graph
 
     def clear(self):
         self.nodes.clear()

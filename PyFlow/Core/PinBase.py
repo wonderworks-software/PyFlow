@@ -20,6 +20,7 @@ class PinBase(IPin):
         self.onExecute = Signal(object)
 
         self._uid = uuid.uuid4()
+        self._linkedToUids = set()
         self._dataType = None
         self._userStructClass = userStructClass
         self._data = None
@@ -43,8 +44,6 @@ class PinBase(IPin):
         self.name = name
         ## Defines is this input pin or output
         self.direction = direction
-        ## This flag is for subgraph input nodes, to correctly establish connections
-        self.actLikeDirection = direction
         ## For rand int node and stuff like that
         self._alwaysPushDirty = False
         ## Can be renamed or not (for switch on string node)
@@ -105,10 +104,10 @@ class PinBase(IPin):
         data = {'name': self.name,
                 'dataType': self.dataType,
                 'direction': int(self.direction),
-                'actLikeDirection': int(self.actLikeDirection),
                 'value': self.currentData(),
                 'uuid': str(self.uid),
-                'bDirty': self.dirty
+                'bDirty': self.dirty,
+                'linkedTo': [str(i.uid) for i in self.affects] if self.direction == PinDirection.Output else []
                 }
         return data
 

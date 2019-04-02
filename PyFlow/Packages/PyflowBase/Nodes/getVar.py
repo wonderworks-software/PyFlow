@@ -12,7 +12,6 @@ class getVar(NodeBase):
     def __init__(self, name, var=None):
         super(getVar, self).__init__(name)
         assert(isinstance(var, Variable))
-        self.varUid = var.uid
         self.var = var
         self.out = CreateRawPin('value', self, var.dataType, PinDirection.Output)
         self.var.valueChanged.connect(self.onVarValueChanged)
@@ -30,7 +29,7 @@ class getVar(NodeBase):
 
     def serialize(self):
         default = NodeBase.serialize(self)
-        default['varUid'] = str(self.varUid)
+        default['varUid'] = str(self.var.uid)
         return default
 
     @staticmethod
@@ -50,5 +49,4 @@ class getVar(NodeBase):
         return 'Access variable value'
 
     def compute(self, *args, **kwargs):
-        var = self.graph().vars[self.varUid]
-        self.out.setData(copy(var.value))
+        self.out.setData(copy(self.var.value))

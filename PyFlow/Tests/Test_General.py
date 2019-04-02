@@ -1,4 +1,4 @@
-from TestsBase import *
+from PyFlow.Tests.TestsBase import *
 from PyFlow.Core.Common import *
 
 

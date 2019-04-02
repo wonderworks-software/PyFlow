@@ -236,6 +236,7 @@ def connectPins(src, dst):
     dst.pinConnected(src)
     src.pinConnected(dst)
     push(dst)
+    src._linkedToUids.add(dst.uid)
     return True
 
 
@@ -254,6 +255,7 @@ def disconnectPins(src, dst):
         src.pinDisconnected(dst)
         dst.pinDisconnected(src)
         push(dst)
+        src._linkedToUids.remove(dst.uid)
         return True
     return False
 

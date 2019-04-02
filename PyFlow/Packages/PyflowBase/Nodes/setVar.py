@@ -16,6 +16,11 @@ class setVar(NodeBase):
         self.inp = CreateRawPin("inp", self, self.var.dataType, PinDirection.Input)
         self.out = CreateRawPin("out", self, self.var.dataType, PinDirection.Output)
 
+    def serialize(self):
+        default = NodeBase.serialize(self)
+        default['varUid'] = str(self.var.uid)
+        return default
+
     @staticmethod
     def pinTypeHints():
         return {'inputs': [], 'outputs': []}
