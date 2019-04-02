@@ -71,11 +71,6 @@ class subgraph(NodeBase):
                 subgraphInputPin.call = other.call
         outPin.onPinConnected.connect(onInnerConnected, weak=False)
 
-        def onInnerDisconnected(other):
-            if not outPin.hasConnections():
-                outPin.kill()
-        outPin.onPinDisconnected.connect(onInnerDisconnected, weak=False)
-
         # handle outer connect/disconnect
         def onSubgraphInputConnected(other):
             outPin.setType(other)
@@ -100,6 +95,7 @@ class subgraph(NodeBase):
                                               inPin.call,
                                               inPin.constraint)
         subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
+        subgraphOutputPin.singleInit = inPin.singleInit
         self.__outputsMap[subgraphOutputPin] = inPin
         pinAffects(inPin, subgraphOutputPin)
         # connect
@@ -119,10 +115,10 @@ class subgraph(NodeBase):
                 other.call = subgraphOutputPin.call
         inPin.onPinConnected.connect(onInnerInpPinConnected, weak=False)
 
-        def onInnerInpDisconnected(other):
-            if not subgraphOutputPin.hasConnections():
-                subgraphOutputPin.setDefault()
-        inPin.onPinDisconnected.connect(onInnerInpDisconnected)
+        # handle outer connect/disconnect
+        def onSubgraphOutputConnected(other):
+            inPin.setType(other)
+        subgraphOutputPin.onPinConnected.connect(onSubgraphOutputConnected, weak=False)
 
         wrapperRef = self.getWrapper()
         if wrapperRef is not None:
