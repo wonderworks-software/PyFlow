@@ -9,9 +9,10 @@ from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Variable import Variable
 from PyFlow.Core.GraphTree import GraphTree
+from PyFlow.Core.Interfaces import ISerializable
 
 
-class GraphBase(object):
+class GraphBase(ISerializable):
     def __init__(self, name, *args, **kwargs):
         super(GraphBase, self).__init__(*args, **kwargs)
         # signals
@@ -22,13 +23,24 @@ class GraphBase(object):
 
         self.__name = name
         self.nodes = {}
-        self.connections = {}
+        # self.connections = {}
         self.vars = {}
+
+    def serialize(self, *args, **Kwargs):
+        result = {
+            'vars': [v.serialize() for v in self.vars.values()],
+            'nodes': [n.serialize() for n in self.nodes.values()]
+        }
+        return result
+
+    @staticmethod
+    def deserialize(*args, **Kwargs):
+        pass
 
     def clear(self):
         self.nodes.clear()
         self.vars.clear()
-        self.connections.clear()
+        # self.connections.clear()
 
     @property
     def name(self):

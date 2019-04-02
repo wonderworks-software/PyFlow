@@ -19,6 +19,11 @@ class UIsubgraph(UINodeBase):
         # and connect signals
         uiCompanionPin = self._createUIPinWrapper(rawPin)
 
+    def serialize(self):
+        default = super(UIsubgraph, self).serialize()
+
+        return default
+
     def onGraphOutputPinExposed(self, rawPin):
         uiCompanionPin = self._createUIPinWrapper(rawPin)
 

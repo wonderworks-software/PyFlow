@@ -35,6 +35,11 @@ class subgraph(NodeBase):
     def description():
         return 'Encapsulate a graph inside a node'
 
+    def serialize(self):
+        default = NodeBase.serialize(self)
+        default['graphData'] = self.rawGraph.serialize()
+        return default
+
     def onGraphInputPinCreated(self, outPin):
         """Reaction when pin added to graphInputs node
 
