@@ -48,6 +48,7 @@ class GraphTree:
         # restore hierarchy
         tree = deserializeTree(jsonData['tree'])
         # recreate graphs and apply them as data to nodes
+        # TODO: check graphs created from root, to children
         for graphIdentifier in jsonData['graphs']:
             graphJson = jsonData['graphs'][graphIdentifier]
             restoredGraph = GraphBase.deserialize(graphJson)
