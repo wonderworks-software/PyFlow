@@ -312,12 +312,12 @@ class UINodeBase(QGraphicsObject):
     def setName(self, name):
         self._rawNode.setName(name)
 
-    def getPinByName(self, name, pinsGroup=PinSelectionGroup.BothSides):
-        return self._rawNode.getPinByName(name, pinsGroup)
+    def getPin(self, name, pinsGroup=PinSelectionGroup.BothSides):
+        return self._rawNode.getPin(name, pinsGroup)
 
     @staticmethod
     def removePinByName(node, name):
-        pin = node.getPinByName(name)
+        pin = node.getPin(name)
         if pin:
             pin.kill()
 
@@ -344,7 +344,7 @@ class UINodeBase(QGraphicsObject):
 
         # set pins data
         for inpJson in data['inputs']:
-            pin = node.getPinByName(inpJson['name'], PinSelectionGroup.Inputs)
+            pin = node.getPin(inpJson['name'], PinSelectionGroup.Inputs)
             pin.uid = uuid.UUID(inpJson['uuid'])
             pin.setData(inpJson['value'])
             if inpJson['bDirty']:
@@ -353,7 +353,7 @@ class UINodeBase(QGraphicsObject):
                 pin.setClean()
 
         for outJson in data['outputs']:
-            pin = node.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
+            pin = node.getPin(outJson['name'], PinSelectionGroup.Outputs)
             pin.uid = uuid.UUID(outJson['uuid'])
             pin.setData(outJson['value'])
             if outJson['bDirty']:
@@ -416,12 +416,12 @@ class UINodeBase(QGraphicsObject):
 
     def getData(self, pinName):
         if pinName in [p.name for p in self.inputs.values()]:
-            p = self.getPinByName(pinName, PinSelectionGroup.Inputs)
+            p = self.getPin(pinName, PinSelectionGroup.Inputs)
             return p.getData()
 
     def setData(self, pinName, data):
         if pinName in [p.name for p in self.outputs.values()]:
-            p = self.getPinByName(pinName, PinSelectionGroup.Outputs)
+            p = self.getPin(pinName, PinSelectionGroup.Outputs)
             p.setData(data)
 
     def getWidth(self):
@@ -722,7 +722,7 @@ class UINodeBase(QGraphicsObject):
         le = QApplication.instance().focusWidget()
         if isinstance(le, QLineEdit):
             nodeName, attr = le.objectName().split('.')
-            Pin = self.getPinByName(attr)
+            Pin = self.getPin(attr)
             Pin.setData(le.text())
 
     def getChainedNodes(self):

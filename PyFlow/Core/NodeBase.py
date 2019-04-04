@@ -7,6 +7,7 @@ try:
 except:
     from inspect import getargspec
 from types import MethodType
+from multipledispatch import dispatch
 
 from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
@@ -27,6 +28,10 @@ class NodeBase(INode):
         self._wrapper = None
         self._Constraints = {}
         self.lib = None
+
+    @dispatch(str)
+    def __getitem__(self, pinName):
+        return self.getPin(pinName)
 
     @property
     def pins(self):
@@ -125,10 +130,11 @@ class NodeBase(INode):
     def deserialize(jsonData, *args, **kwargs):
         node = getRawNodeInstance(jsonData['type'], packageName=jsonData['package'], libName=jsonData['lib'], *args, **kwargs)
         node.uid = uuid.UUID(jsonData['uuid'])
+        node.setName(jsonData['name'])
 
         # set pins data
         for inpJson in jsonData['inputs']:
-            pin = node.getPinByName(inpJson['name'], PinSelectionGroup.Inputs)
+            pin = node.getPin(inpJson['name'], PinSelectionGroup.Inputs)
             pin.uid = uuid.UUID(inpJson['uuid'])
             pin.setData(inpJson['value'])
             if inpJson['bDirty']:
@@ -137,7 +143,7 @@ class NodeBase(INode):
                 pin.setClean()
 
         for outJson in jsonData['outputs']:
-            pin = node.getPinByName(outJson['name'], PinSelectionGroup.Outputs)
+            pin = node.getPin(outJson['name'], PinSelectionGroup.Outputs)
             pin.uid = uuid.UUID(outJson['uuid'])
             pin.setData(outJson['value'])
             if outJson['bDirty']:
@@ -261,28 +267,18 @@ class NodeBase(INode):
         return p
 
     def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):
-        p = self.getPinByName(pinName, pinSelectionGroup)
+        p = self.getPin(pinName, pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
         p.setData(data)
 
     def getData(self, pinName, pinSelectionGroup=PinSelectionGroup.BothSides):
-        p = self.getPinByName(pinName, pinSelectionGroup)
+        p = self.getPin(pinName, pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
         return p.getData()
 
     def getUniqPinName(self, name):
         pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))] + dir(self)
         return getUniqNameFromList(pinNames, name)
-
-    def getPinByUUID(self, uid):
-        inputs = self.inputs
-        outputs = self.outputs
-
-        if uid in inputs:
-            return inputs[uid]
-        if uid in outputs:
-            return outputs[uid]
-        return None
 
     def call(self, name, *args, **kwargs):
         namePinOutputsMap = self.namePinOutputsMap
@@ -296,7 +292,8 @@ class NodeBase(INode):
             if p.dataType == 'ExecPin':
                 p.call(*args, **kwargs)
 
-    def getPinByName(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
+    @dispatch(str, PinSelectionGroup)
+    def getPin(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
         inputs = self.inputs
         outputs = self.outputs
         if pinsSelectionGroup == PinSelectionGroup.BothSides:
@@ -311,6 +308,25 @@ class NodeBase(INode):
             for p in list(outputs.values()):
                 if p.name == name:
                     return p
+
+    @dispatch(str)
+    def getPin(self, name):
+        inputs = self.inputs
+        outputs = self.outputs
+        for p in list(inputs.values()) + list(outputs.values()):
+            if p.name == name:
+                return p
+
+    @dispatch(uuid.UUID)
+    def getPin(self, uid):
+        inputs = self.inputs
+        outputs = self.outputs
+
+        if uid in inputs:
+            return inputs[uid]
+        if uid in outputs:
+            return outputs[uid]
+        return None
 
     def postCreate(self, jsonTemplate=None):
         if self.isCallable():

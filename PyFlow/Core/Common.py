@@ -314,7 +314,7 @@ class REGISTER_ENUM(object):
         return cls
 
 
-## Used in PyFlow.AbstractGraph.NodeBase.getPinByName for optimization purposes
+## Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes
 class PinSelectionGroup(IntEnum):
     Inputs = 0
     Outputs = 1

@@ -656,21 +656,7 @@ class Canvas(QGraphicsView):
         return uiPin
 
     def getGraphSaveData(self):
-        """Everything what is needed for saving
-
-        All nodes from all subgraphs
-        Connections
-        Variables
-        """
-        data = {self.name: {'nodes': [], 'connections': [], 'vars': []}}
-        # save nodes
-        nodeList = [n.getWrapper()() for n in GraphTree().getAllNodes()]
-        assert(None not in nodeList)
-        data[self.name]['nodes'] = [node.serialize() for node in nodeList if not node.isCommentNode] + [node.serialize() for node in nodeList if node.isCommentNode]
-        # save connections
-        data[self.name]['connections'] = [e.serialize() for e in self.connections.values()]
-        # variables
-        data[self.name]['vars'] = [v.serialize() for v in self.vars.values()]
+        data = GraphTree().serialize()
         return data
 
     def save(self, save_as=False):
@@ -767,7 +753,7 @@ class Canvas(QGraphicsView):
         pinName = full_name.split('.')[1]
         node = self.findNode(node_name)
         if node:
-            Pin = node.getPinByName(pinName)
+            Pin = node.getPin(pinName)
             if Pin:
                 return Pin
 
@@ -962,13 +948,13 @@ class Canvas(QGraphicsView):
             for e in connections:
                 if e.source().UiNode in oldNodes and e.destination().UiNode in oldNodes:
                     nsrc = newNodes[oldNodes.index(
-                        e.source().UiNode)].getPinByName(e.source().name)
-                    ndst = newNodes[oldNodes.index(e.destination().UiNode)].getPinByName(
+                        e.source().UiNode)].getPin(e.source().name)
+                    ndst = newNodes[oldNodes.index(e.destination().UiNode)].getPin(
                         e.destination().name)
                     self.connectPins(nsrc, ndst)
                 elif e.source().UiNode not in oldNodes and e.source().dataType != "ExecPin":
                     nsrc = e.source()
-                    ndst = newNodes[oldNodes.index(e.destination().UiNode)].getPinByName(
+                    ndst = newNodes[oldNodes.index(e.destination().UiNode)].getPin(
                         e.destination().name)
                     self.connectPins(nsrc, ndst)
 
@@ -1029,17 +1015,17 @@ class Canvas(QGraphicsView):
         for connection in nodes["connections"]:
             if connection["full"]:
                 nsrc = newNodes[connection["sourcenode"]
-                                ].getPinByName(connection["sourcePin"])
+                                ].getPin(connection["sourcePin"])
                 ndst = newNodes[connection["destinationNode"]
-                                ].getPinByName(connection["destinationPin"])
+                                ].getPin(connection["destinationPin"])
                 self.connectPins(nsrc, ndst)
             else:
                 nsrc = self.findNode(connection["sourcenode"])
                 if nsrc is not None:
-                    nsrc = nsrc.getPinByName(connection["sourcePin"])
+                    nsrc = nsrc.getPin(connection["sourcePin"])
                     if nsrc is not None:
                         ndst = newNodes[connection["destinationNode"]
-                                        ].getPinByName(connection["destinationPin"])
+                                        ].getPin(connection["destinationPin"])
                         self.connectPins(nsrc, ndst)
 
     @dispatch(str)
@@ -1563,7 +1549,7 @@ class Canvas(QGraphicsView):
         if isinstance(le, QLineEdit):
             nodeName, attr = le.objectName().split('.')
             node = self.findNode(nodeName)
-            Pin = node.getPinByName(attr)
+            Pin = node.getPin(attr)
             Pin.setData(le.text())
 
     def wheelEvent(self, event):
@@ -1645,7 +1631,7 @@ class Canvas(QGraphicsView):
 
         # set pins data
         for inpJson in jsonTemplate['inputs']:
-            pin = nodeInstance.getPinByName(
+            pin = nodeInstance.getPin(
                 inpJson['name'], PinSelectionGroup.Inputs)
             if pin:
                 pin.uid = uuid.UUID(inpJson['uuid'])
@@ -1656,7 +1642,7 @@ class Canvas(QGraphicsView):
                     pin.setClean()
 
         for outJson in jsonTemplate['outputs']:
-            pin = nodeInstance.getPinByName(
+            pin = nodeInstance.getPin(
                 outJson['name'], PinSelectionGroup.Outputs)
             if pin:
                 pin.uid = uuid.UUID(outJson['uuid'])

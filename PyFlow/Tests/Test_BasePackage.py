@@ -32,7 +32,7 @@ class TestBasePackage(unittest.TestCase):
         GT.activeGraph().addNode(branchNode)
         branchNode.setData('Condition', True)
 
-        connected = connectPins(printNode1.getPinByName(DEFAULT_OUT_EXEC_NAME), branchNode.getPinByName("In"))
+        connected = connectPins(printNode1.getPin(DEFAULT_OUT_EXEC_NAME), branchNode.getPin("In"))
         self.assertEqual(connected, True, "failed to connect")
 
         printNodeTrue = NodeBase.initializeFromFunction(foos["pyprint"])
@@ -43,7 +43,7 @@ class TestBasePackage(unittest.TestCase):
         GT.activeGraph().addNode(printNodeFalse)
         printNodeFalse.setData('entity', "False executed")
 
-        connectPins(branchNode.getPinByName('True'), printNodeTrue.getPinByName(DEFAULT_IN_EXEC_NAME))
-        connectPins(branchNode.getPinByName('False'), printNodeFalse.getPinByName(DEFAULT_IN_EXEC_NAME))
+        connectPins(branchNode.getPin('True'), printNodeTrue.getPin(DEFAULT_IN_EXEC_NAME))
+        connectPins(branchNode.getPin('False'), printNodeFalse.getPin(DEFAULT_IN_EXEC_NAME))
 
         printNode1.call(DEFAULT_IN_EXEC_NAME, message="TEST MESSAGE")

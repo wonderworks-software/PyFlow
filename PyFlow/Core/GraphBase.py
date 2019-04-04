@@ -56,8 +56,8 @@ class GraphBase(ISerializable):
         for nodeJson in jsonData['nodes']:
             for nodeOutputJson in nodeJson['outputs']:
                 lhsPin = graphPins[uuid.UUID(nodeOutputJson['uuid'])]
-                for rhsJson in nodeOutputJson['linkedTo']:
-                    rhsPin = graphPins[uuid.UUID(rhsJson['uuid'])]
+                for rhsUidStr in nodeOutputJson['linkedTo']:
+                    rhsPin = graphPins[uuid.UUID(rhsUidStr)]
                     connected = connectPins(lhsPin, rhsPin)
                     assert(connected, True), "Failed to restore connection"
         return graph
@@ -169,7 +169,8 @@ class GraphBase(ISerializable):
     def getNodes(self):
         return self.nodes.values()
 
-    def getNodeByName(self, name):
+    @dispatch(str)
+    def findNode(self, name):
         for i in self.nodes.values():
             if i.name == name:
                 return i

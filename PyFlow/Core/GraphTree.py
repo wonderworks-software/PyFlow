@@ -1,6 +1,12 @@
+import json
+
 from multipledispatch import dispatch
 from blinker import Signal
 from treelib import Tree
+try:
+    from collections.abc import Hashable
+except:
+    from collections import Hashable
 
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.Core.Common import getUniqNameFromList
@@ -22,9 +28,35 @@ class GraphTree:
         else:
             assert(False), "Failed to set root graph!"
 
+    def serialize(self):
+        # save hierarchy
+        result = {
+            'tree': self.getTree().to_json(),
+            'graphs': {}
+        }
+
+        tree = self.getTree()
+        for nodeId in tree.nodes:
+            node = tree.nodes[nodeId]
+            result['graphs'][node.identifier] = node.data.serialize()
+
+        return result
+
+    def deserialize(self, jsonData):
+        from PyFlow.Core.GraphBase import GraphBase
+
+        # restore hierarchy
+        tree = deserializeTree(jsonData['tree'])
+        # recreate graphs and apply them as data to nodes
+        for graphIdentifier in jsonData['graphs']:
+            graphJson = jsonData['graphs'][graphIdentifier]
+            restoredGraph = GraphBase.deserialize(graphJson)
+            tree[graphIdentifier].data = restoredGraph
+
+        # apply root graph to tree
+        self.setRootGraph(tree[tree.root].data)
+
     def clear(self):
-        """remove everything except of root graph
-        """
         t = self.getTree()
         t._nodes.clear()
         t.root = None
@@ -156,3 +188,33 @@ class GraphTree:
 
     def getTree(self):
         return self.__tree
+
+
+def deserializeTree(jsonTree):
+    def giveKey(d):
+        return list(d.keys())[0]
+
+    def helper(node, subtree):
+        for childStruct in subtree[node]['children']:
+            if type(childStruct) == list:
+                childStruct = tuple(childStruct)
+            if isinstance(childStruct, Hashable):
+                newTree.create_node(childStruct, childStruct, parent=node)
+            else:
+                childNode = giveKey(childStruct)
+                newTree.create_node(childNode, childNode, parent=node)
+                helper(childNode, childStruct)
+    newTree = Tree()
+    jsonTree = json.loads(jsonTree)
+
+    # handle if root only
+    if isinstance(jsonTree, str):
+        root = jsonTree
+        newTree.create_node(root, root)
+        return newTree
+
+    if isinstance(jsonTree, dict):
+        root = giveKey(jsonTree)
+        newTree.create_node(root, root)
+        helper(root, jsonTree)
+    return newTree
