@@ -33,10 +33,9 @@ def lwMousePressEvent(self, event):
 class VariablesWidget(QWidget, Ui_Form):
     """docstring for VariablesWidget"""
 
-    def __init__(self, app, graph, parent=None):
+    def __init__(self, app, parent=None):
         super(VariablesWidget, self).__init__(parent)
         self.setupUi(self)
-        self.graph = graph
         self.app = app
         self.pbNewVar.clicked.connect(self.createVariable)
         self.pbKillVar.clicked.connect(self.killVar)
@@ -45,31 +44,13 @@ class VariablesWidget(QWidget, Ui_Form):
         self.listWidget.setDragDropMode(self.listWidget.InternalMove)
         self.notVisVars = []
 
-    # TODO: this will be removed when scopes will be done
-    def setGraph(self, graph):
-        self.graph = graph
-        for i in range(self.listWidget.count()):
-            item = self.listWidget.item(i)
-            w = self.listWidget.itemWidget(item)
-            if w.uid not in self.graph.vars:
-                item.setHidden(True)
-            else:
-                item.setHidden(False)
-
     def killAll(self):
         self.listWidget.clear()
-        self.graph.vars.clear()
-        self.graph._clearPropertiesView()
 
     def killVar(self):
-        for i in self.listWidget.selectedItems():
-            w = self.listWidget.itemWidget(i)
-            if w.uid in self.graph.vars:
-                var = self.graph.vars.pop(w.uid)
-                row = self.listWidget.row(i)
-                self.listWidget.takeItem(row)
-                var.killed.emit()
-        self.graph._clearPropertiesView()
+        # remove variable from owning graph
+        # send events
+        pass
 
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
         rawVariable = self.graph.createVariable(

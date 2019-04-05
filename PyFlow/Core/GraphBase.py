@@ -63,9 +63,14 @@ class GraphBase(ISerializable):
         return graph
 
     def clear(self):
+        for node in list(self.nodes.values()):
+            node.kill()
         self.nodes.clear()
+
+        for var in list(self.vars.values()):
+            # TODO: remove variable
+            pass
         self.vars.clear()
-        # self.connections.clear()
 
     @property
     def name(self):

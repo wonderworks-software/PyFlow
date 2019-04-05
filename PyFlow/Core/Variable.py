@@ -30,6 +30,11 @@ class Variable(ISerializable):
         assert(isinstance(self._uid, uuid.UUID))
         self.updatePackageName()
 
+    def kill(self, *args, **kwargs):
+        # TODO: ask graph tree to remove variable and replace all references
+        # self.killed.send(*args, **kwargs)
+        pass
+
     def updatePackageName(self):
         self._packageName = findPinClassByType(self._dataType).packageName()
 

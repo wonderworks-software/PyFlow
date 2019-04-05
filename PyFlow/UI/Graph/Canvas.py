@@ -84,7 +84,7 @@ def importByName(module, name):
         print("error", name)
 
 
-def getNodeInstance(jsonTemplate, graph):
+def getNodeInstance(jsonTemplate, canvas):
     nodeClassName = jsonTemplate['type']
     nodeName = jsonTemplate['name']
     packageName = jsonTemplate['package']
@@ -94,9 +94,10 @@ def getNodeInstance(jsonTemplate, graph):
         libName = None
 
     kwargs = {}
+
     # if get var or set var, construct additional keyword arguments
     if jsonTemplate['type'] in ('getVar', 'setVar'):
-        kwargs['var'] = graph.vars[uuid.UUID(
+        kwargs['var'] = canvas.vars[uuid.UUID(
             jsonTemplate['meta']['var']['uuid'])]
 
     raw_instance = getRawNodeInstance(
@@ -105,7 +106,7 @@ def getNodeInstance(jsonTemplate, graph):
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(
         nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
-    graph.addNode(instance, jsonTemplate)
+    canvas.addNode(instance, jsonTemplate)
     return instance
 
 
@@ -530,6 +531,8 @@ class Canvas(QGraphicsView):
 
     @property
     def nodes(self):
+        """returns all ui nodes dict
+        """
         result = {}
         for rawNode in GraphTree().getAllNodes():
             result[rawNode.uid] = rawNode.getWrapper()()
@@ -549,6 +552,8 @@ class Canvas(QGraphicsView):
         return self._UIConnections
 
     def getAllNodes(self):
+        """returns all ui nodes list
+        """
         return list(self.nodes.values())
 
     def getUniqNodeDisplayName(self, name):
@@ -701,13 +706,14 @@ class Canvas(QGraphicsView):
     def new_file(self):
         self._current_file_name = 'Untitled'
         self._file_name_label.setPlainText('Untitled')
-        nodes = list(self.getAllNodes())
-        for node in nodes:
-            node.kill()
         self.parent.variablesWidget.killAll()
         self.undoStack.clear()
         self._clearPropertiesView()
-        GraphTree().clear()
+        GT = GraphTree()
+        GT.clear()
+        # create untitled root graph
+        root = GraphBase('root')
+        GT.setRootGraph(root)
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -721,21 +727,26 @@ class Canvas(QGraphicsView):
                 data = json.load(f)
                 self.loadFromData(data, fpath)
 
+    def showVariables(self):
+        """read active graph variables and populate widget
+        """
+        pass
+
     def loadFromData(self, data, fpath=""):
         self.new_file()
-        # vars
-        for varJson in data[self.name]['vars']:
-            UIVariable.deserialize(varJson, self)
-        # nodes
-        for nodeJson in data[self.name]['nodes']:
-            try:
-                UINodeBase.deserialize(nodeJson, self)
-            except Exception as e:
-                print(nodeJson)
-                print(e)
-        # connections
-        for edgeJson in data[self.name]['connections']:
-            UIConnection.deserialize(edgeJson, self)
+
+        GT = GraphTree()
+        # this call will create all raw classes
+        GT.deserialize(data)
+
+        # populate view with current graph variables
+        self.showVariables()
+
+        # create UINode wrappers
+        for rawNode in GT.getAllNodes():
+            uiNodeInstance = getUINodeInstance(rawNode)
+            self.addNode(uiNodeInstance, None)
+
         self._current_file_name = fpath
         self._file_name_label.setPlainText(self._current_file_name)
         self.frameAllNodes()
@@ -745,7 +756,7 @@ class Canvas(QGraphicsView):
                 if not node.expanded:
                     node.expanded = True
                     node.updateChildren(node.nodesToMove.keys())
-                    node.toogleCollapsed()
+                    node.toggleCollapsed()
         self._clearPropertiesView()
 
     def getPinByFullName(self, full_name):
@@ -1529,8 +1540,7 @@ class Canvas(QGraphicsView):
         self.resizing = False
 
     def removeItemByName(self, name):
-        [self.scene().removeItem(i) for i in self.scene().items()
-         if hasattr(i, 'name') and i.name == name]
+        [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def tryFillPropertiesView(self, obj):
         '''
@@ -1660,16 +1670,17 @@ class Canvas(QGraphicsView):
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
-    def addNode(self, node, jsonTemplate=None):
+    def addNode(self, uiNode, jsonTemplate, parentGraph=None):
         """Adds node to a graph
 
         Arguments:
             node UINodeBase -- raw node wrapper
         """
-        activeGraph = GraphTree().activeGraph()
-        activeGraph.addNode(node._rawNode, jsonTemplate)
-        node.graph = weakref.ref(self)
-        self.scene().addItem(node)
+        assert(jsonTemplate is not None)
+        graph = GraphTree().activeGraph() if parentGraph is None else parentGraph
+        graph.addNode(uiNode._rawNode, jsonTemplate)
+        uiNode.canvasRef = weakref.ref(self)
+        self.scene().addItem(uiNode)
 
     def connectPinsInternal(self, src, dst):
         result = connectPins(src._rawPin, dst._rawPin)

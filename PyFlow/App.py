@@ -111,8 +111,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.tick_timer.timeout.connect(self.mainLoop)
 
     def onRawGraphSwitched(self, *args, **kwargs):
+        assert('old' in kwargs), "invalid arguments passed"
+        assert('new' in kwargs), "invalid arguments passed"
         old = kwargs['old']
         new = kwargs['new']
+        assert(old is not None), "invalid graph passed"
+        assert(new is not None), "invalid graph passed"
         # hide current graph contents
         for node in old.nodes.values():
             uiNode = node.getWrapper()()

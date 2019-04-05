@@ -161,11 +161,16 @@ class NodeBase(INode):
             pin.disconnectAll()
         self.graph().nodes.pop(self.uid)
 
+        # kill ui wrapper if exists
+        wrapperRef = self.getWrapper()
+        if wrapperRef is not None:
+            wrapperRef().kill()
+
     def Tick(self, delta):
         # call UI wrapper tick if exists
-        wrapper = self.getWrapper()()
-        if wrapper is not None:
-            wrapper.Tick(delta)
+        wrapperRef = self.getWrapper()
+        if wrapperRef is not None:
+            wrapperRef().Tick(delta)
 
     @staticmethod
     def category():

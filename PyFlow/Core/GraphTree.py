@@ -86,11 +86,19 @@ class GraphTree:
 
     def clear(self):
         t = self.getTree()
+
+        # remove all graphs contents
+        for graph in self.getAllGraphs():
+            graph.clear()
+
+        # clear internal tree dict
         t._nodes.clear()
+
+        # clear root identifier
         t.root = None
-        if self.__activeGraph:
-            self.__activeGraph.clear()
-            self.__activeGraph = None
+
+        # clear active graph pointer
+        self.__activeGraph = None
 
     def getUniqGraphName(self, name):
         existingGraphNames = [g.name for g in self.getAllGraphs()]
@@ -210,6 +218,10 @@ class GraphTree:
             t.create_node(graph.name, graph.name, data=graph)
             self.__activeGraph = graph
             return True
+        else:
+            if graph.name == t[t.root].data.name:
+                self.__activeGraph = t[t.root].data
+                return True
         return False
 
     def getRootGraph(self):

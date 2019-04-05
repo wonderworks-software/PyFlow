@@ -62,7 +62,7 @@ class commentNodeName(NodeName):
         self.hideButton = QPushButton("-")
         self.hideButtomProxy.setWidget(self.hideButton)
         self.hideButton.setStyleSheet(buttonStyle)
-        self.hideButton.pressed.connect(self.parentItem().toogleCollapsed)
+        self.hideButton.pressed.connect(self.parentItem().toggleCollapsed)
         self.hideButton.setFixedHeight(25)
         self.hideButton.setFixedWidth(25)
         self.leftWidget = UICommentPinBase(self)  # QGraphicsWidget(self)
@@ -301,14 +301,14 @@ class UIcommentNode(UINodeBase):
 
     def mouseDoubleClickEvent(self, event):
         super(UIcommentNode, self).mouseDoubleClickEvent(event)
-        self.toogleCollapsed()
+        self.toggleCollapsed()
         event.accept()
 
     def mouseMoveEvent(self, event):
         super(UIcommentNode, self).mouseMoveEvent(event)
         self.label().adjustSizes()
 
-    def toogleCollapsed(self):
+    def toggleCollapsed(self):
         if self.expanded:
             self.updateChildren(self.collidingItems())
             self.label().hideButton.setText("+")

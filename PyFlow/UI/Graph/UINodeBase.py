@@ -198,7 +198,7 @@ class UINodeBase(QGraphicsObject):
         self.setZValue(1)
 
         self.icon = None
-        self.UIGraph = None
+        self.canvasRef = None
         self._menu = QMenu()
         # Resizing Options
         self.minWidth = 25
@@ -223,14 +223,6 @@ class UINodeBase(QGraphicsObject):
         # Core Nodes Support
         self.isTemp = False
         self.isCommentNode = False
-
-    @property
-    def graph(self):
-        return self.UIGraph
-
-    @graph.setter
-    def graph(self, value):
-        self.UIGraph = value
 
     @property
     def uid(self):
@@ -326,7 +318,7 @@ class UINodeBase(QGraphicsObject):
         templ = node.serialize()
         uid = node.uid
         node.kill()
-        newNode = node.graph().createNode(templ)
+        newNode = node.canvas.createNode(templ)
         newNode.uid = uid
         return newNode
 
@@ -337,32 +329,6 @@ class UINodeBase(QGraphicsObject):
         template['y'] = 0
         return template
 
-    @staticmethod
-    def deserialize(data, graph):
-        node = graph.createNode(data)
-        node.uid = uuid.UUID(data['uuid'])
-
-        # set pins data
-        for inpJson in data['inputs']:
-            pin = node.getPin(inpJson['name'], PinSelectionGroup.Inputs)
-            pin.uid = uuid.UUID(inpJson['uuid'])
-            pin.setData(inpJson['value'])
-            if inpJson['bDirty']:
-                pin.setDirty()
-            else:
-                pin.setClean()
-
-        for outJson in data['outputs']:
-            pin = node.getPin(outJson['name'], PinSelectionGroup.Outputs)
-            pin.uid = uuid.UUID(outJson['uuid'])
-            pin.setData(outJson['value'])
-            if outJson['bDirty']:
-                pin.setDirty()
-            else:
-                pin.setClean()
-
-        return node
-
     def serialize(self):
         template = self._rawNode.serialize()
         template['x'] = self.scenePos().x()
@@ -371,7 +337,6 @@ class UINodeBase(QGraphicsObject):
         if self.resizable:
             template['meta']['resize'] = {
                 'w': self._rect.right(), 'h': self._rect.bottom()}
-
         return template
 
     def autoAffectPins(self):
@@ -633,14 +598,14 @@ class UINodeBase(QGraphicsObject):
             inp['uuid'] = str(uuid.uuid4())
         for out in templ['outputs']:
             out['uuid'] = str(uuid.uuid4())
-        new_node = self.graph().createNode(templ)
+        new_node = self.camvas.createNode(templ)
         return new_node
 
     def call(self, name):
         self._rawNode.call(name)
 
     def propertyView(self):
-        return self.graph().parent.dockWidgetNodeView
+        return self.canvasRef().parent.dockWidgetNodeView
 
     def onUpdatePropertyView(self, formLayout):
         # name
@@ -735,7 +700,6 @@ class UINodeBase(QGraphicsObject):
         return nodes
 
     def kill(self):
-        self._rawNode.kill()
         self.scene().removeItem(self)
         del(self)
 
@@ -752,7 +716,7 @@ class UINodeBase(QGraphicsObject):
         lyt.setOrientation(QtCore.Qt.Vertical)
         lyt.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         lyt.setContentsMargins(1, 1, 1, 1)
-        container.group_name = EditableLabel(name=groupName, node=self, graph=self.graph())
+        container.group_name = EditableLabel(name=groupName, node=self, canvas=self.canvasRef())
         font = QtGui.QFont('Consolas')
         font.setBold(True)
         font.setPointSize(500)
@@ -796,7 +760,9 @@ class UINodeBase(QGraphicsObject):
         lblName = name
         # TODO: do not use Proxy widget. Use QGraphicsTextItem instead
 
-        connector_name = EditableLabel(name=lblName, node=self, graph=self.graph())
+        if self.canvasRef is None:
+            print(self.canvasRef)
+        connector_name = EditableLabel(name=lblName, node=self, canvas=self.canvasRef())
         connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)
         if not color:
