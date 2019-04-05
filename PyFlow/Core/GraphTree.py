@@ -43,26 +43,54 @@ class GraphTree:
         return result
 
     def deserialize(self, jsonData):
+        self.clear()
         from PyFlow.Core.GraphBase import GraphBase
 
-        # restore hierarchy
-        tree = deserializeTree(jsonData['tree'])
-        # recreate graphs and apply them as data to nodes
-        # TODO: check graphs created from root, to children
-        for graphIdentifier in jsonData['graphs']:
-            graphJson = jsonData['graphs'][graphIdentifier]
-            restoredGraph = GraphBase.deserialize(graphJson)
-            tree[graphIdentifier].data = restoredGraph
+        def giveKey(d):
+            return list(d.keys())[0]
 
-        # apply root graph to tree
-        self.setRootGraph(tree[tree.root].data)
+        tree = self.getTree()
+
+        def helper(node, subtree):
+            for childStruct in subtree[node]['children']:
+                if type(childStruct) == list:
+                    childStruct = tuple(childStruct)
+                if isinstance(childStruct, Hashable):
+                    graph = GraphBase.deserialize(jsonData[childStruct])
+                    tree.create_node(childStruct, childStruct, parent=node, data=graph)
+                else:
+                    childNode = giveKey(childStruct)
+                    graph = GraphBase.deserialize(jsonData[childNode])
+                    tree.create_node(childNode, childNode, parent=node, data=graph)
+                    helper(childNode, childStruct)
+        jsonTree = json.loads(jsonData['tree'])
+
+        # handle if root only
+        if isinstance(jsonTree, str):
+            root = jsonTree
+            graphJson = jsonData['graphs'][root]
+            restoredRootGraph = GraphBase.deserialize(graphJson)
+            tree.create_node(root, root, data=restoredRootGraph)
+            if self.setRootGraph(restoredRootGraph):
+                self.switchGraph(restoredRootGraph.name)
+        elif isinstance(jsonTree, dict):
+            root = giveKey(jsonTree)
+            graphJson = jsonData['graphs'][root]
+            restoredRootGraph = GraphBase.deserialize(graphJson)
+            tree.create_node(root, root, data=restoredRootGraph)
+            if self.setRootGraph(restoredRootGraph):
+                self.switchGraph(restoredRootGraph.name)
+            # recursively create graphs
+            helper(root, jsonTree)
+        self.switchGraph(tree[tree.root].data.name)
 
     def clear(self):
         t = self.getTree()
         t._nodes.clear()
         t.root = None
-        self.__activeGraph.clear()
-        self.__activeGraph = None
+        if self.__activeGraph:
+            self.__activeGraph.clear()
+            self.__activeGraph = None
 
     def getUniqGraphName(self, name):
         existingGraphNames = [g.name for g in self.getAllGraphs()]
@@ -189,33 +217,3 @@ class GraphTree:
 
     def getTree(self):
         return self.__tree
-
-
-def deserializeTree(jsonTree):
-    def giveKey(d):
-        return list(d.keys())[0]
-
-    def helper(node, subtree):
-        for childStruct in subtree[node]['children']:
-            if type(childStruct) == list:
-                childStruct = tuple(childStruct)
-            if isinstance(childStruct, Hashable):
-                newTree.create_node(childStruct, childStruct, parent=node)
-            else:
-                childNode = giveKey(childStruct)
-                newTree.create_node(childNode, childNode, parent=node)
-                helper(childNode, childStruct)
-    newTree = Tree()
-    jsonTree = json.loads(jsonTree)
-
-    # handle if root only
-    if isinstance(jsonTree, str):
-        root = jsonTree
-        newTree.create_node(root, root)
-        return newTree
-
-    if isinstance(jsonTree, dict):
-        root = giveKey(jsonTree)
-        newTree.create_node(root, root)
-        helper(root, jsonTree)
-    return newTree
