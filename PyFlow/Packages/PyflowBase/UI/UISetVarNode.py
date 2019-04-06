@@ -9,7 +9,7 @@ from Qt import QtCore
 from Qt import QtGui
 
 from PyFlow.UI.Utils.Settings import *
-from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 

@@ -4,7 +4,7 @@
     "Modules": {
     },
     "Version": "1.0.0",
-    "Author": "Ilgar Lunin",
+    "Authors": ["Ilgar Lunin", "Pedro Cabrera"],
     "Description": "",
     "Home URL": ""
 }

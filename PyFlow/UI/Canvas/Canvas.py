@@ -28,13 +28,13 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QPushButton
 
 from PyFlow.UI.Utils.Settings import Colors
-from PyFlow.UI.Graph.SelectionRect import SelectionRect
-from PyFlow.UI.Graph.UIConnection import UIConnection
-from PyFlow.UI.Graph.UINodeBase import UINodeBase
-from PyFlow.UI.Graph.UINodeBase import NodeName
-from PyFlow.UI.Graph.UINodeBase import getUINodeInstance
-from PyFlow.UI.Graph.UIPinBase import UIPinBase
-from PyFlow.UI.Graph.UIVariable import UIVariable
+from PyFlow.UI.Canvas.SelectionRect import SelectionRect
+from PyFlow.UI.Canvas.UIConnection import UIConnection
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.UI.Canvas.UINodeBase import NodeName
+from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
+from PyFlow.UI.Canvas.UIPinBase import UIPinBase
+from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
@@ -233,10 +233,10 @@ class SceneClass(QGraphicsScene):
                 for item in hoverItems:
                     if isinstance(item, UIConnection):
                         valid = False
-                        for inp in self.tempnode.inputs.values():
+                        for inp in self.tempnode.UIinputs.values():
                             if self.parent().canConnectPins(item.source(), inp):
                                 valid = True
-                        for out in self.tempnode.outputs.values():
+                        for out in self.tempnode.UIoutputs.values():
                             if self.parent().canConnectPins(out, item.destination()):
                                 valid = True
                         if valid:
@@ -445,6 +445,8 @@ class Canvas(QGraphicsView):
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent
+        # connect with App class signals
+        self.parent.newFileExecuted.connect(self.onNewFile)
         self.parent.actionClear_history.triggered.connect(self.undoStack.clear)
         self.parent.listViewUndoStack.setStack(self.undoStack)
         self.styleSheetEditor = self.parent.styleSheetEditor
@@ -480,14 +482,6 @@ class Canvas(QGraphicsView):
         self.factor_diff = 0
 
         self._current_file_name = 'Untitled'
-        self._file_name_label = QGraphicsTextItem()
-        self._file_name_label.setZValue(5)
-        self._file_name_label.setEnabled(False)
-        self._file_name_label.setFlag(
-            QGraphicsTextItem.ItemIgnoresTransformations)
-        self._file_name_label.setDefaultTextColor(Colors.White)
-        self._file_name_label.setPlainText(self._current_file_name)
-        self.scene().addItem(self._file_name_label)
         self.real_time_line = QGraphicsPathItem(None, self.scene())
         self.real_time_line.name = 'RealTimeLine'
         self.real_time_line.setPen(QtGui.QPen(
@@ -660,104 +654,13 @@ class Canvas(QGraphicsView):
                 break
         return uiPin
 
-    def getGraphSaveData(self):
-        data = GraphTree().serialize()
-        return data
-
-    def save(self, save_as=False):
-        if save_as:
-            name_filter = "Graph files (*.json)"
-            savepath = QFileDialog.getSaveFileName(filter=name_filter)
-            if type(savepath) in [tuple, list]:
-                pth = savepath[0]
-            else:
-                pth = savepath
-            if not pth == '':
-                self._current_file_name = pth
-            else:
-                self._current_file_name = "Untitled"
-        else:
-            if not path.isfile(self._current_file_name):
-                name_filter = "Graph files (*.json)"
-                savepath = QFileDialog.getSaveFileName(filter=name_filter)
-                if type(savepath) in [tuple, list]:
-                    pth = savepath[0]
-                else:
-                    pth = savepath
-                if not pth == '':
-                    self._current_file_name = pth
-                else:
-                    self._current_file_name = "Untitled"
-
-        if self._current_file_name in ["", "Untitled"]:
-            return
-
-        if not self._current_file_name == '':
-            with open(self._current_file_name, 'w') as f:
-                graphData = self.getGraphSaveData()
-                json.dump(graphData, f, indent=4)
-
-            self._file_name_label.setPlainText(self._current_file_name)
-            print(str("// saved: '{0}'".format(self._current_file_name)))
-
-    def save_as(self):
-        self.save(True)
-
-    def new_file(self):
-        self._current_file_name = 'Untitled'
-        self._file_name_label.setPlainText('Untitled')
-        self.parent.variablesWidget.killAll()
+    def onNewFile(self):
         self.undoStack.clear()
-        self._clearPropertiesView()
-        GT = GraphTree()
-        GT.clear()
-        # create untitled root graph
-        root = GraphBase('root')
-        GT.setRootGraph(root)
-
-    def load(self):
-        name_filter = "Graph files (*.json)"
-        savepath = QFileDialog.getOpenFileName(filter=name_filter)
-        if type(savepath) in [tuple, list]:
-            fpath = savepath[0]
-        else:
-            fpath = savepath
-        if not fpath == '':
-            with open(fpath, 'r') as f:
-                data = json.load(f)
-                self.loadFromData(data, fpath)
 
     def showVariables(self):
         """read active graph variables and populate widget
         """
         pass
-
-    def loadFromData(self, data, fpath=""):
-        self.new_file()
-
-        GT = GraphTree()
-        # this call will create all raw classes
-        GT.deserialize(data)
-
-        # populate view with current graph variables
-        self.showVariables()
-
-        # create UINode wrappers
-        for rawNode in GT.getAllNodes():
-            uiNodeInstance = getUINodeInstance(rawNode)
-            self.addNode(uiNodeInstance, None)
-
-        self._current_file_name = fpath
-        self._file_name_label.setPlainText(self._current_file_name)
-        self.frameAllNodes()
-        self.undoStack.clear()
-        for node in self.getAllNodes():
-            if node.isCommentNode:
-                if not node.expanded:
-                    node.expanded = True
-                    node.updateChildren(node.nodesToMove.keys())
-                    node.toggleCollapsed()
-        self._clearPropertiesView()
 
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
@@ -893,15 +796,6 @@ class Canvas(QGraphicsView):
             if all([event.key() == QtCore.Qt.Key_Y, modifiers == QtCore.Qt.ControlModifier]):
                     self.undoStack.redo()
 
-            if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
-                self.new_file()
-            if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
-                self.save()
-            if all([event.key() == QtCore.Qt.Key_O, modifiers == QtCore.Qt.ControlModifier]):
-                self.load()
-            if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-                self.save_as()
-
             if all([event.key() == QtCore.Qt.Key_F, modifiers == QtCore.Qt.NoModifier]):
                 self.frameSelectedNodes()
             if all([event.key() == QtCore.Qt.Key_H, modifiers == QtCore.Qt.NoModifier]):
@@ -954,7 +848,7 @@ class Canvas(QGraphicsView):
                 new_node.setPos(new_node.scenePos() + diff)
                 newNodes.append(new_node)
                 oldNodes.append(n)
-                for i in n.inputs.values() + n.outputs.values():
+                for i in n.UIinputs.values() + n.outputs.values():
                     connections += i.connections
             for e in connections:
                 if e.source().UiNode in oldNodes and e.destination().UiNode in oldNodes:
@@ -1224,7 +1118,7 @@ class Canvas(QGraphicsView):
                             if canConnectPins(self.pressed_item.source()._rawPin, inp._rawPin):
                                 drawPin = self.pressed_item.drawSource
                                 if self.pressed_item.source().dataType == 'ExecPin':
-                                    self.pressed_item.source().disconnectAll()
+                                    self.pressed_item.kill()
                                 self.connectPins(self.pressed_item.source(), inp)
                                 for conection in inp.connections:
                                     conection.drawSource = drawPin
@@ -1332,11 +1226,11 @@ class Canvas(QGraphicsView):
                 reruteNode = self.getReruteNode(event.pos())
                 self.clearSelection()
                 reruteNode.setSelected(True)
-                for inp in reruteNode.inputs.values():
+                for inp in reruteNode.UIinputs.values():
                     if self.canConnectPins(self.pressed_item, inp):
                         self.connectPins(self.pressed_item, inp)
                         break
-                for out in reruteNode.outputs.values():
+                for out in reruteNode.UIoutputs.values():
                     if self.canConnectPins(self.pressed_item, out):
                         self.connectPins(self.pressed_item, out)
                         break
@@ -1412,15 +1306,15 @@ class Canvas(QGraphicsView):
                 newIns = []
                 for item in hoverItems:
                     if isinstance(item, UIConnection):
-                        if list(node.inputs.values())[0].connections and list(node.outputs.values())[0].connections:
-                            if item.source() == list(node.inputs.values())[0].connections[0].source():
+                        if list(node.UIinputs.values())[0].connections and list(node.UIoutputs.values())[0].connections:
+                            if item.source() == list(node.UIinputs.values())[0].connections[0].source():
                                 newOuts.append([item.destination(), item.drawDestination])
-                            if item.destination() == list(node.outputs.values())[0].connections[0].destination():
+                            if item.destination() == list(node.UIoutputs.values())[0].connections[0].destination():
                                 newIns.append([item.source(), item.drawSource])
                 for out in newOuts:
-                    self.connectPins(list(node.outputs.values())[0], out[0])
+                    self.connectPins(list(node.UIoutputs.values())[0], out[0])
                 for inp in newIns:
-                    self.connectPins(inp[0], list(node.inputs.values())[0])
+                    self.connectPins(inp[0], list(node.UIinputs.values())[0])
 
         elif self._manipulationMode == MANIP_MODE_PAN:
             self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
@@ -1551,6 +1445,7 @@ class Canvas(QGraphicsView):
             self._clearPropertiesView()
             obj.onUpdatePropertyView(self.parent.formLayout)
 
+    # TODO: move this to App
     def _clearPropertiesView(self):
         clearLayout(self.parent.formLayout)
 
@@ -1577,7 +1472,7 @@ class Canvas(QGraphicsView):
 
         self.scale(zoomFactor, zoomFactor)
 
-        # Call udpate to redraw background
+        # Call update to redraw background
         self.update()
 
     def drawBackground(self, painter, rect):
@@ -1586,7 +1481,6 @@ class Canvas(QGraphicsView):
         self.boundingRect = rect
 
         polygon = self.mapToScene(self.viewport().rect())
-        self._file_name_label.setPos(polygon[0])
 
         color = self._backgroundColor
         painter.fillRect(rect, QtGui.QBrush(color))
@@ -1662,7 +1556,6 @@ class Canvas(QGraphicsView):
                 else:
                     pin.setClean()
 
-        nodeInstance.postCreate(jsonTemplate)
         return nodeInstance
 
     def createNode(self, jsonTemplate, **kwags):
@@ -1681,21 +1574,27 @@ class Canvas(QGraphicsView):
         graph.addNode(uiNode._rawNode, jsonTemplate)
         uiNode.canvasRef = weakref.ref(self)
         self.scene().addItem(uiNode)
+        uiNode.postCreate(jsonTemplate)
+
+    def createUIConnectionForConnectedPins(self, srcUiPin, dstUiPin):
+        assert(srcUiPin is not None)
+        assert(dstUiPin is not None)
+        if srcUiPin.direction == PinDirection.Input:
+            srcUiPin, dstUiPin = dstUiPin, srcUiPin
+        uiConnection = UIConnection(srcUiPin, dstUiPin, self)
+        self.scene().addItem(uiConnection)
+        self.connections[uiConnection.uid] = uiConnection
+        return uiConnection
 
     def connectPinsInternal(self, src, dst):
         result = connectPins(src._rawPin, dst._rawPin)
         if result:
-            if src.direction == PinDirection.Input:
-                src, dst = dst, src
-            uiConnection = UIConnection(src, dst, self)
-            self.scene().addItem(uiConnection)
-            self.connections[uiConnection.uid] = uiConnection
-            return uiConnection
+            return self.createUIConnectionForConnectedPins(src, dst)
         return None
 
     def connectPins(self, src, dst):
         # Highest level connect pins function
-        if canConnectPins(src, dst):
+        if canConnectPins(src._rawPin, dst._rawPin):
             cmd = cmdConnectPin(self, src, dst)
             self.undoStack.push(cmd)
 

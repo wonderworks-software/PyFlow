@@ -24,11 +24,11 @@ class ConnectPin(QUndoCommand):
 
         srcPin = self.canvas.findPin(self.srcUid)
         if srcPin is None:
-            print(self.srcUid, "not found")
+            return
 
         dstPin = self.canvas.findPin(self.dstUid)
         if dstPin is None:
-            print(self.dstUid, "not found")
+            return
 
         connection = self.canvas.connectPinsInternal(srcPin, dstPin)
 

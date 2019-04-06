@@ -1,4 +1,4 @@
-from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
 
 def createUINode(raw_instance):

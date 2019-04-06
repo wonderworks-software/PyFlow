@@ -25,13 +25,13 @@ from Qt.QtWidgets import QColorDialog
 from Qt.QtWidgets import QMenu
 
 from PyFlow.UI.Utils.Settings import *
-from PyFlow.UI.Graph.UIPinBase import (
+from PyFlow.UI.Canvas.UIPinBase import (
     UIPinBase,
     getUIPinInstance,
     UIGroupPinBase
 )
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
-from PyFlow.UI.Graph.Painters import NodePainter
+from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.GraphTree import GraphTree
@@ -146,6 +146,8 @@ class UINodeBase(QGraphicsObject):
         super(UINodeBase, self).__init__()
         self._rawNode = raw_node
         self._rawNode.setWrapper(self)
+        self._rawNode.killed.connect(self.kill)
+        self._rawNode.tick.connect(self.Tick)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.opt_node_base_color = Colors.NodeBackgrounds
         self.opt_selected_pen_color = Colors.NodeSelectedPenColor
@@ -324,26 +326,32 @@ class UINodeBase(QGraphicsObject):
 
     @staticmethod
     def jsonTemplate():
-        template = NodeBase.jsonTemplate()
+        template = {}
         template['x'] = 0
         template['y'] = 0
+        # template['meta'] = {'label': ''}
+        return template
+
+    # TODO: add this to ui node interface
+    def serializationHook(self):
+        # this will be called by raw node
+        # to gather ui specific info
+        template = {}
+        template['x'] = self.scenePos().x()
+        template['y'] = self.scenePos().y()
+        if self.resizable:
+            template['meta']['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
         return template
 
     def serialize(self):
-        template = self._rawNode.serialize()
-        template['x'] = self.scenePos().x()
-        template['y'] = self.scenePos().y()
-        template['meta']['label'] = self.displayName
-        if self.resizable:
-            template['meta']['resize'] = {
-                'w': self._rect.right(), 'h': self._rect.bottom()}
-        return template
+        return self._rawNode.serialize()
 
     def autoAffectPins(self):
         self._rawNode.autoAffectPins()
 
     def postCreate(self, jsonTemplate=None):
-        # self._rawNode.postCreate(jsonTemplate)
+        self.setPosition(self._rawNode.x, self._rawNode.y)
+
         # create ui pin wrappers
         for uid, i in self._rawNode.pins.items():
             self._createUIPinWrapper(i)
@@ -699,13 +707,13 @@ class UINodeBase(QGraphicsObject):
                 nodes += node.getChainedNodes()
         return nodes
 
-    def kill(self):
+    def kill(self, *args, **kwargs):
         self.scene().removeItem(self)
         del(self)
 
-    def Tick(self, delta):
+    def Tick(self, delta, *args, **kwargs):
         # NOTE: Do not call wrapped raw node Tick method here!
-        # this ui node tick called from underlined raw node's tick
+        # this ui node tick called from underlined raw node's emitted signal
         # do here only UI stuff
         pass
 

@@ -78,7 +78,8 @@ class PinBase(IPin):
         return True
 
     def setWrapper(self, wrapper):
-        self._wrapper = weakref.ref(wrapper)
+        if self._wrapper is None:
+            self._wrapper = weakref.ref(wrapper)
 
     def getWrapper(self):
         return self._wrapper

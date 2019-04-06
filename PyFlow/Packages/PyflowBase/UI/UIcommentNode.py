@@ -17,9 +17,9 @@ from Qt import QtGui
 from Qt import QtCore
 
 from PyFlow.UI.Utils.Settings import (Spacings, Colors)
-from PyFlow.UI.Graph.UINodeBase import UINodeBase
-from PyFlow.UI.Graph.UINodeBase import NodeName
-from PyFlow.UI.Graph.UIPinBase import UICommentPinBase
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.UI.Canvas.UINodeBase import NodeName
+from PyFlow.UI.Canvas.UIPinBase import UICommentPinBase
 import weakref
 
 buttonStyle = """

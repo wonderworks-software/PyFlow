@@ -3,11 +3,11 @@ from PyFlow.Core import PinBase
 from PyFlow import findPinClassByType
 from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.Settings import Colors
-from PyFlow.UI.Graph.Painters import PinPainter
+from PyFlow.UI.Canvas.Painters import PinPainter
 from PyFlow import getAllPinClasses
 from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
 
-from PyFlow.UI.Graph.UIPinBase import UIPinBase
+from PyFlow.UI.Canvas.UIPinBase import UIPinBase
 from Qt import QtGui
 
 

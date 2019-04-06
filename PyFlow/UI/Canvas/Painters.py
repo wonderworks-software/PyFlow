@@ -55,7 +55,7 @@ class NodePainter(object):
         if option.state & QStyle.State_Selected:
             # pen.setColor(Colors.Yellow)
             pen.setColor(
-                node.graph().window().styleSheetEditor.style.MainColor)
+                node.canvasRef().window().styleSheetEditor.style.MainColor)
             pen.setStyle(node.opt_pen_selected_type)
             pen.setWidth(pen.width() * 1.5)
         painter.setPen(pen)
@@ -80,7 +80,7 @@ class NodePainter(object):
         if option.state & QStyle.State_Selected:
             # pen.setColor(Colors.Yellow)
             pen.setColor(
-                node.graph().window().styleSheetEditor.style.MainColor)
+                node.canvasRef().window().styleSheetEditor.style.MainColor)
             pen.setStyle(node.opt_pen_selected_type)
         painter.setPen(pen)
         painter.drawRoundedRect(node.boundingRect(), 7, 7)
@@ -112,7 +112,7 @@ class NodePainter(object):
         if option.state & QStyle.State_Selected:
             # pen.setColor(Colors.Yellow)
             pen.setColor(
-                node.graph().window().styleSheetEditor.style.MainColor)
+                node.canvasRef().window().styleSheetEditor.style.MainColor)
             pen.setStyle(node.opt_pen_selected_type)
             pen.setWidth(width * 1.5)
         painter.setPen(pen)
@@ -130,7 +130,7 @@ class NodePainter(object):
         linearGrad.setColorAt(1, color.lighter(180))
         br = QtGui.QBrush(linearGrad)
         painter.setBrush(br)
-        # pen = QtGui.QPen(node.graph().parent.styleSheetEditor.style.MainColor, 0.5)
+        # pen = QtGui.QPen(node.canvasRef().parent.styleSheetEditor.style.MainColor, 0.5)
         pen = QtGui.QPen(QtCore.Qt.black, 0.75)
         painter.setPen(pen)
         r = QtCore.QRectF(node.boundingRect())
@@ -149,7 +149,7 @@ class NodePainter(object):
         if option.state & QStyle.State_Selected:
             # pen.setColor(Colors.Yellow)
             pen.setColor(
-                node.graph().window().styleSheetEditor.style.MainColor)
+                node.canvasRef().window().styleSheetEditor.style.MainColor)
             pen.setStyle(node.opt_pen_selected_type)
             pen.setWidth(pen.width() * 1.5)
             painter.setPen(pen)

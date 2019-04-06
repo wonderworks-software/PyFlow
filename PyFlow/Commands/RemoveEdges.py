@@ -2,7 +2,7 @@ from uuid import UUID
 
 from Qt.QtWidgets import QUndoCommand
 
-from PyFlow.UI.Graph.UIConnection import UIConnection
+from PyFlow.UI.Canvas.UIConnection import UIConnection
 
 
 class RemoveEdges(QUndoCommand):

@@ -9,7 +9,7 @@ import uuid
 from Qt import QtCore, QtGui
 from Qt.QtWidgets import QListWidget, QListWidgetItem, QWidget
 
-from PyFlow.UI.Graph.UIVariable import UIVariable
+from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.VariablesWidget_ui import Ui_Form
 from PyFlow.Core.Common import *
 

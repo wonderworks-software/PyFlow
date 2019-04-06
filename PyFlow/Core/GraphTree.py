@@ -23,10 +23,12 @@ class GraphTree:
 
         self.__tree = Tree()
         self.__activeGraph = None
-        if self.setRootGraph(rootGraph):
-            self.switchGraph(rootGraph.name)
-        else:
-            assert(False), "Failed to set root graph!"
+        self.createRoot(rootGraph)
+
+    def createRoot(self, graph):
+        if self.__activeGraph is None:
+            self.__tree.create_node(graph.name, graph.name, data=graph)
+            self.__activeGraph = graph
 
     def serialize(self):
         # save hierarchy
@@ -70,19 +72,30 @@ class GraphTree:
             root = jsonTree
             graphJson = jsonData['graphs'][root]
             restoredRootGraph = GraphBase.deserialize(graphJson)
-            tree.create_node(root, root, data=restoredRootGraph)
-            if self.setRootGraph(restoredRootGraph):
-                self.switchGraph(restoredRootGraph.name)
+            self.createRoot(restoredRootGraph)
         elif isinstance(jsonTree, dict):
             root = giveKey(jsonTree)
             graphJson = jsonData['graphs'][root]
             restoredRootGraph = GraphBase.deserialize(graphJson)
-            tree.create_node(root, root, data=restoredRootGraph)
-            if self.setRootGraph(restoredRootGraph):
-                self.switchGraph(restoredRootGraph.name)
+            self.createRoot(restoredRootGraph)
             # recursively create graphs
             helper(root, jsonTree)
         self.switchGraph(tree[tree.root].data.name)
+
+    def reset(self):
+        """Like clear, but leaves root graph
+        """
+        t = self.getTree()
+
+        rootNode = t[t.root]
+
+        # remove all graphs contents
+        for graph in self.getAllGraphs():
+            graph.clear()
+
+        t.remove_node(rootNode)
+        t.add_node(rootNode)
+        self._activeGraph = rootNode.data
 
     def clear(self):
         t = self.getTree()
@@ -211,18 +224,6 @@ class GraphTree:
         if parentNodeName is not None:
             return self.getTree()[parentNodeName].data
         return None
-
-    def setRootGraph(self, graph):
-        t = self.getTree()
-        if t.size() == 0:
-            t.create_node(graph.name, graph.name, data=graph)
-            self.__activeGraph = graph
-            return True
-        else:
-            if graph.name == t[t.root].data.name:
-                self.__activeGraph = t[t.root].data
-                return True
-        return False
 
     def getRootGraph(self):
         return self.__tree[self.__tree.root].data

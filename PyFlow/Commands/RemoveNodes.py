@@ -41,7 +41,7 @@ class RemoveNodes(QUndoCommand):
                     for e in pin.connections:
                         self.connectionInfo.append(e.serialize())
 
-                node.kill()
+                node._rawNode.kill()
 
             else:
                 assert(False), "node {} not in graph".format(uid)

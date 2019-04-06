@@ -1,3 +1,4 @@
+from blinker import Signal
 import weakref
 import uuid
 import keyword
@@ -18,6 +19,9 @@ from PyFlow import CreateRawPin
 class NodeBase(INode):
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
+        self.killed = Signal()
+        self.tick = Signal(float)
+
         self._uid = uuid.uuid4() if uid is None else uid
         self.graph = None
         self.name = name
@@ -88,7 +92,8 @@ class NodeBase(INode):
     # IItemBase interface
 
     def setWrapper(self, wrapper):
-        self._wrapper = weakref.ref(wrapper)
+        if self._wrapper is None:
+            self._wrapper = weakref.ref(wrapper)
 
     def getWrapper(self):
         return self._wrapper
@@ -124,6 +129,15 @@ class NodeBase(INode):
         template['inputs'] = [i.serialize() for i in self.inputs.values()]
         template['outputs'] = [o.serialize() for o in self.outputs.values()]
         template['meta']['label'] = self.name
+        template['x'] = self.x
+        template['y'] = self.y
+
+        # if running with ui get ui wrapper data to save
+        wrapperRef = self.getWrapper()
+        if wrapperRef:
+            uiDataToSave = wrapperRef().serializationHook()
+            for key, value in uiDataToSave.items():
+                template[key] = value
         return template
 
     @staticmethod
@@ -131,6 +145,8 @@ class NodeBase(INode):
         node = getRawNodeInstance(jsonData['type'], packageName=jsonData['package'], libName=jsonData['lib'], *args, **kwargs)
         node.uid = uuid.UUID(jsonData['uuid'])
         node.setName(jsonData['name'])
+        node.x = jsonData['x']
+        node.y = jsonData['y']
 
         # set pins data
         for inpJson in jsonData['inputs']:
@@ -160,17 +176,10 @@ class NodeBase(INode):
         for pin in self.outputs.values():
             pin.disconnectAll()
         self.graph().nodes.pop(self.uid)
-
-        # kill ui wrapper if exists
-        wrapperRef = self.getWrapper()
-        if wrapperRef is not None:
-            wrapperRef().kill()
+        self.killed.send()
 
     def Tick(self, delta):
-        # call UI wrapper tick if exists
-        wrapperRef = self.getWrapper()
-        if wrapperRef is not None:
-            wrapperRef().Tick(delta)
+        self.tick.send(delta)
 
     @staticmethod
     def category():

@@ -1,5 +1,5 @@
-from PyFlow.UI.Graph.UINodeBase import UINodeBase
-from PyFlow.UI.Graph.Painters import NodePainter
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.UI.Canvas.Painters import NodePainter
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsItem
 
@@ -13,7 +13,7 @@ class UIRerouteNode(UINodeBase):
         self.minWidth = 0
         self.setAcceptHoverEvents(True)
 
-    def kill(self):
+    def kill(self, *args, **kwargs):
         inp = list(self.UIinputs.values())[0]
         out = list(self.UIoutputs.values())[0]
         if inp.dataType == "ExecPin":
@@ -24,7 +24,7 @@ class UIRerouteNode(UINodeBase):
             if out.connections:
                 dst = out.connections[0].destination()
                 for inpt in newIns:
-                    self.graph().connectPins(inpt, dst)
+                    self.canvasRef().connectPins(inpt, dst)
         else:
             newOuts = []
             for i in self.UIoutputs.values():
@@ -35,7 +35,7 @@ class UIRerouteNode(UINodeBase):
                 source = inp.connections[0].source()
                 for out in newOuts:
                     drawSource = inp.connections[0].drawSource
-                    self.graph().connectPins(source, out[0])
+                    self.canvasRef().connectPins(source, out[0])
                     for conection in out[0].connections:
                         if conection.source() == source and conection.destination() == out[0]:
                             conection.drawSource = drawSource

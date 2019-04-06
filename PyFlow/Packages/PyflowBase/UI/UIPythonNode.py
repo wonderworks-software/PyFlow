@@ -2,7 +2,7 @@ import uuid
 
 from Qt import QtGui
 
-from PyFlow.UI.Graph.UINodeBase import UINodeBase
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Views.CodeEditor import CodeEditor
 
 

@@ -20,15 +20,17 @@ from Qt.QtWidgets import QUndoView
 from Qt.QtWidgets import QToolButton
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QSpacerItem
+from Qt.QtWidgets import QFileDialog
 
 from PyFlow import Packages
-from PyFlow.UI.Graph.Canvas import Canvas
+from PyFlow.UI.Canvas.Canvas import Canvas
 from PyFlow.Core.Common import Direction
 from PyFlow.Core.Common import clearLayout
 from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.AppBase import AppBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Views import GraphEditor_ui
 from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
@@ -62,6 +64,8 @@ def _implementPlugin(name, pluginType):
 
 ## App itself
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
+    newFileExecuted = QtCore.Signal()
+
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
         AppBase.__init__(self)
@@ -84,10 +88,10 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
 
         # TODO: move this methods to App
-        self.actionSave.triggered.connect(self.canvasWidget.save)
-        self.actionLoad.triggered.connect(self.canvasWidget.load)
-        self.actionSave_as.triggered.connect(self.canvasWidget.save_as)
-        self.actionNew.triggered.connect(self.canvasWidget.new_file)
+        self.actionSave.triggered.connect(self.save)
+        self.actionLoad.triggered.connect(self.load)
+        self.actionSave_as.triggered.connect(lambda: self.save(True))
+        self.actionNew.triggered.connect(self.newFile)
 
         self.actionAlignLeft.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Left))
         self.actionAlignUp.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Up))
@@ -109,6 +113,108 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.mainLoop)
+        self._current_file_name = 'Untitled'
+
+    def keyPressEvent(self, event):
+        modifiers = event.modifiers()
+        if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
+            self.newFile()
+        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
+            self.save()
+        if all([event.key() == QtCore.Qt.Key_O, modifiers == QtCore.Qt.ControlModifier]):
+            self.load()
+        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            self.save_as()
+
+    def loadFromData(self, data, fpath=""):
+        self.newFile()
+        GT = GraphTree()
+        # this call will create all raw classes
+        GT.deserialize(data)
+        # create ui wrappers
+        for rawNode in GT.getAllNodes():
+            uiNode = getUINodeInstance(rawNode)
+            self.canvasWidget.addNode(uiNode, rawNode.serialize())
+        # create ui connections
+        for rawNode in GT.getAllNodes():
+            uiNode = rawNode.getWrapper()()
+            for outPin in uiNode.UIoutputs.values():
+                for rhsPinUid in outPin._rawPin._linkedToUids:
+                    inRawPin = rawNode.graph().findPin(rhsPinUid)
+                    inUiPin = inRawPin.getWrapper()()
+                    self.canvasWidget.createUIConnectionForConnectedPins(outPin, inUiPin)
+
+        self._current_file_name = fpath
+        self.canvasWidget.frameAllNodes()
+        for node in self.canvasWidget.getAllNodes():
+            if node.isCommentNode:
+                if not node.expanded:
+                    node.expanded = True
+                    node.updateChildren(node.nodesToMove.keys())
+                    node.toggleCollapsed()
+        self.clearPropertiesView()
+
+    def load(self):
+        name_filter = "Graph files (*.json)"
+        savepath = QFileDialog.getOpenFileName(filter=name_filter)
+        if type(savepath) in [tuple, list]:
+            fpath = savepath[0]
+        else:
+            fpath = savepath
+        if not fpath == '':
+            with open(fpath, 'r') as f:
+                data = json.load(f)
+                self.loadFromData(data, fpath)
+
+    def save(self, save_as=False):
+        if save_as:
+            name_filter = "Graph files (*.json)"
+            savepath = QFileDialog.getSaveFileName(filter=name_filter)
+            if type(savepath) in [tuple, list]:
+                pth = savepath[0]
+            else:
+                pth = savepath
+            if not pth == '':
+                self._current_file_name = pth
+            else:
+                self._current_file_name = "Untitled"
+        else:
+            if not os.path.isfile(self._current_file_name):
+                name_filter = "Graph files (*.json)"
+                savepath = QFileDialog.getSaveFileName(filter=name_filter)
+                if type(savepath) in [tuple, list]:
+                    pth = savepath[0]
+                else:
+                    pth = savepath
+                if not pth == '':
+                    self._current_file_name = pth
+                else:
+                    self._current_file_name = "Untitled"
+
+        if self._current_file_name in ["", "Untitled"]:
+            return
+
+        if not self._current_file_name == '':
+            with open(self._current_file_name, 'w') as f:
+                saveData = GraphTree().serialize()
+                json.dump(saveData, f, indent=4)
+
+            print(str("// saved: '{0}'".format(self._current_file_name)))
+
+    def clearPropertiesView(self):
+        clearLayout(self.formLayout)
+
+    def newFile(self):
+        # broadcast
+        self.newFileExecuted.emit()
+        self._current_file_name = 'Untitled'
+        self.clearPropertiesView()
+        GT = GraphTree()
+        GT.clear()
+        # create untitled root graph
+        root = GraphBase('root')
+        GT.getTree().create_node(root.name, root.name, data=root)
+        GT.__activeGraph = root
 
     def onRawGraphSwitched(self, *args, **kwargs):
         assert('old' in kwargs), "invalid arguments passed"

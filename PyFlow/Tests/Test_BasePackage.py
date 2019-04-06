@@ -8,13 +8,11 @@ class TestBasePackage(unittest.TestCase):
         print('\t[BEGIN TEST]', self._testMethodName)
         root = GraphBase("root")
         GT = GraphTree(root)
-        GT.setRootGraph(root)
-        GT.switchGraph(root)
 
     def tearDown(self):
         print('--------------------------------\n')
         try:
-            GraphTree().clear()
+            GraphTree().reset()
         except:
             pass
 

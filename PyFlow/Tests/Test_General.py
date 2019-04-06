@@ -8,13 +8,12 @@ class TestGeneral(unittest.TestCase):
         print('\t[BEGIN TEST]', self._testMethodName)
         root = GraphBase("root")
         GT = GraphTree(root)
-        GT.setRootGraph(root)
-        GT.switchGraph(root)
+        GT.switchGraph('root')
 
     def tearDown(self):
         print('--------------------------------\n')
         try:
-            GraphTree().clear()
+            GraphTree().reset()
         except:
             pass
 
@@ -371,6 +370,7 @@ class TestGeneral(unittest.TestCase):
         """
         packages = GET_PACKAGES()
         GT = GraphTree()
+        GT.switchGraph('root')
 
         # create empty subgraph
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['subgraph']
@@ -573,35 +573,11 @@ class TestGeneral(unittest.TestCase):
 
         # load
         restoredGraph = GraphBase.deserialize(graphJson)
-        GT.setRootGraph(restoredGraph)
+        GT.createRoot(restoredGraph)
 
         restoredAddNode2 = GT.activeGraph().findNode('add2')
         self.assertEqual(restoredAddNode2.getData('out'), 5, "Incorrect calc")
 
-    def test_tree_serialization(self):
-        GT = GraphTree()
-        packages = GET_PACKAGES()
-        intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
-        foos = intlib.getFunctions()
-
-        addNode1 = NodeBase.initializeFromFunction(foos["add"])
-        addNode2 = NodeBase.initializeFromFunction(foos["add"])
-
-        GT.activeGraph().addNode(addNode1)
-        GT.activeGraph().addNode(addNode2)
-        connected = connectPins(addNode1['out'], addNode2['a'])
-        addNode1.setData('a', 5)
-        self.assertEqual(connected, True)
-        self.assertEqual(addNode2.getData('out'), 5, "Incorrect calc")
-
-        # save and clear
-        treeJson = GT.serialize()
-        GT.clear()
-
-        # load
-        GT.deserialize(treeJson)
-        restoredAddNode2 = GT.activeGraph().findNode('add2')
-        self.assertEqual(restoredAddNode2.getData('out'), 5, "Incorrect calc")
 
 if __name__ == '__main__':
     unittest.main()

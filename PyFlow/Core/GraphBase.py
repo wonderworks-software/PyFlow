@@ -34,7 +34,7 @@ class GraphBase(ISerializable):
 
     @staticmethod
     def deserialize(jsonData, *args, **Kwargs):
-        # create graph and return
+        # create graph
         graph = GraphBase(jsonData['name'])
         # restore vars
         for varJson in jsonData['vars']:
