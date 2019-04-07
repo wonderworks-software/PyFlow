@@ -307,7 +307,7 @@ class UINodeBase(QGraphicsObject):
         self._rawNode.setName(name)
 
     def getPin(self, name, pinsGroup=PinSelectionGroup.BothSides):
-        return self._rawNode.getPin(name, pinsGroup)
+        return self._rawNode.getPin(name, pinsGroup).getWrapper()()
 
     @staticmethod
     def removePinByName(node, name):

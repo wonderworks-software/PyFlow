@@ -13,9 +13,6 @@ class ExecPin(PinBase):
         self._isArray = False
 
     def pinConnected(self, other):
-        # connect execution signals
-        if self.direction == PinDirection.Output:
-            self.onExecute.connect(other.call)
         super(ExecPin, self).pinConnected(other)
 
     def setAsArray(self, bIsArray):

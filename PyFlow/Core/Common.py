@@ -231,6 +231,9 @@ def connectPins(src, dst):
     if src.dataType == 'ExecPin' and dst.dataType == 'ExecPin' and src.hasConnections():
         src.disconnectAll()
 
+    if src.dataType == 'ExecPin' and dst.dataType == 'ExecPin':
+        src.onExecute.connect(dst.call)
+
     pinAffects(src, dst)
     src.setDirty()
     dst._data = src.currentData()
@@ -257,6 +260,8 @@ def disconnectPins(src, dst):
         dst.pinDisconnected(src)
         push(dst)
         src._linkedToUids.remove(dst.uid)
+        if src.dataType == 'ExecPin' and dst.dataType == 'ExecPin':
+            src.onExecute.disconnect(dst.call)
         return True
     return False
 

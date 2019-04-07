@@ -247,7 +247,6 @@ class PinBase(IPin):
         self.onPinConnected.send(other)
 
     def pinDisconnected(self, other):
-        clearSignal(self.onExecute)
         self.onPinDisconnected.send(other)
 
     def setClean(self):
