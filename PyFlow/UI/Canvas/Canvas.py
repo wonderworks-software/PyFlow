@@ -569,12 +569,12 @@ class Canvas(QGraphicsView):
         if dataType is None:
             self.node_box.lineEdit.setFocus()
 
-    def goUp(self):
-        if self._parentGraph:
-            self.parent.currentGraph = self._parentGraph
-            self._parentGraph.show()
-            self.hide()
-            self.parent.variablesWidget.setGraph(self._parentGraph)
+    # def goUp(self):
+    #     if self._parentGraph:
+    #         self.parent.currentGraph = self._parentGraph
+    #         self._parentGraph.show()
+    #         self.hide()
+    #         self.parent.variablesWidget.setGraph(self._parentGraph)
 
     def shoutDown(self):
         for ed in self.codeEditors.values():
@@ -732,7 +732,7 @@ class Canvas(QGraphicsView):
         return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
 
     def selectedNodes(self):
-        return [i for i in self.getAllNodes() if i.isSelected()]
+        return [i for i in self.getAllNodes() if i.isSelected() and i is not None]
 
     def clearSelection(self):
         for node in self.selectedNodes():

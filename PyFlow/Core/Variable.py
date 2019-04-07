@@ -122,7 +122,7 @@ class Variable(ISerializable):
         return template
 
     @staticmethod
-    def deserialize(jsonData):
+    def deserialize(jsonData, *args, **kwargs):
         name = jsonData['name']
         dataType = jsonData['dataType']
 

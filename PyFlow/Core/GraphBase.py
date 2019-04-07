@@ -33,18 +33,18 @@ class GraphBase(ISerializable):
         return result
 
     @staticmethod
-    def deserialize(jsonData, *args, **Kwargs):
+    def deserialize(jsonData, *args, **kwargs):
         # create graph
         graph = GraphBase(jsonData['name'])
         # restore vars
         for varJson in jsonData['vars']:
-            var = Variable.deserialize(varJson)
+            var = Variable.deserialize(varJson, *args, **kwargs)
             graph.vars[var.uid] = var
         # restore nodes
         for nodeJson in jsonData['nodes']:
             # check if variable getter or setter and pass variable
-            nodeArgs = ()
-            nodeKwargs = {}
+            nodeArgs = args
+            nodeKwargs = kwargs
             if nodeJson['type'] in ('getVar', 'setVar'):
                 kwargs['var'] = graph.vars[uuid.UUID(nodeJson['varUid'])]
             node = NodeBase.deserialize(nodeJson, *nodeArgs, **nodeKwargs)

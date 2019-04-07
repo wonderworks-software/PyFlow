@@ -37,7 +37,8 @@ class subgraph(NodeBase):
 
     def serialize(self):
         default = NodeBase.serialize(self)
-        default['graphData'] = self.rawGraph.serialize()
+        # default['graphData'] = self.rawGraph.serialize()
+        # default['graphName'] = self.rawGraph.name
         return default
 
     def onGraphInputPinCreated(self, outPin):
@@ -81,6 +82,7 @@ class subgraph(NodeBase):
             outPin.setType(other)
         subgraphInputPin.onPinConnected.connect(onSubgraphInputConnected, weak=False)
 
+        # TODO: rewrite with signal
         wrapperRef = self.getWrapper()
         if wrapperRef is not None:
             # raw subgraph input pin created. Now call UI subgraph node to create UI companion
@@ -125,6 +127,7 @@ class subgraph(NodeBase):
             inPin.setType(other)
         subgraphOutputPin.onPinConnected.connect(onSubgraphOutputConnected, weak=False)
 
+        # TODO: rewrite with signal
         wrapperRef = self.getWrapper()
         if wrapperRef is not None:
             # raw subgraph input pin created. Now call UI subgraph node to create UI companion
@@ -143,10 +146,6 @@ class subgraph(NodeBase):
         self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
 
     def compute(self, *args, **kwargs):
-        # get data from subgraph node input pins and put it to inner companions
-        # for inputPin, innerOutPin in self.__inputsMap.items():
-        #     innerOutPin.setData(inputPin.getData())
-
         # put data from inner graph pins to outer subgraph node output companions
         for outputPin, innerPin in self.__outputsMap.items():
             outputPin.setData(innerPin.getData())

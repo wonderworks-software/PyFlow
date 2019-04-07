@@ -209,11 +209,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self._current_file_name = 'Untitled'
         self.clearPropertiesView()
         GT = GraphTree()
-        GT.clear()
-        # create untitled root graph
-        root = GraphBase('root')
-        GT.getTree().create_node(root.name, root.name, data=root)
-        GT.__activeGraph = root
+        GT.reset()
 
     def onRawGraphSwitched(self, *args, **kwargs):
         assert('old' in kwargs), "invalid arguments passed"
@@ -251,9 +247,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
             btn = QPushButton(folderName)
 
             def onClicked(checked, name=None):
-                if GraphTree().switchGraph(name):
-                    print('goto', name)
-                else:
+                if not GraphTree().switchGraph(name):
                     print('skip')
             btn.clicked.connect(lambda chk=False, name=folderName: onClicked(chk, name))
             self.layoutGraphPath.insertWidget(index, btn)

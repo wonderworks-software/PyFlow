@@ -214,6 +214,9 @@ def connectPins(src, dst):
         src PinBase -- left hand side pin
         dst PinBase -- right hand side pin
     """
+    if arePinsConnected(src, dst):
+        return False
+
     if not canConnectPins(src, dst):
         return False
 

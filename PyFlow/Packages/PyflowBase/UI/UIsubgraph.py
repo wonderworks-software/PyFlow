@@ -31,7 +31,7 @@ class UIsubgraph(UINodeBase):
         GraphTree().switchGraph(self._rawNode.rawGraph.name)
         event.accept()
 
-    def kill(self):
+    def kill(self, *args, **kwargs):
         super(UIsubgraph, self).kill()
 
     def postCreate(self, jsonTemplate=None):

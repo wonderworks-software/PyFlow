@@ -329,14 +329,14 @@ class UINodeBase(QGraphicsObject):
         template = {}
         template['x'] = 0
         template['y'] = 0
-        # template['meta'] = {'label': ''}
+        template['meta'] = {'label': ''}
         return template
 
     # TODO: add this to ui node interface
     def serializationHook(self):
         # this will be called by raw node
         # to gather ui specific info
-        template = {}
+        template = self.jsonTemplate()
         template['x'] = self.scenePos().x()
         template['y'] = self.scenePos().y()
         if self.resizable:

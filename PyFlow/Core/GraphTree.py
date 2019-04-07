@@ -13,102 +13,118 @@ from PyFlow.Core.Common import getUniqNameFromList
 
 
 @SingletonDecorator
-class GraphTree:
+class GraphTree(Tree):
     """Graph tree. Here is all the data
     """
     def __init__(self, rootGraph=None):
+        Tree.__init__(self, tree=None, deep=False, node_class=None)
         assert(rootGraph is not None)
         # signals
         self.onGraphSwitched = Signal()
 
-        self.__tree = Tree()
         self.__activeGraph = None
         self.createRoot(rootGraph)
 
+    def to_dict(self, nid=None, key=None, sort=True, reverse=False, with_data=False):
+        """Transform the whole tree into a dict."""
+
+        nid = self.root if (nid is None) else nid
+        ntag = self[nid].tag
+        tree_dict = {ntag: {"children": []}}
+        if with_data:
+            tree_dict[ntag]["data"] = self[nid].data.serialize()
+
+        if self[nid].expanded:
+            queue = [self[i] for i in self[nid].fpointer]
+            key = (lambda x: x) if (key is None) else key
+            if sort:
+                queue.sort(key=key, reverse=reverse)
+
+            for elem in queue:
+                tree_dict[ntag]["children"].append(
+                    self.to_dict(elem.identifier, with_data=with_data, sort=sort, reverse=reverse))
+            if len(tree_dict[ntag]["children"]) == 0:
+                tree_dict = self[nid].tag if not with_data else \
+                    {ntag: {"data": self[nid].data.serialize()}}
+            return tree_dict
+
     def createRoot(self, graph):
         if self.__activeGraph is None:
-            self.__tree.create_node(graph.name, graph.name, data=graph)
+            self.create_node(graph.name, graph.name, data=graph)
             self.__activeGraph = graph
 
     def serialize(self):
-        # save hierarchy
-        result = {
-            'tree': self.getTree().to_json(),
-            'graphs': {}
-        }
-
-        tree = self.getTree()
-        for nodeId in tree.nodes:
-            node = tree.nodes[nodeId]
-            result['graphs'][node.identifier] = node.data.serialize()
-
-        return result
+        return self.to_dict(with_data=True)
 
     def deserialize(self, jsonData):
-        self.clear()
+        self.reset()
         from PyFlow.Core.GraphBase import GraphBase
 
         def giveKey(d):
             return list(d.keys())[0]
 
-        tree = self.getTree()
+        def getGraphsDict(treeNode, out):
+            for name, graph in treeNode.items():
+                out[name] = graph['data']
+                if 'children' in graph:
+                    for child in graph['children']:
+                        getGraphsDict(child, out)
 
-        def helper(node, subtree):
-            for childStruct in subtree[node]['children']:
-                if type(childStruct) == list:
-                    childStruct = tuple(childStruct)
-                if isinstance(childStruct, Hashable):
-                    graph = GraphBase.deserialize(jsonData[childStruct])
-                    tree.create_node(childStruct, childStruct, parent=node, data=graph)
-                else:
-                    childNode = giveKey(childStruct)
-                    graph = GraphBase.deserialize(jsonData[childNode])
-                    tree.create_node(childNode, childNode, parent=node, data=graph)
-                    helper(childNode, childStruct)
-        jsonTree = json.loads(jsonData['tree'])
+        def helper(node, subtree, graphsDict):
+            if 'children' in subtree[node]:
+                for childStruct in subtree[node]['children']:
+                    if type(childStruct) == list:
+                        childStruct = tuple(childStruct)
+                    if isinstance(childStruct, Hashable):
+                        graph = GraphBase.deserialize(graphsDict[childStruct])
+                        if childStruct in self:
+                            self[childStruct].data = graph
+                        else:
+                            self.create_node(childStruct, childStruct, parent=node, data=graph)
+                    else:
+                        childNode = giveKey(childStruct)
+                        graph = GraphBase.deserialize(graphsDict[childNode])
+                        if childNode in self:
+                            self[childNode].data = graph
+                        else:
+                            self.create_node(childNode, childNode, parent=node, data=graph)
+                        helper(childNode, childStruct, graphsDict)
 
-        # handle if root only
-        if isinstance(jsonTree, str):
-            root = jsonTree
-            graphJson = jsonData['graphs'][root]
-            restoredRootGraph = GraphBase.deserialize(graphJson)
-            self.createRoot(restoredRootGraph)
-        elif isinstance(jsonTree, dict):
-            root = giveKey(jsonTree)
-            graphJson = jsonData['graphs'][root]
-            restoredRootGraph = GraphBase.deserialize(graphJson)
-            self.createRoot(restoredRootGraph)
-            # recursively create graphs
-            helper(root, jsonTree)
-        self.switchGraph(tree[tree.root].data.name)
+        root = giveKey(jsonData)
+        graphJson = jsonData['root']['data']
+        restoredRootGraph = GraphBase.deserialize(graphJson)
+        self.createRoot(restoredRootGraph)
+        # recursively create graphs
+        # create graphs dict
+        graphsDict = {}
+        getGraphsDict(jsonData, graphsDict)
+        helper(root, jsonData, graphsDict)
+        self.switchGraph(self[self.root].data.name)
 
     def reset(self):
         """Like clear, but leaves root graph
         """
-        t = self.getTree()
-
-        rootNode = t[t.root]
+        rootNode = self[self.root]
 
         # remove all graphs contents
         for graph in self.getAllGraphs():
             graph.clear()
 
-        t.remove_node(rootNode)
-        t.add_node(rootNode)
+        for childGraphId in rootNode.fpointer:
+            self.remove_node(childGraphId)
+
         self._activeGraph = rootNode.data
 
     def clear(self):
-        t = self.getTree()
-
         # remove all graphs contents
         for graph in self.getAllGraphs():
             graph.clear()
 
         # clear internal tree dict
-        t._nodes.clear()
+        self._nodes.clear()
 
         # clear root identifier
-        t.root = None
+        self.root = None
 
         # clear active graph pointer
         self.__activeGraph = None
@@ -120,11 +136,11 @@ class GraphTree:
     def addChildGraph(self, rawGraph=None):
         uniqName = self.getUniqGraphName(rawGraph.name)
         rawGraph.name = uniqName
-        self.getTree().create_node(rawGraph.name, rawGraph.name, self.activeGraph().name, rawGraph)
+        self.create_node(rawGraph.name, rawGraph.name, self.activeGraph().name, rawGraph)
 
     def getUniqNodeName(self, name):
         existingNodeNames = []
-        for treeNode in self.getTree().all_nodes():
+        for treeNode in self.all_nodes():
             for rawNode in treeNode.data.getNodes():
                 existingNodeNames.append(rawNode.getName())
         return getUniqNameFromList(existingNodeNames, name)
@@ -165,15 +181,15 @@ class GraphTree:
         return result
 
     def Tick(self, deltaTime):
-        for node in self.getTree().all_nodes():
+        for node in self.all_nodes():
             node.data.Tick(deltaTime)
 
     def switchGraph(self, newGraphName):
-        if newGraphName not in self.getTree():
+        if newGraphName not in self:
             return False
 
         old = self.activeGraph()
-        new = self.getTree()[newGraphName].data
+        new = self[newGraphName].data
         if old == new:
             return False
 
@@ -188,45 +204,39 @@ class GraphTree:
 
     def location(self, sep='|'):
         activeGraphName = self.activeGraph().name
-        if activeGraphName in self.__tree:
-            result = sep.join(reversed([i for i in self.__tree.rsearch(activeGraphName)]))
+        if activeGraphName in self:
+            result = sep.join(reversed([i for i in self.rsearch(activeGraphName)]))
             return result
         return "Unknown"
-
-    def show(self):
-        self.__tree.show()
 
     def activeGraph(self):
         return self.__activeGraph
 
     def getAllNodes(self):
         nodes = []
-        for treeNode in self.getTree().all_nodes():
+        for treeNode in self.all_nodes():
             nodes += list(treeNode.data.nodes.values())
         return nodes
 
     def getAllGraphs(self):
         graphs = []
-        for treeNode in self.getTree().all_nodes():
+        for treeNode in self.all_nodes():
             graphs.append(treeNode.data)
         return graphs
 
     @dispatch(object)
     def getParentGraph(self, graph):
-        parentNodeName = self.getTree()[graph.name].bpointer
+        parentNodeName = self[graph.name].bpointer
         if parentNodeName is not None:
-            return self.getTree()[parentNodeName].data
+            return self[parentNodeName].data
         return None
 
     @dispatch()
     def getParentGraph(self):
-        parentNodeName = self.getTree()[self.activeGraph().name].bpointer
+        parentNodeName = self[self.activeGraph().name].bpointer
         if parentNodeName is not None:
-            return self.getTree()[parentNodeName].data
+            return self[parentNodeName].data
         return None
 
     def getRootGraph(self):
-        return self.__tree[self.__tree.root].data
-
-    def getTree(self):
-        return self.__tree
+        return self[self.root].data

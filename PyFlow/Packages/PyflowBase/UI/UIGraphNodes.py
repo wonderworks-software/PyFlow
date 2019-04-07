@@ -23,7 +23,7 @@ class UIGraphInputs(UINodeBase):
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
-            self.displayName = self.graph().getUniqNodeDisplayName(name)
+            self.displayName = self.canvasRef().getUniqNodeDisplayName(name)
             self.update()
 
     def onAddOutPin(self):
@@ -39,7 +39,7 @@ class UIGraphInputs(UINodeBase):
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
         # recreate dynamically created pins
-        self.pinCreated.connect(self.graph().inPinCreated.emit)
+        self.pinCreated.connect(self.canvasRef().inPinCreated.emit)
         createdPinNames = [pin.name for pin in self.UIoutputs.values()]
         for outPin in jsonTemplate["outputs"]:
             if outPin['name'] not in createdPinNames:
@@ -47,7 +47,7 @@ class UIGraphInputs(UINodeBase):
         try:
             self.displayName = jsonTemplate['meta']['label']
         except:
-            self.displayName = self.graph().getUniqNodeDisplayName("Inputs")
+            self.displayName = self.canvasRef().getUniqNodeDisplayName("Inputs")
         self.label().setPlainText(self.displayName)
         if "resize" in jsonTemplate['meta']:
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
@@ -80,7 +80,7 @@ class UIGraphOutputs(UINodeBase):
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
-            self.displayName = self.graph().getUniqNodeDisplayName(name)
+            self.displayName = self.canvasRef().getUniqNodeDisplayName(name)
             self.update()
 
     def onAddInPin(self):
@@ -96,7 +96,7 @@ class UIGraphOutputs(UINodeBase):
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
         # recreate dynamically created pins
-        self.pinCreated.connect(self.graph().outPinCreated.emit)
+        self.pinCreated.connect(self.canvasRef().outPinCreated.emit)
         createdPinNames = [pin.name for pin in self.UIinputs.values()]
         for inPin in jsonTemplate["inputs"]:
             if inPin['name'] not in createdPinNames:
@@ -104,7 +104,7 @@ class UIGraphOutputs(UINodeBase):
         try:
             self.displayName = jsonTemplate['meta']['label']
         except:
-            self.displayName = self.graph().getUniqNodeDisplayName("Outputs")
+            self.displayName = self.canvasRef().getUniqNodeDisplayName("Outputs")
         self.label().setPlainText(self.displayName)
         if "resize" in jsonTemplate['meta']:
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
