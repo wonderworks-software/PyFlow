@@ -21,7 +21,7 @@ class CreateNode(QUndoCommand):
 
         self.jsonTemplate.clear()
         self.jsonTemplate = self.nodeInstance.serialize()
-        self.graph.nodes[self.uid].kill()
+        self.graph.nodes[self.uid]._rawNode.kill()
         self.graph.scene().blockSignals(False)
 
     def redo(self):

@@ -87,7 +87,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.actionScreenshot.triggered.connect(self.canvasWidget.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
 
-        # TODO: move this methods to App
         self.actionSave.triggered.connect(self.save)
         self.actionLoad.triggered.connect(self.load)
         self.actionSave_as.triggered.connect(lambda: self.save(True))

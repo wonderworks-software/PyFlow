@@ -8,6 +8,7 @@ import math
 import time
 import inspect
 import struct
+import weakref
 from treelib import Node, Tree
 try:
     from queue import Queue
@@ -291,6 +292,19 @@ def getUniqNameFromList(existingNames, name):
         idx += 1
         tmp = name + str(idx)
     return name + str(idx)
+
+
+def clearSignal(signal):
+    """Disconnects all receivers
+
+    Arguments:
+        signal {Signal} -- blinker Signal class
+    """
+    for receiver in list(signal.receivers.values()):
+        if isinstance(receiver, weakref.ref):
+            signal.disconnect(receiver())
+        else:
+            signal.disconnect(receiver)
 
 
 class SingletonDecorator:
