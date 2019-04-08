@@ -34,7 +34,6 @@ from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.Common import *
 
 from collections import OrderedDict
@@ -600,7 +599,7 @@ class UINodeBase(QGraphicsObject):
 
     def clone(self):
         templ = self.serialize()
-        templ['name'] = GraphTree().getUniqNodeName(self.name)
+        templ['name'] = self.canvasRef()().getUniqNodeName(self.name)
         templ['uuid'] = str(uuid.uuid4())
         for inp in templ['inputs']:
             inp['uuid'] = str(uuid.uuid4())

@@ -6,18 +6,23 @@ class TestGeneral(unittest.TestCase):
 
     def setUp(self):
         print('\t[BEGIN TEST]', self._testMethodName)
-        root = GraphBase("root")
-        GT = GraphTree(root)
-        GT.switchGraph('root')
 
     def tearDown(self):
         print('--------------------------------\n')
-        try:
-            GraphTree().reset()
-        except:
-            pass
+
+    def test_graph_location(self):
+        packages = GET_PACKAGES()
+        graph = GraphBase('root')
+        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
+        subgraphNodeInstance = subgraphNodeClass('compound')
+        graph.addNode(subgraphNodeInstance)
+
+        # step inside compound
+        graph.stepToCompound(subgraphNodeInstance.name)
+        self.assertCountEqual(graph.location(), ['root', subgraphNodeInstance.name])
 
     def test_add_int_no_exec(self):
+        graph = GraphBase('root')
         packages = GET_PACKAGES()
         intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
         foos = intlib.getFunctions()
@@ -25,8 +30,8 @@ class TestGeneral(unittest.TestCase):
         addNode1 = NodeBase.initializeFromFunction(foos["add"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
-        GraphTree().activeGraph().addNode(addNode1)
-        GraphTree().activeGraph().addNode(addNode2)
+        graph.addNode(addNode1)
+        graph.addNode(addNode2)
 
         addNode1.setData('a', 5)
 
@@ -44,8 +49,10 @@ class TestGeneral(unittest.TestCase):
         randintNode = NodeBase.initializeFromFunction(randomLibFoos["randint"])
         printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
 
-        GraphTree().activeGraph().addNode(randintNode)
-        GraphTree().activeGraph().addNode(printNode)
+        graph = GraphBase('root')
+
+        graph.addNode(randintNode)
+        graph.addNode(printNode)
 
         self.assertIsNotNone(randintNode)
         self.assertIsNotNone(printNode)
@@ -81,9 +88,11 @@ class TestGeneral(unittest.TestCase):
         n2 = NodeBase.initializeFromFunction(foos["makeBool"])
         n3 = NodeBase.initializeFromFunction(foos["makeBool"])
 
-        GraphTree().activeGraph().addNode(n1)
-        GraphTree().activeGraph().addNode(n2)
-        GraphTree().activeGraph().addNode(n3)
+        graph = GraphBase('root')
+
+        graph.addNode(n1)
+        graph.addNode(n2)
+        graph.addNode(n3)
 
         n1Out = n1.getPin('out', PinSelectionGroup.Outputs)
         n3b = n3.getPin('b', PinSelectionGroup.Inputs)
@@ -118,8 +127,10 @@ class TestGeneral(unittest.TestCase):
         addNode1 = NodeBase.initializeFromFunction(foos["add"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
-        GraphTree().activeGraph().addNode(addNode1)
-        GraphTree().activeGraph().addNode(addNode2)
+        graph = GraphBase('root')
+
+        graph.addNode(addNode1)
+        graph.addNode(addNode2)
 
         pinOut = addNode1.getPin('out', PinSelectionGroup.Outputs)
         pinInp = addNode2.getPin('a', PinSelectionGroup.Inputs)
@@ -132,84 +143,85 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(arePinsConnected(pinOut, pinInp), False)
 
     def test_create_var(self):
-        v1 = GraphTree().activeGraph().createVariable()
-        self.assertEqual(v1.uid in GraphTree().activeGraph().vars, True)
+        graph = GraphBase('root')
+        v1 = graph.createVariable()
+        self.assertEqual(v1.uid in graph.vars, True)
 
     def test_variable_scope(self):
         from collections import Counter
 
-        GT = GraphTree()
+        graph = GraphBase('root')
         # add variable to root graph
-        rootVariable = GT.activeGraph().createVariable(name="v0")
+        rootVariable = graph.createVariable(name="v0")
         rootVariable.value = 0
-        self.assertEqual(rootVariable.uid in GT.activeGraph().vars, True)
+        self.assertEqual(rootVariable.uid in graph.vars, True)
 
-        vars = GT.getVarsList()
+        vars = graph.getVarList()
         self.assertEqual(len(vars), 1, "failed to gather variables")
 
         # create two subgraphs and variables inside
         packages = GET_PACKAGES()
-        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['subgraph']
+        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
 
         subgraphNodeInstance1 = subgraphNodeClass('subgraph1')
         subgraphNodeInstance2 = subgraphNodeClass('subgraph2')
-        GT.activeGraph().addNode(subgraphNodeInstance1)
-        GT.activeGraph().addNode(subgraphNodeInstance2)
-        self.assertEqual(GT.getRootGraph().name, "root", "root graph is invalid")
-        self.assertEqual(GT.activeGraph().name, "root")
+        graph.addNode(subgraphNodeInstance1)
+        graph.addNode(subgraphNodeInstance2)
 
         # goto subgraph1 and create variable
-        GT.switchGraph(subgraphNodeInstance1.name)
-        sg1Var = GT.activeGraph().createVariable(name="v1")
+        graph.stepToCompound(subgraphNodeInstance1.name)
+        sg1Var = graph.createVariable(name="v1")
         sg1Var.value = 1
-        GT.switchGraph('root')
+        graph.stepToCompound('root')
 
         # goto subgraph2 and create variable there
-        GT.switchGraph(subgraphNodeInstance2.name)
-        sg2Var = GT.activeGraph().createVariable(name="v2")
+        graph.stepToCompound(subgraphNodeInstance2.name)
+        sg2Var = graph.createVariable(name="v2")
         sg2Var.value = 2
-        GT.switchGraph('root')
+        graph.stepToCompound('root')
 
         # ask variables from rootgraph.
-        vars = GT.getVarsList()
+        vars = graph.getVarList()
         self.assertEqual(len(vars), 1, "failed to gather variables")
         # check variable value is 0
         self.assertEqual(vars[0].value, 0, "invalid variable")
 
         # go to subgraph1 and ask variables there
-        GT.switchGraph(subgraphNodeInstance1.name)
-        vars = GT.getVarsList()
+        graph.stepToCompound(subgraphNodeInstance1.name)
+        vars = graph.getVarList()
         # two variables. One from subgraph1 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
         self.assertEqual(Counter(varsValues) == Counter([0, 1]), True, "variables are incorrect")
-        GT.switchGraph('root')
+        graph.stepToCompound('root')
 
         # goto subgraph2 and ask variables there
-        GT.switchGraph(subgraphNodeInstance2.name)
-        vars = GT.getVarsList()
+        graph.stepToCompound(subgraphNodeInstance2.name)
+        vars = graph.getVarList()
         # two variables. One from subgraph2 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
         self.assertEqual(Counter(varsValues) == Counter([0, 2]), True, "variables are incorrect")
-        GT.switchGraph('root')
+        graph.stepToCompound('root')
 
     def test_get_any_var(self):
         packages = GET_PACKAGES()
 
+        graph = GraphBase('root')
+
         # create any type variable
-        v1 = GraphTree().activeGraph().createVariable()
+        v1 = graph.createVariable()
         v1.value = False
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
         varGetterInstance = varGetterClass('v1Getter', v1)
-        GraphTree().activeGraph().addNode(varGetterInstance)
+        graph.addNode(varGetterInstance)
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
         printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
-        GraphTree().activeGraph().addNode(printerInstance)
+        graph.addNode(printerInstance)
 
         # connect to print node input
         varOutPin = varGetterInstance.getPin('value', PinSelectionGroup.Outputs)
@@ -234,20 +246,22 @@ class TestGeneral(unittest.TestCase):
     def test_get_bool_var(self):
         packages = GET_PACKAGES()
 
+        graph = GraphBase('root')
+
         # create bool variable
-        v1 = GraphTree().activeGraph().createVariable('BoolPin')
+        v1 = graph.createVariable('BoolPin')
         v1.value = False
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
         # since variable is bool, bool pin will be created
         varGetterInstance = varGetterClass('v1Getter', v1)
-        GraphTree().activeGraph().addNode(varGetterInstance)
+        graph.addNode(varGetterInstance)
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
         printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
-        GraphTree().activeGraph().addNode(printerInstance)
+        graph.addNode(printerInstance)
 
         # connect to print node input
         varOutPin = varGetterInstance.getPin('value', PinSelectionGroup.Outputs)
@@ -271,19 +285,21 @@ class TestGeneral(unittest.TestCase):
     def test_kill_variable(self):
         packages = GET_PACKAGES()
 
+        graph = GraphBase('root')
+
         # create any type variable
-        v1 = GraphTree().activeGraph().createVariable()
+        v1 = graph.createVariable()
         v1.value = False
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
         varGetterInstance = varGetterClass('v1Getter', v1)
-        GraphTree().activeGraph().addNode(varGetterInstance)
+        graph.addNode(varGetterInstance)
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
         printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
-        GraphTree().activeGraph().addNode(printerInstance)
+        graph.addNode(printerInstance)
 
         # connect to print node input
         varOutPin = varGetterInstance.getPin('value', PinSelectionGroup.Outputs)
@@ -292,24 +308,26 @@ class TestGeneral(unittest.TestCase):
         connected = connectPins(varOutPin, printInPin)
         self.assertEqual(connected, True, "var getter is not connected")
 
-        GraphTree().activeGraph().killVariable(v1)
-        self.assertEqual(v1 not in GraphTree().activeGraph().vars, True, "variable not killed")
-        self.assertEqual(varGetterInstance.uid not in GraphTree().activeGraph().nodes, True, "get var not killed")
+        graph.killVariable(v1)
+        self.assertEqual(v1 not in graph.vars, True, "variable not killed")
+        self.assertEqual(varGetterInstance.uid not in graph.nodes, True, "get var not killed")
         connected = arePinsConnected(varOutPin, printInPin)
         self.assertEqual(connected, False, "get var node is removed, but pins are still connected")
 
     def test_set_any_var(self):
         packages = GET_PACKAGES()
 
+        graph = GraphBase('root')
+
         # create any type variable
-        v1 = GraphTree().activeGraph().createVariable()
+        v1 = graph.createVariable()
         # type checking will not be performed since this is any type
         v1.value = False
 
         # create variable setter node
         varSetterClass = packages["PyflowBase"].GetNodeClasses()['setVar']
         varSetterInstance = varSetterClass('v1Setter', v1)
-        setterAdded = GraphTree().activeGraph().addNode(varSetterInstance)
+        setterAdded = graph.addNode(varSetterInstance)
         self.assertEqual(setterAdded, True)
 
         # set new value to setter node input pin
@@ -332,15 +350,17 @@ class TestGeneral(unittest.TestCase):
         import pyrr
         packages = GET_PACKAGES()
 
+        graph = GraphBase('root')
+
         # create bool type variable
-        v1 = GraphTree().activeGraph().createVariable('BoolPin')
+        v1 = graph.createVariable('BoolPin')
         # this will accept only bools
         v1.value = False
 
         # create variable setter node
         varSetterClass = packages["PyflowBase"].GetNodeClasses()['setVar']
         varSetterInstance = varSetterClass('v1Setter', v1)
-        setterAdded = GraphTree().activeGraph().addNode(varSetterInstance)
+        setterAdded = graph.addNode(varSetterInstance)
         self.assertEqual(setterAdded, True)
 
         # set new value to setter node input pin
@@ -360,37 +380,34 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(v1.value, True, "variable value is not set")
 
     def test_subgraph_simple(self):
-        """Here we create subgraph node with two add nodes connected inside [add1.out -> add2.a]
+        """Here we create compound node with two add nodes connected inside [add1.out -> add2.a]
 
-        switch active graph to subgraph and back to root
-        check subgraph node exposes pins from underlined graph inputs/outputs nodes
+        switch active graph to compound and back to root
+        check compound node exposes pins from underlined graph inputs/outputs nodes
         add nodes to different graphs of GraphTree
-        check inner pins broadcasts changes to outer companion pins on subgraph node
+        check inner pins broadcasts changes to outer companion pins on compound node
 
         """
         packages = GET_PACKAGES()
-        GT = GraphTree()
-        GT.switchGraph('root')
+        graph = GraphBase('root')
 
-        # create empty subgraph
-        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['subgraph']
-        subgraphNodeInstance = subgraphNodeClass('subgraph')
-        GT.activeGraph().addNode(subgraphNodeInstance)
-        self.assertEqual(GT.getRootGraph().name, "root", "root graph is invalid")
-        self.assertEqual(GT.activeGraph().name, "root")
+        # create empty compound
+        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
+        subgraphNodeInstance = subgraphNodeClass('compound')
+        graph.addNode(subgraphNodeInstance)
 
-        # step inside subgraph
-        GT.switchGraph(subgraphNodeInstance.name)
-        self.assertEqual(GT.activeGraph().name, subgraphNodeInstance.name, "failed to enter subgraph")
+        # step inside compound
+        graph.stepToCompound(subgraphNodeInstance.name)
+        # check current location
 
-        # add input output nodes to expose pins to outer subgraph node
-        inputs1 = GT.activeGraph().getInputNode()
-        outputs1 = GT.activeGraph().getOutputNode()
+        # add input output nodes to expose pins to outer compound node
+        inputs1 = graph.getInputNode()
+        outputs1 = graph.getOutputNode()
         self.assertIsNotNone(inputs1, "failed to create graph inputs node")
         self.assertIsNotNone(outputs1, "failed to create graph outputs node")
 
         # create out pin on graphInputs node
-        # this should expose input pin on subgraph node
+        # this should expose input pin on compound node
         outPin = inputs1.addOutPin()
         self.assertEqual(len(subgraphNodeInstance.namePinInputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
@@ -400,7 +417,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name, "name is not synchronized")
 
         # create input pin on graphOutputs node
-        # this should expose output pin on subgraph node
+        # this should expose output pin on compound node
         inPin = outputs1.addInPin()
         self.assertEqual(len(subgraphNodeInstance.namePinOutputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
@@ -410,17 +427,17 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name, "name is not synchronized")
 
         subgraphInPin = subgraphNodeInstance.getPin('first', PinSelectionGroup.Inputs)
-        self.assertIsNotNone(subgraphInPin, "failed to find subgraph out pin")
+        self.assertIsNotNone(subgraphInPin, "failed to find compound out pin")
         subgraphOutPin = subgraphNodeInstance.getPin('first', PinSelectionGroup.Outputs)
-        self.assertIsNotNone(subgraphOutPin, "failed to find subgraph out pin")
+        self.assertIsNotNone(subgraphOutPin, "failed to find compound out pin")
 
         # add simple calculation
         foos = packages['PyflowBase'].GetFunctionLibraries()["IntLib"].getFunctions()
 
         addNode1 = NodeBase.initializeFromFunction(foos["add"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
-        GT.activeGraph().addNode(addNode1)
-        GT.activeGraph().addNode(addNode2)
+        subgraphNodeInstance.addNode(addNode1)
+        subgraphNodeInstance.addNode(addNode2)
         addNode1.setData("b", 1)
         addNode2.setData("b", 1)
         connection = connectPins(addNode1.getPin('out', PinSelectionGroup.Outputs), addNode2.getPin('a', PinSelectionGroup.Inputs))
@@ -439,17 +456,17 @@ class TestGeneral(unittest.TestCase):
         self.assertIsNotNone(outputs1.getPin('first').currentData(), "output companion pin data is incorrect")
 
         # go back to root graph
-        GT.switchGraph("root")
-        self.assertEqual(GT.activeGraph().name, "root", "failed to return back to root from subgraph node")
+        graph.stepToCompound("root")
+        self.assertEqual(graph.activeGraph().name, "root", "failed to return back to root from compound node")
 
         # check exposed pins added
         self.assertEqual(len(subgraphNodeInstance.inputs), 1)
         self.assertEqual(len(subgraphNodeInstance.outputs), 1)
 
-        # connect getter to subgraph output pin
+        # connect getter to compound output pin
         defaultLibFoos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
         printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
-        GT.activeGraph().addNode(printNode)
+        graph.activeGraph().addNode(printNode)
 
         connected = connectPins(printNode.getPin('entity'), subgraphOutPin)
         self.assertEqual(connected, True)
@@ -458,15 +475,15 @@ class TestGeneral(unittest.TestCase):
         printNode.getPin('inExec').call()
         self.assertEqual(printNode.getPin('entity').currentData(), 2)
 
-        # connect another add node to exposed subgraph input
+        # connect another add node to exposed compound input
         addNode3 = NodeBase.initializeFromFunction(foos["add"])
-        GT.activeGraph().addNode(addNode3)
+        graph.activeGraph().addNode(addNode3)
         addNode3.setData('a', 1)
         connected = connectPins(addNode3.getPin('out'), subgraphInPin)
         self.assertEqual(connected, True)
 
-        # any pin should be connected, because we have int calculations inside subgraph
-        self.assertEqual(subgraphInPin.hasConnections(), True, "subgraph input pin has no connections")
+        # any pin should be connected, because we have int calculations inside compound
+        self.assertEqual(subgraphInPin.hasConnections(), True, "compound input pin has no connections")
 
         # check value
         printNode.getPin('inExec').call()
@@ -484,57 +501,55 @@ class TestGeneral(unittest.TestCase):
     def test_subgraph_execs(self):
         packages = GET_PACKAGES()
 
-        GT = GraphTree()
+        graph = GraphBase('root')
 
-        # create empty subgraph
-        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['subgraph']
-        subgraphNodeInstance = subgraphNodeClass('subgraph')
-        GT.activeGraph().addNode(subgraphNodeInstance)
-        self.assertEqual(GT.getRootGraph().name, "root", "root graph is invalid")
-        self.assertEqual(GT.activeGraph().name, "root")
+        # create empty compound
+        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
+        subgraphNodeInstance = subgraphNodeClass('compound')
+        graph.addNode(subgraphNodeInstance)
 
-        # step inside subgraph
-        GT.switchGraph(subgraphNodeInstance.name)
-        self.assertEqual(GT.activeGraph().name, subgraphNodeInstance.name, "failed to enter subgraph")
+        # step inside compound
+        graph.stepToCompound(subgraphNodeInstance.name)
+        # self.assertEqual(graph.name, subgraphNodeInstance.name, "failed to enter compound")
 
-        # add input output nodes to expose pins to outer subgraph node
-        inputs1 = GT.activeGraph().getInputNode()
-        outputs1 = GT.activeGraph().getOutputNode()
+        # add input output nodes to expose pins to outer compound node
+        inputs1 = graph.getInputNode()
+        outputs1 = graph.getOutputNode()
         self.assertIsNotNone(inputs1, "failed to create graph inputs node")
         self.assertIsNotNone(outputs1, "failed to create graph outputs node")
 
         # create out pin on graphInputs node
-        # this should expose input pin on subgraph node
+        # this should expose input pin on compound node
         outPin = inputs1.addOutPin()
         self.assertEqual(len(subgraphNodeInstance.namePinInputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
         outPin.setName('inAnyExec')
 
         # create input pin on graphOutputs node
-        # this should expose output pin on subgraph node
+        # this should expose output pin on compound node
         inPin = outputs1.addInPin()
         self.assertEqual(len(subgraphNodeInstance.namePinOutputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
         inPin.setName('outAnyExec')
 
         subgraphInAnyExec = subgraphNodeInstance.getPin('inAnyExec', PinSelectionGroup.Inputs)
-        self.assertIsNotNone(subgraphInAnyExec, "failed to find subgraph input exec pin")
+        self.assertIsNotNone(subgraphInAnyExec, "failed to find compound input exec pin")
         subgraphOutAnyExec = subgraphNodeInstance.getPin('outAnyExec', PinSelectionGroup.Outputs)
-        self.assertIsNotNone(subgraphOutAnyExec, "failed to find subgraph out exec pin")
+        self.assertIsNotNone(subgraphOutAnyExec, "failed to find compound out exec pin")
 
         # add print node inside
         foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
 
         printNode1 = NodeBase.initializeFromFunction(foos["pyprint"])
-        GT.activeGraph().addNode(printNode1)
-        printNode1.setData("entity", "hello from subgraph")
+        graph.addNode(printNode1)
+        printNode1.setData("entity", "hello from compound")
 
         # connect print node execs to graph input/output
-        # this should change pin types to execs on graph nodes as well as on owning subgraph node
+        # this should change pin types to execs on graph nodes as well as on owning compound node
         connection = connectPins(outPin, printNode1.getPin(DEFAULT_IN_EXEC_NAME))
         self.assertEqual(connection, True)
         self.assertEqual(subgraphInAnyExec.dataType, "ExecPin", "failed to change data type to exec")
-        # Print in exec connected to subgraph input node. Calling from outside exec
+        # Print in exec connected to compound input node. Calling from outside exec
         # output is not connected
         subgraphInAnyExec.call(message="TEMP")
 
@@ -544,15 +559,10 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(subgraphOutAnyExec.dataType, "ExecPin", "failed to change data type to exec")
         self.assertEqual(subgraphOutAnyExec.call, printNode1.getPin(DEFAULT_OUT_EXEC_NAME).call, "incorrect call functions on exec pins")
 
-        # go back to root
-        # GT.switchGraph("root")
-        # printNodeAfter = NodeBase.initializeFromFunction(foos["pyprint"])
-        # GT.activeGraph().addNode(printNodeAfter)
-        # printNodeAfter.setData("entity", "hello after subgraph exec")
         subgraphInAnyExec.call(message="EXECS MSG")
 
     def test_graph_serialization(self):
-        GT = GraphTree()
+        graph = GraphBase('root')
         packages = GET_PACKAGES()
         intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
         foos = intlib.getFunctions()
@@ -560,22 +570,20 @@ class TestGeneral(unittest.TestCase):
         addNode1 = NodeBase.initializeFromFunction(foos["add"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
-        GT.activeGraph().addNode(addNode1)
-        GT.activeGraph().addNode(addNode2)
+        graph.addNode(addNode1)
+        graph.addNode(addNode2)
         connected = connectPins(addNode1['out'], addNode2['a'])
         addNode1.setData('a', 5)
         self.assertEqual(connected, True)
         self.assertEqual(addNode2.getData('out'), 5, "Incorrect calc")
 
         # save and clear
-        graphJson = GT.activeGraph().serialize()
-        GT.clear()
+        graphJson = graph.serialize()
 
         # load
         restoredGraph = GraphBase.deserialize(graphJson)
-        GT.createRoot(restoredGraph)
 
-        restoredAddNode2 = GT.activeGraph().findNode('add2')
+        restoredAddNode2 = graph.findNode('add2')
         self.assertEqual(restoredAddNode2.getData('out'), 5, "Incorrect calc")
 
 

@@ -2,13 +2,12 @@ from Qt import QtWidgets
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
-from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.Common import *
 
 
-class UIsubgraph(UINodeBase):
+class UICompoundNode(UINodeBase):
     def __init__(self, raw_node):
-        super(UIsubgraph, self).__init__(raw_node)
+        super(UICompoundNode, self).__init__(raw_node)
 
     def updateSize(self, name):
         self.updateWidth()
@@ -20,7 +19,7 @@ class UIsubgraph(UINodeBase):
         uiCompanionPin = self._createUIPinWrapper(rawPin)
 
     def serialize(self):
-        default = super(UIsubgraph, self).serialize()
+        default = super(UICompoundNode, self).serialize()
 
         return default
 
@@ -28,11 +27,11 @@ class UIsubgraph(UINodeBase):
         uiCompanionPin = self._createUIPinWrapper(rawPin)
 
     def mouseDoubleClickEvent(self, event):
-        GraphTree().switchGraph(self._rawNode.rawGraph.name)
+        self._rawNode.graph().stepToCompound(self.name)
         event.accept()
 
     def kill(self, *args, **kwargs):
-        super(UIsubgraph, self).kill()
+        super(UICompoundNode, self).kill()
 
     def postCreate(self, jsonTemplate=None):
-        super(UIsubgraph, self).postCreate(jsonTemplate)
+        super(UICompoundNode, self).postCreate(jsonTemplate)

@@ -42,7 +42,6 @@ from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
 from PyFlow.Commands.RemoveEdges import RemoveEdges as cmdRemoveEdges
 from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.UI.Views.VariablesWidget import (
@@ -197,7 +196,7 @@ class SceneClass(QGraphicsScene):
             packageName = jsonData["package"]
             nodeType = jsonData["type"]
             libName = jsonData["lib"]
-            name = GraphTree().getUniqNodeName(nodeType)
+            name = self.parent()._rawGraph.getUniqNodeName(nodeType)
 
             nodeTemplate = NodeBase.jsonTemplate()
             nodeTemplate['package'] = packageName
@@ -342,7 +341,7 @@ class SceneClass(QGraphicsScene):
                 packageName = jsonData["package"]
                 nodeType = jsonData["type"]
                 libName = jsonData['lib']
-                name = GraphTree().getUniqNodeName(nodeType)
+                name = self.parent()._rawGraph.getUniqNodeName(nodeType)
                 dropItem = self.parent().nodeFromInstance(self.itemAt(event.scenePos(), QtGui.QTransform()))
                 if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
                     nodeTemplate = NodeBase.jsonTemplate()
@@ -442,6 +441,7 @@ class Canvas(QGraphicsView):
 
     def __init__(self, parent=None):
         super(Canvas, self).__init__()
+        self._rawGraph = GraphBase('root')
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent
@@ -516,19 +516,25 @@ class Canvas(QGraphicsView):
         self._storedVars = []
         self.installEventFilter(self)
 
+    def plot(self):
+        self._rawGraph._compoundTree[self._rawGraph._activeGraphId].data.plot()
+
+    def location(self):
+        return self._rawGraph.location()
+
     def __del__(self):
         # self.tick_timer.stop()
         pass
 
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
-        return GraphTree().activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+        return self._rawGraph.createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
 
     @property
     def nodes(self):
         """returns all ui nodes dict
         """
         result = {}
-        for rawNode in GraphTree().getAllNodes():
+        for rawNode in self._rawGraph.getAllNodes():
             result[rawNode.uid] = rawNode.getWrapper()()
         return result
 
@@ -537,7 +543,7 @@ class Canvas(QGraphicsView):
         """Returns UI pins dict {uuid: UIPinBase}
         """
         result = {}
-        for rawPin in GraphTree().activeGraph().pins.values():
+        for rawPin in self._rawGraph.pins.values():
             result[rawPin.uid] = rawPin.getWrapper()()
         return result
 
@@ -568,13 +574,6 @@ class Canvas(QGraphicsView):
         self.node_box.lineEdit.setText("")
         if dataType is None:
             self.node_box.lineEdit.setFocus()
-
-    # def goUp(self):
-    #     if self._parentGraph:
-    #         self.parent.currentGraph = self._parentGraph
-    #         self._parentGraph.show()
-    #         self.hide()
-    #         self.parent.variablesWidget.setGraph(self._parentGraph)
 
     def shoutDown(self):
         for ed in self.codeEditors.values():
@@ -761,7 +760,7 @@ class Canvas(QGraphicsView):
                 nodeTemplate = NodeBase.jsonTemplate()
                 nodeTemplate['package'] = "PyflowBase"
                 nodeTemplate['type'] = commentNode.__name__
-                nodeTemplate['name'] = GraphTree().getUniqNodeName(commentNode.__name__)
+                nodeTemplate['name'] = self._rawGraph.getUniqNodeName(commentNode.__name__)
                 if rect:
                     nodeTemplate['x'] = rect.topLeft().x()
                     nodeTemplate['y'] = rect.topLeft().y()
@@ -905,7 +904,7 @@ class Canvas(QGraphicsView):
 
         for node in nodes["nodes"]:
             oldName = node["name"]
-            node["name"] = GraphTree().getUniqNodeName(node["name"])
+            node["name"] = self._rawGraph.getUniqNodeName(node["name"])
             node['uuid'] = str(uuid.uuid4())
             for inp in node['inputs']:
                 inp['uuid'] = str(uuid.uuid4())
@@ -1024,7 +1023,7 @@ class Canvas(QGraphicsView):
         nodeTemplate['package'] = "PyflowBase"
         nodeTemplate['lib'] = None
         nodeTemplate['type'] = "graphInputs"
-        nodeTemplate['name'] = GraphTree().getUniqNodeName("graphInputs")
+        nodeTemplate['name'] = self._rawGraph.getUniqNodeName("graphInputs")
         nodeTemplate['x'] = self.boundingRect.left() + 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
         nodeTemplate['uuid'] = str(uuid.uuid4())
@@ -1038,7 +1037,7 @@ class Canvas(QGraphicsView):
         nodeTemplate['package'] = "PyflowBase"
         nodeTemplate['lib'] = None
         nodeTemplate['type'] = "graphOutputs"
-        nodeTemplate['name'] = GraphTree().getUniqNodeName("graphOutputs")
+        nodeTemplate['name'] = self._rawGraph.getUniqNodeName("graphOutputs")
         nodeTemplate['x'] = self.boundingRect.width() - 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
         nodeTemplate['uuid'] = str(uuid.uuid4())
@@ -1475,6 +1474,9 @@ class Canvas(QGraphicsView):
         # Call update to redraw background
         self.update()
 
+    def stepToCompound(self, compoundNode):
+        self._rawGraph.stepToCompound(compoundNode)
+
     def drawBackground(self, painter, rect):
 
         super(Canvas, self).drawBackground(painter, rect)
@@ -1563,6 +1565,9 @@ class Canvas(QGraphicsView):
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
+    def activeGraph(self):
+        return self._rawGraph.activeGraph()
+
     def addNode(self, uiNode, jsonTemplate, parentGraph=None):
         """Adds node to a graph
 
@@ -1570,7 +1575,7 @@ class Canvas(QGraphicsView):
             node UINodeBase -- raw node wrapper
         """
         assert(jsonTemplate is not None)
-        graph = GraphTree().activeGraph() if parentGraph is None else parentGraph
+        graph = self.activeGraph() if parentGraph is None else parentGraph
         graph.addNode(uiNode._rawNode, jsonTemplate)
         uiNode.canvasRef = weakref.ref(self)
         self.scene().addItem(uiNode)

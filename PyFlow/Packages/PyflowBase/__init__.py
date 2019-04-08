@@ -48,7 +48,7 @@ from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
     graphOutputs
 )
 from PyFlow.Packages.PyflowBase.Nodes.pythonNode import pythonNode
-from PyFlow.Packages.PyflowBase.Nodes.subgraph import subgraph
+from PyFlow.Packages.PyflowBase.Nodes.compound import compound
 _FOO_LIBS = {
     ArrayLib.__name__: ArrayLib(PACKAGE_NAME),
     BoolLib.__name__: BoolLib(PACKAGE_NAME),
@@ -82,7 +82,7 @@ _NODES = {
     reroute.__name__: reroute,
     graphInputs.__name__: graphInputs,
     graphOutputs.__name__: graphOutputs,
-    subgraph.__name__: subgraph,
+    compound.__name__: compound,
     pythonNode.__name__: pythonNode
 }
 

@@ -26,8 +26,6 @@ from PyFlow import Packages
 from PyFlow.UI.Canvas.Canvas import Canvas
 from PyFlow.Core.Common import Direction
 from PyFlow.Core.Common import clearLayout
-from PyFlow.Core.GraphTree import GraphTree
-from PyFlow.Core.AppBase import AppBase
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
@@ -63,12 +61,11 @@ def _implementPlugin(name, pluginType):
 
 
 ## App itself
-class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
+class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     newFileExecuted = QtCore.Signal()
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
-        AppBase.__init__(self)
         self.setupUi(self)
         self.listViewUndoStack = QUndoView(self.dockWidgetContents_3)
         self.listViewUndoStack.setObjectName("listViewUndoStack")
@@ -76,12 +73,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
 
         self.styleSheetEditor = StyleSheetEditor()
         self.canvasWidget = Canvas(self)
+        self.canvasWidget._rawGraph.locationChanged.connect(self.onRawGraphSwitched)
         self.updateGraphTreeLocation()
-        GraphTree().onGraphSwitched.connect(self.onRawGraphSwitched)
         self.SceneLayout.addWidget(self.canvasWidget)
 
         self.actionVariables.triggered.connect(self.toggleVariables)
-        self.actionPlot_graph.triggered.connect(GraphTree().plot)
+        self.actionPlot_graph.triggered.connect(self.canvasWidget.plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionPropertyView.triggered.connect(self.togglePropertyView)
         self.actionScreenshot.triggered.connect(self.canvasWidget.screenShot)
@@ -127,31 +124,31 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
 
     def loadFromData(self, data, fpath=""):
         self.newFile()
-        GT = GraphTree()
+        # GT = GraphTree()
         # this call will create all raw classes
-        GT.deserialize(data)
+        # GT.deserialize(data)
         # create ui wrappers
-        for rawNode in GT.getAllNodes():
-            uiNode = getUINodeInstance(rawNode)
-            self.canvasWidget.addNode(uiNode, rawNode.serialize())
+        # for rawNode in GT.getAllNodes():
+        #     uiNode = getUINodeInstance(rawNode)
+        #     self.canvasWidget.addNode(uiNode, rawNode.serialize())
         # create ui connections
-        for rawNode in GT.getAllNodes():
-            uiNode = rawNode.getWrapper()()
-            for outPin in uiNode.UIoutputs.values():
-                for rhsPinUid in outPin._rawPin._linkedToUids:
-                    inRawPin = rawNode.graph().findPin(rhsPinUid)
-                    inUiPin = inRawPin.getWrapper()()
-                    self.canvasWidget.createUIConnectionForConnectedPins(outPin, inUiPin)
+        # for rawNode in GT.getAllNodes():
+        #     uiNode = rawNode.getWrapper()()
+        #     for outPin in uiNode.UIoutputs.values():
+        #         for rhsPinUid in outPin._rawPin._linkedToUids:
+        #             inRawPin = rawNode.graph().findPin(rhsPinUid)
+        #             inUiPin = inRawPin.getWrapper()()
+        #             self.canvasWidget.createUIConnectionForConnectedPins(outPin, inUiPin)
 
-        self._current_file_name = fpath
-        self.canvasWidget.frameAllNodes()
-        for node in self.canvasWidget.getAllNodes():
-            if node.isCommentNode:
-                if not node.expanded:
-                    node.expanded = True
-                    node.updateChildren(node.nodesToMove.keys())
-                    node.toggleCollapsed()
-        self.clearPropertiesView()
+        # self._current_file_name = fpath
+        # self.canvasWidget.frameAllNodes()
+        # for node in self.canvasWidget.getAllNodes():
+        #     if node.isCommentNode:
+        #         if not node.expanded:
+        #             node.expanded = True
+        #             node.updateChildren(node.nodesToMove.keys())
+        #             node.toggleCollapsed()
+        # self.clearPropertiesView()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -195,7 +192,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
 
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
-                saveData = GraphTree().serialize()
+                saveData = self.canvasWidget.serialize()
                 json.dump(saveData, f, indent=4)
 
             print(str("// saved: '{0}'".format(self._current_file_name)))
@@ -208,8 +205,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.newFileExecuted.emit()
         self._current_file_name = 'Untitled'
         self.clearPropertiesView()
-        GT = GraphTree()
-        GT.reset()
+        # GT = GraphTree()
+        # GT.reset()
 
     def onRawGraphSwitched(self, *args, **kwargs):
         assert('old' in kwargs), "invalid arguments passed"
@@ -238,17 +235,17 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         self.updateGraphTreeLocation()
 
     def updateGraphTreeLocation(self):
-        location = GraphTree().location()
+        location = self.canvasWidget.location()
         clearLayout(self.layoutGraphPath)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.layoutGraphPath.addItem(spacerItem)
-        for folderName in location.split('|'):
+        for folderName in location:
             index = self.layoutGraphPath.count() - 1
             btn = QPushButton(folderName)
 
             def onClicked(checked, name=None):
-                if not GraphTree().switchGraph(name):
-                    print('skip')
+                self.canvasWidget.stepToCompound(name)
+
             btn.clicked.connect(lambda chk=False, name=folderName: onClicked(chk, name))
             self.layoutGraphPath.insertWidget(index, btn)
 
@@ -275,7 +272,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow, AppBase):
         # Tick all graphs
         # each graph will tick owning raw nodes
         # each raw node will tick it's ui wrapper if it exists
-        AppBase.Tick(self, deltaTime)
+        self.canvasWidget.Tick(deltaTime)
 
         self._lastClock = clock()
 

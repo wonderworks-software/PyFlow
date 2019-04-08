@@ -4,20 +4,28 @@ import weakref
 
 from PyFlow.Core import NodeBase
 from PyFlow.Core import GraphBase
-from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.Common import *
 
 
-class subgraph(NodeBase):
+class compound(NodeBase):
     """this node encapsulates a graph, like compound in xsi
 
-    pins can be edited only from inside the subgraph
+    pins can be edited only from inside the compound
     """
     def __init__(self, name):
-        super(subgraph, self).__init__(name)
+        super(compound, self).__init__(name)
         self.rawGraph = None
         self.__inputsMap = {}  # { self.[inputPin]: innerOutPin }
         self.__outputsMap = {}  # { self.[outputPin]: innerInPin }
+
+    def Tick(self, delta):
+        self.rawGraph.Tick(delta)
+        super(compound, self).Tick(delta)
+
+    def setName(self, name):
+        super(compound, self).setName(name)
+        if self.rawGraph is not None:
+            self.rawGraph.name = name
 
     @staticmethod
     def pinTypeHints():
@@ -85,7 +93,7 @@ class subgraph(NodeBase):
         # TODO: rewrite with signal
         wrapperRef = self.getWrapper()
         if wrapperRef is not None:
-            # raw subgraph input pin created. Now call UI subgraph node to create UI companion
+            # raw compound input pin created. Now call UI compound node to create UI companion
             wrapperRef().onGraphInputPinExposed(subgraphInputPin)
 
     def onGraphOutputPinCreated(self, inPin):
@@ -130,22 +138,25 @@ class subgraph(NodeBase):
         # TODO: rewrite with signal
         wrapperRef = self.getWrapper()
         if wrapperRef is not None:
-            # raw subgraph input pin created. Now call UI subgraph node to create UI companion
+            # raw compound input pin created. Now call UI compound node to create UI companion
             wrapperRef().onGraphOutputPinExposed(subgraphOutputPin)
+
+    def addNode(self, node):
+        self.rawGraph.addNode(node)
 
     def autoAffectPins(self):
         raise NotImplementedError("Error")
 
     def postCreate(self, jsonTemplate=None):
         self.rawGraph = GraphBase(self.name)
-        GraphTree().addChildGraph(self.rawGraph)
+        self.graph().addCompoundToTree(self)
 
         # connect with pin creation events and add dynamic pins
-        # tell subgraph node pins been created
+        # tell compound node pins been created
         self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
         self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
 
     def compute(self, *args, **kwargs):
-        # put data from inner graph pins to outer subgraph node output companions
+        # put data from inner graph pins to outer compound node output companions
         for outputPin, innerPin in self.__outputsMap.items():
             outputPin.setData(innerPin.getData())

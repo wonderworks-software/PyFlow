@@ -1,5 +1,6 @@
 import weakref
 from blinker import Signal
+from treelib import Tree
 from multipledispatch import dispatch
 
 from PyFlow.Core.Common import *
@@ -9,7 +10,6 @@ from PyFlow import getRawNodeInstance
 from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Variable import Variable
-from PyFlow.Core.GraphTree import GraphTree
 from PyFlow.Core.Interfaces import ISerializable
 
 
@@ -19,10 +19,28 @@ class GraphBase(ISerializable):
         # signals
         self.inputPinCreated = Signal(object)
         self.outputPinCreated = Signal(object)
+        self.locationChanged = Signal(object)
 
         self.__name = name
         self.nodes = {}
         self.vars = {}
+
+        self._compoundTree = Tree()
+        self._activeGraphId = self.name
+        self._compoundTree.create_node(self.name, self.name, data=self)
+
+    def addCompoundToTree(self, compoundNode, parentGraphId=None):
+        activeGraph = self._compoundTree[self._activeGraphId]
+        self._compoundTree.create_node(compoundNode.name, compoundNode.name, parent=self._activeGraphId, data=compoundNode.rawGraph)
+
+    def getVarList(self):
+        """return list of variables from active graph
+        """
+        result = []
+        for treeNodeId in self._compoundTree.rsearch(self._activeGraphId):
+            treeNode = self._compoundTree[treeNodeId]
+            result += treeNode.data.vars.values()
+        return result
 
     def serialize(self, *args, **Kwargs):
         result = {
@@ -59,7 +77,7 @@ class GraphBase(ISerializable):
                 for rhsUidStr in nodeOutputJson['linkedTo']:
                     rhsPin = graphPins[uuid.UUID(rhsUidStr)]
                     connected = connectPins(lhsPin, rhsPin)
-                    assert(connected, True), "Failed to restore connection"
+                    assert(connected == True), "Failed to restore connection"
         return graph
 
     def clear(self):
@@ -95,13 +113,13 @@ class GraphBase(ISerializable):
 
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None, name="var"):
         var = Variable(getPinDefaultValueByType(dataType), self.getUniqVarName(name), dataType, accessLevel=accessLevel, uid=uid)
-        self.vars[var.uid] = var
+        self.activeGraph().vars[var.uid] = var
         return var
 
     def killVariable(self, var):
         assert(isinstance(var, Variable))
-        if var.uid in self.vars:
-            popped = self.vars.pop(var.uid)
+        if var.uid in self.activeGraph().vars:
+            popped = self.activeGraph().vars.pop(var.uid)
             popped.killed.send()
 
     def getUniqVarName(self, name):
@@ -171,19 +189,29 @@ class GraphBase(ISerializable):
                                 nodes.append(p.owningNode())
             return nodes
 
+    def getAllNodes(self):
+        """return all graph nodes including compounds's nodes
+        """
+        nodes = []
+        for treeNode in self._compoundTree.all_nodes():
+            nodes += treeNode.data.nodes.values()
+        return nodes
+
     def getNodes(self):
+        """return all nodes without compound's nodes
+        """
         return self.nodes.values()
 
     @dispatch(str)
     def findNode(self, name):
-        for i in self.nodes.values():
+        for i in self.activeGraph().nodes.values():
             if i.name == name:
                 return i
         return None
 
     def getNodesByClassName(self, className):
         nodes = []
-        for i in self.nodes.values():
+        for i in self.getNodes():
             if i.__class__.__name__ == className:
                 nodes.append(i)
         return nodes
@@ -207,20 +235,58 @@ class GraphBase(ISerializable):
     def getInputNode(self):
         """Creates and adds to graph 'graphInputs' node
 
-        pins on this node will be exposed on subgraph node as input pins
+        pins on this node will be exposed on compound node as input pins
         """
         node = getRawNodeInstance("graphInputs", "PyflowBase")
-        self.addNode(node)
+        self.activeGraph().addNode(node)
         return node
 
     def getOutputNode(self):
         """Creates and adds to graph 'graphOutputs' node.
 
-        pins on this node will be exposed on subgraph node as output pins
+        pins on this node will be exposed on compound node as output pins
         """
         node = getRawNodeInstance("graphOutputs", "PyflowBase")
-        self.addNode(node)
+        self.activeGraph().addNode(node)
         return node
+
+    def location(self):
+        if self._activeGraphId == self.name:
+            return [self.name]
+        if self._activeGraphId in self._compoundTree:
+            result = [i for i in reversed(list(self._compoundTree.rsearch(self._activeGraphId)))]
+            return result
+        assert(False), "invalid graph location"
+
+    def activeGraph(self):
+        return self._compoundTree[self._activeGraphId].data
+
+    def stepToCompound(self, compoundName):
+        # do nothing if same location
+        if compoundName == self._activeGraphId:
+            return False
+        old = self.activeGraph()
+        # handle root graph
+        if compoundName == 'root':
+            self._activeGraphId = self.name
+            kwargs = {'old': old, 'new': self}
+            self.locationChanged.send(**kwargs)
+            return True
+        else:
+            new = compoundNode = self.findNode(compoundName).rawGraph
+            if old == new:
+                return False
+            self._activeGraphId = new.name
+            # switch contents
+            kwargs = {'old': old, 'new': new}
+            self.locationChanged.send(**kwargs)
+            return True
+
+    def getUniqNodeName(self, name):
+        existingNodeNames = set()
+        for node in self.getNodes():
+            existingNodeNames.add(node.name)
+        return getUniqNameFromList(existingNodeNames, name)
 
     def addNode(self, node, jsonTemplate=None):
         assert(node is not None), "failed to add node, None is passed"
@@ -228,7 +294,7 @@ class GraphBase(ISerializable):
             return False
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)
-        node.setName(GraphTree().getUniqNodeName(node.name))
+        node.setName(self.getUniqNodeName(node.name))
         node.postCreate(jsonTemplate)
         return True
 

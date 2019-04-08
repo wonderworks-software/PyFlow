@@ -5,7 +5,7 @@ from PyFlow.Core.Common import *
 
 
 class graphInputs(NodeBase):
-    """Represents a group of input pins on subgraph node
+    """Represents a group of input pins on compound node
     """
     def __init__(self, name):
         super(graphInputs, self).__init__(name)
@@ -30,7 +30,7 @@ class graphInputs(NodeBase):
         name = str(len(self.outputs))
         p = self.addOutputPin(name, 'AnyPin')
         p.singleInit = True
-        # this will be passed to subgraph node for companion pin creation
+        # this will be passed to compound node for companion pin creation
         # and signals connection
         self.graph().inputPinCreated.send(p)
         return p
@@ -47,7 +47,7 @@ class graphInputs(NodeBase):
 
 
 class graphOutputs(NodeBase):
-    """Represents a group of output pins on subgraph node
+    """Represents a group of output pins on compound node
     """
     def __init__(self, name):
         super(graphOutputs, self).__init__(name)
@@ -76,6 +76,7 @@ class graphOutputs(NodeBase):
     def addInPin(self):
         name = str(len(self.outputs))
         p = self.addInputPin(name, 'AnyPin')
+        p.singleInit = True
         # p.setAlwaysPushDirty(True)
         self.graph().outputPinCreated.send(p)
         return p
