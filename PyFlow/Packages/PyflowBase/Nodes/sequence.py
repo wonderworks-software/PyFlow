@@ -3,7 +3,7 @@ from PyFlow.Core.Common import *
 
 
 class sequence(NodeBase):
-    def __init__(self, name):
+    def __init__(self, name, parent):
         super(sequence, self).__init__(name)
         self.inExecPin = self.addInputPin('inExec', 'ExecPin', None, self.compute)
 

@@ -16,7 +16,7 @@ from PyFlow.Core.PyCodeCompiler import Py3FunctionCompiler
 
 
 class pythonNode(NodeBase):
-    def __init__(self, name):
+    def __init__(self, name, parent):
         super(pythonNode, self).__init__(name)
         self.currentComputeCode = ''
 

@@ -2,7 +2,7 @@ from PyFlow.Core import NodeBase
 
 
 class deltaTime(NodeBase):
-    def __init__(self, name):
+    def __init__(self, name, parent):
         super(deltaTime, self).__init__(name)
         self._deltaTime = 0.0
         self._out0 = self.addOutputPin('out0', 'FloatPin')

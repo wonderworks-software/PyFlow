@@ -26,18 +26,18 @@ class GraphBase(ISerializable):
         self.vars = {}
 
         self._compoundTree = Tree()
-        self._activeGraphId = self.name
-        self._compoundTree.create_node(self.name, self.name, data=self)
+        self._activeCompoundId = self.name
+        self._compoundTree.create_node(self.name, self.name, data=None)
 
     def addCompoundToTree(self, compoundNode, parentGraphId=None):
-        activeGraph = self._compoundTree[self._activeGraphId]
-        self._compoundTree.create_node(compoundNode.name, compoundNode.name, parent=self._activeGraphId, data=compoundNode.rawGraph)
+        activeGraph = self._compoundTree[self._activeCompoundId]
+        self._compoundTree.create_node(compoundNode.name, compoundNode.name, parent=self._activeCompoundId, data=compoundNode.rawGraph)
 
     def getVarList(self):
         """return list of variables from active graph
         """
         result = []
-        for treeNodeId in self._compoundTree.rsearch(self._activeGraphId):
+        for treeNodeId in self._compoundTree.rsearch(self._activeCompoundId):
             treeNode = self._compoundTree[treeNodeId]
             result += treeNode.data.vars.values()
         return result
@@ -113,13 +113,13 @@ class GraphBase(ISerializable):
 
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None, name="var"):
         var = Variable(getPinDefaultValueByType(dataType), self.getUniqVarName(name), dataType, accessLevel=accessLevel, uid=uid)
-        self.activeGraph().vars[var.uid] = var
+        self.vars[var.uid] = var
         return var
 
     def killVariable(self, var):
         assert(isinstance(var, Variable))
-        if var.uid in self.activeGraph().vars:
-            popped = self.activeGraph().vars.pop(var.uid)
+        if var.uid in self.vars:
+            popped = self.vars.pop(var.uid)
             popped.killed.send()
 
     def getUniqVarName(self, name):
@@ -189,14 +189,6 @@ class GraphBase(ISerializable):
                                 nodes.append(p.owningNode())
             return nodes
 
-    def getAllNodes(self):
-        """return all graph nodes including compounds's nodes
-        """
-        nodes = []
-        for treeNode in self._compoundTree.all_nodes():
-            nodes += treeNode.data.nodes.values()
-        return nodes
-
     def getNodes(self):
         """return all nodes without compound's nodes
         """
@@ -204,7 +196,7 @@ class GraphBase(ISerializable):
 
     @dispatch(str)
     def findNode(self, name):
-        for i in self.activeGraph().nodes.values():
+        for i in self.nodes.values():
             if i.name == name:
                 return i
         return None
@@ -238,7 +230,7 @@ class GraphBase(ISerializable):
         pins on this node will be exposed on compound node as input pins
         """
         node = getRawNodeInstance("graphInputs", "PyflowBase")
-        self.activeGraph().addNode(node)
+        self.addNode(node)
         return node
 
     def getOutputNode(self):
@@ -247,40 +239,35 @@ class GraphBase(ISerializable):
         pins on this node will be exposed on compound node as output pins
         """
         node = getRawNodeInstance("graphOutputs", "PyflowBase")
-        self.activeGraph().addNode(node)
+        self.addNode(node)
         return node
 
     def location(self):
-        if self._activeGraphId == self.name:
+        if self._activeCompoundId == self.name:
             return [self.name]
-        if self._activeGraphId in self._compoundTree:
-            result = [i for i in reversed(list(self._compoundTree.rsearch(self._activeGraphId)))]
+        if self._activeCompoundId in self._compoundTree:
+            result = [i for i in reversed(list(self._compoundTree.rsearch(self._activeCompoundId)))]
             return result
         assert(False), "invalid graph location"
 
-    def activeGraph(self):
-        return self._compoundTree[self._activeGraphId].data
-
     def stepToCompound(self, compoundName):
         # do nothing if same location
-        if compoundName == self._activeGraphId:
+        if compoundName == self._activeCompoundId:
             return False
-        old = self.activeGraph()
+
         # handle root graph
-        if compoundName == 'root':
-            self._activeGraphId = self.name
-            kwargs = {'old': old, 'new': self}
-            self.locationChanged.send(**kwargs)
+        if compoundName == self.name:
+            self._activeCompoundId = self.name
+            self.locationChanged.send(None)
             return True
-        else:
-            new = compoundNode = self.findNode(compoundName).rawGraph
-            if old == new:
-                return False
-            self._activeGraphId = new.name
-            # switch contents
-            kwargs = {'old': old, 'new': new}
-            self.locationChanged.send(**kwargs)
-            return True
+
+        new = self.findNode(compoundName)
+
+        self._activeCompoundId = new.name
+
+        # switch contents
+        self.locationChanged.send(new)
+        return True
 
     def getUniqNodeName(self, name):
         existingNodeNames = set()

@@ -62,7 +62,7 @@ def CreateRawPin(name, owningNode, dataType, direction, **kwds):
     return inst
 
 
-def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
+def getRawNodeInstance(nodeClassName, parent, packageName=None, libName=None, **kwargs):
     from PyFlow.Core.NodeBase import NodeBase
     package = GET_PACKAGE_CHECKED(packageName)
     # try find function first
@@ -70,7 +70,7 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
         foos = lib.getFunctions()
         if libName is not None:
             if libName == key and nodeClassName in foos:
-                return NodeBase.initializeFromFunction(foos[nodeClassName])
+                return NodeBase.initializeFromFunction(foos[nodeClassName], parent)
 
     # try find node class
     nodes = package.GetNodeClasses()

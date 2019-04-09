@@ -4,7 +4,7 @@ from PyFlow.Core import NodeBase
 
 
 class implicitPinCall(NodeBase):
-    def __init__(self, name):
+    def __init__(self, name, parent):
         super(implicitPinCall, self).__init__(name)
         self.inExec = self.addInputPin('inp', 'ExecPin', None, self.compute)
         self.uidInp = self.addInputPin('UUID', 'StringPin')

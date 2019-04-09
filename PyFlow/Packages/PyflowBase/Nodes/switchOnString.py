@@ -4,7 +4,7 @@ from PyFlow.Core.Common import *
 
 
 class switchOnString(NodeBase):
-    def __init__(self, name):
+    def __init__(self, name, parent):
         super(switchOnString, self).__init__(name)
         self.inExecPin = self.addInputPin('inExec', 'ExecPin', None, self.compute)
         self.inString = self.addInputPin('String', 'StringPin')

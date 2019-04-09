@@ -73,7 +73,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         self.styleSheetEditor = StyleSheetEditor()
         self.canvasWidget = Canvas(self)
-        self.canvasWidget._rawGraph.locationChanged.connect(self.onRawGraphSwitched)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
 
@@ -209,15 +208,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # GT.reset()
 
     def onRawGraphSwitched(self, *args, **kwargs):
-        assert('old' in kwargs), "invalid arguments passed"
-        assert('new' in kwargs), "invalid arguments passed"
-        old = kwargs['old']
-        new = kwargs['new']
-        assert(old is not None), "invalid graph passed"
-        assert(new is not None), "invalid graph passed"
-        # hide current graph contents
-        for node in old.nodes.values():
-            uiNode = node.getWrapper()()
+        assert(len(args) == 1), "invalid arguments passed"
+        newContent = args[0].content if args[0] is not None else self.canvasWidget._rawGraph.getNodes()
+
+        # hide everything
+        for uiNode in self.canvasWidget.getAllNodes():
             uiNode.hide()
             # hide connections
             for uiPin in uiNode.UIPins.values():
@@ -225,7 +220,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     connection.hide()
 
         # show new graph contents
-        for node in new.nodes.values():
+        for node in newContent:
             uiNode = node.getWrapper()()
             uiNode.show()
             for uiPin in uiNode.UIPins.values():

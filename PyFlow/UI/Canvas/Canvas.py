@@ -83,7 +83,7 @@ def importByName(module, name):
         print("error", name)
 
 
-def getNodeInstance(jsonTemplate, canvas):
+def getNodeInstance(jsonTemplate, canvas, parent):
     nodeClassName = jsonTemplate['type']
     nodeName = jsonTemplate['name']
     packageName = jsonTemplate['package']
@@ -517,7 +517,7 @@ class Canvas(QGraphicsView):
         self.installEventFilter(self)
 
     def plot(self):
-        self._rawGraph._compoundTree[self._rawGraph._activeGraphId].data.plot()
+        self._rawGraph._compoundTree[self._rawGraph._activeCompoundId].data.plot()
 
     def location(self):
         return self._rawGraph.location()
@@ -534,7 +534,7 @@ class Canvas(QGraphicsView):
         """returns all ui nodes dict
         """
         result = {}
-        for rawNode in self._rawGraph.getAllNodes():
+        for rawNode in self._rawGraph.getNodes():
             result[rawNode.uid] = rawNode.getWrapper()()
         return result
 
@@ -1565,9 +1565,6 @@ class Canvas(QGraphicsView):
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
-    def activeGraph(self):
-        return self._rawGraph.activeGraph()
-
     def addNode(self, uiNode, jsonTemplate, parentGraph=None):
         """Adds node to a graph
 
@@ -1575,8 +1572,7 @@ class Canvas(QGraphicsView):
             node UINodeBase -- raw node wrapper
         """
         assert(jsonTemplate is not None)
-        graph = self.activeGraph() if parentGraph is None else parentGraph
-        graph.addNode(uiNode._rawNode, jsonTemplate)
+        self._rawGraph.addNode(uiNode._rawNode, jsonTemplate)
         uiNode.canvasRef = weakref.ref(self)
         self.scene().addItem(uiNode)
         uiNode.postCreate(jsonTemplate)

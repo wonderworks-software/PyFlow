@@ -12,11 +12,12 @@ class compound(NodeBase):
 
     pins can be edited only from inside the compound
     """
-    def __init__(self, name):
+    def __init__(self, name, parent):
         super(compound, self).__init__(name)
         self.rawGraph = None
         self.__inputsMap = {}  # { self.[inputPin]: innerOutPin }
         self.__outputsMap = {}  # { self.[outputPin]: innerInPin }
+        self.content = []
 
     def Tick(self, delta):
         self.rawGraph.Tick(delta)
@@ -141,20 +142,21 @@ class compound(NodeBase):
             # raw compound input pin created. Now call UI compound node to create UI companion
             wrapperRef().onGraphOutputPinExposed(subgraphOutputPin)
 
+    def kill(self, *args, **kwargs):
+        # remove content
+        for node in self.content:
+            node.kill()
+        super(compound, self).kill(*args, **kwargs)
+
+    def postCreate(self, jsonTemplate=None):
+        super(compound, self).postCreate(jsonTemplate=jsonTemplate)
+        self.graph()._compoundTree.create_node(self.name, self.name, parent=self.graph()._activeCompoundId, data=self)
+
     def addNode(self, node):
         self.rawGraph.addNode(node)
 
     def autoAffectPins(self):
         raise NotImplementedError("Error")
-
-    def postCreate(self, jsonTemplate=None):
-        self.rawGraph = GraphBase(self.name)
-        self.graph().addCompoundToTree(self)
-
-        # connect with pin creation events and add dynamic pins
-        # tell compound node pins been created
-        self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
-        self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
 
     def compute(self, *args, **kwargs):
         # put data from inner graph pins to outer compound node output companions
