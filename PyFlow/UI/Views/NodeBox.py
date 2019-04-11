@@ -220,7 +220,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                 return
 
             nodeClassName = self.currentItem().text(0)
-            name = self.parent().graph().getUniqNodeName(nodeClassName)
+            name = nodeClassName
             pos = self.parent().graph().mapToScene(self.parent().graph().mouseReleasePos)
             nodeTemplate = NodeBase.jsonTemplate()
             nodeTemplate['package'] = packageName

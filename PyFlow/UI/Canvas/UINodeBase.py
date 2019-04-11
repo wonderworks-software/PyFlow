@@ -599,7 +599,7 @@ class UINodeBase(QGraphicsObject):
 
     def clone(self):
         templ = self.serialize()
-        templ['name'] = self.canvasRef()().getUniqNodeName(self.name)
+        templ['name'] = self.name
         templ['uuid'] = str(uuid.uuid4())
         for inp in templ['inputs']:
             inp['uuid'] = str(uuid.uuid4())

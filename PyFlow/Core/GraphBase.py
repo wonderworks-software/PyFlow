@@ -239,38 +239,13 @@ class GraphBase(ISerializable):
         self.addNode(node)
         return node
 
-    # def stepToCompound(self, compoundName):
-    #     # do nothing if same location
-    #     if compoundName == self._activeCompoundId:
-    #         return False
-
-    #     # handle root graph
-    #     if compoundName == self.name:
-    #         self._activeCompoundId = self.name
-    #         self.locationChanged.send(None)
-    #         return True
-
-    #     new = self.findNode(compoundName)
-
-    #     self._activeCompoundId = new.name
-
-    #     # switch contents
-    #     self.locationChanged.send(new)
-    #     return True
-
-    def getUniqNodeName(self, name):
-        existingNodeNames = set()
-        for node in self.getNodes():
-            existingNodeNames.add(node.name)
-        return getUniqNameFromList(existingNodeNames, name)
-
     def addNode(self, node, jsonTemplate=None):
         assert(node is not None), "failed to add node, None is passed"
         if node.uid in self.nodes:
             return False
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)
-        node.setName(self.getUniqNodeName(node.name))
+        node.setName(self.graphManager.getUniqNodeName(node.name))
         node.postCreate(jsonTemplate)
         return True
 

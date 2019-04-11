@@ -86,7 +86,7 @@ def importByName(module, name):
 
 def getNodeInstance(jsonTemplate, canvas):
     nodeClassName = jsonTemplate['type']
-    nodeName = canvas.graphManager.getUniqNodeName(jsonTemplate['name'])
+    nodeName = jsonTemplate['name']
     packageName = jsonTemplate['package']
     if 'lib' in jsonTemplate:
         libName = jsonTemplate['lib']
@@ -197,7 +197,7 @@ class SceneClass(QGraphicsScene):
             packageName = jsonData["package"]
             nodeType = jsonData["type"]
             libName = jsonData["lib"]
-            name = self.parent().graphManager.getUniqNodeName(nodeType)
+            name = nodeType
 
             nodeTemplate = NodeBase.jsonTemplate()
             nodeTemplate['package'] = packageName
@@ -342,7 +342,7 @@ class SceneClass(QGraphicsScene):
                 packageName = jsonData["package"]
                 nodeType = jsonData["type"]
                 libName = jsonData['lib']
-                name = self.parent().graphManager.activeGraph().getUniqNodeName(nodeType)
+                name = nodeType
                 dropItem = self.parent().nodeFromInstance(self.itemAt(event.scenePos(), QtGui.QTransform()))
                 if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
                     nodeTemplate = NodeBase.jsonTemplate()
@@ -764,7 +764,7 @@ class Canvas(QGraphicsView):
                 nodeTemplate = NodeBase.jsonTemplate()
                 nodeTemplate['package'] = "PyflowBase"
                 nodeTemplate['type'] = commentNode.__name__
-                nodeTemplate['name'] = self.graphManager.activeGraph().getUniqNodeName(commentNode.__name__)
+                nodeTemplate['name'] = commentNode.__name__
                 if rect:
                     nodeTemplate['x'] = rect.topLeft().x()
                     nodeTemplate['y'] = rect.topLeft().y()
@@ -908,7 +908,7 @@ class Canvas(QGraphicsView):
 
         for node in nodes["nodes"]:
             oldName = node["name"]
-            node["name"] = self.graphManager.activeGraph().getUniqNodeName(node["name"])
+            node["name"] = node["name"]
             node['uuid'] = str(uuid.uuid4())
             for inp in node['inputs']:
                 inp['uuid'] = str(uuid.uuid4())
@@ -1027,7 +1027,7 @@ class Canvas(QGraphicsView):
         nodeTemplate['package'] = "PyflowBase"
         nodeTemplate['lib'] = None
         nodeTemplate['type'] = "graphInputs"
-        nodeTemplate['name'] = self.graphManager.activeGraph().getUniqNodeName("graphInputs")
+        nodeTemplate['name'] = "graphInputs"
         nodeTemplate['x'] = self.boundingRect.left() + 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
         nodeTemplate['uuid'] = str(uuid.uuid4())
@@ -1041,7 +1041,7 @@ class Canvas(QGraphicsView):
         nodeTemplate['package'] = "PyflowBase"
         nodeTemplate['lib'] = None
         nodeTemplate['type'] = "graphOutputs"
-        nodeTemplate['name'] = self.graphManager.activeGraph().getUniqNodeName("graphOutputs")
+        nodeTemplate['name'] = "graphOutputs"
         nodeTemplate['x'] = self.boundingRect.width() - 50
         nodeTemplate['y'] = self.boundingRect.center().y() + 50
         nodeTemplate['uuid'] = str(uuid.uuid4())
