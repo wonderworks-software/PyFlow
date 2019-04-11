@@ -27,7 +27,7 @@ class UICompoundNode(UINodeBase):
         uiCompanionPin = self._createUIPinWrapper(rawPin)
 
     def mouseDoubleClickEvent(self, event):
-        self._rawNode.graph().stepToCompound(self.name)
+        self._rawNode.graph().graphManager.selectGraph(self.name)
         event.accept()
 
     def kill(self, *args, **kwargs):

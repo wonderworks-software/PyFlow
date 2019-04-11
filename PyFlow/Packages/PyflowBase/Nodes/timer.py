@@ -5,7 +5,7 @@ from PyFlow.Core import NodeBase
 
 ## Timer node
 class timer(NodeBase):
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(timer, self).__init__(name)
         self.out = self.addOutputPin("OUT", 'ExecPin')
         self.beginPin = self.addInputPin("Begin", 'ExecPin', None, self.start)

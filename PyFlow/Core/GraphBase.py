@@ -14,32 +14,29 @@ from PyFlow.Core.Interfaces import ISerializable
 
 
 class GraphBase(ISerializable):
-    def __init__(self, name, *args, **kwargs):
+    def __init__(self, name, manager, *args, **kwargs):
         super(GraphBase, self).__init__(*args, **kwargs)
+        self.graphManager = manager
         # signals
         self.inputPinCreated = Signal(object)
         self.outputPinCreated = Signal(object)
-        self.locationChanged = Signal(object)
+
+        self.parentGraph = manager.activeGraph() if manager.activeGraph() is not None else None
 
         self.__name = name
         self.nodes = {}
         self.vars = {}
 
-        self._compoundTree = Tree()
-        self._activeCompoundId = self.name
-        self._compoundTree.create_node(self.name, self.name, data=None)
-
-    def addCompoundToTree(self, compoundNode, parentGraphId=None):
-        activeGraph = self._compoundTree[self._activeCompoundId]
-        self._compoundTree.create_node(compoundNode.name, compoundNode.name, parent=self._activeCompoundId, data=compoundNode.rawGraph)
+        manager.add(self)
 
     def getVarList(self):
         """return list of variables from active graph
         """
-        result = []
-        for treeNodeId in self._compoundTree.rsearch(self._activeCompoundId):
-            treeNode = self._compoundTree[treeNodeId]
-            result += treeNode.data.vars.values()
+        result = self.vars.values()
+        parent = self.parentGraph
+        while parent is not None:
+            result += parent.vars.values()
+            parent = parent.parentGraph
         return result
 
     def serialize(self, *args, **Kwargs):
@@ -77,7 +74,7 @@ class GraphBase(ISerializable):
                 for rhsUidStr in nodeOutputJson['linkedTo']:
                     rhsPin = graphPins[uuid.UUID(rhsUidStr)]
                     connected = connectPins(lhsPin, rhsPin)
-                    assert(connected == True), "Failed to restore connection"
+                    assert(connected is True), "Failed to restore connection"
         return graph
 
     def clear(self):
@@ -242,32 +239,24 @@ class GraphBase(ISerializable):
         self.addNode(node)
         return node
 
-    def location(self):
-        if self._activeCompoundId == self.name:
-            return [self.name]
-        if self._activeCompoundId in self._compoundTree:
-            result = [i for i in reversed(list(self._compoundTree.rsearch(self._activeCompoundId)))]
-            return result
-        assert(False), "invalid graph location"
+    # def stepToCompound(self, compoundName):
+    #     # do nothing if same location
+    #     if compoundName == self._activeCompoundId:
+    #         return False
 
-    def stepToCompound(self, compoundName):
-        # do nothing if same location
-        if compoundName == self._activeCompoundId:
-            return False
+    #     # handle root graph
+    #     if compoundName == self.name:
+    #         self._activeCompoundId = self.name
+    #         self.locationChanged.send(None)
+    #         return True
 
-        # handle root graph
-        if compoundName == self.name:
-            self._activeCompoundId = self.name
-            self.locationChanged.send(None)
-            return True
+    #     new = self.findNode(compoundName)
 
-        new = self.findNode(compoundName)
+    #     self._activeCompoundId = new.name
 
-        self._activeCompoundId = new.name
-
-        # switch contents
-        self.locationChanged.send(new)
-        return True
+    #     # switch contents
+    #     self.locationChanged.send(new)
+    #     return True
 
     def getUniqNodeName(self, name):
         existingNodeNames = set()

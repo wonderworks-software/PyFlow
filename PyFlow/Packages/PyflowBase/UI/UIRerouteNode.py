@@ -51,10 +51,10 @@ class UIRerouteNode(UINodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(UIRerouteNode, self).postCreate(jsonTemplate)
-        self.input = self.getPin("in").getWrapper()()
+        self.input = self.getPin("in")
         self.input.getLabel()().hide()
         self.input.setDisplayName("")
-        self.output = self.getPin("out").getWrapper()()
+        self.output = self.getPin("out")
         self.output.getLabel()().hide()
         self.output.setDisplayName("")
         self.input.OnPinChanged.connect(self.setColor)

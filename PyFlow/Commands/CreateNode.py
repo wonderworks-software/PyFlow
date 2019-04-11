@@ -7,25 +7,25 @@ class CreateNode(QUndoCommand):
     '''
     Creates a node
     '''
-    def __init__(self, graph, jsonTemplate, **kwags):
+    def __init__(self, canvas, jsonTemplate, **kwags):
         super(CreateNode, self).__init__()
         self.kwargs = kwags
-        self.graph = graph
+        self.canvas = canvas
         self.nodeInstance = None
         self.jsonTemplate = jsonTemplate
         self.setText("create {} node".format(jsonTemplate['type']))
         self.uid = uuid.UUID(jsonTemplate['uuid'])
 
     def undo(self):
-        self.graph.scene().blockSignals(True)
+        self.canvas.scene().blockSignals(True)
 
         self.jsonTemplate.clear()
         self.jsonTemplate = self.nodeInstance.serialize()
-        self.graph.nodes[self.uid]._rawNode.kill()
-        self.graph.scene().blockSignals(False)
+        self.canvas.nodes[self.uid]._rawNode.kill()
+        self.canvas.scene().blockSignals(False)
 
     def redo(self):
-        self.graph.scene().blockSignals(True)
+        self.canvas.scene().blockSignals(True)
         self.jsonTemplate['uuid'] = str(self.uid)
-        self.nodeInstance = self.graph._createNode(self.jsonTemplate, **self.kwargs)
-        self.graph.scene().blockSignals(False)
+        self.nodeInstance = self.canvas._createNode(self.jsonTemplate, **self.kwargs)
+        self.canvas.scene().blockSignals(False)

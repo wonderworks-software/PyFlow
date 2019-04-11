@@ -9,7 +9,8 @@ from PyFlow import(
 from PyFlow.Core import(
     GraphBase,
     PinBase,
-    NodeBase
+    NodeBase,
+    GraphManager
 )
 
 INITIALIZE()

@@ -2,7 +2,7 @@ from PyFlow.Core import NodeBase
 
 
 class doN(NodeBase):
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(doN, self).__init__(name)
         self.enter = self.addInputPin('Enter', 'ExecPin', self.compute)
         self._N = self.addInputPin('N', 'IntPin')

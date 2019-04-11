@@ -3,7 +3,7 @@ from PyFlow.Core.Common import push
 
 
 class forLoop(NodeBase):
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(forLoop, self).__init__(name)
         self.inExec = self.addInputPin('inExec', 'ExecPin', None, self.compute)
         self.firstIndex = self.addInputPin('Start', 'IntPin')

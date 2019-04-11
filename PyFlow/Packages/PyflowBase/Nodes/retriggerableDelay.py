@@ -2,7 +2,7 @@ from PyFlow.Core import NodeBase
 
 
 class retriggerableDelay(NodeBase):
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(retriggerableDelay, self).__init__(name)
         self.inp0 = self.addInputPin('in0', 'ExecPin', None, self.compute)
         self.delay = self.addInputPin('Delay(s)', 'FloatPin')

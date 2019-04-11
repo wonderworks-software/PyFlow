@@ -249,37 +249,10 @@ class IPin(IItemBase):
         raise NotImplementedError('jsonEncoderClass method of IPin is not implemented')
 
 
-class INestedObject(object):
-    """docstring for NestedObject."""
-    def __init__(self, parent):
-        super(INestedObject, self).__init__()
+class INode(IItemBase):
 
-    def getParent(self):
-        raise NotImplementedError('getParent method of INestedObject is not implemented')
-
-    def children(self):
-        raise NotImplementedError('children method of INestedObject is not implemented')
-
-    def findChild(self, name):
-        raise NotImplementedError('findChild method of INestedObject is not implemented')
-
-    def removeChild(self, obj):
-        raise NotImplementedError('removeChild method of INestedObject is not implemented')
-
-    def fullName(self):
-        raise NotImplementedError('fullName method of INestedObject is not implemented')
-
-    def isChildOf(self, obj):
-        raise NotImplementedError('isChildOf method of INestedObject is not implemented')
-
-    def allParents(self):
-        raise NotImplementedError('allParents method of INestedObject is not implemented')
-
-
-class INode(IItemBase, INestedObject):
-
-    def __init__(self, parent):
-        super(INode, self).__init__(parent)
+    def __init__(self):
+        super(INode, self).__init__()
 
     def compute(self, *args, **kwargs):
         raise NotImplementedError('compute method of INode is not implemented')

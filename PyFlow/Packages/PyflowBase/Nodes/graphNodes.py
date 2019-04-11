@@ -7,7 +7,7 @@ from PyFlow.Core.Common import *
 class graphInputs(NodeBase):
     """Represents a group of input pins on compound node
     """
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(graphInputs, self).__init__(name)
 
     @staticmethod
@@ -49,7 +49,7 @@ class graphInputs(NodeBase):
 class graphOutputs(NodeBase):
     """Represents a group of output pins on compound node
     """
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(graphOutputs, self).__init__(name)
 
     @staticmethod

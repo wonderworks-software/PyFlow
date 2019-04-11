@@ -12,17 +12,17 @@ class TestGeneral(unittest.TestCase):
 
     def test_graph_location(self):
         packages = GET_PACKAGES()
-        graph = GraphBase('root')
+        man = GraphManager()
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
         subgraphNodeInstance = subgraphNodeClass('compound')
-        graph.addNode(subgraphNodeInstance)
+        man.activeGraph().addNode(subgraphNodeInstance)
 
         # step inside compound
-        graph.stepToCompound(subgraphNodeInstance.name)
-        self.assertCountEqual(graph.location(), ['root', subgraphNodeInstance.name])
+        man.selectGraph(subgraphNodeInstance.name)
+        self.assertCountEqual(man.location(), ['root', subgraphNodeInstance.name])
 
     def test_add_int_no_exec(self):
-        graph = GraphBase('root')
+        man = GraphManager()
         packages = GET_PACKAGES()
         intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
         foos = intlib.getFunctions()
@@ -30,8 +30,8 @@ class TestGeneral(unittest.TestCase):
         addNode1 = NodeBase.initializeFromFunction(foos["add"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
-        graph.addNode(addNode1)
-        graph.addNode(addNode2)
+        man.activeGraph().addNode(addNode1)
+        man.activeGraph().addNode(addNode2)
 
         addNode1.setData('a', 5)
 
@@ -127,10 +127,10 @@ class TestGeneral(unittest.TestCase):
         addNode1 = NodeBase.initializeFromFunction(foos["add"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
-        graph = GraphBase('root')
+        man = GraphManager()
 
-        graph.addNode(addNode1)
-        graph.addNode(addNode2)
+        man.activeGraph().addNode(addNode1)
+        man.activeGraph().addNode(addNode2)
 
         pinOut = addNode1.getPin('out', PinSelectionGroup.Outputs)
         pinInp = addNode2.getPin('a', PinSelectionGroup.Inputs)

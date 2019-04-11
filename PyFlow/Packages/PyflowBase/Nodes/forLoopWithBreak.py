@@ -2,7 +2,7 @@ from PyFlow.Core import NodeBase
 
 
 class forLoopWithBreak(NodeBase):
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(forLoopWithBreak, self).__init__(name)
         self.stop = False
         self.inExec = self.addInputPin('inExec', 'ExecPin', None, self.compute)

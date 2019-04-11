@@ -17,7 +17,7 @@ from PyFlow import CreateRawPin
 
 
 class NodeBase(INode):
-    def __init__(self, name, parent=None, uid=None):
+    def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
         self.killed = Signal()
         self.tick = Signal(float)
@@ -357,7 +357,7 @@ class NodeBase(INode):
 
     @staticmethod
     # Constructs a node from given annotated function
-    def initializeFromFunction(foo, parent):
+    def initializeFromFunction(foo):
         retAnyOpts = None
         retConstraint = None
         foo = foo
@@ -393,8 +393,8 @@ class NodeBase(INode):
         def packageName():
             return _packageName
 
-        def constructor(self, name, parent, **kwargs):
-            NodeBase.__init__(self, name, parent, **kwargs)
+        def constructor(self, name, **kwargs):
+            NodeBase.__init__(self, name, **kwargs)
 
         nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
                                                      'category': category,
@@ -403,7 +403,7 @@ class NodeBase(INode):
                                                      'packageName': packageName
                                                      })
 
-        raw_inst = nodeClass(foo.__name__, parent)
+        raw_inst = nodeClass(foo.__name__)
         raw_inst.lib = libName
         if returnType is not None:
             p = raw_inst.addOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)

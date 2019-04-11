@@ -2,7 +2,7 @@ from PyFlow.Core import NodeBase
 
 
 class branch(NodeBase):
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(branch, self).__init__(name)
         self.trueExec = self.addOutputPin("True", 'ExecPin')
         self.falseExec = self.addOutputPin("False", 'ExecPin')

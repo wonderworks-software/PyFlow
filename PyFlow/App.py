@@ -72,15 +72,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
 
         self.styleSheetEditor = StyleSheetEditor()
-        self.canvasWidget = Canvas(self)
+        self.rootCanvasWidget = Canvas(self)
         self.updateGraphTreeLocation()
-        self.SceneLayout.addWidget(self.canvasWidget)
+        self.SceneLayout.addWidget(self.rootCanvasWidget)
 
         self.actionVariables.triggered.connect(self.toggleVariables)
-        self.actionPlot_graph.triggered.connect(self.canvasWidget.plot)
+        self.actionPlot_graph.triggered.connect(self.rootCanvasWidget.plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionPropertyView.triggered.connect(self.togglePropertyView)
-        self.actionScreenshot.triggered.connect(self.canvasWidget.screenShot)
+        self.actionScreenshot.triggered.connect(self.rootCanvasWidget.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
 
         self.actionSave.triggered.connect(self.save)
@@ -101,7 +101,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         self.setMouseTracking(True)
 
-        self.variablesWidget = VariablesWidget(self, self.canvasWidget)
+        self.variablesWidget = VariablesWidget(self, self.rootCanvasWidget)
         self.leftDockGridLayout.addWidget(self.variablesWidget)
 
         self._lastClock = 0.0
@@ -129,7 +129,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # create ui wrappers
         # for rawNode in GT.getAllNodes():
         #     uiNode = getUINodeInstance(rawNode)
-        #     self.canvasWidget.addNode(uiNode, rawNode.serialize())
+        #     self.rootCanvasWidget.addNode(uiNode, rawNode.serialize())
         # create ui connections
         # for rawNode in GT.getAllNodes():
         #     uiNode = rawNode.getWrapper()()
@@ -137,11 +137,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         #         for rhsPinUid in outPin._rawPin._linkedToUids:
         #             inRawPin = rawNode.graph().findPin(rhsPinUid)
         #             inUiPin = inRawPin.getWrapper()()
-        #             self.canvasWidget.createUIConnectionForConnectedPins(outPin, inUiPin)
+        #             self.rootCanvasWidget.createUIConnectionForConnectedPins(outPin, inUiPin)
 
         # self._current_file_name = fpath
-        # self.canvasWidget.frameAllNodes()
-        # for node in self.canvasWidget.getAllNodes():
+        # self.rootCanvasWidget.frameAllNodes()
+        # for node in self.rootCanvasWidget.getAllNodes():
         #     if node.isCommentNode:
         #         if not node.expanded:
         #             node.expanded = True
@@ -191,7 +191,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
-                saveData = self.canvasWidget.serialize()
+                saveData = self.rootCanvasWidget.serialize()
                 json.dump(saveData, f, indent=4)
 
             print(str("// saved: '{0}'".format(self._current_file_name)))
@@ -204,15 +204,13 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.newFileExecuted.emit()
         self._current_file_name = 'Untitled'
         self.clearPropertiesView()
-        # GT = GraphTree()
-        # GT.reset()
 
     def onRawGraphSwitched(self, *args, **kwargs):
         assert(len(args) == 1), "invalid arguments passed"
-        newContent = args[0].content if args[0] is not None else self.canvasWidget._rawGraph.getNodes()
+        newContent = args[0].content if args[0] is not None else self.rootCanvasWidget._rawGraph.getNodes()
 
         # hide everything
-        for uiNode in self.canvasWidget.getAllNodes():
+        for uiNode in self.rootCanvasWidget.getAllNodes():
             uiNode.hide()
             # hide connections
             for uiPin in uiNode.UIPins.values():
@@ -230,7 +228,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.updateGraphTreeLocation()
 
     def updateGraphTreeLocation(self):
-        location = self.canvasWidget.location()
+        location = self.rootCanvasWidget.location()
         clearLayout(self.layoutGraphPath)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.layoutGraphPath.addItem(spacerItem)
@@ -239,18 +237,18 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             btn = QPushButton(folderName)
 
             def onClicked(checked, name=None):
-                self.canvasWidget.stepToCompound(name)
+                self.rootCanvasWidget.stepToCompound(name)
 
             btn.clicked.connect(lambda chk=False, name=folderName: onClicked(chk, name))
             self.layoutGraphPath.insertWidget(index, btn)
 
     @property
     def currentGraph(self):
-        return self.canvasWidget
+        return self.rootCanvasWidget
 
     @currentGraph.setter
     def currentGraph(self, graph):
-        self.canvasWidget = graph
+        self.rootCanvasWidget = graph
 
     def startMainLoop(self):
         self.tick_timer.start(1000 / EDITOR_TARGET_FPS)
@@ -267,7 +265,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # Tick all graphs
         # each graph will tick owning raw nodes
         # each raw node will tick it's ui wrapper if it exists
-        self.canvasWidget.Tick(deltaTime)
+        self.rootCanvasWidget.Tick(deltaTime)
 
         self._lastClock = clock()
 
@@ -287,7 +285,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def closeEvent(self, event):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
-        self.canvasWidget.shoutDown()
+        self.rootCanvasWidget.shoutDown()
         # save editor config
         settings = QtCore.QSettings(
             SETTINGS_PATH, QtCore.QSettings.IniFormat, self)

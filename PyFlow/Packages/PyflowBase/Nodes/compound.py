@@ -12,7 +12,7 @@ class compound(NodeBase):
 
     pins can be edited only from inside the compound
     """
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(compound, self).__init__(name)
         self.rawGraph = None
         self.__inputsMap = {}  # { self.[inputPin]: innerOutPin }
@@ -46,8 +46,7 @@ class compound(NodeBase):
 
     def serialize(self):
         default = NodeBase.serialize(self)
-        # default['graphData'] = self.rawGraph.serialize()
-        # default['graphName'] = self.rawGraph.name
+        default['graphData'] = self.rawGraph.serialize()
         return default
 
     def onGraphInputPinCreated(self, outPin):
@@ -150,7 +149,12 @@ class compound(NodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(compound, self).postCreate(jsonTemplate=jsonTemplate)
-        self.graph()._compoundTree.create_node(self.name, self.name, parent=self.graph()._activeCompoundId, data=self)
+        # register graph in graph manager
+        if jsonTemplate is not None and 'graphData' in jsonTemplate:
+            self.rawGraph = GraphBase.deserialize(jsonTemplate['graphData'])
+            self.graph().graphManager.add(self.rawGraph)
+        else:
+            self.rawGraph = GraphBase(self.name, self.graph().graphManager)
 
     def addNode(self, node):
         self.rawGraph.addNode(node)

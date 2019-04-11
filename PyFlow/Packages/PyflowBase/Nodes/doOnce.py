@@ -2,7 +2,7 @@ from PyFlow.Core import NodeBase
 
 
 class doOnce(NodeBase):
-    def __init__(self, name, parent):
+    def __init__(self, name):
         super(doOnce, self).__init__(name)
         self.inExec = self.addInputPin('inExec', 'ExecPin', self.compute)
         self.reset = self.addInputPin('Reset', 'ExecPin', self.OnReset)
