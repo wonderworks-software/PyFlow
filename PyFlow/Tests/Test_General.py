@@ -49,10 +49,10 @@ class TestGeneral(unittest.TestCase):
         randintNode = NodeBase.initializeFromFunction(randomLibFoos["randint"])
         printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
 
-        graph = GraphBase('root')
+        man = GraphManager()
 
-        graph.addNode(randintNode)
-        graph.addNode(printNode)
+        man.activeGraph().addNode(randintNode)
+        man.activeGraph().addNode(printNode)
 
         self.assertIsNotNone(randintNode)
         self.assertIsNotNone(printNode)
@@ -88,11 +88,10 @@ class TestGeneral(unittest.TestCase):
         n2 = NodeBase.initializeFromFunction(foos["makeBool"])
         n3 = NodeBase.initializeFromFunction(foos["makeBool"])
 
-        graph = GraphBase('root')
-
-        graph.addNode(n1)
-        graph.addNode(n2)
-        graph.addNode(n3)
+        man = GraphManager()
+        man.activeGraph().addNode(n1)
+        man.activeGraph().addNode(n2)
+        man.activeGraph().addNode(n3)
 
         n1Out = n1.getPin('out', PinSelectionGroup.Outputs)
         n3b = n3.getPin('b', PinSelectionGroup.Inputs)
@@ -143,20 +142,20 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(arePinsConnected(pinOut, pinInp), False)
 
     def test_create_var(self):
-        graph = GraphBase('root')
-        v1 = graph.createVariable()
-        self.assertEqual(v1.uid in graph.vars, True)
+        man = GraphManager()
+        v1 = man.activeGraph().createVariable()
+        self.assertEqual(v1.uid in man.activeGraph().vars, True)
 
     def test_variable_scope(self):
         from collections import Counter
 
-        graph = GraphBase('root')
+        man = GraphManager()
         # add variable to root graph
-        rootVariable = graph.createVariable(name="v0")
+        rootVariable = man.activeGraph().createVariable(name="v0")
         rootVariable.value = 0
-        self.assertEqual(rootVariable.uid in graph.vars, True)
+        self.assertEqual(rootVariable.uid in man.activeGraph().vars, True)
 
-        vars = graph.getVarList()
+        vars = man.activeGraph().getVarList()
         self.assertEqual(len(vars), 1, "failed to gather variables")
 
         # create two subgraphs and variables inside
@@ -165,63 +164,63 @@ class TestGeneral(unittest.TestCase):
 
         subgraphNodeInstance1 = subgraphNodeClass('subgraph1')
         subgraphNodeInstance2 = subgraphNodeClass('subgraph2')
-        graph.addNode(subgraphNodeInstance1)
-        graph.addNode(subgraphNodeInstance2)
+        man.activeGraph().addNode(subgraphNodeInstance1)
+        man.activeGraph().addNode(subgraphNodeInstance2)
 
         # goto subgraph1 and create variable
-        graph.stepToCompound(subgraphNodeInstance1.name)
-        sg1Var = graph.createVariable(name="v1")
+        man.selectGraph(subgraphNodeInstance1.name)
+        sg1Var = man.activeGraph().createVariable(name="v1")
         sg1Var.value = 1
-        graph.stepToCompound('root')
+        man.selectGraph('root')
 
         # goto subgraph2 and create variable there
-        graph.stepToCompound(subgraphNodeInstance2.name)
-        sg2Var = graph.createVariable(name="v2")
+        man.selectGraph(subgraphNodeInstance2.name)
+        sg2Var = man.activeGraph().createVariable(name="v2")
         sg2Var.value = 2
-        graph.stepToCompound('root')
+        man.selectGraph('root')
 
         # ask variables from rootgraph.
-        vars = graph.getVarList()
+        vars = man.activeGraph().getVarList()
         self.assertEqual(len(vars), 1, "failed to gather variables")
         # check variable value is 0
         self.assertEqual(vars[0].value, 0, "invalid variable")
 
         # go to subgraph1 and ask variables there
-        graph.stepToCompound(subgraphNodeInstance1.name)
-        vars = graph.getVarList()
+        man.selectGraph(subgraphNodeInstance1.name)
+        vars = man.activeGraph().getVarList()
         # two variables. One from subgraph1 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
         self.assertEqual(Counter(varsValues) == Counter([0, 1]), True, "variables are incorrect")
-        graph.stepToCompound('root')
+        man.selectGraph('root')
 
         # goto subgraph2 and ask variables there
-        graph.stepToCompound(subgraphNodeInstance2.name)
-        vars = graph.getVarList()
+        man.selectGraph(subgraphNodeInstance2.name)
+        vars = man.activeGraph().getVarList()
         # two variables. One from subgraph2 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
         self.assertEqual(Counter(varsValues) == Counter([0, 2]), True, "variables are incorrect")
-        graph.stepToCompound('root')
+        man.selectGraph('root')
 
     def test_get_any_var(self):
         packages = GET_PACKAGES()
 
-        graph = GraphBase('root')
+        man = GraphManager()
 
         # create any type variable
-        v1 = graph.createVariable()
+        v1 = man.activeGraph().createVariable()
         v1.value = False
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
         varGetterInstance = varGetterClass('v1Getter', v1)
-        graph.addNode(varGetterInstance)
+        man.activeGraph().addNode(varGetterInstance)
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
         printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
-        graph.addNode(printerInstance)
+        man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
         varOutPin = varGetterInstance.getPin('value', PinSelectionGroup.Outputs)
@@ -246,22 +245,22 @@ class TestGeneral(unittest.TestCase):
     def test_get_bool_var(self):
         packages = GET_PACKAGES()
 
-        graph = GraphBase('root')
+        man = GraphManager()
 
         # create bool variable
-        v1 = graph.createVariable('BoolPin')
+        v1 = man.activeGraph().createVariable('BoolPin')
         v1.value = False
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
         # since variable is bool, bool pin will be created
         varGetterInstance = varGetterClass('v1Getter', v1)
-        graph.addNode(varGetterInstance)
+        man.activeGraph().addNode(varGetterInstance)
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
         printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
-        graph.addNode(printerInstance)
+        man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
         varOutPin = varGetterInstance.getPin('value', PinSelectionGroup.Outputs)
@@ -285,21 +284,21 @@ class TestGeneral(unittest.TestCase):
     def test_kill_variable(self):
         packages = GET_PACKAGES()
 
-        graph = GraphBase('root')
+        man = GraphManager()
 
         # create any type variable
-        v1 = graph.createVariable()
+        v1 = man.activeGraph().createVariable()
         v1.value = False
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
         varGetterInstance = varGetterClass('v1Getter', v1)
-        graph.addNode(varGetterInstance)
+        man.activeGraph().addNode(varGetterInstance)
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
         printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
-        graph.addNode(printerInstance)
+        man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
         varOutPin = varGetterInstance.getPin('value', PinSelectionGroup.Outputs)
@@ -308,26 +307,26 @@ class TestGeneral(unittest.TestCase):
         connected = connectPins(varOutPin, printInPin)
         self.assertEqual(connected, True, "var getter is not connected")
 
-        graph.killVariable(v1)
-        self.assertEqual(v1 not in graph.vars, True, "variable not killed")
-        self.assertEqual(varGetterInstance.uid not in graph.nodes, True, "get var not killed")
+        man.activeGraph().killVariable(v1)
+        self.assertEqual(v1 not in man.activeGraph().vars, True, "variable not killed")
+        self.assertEqual(varGetterInstance.uid not in man.activeGraph().nodes, True, "get var not killed")
         connected = arePinsConnected(varOutPin, printInPin)
         self.assertEqual(connected, False, "get var node is removed, but pins are still connected")
 
     def test_set_any_var(self):
         packages = GET_PACKAGES()
 
-        graph = GraphBase('root')
+        man = GraphManager()
 
         # create any type variable
-        v1 = graph.createVariable()
+        v1 = man.activeGraph().createVariable()
         # type checking will not be performed since this is any type
         v1.value = False
 
         # create variable setter node
         varSetterClass = packages["PyflowBase"].GetNodeClasses()['setVar']
         varSetterInstance = varSetterClass('v1Setter', v1)
-        setterAdded = graph.addNode(varSetterInstance)
+        setterAdded = man.activeGraph().addNode(varSetterInstance)
         self.assertEqual(setterAdded, True)
 
         # set new value to setter node input pin
@@ -350,17 +349,17 @@ class TestGeneral(unittest.TestCase):
         import pyrr
         packages = GET_PACKAGES()
 
-        graph = GraphBase('root')
+        man = GraphManager()
 
         # create bool type variable
-        v1 = graph.createVariable('BoolPin')
+        v1 = man.activeGraph().createVariable('BoolPin')
         # this will accept only bools
         v1.value = False
 
         # create variable setter node
         varSetterClass = packages["PyflowBase"].GetNodeClasses()['setVar']
         varSetterInstance = varSetterClass('v1Setter', v1)
-        setterAdded = graph.addNode(varSetterInstance)
+        setterAdded = man.activeGraph().addNode(varSetterInstance)
         self.assertEqual(setterAdded, True)
 
         # set new value to setter node input pin
@@ -562,7 +561,7 @@ class TestGeneral(unittest.TestCase):
         subgraphInAnyExec.call(message="EXECS MSG")
 
     def test_graph_serialization(self):
-        graph = GraphBase('root')
+        man = GraphManager()
         packages = GET_PACKAGES()
         intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
         foos = intlib.getFunctions()
@@ -570,20 +569,20 @@ class TestGeneral(unittest.TestCase):
         addNode1 = NodeBase.initializeFromFunction(foos["add"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
-        graph.addNode(addNode1)
-        graph.addNode(addNode2)
+        man.activeGraph().addNode(addNode1)
+        man.activeGraph().addNode(addNode2)
         connected = connectPins(addNode1['out'], addNode2['a'])
         addNode1.setData('a', 5)
         self.assertEqual(connected, True)
         self.assertEqual(addNode2.getData('out'), 5, "Incorrect calc")
 
         # save and clear
-        graphJson = graph.serialize()
+        graphJson = man.activeGraph().serialize()
 
         # load
-        restoredGraph = GraphBase.deserialize(graphJson)
+        restoredGraph = GraphBase.deserialize(graphJson, man)
 
-        restoredAddNode2 = graph.findNode('add2')
+        restoredAddNode2 = man.activeGraph().findNode('add2')
         self.assertEqual(restoredAddNode2.getData('out'), 5, "Incorrect calc")
 
 

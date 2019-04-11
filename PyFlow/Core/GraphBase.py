@@ -32,10 +32,10 @@ class GraphBase(ISerializable):
     def getVarList(self):
         """return list of variables from active graph
         """
-        result = self.vars.values()
+        result = list(self.vars.values())
         parent = self.parentGraph
         while parent is not None:
-            result += parent.vars.values()
+            result += list(parent.vars.values())
             parent = parent.parentGraph
         return result
 
@@ -48,9 +48,9 @@ class GraphBase(ISerializable):
         return result
 
     @staticmethod
-    def deserialize(jsonData, *args, **kwargs):
+    def deserialize(jsonData, manager, *args, **kwargs):
         # create graph
-        graph = GraphBase(jsonData['name'])
+        graph = GraphBase(jsonData['name'], manager)
         # restore vars
         for varJson in jsonData['vars']:
             var = Variable.deserialize(varJson, *args, **kwargs)

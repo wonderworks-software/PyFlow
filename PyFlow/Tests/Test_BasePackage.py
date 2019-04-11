@@ -12,27 +12,27 @@ class TestBasePackage(unittest.TestCase):
 
     def test_branch_node(self):
         packages = GET_PACKAGES()
-        graph = GraphBase('root')
+        man = GraphManager()
         foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
         nodes = packages['PyflowBase'].GetNodeClasses()
         printNode1 = NodeBase.initializeFromFunction(foos["pyprint"])
-        graph.addNode(printNode1)
+        man.activeGraph().addNode(printNode1)
         printNode1.setData('entity', "first")
 
         branchNode = nodes["branch"]("branchNODE")
         self.assertIsNotNone(branchNode, "branch node is not created")
-        graph.addNode(branchNode)
+        man.activeGraph().addNode(branchNode)
         branchNode.setData('Condition', True)
 
         connected = connectPins(printNode1.getPin(DEFAULT_OUT_EXEC_NAME), branchNode.getPin("In"))
         self.assertEqual(connected, True, "failed to connect")
 
         printNodeTrue = NodeBase.initializeFromFunction(foos["pyprint"])
-        graph.addNode(printNodeTrue)
+        man.activeGraph().addNode(printNodeTrue)
         printNodeTrue.setData('entity', "True executed")
 
         printNodeFalse = NodeBase.initializeFromFunction(foos["pyprint"])
-        graph.addNode(printNodeFalse)
+        man.activeGraph().addNode(printNodeFalse)
         printNodeFalse.setData('entity', "False executed")
 
         connectPins(branchNode.getPin('True'), printNodeTrue.getPin(DEFAULT_IN_EXEC_NAME))
