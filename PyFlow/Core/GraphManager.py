@@ -56,12 +56,22 @@ class GraphManager(object):
             allNodes += graph.nodes.values()
         return allNodes
 
+    def getAllVariables(self):
+        result = []
+        for graph in self._graphs.values():
+            result += list(graph.vars.values())
+        return result
+
     def getUniqGraphName(self, name):
         existingNames = [g.name for g in self._graphs.values()]
         return getUniqNameFromList(existingNames, name)
 
     def getUniqNodeName(self, name):
         existingNames = [n.name for n in self.getAllNodes()]
+        return getUniqNameFromList(existingNames, name)
+
+    def getUniqVariableName(self, name):
+        existingNames = [var.name for var in self.getAllVariables()]
         return getUniqNameFromList(existingNames, name)
 
     def plot(self):

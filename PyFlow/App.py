@@ -102,7 +102,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         self.setMouseTracking(True)
 
-        self.variablesWidget = VariablesWidget(self, self.canvasWidget)
+        self.variablesWidget = VariablesWidget(self.canvasWidget)
         self.leftDockGridLayout.addWidget(self.variablesWidget)
 
         self._lastClock = 0.0

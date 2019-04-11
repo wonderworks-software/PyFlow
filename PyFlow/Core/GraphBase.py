@@ -109,7 +109,7 @@ class GraphBase(ISerializable):
         return result
 
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None, name="var"):
-        var = Variable(getPinDefaultValueByType(dataType), self.getUniqVarName(name), dataType, accessLevel=accessLevel, uid=uid)
+        var = Variable(self, getPinDefaultValueByType(dataType), self.getUniqVarName(name), dataType, accessLevel=accessLevel, uid=uid)
         self.vars[var.uid] = var
         return var
 

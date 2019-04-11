@@ -8,17 +8,17 @@ from PyFlow.Core.Interfaces import ISerializable
 
 
 class Variable(ISerializable):
-    def __init__(self, value, name, dataType, accessLevel=AccessLevel.public, uid=None):
+    def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, uid=None):
         super(Variable, self).__init__()
         assert(isinstance(name, str))
         assert(isinstance(dataType, str))
         # signals
-        self.nameChanged = Signal()
-        self.valueChanged = Signal()
-        self.dataTypeChanged = Signal()
-        self.accessLevelChanged = Signal()
-        self.packageNameChanged = Signal()
-        self.uuidChanged = Signal()
+        self.nameChanged = Signal(str)
+        self.valueChanged = Signal(str)
+        self.dataTypeChanged = Signal(str)
+        self.accessLevelChanged = Signal(str)
+        self.packageNameChanged = Signal(str)
+        self.uuidChanged = Signal(object)
         self.killed = Signal()
 
         self._name = name
@@ -101,8 +101,9 @@ class Variable(ISerializable):
     @uid.setter
     def uid(self, value):
         assert(isinstance(value, uuid.UUID))
+        graph.vars[value] = graph.vars.pop(self._uid)
         self._uid = value
-        self.uuidChanged.send(value)
+        # self.uuidChanged.send(value)
 
     def serialize(self):
         pinClass = findPinClassByType(self.dataType)

@@ -14,7 +14,6 @@ from Qt.QtWidgets import QLabel
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
 
-from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.Core.Common import *
 from PyFlow import getPinDefaultValueByType
 from PyFlow import findPinClassByType
@@ -49,7 +48,8 @@ class VarTypeComboBox(QComboBox):
         super(VarTypeComboBox, self).__init__(parent)
         self._bJustSpawned = True
         self.var = var
-        for i in self.var.types:
+        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
+        for i in self.types:
             self.addItem(i)
         self.currentIndexChanged.connect(self.onCurrentIndexChanged)
         self.setCurrentIndex(self.findText(var.dataType))
@@ -67,40 +67,26 @@ class VarTypeComboBox(QComboBox):
 
 # Variable class
 class UIVariable(QWidget):
-    # executed when value been set
-    valueChanged = QtCore.Signal()
-    # executed when name been changed
-    nameChanged = QtCore.Signal(str)
-    # executed when variable been killed
-    killed = QtCore.Signal()
-    # executed when variable data type been changed
-    dataTypeChanged = QtCore.Signal(int)
-    # executed when variable access level been changed
-    accessLevelChanged = QtCore.Signal(int)
-
-    def __init__(self, rawVariable=None, graph=None):
-        super(UIVariable, self).__init__()
+    def __init__(self, rawVariable, variablesWidget, parent=None):
+        super(UIVariable, self).__init__(parent)
         self._rawVariable = rawVariable
+        self.variablesWidget = variablesWidget
+
         # ui
         self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setSpacing(1)
         self.horizontalLayout.setContentsMargins(1, 1, 1, 1)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.widget = TypeWidget(findPinClassByType(
-            self._rawVariable.dataType).color(), self)
+        self.widget = TypeWidget(findPinClassByType(self._rawVariable.dataType).color(), self)
         self.widget.setObjectName("widget")
         self.horizontalLayout.addWidget(self.widget)
         self.labelName = QLabel(self)
         self.labelName.setObjectName("labelName")
         self.horizontalLayout.addWidget(self.labelName)
-        spacerItem = QSpacerItem(
-            40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
 
         QtCore.QMetaObject.connectSlotsByName(self)
-        self.graph = graph
-        self.types = [pin.__name__ for pin in getAllPinClasses()
-                      if pin.IsValuePin()]
         self.setName(self._rawVariable.name)
 
     @property
@@ -122,7 +108,6 @@ class UIVariable(QWidget):
     @accessLevel.setter
     def accessLevel(self, value):
         self._rawVariable.accessLevel = value
-        self.accessLevelChanged.emit(value)
 
     @property
     def uid(self):
@@ -193,57 +178,21 @@ class UIVariable(QWidget):
     @value.setter
     def value(self, data):
         self._rawVariable.value = data
-        self.valueChanged.emit()
 
     # Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
     # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
     def setDataType(self, dataType, _bJustSpawned=False):
         self._rawVariable.dataType = dataType
         self.widget.color = findPinClassByType(self.dataType).color()
-        # self.value = findPinClassByType(self.dataType).pinDataTypeHint()[1]
         self.widget.update()
         if _bJustSpawned:
             return
-        self.dataTypeChanged.emit(self.dataType)
-        # self.graph.undoStack.clear()
-        self.graph.tryFillPropertiesView(self)
+        self.variablesWidget.onUpdatePropertyView(self)
 
     def mousePressEvent(self, event):
-        QWidget.mousePressEvent(self, event)
-        self.graph.tryFillPropertiesView(self)
+        super(UIVariable, self).mousePressEvent(event)
+        self.variablesWidget.onUpdatePropertyView(self)
 
     def setName(self, name):
-        self.labelName.setText(name)
-        self.name = name
-        self.nameChanged.emit(str(name))
-
-    def onUpdatePropertyView(self, formLayout):
-        # name
-        le_name = QLineEdit(self.name)
-        le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
-        formLayout.addRow("Name", le_name)
-
-        # data type
-        cbTypes = VarTypeComboBox(self)
-        formLayout.addRow("Type", cbTypes)
-
-        # current value
-        def valSetter(x):
-            self.value = x
-        w = createInputWidget(self.dataType, valSetter,
-                              getPinDefaultValueByType(self.dataType), None)
-        if w:
-            w.setWidgetValue(self.value)
-            w.setObjectName(self.name)
-            formLayout.addRow(self.name, w)
-        # access level
-        cb = QComboBox()
-        cb.addItem('public', 0)
-        cb.addItem('private', 1)
-        cb.addItem('protected', 2)
-
-        def accessLevelChanged(x):
-            self.accessLevel = AccessLevel[x]
-        cb.currentTextChanged.connect(accessLevelChanged)
-        cb.setCurrentIndex(self.accessLevel)
-        formLayout.addRow('Access level', cb)
+        self._rawVariable.name = name
+        self.labelName.setText(self._rawVariable.name)
