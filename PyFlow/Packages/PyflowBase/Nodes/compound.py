@@ -15,9 +15,8 @@ class compound(NodeBase):
     def __init__(self, name):
         super(compound, self).__init__(name)
         self.rawGraph = None
-        self.__inputsMap = {}  # { self.[inputPin]: innerOutPin }
-        self.__outputsMap = {}  # { self.[outputPin]: innerInPin }
-        self.content = []
+        self.__inputsMap = {}
+        self.__outputsMap = {}
 
     def Tick(self, delta):
         self.rawGraph.Tick(delta)
@@ -142,19 +141,20 @@ class compound(NodeBase):
             wrapperRef().onGraphOutputPinExposed(subgraphOutputPin)
 
     def kill(self, *args, **kwargs):
-        # remove content
-        for node in self.content:
-            node.kill()
+        self.rawGraph.clear()
         super(compound, self).kill(*args, **kwargs)
 
     def postCreate(self, jsonTemplate=None):
         super(compound, self).postCreate(jsonTemplate=jsonTemplate)
         # register graph in graph manager
         if jsonTemplate is not None and 'graphData' in jsonTemplate:
-            self.rawGraph = GraphBase.deserialize(jsonTemplate['graphData'])
-            self.graph().graphManager.add(self.rawGraph)
+            self.rawGraph = GraphBase.deserialize(jsonTemplate['graphData'], self.graph().graphManager)
+            self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
+            self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
         else:
             self.rawGraph = GraphBase(self.name, self.graph().graphManager)
+            self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
+            self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
 
     def addNode(self, node):
         self.rawGraph.addNode(node)

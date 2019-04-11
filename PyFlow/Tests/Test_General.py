@@ -388,20 +388,20 @@ class TestGeneral(unittest.TestCase):
 
         """
         packages = GET_PACKAGES()
-        graph = GraphBase('root')
+        man = GraphManager()
 
         # create empty compound
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
         subgraphNodeInstance = subgraphNodeClass('compound')
-        graph.addNode(subgraphNodeInstance)
+        man.activeGraph().addNode(subgraphNodeInstance)
 
         # step inside compound
-        graph.stepToCompound(subgraphNodeInstance.name)
+        man.selectGraph(subgraphNodeInstance.name)
         # check current location
 
         # add input output nodes to expose pins to outer compound node
-        inputs1 = graph.getInputNode()
-        outputs1 = graph.getOutputNode()
+        inputs1 = man.activeGraph().getInputNode()
+        outputs1 = man.activeGraph().getOutputNode()
         self.assertIsNotNone(inputs1, "failed to create graph inputs node")
         self.assertIsNotNone(outputs1, "failed to create graph outputs node")
 
@@ -455,8 +455,8 @@ class TestGeneral(unittest.TestCase):
         self.assertIsNotNone(outputs1.getPin('first').currentData(), "output companion pin data is incorrect")
 
         # go back to root graph
-        graph.stepToCompound("root")
-        self.assertEqual(graph.activeGraph().name, "root", "failed to return back to root from compound node")
+        man.selectGraph("root")
+        self.assertEqual(man.activeGraph().name, "root", "failed to return back to root from compound node")
 
         # check exposed pins added
         self.assertEqual(len(subgraphNodeInstance.inputs), 1)
@@ -465,7 +465,7 @@ class TestGeneral(unittest.TestCase):
         # connect getter to compound output pin
         defaultLibFoos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
         printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
-        graph.activeGraph().addNode(printNode)
+        man.activeGraph().addNode(printNode)
 
         connected = connectPins(printNode.getPin('entity'), subgraphOutPin)
         self.assertEqual(connected, True)
@@ -476,7 +476,7 @@ class TestGeneral(unittest.TestCase):
 
         # connect another add node to exposed compound input
         addNode3 = NodeBase.initializeFromFunction(foos["add"])
-        graph.activeGraph().addNode(addNode3)
+        man.activeGraph().addNode(addNode3)
         addNode3.setData('a', 1)
         connected = connectPins(addNode3.getPin('out'), subgraphInPin)
         self.assertEqual(connected, True)
@@ -500,20 +500,20 @@ class TestGeneral(unittest.TestCase):
     def test_subgraph_execs(self):
         packages = GET_PACKAGES()
 
-        graph = GraphBase('root')
+        man = GraphManager()
 
         # create empty compound
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
         subgraphNodeInstance = subgraphNodeClass('compound')
-        graph.addNode(subgraphNodeInstance)
+        man.activeGraph().addNode(subgraphNodeInstance)
 
         # step inside compound
-        graph.stepToCompound(subgraphNodeInstance.name)
+        man.selectGraph(subgraphNodeInstance.name)
         # self.assertEqual(graph.name, subgraphNodeInstance.name, "failed to enter compound")
 
         # add input output nodes to expose pins to outer compound node
-        inputs1 = graph.getInputNode()
-        outputs1 = graph.getOutputNode()
+        inputs1 = man.activeGraph().getInputNode()
+        outputs1 = man.activeGraph().getOutputNode()
         self.assertIsNotNone(inputs1, "failed to create graph inputs node")
         self.assertIsNotNone(outputs1, "failed to create graph outputs node")
 
@@ -540,7 +540,7 @@ class TestGeneral(unittest.TestCase):
         foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
 
         printNode1 = NodeBase.initializeFromFunction(foos["pyprint"])
-        graph.addNode(printNode1)
+        man.activeGraph().addNode(printNode1)
         printNode1.setData("entity", "hello from compound")
 
         # connect print node execs to graph input/output

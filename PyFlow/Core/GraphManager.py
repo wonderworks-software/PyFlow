@@ -14,6 +14,10 @@ class GraphManager(object):
         self._activeGraph = None
         self._activeGraph = GraphBase('root', self)
 
+    def Tick(self, deltaTime):
+        for graph in self._graphs.values():
+            graph.Tick(deltaTime)
+
     def location(self):
         location = [self.activeGraph().name]
         parent = self.activeGraph().parentGraph

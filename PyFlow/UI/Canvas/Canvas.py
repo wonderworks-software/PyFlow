@@ -86,7 +86,7 @@ def importByName(module, name):
 
 def getNodeInstance(jsonTemplate, canvas):
     nodeClassName = jsonTemplate['type']
-    nodeName = jsonTemplate['name']
+    nodeName = canvas.graphManager.getUniqNodeName(jsonTemplate['name'])
     packageName = jsonTemplate['package']
     if 'lib' in jsonTemplate:
         libName = jsonTemplate['lib']
@@ -532,10 +532,10 @@ class Canvas(QGraphicsView):
 
     @property
     def nodes(self):
-        """returns all ui nodes dict
+        """returns all ui nodes dict including compounds
         """
         result = {}
-        for rawNode in self.graphManager.activeGraph().getNodes():
+        for rawNode in self.graphManager.getAllNodes():
             result[rawNode.uid] = rawNode.getWrapper()()
         return result
 
@@ -544,8 +544,9 @@ class Canvas(QGraphicsView):
         """Returns UI pins dict {uuid: UIPinBase}
         """
         result = {}
-        for rawPin in self.graphManager.activeGraph().pins.values():
-            result[rawPin.uid] = rawPin.getWrapper()()
+        for node in self.graphManager.getAllNodes():
+            for pin in node.pins.values():
+                result[pin.uid] = pin.getWrapper()()
         return result
 
     @property
@@ -616,6 +617,8 @@ class Canvas(QGraphicsView):
 
         for e in list(self.connections.values()):
             e.Tick()
+
+        self.graphManager.Tick(deltaTime)
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)
@@ -1533,6 +1536,7 @@ class Canvas(QGraphicsView):
 
     def _createNode(self, jsonTemplate):
         nodeInstance = getNodeInstance(jsonTemplate, self)
+        print(nodeInstance.name)
         assert(nodeInstance is not None), "Node instance is not found!"
         nodeInstance.setPosition(jsonTemplate["x"], jsonTemplate["y"])
 
