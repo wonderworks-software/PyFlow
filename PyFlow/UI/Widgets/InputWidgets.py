@@ -112,8 +112,7 @@ def REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, factory):
 def createInputWidget(dataType, dataSetter, defaultValue=None, userStruct=None):
     pinInputWidget = None
     for packageName, factory in UI_INPUT_WIDGET_PINS_FACTORIES.items():
-        pinInputWidget = factory(dataType, dataSetter,
-                                 defaultValue, userStruct)
+        pinInputWidget = factory(dataType, dataSetter, defaultValue, userStruct)
         if pinInputWidget is not None:
             return pinInputWidget
-    assert(pinInputWidget is not None), "failed to create pin. No input widget found for type '{}'".format(dataType)
+    return pinInputWidget
