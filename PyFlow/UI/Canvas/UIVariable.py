@@ -13,6 +13,7 @@ from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QLabel
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
+from Qt.QtWidgets import QPushButton
 
 from PyFlow.Core.Common import *
 from PyFlow import getPinDefaultValueByType
@@ -85,9 +86,19 @@ class UIVariable(QWidget):
         self.horizontalLayout.addWidget(self.labelName)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
+        self.pbKill = QPushButton("")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icons/resources/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pbKill.setIcon(icon)
+        self.pbKill.setObjectName("pbKill")
+        self.horizontalLayout.addWidget(self.pbKill)
+        self.pbKill.clicked.connect(self.onKillClicked)
 
         QtCore.QMetaObject.connectSlotsByName(self)
         self.setName(self._rawVariable.name)
+
+    def onKillClicked(self):
+        self.variablesWidget.killVar(self._rawVariable)
 
     @property
     def dataType(self):

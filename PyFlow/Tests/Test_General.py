@@ -35,7 +35,7 @@ class TestGeneral(unittest.TestCase):
 
         addNode1.setData('a', 5)
 
-        connection = connectPins(addNode1.getPin('out', PinSelectionGroup.Outputs), addNode2.getPin('a', PinSelectionGroup.Inputs))
+        connection = connectPins(addNode1['out'], addNode2['a'])
         self.assertEqual(connection, True, "FAILED TO ADD EDGE")
         self.assertEqual(addNode2.getData('out'), 5, "NODES EVALUATION IS INCORRECT")
 
@@ -57,18 +57,11 @@ class TestGeneral(unittest.TestCase):
         self.assertIsNotNone(randintNode)
         self.assertIsNotNone(printNode)
 
-        pRandIntResultPin = randintNode.getPin('Result', PinSelectionGroup.Outputs)
-        pRandIntOutExecPin = randintNode.getPin('outExec', PinSelectionGroup.Outputs)
+        pPrintInputValuePin = printNode['entity']
         pRandIntInExecPin = randintNode.getPin('inExec', PinSelectionGroup.Inputs)
-        pPrintInputValuePin = printNode.getPin('entity', PinSelectionGroup.Inputs)
-        pPrintInputExecPin = printNode.getPin('inExec', PinSelectionGroup.Inputs)
-        self.assertIsNotNone(pRandIntResultPin)
-        self.assertIsNotNone(pPrintInputValuePin)
-        self.assertIsNotNone(pRandIntOutExecPin)
-        self.assertIsNotNone(pPrintInputExecPin)
 
-        edge1Created = connectPins(pRandIntOutExecPin, pPrintInputExecPin)
-        edge2Created = connectPins(pRandIntResultPin, pPrintInputValuePin)
+        edge1Created = connectPins(randintNode[DEFAULT_OUT_EXEC_NAME], printNode[DEFAULT_IN_EXEC_NAME])
+        edge2Created = connectPins(randintNode['Result'], pPrintInputValuePin)
         self.assertEqual(edge1Created, True, "FAILED TO CONNECT EXECS")
         self.assertEqual(edge2Created, True, "FAILED TO CONNECT INT AND ANY")
 

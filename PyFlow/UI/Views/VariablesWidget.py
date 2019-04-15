@@ -12,7 +12,8 @@ from Qt.QtWidgets import (
     QListWidgetItem,
     QWidget,
     QLineEdit,
-    QComboBox
+    QComboBox,
+    QAbstractItemView
 )
 
 from PyFlow.UI.Canvas.UIVariable import UIVariable, VarTypeComboBox
@@ -25,17 +26,26 @@ VARIABLE_TAG = "VAR"
 VARIABLE_DATA_TAG = "VAR_DATA"
 
 
-def lwMousePressEvent(self, event):
-    QListWidget.mousePressEvent(self, event)
-    w = self.itemWidget(self.currentItem())
-    if w:
-        drag = QtGui.QDrag(self)
-        mime_data = QtCore.QMimeData()
-        varJson = w.serialize()
-        dataJson = {VARIABLE_TAG: True, VARIABLE_DATA_TAG: varJson}
-        mime_data.setText(json.dumps(dataJson))
-        drag.setMimeData(mime_data)
-        drag.exec_()
+class VariablesListWidget(QListWidget):
+    """docstring for VariablesListWidget."""
+    def __init__(self, parent=None):
+        super(VariablesListWidget, self).__init__(parent)
+        self.setDragDropMode(QAbstractItemView.InternalMove)
+        self.setDefaultDropAction(QtCore.Qt.MoveAction)
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.setSelectionRectVisible(True)
+
+    def mousePressEvent(self, event):
+        super(VariablesListWidget, self).mousePressEvent(event)
+        w = self.itemWidget(self.currentItem())
+        if w:
+            drag = QtGui.QDrag(self)
+            mime_data = QtCore.QMimeData()
+            varJson = w.serialize()
+            dataJson = {VARIABLE_TAG: True, VARIABLE_DATA_TAG: varJson}
+            mime_data.setText(json.dumps(dataJson))
+            drag.setMimeData(mime_data)
+            drag.exec_()
 
 
 class VariablesWidget(QWidget, Ui_Form):
@@ -45,27 +55,40 @@ class VariablesWidget(QWidget, Ui_Form):
         super(VariablesWidget, self).__init__(parent)
         self.setupUi(self)
         self.canvas = canvas
+        self.canvas.graphManager.graphChanged.connect(self.onGraphChanged)
         self.pbNewVar.clicked.connect(self.createVariable)
         self.pbKillVar.clicked.connect(self.killVar)
-        self.listWidget.mousePressEvent = MethodType(
-            lwMousePressEvent, self.listWidget)
-        self.listWidget.setDragDropMode(self.listWidget.InternalMove)
-        self.notVisVars = []
+        self.listWidget = VariablesListWidget()
+        self.lytListWidget.addWidget(self.listWidget)
 
-    def killAll(self):
+    def onGraphChanged(self, *args, **kwargs):
+        self.clear()
+        # populate current graph
+        graph = self.canvas.graphManager.activeGraph()
+        for var in graph.getVarList():
+            self.createVariableWrapperAndAddToList(var)
+
+    def clear(self):
+        """Does not removes any variable. UI only
+        """
         self.listWidget.clear()
 
-    def killVar(self):
+    def killVar(self, variable):
+        print("widget kill", variable)
         # remove variable from owning graph
         # send events
         pass
 
-    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
-        rawVariable = self.canvas.graphManager.activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+    def createVariableWrapperAndAddToList(self, rawVariable):
         uiVariable = UIVariable(rawVariable, self)
         item = QListWidgetItem(self.listWidget)
         item.setSizeHint(QtCore.QSize(60, 38))
         self.listWidget.setItemWidget(item, uiVariable)
+        return uiVariable
+
+    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
+        rawVariable = self.canvas.graphManager.activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+        uiVariable = self.createVariableWrapperAndAddToList(rawVariable)
         return uiVariable
 
     def onUpdatePropertyView(self, uiVariable):

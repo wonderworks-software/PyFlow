@@ -29,6 +29,14 @@ class GraphBase(ISerializable):
 
         manager.add(self)
 
+    def depth(self):
+        result = 1
+        parent = self.parentGraph
+        while parent is not None:
+            result += 1
+            parent = parent.parentGraph
+        return result
+
     def getVarList(self):
         """return list of variables from active graph
         """
@@ -43,7 +51,8 @@ class GraphBase(ISerializable):
         result = {
             'name': self.name,
             'vars': [v.serialize() for v in self.vars.values()],
-            'nodes': [n.serialize() for n in self.nodes.values()]
+            'nodes': [n.serialize() for n in self.nodes.values()],
+            'depth': self.depth()
         }
         return result
 
@@ -109,7 +118,8 @@ class GraphBase(ISerializable):
         return result
 
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None, name="var"):
-        var = Variable(self, getPinDefaultValueByType(dataType), self.getUniqVarName(name), dataType, accessLevel=accessLevel, uid=uid)
+        name = self.graphManager.getUniqVariableName(name)
+        var = Variable(self, getPinDefaultValueByType(dataType), name, dataType, accessLevel=accessLevel, uid=uid)
         self.vars[var.uid] = var
         return var
 
@@ -118,17 +128,6 @@ class GraphBase(ISerializable):
         if var.uid in self.vars:
             popped = self.vars.pop(var.uid)
             popped.killed.send()
-
-    def getUniqVarName(self, name):
-        names = [v.name for v in self.vars.values()]
-        if name not in names:
-            return name
-        idx = 0
-        tmp = name
-        while tmp in names:
-            idx += 1
-            tmp = name + str(idx)
-        return name + str(idx)
 
     def getEvaluationOrder(self, node):
 

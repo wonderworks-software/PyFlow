@@ -440,9 +440,9 @@ class Canvas(QGraphicsView):
     outPinCreated = QtCore.Signal(object)
     outPinDeleted = QtCore.Signal(object)
 
-    def __init__(self, parent=None):
+    def __init__(self, graphManager, parent=None):
         super(Canvas, self).__init__()
-        self.graphManager = GraphManager()
+        self.graphManager = graphManager
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>367</width>
-    <height>437</height>
+    <width>342</width>
+    <height>385</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,19 +67,30 @@
     </layout>
    </item>
    <item>
-    <widget class="QListWidget" name="listWidget">
-     <property name="dragDropMode">
-      <enum>QAbstractItemView::InternalMove</enum>
+    <widget class="QWidget" name="wListWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <property name="defaultDropAction">
-      <enum>Qt::MoveAction</enum>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::SingleSelection</enum>
-     </property>
-     <property name="selectionRectVisible">
-      <bool>true</bool>
-     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>1</number>
+      </property>
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <property name="rightMargin">
+       <number>1</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
+      <item row="0" column="0">
+       <layout class="QVBoxLayout" name="lytListWidget"/>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -116,7 +127,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="nodes_res.qrc">
+        <iconset resource="../Utils/nodes_res.qrc">
          <normaloff>:/icons/resources/delete_icon.png</normaloff>:/icons/resources/delete_icon.png</iconset>
        </property>
       </widget>
@@ -126,7 +137,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="nodes_res.qrc"/>
+  <include location="../Utils/nodes_res.qrc"/>
  </resources>
  <connections/>
 </ui>

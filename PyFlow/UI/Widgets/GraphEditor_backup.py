@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor.ui',
-# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor.ui' applies.
+# Form implementation generated from reading ui file 'd:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor.ui',
+# licensing of 'd:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor.ui' applies.
 #
-# Created: Tue Mar 26 10:29:42 2019
+# Created: Mon Apr 15 11:38:35 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!

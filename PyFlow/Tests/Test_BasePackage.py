@@ -24,7 +24,7 @@ class TestBasePackage(unittest.TestCase):
         man.activeGraph().addNode(branchNode)
         branchNode.setData('Condition', True)
 
-        connected = connectPins(printNode1.getPin(DEFAULT_OUT_EXEC_NAME), branchNode.getPin("In"))
+        connected = connectPins(printNode1[DEFAULT_OUT_EXEC_NAME], branchNode["In"])
         self.assertEqual(connected, True, "failed to connect")
 
         printNodeTrue = NodeBase.initializeFromFunction(foos["pyprint"])
@@ -35,7 +35,7 @@ class TestBasePackage(unittest.TestCase):
         man.activeGraph().addNode(printNodeFalse)
         printNodeFalse.setData('entity', "False executed")
 
-        connectPins(branchNode.getPin('True'), printNodeTrue.getPin(DEFAULT_IN_EXEC_NAME))
-        connectPins(branchNode.getPin('False'), printNodeFalse.getPin(DEFAULT_IN_EXEC_NAME))
+        connectPins(branchNode['True'], printNodeTrue[DEFAULT_IN_EXEC_NAME])
+        connectPins(branchNode['False'], printNodeFalse[DEFAULT_IN_EXEC_NAME])
 
         printNode1.call(DEFAULT_IN_EXEC_NAME, message="TEST MESSAGE")

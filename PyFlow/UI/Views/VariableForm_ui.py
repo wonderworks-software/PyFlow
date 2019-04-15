@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Views\VariableForm_ui.ui',
-# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Views\VariableForm_ui.ui' applies.
+# Form implementation generated from reading ui file 'd:/GIT/PyFlow/PyFlow/UI/Views\VariableForm_ui.ui',
+# licensing of 'd:/GIT/PyFlow/PyFlow/UI/Views\VariableForm_ui.ui' applies.
 #
-# Created: Tue Mar 26 10:29:41 2019
+# Created: Mon Apr 15 11:38:35 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from Qt import QtCompat, QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(94, 26)
+        Form.resize(217, 28)
         self.horizontalLayout = QtWidgets.QHBoxLayout(Form)
         self.horizontalLayout.setSpacing(1)
         self.horizontalLayout.setContentsMargins(1, 1, 1, 1)
@@ -26,14 +26,14 @@ class Ui_Form(object):
         self.horizontalLayout.addWidget(self.labelName)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.pushButton_2 = QtWidgets.QPushButton(Form)
-        self.pushButton_2.setMaximumSize(QtCore.QSize(40, 16777215))
-        self.pushButton_2.setText("")
+        self.pbKill = QtWidgets.QPushButton(Form)
+        self.pbKill.setMaximumSize(QtCore.QSize(40, 16777215))
+        self.pbKill.setText("")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/icons/resources/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_2.setIcon(icon)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.horizontalLayout.addWidget(self.pushButton_2)
+        self.pbKill.setIcon(icon)
+        self.pbKill.setObjectName("pbKill")
+        self.horizontalLayout.addWidget(self.pbKill)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)

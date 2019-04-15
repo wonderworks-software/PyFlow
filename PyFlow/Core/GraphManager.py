@@ -27,6 +27,8 @@ class GraphManager(object):
         return location
 
     def add(self, graph):
+        if graph.name in self._graphs:
+            graph.name = self.getUniqGraphName(graph.name)
         self._graphs[graph.name] = graph
 
     def activeGraph(self):

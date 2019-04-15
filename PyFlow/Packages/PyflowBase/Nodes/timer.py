@@ -25,14 +25,14 @@ class timer(NodeBase):
     def pinTypeHints():
         return {'inputs': ['FloatPin', 'ExecPin'], 'outputs': ['ExecPin']}
 
-    def reset(self):
+    def reset(self, *args, **kwargs):
         self.stop()
         self.start()
 
-    def stop(self):
+    def stop(self, *args, **kwargs):
         self._timer.stop()
 
-    def start(self):
+    def start(self, *args, **kwargs):
         dt = self.interval.getData() * 1000.0
         self._timer.start(dt)
 

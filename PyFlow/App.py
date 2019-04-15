@@ -27,6 +27,7 @@ from PyFlow.UI.Canvas.Canvas import Canvas
 from PyFlow.Core.Common import Direction
 from PyFlow.Core.Common import clearLayout
 from PyFlow.Core.GraphBase import GraphBase
+from PyFlow.Core.GraphManager import GraphManager
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Views import GraphEditor_ui
@@ -72,7 +73,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
 
         self.styleSheetEditor = StyleSheetEditor()
-        self.canvasWidget = Canvas(self)
+        self.graphManager = GraphManager()
+        self.canvasWidget = Canvas(self.graphManager, self)
         self.canvasWidget.graphManager.graphChanged.connect(self.onRawGraphSwitched)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
