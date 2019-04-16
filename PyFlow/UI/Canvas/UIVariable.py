@@ -14,6 +14,7 @@ from Qt.QtWidgets import QLabel
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QPushButton
+from Qt.QtWidgets import QInputDialog
 
 from PyFlow.Core.Common import *
 from PyFlow import getPinDefaultValueByType
@@ -86,6 +87,15 @@ class UIVariable(QWidget):
         self.horizontalLayout.addWidget(self.labelName)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
+        # find refs
+        self.pbFindRefs = QPushButton("")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icons/resources/searching-magnifying-glass.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pbFindRefs.setIcon(icon)
+        self.pbFindRefs.setObjectName("pbFindRefs")
+        self.horizontalLayout.addWidget(self.pbFindRefs)
+        self.pbFindRefs.clicked.connect(self.onFindRefsClicked)
+        #  kill variable
         self.pbKill = QPushButton("")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/icons/resources/delete_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -97,8 +107,24 @@ class UIVariable(QWidget):
         QtCore.QMetaObject.connectSlotsByName(self)
         self.setName(self._rawVariable.name)
 
+    def onFindRefsClicked(self):
+        refs = self._rawVariable.findRefs()
+        print(refs)
+
     def onKillClicked(self):
-        self.variablesWidget.killVar(self._rawVariable)
+        # check refs and ask user what to do
+        refs = self._rawVariable.findRefs()
+        if len(refs) > 0:
+            item, accepted = QInputDialog.getItem(None, 'Decide!', 'What to do with getters and setters in canvas?', ['kill', 'leave'], editable=False)
+            if accepted:
+                if item == 'kill':
+                    self.variablesWidget.killVar(self)
+                    for node in refs:
+                        node.kill()
+                elif item == 'leave':
+                    # mark node as invalid
+                    # TODO: For future. Like in ue4, if variable is removed, it can be recreated from node (e.g. promote to variable)
+                    print('leave')
 
     @property
     def dataType(self):

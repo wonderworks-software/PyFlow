@@ -24,6 +24,7 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QUndoStack
 from Qt.QtWidgets import QGraphicsWidget
+from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QPushButton
 
@@ -97,8 +98,7 @@ def getNodeInstance(jsonTemplate, canvas):
 
     # if get var or set var, construct additional keyword arguments
     if jsonTemplate['type'] in ('getVar', 'setVar'):
-        kwargs['var'] = canvas.vars[uuid.UUID(
-            jsonTemplate['meta']['var']['uuid'])]
+        kwargs['var'] = canvas.graphManager.activeGraph().vars[uuid.UUID(jsonTemplate['meta']['var']['uuid'])]
 
     raw_instance = getRawNodeInstance(
         nodeClassName, packageName, libName, **kwargs)
@@ -1565,8 +1565,8 @@ class Canvas(QGraphicsView):
 
         return nodeInstance
 
-    def createNode(self, jsonTemplate, **kwags):
-        cmd = cmdCreateNode(self, jsonTemplate, **kwags)
+    def createNode(self, jsonTemplate, **kwargs):
+        cmd = cmdCreateNode(self, jsonTemplate, **kwargs)
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 

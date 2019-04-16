@@ -30,7 +30,7 @@ from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManager
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
-from PyFlow.UI.Views import GraphEditor_ui
+from PyFlow.UI.Widgets import GraphEditor_ui
 from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
 from PyFlow import INITIALIZE
@@ -102,6 +102,16 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionHistory.triggered.connect(self.toggleHistory)
         self.dockWidgetUndoStack.setVisible(False)
 
+        rxLettersAndNumbers = QtCore.QRegExp('^[a-zA-Z0-9]*$')
+        nameValidator = QtGui.QRegExpValidator(rxLettersAndNumbers, self.leCompoundName)
+        self.leCompoundName.setValidator(nameValidator)
+        self.leCompoundName.returnPressed.connect(self.onActiveCompoundNameAccepted)
+
+        rxLetters = QtCore.QRegExp('^[a-zA-Z]*$')
+        categoryValidator = QtGui.QRegExpValidator(rxLetters, self.leCompoundCategory)
+        self.leCompoundCategory.setValidator(categoryValidator)
+        self.leCompoundCategory.returnPressed.connect(self.onActiveCompoundCategoryAccepted)
+
         self.setMouseTracking(True)
 
         self.variablesWidget = VariablesWidget(self.canvasWidget)
@@ -112,6 +122,14 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer = QtCore.QTimer()
         self.tick_timer.timeout.connect(self.mainLoop)
         self._current_file_name = 'Untitled'
+
+    def setCompoundPropertiesWidgetVisible(self, bVisible):
+        if bVisible:
+            self.CompoundPropertiesWidget.show()
+            self.leCompoundName.setText(self.graphManager.activeGraph().name)
+            self.leCompoundCategory.setText(self.graphManager.activeGraph().category)
+        else:
+            self.CompoundPropertiesWidget.hide()
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
@@ -243,6 +261,20 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
             btn.clicked.connect(lambda chk=False, name=folderName: onClicked(chk, name))
             self.layoutGraphPath.insertWidget(index, btn)
+
+        self.setCompoundPropertiesWidgetVisible(len(location) > 1)
+
+    def onActiveCompoundNameAccepted(self):
+        newName = self.graphManager.getUniqName(self.leCompoundName.text())
+        self.graphManager.activeGraph().name = newName
+        self.leCompoundName.blockSignals(True)
+        self.leCompoundName.setText(newName)
+        self.leCompoundName.blockSignals(False)
+        self.updateGraphTreeLocation()
+
+    def onActiveCompoundCategoryAccepted(self):
+        newCategoryName = self.leCompoundCategory.text()
+        self.graphManager.activeGraph().category = newCategoryName
 
     @property
     def currentGraph(self):

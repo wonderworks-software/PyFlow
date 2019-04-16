@@ -14,16 +14,19 @@ from PyFlow.Core.Interfaces import ISerializable
 
 
 class GraphBase(ISerializable):
-    def __init__(self, name, manager, *args, **kwargs):
+    def __init__(self, name, manager, category='', *args, **kwargs):
         super(GraphBase, self).__init__(*args, **kwargs)
         self.graphManager = manager
         # signals
         self.inputPinCreated = Signal(object)
         self.outputPinCreated = Signal(object)
+        self.nameChanged = Signal(str)
+        self.categoryChanged = Signal(str)
 
         self.parentGraph = manager.activeGraph() if manager.activeGraph() is not None else None
 
         self.__name = name
+        self.__category = category
         self.nodes = {}
         self.vars = {}
 
@@ -50,6 +53,7 @@ class GraphBase(ISerializable):
     def serialize(self, *args, **Kwargs):
         result = {
             'name': self.name,
+            'category': self.category,
             'vars': [v.serialize() for v in self.vars.values()],
             'nodes': [n.serialize() for n in self.nodes.values()],
             'depth': self.depth()
@@ -59,7 +63,7 @@ class GraphBase(ISerializable):
     @staticmethod
     def deserialize(jsonData, manager, *args, **kwargs):
         # create graph
-        graph = GraphBase(jsonData['name'], manager)
+        graph = GraphBase(jsonData['name'], manager, jsonData['category'])
         # restore vars
         for varJson in jsonData['vars']:
             var = Variable.deserialize(varJson, *args, **kwargs)
@@ -103,7 +107,22 @@ class GraphBase(ISerializable):
     @name.setter
     def name(self, value):
         assert(isinstance(value, str))
+        # TODO: remove this. graph manager should store graphs by uuids
+        # actualize internal graphManager data
+        self.graphManager._graphs[value] = self.graphManager._graphs.pop(self.__name)
+
         self.__name = value
+        self.nameChanged.send(self.__name)
+
+    @property
+    def category(self):
+        return self.__category
+
+    @category.setter
+    def category(self, value):
+        assert(isinstance(value, str))
+        self.__category = value
+        self.categoryChanged.send(self.__category)
 
     def Tick(self, deltaTime):
         for node in self.nodes.values():

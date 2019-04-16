@@ -33,5 +33,10 @@ class UICompoundNode(UINodeBase):
     def kill(self, *args, **kwargs):
         super(UICompoundNode, self).kill()
 
+    def onGraphNameChanged(self, newName):
+        self.displayName = newName
+        self.name = newName
+
     def postCreate(self, jsonTemplate=None):
         super(UICompoundNode, self).postCreate(jsonTemplate)
+        self._rawNode.rawGraph.nameChanged.connect(self.onGraphNameChanged)

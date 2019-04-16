@@ -38,7 +38,6 @@ class UIGetVarNode(UINodeBase):
 
         self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.nameChanged.connect(self.onVarNameChanged)
-        self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
         self.onVarNameChanged(self.var.name)
 
@@ -55,16 +54,11 @@ class UIGetVarNode(UINodeBase):
         pass
 
     def onVarDataTypeChanged(self, dataType):
-        # TODO: inform user if something is connected to output pin
-        # Offer choices what to do with references. Remove nodes or just disconnect them
-
-        # kill ui and raw pin
-        self.UIOut.kill()
         # recreate pin
-        bRecreated = self._rawNode.recreateOutput(dataType)
-        assert(bRecreated)
+        recreatedPin = self._rawNode.recreateOutput(dataType)
         self.UIOut = self._createUIPinWrapper(self._rawNode.out)
         self.UIOut.getLabel()().hide()
+
         self.updateNodeShape(self.var.name)
         self.onVarNameChanged(self.var.name)
 

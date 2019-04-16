@@ -75,7 +75,7 @@ from Qt.QtWidgets import QPlainTextEdit
 
 import PyFlow.UI.Utils.PythonSyntax as PythonSyntax
 from PyFlow.UI.Views import PinWidget_ui
-from PyFlow.UI.Views import CodeEditor_ui
+from PyFlow.UI.Widgets import CodeEditor_ui
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.Core.Common import pinAffects
 from PyFlow import (

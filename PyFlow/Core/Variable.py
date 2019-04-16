@@ -21,6 +21,8 @@ class Variable(ISerializable):
         self.uuidChanged = Signal(object)
         self.killed = Signal()
 
+        self.graph = graph
+
         self._name = name
         self._value = value
         self._dataType = dataType
@@ -30,10 +32,10 @@ class Variable(ISerializable):
         assert(isinstance(self._uid, uuid.UUID))
         self.updatePackageName()
 
-    def kill(self, *args, **kwargs):
-        # TODO: ask graph tree to remove variable and replace all references
-        # self.killed.send(*args, **kwargs)
-        pass
+    def findRefs(self):
+        """returns all getVar and setVar instances for this node
+        """
+        return self.graph.graphManager.findVariableRefs(self)
 
     def updatePackageName(self):
         self._packageName = findPinClassByType(self._dataType).packageName()

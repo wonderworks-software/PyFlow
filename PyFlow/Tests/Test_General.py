@@ -578,6 +578,18 @@ class TestGeneral(unittest.TestCase):
         restoredAddNode2 = man.activeGraph().findNode('add2')
         self.assertEqual(restoredAddNode2.getData('out'), 5, "Incorrect calc")
 
+    def test_graph_depth(self):
+        man = GraphManager()
+        packages = GET_PACKAGES()
+
+        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
+        subgraphNodeInstance = subgraphNodeClass('compound')
+        man.activeGraph().addNode(subgraphNodeInstance)
+
+        self.assertEqual(man.activeGraph().depth(), 1)
+
+        man.selectGraph(subgraphNodeInstance)
+        self.assertEqual(man.activeGraph().depth(), 2)
 
 if __name__ == '__main__':
     unittest.main()

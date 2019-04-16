@@ -127,7 +127,9 @@ class PinBase(IPin):
         self._uid = value
 
     def setName(self, name):
-        self.name = name.replace(" ", "_")
+        if name == self.name:
+            return
+        self.name = name
         self.nameChanged.send(self.name)
 
     def getName(self):
@@ -147,6 +149,7 @@ class PinBase(IPin):
     def defaultValue(self):
         return self._defaultValue
 
+    # TODO: Move this to separate class (e.g. ExecutionEngine) with PIMPL
     ## retrieving the data
     def getData(self):
         if self.direction == PinDirection.Output:

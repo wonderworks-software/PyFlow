@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor.ui',
-# licensing of 'd:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor.ui' applies.
+# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor.ui',
+# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor.ui' applies.
 #
-# Created: Mon Apr 15 11:38:35 2019
+# Created: Tue Apr 16 08:11:54 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -34,13 +34,9 @@ class Ui_MainWindow(object):
         self.SceneWidget = QtWidgets.QWidget(self.horizontal_splitter)
         self.SceneWidget.setObjectName("SceneWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.SceneWidget)
+        self.gridLayout.setSpacing(2)
         self.gridLayout.setContentsMargins(1, 1, 1, 1)
         self.gridLayout.setObjectName("gridLayout")
-        self.SceneLayout = QtWidgets.QGridLayout()
-        self.SceneLayout.setSizeConstraint(QtWidgets.QLayout.SetMaximumSize)
-        self.SceneLayout.setContentsMargins(0, 0, 0, 0)
-        self.SceneLayout.setObjectName("SceneLayout")
-        self.gridLayout.addLayout(self.SceneLayout, 1, 0, 1, 1)
         self.widgetCurrentGraphPath = QtWidgets.QWidget(self.SceneWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -56,7 +52,38 @@ class Ui_MainWindow(object):
         self.layoutGraphPath.setContentsMargins(-1, 0, -1, 0)
         self.layoutGraphPath.setObjectName("layoutGraphPath")
         self.horizontalLayout_3.addLayout(self.layoutGraphPath)
-        self.gridLayout.addWidget(self.widgetCurrentGraphPath, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.widgetCurrentGraphPath, 1, 0, 1, 1)
+        self.SceneLayout = QtWidgets.QGridLayout()
+        self.SceneLayout.setSizeConstraint(QtWidgets.QLayout.SetMaximumSize)
+        self.SceneLayout.setObjectName("SceneLayout")
+        self.gridLayout.addLayout(self.SceneLayout, 4, 0, 1, 1)
+        self.CompoundPropertiesWidget = QtWidgets.QWidget(self.SceneWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.CompoundPropertiesWidget.sizePolicy().hasHeightForWidth())
+        self.CompoundPropertiesWidget.setSizePolicy(sizePolicy)
+        self.CompoundPropertiesWidget.setObjectName("CompoundPropertiesWidget")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.CompoundPropertiesWidget)
+        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setContentsMargins(-1, 0, -1, 0)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.label_2 = QtWidgets.QLabel(self.CompoundPropertiesWidget)
+        self.label_2.setObjectName("label_2")
+        self.horizontalLayout_2.addWidget(self.label_2)
+        self.leCompoundName = QtWidgets.QLineEdit(self.CompoundPropertiesWidget)
+        self.leCompoundName.setObjectName("leCompoundName")
+        self.horizontalLayout_2.addWidget(self.leCompoundName)
+        self.label = QtWidgets.QLabel(self.CompoundPropertiesWidget)
+        self.label.setObjectName("label")
+        self.horizontalLayout_2.addWidget(self.label)
+        self.leCompoundCategory = QtWidgets.QLineEdit(self.CompoundPropertiesWidget)
+        self.leCompoundCategory.setObjectName("leCompoundCategory")
+        self.horizontalLayout_2.addWidget(self.leCompoundCategory)
+        self.gridLayout_2.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.CompoundPropertiesWidget, 2, 0, 1, 1)
         self.gridLayout_3.addWidget(self.horizontal_splitter, 1, 0, 1, 1)
         self.widget = QtWidgets.QWidget(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
@@ -133,7 +160,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 78, 396))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 109, 396))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
@@ -302,6 +329,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "PyFlow", None, -1))
+        self.label_2.setText(QtWidgets.QApplication.translate("MainWindow", "Name:", None, -1))
+        self.label.setText(QtWidgets.QApplication.translate("MainWindow", "Category:", None, -1))
         self.menuEdit.setTitle(QtWidgets.QApplication.translate("MainWindow", "Edit", None, -1))
         self.menuView.setTitle(QtWidgets.QApplication.translate("MainWindow", "View", None, -1))
         self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None, -1))

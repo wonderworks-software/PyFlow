@@ -61,23 +61,29 @@ class VariablesWidget(QWidget, Ui_Form):
         self.listWidget = VariablesListWidget()
         self.lytListWidget.addWidget(self.listWidget)
 
-    def onGraphChanged(self, *args, **kwargs):
+    def actualize(self):
         self.clear()
         # populate current graph
         graph = self.canvas.graphManager.activeGraph()
         for var in graph.getVarList():
             self.createVariableWrapperAndAddToList(var)
 
+    def onGraphChanged(self, *args, **kwargs):
+        self.actualize()
+
     def clear(self):
         """Does not removes any variable. UI only
         """
         self.listWidget.clear()
 
-    def killVar(self, variable):
-        print("widget kill", variable)
-        # remove variable from owning graph
-        # send events
-        pass
+    def killVar(self, uiVariableWidget):
+        variableGraph = uiVariableWidget._rawVariable.graph
+        variableGraph.killVariable(uiVariableWidget._rawVariable)
+        self.actualize()
+
+        # TODO: rewrite properties system
+        formLayout = self.canvas.parent.formLayout
+        clearLayout(formLayout)
 
     def createVariableWrapperAndAddToList(self, rawVariable):
         uiVariable = UIVariable(rawVariable, self)
@@ -93,6 +99,7 @@ class VariablesWidget(QWidget, Ui_Form):
 
     def onUpdatePropertyView(self, uiVariable):
         formLayout = self.canvas.parent.formLayout
+        clearLayout(formLayout)
         rawVariable = uiVariable._rawVariable
 
         # name

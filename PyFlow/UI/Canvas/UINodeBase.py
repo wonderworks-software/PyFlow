@@ -237,6 +237,10 @@ class UINodeBase(QGraphicsObject):
     def name(self):
         return self._rawNode.name
 
+    @name.setter
+    def name(self, value):
+        self._rawNode.setName(value)
+
     @property
     def displayName(self):
         return self._displayName
@@ -760,7 +764,6 @@ class UINodeBase(QGraphicsObject):
 
     def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None, color=None):
         p = getUIPinInstance(self, rawPin)
-        # if rawPin.direction == PinDirection.Input:
         p.call = rawPin.call
 
         name = rawPin.name

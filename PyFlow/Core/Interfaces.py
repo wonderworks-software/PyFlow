@@ -307,8 +307,8 @@ class IPackage(object):
 
 
 class ICodeCompiler(object):
-    def __init__(self, *args, **kwags):
-        super(ICodeCompiler, self).__init__(*args, **kwags)
+    def __init__(self, *args, **kwargs):
+        super(ICodeCompiler, self).__init__(*args, **kwargs)
 
     def compile(self, code):
         raise NotImplementedError('compile method of ICodeCompiler is not implemented')

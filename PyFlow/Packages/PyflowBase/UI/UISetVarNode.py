@@ -71,7 +71,6 @@ class UISetVarNode(UINodeBase):
     def postCreate(self, template):
         super(UISetVarNode, self).postCreate(template)
         self.var.nameChanged.connect(self.onVarNameChanged)
-        self.var.killed.connect(self.kill)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
         # hide all execs labels

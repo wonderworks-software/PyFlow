@@ -336,6 +336,13 @@ class UIPinBase(QGraphicsWidget):
         self.OnPinDeleted.emit(self)
         self.update()
 
+    def assignRawPin(self, rawPin):
+        if rawPin is not self._rawPin:
+            self._rawPin = rawPin
+            self.call = rawPin.call
+            self._rawPin.setWrapper(self)
+            self._color = QtGui.QColor(*self._rawPin.color())
+
     @staticmethod
     def deserialize(owningNode, jsonData):
         name = jsonData['name']

@@ -15,6 +15,7 @@ class compound(NodeBase):
     def __init__(self, name):
         super(compound, self).__init__(name)
         self.rawGraph = None
+        # TODO: remove this maps
         self.__inputsMap = {}
         self.__outputsMap = {}
 
@@ -24,8 +25,6 @@ class compound(NodeBase):
 
     def setName(self, name):
         super(compound, self).setName(name)
-        if self.rawGraph is not None:
-            self.rawGraph.name = name
 
     @staticmethod
     def pinTypeHints():
