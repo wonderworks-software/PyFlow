@@ -15,6 +15,7 @@ class setVar(NodeBase):
         self.var = var
         self.inp = CreateRawPin("inp", self, self.var.dataType, PinDirection.Input)
         self.out = CreateRawPin("out", self, self.var.dataType, PinDirection.Output)
+        self.var.killed.connect(self.kill)
 
     def variableUid(self):
         return self.var.uid

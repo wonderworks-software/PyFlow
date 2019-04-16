@@ -119,8 +119,6 @@ class UIVariable(QWidget):
             if accepted:
                 if item == 'kill':
                     self.variablesWidget.killVar(self)
-                    for node in refs:
-                        node.kill()
                 elif item == 'leave':
                     # mark node as invalid
                     # TODO: For future. Like in ue4, if variable is removed, it can be recreated from node (e.g. promote to variable)
