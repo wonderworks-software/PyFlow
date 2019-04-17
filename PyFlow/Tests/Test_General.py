@@ -20,6 +20,7 @@ class TestGeneral(unittest.TestCase):
         # step inside compound
         man.selectGraph(subgraphNodeInstance.name)
         self.assertCountEqual(man.location(), ['root', subgraphNodeInstance.name])
+        self.assertCountEqual(subgraphNodeInstance.rawGraph.location(), man.location())
 
     def test_add_int_no_exec(self):
         man = GraphManager()
@@ -570,12 +571,13 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(addNode2.getData('out'), 5, "Incorrect calc")
 
         # save and clear
-        graphJson = man.activeGraph().serialize()
+        dataJson = man.serialize()
+        man.clear(keepRoot=False)
 
         # load
-        restoredGraph = GraphBase.deserialize(graphJson, man)
+        man.deserialize(dataJson)
 
-        restoredAddNode2 = man.activeGraph().findNode('add2')
+        restoredAddNode2 = man.activeGraph().findNode('add1')
         self.assertEqual(restoredAddNode2.getData('out'), 5, "Incorrect calc")
 
     def test_graph_depth(self):
@@ -590,6 +592,27 @@ class TestGeneral(unittest.TestCase):
 
         man.selectGraph(subgraphNodeInstance)
         self.assertEqual(man.activeGraph().depth(), 2)
+
+    def test_manager_serialization(self):
+        man = GraphManager()
+        packages = GET_PACKAGES()
+
+        subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
+        subgraphNodeInstance = subgraphNodeClass('compound')
+        man.activeGraph().addNode(subgraphNodeInstance)
+        man.selectGraph(subgraphNodeInstance)
+        depthsBefore = [g.depth() for g in man.getAllGraphs()]
+
+        nameBefore = subgraphNodeInstance.name
+        saved = man.serialize()
+        man.clear(keepRoot=False)
+        self.assertEqual(man.activeGraph(), None)
+        man.deserialize(saved)
+        self.assertIsNotNone(man.activeGraph())
+        self.assertEqual(nameBefore, man.getAllNodes()[0].name, "names are incorrect")
+        depthsAfter = [g.depth() for g in man.getAllGraphs()]
+        self.assertCountEqual(depthsBefore, depthsAfter, "failed to restore graphs depths")
+
 
 if __name__ == '__main__':
     unittest.main()

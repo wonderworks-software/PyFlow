@@ -897,11 +897,11 @@ class Canvas(QGraphicsView):
         if "nodes" not in nodes or "connections" not in nodes:
             return
 
-        diff = QtCore.QPointF(self.mapToScene(
-            self.mousePos)) - QtCore.QPointF(nodes["nodes"][0]["x"], nodes["nodes"][0]["y"])
+        diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - QtCore.QPointF(nodes["nodes"][0]["x"], nodes["nodes"][0]["y"])
         self.clearSelection()
         newNodes = {}
 
+        currentGraph = self.graphManager.activeGraph()
         for node in nodes["nodes"]:
             oldName = node["name"]
             node["name"] = node["name"]
@@ -911,7 +911,17 @@ class Canvas(QGraphicsView):
             for out in node['outputs']:
                 out['uuid'] = str(uuid.uuid4())
 
+            # Check if user tries to copy variable setter or getter for variables of child graphs
+            # and remove them from json data!
+            if node['type'] in ['getVar', 'setVar']:
+                var = self.graphManager.findVariable(uuid.UUID(node['varUid']))
+                varLocation = var.location()
+                currentGraphLocation = currentGraph.location()
+                if len(varLocation) > len(currentGraphLocation):
+                    continue
+
             n = self.createNode(node)
+
             newNodes[oldName] = n
             n.setSelected(True)
             if move:

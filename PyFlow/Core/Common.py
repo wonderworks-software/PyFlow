@@ -27,9 +27,6 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
-# TODO: Move to config
-GRID_SIZE = 20
-
 ## Used in function library decorator to mark pins as always dirty
 # for example random integer node should always mark dirty all upper branches of graph
 PROPAGATE_DIRTY = 'PropagateDirty'
@@ -97,14 +94,7 @@ def findGoodId(ids):
 # @param[in] left hand side pin
 # @param[in] right hand side pin
 # @returns bool
-# TODO: remove this, need to find leafs first
-# then build recursion stack
 def cycle_check(src, dst):
-
-    # allow cycles on execs
-    # if src.dataType == 'ExecPin' or dst.dataType == 'ExecPin':
-    #     return False
-
     if src.direction == PinDirection.Input:
         src, dst = dst, src
     start = src

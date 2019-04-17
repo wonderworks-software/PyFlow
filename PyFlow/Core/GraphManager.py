@@ -15,21 +15,23 @@ class GraphManager(object):
         self._activeGraph = GraphBase('root', self)
 
     def serialize(self):
-        data = {}
-        for graph in self._graphs.values():
-            data[graph.name] = graph.serialize()
-        return data
+        return self.graphsDict['root'].serialize()
 
     def deserialize(self, data):
-        self.clear()
-        rootGraphName = data[list(data.keys())[0]]
-        self._activeGraph = GraphBase.deserialize(rootGraphName, self)
+        self.clear(keepRoot=False)
+        # rootGraphJson = data[list(data.keys())[0]]
+        self._activeGraph = GraphBase.deserialize(data, self)
 
-    def clear(self, *args, **kwargs):
+    def clear(self, *args, keepRoot=True, **kwargs):
         for graph in self._graphs.values():
             graph.clear()
         self._graphs.clear()
-        self._activeGraph = None
+        if keepRoot:
+            newGraph = GraphBase('root', self)
+            self.selectGraph(newGraph)
+        else:
+            del self._activeGraph
+            self._activeGraph = None
 
     def Tick(self, deltaTime):
         for graph in self._graphs.values():
@@ -42,13 +44,46 @@ class GraphManager(object):
                 result.append(node)
         return result
 
+    @dispatch(str)
+    def findNode(self, name):
+        """Finds a node across all graphs
+        """
+        result = None
+        for graph in self.getAllGraphs():
+            result = graph.findNode(name)
+            if result is not None:
+                break
+        return result
+
+    @dispatch(uuid.UUID)
+    def findNode(self, uid):
+        """Finds a node across all graphs
+        """
+        for graph in self.getAllGraphs():
+            if uid in graph.nodes:
+                return graph.nodes[uid]
+        return None
+
+    @dispatch(uuid.UUID)
     def findVariable(self, uuid):
+        """Finds a variable across all graphs
+        """
         result = None
         for graph in self._graphs.values():
             if uuid in graph.vars:
                 result = graph.vars[uuid]
                 break
         return result
+
+    @dispatch(str)
+    def findVariable(self, name):
+        """Finds a variable across all graphs
+        """
+        for graph in self._graphs.values():
+            for var in graph.vars.values():
+                if var.name == name:
+                    return var
+        return None
 
     def location(self):
         location = [self.activeGraph().name]
@@ -58,21 +93,28 @@ class GraphManager(object):
             parent = parent.parentGraph
         return location
 
+    @property
+    def graphsDict(self):
+        result = {}
+        for graph in self.getAllGraphs():
+            result[graph.name] = graph
+        return result
+
     def add(self, graph):
         if graph.name in self._graphs:
             graph.name = self.getUniqGraphName(graph.name)
-        # TODO: Use uuid as key. In this case no need to bother actualizing self.__graphs keys when graph renamed
-        self._graphs[graph.name] = graph
+        self._graphs[graph.uid] = graph
 
     def activeGraph(self):
         return self._activeGraph
 
     @dispatch(str)
     def selectGraph(self, name):
-        if name in self._graphs:
+        graphs = self.graphsDict
+        if name in graphs:
             if name != self.activeGraph().name:
                 oldGraph = self.activeGraph()
-                newGraph = self._graphs[name]
+                newGraph = graphs[name]
                 self._activeGraph = newGraph
                 self.graphChanged.send(self.activeGraph())
 

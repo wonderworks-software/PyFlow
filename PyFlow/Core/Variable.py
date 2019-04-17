@@ -32,6 +32,9 @@ class Variable(ISerializable):
         assert(isinstance(self._uid, uuid.UUID))
         self.updatePackageName()
 
+    def location(self):
+        return self.graph.location()
+
     def findRefs(self):
         """returns all getVar and setVar instances for this node
         """

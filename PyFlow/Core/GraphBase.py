@@ -29,6 +29,7 @@ class GraphBase(ISerializable):
         self.__category = category
         self.nodes = {}
         self.vars = {}
+        self.uid = uuid.uuid4()
 
         manager.add(self)
 
@@ -56,7 +57,8 @@ class GraphBase(ISerializable):
             'category': self.category,
             'vars': [v.serialize() for v in self.vars.values()],
             'nodes': [n.serialize() for n in self.nodes.values()],
-            'depth': self.depth()
+            'depth': self.depth(),
+            'parentGraphName': str(self.parentGraph.name) if self.parentGraph is not None else str(None)
         }
         return result
 
@@ -64,6 +66,8 @@ class GraphBase(ISerializable):
     def deserialize(jsonData, manager, *args, **kwargs):
         # create graph
         graph = GraphBase(jsonData['name'], manager, jsonData['category'])
+        parentGraph = manager.graphsDict[jsonData['parentGraphName']] if jsonData['parentGraphName'] != str(None) else None
+        graph.parentGraph = parentGraph
         # restore vars
         for varJson in jsonData['vars']:
             var = Variable.deserialize(varJson, *args, **kwargs)
@@ -96,8 +100,7 @@ class GraphBase(ISerializable):
         self.nodes.clear()
 
         for var in list(self.vars.values()):
-            # TODO: remove variable
-            pass
+            self.killVariable(var)
         self.vars.clear()
 
     @property
@@ -107,10 +110,6 @@ class GraphBase(ISerializable):
     @name.setter
     def name(self, value):
         assert(isinstance(value, str))
-        # TODO: remove this. graph manager should store graphs by uuids
-        # actualize internal graphManager data
-        self.graphManager._graphs[value] = self.graphManager._graphs.pop(self.__name)
-
         self.__name = value
         self.nameChanged.send(self.__name)
 
@@ -216,6 +215,10 @@ class GraphBase(ISerializable):
                 return i
         return None
 
+    @dispatch(uuid.UUID)
+    def findNode(self, uuid):
+        return None
+
     def getNodesByClassName(self, className):
         nodes = []
         for i in self.getNodes():
@@ -261,11 +264,21 @@ class GraphBase(ISerializable):
         assert(node is not None), "failed to add node, None is passed"
         if node.uid in self.nodes:
             return False
+        # Important! Give unique name before adding to nodes. Because it will include itself
+        node.setName(self.graphManager.getUniqNodeName(node.name))
+
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)
-        node.setName(self.graphManager.getUniqNodeName(node.name))
         node.postCreate(jsonTemplate)
         return True
+
+    def location(self):
+        result = [self.name]
+        parent = self.parentGraph
+        while parent is not None:
+            result.insert(0, parent.name)
+            parent = parent.parentGraph
+        return result
 
     def count(self):
         return self.nodes.__len__()

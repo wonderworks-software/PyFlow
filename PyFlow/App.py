@@ -76,7 +76,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.graphManager = GraphManager()
         self.canvasWidget = Canvas(self.graphManager, self)
         self.canvasWidget.graphManager.graphChanged.connect(self.onRawGraphSwitched)
-        self.newFileExecuted.connect(self.graphManager.clear)
+        self.newFileExecuted.connect(lambda: self.graphManager.clear(keepRoot=True))
         self.newFileExecuted.connect(self.canvasWidget.shoutDown)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
