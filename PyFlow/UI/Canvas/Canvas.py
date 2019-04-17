@@ -458,7 +458,6 @@ class Canvas(QGraphicsView):
         self.resizing = False
         self.hoverItems = []
         self.bPanMode = False
-        self.groupers = []
         self._isPanning = False
         self._mousePressed = False
         self._shadows = False
@@ -513,7 +512,6 @@ class Canvas(QGraphicsView):
         self.codeEditors = {}
         self._UIConnections = {}
         self.boundingRect = self.rect()
-        self._storedVars = []
         self.installEventFilter(self)
 
     def plot(self):
@@ -583,6 +581,7 @@ class Canvas(QGraphicsView):
         self.graphManager.clear()
         self.scene().shoutDown()
         self.scene().clear()
+        self._UIConnections.clear()
         self.node_box.hide()
         self.node_box.lineEdit.clear()
 
