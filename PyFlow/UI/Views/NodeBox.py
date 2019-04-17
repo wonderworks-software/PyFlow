@@ -230,7 +230,7 @@ class NodeBoxTreeWidget(QTreeWidget):
             nodeTemplate['x'] = pos.x()
             nodeTemplate['y'] = pos.y()
             nodeTemplate['meta']['label'] = nodeClassName
-            nodeTemplate['uuid'] = None
+            nodeTemplate['uuid'] = str(uuid.uuid4())
 
             self.parent().graph().createNode(nodeTemplate)
 

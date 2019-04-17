@@ -70,7 +70,7 @@ class commentNodeName(NodeName):
 
     def mousePressEvent(self, event):
         if not self.parentItem().isSelected():
-            self.parentItem().graph().clearSelection()
+            self.parentItem().canvasRef().clearSelection()
         if self.parentItem().expanded:
             self.parentItem().nodesToMove.clear()
             self.parentItem().updateChildren(self.parentItem().collidingItems())
@@ -248,9 +248,9 @@ class UIcommentNode(UINodeBase):
             if "nodesToMove" in jsonTemplate['meta']['commentNode']:
                 self.nodesNamesToMove = jsonTemplate['meta']['commentNode']["nodesToMove"]
                 for nodename in self.nodesNamesToMove:
-                    for n in self.graph().nodes:
+                    for n in self.canvasRef().nodes:
                         if str(n) == str(nodename):
-                            self.nodesToMove[self.graph().nodes[n]] = self.graph(
+                            self.nodesToMove[self.canvasRef().nodes[n]] = self.canvasRef(
                             ).nodes[n].scenePos()
                 self.nodesNamesToMove = []
 

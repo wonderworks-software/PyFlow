@@ -33,7 +33,6 @@ from PyFlow.Packages.PyflowBase.Nodes.doOnce import doOnce
 from PyFlow.Packages.PyflowBase.Nodes.flipFlop import flipFlop
 from PyFlow.Packages.PyflowBase.Nodes.forLoop import forLoop
 from PyFlow.Packages.PyflowBase.Nodes.forLoopWithBreak import forLoopWithBreak
-from PyFlow.Packages.PyflowBase.Nodes.implicitPinCall import implicitPinCall
 from PyFlow.Packages.PyflowBase.Nodes.retriggerableDelay import retriggerableDelay
 from PyFlow.Packages.PyflowBase.Nodes.sequence import sequence
 from PyFlow.Packages.PyflowBase.Nodes.switchOnString import switchOnString
@@ -70,7 +69,6 @@ _NODES = {
     flipFlop.__name__: flipFlop,
     forLoop.__name__: forLoop,
     forLoopWithBreak.__name__: forLoopWithBreak,
-    implicitPinCall.__name__: implicitPinCall,
     retriggerableDelay.__name__: retriggerableDelay,
     sequence.__name__: sequence,
     switchOnString.__name__: switchOnString,

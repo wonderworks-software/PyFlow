@@ -128,10 +128,10 @@ class NodeName(QGraphicsTextItem):
                          QtCore.Qt.AlignBottom, text)
 
     def focusInEvent(self, event):
-        self.parentItem().graph().disableSortcuts()
+        self.parentItem().canvasRef().disableSortcuts()
 
     def focusOutEvent(self, event):
-        self.parentItem().graph().enableSortcuts()
+        self.parentItem().canvasRef().enableSortcuts()
         # clear cursour
         cursor = QtGui.QTextCursor(self.document())
         cursor.clearSelection()
@@ -164,7 +164,7 @@ class UINodeBase(QGraphicsObject):
             '{0}MainLayout'.format(self._rawNode.__class__.__name__))
         self._w = 0
         self.h = 40
-        self.bUseTextureBg = bUseTextureBg  # self.graph().styleSheetEditor.USETEXTUREBG
+        self.bUseTextureBg = bUseTextureBg  # self.canvasRef().styleSheetEditor.USETEXTUREBG
         if self.bUseTextureBg:
             self.sizes = [0, 0, self.w, self.h, 5, 5]
         else:

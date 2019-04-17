@@ -100,9 +100,10 @@ def findGoodId(ids):
 # TODO: remove this, need to find leafs first
 # then build recursion stack
 def cycle_check(src, dst):
+
     # allow cycles on execs
-    if src.dataType == 'ExecPin' or dst.dataType == 'ExecPin':
-        return False
+    # if src.dataType == 'ExecPin' or dst.dataType == 'ExecPin':
+    #     return False
 
     if src.direction == PinDirection.Input:
         src, dst = dst, src
@@ -157,9 +158,6 @@ def canConnectPins(src, dst):
 
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
         return False
-
-    # if src.owningNode().graph() != dst.owningNode().graph():
-    #     return False
 
     if cycle_check(src, dst):
         print('cycles are not allowed')

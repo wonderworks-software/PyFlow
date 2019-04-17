@@ -111,7 +111,7 @@ def getNodeInstance(jsonTemplate, canvas):
 
 
 class AutoPanController(object):
-    def __init__(self, amount=10.0):
+    def __init__(self, amount=0.1):
         super(AutoPanController, self).__init__()
         self.bAllow = False
         self.amount = amount
@@ -123,21 +123,20 @@ class AutoPanController(object):
             if pos.x() < 0:
                 self.autoPanDelta = QtGui.QVector2D(-self.amount, 0.0)
                 self.beenOutside = True
-                self.amount = clamp(abs(pos.x()) * 0.3, 0.0, 25.0)
+                self.amount = clamp(abs(pos.x()) * 0.1, 0.0, 25.0)
             if pos.x() > rect.width():
                 self.autoPanDelta = QtGui.QVector2D(self.amount, 0.0)
                 self.beenOutside = True
-                self.amount = clamp(
-                    abs(rect.width() - pos.x()) * 0.3, 0.0, 25.0)
+                self.amount = clamp(abs(rect.width() - pos.x()) * 0.1, 0.0, 25.0)
             if pos.y() < 0:
                 self.autoPanDelta = QtGui.QVector2D(0.0, -self.amount)
                 self.beenOutside = True
-                self.amount = clamp(abs(pos.y()) * 0.3, 0.0, 25.0)
+                self.amount = clamp(abs(pos.y()) * 0.1, 0.0, 25.0)
             if pos.y() > rect.height():
                 self.autoPanDelta = QtGui.QVector2D(0.0, self.amount)
                 self.beenOutside = True
                 self.amount = clamp(
-                    abs(rect.height() - pos.y()) * 0.3, 0.0, 25.0)
+                    abs(rect.height() - pos.y()) * 0.1, 0.0, 25.0)
             if self.beenOutside and rect.contains(pos):
                 self.reset()
 
@@ -234,10 +233,10 @@ class SceneClass(QGraphicsScene):
                     if isinstance(item, UIConnection):
                         valid = False
                         for inp in self.tempnode.UIinputs.values():
-                            if self.parent().canConnectPins(item.source(), inp):
+                            if canConnectPins(item.source()._rawPin, inp._rawPin):
                                 valid = True
                         for out in self.tempnode.UIoutputs.values():
-                            if self.parent().canConnectPins(out, item.destination()):
+                            if canConnectPins(out._rawPin, item.destination()._rawPin):
                                 valid = True
                         if valid:
                             self.hoverItems.append(item)
@@ -259,9 +258,9 @@ class SceneClass(QGraphicsScene):
             event.ignore()
 
     def dragLeaveEvent(self, event):
-        # if self.tempnode:
-        #     self.tempnode.isTemp = False
-        #     self.tempnode = None
+        if self.tempnode:
+            self.tempnode._rawNode.kill()
+            self.tempnode = None
         event.accept()
 
     def OnSelectionChanged(self):
@@ -375,26 +374,26 @@ class SceneClass(QGraphicsScene):
                     if isinstance(dropItem, UIPinBase):
                         node.setPos(x - node.boundingRect().width(), y)
                         for inp in nodeInputs.values():
-                            if self.parent().canConnectPins(dropItem, inp):
+                            if canConnectPins(dropItem._rawPin, inp._rawPin):
                                 if dropItem.dataType == 'ExecPin':
-                                    dropItem.disconnectAll()
+                                    dropItem._rawPin.disconnectAll()
                                 self.parent().connectPins(dropItem, inp)
                                 node.setPos(x + node.boundingRect().width(), y)
                                 break
                         for out in nodeOutputs.values():
-                            if self.parent().canConnectPins(out, dropItem):
+                            if canConnectPins(out._rawPin, dropItem._rawPin):
                                 self.parent().connectPins(out, dropItem)
                                 node.setPos(x - node.boundingRect().width(), y)
                                 break
                     if isinstance(dropItem, UIConnection):
                         for inp in nodeInputs.values():
-                            if self.parent().canConnectPins(dropItem.source(), inp):
+                            if canConnectPins(dropItem.source()._rawPin, inp._rawPin):
                                 if dropItem.source().dataType == 'ExecPin':
-                                    dropItem.source().disconnectAll()
+                                    dropItem.source()._rawPin.disconnectAll()
                                 self.parent().connectPins(dropItem.source(), inp)
                                 break
                         for out in nodeOutputs.values():
-                            if self.parent().canConnectPins(out, dropItem.destination()):
+                            if canConnectPins(out._rawPin, dropItem.destination()._rawPin):
                                 self.parent().connectPins(out, dropItem.destination())
                                 break
         else:
@@ -577,12 +576,11 @@ class Canvas(QGraphicsView):
         if dataType is None:
             self.node_box.lineEdit.setFocus()
 
-    def shoutDown(self):
+    def shoutDown(self, *args, **kwargs):
         for ed in self.codeEditors.values():
             ed.deleteLater()
         nodes = list(self.nodes.values())
-        for node in nodes:
-            node.kill()
+        self.graphManager.clear()
         self.scene().shoutDown()
         self.scene().clear()
         self.node_box.hide()
@@ -613,12 +611,11 @@ class Canvas(QGraphicsView):
 
     def Tick(self, deltaTime):
         if self.autoPanController.isActive():
-            self.moveScrollbar(self.autoPanController.getDelta())
+            delta = self.autoPanController.getDelta()
+            self.moveScrollbar(delta)
 
         for e in list(self.connections.values()):
             e.Tick()
-
-        self.graphManager.Tick(deltaTime)
 
     def notify(self, message, duration):
         self.parent.statusBar.showMessage(message, duration)

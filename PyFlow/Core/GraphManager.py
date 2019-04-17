@@ -14,6 +14,23 @@ class GraphManager(object):
         self._activeGraph = None
         self._activeGraph = GraphBase('root', self)
 
+    def serialize(self):
+        data = {}
+        for graph in self._graphs.values():
+            data[graph.name] = graph.serialize()
+        return data
+
+    def deserialize(self, data):
+        self.clear()
+        rootGraphName = data[list(data.keys())[0]]
+        self._activeGraph = GraphBase.deserialize(rootGraphName, self)
+
+    def clear(self):
+        for graph in self._graphs.values():
+            graph.clear()
+        self._graphs.clear()
+        self._activeGraph = None
+
     def Tick(self, deltaTime):
         for graph in self._graphs.values():
             graph.Tick(deltaTime)
@@ -61,16 +78,20 @@ class GraphManager(object):
 
     @dispatch(object)
     def selectGraph(self, graph):
-        for newGraph in self._graphs.values():
+        for newGraph in self.getAllGraphs():
             if newGraph.name == graph.name:
                 if newGraph.name != self.activeGraph().name:
                     oldGraph = self.activeGraph()
                     self._activeGraph = newGraph
                     self.graphChanged.send(self.activeGraph())
+                    break
+
+    def getAllGraphs(self):
+        return [g for g in self._graphs.values()]
 
     def getAllNodes(self, classNameFilters=[]):
         allNodes = []
-        for graph in self._graphs.values():
+        for graph in self.getAllGraphs():
             if len(classNameFilters) == 0:
                 allNodes += graph.nodes.values()
             else:
@@ -79,18 +100,18 @@ class GraphManager(object):
 
     def getAllVariables(self):
         result = []
-        for graph in self._graphs.values():
+        for graph in self.getAllGraphs():
             result += list(graph.vars.values())
         return result
 
     def getUniqName(self, name):
-        existingNames = [g.name for g in self._graphs.values()]
+        existingNames = [g.name for g in self.getAllGraphs()]
         existingNames.extend([n.name for n in self.getAllNodes()])
         existingNames.extend([var.name for var in self.getAllVariables()])
         return getUniqNameFromList(existingNames, name)
 
     def getUniqGraphName(self, name):
-        existingNames = [g.name for g in self._graphs.values()]
+        existingNames = [g.name for g in self.getAllGraphs()]
         return getUniqNameFromList(existingNames, name)
 
     def getUniqNodeName(self, name):

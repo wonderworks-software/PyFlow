@@ -76,6 +76,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.graphManager = GraphManager()
         self.canvasWidget = Canvas(self.graphManager, self)
         self.canvasWidget.graphManager.graphChanged.connect(self.onRawGraphSwitched)
+        self.newFileExecuted.connect(self.canvasWidget.shoutDown)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
 
@@ -120,7 +121,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self._lastClock = 0.0
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
-        self.tick_timer.timeout.connect(self.mainLoop)
         self._current_file_name = 'Untitled'
 
     def setCompoundPropertiesWidgetVisible(self, bVisible):
@@ -144,31 +144,21 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def loadFromData(self, data, fpath=""):
         self.newFile()
-        # GT = GraphTree()
-        # this call will create all raw classes
-        # GT.deserialize(data)
-        # create ui wrappers
-        # for rawNode in GT.getAllNodes():
-        #     uiNode = getUINodeInstance(rawNode)
-        #     self.canvasWidget.addNode(uiNode, rawNode.serialize())
+        # load raw data
+        self.graphManager.deserialize(data)
+        # create ui nodes
+        for graph in self.graphManager.getAllGraphs():
+            for node in graph.getNodes():
+                uiNode = getUINodeInstance(node)
+                self.canvasWidget.addNode(uiNode, node.serialize())
         # create ui connections
-        # for rawNode in GT.getAllNodes():
-        #     uiNode = rawNode.getWrapper()()
-        #     for outPin in uiNode.UIoutputs.values():
-        #         for rhsPinUid in outPin._rawPin._linkedToUids:
-        #             inRawPin = rawNode.graph().findPin(rhsPinUid)
-        #             inUiPin = inRawPin.getWrapper()()
-        #             self.canvasWidget.createUIConnectionForConnectedPins(outPin, inUiPin)
-
-        # self._current_file_name = fpath
-        # self.canvasWidget.frameAllNodes()
-        # for node in self.canvasWidget.getAllNodes():
-        #     if node.isCommentNode:
-        #         if not node.expanded:
-        #             node.expanded = True
-        #             node.updateChildren(node.nodesToMove.keys())
-        #             node.toggleCollapsed()
-        # self.clearPropertiesView()
+        for rawNode in self.graphManager.getAllNodes():
+            uiNode = rawNode.getWrapper()()
+            for outPin in uiNode.UIoutputs.values():
+                for rhsPinUid in outPin._rawPin._linkedToUids:
+                    inRawPin = rawNode.graph().findPin(rhsPinUid)
+                    inUiPin = inRawPin.getWrapper()()
+                    self.canvasWidget.createUIConnectionForConnectedPins(outPin, inUiPin)
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -212,7 +202,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
-                saveData = self.canvasWidget.serialize()
+                saveData = self.graphManager.serialize()
                 json.dump(saveData, f, indent=4)
 
             print(str("// saved: '{0}'".format(self._current_file_name)))
@@ -221,10 +211,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         clearLayout(self.formLayout)
 
     def newFile(self):
+        self.tick_timer.stop()
+        self.tick_timer.timeout.disconnect()
+
         # broadcast
         self.newFileExecuted.emit()
         self._current_file_name = 'Untitled'
         self.clearPropertiesView()
+
+        self.startMainLoop()
 
     def onRawGraphSwitched(self, *args, **kwargs):
         assert(len(args) == 1), "invalid arguments passed"
@@ -276,16 +271,13 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         newCategoryName = self.leCompoundCategory.text()
         self.graphManager.activeGraph().category = newCategoryName
 
-    @property
-    def currentGraph(self):
-        return self.canvasWidget
-
-    @currentGraph.setter
-    def currentGraph(self, graph):
-        self.canvasWidget = graph
-
     def startMainLoop(self):
+        self.tick_timer.timeout.connect(self.mainLoop)
         self.tick_timer.start(1000 / EDITOR_TARGET_FPS)
+
+    def stopMainLoop(self):
+        self.tick_timer.stop()
+        self.tick_timer.timeout.disconnect()
 
     def mainLoop(self):
         deltaTime = clock() - self._lastClock
@@ -293,12 +285,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if ds > 0:
             self.fps = int(1000.0 / ds)
 
-        # Tick UI graph
-        self.currentGraph.Tick(deltaTime)
-
         # Tick all graphs
         # each graph will tick owning raw nodes
         # each raw node will tick it's ui wrapper if it exists
+        self.graphManager.Tick(deltaTime)
+
+        # Tick canvas. Update ui only stuff such animation etc.
         self.canvasWidget.Tick(deltaTime)
 
         self._lastClock = clock()

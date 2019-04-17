@@ -207,7 +207,7 @@ class GraphBase(ISerializable):
     def getNodes(self):
         """return all nodes without compound's nodes
         """
-        return self.nodes.values()
+        return [n for n in self.nodes.values()]
 
     @dispatch(str)
     def findNode(self, name):
