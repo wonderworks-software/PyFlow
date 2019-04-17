@@ -25,7 +25,7 @@ class GraphManager(object):
         rootGraphName = data[list(data.keys())[0]]
         self._activeGraph = GraphBase.deserialize(rootGraphName, self)
 
-    def clear(self):
+    def clear(self, *args, **kwargs):
         for graph in self._graphs.values():
             graph.clear()
         self._graphs.clear()

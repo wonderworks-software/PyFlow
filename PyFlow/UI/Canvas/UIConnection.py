@@ -15,13 +15,13 @@ from PyFlow.Core.Common import *
 
 # UIConnection between pins
 class UIConnection(QGraphicsPathItem):
-    def __init__(self, source, destination, graph):
+    def __init__(self, source, destination, canvas):
         QGraphicsPathItem.__init__(self)
         self._menu = QMenu()
         self.actionDisconnect = self._menu.addAction("Disconnect")
         self.actionDisconnect.triggered.connect(self.kill)
         self._uid = uuid4()
-        self.graph = weakref.ref(graph)
+        self.canvasRef = weakref.ref(canvas)
         self.source = weakref.ref(source)
         self.destination = weakref.ref(destination)
         self.drawSource = self.source()
@@ -69,7 +69,7 @@ class UIConnection(QGraphicsPathItem):
         # check if this instance represents existing connection
         # if not - destroy
         if not arePinsConnected(self.source()._rawPin, self.destination()._rawPin):
-            self.graph().removeConnection(self)
+            self.canvasRef().removeConnection(self)
 
         if self.fade > 0:
             self.pen.setWidthF(self.thickness + self.fade * 2)
@@ -95,9 +95,8 @@ class UIConnection(QGraphicsPathItem):
 
     @uid.setter
     def uid(self, value):
-        if self._uid in self.graph().connections:
-            self.graph().connections[value] = self.graph(
-            ).connections.pop(self._uid)
+        if self._uid in self.canvasRef().connections:
+            self.canvasRef().connections[value] = self.canvasRef().connections.pop(self._uid)
             self._uid = value
 
     @staticmethod
@@ -195,7 +194,7 @@ class UIConnection(QGraphicsPathItem):
         self.setPath(self.mPath)
 
     def kill(self):
-        self.graph().removeConnection(self)
+        self.canvasRef().removeConnection(self)
 
     def destination_port_name(self):
         return self.destination().getName()

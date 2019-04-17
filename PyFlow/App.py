@@ -76,6 +76,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.graphManager = GraphManager()
         self.canvasWidget = Canvas(self.graphManager, self)
         self.canvasWidget.graphManager.graphChanged.connect(self.onRawGraphSwitched)
+        self.newFileExecuted.connect(self.graphManager.clear)
         self.newFileExecuted.connect(self.canvasWidget.shoutDown)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
@@ -92,10 +93,10 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionSave_as.triggered.connect(lambda: self.save(True))
         self.actionNew.triggered.connect(self.newFile)
 
-        self.actionAlignLeft.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Left))
-        self.actionAlignUp.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Up))
-        self.actionAlignBottom.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Down))
-        self.actionAlignRight.triggered.connect(lambda: self.currentGraph.alignSelectedNodes(Direction.Right))
+        self.actionAlignLeft.triggered.connect(lambda: self.canvasWidget.alignSelectedNodes(Direction.Left))
+        self.actionAlignUp.triggered.connect(lambda: self.canvasWidget.alignSelectedNodes(Direction.Up))
+        self.actionAlignBottom.triggered.connect(lambda: self.canvasWidget.alignSelectedNodes(Direction.Down))
+        self.actionAlignRight.triggered.connect(lambda: self.canvasWidget.alignSelectedNodes(Direction.Right))
         self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
         self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
         self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
@@ -370,7 +371,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         QMessageBox.information(self, "Shortcuts", data)
 
     def on_delete(self):
-        self.currentGraph.killSelectedNodes()
+        self.canvasWidget.killSelectedNodes()
 
     @staticmethod
     def instance(parent=None):
