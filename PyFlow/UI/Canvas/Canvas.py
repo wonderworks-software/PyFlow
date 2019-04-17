@@ -98,7 +98,7 @@ def getNodeInstance(jsonTemplate, canvas):
 
     # if get var or set var, construct additional keyword arguments
     if jsonTemplate['type'] in ('getVar', 'setVar'):
-        kwargs['var'] = canvas.graphManager.findVariable(uuid.UUID(jsonTemplate['meta']['var']['uuid']))
+        kwargs['var'] = canvas.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
 
     raw_instance = getRawNodeInstance(
         nodeClassName, packageName, libName, **kwargs)
@@ -306,7 +306,7 @@ class SceneClass(QGraphicsScene):
                     # node uid should be unique, different from var
                     nodeTemplate['uuid'] = str(uuid.uuid4())
 
-                    nodeTemplate['meta']['var']['uuid'] = varData['uuid']
+                    nodeTemplate['varUid'] = varData['uuid']
                     m = QMenu()
                     getterAction = m.addAction('Get')
 
@@ -325,14 +325,14 @@ class SceneClass(QGraphicsScene):
                     nodeTemplate['type'] = 'getVar'
                     # node uid should be unique, different from var
                     nodeTemplate['uuid'] = str(uuid.uuid4())
-                    nodeTemplate['meta']['var']['uuid'] = varData['uuid']
+                    nodeTemplate['varUid'] = varData['uuid']
                     nodeTemplate['meta']['label'] = varData['name']
                     self.parent().createNode(nodeTemplate)
                     return
                 if modifiers == QtCore.Qt.AltModifier:
                     nodeTemplate['type'] = 'setVar'
                     nodeTemplate['uuid'] = varData['uuid']
-                    nodeTemplate['meta']['var']['uuid'] = varData['uuid']
+                    nodeTemplate['varUid'] = varData['uuid']
                     nodeTemplate['meta']['label'] = varData['name']
                     self.parent().createNode(nodeTemplate)
                     return
@@ -901,7 +901,6 @@ class Canvas(QGraphicsView):
         self.clearSelection()
         newNodes = {}
 
-        currentGraph = self.graphManager.activeGraph()
         for node in nodes["nodes"]:
             oldName = node["name"]
             node["name"] = node["name"]
@@ -911,16 +910,9 @@ class Canvas(QGraphicsView):
             for out in node['outputs']:
                 out['uuid'] = str(uuid.uuid4())
 
-            # Check if user tries to copy variable setter or getter for variables of child graphs
-            # and remove them from json data!
-            if node['type'] in ['getVar', 'setVar']:
-                var = self.graphManager.findVariable(uuid.UUID(node['varUid']))
-                varLocation = var.location()
-                currentGraphLocation = currentGraph.location()
-                if len(varLocation) > len(currentGraphLocation):
-                    continue
-
             n = self.createNode(node)
+            if n is None:
+                continue
 
             newNodes[oldName] = n
             n.setSelected(True)
@@ -1541,8 +1533,15 @@ class Canvas(QGraphicsView):
         painter.drawLines(gridLines)
 
     def _createNode(self, jsonTemplate):
+        # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
+        # Stop any attempt to disrupt variable scope. Even if we accidentally forgot this check, GraphBase.addNode will fail
+        if jsonTemplate['type'] in ['getVar', 'setVar']:
+            var = self.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
+            variableLocation = var.location()
+            if len(variableLocation) > len(self.graphManager.activeGraph().location()):
+                return None
+
         nodeInstance = getNodeInstance(jsonTemplate, self)
-        print(nodeInstance.name)
         assert(nodeInstance is not None), "Node instance is not found!"
         nodeInstance.setPosition(jsonTemplate["x"], jsonTemplate["y"])
 

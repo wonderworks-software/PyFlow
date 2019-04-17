@@ -141,8 +141,6 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(v1.uid in man.activeGraph().vars, True)
 
     def test_variable_scope(self):
-        from collections import Counter
-
         man = GraphManager()
         # add variable to root graph
         rootVariable = man.activeGraph().createVariable(name="v0")
@@ -155,17 +153,27 @@ class TestGeneral(unittest.TestCase):
         # create two subgraphs and variables inside
         packages = GET_PACKAGES()
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
+        varGetterClass = packages['PyflowBase'].GetNodeClasses()['getVar']
+        varSetterClass = packages['PyflowBase'].GetNodeClasses()['setVar']
 
         subgraphNodeInstance1 = subgraphNodeClass('subgraph1')
         subgraphNodeInstance2 = subgraphNodeClass('subgraph2')
-        man.activeGraph().addNode(subgraphNodeInstance1)
-        man.activeGraph().addNode(subgraphNodeInstance2)
+        self.assertEqual(man.activeGraph().addNode(subgraphNodeInstance1), True)
+        self.assertEqual(man.activeGraph().addNode(subgraphNodeInstance2), True)
 
         # goto subgraph1 and create variable
         man.selectGraph(subgraphNodeInstance1.name)
         sg1Var = man.activeGraph().createVariable(name="v1")
         sg1Var.value = 1
+        v1Getter = varGetterClass("v1Get", sg1Var)
+        v1Setter = varSetterClass("v1Set", sg1Var)
+        self.assertEqual(man.activeGraph().addNode(v1Getter), True)
+        self.assertEqual(man.activeGraph().addNode(v1Setter), True)
         man.selectGraph('root')
+
+        # Check variables scope visibility
+        self.assertEqual(man.activeGraph().addNode(v1Getter), False, "Variable access error! Variables in child graphs should not be visible to parent ones!")
+        self.assertEqual(man.activeGraph().addNode(v1Setter), False, "Variable access error! Variables in child graphs should not be visible to parent ones!")
 
         # goto subgraph2 and create variable there
         man.selectGraph(subgraphNodeInstance2.name)
@@ -185,7 +193,7 @@ class TestGeneral(unittest.TestCase):
         # two variables. One from subgraph1 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
-        self.assertEqual(Counter(varsValues) == Counter([0, 1]), True, "variables are incorrect")
+        self.assertCountEqual(varsValues, [0, 1], "variables are incorrect")
         man.selectGraph('root')
 
         # goto subgraph2 and ask variables there
@@ -194,7 +202,7 @@ class TestGeneral(unittest.TestCase):
         # two variables. One from subgraph2 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
-        self.assertEqual(Counter(varsValues) == Counter([0, 2]), True, "variables are incorrect")
+        self.assertCountEqual(varsValues, [0, 2], "variables are incorrect")
         man.selectGraph('root')
 
     def test_get_any_var(self):

@@ -264,7 +264,16 @@ class GraphBase(ISerializable):
         assert(node is not None), "failed to add node, None is passed"
         if node.uid in self.nodes:
             return False
-        # Important! Give unique name before adding to nodes. Because it will include itself
+
+        # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
+        # Do not disrupt variable scope
+        if node.__class__.__name__ in ['getVar', 'setVar']:
+            var = self.graphManager.findVariable(node.variableUid())
+            variableLocation = var.location()
+            if len(variableLocation) > len(self.location()):
+                return False
+
+        # Important! Give a node unique name before adding it to nodes dict. Because it will include itself.
         node.setName(self.graphManager.getUniqNodeName(node.name))
 
         self.nodes[node.uid] = node
