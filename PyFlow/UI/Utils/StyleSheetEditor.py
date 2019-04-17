@@ -1,7 +1,7 @@
 from Qt import QtWidgets
 from Qt import QtCore
 
-from Widgets.pyf_HueSlider import pyf_HueSlider, pyf_GradientSlider
+from Widgets.QtSliders import pyf_HueSlider, pyf_GradientSlider
 
 if __name__ == '__main__':
     import sys

@@ -646,13 +646,13 @@ class UINodeBase(QGraphicsObject):
         formLayout.addRow("Pos", le_pos)
 
         # inputs
-        if len([i for i in self.UIPins.values()]) != 0:
+        if len([i for i in self.UIinputs.values()]) != 0:
             sep_inputs = QLabel()
             sep_inputs.setStyleSheet("background-color: black;")
             sep_inputs.setText("INPUTS")
             formLayout.addRow("", sep_inputs)
 
-            for inp in self.UIPins.values():
+            for inp in self.UIinputs.values():
                 dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
                 w = createInputWidget(
                     inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())

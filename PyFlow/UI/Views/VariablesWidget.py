@@ -82,8 +82,7 @@ class VariablesWidget(QWidget, Ui_Form):
         self.actualize()
 
         # TODO: rewrite properties system
-        formLayout = self.canvas.parent.formLayout
-        clearLayout(formLayout)
+        self.clearProperties()
 
     def createVariableWrapperAndAddToList(self, rawVariable):
         uiVariable = UIVariable(rawVariable, self)
@@ -97,14 +96,19 @@ class VariablesWidget(QWidget, Ui_Form):
         uiVariable = self.createVariableWrapperAndAddToList(rawVariable)
         return uiVariable
 
+    def clearProperties(self):
+        formLayout = self.canvas.parent.formLayout
+        clearLayout(formLayout)
+
     def onUpdatePropertyView(self, uiVariable):
         formLayout = self.canvas.parent.formLayout
         clearLayout(formLayout)
+        formLayout.update()
         rawVariable = uiVariable._rawVariable
 
         # name
         le_name = QLineEdit(rawVariable.name)
-        le_name.returnPressed.connect(lambda: var.setName(le_name.text()))
+        le_name.returnPressed.connect(lambda: uiVariable.setName(le_name.text()))
         formLayout.addRow("Name", le_name)
 
         # data type

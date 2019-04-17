@@ -62,7 +62,7 @@ class EditableLabel(QtWidgets.QGraphicsProxyWidget):
 background-color: transparent;
 border-style: transparent;
 """+self.style
-
+        
             self.nameEdit.setStyleSheet(style)
             self.setWidget(self.nameEdit)
             self.nameEdit.returnPressed.connect(self.setOutFocus)

@@ -98,7 +98,7 @@ def getNodeInstance(jsonTemplate, canvas):
 
     # if get var or set var, construct additional keyword arguments
     if jsonTemplate['type'] in ('getVar', 'setVar'):
-        kwargs['var'] = canvas.graphManager.activeGraph().vars[uuid.UUID(jsonTemplate['meta']['var']['uuid'])]
+        kwargs['var'] = canvas.graphManager.findVariable(uuid.UUID(jsonTemplate['meta']['var']['uuid']))
 
     raw_instance = getRawNodeInstance(
         nodeClassName, packageName, libName, **kwargs)

@@ -25,6 +25,14 @@ class GraphManager(object):
                 result.append(node)
         return result
 
+    def findVariable(self, uuid):
+        result = None
+        for graph in self._graphs.values():
+            if uuid in graph.vars:
+                result = graph.vars[uuid]
+                break
+        return result
+
     def location(self):
         location = [self.activeGraph().name]
         parent = self.activeGraph().parentGraph

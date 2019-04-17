@@ -262,7 +262,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             btn.clicked.connect(lambda chk=False, name=folderName: onClicked(chk, name))
             self.layoutGraphPath.insertWidget(index, btn)
 
-        self.setCompoundPropertiesWidgetVisible(len(location) > 1)
+        self.setCompoundPropertiesWidgetVisible(self.graphManager.activeGraph().depth() > 1)
 
     def onActiveCompoundNameAccepted(self):
         newName = self.graphManager.getUniqName(self.leCompoundName.text())
