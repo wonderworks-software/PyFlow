@@ -6,6 +6,7 @@ from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QPushButton
+from Qt.QtWidgets import QMenu
 
 
 from PyFlow.Core.Common import *
@@ -43,6 +44,9 @@ class InputWidgetRaw(QWidget, IInputWidget):
         # this will set data to pin
         self.dataSetCallback = dataSetCallback
         self._widget = None
+        self._menu = QMenu()
+        self.actionReset = self._menu.addAction("ResetValue")
+        self.actionReset.triggered.connect(self.onResetValue)
 
     def setWidget(self, widget):
         self._widget = widget
@@ -62,6 +66,9 @@ class InputWidgetRaw(QWidget, IInputWidget):
         '''from widget'''
         pass
 
+    def contextMenuEvent(self, event):
+        self._menu.exec_(event.globalPos())
+
 
 class InputWidgetSingle(InputWidgetRaw):
     """
@@ -73,25 +80,18 @@ class InputWidgetSingle(InputWidgetRaw):
         super(InputWidgetSingle, self).__init__(parent=parent, dataSetCallback=dataSetCallback,
                                                 defaultValue=defaultValue, userStructClass=userStructClass, **kwds)
         # from widget
-        self.gridLayout = QGridLayout(self)
-        self.gridLayout.setSpacing(1)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout.setObjectName("gridLayout")
-        self.horizontalLayout = QHBoxLayout()
+        #self.gridLayout = QGridLayout(self)
+        # self.gridLayout.setSpacing(1)
+        #self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        # self.gridLayout.setObjectName("gridLayout")
+        self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setObjectName("horizontalLayout")
 
         spacerItem = QSpacerItem(
             40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
-        self.pbReset = QPushButton(self)
-        self.pbReset.setMaximumSize(QtCore.QSize(25, 25))
-        self.pbReset.setText("")
-        self.pbReset.setObjectName("pbReset")
-        self.pbReset.setIcon(QtGui.QIcon(":/icons/resources/reset.png"))
-        self.horizontalLayout.addWidget(self.pbReset)
-        self.pbReset.clicked.connect(self.onResetValue)
+        #self.horizontalLayout.addItem(spacerItem)
 
-        self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 1)
+        #self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 1)
         self._index = 0
         self._widget = None
 
