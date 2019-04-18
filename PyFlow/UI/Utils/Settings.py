@@ -13,7 +13,6 @@ class Spacings:
 
 
 class Colors:
-    
     Orange =          QtGui.QColor(255, 160, 47)
     OrangeLighter =   QtGui.QColor(234, 165, 83)
     OrangeLighter2=   QtGui.QColor(255, 170, 0)

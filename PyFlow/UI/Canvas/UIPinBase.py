@@ -191,8 +191,7 @@ class UIPinBase(QGraphicsWidget):
         return self._rawPin.canBeRenamed()
 
     def onRename(self):
-        name, confirmed = QInputDialog.getText(
-            None, "Rename", "Enter new pin name")
+        name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
             self.setName(name)
             self.setDisplayName(name)

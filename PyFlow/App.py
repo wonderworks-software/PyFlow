@@ -154,12 +154,13 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 self.canvasWidget.addNode(uiNode, node.serialize())
         # create ui connections
         for rawNode in self.graphManager.getAllNodes():
-            uiNode = rawNode.getWrapper()()
+            uiNode = rawNode.getWrapper()
             for outPin in uiNode.UIoutputs.values():
                 for rhsPinUid in outPin._rawPin._linkedToUids:
                     inRawPin = rawNode.graph().findPin(rhsPinUid)
                     inUiPin = inRawPin.getWrapper()()
                     self.canvasWidget.createUIConnectionForConnectedPins(outPin, inUiPin)
+        self.onRawGraphSwitched(self.graphManager.activeGraph())
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -235,7 +236,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         # show new graph contents
         for node in args[0].getNodes():
-            uiNode = node.getWrapper()()
+            uiNode = node.getWrapper()
             uiNode.show()
             for uiPin in uiNode.UIPins.values():
                 for connection in uiPin.uiConnectionList:

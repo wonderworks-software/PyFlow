@@ -314,7 +314,9 @@ class UINodeBase(QGraphicsObject):
         self._rawNode.setName(name)
 
     def getPin(self, name, pinsGroup=PinSelectionGroup.BothSides):
-        return self._rawNode.getPin(name, pinsGroup).getWrapper()()
+        pin = self._rawNode.getPin(name, pinsGroup)
+        assert(pin is not None), "Pin [{0}] not found in node {1}".format(name, self._rawNode.getName())
+        return pin.getWrapper()()
 
     @staticmethod
     def removePinByName(node, name):
@@ -771,7 +773,7 @@ class UINodeBase(QGraphicsObject):
         container.setLayout(lyt)
         return container
 
-    def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None, color=None):
+    def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None):
         p = getUIPinInstance(self, rawPin)
         p.call = rawPin.call
 
@@ -779,15 +781,11 @@ class UINodeBase(QGraphicsObject):
         lblName = name
         # TODO: do not use Proxy widget. Use QGraphicsTextItem instead
 
-        if self.canvasRef is None:
-            print(self.canvasRef)
         connector_name = EditableLabel(name=lblName, node=self, canvas=self.canvasRef())
         connector_name.setObjectName('{0}PinConnector'.format(name))
         connector_name.setContentsMargins(0, 0, 0, 0)
-        if not color:
-            connector_name.setColor(Colors.PinNameColor)
-        else:
-            connector_name.setColor(color)
+        connector_name.setColor(Colors.PinNameColor)
+
         p.displayNameChanged.connect(connector_name.setText)
         connector_name.nameChanged.connect(p.setName)
         connector_name.nameChanged.connect(p.setDisplayName)

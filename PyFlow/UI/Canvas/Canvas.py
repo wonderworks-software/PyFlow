@@ -533,7 +533,10 @@ class Canvas(QGraphicsView):
         """
         result = {}
         for rawNode in self.graphManager.getAllNodes():
-            result[rawNode.uid] = rawNode.getWrapper()()
+            uiNode = rawNode.getWrapper()
+            if uiNode is None:
+                print("{0} has not UI wrapper", rawNode.name)
+            result[rawNode.uid] = uiNode
         return result
 
     @property
@@ -557,14 +560,7 @@ class Canvas(QGraphicsView):
 
     def getUniqNodeDisplayName(self, name):
         nodes_names = [n.displayName for n in self.nodes.values()]
-        if name not in nodes_names:
-            return name
-        idx = 0
-        tmp = name
-        while tmp in nodes_names:
-            idx += 1
-            tmp = name + str(idx)
-        return name + str(idx)
+        return getUniqNameFromList(nodes_names, name)
 
     def showNodeBox(self, dataType=None, pinType=None):
         self.node_box.show()
@@ -578,8 +574,6 @@ class Canvas(QGraphicsView):
         for ed in self.codeEditors.values():
             ed.deleteLater()
         nodes = list(self.nodes.values())
-        self.graphManager.clear()
-        self.scene().shoutDown()
         self.scene().clear()
         self._UIConnections.clear()
         self.node_box.hide()
@@ -731,7 +725,9 @@ class Canvas(QGraphicsView):
         return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
 
     def selectedNodes(self):
-        return [i for i in self.getAllNodes() if i.isSelected() and i is not None]
+        allNodes = self.getAllNodes()
+        assert(None not in allNodes), "Bad nodes!"
+        return [i for i in allNodes if i.isSelected()]
 
     def clearSelection(self):
         for node in self.selectedNodes():
@@ -1582,7 +1578,10 @@ class Canvas(QGraphicsView):
             node UINodeBase -- raw node wrapper
         """
         assert(jsonTemplate is not None)
-        self.graphManager.activeGraph().addNode(uiNode._rawNode, jsonTemplate)
+        if uiNode._rawNode.graph is None:
+            # if added from node box
+            self.graphManager.activeGraph().addNode(uiNode._rawNode, jsonTemplate)
+
         uiNode.canvasRef = weakref.ref(self)
         self.scene().addItem(uiNode)
         uiNode.postCreate(jsonTemplate)

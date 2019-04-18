@@ -93,7 +93,7 @@ class NodeBase(INode):
 
     def setWrapper(self, wrapper):
         if self._wrapper is None:
-            self._wrapper = weakref.ref(wrapper)
+            self._wrapper = wrapper
 
     def getWrapper(self):
         return self._wrapper
@@ -111,6 +111,7 @@ class NodeBase(INode):
         template = {'package': None,
                     'lib': None,
                     'type': None,
+                    'owningGraphName': None,
                     'name': None,
                     'uuid': None,
                     'inputs': [],
@@ -125,6 +126,7 @@ class NodeBase(INode):
         template['lib'] = self.lib
         template['type'] = self.__class__.__name__
         template['name'] = self.name
+        template['owningGraphName'] = self.graph().name
         template['uuid'] = str(self.uid)
         template['inputs'] = [i.serialize() for i in self.inputs.values()]
         template['outputs'] = [o.serialize() for o in self.outputs.values()]
@@ -133,9 +135,9 @@ class NodeBase(INode):
         template['y'] = self.y
 
         # if running with ui get ui wrapper data to save
-        wrapperRef = self.getWrapper()
-        if wrapperRef:
-            uiDataToSave = wrapperRef().serializationHook()
+        wrapper = self.getWrapper()
+        if wrapper:
+            uiDataToSave = wrapper.serializationHook()
             for key, value in uiDataToSave.items():
                 template[key] = value
         return template
@@ -150,6 +152,9 @@ class NodeBase(INode):
 
         # set pins data
         for inpJson in jsonData['inputs']:
+            # TODO: create pins if they were created dynamically
+            if inpJson['name'] not in node.namePinInputsMap:
+                pass
             pin = node.getPin(inpJson['name'], PinSelectionGroup.Inputs)
             pin.uid = uuid.UUID(inpJson['uuid'])
             pin.setData(inpJson['value'])
@@ -159,6 +164,9 @@ class NodeBase(INode):
                 pin.setClean()
 
         for outJson in jsonData['outputs']:
+            # TODO: create pins if they were created dynamically
+            if outJson['name'] not in node.namePinOutputsMap:
+                pass
             pin = node.getPin(outJson['name'], PinSelectionGroup.Outputs)
             pin.uid = uuid.UUID(outJson['uuid'])
             pin.setData(outJson['value'])

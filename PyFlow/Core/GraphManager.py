@@ -19,16 +19,17 @@ class GraphManager(object):
 
     def deserialize(self, data):
         self.clear(keepRoot=False)
-        # rootGraphJson = data[list(data.keys())[0]]
         self._activeGraph = GraphBase.deserialize(data, self)
 
     def clear(self, *args, keepRoot=True, **kwargs):
+        self.selectGraph('root')
         for graph in self._graphs.values():
             graph.clear()
         self._graphs.clear()
+        self._graphs = {}
         if keepRoot:
-            newGraph = GraphBase('root', self)
-            self.selectGraph(newGraph)
+            self._activeGraph = GraphBase('root', self)
+            self.selectGraph(self._activeGraph)
         else:
             del self._activeGraph
             self._activeGraph = None
@@ -43,6 +44,13 @@ class GraphManager(object):
             if node.variableUid() == variable.uid:
                 result.append(node)
         return result
+
+    @dispatch(str)
+    def findGraph(self, name):
+        graphs = self.graphsDict
+        if name in graphs:
+            return graphs[name]
+        return None
 
     @dispatch(str)
     def findNode(self, name):
@@ -101,8 +109,7 @@ class GraphManager(object):
         return result
 
     def add(self, graph):
-        if graph.name in self._graphs:
-            graph.name = self.getUniqGraphName(graph.name)
+        graph.name = self.getUniqGraphName(graph.name)
         self._graphs[graph.uid] = graph
 
     def activeGraph(self):

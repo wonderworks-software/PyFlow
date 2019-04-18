@@ -80,7 +80,6 @@ class GraphBase(ISerializable):
             if nodeJson['type'] in ('getVar', 'setVar'):
                 kwargs['var'] = graph.vars[uuid.UUID(nodeJson['varUid'])]
             node = NodeBase.deserialize(nodeJson, *nodeArgs, **nodeKwargs)
-            # set pin uids
             graph.addNode(node, nodeJson)
 
         # restore connections

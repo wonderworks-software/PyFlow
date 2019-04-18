@@ -26,8 +26,9 @@ class graphInputs(NodeBase):
     def description():
         return ''
 
-    def addOutPin(self):
-        name = str(len(self.outputs))
+    def addOutPin(self, name=None):
+        if name is None:
+            name = self.getUniqPinName('in')
         p = self.addOutputPin(name, 'AnyPin')
         p.singleInit = True
         # this will be passed to compound node for companion pin creation
@@ -43,7 +44,9 @@ class graphInputs(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(graphInputs, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamically created pins
-        pass
+        if jsonTemplate is not None:
+            for outPin in jsonTemplate["outputs"]:
+                self.addOutPin(outPin['name'])
 
 
 class graphOutputs(NodeBase):
@@ -71,10 +74,13 @@ class graphOutputs(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(graphOutputs, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamically created pins
-        pass
+        if jsonTemplate is not None:
+            for outPin in jsonTemplate["inputs"]:
+                self.addInPin(outPin['name'])
 
-    def addInPin(self):
-        name = str(len(self.outputs))
+    def addInPin(self, name=None):
+        if name is None:
+            name = self.getUniqPinName('out')
         p = self.addInputPin(name, 'AnyPin')
         p.singleInit = True
         # p.setAlwaysPushDirty(True)

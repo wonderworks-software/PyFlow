@@ -12,21 +12,21 @@ class UISequenceNode(UINodeBase):
         rawPin = self._rawNode.addOutPin()
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.setDynamic(True)
-        uiPin.setDisplayName("Then {}".format(str(len(self.outputs) - 1)))
+        uiPin.setDisplayName("Then {}".format(str(len(self.UIoutputs) - 1)))
         self.updateWidth()
         return uiPin
 
     def updateNodeShape(self, label=None):
         UINodeBase.updateNodeShape(self, label)
-        for i in range(0, len(self.outputs)):
-            pin = list(self.outputs.values())[i]
-            pin.getWrapper()().setName(str(i))
-            pin.getWrapper()().setDisplayName("Then {}".format(i))
+        for i in range(0, len(self.UIoutputs)):
+            pin = list(self.UIoutputs.values())[i]
+            pin.setName(str(i))
+            pin.setDisplayName("Then {}".format(i))
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
         # recreate dynamically created pins
-        createdPinNames = [pin.name for pin in self.outputs.values()]
+        createdPinNames = [pin.name for pin in self.UIoutputs.values()]
         for outPin in jsonTemplate["outputs"]:
             if outPin['name'] not in createdPinNames:
                 uiPin = self.onAddOutPin()

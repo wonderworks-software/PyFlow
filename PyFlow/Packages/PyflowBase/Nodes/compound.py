@@ -89,10 +89,10 @@ class compound(NodeBase):
         subgraphInputPin.onPinConnected.connect(onSubgraphInputConnected, weak=False)
 
         # TODO: rewrite with signal
-        wrapperRef = self.getWrapper()
-        if wrapperRef is not None:
+        wrapper = self.getWrapper()
+        if wrapper is not None:
             # raw compound input pin created. Now call UI compound node to create UI companion
-            wrapperRef().onGraphInputPinExposed(subgraphInputPin)
+            wrapper.onGraphInputPinExposed(subgraphInputPin)
 
     def onGraphOutputPinCreated(self, inPin):
         """Reaction when pin added to graphOutputs node
@@ -134,10 +134,10 @@ class compound(NodeBase):
         subgraphOutputPin.onPinConnected.connect(onSubgraphOutputConnected, weak=False)
 
         # TODO: rewrite with signal
-        wrapperRef = self.getWrapper()
-        if wrapperRef is not None:
+        wrapper = self.getWrapper()
+        if wrapper is not None:
             # raw compound input pin created. Now call UI compound node to create UI companion
-            wrapperRef().onGraphOutputPinExposed(subgraphOutputPin)
+            wrapper.onGraphOutputPinExposed(subgraphOutputPin)
 
     def kill(self, *args, **kwargs):
         self.rawGraph.clear()
