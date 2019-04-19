@@ -133,11 +133,11 @@ def pinAffects(lhs, rhs):
 
 def canConnectPins(src, dst):
     if src is None or dst is None:
-        print("can not connect pins")
-        if src is None:
-            print("src is None")
-        if dst is None:
-            print("dst is None")
+        # print("can not connect pins")
+        # if src is None:
+        #     print("src is None")
+        # if dst is None:
+        #     print("dst is None")
         return False
 
     if src.direction == PinDirection.Input:
@@ -150,7 +150,7 @@ def canConnectPins(src, dst):
         return False
 
     if cycle_check(src, dst):
-        print('cycles are not allowed')
+        # print('cycles are not allowed')
         return False
 
     if src.dataType == "AnyPin" and not cycle_check(src, dst):
@@ -165,22 +165,22 @@ def canConnectPins(src, dst):
             return False
 
     if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
-        print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
+        # print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
         return False
     else:
         if src.dataType is 'ExecPin':
             if dst.dataType != 'ExecPin' and dst.dataType != 'AnyPin':
-                print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
+                # print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
                 return False
 
     if src in dst.affected_by:
-        print('already connected. skipped')
+        # print('already connected. skipped')
         return False
     if src.direction == dst.direction:
-        print('same side pins can not be connected')
+        # print('same side pins can not be connected')
         return False
     if src.owningNode == dst.owningNode:
-        print('can not connect to owning node')
+        # print('can not connect to owning node')
         return False
 
     if dst.constraint is not None:
@@ -190,7 +190,7 @@ def canConnectPins(src, dst):
                 if not free:
                     pinClass = findPinClassByType(dst.dataType)
                     if src.dataType not in pinClass.supportedDataTypes():
-                        print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
+                        # print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
                         return False
     return True
 

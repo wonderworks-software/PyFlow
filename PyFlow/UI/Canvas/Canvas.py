@@ -452,6 +452,7 @@ class Canvas(QGraphicsView):
         self.setScene(SceneClass(self))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pressed_item = None
+        self.pressedPin = None
         self.released_item = None
         self.resizing = False
         self.hoverItems = []
@@ -479,16 +480,18 @@ class Canvas(QGraphicsView):
         self.factor_diff = 0
 
         self._current_file_name = 'Untitled'
-        self.real_time_line = QGraphicsPathItem(None, self.scene())
-        self.real_time_line.name = 'RealTimeLine'
-        self.real_time_line.setPen(QtGui.QPen(
-            Colors.Green, 1.0, QtCore.Qt.DashLine))
+        self.realTimeLine = QGraphicsPathItem(None, self.scene())
+        self.realTimeLine.name = 'RealTimeLine'
+        self.realTimeLineInvalidPen = QtGui.QPen(Colors.Red, 2.0, QtCore.Qt.SolidLine)
+        self.realTimeLineNormalPen = QtGui.QPen(Colors.White, 2.0, QtCore.Qt.DashLine)
+        self.realTimeLineValidPen = QtGui.QPen(Colors.Green, 2.0, QtCore.Qt.SolidLine)
+        self.realTimeLine.setPen(self.realTimeLineNormalPen)
         self.mousePressPose = QtCore.QPointF(0, 0)
         self.mousePos = QtCore.QPointF(0, 0)
         self._lastMousePos = QtCore.QPointF(0, 0)
         self._right_button = False
         self._is_rubber_band_selection = False
-        self._draw_real_time_line = False
+        self._drawRealtimeLine = False
         self._update_items = False
         self._resize_group_mode = False
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -1042,6 +1045,7 @@ class Canvas(QGraphicsView):
             if self.pressed_item != self.itemAt(event.pos()):
                 self.pressed_item.setOutFocus()
         self.pressed_item = self.itemAt(event.pos())
+        self.pressedPin = self.findPinNearPosition(event.pos())
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         node = self.nodeFromInstance(self.pressed_item)
@@ -1093,11 +1097,11 @@ class Canvas(QGraphicsView):
                     if event.button() == QtCore.Qt.LeftButton:
                         self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
                         self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
-                        self._draw_real_time_line = True
+                        self._drawRealtimeLine = True
                         self.autoPanController.start()
                     if modifiers == QtCore.Qt.AltModifier:
                         self.removeEdgeCmd(self.pressed_item.connections)
-                        self._draw_real_time_line = False
+                        self._drawRealtimeLine = False
                 else:
                     # super(Canvas, self).mousePressEvent(event)
                     if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.AltModifier:
@@ -1180,12 +1184,25 @@ class Canvas(QGraphicsView):
                 elif resizeOpts["direction"] == (-1, -1):
                     self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)
 
-        if self._draw_real_time_line:
+        if self._drawRealtimeLine:
             if isinstance(self.pressed_item, PinBase):
                 if self.pressed_item.parentItem().isSelected():
                     self.pressed_item.parentItem().setSelected(False)
-            if self.real_time_line not in self.scene().items():
-                self.scene().addItem(self.real_time_line)
+            if self.realTimeLine not in self.scene().items():
+                self.scene().addItem(self.realTimeLine)
+
+            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 5, event.pos().y() - 4),
+                                     QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
+            hoverItems = self.items(mouseRect)
+
+            hoveredPins = [pin for pin in hoverItems if isinstance(pin, UIPinBase)]
+            if len(hoveredPins) > 0:
+                item = hoveredPins[0]
+                if isinstance(item, UIPinBase) and isinstance(self.pressed_item, UIPinBase):
+                    canBeConnected = canConnectPins(self.pressed_item._rawPin, item._rawPin)
+                    self.realTimeLine.setPen(self.realTimeLineValidPen if canBeConnected else self.realTimeLineInvalidPen)
+            else:
+                self.realTimeLine.setPen(self.realTimeLineNormalPen)
 
             p1 = self.pressed_item.scenePos() + self.pressed_item.boundingRect().center()
             p2 = self.mapToScene(self.mousePos)
@@ -1196,10 +1213,7 @@ class Canvas(QGraphicsView):
             path.moveTo(p1)
             path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()),
                          QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
-            self.real_time_line.setPath(path)
-            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 2, event.pos().y() - 2),
-                                     QtCore.QPoint(event.pos().x() + 2, event.pos().y() + 2))
-            hoverItems = self.items(mouseRect)
+            self.realTimeLine.setPath(path)
             for item in hoverItems:
                 if isinstance(item, UIRerouteNode):
                     self.hoverItems.append(item)
@@ -1210,8 +1224,8 @@ class Canvas(QGraphicsView):
                     if isinstance(item, UIRerouteNode):
                         item.hidePins()
             if modifiers == QtCore.Qt.AltModifier:
-                self._draw_real_time_line = False
-                if self.real_time_line in self.scene().items():
+                self._drawRealtimeLine = False
+                if self.realTimeLine in self.scene().items():
                     self.removeItemByName('RealTimeLine')
                 reruteNode = self.getReruteNode(event.pos())
                 self.clearSelection()
@@ -1359,12 +1373,22 @@ class Canvas(QGraphicsView):
         #    super(Canvas, self).mouseMoveEvent(event)
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
 
+    def findPinNearPosition(self, scenePos, tolerance=10):
+        rect = QtCore.QRect(QtCore.QPoint(scenePos.x() - tolerance, scenePos.y() - tolerance),
+                            QtCore.QPoint(scenePos.x() + tolerance, scenePos.y() + tolerance))
+        items = self.items(rect)
+        pins = [i for i in items if isinstance(i, UIPinBase)]
+        if len(pins) > 0:
+            return pins[0]
+        return None
+
     def mouseReleaseEvent(self, event):
         super(Canvas, self).mouseReleaseEvent(event)
 
         self.autoPanController.stop()
         self.mouseReleasePos = event.pos()
         self.released_item = self.itemAt(event.pos())
+        self.releasedPin = self.findPinNearPosition(event.pos())
         self._resize_group_mode = False
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         for n in self.getAllNodes():
@@ -1372,9 +1396,9 @@ class Canvas(QGraphicsView):
                 n.setFlag(QGraphicsItem.ItemIsMovable)
                 n.setFlag(QGraphicsItem.ItemIsSelectable)
 
-        if self._draw_real_time_line:
-            self._draw_real_time_line = False
-            if self.real_time_line in self.scene().items():
+        if self._drawRealtimeLine:
+            self._drawRealtimeLine = False
+            if self.realTimeLine in self.scene().items():
                 self.removeItemByName('RealTimeLine')
 
         if self._manipulationMode == MANIP_MODE_SELECT:
@@ -1388,7 +1412,7 @@ class Canvas(QGraphicsView):
                     self.mousePressPose) - self.mapToScene(event.pos())
                 if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                     self.showNodeBox()
-        elif event.button() == QtCore.Qt.LeftButton and not isinstance(self.released_item, UIPinBase):
+        elif event.button() == QtCore.Qt.LeftButton and self.releasedPin is None:
             if isinstance(self.pressed_item, UIPinBase) and not self.resizing:
                 # node box tree pops up
                 # with nodes taking supported data types of pressed Pin as input
@@ -1396,8 +1420,8 @@ class Canvas(QGraphicsView):
                                  self.pressed_item.direction)
         self._manipulationMode = MANIP_MODE_NONE
         if not self.resizing:
-            p_itm = self.pressed_item
-            r_itm = self.released_item
+            p_itm = self.pressedPin
+            r_itm = self.releasedPin
             do_connect = True
             for i in [p_itm, r_itm]:
                 if not i:
@@ -1409,7 +1433,7 @@ class Canvas(QGraphicsView):
             if p_itm and r_itm:
                 if p_itm.__class__.__name__ == UIPinBase.__name__ and r_itm.__class__.__name__ == UIPinBase.__name__:
                     if cycle_check(p_itm, r_itm):
-                        print('cycles are not allowed')
+                        # print('cycles are not allowed')
                         do_connect = False
 
             if do_connect:

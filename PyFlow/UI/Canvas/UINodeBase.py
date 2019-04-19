@@ -345,8 +345,6 @@ class UINodeBase(QGraphicsObject):
         # this will be called by raw node
         # to gather ui specific info
         template = self.jsonTemplate()
-        template['x'] = self.scenePos().x()
-        template['y'] = self.scenePos().y()
         if self.resizable:
             template['meta']['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
         template['displayName'] = self.displayName
