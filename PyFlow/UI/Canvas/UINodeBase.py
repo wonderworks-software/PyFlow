@@ -873,6 +873,8 @@ class UINodeBase(QGraphicsObject):
             0, 0, self._rect.width(), self.childrenBoundingRect().height()))
         self.update()
         self.nodeMainGWidget.update()
+        p.syncRenamable()
+        p.syncDynamic()
         return p
 
     def collapsePinGroup(self, container):

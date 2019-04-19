@@ -226,8 +226,8 @@ class IPin(IItemBase):
     def setDynamic(self, bDynamic):
         raise NotImplementedError('setDynamic method of IPin is not implemented')
 
-    def canBeRenamed(self):
-        raise NotImplementedError('canBeRenamed method of IPin is not implemented')
+    def renamingEnabled(self):
+        raise NotImplementedError('renamingEnabled method of IPin is not implemented')
 
     def isDynamic(self):
         raise NotImplementedError('isDynamic method of IPin is not implemented')

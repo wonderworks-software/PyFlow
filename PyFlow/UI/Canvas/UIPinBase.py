@@ -114,6 +114,8 @@ class UIPinBase(QGraphicsWidget):
         # self.setCursor(QtCore.Qt.CrossCursor)
         # context menu for pin
         self.menu = QMenu()
+        self.menu.addAction("Rename").triggered.connect(self.onRename)
+        self.menu.addAction("Remove").triggered.connect(self._rawPin.kill)
         # Disconnect all connections
         self.actionDisconnect = self.menu.addAction('Disconnect all')
         self.actionDisconnect.triggered.connect(self._rawPin.disconnectAll)
@@ -138,8 +140,7 @@ class UIPinBase(QGraphicsWidget):
         self._groupContainer = None
         self._execPen = QtGui.QPen(Colors.White, 0.5, QtCore.Qt.SolidLine)
         self.setGeometry(0, 0, self.width, self.height)
-        self._dirty_pen = QtGui.QPen(
-            Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
         self.pinImage = QtGui.QImage(':/icons/resources/array.png')
         self.bLabelHidden = False
@@ -179,16 +180,23 @@ class UIPinBase(QGraphicsWidget):
     def isAny(self):
         return self._rawPin.isAny
 
+    def setMenuItemEnabled(self, actionName, bVisible):
+        for action in self.menu.actions():
+            if action.text() == actionName:
+                action.setEnabled(bVisible)
+                action.setVisible(bVisible)
+
+    def syncRenamable(self):
+        renamingEnabled = self._rawPin.renamingEnabled()
+        self._label()._isEditable = renamingEnabled
+        self.setMenuItemEnabled("Rename", renamingEnabled)
+
     def setRenamingEnabled(self, bEnabled):
         self._rawPin.setRenamingEnabled(bEnabled)
-        self._label()._isEditable = bEnabled
-        actionsNames = [a.text() for a in self.menu.actions()]
-        if bEnabled and "Rename" not in actionsNames:
-            renameAction = self.menu.addAction("Rename")
-            renameAction.triggered.connect(self.onRename)
+        self.syncRenamable()
 
-    def canBeRenamed(self):
-        return self._rawPin.canBeRenamed()
+    def renamingEnabled(self):
+        return self._rawPin.renamingEnabled()
 
     def onRename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
@@ -196,13 +204,13 @@ class UIPinBase(QGraphicsWidget):
             self.setName(name)
             self.setDisplayName(name)
 
+    def syncDynamic(self):
+        dynamic = self._rawPin.isDynamic()
+        self.setMenuItemEnabled("Remove", dynamic)
+
     def setDynamic(self, bDynamic):
         self._rawPin.setDynamic(bDynamic)
-        actionsNames = [a.text() for a in self.menu.actions()]
-        if bDynamic and "Remove" not in actionsNames:
-            removeAction = self.menu.addAction("Remove")
-            # raw pin will send signal `killed` which will be considered by UI pin
-            removeAction.triggered.connect(self._rawPin.kill)
+        self.syncDynamic()
 
     def isDynamic(self):
         return self._rawPin.isDynamic()

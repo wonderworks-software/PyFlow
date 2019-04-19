@@ -10,6 +10,7 @@ except:
 from types import MethodType
 from multipledispatch import dispatch
 
+from PyFlow import getPinDefaultValueByType
 from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
 from PyFlow.Core.Interfaces import INode
@@ -116,7 +117,8 @@ class NodeBase(INode):
                     'uuid': None,
                     'inputs': [],
                     'outputs': [],
-                    'meta': {'var': {}}
+                    'meta': {'var': {}},
+                    'wrapper': {}
                     }
         return template
 
@@ -137,9 +139,7 @@ class NodeBase(INode):
         # if running with ui get ui wrapper data to save
         wrapper = self.getWrapper()
         if wrapper:
-            uiDataToSave = wrapper.serializationHook()
-            for key, value in uiDataToSave.items():
-                template[key] = value
+            template['wrapper'] = wrapper.serializationHook()
         return template
 
     @staticmethod
@@ -153,8 +153,15 @@ class NodeBase(INode):
         # set pins data
         for inpJson in jsonData['inputs']:
             # TODO: create pins if they were created dynamically
-            if inpJson['name'] not in node.namePinInputsMap:
-                pass
+            if inpJson['dynamic'] and inpJson['name'] not in node.namePinInputsMap:
+                defaultValue = getPinDefaultValueByType(inpJson['dataType'])
+                dynamicPin = node.addInputPin(inpJson['name'], inpJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
+                dynamicPin.uid = uuid.UUID(inpJson['uuid'])
+                dynamicPin.setDynamic(True)
+                dynamicPin.setRenamingEnabled(inpJson['renamingEnabled'])
+                dynamicPin.typeChecking = inpJson['typeChecking']
+                dynamicPin.setAlwaysPushDirty(inpJson['alwaysPushDirty'])
+
             pin = node.getPin(inpJson['name'], PinSelectionGroup.Inputs)
             pin.uid = uuid.UUID(inpJson['uuid'])
             pin.setData(inpJson['value'])
@@ -165,8 +172,15 @@ class NodeBase(INode):
 
         for outJson in jsonData['outputs']:
             # TODO: create pins if they were created dynamically
-            if outJson['name'] not in node.namePinOutputsMap:
-                pass
+            if outJson['dynamic'] and outJson['name'] not in node.namePinOutputsMap:
+                defaultValue = getPinDefaultValueByType(outJson['dataType'])
+                dynamicPin = node.addOutputPin(outJson['name'], outJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
+                dynamicPin.uid = uuid.UUID(outJson['uuid'])
+                dynamicPin.setDynamic(True)
+                dynamicPin.setRenamingEnabled(outJson['renamingEnabled'])
+                dynamicPin.typeChecking = outJson['typeChecking']
+                dynamicPin.setAlwaysPushDirty(outJson['alwaysPushDirty'])
+
             pin = node.getPin(outJson['name'], PinSelectionGroup.Outputs)
             pin.uid = uuid.UUID(outJson['uuid'])
             pin.setData(outJson['value'])
@@ -273,7 +287,6 @@ class NodeBase(INode):
     def addOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
-        p.direction = PinDirection.Output
         if foo:
             # p.call = foo
             p.onExecute.connect(foo, weak=False)

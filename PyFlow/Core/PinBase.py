@@ -87,7 +87,7 @@ class PinBase(IPin):
     def setRenamingEnabled(self, bEnabled):
         self._renamingEnabled = bEnabled
 
-    def canBeRenamed(self):
+    def renamingEnabled(self):
         return self._renamingEnabled
 
     def setDynamic(self, bDynamic):
@@ -95,6 +95,9 @@ class PinBase(IPin):
 
     def isDynamic(self):
         return self._dynamic
+
+    def isAlwaysPushDirty(self):
+        return self._alwaysPushDirty
 
     def setAlwaysPushDirty(self, bValue=False):
         assert(isinstance(bValue, bool))
@@ -108,6 +111,10 @@ class PinBase(IPin):
                 'value': self.currentData(),
                 'uuid': str(self.uid),
                 'bDirty': self.dirty,
+                'dynamic': self.isDynamic(),
+                'renamingEnabled': self.renamingEnabled(),
+                'typeChecking': self.typeChecking,
+                'alwaysPushDirty': self._alwaysPushDirty,
                 'linkedTo': [str(i.uid) for i in self.affects] if self.direction == PinDirection.Output else []
                 }
         return data
@@ -124,7 +131,8 @@ class PinBase(IPin):
 
     @uid.setter
     def uid(self, value):
-        self._uid = value
+        if not value == self._uid:
+            self._uid = value
 
     def setName(self, name):
         if name == self.name:
@@ -237,8 +245,9 @@ class PinBase(IPin):
 
     def kill(self, *args, **kwargs):
         self.disconnectAll()
-        if self.uid in self.owningNode().pins:
-            self.owningNode().pins.pop(self.uid)
+        # if self.uid in self.owningNode().pins:
+        #     self.owningNode().pins.pop(self.uid)
+        self.owningNode().pins.pop(self.uid)
         self.killed.send()
 
     def currentData(self):

@@ -100,11 +100,9 @@ def getNodeInstance(jsonTemplate, canvas):
     if jsonTemplate['type'] in ('getVar', 'setVar'):
         kwargs['var'] = canvas.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
 
-    raw_instance = getRawNodeInstance(
-        nodeClassName, packageName, libName, **kwargs)
+    raw_instance = getRawNodeInstance(nodeClassName, packageName, libName, **kwargs)
     raw_instance.uid = uuid.UUID(jsonTemplate['uuid'])
-    assert(raw_instance is not None), "Node {0} not found in package {1}".format(
-        nodeClassName, packageName)
+    assert(raw_instance is not None), "Node {0} not found in package {1}".format(nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
     canvas.addNode(instance, jsonTemplate)
     return instance
@@ -1543,8 +1541,7 @@ class Canvas(QGraphicsView):
 
         # set pins data
         for inpJson in jsonTemplate['inputs']:
-            pin = nodeInstance.getPin(
-                inpJson['name'], PinSelectionGroup.Inputs)
+            pin = nodeInstance.getPin(inpJson['name'], PinSelectionGroup.Inputs)
             if pin:
                 pin.uid = uuid.UUID(inpJson['uuid'])
                 pin.setData(inpJson['value'])
@@ -1554,8 +1551,7 @@ class Canvas(QGraphicsView):
                     pin.setClean()
 
         for outJson in jsonTemplate['outputs']:
-            pin = nodeInstance.getPin(
-                outJson['name'], PinSelectionGroup.Outputs)
+            pin = nodeInstance.getPin(outJson['name'], PinSelectionGroup.Outputs)
             if pin:
                 pin.uid = uuid.UUID(outJson['uuid'])
                 pin.setData(outJson['value'])
