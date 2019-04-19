@@ -180,11 +180,11 @@ class UIPinBase(QGraphicsWidget):
     def isAny(self):
         return self._rawPin.isAny
 
-    def setMenuItemEnabled(self, actionName, bVisible):
+    def setMenuItemEnabled(self, actionName, bEnabled):
         for action in self.menu.actions():
             if action.text() == actionName:
-                action.setEnabled(bVisible)
-                action.setVisible(bVisible)
+                action.setEnabled(bEnabled)
+                action.setVisible(bEnabled)
 
     def syncRenamable(self):
         renamingEnabled = self._rawPin.renamingEnabled()
@@ -352,30 +352,19 @@ class UIPinBase(QGraphicsWidget):
 
     @staticmethod
     def deserialize(owningNode, jsonData):
-        name = jsonData['name']
-        dataType = jsonData['dataType']
-        direction = jsonData['direction']
-        value = jsonData['value']
-        uid = uuid.UUID(jsonData['uuid'])
-        bLabelHidden = jsonData['bLabelHidden']
-        bDirty = jsonData['bDirty']
+        # find raw pin class by type
+        # call deserialize on it
+        # create ui wrapper
+        return None
 
-        p = None
-        if direction == PinDirection.Input:
-            p = owningNode.createInputPin(name, dataType, hideLabel=bLabelHidden)
-            p.uid = uid
-        else:
-            p = owningNode.createOutputPin(name, dataType, hideLabel=bLabelHidden)
-            p.uid = uid
-
-        p.setData(value)
-        return p
-
-    def serialize(self):
-        data = self._rawPin.serialize()
+    def serializationHook(self):
+        data = {}
         data['bLabelHidden'] = self.bLabelHidden
         data['displayName'] = self.displayName()
         return data
+
+    def serialize(self):
+        return self._rawPin.serialize()
 
     def ungrabMouseEvent(self, event):
         super(UIPinBase, self).ungrabMouseEvent(event)

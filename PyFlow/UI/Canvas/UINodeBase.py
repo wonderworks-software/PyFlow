@@ -263,7 +263,8 @@ class UINodeBase(QGraphicsObject):
         result = OrderedDict()
         for rawPin in self._rawNode.pins.values():
             uiPinRef = rawPin.getWrapper()
-            result[rawPin.uid] = uiPinRef()
+            if uiPinRef is not None:
+                result[rawPin.uid] = uiPinRef()
         return result
 
     @property
@@ -336,9 +337,7 @@ class UINodeBase(QGraphicsObject):
     @staticmethod
     def jsonTemplate():
         template = {}
-        template['x'] = 0
-        template['y'] = 0
-        template['meta'] = {'label': ''}
+        template['meta'] = {}
         return template
 
     # TODO: add this to ui node interface
@@ -350,7 +349,13 @@ class UINodeBase(QGraphicsObject):
         template['y'] = self.scenePos().y()
         if self.resizable:
             template['meta']['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
+        template['displayName'] = self.displayName
         return template
+
+    def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemPositionChange:
+            self._rawNode.setPosition(value.x(), value.y())
+        return super(UINodeBase, self).itemChange(change, value)
 
     def serialize(self):
         return self._rawNode.serialize()
@@ -359,8 +364,6 @@ class UINodeBase(QGraphicsObject):
         self._rawNode.autoAffectPins()
 
     def postCreate(self, jsonTemplate=None):
-        self.setPosition(self._rawNode.x, self._rawNode.y)
-
         # create ui pin wrappers
         for uid, i in self._rawNode.pins.items():
             self._createUIPinWrapper(i)
@@ -372,6 +375,7 @@ class UINodeBase(QGraphicsObject):
             self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
         self._displayName = self.name
+        self.setPos(self._rawNode.x, self._rawNode.y)
 
     def isCallable(self):
         return self._rawNode.isCallable()
@@ -487,10 +491,6 @@ class UINodeBase(QGraphicsObject):
                 self.label().color = res
                 self.update()
                 self.label().update()
-
-    def setPosition(self, x, y):
-        self._rawNode.setPosition(x, y)
-        self.setPos(QtCore.QPointF(x, y))
 
     def translate(self, x, y, moveChildren=False):
         if moveChildren:

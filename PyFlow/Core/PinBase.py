@@ -117,11 +117,15 @@ class PinBase(IPin):
                 'alwaysPushDirty': self._alwaysPushDirty,
                 'linkedTo': [str(i.uid) for i in self.affects] if self.direction == PinDirection.Output else []
                 }
+        wrapper = self.getWrapper()
+        if wrapper is not None:
+            data['wrapper'] = wrapper().serializationHook()
         return data
 
     @staticmethod
-    def deserialize(owningNode, jsonData):
-        pass
+    def deserialize(jsonData):
+        # create pin from json by type
+        return None
 
     # IItemBase interface
 
@@ -245,9 +249,8 @@ class PinBase(IPin):
 
     def kill(self, *args, **kwargs):
         self.disconnectAll()
-        # if self.uid in self.owningNode().pins:
-        #     self.owningNode().pins.pop(self.uid)
-        self.owningNode().pins.pop(self.uid)
+        if self.uid in self.owningNode().pins:
+            self.owningNode().pins.pop(self.uid)
         self.killed.send()
 
     def currentData(self):

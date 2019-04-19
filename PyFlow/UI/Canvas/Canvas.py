@@ -222,7 +222,7 @@ class SceneClass(QGraphicsScene):
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
             if self.tempnode:
-                self.tempnode.setPosition(
+                self.tempnode.setPos(
                     (self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
                 mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x() - 1, event.scenePos().y() - 1),
                                          QtCore.QPoint(event.scenePos().x() + 1, event.scenePos().y() + 1))
@@ -771,6 +771,9 @@ class Canvas(QGraphicsView):
                     instance.label().width = rect.width()
                     instance.label().adjustSizes()
 
+            if all([modifiers == QtCore.Qt.ControlModifier, event.key() == QtCore.Qt.Key_Space]):
+                self.showNodeBox()
+
             if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
                 self.alignSelectedNodes(Direction.Left)
                 return
@@ -800,14 +803,6 @@ class Canvas(QGraphicsView):
                 self.zoomDelta(False)
             if all([event.key() == QtCore.Qt.Key_R, modifiers == QtCore.Qt.ControlModifier]):
                 self.reset_scale()
-
-            # if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-            #    if self.parent:
-            #        self.parent.toggle_node_box()
-            # if all([event.key() == QtCore.Qt.Key_M, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
-            #    self.parent.toggle_multithreaded()
-            # if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier]):
-            #    self.parent.toggle_debug()
 
             if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
                 self.parent.togglePropertyView()
@@ -1537,7 +1532,7 @@ class Canvas(QGraphicsView):
 
         nodeInstance = getNodeInstance(jsonTemplate, self)
         assert(nodeInstance is not None), "Node instance is not found!"
-        nodeInstance.setPosition(jsonTemplate["x"], jsonTemplate["y"])
+        nodeInstance.setPos(jsonTemplate["x"], jsonTemplate["y"])
 
         # set pins data
         for inpJson in jsonTemplate['inputs']:
