@@ -4,10 +4,10 @@ from PyFlow.Core import NodeBase
 class retriggerableDelay(NodeBase):
     def __init__(self, name):
         super(retriggerableDelay, self).__init__(name)
-        self.inp0 = self.addInputPin('in0', 'ExecPin', None, self.compute)
-        self.delay = self.addInputPin('Delay(s)', 'FloatPin')
+        self.inp0 = self.createInputPin('in0', 'ExecPin', None, self.compute)
+        self.delay = self.createInputPin('Delay(s)', 'FloatPin')
         self.delay.setDefaultValue(0.5)
-        self.out0 = self.addOutputPin('out0', 'ExecPin')
+        self.out0 = self.createOutputPin('out0', 'ExecPin')
         self.process = False
         self._total = 0.0
         self._currentDelay = 0.0

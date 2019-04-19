@@ -7,11 +7,11 @@ from PyFlow.Core import NodeBase
 class timer(NodeBase):
     def __init__(self, name):
         super(timer, self).__init__(name)
-        self.out = self.addOutputPin("OUT", 'ExecPin')
-        self.beginPin = self.addInputPin("Begin", 'ExecPin', None, self.start)
-        self.stopPin = self.addInputPin("Stop", 'ExecPin', None, self.stop)
-        self.resetPin = self.addInputPin("Reset", 'ExecPin', None, self.reset)
-        self.interval = self.addInputPin("Delta(ms)", 'FloatPin')
+        self.out = self.createOutputPin("OUT", 'ExecPin')
+        self.beginPin = self.createInputPin("Begin", 'ExecPin', None, self.start)
+        self.stopPin = self.createInputPin("Stop", 'ExecPin', None, self.stop)
+        self.resetPin = self.createInputPin("Reset", 'ExecPin', None, self.reset)
+        self.interval = self.createInputPin("Delta(ms)", 'FloatPin')
         self.interval.setDefaultValue(0.2)
         self._timer = QTimer()
         self._timer.timeout.connect(self.compute)

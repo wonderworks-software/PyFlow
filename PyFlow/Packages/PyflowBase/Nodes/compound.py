@@ -55,7 +55,7 @@ class compound(NodeBase):
         """
 
         # add companion pin for graphInputs node's output pin
-        subgraphInputPin = self.addInputPin(outPin.name,
+        subgraphInputPin = self.createInputPin(outPin.name,
                                             outPin.dataType,
                                             outPin.defaultValue(),
                                             outPin.call,
@@ -102,7 +102,7 @@ class compound(NodeBase):
         """
 
         # add companion pin for graphOutputs node's input pin
-        subgraphOutputPin = self.addOutputPin(inPin.name,
+        subgraphOutputPin = self.createOutputPin(inPin.name,
                                               inPin.dataType,
                                               inPin.defaultValue(),
                                               inPin.call,

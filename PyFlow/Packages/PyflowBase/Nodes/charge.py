@@ -10,14 +10,14 @@ from PyFlow.Core.Common import *
 class charge(NodeBase):
     def __init__(self, name):
         super(charge, self).__init__(name)
-        self.inExec = self.addInputPin('inExec', 'ExecPin', self.compute)
-        self.amount = self.addInputPin('Amount', 'FloatPin')
+        self.inExec = self.createInputPin('inExec', 'ExecPin', self.compute)
+        self.amount = self.createInputPin('Amount', 'FloatPin')
         self.amount.setDefaultValue(1.0)
 
-        self.step = self.addInputPin('Step', 'FloatPin')
+        self.step = self.createInputPin('Step', 'FloatPin')
         self.step.setDefaultValue(0.1)
 
-        self.completed = self.addOutputPin('completed', 'ExecPin')
+        self.completed = self.createOutputPin('completed', 'ExecPin')
         self._currentAmount = 0
 
     @staticmethod

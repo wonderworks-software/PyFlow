@@ -6,9 +6,9 @@ from PyFlow.Core.Common import *
 class sequence(NodeBase):
     def __init__(self, name):
         super(sequence, self).__init__(name)
-        self.inExecPin = self.addInputPin('inExec', 'ExecPin', None, self.compute)
+        self.inExecPin = self.createInputPin('inExec', 'ExecPin', None, self.compute)
 
-    def addOutputPin(self, *args, **kwargs):
+    def createOutputPin(self, *args, **kwargs):
         currentIds = [int(i) for i in self.namePinOutputsMap]
         pinName = str(findGoodId(currentIds)) if 'name' not in kwargs else kwargs['name']
         p = CreateRawPin(pinName, self, 'ExecPin', PinDirection.Output)
@@ -28,7 +28,7 @@ class sequence(NodeBase):
         if jsonTemplate is not None:
             for outJson in jsonTemplate['outputs']:
                 if outJson['name'] not in self.namePinOutputsMap:
-                    pin = self.addOutputPin(outJson['name'])
+                    pin = self.createOutputPin(outJson['name'])
 
     @staticmethod
     def keywords():

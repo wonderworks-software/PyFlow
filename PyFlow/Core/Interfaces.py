@@ -266,11 +266,11 @@ class INode(IItemBase):
         """
         raise NotImplementedError('call method of INode is not implemented')
 
-    def addInputPin(self, pinName, dataType, foo=None):
-        raise NotImplementedError('addInputPin method of INode is not implemented')
+    def createInputPin(self, pinName, dataType, foo=None):
+        raise NotImplementedError('createInputPin method of INode is not implemented')
 
-    def addOutputPin(self, pinName, dataType, foo=None):
-        raise NotImplementedError('addOutputPin method of INode is not implemented')
+    def createOutputPin(self, pinName, dataType, foo=None):
+        raise NotImplementedError('createOutputPin method of INode is not implemented')
 
     def getUniqPinName(self, name):
         raise NotImplementedError('getUniqPinName method of INode is not implemented')

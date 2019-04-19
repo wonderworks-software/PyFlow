@@ -8,7 +8,7 @@ class UISequenceNode(UINodeBase):
         actionAddOut.triggered.connect(self.onAddOutPin)
 
     def onAddOutPin(self):
-        rawPin = self._rawNode.addOutputPin()
+        rawPin = self._rawNode.createOutputPin()
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.setDynamic(True)
         uiPin.setDisplayName("Then {}".format(rawPin.name))

@@ -155,7 +155,7 @@ class NodeBase(INode):
             # TODO: create pins if they were created dynamically
             if inpJson['dynamic'] and inpJson['name'] not in node.namePinInputsMap:
                 defaultValue = getPinDefaultValueByType(inpJson['dataType'])
-                dynamicPin = node.addInputPin(inpJson['name'], inpJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
+                dynamicPin = node.createInputPin(inpJson['name'], inpJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
                 dynamicPin.uid = uuid.UUID(inpJson['uuid'])
                 dynamicPin.setDynamic(True)
                 dynamicPin.setRenamingEnabled(inpJson['renamingEnabled'])
@@ -174,7 +174,7 @@ class NodeBase(INode):
             # TODO: create pins if they were created dynamically
             if outJson['dynamic'] and outJson['name'] not in node.namePinOutputsMap:
                 defaultValue = getPinDefaultValueByType(outJson['dataType'])
-                dynamicPin = node.addOutputPin(outJson['name'], outJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
+                dynamicPin = node.createOutputPin(outJson['name'], outJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
                 dynamicPin.uid = uuid.UUID(outJson['uuid'])
                 dynamicPin.setDynamic(True)
                 dynamicPin.setRenamingEnabled(outJson['renamingEnabled'])
@@ -262,7 +262,7 @@ class NodeBase(INode):
                     continue
                 pinAffects(i, o)
 
-    def addInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
         if dataType == 'ExecPin':
             assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
 
@@ -284,7 +284,7 @@ class NodeBase(INode):
             p.updateConstraint(constraint)
         return p
 
-    def addOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         if foo:
@@ -427,7 +427,7 @@ class NodeBase(INode):
         raw_inst = nodeClass(foo.__name__)
         raw_inst.lib = libName
         if returnType is not None:
-            p = raw_inst.addOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
+            p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
 
@@ -455,8 +455,8 @@ class NodeBase(INode):
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
-            inputExec = raw_inst.addInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
-            outExec = raw_inst.addOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin', None)
+            inputExec = raw_inst.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
+            outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin', None)
             raw_inst.bCallable = True
 
         # iterate over function arguments and create pins according to data types
@@ -480,7 +480,7 @@ class NodeBase(INode):
                         anyOpts = dataType[2]["supportedDataTypes"]
                     if "constraint" in dataType[2]:
                         constraint = dataType[2]["constraint"]
-                outRef = raw_inst.addOutputPin(argName, dataType[0], allowedPins=anyOpts, constraint=constraint)
+                outRef = raw_inst.createOutputPin(argName, dataType[0], allowedPins=anyOpts, constraint=constraint)
                 outRef.setAsArray(isinstance(argDefaultValue, list))
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
@@ -489,7 +489,7 @@ class NodeBase(INode):
                         outRef.setAlwaysPushDirty(True)
                 refs.append(outRef)
             else:
-                inp = raw_inst.addInputPin(argName, dataType, allowedPins=anyOpts, constraint=constraint)
+                inp = raw_inst.createInputPin(argName, dataType, allowedPins=anyOpts, constraint=constraint)
                 inp.setAsArray(isinstance(argDefaultValue, list))
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)

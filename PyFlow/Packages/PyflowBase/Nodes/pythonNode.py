@@ -43,7 +43,7 @@ class pythonNode(NodeBase):
 
         # recreate pins
         for i in jsonTemplate['inputs']:
-            inPin = self.addInputPin(i['name'],
+            inPin = self.createInputPin(i['name'],
                                      i['dataType'],
                                      getPinDefaultValueByType(i['dataType']))
             inPin.setData(i['value'])
@@ -51,7 +51,7 @@ class pythonNode(NodeBase):
 
         for o in jsonTemplate['outputs']:
             compute = self.compute if o['dataType'] in ('AnyPin', 'ExecPin') else None
-            outPin = self.addOutputPin(o['name'],
+            outPin = self.createOutputPin(o['name'],
                                        o['dataType'],
                                        getPinDefaultValueByType(o['dataType']),
                                        compute)

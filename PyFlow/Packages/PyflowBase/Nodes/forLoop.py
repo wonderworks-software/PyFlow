@@ -5,15 +5,15 @@ from PyFlow.Core.Common import push
 class forLoop(NodeBase):
     def __init__(self, name):
         super(forLoop, self).__init__(name)
-        self.inExec = self.addInputPin('inExec', 'ExecPin', None, self.compute)
-        self.firstIndex = self.addInputPin('Start', 'IntPin')
-        self.lastIndex = self.addInputPin('Stop', 'IntPin')
-        self.step = self.addInputPin('Step', 'IntPin')
+        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
+        self.firstIndex = self.createInputPin('Start', 'IntPin')
+        self.lastIndex = self.createInputPin('Stop', 'IntPin')
+        self.step = self.createInputPin('Step', 'IntPin')
         self.step.setData(1)
 
-        self.loopBody = self.addOutputPin('LoopBody', 'ExecPin')
-        self.index = self.addOutputPin('Index', 'IntPin')
-        self.completed = self.addOutputPin('Completed', 'ExecPin')
+        self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
+        self.index = self.createOutputPin('Index', 'IntPin')
+        self.completed = self.createOutputPin('Completed', 'ExecPin')
 
     @staticmethod
     def pinTypeHints():

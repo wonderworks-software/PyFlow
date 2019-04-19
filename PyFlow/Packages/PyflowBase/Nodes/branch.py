@@ -4,10 +4,10 @@ from PyFlow.Core import NodeBase
 class branch(NodeBase):
     def __init__(self, name):
         super(branch, self).__init__(name)
-        self.trueExec = self.addOutputPin("True", 'ExecPin')
-        self.falseExec = self.addOutputPin("False", 'ExecPin')
-        self.inExec = self.addInputPin("In", 'ExecPin', defaultValue=None, foo=self.compute)
-        self.condition = self.addInputPin("Condition", 'BoolPin')
+        self.trueExec = self.createOutputPin("True", 'ExecPin')
+        self.falseExec = self.createOutputPin("False", 'ExecPin')
+        self.inExec = self.createInputPin("In", 'ExecPin', defaultValue=None, foo=self.compute)
+        self.condition = self.createInputPin("Condition", 'BoolPin')
 
     @staticmethod
     def pinTypeHints():

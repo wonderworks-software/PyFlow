@@ -362,10 +362,10 @@ class UIPinBase(QGraphicsWidget):
 
         p = None
         if direction == PinDirection.Input:
-            p = owningNode.addInputPin(name, dataType, hideLabel=bLabelHidden)
+            p = owningNode.createInputPin(name, dataType, hideLabel=bLabelHidden)
             p.uid = uid
         else:
-            p = owningNode.addOutputPin(name, dataType, hideLabel=bLabelHidden)
+            p = owningNode.createOutputPin(name, dataType, hideLabel=bLabelHidden)
             p.uid = uid
 
         p.setData(value)

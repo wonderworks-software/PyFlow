@@ -4,13 +4,13 @@ from PyFlow.Core import NodeBase
 class doN(NodeBase):
     def __init__(self, name):
         super(doN, self).__init__(name)
-        self.enter = self.addInputPin('Enter', 'ExecPin', self.compute)
-        self._N = self.addInputPin('N', 'IntPin')
+        self.enter = self.createInputPin('Enter', 'ExecPin', self.compute)
+        self._N = self.createInputPin('N', 'IntPin')
         self._N.setData(10)
-        self.reset = self.addInputPin('Reset', 'ExecPin', self.OnReset)
+        self.reset = self.createInputPin('Reset', 'ExecPin', self.OnReset)
 
-        self.completed = self.addOutputPin('Exit', 'ExecPin')
-        self.counter = self.addOutputPin('Counter', 'IntPin')
+        self.completed = self.createOutputPin('Exit', 'ExecPin')
+        self.counter = self.createOutputPin('Counter', 'IntPin')
         self.bClosed = False
         self._numCalls = 0
 

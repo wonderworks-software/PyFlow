@@ -5,17 +5,17 @@ class forLoopWithBreak(NodeBase):
     def __init__(self, name):
         super(forLoopWithBreak, self).__init__(name)
         self.stop = False
-        self.inExec = self.addInputPin('inExec', 'ExecPin', None, self.compute)
-        self.firstIndex = self.addInputPin('Start', 'IntPin')
-        self.lastIndex = self.addInputPin('Stop', 'IntPin')
+        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
+        self.firstIndex = self.createInputPin('Start', 'IntPin')
+        self.lastIndex = self.createInputPin('Stop', 'IntPin')
         self.lastIndex.setDefaultValue(10)
-        self.step = self.addInputPin('Step', 'IntPin')
+        self.step = self.createInputPin('Step', 'IntPin')
         self.step.setDefaultValue(1)
-        self.breakExec = self.addInputPin('Break', 'ExecPin', None, self.interrupt)
+        self.breakExec = self.createInputPin('Break', 'ExecPin', None, self.interrupt)
 
-        self.loopBody = self.addOutputPin('LoopBody', 'ExecPin')
-        self.index = self.addOutputPin('Index', 'IntPin')
-        self.completed = self.addOutputPin('Completed', 'ExecPin')
+        self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
+        self.index = self.createOutputPin('Index', 'IntPin')
+        self.completed = self.createOutputPin('Completed', 'ExecPin')
 
     @staticmethod
     def pinTypeHints():

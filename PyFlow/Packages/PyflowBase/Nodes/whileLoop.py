@@ -4,10 +4,10 @@ from PyFlow.Core import NodeBase
 class whileLoop(NodeBase):
     def __init__(self, name):
         super(whileLoop, self).__init__(name)
-        self.inExec = self.addInputPin('inExec', 'ExecPin', self.begin)
-        self.bCondition = self.addInputPin('Condition', 'BoolPin')
-        self.loopBody = self.addOutputPin('LoopBody', 'ExecPin')
-        self.completed = self.addOutputPin('Completed', 'ExecPin')
+        self.inExec = self.createInputPin('inExec', 'ExecPin', self.begin)
+        self.bCondition = self.createInputPin('Condition', 'BoolPin')
+        self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
+        self.completed = self.createOutputPin('Completed', 'ExecPin')
         self.bProcess = False
         self._dirty = False
 

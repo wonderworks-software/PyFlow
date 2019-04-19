@@ -726,7 +726,9 @@ class UINodeBase(QGraphicsObject):
         # NOTE: Do not call wrapped raw node Tick method here!
         # this ui node tick called from underlined raw node's emitted signal
         # do here only UI stuff
-        pass
+        for uiPin in self.UIPins.values():
+            uiPin.syncDynamic()
+            uiPin.syncRenamable()
 
     def addGroupContainer(self, portType, groupName="group"):
         container = QGraphicsWidget()
@@ -873,8 +875,6 @@ class UINodeBase(QGraphicsObject):
             0, 0, self._rect.width(), self.childrenBoundingRect().height()))
         self.update()
         self.nodeMainGWidget.update()
-        p.syncRenamable()
-        p.syncDynamic()
         return p
 
     def collapsePinGroup(self, container):

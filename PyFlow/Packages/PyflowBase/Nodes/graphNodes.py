@@ -29,7 +29,7 @@ class graphInputs(NodeBase):
     def addOutPin(self, name=None):
         if name is None:
             name = self.getUniqPinName('in')
-        p = self.addOutputPin(name, 'AnyPin')
+        p = self.createOutputPin(name, 'AnyPin')
         p.singleInit = True
         # this will be passed to compound node for companion pin creation
         # and signals connection
@@ -81,7 +81,7 @@ class graphOutputs(NodeBase):
     def addInPin(self, name=None):
         if name is None:
             name = self.getUniqPinName('out')
-        p = self.addInputPin(name, 'AnyPin')
+        p = self.createInputPin(name, 'AnyPin')
         p.singleInit = True
         # p.setAlwaysPushDirty(True)
         self.graph().outputPinCreated.send(p)

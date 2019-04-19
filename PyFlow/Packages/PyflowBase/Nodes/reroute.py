@@ -6,8 +6,8 @@ from copy import copy
 class reroute(NodeBase):
     def __init__(self, name):
         super(reroute, self).__init__(name)
-        self.input = self.addInputPin("in", 'AnyPin', constraint="1")
-        self.output = self.addOutputPin("out", 'AnyPin', constraint="1")
+        self.input = self.createInputPin("in", 'AnyPin', constraint="1")
+        self.output = self.createOutputPin("out", 'AnyPin', constraint="1")
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
 

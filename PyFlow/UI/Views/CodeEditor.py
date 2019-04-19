@@ -337,7 +337,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
             if isinstance(w, WPinWidget):
                 dataType = w.dataType()
-                rawPin = node._rawNode.addOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), foo=node.compute)
+                rawPin = node._rawNode.createOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), foo=node.compute)
                 uiPin = node._createUIPinWrapper(rawPin)
                 w.lePinName.setText(uiPin.name)
                 uiPin.getLabel()().setVisible(not w.shouldHideLabel())
@@ -348,7 +348,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             if isinstance(w, WPinWidget):
                 dataType = w.dataType()
                 compute = node.compute if dataType == "ExecPin" else None
-                rawPin = node._rawNode.addInputPin(
+                rawPin = node._rawNode.createInputPin(
                     w.name(), w.dataType(), getPinDefaultValueByType(dataType), compute)
                 uiPin = node._createUIPinWrapper(rawPin)
                 w.lePinName.setText(uiPin.name)
