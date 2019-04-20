@@ -138,9 +138,10 @@ class PinBase(IPin):
         if not value == self._uid:
             self._uid = value
 
-    def setName(self, name):
-        if not self.renamingEnabled():
-            return False
+    def setName(self, name, force=False):
+        if not force:
+            if not self.renamingEnabled():
+                return False
         if name == self.name:
             return False
         self.name = name

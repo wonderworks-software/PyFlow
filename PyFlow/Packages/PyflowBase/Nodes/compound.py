@@ -62,12 +62,15 @@ class compound(NodeBase):
                                                outPin.constraint)
         subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
         subgraphInputPin.singleInit = outPin.singleInit
-        subgraphInputPin.setRenamingEnabled(outPin.renamingEnabled())
-        subgraphInputPin.setDynamic(outPin.isDynamic())
+        subgraphInputPin.setRenamingEnabled(False)
+        subgraphInputPin.setDynamic(False)
         self.__inputsMap[subgraphInputPin] = outPin
         pinAffects(subgraphInputPin, outPin)
         # connect
-        outPin.nameChanged.connect(subgraphInputPin.setName)
+
+        def forceRename(name):
+            subgraphInputPin.setName(name, force=True)
+        outPin.nameChanged.connect(forceRename, weak=False)
 
         def onInnerKilled(*args, **kwargs):
             if subgraphInputPin in self.__inputsMap:
@@ -111,6 +114,8 @@ class compound(NodeBase):
                                                  inPin.constraint)
         subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
         subgraphOutputPin.singleInit = inPin.singleInit
+        subgraphOutputPin.setRenamingEnabled(False)
+        subgraphOutputPin.setDynamic(False)
         self.__outputsMap[subgraphOutputPin] = inPin
         pinAffects(inPin, subgraphOutputPin)
         # connect

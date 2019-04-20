@@ -119,9 +119,6 @@ class UIPinBase(QGraphicsWidget):
         # Disconnect all connections
         self.actionDisconnect = self.menu.addAction('Disconnect all')
         self.actionDisconnect.triggered.connect(self._rawPin.disconnectAll)
-        # Copy UUID to buffer
-        self.actionCopyUid = self.menu.addAction('Copy uid')
-        self.actionCopyUid.triggered.connect(self.saveUidToClipboard)
 
         # label item weak ref
         self._label = None
@@ -165,8 +162,9 @@ class UIPinBase(QGraphicsWidget):
         return self._displayName
 
     def setDisplayName(self, displayName):
-        self._displayName = displayName
-        self.displayNameChanged.emit(self._displayName)
+        if displayName != self._displayName:
+            self._displayName = displayName
+            self.displayNameChanged.emit(self._displayName)
 
     @property
     def owningNode(self):
@@ -390,11 +388,6 @@ class UIPinBase(QGraphicsWidget):
             return QtCore.QSizeF(self.width, self.height)
         except:
             return QGraphicsWidget.sizeHint(self, which, constraint)
-
-    def saveUidToClipboard(self):
-        clipboard = QApplication.clipboard()
-        clipboard.clear()
-        clipboard.setText(str(self.uid))
 
     def shape(self):
         path = QtGui.QPainterPath()
