@@ -9,8 +9,8 @@ class UISequenceNode(UINodeBase):
         self.outPins = set()
 
     def onPinWasKilled(self, uiPin):
-        print("reorder pins", uiPin.getName())
         index = 1
+        uiPin.OnPinDeleted.disconnect(self.onPinWasKilled)
         for outPin in self.UIoutputs.values():
             outPin.setName(str(index))
             outPin.setDisplayName(str(index))
@@ -23,6 +23,5 @@ class UISequenceNode(UINodeBase):
         uiPin.OnPinDeleted.connect(self.onPinWasKilled)
         self.outPins.add(uiPin)
         uiPin.setDynamic(True)
-        # uiPin.setDisplayName("Then {}".format(rawPin.name))
         self.updateWidth()
         return uiPin
