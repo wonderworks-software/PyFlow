@@ -12,6 +12,7 @@ class sequence(NodeBase):
         currentIds = [int(i) for i in self.namePinOutputsMap]
         pinName = str(findGoodId(currentIds)) if 'name' not in kwargs else kwargs['name']
         p = CreateRawPin(pinName, self, 'ExecPin', PinDirection.Output)
+        p.setDynamic(True)
         return p
 
     @staticmethod
