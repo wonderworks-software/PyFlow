@@ -409,8 +409,7 @@ class UINodeBase(QGraphicsObject):
             p.setData(data)
 
     def getWidth(self):
-        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(
-            self.displayName) + Spacings.kPinSpacing
+        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.displayName) + Spacings.kPinSpacing
         return fontWidth  # if fontWidth > 25 else 25
 
     def getPinsWidth(self):
@@ -442,8 +441,8 @@ class UINodeBase(QGraphicsObject):
         return max(pinheight, pinheight2)
 
     def updateWidth(self):
-        self.minWidth = max(self.getPinsWidth(),
-                            self.getWidth() + Spacings.kPinOffset)
+        # self.minWidth = max(self.getPinsWidth(), self.getWidth() + Spacings.kPinOffset)
+        self.minWidth = self.getWidth() + Spacings.kPinOffset
         self.w = self.minWidth
 
     def updateNodeShape(self, label=None):
@@ -452,8 +451,7 @@ class UINodeBase(QGraphicsObject):
             lyt = container.layout()
             if lyt:
                 for j in range(0, lyt.count()):
-                    lyt.setAlignment(lyt.itemAt(
-                        j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+                    lyt.setAlignment(lyt.itemAt(j), QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 
         for i in range(0, self.outputsLayout.count()):
             container = self.outputsLayout.itemAt(i)
@@ -873,6 +871,7 @@ class UINodeBase(QGraphicsObject):
             0, 0, self._rect.width(), self.childrenBoundingRect().height()))
         self.update()
         self.nodeMainGWidget.update()
+        self.updateNodeShape()
         return p
 
     def collapsePinGroup(self, container):

@@ -325,7 +325,7 @@ class UIPinBase(QGraphicsWidget):
             e.highlight()
 
     def kill(self, *args, **kwargs):
-        """this will called after raw pin is deleted
+        """this will be called after raw pin is deleted
         """
         if self._container is not None:
             self.scene().removeItem(self._container)
