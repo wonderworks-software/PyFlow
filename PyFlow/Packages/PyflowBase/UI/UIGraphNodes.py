@@ -30,8 +30,6 @@ class UIGraphInputs(UINodeBase):
         rawPin = self._rawNode.addOutPin(name)
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
-        uiPin.setDynamic(True)
-        uiPin.setRenamingEnabled(True)
         self.updateWidth()
         self.pinCreated.emit(uiPin)
         return uiPin

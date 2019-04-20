@@ -428,20 +428,7 @@ class UINodeBase(QGraphicsObject):
                 pinwidth2 = max(pinwidth2, i.width)
         return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
 
-    def getPinsHeight(self):
-        iheight = 0
-        oheight = 0
-        pinheight = 0
-        pinheight2 = 0
-        for i in self.UIPins.values():
-            if i.direction == PinDirection.Input:
-                pinheight = max(pinheight, i.height)
-            else:
-                pinheight2 = max(pinheight2, i.height)
-        return max(pinheight, pinheight2)
-
     def updateWidth(self):
-        # self.minWidth = max(self.getPinsWidth(), self.getWidth() + Spacings.kPinOffset)
         self.minWidth = self.getWidth() + Spacings.kPinOffset
         self.w = self.minWidth
 

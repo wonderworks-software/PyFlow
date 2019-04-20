@@ -56,12 +56,14 @@ class compound(NodeBase):
 
         # add companion pin for graphInputs node's output pin
         subgraphInputPin = self.createInputPin(outPin.name,
-                                            outPin.dataType,
-                                            outPin.defaultValue(),
-                                            outPin.call,
-                                            outPin.constraint)
+                                               outPin.dataType,
+                                               outPin.defaultValue(),
+                                               outPin.call,
+                                               outPin.constraint)
         subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
         subgraphInputPin.singleInit = outPin.singleInit
+        subgraphInputPin.setRenamingEnabled(outPin.renamingEnabled())
+        subgraphInputPin.setDynamic(outPin.isDynamic())
         self.__inputsMap[subgraphInputPin] = outPin
         pinAffects(subgraphInputPin, outPin)
         # connect
@@ -103,10 +105,10 @@ class compound(NodeBase):
 
         # add companion pin for graphOutputs node's input pin
         subgraphOutputPin = self.createOutputPin(inPin.name,
-                                              inPin.dataType,
-                                              inPin.defaultValue(),
-                                              inPin.call,
-                                              inPin.constraint)
+                                                 inPin.dataType,
+                                                 inPin.defaultValue(),
+                                                 inPin.call,
+                                                 inPin.constraint)
         subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
         subgraphOutputPin.singleInit = inPin.singleInit
         self.__outputsMap[subgraphOutputPin] = inPin
@@ -140,7 +142,7 @@ class compound(NodeBase):
             wrapper.onGraphOutputPinExposed(subgraphOutputPin)
 
     def kill(self, *args, **kwargs):
-        self.rawGraph.clear()
+        self.rawGraph.remove()
         super(compound, self).kill(*args, **kwargs)
 
     def postCreate(self, jsonTemplate=None):

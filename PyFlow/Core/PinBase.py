@@ -139,10 +139,13 @@ class PinBase(IPin):
             self._uid = value
 
     def setName(self, name):
+        if not self.renamingEnabled():
+            return False
         if name == self.name:
-            return
+            return False
         self.name = name
         self.nameChanged.send(self.name)
+        return True
 
     def getName(self):
         return self.owningNode().name + '.' + self.name

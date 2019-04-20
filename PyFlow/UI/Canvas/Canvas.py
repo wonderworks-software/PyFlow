@@ -536,7 +536,7 @@ class Canvas(QGraphicsView):
         for rawNode in self.graphManager.getAllNodes():
             uiNode = rawNode.getWrapper()
             if uiNode is None:
-                print("{0} has not UI wrapper", rawNode.name)
+                print("{0} has not UI wrapper".format(rawNode.name))
             result[rawNode.uid] = uiNode
         return result
 

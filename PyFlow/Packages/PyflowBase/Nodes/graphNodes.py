@@ -30,6 +30,8 @@ class graphInputs(NodeBase):
         if name is None:
             name = self.getUniqPinName('in')
         p = self.createOutputPin(name, 'AnyPin')
+        p.setDynamic(True)
+        p.setRenamingEnabled(True)
         p.singleInit = True
         # this will be passed to compound node for companion pin creation
         # and signals connection

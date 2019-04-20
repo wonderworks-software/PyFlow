@@ -17,14 +17,27 @@ class GraphManager(object):
     def serialize(self):
         return self.graphsDict['root'].serialize()
 
+    @dispatch(str)
+    def removeGraph(self, name):
+        graph = self.findGraph(name)
+        if graph is not None:
+            graph.clear()
+            self._graphs.pop(graph.uid)
+
+    @dispatch(object)
+    def removeGraph(self, graph):
+        if graph.uid is self._graphs:
+            graph.clear()
+            self._graphs.pop(graph.uid)
+
     def deserialize(self, data):
         self.clear(keepRoot=False)
         self._activeGraph = GraphBase.deserialize(data, self)
 
     def clear(self, *args, keepRoot=True, **kwargs):
         self.selectGraph('root')
-        for graph in self._graphs.values():
-            graph.clear()
+        for graph in list(self._graphs.values()):
+            self.removeGraph(graph.name)
         self._graphs.clear()
         self._graphs = {}
         if keepRoot:

@@ -205,8 +205,7 @@ class UIPinBase(QGraphicsWidget):
             self.setDisplayName(name)
 
     def syncDynamic(self):
-        dynamic = self._rawPin.isDynamic()
-        self.setMenuItemEnabled("Remove", dynamic)
+        self.setMenuItemEnabled("Remove", self._rawPin.isDynamic())
 
     def setDynamic(self, bDynamic):
         self._rawPin.setDynamic(bDynamic)
@@ -291,7 +290,7 @@ class UIPinBase(QGraphicsWidget):
         self.userStructChanged.emit(inStruct)
 
     def setName(self, newName):
-        self._rawPin.setName(newName)
+        return self._rawPin.setName(newName)
 
     def setData(self, value):
         self._rawPin.setData(value)

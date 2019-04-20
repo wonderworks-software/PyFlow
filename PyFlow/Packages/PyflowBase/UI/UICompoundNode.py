@@ -1,7 +1,7 @@
 from Qt import QtWidgets
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-
+from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.Core.Common import *
 
 
@@ -39,4 +39,18 @@ class UICompoundNode(UINodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(UICompoundNode, self).postCreate(jsonTemplate)
+        # TODO: Move this process to canvas method for specific graph.
+        # raw graph nodes created, create ui wrappers
+        for node in self._rawNode.rawGraph.getNodes():
+            uiNode = getUINodeInstance(node)
+            self.canvasRef().addNode(uiNode, node.serialize())
+        # restore ui connections
+        for rawNode in self._rawNode.rawGraph.getNodes():
+            uiNode = rawNode.getWrapper()
+            for outPin in uiNode.UIoutputs.values():
+                for rhsPinUid in outPin._rawPin._linkedToUids:
+                    inRawPin = rawNode.graph().findPin(rhsPinUid)
+                    inUiPin = inRawPin.getWrapper()()
+                    self.canvasRef().createUIConnectionForConnectedPins(outPin, inUiPin)
+        self.canvasRef().parent.onRawGraphSwitched(self.canvasRef().graphManager.activeGraph())
         self._rawNode.rawGraph.nameChanged.connect(self.onGraphNameChanged)

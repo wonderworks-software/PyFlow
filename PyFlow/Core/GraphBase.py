@@ -24,6 +24,9 @@ class GraphBase(ISerializable):
         self.categoryChanged = Signal(str)
 
         self.parentGraph = manager.activeGraph() if manager.activeGraph() is not None else None
+        self.childGraphs = set()
+        if self.parentGraph is not None:
+            self.parentGraph.childGraphs.add(self)
 
         self.__name = name
         self.__category = category
@@ -92,6 +95,15 @@ class GraphBase(ISerializable):
                     connected = connectPins(lhsPin, rhsPin)
                     assert(connected is True), "Failed to restore connection"
         return graph
+
+    def remove(self):
+        """Removes this graph as well as child graphs. Deepest graphs will be removed first
+        """
+        # graphs should be removed from leafs to root
+        for childGraph in self.childGraphs:
+            childGraph.remove()
+        # remove itself
+        self.graphManager.removeGraph(self)
 
     def clear(self):
         for node in list(self.nodes.values()):
