@@ -1592,6 +1592,8 @@ class Canvas(QGraphicsView):
     def createWrappersForGraph(self, rawGraph):
         # when raw graph was created, we need to create all ui wrappers for it
         for node in rawGraph.getNodes():
+            if node.getWrapper() is not None:
+                continue
             uiNode = getUINodeInstance(node)
             self.addNode(uiNode, node.serialize(), parentGraph=rawGraph)
         # restore ui connections

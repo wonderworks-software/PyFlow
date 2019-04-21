@@ -19,7 +19,7 @@ class TestGeneral(unittest.TestCase):
 
         # step inside compound
         man.selectGraph(subgraphNodeInstance.name)
-        self.assertCountEqual(man.location(), ['root', subgraphNodeInstance.name])
+        self.assertCountEqual(man.location(), [man.findRootGraph().name, subgraphNodeInstance.name])
         self.assertCountEqual(subgraphNodeInstance.rawGraph.location(), man.location())
 
     def test_add_int_no_exec(self):
@@ -169,7 +169,7 @@ class TestGeneral(unittest.TestCase):
         v1Setter = varSetterClass("v1Set", sg1Var)
         self.assertEqual(man.activeGraph().addNode(v1Getter), True)
         self.assertEqual(man.activeGraph().addNode(v1Setter), True)
-        man.selectGraph('root')
+        man.selectRootGraph()
 
         # Check variables scope visibility
         self.assertEqual(man.activeGraph().addNode(v1Getter), False, "Variable access error! Variables in child graphs should not be visible to parent ones!")
@@ -179,7 +179,7 @@ class TestGeneral(unittest.TestCase):
         man.selectGraph(subgraphNodeInstance2.name)
         sg2Var = man.activeGraph().createVariable(name="v2")
         sg2Var.value = 2
-        man.selectGraph('root')
+        man.selectRootGraph()
 
         # ask variables from rootgraph.
         vars = man.activeGraph().getVarList()
@@ -194,7 +194,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
         self.assertCountEqual(varsValues, [0, 1], "variables are incorrect")
-        man.selectGraph('root')
+        man.selectRootGraph()
 
         # goto subgraph2 and ask variables there
         man.selectGraph(subgraphNodeInstance2.name)
@@ -203,7 +203,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
         self.assertCountEqual(varsValues, [0, 2], "variables are incorrect")
-        man.selectGraph('root')
+        man.selectRootGraph()
 
     def test_get_any_var(self):
         packages = GET_PACKAGES()
@@ -414,7 +414,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
 
         # change inner pin name and check it is reflected outside
-        outPin.setName("first")
+        outPin.setName("innerInPinName")
         self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name, "name is not synchronized")
 
         # create input pin on graphOutputs node
@@ -424,12 +424,12 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
 
         # change inner pin name and check it is reflected outside
-        inPin.setName("first")
+        inPin.setName("innerOutPinName")
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name, "name is not synchronized")
 
-        subgraphInPin = subgraphNodeInstance.getPin('first', PinSelectionGroup.Inputs)
+        subgraphInPin = subgraphNodeInstance.getPin('innerInPinName', PinSelectionGroup.Inputs)
         self.assertIsNotNone(subgraphInPin, "failed to find compound out pin")
-        subgraphOutPin = subgraphNodeInstance.getPin('first', PinSelectionGroup.Outputs)
+        subgraphOutPin = subgraphNodeInstance.getPin('innerOutPinName', PinSelectionGroup.Outputs)
         self.assertIsNotNone(subgraphOutPin, "failed to find compound out pin")
 
         # add simple calculation
@@ -446,15 +446,15 @@ class TestGeneral(unittest.TestCase):
 
         # connect add nodes with graph inputs/outputs
         # this connections should change outside companion pins types and update its values by type's default values
-        connected = connectPins(inputs1.getPin('first'), addNode1.getPin('a'))
+        connected = connectPins(inputs1.getPin('innerInPinName'), addNode1.getPin('a'))
         self.assertIsNotNone(subgraphInPin.currentData(), "outer pin data is invalid")
         self.assertEqual(connected, True)
-        self.assertIsNotNone(inputs1.getPin('first').currentData(), "output companion pin data is incorrect")
+        self.assertIsNotNone(inputs1.getPin('innerInPinName').currentData(), "output companion pin data is incorrect")
 
-        connected = connectPins(outputs1.getPin('first'), addNode2.getPin('out'))
+        connected = connectPins(outputs1.getPin('innerOutPinName'), addNode2.getPin('out'))
         self.assertIsNotNone(subgraphOutPin.currentData(), "outer pin data is")
         self.assertEqual(connected, True)
-        self.assertIsNotNone(outputs1.getPin('first').currentData(), "output companion pin data is incorrect")
+        self.assertIsNotNone(outputs1.getPin('innerOutPinName').currentData(), "output companion pin data is incorrect")
 
         # go back to root graph
         man.selectGraph("root")
@@ -609,6 +609,32 @@ class TestGeneral(unittest.TestCase):
         subgraphNodeInstance = subgraphNodeClass('compound')
         man.activeGraph().addNode(subgraphNodeInstance)
         man.selectGraph(subgraphNodeInstance)
+
+        inputs1 = man.activeGraph().getInputNode()
+        outputs1 = man.activeGraph().getOutputNode()
+
+        # create out pin on graphInputs node
+        # this should expose input pin on compound node
+        outPin = inputs1.addOutPin()
+        self.assertEqual(len(subgraphNodeInstance.namePinInputsMap), 1, "failed to expose input pin")
+        self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
+        self.assertEqual(outPin.isDynamic(), True)
+
+        # change inner pin name and check it is reflected outside
+        outPin.setName("first")
+        self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name, "name is not synchronized")
+
+        # create input pin on graphOutputs node
+        # this should expose output pin on compound node
+        inPin = outputs1.addInPin()
+        self.assertEqual(len(subgraphNodeInstance.namePinOutputsMap), 1, "failed to expose input pin")
+        self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
+        self.assertEqual(inPin.isDynamic(), True)
+
+        # change inner pin name and check it is reflected outside
+        inPin.setName("first")
+        self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name, "name is not synchronized")
+
         depthsBefore = [g.depth() for g in man.getAllGraphs()]
 
         nameBefore = subgraphNodeInstance.name

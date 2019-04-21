@@ -14,6 +14,13 @@ class graphInputs(NodeBase):
     def pinTypeHints():
         return {'inputs': [], 'outputs': []}
 
+    def getUniqPinName(self, name):
+        result = name
+        if self.graph is not None:
+            owningCompoundNode = self.graph().graphManager.findNode(self.graph().name)
+            result = owningCompoundNode.getUniqPinName(name)
+        return result
+
     @staticmethod
     def category():
         return 'Common'
@@ -56,6 +63,13 @@ class graphOutputs(NodeBase):
     """
     def __init__(self, name):
         super(graphOutputs, self).__init__(name)
+
+    def getUniqPinName(self, name):
+        result = name
+        if self.graph is not None:
+            owningCompoundNode = self.graph().graphManager.findNode(self.graph().name)
+            result = owningCompoundNode.getUniqPinName(name)
+        return result
 
     @staticmethod
     def pinTypeHints():

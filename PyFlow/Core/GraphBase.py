@@ -14,27 +14,35 @@ from PyFlow.Core.Interfaces import ISerializable
 
 
 class GraphBase(ISerializable):
-    def __init__(self, name, manager, category='', *args, **kwargs):
+    def __init__(self, name, manager, category='', uid=None, *args, **kwargs):
         super(GraphBase, self).__init__(*args, **kwargs)
         self.graphManager = manager
+        self._isRoot = False
         # signals
         self.inputPinCreated = Signal(object)
         self.outputPinCreated = Signal(object)
         self.nameChanged = Signal(str)
         self.categoryChanged = Signal(str)
 
-        self._parentGraph = manager.activeGraph() if manager.activeGraph() is not None else None
+        self.__name = name
+        self.__category = category
+
+        self._parentGraph = self.graphManager.activeGraph() if not self.isRoot() else None
         self.childGraphs = set()
         if self.parentGraph is not None:
             self.parentGraph.childGraphs.add(self)
 
-        self.__name = name
-        self.__category = category
         self.nodes = {}
         self.vars = {}
-        self.uid = uuid.uuid4()
+        self.uid = uuid.uuid4() if uid is None else uid
 
         manager.add(self)
+
+    def setIsRoot(self, bIsRoot):
+        self._isRoot = bIsRoot
+
+    def isRoot(self):
+        return self._isRoot
 
     @property
     def parentGraph(self):
@@ -42,13 +50,13 @@ class GraphBase(ISerializable):
 
     @parentGraph.setter
     def parentGraph(self, newParentGraph):
+        if self.isRoot():
+            self._parentGraph = None
+            return
         self._parentGraph = newParentGraph
         if newParentGraph is not None:
             # add self to parent's children set
             self._parentGraph.childGraphs.add(self)
-        # else:
-        #     # if parent is None - remove self
-        #     self.remove()
 
     def depth(self):
         result = 1
@@ -75,6 +83,7 @@ class GraphBase(ISerializable):
             'vars': [v.serialize() for v in self.vars.values()],
             'nodes': [n.serialize() for n in self.nodes.values()],
             'depth': self.depth(),
+            # 'uid': str(self.uid),
             'parentGraphName': str(self._parentGraph.name) if self._parentGraph is not None else str(None)
         }
         return result
@@ -82,7 +91,7 @@ class GraphBase(ISerializable):
     @staticmethod
     def deserialize(jsonData, manager, *args, **kwargs):
         # create graph
-        graph = GraphBase(jsonData['name'], manager, jsonData['category'])
+        graph = GraphBase(jsonData['name'], manager, jsonData['category'], *args, **kwargs)
         parentGraph = manager.graphsDict[jsonData['parentGraphName']] if jsonData['parentGraphName'] != str(None) else None
         graph.parentGraph = parentGraph
         # restore vars
@@ -327,7 +336,7 @@ class GraphBase(ISerializable):
     def plot(self):
         depth = self.depth()
         prefix = "".join(['-'] * depth) if depth > 1 else ''
-        print(prefix + "GRAPH:" + self.name)
+        print(prefix + "GRAPH:" + self.name + ", parent:{0}".format(str(self.parentGraph)))
         for n in self.getNodes():
             print(prefix + "-Node:{}".format(n.name))
         for child in self.childGraphs:

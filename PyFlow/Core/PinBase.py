@@ -144,7 +144,7 @@ class PinBase(IPin):
                 return False
         if name == self.name:
             return False
-        self.name = name
+        self.name = self.owningNode().getUniqPinName(name)
         self.nameChanged.send(self.name)
         return True
 

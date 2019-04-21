@@ -56,6 +56,12 @@ class compound(NodeBase):
         default['graphData'] = self.rawGraph.serialize()
         return default
 
+    def getUniqPinName(self, name):
+        result = name
+        if self.graph is not None:
+            result = self.graph().graphManager.getUniqGraphPinName(self.rawGraph, name)
+        return result
+
     def onGraphInputPinCreated(self, outPin):
         """Reaction when pin added to graphInputs node
 

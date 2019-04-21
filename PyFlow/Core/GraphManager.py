@@ -4,6 +4,8 @@ from blinker import Signal
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.Common import *
 
+ROOT_GRAPH_NAME = 'root'
+
 
 class GraphManager(object):
     """docstring for GraphManager."""
@@ -12,10 +14,23 @@ class GraphManager(object):
         self.graphChanged = Signal(object)
         self._graphs = {}
         self._activeGraph = None
-        self._activeGraph = GraphBase('root', self)
+        self._activeGraph = GraphBase(ROOT_GRAPH_NAME, self)
+        self._activeGraph.setIsRoot(True)
+
+    def findRootGraph(self):
+        roots = []
+        for graph in self.getAllGraphs():
+            if graph.isRoot():
+                roots.append(graph)
+        assert(len(roots) == 1), "Fatal! Multiple roots!"
+        return roots[0]
+
+    def selectRootGraph(self):
+        self.selectGraph(self.findRootGraph())
 
     def serialize(self):
-        return self.graphsDict['root'].serialize()
+        rootGraph = self.findRootGraph()
+        return rootGraph.serialize()
 
     @dispatch(str)
     def removeGraph(self, name):
@@ -35,12 +50,12 @@ class GraphManager(object):
         self._activeGraph = GraphBase.deserialize(data, self)
 
     def clear(self, *args, keepRoot=True, **kwargs):
-        self.selectGraph('root')
-        self.removeGraph('root')
+        self.selectGraph(ROOT_GRAPH_NAME)
+        self.removeGraph(ROOT_GRAPH_NAME)
         self._graphs.clear()
         self._graphs = {}
         if keepRoot:
-            self._activeGraph = GraphBase('root', self)
+            self._activeGraph = GraphBase(ROOT_GRAPH_NAME, self)
             self.selectGraph(self._activeGraph)
         else:
             del self._activeGraph
@@ -154,16 +169,22 @@ class GraphManager(object):
         allNodes = []
         for graph in self.getAllGraphs():
             if len(classNameFilters) == 0:
-                allNodes += graph.nodes.values()
+                allNodes.extend(list(graph.nodes.values()))
             else:
-                allNodes += [node for node in graph.nodes.values() if node.__class__.__name__ in classNameFilters]
+                allNodes.extend([node for node in graph.nodes.values() if node.__class__.__name__ in classNameFilters])
         return allNodes
 
     def getAllVariables(self):
         result = []
         for graph in self.getAllGraphs():
-            result += list(graph.vars.values())
+            result.extend(list(graph.vars.values()))
         return result
+
+    def getUniqGraphPinName(self, graph, name):
+        existingNames = []
+        for node in self.getAllNodes(classNameFilters=["compound"]):
+            existingNames.extend([pin.name for pin in node.pins.values()])
+        return getUniqNameFromList(existingNames, name)
 
     def getUniqName(self, name):
         existingNames = [g.name for g in self.getAllGraphs()]
@@ -184,6 +205,6 @@ class GraphManager(object):
         return getUniqNameFromList(existingNames, name)
 
     def plot(self):
-        root = self.findGraph('root')
-        print("All graphs:", [g.name for g in self._graphs.values()])
+        root = self.findRootGraph()
+        print("Active graph: {0}".format(str(self.activeGraph().name)), "All graphs:", [g.name for g in self._graphs.values()])
         root.plot()

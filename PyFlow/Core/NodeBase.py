@@ -146,7 +146,7 @@ class NodeBase(INode):
 
     @staticmethod
     def deserialize(jsonData, *args, **kwargs):
-        node = getRawNodeInstance(jsonData['type'], packageName=jsonData['package'], libName=jsonData['lib'], **kwargs)
+        node = getRawNodeInstance(jsonData['type'], packageName=jsonData['package'], libName=jsonData['lib'], *args, **kwargs)
         node.uid = uuid.UUID(jsonData['uuid'])
         node.setName(jsonData['name'])
         node.x = jsonData['x']
@@ -155,7 +155,7 @@ class NodeBase(INode):
         # set pins data
         for inpJson in jsonData['inputs']:
             # TODO: create pins if they were created dynamically
-            if inpJson['dynamic'] and inpJson['name'] not in node.namePinInputsMap:
+            if inpJson['dynamic'] or inpJson['name'] not in node.namePinInputsMap:
                 defaultValue = getPinDefaultValueByType(inpJson['dataType'])
                 dynamicPin = node.createInputPin(inpJson['name'], inpJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
                 dynamicPin.uid = uuid.UUID(inpJson['uuid'])
@@ -174,7 +174,7 @@ class NodeBase(INode):
 
         for outJson in jsonData['outputs']:
             # TODO: create pins if they were created dynamically
-            if outJson['dynamic'] and outJson['name'] not in node.namePinOutputsMap:
+            if outJson['dynamic'] or outJson['name'] not in node.namePinOutputsMap:
                 defaultValue = getPinDefaultValueByType(outJson['dataType'])
                 dynamicPin = node.createOutputPin(outJson['name'], outJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
                 dynamicPin.uid = uuid.UUID(outJson['uuid'])

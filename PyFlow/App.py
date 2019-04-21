@@ -150,7 +150,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # create ui nodes
         for graph in self.graphManager.getAllGraphs():
             self.canvasWidget.createWrappersForGraph(graph)
-        self.graphManager.selectGraph('root')
+        self.graphManager.selectRootGraph()
 
     def load(self):
         name_filter = "Graph files (*.json)"
