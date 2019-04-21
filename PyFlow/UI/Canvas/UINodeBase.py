@@ -229,6 +229,10 @@ class UINodeBase(QGraphicsObject):
         self.isTemp = False
         self.isCommentNode = False
 
+    def __repr__(self):
+        graphName = self._rawNode.graph().name if self._rawNode.graph is not None else str(None)
+        return "class[{0}];name[{1}];graph[{2}]".format(self.__class__.__name__, self.getName(), graphName)
+
     @property
     def uid(self):
         return self._rawNode._uid
@@ -374,6 +378,9 @@ class UINodeBase(QGraphicsObject):
             self._rect.setRight(jsonTemplate['meta']['resize']['w'])
         self._displayName = self.name
         self.setPos(self._rawNode.x, self._rawNode.y)
+
+        if self.canvasRef().graphManager.activeGraph() != self._rawNode.graph():
+            self.hide()
 
     def isCallable(self):
         return self._rawNode.isCallable()
@@ -712,6 +719,17 @@ class UINodeBase(QGraphicsObject):
         for uiPin in self.UIPins.values():
             uiPin.syncDynamic()
             uiPin.syncRenamable()
+
+        if self._rawNode.graph() != self.canvasRef().graphManager.activeGraph():
+            self.hide()
+            for uiPin in self.UIPins.values():
+                for connection in uiPin.uiConnectionList:
+                    connection.hide()
+        else:
+            self.show()
+            for uiPin in self.UIPins.values():
+                for connection in uiPin.uiConnectionList:
+                    connection.show()
 
     def addGroupContainer(self, portType, groupName="group"):
         container = QGraphicsWidget()

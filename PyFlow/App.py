@@ -39,7 +39,7 @@ from PyFlow import INITIALIZE
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 SETTINGS_PATH = os.path.join(FILE_DIR, "appConfig.ini")
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
-EDITOR_TARGET_FPS = 60
+EDITOR_TARGET_FPS = 120
 
 
 def open_file(filename):
@@ -75,7 +75,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.styleSheetEditor = StyleSheetEditor()
         self.graphManager = GraphManager()
         self.canvasWidget = Canvas(self.graphManager, self)
-        self.canvasWidget.graphManager.graphChanged.connect(self.onRawGraphSwitched)
+        self.canvasWidget.graphManager.graphChanged.connect(self.updateGraphTreeLocation)
         self.newFileExecuted.connect(lambda: self.graphManager.clear(keepRoot=True))
         self.newFileExecuted.connect(self.canvasWidget.shoutDown)
         self.updateGraphTreeLocation()
@@ -149,18 +149,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.graphManager.deserialize(data)
         # create ui nodes
         for graph in self.graphManager.getAllGraphs():
-            for node in graph.getNodes():
-                uiNode = getUINodeInstance(node)
-                self.canvasWidget.addNode(uiNode, node.serialize())
-        # create ui connections
-        for rawNode in self.graphManager.getAllNodes():
-            uiNode = rawNode.getWrapper()
-            for outPin in uiNode.UIoutputs.values():
-                for rhsPinUid in outPin._rawPin._linkedToUids:
-                    inRawPin = rawNode.graph().findPin(rhsPinUid)
-                    inUiPin = inRawPin.getWrapper()()
-                    self.canvasWidget.createUIConnectionForConnectedPins(outPin, inUiPin)
-        self.onRawGraphSwitched(self.graphManager.activeGraph())
+            self.canvasWidget.createWrappersForGraph(graph)
+        self.graphManager.selectGraph('root')
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -223,28 +213,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         self.startMainLoop()
 
-    def onRawGraphSwitched(self, *args, **kwargs):
-        assert(len(args) == 1), "invalid arguments passed"
-
-        # hide everything
-        for uiNode in self.canvasWidget.getAllNodes():
-            uiNode.hide()
-            # hide connections
-            for uiPin in uiNode.UIPins.values():
-                for connection in uiPin.uiConnectionList:
-                    connection.hide()
-
-        # show new graph contents
-        for node in args[0].getNodes():
-            uiNode = node.getWrapper()
-            uiNode.show()
-            for uiPin in uiNode.UIPins.values():
-                for connection in uiPin.uiConnectionList:
-                    connection.show()
-
-        self.updateGraphTreeLocation()
-
-    def updateGraphTreeLocation(self):
+    def updateGraphTreeLocation(self, *args, **kwargs):
         location = self.canvasWidget.location()
         clearLayout(self.layoutGraphPath)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)

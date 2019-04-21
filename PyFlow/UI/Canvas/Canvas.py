@@ -85,7 +85,7 @@ def importByName(module, name):
         print("error", name)
 
 
-def getNodeInstance(jsonTemplate, canvas):
+def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     nodeClassName = jsonTemplate['type']
     nodeName = jsonTemplate['name']
     packageName = jsonTemplate['package']
@@ -100,11 +100,12 @@ def getNodeInstance(jsonTemplate, canvas):
     if jsonTemplate['type'] in ('getVar', 'setVar'):
         kwargs['var'] = canvas.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
 
-    raw_instance = getRawNodeInstance(nodeClassName, packageName, libName, **kwargs)
+    raw_instance = getRawNodeInstance(nodeClassName, packageName=packageName, libName=libName, **kwargs)
     raw_instance.uid = uuid.UUID(jsonTemplate['uuid'])
+    raw_instance.setName(jsonTemplate['name'])
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
-    canvas.addNode(instance, jsonTemplate)
+    canvas.addNode(instance, jsonTemplate, parentGraph=parentGraph)
     return instance
 
 
@@ -537,6 +538,8 @@ class Canvas(QGraphicsView):
             uiNode = rawNode.getWrapper()
             if uiNode is None:
                 print("{0} has not UI wrapper".format(rawNode.name))
+            if rawNode.uid in result:
+                rawNode.uid = uuid.uuid4()
             result[rawNode.uid] = uiNode
         return result
 
@@ -1586,6 +1589,20 @@ class Canvas(QGraphicsView):
         self.undoStack.push(cmd)
         return cmd.nodeInstance
 
+    def createWrappersForGraph(self, rawGraph):
+        # when raw graph was created, we need to create all ui wrappers for it
+        for node in rawGraph.getNodes():
+            uiNode = getUINodeInstance(node)
+            self.addNode(uiNode, node.serialize(), parentGraph=rawGraph)
+        # restore ui connections
+        for rawNode in rawGraph.getNodes():
+            uiNode = rawNode.getWrapper()
+            for outUiPin in uiNode.UIoutputs.values():
+                for rhsPinUid in outUiPin._rawPin._linkedToUids:
+                    inRawPin = rawNode.graph().findPin(rhsPinUid)
+                    inUiPin = inRawPin.getWrapper()()
+                    self.createUIConnectionForConnectedPins(outUiPin, inUiPin)
+
     def addNode(self, uiNode, jsonTemplate, parentGraph=None):
         """Adds node to a graph
 
@@ -1596,6 +1613,9 @@ class Canvas(QGraphicsView):
         if uiNode._rawNode.graph is None:
             # if added from node box
             self.graphManager.activeGraph().addNode(uiNode._rawNode, jsonTemplate)
+        else:
+            assert(parentGraph is not None), "Parent graph is invalid"
+            parentGraph.addNode(uiNode._rawNode, jsonTemplate)
 
         uiNode.canvasRef = weakref.ref(self)
         self.scene().addItem(uiNode)

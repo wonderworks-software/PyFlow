@@ -14,10 +14,19 @@ class compound(NodeBase):
     """
     def __init__(self, name):
         super(compound, self).__init__(name)
-        self.rawGraph = None
+        self._rawGraph = None
         # TODO: remove this maps
         self.__inputsMap = {}
         self.__outputsMap = {}
+
+    @property
+    def rawGraph(self):
+        return self._rawGraph
+
+    @rawGraph.setter
+    def rawGraph(self, newGraph):
+        assert(newGraph is not None)
+        self._rawGraph = newGraph
 
     def Tick(self, delta):
         self.rawGraph.Tick(delta)
@@ -118,8 +127,11 @@ class compound(NodeBase):
         subgraphOutputPin.setDynamic(False)
         self.__outputsMap[subgraphOutputPin] = inPin
         pinAffects(inPin, subgraphOutputPin)
+
         # connect
-        inPin.nameChanged.connect(subgraphOutputPin.setName)
+        def forceRename(name):
+            subgraphOutputPin.setName(name, force=True)
+        inPin.nameChanged.connect(forceRename, weak=False)
 
         def onInnerInpPinKilled(*args, **kwargs):
             self.__outputsMap.pop(subgraphOutputPin)

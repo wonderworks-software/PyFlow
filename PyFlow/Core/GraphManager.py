@@ -26,7 +26,7 @@ class GraphManager(object):
 
     @dispatch(object)
     def removeGraph(self, graph):
-        if graph.uid is self._graphs:
+        if graph.uid in self._graphs:
             graph.clear()
             self._graphs.pop(graph.uid)
 
@@ -36,8 +36,7 @@ class GraphManager(object):
 
     def clear(self, *args, keepRoot=True, **kwargs):
         self.selectGraph('root')
-        for graph in list(self._graphs.values()):
-            self.removeGraph(graph.name)
+        self.removeGraph('root')
         self._graphs.clear()
         self._graphs = {}
         if keepRoot:
@@ -185,4 +184,6 @@ class GraphManager(object):
         return getUniqNameFromList(existingNames, name)
 
     def plot(self):
-        self.activeGraph().plot()
+        root = self.findGraph('root')
+        print("All graphs:", [g.name for g in self._graphs.values()])
+        root.plot()

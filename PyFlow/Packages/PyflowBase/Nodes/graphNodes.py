@@ -84,7 +84,8 @@ class graphOutputs(NodeBase):
         if name is None:
             name = self.getUniqPinName('out')
         p = self.createInputPin(name, 'AnyPin')
+        p.setDynamic(True)
+        p.setRenamingEnabled(True)
         p.singleInit = True
-        # p.setAlwaysPushDirty(True)
         self.graph().outputPinCreated.send(p)
         return p

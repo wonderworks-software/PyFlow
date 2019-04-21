@@ -105,6 +105,8 @@ class NodeBase(INode):
 
     @uid.setter
     def uid(self, value):
+        if self.graph is not None:
+            self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
         self._uid = value
 
     @staticmethod
@@ -144,7 +146,7 @@ class NodeBase(INode):
 
     @staticmethod
     def deserialize(jsonData, *args, **kwargs):
-        node = getRawNodeInstance(jsonData['type'], packageName=jsonData['package'], libName=jsonData['lib'], *args, **kwargs)
+        node = getRawNodeInstance(jsonData['type'], packageName=jsonData['package'], libName=jsonData['lib'], **kwargs)
         node.uid = uuid.UUID(jsonData['uuid'])
         node.setName(jsonData['name'])
         node.x = jsonData['x']

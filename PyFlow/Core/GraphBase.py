@@ -23,7 +23,7 @@ class GraphBase(ISerializable):
         self.nameChanged = Signal(str)
         self.categoryChanged = Signal(str)
 
-        self.parentGraph = manager.activeGraph() if manager.activeGraph() is not None else None
+        self._parentGraph = manager.activeGraph() if manager.activeGraph() is not None else None
         self.childGraphs = set()
         if self.parentGraph is not None:
             self.parentGraph.childGraphs.add(self)
@@ -36,9 +36,23 @@ class GraphBase(ISerializable):
 
         manager.add(self)
 
+    @property
+    def parentGraph(self):
+        return self._parentGraph
+
+    @parentGraph.setter
+    def parentGraph(self, newParentGraph):
+        self._parentGraph = newParentGraph
+        if newParentGraph is not None:
+            # add self to parent's children set
+            self._parentGraph.childGraphs.add(self)
+        # else:
+        #     # if parent is None - remove self
+        #     self.remove()
+
     def depth(self):
         result = 1
-        parent = self.parentGraph
+        parent = self._parentGraph
         while parent is not None:
             result += 1
             parent = parent.parentGraph
@@ -48,7 +62,7 @@ class GraphBase(ISerializable):
         """return list of variables from active graph
         """
         result = list(self.vars.values())
-        parent = self.parentGraph
+        parent = self._parentGraph
         while parent is not None:
             result += list(parent.vars.values())
             parent = parent.parentGraph
@@ -61,7 +75,7 @@ class GraphBase(ISerializable):
             'vars': [v.serialize() for v in self.vars.values()],
             'nodes': [n.serialize() for n in self.nodes.values()],
             'depth': self.depth(),
-            'parentGraphName': str(self.parentGraph.name) if self.parentGraph is not None else str(None)
+            'parentGraphName': str(self._parentGraph.name) if self._parentGraph is not None else str(None)
         }
         return result
 
@@ -106,6 +120,13 @@ class GraphBase(ISerializable):
         self.graphManager.removeGraph(self)
 
     def clear(self):
+        """Clears content of this graph as well as child graphs. Deepest graphs will be cleared first
+        """
+        # graphs should be cleared from leafs to root
+        for childGraph in self.childGraphs:
+            childGraph.clear()
+
+        # clear itself
         for node in list(self.nodes.values()):
             node.kill()
         self.nodes.clear()
@@ -294,7 +315,7 @@ class GraphBase(ISerializable):
 
     def location(self):
         result = [self.name]
-        parent = self.parentGraph
+        parent = self._parentGraph
         while parent is not None:
             result.insert(0, parent.name)
             parent = parent.parentGraph
@@ -304,16 +325,10 @@ class GraphBase(ISerializable):
         return self.nodes.__len__()
 
     def plot(self):
-        print(self.name + '\n----------\n')
+        depth = self.depth()
+        prefix = "".join(['-'] * depth) if depth > 1 else ''
+        print(prefix + "GRAPH:" + self.name)
         for n in self.getNodes():
-            print("Node:", n.name, n.uid)
-            for inp in n.inputs.values():
-                print(inp.getName(), 'data - {0}'.format(inp.currentData()),
-                      'affects on', [i.getName() for i in inp.affects],
-                      'affected_by ', [p.getName() for p in inp.affected_by],
-                      'DIRTY ', inp.dirty)
-            for out in n.outputs.values():
-                print(out.getName(), 'data - {0}'.format(out.currentData()),
-                      'affects on', [i.getName() for i in out.affects],
-                      'affected_by ', [p.getName() for p in out.affected_by],
-                      'DIRTY', out.dirty)
+            print(prefix + "-Node:{}".format(n.name))
+        for child in self.childGraphs:
+            child.plot()
