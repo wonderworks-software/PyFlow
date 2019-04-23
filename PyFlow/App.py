@@ -63,7 +63,7 @@ def _implementPlugin(name, pluginType):
 
 ## App itself
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
-    newFileExecuted = QtCore.Signal()
+    newFileExecuted = QtCore.Signal(bool)
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
@@ -76,7 +76,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.graphManager = GraphManager()
         self.canvasWidget = Canvas(self.graphManager, self)
         self.canvasWidget.graphManager.graphChanged.connect(self.updateGraphTreeLocation)
-        self.newFileExecuted.connect(lambda: self.graphManager.clear(keepRoot=True))
+        self.newFileExecuted.connect(lambda keepRoot: self.graphManager.clear(keepRoot=keepRoot))
         self.newFileExecuted.connect(self.canvasWidget.shoutDown)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
@@ -144,7 +144,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             self.save_as()
 
     def loadFromData(self, data, fpath=""):
-        self.newFile()
+        self.newFile(keepRoot=False)
         # load raw data
         self.graphManager.deserialize(data)
         # create ui nodes
@@ -202,12 +202,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def clearPropertiesView(self):
         clearLayout(self.formLayout)
 
-    def newFile(self):
+    def newFile(self, keepRoot=True):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
 
         # broadcast
-        self.newFileExecuted.emit()
+        self.newFileExecuted.emit(keepRoot)
         self._current_file_name = 'Untitled'
         self.clearPropertiesView()
 

@@ -47,19 +47,22 @@ class GraphManager(object):
 
     def deserialize(self, data):
         self.clear(keepRoot=False)
-        self._activeGraph = GraphBase.deserialize(data, self)
+        self._activeGraph = GraphBase('root', self)
+        self._activeGraph.populateFromJson(data)
+        self._activeGraph.setIsRoot(True)
+        self.selectGraph(self._activeGraph)
 
     def clear(self, *args, keepRoot=True, **kwargs):
         self.selectGraph(ROOT_GRAPH_NAME)
         self.removeGraph(ROOT_GRAPH_NAME)
         self._graphs.clear()
         self._graphs = {}
+        del self._activeGraph
+        self._activeGraph = None
         if keepRoot:
             self._activeGraph = GraphBase(ROOT_GRAPH_NAME, self)
             self.selectGraph(self._activeGraph)
-        else:
-            del self._activeGraph
-            self._activeGraph = None
+            self._activeGraph.setIsRoot(True)
 
     def Tick(self, deltaTime):
         for graph in self._graphs.values():

@@ -280,6 +280,7 @@ def clearLayout(layout):
 
 
 def getUniqNameFromList(existingNames, name):
+    # TODO: Extract digits from node and find good Id
     if name not in existingNames:
         return name
     idx = 0

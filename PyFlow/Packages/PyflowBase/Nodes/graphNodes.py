@@ -53,9 +53,12 @@ class graphInputs(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(graphInputs, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamically created pins
+        existingPins = self.namePinOutputsMap
         if jsonTemplate is not None:
-            for outPin in jsonTemplate["outputs"]:
-                self.addOutPin(outPin['name'])
+            for outPinJson in jsonTemplate["outputs"]:
+                if outPinJson['name'] not in existingPins:
+                    dynOut = self.addOutPin(outPinJson['name'])
+                    dynOut.uid = uuid.UUID(outPinJson['uuid'])
 
 
 class graphOutputs(NodeBase):
@@ -90,9 +93,12 @@ class graphOutputs(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(graphOutputs, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamically created pins
+        existingPins = self.namePinInputsMap
         if jsonTemplate is not None:
-            for outPin in jsonTemplate["inputs"]:
-                self.addInPin(outPin['name'])
+            for inPinJson in jsonTemplate["inputs"]:
+                if inPinJson['name'] not in existingPins:
+                    inDyn = self.addInPin(inPinJson['name'])
+                    inDyn.uid = uuid.UUID(inPinJson['uuid'])
 
     def addInPin(self, name=None):
         if name is None:

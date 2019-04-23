@@ -37,10 +37,9 @@ class UIGraphInputs(UINodeBase):
     def postCreate(self, jsonTemplate):
         # this call will create wrappers for raw pins
         UINodeBase.postCreate(self, jsonTemplate)
+
         for uiPin in self.UIPins.values():
             uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
-
-        self.pinCreated.connect(self.canvasRef().inPinCreated.emit)
 
         try:
             self.displayName = jsonTemplate['name']
@@ -97,7 +96,6 @@ class UIGraphOutputs(UINodeBase):
         for uiPin in self.UIPins.values():
             uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
         # recreate dynamically created pins
-        self.pinCreated.connect(self.canvasRef().outPinCreated.emit)
 
         try:
             self.displayName = jsonTemplate['meta']['label']

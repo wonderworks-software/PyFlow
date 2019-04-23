@@ -144,54 +144,6 @@ class NodeBase(INode):
             template['wrapper'] = wrapper.serializationHook()
         return template
 
-    @staticmethod
-    def deserialize(jsonData, *args, **kwargs):
-        node = getRawNodeInstance(jsonData['type'], packageName=jsonData['package'], libName=jsonData['lib'], *args, **kwargs)
-        node.uid = uuid.UUID(jsonData['uuid'])
-        node.setName(jsonData['name'])
-        node.x = jsonData['x']
-        node.y = jsonData['y']
-
-        # set pins data
-        for inpJson in jsonData['inputs']:
-            # TODO: create pins if they were created dynamically
-            if inpJson['dynamic'] or inpJson['name'] not in node.namePinInputsMap:
-                defaultValue = getPinDefaultValueByType(inpJson['dataType'])
-                dynamicPin = node.createInputPin(inpJson['name'], inpJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
-                dynamicPin.uid = uuid.UUID(inpJson['uuid'])
-                dynamicPin.setDynamic(True)
-                dynamicPin.setRenamingEnabled(inpJson['renamingEnabled'])
-                dynamicPin.typeChecking = inpJson['typeChecking']
-                dynamicPin.setAlwaysPushDirty(inpJson['alwaysPushDirty'])
-
-            pin = node.getPin(inpJson['name'], PinSelectionGroup.Inputs)
-            pin.uid = uuid.UUID(inpJson['uuid'])
-            pin.setData(inpJson['value'])
-            if inpJson['bDirty']:
-                pin.setDirty()
-            else:
-                pin.setClean()
-
-        for outJson in jsonData['outputs']:
-            # TODO: create pins if they were created dynamically
-            if outJson['dynamic'] or outJson['name'] not in node.namePinOutputsMap:
-                defaultValue = getPinDefaultValueByType(outJson['dataType'])
-                dynamicPin = node.createOutputPin(outJson['name'], outJson['dataType'], defaultValue=defaultValue, foo=None, constraint=None, allowedPins=[])
-                dynamicPin.uid = uuid.UUID(outJson['uuid'])
-                dynamicPin.setDynamic(True)
-                dynamicPin.setRenamingEnabled(outJson['renamingEnabled'])
-                dynamicPin.typeChecking = outJson['typeChecking']
-                dynamicPin.setAlwaysPushDirty(outJson['alwaysPushDirty'])
-
-            pin = node.getPin(outJson['name'], PinSelectionGroup.Outputs)
-            pin.uid = uuid.UUID(outJson['uuid'])
-            pin.setData(outJson['value'])
-            if outJson['bDirty']:
-                pin.setDirty()
-            else:
-                pin.setClean()
-        return node
-
     def kill(self, *args, **kwargs):
         assert(self.uid in self.graph().nodes), "Error killing node. \
             Node {0} not in graph".format(self.getName())
@@ -366,6 +318,39 @@ class NodeBase(INode):
         return None
 
     def postCreate(self, jsonTemplate=None):
+        if jsonTemplate is not None:
+            self.uid = uuid.UUID(jsonTemplate['uuid'])
+            self.setName(jsonTemplate['name'])
+            self.x = jsonTemplate['x']
+            self.y = jsonTemplate['y']
+
+            # set pins data
+            for inpJson in jsonTemplate['inputs']:
+                if inpJson['dynamic'] or inpJson['name'] not in self.namePinInputsMap:
+                    # create custom dynamically created pins in derived classes
+                    continue
+
+                pin = self.getPin(inpJson['name'], PinSelectionGroup.Inputs)
+                pin.uid = uuid.UUID(inpJson['uuid'])
+                pin.setData(inpJson['value'])
+                if inpJson['bDirty']:
+                    pin.setDirty()
+                else:
+                    pin.setClean()
+
+            for outJson in jsonTemplate['outputs']:
+                if outJson['dynamic'] or outJson['name'] not in self.namePinOutputsMap:
+                    # create custom dynamically created pins in derived classes
+                    continue
+
+                pin = self.getPin(outJson['name'], PinSelectionGroup.Outputs)
+                pin.uid = uuid.UUID(outJson['uuid'])
+                pin.setData(outJson['value'])
+                if outJson['bDirty']:
+                    pin.setDirty()
+                else:
+                    pin.setClean()
+
         if self.isCallable():
             self.bCallable = True
 

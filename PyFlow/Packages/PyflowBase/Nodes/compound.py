@@ -15,7 +15,6 @@ class compound(NodeBase):
     def __init__(self, name):
         super(compound, self).__init__(name)
         self._rawGraph = None
-        # TODO: remove this maps
         self.__inputsMap = {}
         self.__outputsMap = {}
 
@@ -34,6 +33,8 @@ class compound(NodeBase):
 
     def setName(self, name):
         super(compound, self).setName(name)
+        if self.rawGraph is not None:
+            self.rawGraph.name = self.getName()
 
     @staticmethod
     def pinTypeHints():
@@ -53,6 +54,10 @@ class compound(NodeBase):
 
     def serialize(self):
         default = NodeBase.serialize(self)
+        # remove dynamically created ins outs. They will be recreated automatically when graph data populated
+        default['inputs'] = []
+        default['outputs'] = []
+
         default['graphData'] = self.rawGraph.serialize()
         return default
 
@@ -170,15 +175,14 @@ class compound(NodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(compound, self).postCreate(jsonTemplate=jsonTemplate)
-        # register graph in graph manager
+        self.rawGraph = GraphBase(self.name, self.graph().graphManager)
+        self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
+        self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
+
         if jsonTemplate is not None and 'graphData' in jsonTemplate:
-            self.rawGraph = GraphBase.deserialize(jsonTemplate['graphData'], self.graph().graphManager)
-            self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
-            self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
-        else:
-            self.rawGraph = GraphBase(self.name, self.graph().graphManager)
-            self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
-            self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
+            # recreate graph contents
+            jsonTemplate['graphData']['name'] = self.getName()
+            self.rawGraph.populateFromJson(jsonTemplate['graphData'])
 
     def addNode(self, node):
         self.rawGraph.addNode(node)

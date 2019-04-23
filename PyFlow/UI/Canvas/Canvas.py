@@ -102,7 +102,6 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
 
     raw_instance = getRawNodeInstance(nodeClassName, packageName=packageName, libName=libName, **kwargs)
     raw_instance.uid = uuid.UUID(jsonTemplate['uuid'])
-    raw_instance.setName(jsonTemplate['name'])
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
     canvas.addNode(instance, jsonTemplate, parentGraph=parentGraph)
@@ -433,10 +432,6 @@ class Canvas(QGraphicsView):
     _gridSizeCourse = 100
 
     _mouseWheelZoomRate = 0.0005
-    inPinCreated = QtCore.Signal(object)
-    inPinDeleted = QtCore.Signal(object)
-    outPinCreated = QtCore.Signal(object)
-    outPinDeleted = QtCore.Signal(object)
 
     def __init__(self, graphManager, parent=None):
         super(Canvas, self).__init__()
@@ -575,16 +570,15 @@ class Canvas(QGraphicsView):
             self.node_box.lineEdit.setFocus()
 
     def shoutDown(self, *args, **kwargs):
+        # TODO: ask user to save or close
         for ed in self.codeEditors.values():
             ed.deleteLater()
-        nodes = list(self.nodes.values())
         self.scene().clear()
         self._UIConnections.clear()
         self.node_box.hide()
         self.node_box.lineEdit.clear()
 
     def moveScrollbar(self, delta):
-        # delta = self.mapToScene(event.pos()) - self._lastPanPoint
         rect = self.sceneRect()
         rect.translate(delta.x(), delta.y())
         self.setSceneRect(rect)
@@ -1611,7 +1605,15 @@ class Canvas(QGraphicsView):
         Arguments:
             node UINodeBase -- raw node wrapper
         """
+
+        uiNode.canvasRef = weakref.ref(self)
+        self.scene().addItem(uiNode)
+
         assert(jsonTemplate is not None)
+
+        # add node unique name before adding it
+        jsonTemplate['name'] = self.graphManager.getUniqNodeName(jsonTemplate['name'])
+
         if uiNode._rawNode.graph is None:
             # if added from node box
             self.graphManager.activeGraph().addNode(uiNode._rawNode, jsonTemplate)
@@ -1619,8 +1621,6 @@ class Canvas(QGraphicsView):
             assert(parentGraph is not None), "Parent graph is invalid"
             parentGraph.addNode(uiNode._rawNode, jsonTemplate)
 
-        uiNode.canvasRef = weakref.ref(self)
-        self.scene().addItem(uiNode)
         uiNode.postCreate(jsonTemplate)
 
     def createUIConnectionForConnectedPins(self, srcUiPin, dstUiPin):

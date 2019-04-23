@@ -83,33 +83,36 @@ class GraphBase(ISerializable):
             'vars': [v.serialize() for v in self.vars.values()],
             'nodes': [n.serialize() for n in self.nodes.values()],
             'depth': self.depth(),
-            # 'uid': str(self.uid),
+            'isRoot': self.isRoot(),
             'parentGraphName': str(self._parentGraph.name) if self._parentGraph is not None else str(None)
         }
         return result
 
-    @staticmethod
-    def deserialize(jsonData, manager, *args, **kwargs):
-        # create graph
-        graph = GraphBase(jsonData['name'], manager, jsonData['category'], *args, **kwargs)
-        parentGraph = manager.graphsDict[jsonData['parentGraphName']] if jsonData['parentGraphName'] != str(None) else None
-        graph.parentGraph = parentGraph
+    def populateFromJson(self, jsonData):
+        self.clear()
+        parentGraphName = jsonData['parentGraphName']
+        parentGraph = self.graphManager.findGraph(parentGraphName)
+        self.parentGraph = parentGraph
+        self.name = jsonData['name']
+        self.category = jsonData['category']
+        self.setIsRoot(jsonData['isRoot'])
         # restore vars
         for varJson in jsonData['vars']:
-            var = Variable.deserialize(varJson, *args, **kwargs)
-            graph.vars[var.uid] = var
+            var = Variable.deserialize(varJson)
+            self.vars[var.uid] = var
         # restore nodes
         for nodeJson in jsonData['nodes']:
             # check if variable getter or setter and pass variable
-            nodeArgs = args
-            nodeKwargs = kwargs
+            nodeArgs = ()
+            nodeKwargs = {}
             if nodeJson['type'] in ('getVar', 'setVar'):
-                kwargs['var'] = graph.vars[uuid.UUID(nodeJson['varUid'])]
-            node = NodeBase.deserialize(nodeJson, *nodeArgs, **nodeKwargs)
-            graph.addNode(node, nodeJson)
-
+                nodeKwargs['var'] = self.vars[uuid.UUID(nodeJson['varUid'])]
+            node = getRawNodeInstance(nodeJson['type'], packageName=nodeJson['package'], libName=nodeJson['lib'], *nodeArgs, **nodeKwargs)
+            # give node a unique name before adding it
+            node.setName(self.graphManager.getUniqNodeName(node.getName()))
+            self.addNode(node, nodeJson)
         # restore connections
-        graphPins = graph.pins
+        graphPins = self.pins
         for nodeJson in jsonData['nodes']:
             for nodeOutputJson in nodeJson['outputs']:
                 lhsPin = graphPins[uuid.UUID(nodeOutputJson['uuid'])]
@@ -117,7 +120,6 @@ class GraphBase(ISerializable):
                     rhsPin = graphPins[uuid.UUID(rhsUidStr)]
                     connected = connectPins(lhsPin, rhsPin)
                     assert(connected is True), "Failed to restore connection"
-        return graph
 
     def remove(self):
         """Removes this graph as well as child graphs. Deepest graphs will be removed first
@@ -313,9 +315,6 @@ class GraphBase(ISerializable):
             variableLocation = var.location()
             if len(variableLocation) > len(self.location()):
                 return False
-
-        # Important! Give a node unique name before adding it to nodes dict. Because it will include itself.
-        node.setName(self.graphManager.getUniqNodeName(node.name))
 
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)

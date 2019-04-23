@@ -60,8 +60,7 @@ class NodeName(QGraphicsTextItem):
         self.defaultHeight = self.opt_font_size * 3.3
         self.h = self.defaultHeight
         self.setFont(self.opt_font)
-        self.descFont = QtGui.QFont(
-            "Consolas", self.opt_font.pointSize() / 2.0, 2, True)
+        self.descFont = QtGui.QFont("Consolas", self.opt_font.pointSize() / 2.0, 2, True)
         self.setPos(0, -self.boundingRect().height() - 4)
         self.color = color
         self.clipRect = None
@@ -354,13 +353,13 @@ class UINodeBase(QGraphicsObject):
         template['displayName'] = self.displayName
         return template
 
+    def serialize(self):
+        return self._rawNode.serialize()
+
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange:
             self._rawNode.setPosition(value.x(), value.y())
         return super(UINodeBase, self).itemChange(change, value)
-
-    def serialize(self):
-        return self._rawNode.serialize()
 
     def autoAffectPins(self):
         self._rawNode.autoAffectPins()
