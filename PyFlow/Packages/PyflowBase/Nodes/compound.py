@@ -32,14 +32,15 @@ class compound(NodeBase):
         super(compound, self).Tick(delta)
 
         # look for graph nodes pins was added
-        graphInputs = self.rawGraph.getNodes(classFilterNames=['graphInputs'])
+        # We need only create companions, deletion will be performed by signals automatically
+        graphInputs = self.rawGraph.getNodes(classNameFilters=['graphInputs'])
         for graphInputNode in graphInputs:
             for outPin in graphInputNode.outputs.values():
                 # create companion pin if needed
                 if outPin.name not in self.namePinInputsMap:
                     self.onGraphInputPinCreated(outPin)
 
-        graphOutputs = self.rawGraph.getNodes(classFilterNames=['graphOutputs'])
+        graphOutputs = self.rawGraph.getNodes(classNameFilters=['graphOutputs'])
         for graphOutputNode in graphOutputs:
             for inPin in graphOutputNode.inputs.values():
                 # create companion pin if needed
@@ -67,20 +68,14 @@ class compound(NodeBase):
     def description():
         return 'Encapsulate a graph inside a node'
 
-    def serialize(self):
-        default = NodeBase.serialize(self)
+    def serialize(self, copy=False):
+        default = NodeBase.serialize(self, copy=copy)
         # remove dynamically created ins outs. They will be recreated automatically when graph data populated
         default['inputs'] = []
         default['outputs'] = []
 
         default['graphData'] = self.rawGraph.serialize()
         return default
-
-    def getUniqPinName(self, name):
-        result = name
-        if self.graph is not None:
-            result = self.graph().graphManager.getUniqGraphPinName(self.rawGraph, name)
-        return result
 
     def onGraphInputPinCreated(self, outPin):
         """Reaction when pin added to graphInputs node

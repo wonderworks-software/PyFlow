@@ -858,7 +858,7 @@ class Canvas(QGraphicsView):
         connections = []
         for n in selectedNodes:
             oldNodes.append(n)
-            nodes.append(n.serialize())
+            nodes.append(n.serialize(copy=True))
             for i in list(n.UIinputs.values()) + list(n.UIoutputs.values()):
                 connections += i.connections
         fullEdges = []
@@ -900,6 +900,7 @@ class Canvas(QGraphicsView):
                 out['uuid'] = str(uuid.uuid4())
 
             n = self.createNode(node)
+
             if n is None:
                 continue
 

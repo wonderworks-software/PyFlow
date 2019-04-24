@@ -19,8 +19,6 @@ class GraphBase(ISerializable):
         self.graphManager = manager
         self._isRoot = False
         # signals
-        self.inputPinCreated = Signal(object)
-        self.outputPinCreated = Signal(object)
         self.nameChanged = Signal(str)
         self.categoryChanged = Signal(str)
 
@@ -107,9 +105,8 @@ class GraphBase(ISerializable):
             nodeKwargs = {}
             if nodeJson['type'] in ('getVar', 'setVar'):
                 nodeKwargs['var'] = self.vars[uuid.UUID(nodeJson['varUid'])]
+            nodeJson['owningGraphName'] = self.name
             node = getRawNodeInstance(nodeJson['type'], packageName=nodeJson['package'], libName=nodeJson['lib'], *nodeArgs, **nodeKwargs)
-            # give node a unique name before adding it
-            node.setName(self.graphManager.getUniqNodeName(node.getName()))
             self.addNode(node, nodeJson)
         # restore connections
         graphPins = self.pins
@@ -153,8 +150,9 @@ class GraphBase(ISerializable):
     @name.setter
     def name(self, value):
         assert(isinstance(value, str))
-        self.__name = value
-        self.nameChanged.send(self.__name)
+        if self.__name != value:
+            self.__name = value
+            self.nameChanged.send(self.__name)
 
     @property
     def category(self):
@@ -246,11 +244,11 @@ class GraphBase(ISerializable):
                                 nodes.append(p.owningNode())
             return nodes
 
-    def getNodes(self, classFilterNames=[]):
+    def getNodes(self, classNameFilters=[]):
         """return all nodes without compound's nodes
         """
-        if len(classFilterNames) > 0:
-            return [n for n in self.nodes.values() if n.__class__.__name__ in classFilterNames]
+        if len(classNameFilters) > 0:
+            return [n for n in self.nodes.values() if n.__class__.__name__ in classNameFilters]
         else:
             return [n for n in self.nodes.values()]
 
@@ -320,9 +318,9 @@ class GraphBase(ISerializable):
                 return False
 
         if jsonTemplate is not None:
-            jsonTemplate['name'] = self.graphManager.getUniqNodeName(jsonTemplate['name'])
+            jsonTemplate['name'] = self.graphManager.getUniqName(jsonTemplate['name'])
         else:
-            node.setName(self.graphManager.getUniqNodeName(node.name))
+            node.setName(self.graphManager.getUniqName(node.name))
 
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)

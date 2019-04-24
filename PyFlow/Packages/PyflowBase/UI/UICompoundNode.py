@@ -18,11 +18,6 @@ class UICompoundNode(UINodeBase):
         # and connect signals
         uiCompanionPin = self._createUIPinWrapper(rawPin)
 
-    def serialize(self):
-        default = super(UICompoundNode, self).serialize()
-
-        return default
-
     def onGraphOutputPinExposed(self, rawPin):
         uiCompanionPin = self._createUIPinWrapper(rawPin)
 

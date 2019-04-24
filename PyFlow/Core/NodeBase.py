@@ -124,7 +124,7 @@ class NodeBase(INode):
                     }
         return template
 
-    def serialize(self):
+    def serialize(self, copy=False):
         template = NodeBase.jsonTemplate()
         template['package'] = self.packageName()
         template['lib'] = self.lib
@@ -132,8 +132,8 @@ class NodeBase(INode):
         template['name'] = self.name
         template['owningGraphName'] = self.graph().name
         template['uuid'] = str(self.uid)
-        template['inputs'] = [i.serialize() for i in self.inputs.values()]
-        template['outputs'] = [o.serialize() for o in self.outputs.values()]
+        template['inputs'] = [i.serialize(copy=copy) for i in self.inputs.values()]
+        template['outputs'] = [o.serialize(copy=copy) for o in self.outputs.values()]
         template['meta']['label'] = self.name
         template['x'] = self.x
         template['y'] = self.y
@@ -148,9 +148,9 @@ class NodeBase(INode):
         assert(self.uid in self.graph().nodes), "Error killing node. \
             Node {0} not in graph".format(self.getName())
         for pin in self.inputs.values():
-            pin.disconnectAll()
+            pin.kill()
         for pin in self.outputs.values():
-            pin.disconnectAll()
+            pin.kill()
         self.graph().nodes.pop(self.uid)
         self.killed.send()
 

@@ -319,8 +319,10 @@ class UINodeBase(QGraphicsObject):
 
     def getPin(self, name, pinsGroup=PinSelectionGroup.BothSides):
         pin = self._rawNode.getPin(name, pinsGroup)
-        assert(pin is not None), "Pin [{0}] not found in node {1}".format(name, self._rawNode.getName())
-        return pin.getWrapper()()
+        if pin is not None:
+            if pin.getWrapper() is not None:
+                return pin.getWrapper()()
+        return None
 
     @staticmethod
     def removePinByName(node, name):
@@ -353,8 +355,8 @@ class UINodeBase(QGraphicsObject):
         template['displayName'] = self.displayName
         return template
 
-    def serialize(self):
-        return self._rawNode.serialize()
+    def serialize(self, copy=False):
+        return self._rawNode.serialize(copy=copy)
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange:
@@ -629,9 +631,9 @@ class UINodeBase(QGraphicsObject):
         formLayout.addRow("Name", le_name)
 
         # uid
-        #leUid = QLineEdit(str(self.uid))
-        # leUid.setReadOnly(True)
-        #formLayout.addRow("Uuid", leUid)
+        leUid = QLineEdit(str(self._rawNode.graph().name))
+        leUid.setReadOnly(True)
+        formLayout.addRow("Owning graph", leUid)
 
         # type
         text = "{0}".format(self.packageName())
@@ -651,8 +653,7 @@ class UINodeBase(QGraphicsObject):
 
             for inp in self.UIinputs.values():
                 dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
-                w = createInputWidget(
-                    inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
+                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
                     w.blockWidgetSignals(True)
                     w.setWidgetValue(inp.currentData())

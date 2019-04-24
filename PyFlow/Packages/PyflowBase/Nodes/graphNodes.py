@@ -40,9 +40,6 @@ class graphInputs(NodeBase):
         p.setDynamic(True)
         p.setRenamingEnabled(True)
         p.singleInit = True
-        # this will be passed to compound node for companion pin creation
-        # and signals connection
-        self.graph().inputPinCreated.send(p)
         return p
 
     def compute(self, *args, **kwargs):
@@ -107,5 +104,4 @@ class graphOutputs(NodeBase):
         p.setDynamic(True)
         p.setRenamingEnabled(True)
         p.singleInit = True
-        self.graph().outputPinCreated.send(p)
         return p

@@ -26,6 +26,7 @@ class ConnectPin(QUndoCommand):
         if srcPin is None:
             return
 
+        # FIXME: This returns incorrect pins with copied compound node
         dstPin = self.canvas.findPin(self.dstUid)
         if dstPin is None:
             return
