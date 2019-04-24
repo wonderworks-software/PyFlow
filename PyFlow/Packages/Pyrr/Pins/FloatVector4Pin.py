@@ -54,7 +54,7 @@ class FloatVector4Pin(PinBase):
     def color():
         return (173, 216, 230, 255)
 
-    def serialize(self):
+    def serialize(self, copying=False):
         data = PinBase.serialize(self)
         data['value'] = self.currentData().xyzw.tolist()
         return data

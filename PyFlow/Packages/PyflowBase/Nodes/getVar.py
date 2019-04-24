@@ -30,8 +30,8 @@ class getVar(NodeBase):
     def onVarValueChanged(self, *args, **kwargs):
         push(self.out)
 
-    def serialize(self):
-        default = NodeBase.serialize(self)
+    def serialize(self, copying=False):
+        default = NodeBase.serialize(self, copying=copying)
         default['varUid'] = str(self.var.uid)
         return default
 

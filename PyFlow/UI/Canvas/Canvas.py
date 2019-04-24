@@ -858,7 +858,7 @@ class Canvas(QGraphicsView):
         connections = []
         for n in selectedNodes:
             oldNodes.append(n)
-            nodes.append(n.serialize(copy=True))
+            nodes.append(n.serialize(copying=True))
             for i in list(n.UIinputs.values()) + list(n.UIoutputs.values()):
                 connections += i.connections
         fullEdges = []
@@ -910,18 +910,15 @@ class Canvas(QGraphicsView):
                 n.setPos(n.scenePos() + diff)
         for connection in nodes["connections"]:
             if connection["full"]:
-                nsrc = newNodes[connection["sourcenode"]
-                                ].getPin(connection["sourcePin"])
-                ndst = newNodes[connection["destinationNode"]
-                                ].getPin(connection["destinationPin"])
+                nsrc = newNodes[connection["sourcenode"]].getPin(connection["sourcePin"])
+                ndst = newNodes[connection["destinationNode"]].getPin(connection["destinationPin"])
                 self.connectPins(nsrc, ndst)
             else:
                 nsrc = self.findNode(connection["sourcenode"])
                 if nsrc is not None:
                     nsrc = nsrc.getPin(connection["sourcePin"])
                     if nsrc is not None:
-                        ndst = newNodes[connection["destinationNode"]
-                                        ].getPin(connection["destinationPin"])
+                        ndst = newNodes[connection["destinationNode"]].getPin(connection["destinationPin"])
                         self.connectPins(nsrc, ndst)
 
     @dispatch(str)
@@ -1641,9 +1638,10 @@ class Canvas(QGraphicsView):
 
     def connectPins(self, src, dst):
         # Highest level connect pins function
-        if canConnectPins(src._rawPin, dst._rawPin):
-            cmd = cmdConnectPin(self, src, dst)
-            self.undoStack.push(cmd)
+        if src and dst:
+            if canConnectPins(src._rawPin, dst._rawPin):
+                cmd = cmdConnectPin(self, src, dst)
+                self.undoStack.push(cmd)
 
     def removeEdgeCmd(self, connections):
         self.undoStack.push(cmdRemoveEdges(self, [e.serialize() for e in connections]))

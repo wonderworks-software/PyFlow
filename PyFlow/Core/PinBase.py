@@ -104,12 +104,17 @@ class PinBase(IPin):
         self._alwaysPushDirty = bValue
 
     # ISerializable interface
-    def serialize(self, copy=False):
+    def serialize(self, copying=False):
+
+        uidString = str(self.uid)
+        if copying:
+            uidString = str(uuid.uuid4())
+
         data = {'name': self.name,
                 'dataType': self.dataType,
                 'direction': int(self.direction),
                 'value': self.currentData(),
-                'uuid': str(self.uid) if copy else str(uuid.uuid4()),
+                'uuid': uidString,
                 'bDirty': self.dirty,
                 'dynamic': self.isDynamic(),
                 'renamingEnabled': self.renamingEnabled(),

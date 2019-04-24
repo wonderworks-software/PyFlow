@@ -27,7 +27,7 @@ class UISetVarNode(UINodeBase):
     def var(self):
         return self._rawNode.var
 
-    def serialize(self):
+    def serialize(self, copying=False):
         template = UINodeBase.serialize(self)
         template['meta']['var'] = self.var.serialize()
         return template

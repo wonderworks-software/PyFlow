@@ -355,8 +355,8 @@ class UINodeBase(QGraphicsObject):
         template['displayName'] = self.displayName
         return template
 
-    def serialize(self, copy=False):
-        return self._rawNode.serialize(copy=copy)
+    def serialize(self, copying=False):
+        return self._rawNode.serialize(copying=copying)
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange:

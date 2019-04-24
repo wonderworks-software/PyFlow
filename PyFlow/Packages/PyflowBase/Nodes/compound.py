@@ -68,8 +68,8 @@ class compound(NodeBase):
     def description():
         return 'Encapsulate a graph inside a node'
 
-    def serialize(self, copy=False):
-        default = NodeBase.serialize(self, copy=copy)
+    def serialize(self, copying=False):
+        default = NodeBase.serialize(self, copying=copying)
         # remove dynamically created ins outs. They will be recreated automatically when graph data populated
         default['inputs'] = []
         default['outputs'] = []

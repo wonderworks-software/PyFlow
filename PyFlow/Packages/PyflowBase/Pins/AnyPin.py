@@ -60,8 +60,8 @@ class AnyPin(PinBase):
         self._data = data
         PinBase.setData(self, self._data)
 
-    def serialize(self, copy=False):
-        dt = super(AnyPin, self).serialize(copy=copy)
+    def serialize(self, copying=False):
+        dt = super(AnyPin, self).serialize(copying=copying)
         activeType = self.dataType
         dt['dataType'] = "AnyPin"
         if activeType != "AnyPin":

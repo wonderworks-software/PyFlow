@@ -360,8 +360,8 @@ class UIPinBase(QGraphicsWidget):
         data['displayName'] = self.displayName()
         return data
 
-    def serialize(self):
-        return self._rawPin.serialize()
+    def serialize(self, copying=False):
+        return self._rawPin.serialize(copying=copying)
 
     def ungrabMouseEvent(self, event):
         super(UIPinBase, self).ungrabMouseEvent(event)
@@ -416,8 +416,7 @@ class UIPinBase(QGraphicsWidget):
         super(UIPinBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        hoverMessage = "Data: {0}\r\nDirty: {1}".format(
-            str(self._rawPin.currentData()), self._rawPin.dirty)
+        hoverMessage = "{2}\nData: {0}\r\nDirty: {1}".format(str(self.uid), str(self._rawPin.currentData()), self._rawPin.dirty)
         self.setToolTip(hoverMessage)
         event.accept()
 

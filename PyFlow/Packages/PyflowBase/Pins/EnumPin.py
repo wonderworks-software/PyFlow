@@ -14,8 +14,8 @@ class EnumPin(PinBase):
     def IsValuePin():
         return True
 
-    def serialize(self):
-        dt = super(PinWidgetBase, self).serialize()
+    def serialize(self, copying=False):
+        dt = super(EnumPin, self).serialize(copying=copying)
         dt['value'] = int(dt['value'])
         return dt
 

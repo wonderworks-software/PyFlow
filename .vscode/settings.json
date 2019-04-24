@@ -10,7 +10,7 @@
         "**/*.pyc": true,
     },
     "git.enableSmartCommit": true,
-    "python.unitTest.unittestArgs": [
+    "python.testing.unittestArgs": [
         "-v",
         "-s",
         "./PyFlow/Tests",
@@ -18,12 +18,12 @@
         "Test_*.py"
     ],
     "python.pythonPath": "C:\\Python37-32\\python.exe",
-    "python.unitTest.unittestEnabled": true,
-    "python.unitTest.pyTestEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "python.testing.pyTestEnabled": false,
     "python.linting.pep8Enabled": true,
     "python.linting.pep8Args": [
         "--ignore=E501,E402,E266"
     ],
-    "python.unitTest.nosetestsEnabled": false,
+    "python.testing.nosetestsEnabled": false,
     "pyside2-vsc.uic.compile.filepath": "${ui_name}_ui.py",
 }

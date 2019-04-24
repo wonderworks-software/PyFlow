@@ -30,6 +30,7 @@ class sequence(NodeBase):
             for outJson in jsonTemplate['outputs']:
                 if outJson['name'] not in self.namePinOutputsMap:
                     pin = self.createOutputPin(outJson['name'])
+                    pin.uid = uuid.UUID(outJson['uuid'])
 
     @staticmethod
     def keywords():

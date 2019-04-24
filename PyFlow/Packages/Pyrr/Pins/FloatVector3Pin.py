@@ -42,7 +42,7 @@ class FloatVector3Pin(PinBase):
     def pinDataTypeHint():
         return 'FloatVector3Pin', Vector3()
 
-    def serialize(self):
+    def serialize(self, copying=False):
         data = PinBase.serialize(self)
         data['value'] = self.currentData().xyz.tolist()
         return data

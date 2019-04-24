@@ -54,7 +54,7 @@ class QuatPin(PinBase):
     def pinDataTypeHint():
         return 'QuatlPin', Quaternion()
 
-    def serialize(self):
+    def serialize(self, copying=False):
         # note how custom class can be serialized
         # here we store quats xyzw as list
         data = PinBase.serialize(self)
