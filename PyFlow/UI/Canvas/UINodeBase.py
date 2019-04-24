@@ -777,6 +777,10 @@ class UINodeBase(QGraphicsObject):
         return container
 
     def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None):
+        wrapper = rawPin.getWrapper()
+        if wrapper is not None:
+            return wrapper()
+
         p = getUIPinInstance(self, rawPin)
         p.call = rawPin.call
 

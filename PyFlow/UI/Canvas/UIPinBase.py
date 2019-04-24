@@ -324,15 +324,20 @@ class UIPinBase(QGraphicsWidget):
     def kill(self, *args, **kwargs):
         """this will be called after raw pin is deleted
         """
+        scene = self.scene()
+        if scene is None:
+            # already deleted
+            del self
+            return
         if self._container is not None:
-            self.scene().removeItem(self._container)
+            scene.removeItem(self._container)
             if not self._groupContainer:
                 if self._rawPin.direction == PinDirection.Input:
                     self.owningNode().inputsLayout.removeItem(self._container)
                 else:
                     self.owningNode().outputsLayout.removeItem(self._container)
             else:
-                self.scene().removeItem(self._groupContainer)
+                scene.removeItem(self._groupContainer)
                 if self._rawPin.direction == PinDirection.Input:
                     self.owningNode().inputsLayout.removeItem(self._groupContainer)
                 else:

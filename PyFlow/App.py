@@ -76,7 +76,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.graphManager = GraphManager()
         self.canvasWidget = Canvas(self.graphManager, self)
         self.canvasWidget.graphManager.graphChanged.connect(self.updateGraphTreeLocation)
-        self.newFileExecuted.connect(lambda keepRoot: self.graphManager.clear(keepRoot=keepRoot))
         self.newFileExecuted.connect(self.canvasWidget.shoutDown)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
@@ -207,6 +206,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer.timeout.disconnect()
 
         # broadcast
+        self.graphManager.clear(keepRoot=keepRoot)
         self.newFileExecuted.emit(keepRoot)
         self._current_file_name = 'Untitled'
         self.clearPropertiesView()

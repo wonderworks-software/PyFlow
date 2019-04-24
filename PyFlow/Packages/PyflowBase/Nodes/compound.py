@@ -1,6 +1,7 @@
 import os
 import json
 import weakref
+from copy import deepcopy
 
 from PyFlow.Core import NodeBase
 from PyFlow.Core import GraphBase
@@ -27,10 +28,7 @@ class compound(NodeBase):
         assert(newGraph is not None)
         self._rawGraph = newGraph
 
-    def Tick(self, delta):
-        self.rawGraph.Tick(delta)
-        super(compound, self).Tick(delta)
-
+    def syncPins(self):
         # look for graph nodes pins was added
         # We need only create companions, deletion will be performed by signals automatically
         graphInputs = self.rawGraph.getNodes(classNameFilters=['graphInputs'])
@@ -46,6 +44,11 @@ class compound(NodeBase):
                 # create companion pin if needed
                 if inPin.name not in self.namePinOutputsMap:
                     self.onGraphOutputPinCreated(inPin)
+
+    def Tick(self, delta):
+        self.syncPins()
+        self.rawGraph.Tick(delta)
+        super(compound, self).Tick(delta)
 
     def setName(self, name):
         super(compound, self).setName(name)
@@ -70,10 +73,6 @@ class compound(NodeBase):
 
     def serialize(self, copying=False):
         default = NodeBase.serialize(self, copying=copying)
-        # remove dynamically created ins outs. They will be recreated automatically when graph data populated
-        default['inputs'] = []
-        default['outputs'] = []
-
         default['graphData'] = self.rawGraph.serialize()
         return default
 
@@ -102,6 +101,7 @@ class compound(NodeBase):
             subgraphInputPin.setName(name, force=True)
         outPin.nameChanged.connect(forceRename, weak=False)
 
+        # TODO: move lifetime to syncPins
         def onInnerKilled(*args, **kwargs):
             if subgraphInputPin in self.__inputsMap:
                 self.__inputsMap.pop(subgraphInputPin)
@@ -154,6 +154,7 @@ class compound(NodeBase):
             subgraphOutputPin.setName(name, force=True)
         inPin.nameChanged.connect(forceRename, weak=False)
 
+        # TODO: move lifetime to syncPins
         def onInnerInpPinKilled(*args, **kwargs):
             self.__outputsMap.pop(subgraphOutputPin)
             subgraphOutputPin.kill()
@@ -191,6 +192,16 @@ class compound(NodeBase):
             # recreate graph contents
             jsonTemplate['graphData']['name'] = self.getName()
             self.rawGraph.populateFromJson(jsonTemplate['graphData'])
+
+            self.syncPins()
+
+            inputsMap = self.namePinInputsMap
+            for inpJson in jsonTemplate['inputs']:
+                inputsMap[inpJson['name']].uid = uuid.UUID(inpJson['uuid'])
+
+            outputsMap = self.namePinOutputsMap
+            for outJson in jsonTemplate['outputs']:
+                outputsMap[outJson['name']].uid = uuid.UUID(outJson['uuid'])
 
     def addNode(self, node):
         self.rawGraph.addNode(node)
