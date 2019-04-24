@@ -246,10 +246,13 @@ class GraphBase(ISerializable):
                                 nodes.append(p.owningNode())
             return nodes
 
-    def getNodes(self):
+    def getNodes(self, classFilterNames=[]):
         """return all nodes without compound's nodes
         """
-        return [n for n in self.nodes.values()]
+        if len(classFilterNames) > 0:
+            return [n for n in self.nodes.values() if n.__class__.__name__ in classFilterNames]
+        else:
+            return [n for n in self.nodes.values()]
 
     @dispatch(str)
     def findNode(self, name):
@@ -315,6 +318,11 @@ class GraphBase(ISerializable):
             variableLocation = var.location()
             if len(variableLocation) > len(self.location()):
                 return False
+
+        if jsonTemplate is not None:
+            jsonTemplate['name'] = self.graphManager.getUniqNodeName(jsonTemplate['name'])
+        else:
+            node.setName(self.graphManager.getUniqNodeName(node.name))
 
         self.nodes[node.uid] = node
         node.graph = weakref.ref(self)

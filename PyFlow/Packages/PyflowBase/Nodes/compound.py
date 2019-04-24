@@ -31,6 +31,21 @@ class compound(NodeBase):
         self.rawGraph.Tick(delta)
         super(compound, self).Tick(delta)
 
+        # look for graph nodes pins was added
+        graphInputs = self.rawGraph.getNodes(classFilterNames=['graphInputs'])
+        for graphInputNode in graphInputs:
+            for outPin in graphInputNode.outputs.values():
+                # create companion pin if needed
+                if outPin.name not in self.namePinInputsMap:
+                    self.onGraphInputPinCreated(outPin)
+
+        graphOutputs = self.rawGraph.getNodes(classFilterNames=['graphOutputs'])
+        for graphOutputNode in graphOutputs:
+            for inPin in graphOutputNode.inputs.values():
+                # create companion pin if needed
+                if inPin.name not in self.namePinOutputsMap:
+                    self.onGraphOutputPinCreated(inPin)
+
     def setName(self, name):
         super(compound, self).setName(name)
         if self.rawGraph is not None:
@@ -176,8 +191,6 @@ class compound(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(compound, self).postCreate(jsonTemplate=jsonTemplate)
         self.rawGraph = GraphBase(self.name, self.graph().graphManager)
-        self.rawGraph.inputPinCreated.connect(self.onGraphInputPinCreated)
-        self.rawGraph.outputPinCreated.connect(self.onGraphOutputPinCreated)
 
         if jsonTemplate is not None and 'graphData' in jsonTemplate:
             # recreate graph contents

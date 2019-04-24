@@ -410,6 +410,7 @@ class TestGeneral(unittest.TestCase):
         # create out pin on graphInputs node
         # this should expose input pin on compound node
         outPin = inputs1.addOutPin()
+        man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.namePinInputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
 
@@ -420,6 +421,7 @@ class TestGeneral(unittest.TestCase):
         # create input pin on graphOutputs node
         # this should expose output pin on compound node
         inPin = outputs1.addInPin()
+        man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.namePinOutputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
 
@@ -522,6 +524,7 @@ class TestGeneral(unittest.TestCase):
         # create out pin on graphInputs node
         # this should expose input pin on compound node
         outPin = inputs1.addOutPin()
+        man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.namePinInputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
         outPin.setName('inAnyExec')
@@ -529,6 +532,7 @@ class TestGeneral(unittest.TestCase):
         # create input pin on graphOutputs node
         # this should expose output pin on compound node
         inPin = outputs1.addInPin()
+        man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.namePinOutputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
         inPin.setName('outAnyExec')
@@ -616,6 +620,7 @@ class TestGeneral(unittest.TestCase):
         # create out pin on graphInputs node
         # this should expose input pin on compound node
         outPin = inputs1.addOutPin()
+        man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.namePinInputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
         self.assertEqual(outPin.isDynamic(), True)
@@ -627,6 +632,7 @@ class TestGeneral(unittest.TestCase):
         # create input pin on graphOutputs node
         # this should expose output pin on compound node
         inPin = outputs1.addInPin()
+        man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.namePinOutputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
         self.assertEqual(inPin.isDynamic(), True)

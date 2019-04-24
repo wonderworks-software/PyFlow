@@ -1611,13 +1611,12 @@ class Canvas(QGraphicsView):
 
         assert(jsonTemplate is not None)
 
-        # add node unique name before adding it
-        jsonTemplate['name'] = self.graphManager.getUniqNodeName(jsonTemplate['name'])
-
         if uiNode._rawNode.graph is None:
             # if added from node box
             self.graphManager.activeGraph().addNode(uiNode._rawNode, jsonTemplate)
         else:
+            # When copy paste compound node. we are actually pasting a tree of graphs
+            # So we need to put each node under correct graph
             assert(parentGraph is not None), "Parent graph is invalid"
             parentGraph.addNode(uiNode._rawNode, jsonTemplate)
 
