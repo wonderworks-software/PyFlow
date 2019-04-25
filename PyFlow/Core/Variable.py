@@ -81,10 +81,13 @@ class Variable(ISerializable):
     def value(self, value):
         # type checking if this variable is not of any type
         if not self.dataType == 'AnyPin':
-            defaultValue = getPinDefaultValueByType(self.dataType)
-            assert(isinstance(value, type(defaultValue))), "type error! rhs value type is {0}, but variable type is {1}".format(type(value), type(defaultValue))
-        self._value = value
-        self.valueChanged.send(value)
+            supportedDataTypes = findPinClassByType(self.dataType).supportedDataTypes()
+            if self.dataType not in supportedDataTypes:
+                return
+
+        if self._value != value:
+            self._value = value
+            self.valueChanged.send(value)
 
     @property
     def dataType(self):

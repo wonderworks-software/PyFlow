@@ -21,7 +21,7 @@ class forLoopWithBreak(NodeBase):
     def pinTypeHints():
         return {'inputs': ['ExecPin', 'IntPin'], 'outputs': ['ExecPin', 'IntPin']}
 
-    def interrupt(self):
+    def interrupt(self, *args, **kwargs):
         self.stop = True
 
     @staticmethod

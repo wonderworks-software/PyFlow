@@ -105,7 +105,6 @@ class NodeName(QGraphicsTextItem):
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
                 painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
-        # super(NodeName, self).paint(painter, option, widget)
         if lod <= 2:
             painter.setPen(self.defaultPen)
             font = painter.font()
@@ -121,6 +120,7 @@ class NodeName(QGraphicsTextItem):
             painter.setPen(QtGui.QPen(QtCore.Qt.gray, 0.5))
             text = self.parentItem().packageName()
             painter.drawText(packageRect, QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom, text)
+        # super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):
         self.parentItem().canvasRef().disableSortcuts()
@@ -155,8 +155,7 @@ class UINodeBase(QGraphicsObject):
         self.headColor = headColor
         self.height_offset = 3
         self.nodeMainGWidget = QGraphicsWidget()
-        self.nodeMainGWidget.setObjectName(
-            '{0}MainLayout'.format(self._rawNode.__class__.__name__))
+        self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(self._rawNode.__class__.__name__))
         self._w = 0
         self.h = 40
         self.bUseTextureBg = bUseTextureBg  # self.canvasRef().styleSheetEditor.USETEXTUREBG
@@ -170,8 +169,7 @@ class UINodeBase(QGraphicsObject):
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
-        self.label = weakref.ref(
-            NodeName(self, self.bUseTextureBg, self.headColor))
+        self.label = weakref.ref(NodeName(self, self.bUseTextureBg, self.headColor))
         self._displayName = self.name
         # set node layouts
         self.nodeMainGWidget.setParentItem(self)
@@ -459,8 +457,7 @@ class UINodeBase(QGraphicsObject):
             self.displayName = label
 
         self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-            0, 0, self.w, self.childrenBoundingRect().height()))
+        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
         if self.isCallable():
             if 'flow' not in self.category().lower():
                 if self.label().bUseTextureBg:

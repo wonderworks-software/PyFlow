@@ -81,9 +81,7 @@ class NodePainter(object):
         painter.setBrush(br)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            # pen.setColor(Colors.Yellow)
-            pen.setColor(
-                node.canvasRef().window().styleSheetEditor.style.MainColor)
+            pen.setColor(node.canvasRef().window().styleSheetEditor.style.MainColor)
             pen.setStyle(node.opt_pen_selected_type)
         painter.setPen(pen)
         painter.drawRoundedRect(node.boundingRect(), 7, 7)
@@ -92,8 +90,7 @@ class NodePainter(object):
         painter.setPen(QtGui.QPen(QtCore.Qt.white, 0.5))
         textRect = node.boundingRect()
         textRect.setWidth(textRect.width() - 10)
-        painter.drawText(textRect, QtCore.Qt.AlignCenter |
-                         QtCore.Qt.AlignVCenter, node.displayName)
+        painter.drawText(textRect, QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, node.displayName)
 
     @staticmethod
     def asRerouteNode(node, painter, option, widget):

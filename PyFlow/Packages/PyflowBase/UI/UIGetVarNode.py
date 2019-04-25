@@ -8,6 +8,7 @@ from Qt import QtCore
 from Qt import QtGui
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.UI.Canvas.UICommon import VisibilityPolicy
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
@@ -19,7 +20,6 @@ from PyFlow.UI.Canvas.Painters import NodePainter
 class UIGetVarNode(UINodeBase):
     def __init__(self, raw_node):
         super(UIGetVarNode, self).__init__(raw_node)
-        self.label().hide()
         self.label().opt_font.setPointSizeF(6.5)
         self.UIOut = None
 
@@ -27,12 +27,16 @@ class UIGetVarNode(UINodeBase):
     def var(self):
         return self._rawNode.var
 
+    def handlePinLabelsVisibility(self):
+        pass
+
     def postCreate(self, jsonTemplate=None):
         # create self._rawNode.var and raw self._rawNode.out pin
         self._rawNode.postCreate(jsonTemplate)
 
         self.UIOut = self._createUIPinWrapper(self._rawNode.out)
         self.UIOut.getLabel()().hide()
+        self.label().hide()
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
@@ -57,10 +61,12 @@ class UIGetVarNode(UINodeBase):
         # recreate pin
         recreatedPin = self._rawNode.recreateOutput(dataType)
         self.UIOut = self._createUIPinWrapper(self._rawNode.out)
-        self.UIOut.getLabel()().hide()
 
         self.updateNodeShape(self.var.name)
         self.onVarNameChanged(self.var.name)
+
+        self.UIOut.getLabel()().hide()
+        self.UIOut.getLabel()().visibilityPolicy = VisibilityPolicy.AlwaysHidden
 
     def onVarNameChanged(self, newName):
         self.displayName = newName
