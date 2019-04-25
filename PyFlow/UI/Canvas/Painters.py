@@ -12,6 +12,9 @@ class NodePainter(object):
 
     @staticmethod
     def default(node, painter, option, widget):
+        # use 3 levels of detail
+        lod = node.canvasRef().getLodValueFromCurrentScale(3)
+
         color = node.color
         color.setAlpha(230)
         if node.isSelected():

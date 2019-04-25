@@ -14,7 +14,7 @@ from PyFlow.Core.Interfaces import ISerializable
 
 
 class GraphBase(ISerializable):
-    def __init__(self, name, manager, category='', uid=None, *args, **kwargs):
+    def __init__(self, name, manager, parentGraph=None, category='', uid=None, *args, **kwargs):
         super(GraphBase, self).__init__(*args, **kwargs)
         self.graphManager = manager
         self._isRoot = False
@@ -25,10 +25,10 @@ class GraphBase(ISerializable):
         self.__name = name
         self.__category = category
 
-        self._parentGraph = self.graphManager.activeGraph() if not self.isRoot() else None
+        self._parentGraph = None
         self.childGraphs = set()
-        if self.parentGraph is not None:
-            self.parentGraph.childGraphs.add(self)
+
+        self.parentGraph = parentGraph
 
         self.nodes = {}
         self.vars = {}
@@ -51,10 +51,16 @@ class GraphBase(ISerializable):
         if self.isRoot():
             self._parentGraph = None
             return
-        self._parentGraph = newParentGraph
+
         if newParentGraph is not None:
-            # add self to parent's children set
-            self._parentGraph.childGraphs.add(self)
+            if self._parentGraph is not None:
+                # remove self from old parent's children set
+                if self in self._parentGraph.childGraphs:
+                    self._parentGraph.childGraphs.remove(self)
+            # add self to new parent's children set
+            newParentGraph.childGraphs.add(self)
+            # update parent
+            self._parentGraph = newParentGraph
 
     def depth(self):
         result = 1
@@ -122,7 +128,7 @@ class GraphBase(ISerializable):
         """Removes this graph as well as child graphs. Deepest graphs will be removed first
         """
         # graphs should be removed from leafs to root
-        for childGraph in self.childGraphs:
+        for childGraph in set(self.childGraphs):
             childGraph.remove()
         # remove itself
         self.graphManager.removeGraph(self)
@@ -341,8 +347,12 @@ class GraphBase(ISerializable):
     def plot(self):
         depth = self.depth()
         prefix = "".join(['-'] * depth) if depth > 1 else ''
-        print(prefix + "GRAPH:" + self.name + ", parent:{0}".format(str(self.parentGraph)))
-        for n in self.getNodes():
-            print(prefix + "-Node:{}".format(n.name))
+        parentGraphString = str(None) if self.parentGraph is None else self.parentGraph.name
+        print(prefix + "GRAPH:" + self.name + ", parent:{0}".format(parentGraphString))
+        # for n in self.getNodes():
+        #     print(prefix + "-Node:{}".format(n.name))
+
+        assert(self not in self.childGraphs)
+
         for child in self.childGraphs:
             child.plot()

@@ -4,6 +4,8 @@ from Qt import QtCore, QtGui
 from Qt.QtCore import QRegExp
 from Qt.QtGui import QRegExpValidator, QValidator
 
+from PyFlow.UI.Canvas.UICommon import VisibilityPolicy
+
 
 class EditableLabel(QtWidgets.QGraphicsProxyWidget):
     nameChanged = QtCore.Signal(str)
@@ -12,6 +14,7 @@ class EditableLabel(QtWidgets.QGraphicsProxyWidget):
         super(EditableLabel, self).__init__(parent)
         self.node = node
         self.canvas = canvas
+        self.visibilityPolicy = VisibilityPolicy.Auto
         self.nameLabel = QtWidgets.QLabel(name)
         self.nameLabel.setContentsMargins(0, 0, 0, 0)
         self.nameLabel.setAttribute(QtCore.Qt.WA_TranslucentBackground)

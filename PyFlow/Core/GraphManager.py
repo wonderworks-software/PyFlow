@@ -38,12 +38,20 @@ class GraphManager(object):
         if graph is not None:
             graph.clear()
             self._graphs.pop(graph.uid)
+            if graph.parentGraph is not None:
+                if graph in graph.parentGraph.childGraphs:
+                    graph.parentGraph.childGraphs.remove(graph)
+            del graph
 
     @dispatch(object)
     def removeGraph(self, graph):
         if graph.uid in self._graphs:
             graph.clear()
             self._graphs.pop(graph.uid)
+            if graph.parentGraph is not None:
+                if graph in graph.parentGraph.childGraphs:
+                    graph.parentGraph.childGraphs.remove(graph)
+            del graph
 
     def deserialize(self, data):
         self.clear(keepRoot=False)

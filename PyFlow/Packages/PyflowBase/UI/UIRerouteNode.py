@@ -64,6 +64,10 @@ class UIRerouteNode(UINodeBase):
         self.updateNodeShape("")
         self.hidePins()
 
+    def handlePinLabelsVisibility(self):
+        # do not use default lod behavior
+        pass
+
     def setColor(self, item):
         self.color = item._color
         self.update()

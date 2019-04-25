@@ -5,11 +5,6 @@ from PyFlow.Core import(
 from PyFlow.Core.Common import *
 
 
-## Calculates the percentage along a line from MinValue to MaxValue that Value is.
-def GetRangePct(MinValue, MaxValue, Value):
-    return (Value - MinValue) / (MaxValue - MinValue)
-
-
 class MathAbstractLib(FunctionLibraryBase):
     '''doc string for MathAbstractLib'''
     def __init__(self, packageName):
@@ -18,7 +13,7 @@ class MathAbstractLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["="]})
     ## Is a equal b
-    def isequal(a=("AnyPin", None, {"constraint": "1"}),
+    def isEqual(a=("AnyPin", None, {"constraint": "1"}),
                 b=("AnyPin", None, {"constraint": "1"})):
         '''
         Is a equal b
@@ -29,10 +24,10 @@ class MathAbstractLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': [">"]})
     ## Is a > b
     def isGreater(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                                "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                 "FloatVector3Pin", "FloatVector4Pin"]}),
                   b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                                "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                 "FloatVector3Pin", "FloatVector4Pin"]})):
         '''
         Is a > b
@@ -43,10 +38,10 @@ class MathAbstractLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': [">"]})
     ## Is a >= b
     def isGreaterOrEqual(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                       "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                                       "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                        "FloatVector3Pin", "FloatVector4Pin"]}),
                          b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                       "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                                       "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                        "FloatVector3Pin", "FloatVector4Pin"]})):
         '''
         Is a >= b
@@ -57,10 +52,10 @@ class MathAbstractLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["<"]})
     ## Is a < b
     def isLess(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                             "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                             "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                              "FloatVector3Pin", "FloatVector4Pin"]}),
                b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                             "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                             "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                              "FloatVector3Pin", "FloatVector4Pin"]})):
         '''
         Is a < b
@@ -71,10 +66,10 @@ class MathAbstractLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["<"]})
     ## Is a <= b
     def isLessOrEqual(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                    "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                                    "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                     "FloatVector3Pin", "FloatVector4Pin"]}),
                       b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                    "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                                    "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                     "FloatVector3Pin", "FloatVector4Pin"]})):
         '''
         Is a <= b
@@ -94,10 +89,10 @@ class MathAbstractLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=(("AnyPin", None, {"constraint": "1"})), meta={'Category': 'Math|Basic', 'Keywords': ['-']})
     ## Basic subtraction
     def subtract(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                               "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                               "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                "FloatVector3Pin", "FloatVector4Pin"]}),
                  b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                               "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                               "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                "FloatVector3Pin", "FloatVector4Pin"]})):
         '''
         Basic subtraction
@@ -108,10 +103,10 @@ class MathAbstractLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=("AnyPin", None, {"constraint": "1"}), meta={'Category': 'Math|Basic', 'Keywords': ['/', "divide"]})
     ## Basic division
     def divide(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                             "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                             "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                              "FloatVector3Pin", "FloatVector4Pin"]}),
                b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                             "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                             "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                              "FloatVector3Pin", "FloatVector4Pin"]}),
                result=("Reference", ("BoolPin", False))):
         '''
@@ -129,10 +124,10 @@ class MathAbstractLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=(("AnyPin", None, {"constraint": "1"})), meta={'Category': 'Math|Basic', 'Keywords': ['*', "multiply"]})
     ## Basic multiplication
     def multiply(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                               "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                               "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                "FloatVector3Pin", "FloatVector4Pin"]}),
                  b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                               "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                               "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                "FloatVector3Pin", "FloatVector4Pin"]})):
         '''
         Basic multiplication
@@ -141,23 +136,23 @@ class MathAbstractLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("FloatPin", 0.0), meta={'Category': 'Math|Basic', 'Keywords': ['vector', '|', 'dot', 'product']})
-    def dotProduct(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatVector4Pin", "FloatVector3Pin", "QuatlPin"]}),
-                   b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatVector4Pin", "FloatVector3Pin", "QuatlPin"]})):
+    def dotProduct(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatVector4Pin", "FloatVector3Pin", "QuatPin"]}),
+                   b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatVector4Pin", "FloatVector3Pin", "QuatPin"]})):
         '''Dot product'''
         if type(a) == "Quaternion":
             return a.dot(b)
         return a | b
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["inrange", "range"]})
+    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["in", "range"]})
     def inRange(Value=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                  "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                                  "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                   "FloatVector3Pin", "FloatVector4Pin"]}),
                 RangeMin=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                     "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                                     "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                      "FloatVector3Pin", "FloatVector4Pin"]}),
                 RangeMax=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                     "Matrix33Pin", "Matrix44Pin", "QuatlPin",
+                                                                                     "Matrix33Pin", "Matrix44Pin", "QuatPin",
                                                                                      "FloatVector3Pin", "FloatVector4Pin"]}),
                 InclusiveMin=("BoolPin", False),
                 InclusiveMax=("BoolPin", False)):

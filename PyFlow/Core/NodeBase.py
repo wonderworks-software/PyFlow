@@ -152,12 +152,14 @@ class NodeBase(INode):
     def kill(self, *args, **kwargs):
         assert(self.uid in self.graph().nodes), "Error killing node. \
             Node {0} not in graph".format(self.getName())
+
+        self.killed.send()
+
         for pin in self.inputs.values():
             pin.kill()
         for pin in self.outputs.values():
             pin.kill()
         self.graph().nodes.pop(self.uid)
-        self.killed.send()
 
     def Tick(self, delta):
         self.tick.send(delta)

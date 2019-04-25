@@ -44,6 +44,11 @@ def lerp(start, end, alpha):
     return (start + alpha * (end - start))
 
 
+## Calculates the percentage along a line from MinValue to MaxValue that Value is.
+def GetRangePct(MinValue, MaxValue, Value):
+    return (Value - MinValue) / (MaxValue - MinValue)
+
+
 ## Computes the value of the first specified argument clamped to a range defined by the second and third specified arguments
 # @param[in] n
 # @param[in] vmin

@@ -456,10 +456,9 @@ class Canvas(QGraphicsView):
         self._isPanning = False
         self._mousePressed = False
         self._shadows = False
-        self._scale = 1.0
         self._panSpeed = 1.0
-        self.minimum_scale = 0.5
-        self.maximum_scale = 2.0
+        self._minimum_scale = 0.5
+        self._maximum_scale = 2.0
         self.setViewportUpdateMode(self.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
         # Antialias -- Change to styleSheetEditor
@@ -471,9 +470,7 @@ class Canvas(QGraphicsView):
         self.setAttribute(QtCore.Qt.WA_AlwaysShowToolTips)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         self.scene().setSceneRect(QtCore.QRectF(0, 0, 10, 10))
-        self._grid_spacing = 50
         self.factor = 1
-        self.factor_diff = 0
 
         self._current_file_name = 'Untitled'
         self.realTimeLine = QGraphicsPathItem(None, self.scene())
@@ -497,8 +494,6 @@ class Canvas(QGraphicsView):
         self.initialScrollBarsPos = QtGui.QVector2D(
             self.horizontalScrollBar().value(), self.verticalScrollBar().value())
         self._sortcuts_enabled = True
-        self.grid_size = 10
-        self.drawGrigSize = self.grid_size * 2
         self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
@@ -674,15 +669,11 @@ class Canvas(QGraphicsView):
         else:
             scale = scaleY
 
-        if scale < 1.0:
-            self.setTransform(QtGui.QTransform.fromScale(scale, scale))
-        else:
-            self.setTransform(QtGui.QTransform())
+        self.zoom(scale)
 
         sceneRect = self.sceneRect()
-        pan = sceneRect.center() - nodesRect.center()
-        sceneRect.translate(-pan.x(), -pan.y())
-        self.setSceneRect(sceneRect)
+        delta = sceneRect.center() - nodesRect.center()
+        self.pan(delta)
         # Update the main panel when reframing.
         self.update()
 
@@ -1473,13 +1464,7 @@ class Canvas(QGraphicsView):
         center = (topLeft + bottomRight) * 0.5
         zoomFactor = 1.0 + event.delta() * self._mouseWheelZoomRate
 
-        transform = self.transform()
-
-        # Limit zoom to 3x
-        if transform.m22() * zoomFactor >= 2.0:
-            return
-
-        self.scale(zoomFactor, zoomFactor)
+        self.zoom(zoomFactor)
 
         # Call update to redraw background
         self.update()
@@ -1671,19 +1656,30 @@ class Canvas(QGraphicsView):
     def reset_scale(self):
         self.resetMatrix()
 
-    def zoom(self, scale_factor):
+    def viewMinimumScale(self):
+        return self._minimum_scale
 
-        self.factor = self.matrix().scale(scale_factor, scale_factor).mapRect(
-            QtCore.QRectF(0, 0, 1, 1)).width()
-        self.factor = round(self.factor, 1)
-        if self.factor < (self.minimum_scale + 0.4):
-            self.grid_size = 20
-        else:
-            self.grid_size = 10
-        if self.factor < self.minimum_scale or self.factor > self.maximum_scale:
+    def viewMaximumScale(self):
+        return self._maximum_scale
+
+    def currentViewScale(self):
+        return self.transform().m22()
+
+    def getLodValueFromScale(self, numLods=5, scale=1.0):
+        lod = lerp(numLods, 1, GetRangePct(self.viewMinimumScale(), self.viewMaximumScale(), scale))
+        return int(round(lod))
+
+    def getLodValueFromCurrentScale(self, numLods=5):
+        return self.getLodValueFromScale(numLods, self.currentViewScale())
+
+    def zoom(self, scale_factor):
+        self.factor = self.transform().m22()
+        futureScale = self.factor * scale_factor
+        if futureScale < self._minimum_scale:
+            return
+        if futureScale > self._maximum_scale:
             return
         self.scale(scale_factor, scale_factor)
-        self._scale *= scale_factor
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_Tab:

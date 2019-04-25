@@ -186,9 +186,10 @@ class compound(NodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(compound, self).postCreate(jsonTemplate=jsonTemplate)
-        self.rawGraph = GraphBase(self.name, self.graph().graphManager)
 
         if jsonTemplate is not None and 'graphData' in jsonTemplate:
+            parentGraph = self.graph().graphManager.findGraph(jsonTemplate['owningGraphName'])
+            self.rawGraph = GraphBase(self.name, self.graph().graphManager, parentGraph)
             # recreate graph contents
             jsonTemplate['graphData']['name'] = self.getName()
             self.rawGraph.populateFromJson(jsonTemplate['graphData'])
@@ -202,6 +203,8 @@ class compound(NodeBase):
             outputsMap = self.namePinOutputsMap
             for outJson in jsonTemplate['outputs']:
                 outputsMap[outJson['name']].uid = uuid.UUID(outJson['uuid'])
+        else:
+            self.rawGraph = GraphBase(self.name, self.graph().graphManager, self.graph().graphManager.activeGraph())
 
     def addNode(self, node):
         self.rawGraph.addNode(node)

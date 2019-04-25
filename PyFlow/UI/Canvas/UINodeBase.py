@@ -30,6 +30,7 @@ from PyFlow.UI.Canvas.UIPinBase import (
     getUIPinInstance,
     UIGroupPinBase
 )
+from PyFlow.UI.Canvas.UICommon import VisibilityPolicy
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
@@ -92,39 +93,34 @@ class NodeName(QGraphicsTextItem):
         return QtCore.QRectF(0, 0, self.width + 5.0, self.h)
 
     def paint(self, painter, option, widget):
+        # use 3 levels of detail
+        lod = self.parentItem().canvasRef().getLodValueFromCurrentScale(3)
+
         if self.parentItem().bUseTextureBg:
             color = self.color
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
-                painter.drawImage(QtCore.QRect(parentRet.width(
-                ) - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
+                painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
         else:
             parentRet = self.parentItem().childrenBoundingRect()
             if self.icon:
-                painter.drawImage(QtCore.QRect(parentRet.width(
-                ) - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
+                painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
         # super(NodeName, self).paint(painter, option, widget)
-        painter.setPen(self.defaultPen)
-        font = painter.font()
-
-        nameRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right(),
-                                                                               self.boundingRect().bottom()))
-        nameRect -= self.nodeLabelMargin
-        painter.drawText(nameRect, QtCore.Qt.AlignLeft,
-                         self.parentItem().displayName)
-        packageRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right(),
-                                                                                  self.boundingRect().bottom()))
-        packageRect -= self.nodePackageMargin
-        font = painter.font()
-        font.setPointSize(font.pointSize() * 0.5)
-        font.setItalic(True)
-        painter.setFont(font)
-        painter.setPen(QtGui.QPen(QtCore.Qt.gray, 0.5))
-        text = self.parentItem().packageName()
-        # if self.parentItem()._rawNode.lib:
-        #    text += "|{0}".format(self.parentItem()._rawNode.lib)
-        painter.drawText(packageRect, QtCore.Qt.AlignLeft |
-                         QtCore.Qt.AlignBottom, text)
+        if lod <= 2:
+            painter.setPen(self.defaultPen)
+            font = painter.font()
+            nameRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right(), self.boundingRect().bottom()))
+            nameRect -= self.nodeLabelMargin
+            painter.drawText(nameRect, QtCore.Qt.AlignLeft, self.parentItem().displayName)
+            packageRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right(), self.boundingRect().bottom()))
+            packageRect -= self.nodePackageMargin
+            font = painter.font()
+            font.setPointSize(font.pointSize() * 0.5)
+            font.setItalic(True)
+            painter.setFont(font)
+            painter.setPen(QtGui.QPen(QtCore.Qt.gray, 0.5))
+            text = self.parentItem().packageName()
+            painter.drawText(packageRect, QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom, text)
 
     def focusInEvent(self, event):
         self.parentItem().canvasRef().disableSortcuts()
@@ -712,14 +708,7 @@ class UINodeBase(QGraphicsObject):
         self.scene().removeItem(self)
         del(self)
 
-    def Tick(self, delta, *args, **kwargs):
-        # NOTE: Do not call wrapped raw node Tick method here!
-        # this ui node tick called from underlined raw node's emitted signal
-        # do here only UI stuff
-        for uiPin in self.UIPins.values():
-            uiPin.syncDynamic()
-            uiPin.syncRenamable()
-
+    def handleConnectionsVisibility(self):
         if self._rawNode.graph() != self.canvasRef().graphManager.activeGraph():
             self.hide()
             for uiPin in self.UIPins.values():
@@ -730,6 +719,31 @@ class UINodeBase(QGraphicsObject):
             for uiPin in self.UIPins.values():
                 for connection in uiPin.uiConnectionList:
                     connection.show()
+
+    def handlePinLabelsVisibility(self):
+        """Control when pin labels should be visible
+        """
+        lod = self.canvasRef().getLodValueFromCurrentScale(3)
+        for uiPin in self.UIPins.values():
+            uiPin.syncDynamic()
+            uiPin.syncRenamable()
+            label = uiPin.getLabel()()
+            if label.visibilityPolicy == VisibilityPolicy.Auto:
+                if lod <= 2:
+                    label.show()
+                else:
+                    label.hide()
+            elif label.visibilityPolicy == VisibilityPolicy.AlwaysHidden:
+                label.hide()
+            elif label.visibilityPolicy == VisibilityPolicy.AlwaysVisible:
+                label.show()
+
+    def Tick(self, delta, *args, **kwargs):
+        # NOTE: Do not call wrapped raw node Tick method here!
+        # this ui node tick called from underlined raw node's emitted signal
+        # do here only UI stuff
+        self.handleConnectionsVisibility()
+        self.handlePinLabelsVisibility()
 
     def addGroupContainer(self, portType, groupName="group"):
         container = QGraphicsWidget()
