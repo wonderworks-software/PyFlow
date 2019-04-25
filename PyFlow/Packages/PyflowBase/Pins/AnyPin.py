@@ -95,11 +95,13 @@ class AnyPin(PinBase):
                     if port != self:
                         port.setType(other)
                         port._free = False
-                        for e in port.getWrapper()().connections:
-                            for p in [e.source()._rawPin, e.destination()._rawPin]:
-                                if p != port:
-                                    if p.dataType == "AnyPin" and p.dataType != self.dataType:
-                                        p.updateOnConnection(port)
+                        wrapper = port.getWrapper()
+                        if wrapper is not None:
+                            for e in wrapper().connections:
+                                for p in [e.source()._rawPin, e.destination()._rawPin]:
+                                    if p != port:
+                                        if p.dataType == "AnyPin" and p.dataType != self.dataType:
+                                            p.updateOnConnection(port)
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
