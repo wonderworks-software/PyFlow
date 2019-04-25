@@ -30,20 +30,36 @@ class compound(NodeBase):
 
     def syncPins(self):
         # look for graph nodes pins was added
-        # We need only create companions, deletion will be performed by signals automatically
-        graphInputs = self.rawGraph.getNodes(classNameFilters=['graphInputs'])
-        for graphInputNode in graphInputs:
+        nodeInputPins = self.namePinInputsMap
+        nodeOutputPins = self.namePinOutputsMap
+
+        graphInputsNodes = self.rawGraph.getNodes(classNameFilters=['graphInputs'])
+        graphInputPins = {}
+        for graphInputNode in graphInputsNodes:
             for outPin in graphInputNode.outputs.values():
+                graphInputPins[outPin.name] = outPin
                 # create companion pin if needed
-                if outPin.name not in self.namePinInputsMap:
+                if outPin.name not in nodeInputPins:
                     self.onGraphInputPinCreated(outPin)
 
-        graphOutputs = self.rawGraph.getNodes(classNameFilters=['graphOutputs'])
-        for graphOutputNode in graphOutputs:
+        graphOutputNodes = self.rawGraph.getNodes(classNameFilters=['graphOutputs'])
+        graphOutputPins = {}
+        for graphOutputNode in graphOutputNodes:
             for inPin in graphOutputNode.inputs.values():
+                graphOutputPins[inPin.name] = inPin
                 # create companion pin if needed
-                if inPin.name not in self.namePinOutputsMap:
+                if inPin.name not in nodeOutputPins:
                     self.onGraphOutputPinCreated(inPin)
+
+        for nodeInputPinName, nodeInputPin in nodeInputPins.items():
+            if nodeInputPinName not in graphInputPins:
+                clearSignal(nodeInputPin.killed)
+                nodeInputPin.kill()
+
+        for nodeOutputPinName, nodeOutputPin in nodeOutputPins.items():
+            if nodeOutputPinName not in graphOutputPins:
+                clearSignal(nodeOutputPin.killed)
+                nodeOutputPin.kill()
 
     def Tick(self, delta):
         self.syncPins()
@@ -93,20 +109,13 @@ class compound(NodeBase):
         subgraphInputPin.singleInit = outPin.singleInit
         subgraphInputPin.setRenamingEnabled(False)
         subgraphInputPin.setDynamic(False)
-        self.__inputsMap[subgraphInputPin] = outPin
+        self.__inputsMap[subgraphInputPin] = outPin.uid
         pinAffects(subgraphInputPin, outPin)
         # connect
 
         def forceRename(name):
             subgraphInputPin.setName(name, force=True)
         outPin.nameChanged.connect(forceRename, weak=False)
-
-        # TODO: move lifetime to syncPins
-        def onInnerKilled(*args, **kwargs):
-            if subgraphInputPin in self.__inputsMap:
-                self.__inputsMap.pop(subgraphInputPin)
-            subgraphInputPin.kill()
-        outPin.killed.connect(onInnerKilled, weak=False)
 
         # handle inner connect/disconnect
         def onInnerConnected(other):
@@ -146,19 +155,13 @@ class compound(NodeBase):
         subgraphOutputPin.singleInit = inPin.singleInit
         subgraphOutputPin.setRenamingEnabled(False)
         subgraphOutputPin.setDynamic(False)
-        self.__outputsMap[subgraphOutputPin] = inPin
+        self.__outputsMap[subgraphOutputPin] = inPin.uid
         pinAffects(inPin, subgraphOutputPin)
 
         # connect
         def forceRename(name):
             subgraphOutputPin.setName(name, force=True)
         inPin.nameChanged.connect(forceRename, weak=False)
-
-        # TODO: move lifetime to syncPins
-        def onInnerInpPinKilled(*args, **kwargs):
-            self.__outputsMap.pop(subgraphOutputPin)
-            subgraphOutputPin.kill()
-        inPin.killed.connect(onInnerInpPinKilled, weak=False)
 
         # watch if something is connected to inner companion
         # and change default value
