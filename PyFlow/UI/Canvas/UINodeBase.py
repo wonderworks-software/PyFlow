@@ -34,6 +34,7 @@ from PyFlow.UI.Canvas.UICommon import VisibilityPolicy
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
+from PyFlow.UI.Widgets.CollapsibleWidget import CollapsibleFormWidget
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *
 
@@ -611,36 +612,33 @@ class UINodeBase(QGraphicsObject):
     def propertyView(self):
         return self.canvasRef().parent.dockWidgetNodeView
 
-    def onUpdatePropertyView(self, formLayout):
-        # name
+    def onUpdatePropertyView(self, propertiesLayout):
+        baseCategory = CollapsibleFormWidget(headName="Base")
+
         le_name = QLineEdit(self.getName())
         le_name.setReadOnly(True)
         if self.label().IsRenamable():
             le_name.setReadOnly(False)
             le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
-        formLayout.addRow("Name", le_name)
+        baseCategory.addWidget("Name", le_name)
 
-        # uid
         leUid = QLineEdit(str(self._rawNode.graph().name))
         leUid.setReadOnly(True)
-        formLayout.addRow("Owning graph", leUid)
+        baseCategory.addWidget("Owning graph", leUid)
 
-        # type
         text = "{0}".format(self.packageName())
         if self._rawNode.lib:
             text += " | {0}".format(self._rawNode.lib)
         text += " | {0}".format(self._rawNode.__class__.__name__)
         leType = QLineEdit(text)
         leType.setReadOnly(True)
-        formLayout.addRow("Type", leType)
+        baseCategory.addWidget("Type", leType)
+
+        propertiesLayout.addWidget(baseCategory)
 
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
-            sep_inputs = QLabel()
-            sep_inputs.setStyleSheet("background-color: black;")
-            sep_inputs.setText("INPUTS")
-            formLayout.addRow("", sep_inputs)
-
+            inputsCategory = CollapsibleFormWidget(headName="Inputs")
             for inp in self.UIinputs.values():
                 dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
                 w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
@@ -649,16 +647,14 @@ class UINodeBase(QGraphicsObject):
                     w.setWidgetValue(inp.currentData())
                     w.blockWidgetSignals(False)
                     w.setObjectName(inp.getName())
-                    formLayout.addRow(inp.name, w)
+                    inputsCategory.addWidget(inp.name, w)
                     if inp.hasConnections():
                         w.setEnabled(False)
+            propertiesLayout.addWidget(inputsCategory)
 
         # outputs
         if len([i for i in self.UIoutputs.values()]) != 0:
-            sep_outputs = QLabel()
-            sep_outputs.setStyleSheet("background-color: black;")
-            sep_outputs.setText("OUTPUTS")
-            formLayout.addRow("", sep_outputs)
+            outputsCategory = CollapsibleFormWidget(headName="Outputs")
             for out in self.UIoutputs.values():
                 if out.dataType == 'ExecPin':
                     continue
@@ -669,18 +665,17 @@ class UINodeBase(QGraphicsObject):
                     w.setWidgetValue(out.currentData())
                     w.blockWidgetSignals(False)
                     w.setObjectName(out.getName())
-                    formLayout.addRow(out.name, w)
+                    outputsCategory.addWidget(out.name, w)
                     if out.hasConnections():
                         w.setEnabled(False)
+            propertiesLayout.addWidget(outputsCategory)
 
-        doc_lb = QLabel()
-        doc_lb.setStyleSheet("background-color: black;")
-        doc_lb.setText("Description")
-        formLayout.addRow("", doc_lb)
+        Info = CollapsibleFormWidget(headName="Info", collapsed=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())
-        formLayout.addRow("", doc)
+        Info.addWidget(widget=doc)
+        propertiesLayout.addWidget(Info)
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()

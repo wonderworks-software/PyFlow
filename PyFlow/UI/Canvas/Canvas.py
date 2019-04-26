@@ -1443,11 +1443,11 @@ class Canvas(QGraphicsView):
         '''
         if hasattr(obj, 'onUpdatePropertyView'):
             self._clearPropertiesView()
-            obj.onUpdatePropertyView(self.parent.formLayout)
+            obj.onUpdatePropertyView(self.parent.propertiesLayout)
 
     # TODO: move this to App
     def _clearPropertiesView(self):
-        clearLayout(self.parent.formLayout)
+        self.parent.clearPropertiesView()
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()

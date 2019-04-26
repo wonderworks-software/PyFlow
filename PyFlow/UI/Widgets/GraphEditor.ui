@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>996</width>
-    <height>650</height>
+    <height>491</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,10 @@
    <property name="locale">
     <locale language="English" country="UnitedStates"/>
    </property>
-   <layout class="QGridLayout" name="gridLayout_3">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <property name="spacing">
+     <number>1</number>
+    </property>
     <property name="leftMargin">
      <number>1</number>
     </property>
@@ -43,10 +46,31 @@
     <property name="bottomMargin">
      <number>1</number>
     </property>
-    <property name="spacing">
-     <number>1</number>
-    </property>
-    <item row="1" column="0">
+    <item>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <widget class="QSplitter" name="horizontal_splitter">
       <property name="styleSheet">
        <string notr="true"/>
@@ -171,30 +195,6 @@
         </item>
        </layout>
       </widget>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QWidget" name="widget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-      </layout>
      </widget>
     </item>
    </layout>
@@ -325,7 +325,7 @@
           <x>0</x>
           <y>0</y>
           <width>148</width>
-          <height>571</height>
+          <height>412</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -392,19 +392,25 @@
      </property>
      <item>
       <widget class="QScrollArea" name="scrollArea">
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustToContents</enum>
+       </property>
        <property name="widgetResizable">
         <bool>true</bool>
        </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents_3">
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>109</width>
-          <height>396</height>
+          <width>78</width>
+          <height>283</height>
          </rect>
         </property>
-        <layout class="QGridLayout" name="gridLayout_4">
+        <layout class="QVBoxLayout" name="verticalLayout_5">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -417,8 +423,21 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="0" column="0">
-          <layout class="QFormLayout" name="formLayout"/>
+         <item>
+          <layout class="QVBoxLayout" name="propertiesLayout"/>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>

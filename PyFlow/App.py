@@ -25,7 +25,7 @@ from Qt.QtWidgets import QFileDialog
 from PyFlow import Packages
 from PyFlow.UI.Canvas.Canvas import Canvas
 from PyFlow.Core.Common import Direction
-from PyFlow.Core.Common import clearLayout
+from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManager
 from PyFlow.UI.Views.NodeBox import NodesBox
@@ -200,7 +200,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             print(str("// saved: '{0}'".format(self._current_file_name)))
 
     def clearPropertiesView(self):
-        clearLayout(self.formLayout)
+        clearLayout(self.propertiesLayout)
 
     def newFile(self, keepRoot=True):
         self.tick_timer.stop()
