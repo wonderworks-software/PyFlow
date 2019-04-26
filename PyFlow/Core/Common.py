@@ -9,7 +9,6 @@ import time
 import inspect
 import struct
 import weakref
-from treelib import Node, Tree
 try:
     from queue import Queue
 except:

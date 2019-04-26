@@ -1,6 +1,5 @@
 import weakref
 from blinker import Signal
-from treelib import Tree
 from multipledispatch import dispatch
 
 from PyFlow.Core.Common import *

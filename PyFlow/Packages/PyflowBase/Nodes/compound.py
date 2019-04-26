@@ -109,7 +109,7 @@ class compound(NodeBase):
         subgraphInputPin.singleInit = outPin.singleInit
         subgraphInputPin.setRenamingEnabled(False)
         subgraphInputPin.setDynamic(False)
-        self.__inputsMap[subgraphInputPin] = outPin.uid
+        self.__inputsMap[subgraphInputPin] = outPin
         pinAffects(subgraphInputPin, outPin)
         # connect
 
@@ -155,7 +155,7 @@ class compound(NodeBase):
         subgraphOutputPin.singleInit = inPin.singleInit
         subgraphOutputPin.setRenamingEnabled(False)
         subgraphOutputPin.setDynamic(False)
-        self.__outputsMap[subgraphOutputPin] = inPin.uid
+        self.__outputsMap[subgraphOutputPin] = inPin
         pinAffects(inPin, subgraphOutputPin)
 
         # connect
