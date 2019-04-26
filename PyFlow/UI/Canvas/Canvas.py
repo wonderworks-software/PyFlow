@@ -398,12 +398,13 @@ class SceneClass(QGraphicsScene):
             super(SceneClass, self).dropEvent(event)
 
 
-MANIP_MODE_NONE = 0
-MANIP_MODE_SELECT = 1
-MANIP_MODE_PAN = 2
-MANIP_MODE_MOVE = 3
-MANIP_MODE_ZOOM = 4
-MANIP_MODE_COPY = 5
+class CanvasManipulationMode(IntEnum):
+    NONE = 0
+    SELECT = 1
+    PAN = 2
+    MOVE = 3
+    ZOOM = 4
+    COPY = 5
 
 buttonStyle = """
 QPushButton{color : rgba(255,255,255,255);
@@ -423,7 +424,7 @@ QPushButton:pressed{
 
 
 class Canvas(QGraphicsView):
-    _manipulationMode = MANIP_MODE_NONE
+    _manipulationMode = CanvasManipulationMode.NONE
 
     _backgroundColor = Colors.SceneBackground  # QtGui.QColor(50, 50, 50)
     _gridPenS = Colors.GridColor
@@ -505,6 +506,26 @@ class Canvas(QGraphicsView):
         self._UIConnections = {}
         self.boundingRect = self.rect()
         self.installEventFilter(self)
+
+    @property
+    def manipulationMode(self):
+        return self._manipulationMode
+
+    @manipulationMode.setter
+    def manipulationMode(self, value):
+        self._manipulationMode = value
+        if value == CanvasManipulationMode.NONE:
+            pass
+        elif value == CanvasManipulationMode.SELECT:
+            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+        elif value == CanvasManipulationMode.PAN:
+            self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
+        elif value == CanvasManipulationMode.MOVE:
+            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+        elif value == CanvasManipulationMode.ZOOM:
+            self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
+        elif value == CanvasManipulationMode.COPY:
+            pass
 
     def plot(self):
         self.graphManager.plot()
@@ -765,6 +786,9 @@ class Canvas(QGraphicsView):
             if all([modifiers == QtCore.Qt.ControlModifier, event.key() == QtCore.Qt.Key_Space]):
                 self.showNodeBox()
 
+            if self.pressed_item is None and modifiers == QtCore.Qt.ShiftModifier:
+                self.manipulationMode = CanvasManipulationMode.PAN
+
             if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
                 self.alignSelectedNodes(Direction.Left)
                 return
@@ -974,6 +998,8 @@ class Canvas(QGraphicsView):
 
     def keyReleaseEvent(self, event):
         QGraphicsView.keyReleaseEvent(self, event)
+        if event.key() == QtCore.Qt.Key_Shift and self.manipulationMode == CanvasManipulationMode.PAN:
+            self.manipulationMode = CanvasManipulationMode.NONE
 
     def nodeFromInstance(self, instance):
         if isinstance(instance, UINodeBase):
@@ -1043,7 +1069,7 @@ class Canvas(QGraphicsView):
                 node.setSelected(False)
             if not self.resizing:
                 if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
-                    self._manipulationMode = MANIP_MODE_SELECT
+                    self.manipulationMode = CanvasManipulationMode.SELECT
                     self._selectionRect = SelectionRect(
                         graph=self, mouseDownPos=self.mapToScene(event.pos()), modifiers=modifiers)
                     self._mouseDownSelection = [
@@ -1057,13 +1083,11 @@ class Canvas(QGraphicsView):
                         self._selectionRect = None
                 LeftPaning = event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.AltModifier
                 if event.button() == QtCore.Qt.MiddleButton or LeftPaning:
-                    self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
-                    self._manipulationMode = MANIP_MODE_PAN
+                    self.manipulationMode = CanvasManipulationMode.PAN
                     self._lastPanPoint = self.mapToScene(event.pos())
                 elif event.button() == QtCore.Qt.RightButton:
-                    self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
-                    self._manipulationMode = MANIP_MODE_ZOOM
-                    self._lastMousePos = event.pos()
+                    self.manipulationMode = CanvasManipulationMode.ZOOM
+                    # self._lastMousePos = event.pos()
                     self._lastTransform = QtGui.QTransform(self.transform())
                     self._lastSceneRect = self.sceneRect()
                     self._lastSceneCenter = self._lastSceneRect.center()
@@ -1111,7 +1135,7 @@ class Canvas(QGraphicsView):
                                     conection.drawDestination = drawPin
                                 break
                         self.pressed_item = reruteNode
-                        self._manipulationMode = MANIP_MODE_MOVE
+                        self.manipulationMode = CanvasManipulationMode.MOVE
                         self._lastDragPoint = self.mapToScene(event.pos())
                     else:
                         if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
@@ -1136,10 +1160,10 @@ class Canvas(QGraphicsView):
                                 node.setSelected(True)
                         self.autoPanController.start()
                         if all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.NoModifier]):
-                            self._manipulationMode = MANIP_MODE_MOVE
+                            self.manipulationMode = CanvasManipulationMode.MOVE
                             self._lastDragPoint = self.mapToScene(event.pos())
                         elif all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.AltModifier]):
-                            self._manipulationMode = MANIP_MODE_MOVE
+                            self.manipulationMode = CanvasManipulationMode.MOVE
                             self._lastDragPoint = self.mapToScene(event.pos())
                             selectedNodes = self.selectedNodes()
                             copiedNodes = self.copyNodes(toClipboard=False)
@@ -1155,6 +1179,7 @@ class Canvas(QGraphicsView):
 
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
+        mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         modifiers = event.modifiers()
         node = self.nodeFromInstance(self.itemAt(event.pos()))
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
@@ -1225,11 +1250,10 @@ class Canvas(QGraphicsView):
                         self.connectPins(self.pressed_item, out)
                         break
                 self.pressed_item = reruteNode
-                self._manipulationMode = MANIP_MODE_MOVE
+                self.manipulationMode = CanvasManipulationMode.MOVE
                 self._lastDragPoint = self.mapToScene(event.pos())
         # if not isinstance(self.pressed_item,EditableLabel):
-        if self._manipulationMode == MANIP_MODE_SELECT:
-            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+        if self.manipulationMode == CanvasManipulationMode.SELECT:
             dragPoint = self.mapToScene(event.pos())
             self._selectionRect.setDragPoint(dragPoint, modifiers)
             # This logic allows users to use ctrl and shift with rectangle
@@ -1278,8 +1302,7 @@ class Canvas(QGraphicsView):
                     elif node.isSelected() and not self._selectionRect.collidesWithItem(node):
                         node.setSelected(False)
 
-        elif self._manipulationMode == MANIP_MODE_MOVE:
-            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+        elif self.manipulationMode == CanvasManipulationMode.MOVE:
             newPos = self.mapToScene(event.pos())
             delta = newPos - self._lastDragPoint
             self._lastDragPoint = self.mapToScene(event.pos())
@@ -1306,16 +1329,14 @@ class Canvas(QGraphicsView):
                 for inp in newIns:
                     self.connectPins(inp[0], list(node.UIinputs.values())[0])
 
-        elif self._manipulationMode == MANIP_MODE_PAN:
-            self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
-            delta = self.mapToScene(event.pos()) - self._lastPanPoint
+        elif self.manipulationMode == CanvasManipulationMode.PAN:
+            # delta = self.mapToScene(event.pos()) - self._lastPanPoint
             rect = self.sceneRect()
-            rect.translate(-delta.x(), -delta.y())
+            rect.translate(-mouseDelta.x(), -mouseDelta.y())
             self.setSceneRect(rect)
             self._lastPanPoint = self.mapToScene(event.pos())
 
-        elif self._manipulationMode == MANIP_MODE_ZOOM:
-            self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
+        elif self.manipulationMode == CanvasManipulationMode.ZOOM:
             # How much
             delta = event.pos() - self._lastMousePos
             # self._lastMousePos = event.pos()
@@ -1358,6 +1379,7 @@ class Canvas(QGraphicsView):
         # else:
         #    super(Canvas, self).mouseMoveEvent(event)
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
+        self._lastMousePos = event.pos()
 
     def findPinNearPosition(self, scenePos, tolerance=10):
         rect = QtCore.QRect(QtCore.QPoint(scenePos.x() - tolerance, scenePos.y() - tolerance),
@@ -1387,7 +1409,7 @@ class Canvas(QGraphicsView):
             if self.realTimeLine in self.scene().items():
                 self.removeItemByName('RealTimeLine')
 
-        if self._manipulationMode == MANIP_MODE_SELECT:
+        if self.manipulationMode == CanvasManipulationMode.SELECT:
             self._selectionRect.destroy()
             self._selectionRect = None
 
@@ -1402,9 +1424,8 @@ class Canvas(QGraphicsView):
             if isinstance(self.pressed_item, UIPinBase) and not self.resizing:
                 # node box tree pops up
                 # with nodes taking supported data types of pressed Pin as input
-                self.showNodeBox(self.pressed_item.dataType,
-                                 self.pressed_item.direction)
-        self._manipulationMode = MANIP_MODE_NONE
+                self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction)
+        self.manipulationMode = CanvasManipulationMode.NONE
         if not self.resizing:
             p_itm = self.pressedPin
             r_itm = self.releasedPin

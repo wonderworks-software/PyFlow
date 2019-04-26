@@ -48,6 +48,7 @@ class CollapsibleWidget(QtWidgets.QWidget):
         self.mainVLayout.setSpacing(2)
         self.mainVLayout.setContentsMargins(2, 2, 2, 2)
         self.mainVLayout.setObjectName("mainVLayout")
+        self.mainVLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
         self.pbHead = HeadButton(self)
         self.mainVLayout.addWidget(self.pbHead)
         self.setMinimumHeight(30)
@@ -119,6 +120,7 @@ class PropertiesWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(PropertiesWidget, self).__init__(parent)
         self.lyt = QtWidgets.QVBoxLayout(self)
+        self.lyt.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
 
     def clear(self):
