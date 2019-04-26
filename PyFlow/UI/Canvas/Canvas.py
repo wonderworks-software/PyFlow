@@ -1573,6 +1573,7 @@ class Canvas(QGraphicsView):
                 continue
             uiNode = getUINodeInstance(node)
             self.addNode(uiNode, node.serialize(), parentGraph=rawGraph)
+            uiNode.updateNodeShape()
         # restore ui connections
         for rawNode in rawGraph.getNodes():
             uiNode = rawNode.getWrapper()

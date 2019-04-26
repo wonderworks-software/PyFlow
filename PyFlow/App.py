@@ -150,6 +150,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         for graph in self.graphManager.getAllGraphs():
             self.canvasWidget.createWrappersForGraph(graph)
         self.graphManager.selectRootGraph()
+        self.variablesWidget.actualize()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -210,6 +211,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.newFileExecuted.emit(keepRoot)
         self._current_file_name = 'Untitled'
         self.clearPropertiesView()
+        self.variablesWidget.actualize()
 
         self.startMainLoop()
 

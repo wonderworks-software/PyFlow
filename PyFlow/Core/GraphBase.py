@@ -101,7 +101,7 @@ class GraphBase(ISerializable):
         self.setIsRoot(jsonData['isRoot'])
         # restore vars
         for varJson in jsonData['vars']:
-            var = Variable.deserialize(varJson)
+            var = Variable.deserialize(self, varJson)
             self.vars[var.uid] = var
         # restore nodes
         for nodeJson in jsonData['nodes']:

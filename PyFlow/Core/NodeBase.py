@@ -150,8 +150,10 @@ class NodeBase(INode):
         return template
 
     def kill(self, *args, **kwargs):
-        assert(self.uid in self.graph().nodes), "Error killing node. \
-            Node {0} not in graph".format(self.getName())
+        if self.uid not in self.graph().nodes:
+            # already killed
+            # this block executes for variable getter/setter
+            return
 
         self.killed.send()
 

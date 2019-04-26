@@ -175,21 +175,18 @@ class UINodeBase(QGraphicsObject):
         self.nodeMainGWidget.setParentItem(self)
         # main
         self.portsMainLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
-        self.portsMainLayout.setSizePolicy(
-            QSizePolicy.Maximum, QSizePolicy.Maximum)
+        self.portsMainLayout.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.portsMainLayout.setContentsMargins(0, 0, 0, 0)
         self.nodeMainGWidget.setLayout(self.portsMainLayout)
         self.nodeMainGWidget.setX(self.nodeMainGWidget.x())
         # inputs layout
         self.inputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.inputsLayout.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Maximum)
+        self.inputsLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.inputsLayout.setContentsMargins(1, 1, 1, 1)
         self.portsMainLayout.addItem(self.inputsLayout)
         # outputs layout
         self.outputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.outputsLayout.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Maximum)
+        self.outputsLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.outputsLayout.setContentsMargins(1, 1, 1, 1)
         self.portsMainLayout.addItem(self.outputsLayout)
 

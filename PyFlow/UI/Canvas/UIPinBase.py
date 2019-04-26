@@ -87,6 +87,7 @@ class UIGroupPinBase(QGraphicsWidget):
         self.update()
 
 
+# TODO: Make ui pin compound with label in horizontal layout
 class UIPinBase(QGraphicsWidget):
     '''
     Pin ui wrapper

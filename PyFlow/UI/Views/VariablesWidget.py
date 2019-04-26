@@ -65,8 +65,9 @@ class VariablesWidget(QWidget, Ui_Form):
         self.clear()
         # populate current graph
         graph = self.canvas.graphManager.activeGraph()
-        for var in graph.getVarList():
-            self.createVariableWrapperAndAddToList(var)
+        if graph:
+            for var in graph.getVarList():
+                self.createVariableWrapperAndAddToList(var)
 
     def onGraphChanged(self, *args, **kwargs):
         self.actualize()

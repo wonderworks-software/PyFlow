@@ -7,6 +7,8 @@ from Qt.QtGui import QRegExpValidator, QValidator
 from PyFlow.UI.Canvas.UICommon import VisibilityPolicy
 
 
+# TODO: Proxy widgets are bad. Rewrite with QGraphicsWidget
+# Strong references between graphic items will lead to crash
 class EditableLabel(QtWidgets.QGraphicsProxyWidget):
     nameChanged = QtCore.Signal(str)
 
@@ -75,7 +77,7 @@ border-style: transparent;
         self.clearFocus()
 
     def restoreGraph(self):
-        self.node.graph().enableSortcuts()
+        self.node.canvasRef().enableSortcuts()
         if self._isEditable:
             if self.nameEdit:
                 if self.nameEdit.text() != "":

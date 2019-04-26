@@ -21,7 +21,6 @@ class UIGetVarNode(UINodeBase):
     def __init__(self, raw_node):
         super(UIGetVarNode, self).__init__(raw_node)
         self.label().opt_font.setPointSizeF(6.5)
-        self.UIOut = None
 
     @property
     def var(self):
@@ -31,19 +30,17 @@ class UIGetVarNode(UINodeBase):
         pass
 
     def postCreate(self, jsonTemplate=None):
-        # create self._rawNode.var and raw self._rawNode.out pin
-        self._rawNode.postCreate(jsonTemplate)
+        super(UIGetVarNode, self).postCreate(jsonTemplate)
 
-        self.UIOut = self._createUIPinWrapper(self._rawNode.out)
-        self.UIOut.getLabel()().hide()
         self.label().hide()
+        for out in self.UIoutputs.values():
+            out.getLabel()().hide()
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
         self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
-        self.onVarNameChanged(self.var.name)
 
     def boundingRect(self):
         return QtCore.QRectF(0, -3, self.w, 20)
@@ -75,7 +72,8 @@ class UIGetVarNode(UINodeBase):
         self.updateNodeShape(label=self.label().toPlainText())
 
     def onVarValueChanged(self, *args, **kwargs):
-        push(self.UIOut)
+        for out in self._rawNode.outputs.values():
+            push(out)
 
     def paint(self, painter, option, widget):
         NodePainter.asVariableGetter(self, painter, option, widget)

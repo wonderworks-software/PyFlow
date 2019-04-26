@@ -79,11 +79,15 @@ class MathAbstractLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=(("AnyPin", None, {"constraint": "1"})), meta={'Category': 'Math|Basic', 'Keywords': ['+', 'append', "sum"]})
     ## Basic Sum
-    def add(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"})):
+    def add(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"}), result=("Reference", ("BoolPin", False))):
         '''
         Basic Sum
         '''
-        return a + b
+        try:
+            result(True)
+            return a + b
+        except:
+            result(False)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=(("AnyPin", None, {"constraint": "1"})), meta={'Category': 'Math|Basic', 'Keywords': ['-']})
@@ -93,11 +97,16 @@ class MathAbstractLib(FunctionLibraryBase):
                                                                                "FloatVector3Pin", "FloatVector4Pin"]}),
                  b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
                                                                                "Matrix33Pin", "Matrix44Pin", "QuatPin",
-                                                                               "FloatVector3Pin", "FloatVector4Pin"]})):
+                                                                               "FloatVector3Pin", "FloatVector4Pin"]}),
+                 result=("Reference", ("BoolPin", False))):
         '''
         Basic subtraction
         '''
-        return a - b
+        try:
+            result(True)
+            return a - b
+        except:
+            result(False)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("AnyPin", None, {"constraint": "1"}), meta={'Category': 'Math|Basic', 'Keywords': ['/', "divide"]})

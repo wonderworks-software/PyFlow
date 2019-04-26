@@ -131,16 +131,19 @@ class Variable(ISerializable):
         return template
 
     @staticmethod
-    def deserialize(jsonData, *args, **kwargs):
+    def deserialize(graph, jsonData, *args, **kwargs):
         name = jsonData['name']
         dataType = jsonData['dataType']
 
-        pinClass = findPinClassByType(dataType)
-        value = jsonData['value'] if pinClass.isPrimitiveType() else json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass())
+        if dataType != "AnyPin":
+            pinClass = findPinClassByType(dataType)
+            value = jsonData['value'] if pinClass.isPrimitiveType() else json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass())
+        else:
+            value = getPinDefaultValueByType("AnyPin")
 
         accessLevel = AccessLevel(jsonData['accessLevel'])
-        uid = uuid.UUID(json['uuid'])
-        return Variable(value, name, dataType, accessLevel, uid)
+        uid = uuid.UUID(jsonData['uuid'])
+        return Variable(graph, value, name, dataType, accessLevel, uid)
 
     @staticmethod
     def jsonTemplate():

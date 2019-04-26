@@ -111,7 +111,7 @@ class PinBase(IPin):
             uidString = str(uuid.uuid4())
 
         data = {'name': self.name,
-                'dataType': self.dataType,
+                'dataType': self.__class__.__name__,
                 'direction': int(self.direction),
                 'value': self.currentData(),
                 'uuid': uidString,

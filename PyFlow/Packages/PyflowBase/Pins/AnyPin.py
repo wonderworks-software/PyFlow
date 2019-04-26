@@ -31,7 +31,11 @@ class AnyPin(PinBase):
 
     @staticmethod
     def supportedDataTypes():
-        return tuple([pin.__name__ for pin in getAllPinClasses()])
+        # TODO: Any pin should be only value pin
+        # Good example of why it should be like this is addNode with any pins - we can connect exec pins to it
+        # which doesn't make sense and breaks everything
+        # return tuple([pin.__name__ for pin in getAllPinClasses()])
+        return tuple([pin.__name__ for pin in getAllPinClasses() if pin.__name__ != "ExecPin"])
 
     @staticmethod
     def IsValuePin():
@@ -62,10 +66,10 @@ class AnyPin(PinBase):
 
     def serialize(self, copying=False):
         dt = super(AnyPin, self).serialize(copying=copying)
-        activeType = self.dataType
-        dt['dataType'] = "AnyPin"
-        if activeType != "AnyPin":
-            pinClass = findPinClassByType(activeType)
+        constrainedType = self.dataType
+        dt['constrainedType'] = self.dataType
+        if constrainedType != "AnyPin":
+            pinClass = findPinClassByType(constrainedType)
             # serialize with active type's encoder
             if not pinClass.isPrimitiveType():
                 encodedValue = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
