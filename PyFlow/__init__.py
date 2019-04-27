@@ -58,7 +58,7 @@ def CreateRawPin(name, owningNode, dataType, direction, **kwds):
     if pinClass is None:
         return None
     inst = pinClass(name, owningNode, direction, **kwds)
-    owningNode._pins[inst.uid] = inst
+    owningNode.pins.add(inst)
     return inst
 
 

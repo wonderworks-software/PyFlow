@@ -113,10 +113,14 @@ class Variable(ISerializable):
         self._uid = value
         # self.uuidChanged.send(value)
 
-    def serialize(self):
+    def serialize(self, copying=False):
         pinClass = findPinClassByType(self.dataType)
 
         template = Variable.jsonTemplate()
+
+        uidString = str(self.uid)
+        if copying:
+            uidString = str(uuid.uuid4())
 
         template['name'] = self.name
         if self.dataType == 'AnyPin':
@@ -126,7 +130,7 @@ class Variable(ISerializable):
         template['dataType'] = self.dataType
         template['accessLevel'] = self.accessLevel.value
         template['package'] = self._packageName
-        template['uuid'] = str(self.uid)
+        template['uuid'] = uidString
 
         return template
 

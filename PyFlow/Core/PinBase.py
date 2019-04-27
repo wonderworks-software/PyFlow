@@ -255,9 +255,10 @@ class PinBase(IPin):
 
     def kill(self, *args, **kwargs):
         self.disconnectAll()
-        if self.uid in self.owningNode().pins:
-            self.owningNode().pins.pop(self.uid)
+        if self in self.owningNode().pins:
+            self.owningNode().pins.remove(self)
         self.killed.send()
+        clearSignal(self.killed)
 
     def currentData(self):
         if self._data is None:

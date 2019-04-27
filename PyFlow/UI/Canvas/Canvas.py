@@ -561,7 +561,7 @@ class Canvas(QGraphicsView):
         """
         result = {}
         for node in self.graphManager.getAllNodes():
-            for pin in node.pins.values():
+            for pin in node.pins:
                 result[pin.uid] = pin.getWrapper()()
         return result
 
@@ -651,7 +651,7 @@ class Canvas(QGraphicsView):
     @dispatch(str)
     def findPin(self, pinName):
         uiPin = None
-        for pin in self.pins.values():
+        for pin in self.pins:
             if pinName == pin.getName():
                 uiPin = pin
                 break

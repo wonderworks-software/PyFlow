@@ -194,13 +194,13 @@ class GraphManager(object):
     def getUniqGraphPinName(self, graph, name):
         existingNames = []
         for node in graph.getNodes(classNameFilters=['graphInputs', 'graphOutputs']):
-            existingNames.extend([pin.name for pin in node.pins.values()])
+            existingNames.extend([pin.name for pin in node.pins])
         return getUniqNameFromList(existingNames, name)
 
     def getUniqPinName(self, name):
         existingNames = []
         for node in self.getAllNodes():
-            existingNames.extend([pin.name for pin in node.pins.values()])
+            existingNames.extend([pin.name for pin in node.pins])
         return getUniqNameFromList(existingNames, name)
 
     def getUniqName(self, name):
@@ -208,7 +208,7 @@ class GraphManager(object):
         existingNames.extend([n.name for n in self.getAllNodes()])
         existingNames.extend([var.name for var in self.getAllVariables()])
         for node in self.getAllNodes():
-            existingNames.extend([pin.name for pin in node.pins.values()])
+            existingNames.extend([pin.name for pin in node.pins])
         return getUniqNameFromList(existingNames, name)
 
     def getUniqGraphName(self, name):

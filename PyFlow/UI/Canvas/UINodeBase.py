@@ -256,7 +256,7 @@ class UINodeBase(QGraphicsObject):
     @property
     def UIPins(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.pins.values():
+        for rawPin in self._rawNode.pins:
             uiPinRef = rawPin.getWrapper()
             if uiPinRef is not None:
                 result[rawPin.uid] = uiPinRef()
@@ -265,7 +265,7 @@ class UINodeBase(QGraphicsObject):
     @property
     def UIinputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.pins.values():
+        for rawPin in self._rawNode.pins:
             if rawPin.direction == PinDirection.Input:
                 result[rawPin.uid] = rawPin.getWrapper()()
         return result
@@ -273,7 +273,7 @@ class UINodeBase(QGraphicsObject):
     @property
     def UIoutputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.pins.values():
+        for rawPin in self._rawNode.pins:
             if rawPin.direction == PinDirection.Output:
                 result[rawPin.uid] = rawPin.getWrapper()()
         return result
@@ -281,7 +281,7 @@ class UINodeBase(QGraphicsObject):
     @property
     def namePinOutputsMap(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.pins.values():
+        for rawPin in self._rawNode.pins:
             if rawPin.direction == PinDirection.Output:
                 result[rawPin.name] = rawPin.getWrapper()()
         return result
@@ -289,7 +289,7 @@ class UINodeBase(QGraphicsObject):
     @property
     def namePinInputsMap(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.pins.values():
+        for rawPin in self._rawNode.pins:
             if rawPin.direction == PinDirection.Input:
                 result[rawPin.name] = rawPin.getWrapper()()
         return result
@@ -360,7 +360,7 @@ class UINodeBase(QGraphicsObject):
 
     def postCreate(self, jsonTemplate=None):
         # create ui pin wrappers
-        for uid, i in self._rawNode.pins.items():
+        for i in self._rawNode.pins:
             self._createUIPinWrapper(i)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])

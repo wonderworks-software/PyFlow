@@ -53,13 +53,17 @@ class compound(NodeBase):
 
         for nodeInputPinName, nodeInputPin in nodeInputPins.items():
             if nodeInputPinName not in graphInputPins:
-                clearSignal(nodeInputPin.killed)
-                nodeInputPin.kill()
+                if nodeInputPin in self.__inputsMap:
+                    nodeInputPin.kill()
+                    clearSignal(nodeInputPin.killed)
+                    self.__inputsMap.pop(nodeInputPin)
 
         for nodeOutputPinName, nodeOutputPin in nodeOutputPins.items():
             if nodeOutputPinName not in graphOutputPins:
-                clearSignal(nodeOutputPin.killed)
-                nodeOutputPin.kill()
+                if nodeOutputPin in self.__outputsMap:
+                    nodeOutputPin.kill()
+                    clearSignal(nodeOutputPin.killed)
+                    self.__outputsMap.pop(nodeOutputPin)
 
     def Tick(self, delta):
         self.syncPins()
@@ -89,7 +93,7 @@ class compound(NodeBase):
 
     def serialize(self, copying=False):
         default = NodeBase.serialize(self, copying=copying)
-        default['graphData'] = self.rawGraph.serialize()
+        default['graphData'] = self.rawGraph.serialize(copying=copying)
         return default
 
     def onGraphInputPinCreated(self, outPin):
@@ -101,7 +105,7 @@ class compound(NodeBase):
 
         # add companion pin for graphInputs node's output pin
         subgraphInputPin = self.createInputPin(outPin.name,
-                                               outPin.__class__.__name__,
+                                               outPin.dataType,
                                                outPin.defaultValue(),
                                                outPin.call,
                                                outPin.constraint)
@@ -148,7 +152,7 @@ class compound(NodeBase):
 
         # add companion pin for graphOutputs node's input pin
         subgraphOutputPin = self.createOutputPin(inPin.name,
-                                                 inPin.__class__.__name__,
+                                                 inPin.dataType,
                                                  inPin.defaultValue(),
                                                  inPin.call,
                                                  inPin.constraint)

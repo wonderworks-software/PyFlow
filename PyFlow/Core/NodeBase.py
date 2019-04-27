@@ -26,7 +26,8 @@ class NodeBase(INode):
         self._uid = uuid.uuid4() if uid is None else uid
         self.graph = None
         self.name = name
-        self._pins = OrderedDict()
+        # self._pins = OrderedDict()
+        self._pins = set()
         self.x = 0.0
         self.y = 0.0
         self.bCallable = False
@@ -49,7 +50,7 @@ class NodeBase(INode):
             dict(uuid: PinBase)
         """
         result = OrderedDict()
-        for pin in self.pins.values():
+        for pin in self.pins:
             if pin.direction == PinDirection.Input:
                 result[pin.uid] = pin
         return result
@@ -61,7 +62,7 @@ class NodeBase(INode):
             dict(str: PinBase)
         """
         result = OrderedDict()
-        for pin in self.pins.values():
+        for pin in self.pins:
             if pin.direction == PinDirection.Input:
                 result[pin.name] = pin
         return result
@@ -73,7 +74,7 @@ class NodeBase(INode):
             dict(uuid: PinBase)
         """
         result = OrderedDict()
-        for pin in self.pins.values():
+        for pin in self.pins:
             if pin.direction == PinDirection.Output:
                 result[pin.uid] = pin
         return result
@@ -85,7 +86,7 @@ class NodeBase(INode):
             dict(str: PinBase)
         """
         result = OrderedDict()
-        for pin in self.pins.values():
+        for pin in self.pins:
             if pin.direction == PinDirection.Output:
                 result[pin.name] = pin
         return result
