@@ -58,7 +58,7 @@ class CollapsibleWidget(QtWidgets.QWidget):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.ContentWidget.sizePolicy().hasHeightForWidth())
         self.ContentWidget.setSizePolicy(sizePolicy)
-        self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding))
+        self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred))
         self.ContentWidget.setObjectName("ContentWidget")
         self.ContentWidget.setContentsMargins(10, 0, 0, 0)
         self.mainVLayout.addWidget(self.ContentWidget)

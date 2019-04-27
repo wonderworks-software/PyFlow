@@ -19,6 +19,8 @@ from Qt.QtWidgets import (
 from PyFlow.UI.Canvas.UIVariable import UIVariable, VarTypeComboBox
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Views.VariablesWidget_ui import Ui_Form
+from PyFlow.UI.Canvas.UICommon import clearLayout
+from PyFlow.UI.Widgets.CollapsibleWidget import CollapsibleFormWidget
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Common import *
 
@@ -102,19 +104,22 @@ class VariablesWidget(QWidget, Ui_Form):
         clearLayout(formLayout)
 
     def onUpdatePropertyView(self, uiVariable):
-        formLayout = self.canvas.parent.formLayout
-        clearLayout(formLayout)
-        formLayout.update()
+        propertiesLayout = self.canvas.parent.propertiesLayout
+        clearLayout(propertiesLayout)
         rawVariable = uiVariable._rawVariable
+
+        baseCategory = CollapsibleFormWidget(headName="Base")
 
         # name
         le_name = QLineEdit(rawVariable.name)
         le_name.returnPressed.connect(lambda: uiVariable.setName(le_name.text()))
-        formLayout.addRow("Name", le_name)
+        baseCategory.addWidget("Name", le_name)
 
         # data type
         cbTypes = VarTypeComboBox(uiVariable)
-        formLayout.addRow("Type", cbTypes)
+        baseCategory.addWidget("Type", cbTypes)
+
+        valueCategory = CollapsibleFormWidget(headName="Value")
 
         # current value
         def valSetter(x):
@@ -123,7 +128,7 @@ class VariablesWidget(QWidget, Ui_Form):
         if w:
             w.setWidgetValue(rawVariable.value)
             w.setObjectName(rawVariable.name)
-            formLayout.addRow(rawVariable.name, w)
+            valueCategory.addWidget(rawVariable.name, w)
         # access level
         cb = QComboBox()
         cb.addItem('public', 0)
@@ -134,4 +139,6 @@ class VariablesWidget(QWidget, Ui_Form):
             rawVariable.accessLevel = AccessLevel[x]
         cb.currentTextChanged.connect(accessLevelChanged)
         cb.setCurrentIndex(rawVariable.accessLevel)
-        formLayout.addRow('Access level', cb)
+        valueCategory.addWidget('Access level', cb)
+        propertiesLayout.addWidget(baseCategory)
+        propertiesLayout.addWidget(valueCategory)

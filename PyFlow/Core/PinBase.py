@@ -21,7 +21,7 @@ class PinBase(IPin):
 
         self._uid = uuid.uuid4()
         self._linkedToUids = set()
-        self._dataType = None
+        # self._dataType = dataType
         self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
@@ -40,7 +40,6 @@ class PinBase(IPin):
         # enable type checking
         self._typeChecking = True
 
-        self.dataType = dataType
         self.name = name
         ## Defines is this input pin or output
         self.direction = direction
@@ -57,6 +56,10 @@ class PinBase(IPin):
         self.constraint = None
         self.isAny = False
         self._isArray = False
+
+    @property
+    def dataType(self):
+        return self.__class__.__name__
 
     @property
     def typeChecking(self):
@@ -239,11 +242,7 @@ class PinBase(IPin):
     ## Describes, what data type is this pin.
     @property
     def dataType(self):
-        return self._dataType
-
-    @dataType.setter
-    def dataType(self, value):
-        self._dataType = value
+        return self.__class__.__name__
 
     def isUserStruct(self):
         return self._userStructClass is not None

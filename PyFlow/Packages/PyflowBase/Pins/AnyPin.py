@@ -58,7 +58,7 @@ class AnyPin(PinBase):
         return data
 
     def setData(self, data):
-        if self.dataType != "AnyPin":
+        if self.activeDataType != "AnyPin":
             if self.super is not None:
                 data = self.super.processData(data)
         self._data = data
@@ -66,9 +66,9 @@ class AnyPin(PinBase):
 
     def serialize(self, copying=False):
         dt = super(AnyPin, self).serialize(copying=copying)
-        constrainedType = self.dataType
-        dt['constrainedType'] = self.dataType
-        if constrainedType != "AnyPin":
+        constrainedType = self.activeDataType
+        dt['constrainedType'] = constrainedType
+        if constrainedType != self.dataType:
             pinClass = findPinClassByType(constrainedType)
             # serialize with active type's encoder
             if not pinClass.isPrimitiveType():
@@ -87,13 +87,13 @@ class AnyPin(PinBase):
             self.setType(other)
             self._free = False
         else:
-            if other.dataType != "AnyPin":
+            if other.dataType != self.dataType:
                 self._free = False
                 self.setType(other)
                 for e in self.connections:
                     for p in [e.source()._rawPin, e.destination()._rawPin]:
                         if p != self:
-                            if p.dataType == "AnyPin" and p.dataType != self.dataType:
+                            if p.dataType == self.dataType and p.dataType != self.activeDataType:
                                 p.updateOnConnection(other)
                 for port in self.owningNode()._Constraints[self.constraint]:
                     if port != self:
@@ -104,7 +104,7 @@ class AnyPin(PinBase):
                             for e in wrapper().connections:
                                 for p in [e.source()._rawPin, e.destination()._rawPin]:
                                     if p != port:
-                                        if p.dataType == "AnyPin" and p.dataType != self.dataType:
+                                        if p.dataType == self.dataType and p.dataType != self.activeDataType:
                                             p.updateOnConnection(port)
 
     def pinDisconnected(self, other):
@@ -125,7 +125,7 @@ class AnyPin(PinBase):
                             pin.pinDisconnected(other)
 
     def checkFree(self, checked=[], selfChek=True):
-        if self.constraint is None or self.dataType == "AnyPin":
+        if self.constraint is None or self.activeDataType == "AnyPin":
             return True
         else:
             con = []
@@ -151,12 +151,12 @@ class AnyPin(PinBase):
             return free
 
     def setDefault(self):
-        if self.dataType != "AnyPin" and self.singleInit:
+        if self.activeDataType != "AnyPin" and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
 
         self.super = None
-        self.dataType = "AnyPin"
+        self.activeDataType = self.dataType
 
         self.call = lambda: None
 
@@ -166,18 +166,18 @@ class AnyPin(PinBase):
         self.setDefaultValue(None)
 
     def setType(self, other):
-        if self.dataType != "AnyPin" and self.singleInit:
+        if self.activeDataType != "AnyPin" and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
 
-        if self.dataType == "AnyPin" or self.dataType not in other.supportedDataTypes():
+        if self.activeDataType == "AnyPin" or self.activeDataType not in other.supportedDataTypes():
             self.super = other.__class__
-            self.dataType = other.dataType
+            self.activeDataType = other.dataType
             self.color = other.color
-            self._data = getPinDefaultValueByType(self.dataType)
-            self.setDefaultValue(other.defaultValue())
+            self._data = getPinDefaultValueByType(self.activeDataType)
+            self.setDefaultValue(self._data)
             self.dirty = other.dirty
             self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
-            self.typeChanged.send(self.dataType)
+            self.typeChanged.send(self.activeDataType)
