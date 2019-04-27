@@ -22,8 +22,8 @@ class M33Decoder(json.JSONDecoder):
 
 class Matrix33Pin(PinBase):
     """doc string for Matrix33Pin"""
-    def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(Matrix33Pin, self).__init__(name, parent, dataType, direction, **kwargs)
+    def __init__(self, name, parent, direction, **kwargs):
+        super(Matrix33Pin, self).__init__(name, parent, direction, **kwargs)
         self.setDefaultValue(Matrix33())
 
     @staticmethod

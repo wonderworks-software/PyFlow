@@ -5,9 +5,8 @@ from PyFlow.UI.Utils.Settings import Colors
 
 # Execution pin
 class ExecPin(PinBase):
-    def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(ExecPin, self).__init__(
-            name, parent, dataType, direction, **kwargs)
+    def __init__(self, name, parent, direction, **kwargs):
+        super(ExecPin, self).__init__(name, parent, direction, **kwargs)
         self.width = self.height = 10.0
         self.dirty = False
         self._isArray = False

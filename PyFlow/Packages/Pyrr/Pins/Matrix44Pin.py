@@ -22,8 +22,8 @@ class M44Decoder(json.JSONDecoder):
 
 class Matrix44Pin(PinBase):
     """doc string for Matrix44Pin"""
-    def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(Matrix44Pin, self).__init__(name, parent, dataType, direction, **kwargs)
+    def __init__(self, name, parent, direction, **kwargs):
+        super(Matrix44Pin, self).__init__(name, parent, direction, **kwargs)
         self.setDefaultValue(Matrix44())
 
     @staticmethod

@@ -4,8 +4,8 @@ from PyFlow.Core.Common import *
 
 class IntPin(PinBase):
     """doc string for IntPin"""
-    def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(IntPin, self).__init__(name, parent, dataType, direction, **kwargs)
+    def __init__(self, name, parent, direction, **kwargs):
+        super(IntPin, self).__init__(name, parent, direction, **kwargs)
         self.setDefaultValue(0)
 
     @staticmethod

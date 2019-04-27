@@ -12,8 +12,8 @@ from PyFlow import getPinDefaultValueByType
 class AnyPin(PinBase):
     """doc string for AnyPin"""
 
-    def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(AnyPin, self).__init__(name, parent, dataType, direction, **kwargs)
+    def __init__(self, name, parent, direction, **kwargs):
+        super(AnyPin, self).__init__(name, parent, direction, **kwargs)
         self.typeChanged = Signal(str)
         self.setDefaultValue(None)
         self._free = True

@@ -22,8 +22,8 @@ class Vector3Decoder(json.JSONDecoder):
 
 class FloatVector3Pin(PinBase):
     """doc string for FloatVector3Pin"""
-    def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(FloatVector3Pin, self).__init__(name, parent, dataType, direction, **kwargs)
+    def __init__(self, name, parent, direction, **kwargs):
+        super(FloatVector3Pin, self).__init__(name, parent, direction, **kwargs)
         self.setDefaultValue(Vector3())
 
     @staticmethod

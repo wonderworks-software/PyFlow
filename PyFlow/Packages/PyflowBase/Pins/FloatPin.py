@@ -6,7 +6,7 @@ from PyFlow.UI.Utils.Settings import Colors
 class FloatPin(PinBase):
     """doc string for FloatPin"""
 
-    def __init__(self, name, parent, dataType, direction, **kwargs):
+    def __init__(self, name, parent, direction, **kwargs):
         super(FloatPin, self).__init__(
             name, parent, dataType, direction, **kwargs)
         self.setDefaultValue(0.0)

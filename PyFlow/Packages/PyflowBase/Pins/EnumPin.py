@@ -5,8 +5,8 @@ from PyFlow.Core.Enums import ENone
 
 class EnumPin(PinBase):
     '''doc string for EnumPin'''
-    def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(EnumPin, self).__init__(name, parent, dataType, direction, **kwargs)
+    def __init__(self, name, parent, direction, **kwargs):
+        super(EnumPin, self).__init__(name, parent, direction, **kwargs)
         self._userStruct = kwargs['userStructClass']
         self.setDefaultValue(self._userStruct(0))
 

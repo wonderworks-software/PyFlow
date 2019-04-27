@@ -9,8 +9,7 @@ from PyFlow import getPinDefaultValueByType
 
 
 class PinBase(IPin):
-    # TODO: remove dataType argument. We should use __class__.__name__
-    def __init__(self, name, owningNode, dataType, direction, userStructClass=None):
+    def __init__(self, name, owningNode, direction, userStructClass=None):
         super(PinBase, self).__init__()
         # signals
         self.onPinConnected = Signal(object)
@@ -21,7 +20,6 @@ class PinBase(IPin):
 
         self._uid = uuid.uuid4()
         self._linkedToUids = set()
-        # self._dataType = dataType
         self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None

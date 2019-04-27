@@ -22,8 +22,8 @@ class QuatDecoder(json.JSONDecoder):
 
 class QuatPin(PinBase):
     """doc string for QuatPin"""
-    def __init__(self, name, parent, dataType, direction, **kwargs):
-        super(QuatPin, self).__init__(name, parent, dataType, direction, **kwargs)
+    def __init__(self, name, parent, direction, **kwargs):
+        super(QuatPin, self).__init__(name, parent, direction, **kwargs)
         self.setDefaultValue(Quaternion())
 
     @staticmethod
