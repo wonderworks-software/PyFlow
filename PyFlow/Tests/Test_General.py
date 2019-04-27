@@ -495,9 +495,11 @@ class TestGeneral(unittest.TestCase):
         # kill inner pins and check outer companions killed also
         self.assertEqual(len(subgraphNodeInstance.pins), 2)
         inPin.kill()
+        man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.outputs), 0, "outer companion pin is not killed")
         self.assertEqual(len(subgraphNodeInstance.pins), 1)
         outPin.kill()
+        man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.inputs), 0, "outer companion pin is not killed")
         self.assertEqual(len(subgraphNodeInstance.pins), 0, "outer companion pins are not killed")
 
@@ -553,18 +555,10 @@ class TestGeneral(unittest.TestCase):
         # this should change pin types to execs on graph nodes as well as on owning compound node
         connection = connectPins(outPin, printNode1.getPin(DEFAULT_IN_EXEC_NAME))
         self.assertEqual(connection, True)
-        self.assertEqual(subgraphInAnyExec.dataType, "ExecPin", "failed to change data type to exec")
+        self.assertEqual(subgraphInAnyExec.activeDataType, "ExecPin", "failed to change data type to exec")
         # Print in exec connected to compound input node. Calling from outside exec
         # output is not connected
         subgraphInAnyExec.call(message="TEMP")
-
-        # connect print out exec to graph output
-        connection = connectPins(printNode1.getPin(DEFAULT_OUT_EXEC_NAME), inPin)
-        self.assertEqual(connection, True, "failed to connect")
-        self.assertEqual(subgraphOutAnyExec.dataType, "ExecPin", "failed to change data type to exec")
-        self.assertEqual(subgraphOutAnyExec.call, printNode1.getPin(DEFAULT_OUT_EXEC_NAME).call, "incorrect call functions on exec pins")
-
-        subgraphInAnyExec.call(message="EXECS MSG")
 
     def test_graph_serialization(self):
         man = GraphManager()
