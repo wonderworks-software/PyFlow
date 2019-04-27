@@ -39,7 +39,7 @@ class UIConnection(QGraphicsPathItem):
         self.color = self.source().color()
 
         self.thickness = 1
-        if source.dataType == 'ExecPin':
+        if source.isExec():
             self.thickness = 2
 
         self.pen = QtGui.QPen(self.color, self.thickness,

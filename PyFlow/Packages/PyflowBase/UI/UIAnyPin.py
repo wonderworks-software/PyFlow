@@ -58,7 +58,7 @@ class UIAnyPin(UIPinBase):
         event.accept()
 
     def paint(self, painter, option, widget):
-        if self.dataType == "ExecPin":
+        if self.isExec():
             PinPainter.asExecPin(self, painter, option, widget)
         elif self.isArray():
             PinPainter.asArrayPin(self, painter, option, widget)

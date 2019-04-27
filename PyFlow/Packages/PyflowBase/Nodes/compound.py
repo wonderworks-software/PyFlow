@@ -3,6 +3,8 @@ import json
 import weakref
 from copy import deepcopy
 
+from blinker import Signal
+
 from PyFlow.Core import NodeBase
 from PyFlow.Core import GraphBase
 from PyFlow.Core.Common import *
@@ -15,6 +17,7 @@ class compound(NodeBase):
     """
     def __init__(self, name):
         super(compound, self).__init__(name)
+        self.pinExposed = Signal(object)
         self._rawGraph = None
         self.__inputsMap = {}
         self.__outputsMap = {}
@@ -128,8 +131,6 @@ class compound(NodeBase):
                 subgraphInputPin.disconnectAll()
             subgraphInputPin._data = other.currentData()
             subgraphInputPin.setType(other)
-            if other.dataType == "ExecPin":
-                subgraphInputPin.call = other.call
         outPin.onPinConnected.connect(onInnerConnected, weak=False)
 
         # handle outer connect/disconnect
@@ -137,11 +138,8 @@ class compound(NodeBase):
             outPin.setType(other)
         subgraphInputPin.onPinConnected.connect(onSubgraphInputConnected, weak=False)
 
-        # TODO: rewrite with signal
-        wrapper = self.getWrapper()
-        if wrapper is not None:
-            # raw compound input pin created. Now call UI compound node to create UI companion
-            wrapper.onGraphInputPinExposed(subgraphInputPin)
+        # broadcast for UI wrapper class
+        self.pinExposed.send(subgraphInputPin)
 
     def onGraphOutputPinCreated(self, inPin):
         """Reaction when pin added to graphOutputs node
@@ -174,8 +172,6 @@ class compound(NodeBase):
         def onInnerInpPinConnected(other):
             subgraphOutputPin._data = other.currentData()
             subgraphOutputPin.setType(other)
-            if other.dataType == "ExecPin":
-                other.call = subgraphOutputPin.call
         inPin.onPinConnected.connect(onInnerInpPinConnected, weak=False)
 
         # handle outer connect/disconnect
@@ -183,11 +179,8 @@ class compound(NodeBase):
             inPin.setType(other)
         subgraphOutputPin.onPinConnected.connect(onSubgraphOutputConnected, weak=False)
 
-        # TODO: rewrite with signal
-        wrapper = self.getWrapper()
-        if wrapper is not None:
-            # raw compound input pin created. Now call UI compound node to create UI companion
-            wrapper.onGraphOutputPinExposed(subgraphOutputPin)
+        # broadcast for UI wrapper class
+        self.pinExposed.send(subgraphOutputPin)
 
     def kill(self, *args, **kwargs):
         self.rawGraph.remove()

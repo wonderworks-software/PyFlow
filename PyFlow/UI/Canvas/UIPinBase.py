@@ -109,6 +109,7 @@ class UIPinBase(QGraphicsWidget):
     def __init__(self, owningNode, raw_pin):
         super(UIPinBase, self).__init__()
         self._rawPin = raw_pin
+        self._rawPin.serializationHook.connect(self.serializationHook)
         self._rawPin.setWrapper(self)
         self.setParentItem(owningNode)
         self.UiNode = weakref.ref(owningNode)
@@ -361,7 +362,7 @@ class UIPinBase(QGraphicsWidget):
         # create ui wrapper
         return None
 
-    def serializationHook(self):
+    def serializationHook(self, *args, **kwargs):
         data = {}
         data['bLabelHidden'] = self.bLabelHidden
         data['displayName'] = self.displayName()
@@ -376,12 +377,15 @@ class UIPinBase(QGraphicsWidget):
     def getContainer(self):
         return self._container
 
+    def isExec(self):
+        return self._rawPin.isExec()
+
     @property
     def dataType(self):
         return self._rawPin.dataType
 
     def boundingRect(self):
-        if not self.dataType == 'ExecPin':
+        if not self.isExec():
             return QtCore.QRectF(0, -0.5, 8 * 1.5, 8 + 1.0)
         else:
             return QtCore.QRectF(0, -0.5, 10 * 1.5, 10 + 1.0)

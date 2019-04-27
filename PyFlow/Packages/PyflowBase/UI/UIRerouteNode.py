@@ -16,7 +16,7 @@ class UIRerouteNode(UINodeBase):
     def kill(self, *args, **kwargs):
         inp = list(self.UIinputs.values())[0]
         out = list(self.UIoutputs.values())[0]
-        if inp.dataType == "ExecPin":
+        if inp.isExec():
             newIns = []
             for i in self.UIinputs.values():
                 for connection in i.connections:

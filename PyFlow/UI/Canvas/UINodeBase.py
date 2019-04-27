@@ -609,9 +609,6 @@ class UINodeBase(QGraphicsObject):
     def call(self, name):
         self._rawNode.call(name)
 
-    def propertyView(self):
-        return self.canvasRef().parent.dockWidgetNodeView
-
     def onUpdatePropertyView(self, propertiesLayout):
         baseCategory = CollapsibleFormWidget(headName="Base")
 
@@ -640,7 +637,7 @@ class UINodeBase(QGraphicsObject):
         if len([i for i in self.UIinputs.values()]) != 0:
             inputsCategory = CollapsibleFormWidget(headName="Inputs")
             for inp in self.UIinputs.values():
-                dataSetter = inp.call if inp.dataType == 'ExecPin' else inp.setData
+                dataSetter = inp.call if inp.isExec() else inp.setData
                 w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
                     w.blockWidgetSignals(True)
@@ -653,10 +650,10 @@ class UINodeBase(QGraphicsObject):
             propertiesLayout.addWidget(inputsCategory)
 
         # outputs
-        if len([i for i in self.UIoutputs.values()]) != 0:
+        if len([i for i in self.UIoutputs.values() if not i._rawPin.isExec()]) != 0:
             outputsCategory = CollapsibleFormWidget(headName="Outputs")
             for out in self.UIoutputs.values():
-                if out.dataType == 'ExecPin':
+                if out.isExec():
                     continue
                 w = createInputWidget(
                     out.dataType, out.setData, out.defaultValue(), out.getUserStruct())

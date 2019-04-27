@@ -75,7 +75,7 @@ class UISetVarNode(UINodeBase):
 
         # hide all execs labels
         for uiPin in self.UIPins.values():
-            if uiPin.dataType == 'ExecPin':
+            if uiPin.isExec():
                 uiPin.setDisplayName("")
 
         self.onVarNameChanged(self.var.name)

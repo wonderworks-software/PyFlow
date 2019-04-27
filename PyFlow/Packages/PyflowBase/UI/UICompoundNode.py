@@ -8,18 +8,11 @@ from PyFlow.Core.Common import *
 class UICompoundNode(UINodeBase):
     def __init__(self, raw_node):
         super(UICompoundNode, self).__init__(raw_node)
+        self._rawNode.pinExposed.connect(self._createUIPinWrapper)
 
     def updateSize(self, name):
         self.updateWidth()
         self.updateNodeShape()
-
-    def onGraphInputPinExposed(self, rawPin):
-        # create ui wrapper for raw exposed pin
-        # and connect signals
-        uiCompanionPin = self._createUIPinWrapper(rawPin)
-
-    def onGraphOutputPinExposed(self, rawPin):
-        uiCompanionPin = self._createUIPinWrapper(rawPin)
 
     def mouseDoubleClickEvent(self, event):
         self._rawNode.graph().graphManager.selectGraph(self.name)

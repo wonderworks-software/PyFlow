@@ -224,10 +224,10 @@ def connectPins(src, dst):
         dst.disconnectAll()
     # input execs can have any number of connections
     # output execs can have only one connection
-    if src.dataType == 'ExecPin' and dst.dataType == 'ExecPin' and src.hasConnections():
+    if src.isExec() and dst.isExec() and src.hasConnections():
         src.disconnectAll()
 
-    if src.dataType == 'ExecPin' and dst.dataType == 'ExecPin':
+    if src.isExec() and dst.isExec():
         src.onExecute.connect(dst.call)
 
     pinAffects(src, dst)
@@ -256,7 +256,7 @@ def disconnectPins(src, dst):
         dst.pinDisconnected(src)
         push(dst)
         src._linkedToUids.remove(dst.uid)
-        if src.dataType == 'ExecPin' and dst.dataType == 'ExecPin':
+        if src.isExec() and dst.isExec():
             src.onExecute.disconnect(dst.call)
         return True
     return False

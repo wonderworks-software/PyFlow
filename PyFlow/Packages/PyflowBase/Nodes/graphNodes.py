@@ -37,6 +37,7 @@ class graphInputs(NodeBase):
         return ''
 
     def addOutPin(self, name=None):
+        # TODO: add dataType parameter to create specific pins
         if name is None:
             name = self.getUniqPinName('in')
         p = self.createOutputPin(name, 'AnyPin')
@@ -104,6 +105,7 @@ class graphOutputs(NodeBase):
                     inDyn.uid = uuid.UUID(inPinJson['uuid'])
 
     def addInPin(self, name=None):
+        # TODO: add dataType parameter to create specific pins
         if name is None:
             name = self.getUniqPinName('out')
         p = self.createInputPin(name, 'AnyPin')

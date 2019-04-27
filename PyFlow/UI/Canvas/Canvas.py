@@ -373,7 +373,7 @@ class SceneClass(QGraphicsScene):
                         node.setPos(x - node.boundingRect().width(), y)
                         for inp in nodeInputs.values():
                             if canConnectPins(dropItem._rawPin, inp._rawPin):
-                                if dropItem.dataType == 'ExecPin':
+                                if dropItem.isExec():
                                     dropItem._rawPin.disconnectAll()
                                 self.parent().connectPins(dropItem, inp)
                                 node.setPos(x + node.boundingRect().width(), y)
@@ -386,7 +386,7 @@ class SceneClass(QGraphicsScene):
                     if isinstance(dropItem, UIConnection):
                         for inp in nodeInputs.values():
                             if canConnectPins(dropItem.source()._rawPin, inp._rawPin):
-                                if dropItem.source().dataType == 'ExecPin':
+                                if dropItem.source().isExec():
                                     dropItem.source()._rawPin.disconnectAll()
                                 self.parent().connectPins(dropItem.source(), inp)
                                 break
@@ -1112,7 +1112,7 @@ class Canvas(QGraphicsView):
                         for inp in reruteNode.UIinputs.values():
                             if canConnectPins(self.pressed_item.source()._rawPin, inp._rawPin):
                                 drawPin = self.pressed_item.drawSource
-                                if self.pressed_item.source().dataType == 'ExecPin':
+                                if self.pressed_item.source().isExec():
                                     self.pressed_item.kill()
                                 self.connectPins(self.pressed_item.source(), inp)
                                 for conection in inp.connections:
@@ -1397,10 +1397,14 @@ class Canvas(QGraphicsView):
                 if p_itm is not r_itm:
                     self.connectPins(p_itm, r_itm)
 
-        node = self.nodeFromInstance(self.released_item)
-        if event.button() == QtCore.Qt.LeftButton and node is not None:
-            if isinstance(node, UINodeBase):
-                self.tryFillPropertiesView(node)
+        # We don't want properties view go crazy
+        # check if same node pressed and released left mouse button and not moved
+        releasedNode = self.nodeFromInstance(self.released_item)
+        pressedNode = self.nodeFromInstance(self.pressed_item)
+        manhattanLengthTest = (self.mousePressPose - event.pos()).manhattanLength() <= 2
+        if all([event.button() == QtCore.Qt.LeftButton, releasedNode is not None,
+                pressedNode is not None, pressedNode == releasedNode, manhattanLengthTest]):
+                self.tryFillPropertiesView(pressedNode)
         elif event.button() == QtCore.Qt.LeftButton:
             self._clearPropertiesView()
         self.resizing = False

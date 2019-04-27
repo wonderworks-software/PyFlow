@@ -206,7 +206,7 @@ class NodeBase(INode):
 
     def isCallable(self):
         for p in list(self.inputs.values()) + list(self.outputs.values()):
-            if p.dataType == 'ExecPin':
+            if p.isExec():
                 return True
         return False
 
@@ -284,11 +284,11 @@ class NodeBase(INode):
         namePinInputsMap = self.namePinInputsMap
         if name in namePinOutputsMap:
             p = namePinOutputsMap[name]
-            if p.dataType == 'ExecPin':
+            if p.isExec():
                 p.call(*args, **kwargs)
         if name in namePinInputsMap:
             p = namePinInputsMap[name]
-            if p.dataType == 'ExecPin':
+            if p.isExec():
                 p.call(*args, **kwargs)
 
     @dispatch(str, PinSelectionGroup)

@@ -12,6 +12,7 @@ class PinBase(IPin):
     def __init__(self, name, owningNode, direction, userStructClass=None):
         super(PinBase, self).__init__()
         # signals
+        self.serializationHook = Signal()
         self.onPinConnected = Signal(object)
         self.onPinDisconnected = Signal(object)
         self.nameChanged = Signal(str)
@@ -55,6 +56,9 @@ class PinBase(IPin):
         self.isAny = False
         self._isArray = False
 
+    def isExec(self):
+        return False
+
     @property
     def dataType(self):
         return self.__class__.__name__
@@ -65,7 +69,7 @@ class PinBase(IPin):
 
     @typeChecking.setter
     def typeChecking(self, bEnabled):
-        assert(bEnabled, bool)
+        assert(isinstance(bEnabled, bool))
         self._typeChecking = bEnabled
 
     def setAsArray(self, bIsArray):
@@ -111,21 +115,28 @@ class PinBase(IPin):
         if copying:
             uidString = str(uuid.uuid4())
 
-        data = {'name': self.name,
-                'dataType': self.__class__.__name__,
-                'direction': int(self.direction),
-                'value': self.currentData(),
-                'uuid': uidString,
-                'bDirty': self.dirty,
-                'dynamic': self.isDynamic(),
-                'renamingEnabled': self.renamingEnabled(),
-                'typeChecking': self.typeChecking,
-                'alwaysPushDirty': self._alwaysPushDirty,
-                'linkedTo': [str(i.uid) for i in self.affects] if self.direction == PinDirection.Output else []
-                }
-        wrapper = self.getWrapper()
-        if wrapper is not None:
-            data['wrapper'] = wrapper().serializationHook()
+        data = {
+            'name': self.name,
+            'dataType': self.__class__.__name__,
+            'direction': int(self.direction),
+            'value': self.currentData(),
+            'uuid': uidString,
+            'bDirty': self.dirty,
+            'dynamic': self.isDynamic(),
+            'renamingEnabled': self.renamingEnabled(),
+            'typeChecking': self.typeChecking,
+            'alwaysPushDirty': self._alwaysPushDirty,
+            'linkedTo': [str(i.uid) for i in self.affects] if self.direction == PinDirection.Output else []
+        }
+
+        # Wrapper class can subscribe to this signal and return
+        # UI specific data which will be considered on serialization.
+        # Blinker returns a tuple (receiver, return val)
+        wrapperData = self.serializationHook.send(self)
+        if wrapperData is not None:
+            if len(wrapperData) > 0:
+                # We take return value from one wrapper
+                data['wrapper'] = wrapperData[0][1]
         return data
 
     @staticmethod
@@ -286,7 +297,7 @@ class PinBase(IPin):
         return numConnections > 0
 
     def setDirty(self):
-        if self.dataType == 'ExecPin':
+        if self.isExec():
             return
         self.dirty = True
         for i in self.affects:

@@ -124,6 +124,12 @@ class IPin(IItemBase):
     def color():
         return (255, 0, 0, 255)
 
+    def isExec(self):
+        '''
+        is this pin executable or not
+        '''
+        raise NotImplementedError('isExec method of IPin is not implemented')
+
     def isArray(self):
         '''
         is this pin holds an array of values or not
