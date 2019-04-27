@@ -4,6 +4,7 @@
 
 this file is imported in almost all others files of the program
 """
+import re
 import math
 import time
 import inspect
@@ -272,16 +273,27 @@ def push(start_from):
             push(i)
 
 
+def extractDigitsFromEndOfString(string):
+    result = re.search('(\d+)$', string)
+    if result is not None:
+        return int(result.group(0))
+
+
+def removeDigitsFromEndOfString(string):
+    return re.sub(r'\d+$', '', string)
+
+
 def getUniqNameFromList(existingNames, name):
-    # TODO: Extract digits from node and find good Id
     if name not in existingNames:
         return name
-    idx = 0
-    tmp = name
-    while tmp in existingNames:
-        idx += 1
-        tmp = name + str(idx)
-    return name + str(idx)
+    ids = set()
+    for existingName in existingNames:
+        digits = extractDigitsFromEnd(existingName)
+        if digits is not None:
+            ids.add(digits)
+    idx = findGoodId(ids)
+    nameNoDigits = removeDigitsFromEndOfString(name)
+    return nameNoDigits + str(idx)
 
 
 def clearSignal(signal):

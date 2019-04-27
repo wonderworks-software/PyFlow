@@ -748,7 +748,7 @@ class Canvas(QGraphicsView):
         if self.isShortcutsEnabled() and len(selectedNodes) > 0:
             cmdRemove = cmdRemoveNodes(selectedNodes, self)
             self.undoStack.push(cmdRemove)
-            clearLayout(self.parent.formLayout)
+            self.parent.clearPropertiesView()
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
@@ -785,9 +785,6 @@ class Canvas(QGraphicsView):
 
             if all([modifiers == QtCore.Qt.ControlModifier, event.key() == QtCore.Qt.Key_Space]):
                 self.showNodeBox()
-
-            if self.pressed_item is None and modifiers == QtCore.Qt.ShiftModifier:
-                self.manipulationMode = CanvasManipulationMode.PAN
 
             if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
                 self.alignSelectedNodes(Direction.Left)
@@ -998,8 +995,6 @@ class Canvas(QGraphicsView):
 
     def keyReleaseEvent(self, event):
         QGraphicsView.keyReleaseEvent(self, event)
-        if event.key() == QtCore.Qt.Key_Shift and self.manipulationMode == CanvasManipulationMode.PAN:
-            self.manipulationMode = CanvasManipulationMode.NONE
 
     def nodeFromInstance(self, instance):
         if isinstance(instance, UINodeBase):
@@ -1136,7 +1131,6 @@ class Canvas(QGraphicsView):
                                 break
                         self.pressed_item = reruteNode
                         self.manipulationMode = CanvasManipulationMode.MOVE
-                        self._lastDragPoint = self.mapToScene(event.pos())
                     else:
                         if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
                             if node.bResize:
@@ -1161,10 +1155,8 @@ class Canvas(QGraphicsView):
                         self.autoPanController.start()
                         if all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.NoModifier]):
                             self.manipulationMode = CanvasManipulationMode.MOVE
-                            self._lastDragPoint = self.mapToScene(event.pos())
                         elif all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.AltModifier]):
                             self.manipulationMode = CanvasManipulationMode.MOVE
-                            self._lastDragPoint = self.mapToScene(event.pos())
                             selectedNodes = self.selectedNodes()
                             copiedNodes = self.copyNodes(toClipboard=False)
                             self.pasteNodes(move=False, data=copiedNodes)
@@ -1174,7 +1166,10 @@ class Canvas(QGraphicsView):
 
     def pan(self, delta):
         rect = self.sceneRect()
-        rect.translate(-delta.x(), -delta.y())
+        scale = self.currentViewScale()
+        x = -delta.x() / scale
+        y = -delta.y() / scale
+        rect.translate(x, y)
         self.setSceneRect(rect)
 
     def mouseMoveEvent(self, event):
@@ -1251,8 +1246,6 @@ class Canvas(QGraphicsView):
                         break
                 self.pressed_item = reruteNode
                 self.manipulationMode = CanvasManipulationMode.MOVE
-                self._lastDragPoint = self.mapToScene(event.pos())
-        # if not isinstance(self.pressed_item,EditableLabel):
         if self.manipulationMode == CanvasManipulationMode.SELECT:
             dragPoint = self.mapToScene(event.pos())
             self._selectionRect.setDragPoint(dragPoint, modifiers)
@@ -1304,13 +1297,11 @@ class Canvas(QGraphicsView):
 
         elif self.manipulationMode == CanvasManipulationMode.MOVE:
             newPos = self.mapToScene(event.pos())
-            delta = newPos - self._lastDragPoint
-            self._lastDragPoint = self.mapToScene(event.pos())
+            scaledDelta = mouseDelta / self.currentViewScale()
             selectedNodes = self.selectedNodes()
             # Apply the delta to each selected node
             for node in selectedNodes:
-                # if node not in [self.inputsItem,self.outputsItem]:
-                node.translate(delta.x(), delta.y())
+                node.translate(scaledDelta.x(), scaledDelta.y())
             if isinstance(node, UIRerouteNode) and modifiers == QtCore.Qt.AltModifier:
                 mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
                                          QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
@@ -1328,56 +1319,17 @@ class Canvas(QGraphicsView):
                     self.connectPins(list(node.UIoutputs.values())[0], out[0])
                 for inp in newIns:
                     self.connectPins(inp[0], list(node.UIinputs.values())[0])
-
         elif self.manipulationMode == CanvasManipulationMode.PAN:
-            # delta = self.mapToScene(event.pos()) - self._lastPanPoint
-            rect = self.sceneRect()
-            rect.translate(-mouseDelta.x(), -mouseDelta.y())
-            self.setSceneRect(rect)
-            self._lastPanPoint = self.mapToScene(event.pos())
-
+            self.pan(mouseDelta)
         elif self.manipulationMode == CanvasManipulationMode.ZOOM:
-            # How much
-            delta = event.pos() - self._lastMousePos
-            # self._lastMousePos = event.pos()
             zoomFactor = 1.0
-            if delta.x() > 0:
-                zoomFactor = 1.0 + delta.x() / 100.0
+            if mouseDelta.x() > 0:
+                zoomFactor = 1.0 + mouseDelta.x() / 100.0
             else:
-                zoomFactor = 1.0 / (1.0 + abs(delta.x()) / 100.0)
-
-            # Limit zoom to 3x
-            if self._lastTransform.m22() * zoomFactor >= 2.0:
-                return
-
-            # Reset to when we mouse pressed
-            self.setSceneRect(self._lastSceneRect)
-            self.setTransform(self._lastTransform)
-
-            # Center scene around mouse down
-            rect = self.sceneRect()
-            rect.translate(self._lastOffsetFromSceneCenter)
-            self.setSceneRect(rect)
-
-            # Zoom in (QGraphicsView auto-centers!)
-            self.scale(zoomFactor, zoomFactor)
-
-            newSceneCenter = self.sceneRect().center()
-            newScenePos = self.mapToScene(self._lastMousePos)
-            newOffsetFromSceneCenter = newScenePos - newSceneCenter
-
-            # Put mouse down back where is was on screen
-            rect = self.sceneRect()
-            rect.translate(-1 * newOffsetFromSceneCenter)
-            self.setSceneRect(rect)
-
-            # Call udpate to redraw background
-            self.update()
-
+                zoomFactor = 1.0 / (1.0 + abs(mouseDelta.x()) / 100.0)
+            self.zoom(zoomFactor)
         else:
             super(Canvas, self).mouseMoveEvent(event)
-        # else:
-        #    super(Canvas, self).mouseMoveEvent(event)
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
         self._lastMousePos = event.pos()
 

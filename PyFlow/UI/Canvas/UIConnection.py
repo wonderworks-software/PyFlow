@@ -200,31 +200,34 @@ class UIConnection(QGraphicsPathItem):
         return self.destination().getName()
 
     def paint(self, painter, option, widget):
+        lod = self.canvasRef().getLodValueFromCurrentScale(5)
+
         self.setPen(self.pen)
         p1, p2 = self.getEndPoints()
 
-        xDistance = p2.x() - p1.x()
-        vDistance = p2.y() - p1.y()
-
-        offset = abs(xDistance) * 0.5
-        defOffset = 150
-        if abs(xDistance) < defOffset:
-            offset = defOffset / 2
-
-        if abs(vDistance) < 20:
-            offset = abs(xDistance) * 0.3
-
-        multiply = 2
-        self.mPath = QtGui.QPainterPath()
-        self.mPath.moveTo(p1)
-
-        if xDistance < 0:
-            self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
-            self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+        if lod >= 5:
+            self.mPath = QtGui.QPainterPath()
+            self.mPath.moveTo(p1)
+            self.mPath.lineTo(p2)
         else:
-            self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
-            self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
+            xDistance = p2.x() - p1.x()
+            vDistance = p2.y() - p1.y()
+            offset = abs(xDistance) * 0.5
+            defOffset = 150
+            if abs(xDistance) < defOffset:
+                offset = defOffset / 2
+            if abs(vDistance) < 20:
+                offset = abs(xDistance) * 0.3
+            multiply = 2
+            self.mPath = QtGui.QPainterPath()
+            self.mPath.moveTo(p1)
+            if xDistance < 0:
+                self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
+                self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+            else:
+                self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+                self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
+            self.mPath.cubicTo(self.cp1, self.cp2, p2)
 
-        self.mPath.cubicTo(self.cp1, self.cp2, p2)
         self.setPath(self.mPath)
         super(UIConnection, self).paint(painter, option, widget)

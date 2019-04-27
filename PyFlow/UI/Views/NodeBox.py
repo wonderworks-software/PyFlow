@@ -38,7 +38,7 @@ class NodeBoxLineEdit(QLineEdit):
 
 
 class NodeBoxTreeWidget(QTreeWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, useDragAndDrop=False):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "background-color: rgb(40, 40, 40);" +\
                 "selection-background-color: rgb(50, 50, 50);" +\
@@ -51,10 +51,12 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.setFrameShadow(QFrame.Sunken)
         self.setObjectName("tree_nodes")
         self.setSortingEnabled(True)
-        self.setDragEnabled(True)
         self.setColumnCount(1)
         self.setHeaderHidden(True)
-        self.setDragDropMode(QAbstractItemView.DragOnly)
+        self.bUseDragAndDrop = useDragAndDrop
+        if useDragAndDrop:
+            self.setDragEnabled(True)
+            self.setDragDropMode(QAbstractItemView.DragOnly)
         self.setAnimated(True)
         self.categoryPaths = {}
 
@@ -199,6 +201,7 @@ class NodeBoxTreeWidget(QTreeWidget):
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
         key = event.key()
+        canvas = self.parent().canvasRef()
         if key == QtCore.Qt.Key_Return:
             item_clicked = self.currentItem()
             if not item_clicked:
@@ -221,7 +224,7 @@ class NodeBoxTreeWidget(QTreeWidget):
 
             nodeClassName = self.currentItem().text(0)
             name = nodeClassName
-            pos = self.parent().graph().mapToScene(self.parent().graph().mouseReleasePos)
+            pos = canvas.mapToScene(canvas.mouseReleasePos)
             nodeTemplate = NodeBase.jsonTemplate()
             nodeTemplate['package'] = packageName
             nodeTemplate['lib'] = libName
@@ -232,10 +235,11 @@ class NodeBoxTreeWidget(QTreeWidget):
             nodeTemplate['meta']['label'] = nodeClassName
             nodeTemplate['uuid'] = str(uuid.uuid4())
 
-            self.parent().graph().createNode(nodeTemplate)
+            canvas.createNode(nodeTemplate)
 
     def mousePressEvent(self, event):
         super(NodeBoxTreeWidget, self).mousePressEvent(event)
+        canvas = self.parent().canvasRef()
         item_clicked = self.currentItem()
         if not item_clicked:
             event.ignore()
@@ -255,26 +259,37 @@ class NodeBoxTreeWidget(QTreeWidget):
         if pressed_text in self.categoryPaths.keys():
             event.ignore()
             return
-        drag = QtGui.QDrag(self)
-        mime_data = QtCore.QMimeData()
+
+        mousePos = canvas.mapToScene(canvas.mousePressPose)
+
         jsonTemplate = NodeBase.jsonTemplate()
         jsonTemplate['package'] = packageName
         jsonTemplate['lib'] = libName
         jsonTemplate['type'] = pressed_text
         jsonTemplate['name'] = pressed_text
+        jsonTemplate['uuid'] = str(uuid.uuid4())
+        jsonTemplate['x'] = mousePos.x()
+        jsonTemplate['y'] = mousePos.y()
+        jsonTemplate['meta']['label'] = pressed_text
 
-        pressed_text = json.dumps(jsonTemplate)
-        mime_data.setText(pressed_text)
-        drag.setMimeData(mime_data)
-        drag.exec_()
+        if self.bUseDragAndDrop:
+            drag = QtGui.QDrag(self)
+            mime_data = QtCore.QMimeData()
+
+            pressed_text = json.dumps(jsonTemplate)
+            mime_data.setText(pressed_text)
+            drag.setMimeData(mime_data)
+            drag.exec_()
+        else:
+            canvas.createNode(jsonTemplate)
 
 
 class NodesBox(QWidget):
     """doc string for NodesBox"""
 
-    def __init__(self, parent, graph=None):
+    def __init__(self, parent, canvas=None):
         super(NodesBox, self).__init__(parent)
-        self.graph = weakref.ref(graph)
+        self.canvasRef = weakref.ref(canvas)
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.setObjectName("verticalLayout")
         self.verticalLayout.setContentsMargins(4, 4, 4, 4)
