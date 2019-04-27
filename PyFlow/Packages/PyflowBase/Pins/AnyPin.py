@@ -34,7 +34,6 @@ class AnyPin(PinBase):
         # TODO: Any pin should be only value pin
         # Good example of why it should be like this is addNode with any pins - we can connect exec pins to it
         # which doesn't make sense and breaks everything
-        # return tuple([pin.__name__ for pin in getAllPinClasses()])
         return tuple([pin.__name__ for pin in getAllPinClasses() if pin.__name__ != "ExecPin"])
 
     @staticmethod

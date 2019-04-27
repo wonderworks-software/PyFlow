@@ -17,9 +17,11 @@ class graphInputs(NodeBase):
     def getUniqPinName(self, name):
         result = name
         if self.graph is not None:
-            # TODO: owningCompoundNode will fail if this node is under root graph
             owningCompoundNode = self.graph().graphManager.findNode(self.graph().name)
-            result = owningCompoundNode.getUniqPinName(name)
+            if owningCompoundNode is not None:
+                result = owningCompoundNode.getUniqPinName(name)
+            else:
+                result = self.graph().graphManager.getUniqName(name)
         return result
 
     @staticmethod
@@ -69,7 +71,10 @@ class graphOutputs(NodeBase):
         result = name
         if self.graph is not None:
             owningCompoundNode = self.graph().graphManager.findNode(self.graph().name)
-            result = owningCompoundNode.getUniqPinName(name)
+            if owningCompoundNode is not None:
+                result = owningCompoundNode.getUniqPinName(name)
+            else:
+                result = self.graph().graphManager.getUniqName(name)
         return result
 
     @staticmethod

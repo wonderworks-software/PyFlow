@@ -200,8 +200,9 @@ class UIPinBase(QGraphicsWidget):
     def onRename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
-            self.setName(name)
-            self.setDisplayName(name)
+            uniqueName = self._rawPin.owningNode().graph().graphManager.getUniqName(name)
+            self.setName(uniqueName)
+            self.setDisplayName(uniqueName)
 
     def syncDynamic(self):
         self.setMenuItemEnabled("Remove", self._rawPin.isDynamic())
