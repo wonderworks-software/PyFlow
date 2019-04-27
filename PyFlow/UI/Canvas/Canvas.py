@@ -594,11 +594,6 @@ class Canvas(QGraphicsView):
         self.node_box.hide()
         self.node_box.lineEdit.clear()
 
-    def moveScrollbar(self, delta):
-        rect = self.sceneRect()
-        rect.translate(delta.x(), delta.y())
-        self.setSceneRect(rect)
-
     def mouseDoubleClickEvent(self, event):
         QGraphicsView.mouseDoubleClickEvent(self, event)
         self.OnDoubleClick(self.mapToScene(event.pos()))
@@ -618,8 +613,8 @@ class Canvas(QGraphicsView):
 
     def Tick(self, deltaTime):
         if self.autoPanController.isActive():
-            delta = self.autoPanController.getDelta()
-            self.moveScrollbar(delta)
+            delta = self.autoPanController.getDelta() * -1
+            self.pan(delta)
 
         for e in list(self.connections.values()):
             e.Tick()
@@ -1152,7 +1147,6 @@ class Canvas(QGraphicsView):
                                 node.setSelected(not node.isSelected())
                             if modifiers == QtCore.Qt.ShiftModifier:
                                 node.setSelected(True)
-                        self.autoPanController.start()
                         if all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.NoModifier]):
                             self.manipulationMode = CanvasManipulationMode.MOVE
                         elif all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.AltModifier]):
@@ -1298,10 +1292,15 @@ class Canvas(QGraphicsView):
         elif self.manipulationMode == CanvasManipulationMode.MOVE:
             newPos = self.mapToScene(event.pos())
             scaledDelta = mouseDelta / self.currentViewScale()
+
             selectedNodes = self.selectedNodes()
+            if self.autoPanController.isActive():
+                scaledDelta = self.autoPanController.getDelta()
+
             # Apply the delta to each selected node
             for node in selectedNodes:
                 node.translate(scaledDelta.x(), scaledDelta.y())
+
             if isinstance(node, UIRerouteNode) and modifiers == QtCore.Qt.AltModifier:
                 mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
                                          QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))

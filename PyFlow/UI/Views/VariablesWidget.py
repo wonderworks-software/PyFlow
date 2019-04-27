@@ -103,6 +103,11 @@ class VariablesWidget(QWidget, Ui_Form):
         formLayout = self.canvas.parent.formLayout
         clearLayout(formLayout)
 
+    @staticmethod
+    def createPropertiesWidgetForVariable(rawVariable):
+        # TODO: construct properties view here and return
+        return None
+
     def onUpdatePropertyView(self, uiVariable):
         propertiesLayout = self.canvas.parent.propertiesLayout
         clearLayout(propertiesLayout)
@@ -129,6 +134,7 @@ class VariablesWidget(QWidget, Ui_Form):
             w.setWidgetValue(rawVariable.value)
             w.setObjectName(rawVariable.name)
             valueCategory.addWidget(rawVariable.name, w)
+
         # access level
         cb = QComboBox()
         cb.addItem('public', 0)

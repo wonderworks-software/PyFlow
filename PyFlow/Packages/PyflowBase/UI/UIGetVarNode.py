@@ -1,6 +1,6 @@
 """@file UIGetVarNode.py
 
-Builtin node to acess variable value.
+Builtin node to access variable value.
 """
 from Qt.QtWidgets import QStyle
 from Qt.QtWidgets import QGraphicsItem
@@ -10,6 +10,7 @@ from Qt import QtGui
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UICommon import VisibilityPolicy
 from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
@@ -50,9 +51,10 @@ class UIGetVarNode(UINodeBase):
         template['meta']['var'] = self.var.serialize()
         return template
 
-    def onUpdatePropertyView(self, formLayout):
-        # TODO: fill properties here
-        pass
+    def onUpdatePropertyView(self, propertiesLayout):
+        widget = VariablesWidget.createPropertiesWidgetForVariable(self.var)
+        if widget is not None:
+            propertiesLayout.addWidget(widget)
 
     def onVarDataTypeChanged(self, dataType):
         # recreate pin
