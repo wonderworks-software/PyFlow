@@ -20,10 +20,14 @@ class AnyPin(PinBase):
         self.isAny = True
         self.origSetData = self.setData
         self.super = None
-        self.activeDataType = self.dataType
+        self.activeDataType = self.__class__.__name__
         self.typeChecking = False
         # if True, setType and setDefault will work only once
         self.singleInit = False
+
+    @PinBase.dataType.getter
+    def dataType(self):
+        return self.activeDataType
 
     @staticmethod
     def isPrimitiveType():
@@ -155,7 +159,7 @@ class AnyPin(PinBase):
             return
 
         self.super = None
-        self.activeDataType = self.dataType
+        self.activeDataType = self.__class__.__name__
 
         self.call = lambda: None
 
