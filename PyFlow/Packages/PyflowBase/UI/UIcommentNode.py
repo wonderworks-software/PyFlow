@@ -20,6 +20,7 @@ from PyFlow.UI.Utils.Settings import (Spacings, Colors)
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import NodeName
 from PyFlow.UI.Canvas.UIPinBase import UICommentPinBase
+from PyFlow.UI.Widgets.CollapsibleWidget import CollapsibleFormWidget
 import weakref
 
 buttonStyle = """
@@ -380,39 +381,36 @@ class UIcommentNode(UINodeBase):
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
         painter.drawRoundedRect(r, self.sizes[4], self.sizes[5])
 
-    def onUpdatePropertyView(self, formLayout):
-
+    def onUpdatePropertyView(self, propertiesLayout):
+        baseCategory = CollapsibleFormWidget(headName="Base")
         # name
         le_name = QLineEdit(self.getName())
         le_name.setReadOnly(True)
         if self.label().IsRenamable():
             le_name.setReadOnly(False)
             le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
-        formLayout.addRow("Name", le_name)
-
-        # uid
-        leUid = QLineEdit(str(self.uid))
-        leUid.setReadOnly(True)
-        formLayout.addRow("Uuid", leUid)
+        baseCategory.addWidget("Name", le_name)
 
         # type
         leType = QLineEdit(self.__class__.__name__)
         leType.setReadOnly(True)
-        formLayout.addRow("Type", leType)
+        baseCategory.addWidget("Type", leType)
 
         # pos
         le_pos = QLineEdit("{0} x {1}".format(self.pos().x(), self.pos().y()))
-        formLayout.addRow("Pos", le_pos)
+        baseCategory.addWidget("Pos", le_pos)
+        propertiesLayout.addWidget(baseCategory)
 
+        appearanceCategory = CollapsibleFormWidget(headName="Appearance")
         pb = QPushButton("...")
         pb.clicked.connect(lambda: self.onChangeColor(True))
-        formLayout.addRow("Color", pb)
+        appearanceCategory.addWidget("Color", pb)
+        propertiesLayout.addWidget(appearanceCategory)
 
-        doc_lb = QLabel()
-        doc_lb.setStyleSheet("background-color: black;")
-        doc_lb.setText("Description")
-        formLayout.addRow("", doc_lb)
+        infoCategory = CollapsibleFormWidget(headName="Info")
+
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())
-        formLayout.addRow("", doc)
+        infoCategory.addWidget("", doc)
+        propertiesLayout.addWidget(infoCategory)

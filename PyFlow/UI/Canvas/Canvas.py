@@ -437,7 +437,6 @@ class Canvas(QGraphicsView):
     def __init__(self, graphManager, parent=None):
         super(Canvas, self).__init__()
         self.graphManager = graphManager
-        self.setDragMode(QGraphicsView.RubberBandDrag)
         self.undoStack = QUndoStack(self)
         self.parent = parent
         # connect with App class signals
@@ -460,13 +459,15 @@ class Canvas(QGraphicsView):
         self._panSpeed = 1.0
         self._minimum_scale = 0.5
         self._maximum_scale = 2.0
-        self.setViewportUpdateMode(self.FullViewportUpdate)
+
+        self.setDragMode(QGraphicsView.RubberBandDrag)
+        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
-        # Antialias -- Change to styleSheetEditor
-        self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.setRenderHint(QtGui.QPainter.TextAntialiasing)
-        ##
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        # Antialias -- Change to styleSheetEditor
+        self.setRenderHint(QtGui.QPainter.Antialiasing, False)
+        self.setRenderHint(QtGui.QPainter.TextAntialiasing, False)
+        ##
         self.setAcceptDrops(True)
         self.setAttribute(QtCore.Qt.WA_AlwaysShowToolTips)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
@@ -995,7 +996,7 @@ class Canvas(QGraphicsView):
         if isinstance(instance, UINodeBase):
             return instance
         node = instance
-        while (isinstance(node, QGraphicsItem) or isinstance(node, QGraphicsWidget) or isinstance(node, QGraphicsProxyWidget))and node.parentItem() is not None:
+        while (isinstance(node, QGraphicsItem) or isinstance(node, QGraphicsWidget) or isinstance(node, QGraphicsProxyWidget)) and node.parentItem() is not None:
             node = node.parentItem()
         return node
 
@@ -1294,8 +1295,6 @@ class Canvas(QGraphicsView):
             scaledDelta = mouseDelta / self.currentViewScale()
 
             selectedNodes = self.selectedNodes()
-            if self.autoPanController.isActive():
-                scaledDelta = self.autoPanController.getDelta()
 
             # Apply the delta to each selected node
             for node in selectedNodes:
@@ -1398,9 +1397,10 @@ class Canvas(QGraphicsView):
                 if p_itm is not r_itm:
                     self.connectPins(p_itm, r_itm)
 
-        selectedNodes = self.selectedNodes()
-        if len(selectedNodes) != 0 and event.button() == QtCore.Qt.LeftButton:
-            self.tryFillPropertiesView(selectedNodes[0])
+        node = self.nodeFromInstance(self.released_item)
+        if event.button() == QtCore.Qt.LeftButton and node is not None:
+            if isinstance(node, UINodeBase):
+                self.tryFillPropertiesView(node)
         elif event.button() == QtCore.Qt.LeftButton:
             self._clearPropertiesView()
         self.resizing = False
