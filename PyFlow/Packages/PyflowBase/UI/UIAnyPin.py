@@ -16,6 +16,12 @@ class UIAnyPin(UIPinBase):
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
         self._defaultColor = self._color
         self._rawPin.typeChanged.connect(self.setType)
+        self._rawPin.onSetDefaultType.connect(self.onSetDefaultType)
+        self.actionQueryConstraints = self.menu.addAction("Query constraints")
+        self.actionQueryConstraints.triggered.connect(self._rawPin.queryConstrainedPins)
+
+    def onSetDefaultType(self, *args, **kwargs):
+        self.setDefault(self._rawPin.defColor())
 
     def checkFree(self, checked=[], selfChek=True):
         return self._rawPin.checkFree(checked, selfChek)

@@ -15,6 +15,7 @@ class AnyPin(PinBase):
     def __init__(self, name, parent, direction, **kwargs):
         super(AnyPin, self).__init__(name, parent, direction, **kwargs)
         self.typeChanged = Signal(str)
+        self.onSetDefaultType = Signal()
         self.setDefaultValue(None)
         self._free = True
         self.isAny = True
@@ -100,7 +101,7 @@ class AnyPin(PinBase):
                         p.updateOnConnection(other)
                 for pin in self.owningNode().constraints[self.constraint]:
                     if pin != self:
-                        pin.setType(other, bUpdateArray=False)
+                        pin.setType(other, bUpdateIsArray=False)
                         pin._free = False
                         for p in getConnectedPins(self):
                             if p.dataType == self.dataType and p.dataType != self.activeDataType:
@@ -123,8 +124,13 @@ class AnyPin(PinBase):
                         for pin in list(pin.affected_by) + list(pin.affects):
                             pin.pinDisconnected(other)
 
+    def queryConstrainedPins(self):
+        print("constraint", self.constraint)
+        print("node constraints", self.owningNode().constraints)
+
     def checkFree(self, checked=[], selfChek=True):
-        if self.constraint is None or self.activeDataType == "AnyPin":
+        # if self.constraint is None or self.activeDataType == self.dataType:
+        if self.constraint is None:
             return True
         else:
             con = []
@@ -148,7 +154,7 @@ class AnyPin(PinBase):
             return free
 
     def setDefault(self):
-        if self.activeDataType != "AnyPin" and self.singleInit:
+        if self.activeDataType != self.dataType and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
 
@@ -157,13 +163,12 @@ class AnyPin(PinBase):
 
         self.call = lambda: None
 
-        if self.getWrapper() is not None:
-            self.getWrapper()().setDefault(self.defColor())
+        self.onSetDefaultType.send()
 
         self.setDefaultValue(None)
         self.setAsArray(self.isArrayByDefault)
 
-    def setType(self, other, bUpdateArray=True):
+    def setType(self, other, bUpdateIsArray=True):
         if self.activeDataType != self.dataType and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
@@ -179,5 +184,5 @@ class AnyPin(PinBase):
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
-            if bUpdateArray:
+            if bUpdateIsArray:
                 self.setAsArray(other.isArray() | self.isArrayByDefault)

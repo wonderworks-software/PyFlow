@@ -53,6 +53,9 @@ class PinBase(IPin):
         self._isArray = False
         self.supportsOnlyArray = False
 
+    def __repr__(self):
+        return "[{0}:{1}:{2}:{3}]".format(self.dataType, self.getName(), self.dirty, self.currentData())
+
     def isExec(self):
         return False
 
