@@ -1,5 +1,6 @@
-from Qt.QtWidgets import QUndoCommand
 from uuid import UUID
+
+from Qt.QtWidgets import QUndoCommand
 
 
 class RemoveNodes(QUndoCommand):
@@ -10,36 +11,37 @@ class RemoveNodes(QUndoCommand):
         super(RemoveNodes, self).__init__()
         self.setText("Remove nodes")
         self.graph = graph
-        self.selectedNodes = selectedNodes
         self.connectionInfo = []
-        self.jsonData = []
+        self.serializedNodes = []
         # we do not want to use class references directly
         # instead we store uuids, and access refs through graph
-        for node in self.selectedNodes:
-            self.jsonData.append(node.serialize())
+        for node in selectedNodes:
+            self.serializedNodes.append(node.serialize())
 
     def undo(self):
-        for nodeJson in self.jsonData:
+        for nodeJson in self.serializedNodes:
             nodeInstance = self.graph._createNode(nodeJson)
             nodeInstance.uid = UUID(nodeJson['uuid'])
         # restore connection info
         for edgeJson in self.connectionInfo:
-            src = self.graph.pins[UUID(edgeJson['sourceUUID'])]
-            dst = self.graph.pins[UUID(edgeJson['destinationUUID'])]
-            edge = self.graph._addEdge(src, dst)
-            if edge:
-                edge.uid = UUID(edgeJson['uuid'])
+            src = self.graph.findPin(UUID(edgeJson['sourceUUID']))
+            dst = self.graph.findPin(UUID(edgeJson['destinationUUID']))
+            connection = self.graph.connectPinsInternal(src, dst)
+            if connection:
+                connection.uid = UUID(edgeJson['uuid'])
 
     def redo(self):
-        for nodeData in self.jsonData:
+        for nodeData in self.serializedNodes:
             uid = UUID(nodeData['uuid'])
             if uid in self.graph.nodes:
                 node = self.graph.nodes[uid]
 
                 # store connecton info
-                for pin in node.inputs.values() + node.outputs.values():
-                    for e in pin.edge_list:
+                for pin in list(node.UIinputs.values()) + list(node.UIoutputs.values()):
+                    for e in pin.connections:
                         self.connectionInfo.append(e.serialize())
-                    pin.disconnectAll()
 
-                node.kill()
+                node._rawNode.kill()
+
+            else:
+                assert(False), "node {} not in graph".format(uid)

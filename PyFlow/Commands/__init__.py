@@ -1,5 +1,8 @@
-import os
-for n in os.listdir(os.path.dirname(__file__)):
-    if n.endswith(".py") and "__init__" not in n:
-        commandName = n.split(".")[0]
-        exec("from {0} import *".format(commandName))
+from PyFlow.Commands.ConnectPin import ConnectPin
+from PyFlow.Commands.CreateNode import CreateNode
+from PyFlow.Commands.Move import Move
+from PyFlow.Commands.RemoveEdges import RemoveEdges
+from PyFlow.Commands.RemoveNodes import RemoveNodes
+
+
+__all__ = ["ConnectPin", "CreateNode", "Move", "RemoveEdges", "RemoveNodes"]

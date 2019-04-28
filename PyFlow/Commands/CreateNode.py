@@ -1,3 +1,5 @@
+import uuid
+
 from Qt.QtWidgets import QUndoCommand
 
 
@@ -5,31 +7,25 @@ class CreateNode(QUndoCommand):
     '''
     Creates a node
     '''
-    def __init__(self, graph, jsonTemplate):
+    def __init__(self, canvas, jsonTemplate, **kwargs):
         super(CreateNode, self).__init__()
-        self.graph = graph
+        self.kwargs = kwargs
+        self.canvas = canvas
         self.nodeInstance = None
         self.jsonTemplate = jsonTemplate
         self.setText("create {} node".format(jsonTemplate['type']))
-        self.uid = None
+        self.uid = uuid.UUID(jsonTemplate['uuid'])
 
     def undo(self):
-        self.graph.scene().blockSignals(True)
+        self.canvas.scene().blockSignals(True)
 
         self.jsonTemplate.clear()
         self.jsonTemplate = self.nodeInstance.serialize()
-        if self.uid in self.graph.nodes:
-            self.graph.nodes[self.uid].kill()
-
-        self.graph.scene().blockSignals(False)
+        self.canvas.nodes[self.uid]._rawNode.kill()
+        self.canvas.scene().blockSignals(False)
 
     def redo(self):
-        self.graph.scene().blockSignals(True)
-
-        self.nodeInstance = self.graph._createNode(self.jsonTemplate)
-        if self.uid:
-            self.nodeInstance.uid = self.uid
-        else:
-            self.uid = self.nodeInstance.uid
-
-        self.graph.scene().blockSignals(False)
+        self.canvas.scene().blockSignals(True)
+        self.jsonTemplate['uuid'] = str(self.uid)
+        self.nodeInstance = self.canvas._createNode(self.jsonTemplate, **self.kwargs)
+        self.canvas.scene().blockSignals(False)

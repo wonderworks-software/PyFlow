@@ -182,3 +182,16 @@ QPlainTextEdit
     selection-background-color: #3b3b3b;
     selection-color: #ffffff;
 }
+
+QPushButton {
+    background-color: rgb(94, 94, 94);
+    border-style: outset;
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: rgb(112, 112, 112);
+    padding: 3px;
+}
+QPushButton:pressed {
+    background-color: rgb(146, 146, 146);
+    border-style: inset;
+}

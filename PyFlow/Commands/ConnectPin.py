@@ -5,36 +5,41 @@ class ConnectPin(QUndoCommand):
     '''
     Connects two pins
     '''
-    def __init__(self, graph, src, dst):
+    def __init__(self, canvas, src, dst):
         super(ConnectPin, self).__init__()
-        self.graph = graph
+        self.canvas = canvas
         self.srcUid = src.uid
         self.dstUid = dst.uid
-        self.setText('connect edges')
+        self.setText('connect connections')
         self.edgeUid = None
 
     def undo(self):
-        if self.edgeUid in self.graph.edges:
-            self.graph.scene().blockSignals(True)
-            self.graph.removeEdge(self.graph.edges[self.edgeUid])
-            self.graph.scene().blockSignals(False)
+        if self.edgeUid in self.canvas.connections:
+            self.canvas.scene().blockSignals(True)
+            self.canvas.removeConnection(self.canvas.connections[self.edgeUid])
+            self.canvas.scene().blockSignals(False)
 
     def redo(self):
+        self.canvas.scene().blockSignals(True)
 
-        self.graph.scene().blockSignals(True)
+        srcPin = self.canvas.findPin(self.srcUid)
+        if srcPin is None:
+            return
 
-        src = self.graph.pins[self.srcUid]
-        dst = self.graph.pins[self.dstUid]
-        edge = self.graph._addEdge(src, dst)
+        dstPin = self.canvas.findPin(self.dstUid)
+        if dstPin is None:
+            return
 
-        # recreate the same edge with same uuid
+        connection = self.canvas.connectPinsInternal(srcPin, dstPin)
+
+        # recreate the same connection with same uuid
         # if it was deleted
-        if edge and self.edgeUid:
-            edge.uid = self.edgeUid
+        if connection and self.edgeUid:
+            connection.uid = self.edgeUid
 
         # if first created store connection uuid
         # of this particular connection
-        if edge and self.edgeUid is None:
-            self.edgeUid = edge.uid
+        if connection and self.edgeUid is None:
+            self.edgeUid = connection.uid
 
-        self.graph.scene().blockSignals(False)
+        self.canvas.scene().blockSignals(False)
