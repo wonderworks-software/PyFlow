@@ -119,4 +119,4 @@ class IntLib(FunctionLibraryBase):
         '''
         Sign (integer, returns -1 if A &lt; 0, 0 if A is zero, and +1 if A &gt; 0)
         '''
-        return sign(a)
+        return int(sign(a))

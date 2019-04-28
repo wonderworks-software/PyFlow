@@ -156,7 +156,13 @@ def canConnectPins(src, dst):
         src, dst = dst, src
 
     if src.direction == dst.direction:
+        # print("same direction pins can't be connected")
         return False
+
+    if dst.isArray() and not src.isArray():
+        if dst.supportsOnlyArray:
+            # print("dst supports only arrays")
+            return False
 
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
         return False
@@ -166,14 +172,17 @@ def canConnectPins(src, dst):
         return False
 
     if src.dataType == "AnyPin" and not cycle_check(src, dst):
+        # print("cycle detected")
         return True
 
     if dst.dataType == "AnyPin":
         if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
+            # print("type is not supported")
             return False
 
     if dst.isAny:
         if src.dataType not in findPinClassByType(dst.dataType).supportedDataTypes():
+            # print("type is not supported")
             return False
 
     if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
@@ -239,7 +248,9 @@ def connectPins(src, dst):
 
     pinAffects(src, dst)
     src.setDirty()
+
     dst._data = src.currentData()
+
     dst.pinConnected(src)
     src.pinConnected(dst)
     push(dst)

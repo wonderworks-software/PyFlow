@@ -9,6 +9,7 @@ class ExecPin(PinBase):
         super(ExecPin, self).__init__(name, parent, direction, **kwargs)
         self.dirty = False
         self._isArray = False
+        self.supportsOnlyArray = False
 
     def isExec(self):
         return True
@@ -19,6 +20,7 @@ class ExecPin(PinBase):
     def setAsArray(self, bIsArray):
         # exec is not a type, it cannot be an array
         self._isArray = False
+        self.supportsOnlyArray = False
 
     @staticmethod
     def isPrimitiveType():

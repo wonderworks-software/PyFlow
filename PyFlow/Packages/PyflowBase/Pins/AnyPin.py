@@ -21,7 +21,6 @@ class AnyPin(PinBase):
         self.super = None
         self.activeDataType = self.__class__.__name__
         self.isArrayByDefault = False
-        self.typeChecking = False
         # if True, setType and setDefault will work only once
         self.singleInit = False
 
@@ -61,12 +60,12 @@ class AnyPin(PinBase):
         return data
 
     def setData(self, data):
-        if self.activeDataType != "AnyPin":
-            if self.super is not None:
-                if not self.isArray():
-                    data = self.super.processData(data)
-                else:
-                    data = [self.super.processData(i) for i in data]
+        if self.activeDataType != self.dataType:
+            assert(self.super is not None)
+            if not self.isArray():
+                data = self.super.processData(data)
+            else:
+                data = [self.super.processData(i) for i in data]
         self._data = data
         PinBase.setData(self, self._data)
 
@@ -101,7 +100,7 @@ class AnyPin(PinBase):
                         p.updateOnConnection(other)
                 for pin in self.owningNode().constraints[self.constraint]:
                     if pin != self:
-                        pin.setType(other)
+                        pin.setType(other, bUpdateArray=False)
                         pin._free = False
                         for p in getConnectedPins(self):
                             if p.dataType == self.dataType and p.dataType != self.activeDataType:
@@ -164,7 +163,7 @@ class AnyPin(PinBase):
         self.setDefaultValue(None)
         self.setAsArray(self.isArrayByDefault)
 
-    def setType(self, other):
+    def setType(self, other, bUpdateArray=True):
         if self.activeDataType != self.dataType and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
@@ -180,4 +179,5 @@ class AnyPin(PinBase):
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
-            self.setAsArray(other.isArray() | self.isArrayByDefault)
+            if bUpdateArray:
+                self.setAsArray(other.isArray() | self.isArrayByDefault)

@@ -490,6 +490,7 @@ class NodeBase(INode):
                 outRef.setAsArray(isinstance(argDefaultValue, list))
                 if outRef.isArray():
                     outRef.isArrayByDefault = True
+                    outRef.supportsOnlyArray = True
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 refs.append(outRef)
@@ -498,6 +499,7 @@ class NodeBase(INode):
                 inp.setAsArray(isinstance(argDefaultValue, list))
                 if inp.isArray():
                     inp.isArrayByDefault = True
+                    inp.supportsOnlyArray = True
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
 

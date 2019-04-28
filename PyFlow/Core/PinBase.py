@@ -34,9 +34,6 @@ class PinBase(IPin):
         ## Access to the node
         self.owningNode = weakref.ref(owningNode)
 
-        # enable type checking
-        self._typeChecking = True
-
         self.name = name
         ## Defines is this input pin or output
         self.direction = direction
@@ -52,27 +49,17 @@ class PinBase(IPin):
         # Constraint ports
         self.constraint = None
         self.isAny = False
+
         self._isArray = False
         self.supportsOnlyArray = False
 
     def isExec(self):
         return False
 
-    @property
-    def dataType(self):
-        return self.__class__.__name__
-
-    @property
-    def typeChecking(self):
-        return self._typeChecking
-
-    @typeChecking.setter
-    def typeChecking(self, bEnabled):
-        assert(isinstance(bEnabled, bool))
-        self._typeChecking = bEnabled
-
     def setAsArray(self, bIsArray):
         self._isArray = bool(bIsArray)
+        if bIsArray:
+            self._data = []
 
     def isArray(self):
         return self._isArray
@@ -123,7 +110,6 @@ class PinBase(IPin):
             'bDirty': self.dirty,
             'dynamic': self.isDynamic(),
             'renamingEnabled': self.renamingEnabled(),
-            'typeChecking': self.typeChecking,
             'alwaysPushDirty': self._alwaysPushDirty,
             'linkedTo': [str(i.uid) for i in self.affects] if self.direction == PinDirection.Output else []
         }
@@ -193,9 +179,9 @@ class PinBase(IPin):
             if not self.dirty:
                 return self.currentData()
             if self.dirty or self.owningNode().bCallable:
-                out = [i for i in self.affected_by if i.direction == PinDirection.Output]
-                if not out == []:
-                    compute_order = self.owningNode().graph().getEvaluationOrder(out[0].owningNode())
+                connectedOutputs = [i for i in self.affected_by if i.direction == PinDirection.Output]
+                if len(connectedOutputs) == 1:
+                    compute_order = self.owningNode().graph().getEvaluationOrder(connectedOutputs[0].owningNode())
                     # call from left to right
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
                         for node in compute_order[layer]:
@@ -208,11 +194,6 @@ class PinBase(IPin):
 
     ## Setting the data
     def setData(self, data):
-        # type checking
-        if self.typeChecking:
-            thisDefaultValue = getPinDefaultValueByType(self.dataType)
-            assert(type(thisDefaultValue) == type(data)), "invalid type passed! Expected type - [{0}]".format(type(thisDefaultValue).__name__)
-
         self.setClean()
         self._data = data
         if self.direction == PinDirection.Output:

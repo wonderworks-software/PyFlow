@@ -212,7 +212,7 @@ class compound(NodeBase):
         self.rawGraph.addNode(node)
 
     def autoAffectPins(self):
-        raise NotImplementedError("Error")
+        pass
 
     def compute(self, *args, **kwargs):
         # put data from inner graph pins to outer compound node output companions

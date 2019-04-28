@@ -62,7 +62,7 @@ class FloatLib(FunctionLibraryBase):
         '''
         Returns -1 if x &lt; 0, 0 if x==0, 1 if x &gt; 0
         '''
-        return sign(a)
+        return float(sign(a))
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
@@ -71,3 +71,11 @@ class FloatLib(FunctionLibraryBase):
         Round a number to a given precision in decimal digits (default 0 digits)
         '''
         return round(Value, Digits)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
+    def listSum(Value=('FloatPin', [])):
+        '''
+        Sum of list of floats
+        '''
+        return sum(Value)

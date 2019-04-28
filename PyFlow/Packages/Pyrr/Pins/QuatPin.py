@@ -44,7 +44,7 @@ class QuatPin(PinBase):
 
     @staticmethod
     def supportedDataTypes():
-        return ('QuatlPin',)
+        return ('QuatPin',)
 
     @staticmethod
     def color():
@@ -52,7 +52,7 @@ class QuatPin(PinBase):
 
     @staticmethod
     def pinDataTypeHint():
-        return 'QuatlPin', Quaternion()
+        return 'QuatPin', Quaternion()
 
     def serialize(self, copying=False):
         # note how custom class can be serialized

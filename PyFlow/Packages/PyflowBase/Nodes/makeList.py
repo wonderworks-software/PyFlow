@@ -8,11 +8,14 @@ class makeList(NodeBase):
         self.arrayData = self.createInputPin('data', 'AnyPin', constraint="1")
         self.arrayData.isArrayByDefault = True
         self.arrayData.setAsArray(True)
+        # We want to populate array from all connected pins
+        self.arrayData.supportsOnlyArray = False
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
         self.outArray = self.createOutputPin('out', 'AnyPin', constraint="1")
         self.outArray.isArrayByDefault = True
         self.outArray.setAsArray(True)
+        self.outArray.supportsOnlyArray = True
 
     @staticmethod
     def pinTypeHints():
@@ -45,3 +48,4 @@ class makeList(NodeBase):
             outArray = reversed(outArray)
 
         self.outArray.setData(outArray)
+        self.arrayData._data = outArray
