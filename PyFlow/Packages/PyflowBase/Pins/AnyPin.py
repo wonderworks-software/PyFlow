@@ -18,9 +18,9 @@ class AnyPin(PinBase):
         self.setDefaultValue(None)
         self._free = True
         self.isAny = True
-        self.origSetData = self.setData
         self.super = None
         self.activeDataType = self.__class__.__name__
+        self.isArrayByDefault = False
         self.typeChecking = False
         # if True, setType and setDefault will work only once
         self.singleInit = False
@@ -63,7 +63,10 @@ class AnyPin(PinBase):
     def setData(self, data):
         if self.activeDataType != "AnyPin":
             if self.super is not None:
-                data = self.super.processData(data)
+                if not self.isArray():
+                    data = self.super.processData(data)
+                else:
+                    data = [self.super.processData(i) for i in data]
         self._data = data
         PinBase.setData(self, self._data)
 
@@ -93,22 +96,16 @@ class AnyPin(PinBase):
             if other.dataType != self.dataType:
                 self._free = False
                 self.setType(other)
-                for e in self.connections:
-                    for p in [e.source()._rawPin, e.destination()._rawPin]:
-                        if p != self:
+                for p in getConnectedPins(self):
+                    if p.dataType == self.dataType and p.dataType != self.activeDataType:
+                        p.updateOnConnection(other)
+                for pin in self.owningNode().constraints[self.constraint]:
+                    if pin != self:
+                        pin.setType(other)
+                        pin._free = False
+                        for p in getConnectedPins(self):
                             if p.dataType == self.dataType and p.dataType != self.activeDataType:
-                                p.updateOnConnection(other)
-                for port in self.owningNode()._Constraints[self.constraint]:
-                    if port != self:
-                        port.setType(other)
-                        port._free = False
-                        wrapper = port.getWrapper()
-                        if wrapper is not None:
-                            for e in wrapper().connections:
-                                for p in [e.source()._rawPin, e.destination()._rawPin]:
-                                    if p != port:
-                                        if p.dataType == self.dataType and p.dataType != self.activeDataType:
-                                            p.updateOnConnection(port)
+                                p.updateOnConnection(pin)
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
@@ -120,7 +117,7 @@ class AnyPin(PinBase):
             self._free = self.checkFree([])
             if self._free:
                 self.setDefault()
-                for pin in self.owningNode()._Constraints[self.constraint]:
+                for pin in self.owningNode().constraints[self.constraint]:
                     if pin != self:
                         pin.setDefault()
                         pin._free = True
@@ -135,16 +132,14 @@ class AnyPin(PinBase):
             if selfChek:
                 free = not self.hasConnections()
                 if not free:
-                    for connection in self.connections:
-                        for c in [connection.source()._rawPin, connection.destination()._rawPin]:
-                            if c != self:
-                                if c not in checked:
-                                    con.append(c)
+                    for c in getConnectedPins(self):
+                        if c not in checked:
+                            con.append(c)
             else:
                 free = True
                 checked.append(self)
             free = True
-            for port in self.owningNode()._Constraints[self.constraint] + con:
+            for port in self.owningNode().constraints[self.constraint] + con:
                 if port not in checked:
                     checked.append(port)
                     if not isinstance(port, AnyPin):
@@ -167,13 +162,14 @@ class AnyPin(PinBase):
             self.getWrapper()().setDefault(self.defColor())
 
         self.setDefaultValue(None)
+        self.setAsArray(self.isArrayByDefault)
 
     def setType(self, other):
-        if self.activeDataType != "AnyPin" and self.singleInit:
+        if self.activeDataType != self.dataType and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
 
-        if self.activeDataType == "AnyPin" or self.activeDataType not in other.supportedDataTypes():
+        if self.activeDataType == self.dataType or self.activeDataType not in other.supportedDataTypes():
             self.super = other.__class__
             self.activeDataType = other.dataType
             self.color = other.color
@@ -184,3 +180,4 @@ class AnyPin(PinBase):
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
+            self.setAsArray(other.isArray() | self.isArrayByDefault)

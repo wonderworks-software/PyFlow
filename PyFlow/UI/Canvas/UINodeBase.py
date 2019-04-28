@@ -360,7 +360,7 @@ class UINodeBase(QGraphicsObject):
 
     def postCreate(self, jsonTemplate=None):
         # create ui pin wrappers
-        for i in self._rawNode.pins:
+        for i in self._rawNode.getOrderedPins():
             self._createUIPinWrapper(i)
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
@@ -637,6 +637,9 @@ class UINodeBase(QGraphicsObject):
         if len([i for i in self.UIinputs.values()]) != 0:
             inputsCategory = CollapsibleFormWidget(headName="Inputs")
             for inp in self.UIinputs.values():
+                if inp.isArray():
+                    # TODO: create array input widget
+                    continue
                 dataSetter = inp.call if inp.isExec() else inp.setData
                 w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
@@ -653,6 +656,9 @@ class UINodeBase(QGraphicsObject):
         if len([i for i in self.UIoutputs.values() if not i._rawPin.isExec()]) != 0:
             outputsCategory = CollapsibleFormWidget(headName="Outputs")
             for out in self.UIoutputs.values():
+                if out.isArray():
+                    # TODO: create array input widget
+                    continue
                 if out.isExec():
                     continue
                 w = createInputWidget(

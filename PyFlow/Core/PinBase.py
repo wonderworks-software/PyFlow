@@ -31,8 +31,6 @@ class PinBase(IPin):
         self.affects = set()
         ## List of pins connected to this pin
         self.affected_by = set()
-        ## List of connections
-        self.connections = []
         ## Access to the node
         self.owningNode = weakref.ref(owningNode)
 
@@ -55,6 +53,7 @@ class PinBase(IPin):
         self.constraint = None
         self.isAny = False
         self._isArray = False
+        self.supportsOnlyArray = False
 
     def isExec(self):
         return False
@@ -278,9 +277,11 @@ class PinBase(IPin):
 
     def pinConnected(self, other):
         self.onPinConnected.send(other)
+        push(self)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
+        push(other)
 
     def setClean(self):
         self.dirty = False
@@ -311,7 +312,7 @@ class PinBase(IPin):
 
     def updateConstraint(self, constraint):
         self.constraint = constraint
-        if constraint in self.owningNode()._Constraints:
-            self.owningNode()._Constraints[constraint].append(self)
+        if constraint in self.owningNode().constraints:
+            self.owningNode().constraints[constraint].append(self)
         else:
-            self.owningNode()._Constraints[constraint] = [self]
+            self.owningNode().constraints[constraint] = [self]

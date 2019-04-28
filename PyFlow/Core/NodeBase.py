@@ -26,14 +26,21 @@ class NodeBase(INode):
         self._uid = uuid.uuid4() if uid is None else uid
         self.graph = None
         self.name = name
-        # self._pins = OrderedDict()
+        self.pinsCreationOrder = OrderedDict()
         self._pins = set()
         self.x = 0.0
         self.y = 0.0
         self.bCallable = False
         self._wrapper = None
-        self._Constraints = {}
+        self._constraints = {}
         self.lib = None
+
+    @property
+    def constraints(self):
+        return self._constraints
+
+    def getOrderedPins(self):
+        return self.pinsCreationOrder.values()
 
     @dispatch(str)
     def __getitem__(self, pinName):
@@ -364,14 +371,16 @@ class NodeBase(INode):
         if self.isCallable():
             self.bCallable = True
 
+        self.autoAffectPins()
+
     def updateConstraints(self):
-        self._Constraints = {}
+        self._constraints = {}
         for pin in self.inputs.values() + self.outputs.values():
             if pin.constraint is not None:
-                if pin.constraint in self._Constraints:
-                    self._Constraints[pin.constraint].append(pin)
+                if pin.constraint in self._constraints:
+                    self._constraints[pin.constraint].append(pin)
                 else:
-                    self._Constraints[pin.constraint] = [pin]
+                    self._constraints[pin.constraint] = [pin]
 
     @staticmethod
     # Constructs a node from given annotated function
@@ -437,10 +446,10 @@ class NodeBase(INode):
             # arguments will be taken from inputs
             kwds = {}
             for i in list(self.inputs.values()):
-                if i.dataType is not 'ExecPin':
+                if not i.isExec():
                     kwds[i.name] = i.getData()
             for ref in refs:
-                if ref.dataType is not 'ExecPin':
+                if not ref.isExec():
                     kwds[ref.name] = ref.setData
             result = foo(**kwds)
             if returnType is not None:
@@ -479,20 +488,18 @@ class NodeBase(INode):
                         constraint = dataType[2]["constraint"]
                 outRef = raw_inst.createOutputPin(argName, dataType[0], allowedPins=anyOpts, constraint=constraint)
                 outRef.setAsArray(isinstance(argDefaultValue, list))
+                if outRef.isArray():
+                    outRef.isArrayByDefault = True
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
-                if PROPAGATE_DIRTY in meta:
-                    if argName in meta[PROPAGATE_DIRTY]:
-                        outRef.setAlwaysPushDirty(True)
                 refs.append(outRef)
             else:
                 inp = raw_inst.createInputPin(argName, dataType, allowedPins=anyOpts, constraint=constraint)
                 inp.setAsArray(isinstance(argDefaultValue, list))
+                if inp.isArray():
+                    inp.isArrayByDefault = True
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
-                if PROPAGATE_DIRTY in meta:
-                    if argName in meta[PROPAGATE_DIRTY]:
-                        inp.setAlwaysPushDirty(True)
 
         raw_inst.autoAffectPins()
         return raw_inst

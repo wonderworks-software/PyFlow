@@ -27,10 +27,6 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
-## Used in function library decorator to mark pins as always dirty
-# for example random integer node should always mark dirty all upper branches of graph
-PROPAGATE_DIRTY = 'PropagateDirty'
-
 DEFAULT_IN_EXEC_NAME = 'inExec'
 DEFAULT_OUT_EXEC_NAME = 'outExec'
 
@@ -129,6 +125,17 @@ def arePinsConnected(src, dst):
     return False
 
 
+def getConnectedPins(pin):
+    result = set()
+    if pin.direction == PinDirection.Input:
+        for lhsPin in pin.affected_by:
+            result.add(lhsPin)
+    if pin.direction == PinDirection.Output:
+        for rhsPin in pin.affects:
+            result.add(rhsPin)
+    return result
+
+
 ## This function for establish dependencies bitween pins
 def pinAffects(lhs, rhs):
     assert(lhs is not rhs), "pin can not affect itself"
@@ -216,9 +223,9 @@ def connectPins(src, dst):
     if src.direction == PinDirection.Input:
         src, dst = dst, src
 
-    # input value pins can have one output connection
+    # input value pins can have one output connection if right hand side is not an array
     # output value pins can have any number of connections
-    if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections():
+    if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections() and not dst.isArray():
         dst.disconnectAll()
     if src.dataType == 'AnyPin' and dst.dataType != 'ExecPin' and dst.hasConnections():
         dst.disconnectAll()
@@ -266,7 +273,7 @@ def disconnectPins(src, dst):
 # this part of graph will be recomputed every tick
 # @param[in] start_from pin from which recursion begins
 def push(start_from):
-    if not start_from.affects == []:
+    if not len(start_from.affects) == 0:
         start_from.setDirty()
         for i in start_from.affects:
             i.setDirty()
