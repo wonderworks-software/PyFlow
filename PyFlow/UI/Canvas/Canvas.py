@@ -465,8 +465,8 @@ class Canvas(QGraphicsView):
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         # Antialias -- Change to styleSheetEditor
-        self.setRenderHint(QtGui.QPainter.Antialiasing, False)
-        self.setRenderHint(QtGui.QPainter.TextAntialiasing, False)
+        self.setRenderHint(QtGui.QPainter.Antialiasing)
+        self.setRenderHint(QtGui.QPainter.TextAntialiasing)
         ##
         self.setAcceptDrops(True)
         self.setAttribute(QtCore.Qt.WA_AlwaysShowToolTips)
