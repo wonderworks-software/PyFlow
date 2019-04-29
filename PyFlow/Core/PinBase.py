@@ -21,6 +21,7 @@ class PinBase(IPin):
 
         self._uid = uuid.uuid4()
         self._linkedToUids = set()
+        self._linkedToNames = set()
         self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
@@ -106,6 +107,7 @@ class PinBase(IPin):
 
         data = {
             'name': self.name,
+            'fullName': self.getName(),
             'dataType': self.__class__.__name__,
             'direction': int(self.direction),
             'value': self.currentData(),
@@ -114,7 +116,8 @@ class PinBase(IPin):
             'dynamic': self.isDynamic(),
             'renamingEnabled': self.renamingEnabled(),
             'alwaysPushDirty': self._alwaysPushDirty,
-            'linkedTo': [str(i.uid) for i in self.affects] if self.direction == PinDirection.Output else []
+            'linkedToUids': [str(i) for i in self._linkedToUids],
+            'linkedToNames': [i for i in self._linkedToNames]
         }
 
         # Wrapper class can subscribe to this signal and return

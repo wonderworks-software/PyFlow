@@ -7,6 +7,7 @@ Also, it implements [initializeFromFunction](@ref PyFlow.Core.Node.initializeFro
 """
 
 import weakref
+from multipledispatch import dispatch
 
 
 from Qt import QtCore
@@ -219,6 +220,10 @@ class UINodeBase(QGraphicsObject):
         # Core Nodes Support
         self.isTemp = False
         self.isCommentNode = False
+
+    @dispatch(str)
+    def __getitem__(self, pinName):
+        return self.getPin(pinName)
 
     def __repr__(self):
         graphName = self._rawNode.graph().name if self._rawNode.graph is not None else str(None)
@@ -603,7 +608,7 @@ class UINodeBase(QGraphicsObject):
             inp['uuid'] = str(uuid.uuid4())
         for out in templ['outputs']:
             out['uuid'] = str(uuid.uuid4())
-        new_node = self.camvas.createNode(templ)
+        new_node = self.canvasRef().createNode(templ)
         return new_node
 
     def call(self, name):

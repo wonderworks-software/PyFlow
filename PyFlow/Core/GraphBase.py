@@ -113,13 +113,14 @@ class GraphBase(ISerializable):
             nodeJson['owningGraphName'] = self.name
             node = getRawNodeInstance(nodeJson['type'], packageName=nodeJson['package'], libName=nodeJson['lib'], *nodeArgs, **nodeKwargs)
             self.addNode(node, nodeJson)
+
         # restore connections
         graphPins = self.pins
         for nodeJson in jsonData['nodes']:
             for nodeOutputJson in nodeJson['outputs']:
-                lhsPin = graphPins[uuid.UUID(nodeOutputJson['uuid'])]
-                for rhsUidStr in nodeOutputJson['linkedTo']:
-                    rhsPin = graphPins[uuid.UUID(rhsUidStr)]
+                lhsPin = self.findPin(nodeOutputJson['fullName'])
+                for rhsPinFullName in nodeOutputJson['linkedToNames']:
+                    rhsPin = self.findPin(rhsPinFullName)
                     connected = connectPins(lhsPin, rhsPin)
                     assert(connected is True), "Failed to restore connection"
 
@@ -285,7 +286,7 @@ class GraphBase(ISerializable):
     @dispatch(str)
     def findPin(self, pinName):
         pin = None
-        for pin in self.pins:
+        for pin in self.pins.values():
             if pinName == pin.getName():
                 pin = pin
                 break

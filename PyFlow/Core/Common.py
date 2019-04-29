@@ -255,6 +255,7 @@ def connectPins(src, dst):
     src.pinConnected(dst)
     push(dst)
     src._linkedToUids.add(dst.uid)
+    src._linkedToNames.add(dst.getName())
     return True
 
 
@@ -274,6 +275,7 @@ def disconnectPins(src, dst):
         dst.pinDisconnected(src)
         push(dst)
         src._linkedToUids.remove(dst.uid)
+        src._linkedToNames.remove(dst.getName())
         if src.isExec() and dst.isExec():
             src.onExecute.disconnect(dst.call)
         return True

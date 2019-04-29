@@ -136,13 +136,16 @@ class NodeBase(INode):
         template = NodeBase.jsonTemplate()
 
         uidString = str(self.uid)
+        nodeName = self.name
+
         if copying:
             uidString = str(uuid.uuid4())
+            nodeName = self.graph().graphManager.getUniqNodeName(self.name)
 
         template['package'] = self.packageName()
         template['lib'] = self.lib
         template['type'] = self.__class__.__name__
-        template['name'] = self.name
+        template['name'] = nodeName
         template['owningGraphName'] = self.graph().name
         template['uuid'] = uidString
         template['inputs'] = [i.serialize(copying=copying) for i in self.inputs.values()]

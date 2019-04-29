@@ -1,5 +1,6 @@
 import random
 from os import listdir, path
+from copy import deepcopy
 import json
 import uuid
 import weakref
@@ -828,79 +829,41 @@ class Canvas(QGraphicsView):
         QGraphicsView.keyPressEvent(self, event)
 
     def duplicateNodes(self):
-        selectedNodes = [i for i in self.getAllNodes() if i.isSelected()]
+        copiedJson = self.copyNodes()
+        self.pasteNodes(data=copiedJson)
 
-        if len(selectedNodes) > 0:
-            diff = QtCore.QPointF(self.mapToScene(
-                self.mousePos)) - selectedNodes[0].scenePos()
-            newNodes = []
-            oldNodes = []
-            connections = []
-            for n in selectedNodes:
-                new_node = n.clone()
-                assert(new_node is not None)
-                n.setSelected(False)
-                new_node.setSelected(True)
-                new_node.setPos(new_node.scenePos() + diff)
-                newNodes.append(new_node)
-                oldNodes.append(n)
-                for i in n.UIinputs.values() + n.outputs.values():
-                    connections += i.connections
-            for e in connections:
-                if e.source().UiNode in oldNodes and e.destination().UiNode in oldNodes:
-                    nsrc = newNodes[oldNodes.index(
-                        e.source().UiNode)].getPin(e.source().name)
-                    ndst = newNodes[oldNodes.index(e.destination().UiNode)].getPin(
-                        e.destination().name)
-                    self.connectPins(nsrc, ndst)
-                elif e.source().UiNode not in oldNodes and e.source().dataType != "ExecPin":
-                    nsrc = e.source()
-                    ndst = newNodes[oldNodes.index(e.destination().UiNode)].getPin(
-                        e.destination().name)
-                    self.connectPins(nsrc, ndst)
-
-    def copyNodes(self, toClipboard=True):
+    def copyNodes(self):
         nodes = []
-        oldNodes = []
         selectedNodes = [i for i in self.getAllNodes() if i.isSelected()]
-        connections = []
+
         for n in selectedNodes:
-            oldNodes.append(n)
-            nodes.append(n.serialize(copying=True))
-            for i in list(n.UIinputs.values()) + list(n.UIoutputs.values()):
-                connections += i.connections
-        fullEdges = []
-        for e in connections:
-            if e.source().owningNode() in oldNodes and e.destination().owningNode() in oldNodes:
-                fullEdges.append({"full": True, "sourcenode": e.source().owningNode().name, "sourcePin": e.source(
-                ).name, "destinationNode": e.destination().owningNode().name, "destinationPin": e.destination().name})
-            elif e.source().owningNode() not in oldNodes and e.source().dataType != "ExecPin":
-                fullEdges.append({"full": False, "sourcenode": e.source().owningNode().name, "sourcePin": e.source(
-                ).name, "destinationNode": e.destination().owningNode().name, "destinationPin": e.destination().name})
+            nodeJson = n.serialize()
+            nodes.append(nodeJson)
+
         if len(nodes) > 0:
-            ret = {"nodes": nodes, "connections": fullEdges}
+            ret = {"nodes": nodes}
             n = json.dumps(ret)
-            if toClipboard:
-                QApplication.clipboard().clear()
-                QApplication.clipboard().setText(n)
-            else:
-                return n
+            QApplication.clipboard().clear()
+            QApplication.clipboard().setText(n)
+            return n
 
     def pasteNodes(self, move=True, data=None):
         if not data:
             nodes = json.loads(QApplication.clipboard().text())
         else:
             nodes = json.loads(data)
-        if "nodes" not in nodes or "connections" not in nodes:
+
+        if "nodes" not in nodes:
             return
 
         diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - QtCore.QPointF(nodes["nodes"][0]["x"], nodes["nodes"][0]["y"])
         self.clearSelection()
         newNodes = {}
 
-        for node in nodes["nodes"]:
+        nodesData = deepcopy(nodes)
+        for node in nodesData["nodes"]:
             oldName = node["name"]
-            node["name"] = node["name"]
+            # node["name"] = node["name"]
             node['uuid'] = str(uuid.uuid4())
             for inp in node['inputs']:
                 inp['uuid'] = str(uuid.uuid4())
@@ -916,18 +879,20 @@ class Canvas(QGraphicsView):
             n.setSelected(True)
             if move:
                 n.setPos(n.scenePos() + diff)
-        for connection in nodes["connections"]:
-            if connection["full"]:
-                nsrc = newNodes[connection["sourcenode"]].getPin(connection["sourcePin"])
-                ndst = newNodes[connection["destinationNode"]].getPin(connection["destinationPin"])
-                self.connectPins(nsrc, ndst)
-            else:
-                nsrc = self.findNode(connection["sourcenode"])
-                if nsrc is not None:
-                    nsrc = nsrc.getPin(connection["sourcePin"])
-                    if nsrc is not None:
-                        ndst = newNodes[connection["destinationNode"]].getPin(connection["destinationPin"])
-                        self.connectPins(nsrc, ndst)
+
+        for nodeJson in nodes['nodes']:
+            for outPinJson in nodeJson['outputs']:
+                linkedToNames = outPinJson['linkedToNames']
+                if len(linkedToNames) > 0:
+                    lhsNewPin = newNodes[nodeJson['name']][outPinJson['name']]
+                    for linkedToFullName in linkedToNames:
+                        # find rhs pin to connect
+                        oldNodeName, pinName = linkedToFullName.rsplit('.', 1)
+                        if oldNodeName in newNodes:
+                            rhsNewPin = newNodes[oldNodeName][pinName]
+                            connected = connectPins(lhsNewPin._rawPin, rhsNewPin._rawPin)
+                            if connected:
+                                self.createUIConnectionForConnectedPins(lhsNewPin, rhsNewPin)
 
     @dispatch(str)
     def findNode(self, name):
@@ -1153,7 +1118,7 @@ class Canvas(QGraphicsView):
                         elif all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.AltModifier]):
                             self.manipulationMode = CanvasManipulationMode.MOVE
                             selectedNodes = self.selectedNodes()
-                            copiedNodes = self.copyNodes(toClipboard=False)
+                            copiedNodes = self.copyNodes()
                             self.pasteNodes(move=False, data=copiedNodes)
 
         else:
