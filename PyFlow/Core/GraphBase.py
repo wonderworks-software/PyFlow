@@ -284,12 +284,12 @@ class GraphBase(ISerializable):
 
     @dispatch(str)
     def findPin(self, pinName):
-        pin = None
+        result = None
         for pin in self.pins.values():
             if pinName == pin.getName():
-                pin = pin
+                result = pin
                 break
-        return pin
+        return result
 
     def getInputNode(self):
         """Creates and adds to graph 'graphInputs' node

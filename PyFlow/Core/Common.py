@@ -223,10 +223,10 @@ def connectPins(src, dst):
         src PinBase -- left hand side pin
         dst PinBase -- right hand side pin
     """
-    if arePinsConnected(src, dst):
+    if not canConnectPins(src, dst):
         return False
 
-    if not canConnectPins(src, dst):
+    if arePinsConnected(src, dst):
         return False
 
     if src.direction == PinDirection.Input:
@@ -254,7 +254,7 @@ def connectPins(src, dst):
     dst.pinConnected(src)
     src.pinConnected(dst)
     push(dst)
-    src._linkedToNames.add(dst.getName())
+    # src._linkedToNames.add(dst.getName())
     return True
 
 
@@ -273,7 +273,7 @@ def disconnectPins(src, dst):
         src.pinDisconnected(dst)
         dst.pinDisconnected(src)
         push(dst)
-        src._linkedToNames.remove(dst.getName())
+        # src._linkedToNames.remove(dst.getName())
         if src.isExec() and dst.isExec():
             src.onExecute.disconnect(dst.call)
         return True

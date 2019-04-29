@@ -780,9 +780,6 @@ class Canvas(QGraphicsView):
                     instance.label().width = rect.width()
                     instance.label().adjustSizes()
 
-            if all([modifiers == QtCore.Qt.ControlModifier, event.key() == QtCore.Qt.Key_Space]):
-                self.showNodeBox()
-
             if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
                 self.alignSelectedNodes(Direction.Left)
                 return
@@ -832,11 +829,11 @@ class Canvas(QGraphicsView):
         copiedJson = self.copyNodes()
         self.pasteNodes(data=copiedJson)
 
-    def makeSerializedNodesQnique(self, nodes):
+    def makeSerializedNodesQnique(self, nodes, extra=[]):
         copiedNodes = deepcopy(nodes)
         # make names unique
         renameData = {}
-        existingNames = [node.name for node in self.graphManager.getAllNodes()]
+        existingNames = self.graphManager.getAllNames() + extra
         for node in copiedNodes:
             newName = getUniqNameFromList(existingNames, node['name'])
             existingNames.append(newName)
@@ -863,7 +860,7 @@ class Canvas(QGraphicsView):
                 out['linkedToNames'] = newLinkedToNames
         for node in copiedNodes:
             if node['type'] == 'compound':
-                node['graphData']['nodes'] = self.makeSerializedNodesQnique(node['graphData']['nodes'])
+                node['graphData']['nodes'] = self.makeSerializedNodesQnique(node['graphData']['nodes'], extra=existingNames)
         return copiedNodes
 
     def copyNodes(self):
@@ -872,13 +869,13 @@ class Canvas(QGraphicsView):
         if len(selectedNodes) == 0:
             return
 
+        existingNames = self.graphManager.getAllNames()
+
         for n in selectedNodes:
             nodeJson = n.serialize()
-            if n.isCompoundNode:
-                nodeJson['graphData']['nodes'] = self.makeSerializedNodesQnique(nodeJson['graphData']['nodes'])
             nodes.append(nodeJson)
 
-        nodes = self.makeSerializedNodesQnique(nodes)
+        nodes = self.makeSerializedNodesQnique(nodes, extra=existingNames)
 
         if len(nodes) > 0:
             n = json.dumps(nodes)
@@ -903,6 +900,10 @@ class Canvas(QGraphicsView):
         nodesData = deepcopy(nodes)
         for node in nodesData:
             oldName = node["name"]
+
+            if node['type'] == 'compound':
+                node['graphData']['nodes'] = self.makeSerializedNodesQnique(node['graphData']['nodes'])
+
             n = self.createNode(node)
 
             if n is None:
@@ -915,13 +916,17 @@ class Canvas(QGraphicsView):
         for nodeJson in nodes:
             for outPinJson in nodeJson['outputs']:
                 linkedToNames = outPinJson['linkedToNames']
-                lhsPin = self.findPin(outPinJson['fullName'])
-                if len(linkedToNames) > 0:
-                    for linkedToFullName in linkedToNames:
-                        linkedPin = self.findPin(linkedToFullName)
-                        connected = connectPins(lhsPin._rawPin, linkedPin._rawPin)
-                        if connected:
-                            self.createUIConnectionForConnectedPins(lhsPin, linkedPin)
+                try:
+                    lhsPin = self.findPin(outPinJson['fullName'])
+                    if len(linkedToNames) > 0:
+                        for linkedToFullName in linkedToNames:
+                            linkedPin = self.findPin(linkedToFullName)
+                            connected = connectPins(lhsPin._rawPin, linkedPin._rawPin)
+                            if connected:
+                                self.createUIConnectionForConnectedPins(lhsPin, linkedPin)
+                except:
+                    print(outPinJson['fullName'], "not found")
+                    continue
 
     @dispatch(str)
     def findNode(self, name):

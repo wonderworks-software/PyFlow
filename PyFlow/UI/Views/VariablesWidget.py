@@ -100,8 +100,8 @@ class VariablesWidget(QWidget, Ui_Form):
         return uiVariable
 
     def clearProperties(self):
-        formLayout = self.canvas.parent.formLayout
-        clearLayout(formLayout)
+        propertiesLayout = self.canvas.parent.propertiesLayout
+        clearLayout(propertiesLayout)
 
     @staticmethod
     def createPropertiesWidgetForVariable(rawVariable):

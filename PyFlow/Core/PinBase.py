@@ -260,10 +260,18 @@ class PinBase(IPin):
 
     def pinConnected(self, other):
         self.onPinConnected.send(other)
+        if self.direction == PinDirection.Output:
+            assert(other.direction == PinDirection.Input)
+            self._linkedToNames.add(other.getName())
         push(self)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
+        if self.direction == PinDirection.Output:
+            assert(other.direction == PinDirection.Input)
+            otherPinName = other.getName()
+            if otherPinName in self._linkedToNames:
+                self._linkedToNames.remove(otherPinName)
         push(other)
 
     def setClean(self):

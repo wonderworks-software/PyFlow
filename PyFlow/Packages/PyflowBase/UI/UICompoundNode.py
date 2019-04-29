@@ -14,6 +14,9 @@ class UICompoundNode(UINodeBase):
         self.updateWidth()
         self.updateNodeShape()
 
+    def getGraph(self):
+        return self._rawNode.rawGraph
+
     def mouseDoubleClickEvent(self, event):
         self._rawNode.graph().graphManager.selectGraph(self.name)
         event.accept()

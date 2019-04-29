@@ -203,12 +203,16 @@ class GraphManager(object):
             existingNames.extend([pin.name for pin in node.pins])
         return getUniqNameFromList(existingNames, name)
 
-    def getUniqName(self, name):
+    def getAllNames(self):
         existingNames = [g.name for g in self.getAllGraphs()]
         existingNames.extend([n.name for n in self.getAllNodes()])
         existingNames.extend([var.name for var in self.getAllVariables()])
         for node in self.getAllNodes():
             existingNames.extend([pin.name for pin in node.pins])
+        return existingNames
+
+    def getUniqName(self, name):
+        existingNames = self.getAllNames()
         return getUniqNameFromList(existingNames, name)
 
     def getUniqGraphName(self, name):
