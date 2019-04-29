@@ -45,7 +45,7 @@ class makeList(NodeBase):
             outArray = sorted(outArray)
 
         if isReversed:
-            outArray = reversed(outArray)
+            outArray = list(reversed(outArray))
 
         self.outArray.setData(outArray)
         self.arrayData._data = outArray

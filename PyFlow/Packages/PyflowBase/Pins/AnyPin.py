@@ -86,7 +86,8 @@ class AnyPin(PinBase):
 
     def pinConnected(self, other):
         self.onPinConnected.send(other)
-        self.updateOnConnection(other)
+        if other.isAny:
+            self.updateOnConnection(other)
 
     def updateOnConnection(self, other):
         if self.constraint is None:
@@ -97,14 +98,14 @@ class AnyPin(PinBase):
                 self._free = False
                 self.setType(other)
                 for p in getConnectedPins(self):
-                    if p.dataType == self.dataType and p.dataType != self.activeDataType:
+                    if p.isAny:
                         p.updateOnConnection(other)
                 for pin in self.owningNode().constraints[self.constraint]:
                     if pin != self:
                         pin.setType(other, bUpdateIsArray=False)
                         pin._free = False
-                        for p in getConnectedPins(self):
-                            if p.dataType == self.dataType and p.dataType != self.activeDataType:
+                        for p in getConnectedPins(pin):
+                            if p.isAny:
                                 p.updateOnConnection(pin)
 
     def pinDisconnected(self, other):
@@ -113,6 +114,8 @@ class AnyPin(PinBase):
             if not self.hasConnections():
                 self.setDefault()
                 self._free = True
+            else:
+                self.onSetDefaultType.send()
         elif not self._free:
             self._free = self.checkFree([])
             if self._free:
@@ -129,8 +132,8 @@ class AnyPin(PinBase):
         print("node constraints", self.owningNode().constraints)
 
     def checkFree(self, checked=[], selfChek=True):
-        # if self.constraint is None or self.activeDataType == self.dataType:
-        if self.constraint is None:
+        # if self.constraint is None:
+        if self.constraint is None or self.activeDataType == "AnyPin":
             return True
         else:
             con = []
