@@ -34,6 +34,7 @@ class NodeBase(INode):
         self._wrapper = None
         self._constraints = {}
         self.lib = None
+        self.isCompoundNode = False
 
     @property
     def constraints(self):

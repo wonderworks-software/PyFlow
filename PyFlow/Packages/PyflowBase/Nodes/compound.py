@@ -17,6 +17,7 @@ class compound(NodeBase):
     """
     def __init__(self, name):
         super(compound, self).__init__(name)
+        self.isCompoundNode = True
         self.pinExposed = Signal(object)
         self._rawGraph = None
         self.__inputsMap = {}

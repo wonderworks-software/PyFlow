@@ -20,7 +20,6 @@ class PinBase(IPin):
         self.onExecute = Signal(object)
 
         self._uid = uuid.uuid4()
-        self._linkedToUids = set()
         self._linkedToNames = set()
         self._userStructClass = userStructClass
         self._data = None
@@ -114,7 +113,6 @@ class PinBase(IPin):
             'dynamic': self.isDynamic(),
             'renamingEnabled': self.renamingEnabled(),
             'alwaysPushDirty': self._alwaysPushDirty,
-            'linkedToUids': [str(i) for i in self._linkedToUids],
             'linkedToNames': [i for i in self._linkedToNames]
         }
 

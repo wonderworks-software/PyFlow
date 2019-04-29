@@ -342,6 +342,10 @@ class UINodeBase(QGraphicsObject):
         template['meta'] = {}
         return template
 
+    @property
+    def isCompoundNode(self):
+        return self._rawNode.isCompoundNode
+
     # TODO: add this to ui node interface
     def serializationHook(self):
         # this will be called by raw node

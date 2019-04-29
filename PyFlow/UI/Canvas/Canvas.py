@@ -832,20 +832,12 @@ class Canvas(QGraphicsView):
         copiedJson = self.copyNodes()
         self.pasteNodes(data=copiedJson)
 
-    def copyNodes(self):
-        nodes = []
-        selectedNodes = [i for i in self.getAllNodes() if i.isSelected()]
-        if len(selectedNodes) == 0:
-            return
-
-        for n in selectedNodes:
-            nodeJson = n.serialize()
-            nodes.append(nodeJson)
-
-        # rename node names and pin full names
+    def makeSerializedNodesQnique(self, nodes):
+        copiedNodes = deepcopy(nodes)
+        # make names unique
         renameData = {}
         existingNames = [node.name for node in self.graphManager.getAllNodes()]
-        for node in nodes:
+        for node in copiedNodes:
             newName = getUniqNameFromList(existingNames, node['name'])
             existingNames.append(newName)
             renameData[node['name']] = newName
@@ -859,7 +851,7 @@ class Canvas(QGraphicsView):
                 out['uuid'] = str(uuid.uuid4())
 
         # update connections
-        for node in nodes:
+        for node in copiedNodes:
             for out in node['outputs']:
                 newLinkedToNames = []
                 for linkedToFullName in out['linkedToNames']:
@@ -869,6 +861,24 @@ class Canvas(QGraphicsView):
                         newPinFullName = "{0}.{1}".format(newNodeName, pinName)
                         newLinkedToNames.append(newPinFullName)
                 out['linkedToNames'] = newLinkedToNames
+        for node in copiedNodes:
+            if node['type'] == 'compound':
+                node['graphData']['nodes'] = self.makeSerializedNodesQnique(node['graphData']['nodes'])
+        return copiedNodes
+
+    def copyNodes(self):
+        nodes = []
+        selectedNodes = [i for i in self.nodes.values() if i.isSelected()]
+        if len(selectedNodes) == 0:
+            return
+
+        for n in selectedNodes:
+            nodeJson = n.serialize()
+            if n.isCompoundNode:
+                nodeJson['graphData']['nodes'] = self.makeSerializedNodesQnique(nodeJson['graphData']['nodes'])
+            nodes.append(nodeJson)
+
+        nodes = self.makeSerializedNodesQnique(nodes)
 
         if len(nodes) > 0:
             n = json.dumps(nodes)
@@ -1538,7 +1548,7 @@ class Canvas(QGraphicsView):
         for rawNode in rawGraph.getNodes():
             uiNode = rawNode.getWrapper()
             for outUiPin in uiNode.UIoutputs.values():
-                for rhsPinUid in outUiPin._rawPin._linkedToUids:
+                for rhsPinUid in outUiPin._rawPin._linkedToNames:
                     inRawPin = rawNode.graph().findPin(rhsPinUid)
                     inUiPin = inRawPin.getWrapper()()
                     self.createUIConnectionForConnectedPins(outUiPin, inUiPin)
