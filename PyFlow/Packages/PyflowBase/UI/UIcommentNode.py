@@ -210,7 +210,7 @@ class UIcommentNode(UINodeBase):
     def boundingRect(self):
         return self._rect
 
-    def serialize(self, copying=False):
+    def serialize(self):
         template = UINodeBase.serialize(self)
         # if self.expanded:
         #    bottom = self._rect.bottom()

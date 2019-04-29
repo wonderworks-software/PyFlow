@@ -9,11 +9,15 @@ class sequence(NodeBase):
         self.inExecPin = self.createInputPin('inExec', 'ExecPin', None, self.compute)
 
     def createOutputPin(self, *args, **kwargs):
-        currentIds = [int(i) for i in self.namePinOutputsMap]
-        pinName = str(findGoodId(currentIds)) if 'name' not in kwargs else kwargs['name']
+        pinName = str(len(self.outputs) + 1)
         p = CreateRawPin(pinName, self, 'ExecPin', PinDirection.Output)
         p.setDynamic(True)
         return p
+
+    def serialize(self):
+        data = super(sequence, self).serialize()
+        data['numOutputs'] = len(self.outputs)
+        return data
 
     @staticmethod
     def pinTypeHints():
@@ -26,11 +30,9 @@ class sequence(NodeBase):
     def postCreate(self, jsonTemplate=None):
         super(sequence, self).postCreate(jsonTemplate=jsonTemplate)
         # recreate dynamic pins
-        if jsonTemplate is not None:
-            for outJson in jsonTemplate['outputs']:
-                if outJson['name'] not in self.namePinOutputsMap:
-                    pin = self.createOutputPin(outJson['name'])
-                    pin.uid = uuid.UUID(outJson['uuid'])
+        if jsonTemplate is not None and 'numOutputs' in jsonTemplate:
+            for i in range(jsonTemplate['numOutputs']):
+                self.createOutputPin()
 
     @staticmethod
     def keywords():

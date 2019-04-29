@@ -167,7 +167,7 @@ class UIVariable(QWidget):
         }
         return template
 
-    def serialize(self, copying=False):
+    def serialize(self):
         pinClass = findPinClassByType(self._rawVariable.dataType)
 
         template = UIVariable.jsonTemplate()

@@ -132,15 +132,11 @@ class NodeBase(INode):
                     }
         return template
 
-    def serialize(self, copying=False):
+    def serialize(self):
         template = NodeBase.jsonTemplate()
 
         uidString = str(self.uid)
         nodeName = self.name
-
-        if copying:
-            uidString = str(uuid.uuid4())
-            nodeName = self.graph().graphManager.getUniqNodeName(self.name)
 
         template['package'] = self.packageName()
         template['lib'] = self.lib
@@ -148,8 +144,8 @@ class NodeBase(INode):
         template['name'] = nodeName
         template['owningGraphName'] = self.graph().name
         template['uuid'] = uidString
-        template['inputs'] = [i.serialize(copying=copying) for i in self.inputs.values()]
-        template['outputs'] = [o.serialize(copying=copying) for o in self.outputs.values()]
+        template['inputs'] = [i.serialize() for i in self.inputs.values()]
+        template['outputs'] = [o.serialize() for o in self.outputs.values()]
         template['meta']['label'] = self.name
         template['x'] = self.x
         template['y'] = self.y

@@ -24,7 +24,7 @@ class pythonNode(NodeBase):
     def pinTypeHints():
         return {'inputs': [], 'outputs': []}
 
-    def serialize(self, copying=False):
+    def serialize(self):
         default = super(pythonNode, self).serialize()
         default['computeCode'] = self.currentComputeCode
         return default

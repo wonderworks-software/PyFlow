@@ -4,7 +4,6 @@ from PyFlow.Packages.PyflowBase import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
 from PyFlow import CreateRawPin
-import uuid
 
 
 class setVar(NodeBase):
@@ -20,8 +19,8 @@ class setVar(NodeBase):
     def variableUid(self):
         return self.var.uid
 
-    def serialize(self, copying=False):
-        default = NodeBase.serialize(self, copying=copying)
+    def serialize(self):
+        default = NodeBase.serialize(self)
         default['varUid'] = str(self.var.uid)
         return default
 

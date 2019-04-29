@@ -113,14 +113,12 @@ class Variable(ISerializable):
         self._uid = value
         # self.uuidChanged.send(value)
 
-    def serialize(self, copying=False):
+    def serialize(self):
         pinClass = findPinClassByType(self.dataType)
 
         template = Variable.jsonTemplate()
 
         uidString = str(self.uid)
-        if copying:
-            uidString = str(uuid.uuid4())
 
         template['name'] = self.name
         if self.dataType == 'AnyPin':

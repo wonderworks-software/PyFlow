@@ -112,7 +112,7 @@ class UIConnection(QGraphicsPathItem):
         assert(connection is not None)
         connection.uid = UUID(data['uuid'])
 
-    def serialize(self, copying=False):
+    def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
                   'sourceName': self.source()._rawPin.getName(),

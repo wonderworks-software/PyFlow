@@ -70,8 +70,8 @@ class AnyPin(PinBase):
         self._data = data
         PinBase.setData(self, self._data)
 
-    def serialize(self, copying=False):
-        dt = super(AnyPin, self).serialize(copying=copying)
+    def serialize(self):
+        dt = super(AnyPin, self).serialize()
         constrainedType = self.activeDataType
         dt['constrainedType'] = constrainedType
         if constrainedType != self.dataType:
@@ -85,6 +85,7 @@ class AnyPin(PinBase):
         return dt
 
     def pinConnected(self, other):
+        self._data = getPinDefaultValueByType(other.dataType)
         self.onPinConnected.send(other)
         if other.isAny:
             self.updateOnConnection(other)

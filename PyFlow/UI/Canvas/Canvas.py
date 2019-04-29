@@ -652,7 +652,7 @@ class Canvas(QGraphicsView):
     @dispatch(str)
     def findPin(self, pinName):
         uiPin = None
-        for pin in self.pins:
+        for pin in self.pins.values():
             if pinName == pin.getName():
                 uiPin = pin
                 break
@@ -835,64 +835,83 @@ class Canvas(QGraphicsView):
     def copyNodes(self):
         nodes = []
         selectedNodes = [i for i in self.getAllNodes() if i.isSelected()]
+        if len(selectedNodes) == 0:
+            return
 
         for n in selectedNodes:
             nodeJson = n.serialize()
             nodes.append(nodeJson)
 
+        # rename node names and pin full names
+        renameData = {}
+        existingNames = [node.name for node in self.graphManager.getAllNodes()]
+        for node in nodes:
+            newName = getUniqNameFromList(existingNames, node['name'])
+            existingNames.append(newName)
+            renameData[node['name']] = newName
+            node['name'] = newName
+            node['uuid'] = str(uuid.uuid4())
+            for inp in node['inputs']:
+                inp['fullName'] = '{0}.{1}'.format(node['name'], inp['name'])
+                inp['uuid'] = str(uuid.uuid4())
+            for out in node['outputs']:
+                out['fullName'] = '{0}.{1}'.format(node['name'], out['name'])
+                out['uuid'] = str(uuid.uuid4())
+
+        # update connections
+        for node in nodes:
+            for out in node['outputs']:
+                newLinkedToNames = []
+                for linkedToFullName in out['linkedToNames']:
+                    oldNodeName, pinName = linkedToFullName.rsplit('.', 1)
+                    if oldNodeName in renameData:
+                        newNodeName = renameData[oldNodeName]
+                        newPinFullName = "{0}.{1}".format(newNodeName, pinName)
+                        newLinkedToNames.append(newPinFullName)
+                out['linkedToNames'] = newLinkedToNames
+
         if len(nodes) > 0:
-            ret = {"nodes": nodes}
-            n = json.dumps(ret)
+            n = json.dumps(nodes)
             QApplication.clipboard().clear()
             QApplication.clipboard().setText(n)
             return n
 
     def pasteNodes(self, move=True, data=None):
         if not data:
-            nodes = json.loads(QApplication.clipboard().text())
+            nodes = None
+            try:
+                nodes = json.loads(QApplication.clipboard().text())
+            except json.JSONDecodeError as err:
+                return
         else:
             nodes = json.loads(data)
 
-        if "nodes" not in nodes:
-            return
-
-        diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - QtCore.QPointF(nodes["nodes"][0]["x"], nodes["nodes"][0]["y"])
+        diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - QtCore.QPointF(nodes[0]["x"], nodes[0]["y"])
         self.clearSelection()
         newNodes = {}
 
         nodesData = deepcopy(nodes)
-        for node in nodesData["nodes"]:
+        for node in nodesData:
             oldName = node["name"]
-            # node["name"] = node["name"]
-            node['uuid'] = str(uuid.uuid4())
-            for inp in node['inputs']:
-                inp['uuid'] = str(uuid.uuid4())
-            for out in node['outputs']:
-                out['uuid'] = str(uuid.uuid4())
-
             n = self.createNode(node)
 
             if n is None:
                 continue
 
-            newNodes[oldName] = n
             n.setSelected(True)
             if move:
                 n.setPos(n.scenePos() + diff)
 
-        for nodeJson in nodes['nodes']:
+        for nodeJson in nodes:
             for outPinJson in nodeJson['outputs']:
                 linkedToNames = outPinJson['linkedToNames']
+                lhsPin = self.findPin(outPinJson['fullName'])
                 if len(linkedToNames) > 0:
-                    lhsNewPin = newNodes[nodeJson['name']][outPinJson['name']]
                     for linkedToFullName in linkedToNames:
-                        # find rhs pin to connect
-                        oldNodeName, pinName = linkedToFullName.rsplit('.', 1)
-                        if oldNodeName in newNodes:
-                            rhsNewPin = newNodes[oldNodeName][pinName]
-                            connected = connectPins(lhsNewPin._rawPin, rhsNewPin._rawPin)
-                            if connected:
-                                self.createUIConnectionForConnectedPins(lhsNewPin, rhsNewPin)
+                        linkedPin = self.findPin(linkedToFullName)
+                        connected = connectPins(lhsPin._rawPin, linkedPin._rawPin)
+                        if connected:
+                            self.createUIConnectionForConnectedPins(lhsPin, linkedPin)
 
     @dispatch(str)
     def findNode(self, name):

@@ -94,9 +94,9 @@ class compound(NodeBase):
     def description():
         return 'Encapsulate a graph inside a node'
 
-    def serialize(self, copying=False):
-        default = NodeBase.serialize(self, copying=copying)
-        default['graphData'] = self.rawGraph.serialize(copying=copying)
+    def serialize(self):
+        default = NodeBase.serialize(self)
+        default['graphData'] = self.rawGraph.serialize()
         return default
 
     def onGraphInputPinCreated(self, outPin):

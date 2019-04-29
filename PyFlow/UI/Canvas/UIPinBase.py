@@ -290,8 +290,8 @@ class UIPinBase(QGraphicsWidget):
         self._rawPin.setUserStruct(inStruct)
         self.userStructChanged.emit(inStruct)
 
-    def setName(self, newName):
-        return self._rawPin.setName(newName)
+    def setName(self, newName, force=False):
+        return self._rawPin.setName(newName, force=force)
 
     def setData(self, value):
         self._rawPin.setData(value)
@@ -368,8 +368,8 @@ class UIPinBase(QGraphicsWidget):
         data['displayName'] = self.displayName()
         return data
 
-    def serialize(self, copying=False):
-        return self._rawPin.serialize(copying=copying)
+    def serialize(self):
+        return self._rawPin.serialize()
 
     def ungrabMouseEvent(self, event):
         super(UIPinBase, self).ungrabMouseEvent(event)

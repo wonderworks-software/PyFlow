@@ -46,7 +46,7 @@ class UIGetVarNode(UINodeBase):
     def boundingRect(self):
         return QtCore.QRectF(0, -3, self.w, 20)
 
-    def serialize(self, copying=False):
+    def serialize(self):
         template = UINodeBase.serialize(self)
         template['meta']['var'] = self.var.serialize()
         return template

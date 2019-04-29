@@ -79,12 +79,12 @@ class GraphBase(ISerializable):
             parent = parent.parentGraph
         return result
 
-    def serialize(self, copying=False, *args, **Kwargs):
+    def serialize(self, *args, **Kwargs):
         result = {
             'name': self.name,
             'category': self.category,
-            'vars': [v.serialize(copying=copying) for v in self.vars.values()],
-            'nodes': [n.serialize(copying=copying) for n in self.nodes.values()],
+            'vars': [v.serialize() for v in self.vars.values()],
+            'nodes': [n.serialize() for n in self.nodes.values()],
             'depth': self.depth(),
             'isRoot': self.isRoot(),
             'parentGraphName': str(self._parentGraph.name) if self._parentGraph is not None else str(None)
@@ -115,7 +115,6 @@ class GraphBase(ISerializable):
             self.addNode(node, nodeJson)
 
         # restore connections
-        graphPins = self.pins
         for nodeJson in jsonData['nodes']:
             for nodeOutputJson in nodeJson['outputs']:
                 lhsPin = self.findPin(nodeOutputJson['fullName'])

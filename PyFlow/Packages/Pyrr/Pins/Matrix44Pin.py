@@ -54,7 +54,7 @@ class Matrix44Pin(PinBase):
     def pinDataTypeHint():
         return 'Matrix44Pin', Matrix44()
 
-    def serialize(self, copying=False):
+    def serialize(self):
         data = PinBase.serialize(self)
         m = self.currentData()
         data['value'] = [m.c1.tolist(), m.c2.tolist(), m.c3.tolist(), m.c4.tolist()]
