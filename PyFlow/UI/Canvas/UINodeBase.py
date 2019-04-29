@@ -122,7 +122,6 @@ class NodeName(QGraphicsTextItem):
             painter.setPen(QtGui.QPen(QtCore.Qt.gray, 0.5))
             text = self.parentItem().packageName()
             painter.drawText(packageRect, QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom, text)
-        # super(NodeName, self).paint(painter, option, widget)
 
     def focusInEvent(self, event):
         self.parentItem().canvasRef().disableSortcuts()

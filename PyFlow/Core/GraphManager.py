@@ -60,7 +60,7 @@ class GraphManager(object):
         self._activeGraph.setIsRoot(True)
         self.selectGraph(self._activeGraph)
 
-    def clear(self, *args, keepRoot=True, **kwargs):
+    def clear(self, keepRoot=True, *args, **kwargs):
         self.selectGraph(ROOT_GRAPH_NAME)
         self.removeGraph(ROOT_GRAPH_NAME)
         self._graphs.clear()
