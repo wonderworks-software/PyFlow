@@ -378,7 +378,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         for packageName, registeredToolSet in GET_TOOLS():
             for ToolInstance in registeredToolSet:
                 if isinstance(ToolInstance, ShelfTool):
-                    print('instantiating', packageName, ToolInstance.name())
+                    print('initializing', packageName, ToolInstance.name(), "tool")
                     ToolInstance.setCanvas(canvas)
                     action = QAction(instance)
                     action.setIcon(ToolInstance.getIcon())
