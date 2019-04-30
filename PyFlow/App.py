@@ -33,6 +33,8 @@ from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Widgets import GraphEditor_ui
 from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
+from PyFlow.UI.Tool.Tool import ShelfTool
+from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow import INITIALIZE
 
 
@@ -122,6 +124,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self._current_file_name = 'Untitled'
+
+    def getToolbar(self):
+        return self.toolBar
+
+    def getCanvas(self):
+        return self.canvasWidget
 
     def setCompoundPropertiesWidgetVisible(self, bVisible):
         if bVisible:
@@ -358,11 +366,31 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
             if ispkg:
                 mod = importer.find_module(modname).load_module(modname)
-                FactoriesPath = mod.__path__[0]
-                FactoriesImporter = pkgutil.get_importer(FactoriesPath)
-                FactoriesModuleLoader = FactoriesImporter.find_module(
-                    'Factories')
+                PackagePath = mod.__path__[0]
+                PackageImporter = pkgutil.get_importer(PackagePath)
+
+                # load factories
+                FactoriesModuleLoader = PackageImporter.find_module('Factories')
                 if FactoriesModuleLoader is not None:
-                    FactoriesModule = FactoriesModuleLoader.load_module(
-                        'Factories')
+                    FactoriesModule = FactoriesModuleLoader.load_module('Factories')
+                # load tools
+                ToolsModuleLoader = PackageImporter.find_module('Tools')
+                if ToolsModuleLoader is not None:
+                    ToolsModule = ToolsModuleLoader.load_module('Tools')
+
+        # populate tools
+        canvas = instance.getCanvas()
+        toolbar = instance.getToolbar()
+        for packageName, registeredToolSet in GET_TOOLS():
+            for ToolInstance in registeredToolSet:
+                if isinstance(ToolInstance, ShelfTool):
+                    print('instantiating', packageName, ToolInstance.name())
+                    ToolInstance.setCanvas(canvas)
+                    action = QAction(instance)
+                    action.setIcon(ToolInstance.getIcon())
+                    action.setText(ToolInstance.name())
+                    action.setToolTip(ToolInstance.toolTip())
+                    action.setObjectName(ToolInstance.name())
+                    action.triggered.connect(ToolInstance.do)
+                    toolbar.addAction(action)
         return instance

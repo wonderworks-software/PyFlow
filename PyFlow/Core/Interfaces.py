@@ -311,6 +311,10 @@ class IPackage(object):
     def GetPinClasses():
         raise NotImplementedError('GetPinClasses method of IPackage is not implemented')
 
+    @staticmethod
+    def GetTools():
+        raise NotImplementedError('GetTools method of IPackage is not implemented')
+
 
 class ICodeCompiler(object):
     def __init__(self, *args, **kwargs):
