@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui',
-# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui' applies.
+# Form implementation generated from reading ui file 'd:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui',
+# licensing of 'd:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui' applies.
 #
-# Created: Tue Apr 16 08:11:53 2019
+# Created: Tue Apr 30 14:36:27 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!

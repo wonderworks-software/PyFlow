@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>996</width>
-    <height>491</height>
+    <width>925</width>
+    <height>520</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -204,7 +204,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>996</width>
+     <width>925</width>
      <height>21</height>
     </rect>
    </property>
@@ -268,11 +268,6 @@
    <addaction name="actionVariables"/>
    <addaction name="actionHistory"/>
    <addaction name="separator"/>
-   <addaction name="actionAlignLeft"/>
-   <addaction name="actionAlignUp"/>
-   <addaction name="actionAlignBottom"/>
-   <addaction name="actionAlignRight"/>
-   <addaction name="separator"/>
   </widget>
   <widget class="QDockWidget" name="dockWidgetVariables">
    <property name="minimumSize">
@@ -321,7 +316,7 @@
           <x>0</x>
           <y>0</y>
           <width>148</width>
-          <height>412</height>
+          <height>441</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -403,7 +398,7 @@
           <x>0</x>
           <y>0</y>
           <width>78</width>
-          <height>283</height>
+          <height>303</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -530,30 +525,6 @@
     <string>Shortcuts</string>
    </property>
   </action>
-  <action name="actionAlignLeft">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/alignleft.png</normaloff>:/icons/resources/alignleft.png</iconset>
-   </property>
-   <property name="text">
-    <string>AlignLeft</string>
-   </property>
-   <property name="toolTip">
-    <string>Align selected nodes by the left most</string>
-   </property>
-  </action>
-  <action name="actionAlignUp">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/aligntop.png</normaloff>:/icons/resources/aligntop.png</iconset>
-   </property>
-   <property name="text">
-    <string>AlignUp</string>
-   </property>
-   <property name="toolTip">
-    <string>Align selected nodes by the up most</string>
-   </property>
-  </action>
   <action name="actionPropertyView">
    <property name="icon">
     <iconset resource="../Utils/nodes_res.qrc">
@@ -566,27 +537,9 @@
     <string>toggle property view</string>
    </property>
   </action>
-  <action name="actionAlignBottom">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/alignbottom.png</normaloff>:/icons/resources/alignbottom.png</iconset>
-   </property>
-   <property name="text">
-    <string>AlignBottom</string>
-   </property>
-  </action>
-  <action name="actionAlignRight">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/alignright.png</normaloff>:/icons/resources/alignright.png</iconset>
-   </property>
-   <property name="text">
-    <string>alignRight</string>
-   </property>
-  </action>
   <action name="actionNew_Node">
    <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
+    <iconset>
      <normaloff>:/icons/resources/brick.png</normaloff>:/icons/resources/brick.png</iconset>
    </property>
    <property name="text">

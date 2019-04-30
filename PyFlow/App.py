@@ -92,10 +92,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionSave_as.triggered.connect(lambda: self.save(True))
         self.actionNew.triggered.connect(self.newFile)
 
-        self.actionAlignLeft.triggered.connect(lambda: self.canvasWidget.alignSelectedNodes(Direction.Left))
-        self.actionAlignUp.triggered.connect(lambda: self.canvasWidget.alignSelectedNodes(Direction.Up))
-        self.actionAlignBottom.triggered.connect(lambda: self.canvasWidget.alignSelectedNodes(Direction.Down))
-        self.actionAlignRight.triggered.connect(lambda: self.canvasWidget.alignSelectedNodes(Direction.Right))
         self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
         self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
         self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))

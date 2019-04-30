@@ -99,18 +99,9 @@ _PINS = {
 }
 
 
-_TOOLS = (
-    ScreenshotTool,
-)
-
-
 class PyflowBase(IPackage):
     def __init__(self):
         super(PyflowBase, self).__init__()
-
-    @staticmethod
-    def GetTools():
-        return _TOOLS
 
     @staticmethod
     def GetFunctionLibraries():

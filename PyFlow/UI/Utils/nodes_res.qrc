@@ -1,14 +1,7 @@
 <RCC>
   <qresource prefix="icons">
     <file>../resources/searching-magnifying-glass.png</file>
-    <file>../resources/alignbottom.png</file>
-    <file>../resources/alignleft.png</file>
-    <file>../resources/alignright.png</file>
-    <file>../resources/aligntop.png</file>
-    <file>../resources/brick.png</file>
     <file>../resources/clear_icon.png</file>
-    <file>../resources/colors_icon.png</file>
-    <file>../resources/comment_selected_icon.png</file>
     <file>../resources/console_icon.png</file>
     <file>../resources/debug_icon.png</file>
     <file>../resources/delete_icon.png</file>
