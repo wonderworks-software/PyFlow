@@ -13,6 +13,10 @@ class AlignBottomTool(ShelfTool):
         super(AlignBottomTool, self).__init__()
 
     @staticmethod
+    def toolTip():
+        return "Aligns selected nodes by bottom most node"
+
+    @staticmethod
     def getIcon():
         return QtGui.QIcon(RESOURCES_DIR + "alignbottom.png")
 

@@ -9,6 +9,9 @@ class ToolBase(object):
         super(ToolBase, self).__init__()
         self.canvas = None
 
+    def contextMenuBuilder(self):
+        return None
+
     def setCanvas(self, canvas):
         if self.canvas is None:
             self.canvas = canvas

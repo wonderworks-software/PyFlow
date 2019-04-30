@@ -13,6 +13,10 @@ class AlignLeftTool(ShelfTool):
         super(AlignLeftTool, self).__init__()
 
     @staticmethod
+    def toolTip():
+        return "Aligns selected nodes by left most node"
+
+    @staticmethod
     def getIcon():
         return QtGui.QIcon(RESOURCES_DIR + "alignleft.png")
 

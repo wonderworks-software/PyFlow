@@ -14,6 +14,7 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QTextEdit
 from Qt.QtWidgets import QMessageBox
 from Qt.QtWidgets import QAction
+from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QHBoxLayout
 from Qt.QtWidgets import QUndoView
@@ -36,6 +37,7 @@ from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
 from PyFlow.UI.Tool.Tool import ShelfTool
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow import INITIALIZE
+from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -386,5 +388,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     action.setToolTip(ToolInstance.toolTip())
                     action.setObjectName(ToolInstance.name())
                     action.triggered.connect(ToolInstance.do)
+                    # check if context menu data available
+                    menuBuilder = ToolInstance.contextMenuBuilder()
+                    if menuBuilder:
+                        menuGenerator = ContextMenuGenerator(menuBuilder)
+                        menu = menuGenerator.generate()
+                        action.setMenu(menu)
                     toolbar.addAction(action)
         return instance
