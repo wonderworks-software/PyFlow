@@ -1,3 +1,4 @@
+from nine import str
 from blinker import Signal
 import weakref
 import uuid

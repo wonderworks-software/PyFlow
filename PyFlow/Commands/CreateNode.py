@@ -1,4 +1,5 @@
 import uuid
+from nine import str
 
 from Qt.QtWidgets import QUndoCommand
 

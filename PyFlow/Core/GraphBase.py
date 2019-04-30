@@ -1,3 +1,4 @@
+from nine import str
 import weakref
 from blinker import Signal
 from multipledispatch import dispatch
@@ -181,7 +182,7 @@ class GraphBase(ISerializable):
                 result[pin.uid] = pin
         return result
 
-    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None, name="var"):
+    def createVariable(self, dataType=str('AnyPin'), accessLevel=AccessLevel.public, uid=None, name=str("var")):
         name = self.graphManager.getUniqVariableName(name)
         var = Variable(self, getPinDefaultValueByType(dataType), name, dataType, accessLevel=accessLevel, uid=uid)
         self.vars[var.uid] = var

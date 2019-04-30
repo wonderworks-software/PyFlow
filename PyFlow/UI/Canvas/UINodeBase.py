@@ -8,7 +8,7 @@ Also, it implements [initializeFromFunction](@ref PyFlow.Core.Node.initializeFro
 
 import weakref
 from multipledispatch import dispatch
-
+from nine import str
 
 from Qt import QtCore
 from Qt import QtGui
@@ -219,10 +219,6 @@ class UINodeBase(QGraphicsObject):
         # Core Nodes Support
         self.isTemp = False
         self.isCommentNode = False
-
-    @dispatch(str)
-    def __getitem__(self, pinName):
-        return self.getPin(pinName)
 
     def __repr__(self):
         graphName = self._rawNode.graph().name if self._rawNode.graph is not None else str(None)

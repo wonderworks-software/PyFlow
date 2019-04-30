@@ -2,6 +2,7 @@
 
 Variables input widget. Container for [UIVariable](@ref PyFlow.Core.Variable.UIVariable)
 """
+from nine import str
 import json
 from types import MethodType
 import uuid
@@ -94,7 +95,7 @@ class VariablesWidget(QWidget, Ui_Form):
         self.listWidget.setItemWidget(item, uiVariable)
         return uiVariable
 
-    def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
+    def createVariable(self, dataType=str('AnyPin'), accessLevel=AccessLevel.public, uid=None):
         rawVariable = self.canvas.graphManager.activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
         uiVariable = self.createVariableWrapperAndAddToList(rawVariable)
         return uiVariable

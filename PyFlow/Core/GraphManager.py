@@ -1,10 +1,11 @@
+from nine import str
 from multipledispatch import dispatch
 from blinker import Signal
 
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.Common import *
 
-ROOT_GRAPH_NAME = 'root'
+ROOT_GRAPH_NAME = str('root')
 
 
 class GraphManager(object):
