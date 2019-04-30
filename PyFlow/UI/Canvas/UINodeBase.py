@@ -656,27 +656,6 @@ class UINodeBase(QGraphicsObject):
                         w.setEnabled(False)
             propertiesLayout.addWidget(inputsCategory)
 
-        # outputs
-        if len([i for i in self.UIoutputs.values() if not i._rawPin.isExec()]) != 0:
-            outputsCategory = CollapsibleFormWidget(headName="Outputs")
-            for out in self.UIoutputs.values():
-                if out.isArray():
-                    # TODO: create array input widget
-                    continue
-                if out.isExec():
-                    continue
-                w = createInputWidget(
-                    out.dataType, out.setData, out.defaultValue(), out.getUserStruct())
-                if w:
-                    w.blockWidgetSignals(True)
-                    w.setWidgetValue(out.currentData())
-                    w.blockWidgetSignals(False)
-                    w.setObjectName(out.getName())
-                    outputsCategory.addWidget(out.name, w)
-                    if out.hasConnections():
-                        w.setEnabled(False)
-            propertiesLayout.addWidget(outputsCategory)
-
         Info = CollapsibleFormWidget(headName="Info", collapsed=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)

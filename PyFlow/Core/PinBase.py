@@ -268,7 +268,6 @@ class PinBase(IPin):
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
         if self.direction == PinDirection.Output:
-            assert(other.direction == PinDirection.Input)
             otherPinName = other.getName()
             if otherPinName in self._linkedToNames:
                 self._linkedToNames.remove(otherPinName)

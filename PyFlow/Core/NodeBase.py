@@ -251,7 +251,7 @@ class NodeBase(INode):
         if dataType == "AnyPin" and allowedPins:
             def supportedDataTypes():
                 return allowedPins
-            p.supportedDataTypes = staticmethod(supportedDataTypes)
+            p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
         return p
@@ -268,7 +268,7 @@ class NodeBase(INode):
         if dataType == "AnyPin" and allowedPins:
             def supportedDataTypes():
                 return allowedPins
-            p.supportedDataTypes = staticmethod(supportedDataTypes)
+            p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
         return p
@@ -284,7 +284,7 @@ class NodeBase(INode):
         return p.getData()
 
     def getUniqPinName(self, name):
-        pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))] + dir(self)
+        pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))]
         return getUniqNameFromList(pinNames, name)
 
     def call(self, name, *args, **kwargs):
