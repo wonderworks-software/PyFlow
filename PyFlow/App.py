@@ -83,10 +83,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.SceneLayout.addWidget(self.canvasWidget)
 
         self.actionVariables.triggered.connect(self.toggleVariables)
-        self.actionPlot_graph.triggered.connect(self.canvasWidget.plot)
         self.actionDelete.triggered.connect(self.on_delete)
         self.actionPropertyView.triggered.connect(self.togglePropertyView)
-        self.actionScreenshot.triggered.connect(self.canvasWidget.screenShot)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
 
         self.actionSave.triggered.connect(self.save)

@@ -626,14 +626,6 @@ class Canvas(QGraphicsView):
         self.parent.statusBar.showMessage(message, duration)
         print(message)
 
-    def screenShot(self):
-        name_filter = "Image (*.png)"
-        fName = QFileDialog.getSaveFileName(filter=name_filter)
-        if not fName[0] == '':
-            print("save screen to {0}".format(fName[0]))
-            img = QtGui.QPixmap.grab(self)
-            img.save(fName[0], quality=100)
-
     def isShortcutsEnabled(self):
         return self._sortcuts_enabled
 

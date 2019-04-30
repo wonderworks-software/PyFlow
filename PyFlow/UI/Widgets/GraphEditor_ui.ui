@@ -237,7 +237,6 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionPlot_graph"/>
     <addaction name="actionShortcuts"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
@@ -268,9 +267,6 @@
    <addaction name="actionPropertyView"/>
    <addaction name="actionVariables"/>
    <addaction name="actionHistory"/>
-   <addaction name="separator"/>
-   <addaction name="actionPlot_graph"/>
-   <addaction name="actionScreenshot"/>
    <addaction name="separator"/>
    <addaction name="actionAlignLeft"/>
    <addaction name="actionAlignUp"/>
@@ -523,24 +519,6 @@
    </property>
    <property name="text">
     <string>Save as</string>
-   </property>
-  </action>
-  <action name="actionPlot_graph">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/plot_icon.png</normaloff>:/icons/resources/plot_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Plot graph</string>
-   </property>
-  </action>
-  <action name="actionScreenshot">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/screenshot_icon.png</normaloff>:/icons/resources/screenshot_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Screenshot</string>
    </property>
   </action>
   <action name="actionShortcuts">

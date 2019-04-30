@@ -49,7 +49,7 @@ from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
 from PyFlow.Packages.PyflowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyflowBase.Nodes.compound import compound
 
-from PyFlow.Packages.PyflowBase.Tools.TestTool import TestTool
+from PyFlow.Packages.PyflowBase.Tools.ScreenshotTool import ScreenshotTool
 
 _FOO_LIBS = {
     ListLib.__name__: ListLib(PACKAGE_NAME),
@@ -100,7 +100,7 @@ _PINS = {
 
 
 _TOOLS = (
-    TestTool,
+    ScreenshotTool,
 )
 
 
