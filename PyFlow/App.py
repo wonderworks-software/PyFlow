@@ -85,7 +85,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.SceneLayout.addWidget(self.canvasWidget)
 
         self.actionVariables.triggered.connect(self.toggleVariables)
-        self.actionDelete.triggered.connect(self.on_delete)
         self.actionPropertyView.triggered.connect(self.togglePropertyView)
         self.actionShortcuts.triggered.connect(self.shortcuts_info)
 
@@ -94,10 +93,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.actionSave_as.triggered.connect(lambda: self.save(True))
         self.actionNew.triggered.connect(self.newFile)
 
-        self.actionNew_Node.triggered.connect(lambda: self.newPlugin(PluginType.pNode))
-        self.actionNew_Command.triggered.connect(lambda: self.newPlugin(PluginType.pCommand))
-        self.actionFunction_Library.triggered.connect(lambda: self.newPlugin(PluginType.pFunctionLibrary))
-        self.actionNew_pin.triggered.connect(lambda: self.newPlugin(PluginType.pPin))
         self.actionHistory.triggered.connect(self.toggleHistory)
         self.dockWidgetUndoStack.setVisible(False)
 

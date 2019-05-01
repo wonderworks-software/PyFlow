@@ -9,12 +9,13 @@ class ToolBase(object):
         super(ToolBase, self).__init__()
         self.canvas = None
 
-    def contextMenuBuilder(self):
-        return None
-
     def setCanvas(self, canvas):
         if self.canvas is None:
             self.canvas = canvas
+
+    @staticmethod
+    def toolTip():
+        return "Default tooltip"
 
     @staticmethod
     def name():
@@ -26,13 +27,8 @@ class ShelfTool(ToolBase):
     def __init__(self):
         super(ShelfTool, self).__init__()
 
-    @staticmethod
-    def toolTip():
-        return "Default tooltip"
-
-    @staticmethod
-    def name():
-        return "ShelfTool"
+    def contextMenuBuilder(self):
+        return None
 
     @staticmethod
     def getIcon():

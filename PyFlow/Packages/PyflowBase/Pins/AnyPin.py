@@ -35,10 +35,7 @@ class AnyPin(PinBase):
 
     @staticmethod
     def supportedDataTypes():
-        # TODO: Any pin should not accept execs
-        # Good example of why it should be like this is addNode with any pins - we can connect exec pins to it
-        # which doesn't make sense and breaks everything
-        return tuple([pin.__name__ for pin in getAllPinClasses() if pin.__name__ != "ExecPin"])
+        return tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
 
     @staticmethod
     def IsValuePin():
