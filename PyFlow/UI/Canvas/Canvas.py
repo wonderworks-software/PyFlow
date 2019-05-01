@@ -66,28 +66,6 @@ from PyFlow.Packages.PyflowBase.UI.UIRerouteNode import UIRerouteNode
 from PyFlow.Packages.PyflowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
 
 
-def clearLayout(layout):
-    while layout.count():
-        child = layout.takeAt(0)
-        if child.widget() is not None:
-            child.widget().deleteLater()
-        elif child.layout() is not None:
-            clearLayout(child.layout())
-
-
-def importByName(module, name):
-
-    if hasattr(module, name):
-        try:
-            mod = getattr(module, name)
-            return mod
-        except Exception as e:
-            print(e)
-            return
-    else:
-        print("error", name)
-
-
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     nodeClassName = jsonTemplate['type']
     nodeName = jsonTemplate['name']
@@ -344,22 +322,6 @@ class CanvasManipulationMode(IntEnum):
     ZOOM = 4
     COPY = 5
 
-buttonStyle = """
-QPushButton{color : rgba(255,255,255,255);
-    background-color: rgba(150,150,150,150);
-    border-width: 0px;
-    border-color: transparent;
-    border-style: solid;
-    font-size: 10px;
-    font-weight: bold;}
-QPushButton:hover{
-    color: rgba(255, 211, 25, 255);
-}
-QPushButton:pressed{
-    color: rgba(255, 160, 47, 255)
-}
-"""
-
 
 class Canvas(QGraphicsView):
     _manipulationMode = CanvasManipulationMode.NONE
@@ -589,11 +551,6 @@ class Canvas(QGraphicsView):
     def onNewFile(self):
         self.undoStack.clear()
 
-    def showVariables(self):
-        """read active graph variables and populate widget
-        """
-        pass
-
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
         pinName = full_name.split('.')[1]
@@ -757,7 +714,7 @@ class Canvas(QGraphicsView):
         copiedJson = self.copyNodes()
         self.pasteNodes(data=copiedJson)
 
-    def makeSerializedNodesQnique(self, nodes, extra=[]):
+    def makeSerializedNodesUnique(self, nodes, extra=[]):
         copiedNodes = deepcopy(nodes)
         # make names unique
         renameData = {}
@@ -786,9 +743,10 @@ class Canvas(QGraphicsView):
                         newPinFullName = "{0}.{1}".format(newNodeName, pinName)
                         newLinkedToNames.append(newPinFullName)
                 out['linkedToNames'] = newLinkedToNames
+
         for node in copiedNodes:
             if node['type'] == 'compound':
-                node['graphData']['nodes'] = self.makeSerializedNodesQnique(node['graphData']['nodes'], extra=existingNames)
+                node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'], extra=existingNames)
         return copiedNodes
 
     def copyNodes(self):
@@ -803,7 +761,7 @@ class Canvas(QGraphicsView):
             nodeJson = n.serialize()
             nodes.append(nodeJson)
 
-        nodes = self.makeSerializedNodesQnique(nodes, extra=existingNames)
+        nodes = self.makeSerializedNodesUnique(nodes, extra=existingNames)
 
         if len(nodes) > 0:
             n = json.dumps(nodes)
@@ -830,7 +788,7 @@ class Canvas(QGraphicsView):
             oldName = node["name"]
 
             if node['type'] == 'compound':
-                node['graphData']['nodes'] = self.makeSerializedNodesQnique(node['graphData']['nodes'])
+                node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'])
 
             n = self.createNode(node)
 
