@@ -41,6 +41,7 @@ from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.UI.Canvas.AutoPanController import AutoPanController
+from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
@@ -486,7 +487,7 @@ class Canvas(QGraphicsView):
             self.node_box.lineEdit.setFocus()
 
     def shoutDown(self, *args, **kwargs):
-        # TODO: ask user to save or close
+        # TODO: ask user to save editor data
         for ed in self.codeEditors.values():
             ed.deleteLater()
         self.scene().clear()
@@ -1291,24 +1292,16 @@ class Canvas(QGraphicsView):
                 pressedNode is not None, pressedNode == releasedNode, manhattanLengthTest]):
                 self.tryFillPropertiesView(pressedNode)
         elif event.button() == QtCore.Qt.LeftButton:
-            self._clearPropertiesView()
+            self.parent.clearPropertiesView()
         self.resizing = False
 
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
     def tryFillPropertiesView(self, obj):
-        '''
-            TODO: obj should implement interface class
-            with onUpdatePropertyView method
-        '''
-        if hasattr(obj, 'onUpdatePropertyView'):
-            self._clearPropertiesView()
+        if isinstance(obj, IPropertiesViewSupport):
+            self.parent.clearPropertiesView()
             obj.onUpdatePropertyView(self.parent.propertiesLayout)
-
-    # TODO: move this to App
-    def _clearPropertiesView(self):
-        self.parent.clearPropertiesView()
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()

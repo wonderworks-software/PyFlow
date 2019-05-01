@@ -36,6 +36,7 @@ from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.UI.Widgets.CollapsibleWidget import CollapsibleFormWidget
+from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *
 
@@ -134,7 +135,7 @@ class NodeName(QGraphicsTextItem):
         self.setTextCursor(cursor)
 
 
-class UINodeBase(QGraphicsObject):
+class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
     """
     Default node description
     """
