@@ -36,3 +36,30 @@ class ShelfTool(ToolBase):
 
     def do(self):
         print(self.name(), "called!", self.canvas)
+
+
+class DockTool(QtWidgets.QDockWidget, ToolBase):
+    """docstring for DockTool."""
+    def __init__(self, parent=None):
+        ToolBase.__init__(self)
+        QtWidgets.QDockWidget.__init__(self, parent)
+        self.setToolTip(self.toolTip())
+
+    def showEvent(self, event):
+        self.onShow()
+        super(DockTool, self).showEvent(event)
+
+    def onShow(self):
+        print(self.name(), "invoked")
+
+    def onDestroy(self):
+        print(self.name(), "destroyed")
+
+    @staticmethod
+    def showOnStartup():
+        return False
+
+    def closeEvent(self, event):
+        self.onDestroy()
+        self.parent().unregisterToolInstance(self)
+        event.accept()

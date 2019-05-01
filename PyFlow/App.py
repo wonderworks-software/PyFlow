@@ -22,6 +22,7 @@ from Qt.QtWidgets import QToolButton
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QFileDialog
+from Qt.QtWidgets import QDockWidget
 
 from PyFlow import Packages
 from PyFlow.UI.Canvas.Canvas import Canvas
@@ -34,7 +35,7 @@ from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Widgets import GraphEditor_ui
 from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
-from PyFlow.UI.Tool.Tool import ShelfTool
+from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow import INITIALIZE
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
@@ -65,6 +66,16 @@ def _implementPlugin(name, pluginType):
     pass
 
 
+def getOrCreateMenu(menuBar, title):
+    for child in menuBar.findChildren(QMenu):
+        if child.title() == title:
+            return child
+    menu = QMenu(menuBar)
+    menu.setObjectName(title)
+    menu.setTitle(title)
+    return menu
+
+
 ## App itself
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     newFileExecuted = QtCore.Signal(bool)
@@ -72,6 +83,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
         self.setupUi(self)
+        self._tools = set()
         self.listViewUndoStack = QUndoView(self.dockWidgetContents_3)
         self.listViewUndoStack.setObjectName("listViewUndoStack")
         self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
@@ -115,6 +127,13 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self._current_file_name = 'Untitled'
+
+    def registerToolInstance(self, instance):
+        self._tools.add(instance)
+
+    def unregisterToolInstance(self, instance):
+        if instance in self._tools:
+            self._tools.remove(instance)
 
     def getToolbar(self):
         return self.toolBar
@@ -280,6 +299,21 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if result:
             _implementPlugin(name, pluginType)
 
+    def invokeDockToolByName(self, packageName, name):
+        registeredTools = GET_TOOLS()
+        for ToolClass in registeredTools[packageName]:
+            if issubclass(ToolClass, DockTool):
+                if ToolClass.name() == name:
+                    ToolInstance = ToolClass(self)
+                    self.registerToolInstance(ToolInstance)
+                    ToolInstance.setMinimumSize(QtCore.QSize(200, 200))
+                    ToolInstance.setFloating(False)
+                    ToolInstance.setFeatures(QDockWidget.AllDockWidgetFeatures)
+                    ToolInstance.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
+                    ToolInstance.setObjectName(ToolInstance.name())
+                    ToolInstance.setWindowTitle(ToolInstance.name())
+                    self.addDockWidget(QtCore.Qt.DockWidgetArea(1), ToolInstance)
+
     def closeEvent(self, event):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
@@ -372,9 +406,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # populate tools
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
-        for packageName, registeredToolSet in GET_TOOLS():
-            for ToolInstance in registeredToolSet:
-                if isinstance(ToolInstance, ShelfTool):
+        for packageName, registeredToolSet in GET_TOOLS().items():
+            for ToolClass in registeredToolSet:
+                if issubclass(ToolClass, ShelfTool):
+                    ToolInstance = ToolClass()
+                    # prevent to be garbage collected
+                    instance.registerToolInstance(ToolInstance)
                     print('initializing', packageName, ToolInstance.name(), "tool")
                     ToolInstance.setCanvas(canvas)
                     action = QAction(instance)
@@ -390,4 +427,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                         menu = menuGenerator.generate()
                         action.setMenu(menu)
                     toolbar.addAction(action)
+                if issubclass(ToolClass, DockTool):
+                    toolsMenu = getOrCreateMenu(instance.menuBar, "Tools")
+                    instance.menuBar.addMenu(toolsMenu)
+                    packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
+                    toolsMenu.addMenu(packageSubMenu)
+                    showToolAction = packageSubMenu.addAction(ToolClass.name())
+                    showToolAction.triggered.connect(lambda: instance.invokeDockToolByName(packageName, ToolClass.name()))
+
         return instance
