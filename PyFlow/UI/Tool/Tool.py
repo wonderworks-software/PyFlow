@@ -1,4 +1,5 @@
 from nine import str
+import uuid
 from Qt import QtWidgets
 from Qt import QtGui, QtCore
 
@@ -7,7 +8,18 @@ class ToolBase(object):
     """docstring for ToolBase."""
     def __init__(self):
         super(ToolBase, self).__init__()
+        self.uid = uuid.uuid4()
         self.canvas = None
+
+    def saveState(self, settings):
+        settings.setValue("uid", str(self.uid))
+
+    def restoreState(self, settings):
+        uidStr = settings.value("uid")
+        if uidStr is not None:
+            self.uid = uuid.UUID(uidStr)
+        else:
+            self.uid = uuid.uuid4()
 
     def setCanvas(self, canvas):
         if self.canvas is None:

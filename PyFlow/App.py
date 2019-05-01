@@ -319,13 +319,16 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
         settings.beginGroup('Editor')
         settings.setValue("geometry", self.saveGeometry())
-        # settings.setValue("windowState", self.saveState())
+        settings.endGroup()
+
+        # save tools state
+        settings.beginGroup('Tools')
+        for tool in self._tools:
+            settings.beginGroup(tool.name())
+            tool.saveState(settings)
+            settings.endGroup()
         settings.endGroup()
         QMainWindow.closeEvent(self, event)
-
-    def applySettings(self, settings):
-        self.restoreGeometry(settings.value('Editor/geometry'))
-        self.restoreState(settings.value('Editor/windowState'))
 
     def editTheme(self):
         self.styleSheetEditor.show()
@@ -378,7 +381,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def instance(parent=None):
         settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
         instance = PyFlow(parent)
-        instance.applySettings(settings)
+        instance.restoreGeometry(settings.value('Editor/geometry'))
         instance.startMainLoop()
         INITIALIZE()
 
@@ -402,6 +405,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # populate tools
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
+        settings.beginGroup("Tools")
         for packageName, registeredToolSet in GET_TOOLS().items():
             for ToolClass in registeredToolSet:
                 if issubclass(ToolClass, ShelfTool):
@@ -423,6 +427,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                         menu = menuGenerator.generate()
                         action.setMenu(menu)
                     toolbar.addAction(action)
+
+                    # step to tool group and pass settings inside
+                    settings.beginGroup(ToolClass.name())
+                    ToolInstance.restoreState(settings)
+                    settings.endGroup()
+
                 if issubclass(ToolClass, DockTool):
                     toolsMenu = getOrCreateMenu(instance.menuBar, "Tools")
                     instance.menuBar.addMenu(toolsMenu)

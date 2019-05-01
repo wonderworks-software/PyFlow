@@ -13,6 +13,14 @@ class ScreenshotTool(ShelfTool):
         super(ScreenshotTool, self).__init__()
         self.format = "PNG"
 
+    def saveState(self, settings):
+        super(ScreenshotTool, self).saveState(settings)
+        settings.setValue("format", self.format)
+
+    def restoreState(self, settings):
+        super(ScreenshotTool, self).restoreState(settings)
+        self.format = settings.value("format")
+
     def onSetFormat(self, format):
         self.format = format
 
