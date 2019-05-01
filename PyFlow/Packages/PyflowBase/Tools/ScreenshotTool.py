@@ -11,6 +11,16 @@ class ScreenshotTool(ShelfTool):
     """docstring for ScreenshotTool."""
     def __init__(self):
         super(ScreenshotTool, self).__init__()
+        self.format = "PNG"
+
+    def onSetFormat(self, format):
+        self.format = format
+
+    def contextMenuBuilder(self):
+        builder = ContextMenuDataBuilder()
+        builder.addEntry("Save to PNG", "PNG", lambda: self.onSetFormat("PNG"))
+        builder.addEntry("Save to JPG", "JPG", lambda: self.onSetFormat("JPG"))
+        return builder
 
     @staticmethod
     def toolTip():
@@ -25,9 +35,9 @@ class ScreenshotTool(ShelfTool):
         return str("ScreenshotTool")
 
     def do(self):
-        name_filter = "Image (*.png)"
+        name_filter = "Image (*.{0})".format(self.format.lower())
         fName = QFileDialog.getSaveFileName(filter=name_filter)
         if not fName[0] == '':
             print("save screen to {0}".format(fName[0]))
             img = self.canvas.grab()
-            img.save(fName[0], quality=100)
+            img.save(fName[0], format=self.format, quality=100)

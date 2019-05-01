@@ -46,7 +46,7 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         self.setToolTip(self.toolTip())
         self.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
         self.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea | QtCore.Qt.TopDockWidgetArea)
-        self.setMinimumSize(QtCore.QSize(200, 200))
+        self.setMinimumSize(QtCore.QSize(80, 80))
 
     @staticmethod
     def defaultDockArea():

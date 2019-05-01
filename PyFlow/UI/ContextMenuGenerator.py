@@ -20,7 +20,9 @@ class ContextMenuGenerator(object):
                 subMenu.setIcon(icon)
             self.createMenuEntry(subMenu, subMenuData)
         else:
-            action = parentMenu.addAction(icon, menuEntryData['title'])
+            action = parentMenu.addAction(menuEntryData['title'])
+            if icon is not None:
+                action.setIcon(icon)
             action.triggered.connect(menuEntryData['callback'])
 
     def generate(self):

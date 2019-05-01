@@ -8,6 +8,7 @@ class DockToolTest(DockTool):
     """docstring for AlignBottomTool."""
     def __init__(self, parent=None):
         super(DockToolTest, self).__init__(parent)
+        self.setMinimumSize(QtCore.QSize(200, 50))
 
     @staticmethod
     def defaultDockArea():
