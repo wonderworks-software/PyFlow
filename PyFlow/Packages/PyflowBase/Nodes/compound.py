@@ -109,15 +109,16 @@ class compound(NodeBase):
 
         # add companion pin for graphInputs node's output pin
         subgraphInputPin = self.createInputPin(outPin.name,
-                                               outPin.dataType,
+                                               outPin.__class__.__name__,
                                                outPin.defaultValue(),
                                                outPin.call,
                                                outPin.constraint)
-        subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
-        subgraphInputPin.singleInit = outPin.singleInit
+        if subgraphInputPin.isAny:
+            subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
+            subgraphInputPin.singleInit = True
+            subgraphInputPin.setType(outPin)
         subgraphInputPin.setRenamingEnabled(False)
         subgraphInputPin.setDynamic(False)
-        subgraphInputPin.setType(outPin)
         self.__inputsMap[subgraphInputPin] = outPin
         pinAffects(subgraphInputPin, outPin)
         # connect
@@ -151,15 +152,16 @@ class compound(NodeBase):
 
         # add companion pin for graphOutputs node's input pin
         subgraphOutputPin = self.createOutputPin(inPin.name,
-                                                 inPin.dataType,
+                                                 inPin.__class__.__name__,
                                                  inPin.defaultValue(),
                                                  inPin.call,
                                                  inPin.constraint)
-        subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
-        subgraphOutputPin.singleInit = inPin.singleInit
+        if subgraphOutputPin.isAny:
+            subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
+            subgraphOutputPin.singleInit = True
+            subgraphOutputPin.setType(inPin)
         subgraphOutputPin.setRenamingEnabled(False)
         subgraphOutputPin.setDynamic(False)
-        subgraphOutputPin.setType(inPin)
         self.__outputsMap[subgraphOutputPin] = inPin
         pinAffects(inPin, subgraphOutputPin)
 

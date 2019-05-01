@@ -737,13 +737,13 @@ class Canvas(QGraphicsView):
         for node in copiedNodes:
             for out in node['outputs']:
                 newLinkedToNames = []
-                for linkedToFullName in out['linkedToNames']:
+                for linkedToFullName in out['linkedTo']:
                     oldNodeName, pinName = linkedToFullName.rsplit('.', 1)
                     if oldNodeName in renameData:
                         newNodeName = renameData[oldNodeName]
                         newPinFullName = "{0}.{1}".format(newNodeName, pinName)
                         newLinkedToNames.append(newPinFullName)
-                out['linkedToNames'] = newLinkedToNames
+                out['linkedTo'] = newLinkedToNames
 
         for node in copiedNodes:
             if node['type'] == 'compound':
@@ -802,7 +802,7 @@ class Canvas(QGraphicsView):
 
         for nodeJson in nodes:
             for outPinJson in nodeJson['outputs']:
-                linkedToNames = outPinJson['linkedToNames']
+                linkedToNames = outPinJson['linkedTo']
                 try:
                     lhsPin = self.findPin(outPinJson['fullName'])
                     if len(linkedToNames) > 0:
@@ -1432,7 +1432,7 @@ class Canvas(QGraphicsView):
         for rawNode in rawGraph.getNodes():
             uiNode = rawNode.getWrapper()
             for outUiPin in uiNode.UIoutputs.values():
-                for rhsPinUid in outUiPin._rawPin._linkedToNames:
+                for rhsPinUid in outUiPin._rawPin.linkedTo:
                     inRawPin = rawNode.graph().findPin(rhsPinUid)
                     inUiPin = inRawPin.getWrapper()()
                     self.createUIConnectionForConnectedPins(outUiPin, inUiPin)

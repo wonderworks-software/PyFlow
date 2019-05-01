@@ -20,7 +20,6 @@ class PinBase(IPin):
         self.onExecute = Signal(object)
 
         self._uid = uuid.uuid4()
-        self._linkedToNames = set()
         self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
@@ -52,6 +51,16 @@ class PinBase(IPin):
 
         self._isArray = False
         self.supportsOnlyArray = False
+
+    @property
+    def linkedTo(self):
+        # store connection from out pins only
+        # from left hand side to right hand side
+        result = set()
+        if self.direction == PinDirection.Output:
+            for i in self.affects:
+                result.add(i.getName())
+        return result
 
     def __repr__(self):
         return "[{0}:{1}:{2}:{3}]".format(self.dataType, self.getName(), self.dirty, self.currentData())
@@ -113,7 +122,7 @@ class PinBase(IPin):
             'dynamic': self.isDynamic(),
             'renamingEnabled': self.renamingEnabled(),
             'alwaysPushDirty': self._alwaysPushDirty,
-            'linkedToNames': [i for i in self._linkedToNames]
+            'linkedTo': list(self.linkedTo)
         }
 
         # Wrapper class can subscribe to this signal and return
@@ -125,11 +134,6 @@ class PinBase(IPin):
                 # We take return value from one wrapper
                 data['wrapper'] = wrapperData[0][1]
         return data
-
-    @staticmethod
-    def deserialize(jsonData):
-        # create pin from json by type
-        return None
 
     # IItemBase interface
 
@@ -260,17 +264,12 @@ class PinBase(IPin):
 
     def pinConnected(self, other):
         self.onPinConnected.send(other)
-        if self.direction == PinDirection.Output:
-            assert(other.direction == PinDirection.Input)
-            self._linkedToNames.add(other.getName())
         push(self)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
         if self.direction == PinDirection.Output:
             otherPinName = other.getName()
-            if otherPinName in self._linkedToNames:
-                self._linkedToNames.remove(otherPinName)
         push(other)
 
     def setClean(self):

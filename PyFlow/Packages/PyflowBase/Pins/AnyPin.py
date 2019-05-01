@@ -58,7 +58,7 @@ class AnyPin(PinBase):
         return data
 
     def setData(self, data):
-        if self.activeDataType != self.dataType:
+        if self.activeDataType != self.__class__.__name__:
             assert(self.super is not None)
             if not self.isArray():
                 data = self.super.processData(data)
@@ -71,7 +71,9 @@ class AnyPin(PinBase):
         dt = super(AnyPin, self).serialize()
         constrainedType = self.activeDataType
         dt['constrainedType'] = constrainedType
-        if constrainedType != self.dataType:
+        dt['singleInit'] = self.singleInit
+        dt['isArrayByDefault'] = self.isArrayByDefault
+        if constrainedType != self.__class__.__name__:
             pinClass = findPinClassByType(constrainedType)
             # serialize with active type's encoder
             if not pinClass.isPrimitiveType():
@@ -84,15 +86,15 @@ class AnyPin(PinBase):
     def pinConnected(self, other):
         self._data = getPinDefaultValueByType(other.dataType)
         self.onPinConnected.send(other)
-        if other.isAny:
-            self.updateOnConnection(other)
+        self.updateOnConnection(other)
+        super(AnyPin, self).pinConnected(other)
 
     def updateOnConnection(self, other):
         if self.constraint is None:
             self.setType(other)
             self._free = False
         else:
-            if other.dataType != self.dataType:
+            if other.dataType != self.activeDataType:
                 self._free = False
                 self.setType(other)
                 for p in getConnectedPins(self):
@@ -155,7 +157,7 @@ class AnyPin(PinBase):
             return free
 
     def setDefault(self):
-        if self.activeDataType != self.dataType and self.singleInit:
+        if self.activeDataType != self.__class__.__name__ and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
 
@@ -170,11 +172,11 @@ class AnyPin(PinBase):
         self.setAsArray(self.isArrayByDefault)
 
     def setType(self, other, bUpdateIsArray=True):
-        if self.activeDataType != self.dataType and self.singleInit:
+        if self.activeDataType != self.__class__.__name__ and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
 
-        if self.activeDataType == self.dataType or self.activeDataType not in other.supportedDataTypes():
+        if self.activeDataType == self.__class__.__name__ or self.activeDataType not in other.supportedDataTypes():
             self.super = other.__class__
             self.activeDataType = other.dataType
             self.color = other.color
