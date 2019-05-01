@@ -21,8 +21,8 @@ class ScreenshotTool(ShelfTool):
         super(ScreenshotTool, self).restoreState(settings)
         self.format = settings.value("format")
 
-    def onSetFormat(self, format):
-        self.format = format
+    def onSetFormat(self, fmt):
+        self.format = fmt
 
     def contextMenuBuilder(self):
         builder = ContextMenuDataBuilder()

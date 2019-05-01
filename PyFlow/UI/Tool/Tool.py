@@ -60,14 +60,6 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         self.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea | QtCore.Qt.TopDockWidgetArea)
         self.setMinimumSize(QtCore.QSize(80, 80))
 
-    @staticmethod
-    def defaultDockArea():
-        return QtCore.Qt.LeftDockWidgetArea
-
-    def showEvent(self, event):
-        self.onShow()
-        super(DockTool, self).showEvent(event)
-
     def onShow(self):
         print(self.name(), "invoked")
 

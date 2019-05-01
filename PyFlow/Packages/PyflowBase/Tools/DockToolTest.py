@@ -16,7 +16,7 @@ class DockToolTest(DockTool):
 
     @staticmethod
     def showOnStartup():
-        return False
+        return True
 
     @staticmethod
     def toolTip():
@@ -24,4 +24,4 @@ class DockToolTest(DockTool):
 
     @staticmethod
     def name():
-        return str("Test dock tool")
+        return str("TestDockTool")
