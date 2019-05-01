@@ -306,24 +306,20 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 if ToolClass.name() == name:
                     ToolInstance = ToolClass(self)
                     self.registerToolInstance(ToolInstance)
-                    ToolInstance.setMinimumSize(QtCore.QSize(200, 200))
                     ToolInstance.setFloating(False)
-                    ToolInstance.setFeatures(QDockWidget.AllDockWidgetFeatures)
-                    ToolInstance.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
                     ToolInstance.setObjectName(ToolInstance.name())
                     ToolInstance.setWindowTitle(ToolInstance.name())
-                    self.addDockWidget(QtCore.Qt.DockWidgetArea(1), ToolInstance)
+                    self.addDockWidget(ToolClass.defaultDockArea(), ToolInstance)
 
     def closeEvent(self, event):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
         self.canvasWidget.shoutDown()
         # save editor config
-        settings = QtCore.QSettings(
-            SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
+        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
         settings.beginGroup('Editor')
         settings.setValue("geometry", self.saveGeometry())
-        settings.setValue("windowState", self.saveState())
+        # settings.setValue("windowState", self.saveState())
         settings.endGroup()
         QMainWindow.closeEvent(self, event)
 
@@ -434,5 +430,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     toolsMenu.addMenu(packageSubMenu)
                     showToolAction = packageSubMenu.addAction(ToolClass.name())
                     showToolAction.triggered.connect(lambda: instance.invokeDockToolByName(packageName, ToolClass.name()))
-
+                    if ToolClass.showOnStartup():
+                        instance.invokeDockToolByName(packageName, ToolClass.name())
         return instance
