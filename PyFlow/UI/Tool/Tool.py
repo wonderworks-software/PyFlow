@@ -13,6 +13,7 @@ class ToolBase(object):
 
     def saveState(self, settings):
         settings.setValue("uid", str(self.uid))
+        settings.setValue("name", self.name())
 
     def restoreState(self, settings):
         uidStr = settings.value("uid")
@@ -28,6 +29,9 @@ class ToolBase(object):
     @staticmethod
     def toolTip():
         return "Default tooltip"
+
+    def uniqueName(self):
+        return "{0}::{1}".format(self.name(), str(self.uid))
 
     @staticmethod
     def name():
@@ -52,13 +56,19 @@ class ShelfTool(ToolBase):
 
 class DockTool(QtWidgets.QDockWidget, ToolBase):
     """docstring for DockTool."""
-    def __init__(self, parent=None):
+    def __init__(self):
         ToolBase.__init__(self)
-        QtWidgets.QDockWidget.__init__(self, parent)
+        QtWidgets.QDockWidget.__init__(self)
         self.setToolTip(self.toolTip())
         self.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
         self.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea | QtCore.Qt.TopDockWidgetArea)
         self.setMinimumSize(QtCore.QSize(80, 80))
+        self.setObjectName(self.uniqueName())
+
+    def restoreState(self, settings):
+        super(DockTool, self).restoreState(settings)
+        self.setObjectName(self.uniqueName())
+        self.setWindowTitle(settings.value("name"))
 
     def onShow(self):
         print(self.name(), "invoked")

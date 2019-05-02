@@ -4,6 +4,7 @@ import subprocess
 import json
 from time import clock
 import pkgutil
+import uuid
 
 from Qt import QtGui
 from Qt import QtCore
@@ -129,6 +130,14 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self._current_file_name = 'Untitled'
 
     def registerToolInstance(self, instance):
+        """registerToolInstance registerToolInstance Registers tool instance reference
+
+        This needed to prevent classes from being garbage collected and to save widgets state
+
+        Args:
+
+            instance (ToolBase): Tool to be registered
+        """
         self._tools.add(instance)
 
     def unregisterToolInstance(self, instance):
@@ -299,22 +308,30 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if result:
             _implementPlugin(name, pluginType)
 
-    def invokeDockToolByName(self, packageName, name, area=None):
+    def getToolInstanceByClass(self, packageName, toolName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
         for ToolClass in registeredTools[packageName]:
-            if issubclass(ToolClass, DockTool):
-                if ToolClass.name() == name:
-                    ToolInstance = ToolClass(self)
-                    self.registerToolInstance(ToolInstance)
-                    ToolInstance.setFloating(False)
-                    objectName = "{0}_{1}".format(ToolInstance.name(), str(ToolInstance.uid))
-                    ToolInstance.setObjectName(objectName)
-                    ToolInstance.setObjectName(ToolInstance.name())
-                    ToolInstance.setWindowTitle(ToolInstance.name())
-                    dockArea = area if area is not None else ToolClass.defaultDockArea()
-                    self.addDockWidget(dockArea, ToolInstance)
-                    ToolInstance.onShow()
-                    return ToolInstance
+            if issubclass(ToolClass, toolClass):
+                if ToolClass.name() == toolName:
+                    return ToolClass()
+        return None
+
+    def invokeDockToolByName(self, packageName, name, settings=None):
+        # invokeDockToolByName Invokes dock tool by tool name and package name
+        # If settings provided QMainWindow::restoreDockWidget will be called instead QMainWindow::addDockWidget
+        ToolInstance = self.getToolInstanceByClass(packageName, name, DockTool)
+        if ToolInstance:
+            self.registerToolInstance(ToolInstance)
+            ToolInstance.setWindowTitle(ToolInstance.name())
+            if settings is not None:
+                ToolInstance.restoreState(settings)
+                if not self.restoreDockWidget(ToolInstance):
+                    # handle if ui state was not restored
+                    pass
+            else:
+                self.addDockWidget(ToolInstance.defaultDockArea(), ToolInstance)
+            ToolInstance.onShow()
+        return ToolInstance
 
     def closeEvent(self, event):
         self.tick_timer.stop()
@@ -336,16 +353,18 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         for tool in self._tools:
             if isinstance(tool, ShelfTool):
                 settings.beginGroup("ShelfTools")
-                settings.beginGroup(tool.name())
+                settings.beginGroup(tool.uniqueName())
                 tool.saveState(settings)
                 settings.endGroup()
                 settings.endGroup()
-            # if isinstance(tool, DockTool):
-            #     settings.beginGroup("DockTools")
-            #     settings.beginGroup(tool.name())
-            #     tool.saveState(settings)
-            #     settings.endGroup()
-            #     settings.endGroup()
+            if isinstance(tool, DockTool):
+                settings.beginGroup("DockTools")
+                settings.beginGroup(tool.uniqueName())
+                tool.saveState(settings)
+                settings.endGroup()
+                settings.endGroup()
+        settings.endGroup()
+        settings.sync()
         QMainWindow.closeEvent(self, event)
 
     def editTheme(self):
@@ -392,15 +411,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         QMessageBox.information(self, "Shortcuts", data)
 
-    def on_delete(self):
-        self.canvasWidget.killSelectedNodes()
-
     @staticmethod
     def instance(parent=None):
-        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
         instance = PyFlow(parent)
-        instance.restoreGeometry(settings.value('Editor/geometry'))
-        instance.restoreState(settings.value('Editor/state'))
         instance.startMainLoop()
         INITIALIZE()
 
@@ -424,6 +437,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # populate tools
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
+        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
+        instance.restoreGeometry(settings.value('Editor/geometry'))
+        instance.restoreState(settings.value('Editor/state'))
         settings.beginGroup("Tools")
         for packageName, registeredToolSet in GET_TOOLS().items():
             for ToolClass in registeredToolSet:
@@ -431,7 +447,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     ToolInstance = ToolClass()
                     # prevent to be garbage collected
                     instance.registerToolInstance(ToolInstance)
-                    print('initializing', packageName, ToolInstance.name(), "tool")
                     ToolInstance.setCanvas(canvas)
                     action = QAction(instance)
                     action.setIcon(ToolInstance.getIcon())
@@ -461,14 +476,13 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     toolsMenu.addMenu(packageSubMenu)
                     showToolAction = packageSubMenu.addAction(ToolClass.name())
                     showToolAction.triggered.connect(lambda: instance.invokeDockToolByName(packageName, ToolClass.name()))
-                    if ToolClass.showOnStartup():
-                        instance.invokeDockToolByName(packageName, ToolClass.name())
-                    # settings.beginGroup("DockTools")
-                    # if ToolClass.name() in settings.childGroups():
+
+                    settings.beginGroup("DockTools")
+                    for dockToolGroupName in settings.childGroups():
                         # This dock tool data been saved on last shutdown
-                        # settings.beginGroup(ToolClass.name())
-                        # dockArea = QtCore.Qt.DockWidgetArea(int(settings.value("area")))
-                        # ToolInstance = instance.invokeDockToolByName(packageName, ToolClass.name(), dockArea)
-                        # ToolInstance.restoreState(settings)
-                        # settings.endGroup()
+                        settings.beginGroup(dockToolGroupName)
+                        toolName = settings.value("name")
+                        ToolInstance = instance.invokeDockToolByName(packageName, toolName, settings)
+                        settings.endGroup()
+                    settings.endGroup()
         return instance

@@ -6,8 +6,8 @@ from PyFlow.UI.Tool.Tool import DockTool
 
 class DockToolTest(DockTool):
     """docstring for AlignBottomTool."""
-    def __init__(self, parent=None):
-        super(DockToolTest, self).__init__(parent)
+    def __init__(self):
+        super(DockToolTest, self).__init__()
         self.setMinimumSize(QtCore.QSize(200, 50))
 
     @staticmethod
