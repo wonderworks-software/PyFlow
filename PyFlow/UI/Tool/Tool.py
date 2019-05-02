@@ -11,9 +11,14 @@ class ToolBase(object):
         self.uid = uuid.uuid4()
         self.canvas = None
 
+    def onShow(self):
+        print(self.name(), "invoked")
+
+    def onDestroy(self):
+        print(self.name(), "destroyed")
+
     def saveState(self, settings):
         settings.setValue("uid", str(self.uid))
-        settings.setValue("name", self.name())
 
     def restoreState(self, settings):
         uidStr = settings.value("uid")
@@ -65,16 +70,17 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         self.setMinimumSize(QtCore.QSize(80, 80))
         self.setObjectName(self.uniqueName())
 
+    @staticmethod
+    def isSingleton():
+        return False
+
+    def onShow(self):
+        super(DockTool, self).onShow()
+        self.setWindowTitle(self.name())
+
     def restoreState(self, settings):
         super(DockTool, self).restoreState(settings)
         self.setObjectName(self.uniqueName())
-        self.setWindowTitle(settings.value("name"))
-
-    def onShow(self):
-        print(self.name(), "invoked")
-
-    def onDestroy(self):
-        print(self.name(), "destroyed")
 
     @staticmethod
     def showOnStartup():

@@ -342,7 +342,6 @@ class Canvas(QGraphicsView):
         self.parent = parent
         # connect with App class signals
         self.parent.newFileExecuted.connect(self.onNewFile)
-        self.parent.listViewUndoStack.setStack(self.undoStack)
         self.styleSheetEditor = self.parent.styleSheetEditor
         self.menu = QMenu()
         self.setScene(SceneClass(self))

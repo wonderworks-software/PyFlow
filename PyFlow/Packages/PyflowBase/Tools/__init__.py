@@ -8,7 +8,8 @@ from PyFlow.Packages.PyflowBase.Tools.AlignLeftTool import AlignLeftTool
 from PyFlow.Packages.PyflowBase.Tools.AlignTopTool import AlignTopTool
 from PyFlow.Packages.PyflowBase.Tools.AlignRightTool import AlignRightTool
 from PyFlow.Packages.PyflowBase.Tools.AlignBottomTool import AlignBottomTool
-from PyFlow.Packages.PyflowBase.Tools.DockToolTest import DockToolTest
+from PyFlow.Packages.PyflowBase.Tools.HistoryTool import HistoryTool
+from PyFlow.Packages.PyflowBase.Tools.VariablesTool import VariablesTool
 
 
 REGISTER_TOOL(PACKAGE_NAME, ScreenshotTool)
@@ -16,4 +17,5 @@ REGISTER_TOOL(PACKAGE_NAME, AlignLeftTool)
 REGISTER_TOOL(PACKAGE_NAME, AlignTopTool)
 REGISTER_TOOL(PACKAGE_NAME, AlignRightTool)
 REGISTER_TOOL(PACKAGE_NAME, AlignBottomTool)
-REGISTER_TOOL(PACKAGE_NAME, DockToolTest)
+REGISTER_TOOL(PACKAGE_NAME, HistoryTool)
+REGISTER_TOOL(PACKAGE_NAME, VariablesTool)

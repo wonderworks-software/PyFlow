@@ -34,7 +34,6 @@ from PyFlow.Core.GraphManager import GraphManager
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Widgets import GraphEditor_ui
-from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.UI.Tool import GET_TOOLS
@@ -85,9 +84,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         super(PyFlow, self).__init__(parent=parent)
         self.setupUi(self)
         self._tools = set()
-        self.listViewUndoStack = QUndoView(self.dockWidgetContents_3)
-        self.listViewUndoStack.setObjectName("listViewUndoStack")
-        self.gridLayout_6.addWidget(self.listViewUndoStack, 0, 0, 1, 1)
 
         self.styleSheetEditor = StyleSheetEditor()
         self.graphManager = GraphManager()
@@ -96,18 +92,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.newFileExecuted.connect(self.canvasWidget.shoutDown)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
-
-        self.actionVariables.triggered.connect(self.toggleVariables)
-        self.actionPropertyView.triggered.connect(self.togglePropertyView)
-        self.actionShortcuts.triggered.connect(self.shortcuts_info)
-
-        self.actionSave.triggered.connect(self.save)
-        self.actionLoad.triggered.connect(self.load)
-        self.actionSave_as.triggered.connect(lambda: self.save(True))
-        self.actionNew.triggered.connect(self.newFile)
-
-        self.actionHistory.triggered.connect(self.toggleHistory)
-        self.dockWidgetUndoStack.setVisible(False)
 
         rxLettersAndNumbers = QtCore.QRegExp('^[a-zA-Z0-9]*$')
         nameValidator = QtGui.QRegExpValidator(rxLettersAndNumbers, self.leCompoundName)
@@ -121,16 +105,32 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         self.setMouseTracking(True)
 
-        self.variablesWidget = VariablesWidget(self.canvasWidget)
-        self.leftDockGridLayout.addWidget(self.variablesWidget)
-
         self._lastClock = 0.0
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self._current_file_name = 'Untitled'
+        self.populateMenu()
+
+    def populateMenu(self):
+        fileMenu = self.menuBar.addMenu("File")
+        newFileAction = fileMenu.addAction("New file")
+        newFileAction.triggered.connect(self.newFile)
+
+        loadAction = fileMenu.addAction("Load")
+        loadAction.triggered.connect(self.load)
+
+        saveAction = fileMenu.addAction("Save")
+        saveAction.triggered.connect(self.save)
+
+        saveAsAction = fileMenu.addAction("Save as")
+        saveAsAction.triggered.connect(lambda: self.save(True))
+
+        helpMenu = self.menuBar.addMenu("Help")
+        shortcutsAction = helpMenu.addAction("Shortcuts")
+        shortcutsAction.triggered.connect(self.shortcuts_info)
 
     def registerToolInstance(self, instance):
-        """registerToolInstance registerToolInstance Registers tool instance reference
+        """Registers tool instance reference
 
         This needed to prevent classes from being garbage collected and to save widgets state
 
@@ -308,6 +308,14 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if result:
             _implementPlugin(name, pluginType)
 
+    def getToolClassByName(self, packageName, toolName, toolClass=DockTool):
+        registeredTools = GET_TOOLS()
+        for ToolClass in registeredTools[packageName]:
+            if issubclass(ToolClass, toolClass):
+                if ToolClass.name() == toolName:
+                    return ToolClass
+        return None
+
     def getToolInstanceByClass(self, packageName, toolName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
         for ToolClass in registeredTools[packageName]:
@@ -319,10 +327,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def invokeDockToolByName(self, packageName, name, settings=None):
         # invokeDockToolByName Invokes dock tool by tool name and package name
         # If settings provided QMainWindow::restoreDockWidget will be called instead QMainWindow::addDockWidget
+        toolClass = self.getToolClassByName(packageName, name, DockTool)
+        isSingleton = toolClass.isSingleton()
+        if isSingleton:
+            # check if already registered
+            if name in [t.name() for t in self._tools]:
+                return
         ToolInstance = self.getToolInstanceByClass(packageName, name, DockTool)
         if ToolInstance:
             self.registerToolInstance(ToolInstance)
-            ToolInstance.setWindowTitle(ToolInstance.name())
             if settings is not None:
                 ToolInstance.restoreState(settings)
                 if not self.restoreDockWidget(ToolInstance):
@@ -330,6 +343,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     pass
             else:
                 self.addDockWidget(ToolInstance.defaultDockArea(), ToolInstance)
+            ToolInstance.setCanvas(self.canvasWidget)
             ToolInstance.onShow()
         return ToolInstance
 
@@ -363,6 +377,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 tool.saveState(settings)
                 settings.endGroup()
                 settings.endGroup()
+            tool.onDestroy()
         settings.endGroup()
         settings.sync()
         QMainWindow.closeEvent(self, event)
@@ -470,18 +485,23 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     settings.endGroup()
 
                 if issubclass(ToolClass, DockTool):
+                    menus = instance.menuBar.findChildren(QMenu)
+                    beforeLastMenuAction = menus[-1].menuAction()
                     toolsMenu = getOrCreateMenu(instance.menuBar, "Tools")
-                    instance.menuBar.addMenu(toolsMenu)
+                    instance.menuBar.insertMenu(beforeLastMenuAction, toolsMenu)
                     packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
                     toolsMenu.addMenu(packageSubMenu)
                     showToolAction = packageSubMenu.addAction(ToolClass.name())
-                    showToolAction.triggered.connect(lambda: instance.invokeDockToolByName(packageName, ToolClass.name()))
+                    showToolAction.triggered.connect(lambda pkgName=packageName, toolName=ToolClass.name(): instance.invokeDockToolByName(pkgName, toolName))
 
                     settings.beginGroup("DockTools")
-                    for dockToolGroupName in settings.childGroups():
+                    childGroups = settings.childGroups()
+                    for dockToolGroupName in childGroups:
                         # This dock tool data been saved on last shutdown
                         settings.beginGroup(dockToolGroupName)
-                        toolName = settings.value("name")
+                        toolName = dockToolGroupName.split("::")[0]
+                        if dockToolGroupName in [t.uniqueName() for t in instance._tools]:
+                            continue
                         ToolInstance = instance.invokeDockToolByName(packageName, toolName, settings)
                         settings.endGroup()
                     settings.endGroup()

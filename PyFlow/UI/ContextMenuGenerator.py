@@ -8,7 +8,7 @@ class ContextMenuGenerator(object):
         super(ContextMenuGenerator, self).__init__()
         self.builder = menuDataBuilder
 
-    def createMenuEntry(self, parentMenu, menuEntryData):
+    def __createMenuEntry(self, parentMenu, menuEntryData):
         if "separator" in menuEntryData:
             parentMenu.addSeparator()
             return
@@ -18,7 +18,7 @@ class ContextMenuGenerator(object):
             subMenu = parentMenu.addMenu(menuEntryData["title"])
             if icon is not None:
                 subMenu.setIcon(icon)
-            self.createMenuEntry(subMenu, subMenuData)
+            self.__createMenuEntry(subMenu, subMenuData)
         else:
             action = parentMenu.addAction(menuEntryData['title'])
             if icon is not None:
@@ -29,5 +29,5 @@ class ContextMenuGenerator(object):
         menuData = self.builder.get()
         menu = QMenu()
         for menuEntry in menuData:
-            self.createMenuEntry(menu, menuEntry)
+            self.__createMenuEntry(menu, menuEntry)
         return menu
