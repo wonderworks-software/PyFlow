@@ -125,6 +125,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         saveAsAction = fileMenu.addAction("Save as")
         saveAsAction.triggered.connect(lambda: self.save(True))
 
+        editMenu = self.menuBar.addMenu("Edit")
+        preferencesAction = editMenu.addAction("Preferences")
+
         helpMenu = self.menuBar.addMenu("Help")
         shortcutsAction = helpMenu.addAction("Shortcuts")
         shortcutsAction.triggered.connect(self.shortcuts_info)
@@ -332,6 +335,10 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if isSingleton:
             # check if already registered
             if name in [t.name() for t in self._tools]:
+                for tool in self._tools:
+                    if tool.name() == name:
+                        # Highlight window
+                        print("highlight", tool.uniqueName())
                 return
         ToolInstance = self.getToolInstanceByClass(packageName, name, DockTool)
         if ToolInstance:
@@ -486,9 +493,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
                 if issubclass(ToolClass, DockTool):
                     menus = instance.menuBar.findChildren(QMenu)
-                    beforeLastMenuAction = menus[-1].menuAction()
+                    helpMenuAction = [m for m in menus if m.title() == "Help"][0].menuAction()
                     toolsMenu = getOrCreateMenu(instance.menuBar, "Tools")
-                    instance.menuBar.insertMenu(beforeLastMenuAction, toolsMenu)
+                    instance.menuBar.insertMenu(helpMenuAction, toolsMenu)
                     packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
                     toolsMenu.addMenu(packageSubMenu)
                     showToolAction = packageSubMenu.addAction(ToolClass.name())
@@ -499,9 +506,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     for dockToolGroupName in childGroups:
                         # This dock tool data been saved on last shutdown
                         settings.beginGroup(dockToolGroupName)
-                        toolName = dockToolGroupName.split("::")[0]
                         if dockToolGroupName in [t.uniqueName() for t in instance._tools]:
                             continue
+                        toolName = dockToolGroupName.split("::")[0]
                         ToolInstance = instance.invokeDockToolByName(packageName, toolName, settings)
                         settings.endGroup()
                     settings.endGroup()
