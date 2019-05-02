@@ -71,6 +71,10 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         self.setObjectName(self.uniqueName())
 
     @staticmethod
+    def defaultDockArea():
+        return QtCore.Qt.LeftDockWidgetArea
+
+    @staticmethod
     def isSingleton():
         return False
 

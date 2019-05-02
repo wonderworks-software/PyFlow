@@ -30,10 +30,6 @@ class VariablesTool(DockTool):
         self.verticalLayout.addWidget(VariablesWidget(self.canvas))
 
     @staticmethod
-    def defaultDockArea():
-        return QtCore.Qt.LeftDockWidgetArea
-
-    @staticmethod
     def toolTip():
         return "Variables editing/creation"
 
