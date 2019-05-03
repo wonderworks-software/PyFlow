@@ -36,6 +36,7 @@ from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Widgets import GraphEditor_ui
 from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
+from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow import INITIALIZE
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
@@ -88,8 +89,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.styleSheetEditor = StyleSheetEditor()
         self.graphManager = GraphManager()
         self.canvasWidget = Canvas(self.graphManager, self)
-        self.canvasWidget.graphManager.graphChanged.connect(self.updateGraphTreeLocation)
-        self.newFileExecuted.connect(self.canvasWidget.shoutDown)
+        self.canvasWidget.requestFillProperties.connect(self.onRequestFillProperties)
+        self.canvasWidget.requestClearProperties.connect(self.onRequestClearProperties)
+        self.graphManager.graphChanged.connect(self.updateGraphTreeLocation)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
 
@@ -110,6 +112,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer = QtCore.QTimer()
         self._current_file_name = 'Untitled'
         self.populateMenu()
+        self.dockWidgetNodeView.setVisible(True)
 
     def populateMenu(self):
         fileMenu = self.menuBar.addMenu("File")
@@ -146,6 +149,16 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def unregisterToolInstance(self, instance):
         if instance in self._tools:
             self._tools.remove(instance)
+
+    def onRequestFillProperties(self, propertiesWidget):
+        for toolInstance in self._tools:
+            if isinstance(toolInstance, PropertiesTool):
+                toolInstance.assignPropertiesWidget(propertiesWidget)
+
+    def onRequestClearProperties(self):
+        for toolInstance in self._tools:
+            if isinstance(toolInstance, PropertiesTool):
+                toolInstance.clear()
 
     def getToolbar(self):
         return self.toolBar
@@ -228,9 +241,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 json.dump(saveData, f, indent=4)
 
             print(str("// saved: '{0}'".format(self._current_file_name)))
-
-    def clearPropertiesView(self):
-        clearLayout(self.propertiesLayout)
 
     def newFile(self, keepRoot=True):
         self.tick_timer.stop()
@@ -319,7 +329,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     return ToolClass
         return None
 
-    def getToolInstanceByClass(self, packageName, toolName, toolClass=DockTool):
+    def createToolInstanceByClass(self, packageName, toolName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
         for ToolClass in registeredTools[packageName]:
             if issubclass(ToolClass, toolClass):
@@ -340,7 +350,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                         # Highlight window
                         print("highlight", tool.uniqueName())
                 return
-        ToolInstance = self.getToolInstanceByClass(packageName, name, DockTool)
+        ToolInstance = self.createToolInstanceByClass(packageName, name, DockTool)
         if ToolInstance:
             self.registerToolInstance(ToolInstance)
             if settings is not None:

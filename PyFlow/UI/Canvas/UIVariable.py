@@ -17,6 +17,9 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QInputDialog
 
 from PyFlow.Core.Common import *
+from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
+from PyFlow.UI.Widgets.InputWidgets import createInputWidget
+from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget, CollapsibleFormWidget
 from PyFlow import getPinDefaultValueByType
 from PyFlow import findPinClassByType
 from PyFlow import getAllPinClasses
@@ -68,7 +71,7 @@ class VarTypeComboBox(QComboBox):
 
 
 # Variable class
-class UIVariable(QWidget):
+class UIVariable(QWidget, IPropertiesViewSupport):
     def __init__(self, rawVariable, variablesWidget, parent=None):
         super(UIVariable, self).__init__(parent)
         self._rawVariable = rawVariable
@@ -106,6 +109,44 @@ class UIVariable(QWidget):
 
         QtCore.QMetaObject.connectSlotsByName(self)
         self.setName(self._rawVariable.name)
+
+    def createPropertiesWidget(self):
+        propertiesWidget = PropertiesWidget()
+        baseCategory = CollapsibleFormWidget(headName="Base")
+        # name
+        le_name = QLineEdit(self._rawVariable.name)
+        le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
+        baseCategory.addWidget("Name", le_name)
+
+        # data type
+        cbTypes = VarTypeComboBox(self)
+        baseCategory.addWidget("Type", cbTypes)
+        propertiesWidget.addWidget(baseCategory)
+
+        valueCategory = CollapsibleFormWidget(headName="Value")
+
+        # current value
+        def valSetter(x):
+            self._rawVariable.value = x
+        w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType), None)
+        if w:
+            w.setWidgetValue(self._rawVariable.value)
+            w.setObjectName(self._rawVariable.name)
+            valueCategory.addWidget(self._rawVariable.name, w)
+
+        # access level
+        cb = QComboBox()
+        cb.addItem('public', 0)
+        cb.addItem('private', 1)
+        cb.addItem('protected', 2)
+
+        def accessLevelChanged(x):
+            self._rawVariable.accessLevel = AccessLevel[x]
+        cb.currentTextChanged.connect(accessLevelChanged)
+        cb.setCurrentIndex(self._rawVariable.accessLevel)
+        valueCategory.addWidget('Access level', cb)
+        propertiesWidget.addWidget(valueCategory)
+        return propertiesWidget
 
     def onFindRefsClicked(self):
         refs = self._rawVariable.findRefs()

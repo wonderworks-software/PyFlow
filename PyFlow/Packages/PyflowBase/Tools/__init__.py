@@ -10,6 +10,7 @@ from PyFlow.Packages.PyflowBase.Tools.AlignRightTool import AlignRightTool
 from PyFlow.Packages.PyflowBase.Tools.AlignBottomTool import AlignBottomTool
 from PyFlow.Packages.PyflowBase.Tools.HistoryTool import HistoryTool
 from PyFlow.Packages.PyflowBase.Tools.VariablesTool import VariablesTool
+from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 
 
 REGISTER_TOOL(PACKAGE_NAME, ScreenshotTool)
@@ -19,3 +20,4 @@ REGISTER_TOOL(PACKAGE_NAME, AlignRightTool)
 REGISTER_TOOL(PACKAGE_NAME, AlignBottomTool)
 REGISTER_TOOL(PACKAGE_NAME, HistoryTool)
 REGISTER_TOOL(PACKAGE_NAME, VariablesTool)
+REGISTER_TOOL(PACKAGE_NAME, PropertiesTool)

@@ -1,4 +1,5 @@
-# from PyFlow.UI.Canvas.UICommon import clearLayout
+from nine import str
+from PyFlow.UI.Canvas.UICommon import clearLayout
 
 from Qt import QtWidgets
 from Qt import QtCore, QtGui
@@ -13,12 +14,6 @@ class HeadButton(QtWidgets.QPushButton):
         self.setDefault(True)
         self.setMaximumHeight(maxHeight)
 
-    def mousePressEvent(self, event):
-        modifires = event.modifiers()
-        button = event.button()
-        self.parent().bCollapseWithChildren = modifires == QtCore.Qt.ShiftModifier and button == QtCore.Qt.LeftButton
-        super(HeadButton, self).mousePressEvent(event)
-
 
 class CollapsibleWidget(QtWidgets.QWidget):
     """Has content widget and button on top to hide or show content"""
@@ -29,12 +24,15 @@ class CollapsibleWidget(QtWidgets.QWidget):
         self.setupUi()
         self.connectUi()
         self.setButtonName(headName)
-        self.parentCollapseWidget = None
-        self.childrenCollapseWidgets = set()
-        self.bCollapseWithChildren = False
         if noSpacer:
             self.removeSpacer()
         self.setCollapsed(collapsed)
+
+    def filterContent(self, pattern):
+        pass
+
+    def title(self):
+        return self.pbHead.text()
 
     def setReadOnly(self, bReadOnly=True):
         self.ContentWidget.setEnabled(not bReadOnly)
@@ -104,52 +102,98 @@ class CollapsibleWidget(QtWidgets.QWidget):
             self.pbHead.setIcon(self.contentHiddenIcon)
 
     def setCollapsed(self, bCollapsed=False):
-        if self.bCollapseWithChildren:
-            for child in self.childrenCollapseWidgets:
-                child.bCollapseWithChildren = self.bCollapseWithChildren
-                child.setCollapsed(bCollapsed)
-        if bCollapsed:
-            self.ContentWidget.hide()
-        else:
-            self.ContentWidget.show()
+        self.ContentWidget.setVisible(not bCollapsed)
         self.updateIcon()
+
+
+class PropertyEntry(QtWidgets.QWidget):
+    """docstring for PropertyEntry."""
+    def __init__(self, label, widget, parent=None):
+        super(PropertyEntry, self).__init__(parent)
+        self.label = label
+        self.layout = QtWidgets.QHBoxLayout(self)
+        self.layout.setContentsMargins(1, 1, 1, 1)
+        label = QtWidgets.QLabel(label)
+        label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred))
+        self.layout.addWidget(label)
+        self.layout.addWidget(widget)
+
+    def getLabel(self):
+        return self.label
+
+
+class CollapsibleFormWidget(CollapsibleWidget):
+    def __init__(self, parent=None, headName="Collapse", noSpacer=True, collapsed=False):
+        super(CollapsibleFormWidget, self).__init__(parent, headName=headName, noSpacer=noSpacer, collapsed=collapsed)
+        self.Layout = QtWidgets.QVBoxLayout(self.ContentWidget)
+        self.Layout.setObjectName("CollapseWidgetFormLayout")
+        self.Layout.setSpacing(2)
+        self.Layout.setContentsMargins(0, 0, 0, 5)
+
+    def isAllWidgetsHidden(self):
+        count = self.Layout.count()
+        hidden = 0
+        for i in range(count):
+            widget = self.Layout.itemAt(i).widget()
+            if widget.isHidden():
+                hidden += 1
+        return count == hidden
+
+    def filterContent(self, pattern):
+        count = self.Layout.count()
+        for i in range(count):
+            widget = self.Layout.itemAt(i).widget()
+            if widget:
+                widget.setVisible(pattern.lower() in widget.getLabel().lower())
+
+    def addWidget(self, label=None, widget=None):
+        if widget is None or isinstance(widget, CollapsibleWidget):
+            return False
+        self.Layout.addWidget(PropertyEntry(str(label), widget))
+        return True
 
 
 class PropertiesWidget(QtWidgets.QWidget):
     """docstring for PropertiesWidget."""
     def __init__(self, parent=None):
         super(PropertiesWidget, self).__init__(parent)
-        self.lyt = QtWidgets.QVBoxLayout(self)
-        self.lyt.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
+        self.setWindowTitle("Properties view")
+        self.mainLayout = QtWidgets.QVBoxLayout(self)
+        self.mainLayout.setObjectName("propertiesMainLayout")
+        self.mainLayout.setContentsMargins(2, 2, 2, 2)
+        self.searchBox = QtWidgets.QLineEdit(self)
+        self.searchBox.setObjectName("lineEdit")
+        self.searchBox.setPlaceholderText(str("search..."))
+        self.searchBox.textChanged.connect(self.searchTextChanged)
+        self.mainLayout.addWidget(self.searchBox)
+        self.contentLayout = QtWidgets.QVBoxLayout()
+        self.contentLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
+        self.mainLayout.addLayout(self.contentLayout)
+        self.spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.mainLayout.addItem(self.spacerItem)
+        self.mainLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
 
+    def searchTextChanged(self, text):
+        count = self.contentLayout.count()
+        for i in range(count):
+            item = self.contentLayout.itemAt(i)
+            w = item.widget()
+            if w:
+                w.filterContent(text)
+                if w.isAllWidgetsHidden():
+                    w.hide()
+                else:
+                    w.show()
+
     def clear(self):
-        clearLayout(self.lyt)
+        clearLayout(self.contentLayout)
 
-    def addWidget(self, widget):
-        self.lyt.addWidget(widget)
-
-
-# Example widget
-class CollapsibleFormWidget(CollapsibleWidget):
-    def __init__(self, parent=None, headName="Collapse", noSpacer=True, collapsed=False):
-        super(CollapsibleFormWidget, self).__init__(parent, headName=headName, noSpacer=noSpacer, collapsed=collapsed)
-        self.Layout = QtWidgets.QFormLayout(self.ContentWidget)
-        self.Layout.setSpacing(2)
-        self.Layout.setContentsMargins(0, 0, 0, 5)
-
-    def addWidget(self, label=None, widget=None):
-        if widget is None:
-            return False
-        if isinstance(widget, CollapsibleWidget):
-            widget.removeSpacer()
-            widget.parentCollapseWidget = self
-            self.childrenCollapseWidgets.add(widget)
-        if label:
-            self.Layout.addRow(str(label), widget)
-        else:
-            self.Layout.addRow(widget)
-        return True
+    def addWidget(self, collapsibleWidget):
+        if isinstance(collapsibleWidget, CollapsibleFormWidget):
+            self.contentLayout.insertWidget(-1, collapsibleWidget)
+            return True
+        return False
 
 
 if __name__ == "__main__":
@@ -160,31 +204,19 @@ if __name__ == "__main__":
 
     pw = PropertiesWidget()
 
-    rootWidget = CollapsibleFormWidget(headName="Settings", noSpacer=False)
-    w1 = CollapsibleFormWidget(headName="pins")
-    w1.setReadOnly(True)
-    w2 = CollapsibleFormWidget(headName="appearance")
-    w3 = CollapsibleFormWidget(headName="Appearance|base")
+    rootWidget = CollapsibleFormWidget(headName="Settings", noSpacer=True)
+    rootWidget.addWidget("test", QtWidgets.QPushButton("ss"))
+    rootWidget.addWidget("foo", QtWidgets.QPushButton(""))
+    rootWidget.addWidget("bar", QtWidgets.QPushButton(""))
 
-    # Can be nested!!
-    rootWidget.addWidget(widget=w1)
-    rootWidget.addWidget(widget=w2)
-    w2.addWidget(widget=w3)
-
-    w1.addWidget("First", QtWidgets.QPushButton())
-    w1.addWidget("Label", QtWidgets.QPushButton())
-    w1.addWidget("Sec", QtWidgets.QPushButton())
-    w1.addWidget(widget=QtWidgets.QPushButton("separator"))
-    w1.addWidget("A", QtWidgets.QPushButton())
-
-    w2.addWidget("First2", QtWidgets.QPushButton())
-    w2.addWidget("Label2", QtWidgets.QPushButton())
-    w2.addWidget("Sec2", QtWidgets.QPushButton())
-
-    w3.addWidget("Sec3", QtWidgets.QPushButton())
+    rootWidget2 = CollapsibleFormWidget(headName="Test", noSpacer=True)
+    rootWidget2.addWidget("test2", QtWidgets.QPushButton("aa"))
 
     pw.addWidget(rootWidget)
+    pw.addWidget(rootWidget2)
     s.setWidget(pw)
     s.show()
+
+    pw.clear()
 
     sys.exit(app.exec_())

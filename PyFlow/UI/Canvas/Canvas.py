@@ -335,6 +335,9 @@ class Canvas(QGraphicsView):
 
     _mouseWheelZoomRate = 0.0005
 
+    requestFillProperties = QtCore.Signal(object)
+    requestClearProperties = QtCore.Signal()
+
     def __init__(self, graphManager, parent=None):
         super(Canvas, self).__init__()
         self.graphManager = graphManager
@@ -548,8 +551,9 @@ class Canvas(QGraphicsView):
                 break
         return uiPin
 
-    def onNewFile(self):
+    def onNewFile(self, keepRoot=True):
         self.undoStack.clear()
+        self.shoutDown()
 
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
@@ -630,7 +634,7 @@ class Canvas(QGraphicsView):
         if self.isShortcutsEnabled() and len(selectedNodes) > 0:
             cmdRemove = cmdRemoveNodes(selectedNodes, self)
             self.undoStack.push(cmdRemove)
-            self.parent.clearPropertiesView()
+            self.requestClearProperties.emit()
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
@@ -694,9 +698,6 @@ class Canvas(QGraphicsView):
                 self.zoomDelta(False)
             if all([event.key() == QtCore.Qt.Key_R, modifiers == QtCore.Qt.ControlModifier]):
                 self.reset_scale()
-
-            if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-                self.parent.togglePropertyView()
 
             if event.key() == QtCore.Qt.Key_Delete:
                 self.killSelectedNodes()
@@ -1291,7 +1292,7 @@ class Canvas(QGraphicsView):
                 pressedNode is not None, pressedNode == releasedNode, manhattanLengthTest]):
                 self.tryFillPropertiesView(pressedNode)
         elif event.button() == QtCore.Qt.LeftButton:
-            self.parent.clearPropertiesView()
+            self.requestClearProperties.emit()
         self.resizing = False
 
     def removeItemByName(self, name):
@@ -1299,8 +1300,8 @@ class Canvas(QGraphicsView):
 
     def tryFillPropertiesView(self, obj):
         if isinstance(obj, IPropertiesViewSupport):
-            self.parent.clearPropertiesView()
-            obj.onUpdatePropertyView(self.parent.propertiesLayout)
+            propertiesWidget = obj.createPropertiesWidget()
+            self.requestFillProperties.emit(propertiesWidget)
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()

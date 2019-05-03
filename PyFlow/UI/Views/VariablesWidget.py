@@ -12,17 +12,12 @@ from Qt.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QWidget,
-    QLineEdit,
-    QComboBox,
     QAbstractItemView
 )
 
-from PyFlow.UI.Canvas.UIVariable import UIVariable, VarTypeComboBox
-from PyFlow.UI.Widgets.InputWidgets import createInputWidget
+from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.VariablesWidget_ui import Ui_Form
 from PyFlow.UI.Canvas.UICommon import clearLayout
-from PyFlow.UI.Widgets.CollapsibleWidget import CollapsibleFormWidget
-from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Common import *
 
 VARIABLE_TAG = "VAR"
@@ -104,48 +99,6 @@ class VariablesWidget(QWidget, Ui_Form):
         propertiesLayout = self.canvas.parent.propertiesLayout
         clearLayout(propertiesLayout)
 
-    @staticmethod
-    def createPropertiesWidgetForVariable(rawVariable):
-        # TODO: construct properties view here and return
-        return None
-
     def onUpdatePropertyView(self, uiVariable):
-        propertiesLayout = self.canvas.parent.propertiesLayout
-        clearLayout(propertiesLayout)
-        rawVariable = uiVariable._rawVariable
-
-        baseCategory = CollapsibleFormWidget(headName="Base")
-
-        # name
-        le_name = QLineEdit(rawVariable.name)
-        le_name.returnPressed.connect(lambda: uiVariable.setName(le_name.text()))
-        baseCategory.addWidget("Name", le_name)
-
-        # data type
-        cbTypes = VarTypeComboBox(uiVariable)
-        baseCategory.addWidget("Type", cbTypes)
-
-        valueCategory = CollapsibleFormWidget(headName="Value")
-
-        # current value
-        def valSetter(x):
-            rawVariable.value = x
-        w = createInputWidget(rawVariable.dataType, valSetter, getPinDefaultValueByType(rawVariable.dataType), None)
-        if w:
-            w.setWidgetValue(rawVariable.value)
-            w.setObjectName(rawVariable.name)
-            valueCategory.addWidget(rawVariable.name, w)
-
-        # access level
-        cb = QComboBox()
-        cb.addItem('public', 0)
-        cb.addItem('private', 1)
-        cb.addItem('protected', 2)
-
-        def accessLevelChanged(x):
-            rawVariable.accessLevel = AccessLevel[x]
-        cb.currentTextChanged.connect(accessLevelChanged)
-        cb.setCurrentIndex(rawVariable.accessLevel)
-        valueCategory.addWidget('Access level', cb)
-        propertiesLayout.addWidget(baseCategory)
-        propertiesLayout.addWidget(valueCategory)
+        properties = uiVariable.createPropertiesWidget()
+        self.canvas.requestFillProperties.emit(properties)

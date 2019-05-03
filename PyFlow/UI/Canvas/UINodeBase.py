@@ -35,7 +35,7 @@ from PyFlow.UI.Canvas.UICommon import VisibilityPolicy
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
-from PyFlow.UI.Widgets.CollapsibleWidget import CollapsibleFormWidget
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *
@@ -614,7 +614,8 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
     def call(self, name):
         self._rawNode.call(name)
 
-    def onUpdatePropertyView(self, propertiesLayout):
+    def createPropertiesWidget(self):
+        propertiesWidget = PropertiesWidget()
         baseCategory = CollapsibleFormWidget(headName="Base")
 
         le_name = QLineEdit(self.getName())
@@ -636,7 +637,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         leType.setReadOnly(True)
         baseCategory.addWidget("Type", leType)
 
-        propertiesLayout.addWidget(baseCategory)
+        propertiesWidget.addWidget(baseCategory)
 
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
@@ -656,14 +657,16 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
                     inputsCategory.addWidget(inp.name, w)
                     if inp.hasConnections():
                         w.setEnabled(False)
-            propertiesLayout.addWidget(inputsCategory)
+            propertiesWidget.addWidget(inputsCategory)
 
         Info = CollapsibleFormWidget(headName="Info", collapsed=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())
         Info.addWidget(widget=doc)
-        propertiesLayout.addWidget(Info)
+        propertiesWidget.addWidget(Info)
+
+        return propertiesWidget
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()
