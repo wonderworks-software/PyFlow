@@ -1,7 +1,9 @@
 from nine import str
 from Qt import QtCore
+from Qt import QtGui
 from Qt import QtWidgets
 
+from PyFlow.Packages.PyflowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget
 
@@ -24,6 +26,10 @@ class PropertiesTool(DockTool):
         if isinstance(propertiesWidget, PropertiesWidget):
             self.clear()
             self.scrollArea.setWidget(propertiesWidget)
+
+    @staticmethod
+    def getIcon():
+        return QtGui.QIcon(RESOURCES_DIR + "/property_icon.png")
 
     @staticmethod
     def isSingleton():

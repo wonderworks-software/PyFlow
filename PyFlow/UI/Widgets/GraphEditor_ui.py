@@ -1,23 +1,20 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'e:\GIT\PyFlow\PyFlow\UI\Widgets\GraphEditor_ui.ui',
-# licensing of 'e:\GIT\PyFlow\PyFlow\UI\Widgets\GraphEditor_ui.ui' applies.
+# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui',
+# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui' applies.
 #
-# Created: Thu May  2 15:08:41 2019
+# Created: Sat May  4 12:25:24 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
 
-from Qt import QtCore, QtGui, QtWidgets
+from Qt import QtCompat, QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
         MainWindow.resize(863, 543)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/resources/LogoBpApp.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        MainWindow.setWindowIcon(icon)
         MainWindow.setDocumentMode(True)
         MainWindow.setDockNestingEnabled(True)
         MainWindow.setDockOptions(QtWidgets.QMainWindow.AllowNestedDocks|QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
@@ -83,14 +80,14 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.SceneWidget, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 863, 21))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 863, 26))
         self.menuBar.setObjectName("menuBar")
         MainWindow.setMenuBar(self.menuBar)
         self.toolBar = QtWidgets.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.dockWidgetNodeView = QtWidgets.QDockWidget(MainWindow)
-        self.dockWidgetNodeView.setMinimumSize(QtCore.QSize(200, 93))
+        self.dockWidgetNodeView.setMinimumSize(QtCore.QSize(200, 113))
         self.dockWidgetNodeView.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea|QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
         self.dockWidgetNodeView.setObjectName("dockWidgetNodeView")
         self.dockWidgetContents = QtWidgets.QWidget()
@@ -105,7 +102,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 198, 486))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 198, 475))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
@@ -125,10 +122,9 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "PyFlow", None, -1))
-        self.label_2.setText(QtWidgets.QApplication.translate("MainWindow", "Name:", None, -1))
-        self.label.setText(QtWidgets.QApplication.translate("MainWindow", "Category:", None, -1))
-        self.toolBar.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "toolBar", None, -1))
-        self.dockWidgetNodeView.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "PropertyView", None, -1))
+        MainWindow.setWindowTitle(QtCompat.translate("MainWindow", "PyFlow", None, -1))
+        self.label_2.setText(QtCompat.translate("MainWindow", "Name:", None, -1))
+        self.label.setText(QtCompat.translate("MainWindow", "Category:", None, -1))
+        self.toolBar.setWindowTitle(QtCompat.translate("MainWindow", "toolBar", None, -1))
+        self.dockWidgetNodeView.setWindowTitle(QtCompat.translate("MainWindow", "PropertyView", None, -1))
 
-import nodes_res_rc

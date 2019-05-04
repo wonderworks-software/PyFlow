@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:/GIT/PyFlow/PyFlow/UI/Widgets\CodeEditor_ui.ui',
-# licensing of 'd:/GIT/PyFlow/PyFlow/UI/Widgets\CodeEditor_ui.ui' applies.
+# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\CodeEditor_ui.ui',
+# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\CodeEditor_ui.ui' applies.
 #
-# Created: Tue Apr 30 14:30:18 2019
+# Created: Sat May  4 12:25:24 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -62,7 +62,7 @@ class Ui_CodeEditorWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 436, 392))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 436, 375))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_5 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_5.setContentsMargins(1, 1, 1, 1)
@@ -81,7 +81,7 @@ class Ui_CodeEditorWidget(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 435, 392))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 435, 375))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_4.setContentsMargins(1, 1, 1, 1)
@@ -145,4 +145,3 @@ class Ui_CodeEditorWidget(object):
         self.pbReset.setText(QtCompat.translate("CodeEditorWidget", "reset", None, -1))
         self.pbSave.setText(QtCompat.translate("CodeEditorWidget", "save", None, -1))
 
-import nodes_res_rc

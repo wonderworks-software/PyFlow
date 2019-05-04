@@ -1,1 +1,0 @@
-python.exe -u -m trace -t "%cd%/launcherUI.py" /all > "nodes.log"

@@ -6,3 +6,4 @@ PyFlow/appConfig.ini
 .vscode/.ropeproject/objectdb
 nodes.log
 .vscode/settings.json
+PyFlow/config.ini

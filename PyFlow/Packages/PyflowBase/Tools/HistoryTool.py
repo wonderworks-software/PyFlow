@@ -1,9 +1,11 @@
 from nine import str
 from Qt import QtCore
+from Qt import QtGui
 from Qt.QtWidgets import QUndoView
 from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QVBoxLayout
 
+from PyFlow.Packages.PyflowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 
 
@@ -22,6 +24,10 @@ class HistoryTool(DockTool):
         self.undoStackView.setObjectName("undoStackView")
         self.verticalLayout.addWidget(self.undoStackView)
         self.setWidget(self.content)
+
+    @staticmethod
+    def getIcon():
+        return QtGui.QIcon(RESOURCES_DIR + "/history.png")
 
     def onShow(self):
         super(HistoryTool, self).onShow()

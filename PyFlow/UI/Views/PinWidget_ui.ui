@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>168</width>
-    <height>72</height>
+    <height>75</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -103,8 +103,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="nodes_res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -1,9 +1,11 @@
 from nine import str
 from Qt import QtCore
+from Qt import QtGui
 from Qt.QtWidgets import QUndoView
 from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QVBoxLayout
 
+from PyFlow.Packages.PyflowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 
@@ -20,6 +22,10 @@ class VariablesTool(DockTool):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.setWidget(self.content)
+
+    @staticmethod
+    def getIcon():
+        return QtGui.QIcon(RESOURCES_DIR + "/variable.png")
 
     @staticmethod
     def isSingleton():

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui',
-# licensing of 'd:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui' applies.
+# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui',
+# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Views\PinWidget_ui.ui' applies.
 #
-# Created: Tue Apr 30 14:36:27 2019
+# Created: Sat May  4 12:25:23 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from Qt import QtCompat, QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(168, 72)
+        Form.resize(168, 75)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -62,4 +62,3 @@ class Ui_Form(object):
         self.cbHideLabel.setToolTip(QtCompat.translate("Form", "should hide label", None, -1))
         self.cbHideLabel.setText(QtCompat.translate("Form", "hide label", None, -1))
 
-import nodes_res_rc

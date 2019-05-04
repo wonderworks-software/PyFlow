@@ -14,7 +14,7 @@
    <string>Python node editor</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../Utils/nodes_res.qrc">
+   <iconset>
     <normaloff>:/icons/resources/py.png</normaloff>:/icons/resources/py.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -126,7 +126,7 @@
               <string>kill selected pins</string>
              </property>
              <property name="icon">
-              <iconset resource="../Utils/nodes_res.qrc">
+              <iconset>
                <normaloff>:/icons/resources/delete_icon.png</normaloff>:/icons/resources/delete_icon.png</iconset>
              </property>
             </widget>
@@ -174,7 +174,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>436</width>
-                <height>392</height>
+                <height>375</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_5">
@@ -224,7 +224,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>435</width>
-                <height>392</height>
+                <height>375</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_4">
@@ -367,8 +367,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../Utils/nodes_res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

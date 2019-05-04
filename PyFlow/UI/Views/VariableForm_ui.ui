@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>217</width>
-    <height>28</height>
+    <width>228</width>
+    <height>30</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,16 +63,10 @@
      <property name="text">
       <string/>
      </property>
-     <property name="icon">
-      <iconset resource="../Utils/nodes_res.qrc">
-       <normaloff>:/icons/resources/delete_icon.png</normaloff>:/icons/resources/delete_icon.png</iconset>
-     </property>
     </widget>
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../Utils/nodes_res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -82,6 +82,10 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         super(DockTool, self).onShow()
         self.setWindowTitle(self.name())
 
+    @staticmethod
+    def getIcon():
+        return None
+
     def restoreState(self, settings):
         super(DockTool, self).restoreState(settings)
         self.setObjectName(self.uniqueName())

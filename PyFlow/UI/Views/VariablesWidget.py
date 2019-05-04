@@ -17,6 +17,7 @@ from Qt.QtWidgets import (
 
 from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.VariablesWidget_ui import Ui_Form
+from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.Core.Common import *
 
@@ -55,7 +56,6 @@ class VariablesWidget(QWidget, Ui_Form):
         self.canvas = canvas
         self.canvas.graphManager.graphChanged.connect(self.onGraphChanged)
         self.pbNewVar.clicked.connect(self.createVariable)
-        self.pbKillVar.clicked.connect(self.killVar)
         self.listWidget = VariablesListWidget()
         self.lytListWidget.addWidget(self.listWidget)
 

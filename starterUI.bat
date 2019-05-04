@@ -1,3 +1,3 @@
 pip install -r requirements.txt
-python.exe %cd%/launcherUI.py
+python.exe %cd%/launcher.py
 pause
