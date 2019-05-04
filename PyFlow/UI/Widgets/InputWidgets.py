@@ -79,19 +79,9 @@ class InputWidgetSingle(InputWidgetRaw):
     def __init__(self, parent=None, dataSetCallback=None, defaultValue=None, userStructClass=None, **kwds):
         super(InputWidgetSingle, self).__init__(parent=parent, dataSetCallback=dataSetCallback,
                                                 defaultValue=defaultValue, userStructClass=userStructClass, **kwds)
-        # from widget
-        #self.gridLayout = QGridLayout(self)
-        # self.gridLayout.setSpacing(1)
-        #self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        # self.gridLayout.setObjectName("gridLayout")
         self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setObjectName("horizontalLayout")
-
-        spacerItem = QSpacerItem(
-            40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        #self.horizontalLayout.addItem(spacerItem)
-
-        #self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 1)
+        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self._index = 0
         self._widget = None
 

@@ -94,13 +94,13 @@ class CollapsibleWidget(QtWidgets.QWidget):
         self.pbHead.setText(name)
 
     def isCollapsed(self):
-        return self.ContentWidget.isVisible()
+        return self.ContentWidget.isHidden()
 
     def updateIcon(self):
         if self.isCollapsed():
-            self.pbHead.setIcon(self.contentVisibleIcon)
-        else:
             self.pbHead.setIcon(self.contentHiddenIcon)
+        else:
+            self.pbHead.setIcon(self.contentVisibleIcon)
 
     def setCollapsed(self, bCollapsed=False):
         self.ContentWidget.setVisible(not bCollapsed)
@@ -130,6 +130,7 @@ class CollapsibleFormWidget(CollapsibleWidget):
         self.Layout.setObjectName("CollapseWidgetFormLayout")
         self.Layout.setSpacing(2)
         self.Layout.setContentsMargins(0, 0, 0, 5)
+        self.updateIcon()
 
     def isAllWidgetsHidden(self):
         count = self.Layout.count()
@@ -188,7 +189,6 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.searchBoxLayout.setContentsMargins(1, 1, 1, 1)
         self.searchBoxLayout.addWidget(self.searchBox)
         self.lockCheckBox = QtWidgets.QCheckBox()
-        self.lockCheckBox.stateChanged.connect(self.onLockChecked)
         self.lockCheckBox.setStyleSheet(lockUnlockCheckboxStyle)
         self.searchBoxLayout.addWidget(self.lockCheckBox)
         self.mainLayout.addWidget(self.searchBoxWidget)
@@ -215,12 +215,6 @@ class PropertiesWidget(QtWidgets.QWidget):
 
     def isLocked(self):
         return self.lockCheckBox.checkState() == QtCore.Qt.Checked
-
-    def onLockChecked(self, state):
-        if state == QtCore.Qt.Unchecked:
-            print('unlock!')
-        if state == QtCore.Qt.Checked:
-            print('lock!')
 
     def clear(self):
         if not self.isLocked():

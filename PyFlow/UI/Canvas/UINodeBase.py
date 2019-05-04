@@ -24,7 +24,6 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QColorDialog
 from Qt.QtWidgets import QMenu
-from Qt.QtWidgets import QPushButton
 
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UIPinBase import (
