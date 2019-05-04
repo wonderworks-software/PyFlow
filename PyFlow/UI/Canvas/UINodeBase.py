@@ -35,7 +35,7 @@ from PyFlow.UI.Canvas.UICommon import VisibilityPolicy
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
-from PyFlow.UI.Widgets.CollapsibleWidget import CollapsibleFormWidget
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *
@@ -121,7 +121,7 @@ class NodeName(QGraphicsTextItem):
             font.setItalic(True)
             painter.setFont(font)
             painter.setPen(QtGui.QPen(QtCore.Qt.gray, 0.5))
-            text = self.parentItem().packageName()
+            text = self.parentItem().packageName
             painter.drawText(packageRect, QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom, text)
 
     def focusInEvent(self, event):
@@ -400,8 +400,9 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
     def description(self):
         return self._rawNode.description()
 
+    @property
     def packageName(self):
-        return self._rawNode.packageName()
+        return self._rawNode.packageName
 
     def getData(self, pinName):
         if pinName in [p.name for p in self.inputs.values()]:
@@ -614,7 +615,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
     def call(self, name):
         self._rawNode.call(name)
 
-    def onUpdatePropertyView(self, propertiesLayout):
+    def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
 
         le_name = QLineEdit(self.getName())
@@ -628,7 +629,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         leUid.setReadOnly(True)
         baseCategory.addWidget("Owning graph", leUid)
 
-        text = "{0}".format(self.packageName())
+        text = "{0}".format(self.packageName)
         if self._rawNode.lib:
             text += " | {0}".format(self._rawNode.lib)
         text += " | {0}".format(self._rawNode.__class__.__name__)
@@ -636,7 +637,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         leType.setReadOnly(True)
         baseCategory.addWidget("Type", leType)
 
-        propertiesLayout.addWidget(baseCategory)
+        propertiesWidget.addWidget(baseCategory)
 
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
@@ -649,6 +650,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
                 dataSetter = inp.call if inp.isExec() else inp.setData
                 w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
+                    inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
                     w.setWidgetValue(inp.currentData())
                     w.blockWidgetSignals(False)
@@ -656,14 +658,14 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
                     inputsCategory.addWidget(inp.name, w)
                     if inp.hasConnections():
                         w.setEnabled(False)
-            propertiesLayout.addWidget(inputsCategory)
+            propertiesWidget.addWidget(inputsCategory)
 
         Info = CollapsibleFormWidget(headName="Info", collapsed=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())
         Info.addWidget(widget=doc)
-        propertiesLayout.addWidget(Info)
+        propertiesWidget.addWidget(Info)
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()
@@ -910,7 +912,7 @@ def REGISTER_UI_NODE_FACTORY(packageName, factory):
 
 
 def getUINodeInstance(raw_instance):
-    packageName = raw_instance.packageName()
+    packageName = raw_instance.packageName
     instance = None
     if packageName in UI_NODES_FACTORIES:
         instance = UI_NODES_FACTORIES[packageName](raw_instance)

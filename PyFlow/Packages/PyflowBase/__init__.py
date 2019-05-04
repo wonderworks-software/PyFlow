@@ -1,6 +1,7 @@
 PACKAGE_NAME = 'PyflowBase'
+from collections import OrderedDict
 
-from PyFlow.Core.Interfaces import IPackage
+from PyFlow.UI.UIInterfaces import IPackage
 
 # Pins
 from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
@@ -50,6 +51,19 @@ from PyFlow.Packages.PyflowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyflowBase.Nodes.compound import compound
 
 from PyFlow.Packages.PyflowBase.Tools.ScreenshotTool import ScreenshotTool
+from PyFlow.Packages.PyflowBase.Tools.AlignLeftTool import AlignLeftTool
+from PyFlow.Packages.PyflowBase.Tools.AlignRightTool import AlignRightTool
+from PyFlow.Packages.PyflowBase.Tools.AlignTopTool import AlignTopTool
+from PyFlow.Packages.PyflowBase.Tools.AlignBottomTool import AlignBottomTool
+from PyFlow.Packages.PyflowBase.Tools.HistoryTool import HistoryTool
+from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
+from PyFlow.Packages.PyflowBase.Tools.VariablesTool import VariablesTool
+
+# Factories
+from PyFlow.Packages.PyflowBase.Factories.UIPinFactory import createUIPin
+from PyFlow.Packages.PyflowBase.Factories.PinInputWidgetFactory import getInputWidget
+from PyFlow.Packages.PyflowBase.Factories.UINodeFactory import createUINode
+
 
 _FOO_LIBS = {
     ListLib.__name__: ListLib(PACKAGE_NAME),
@@ -61,6 +75,7 @@ _FOO_LIBS = {
     MathAbstractLib.__name__: MathAbstractLib(PACKAGE_NAME),
     RandomLib.__name__: RandomLib(PACKAGE_NAME),
 }
+
 
 _NODES = {
     branch.__name__: branch,
@@ -98,6 +113,17 @@ _PINS = {
     StringPin.__name__: StringPin
 }
 
+# Toolbar will be created in following order
+_TOOLS = OrderedDict()
+_TOOLS[ScreenshotTool.__name__] = ScreenshotTool
+_TOOLS[AlignLeftTool.__name__] = AlignLeftTool
+_TOOLS[AlignRightTool.__name__] = AlignRightTool
+_TOOLS[AlignTopTool.__name__] = AlignTopTool
+_TOOLS[AlignBottomTool.__name__] = AlignBottomTool
+_TOOLS[HistoryTool.__name__] = HistoryTool
+_TOOLS[PropertiesTool.__name__] = PropertiesTool
+_TOOLS[VariablesTool.__name__] = VariablesTool
+
 
 class PyflowBase(IPackage):
     def __init__(self):
@@ -114,3 +140,19 @@ class PyflowBase(IPackage):
     @staticmethod
     def GetPinClasses():
         return _PINS
+
+    @staticmethod
+    def GetToolClasses():
+        return _TOOLS
+
+    @staticmethod
+    def UIPinsFactory():
+        return createUIPin
+
+    @staticmethod
+    def UINodesFactory():
+        return createUINode
+
+    @staticmethod
+    def PinsInputWidgetFactory():
+        return getInputWidget

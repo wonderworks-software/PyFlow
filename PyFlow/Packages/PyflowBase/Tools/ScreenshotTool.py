@@ -13,8 +13,20 @@ class ScreenshotTool(ShelfTool):
         super(ScreenshotTool, self).__init__()
         self.format = "PNG"
 
-    def onSetFormat(self, format):
-        self.format = format
+    def saveState(self, settings):
+        super(ScreenshotTool, self).saveState(settings)
+        settings.setValue("format", self.format)
+
+    def restoreState(self, settings):
+        super(ScreenshotTool, self).restoreState(settings)
+        formatValue = settings.value("format")
+        if formatValue is not None:
+            self.format = formatValue
+        else:
+            self.format = "PNG"
+
+    def onSetFormat(self, fmt):
+        self.format = fmt
 
     def contextMenuBuilder(self):
         builder = ContextMenuDataBuilder()

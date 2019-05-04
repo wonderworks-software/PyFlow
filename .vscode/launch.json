@@ -5,24 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: PyFlow no ui debug",
+            "name": "Python: PyFlow",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/launcher.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: PyFlow unittest",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/unittest_runner.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: PyFlow debug",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/launcherUI.py",
             "console": "integratedTerminal"
         },
         {

@@ -9,16 +9,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>925</width>
-    <height>521</height>
+    <width>863</width>
+    <height>543</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>PyFlow</string>
-  </property>
-  <property name="windowIcon">
-   <iconset resource="../Utils/nodes_res.qrc">
-    <normaloff>:/icons/resources/LogoBpApp.png</normaloff>:/icons/resources/LogoBpApp.png</iconset>
   </property>
   <property name="documentMode">
    <bool>true</bool>
@@ -172,27 +168,10 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>925</width>
-     <height>21</height>
+     <width>863</width>
+     <height>26</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionNew"/>
-    <addaction name="actionSave"/>
-    <addaction name="actionLoad"/>
-    <addaction name="actionSave_as"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="actionShortcuts"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -204,95 +183,13 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionPropertyView"/>
-   <addaction name="actionVariables"/>
-   <addaction name="actionHistory"/>
    <addaction name="separator"/>
-  </widget>
-  <widget class="QDockWidget" name="dockWidgetVariables">
-   <property name="minimumSize">
-    <size>
-     <width>150</width>
-     <height>113</height>
-    </size>
-   </property>
-   <property name="floating">
-    <bool>false</bool>
-   </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>Variables</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_5">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QScrollArea" name="scrollArea_2">
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents_2">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>148</width>
-          <height>442</height>
-         </rect>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <layout class="QGridLayout" name="leftDockGridLayout"/>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidgetNodeView">
    <property name="minimumSize">
     <size>
      <width>200</width>
-     <height>93</height>
+     <height>113</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -338,7 +235,7 @@
           <x>0</x>
           <y>0</y>
           <width>198</width>
-          <height>303</height>
+          <height>475</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -377,133 +274,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidgetUndoStack">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>200</width>
-     <height>38</height>
-    </size>
-   </property>
-   <property name="windowIcon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/history.png</normaloff>:/icons/resources/history.png</iconset>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::AllDockWidgetAreas</set>
-   </property>
-   <property name="windowTitle">
-    <string>History</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_3">
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_6">
-     <property name="leftMargin">
-      <number>1</number>
-     </property>
-     <property name="topMargin">
-      <number>1</number>
-     </property>
-     <property name="rightMargin">
-      <number>1</number>
-     </property>
-     <property name="bottomMargin">
-      <number>1</number>
-     </property>
-     <property name="spacing">
-      <number>1</number>
-     </property>
-    </layout>
-   </widget>
-  </widget>
-  <action name="actionSave">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/save_icon.png</normaloff>:/icons/resources/save_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Save</string>
-   </property>
-  </action>
-  <action name="actionLoad">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/folder_open_icon.png</normaloff>:/icons/resources/folder_open_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Load</string>
-   </property>
-  </action>
-  <action name="actionSave_as">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/save_as_icon.png</normaloff>:/icons/resources/save_as_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Save as</string>
-   </property>
-  </action>
-  <action name="actionShortcuts">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/shortcuts_icon.png</normaloff>:/icons/resources/shortcuts_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Shortcuts</string>
-   </property>
-  </action>
-  <action name="actionPropertyView">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/property_icon.png</normaloff>:/icons/resources/property_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>PropertyView</string>
-   </property>
-   <property name="toolTip">
-    <string>toggle property view</string>
-   </property>
-  </action>
-  <action name="actionVariables">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/variable.png</normaloff>:/icons/resources/variable.png</iconset>
-   </property>
-   <property name="text">
-    <string>Variables</string>
-   </property>
-  </action>
-  <action name="actionHistory">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/history.png</normaloff>:/icons/resources/history.png</iconset>
-   </property>
-   <property name="text">
-    <string>History</string>
-   </property>
-  </action>
-  <action name="actionNew">
-   <property name="icon">
-    <iconset resource="../Utils/nodes_res.qrc">
-     <normaloff>:/icons/resources/new_file_icon.png</normaloff>:/icons/resources/new_file_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>New</string>
-   </property>
-  </action>
  </widget>
- <resources>
-  <include location="../Utils/nodes_res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

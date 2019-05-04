@@ -20,7 +20,7 @@ from PyFlow.UI.Utils.Settings import (Spacings, Colors)
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import NodeName
 from PyFlow.UI.Canvas.UIPinBase import UICommentPinBase
-from PyFlow.UI.Widgets.CollapsibleWidget import CollapsibleFormWidget
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 import weakref
 
 buttonStyle = """

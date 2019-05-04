@@ -83,6 +83,7 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
         kwargs['var'] = canvas.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
 
     raw_instance = getRawNodeInstance(nodeClassName, packageName=packageName, libName=libName, **kwargs)
+    assert(raw_instance.packageName == packageName)
     raw_instance.uid = uuid.UUID(jsonTemplate['uuid'])
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)
@@ -335,6 +336,9 @@ class Canvas(QGraphicsView):
 
     _mouseWheelZoomRate = 0.0005
 
+    requestFillProperties = QtCore.Signal(object)
+    requestClearProperties = QtCore.Signal()
+
     def __init__(self, graphManager, parent=None):
         super(Canvas, self).__init__()
         self.graphManager = graphManager
@@ -342,7 +346,6 @@ class Canvas(QGraphicsView):
         self.parent = parent
         # connect with App class signals
         self.parent.newFileExecuted.connect(self.onNewFile)
-        self.parent.listViewUndoStack.setStack(self.undoStack)
         self.styleSheetEditor = self.parent.styleSheetEditor
         self.menu = QMenu()
         self.setScene(SceneClass(self))
@@ -549,8 +552,9 @@ class Canvas(QGraphicsView):
                 break
         return uiPin
 
-    def onNewFile(self):
+    def onNewFile(self, keepRoot=True):
         self.undoStack.clear()
+        self.shoutDown()
 
     def getPinByFullName(self, full_name):
         node_name = full_name.split('.')[0]
@@ -631,7 +635,7 @@ class Canvas(QGraphicsView):
         if self.isShortcutsEnabled() and len(selectedNodes) > 0:
             cmdRemove = cmdRemoveNodes(selectedNodes, self)
             self.undoStack.push(cmdRemove)
-            self.parent.clearPropertiesView()
+            self.requestClearProperties.emit()
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
@@ -695,9 +699,6 @@ class Canvas(QGraphicsView):
                 self.zoomDelta(False)
             if all([event.key() == QtCore.Qt.Key_R, modifiers == QtCore.Qt.ControlModifier]):
                 self.reset_scale()
-
-            if all([event.key() == QtCore.Qt.Key_P, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
-                self.parent.togglePropertyView()
 
             if event.key() == QtCore.Qt.Key_Delete:
                 self.killSelectedNodes()
@@ -1292,7 +1293,7 @@ class Canvas(QGraphicsView):
                 pressedNode is not None, pressedNode == releasedNode, manhattanLengthTest]):
                 self.tryFillPropertiesView(pressedNode)
         elif event.button() == QtCore.Qt.LeftButton:
-            self.parent.clearPropertiesView()
+            self.requestClearProperties.emit()
         self.resizing = False
 
     def removeItemByName(self, name):
@@ -1300,8 +1301,7 @@ class Canvas(QGraphicsView):
 
     def tryFillPropertiesView(self, obj):
         if isinstance(obj, IPropertiesViewSupport):
-            self.parent.clearPropertiesView()
-            obj.onUpdatePropertyView(self.parent.propertiesLayout)
+            self.requestFillProperties.emit(obj.createPropertiesWidget)
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()

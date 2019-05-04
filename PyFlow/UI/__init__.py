@@ -1,3 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.dirname(__file__))
+fileDir = os.path.dirname(__file__)
+fileDir = fileDir.replace("\\", "/")
+sys.path.append(fileDir)
+RESOURCES_DIR = fileDir + "/resources"

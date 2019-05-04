@@ -9,6 +9,8 @@ from PyFlow import getPinDefaultValueByType
 
 
 class PinBase(IPin):
+    _packageName = ""
+
     def __init__(self, name, owningNode, direction, userStructClass=None):
         super(PinBase, self).__init__()
         # signals
@@ -51,6 +53,10 @@ class PinBase(IPin):
 
         self._isArray = False
         self.supportsOnlyArray = False
+
+    @property
+    def packageName(self):
+        return self._packageName
 
     @property
     def linkedTo(self):

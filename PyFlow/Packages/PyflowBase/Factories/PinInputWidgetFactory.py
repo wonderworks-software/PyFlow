@@ -93,7 +93,7 @@ class IntInputWidget(InputWidgetSingle):
         self.sb = pyf_Slider(self, "int", style=1)
         _configIntSpinBox(self.sb)
         self.setWidget(self.sb)
-        self.sb.valueChanged.connect(lambda val: self.dataSetCallback(val))
+        self.sb.valueChanged.connect(self.dataSetCallback)
 
     def blockWidgetSignals(self, bLocked):
         self.sb.blockSignals(bLocked)

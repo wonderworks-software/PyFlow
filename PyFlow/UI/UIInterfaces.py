@@ -1,17 +1,42 @@
 
 
-# Concept: Each object that able to populate properties view have a set of references to views.
-# View can be torn off and locked to prevent being purge.
-# Each properties view have a weak reference to it's owner to be able to be torn off.
 class IPropertiesViewSupport(object):
     """docstring for IPropertiesViewSupport."""
     def __init__(self):
         super(IPropertiesViewSupport, self).__init__()
 
-    def addPropertiesView(self, view):
+    def createPropertiesWidget(self, propertiesWidget):
         pass
 
-    # TODO: remove propertiesLayout arg in future
-    # work with previously added views
-    def onUpdatePropertiesView(self, propertiesLayout):
-        pass
+
+class IPackage(object):
+    def __init__(self):
+        super(IPackage, self).__init__()
+
+    @staticmethod
+    def GetFunctionLibraries():
+        raise NotImplementedError('GetFunctionLibraries method of IPackage is not implemented')
+
+    @staticmethod
+    def GetNodeClasses():
+        raise NotImplementedError('GetNodeClasses method of IPackage is not implemented')
+
+    @staticmethod
+    def GetPinClasses():
+        raise NotImplementedError('GetPinClasses method of IPackage is not implemented')
+
+    @staticmethod
+    def GetToolClasses():
+        raise NotImplementedError('GetToolClasses method of IPackage is not implemented')
+
+    @staticmethod
+    def UIPinsFactory():
+        raise NotImplementedError('UIPinsFactory method of IPackage is not implemented')
+
+    @staticmethod
+    def UINodesFactory():
+        raise NotImplementedError('UINodesFactory method of IPackage is not implemented')
+
+    @staticmethod
+    def PinsInputWidgetFactory():
+        raise NotImplementedError('PinsInputWidgetFactory method of IPackage is not implemented')
