@@ -42,7 +42,7 @@ class Variable(ISerializable):
         return self.graph.graphManager.findVariableRefs(self)
 
     def updatePackageName(self):
-        self._packageName = findPinClassByType(self._dataType).packageName()
+        self._packageName = findPinClassByType(self._dataType).packageName
 
     @property
     def packageName(self):

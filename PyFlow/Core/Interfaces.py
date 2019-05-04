@@ -222,10 +222,6 @@ class IPin(IItemBase):
     def setUserStruct(self, inStruct):
         raise NotImplementedError('setUserStruct method of IPin is not implemented')
 
-    @staticmethod
-    def packageName():
-        raise NotImplementedError('packageName method of IPin is not implemented')
-
     def setRenamingEnabled(self, bEnabled):
         raise NotImplementedError('setRenamingEnabled method of IPin is not implemented')
 
@@ -289,27 +285,6 @@ class INode(IItemBase):
 
     def getData(self, pinName, pinSelectionGroup):
         raise NotImplementedError('getData method of INode is not implemented')
-
-    @staticmethod
-    def packageName():
-        raise NotImplementedError('packageName method of INode is not implemented')
-
-
-class IPackage(object):
-    def __init__(self):
-        super(IPackage, self).__init__()
-
-    @staticmethod
-    def GetFunctionLibraries():
-        raise NotImplementedError('GetFunctionLibraries method of IPackage is not implemented')
-
-    @staticmethod
-    def GetNodeClasses():
-        raise NotImplementedError('GetNodeClasses method of IPackage is not implemented')
-
-    @staticmethod
-    def GetPinClasses():
-        raise NotImplementedError('GetPinClasses method of IPackage is not implemented')
 
 
 class ICodeCompiler(object):

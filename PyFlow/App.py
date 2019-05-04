@@ -449,23 +449,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         instance.startMainLoop()
         INITIALIZE()
 
-        # fetch input widgets
-        # do it separately from raw classes, since this is ui related code
-        for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
-            if ispkg:
-                mod = importer.find_module(modname).load_module(modname)
-                PackagePath = mod.__path__[0]
-                PackageImporter = pkgutil.get_importer(PackagePath)
-
-                # load factories
-                FactoriesModuleLoader = PackageImporter.find_module('Factories')
-                if FactoriesModuleLoader is not None:
-                    FactoriesModule = FactoriesModuleLoader.load_module('Factories')
-                # load tools
-                ToolsModuleLoader = PackageImporter.find_module('Tools')
-                if ToolsModuleLoader is not None:
-                    ToolsModule = ToolsModuleLoader.load_module('Tools')
-
         # populate tools
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()

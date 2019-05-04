@@ -448,7 +448,7 @@ def REGISTER_UI_PIN_FACTORY(packageName, factory):
 
 
 def getUIPinInstance(owningNode, raw_instance):
-    packageName = raw_instance.packageName()
+    packageName = raw_instance.packageName
     instance = None
     if packageName in UI_PINS_FACTORIES:
         instance = UI_PINS_FACTORIES[packageName](owningNode, raw_instance)

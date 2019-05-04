@@ -1,6 +1,6 @@
 PACKAGE_NAME = 'Pyrr'
-
-from PyFlow.Core.Interfaces import IPackage
+from collections import OrderedDict
+from PyFlow.UI.UIInterfaces import IPackage
 
 # Pins
 from PyFlow.Packages.Pyrr.Pins.QuatPin import QuatPin
@@ -15,6 +15,11 @@ from PyFlow.Packages.Pyrr.FunctionLibraries.Matrix44 import Matrix44
 from PyFlow.Packages.Pyrr.FunctionLibraries.QuatLib import QuatLib
 from PyFlow.Packages.Pyrr.FunctionLibraries.Vector3 import Vector3
 from PyFlow.Packages.Pyrr.FunctionLibraries.Vector4 import Vector4
+
+# Factories
+from PyFlow.Packages.Pyrr.Factories.PinInputWidgetFactory import getInputWidget
+from PyFlow.Packages.Pyrr.Factories.UINodeFactory import createUINode
+from PyFlow.Packages.Pyrr.Factories.UIPinFactory import createUIPin
 
 
 _FOO_LIBS = {
@@ -38,6 +43,9 @@ _PINS = {
 }
 
 
+_TOOLS = OrderedDict()
+
+
 class Pyrr(IPackage):
     def __init__(self):
         super(Pyrr, self).__init__()
@@ -53,3 +61,19 @@ class Pyrr(IPackage):
     @staticmethod
     def GetPinClasses():
         return _PINS
+
+    @staticmethod
+    def GetToolClasses():
+        return _TOOLS
+
+    @staticmethod
+    def UIPinsFactory():
+        return createUIPin
+
+    @staticmethod
+    def UINodesFactory():
+        return createUINode
+
+    @staticmethod
+    def PinsInputWidgetFactory():
+        return getInputWidget

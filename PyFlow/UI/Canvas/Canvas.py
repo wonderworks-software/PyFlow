@@ -83,6 +83,7 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
         kwargs['var'] = canvas.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
 
     raw_instance = getRawNodeInstance(nodeClassName, packageName=packageName, libName=libName, **kwargs)
+    assert(raw_instance.packageName == packageName)
     raw_instance.uid = uuid.UUID(jsonTemplate['uuid'])
     assert(raw_instance is not None), "Node {0} not found in package {1}".format(nodeClassName, packageName)
     instance = getUINodeInstance(raw_instance)

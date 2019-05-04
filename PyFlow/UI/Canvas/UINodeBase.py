@@ -121,7 +121,7 @@ class NodeName(QGraphicsTextItem):
             font.setItalic(True)
             painter.setFont(font)
             painter.setPen(QtGui.QPen(QtCore.Qt.gray, 0.5))
-            text = self.parentItem().packageName()
+            text = self.parentItem().packageName
             painter.drawText(packageRect, QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom, text)
 
     def focusInEvent(self, event):
@@ -400,8 +400,9 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
     def description(self):
         return self._rawNode.description()
 
+    @property
     def packageName(self):
-        return self._rawNode.packageName()
+        return self._rawNode.packageName
 
     def getData(self, pinName):
         if pinName in [p.name for p in self.inputs.values()]:
@@ -629,7 +630,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         leUid.setReadOnly(True)
         baseCategory.addWidget("Owning graph", leUid)
 
-        text = "{0}".format(self.packageName())
+        text = "{0}".format(self.packageName)
         if self._rawNode.lib:
             text += " | {0}".format(self._rawNode.lib)
         text += " | {0}".format(self._rawNode.__class__.__name__)
@@ -913,7 +914,7 @@ def REGISTER_UI_NODE_FACTORY(packageName, factory):
 
 
 def getUINodeInstance(raw_instance):
-    packageName = raw_instance.packageName()
+    packageName = raw_instance.packageName
     instance = None
     if packageName in UI_NODES_FACTORIES:
         instance = UI_NODES_FACTORIES[packageName](raw_instance)

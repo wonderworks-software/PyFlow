@@ -19,6 +19,8 @@ from PyFlow import CreateRawPin
 
 
 class NodeBase(INode):
+    _packageName = ""
+
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
         self.killed = Signal()
@@ -36,6 +38,10 @@ class NodeBase(INode):
         self._constraints = {}
         self.lib = None
         self.isCompoundNode = False
+
+    @property
+    def packageName(self):
+        return self._packageName
 
     @property
     def constraints(self):
@@ -140,7 +146,7 @@ class NodeBase(INode):
         uidString = str(self.uid)
         nodeName = self.name
 
-        template['package'] = self.packageName()
+        template['package'] = self.packageName
         template['lib'] = self.lib
         template['type'] = self.__class__.__name__
         template['name'] = nodeName
@@ -417,19 +423,16 @@ class NodeBase(INode):
         def keywords():
             return meta['Keywords']
 
-        @staticmethod
-        def packageName():
-            return _packageName
-
         def constructor(self, name, **kwargs):
             NodeBase.__init__(self, name, **kwargs)
 
         nodeClass = type(foo.__name__, (NodeBase,), {'__init__': constructor,
                                                      'category': category,
                                                      'keywords': keywords,
-                                                     'description': description,
-                                                     'packageName': packageName
+                                                     'description': description
                                                      })
+
+        nodeClass._packageName = _packageName
 
         raw_inst = nodeClass(foo.__name__)
         raw_inst.lib = libName
