@@ -37,10 +37,7 @@ class PropertiesTool(DockTool):
 
     @staticmethod
     def isSingleton():
-        return True
-
-    def onShow(self):
-        super(PropertiesTool, self).onShow()
+        return False
 
     @staticmethod
     def toolTip():
