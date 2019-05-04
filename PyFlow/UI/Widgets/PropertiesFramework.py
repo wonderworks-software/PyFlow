@@ -174,6 +174,8 @@ QCheckBox::indicator:checked {{
 
 class PropertiesWidget(QtWidgets.QWidget):
     """docstring for PropertiesWidget."""
+    spawnDuplicate = QtCore.Signal()
+
     def __init__(self, parent=None):
         super(PropertiesWidget, self).__init__(parent)
         self.setWindowTitle("Properties view")
@@ -191,6 +193,12 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.lockCheckBox = QtWidgets.QCheckBox()
         self.lockCheckBox.setStyleSheet(lockUnlockCheckboxStyle)
         self.searchBoxLayout.addWidget(self.lockCheckBox)
+        self.tearOffCopy = QtWidgets.QPushButton()
+        self.tearOffCopy.setStyleSheet("")
+        self.tearOffCopy.setFlat(True)
+        self.tearOffCopy.setIcon(QtGui.QIcon(RESOURCES_DIR + "/tear_off_copy.png"))
+        self.tearOffCopy.clicked.connect(self.spawnDuplicate.emit)
+        self.searchBoxLayout.addWidget(self.tearOffCopy)
         self.mainLayout.addWidget(self.searchBoxWidget)
         self.searchBoxWidget.hide()
         self.contentLayout = QtWidgets.QVBoxLayout()

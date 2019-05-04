@@ -18,11 +18,20 @@ class PropertiesTool(DockTool):
         self.propertiesWidget = PropertiesWidget()
         self.scrollArea.setWidget(self.propertiesWidget)
         self.setWindowTitle(self.uniqueName())
+        self.fillDelegate = None
+        self.propertiesWidget.spawnDuplicate.connect(self.onTearOffCopy)
+
+    def onTearOffCopy(self, *args, **kwargs):
+        instance = self.canvas.parent.invokeDockToolByName("PyflowBase", self.name())
+        instance.assignPropertiesWidget(self.fillDelegate)
+        instance.setFloating(True)
+        print("tear off copy")
 
     def clear(self):
         self.propertiesWidget.clear()
 
     def assignPropertiesWidget(self, propertiesFillDelegate):
+        self.fillDelegate = propertiesFillDelegate
         propertiesFillDelegate(self.propertiesWidget)
 
     @staticmethod
