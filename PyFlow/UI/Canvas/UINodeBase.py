@@ -650,6 +650,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
                 dataSetter = inp.call if inp.isExec() else inp.setData
                 w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
                 if w:
+                    inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
                     w.setWidgetValue(inp.currentData())
                     w.blockWidgetSignals(False)

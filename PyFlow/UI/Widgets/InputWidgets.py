@@ -48,6 +48,11 @@ class InputWidgetRaw(QWidget, IInputWidget):
         self.actionReset = self._menu.addAction("ResetValue")
         self.actionReset.triggered.connect(self.onResetValue)
 
+    def setWidgetValueNoSignals(self, value):
+        self.blockWidgetSignals(True)
+        self.setWidgetValue(value)
+        self.blockWidgetSignals(False)
+
     def setWidget(self, widget):
         self._widget = widget
 
@@ -84,6 +89,7 @@ class InputWidgetSingle(InputWidgetRaw):
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self._index = 0
         self._widget = None
+        self.senderPin = None
 
     def getWidget(self):
         return InputWidgetRaw.getWidget(self)
