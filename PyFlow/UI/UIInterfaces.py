@@ -5,7 +5,7 @@ class IPropertiesViewSupport(object):
     def __init__(self):
         super(IPropertiesViewSupport, self).__init__()
 
-    def createPropertiesWidget(self):
+    def createPropertiesWidget(self, propertiesWidget):
         pass
 
 

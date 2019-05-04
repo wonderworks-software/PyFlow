@@ -24,6 +24,7 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QColorDialog
 from Qt.QtWidgets import QMenu
+from Qt.QtWidgets import QPushButton
 
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UIPinBase import (
@@ -615,8 +616,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
     def call(self, name):
         self._rawNode.call(name)
 
-    def createPropertiesWidget(self):
-        propertiesWidget = PropertiesWidget()
+    def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
 
         le_name = QLineEdit(self.getName())
@@ -666,8 +666,6 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         doc.setHtml(self.description())
         Info.addWidget(widget=doc)
         propertiesWidget.addWidget(Info)
-
-        return propertiesWidget
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()

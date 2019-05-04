@@ -158,10 +158,10 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if instance in self._tools:
             self._tools.remove(instance)
 
-    def onRequestFillProperties(self, propertiesWidget):
+    def onRequestFillProperties(self, propertiesFillDelegate):
         for toolInstance in self._tools:
             if isinstance(toolInstance, PropertiesTool):
-                toolInstance.assignPropertiesWidget(propertiesWidget)
+                toolInstance.assignPropertiesWidget(propertiesFillDelegate)
 
     def onRequestClearProperties(self):
         for toolInstance in self._tools:

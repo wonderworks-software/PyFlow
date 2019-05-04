@@ -1301,8 +1301,7 @@ class Canvas(QGraphicsView):
 
     def tryFillPropertiesView(self, obj):
         if isinstance(obj, IPropertiesViewSupport):
-            propertiesWidget = obj.createPropertiesWidget()
-            self.requestFillProperties.emit(propertiesWidget)
+            self.requestFillProperties.emit(obj.createPropertiesWidget)
 
     def propertyEditingFinished(self):
         le = QApplication.instance().focusWidget()

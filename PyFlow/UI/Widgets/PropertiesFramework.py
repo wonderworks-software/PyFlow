@@ -1,4 +1,5 @@
 from nine import str
+from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UICommon import clearLayout
 
 from Qt import QtWidgets
@@ -153,6 +154,23 @@ class CollapsibleFormWidget(CollapsibleWidget):
         return True
 
 
+lockUnlockCheckboxStyle = """
+QCheckBox {{
+    spacing: 5px;
+}}
+QCheckBox::indicator {{
+    width: 20px;
+    height: 20px;
+}}
+QCheckBox::indicator:unchecked {{
+    image: url({0});
+}}
+QCheckBox::indicator:checked {{
+    image: url({1});
+}}
+""".format(RESOURCES_DIR + "/unlocked.png", RESOURCES_DIR + "/locked.png")
+
+
 class PropertiesWidget(QtWidgets.QWidget):
     """docstring for PropertiesWidget."""
     def __init__(self, parent=None):
@@ -165,7 +183,16 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.searchBox.setObjectName("lineEdit")
         self.searchBox.setPlaceholderText(str("search..."))
         self.searchBox.textChanged.connect(self.searchTextChanged)
-        self.mainLayout.addWidget(self.searchBox)
+        self.searchBoxWidget = QtWidgets.QWidget()
+        self.searchBoxLayout = QtWidgets.QHBoxLayout(self.searchBoxWidget)
+        self.searchBoxLayout.setContentsMargins(1, 1, 1, 1)
+        self.searchBoxLayout.addWidget(self.searchBox)
+        self.lockCheckBox = QtWidgets.QCheckBox()
+        self.lockCheckBox.stateChanged.connect(self.onLockChecked)
+        self.lockCheckBox.setStyleSheet(lockUnlockCheckboxStyle)
+        self.searchBoxLayout.addWidget(self.lockCheckBox)
+        self.mainLayout.addWidget(self.searchBoxWidget)
+        self.searchBoxWidget.hide()
         self.contentLayout = QtWidgets.QVBoxLayout()
         self.contentLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
         self.mainLayout.addLayout(self.contentLayout)
@@ -186,14 +213,27 @@ class PropertiesWidget(QtWidgets.QWidget):
                 else:
                     w.show()
 
+    def isLocked(self):
+        return self.lockCheckBox.checkState() == QtCore.Qt.Checked
+
+    def onLockChecked(self, state):
+        if state == QtCore.Qt.Unchecked:
+            print('unlock!')
+        if state == QtCore.Qt.Checked:
+            print('lock!')
+
     def clear(self):
-        clearLayout(self.contentLayout)
+        if not self.isLocked():
+            clearLayout(self.contentLayout)
+            self.searchBoxWidget.hide()
+            self.lockCheckBox.setChecked(False)
 
     def addWidget(self, collapsibleWidget):
-        if isinstance(collapsibleWidget, CollapsibleFormWidget):
-            self.contentLayout.insertWidget(-1, collapsibleWidget)
-            return True
-        return False
+        if not self.isLocked():
+            if isinstance(collapsibleWidget, CollapsibleFormWidget):
+                self.searchBoxWidget.show()
+                self.contentLayout.insertWidget(-1, collapsibleWidget)
+                return True
 
 
 if __name__ == "__main__":

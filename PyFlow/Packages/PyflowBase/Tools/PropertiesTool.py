@@ -12,24 +12,18 @@ class PropertiesTool(DockTool):
     """docstring for Properties tool."""
     def __init__(self):
         super(PropertiesTool, self).__init__()
-        self.scrollArea = None
-
-    def createContent(self, propertiesWidget):
         self.scrollArea = QtWidgets.QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
         self.setWidget(self.scrollArea)
-        self.scrollArea.setWidget(propertiesWidget)
+        self.propertiesWidget = PropertiesWidget()
+        self.scrollArea.setWidget(self.propertiesWidget)
+        self.setWindowTitle(self.uniqueName())
 
     def clear(self):
-        # clear active properties widget signals?
-        currentPropertiesWidget = self.widget()
-        if currentPropertiesWidget:
-            currentPropertiesWidget.deleteLater()
+        self.propertiesWidget.clear()
 
-    def assignPropertiesWidget(self, propertiesWidget):
-        if isinstance(propertiesWidget, PropertiesWidget):
-            self.clear()
-            self.createContent(propertiesWidget)
+    def assignPropertiesWidget(self, propertiesFillDelegate):
+        propertiesFillDelegate(self.propertiesWidget)
 
     @staticmethod
     def getIcon():
