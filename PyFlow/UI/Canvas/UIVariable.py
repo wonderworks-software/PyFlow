@@ -107,8 +107,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         QtCore.QMetaObject.connectSlotsByName(self)
         self.setName(self._rawVariable.name)
 
-    def createPropertiesWidget(self):
-        propertiesWidget = PropertiesWidget()
+    def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
         # name
         le_name = QLineEdit(self._rawVariable.name)
@@ -143,7 +142,6 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         cb.setCurrentIndex(self._rawVariable.accessLevel)
         valueCategory.addWidget('Access level', cb)
         propertiesWidget.addWidget(valueCategory)
-        return propertiesWidget
 
     def onFindRefsClicked(self):
         refs = self._rawVariable.findRefs()
