@@ -102,7 +102,7 @@ class AnyPin(PinBase):
                         p.updateOnConnection(other)
                 for pin in self.owningNode().constraints[self.constraint]:
                     if pin != self:
-                        pin.setType(other, bUpdateIsArray=False)
+                        pin.setType(other)
                         pin._free = False
                         for p in getConnectedPins(pin):
                             if p.isAny:
@@ -171,12 +171,12 @@ class AnyPin(PinBase):
         self.setDefaultValue(None)
         self.setAsArray(self.isArrayByDefault)
 
-    def setType(self, other, bUpdateIsArray=True):
+    def setType(self, other):
         if self.activeDataType != self.__class__.__name__ and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
 
-        if self.activeDataType == self.__class__.__name__ or self.activeDataType not in other.supportedDataTypes():
+        if self.activeDataType == self.__class__.__name__ or self.activeDataType in other.supportedDataTypes():
             self.super = other.__class__
             self.activeDataType = other.dataType
             self.color = other.color
@@ -187,5 +187,4 @@ class AnyPin(PinBase):
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
-            if bUpdateIsArray:
-                self.setAsArray(other.isArray() | self.isArrayByDefault)
+            self.setAsArray(other.isArray() | self.isArrayByDefault)

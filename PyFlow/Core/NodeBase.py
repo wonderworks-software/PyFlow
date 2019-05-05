@@ -38,6 +38,16 @@ class NodeBase(INode):
         self._constraints = {}
         self.lib = None
         self.isCompoundNode = False
+        self._lastError = None
+
+    def isValid(self):
+        return self._lastError is None
+
+    def clearError(self):
+        self._lastError = None
+
+    def setError(self, err):
+        self._lastError = str(err)
 
     @property
     def packageName(self):

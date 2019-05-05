@@ -11,4 +11,15 @@ class TestArrays(unittest.TestCase):
         print('--------------------------------\n')
 
     def test_connectToArray(self):
-        pass
+        packages = GET_PACKAGES()
+        man = GraphManager()
+        nodes = packages['PyflowBase'].GetNodeClasses()
+        foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
+        makeListNode = nodes['makeList']("mkList")
+        man.activeGraph().addNode(makeListNode)
+        makeIntNode = NodeBase.initializeFromFunction(foos['makeInt'])
+        man.activeGraph().addNode(makeIntNode)
+        connected = connectPins(makeIntNode['out'], makeListNode['data'])
+        self.assertEqual(connected, True)
+        result = makeListNode['out'].getData()
+        self.assertCountEqual(result, [0])

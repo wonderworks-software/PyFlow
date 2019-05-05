@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import copy, deepcopy
 
 from PyFlow.Core import(
     FunctionLibraryBase,
@@ -25,9 +25,10 @@ class ListLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
-    def appendToList(arr=('AnyPin', [], {'constraint': '1'}), elem=('AnyPin', None, {'constraint': '1'}), duplicate=('BoolPin', True), result=('Reference', ('AnyPin', [], {'constraint': '1'}))):
+    def appendToList(arr=('AnyPin', [], {'constraint': '1'}), elem=('AnyPin', None, {'constraint': '1'}), duplicate=('BoolPin', True), deepCopy=('BoolPin', False), result=('Reference', ('AnyPin', [], {'constraint': '1'}))):
         outArr = arr
         if duplicate:
-            outArr = deepcopy(arr)
+            copyFunction = deepcopy if deepCopy else copy
+            outArr = copyFunction(arr)
         outArr.append(elem)
         result(outArr)

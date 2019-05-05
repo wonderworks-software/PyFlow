@@ -43,6 +43,8 @@ from PyFlow.Packages.PyflowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyflowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyflowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyflowBase.Nodes.makeList import makeList
+from PyFlow.Packages.PyflowBase.Nodes.extendList import extendList
+from PyFlow.Packages.PyflowBase.Nodes.consoleOutput import consoleOutput
 from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
     graphInputs,
     graphOutputs
@@ -100,7 +102,9 @@ _NODES = {
     graphOutputs.__name__: graphOutputs,
     compound.__name__: compound,
     pythonNode.__name__: pythonNode,
-    makeList.__name__: makeList
+    makeList.__name__: makeList,
+    extendList.__name__: extendList,
+    consoleOutput.__name__: consoleOutput
 }
 
 _PINS = {

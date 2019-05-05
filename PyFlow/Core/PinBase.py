@@ -52,6 +52,7 @@ class PinBase(IPin):
         self.isAny = False
 
         self._isArray = False
+        self.arraySupported = False
         self.supportsOnlyArray = False
 
     @property

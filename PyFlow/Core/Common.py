@@ -164,6 +164,10 @@ def canConnectPins(src, dst):
             # print("dst supports only arrays")
             return False
 
+    if src.isArray() and not dst.isArray():
+        if not dst.arraySupported:
+            return False
+
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
         return False
 

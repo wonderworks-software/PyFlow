@@ -8,11 +8,13 @@ class makeList(NodeBase):
         self.arrayData = self.createInputPin('data', 'AnyPin', constraint="1")
         self.arrayData.isArrayByDefault = True
         self.arrayData.setAsArray(True)
-        # We want to populate array from all connected pins
+        # We want to populate array from all connected pins. So allow connecting not array pins
         self.arrayData.supportsOnlyArray = False
+
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
         self.outArray = self.createOutputPin('out', 'AnyPin', constraint="1")
+        self.result = self.createOutputPin('result', 'BoolPin')
         self.outArray.isArrayByDefault = True
         self.outArray.setAsArray(True)
         self.outArray.supportsOnlyArray = True
@@ -41,11 +43,17 @@ class makeList(NodeBase):
         isSorted = self.sorted.getData()
         isReversed = self.reversed.getData()
 
-        if isSorted:
-            outArray = sorted(outArray)
+        # not every type can be sorted
+        try:
+            if isSorted:
+                outArray = list(sorted(outArray))
+        except:
+            self.result.setData(False)
+            return
 
         if isReversed:
             outArray = list(reversed(outArray))
 
         self.outArray.setData(outArray)
         self.arrayData._data = outArray
+        self.result.setData(True)

@@ -16,23 +16,17 @@ class DefaultLib(FunctionLibraryBase):
         super(DefaultLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['print']})
-    ## Python's 'print' function wrapper
-    def pyprint(entity=('AnyPin', None)):
-        '''
-        printing a string
-        '''
-        print(str(entity))
-
-    @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})
     ## cls cmd call.
     def clearConsole():
-        '''clears console.'''
-        if platform.system() == "Windows":
-            os.system('cls')
-        if platform.system() == "Linux":
-            os.system('clear')
+        '''Cross platform clears console'''
+        system = platform.system()
+        if system != "":
+            system = system.lower()
+            if system in ("windows", "win32"):
+                os.system('cls')
+            if system in ("linux", "darwin", "linux2"):
+                os.system('clear')
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'GenericTypes', 'Keywords': []})

@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.Common import push
 
 
 class deltaTime(NodeBase):
@@ -28,3 +29,5 @@ class deltaTime(NodeBase):
 
     def compute(self, *args, **kwargs):
         self._out0.setData(self._deltaTime)
+        # TODO: cache previous value and push dirty only if value changed
+        push(self._out0)

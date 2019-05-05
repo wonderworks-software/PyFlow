@@ -10,7 +10,7 @@ from PyFlow.Core.Common import *
 class charge(NodeBase):
     def __init__(self, name):
         super(charge, self).__init__(name)
-        self.inExec = self.createInputPin('inExec', 'ExecPin', self.compute)
+        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
         self.amount = self.createInputPin('Amount', 'FloatPin')
         self.amount.setDefaultValue(1.0)
 
