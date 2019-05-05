@@ -10,19 +10,19 @@ class extendList(NodeBase):
         self.arrayA = self.createInputPin('first', 'AnyPin', constraint="1")
         self.arrayA.setAsList(True)
         self.arrayA.isArrayByDefault = True
-        self.arrayA.supportsOnlyArray = True
+        self.arrayA.supportsOnlyList = True
 
         self.arrayB = self.createInputPin('second', 'AnyPin', constraint="1")
         self.arrayB.setAsList(True)
         self.arrayB.isArrayByDefault = True
-        self.arrayB.supportsOnlyArray = True
+        self.arrayB.supportsOnlyList = True
 
         self.deepCopy = self.createInputPin('deepcopy', 'BoolPin', False)
 
         self.resultArray = self.createOutputPin('result', 'AnyPin', constraint="1")
         self.resultArray.setAsList(True)
         self.resultArray.isArrayByDefault = True
-        self.resultArray.supportsOnlyArray = True
+        self.resultArray.supportsOnlyList = True
 
     @staticmethod
     def pinTypeHints():
@@ -38,7 +38,7 @@ class extendList(NodeBase):
 
     @staticmethod
     def description():
-        return 'Creates an array from connected pins'
+        return 'Creates an list from connected pins'
 
     def compute(self, *args, **kwargs):
         bDeepCopy = self.deepCopy.getData()

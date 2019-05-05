@@ -451,7 +451,7 @@ class NodeBase(INode):
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
 
-        # this is array of 'references' outputs will be created for
+        # this is list of 'references' outputs will be created for
         refs = []
         outExec = None
 
@@ -504,7 +504,7 @@ class NodeBase(INode):
                 outRef.setAsList(isinstance(argDefaultValue, list))
                 if outRef.isList():
                     outRef.isArrayByDefault = True
-                    outRef.supportsOnlyArray = True
+                    outRef.supportsOnlyList = True
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 refs.append(outRef)
@@ -513,7 +513,7 @@ class NodeBase(INode):
                 inp.setAsList(isinstance(argDefaultValue, list))
                 if inp.isList():
                     inp.isArrayByDefault = True
-                    inp.supportsOnlyArray = True
+                    inp.supportsOnlyList = True
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
 

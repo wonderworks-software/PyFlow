@@ -159,7 +159,7 @@ def canConnectPins(src, dst):
         return False
 
     if dst.isList() and not src.isList():
-        if dst.supportsOnlyArray:
+        if dst.supportsOnlyList:
             # print("dst supports only arrays")
             return False
 
@@ -233,7 +233,7 @@ def connectPins(src, dst):
     if src.direction == PinDirection.Input:
         src, dst = dst, src
 
-    # input value pins can have one output connection if right hand side is not an array
+    # input value pins can have one output connection if right hand side is not an list
     # output value pins can have any number of connections
     if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections() and not dst.isList():
         dst.disconnectAll()

@@ -53,7 +53,7 @@ class PinBase(IPin):
 
         self._isList = False
         self.arraySupported = False
-        self.supportsOnlyArray = False
+        self.supportsOnlyList = False
 
     def isAny(self):
         return self._isAny
@@ -78,9 +78,9 @@ class PinBase(IPin):
     def isExec(self):
         return False
 
-    def setAsList(self, bIsArray):
-        self._isList = bool(bIsArray)
-        if bIsArray:
+    def setAsList(self, bIsList):
+        self._isList = bool(bIsList)
+        if bIsList:
             self._data = []
 
     def isList(self):

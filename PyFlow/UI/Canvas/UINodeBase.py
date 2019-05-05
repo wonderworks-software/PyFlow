@@ -645,7 +645,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
             sortedInputs = sorted(self.UIinputs.values(), key=lambda x: x.name)
             for inp in sortedInputs:
                 if inp.isList():
-                    # TODO: create array input widget
+                    # TODO: create list input widget
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData
                 w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
