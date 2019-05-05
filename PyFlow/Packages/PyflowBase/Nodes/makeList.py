@@ -7,7 +7,7 @@ class makeList(NodeBase):
         super(makeList, self).__init__(name)
         self.arrayData = self.createInputPin('data', 'AnyPin', constraint="1")
         self.arrayData.isArrayByDefault = True
-        self.arrayData.setAsArray(True)
+        self.arrayData.setAsList(True)
         # We want to populate array from all connected pins. So allow connecting not array pins
         self.arrayData.supportsOnlyArray = False
 
@@ -16,7 +16,7 @@ class makeList(NodeBase):
         self.outArray = self.createOutputPin('out', 'AnyPin', constraint="1")
         self.result = self.createOutputPin('result', 'BoolPin')
         self.outArray.isArrayByDefault = True
-        self.outArray.setAsArray(True)
+        self.outArray.setAsList(True)
         self.outArray.supportsOnlyArray = True
 
     @staticmethod

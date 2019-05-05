@@ -501,8 +501,8 @@ class NodeBase(INode):
                     if "constraint" in dataType[2]:
                         constraint = dataType[2]["constraint"]
                 outRef = raw_inst.createOutputPin(argName, dataType[0], allowedPins=anyOpts, constraint=constraint)
-                outRef.setAsArray(isinstance(argDefaultValue, list))
-                if outRef.isArray():
+                outRef.setAsList(isinstance(argDefaultValue, list))
+                if outRef.isList():
                     outRef.isArrayByDefault = True
                     outRef.supportsOnlyArray = True
                 outRef.setDefaultValue(argDefaultValue)
@@ -510,8 +510,8 @@ class NodeBase(INode):
                 refs.append(outRef)
             else:
                 inp = raw_inst.createInputPin(argName, dataType, allowedPins=anyOpts, constraint=constraint)
-                inp.setAsArray(isinstance(argDefaultValue, list))
-                if inp.isArray():
+                inp.setAsList(isinstance(argDefaultValue, list))
+                if inp.isList():
                     inp.isArrayByDefault = True
                     inp.supportsOnlyArray = True
                 inp.setData(argDefaultValue)

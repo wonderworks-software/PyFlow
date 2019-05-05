@@ -15,7 +15,7 @@ class TestBasePackage(unittest.TestCase):
         man = GraphManager()
         foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
         nodes = packages['PyflowBase'].GetNodeClasses()
-        printNode1 = NodeBase.initializeFromFunction(foos["pyprint"])
+        printNode1 = nodes["consoleOutput"]("print")
         man.activeGraph().addNode(printNode1)
         printNode1.setData('entity', "first")
 
@@ -27,11 +27,11 @@ class TestBasePackage(unittest.TestCase):
         connected = connectPins(printNode1[DEFAULT_OUT_EXEC_NAME], branchNode["In"])
         self.assertEqual(connected, True, "failed to connect")
 
-        printNodeTrue = NodeBase.initializeFromFunction(foos["pyprint"])
+        printNodeTrue = nodes["consoleOutput"]("print")
         man.activeGraph().addNode(printNodeTrue)
         printNodeTrue.setData('entity', "True executed")
 
-        printNodeFalse = NodeBase.initializeFromFunction(foos["pyprint"])
+        printNodeFalse = nodes["consoleOutput"]("print")
         man.activeGraph().addNode(printNodeFalse)
         printNodeFalse.setData('entity', "False executed")
 

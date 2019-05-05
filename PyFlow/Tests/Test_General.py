@@ -44,11 +44,12 @@ class TestGeneral(unittest.TestCase):
         packages = GET_PACKAGES()
         randomLib = packages['PyflowBase'].GetFunctionLibraries()["RandomLib"]
         defaultLib = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"]
+        classNodes = packages['PyflowBase'].GetNodeClasses()
         randomLibFoos = randomLib.getFunctions()
         defaultLibFoos = defaultLib.getFunctions()
 
         randintNode = NodeBase.initializeFromFunction(randomLibFoos["randint"])
-        printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
+        printNode = classNodes["consoleOutput"]("print")
 
         man = GraphManager()
 
@@ -207,6 +208,7 @@ class TestGeneral(unittest.TestCase):
 
     def test_get_any_var(self):
         packages = GET_PACKAGES()
+        classNodes = packages["PyflowBase"].GetNodeClasses()
 
         man = GraphManager()
 
@@ -221,7 +223,7 @@ class TestGeneral(unittest.TestCase):
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
-        printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
+        printerInstance = classNodes["consoleOutput"]("print")
         man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
@@ -246,6 +248,7 @@ class TestGeneral(unittest.TestCase):
 
     def test_get_bool_var(self):
         packages = GET_PACKAGES()
+        classNodes = packages["PyflowBase"].GetNodeClasses()
 
         man = GraphManager()
 
@@ -261,7 +264,7 @@ class TestGeneral(unittest.TestCase):
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
-        printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
+        printerInstance = classNodes["consoleOutput"]("print")
         man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
@@ -299,7 +302,7 @@ class TestGeneral(unittest.TestCase):
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
-        printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
+        printerInstance = packages["PyflowBase"].GetNodeClasses()['consoleOutput']("print")
         man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
@@ -468,7 +471,7 @@ class TestGeneral(unittest.TestCase):
 
         # connect getter to compound output pin
         defaultLibFoos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
-        printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
+        printNode = packages["PyflowBase"].GetNodeClasses()['consoleOutput']("print")
         man.activeGraph().addNode(printNode)
 
         connected = connectPins(printNode.getPin('entity'), subgraphOutPin)
@@ -547,7 +550,7 @@ class TestGeneral(unittest.TestCase):
         # add print node inside
         foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
 
-        printNode1 = NodeBase.initializeFromFunction(foos["pyprint"])
+        printNode1 = packages["PyflowBase"].GetNodeClasses()['consoleOutput']("print")
         man.activeGraph().addNode(printNode1)
         printNode1.setData("entity", "hello from compound")
 

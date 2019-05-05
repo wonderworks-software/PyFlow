@@ -66,7 +66,7 @@ class UIAnyPin(UIPinBase):
     def paint(self, painter, option, widget):
         if self.isExec():
             PinPainter.asExecPin(self, painter, option, widget)
-        elif self.isArray():
+        elif self.isList():
             PinPainter.asArrayPin(self, painter, option, widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)

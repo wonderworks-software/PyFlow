@@ -49,11 +49,14 @@ class PinBase(IPin):
         self._wrapper = None
         # Constraint ports
         self.constraint = None
-        self.isAny = False
+        self._isAny = False
 
-        self._isArray = False
+        self._isList = False
         self.arraySupported = False
         self.supportsOnlyArray = False
+
+    def isAny(self):
+        return self._isAny
 
     @property
     def packageName(self):
@@ -75,13 +78,13 @@ class PinBase(IPin):
     def isExec(self):
         return False
 
-    def setAsArray(self, bIsArray):
-        self._isArray = bool(bIsArray)
+    def setAsList(self, bIsArray):
+        self._isList = bool(bIsArray)
         if bIsArray:
             self._data = []
 
-    def isArray(self):
-        return self._isArray
+    def isList(self):
+        return self._isList
 
     @staticmethod
     def IsValuePin():

@@ -130,11 +130,17 @@ class IPin(IItemBase):
         '''
         raise NotImplementedError('isExec method of IPin is not implemented')
 
-    def isArray(self):
+    def isList(self):
         '''
         is this pin holds an array of values or not
         '''
-        raise NotImplementedError('isArray method of IPin is not implemented')
+        raise NotImplementedError('isList method of IPin is not implemented')
+
+    def isAny(self):
+        '''
+        is this pin of type Any or not
+        '''
+        raise NotImplementedError('isAny method of IPin is not implemented')
 
     @staticmethod
     def pinDataTypeHint():
@@ -249,6 +255,9 @@ class IPin(IItemBase):
     @staticmethod
     def jsonDecoderClass():
         raise NotImplementedError('jsonEncoderClass method of IPin is not implemented')
+
+    def setAsList(self, bIsArray):
+        raise NotImplementedError('setAsList method of IPin is not implemented')
 
 
 class INode(IItemBase):

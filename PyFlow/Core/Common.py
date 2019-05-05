@@ -159,12 +159,12 @@ def canConnectPins(src, dst):
         # print("same direction pins can't be connected")
         return False
 
-    if dst.isArray() and not src.isArray():
+    if dst.isList() and not src.isList():
         if dst.supportsOnlyArray:
             # print("dst supports only arrays")
             return False
 
-    if src.isArray() and not dst.isArray():
+    if src.isList() and not dst.isList():
         if not dst.arraySupported:
             return False
 
@@ -179,7 +179,7 @@ def canConnectPins(src, dst):
         # print("cycle detected")
         return True
 
-    if dst.isAny:
+    if dst.isAny():
         if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
             # print("type is not supported")
             return False
@@ -208,7 +208,7 @@ def canConnectPins(src, dst):
 
     if dst.constraint is not None:
         if dst.dataType != "AnyPin":
-            if dst.isAny:
+            if dst.isAny():
                 free = dst.checkFree([], False)
                 if not free:
                     pinClass = findPinClassByType(dst.dataType)
@@ -236,7 +236,7 @@ def connectPins(src, dst):
 
     # input value pins can have one output connection if right hand side is not an array
     # output value pins can have any number of connections
-    if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections() and not dst.isArray():
+    if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections() and not dst.isList():
         dst.disconnectAll()
     if src.dataType == 'AnyPin' and dst.dataType != 'ExecPin' and dst.hasConnections():
         dst.disconnectAll()
@@ -346,6 +346,12 @@ class REGISTER_ENUM(object):
     def __call__(self, cls):
         Enums.appendEnumInstance(cls)
         return cls
+
+
+# For any pin. setAsList on connected/disconnected or not
+class ListSwitchPolicy(IntEnum):
+    Auto = 0
+    DoNotSwitch = 1
 
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes

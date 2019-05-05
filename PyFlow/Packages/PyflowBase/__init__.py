@@ -32,6 +32,7 @@ from PyFlow.Packages.PyflowBase.Nodes.doN import doN
 from PyFlow.Packages.PyflowBase.Nodes.doOnce import doOnce
 from PyFlow.Packages.PyflowBase.Nodes.flipFlop import flipFlop
 from PyFlow.Packages.PyflowBase.Nodes.forLoop import forLoop
+from PyFlow.Packages.PyflowBase.Nodes.forEachLoop import forEachLoop
 from PyFlow.Packages.PyflowBase.Nodes.forLoopWithBreak import forLoopWithBreak
 from PyFlow.Packages.PyflowBase.Nodes.retriggerableDelay import retriggerableDelay
 from PyFlow.Packages.PyflowBase.Nodes.sequence import sequence
@@ -104,7 +105,8 @@ _NODES = {
     pythonNode.__name__: pythonNode,
     makeList.__name__: makeList,
     extendList.__name__: extendList,
-    consoleOutput.__name__: consoleOutput
+    consoleOutput.__name__: consoleOutput,
+    forEachLoop.__name__: forEachLoop
 }
 
 _PINS = {

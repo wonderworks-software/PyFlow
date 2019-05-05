@@ -8,19 +8,19 @@ class extendList(NodeBase):
     def __init__(self, name):
         super(extendList, self).__init__(name)
         self.arrayA = self.createInputPin('first', 'AnyPin', constraint="1")
-        self.arrayA.setAsArray(True)
+        self.arrayA.setAsList(True)
         self.arrayA.isArrayByDefault = True
         self.arrayA.supportsOnlyArray = True
 
         self.arrayB = self.createInputPin('second', 'AnyPin', constraint="1")
-        self.arrayB.setAsArray(True)
+        self.arrayB.setAsList(True)
         self.arrayB.isArrayByDefault = True
         self.arrayB.supportsOnlyArray = True
 
         self.deepCopy = self.createInputPin('deepcopy', 'BoolPin', False)
 
         self.resultArray = self.createOutputPin('result', 'AnyPin', constraint="1")
-        self.resultArray.setAsArray(True)
+        self.resultArray.setAsList(True)
         self.resultArray.isArrayByDefault = True
         self.resultArray.supportsOnlyArray = True
 

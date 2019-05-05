@@ -1,5 +1,6 @@
 from blinker import Signal
 import json
+from enum import IntEnum
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
@@ -18,12 +19,13 @@ class AnyPin(PinBase):
         self.onSetDefaultType = Signal()
         self.setDefaultValue(None)
         self._free = True
-        self.isAny = True
+        self._isAny = True
         self.super = None
         self.activeDataType = self.__class__.__name__
         self.isArrayByDefault = False
         # if True, setType and setDefault will work only once
         self.singleInit = False
+        self.listSwitchPolicy = ListSwitchPolicy.Auto
 
     @PinBase.dataType.getter
     def dataType(self):
@@ -60,7 +62,7 @@ class AnyPin(PinBase):
     def setData(self, data):
         if self.activeDataType != self.__class__.__name__:
             assert(self.super is not None)
-            if not self.isArray():
+            if not self.isList():
                 data = self.super.processData(data)
             else:
                 data = [self.super.processData(i) for i in data]
@@ -98,14 +100,14 @@ class AnyPin(PinBase):
                 self._free = False
                 self.setType(other)
                 for p in getConnectedPins(self):
-                    if p.isAny:
+                    if p.isAny():
                         p.updateOnConnection(other)
                 for pin in self.owningNode().constraints[self.constraint]:
                     if pin != self:
                         pin.setType(other)
                         pin._free = False
                         for p in getConnectedPins(pin):
-                            if p.isAny:
+                            if p.isAny():
                                 p.updateOnConnection(pin)
 
     def pinDisconnected(self, other):
@@ -169,7 +171,7 @@ class AnyPin(PinBase):
         self.onSetDefaultType.send()
 
         self.setDefaultValue(None)
-        self.setAsArray(self.isArrayByDefault)
+        self.setAsList(self.isArrayByDefault)
 
     def setType(self, other):
         if self.activeDataType != self.__class__.__name__ and self.singleInit:
@@ -187,4 +189,5 @@ class AnyPin(PinBase):
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
-            self.setAsArray(other.isArray() | self.isArrayByDefault)
+            if self.listSwitchPolicy == ListSwitchPolicy.Auto:
+                self.setAsList(other.isList() | self.isArrayByDefault)

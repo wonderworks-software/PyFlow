@@ -644,7 +644,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
             inputsCategory = CollapsibleFormWidget(headName="Inputs")
             sortedInputs = sorted(self.UIinputs.values(), key=lambda x: x.name)
             for inp in sortedInputs:
-                if inp.isArray():
+                if inp.isList():
                     # TODO: create array input widget
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData

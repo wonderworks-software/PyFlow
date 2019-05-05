@@ -178,7 +178,7 @@ class UIPinBase(QGraphicsWidget):
 
     @property
     def isAny(self):
-        return self._rawPin.isAny
+        return self._rawPin.isAny()
 
     def setMenuItemEnabled(self, actionName, bEnabled):
         for action in self.menu.actions():
@@ -401,11 +401,11 @@ class UIPinBase(QGraphicsWidget):
         path.addEllipse(self.boundingRect())
         return path
 
-    def isArray(self):
-        return self._rawPin.isArray()
+    def isList(self):
+        return self._rawPin.isList()
 
     def paint(self, painter, option, widget):
-        if self.isArray():
+        if self.isList():
             PinPainter.asArrayPin(self, painter, option, widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)
