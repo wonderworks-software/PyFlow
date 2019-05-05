@@ -404,8 +404,7 @@ class Canvas(QGraphicsView):
         self._bRightBeforeShoutDown = False
 
         self.node_box = NodesBox(None, self)
-        self.node_box.setWindowFlags(
-            QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
+        self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
         self._UIConnections = {}
         self.boundingRect = self.rect()

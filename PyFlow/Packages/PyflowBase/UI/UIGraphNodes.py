@@ -3,6 +3,7 @@ from Qt.QtWidgets import QInputDialog
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.Painters import NodePainter
+from PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
 from PyFlow.UI.Utils.Settings import *
 
 
@@ -14,7 +15,7 @@ class UIGraphInputs(UINodeBase):
         actionRename = self._menu.addAction("Rename")
         actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
-        actionAddOut.triggered.connect(lambda: self.onAddOutPin())
+        actionAddOut.triggered.connect(self.createPinDialog)
         self.label().hide()
         self.resizable = True
         self.portsMainLayout.removeItem(self.inputsLayout)
@@ -26,8 +27,15 @@ class UIGraphInputs(UINodeBase):
             self.displayName = self.canvasRef().getUniqNodeDisplayName(name)
             self.update()
 
-    def onAddOutPin(self, name=None):
-        rawPin = self._rawNode.addOutPin(name)
+    def createPinDialog(self):
+        self.d = SelectPinDialog()
+        self.d.exec_()
+        dataType = self.d.getResult()
+        if dataType is not None:
+            self.onAddOutPin(None, dataType)
+
+    def onAddOutPin(self, name=None, dataType="AnyPin"):
+        rawPin = self._rawNode.addOutPin(name, dataType)
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
         self.updateWidth()
@@ -69,7 +77,7 @@ class UIGraphOutputs(UINodeBase):
         actionRename = self._menu.addAction("Rename")
         actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
-        actionAddOut.triggered.connect(lambda: self.onAddInPin())
+        actionAddOut.triggered.connect(self.createPinDialog)
         self.label().hide()
         self.resizable = True
         self.portsMainLayout.removeItem(self.outputsLayout)
@@ -81,8 +89,15 @@ class UIGraphOutputs(UINodeBase):
             self.displayName = self.canvasRef().getUniqNodeDisplayName(name)
             self.update()
 
-    def onAddInPin(self, name=None):
-        rawPin = self._rawNode.addInPin(name)
+    def createPinDialog(self):
+        self.d = SelectPinDialog()
+        self.d.exec_()
+        dataType = self.d.getResult()
+        if dataType is not None:
+            self.onAddInPin(None, dataType)
+
+    def onAddInPin(self, name=None, dataType="AnyPin"):
+        rawPin = self._rawNode.addInPin(name, dataType)
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
         uiPin.setDynamic(True)

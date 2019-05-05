@@ -25,7 +25,7 @@ class PropertiesTool(DockTool):
         instance = self.canvas.parent.invokeDockToolByName("PyflowBase", self.name())
         instance.assignPropertiesWidget(self.fillDelegate)
         instance.setFloating(True)
-        print("tear off copy")
+        instance.resize(self.size())
 
     def clear(self):
         self.propertiesWidget.clear()

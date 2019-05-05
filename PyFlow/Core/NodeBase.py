@@ -241,8 +241,8 @@ class NodeBase(INode):
                 pinAffects(i, o)
 
     def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
-        if dataType == 'ExecPin':
-            assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
+        # if dataType == 'ExecPin':
+        #     assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
 
         # check unique name
         pinName = self.getUniqPinName(pinName)

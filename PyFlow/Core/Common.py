@@ -175,15 +175,13 @@ def canConnectPins(src, dst):
         # print("cycle detected")
         return True
 
-    if dst.dataType == "AnyPin":
+    if dst.isAny:
         if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
             # print("type is not supported")
             return False
 
-    if dst.isAny:
-        if src.dataType not in findPinClassByType(dst.dataType).supportedDataTypes():
-            # print("type is not supported")
-            return False
+    if src.isExec() and not dst.isExec():
+        return False
 
     if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
         # print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))

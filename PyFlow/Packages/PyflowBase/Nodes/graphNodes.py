@@ -36,11 +36,10 @@ class graphInputs(NodeBase):
     def description():
         return ''
 
-    def addOutPin(self, name=None):
-        # TODO: add dataType parameter to create specific pins
+    def addOutPin(self, name=None, dataType="AnyPin"):
         if name is None:
             name = self.getUniqPinName('in')
-        p = self.createOutputPin(name, 'AnyPin')
+        p = self.createOutputPin(name, dataType)
         p.setDynamic(True)
         p.setRenamingEnabled(True)
         p.singleInit = True
@@ -58,7 +57,7 @@ class graphInputs(NodeBase):
         if jsonTemplate is not None:
             for outPinJson in jsonTemplate["outputs"]:
                 if outPinJson['name'] not in existingPins:
-                    dynOut = self.addOutPin(outPinJson['name'])
+                    dynOut = self.addOutPin(outPinJson['name'], outPinJson["dataType"])
                     dynOut.uid = uuid.UUID(outPinJson['uuid'])
 
 
@@ -101,14 +100,14 @@ class graphOutputs(NodeBase):
         if jsonTemplate is not None:
             for inPinJson in jsonTemplate["inputs"]:
                 if inPinJson['name'] not in existingPins:
-                    inDyn = self.addInPin(inPinJson['name'])
+                    inDyn = self.addInPin(inPinJson['name'], inPinJson["dataType"])
                     inDyn.uid = uuid.UUID(inPinJson['uuid'])
 
-    def addInPin(self, name=None):
+    def addInPin(self, name=None, dataType="AnyPin"):
         # TODO: add dataType parameter to create specific pins
         if name is None:
             name = self.getUniqPinName('out')
-        p = self.createInputPin(name, 'AnyPin')
+        p = self.createInputPin(name, dataType)
         p.setDynamic(True)
         p.setRenamingEnabled(True)
         p.singleInit = True
