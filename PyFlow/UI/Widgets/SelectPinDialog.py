@@ -131,6 +131,10 @@ class SelectPinDialog(QtWidgets.QDialog):
         self.setModal(True)
         self._result = None
 
+    def showEvent(self, event):
+        super(SelectPinDialog, self).showEvent(event)
+        self.move(QtGui.QCursor.pos())
+
     def filterContent(self, pattern):
         self.content.filterContent(pattern)
 
