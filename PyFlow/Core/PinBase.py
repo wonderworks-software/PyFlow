@@ -52,7 +52,7 @@ class PinBase(IPin):
         self._isAny = False
 
         self._isList = False
-        self.arraySupported = False
+        self.listSupported = False
         self.supportsOnlyList = False
 
     def isAny(self):

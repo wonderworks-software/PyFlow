@@ -88,7 +88,9 @@ class AnyPin(PinBase):
     def pinConnected(self, other):
         self._data = getPinDefaultValueByType(other.dataType)
         self.onPinConnected.send(other)
-        self.updateOnConnection(other)
+        # update only if not constrained
+        if self.constraint is None:
+            self.updateOnConnection(other)
         super(AnyPin, self).pinConnected(other)
 
     def updateOnConnection(self, other):

@@ -164,7 +164,7 @@ def canConnectPins(src, dst):
             return False
 
     if src.isList() and not dst.isList():
-        if not dst.arraySupported:
+        if not dst.listSupported:
             return False
 
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:

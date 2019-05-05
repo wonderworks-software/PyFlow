@@ -505,6 +505,8 @@ class NodeBase(INode):
                 if outRef.isList():
                     outRef.isArrayByDefault = True
                     outRef.supportsOnlyList = True
+                if outRef.isAny():
+                    outRef.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 refs.append(outRef)
@@ -514,6 +516,8 @@ class NodeBase(INode):
                 if inp.isList():
                     inp.isArrayByDefault = True
                     inp.supportsOnlyList = True
+                if inp.isAny():
+                    inp.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
 
