@@ -6,8 +6,6 @@ from PyFlow.UI.UIInterfaces import IPackage
 # Pins
 from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
 from PyFlow.Packages.PyflowBase.Pins.BoolPin import BoolPin
-# TODO: Enums not working for now, fix this.
-from PyFlow.Packages.PyflowBase.Pins.EnumPin import EnumPin
 from PyFlow.Packages.PyflowBase.Pins.ExecPin import ExecPin
 from PyFlow.Packages.PyflowBase.Pins.FloatPin import FloatPin
 from PyFlow.Packages.PyflowBase.Pins.IntPin import IntPin
@@ -112,7 +110,6 @@ _NODES = {
 _PINS = {
     AnyPin.__name__: AnyPin,
     BoolPin.__name__: BoolPin,
-    EnumPin.__name__: EnumPin,
     ExecPin.__name__: ExecPin,
     FloatPin.__name__: FloatPin,
     IntPin.__name__: IntPin,

@@ -17,7 +17,6 @@ except:
 import uuid
 import sys
 from enum import IntEnum
-from PyFlow.Core import Enums
 from PyFlow import findPinClassByType
 
 maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
@@ -338,16 +337,6 @@ class SingletonDecorator:
         return self.instance
 
 
-class REGISTER_ENUM(object):
-    def __init__(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-
-    def __call__(self, cls):
-        Enums.appendEnumInstance(cls)
-        return cls
-
-
 # For any pin. setAsList on connected/disconnected or not
 class ListSwitchPolicy(IntEnum):
     Auto = 0
@@ -381,7 +370,6 @@ class NodeTypes(IntEnum):
     Pure = 1
 
 
-@REGISTER_ENUM()
 ## Direction identifiers. Used in [alignSelectedNodes](@ref PyFlow.Core.Widget.GraphWidget.alignSelectedNodes)
 class Direction(IntEnum):
     Left = 0
