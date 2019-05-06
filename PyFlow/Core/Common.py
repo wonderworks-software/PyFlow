@@ -264,6 +264,48 @@ def connectPins(src, dst):
     return True
 
 
+def traverseNeighborPins(startFrom, callback):
+    """Iterates over all neighbor pins and passes pin into callback function. Callback will be executed once for every pin
+    """
+
+    traversed = set()
+
+    def worker(pin):
+        traversed.add(pin)
+        callback(pin)
+        nodePins = pin.owningNode().pins.copy()
+        for connectedPin in getConnectedPins(pin):
+            nodePins.add(connectedPin)
+        for neighbor in nodePins:
+            if neighbor not in traversed:
+                worker(neighbor)
+
+    worker(startFrom)
+
+
+def traverseConstrainedPins(startFrom, callback):
+    """Iterates over all constrained chained pins of type `Any` and passes pin into callback function. Callback will be executed once for every pin
+    """
+    if not startFrom.isAny():
+        return
+    traversed = set()
+
+    def worker(pin):
+        if pin.constraint is None:
+            return
+        traversed.add(pin)
+        callback(pin)
+        nodePins = set(pin.owningNode().constraints[pin.constraint])
+        for connectedPin in getConnectedPins(pin):
+            if connectedPin.isAny():
+                nodePins.add(connectedPin)
+        for neighbor in nodePins:
+            if neighbor not in traversed:
+                worker(neighbor)
+
+    worker(startFrom)
+
+
 def disconnectPins(src, dst):
     """Disconnects two pins
 

@@ -20,6 +20,7 @@ class PinBase(IPin):
         self.nameChanged = Signal(str)
         self.killed = Signal()
         self.onExecute = Signal(object)
+        self.containerTypeChanged = Signal()
 
         self._uid = uuid.uuid4()
         self._userStructClass = userStructClass
@@ -56,6 +57,7 @@ class PinBase(IPin):
         self._isList = False
         self.listSupported = False
         self.supportsOnlyList = False
+        self.listSwitchPolicy = ListSwitchPolicy.Auto
 
     def setAllowMultipleConnections(self, bAllow):
         self._allowMultipleConnections = bAllow
@@ -87,9 +89,16 @@ class PinBase(IPin):
         return False
 
     def setAsList(self, bIsList):
-        self._isList = bool(bIsList)
+        bIsList = bool(bIsList)
+        if self._isList == bIsList:
+            return
+        if self.isAny() and self.listSwitchPolicy == ListSwitchPolicy.DoNotSwitch:
+            return
+
+        self._isList = bIsList
         if bIsList:
             self._data = []
+        self.containerTypeChanged.send()
 
     def isList(self):
         return self._isList

@@ -110,6 +110,7 @@ class UIPinBase(QGraphicsWidget):
         super(UIPinBase, self).__init__()
         self._rawPin = raw_pin
         self._rawPin.serializationHook.connect(self.serializationHook)
+        self._rawPin.containerTypeChanged.connect(self.onContainerTypeChanged)
         self._rawPin.setWrapper(self)
         self.setParentItem(owningNode)
         self.UiNode = weakref.ref(owningNode)
@@ -154,6 +155,11 @@ class UIPinBase(QGraphicsWidget):
 
         self._rawPin.killed.connect(self.kill)
         self._rawPin.nameChanged.connect(self.setDisplayName)
+
+    def onContainerTypeChanged(self, *args, **kwargs):
+        # underlined pin is changed to list or dict
+        # update to redraw shape
+        self.update()
 
     def setLabel(self, labelItem):
         if self._label is None:

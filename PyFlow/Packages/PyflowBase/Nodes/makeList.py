@@ -1,5 +1,5 @@
 from PyFlow.Core import NodeBase
-from PyFlow.Core.Common import PinDirection
+from PyFlow.Core.Common import *
 
 
 class makeList(NodeBase):
@@ -7,18 +7,20 @@ class makeList(NodeBase):
         super(makeList, self).__init__(name)
         self.arrayData = self.createInputPin('data', 'AnyPin', constraint="1")
         self.arrayData.setAllowMultipleConnections(True)
-        self.arrayData.isListByDefault = True
         self.arrayData.setAsList(True)
-        # We want to populate list from all connected pins. So allow connecting not list pins
+        self.arrayData.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
+        self.arrayData.isListByDefault = True
         self.arrayData.supportsOnlyList = False
 
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
         self.outArray = self.createOutputPin('out', 'AnyPin', constraint="1")
-        self.result = self.createOutputPin('result', 'BoolPin')
-        self.outArray.isListByDefault = True
         self.outArray.setAsList(True)
+        self.outArray.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
+        self.outArray.isListByDefault = True
         self.outArray.supportsOnlyList = True
+
+        self.result = self.createOutputPin('result', 'BoolPin')
 
     @staticmethod
     def pinTypeHints():

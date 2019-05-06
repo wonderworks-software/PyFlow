@@ -25,7 +25,6 @@ class AnyPin(PinBase):
         self.isListByDefault = False
         # if True, setType and setDefault will work only once
         self.singleInit = False
-        self.listSwitchPolicy = ListSwitchPolicy.Auto
 
     @PinBase.dataType.getter
     def dataType(self):
@@ -88,57 +87,29 @@ class AnyPin(PinBase):
     def pinConnected(self, other):
         self._data = getPinDefaultValueByType(other.dataType)
         self.onPinConnected.send(other)
-        # update only if not constrained
-        if self.constraint is None:
-            self.updateOnConnection(other)
+        traverseConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))
         super(AnyPin, self).pinConnected(other)
 
-    def updateOnConnection(self, other):
-        if self.constraint is None:
-            self.setType(other)
-            self._free = False
-        else:
-            free = self.checkFree([])
-            if other.dataType != self.activeDataType and free:
-                self._free = False
-                self.setType(other)
-                for p in getConnectedPins(self):
-                    if p.isAny():
-                        p.updateOnConnection(other)
-                for pin in self.owningNode().constraints[self.constraint]:
-                    if pin != self:
-                        pin.setType(other)
-                        pin._free = False
-                        for p in getConnectedPins(pin):
-                            if p.isAny():
-                                p.updateOnConnection(pin)
+    def updateOnConnectionCallback(self, pin, other):
+        free = pin.checkFree([])
+        if other.dataType != pin.activeDataType and free:
+            pin._free = False
+            pin.setType(other)
+
+        pin.setAsList(other.isList())
+
+    def updateOnDisconnectionCallback(self, pin, other):
+        free = self.checkFree([])
+        if free:
+            pin.setDefault()
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
-        if self.constraint is None:
-            if not self.hasConnections():
-                self.setDefault()
-                self._free = True
-            else:
-                self.onSetDefaultType.send()
-        elif not self._free:
-            self._free = self.checkFree([])
-            if self._free:
-                self.setDefault()
-                for pin in self.owningNode().constraints[self.constraint]:
-                    if pin != self:
-                        pin.setDefault()
-                        pin._free = True
-                        for pin in list(pin.affected_by) + list(pin.affects):
-                            pin.pinDisconnected(other)
-
-    def queryConstrainedPins(self):
-        print("constraint", self.constraint)
-        print("node constraints", self.owningNode().constraints)
+        traverseConstrainedPins(self, lambda pin, other=other: self.updateOnDisconnectionCallback(pin, other))
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
-        if self.constraint is None or self.activeDataType == "AnyPin":
+        if self.constraint is None or self.dataType == self.__class__.__name__:
             return True
         else:
             con = []
@@ -175,6 +146,8 @@ class AnyPin(PinBase):
 
         self.setDefaultValue(None)
         self.setAsList(self.isListByDefault)
+        if not self.hasConnections():
+            self._free = True
 
     def setType(self, other):
         if self.activeDataType != self.__class__.__name__ and self.singleInit:
@@ -192,5 +165,6 @@ class AnyPin(PinBase):
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
-            if self.listSwitchPolicy == ListSwitchPolicy.Auto:
-                self.setAsList(other.isList() | self.isListByDefault)
+            self._free = self.activeDataType == self.__class__.__name__
+            # if self.listSwitchPolicy == ListSwitchPolicy.Auto:
+            #     self.setAsList(other.isList() | self.isListByDefault)

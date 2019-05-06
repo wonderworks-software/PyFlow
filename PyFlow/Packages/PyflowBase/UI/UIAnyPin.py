@@ -17,8 +17,6 @@ class UIAnyPin(UIPinBase):
         self._defaultColor = self._color
         self._rawPin.typeChanged.connect(self.setType)
         self._rawPin.onSetDefaultType.connect(self.onSetDefaultType)
-        self.actionQueryConstraints = self.menu.addAction("Query constraints")
-        self.actionQueryConstraints.triggered.connect(self._rawPin.queryConstrainedPins)
 
     def onSetDefaultType(self, *args, **kwargs):
         self.setDefault(self._rawPin.defColor())
@@ -29,15 +27,6 @@ class UIAnyPin(UIPinBase):
     @property
     def activeDataType(self):
         return self._rawPin.activeDataType
-
-    def pinConnected(self, other):
-        self._rawPin.updateOnConnection(other._rawPin)
-        UIPinBase.pinConnected(self, other)
-        self.OnPinConnected.emit(other)
-
-    def pinDisconnected(self, other):
-        UIPinBase.pinDisconnected(self, other)
-        self.OnPinConnected.emit(other)
 
     def setDefault(self, defcolor):
         self._color = QtGui.QColor(*defcolor)
