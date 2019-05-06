@@ -24,6 +24,11 @@ class ListLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'List', 'Keywords': ['in']})
+    def listContains(ls=('AnyPin', [], {'constraint': '1'}), element=("AnyPin", None, {'constraint': '1'})):
+        return element in ls
+
+    @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
     def appendToList(arr=('AnyPin', [], {'constraint': '1'}), elem=('AnyPin', None, {'constraint': '1'}), duplicate=('BoolPin', True), deepCopy=('BoolPin', False), result=('Reference', ('AnyPin', [], {'constraint': '1'}))):
         outArr = arr

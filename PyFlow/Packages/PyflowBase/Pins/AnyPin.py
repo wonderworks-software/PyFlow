@@ -98,7 +98,8 @@ class AnyPin(PinBase):
             self.setType(other)
             self._free = False
         else:
-            if other.dataType != self.activeDataType:
+            free = self.checkFree([])
+            if other.dataType != self.activeDataType and free:
                 self._free = False
                 self.setType(other)
                 for p in getConnectedPins(self):
