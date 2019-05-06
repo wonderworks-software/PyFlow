@@ -30,10 +30,19 @@ class ListLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
-    def appendToList(arr=('AnyPin', [], {'constraint': '1'}), elem=('AnyPin', None, {'constraint': '1'}), duplicate=('BoolPin', True), deepCopy=('BoolPin', False), result=('Reference', ('AnyPin', [], {'constraint': '1'}))):
-        outArr = arr
+    def appendToList(ls=('AnyPin', [], {'constraint': '1'}), elem=('AnyPin', None, {'constraint': '1'}), duplicate=('BoolPin', True), deepCopy=('BoolPin', False), result=('Reference', ('AnyPin', [], {'constraint': '1'}))):
+        outArr = ls
         if duplicate:
             copyFunction = deepcopy if deepCopy else copy
-            outArr = copyFunction(arr)
+            outArr = copyFunction(ls)
         outArr.append(elem)
         result(outArr)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
+    def removeFromList(ls=('AnyPin', [], {'constraint': '1'}), elem=('AnyPin', None, {'constraint': '1'}), result=('Reference', ('BoolPin', False, {'constraint': '1'}))):
+        if elem not in ls:
+            result(False)
+            return
+        ls.remove(elem)
+        result(True)

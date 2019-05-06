@@ -121,6 +121,9 @@ class UIPinBase(QGraphicsWidget):
         # Disconnect all connections
         self.actionDisconnect = self.menu.addAction('Disconnect all')
         self.actionDisconnect.triggered.connect(self._rawPin.disconnectAll)
+        # reset value
+        self.actionResetValue = self.menu.addAction("Reset value")
+        self.actionResetValue.triggered.connect(self.resetToDefault)
 
         # label item weak ref
         self._label = None
@@ -222,6 +225,9 @@ class UIPinBase(QGraphicsWidget):
     @dirty.setter
     def dirty(self, value):
         self._rawPin.dirty = value
+
+    def resetToDefault(self):
+        self.setData(self.defaultValue())
 
     def defaultValue(self):
         return self._rawPin.defaultValue()

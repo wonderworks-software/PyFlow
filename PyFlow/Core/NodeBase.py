@@ -503,7 +503,7 @@ class NodeBase(INode):
                 outRef = raw_inst.createOutputPin(argName, dataType[0], allowedPins=anyOpts, constraint=constraint)
                 outRef.setAsList(isinstance(argDefaultValue, list))
                 if outRef.isList():
-                    outRef.isArrayByDefault = True
+                    outRef.isListByDefault = True
                     outRef.supportsOnlyList = True
                 if outRef.isAny():
                     outRef.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
@@ -514,7 +514,7 @@ class NodeBase(INode):
                 inp = raw_inst.createInputPin(argName, dataType, allowedPins=anyOpts, constraint=constraint)
                 inp.setAsList(isinstance(argDefaultValue, list))
                 if inp.isList():
-                    inp.isArrayByDefault = True
+                    inp.isListByDefault = True
                     inp.supportsOnlyList = True
                 if inp.isAny():
                     inp.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch

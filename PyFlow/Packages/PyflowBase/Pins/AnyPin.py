@@ -22,7 +22,7 @@ class AnyPin(PinBase):
         self._isAny = True
         self.super = None
         self.activeDataType = self.__class__.__name__
-        self.isArrayByDefault = False
+        self.isListByDefault = False
         # if True, setType and setDefault will work only once
         self.singleInit = False
         self.listSwitchPolicy = ListSwitchPolicy.Auto
@@ -74,7 +74,7 @@ class AnyPin(PinBase):
         constrainedType = self.activeDataType
         dt['constrainedType'] = constrainedType
         dt['singleInit'] = self.singleInit
-        dt['isArrayByDefault'] = self.isArrayByDefault
+        dt['isListByDefault'] = self.isListByDefault
         if constrainedType != self.__class__.__name__:
             pinClass = findPinClassByType(constrainedType)
             # serialize with active type's encoder
@@ -174,7 +174,7 @@ class AnyPin(PinBase):
         self.onSetDefaultType.send()
 
         self.setDefaultValue(None)
-        self.setAsList(self.isArrayByDefault)
+        self.setAsList(self.isListByDefault)
 
     def setType(self, other):
         if self.activeDataType != self.__class__.__name__ and self.singleInit:
@@ -193,4 +193,4 @@ class AnyPin(PinBase):
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
             if self.listSwitchPolicy == ListSwitchPolicy.Auto:
-                self.setAsList(other.isList() | self.isArrayByDefault)
+                self.setAsList(other.isList() | self.isListByDefault)

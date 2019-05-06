@@ -45,6 +45,8 @@ class PinBase(IPin):
         ## For example sequence nodes output execs are dynamically created and can be deleted from node as well
         self._dynamic = False
 
+        self._allowMultipleConnections = False
+
         # gui class weak ref
         self._wrapper = None
         # Constraint ports
@@ -54,6 +56,12 @@ class PinBase(IPin):
         self._isList = False
         self.listSupported = False
         self.supportsOnlyList = False
+
+    def setAllowMultipleConnections(self, bAllow):
+        self._allowMultipleConnections = bAllow
+
+    def isAllowMultiConnection(self):
+        return self._allowMultipleConnections
 
     def isAny(self):
         return self._isAny
@@ -181,7 +189,10 @@ class PinBase(IPin):
         return ()
 
     def defaultValue(self):
-        return self._defaultValue
+        if self.isList():
+            return []
+        else:
+            return self._defaultValue
 
     # TODO: Move this to separate class (e.g. ExecutionEngine) with PIMPL
     ## retrieving the data

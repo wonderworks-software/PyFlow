@@ -9,14 +9,14 @@ class forEachLoop(NodeBase):
         self.list = self.createInputPin('list', 'AnyPin', constraint="1")
         self.list.setAsList(True)
         self.list.listSupported = True
-        self.list.isArrayByDefault = True
+        self.list.isListByDefault = True
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
         self.elem = self.createOutputPin('element', 'AnyPin', constraint="1")
         self.elem.setAsList(False)
         self.elem.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
         self.elem.listSupported = False
-        self.elem.isArrayByDefault = False
+        self.elem.isListByDefault = False
         self.completed = self.createOutputPin('Completed', 'ExecPin')
 
     @staticmethod

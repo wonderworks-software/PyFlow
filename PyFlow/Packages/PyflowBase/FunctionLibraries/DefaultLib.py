@@ -1,6 +1,6 @@
 import os
 import platform
-from copy import copy
+from copy import copy, deepcopy
 from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
@@ -14,6 +14,13 @@ class DefaultLib(FunctionLibraryBase):
     '''
     def __init__(self, packageName):
         super(DefaultLib, self).__init__(packageName)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "1"}), meta={'Category': 'GenericTypes', 'Keywords': ['id']})
+    def copyObject(obj=('AnyPin', None, {"constraint": "1"}), deepCopy=("BoolPin", False)):
+        '''shallow or deep copy of an object'''
+        copyFunction = deepcopy if deepCopy else copy
+        return copyFunction(obj)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})

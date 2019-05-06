@@ -6,7 +6,8 @@ class makeList(NodeBase):
     def __init__(self, name):
         super(makeList, self).__init__(name)
         self.arrayData = self.createInputPin('data', 'AnyPin', constraint="1")
-        self.arrayData.isArrayByDefault = True
+        self.arrayData.setAllowMultipleConnections(True)
+        self.arrayData.isListByDefault = True
         self.arrayData.setAsList(True)
         # We want to populate list from all connected pins. So allow connecting not list pins
         self.arrayData.supportsOnlyList = False
@@ -15,7 +16,7 @@ class makeList(NodeBase):
         self.reversed = self.createInputPin('reversed', 'BoolPin')
         self.outArray = self.createOutputPin('out', 'AnyPin', constraint="1")
         self.result = self.createOutputPin('result', 'BoolPin')
-        self.outArray.isArrayByDefault = True
+        self.outArray.isListByDefault = True
         self.outArray.setAsList(True)
         self.outArray.supportsOnlyList = True
 

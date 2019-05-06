@@ -233,16 +233,22 @@ def connectPins(src, dst):
     if src.direction == PinDirection.Input:
         src, dst = dst, src
 
+    if dst.hasConnections() and not dst.isAllowMultiConnection():
+        dst.disconnectAll()
+
     # input value pins can have one output connection if right hand side is not an list
     # output value pins can have any number of connections
-    if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections() and not dst.isList():
-        dst.disconnectAll()
+    if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections():
+        if not dst.isAllowMultiConnection():
+            dst.disconnectAll()
     if src.dataType == 'AnyPin' and dst.dataType != 'ExecPin' and dst.hasConnections():
-        dst.disconnectAll()
+        if not dst.isAllowMultiConnection():
+            dst.disconnectAll()
     # input execs can have any number of connections
     # output execs can have only one connection
     if src.isExec() and dst.isExec() and src.hasConnections():
-        src.disconnectAll()
+        if not src.isAllowMultiConnection():
+            src.disconnectAll()
 
     if src.isExec() and dst.isExec():
         src.onExecute.connect(dst.call)
