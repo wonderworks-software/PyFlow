@@ -9,6 +9,8 @@ class ExecPin(PinBase):
         super(ExecPin, self).__init__(name, parent, direction, **kwargs)
         self.dirty = False
         self._isList = False
+        if self.direction == PinDirection.Input:
+            self.enableOptions(PinOptions.AllowMultipleConnections)
 
     def isExec(self):
         return True

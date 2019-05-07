@@ -151,72 +151,38 @@ def pinAffects(lhs, rhs):
 
 def canConnectPins(src, dst):
     if src is None or dst is None:
-        # print("can not connect pins")
-        # if src is None:
-        #     print("src is None")
-        # if dst is None:
-        #     print("dst is None")
         return False
 
     if src.direction == PinDirection.Input:
         src, dst = dst, src
 
     if src.direction == dst.direction:
-        # print("same direction pins can't be connected")
         return False
-
-    if dst.isList() and not src.isList():
-        if not dst.optionEnabled(PinOptions.AllowMultipleConnections):
-            # print("dst supports only arrays")
-            return False
 
     if src.isList() and not dst.isList():
         if not dst.optionEnabled(PinOptions.ListSupported):
+            return False
+
+    if dst.hasConnections():
+        if not dst.optionEnabled(PinOptions.AllowMultipleConnections):
             return False
 
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
         return False
 
     if cycle_check(src, dst):
-        # print('cycles are not allowed')
         return False
 
     if dst.isAny():
         if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
-            # print("type is not supported")
             return False
 
     if src.isExec() and not dst.isExec():
         return False
 
-    if src.dataType not in dst.supportedDataTypes() and not src.dataType == "AnyPin":
-        # print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
-        return False
-    else:
-        if src.dataType is 'ExecPin':
-            if dst.dataType != 'ExecPin' and dst.dataType != 'AnyPin':
-                # print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
-                return False
-
-    if src in dst.affected_by:
-        # print('already connected. skipped')
-        return False
-    if src.direction == dst.direction:
-        # print('same side pins can not be connected')
-        return False
     if src.owningNode == dst.owningNode:
-        # print('can not connect to owning node')
         return False
 
-    if dst.constraint is not None:
-        if dst.dataType != "AnyPin":
-            if dst.isAny():
-                free = dst.checkFree([], False)
-                if not free:
-                    pinClass = findPinClassByType(dst.dataType)
-                    if src.dataType not in pinClass.supportedDataTypes():
-                        # print("[{0}] is not compatible with [{1}]".format(src.dataType, dst.dataType))
-                        return False
     return True
 
 
@@ -227,14 +193,16 @@ def connectPins(src, dst):
         src PinBase -- left hand side pin
         dst PinBase -- right hand side pin
     """
-    if not canConnectPins(src, dst):
-        return False
-
-    if arePinsConnected(src, dst):
-        return False
-
     if src.direction == PinDirection.Input:
         src, dst = dst, src
+
+    if not canConnectPins(src, dst):
+        # disconnect if multiple connections are not supported
+        if dst.hasConnections():
+            if not dst.optionEnabled(PinOptions.AllowMultipleConnections):
+                dst.disconnectAll()
+        else:
+            return False
 
     # input value pins can have one output connection if `AllowMultipleConnections` flag is disabled
     # output value pins can have any number of connections
