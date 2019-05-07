@@ -86,6 +86,19 @@ class PinBase(IPin):
         return False
 
     def setAsList(self, bIsList):
+        """Sets this pin to be a list.
+
+        Every registered pin can hold a list of values instead of single one. List pins can be connected
+        only with another list pins by default. This behavior can be changed by disabling `PinOptions.SupportsOnlyList` option.
+
+        Value pins can be connected only with value pins if option `PinOptions.ListSupported` is not enabled.
+
+        By default input value pin can have only one connection, this also can be modified by enabling `PinOptions.AllowMultipleConnections` flag.
+
+        Args:
+
+            bIsList (bool): list or not
+        """
         bIsList = bool(bIsList)
         if self._isList == bIsList:
             return
