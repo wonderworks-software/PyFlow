@@ -16,18 +16,25 @@ except:
     from Queue import Queue
 import uuid
 import sys
-from enum import IntEnum
+
+from nine import IS_PYTHON2, str
+if IS_PYTHON2:
+    from aenum import IntEnum, Flag, auto
+else:
+    from enum import IntEnum, Flag, auto
+
 from PyFlow import findPinClassByType
 
 maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
+
 
 FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
 FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
-DEFAULT_IN_EXEC_NAME = 'inExec'
-DEFAULT_OUT_EXEC_NAME = 'outExec'
+DEFAULT_IN_EXEC_NAME = str('inExec')
+DEFAULT_OUT_EXEC_NAME = str('outExec')
 
 
 ## Performs a linear interpolation
@@ -159,12 +166,12 @@ def canConnectPins(src, dst):
         return False
 
     if dst.isList() and not src.isList():
-        if dst.supportsOnlyList:
+        if not dst.optionEnabled(PinOptions.AllowMultipleConnections):
             # print("dst supports only arrays")
             return False
 
     if src.isList() and not dst.isList():
-        if not dst.listSupported:
+        if not dst.optionEnabled(PinOptions.ListSupported):
             return False
 
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
@@ -173,10 +180,6 @@ def canConnectPins(src, dst):
     if cycle_check(src, dst):
         # print('cycles are not allowed')
         return False
-
-    if src.dataType == "AnyPin" and not cycle_check(src, dst):
-        # print("cycle detected")
-        return True
 
     if dst.isAny():
         if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
@@ -233,22 +236,19 @@ def connectPins(src, dst):
     if src.direction == PinDirection.Input:
         src, dst = dst, src
 
-    if dst.hasConnections() and not dst.isAllowMultiConnection():
-        dst.disconnectAll()
-
-    # input value pins can have one output connection if right hand side is not an list
+    # input value pins can have one output connection if `AllowMultipleConnections` flag is disabled
     # output value pins can have any number of connections
-    if src.dataType not in ['ExecPin', 'AnyPin'] and dst.hasConnections():
-        if not dst.isAllowMultiConnection():
-            dst.disconnectAll()
-    if src.dataType == 'AnyPin' and dst.dataType != 'ExecPin' and dst.hasConnections():
-        if not dst.isAllowMultiConnection():
-            dst.disconnectAll()
+    if src.IsValuePin() and dst.IsValuePin():
+        if dst.hasConnections():
+            if not dst.optionEnabled(PinOptions.AllowMultipleConnections):
+                dst.disconnectAll()
+
     # input execs can have any number of connections
     # output execs can have only one connection
-    if src.isExec() and dst.isExec() and src.hasConnections():
-        if not src.isAllowMultiConnection():
-            src.disconnectAll()
+    if src.isExec() and dst.isExec():
+        if src.hasConnections():
+            if not src.optionEnabled(PinOptions.AllowMultipleConnections):
+                src.disconnectAll()
 
     if src.isExec() and dst.isExec():
         src.onExecute.connect(dst.call)
@@ -291,10 +291,11 @@ def traverseConstrainedPins(startFrom, callback):
     traversed = set()
 
     def worker(pin):
-        if pin.constraint is None:
-            return
         traversed.add(pin)
         callback(pin)
+
+        if pin.constraint is None:
+            return
         nodePins = set(pin.owningNode().constraints[pin.constraint])
         for connectedPin in getConnectedPins(pin):
             if connectedPin.isAny():
@@ -385,10 +386,13 @@ class SingletonDecorator:
         return self.instance
 
 
-# For any pin. setAsList on connected/disconnected or not
-class ListSwitchPolicy(IntEnum):
-    Auto = 0
-    DoNotSwitch = 1
+class PinOptions(Flag):
+    ListSupported = auto()
+    SupportsOnlyList = auto()
+    AllowMultipleConnections = auto()
+    RenamingEnabled = auto()
+    Dynamic = auto()
+    AlwaysPushDirty = auto()
 
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes

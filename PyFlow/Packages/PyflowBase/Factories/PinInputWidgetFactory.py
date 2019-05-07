@@ -40,27 +40,6 @@ class ExecInputWidget(InputWidgetSingle):
         pass
 
 
-class EnumInputWidget(InputWidgetSingle):
-    """
-    Enum input widget
-    """
-
-    def __init__(self, parent=None, **kwds):
-        super(EnumInputWidget, self).__init__(parent=parent, **kwds)
-        # self._userStruct = kwds['userStructClass']
-        self.cb = QComboBox(self)
-        self.setWidget(self.cb)
-        for i in list(kwds['userStructClass']):
-            self.cb.addItem(i.name, i.value)
-        self.cb.currentIndexChanged[int].connect(self.dataSetCallback)
-
-    def blockWidgetSignals(self, bLocked):
-        self.cb.blockSignals(bLocked)
-
-    def setWidgetValue(self, val):
-        self.cb.setCurrentIndex(val)
-
-
 class FloatInputWidget(InputWidgetSingle):
     """
     Floating point data input widget
@@ -161,7 +140,7 @@ class NoneInputWidget(InputWidgetSingle):
         self.le.setText(str(val))
 
 
-def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
+def getInputWidget(dataType, dataSetter, defaultValue):
     '''
     factory method
     '''
@@ -175,8 +154,6 @@ def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
         return BoolInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'ExecPin':
         return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None)
-    if dataType == 'EnumPin':
-        return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, userStructClass=userStructClass)
     if dataType == 'AnyPin':
         return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None)
     if dataType == 'ListPin':

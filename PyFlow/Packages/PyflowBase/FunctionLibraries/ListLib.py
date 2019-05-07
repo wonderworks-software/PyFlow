@@ -46,3 +46,13 @@ class ListLib(FunctionLibraryBase):
             return
         ls.remove(elem)
         result(True)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
+    def clearList(ls=('AnyPin', [], {'constraint': '1'}), duplicate=('BoolPin', True), deepCopy=('BoolPin', False), result=('Reference', ('AnyPin', [], {'constraint': '1'}))):
+        outArr = ls
+        if duplicate:
+            copyFunction = deepcopy if deepCopy else copy
+            outArr = copyFunction(ls)
+        outArr.clear()
+        result(outArr)

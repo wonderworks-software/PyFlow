@@ -1,4 +1,3 @@
-from nine import str
 import weakref
 from blinker import Signal
 from multipledispatch import dispatch
@@ -118,7 +117,7 @@ class GraphBase(ISerializable):
         # restore connections
         for nodeJson in jsonData['nodes']:
             for nodeOutputJson in nodeJson['outputs']:
-                lhsPin = self.findPin(nodeOutputJson['fullName'])
+                lhsPin = self.findPin(str(nodeOutputJson['fullName']))
                 for rhsPinFullName in nodeOutputJson['linkedTo']:
                     rhsPin = self.findPin(rhsPinFullName)
                     connected = connectPins(lhsPin, rhsPin)
@@ -155,7 +154,7 @@ class GraphBase(ISerializable):
 
     @name.setter
     def name(self, value):
-        assert(isinstance(value, str))
+        value = str(value)
         if self.__name != value:
             self.__name = value
             self.nameChanged.send(self.__name)
@@ -166,8 +165,7 @@ class GraphBase(ISerializable):
 
     @category.setter
     def category(self, value):
-        assert(isinstance(value, str))
-        self.__category = value
+        self.__category = str(value)
         self.categoryChanged.send(self.__category)
 
     def Tick(self, deltaTime):

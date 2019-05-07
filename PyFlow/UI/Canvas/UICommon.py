@@ -1,4 +1,4 @@
-from enum import IntEnum
+from PyFlow.Core.Common import *
 
 
 class VisibilityPolicy(IntEnum):

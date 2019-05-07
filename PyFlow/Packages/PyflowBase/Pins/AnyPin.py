@@ -1,6 +1,5 @@
 from blinker import Signal
 import json
-from enum import IntEnum
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
@@ -22,7 +21,6 @@ class AnyPin(PinBase):
         self._isAny = True
         self.super = None
         self.activeDataType = self.__class__.__name__
-        self.isListByDefault = False
         # if True, setType and setDefault will work only once
         self.singleInit = False
 
@@ -73,7 +71,6 @@ class AnyPin(PinBase):
         constrainedType = self.activeDataType
         dt['constrainedType'] = constrainedType
         dt['singleInit'] = self.singleInit
-        dt['isListByDefault'] = self.isListByDefault
         if constrainedType != self.__class__.__name__:
             pinClass = findPinClassByType(constrainedType)
             # serialize with active type's encoder
@@ -95,8 +92,6 @@ class AnyPin(PinBase):
         if other.dataType != pin.activeDataType and free:
             pin._free = False
             pin.setType(other)
-
-        pin.setAsList(other.isList())
 
     def updateOnDisconnectionCallback(self, pin, other):
         free = self.checkFree([])
@@ -145,7 +140,6 @@ class AnyPin(PinBase):
         self.onSetDefaultType.send()
 
         self.setDefaultValue(None)
-        self.setAsList(self.isListByDefault)
         if not self.hasConnections():
             self._free = True
 
@@ -166,5 +160,3 @@ class AnyPin(PinBase):
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
             self._free = self.activeDataType == self.__class__.__name__
-            # if self.listSwitchPolicy == ListSwitchPolicy.Auto:
-            #     self.setAsList(other.isList() | self.isListByDefault)

@@ -11,7 +11,7 @@ from PyFlow import getPinDefaultValueByType
 class PinBase(IPin):
     _packageName = ""
 
-    def __init__(self, name, owningNode, direction, userStructClass=None):
+    def __init__(self, name, owningNode, direction):
         super(PinBase, self).__init__()
         # signals
         self.serializationHook = Signal()
@@ -21,11 +21,12 @@ class PinBase(IPin):
         self.killed = Signal()
         self.onExecute = Signal(object)
         self.containerTypeChanged = Signal()
-
+        ## Access to the node
+        self.owningNode = weakref.ref(owningNode)
         self._uid = uuid.uuid4()
-        self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
+
         ## This flag for lazy evaluation
         # @sa @ref PinBase::getData
         self.dirty = True
@@ -33,20 +34,10 @@ class PinBase(IPin):
         self.affects = set()
         ## List of pins connected to this pin
         self.affected_by = set()
-        ## Access to the node
-        self.owningNode = weakref.ref(owningNode)
 
         self.name = name
         ## Defines is this input pin or output
         self.direction = direction
-        ## For rand int node and stuff like that
-        self._alwaysPushDirty = False
-        ## Can be renamed or not (for switch on string node)
-        self._renamingEnabled = False
-        ## For example sequence nodes output execs are dynamically created and can be deleted from node as well
-        self._dynamic = False
-
-        self._allowMultipleConnections = False
 
         # gui class weak ref
         self._wrapper = None
@@ -54,16 +45,21 @@ class PinBase(IPin):
         self.constraint = None
         self._isAny = False
 
+        # Flags
+        self._flags = PinOptions(0)
+
         self._isList = False
-        self.listSupported = False
-        self.supportsOnlyList = False
-        self.listSwitchPolicy = ListSwitchPolicy.Auto
 
-    def setAllowMultipleConnections(self, bAllow):
-        self._allowMultipleConnections = bAllow
+    def enableOptions(self, *options):
+        for option in options:
+            self._flags = self._flags | option
 
-    def isAllowMultiConnection(self):
-        return self._allowMultipleConnections
+    def disableOptions(self, *options):
+        for option in options:
+            self._flags = self._flags & ~option
+
+    def optionEnabled(self, option):
+        return bool(self._flags & option)
 
     def isAny(self):
         return self._isAny
@@ -92,12 +88,12 @@ class PinBase(IPin):
         bIsList = bool(bIsList)
         if self._isList == bIsList:
             return
-        if self.isAny() and self.listSwitchPolicy == ListSwitchPolicy.DoNotSwitch:
-            return
 
         self._isList = bIsList
         if bIsList:
             self._data = []
+        # list pins supports only lists by default
+        self.enableOptions(PinOptions.SupportsOnlyList)
         self.containerTypeChanged.send()
 
     def isList(self):
@@ -114,25 +110,6 @@ class PinBase(IPin):
     def getWrapper(self):
         return self._wrapper
 
-    def setRenamingEnabled(self, bEnabled):
-        self._renamingEnabled = bEnabled
-
-    def renamingEnabled(self):
-        return self._renamingEnabled
-
-    def setDynamic(self, bDynamic):
-        self._dynamic = bDynamic
-
-    def isDynamic(self):
-        return self._dynamic
-
-    def isAlwaysPushDirty(self):
-        return self._alwaysPushDirty
-
-    def setAlwaysPushDirty(self, bValue=False):
-        assert(isinstance(bValue, bool))
-        self._alwaysPushDirty = bValue
-
     # ISerializable interface
     def serialize(self):
 
@@ -146,14 +123,12 @@ class PinBase(IPin):
             'value': self.currentData(),
             'uuid': uidString,
             'bDirty': self.dirty,
-            'dynamic': self.isDynamic(),
-            'renamingEnabled': self.renamingEnabled(),
-            'alwaysPushDirty': self._alwaysPushDirty,
-            'linkedTo': list(self.linkedTo)
+            'linkedTo': list(self.linkedTo),
+            'options': [i.value for i in PinOptions if self.optionEnabled(i)]
         }
 
         # Wrapper class can subscribe to this signal and return
-        # UI specific data which will be considered on serialization.
+        # UI specific data which will be considered on serialization
         # Blinker returns a tuple (receiver, return val)
         wrapperData = self.serializationHook.send(self)
         if wrapperData is not None:
@@ -175,7 +150,7 @@ class PinBase(IPin):
 
     def setName(self, name, force=False):
         if not force:
-            if not self.renamingEnabled():
+            if not self.optionEnabled(PinOptions.RenamingEnabled):
                 return False
         if name == self.name:
             return False
@@ -236,7 +211,7 @@ class PinBase(IPin):
             for i in self.affects:
                 i._data = self.currentData()
                 i.setClean()
-        if self.direction == PinDirection.Input or self._alwaysPushDirty:
+        if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
             push(self)
 
     ## Calling execution pin
@@ -268,15 +243,6 @@ class PinBase(IPin):
     @property
     def dataType(self):
         return self.__class__.__name__
-
-    def isUserStruct(self):
-        return self._userStructClass is not None
-
-    def getUserStruct(self):
-        return self._userStructClass
-
-    def setUserStruct(self, inStruct):
-        self._userStructClass = inStruct
 
     # PinBase methods
 

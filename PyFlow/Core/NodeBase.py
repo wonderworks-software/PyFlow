@@ -1,4 +1,3 @@
-from nine import str
 from blinker import Signal
 import weakref
 import uuid
@@ -211,7 +210,7 @@ class NodeBase(INode):
         return self.name
 
     def setName(self, name):
-        self.name = name
+        self.name = str(name)
 
     # INode interface
 
@@ -290,12 +289,12 @@ class NodeBase(INode):
         return p
 
     def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):
-        p = self.getPin(pinName, pinSelectionGroup)
+        p = self.getPin(str(pinName), pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
         p.setData(data)
 
     def getData(self, pinName, pinSelectionGroup=PinSelectionGroup.BothSides):
-        p = self.getPin(pinName, pinSelectionGroup)
+        p = self.getPin(str(pinName), pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
         return p.getData()
 
@@ -360,11 +359,12 @@ class NodeBase(INode):
 
             # set pins data
             for inpJson in jsonTemplate['inputs']:
-                if inpJson['dynamic'] or inpJson['name'] not in self.namePinInputsMap:
+                dynamicEnabled = PinOptions.Dynamic.value in inpJson["options"]
+                if dynamicEnabled or inpJson['name'] not in self.namePinInputsMap:
                     # create custom dynamically created pins in derived classes
                     continue
 
-                pin = self.getPin(inpJson['name'], PinSelectionGroup.Inputs)
+                pin = self.getPin(str(inpJson['name']), PinSelectionGroup.Inputs)
                 pin.uid = uuid.UUID(inpJson['uuid'])
                 pin.setData(inpJson['value'])
                 if inpJson['bDirty']:
@@ -373,11 +373,12 @@ class NodeBase(INode):
                     pin.setClean()
 
             for outJson in jsonTemplate['outputs']:
-                if outJson['dynamic'] or outJson['name'] not in self.namePinOutputsMap:
+                dynamicEnabled = PinOptions.Dynamic.value in outJson["options"]
+                if dynamicEnabled or outJson['name'] not in self.namePinOutputsMap:
                     # create custom dynamically created pins in derived classes
                     continue
 
-                pin = self.getPin(outJson['name'], PinSelectionGroup.Outputs)
+                pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
                 pin.uid = uuid.UUID(outJson['uuid'])
                 pin.setData(outJson['value'])
                 if outJson['bDirty']:
@@ -467,7 +468,7 @@ class NodeBase(INode):
                     kwds[ref.name] = ref.setData
             result = foo(**kwds)
             if returnType is not None:
-                self.setData('out', result)
+                self.setData(str('out'), result)
             if nodeType == NodeTypes.Callable:
                 outExec.call(*args, **kwargs)
 
@@ -502,22 +503,12 @@ class NodeBase(INode):
                         constraint = dataType[2]["constraint"]
                 outRef = raw_inst.createOutputPin(argName, dataType[0], allowedPins=anyOpts, constraint=constraint)
                 outRef.setAsList(isinstance(argDefaultValue, list))
-                if outRef.isList():
-                    outRef.isListByDefault = True
-                    outRef.supportsOnlyList = True
-                if outRef.isAny():
-                    outRef.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
                 outRef.setDefaultValue(argDefaultValue)
                 outRef.setData(dataType[1])
                 refs.append(outRef)
             else:
                 inp = raw_inst.createInputPin(argName, dataType, allowedPins=anyOpts, constraint=constraint)
                 inp.setAsList(isinstance(argDefaultValue, list))
-                if inp.isList():
-                    inp.isListByDefault = True
-                    inp.supportsOnlyList = True
-                if inp.isAny():
-                    inp.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
                 inp.setData(argDefaultValue)
                 inp.setDefaultValue(argDefaultValue)
 

@@ -9,16 +9,10 @@ class copyList(NodeBase):
         super(copyList, self).__init__(name)
         self.entity = self.createInputPin('entity', 'AnyPin', constraint="1")
         self.entity.setAsList(True)
-        self.entity.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
-        self.entity.isListByDefault = True
-        self.entity.supportsOnlyList = True
 
         self.deepcopy = self.createInputPin('deepcopy', 'BoolPin', False)
         self.copiedData = self.createOutputPin("copied", 'AnyPin', constraint="1")
         self.copiedData.setAsList(True)
-        self.copiedData.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
-        self.copiedData.isListByDefault = True
-        self.copiedData.supportsOnlyList = True
 
     @staticmethod
     def pinTypeHints():

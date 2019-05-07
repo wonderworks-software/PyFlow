@@ -13,6 +13,7 @@ class switchOnString(NodeBase):
     def addOutPin(self):
         name = self.getUniqPinName("option")
         p = self.createOutputPin(name, 'ExecPin')
+        p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         pinAffects(self.inExecPin, p)
         return p
 

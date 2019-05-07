@@ -11,8 +11,6 @@ from PyFlow.Core.Interfaces import ISerializable
 class Variable(ISerializable):
     def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, uid=None):
         super(Variable, self).__init__()
-        assert(isinstance(name, str))
-        assert(isinstance(dataType, str))
         # signals
         self.nameChanged = Signal(str)
         self.valueChanged = Signal(str)

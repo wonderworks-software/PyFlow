@@ -101,8 +101,6 @@ class UIPinBase(QGraphicsWidget):
     dataBeenSet = QtCore.Signal(object)
     # Event called when pin name changes
     displayNameChanged = QtCore.Signal(str)
-    # Event called when setUserStruct called. Used by enums
-    userStructChanged = QtCore.Signal(object)
     OnPinChanged = QtCore.Signal(object)
     OnPinDeleted = QtCore.Signal(object)
 
@@ -192,20 +190,14 @@ class UIPinBase(QGraphicsWidget):
     def setMenuItemEnabled(self, actionName, bEnabled):
         for action in self.menu.actions():
             if action.text() == actionName:
-                action.setEnabled(bEnabled)
-                action.setVisible(bEnabled)
+                if bEnabled != action.isEnabled() and action.isVisible():
+                    action.setEnabled(bEnabled)
+                    action.setVisible(bEnabled)
 
     def syncRenamable(self):
-        renamingEnabled = self._rawPin.renamingEnabled()
+        renamingEnabled = self._rawPin.optionEnabled(PinOptions.RenamingEnabled)
         self._label()._isEditable = renamingEnabled
         self.setMenuItemEnabled("Rename", renamingEnabled)
-
-    def setRenamingEnabled(self, bEnabled):
-        self._rawPin.setRenamingEnabled(bEnabled)
-        self.syncRenamable()
-
-    def renamingEnabled(self):
-        return self._rawPin.renamingEnabled()
 
     def onRename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
@@ -215,14 +207,7 @@ class UIPinBase(QGraphicsWidget):
             self.setDisplayName(uniqueName)
 
     def syncDynamic(self):
-        self.setMenuItemEnabled("Remove", self._rawPin.isDynamic())
-
-    def setDynamic(self, bDynamic):
-        self._rawPin.setDynamic(bDynamic)
-        self.syncDynamic()
-
-    def isDynamic(self):
-        return self._rawPin.isDynamic()
+        self.setMenuItemEnabled("Remove", self._rawPin.optionEnabled(PinOptions.Dynamic))
 
     @property
     def dirty(self):
@@ -237,9 +222,6 @@ class UIPinBase(QGraphicsWidget):
 
     def defaultValue(self):
         return self._rawPin.defaultValue()
-
-    def getUserStruct(self):
-        return self._rawPin.getUserStruct()
 
     def currentData(self):
         return self._rawPin.currentData()
@@ -297,10 +279,6 @@ class UIPinBase(QGraphicsWidget):
 
     def color(self):
         return self._color
-
-    def setUserStruct(self, inStruct):
-        self._rawPin.setUserStruct(inStruct)
-        self.userStructChanged.emit(inStruct)
 
     def setName(self, newName, force=False):
         return self._rawPin.setName(newName, force=force)

@@ -54,7 +54,7 @@ class UISetVarNode(UINodeBase):
 
         # input value
         w = createInputWidget(self._rawNode.inp.dataType,
-                              self._rawNode.inp.setData, self.var.value, None)
+                              self._rawNode.inp.setData, self.var.value)
         if w:
             w.blockWidgetSignals(True)
             w.setWidgetValue(self._rawNode.inp.currentData())

@@ -1,12 +1,12 @@
 from PyFlow.Core import NodeBase
-from PyFlow.Core.Common import push
+from PyFlow.Core.Common import *
 
 
 class address(NodeBase):
     def __init__(self, name):
         super(address, self).__init__(name)
         self.obj = self.createInputPin("obj", "AnyPin")
-        self.obj.listSupported = True
+        self.obj.enableOptions(PinOptions.ListSupported)
         self.addr = self.createOutputPin('out', 'StringPin')
 
     @staticmethod

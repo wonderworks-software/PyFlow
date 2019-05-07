@@ -118,8 +118,6 @@ class compound(NodeBase):
             subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
             subgraphInputPin.singleInit = True
             subgraphInputPin.setType(outPin)
-        subgraphInputPin.setRenamingEnabled(False)
-        subgraphInputPin.setDynamic(False)
         self.__inputsMap[subgraphInputPin] = outPin
         pinAffects(subgraphInputPin, outPin)
         # connect
@@ -167,8 +165,6 @@ class compound(NodeBase):
         if subgraphOutputPin.isExec():
             inPin.onExecute.connect(subgraphOutputPin.call)
 
-        subgraphOutputPin.setRenamingEnabled(False)
-        subgraphOutputPin.setDynamic(False)
         self.__outputsMap[subgraphOutputPin] = inPin
         pinAffects(inPin, subgraphOutputPin)
 

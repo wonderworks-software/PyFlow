@@ -9,7 +9,6 @@ class ExecPin(PinBase):
         super(ExecPin, self).__init__(name, parent, direction, **kwargs)
         self.dirty = False
         self._isList = False
-        self.supportsOnlyList = False
 
     def isExec(self):
         return True
@@ -20,7 +19,6 @@ class ExecPin(PinBase):
     def setAsList(self, bIsList):
         # exec is not a type, it cannot be an list
         self._isList = False
-        self.supportsOnlyList = False
 
     @staticmethod
     def isPrimitiveType():

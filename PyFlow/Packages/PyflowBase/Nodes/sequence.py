@@ -11,7 +11,7 @@ class sequence(NodeBase):
     def createOutputPin(self, *args, **kwargs):
         pinName = str(len(self.outputs) + 1)
         p = CreateRawPin(pinName, self, 'ExecPin', PinDirection.Output)
-        p.setDynamic(True)
+        p.enableOptions(PinOptions.Dynamic)
         return p
 
     def serialize(self):

@@ -8,15 +8,10 @@ class forEachLoop(NodeBase):
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.list = self.createInputPin('list', 'AnyPin', constraint="1")
         self.list.setAsList(True)
-        self.list.listSupported = True
-        self.list.isListByDefault = True
+        self.list.enableOptions(PinOptions.ListSupported)
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
         self.elem = self.createOutputPin('element', 'AnyPin', constraint="1")
-        self.elem.setAsList(False)
-        self.elem.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
-        self.elem.listSupported = False
-        self.elem.isListByDefault = False
         self.completed = self.createOutputPin('Completed', 'ExecPin')
 
     @staticmethod

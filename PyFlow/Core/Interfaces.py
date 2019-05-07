@@ -219,27 +219,6 @@ class IPin(IItemBase):
     def dataType(self, value):
         raise NotImplementedError('dataType setter method of IPin is not implemented')
 
-    def isUserStruct(self):
-        raise NotImplementedError('isUserStruct method of IPin is not implemented')
-
-    def getUserStruct(self):
-        raise NotImplementedError('getUserStruct method of IPin is not implemented')
-
-    def setUserStruct(self, inStruct):
-        raise NotImplementedError('setUserStruct method of IPin is not implemented')
-
-    def setRenamingEnabled(self, bEnabled):
-        raise NotImplementedError('setRenamingEnabled method of IPin is not implemented')
-
-    def setDynamic(self, bDynamic):
-        raise NotImplementedError('setDynamic method of IPin is not implemented')
-
-    def renamingEnabled(self):
-        raise NotImplementedError('renamingEnabled method of IPin is not implemented')
-
-    def isDynamic(self):
-        raise NotImplementedError('isDynamic method of IPin is not implemented')
-
     @staticmethod
     def isPrimitiveType():
         '''

@@ -56,7 +56,7 @@ class GraphManager(object):
 
     def deserialize(self, data):
         self.clear(keepRoot=False)
-        self._activeGraph = GraphBase('root', self)
+        self._activeGraph = GraphBase(str('root'), self)
         self._activeGraph.populateFromJson(data)
         self._activeGraph.setIsRoot(True)
         self.selectGraph(self._activeGraph)

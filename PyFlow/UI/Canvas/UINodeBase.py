@@ -648,7 +648,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
                     # TODO: create list input widget
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData
-                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
+                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue())
                 if w:
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
@@ -704,8 +704,6 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         """
         lod = self.canvasRef().getLodValueFromCurrentScale(3)
         for uiPin in self.UIPins.values():
-            uiPin.syncDynamic()
-            uiPin.syncRenamable()
             label = uiPin.getLabel()()
             if label.visibilityPolicy == VisibilityPolicy.Auto:
                 if lod <= 2:
@@ -874,6 +872,8 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         self.update()
         self.nodeMainGWidget.update()
         self.updateNodeShape()
+        p.syncDynamic()
+        p.syncRenamable()
         return p
 
     def collapsePinGroup(self, container):

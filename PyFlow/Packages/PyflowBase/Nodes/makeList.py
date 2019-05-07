@@ -6,19 +6,13 @@ class makeList(NodeBase):
     def __init__(self, name):
         super(makeList, self).__init__(name)
         self.arrayData = self.createInputPin('data', 'AnyPin', constraint="1")
-        self.arrayData.setAllowMultipleConnections(True)
         self.arrayData.setAsList(True)
-        self.arrayData.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
-        self.arrayData.isListByDefault = True
-        self.arrayData.supportsOnlyList = False
+        self.arrayData.enableOptions(PinOptions.AllowMultipleConnections)
 
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
         self.outArray = self.createOutputPin('out', 'AnyPin', constraint="1")
         self.outArray.setAsList(True)
-        self.outArray.listSwitchPolicy = ListSwitchPolicy.DoNotSwitch
-        self.outArray.isListByDefault = True
-        self.outArray.supportsOnlyList = True
 
         self.result = self.createOutputPin('result', 'BoolPin')
 

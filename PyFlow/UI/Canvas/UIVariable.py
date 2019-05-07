@@ -124,7 +124,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         # current value
         def valSetter(x):
             self._rawVariable.value = x
-        w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType), None)
+        w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType))
         if w:
             w.setWidgetValue(self._rawVariable.value)
             w.setObjectName(self._rawVariable.name)
@@ -159,6 +159,8 @@ class UIVariable(QWidget, IPropertiesViewSupport):
                     # mark node as invalid
                     # TODO: For future. Like in ue4, if variable is removed, it can be recreated from node (e.g. promote to variable)
                     print('leave')
+        else:
+            self.variablesWidget.killVar(self)
 
     @property
     def dataType(self):
