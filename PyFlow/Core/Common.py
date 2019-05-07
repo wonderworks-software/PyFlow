@@ -361,6 +361,7 @@ class PinOptions(Flag):
     RenamingEnabled = auto()
     Dynamic = auto()
     AlwaysPushDirty = auto()
+    Storable = auto()
 
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes

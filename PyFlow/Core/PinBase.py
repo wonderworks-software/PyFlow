@@ -2,6 +2,7 @@ from blinker import Signal
 import uuid
 from copy import deepcopy
 import weakref
+import json
 
 from PyFlow.Core.Interfaces import IPin
 from PyFlow.Core.Common import *
@@ -46,7 +47,7 @@ class PinBase(IPin):
         self._isAny = False
 
         # Flags
-        self._flags = PinOptions(0)
+        self._flags = PinOptions.Storable
 
         self._isList = False
 
@@ -113,15 +114,19 @@ class PinBase(IPin):
     # ISerializable interface
     def serialize(self):
 
-        uidString = str(self.uid)
+        storable = self.optionEnabled(PinOptions.Storable)
+
+        serializedData = json.dumps(self.defaultValue(), cls=self.jsonEncoderClass())
+        if storable:
+            serializedData = json.dumps(self.currentData(), cls=self.jsonEncoderClass())
 
         data = {
             'name': self.name,
             'fullName': self.getName(),
             'dataType': self.__class__.__name__,
             'direction': int(self.direction),
-            'value': self.currentData(),
-            'uuid': uidString,
+            'value': serializedData,
+            'uuid': str(self.uid),
             'bDirty': self.dirty,
             'linkedTo': list(self.linkedTo),
             'options': [i.value for i in PinOptions if self.optionEnabled(i)]
@@ -301,3 +306,11 @@ class PinBase(IPin):
             self.owningNode().constraints[constraint].append(self)
         else:
             self.owningNode().constraints[constraint] = [self]
+
+    @staticmethod
+    def jsonEncoderClass():
+        return json.JSONEncoder
+
+    @staticmethod
+    def jsonDecoderClass():
+        return json.JSONDecoder

@@ -220,14 +220,6 @@ class IPin(IItemBase):
         raise NotImplementedError('dataType setter method of IPin is not implemented')
 
     @staticmethod
-    def isPrimitiveType():
-        '''
-        is this pin data is primitive type (int, str, bool, ...)
-        if not, json encoder/decoder needs to be provided
-        '''
-        raise NotImplementedError('IsPrimitiveType method of IPin is not implemented')
-
-    @staticmethod
     def jsonEncoderClass():
         raise NotImplementedError('jsonEncoderClass method of IPin is not implemented')
 

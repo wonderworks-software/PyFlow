@@ -29,10 +29,6 @@ class AnyPin(PinBase):
         return self.activeDataType
 
     @staticmethod
-    def isPrimitiveType():
-        return False
-
-    @staticmethod
     def supportedDataTypes():
         return tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
 
@@ -74,11 +70,7 @@ class AnyPin(PinBase):
         if constrainedType != self.__class__.__name__:
             pinClass = findPinClassByType(constrainedType)
             # serialize with active type's encoder
-            if not pinClass.isPrimitiveType():
-                encodedValue = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
-            else:
-                encodedValue = json.dumps(self.currentData())
-            dt['value'] = encodedValue
+            dt['value'] = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
         return dt
 
     def pinConnected(self, other):
@@ -155,7 +147,6 @@ class AnyPin(PinBase):
             self._data = getPinDefaultValueByType(self.activeDataType)
             self.setDefaultValue(self._data)
             self.dirty = other.dirty
-            self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)

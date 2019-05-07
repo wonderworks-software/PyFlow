@@ -123,7 +123,7 @@ class Variable(ISerializable):
         if self.dataType == 'AnyPin':
             template['value'] = None
         else:
-            template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass()) if not pinClass.isPrimitiveType() else self.value
+            template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass())
         template['dataType'] = self.dataType
         template['accessLevel'] = self.accessLevel.value
         template['package'] = self._packageName
@@ -138,7 +138,7 @@ class Variable(ISerializable):
 
         if dataType != "AnyPin":
             pinClass = findPinClassByType(dataType)
-            value = jsonData['value'] if pinClass.isPrimitiveType() else json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass())
+            value = json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass())
         else:
             value = getPinDefaultValueByType("AnyPin")
 

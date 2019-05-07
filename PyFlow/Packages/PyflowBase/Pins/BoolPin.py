@@ -9,10 +9,6 @@ class BoolPin(PinBase):
         self.setDefaultValue(False)
 
     @staticmethod
-    def isPrimitiveType():
-        return True
-
-    @staticmethod
     def IsValuePin():
         return True
 

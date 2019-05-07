@@ -9,10 +9,6 @@ class IntPin(PinBase):
         self.setDefaultValue(0)
 
     @staticmethod
-    def isPrimitiveType():
-        return True
-
-    @staticmethod
     def IsValuePin():
         return True
 

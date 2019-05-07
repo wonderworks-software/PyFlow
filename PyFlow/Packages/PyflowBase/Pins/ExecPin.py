@@ -23,10 +23,6 @@ class ExecPin(PinBase):
         self._isList = False
 
     @staticmethod
-    def isPrimitiveType():
-        return True
-
-    @staticmethod
     def IsValuePin():
         return False
 

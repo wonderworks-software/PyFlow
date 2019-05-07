@@ -31,10 +31,6 @@ class FloatVector4Pin(PinBase):
         return True
 
     @staticmethod
-    def isPrimitiveType():
-        return False
-
-    @staticmethod
     def jsonEncoderClass():
         return Vector4Encoder
 
@@ -53,11 +49,6 @@ class FloatVector4Pin(PinBase):
     @staticmethod
     def color():
         return (173, 216, 230, 255)
-
-    def serialize(self):
-        data = PinBase.serialize(self)
-        data['value'] = self.currentData().xyzw.tolist()
-        return data
 
     @staticmethod
     def processData(data):
