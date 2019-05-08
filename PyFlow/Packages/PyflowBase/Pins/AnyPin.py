@@ -136,6 +136,8 @@ class AnyPin(PinBase):
         if not self.hasConnections():
             self._free = True
 
+        self.supportedDataTypes = lambda: tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
+
     def setType(self, other):
         if not self.changeTypeOnConnection:
             return
@@ -154,4 +156,5 @@ class AnyPin(PinBase):
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
+            self.supportedDataTypes = other.supportedDataTypes
             self._free = self.activeDataType == self.__class__.__name__

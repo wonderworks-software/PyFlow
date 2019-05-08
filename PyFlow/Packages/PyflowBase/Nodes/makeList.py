@@ -37,7 +37,7 @@ class makeList(NodeBase):
 
     def compute(self, *args, **kwargs):
         outArray = []
-        for i in self.arrayData.affected_by:
+        for i in sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y):
             outArray.append(i.getData())
 
         isSorted = self.sorted.getData()
