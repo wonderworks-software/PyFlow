@@ -135,7 +135,7 @@ class NodeName(QGraphicsTextItem):
         self.setTextCursor(cursor)
 
 
-class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
+class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     """
     Default node description
     """
@@ -156,8 +156,8 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         self.color = color
         self.headColor = headColor
         self.height_offset = 3
-        self.nodeMainGWidget = QGraphicsWidget()
-        self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(self._rawNode.__class__.__name__))
+        # self.nodeMainGWidget = QGraphicsWidget()
+        # self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(self._rawNode.__class__.__name__))
         self._w = 0
         self.h = 40
         self.bUseTextureBg = bUseTextureBg  # self.canvasRef().styleSheetEditor.USETEXTUREBG
@@ -174,13 +174,13 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         self.label = weakref.ref(NodeName(self, self.bUseTextureBg, self.headColor))
         self._displayName = self.name
         # set node layouts
-        self.nodeMainGWidget.setParentItem(self)
+        # self.nodeMainGWidget.setParentItem(self)
         # main
         self.portsMainLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.portsMainLayout.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.portsMainLayout.setContentsMargins(0, 0, 0, 0)
-        self.nodeMainGWidget.setLayout(self.portsMainLayout)
-        self.nodeMainGWidget.setX(self.nodeMainGWidget.x())
+        self.setLayout(self.portsMainLayout)
+        # self.nodeMainGWidget.setX(self.nodeMainGWidget.x())
         # inputs layout
         self.inputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.inputsLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
@@ -220,6 +220,9 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         # Core Nodes Support
         self.isTemp = False
         self.isCommentNode = False
+
+    # def setGeometry(self, rect):
+    #     return self.childrenBoundingRect()
 
     def __repr__(self):
         graphName = self._rawNode.graph().name if self._rawNode.graph is not None else str(None)
@@ -461,7 +464,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
             self.displayName = label
 
         self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
+        # self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
         if self.isCallable():
             if self.label().bUseTextureBg:
                 self.headColor = Colors.NodeNameRectBlue
@@ -488,6 +491,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
 
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)
+        painter.drawRect(self.geometry())
 
     def shouldResize(self, cursorPos):
         cursorPos = self.mapFromScene(cursorPos)
@@ -522,7 +526,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
 
     def mousePressEvent(self, event):
         self.update()
-        QGraphicsItem.mousePressEvent(self, event)
+        super(UINodeBase, self).mousePressEvent(event)
         self.mousePressPos = event.scenePos()
         self.origPos = self.pos()
         self.initPos = self.pos()
@@ -537,7 +541,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
                 self.bResize = True
 
     def mouseMoveEvent(self, event):
-        QGraphicsItem.mouseMoveEvent(self, event)
+        super(UINodeBase, self).mouseMoveEvent(event)
         # resize
         if self.bResize:
             delta = event.scenePos() - self.mousePressPos
@@ -589,8 +593,8 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
                     self.w = newWidth
                 if newHeight > self.minHeight:
                     self._rect.setHeight(newHeight)
-            self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-                0, 0, self.w, self.boundingRect().height()))
+            # self.nodeMainGWidget.setGeometry(QtCore.QRectF(
+            #     0, 0, self.w, self.boundingRect().height()))
             self.update()
             self.label().update()
         self.lastMousePos = event.pos()
@@ -598,7 +602,7 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
     def mouseReleaseEvent(self, event):
         self.update()
         self.bResize = False
-        QGraphicsItem.mouseReleaseEvent(self, event)
+        super(UINodeBase, self).mouseReleaseEvent(event)
 
     def clone(self):
         templ = self.serialize()
@@ -859,10 +863,10 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
 
         p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(
-            0, 0, self._rect.width(), self.childrenBoundingRect().height()))
+        # self.nodeMainGWidget.setGeometry(QtCore.QRectF(
+        #     0, 0, self._rect.width(), self.childrenBoundingRect().height()))
         self.update()
-        self.nodeMainGWidget.update()
+        # self.nodeMainGWidget.update()
         self.updateNodeShape()
         p.syncDynamic()
         p.syncRenamable()
