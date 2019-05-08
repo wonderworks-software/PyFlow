@@ -217,7 +217,6 @@ class PinBase(IPin):
                     for layer in reversed(sorted([i for i in compute_order.keys()])):
                         for node in compute_order[layer]:
                             node.compute()
-                    self.setClean()
                     return self.currentData()
                 else:
                     self.setClean()

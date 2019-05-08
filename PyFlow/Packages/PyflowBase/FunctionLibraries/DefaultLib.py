@@ -18,14 +18,14 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ListSupported}), meta={'Category': 'GenericTypes', 'Keywords': ['id']})
     def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ListSupported}), deepCopy=("BoolPin", False)):
-        '''shallow or deep copy of an object'''
+        '''Shallow or deep copy of an object.'''
         copyFunction = deepcopy if deepCopy else copy
         return copyFunction(obj)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})
     def clearConsole():
-        '''Cross platform clears console'''
+        '''Cross platform clears console.'''
         system = platform.system()
         if system != "":
             system = system.lower()
@@ -37,27 +37,25 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'GenericTypes', 'Keywords': []})
     def makeInt(i=('IntPin', 0)):
-        '''make integer'''
+        '''Make integer.'''
         return i
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'GenericTypes', 'Keywords': []})
     def makeFloat(f=('FloatPin', 0.0)):
-        '''make floating point number'''
+        '''Make floating point number.'''
         return f
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'GenericTypes', 'Keywords': []})
     def makeString(s=('StringPin', '')):
-        '''make string'''
+        '''Make string.'''
         return s
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
     def makeBool(b=('BoolPin', False)):
-        '''
-        make boolean
-        '''
+        '''Make boolean.'''
         return b
 
     # Conversions
@@ -82,7 +80,7 @@ class DefaultLib(FunctionLibraryBase):
         return str(i)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Utils', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {"enabledOptions": PinOptions.AlwaysPushDirty}), meta={'Category': 'Utils', 'Keywords': []})
     def clock():
         '''Returns the CPU time or real time since the start of the process or since the first call of clock().'''
         return time.clock()
