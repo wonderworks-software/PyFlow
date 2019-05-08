@@ -45,94 +45,49 @@ from collections import OrderedDict
 UI_NODES_FACTORIES = {}
 
 
-class NodeName(QGraphicsTextItem):
-    def __init__(self, parent, bUseTextureBg=True, color=Colors.NodeNameRectGreen):
+class NodeName(QGraphicsWidget):
+    """docstring for NodeName"""
+    def __init__(self, parent=None, color=(25, 25, 25, 255)):
         super(NodeName, self).__init__(parent)
-        self.setParentItem(parent)
-        self.bUseTextureBg = bUseTextureBg
-        self.width = 50
-        self.document().contentsChanged.connect(self.onDocContentsChanged)
-        self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        self.desc = parent._rawNode.description()
-        self.descFontPen = QtGui.QPen(QtCore.Qt.gray, 0.5)
-        self.defaultPen = QtGui.QPen(QtCore.Qt.white, 0.5)
-        self.text_color = Colors.PinNameColor
-        self.setDefaultTextColor(self.text_color)
-        self.opt_font = QtGui.QFont('Consolas')
-        self.opt_font_size = 8
-        self.opt_font.setPointSize(self.opt_font_size)
-        self.defaultHeight = self.opt_font_size * 3.3
-        self.h = self.defaultHeight
-        self.setFont(self.opt_font)
-        self.descFont = QtGui.QFont("Consolas", self.opt_font.pointSize() / 2.0, 2, True)
-        self.setPos(0, -self.boundingRect().height() - 4)
         self.color = color
-        self.clipRect = None
-        self.roundCornerFactor = 1.0
-        self.bg = QtGui.QImage(':/icons/resources/white.png')
-        self.icon = None
-        self.nodeLabelMargin = QtCore.QMargins(4, 2, 0, 0)
-        self.nodePackageMargin = QtCore.QMargins(4, 2, 0, 3)
+        self.setGraphicsItem(self)
+        self.defaultPen = QtGui.QPen(QtCore.Qt.white, 0.5)
+        self.hovered = False
+        self.setAcceptHoverEvents(True)
+        self.text = self.parentItem().displayName
+        self._font = QtGui.QFont("Consolas")
+        self._font.setPointSize(6)
 
-    def onDocContentsChanged(self):
-        self.width = QtGui.QFontMetricsF(
-            self.font()).width(self.toPlainText()) + 5.0
-        self.document().setTextWidth(self.width)
+    def hoverEnterEvent(self, event):
+        super(NodeName, self).hoverEnterEvent(event)
+        self.hovered = True
+        self.update()
 
-    @staticmethod
-    def IsRenamable():
-        return False
+    def hoverLeaveEvent(self, event):
+        super(NodeName, self).hoverLeaveEvent(event)
+        self.hovered = False
+        self.update()
 
-    def keyPressEvent(self, event):
-        key = event.key()
-        if (key == QtCore.Qt.Key_Return) or (key == QtCore.Qt.Key_Escape):
-            self.setEnabled(False)
-            self.setEnabled(True)
-            return
-        else:
-            QGraphicsTextItem.keyPressEvent(self, event)
-
-    def boundingRect(self):
-        return QtCore.QRectF(0, 0, self.width + 5.0, self.h)
+    def sizeHint(self, which, constraint):
+        height = QtGui.QFontMetrics(self._font).height()
+        width = self.parentItem().geometry().width()
+        return QtCore.QSizeF(width, height)
 
     def paint(self, painter, option, widget):
-        # use 3 levels of detail
-        lod = self.parentItem().canvasRef().getLodValueFromCurrentScale(3)
+        frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
 
-        if self.parentItem().bUseTextureBg:
-            color = self.color
-            parentRet = self.parentItem().childrenBoundingRect()
-            if self.icon:
-                painter.drawImage(QtCore.QRect(parentRet.width() - 9, 0, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
-        else:
-            parentRet = self.parentItem().childrenBoundingRect()
-            if self.icon:
-                painter.drawImage(QtCore.QRect(parentRet.width() - 12, 5, 8, 8), self.icon, QtCore.QRect(0, 0, self.icon.width(), self.icon.height()))
-        if lod <= 2:
-            painter.setPen(self.defaultPen)
-            font = painter.font()
-            nameRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right(), self.boundingRect().bottom()))
-            nameRect -= self.nodeLabelMargin
-            painter.drawText(nameRect, QtCore.Qt.AlignLeft, self.parentItem().displayName)
-            packageRect = QtCore.QRectF(self.boundingRect().topLeft(), QtCore.QPointF(self.parentItem().boundingRect().right(), self.boundingRect().bottom()))
-            packageRect -= self.nodePackageMargin
-            font = painter.font()
-            font.setPointSize(font.pointSize() * 0.5)
-            font.setItalic(True)
-            painter.setFont(font)
-            painter.setPen(QtGui.QPen(QtCore.Qt.gray, 0.5))
-            text = self.parentItem().packageName
-            painter.drawText(packageRect, QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom, text)
+        bgColor = QtGui.QColor(*self.color)
+        painter.setBrush(bgColor if not self.hovered else bgColor.lighter(150))
+        painter.drawRect(frame)
 
-    def focusInEvent(self, event):
-        self.parentItem().canvasRef().disableSortcuts()
-
-    def focusOutEvent(self, event):
-        self.parentItem().canvasRef().enableSortcuts()
-        # clear cursour
-        cursor = QtGui.QTextCursor(self.document())
-        cursor.clearSelection()
-        self.setTextCursor(cursor)
+        painter.setFont(self._font)
+        painter.setPen(self.defaultPen)
+        width = QtGui.QFontMetrics(painter.font()).width(self.text)
+        height = QtGui.QFontMetrics(painter.font()).height()
+        yCenter = (frame.height() / 2) + (height / 2.5)
+        if frame.width() > width:
+            x = 0
+            painter.drawText(x, yCenter, self.text)
 
 
 class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
@@ -156,44 +111,37 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.color = color
         self.headColor = headColor
         self.height_offset = 3
-        # self.nodeMainGWidget = QGraphicsWidget()
-        # self.nodeMainGWidget.setObjectName('{0}MainLayout'.format(self._rawNode.__class__.__name__))
         self._w = 0
         self.h = 40
         self.bUseTextureBg = bUseTextureBg  # self.canvasRef().styleSheetEditor.USETEXTUREBG
-        if self.bUseTextureBg:
-            self.sizes = [0, 0, self.w, self.h, 5, 5]
-        else:
-            self.sizes = [0, 0, self.w, self.h, 10, 10]
-        self.setFlag(QGraphicsItem.ItemIsMovable)
-        self.setFlag(QGraphicsItem.ItemIsFocusable)
-        self.setFlag(QGraphicsItem.ItemIsSelectable)
-        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
+        self.setFlag(QGraphicsWidget.ItemIsMovable)
+        self.setFlag(QGraphicsWidget.ItemIsFocusable)
+        self.setFlag(QGraphicsWidget.ItemIsSelectable)
+        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.custom_widget_data = {}
         # node name
-        self.label = weakref.ref(NodeName(self, self.bUseTextureBg, self.headColor))
         self._displayName = self.name
-        # set node layouts
-        # self.nodeMainGWidget.setParentItem(self)
-        # main
-        self.portsMainLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
-        self.portsMainLayout.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        self.portsMainLayout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(self.portsMainLayout)
-        # self.nodeMainGWidget.setX(self.nodeMainGWidget.x())
-        # inputs layout
+
+        # UI
+        self.nodeLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
+        self.nodeLayout.setContentsMargins(2, 2, 2, 2)
+        name = NodeName(self)
+        self.nodeLayout.addItem(name)
+        self.nodeLayout.setStretchFactor(name, 1)
+
+        self.pinsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
+        self.pinsLayout.setContentsMargins(0, 0, 0, 0)
+        self.nodeLayout.addItem(self.pinsLayout)
+        self.nodeLayout.setStretchFactor(self.pinsLayout, 2)
         self.inputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.inputsLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        self.inputsLayout.setContentsMargins(1, 1, 1, 1)
-        self.portsMainLayout.addItem(self.inputsLayout)
-        # outputs layout
+        self.inputsLayout.setContentsMargins(0, 0, 0, 0)
         self.outputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.outputsLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        self.outputsLayout.setContentsMargins(1, 1, 1, 1)
-        self.portsMainLayout.addItem(self.outputsLayout)
+        self.outputsLayout.setContentsMargins(0, 0, 0, 0)
+        self.pinsLayout.addItem(self.inputsLayout)
+        self.pinsLayout.addItem(self.outputsLayout)
+        self.setLayout(self.nodeLayout)
 
         self.setZValue(1)
-
         self.icon = None
         self.canvasRef = None
         self._menu = QMenu()
@@ -220,9 +168,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # Core Nodes Support
         self.isTemp = False
         self.isCommentNode = False
-
-    # def setGeometry(self, rect):
-    #     return self.childrenBoundingRect()
 
     def __repr__(self):
         graphName = self._rawNode.graph().name if self._rawNode.graph is not None else str(None)
@@ -305,7 +250,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     @w.setter
     def w(self, value):
         self._w = value
-        self.sizes[2] = value
 
     def getName(self):
         return self._rawNode.getName()
@@ -386,17 +330,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def isCallable(self):
         return self._rawNode.isCallable()
 
-    def boundingRect(self):
-        if self.resizable:
-            if self.childrenBoundingRect().height() > self._rect.height():
-                self._rect.setHeight(self.childrenBoundingRect().height())
-            if self.minWidth > self._rect.width():
-                self._rect.setWidth(self.minWidth)
-        else:
-            self._rect = self.childrenBoundingRect()
-
-        return self._rect
-
     def category(self):
         return self._rawNode.category()
 
@@ -418,8 +351,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             p.setData(data)
 
     def getWidth(self):
-        fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.displayName) + Spacings.kPinSpacing
-        return fontWidth  # if fontWidth > 25 else 25
+        # fontWidth = QtGui.QFontMetricsF(self.label().font()).width(self.displayName) + Spacings.kPinSpacing
+        return 100  # if fontWidth > 25 else 25
 
     def getPinsWidth(self):
         iwidth = 0
@@ -460,15 +393,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             # self.label().setPlainText(self._rawNode.__class__.__name__)
             # self.displayName = self.name
             # else:
-            self.label().setPlainText(label)
+            # self.label().setPlainText(label)
             self.displayName = label
 
         self.updateWidth()
         # self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
-        if self.isCallable():
-            if self.label().bUseTextureBg:
-                self.headColor = Colors.NodeNameRectBlue
-                self.label().color = Colors.NodeNameRectBlue
+        # if self.isCallable():
+        #     if self.label().bUseTextureBg:
+        #         self.headColor = Colors.NodeNameRectBlue
+        #         self.label().color = Colors.NodeNameRectBlue
         self.setToolTip(self.description())
         self.update()
 
@@ -478,9 +411,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             res.setAlpha(80)
             self.color = res
             if label:
-                self.label().color = res
+                # self.label().color = res
                 self.update()
-                self.label().update()
+                # self.label().update()
 
     def translate(self, x, y, moveChildren=False):
         if moveChildren:
@@ -490,8 +423,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         super(UINodeBase, self).moveBy(x, y)
 
     def paint(self, painter, option, widget):
-        NodePainter.default(self, painter, option, widget)
-        painter.drawRect(self.geometry())
+        # NodePainter.default(self, painter, option, widget)
+        painter.setBrush(QtGui.QColor(100, 100, 100))
+        painter.drawRoundedRect(self.boundingRect(), 5, 5)
+        # painter.drawRoundedRect(self.mapFromParent(self.geometry()).boundingRect(), 5, 5)
 
     def shouldResize(self, cursorPos):
         cursorPos = self.mapFromScene(cursorPos)
@@ -549,7 +484,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 # right connection resize
                 newWidth = delta.x() + self.initialRectWidth
                 if newWidth > self.minWidth:
-                    self.label().width = newWidth
+                    # self.label().width = newWidth
                     self._rect.setWidth(newWidth)
                     self.w = newWidth
             elif self.resizeDirection == (-1, 0):
@@ -560,21 +495,21 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 if newWidth > self.minWidth:
                     self.translate(posdelta.x(), 0, False)
                     self.origPos = self.pos()
-                    self.label().width = newWidth
+                    # self.label().width = newWidth
                     self._rect.setWidth(newWidth)
                     self.w = newWidth
             elif self.resizeDirection == (0, -1):
                 newHeight = delta.y() + self.initialRectHeight
-                newHeight = max(newHeight, self.label().h + 20.0)
+                # newHeight = max(newHeight, self.label().h + 20.0)
                 if newHeight > self.minHeight:
                     # bottom connection resize
                     self._rect.setHeight(newHeight)
             elif self.resizeDirection == (1, -1):
                 newWidth = delta.x() + self.initialRectWidth
                 newHeight = delta.y() + self.initialRectHeight
-                newHeight = max(newHeight, self.label().h + 20.0)
+                # newHeight = max(newHeight, self.label().h + 20.0)
                 if newWidth > self.minWidth:
-                    self.label().width = newWidth
+                    # self.label().width = newWidth
                     self._rect.setWidth(newWidth)
                     self.w = newWidth
                 if newHeight > self.minHeight:
@@ -583,12 +518,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 posdelta2 = self.mapToScene(event.pos()) - self.initPos
                 newWidth = -posdelta2.x() + self.initialRectWidth
                 newHeight = delta.y() + self.initialRectHeight
-                newHeight = max(newHeight, self.label().h + 20.0)
+                # newHeight = max(newHeight, self.label().h + 20.0)
                 posdelta = event.scenePos() - self.origPos
                 if newWidth > self.minWidth:  # and newWidth > self.minWidth:
                     self.translate(posdelta.x(), 0, False)
                     self.origPos = self.pos()
-                    self.label().width = newWidth
+                    # self.label().width = newWidth
                     self._rect.setWidth(newWidth)
                     self.w = newWidth
                 if newHeight > self.minHeight:
@@ -596,7 +531,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             # self.nodeMainGWidget.setGeometry(QtCore.QRectF(
             #     0, 0, self.w, self.boundingRect().height()))
             self.update()
-            self.label().update()
+            # self.label().update()
         self.lastMousePos = event.pos()
 
     def mouseReleaseEvent(self, event):
@@ -623,9 +558,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         le_name = QLineEdit(self.getName())
         le_name.setReadOnly(True)
-        if self.label().IsRenamable():
-            le_name.setReadOnly(False)
-            le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
+        # if self.label().IsRenamable():
+        #     le_name.setReadOnly(False)
+        #     le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
         baseCategory.addWidget("Name", le_name)
 
         leUid = QLineEdit(str(self._rawNode.graph().name))
@@ -699,17 +634,17 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         """Control when pin labels should be visible
         """
         lod = self.canvasRef().getLodValueFromCurrentScale(3)
-        for uiPin in self.UIPins.values():
-            label = uiPin.getLabel()()
-            if label.visibilityPolicy == VisibilityPolicy.Auto:
-                if lod <= 2:
-                    label.show()
-                else:
-                    label.hide()
-            elif label.visibilityPolicy == VisibilityPolicy.AlwaysHidden:
-                label.hide()
-            elif label.visibilityPolicy == VisibilityPolicy.AlwaysVisible:
-                label.show()
+        # for uiPin in self.UIPins.values():
+        #     label = uiPin.getLabel()()
+        #     if label.visibilityPolicy == VisibilityPolicy.Auto:
+        #         if lod <= 2:
+        #             label.show()
+        #         else:
+        #             label.hide()
+        #     elif label.visibilityPolicy == VisibilityPolicy.AlwaysHidden:
+        #         label.hide()
+        #     elif label.visibilityPolicy == VisibilityPolicy.AlwaysVisible:
+        #         label.show()
 
     def Tick(self, delta, *args, **kwargs):
         # NOTE: Do not call wrapped raw node Tick method here!
@@ -775,93 +710,97 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         lblName = name
         # TODO: do not use Proxy widget. Use QGraphicsTextItem instead
 
-        connector_name = EditableLabel(name=lblName, node=self, canvas=self.canvasRef())
-        connector_name.setObjectName('{0}PinConnector'.format(name))
-        connector_name.setContentsMargins(0, 0, 0, 0)
-        connector_name.setColor(Colors.PinNameColor)
+        # connector_name = EditableLabel(name=lblName, node=self, canvas=self.canvasRef())
+        # connector_name.setObjectName('{0}PinConnector'.format(name))
+        # connector_name.setContentsMargins(0, 0, 0, 0)
+        # connector_name.setColor(Colors.PinNameColor)
 
-        p.displayNameChanged.connect(connector_name.setText)
-        connector_name.nameChanged.connect(p.setName)
-        connector_name.nameChanged.connect(p.setDisplayName)
-        connector_name.nameChanged.connect(self.updateWidth)
+        # p.displayNameChanged.connect(connector_name.setText)
+        # connector_name.nameChanged.connect(p.setName)
+        # connector_name.nameChanged.connect(p.setDisplayName)
+        # connector_name.nameChanged.connect(self.updateWidth)
         p.displayNameChanged.connect(self.updateWidth)
         p.OnPinDeleted.connect(self.updateWidth)
         if rawPin.direction == PinDirection.Input:
-            container = self.addContainer()
-            connector_name.nameLabel.setAlignment(
-                QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-            container.layout().addItem(p)
-            p.setLabel(connector_name)
-            p._container = container
-            container.layout().addItem(connector_name)
-            container.adjustSize()
-            if not group:
-                self.inputsLayout.insertItem(index, container)
-            else:
-                groupName = group
-                node = group
-                if linkedPin:
-                    node = linkedPin.owningNode()
-                    groupName = node.displayName
+            self.inputsLayout.addItem(p)
+            # self.inputsLayout.setStretchFactor(p, 1)
+            # container = self.addContainer()
+            # connector_name.nameLabel.setAlignment(
+            #     QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+            # container.layout().addItem(p)
+            # p.setLabel(connector_name)
+            # p._container = container
+            # container.layout().addItem(connector_name)
+            # container.adjustSize()
+            # if not group:
+            #     self.inputsLayout.insertItem(index, container)
+            # else:
+            #     groupName = group
+            #     node = group
+            #     if linkedPin:
+            #         node = linkedPin.owningNode()
+            #         groupName = node.displayName
 
-                if node in self.inputGroupPins:
-                    self.inputGroupPins[node].layout(
-                    ).insertItem(index, container)
-                    p._groupContainer = self.inputGroupPins[node]
-                else:
-                    groupContainer = self.addGroupContainer(
-                        rawPin.direction, groupName=groupName)
-                    groupContainer.groupIcon.onCollapsed.connect(
-                        self.collapsePinGroup)
-                    groupContainer.groupIcon.onExpanded.connect(
-                        self.expandPinGroup)
-                    groupContainer.layout().insertItem(index, container)
-                    p._groupContainer = groupContainer
-                    self.inputGroupPins[node] = groupContainer
-                    self.inputsLayout.insertItem(index, groupContainer)
-                    if linkedPin:
-                        # groupContainer.group_name.nameChanged.connect(node.setDisplayName())
-                        node.displayNameChanged.connect(
-                            groupContainer.group_name.setText)
+            #     if node in self.inputGroupPins:
+            #         self.inputGroupPins[node].layout(
+            #         ).insertItem(index, container)
+            #         p._groupContainer = self.inputGroupPins[node]
+            #     else:
+            #         groupContainer = self.addGroupContainer(
+            #             rawPin.direction, groupName=groupName)
+            #         groupContainer.groupIcon.onCollapsed.connect(
+            #             self.collapsePinGroup)
+            #         groupContainer.groupIcon.onExpanded.connect(
+            #             self.expandPinGroup)
+            #         groupContainer.layout().insertItem(index, container)
+            #         p._groupContainer = groupContainer
+            #         self.inputGroupPins[node] = groupContainer
+            #         self.inputsLayout.insertItem(index, groupContainer)
+            #         if linkedPin:
+            #             # groupContainer.group_name.nameChanged.connect(node.setDisplayName())
+            #             node.displayNameChanged.connect(
+            #                 groupContainer.group_name.setText)
 
         elif rawPin.direction == PinDirection.Output:
-            container = self.addContainer()
-            connector_name.nameLabel.setAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-            container.layout().addItem(connector_name)
-            container.layout().addItem(p)
-            p.setLabel(connector_name)
-            p._container = container
-            container.adjustSize()
-            if not group:
-                self.outputsLayout.insertItem(index, container)
-            else:
-                groupName = group
-                node = group
-                if linkedPin:
-                    node = linkedPin.owningNode()
-                    groupName = node.displayName
-                if node in self.outputGroupPins:
-                    self.outputGroupPins[node].layout(
-                    ).insertItem(index, container)
-                    p._groupContainer = self.outputGroupPins[node]
-                else:
-                    groupContainer = self.addGroupContainer(
-                        rawPin.direction, groupName=groupName)
-                    groupContainer.groupIcon.onCollapsed.connect(
-                        self.collapsePinGroup)
-                    groupContainer.groupIcon.onExpanded.connect(
-                        self.expandPinGroup)
-                    groupContainer.layout().insertItem(index, container)
-                    p._groupContainer = groupContainer
-                    self.outputGroupPins[node] = groupContainer
-                    self.outputsLayout.insertItem(index, groupContainer)
-                    if linkedPin:
-                        # groupContainer.group_name.nameChanged.connect(node.setDisplayName())
-                        node.displayNameChanged.connect(
-                            groupContainer.group_name.setText)
+            self.outputsLayout.addItem(p)
+            # self.outputsLayout.setStretchFactor(p, 1)
+            # container = self.addContainer()
+            # connector_name.nameLabel.setAlignment(
+            #     QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+            # container.layout().addItem(connector_name)
+            # container.layout().addItem(p)
+            # p.setLabel(connector_name)
+            # p._container = container
+            # container.adjustSize()
+            # if not group:
+            #     self.outputsLayout.insertItem(index, container)
+            # else:
+            #     groupName = group
+            #     node = group
+            #     if linkedPin:
+            #         node = linkedPin.owningNode()
+            #         groupName = node.displayName
+            #     if node in self.outputGroupPins:
+            #         self.outputGroupPins[node].layout(
+            #         ).insertItem(index, container)
+            #         p._groupContainer = self.outputGroupPins[node]
+            #     else:
+            #         groupContainer = self.addGroupContainer(
+            #             rawPin.direction, groupName=groupName)
+            #         groupContainer.groupIcon.onCollapsed.connect(
+            #             self.collapsePinGroup)
+            #         groupContainer.groupIcon.onExpanded.connect(
+            #             self.expandPinGroup)
+            #         groupContainer.layout().insertItem(index, container)
+            #         p._groupContainer = groupContainer
+            #         self.outputGroupPins[node] = groupContainer
+            #         self.outputsLayout.insertItem(index, groupContainer)
+            #         if linkedPin:
+            #             # groupContainer.group_name.nameChanged.connect(node.setDisplayName())
+            #             node.displayNameChanged.connect(
+            #                 groupContainer.group_name.setText)
 
-        p.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        p.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # self.nodeMainGWidget.setGeometry(QtCore.QRectF(
         #     0, 0, self._rect.width(), self.childrenBoundingRect().height()))

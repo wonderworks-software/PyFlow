@@ -5,6 +5,7 @@ from Qt import QtGui
 from Qt.QtWidgets import QStyle
 
 from PyFlow.UI.Utils.Settings import *
+from PyFlow.Core.Common import *
 
 
 # Determines how to paint the node
@@ -177,6 +178,7 @@ class PinPainter(object):
 
     @staticmethod
     def asValuePin(pin, painter, option, widget):
+        frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
         background_rect = QtCore.QRectF(1, 1, pin.width, pin.width)
 
         w = background_rect.width() / 2
@@ -196,8 +198,24 @@ class PinPainter(object):
         if pin.hovered:
             linearGrad.setColorAt(1, pin.color().lighter(200))
 
-        painter.setBrush(QtGui.QBrush(linearGrad))
-        painter.drawEllipse(background_rect)
+        # painter.setBrush(QtGui.QBrush(linearGrad))
+        # painter.drawEllipse(background_rect)
+        painter.drawRect(frame)
+        painter.setFont(pin._font)
+        width = QtGui.QFontMetrics(painter.font()).width(pin.displayName())
+        height = QtGui.QFontMetrics(painter.font()).height()
+        x = 0 + pin.width + pin.nameOffset
+        if pin.direction == PinDirection.Output:
+            x = frame.width() - width - pin.width - pin.nameOffset
+        yCenter = (frame.height() / 2) + (height / 2.5)
+        painter.drawText(x, yCenter, pin.name)
+        pinX = 0 + pin.width / 2
+        pinY = (frame.height() / 2) - (pin.width / 2)
+        if pin.direction == PinDirection.Output:
+            pinX = frame.width() - (pin.width / 2) - pin.nameOffset
+        if frame.width() > pin.width + pin.nameOffset and frame.height() > pin.width:
+            painter.setBrush(QtCore.Qt.white if pin.hovered else QtCore.Qt.gray)
+            painter.drawEllipse(pinX, pinY, pin.width, pin.width)
 
     @staticmethod
     def asExecPin(pin, painter, option, widget):

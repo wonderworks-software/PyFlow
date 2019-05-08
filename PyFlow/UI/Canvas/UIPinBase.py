@@ -106,6 +106,8 @@ class UIPinBase(QGraphicsWidget):
 
     def __init__(self, owningNode, raw_pin):
         super(UIPinBase, self).__init__()
+        self._font = QtGui.QFont("Consolas")
+        self._font.setPointSize(6)
         self._rawPin = raw_pin
         self._rawPin.serializationHook.connect(self.serializationHook)
         self._rawPin.containerTypeChanged.connect(self.onContainerTypeChanged)
@@ -132,15 +134,16 @@ class UIPinBase(QGraphicsWidget):
         self.setCacheMode(self.DeviceCoordinateCache)
         self.setAcceptHoverEvents(True)
         self.setZValue(2)
-        self.width = 6 + 1
-        self.height = 6 + 1
+        self.width = 6
+        self.height = 6
+        self.nameOffset = 5
         self.hovered = False
         self.startPos = None
         self.endPos = None
         self._container = None
         self._groupContainer = None
         self._execPen = QtGui.QPen(Colors.White, 0.5, QtCore.Qt.SolidLine)
-        self.setGeometry(0, 0, self.width, self.height)
+        # self.setGeometry(0, 0, self.width, self.height)
         self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
         self.pinImage = QtGui.QImage(':/icons/resources/array.png')
@@ -153,6 +156,7 @@ class UIPinBase(QGraphicsWidget):
 
         self._rawPin.killed.connect(self.kill)
         self._rawPin.nameChanged.connect(self.setDisplayName)
+        self.setGraphicsItem(self)
 
     def onContainerTypeChanged(self, *args, **kwargs):
         # underlined pin is changed to list or dict
@@ -202,7 +206,7 @@ class UIPinBase(QGraphicsWidget):
 
     def syncRenamable(self):
         renamingEnabled = self._rawPin.optionEnabled(PinOptions.RenamingEnabled)
-        self._label()._isEditable = renamingEnabled
+        # self._label()._isEditable = renamingEnabled
         self.setMenuItemEnabled("Rename", renamingEnabled)
 
     def onRename(self):
@@ -380,17 +384,10 @@ class UIPinBase(QGraphicsWidget):
     def dataType(self):
         return self._rawPin.dataType
 
-    def boundingRect(self):
-        if not self.isExec():
-            return QtCore.QRectF(0, -0.5, 8 * 1.5, 8 + 1.0)
-        else:
-            return QtCore.QRectF(0, -0.5, 10 * 1.5, 10 + 1.0)
-
     def sizeHint(self, which, constraint):
-        try:
-            return QtCore.QSizeF(self.width, self.height)
-        except:
-            return QGraphicsWidget.sizeHint(self, which, constraint)
+        height = QtGui.QFontMetrics(self._font).height()
+        width = QtGui.QFontMetrics(self._font).width(self._rawPin.name)
+        return QtCore.QSizeF(width + self.width + self.nameOffset, height)
 
     def shape(self):
         path = QtGui.QPainterPath()
