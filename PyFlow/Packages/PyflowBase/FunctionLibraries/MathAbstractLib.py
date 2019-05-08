@@ -173,11 +173,11 @@ class MathAbstractLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Basic', 'Keywords': []})
-    def mapRangeClamped(Value=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-                        InRangeA=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-                        InRangeB=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-                        OutRangeA=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-                        OutRangeB=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]})):
+    def mapRangeClamped(Value=("FloatPin", None),
+                        InRangeA=("FloatPin", None),
+                        InRangeB=("FloatPin", None),
+                        OutRangeA=("FloatPin", None),
+                        OutRangeB=("FloatPin", None)):
         '''
         Returns Value mapped from one range into another where the Value is clamped to the Input Range.\
              (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)
@@ -187,11 +187,11 @@ class MathAbstractLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Basic', 'Keywords': []})
-    def mapRangeUnclamped(Value=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-                          InRangeA=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-                          InRangeB=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-                          OutRangeA=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-                          OutRangeB=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]})):
+    def mapRangeUnclamped(Value=("FloatPin", None),
+                          InRangeA=("FloatPin", None),
+                          InRangeB=("FloatPin", None),
+                          OutRangeA=("FloatPin", None),
+                          OutRangeB=("FloatPin", None)):
         '''
         Returns Value mapped from one range into another where the Value is clamped to the Input Range.\
              (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)
@@ -199,15 +199,13 @@ class MathAbstractLib(FunctionLibraryBase):
         return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
+    @IMPLEMENT_NODE(returns=("FloatPin", None),
                     meta={'Category': 'Math|Basic', 'Keywords': ['clamp']})
     ## Clamp
-    def clamp(i=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-              imin=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
-              imax=("AnyPin", 0, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}, 0.0)):
-        '''
-        Clamp
-        '''
+    def clamp(i=("FloatPin", None),
+              imin=("FloatPin", None),
+              imax=("FloatPin", 0)):
+        '''Clamp.'''
         return clamp(i, imin, imax)
 
     @staticmethod
