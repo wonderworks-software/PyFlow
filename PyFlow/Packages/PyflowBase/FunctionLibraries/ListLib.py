@@ -13,34 +13,88 @@ class ListLib(FunctionLibraryBase):
         super(ListLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
     def appendToList(ls=('AnyPin', [], {'constraint': '1'}),
                      elem=('AnyPin', None, {'constraint': '1'}),
                      duplicate=('BoolPin', True),
-                     deepCopy=('BoolPin', False),
-                     result=('Reference', ('AnyPin', [], {'constraint': '1'}))):
+                     deepCopy=('BoolPin', False)):
         """Add an item to the end of the list."""
         outArr = ls
         if duplicate:
             copyFunction = deepcopy if deepCopy else copy
             outArr = copyFunction(ls)
         outArr.append(elem)
-        result(outArr)
+        return outArr
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
     def extendList(lhs=('AnyPin', [], {'constraint': '1'}),
                    rhs=('AnyPin', [], {'constraint': '1'}),
                    duplicate=('BoolPin', True),
-                   deepCopy=('BoolPin', False),
-                   result=('Reference', ('AnyPin', [], {'constraint': '1'}))):
+                   deepCopy=('BoolPin', False)):
         """Extend the list by appending all the items from the iterable."""
         outArr = lhs
         if duplicate:
             copyFunction = deepcopy if deepCopy else copy
             outArr = copyFunction(lhs)
         outArr.extend(rhs)
-        result(outArr)
+        return outArr
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
+    def insertToList(ls=('AnyPin', [], {'constraint': '1'}),
+                     elem=('AnyPin', None, {'constraint': '1'}),
+                     index=('IntPin', 0),
+                     duplicate=('BoolPin', True),
+                     deepCopy=('BoolPin', False)):
+        """Insert an item at a given position. The first argument is the index of the element before which to insert."""
+        outArr = ls
+        if duplicate:
+            copyFunction = deepcopy if deepCopy else copy
+            outArr = copyFunction(ls)
+        outArr.insert(index, elem)
+        return outArr
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=("AnyPin", [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
+    def removeFromList(ls=('AnyPin', [], {'constraint': '1'}),
+                       elem=('AnyPin', None, {'constraint': '1'}),
+                       duplicate=('BoolPin', True),
+                       deepCopy=('BoolPin', False),
+                       removed=('Reference', ('BoolPin', False))):
+        outArr = ls
+        if duplicate:
+            copyFunction = deepcopy if deepCopy else copy
+            outArr = copyFunction(ls)
+        if elem not in outArr:
+            removed(False)
+            return
+        outArr.remove(elem)
+        removed(True)
+        return outArr
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=("AnyPin", None, {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
+    def popFromList(ls=('AnyPin', [], {'constraint': '1'}),
+                    index=('IntPin', -1),
+                    duplicate=('BoolPin', True),
+                    deepCopy=('BoolPin', False),
+                    popped=('Reference', ('BoolPin', False)),
+                    outLs=('Reference', ('AnyPin', [], {'constraint': '1'}))):
+        lsCopy = ls
+        if duplicate:
+            copyFunction = deepcopy if deepCopy else copy
+            lsCopy = copyFunction(ls)
+
+        poppedElem = None
+        try:
+            poppedElem = lsCopy.pop(index)
+            popped(True)
+        except:
+            popped(False)
+        outLs(lsCopy)
+
+        return poppedElem if poppedElem is not None else 0
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {'constraint': '1'}), meta={'Category': 'List', 'Keywords': []})
@@ -61,25 +115,25 @@ class ListLib(FunctionLibraryBase):
         return element in ls
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
-    def removeFromList(ls=('AnyPin', [], {'constraint': '1'}),
-                       elem=('AnyPin', None, {'constraint': '1'}),
-                       result=('Reference', ('BoolPin', False, {'constraint': '1'}))):
-        if elem not in ls:
-            result(False)
-            return
-        ls.remove(elem)
-        result(True)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
     def clearList(ls=('AnyPin', [], {'constraint': '1'}),
                   duplicate=('BoolPin', True),
-                  deepCopy=('BoolPin', False),
-                  result=('Reference', ('AnyPin', [], {'constraint': '1'}))):
+                  deepCopy=('BoolPin', False)):
         outArr = ls
         if duplicate:
             copyFunction = deepcopy if deepCopy else copy
             outArr = copyFunction(ls)
         outArr.clear()
-        result(outArr)
+        return outArr
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'List', 'Keywords': ['in']})
+    def listElementIndex(ls=('AnyPin', [], {'constraint': '1'}),
+                         element=("AnyPin", None, {'constraint': '1'}),
+                         result=("Reference", ("BoolPin", False))):
+        if element in ls:
+            result(True)
+            return ls.index(element)
+        else:
+            result(False)
+            return 0

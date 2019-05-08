@@ -164,7 +164,7 @@ def canConnectPins(src, dst):
             return False
 
     if dst.hasConnections():
-        if not dst.optionEnabled(PinOptions.AllowMultipleConnections):
+        if not dst.optionEnabled(PinOptions.AllowMultipleConnections) and dst.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection:
             return False
 
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
@@ -197,12 +197,7 @@ def connectPins(src, dst):
         src, dst = dst, src
 
     if not canConnectPins(src, dst):
-        # disconnect if multiple connections are not supported
-        if dst.hasConnections():
-            if not dst.optionEnabled(PinOptions.AllowMultipleConnections):
-                dst.disconnectAll()
-        else:
-            return False
+        return False
 
     # input value pins can have one output connection if `AllowMultipleConnections` flag is disabled
     # output value pins can have any number of connections
@@ -352,6 +347,11 @@ class SingletonDecorator:
         if self.instance is None:
             self.instance = self.cls(*args, **kwds)
         return self.instance
+
+
+class PinReconnectionPolicy(IntEnum):
+    DisconnectIfHasConnections = 0
+    ForbidConnection = 1
 
 
 class PinOptions(Flag):

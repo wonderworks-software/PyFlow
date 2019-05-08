@@ -454,14 +454,6 @@ class NodeBase(INode):
 
         raw_inst = nodeClass(foo.__name__)
         raw_inst.lib = libName
-        if returnType is not None:
-            p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
-            p.setData(returnDefaultValue)
-            p.setDefaultValue(returnDefaultValue)
-            if returnPinOptionsToEnable is not None:
-                p.enableOptions(returnPinOptionsToEnable)
-            if returnPinOptionsToDisable is not None:
-                p.disableOptions(returnPinOptionsToDisable)
 
         # this is list of 'references' outputs will be created for
         refs = []
@@ -490,6 +482,15 @@ class NodeBase(INode):
             inputExec = raw_inst.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
             outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin', None)
             raw_inst.bCallable = True
+
+        if returnType is not None:
+            p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
+            p.setData(returnDefaultValue)
+            p.setDefaultValue(returnDefaultValue)
+            if returnPinOptionsToEnable is not None:
+                p.enableOptions(returnPinOptionsToEnable)
+            if returnPinOptionsToDisable is not None:
+                p.disableOptions(returnPinOptionsToDisable)
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):

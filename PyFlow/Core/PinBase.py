@@ -27,9 +27,9 @@ class PinBase(IPin):
         self._uid = uuid.uuid4()
         self._data = None
         self._defaultValue = None
-
+        # What to do if connect with busy pin. Used when AllowMultipleConnections flag is disabled
+        self.reconnectionPolicy = PinReconnectionPolicy.DisconnectIfHasConnections
         ## This flag for lazy evaluation
-        # @sa @ref PinBase::getData
         self.dirty = True
         ## List of pins this pin connected to
         self.affects = set()
