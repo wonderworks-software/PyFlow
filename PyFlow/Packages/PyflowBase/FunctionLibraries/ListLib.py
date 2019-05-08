@@ -137,3 +137,15 @@ class ListLib(FunctionLibraryBase):
         else:
             result(False)
             return 0
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'List', 'Keywords': ['in']})
+    def listElementCount(ls=('AnyPin', [], {'constraint': '1'}),
+                         element=("AnyPin", None, {'constraint': '1'}),
+                         result=("Reference", ("BoolPin", False))):
+        if element in ls:
+            result(True)
+            return ls.count(element)
+        else:
+            result(False)
+            return 0
