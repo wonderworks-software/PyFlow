@@ -667,13 +667,6 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         Info.addWidget(widget=doc)
         propertiesWidget.addWidget(Info)
 
-    def propertyEditingFinished(self):
-        le = QApplication.instance().focusWidget()
-        if isinstance(le, QLineEdit):
-            nodeName, attr = le.objectName().split('.')
-            Pin = self.getPin(attr)
-            Pin.setData(le.text())
-
     def getChainedNodes(self):
         nodes = []
         for pin in self.UIinputs.values():

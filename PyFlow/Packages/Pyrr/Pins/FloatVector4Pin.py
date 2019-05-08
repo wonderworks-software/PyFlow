@@ -54,8 +54,6 @@ class FloatVector4Pin(PinBase):
     def processData(data):
         if isinstance(data, Vector4):
             return data
-        elif isinstance(data, list) and len(data) == 4:
-            return Vector4(data)
         raise(Exception('Invalid Vector4 data'))
 
     def setData(self, data):

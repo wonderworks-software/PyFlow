@@ -54,8 +54,6 @@ class Matrix33Pin(PinBase):
     def processData(data):
         if isinstance(data, Matrix33):
             return data
-        elif isinstance(data, list) and len(data) == 3:
-            return Matrix33([data[0], data[1], data[2]])
         raise(Exception('Invalid Matrix33 data'))
 
     def setData(self, data):

@@ -175,6 +175,12 @@ class UIPinBase(QGraphicsWidget):
             self._displayName = displayName
             self.displayNameChanged.emit(self._displayName)
 
+    def jsonEncoderClass(self):
+        return self._rawPin.jsonEncoderClass()
+
+    def jsonDecoderClass(self):
+        return self._rawPin.jsonDecoderClass()
+
     @property
     def owningNode(self):
         return self.UiNode

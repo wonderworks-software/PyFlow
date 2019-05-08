@@ -2,6 +2,7 @@ from blinker import Signal
 import weakref
 import uuid
 import keyword
+import json
 from collections import OrderedDict
 try:
     from inspect import getfullargspec as getargspec
@@ -366,7 +367,7 @@ class NodeBase(INode):
 
                 pin = self.getPin(str(inpJson['name']), PinSelectionGroup.Inputs)
                 pin.uid = uuid.UUID(inpJson['uuid'])
-                pin.setData(inpJson['value'])
+                pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
                 if inpJson['bDirty']:
                     pin.setDirty()
                 else:
@@ -380,7 +381,7 @@ class NodeBase(INode):
 
                 pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
                 pin.uid = uuid.UUID(outJson['uuid'])
-                pin.setData(outJson['value'])
+                pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
                 if outJson['bDirty']:
                     pin.setDirty()
                 else:
@@ -408,14 +409,20 @@ class NodeBase(INode):
         foo = foo
         meta = foo.__annotations__['meta']
         returnType = returnDefaultValue = None
+        returnPinOptionsToEnable = None
+        returnPinOptionsToDisable = None
         if foo.__annotations__['return'] is not None:
             returnType = foo.__annotations__['return'][0]
             returnDefaultValue = foo.__annotations__['return'][1]
-            if len(foo.__annotations__['return']) > 2:
+            if len(foo.__annotations__['return']) == 3:
                 if "supportedDataTypes" in foo.__annotations__['return'][2]:
                     retAnyOpts = foo.__annotations__['return'][2]["supportedDataTypes"]
                 if "constraint" in foo.__annotations__['return'][2]:
                     retConstraint = foo.__annotations__['return'][2]["constraint"]
+                if "enabledOptions" in foo.__annotations__['return'][2]:
+                    returnPinOptionsToEnable = foo.__annotations__['return'][2]["enabledOptions"]
+                if "disabledOptions" in foo.__annotations__['return'][2]:
+                    returnPinOptionsToDisable = foo.__annotations__['return'][2]["disabledOptions"]
 
         nodeType = foo.__annotations__['nodeType']
         _packageName = foo.__annotations__['packageName']
@@ -451,6 +458,10 @@ class NodeBase(INode):
             p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
+            if returnPinOptionsToEnable is not None:
+                p.enableOptions(returnPinOptionsToEnable)
+            if returnPinOptionsToDisable is not None:
+                p.disableOptions(returnPinOptionsToDisable)
 
         # this is list of 'references' outputs will be created for
         refs = []
@@ -483,34 +494,63 @@ class NodeBase(INode):
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
             argName = fooArgNames[index]
-            argDefaultValue = foo.__defaults__[index]
-            dataType = foo.__annotations__[argName]
+            pinDescriptionTuple = foo.__annotations__[argName]
             anyOpts = None
             constraint = None
-            if isinstance(dataType, list):
-                if dataType[0][0] == "AnyPin" and len(dataType[0]) > 2:
-                    if "supportedDataTypes" in dataType[0][2]:
-                        anyOpts = dataType[0][2]["supportedDataTypes"]
-                    if "constraint" in dataType[0][2]:
-                        constraint = dataType[0][2]["constraint"]
-                dataType = dataType[0][0]
+            pinOptionsToEnable = None
+            pinOptionsToDisable = None
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
-            if isinstance(dataType, tuple):
-                if dataType[0] == "AnyPin" and len(dataType) > 2:
-                    if "supportedDataTypes" in dataType[2]:
-                        anyOpts = dataType[2]["supportedDataTypes"]
-                    if "constraint" in dataType[2]:
-                        constraint = dataType[2]["constraint"]
-                outRef = raw_inst.createOutputPin(argName, dataType[0], allowedPins=anyOpts, constraint=constraint)
-                outRef.setAsList(isinstance(argDefaultValue, list))
-                outRef.setDefaultValue(argDefaultValue)
-                outRef.setData(dataType[1])
+            if "Reference" in pinDescriptionTuple:
+                pinDataType = pinDescriptionTuple[1][0]
+                pinDefaultValue = pinDescriptionTuple[1][1]
+                pinDict = None
+                if len(pinDescriptionTuple[1]) == 3:
+                    pinDict = pinDescriptionTuple[1][2]
+
+                if pinDict is not None:
+                    if "supportedDataTypes" in pinDict:
+                        anyOpts = pinDict["supportedDataTypes"]
+                    if "constraint" in pinDict:
+                        constraint = pinDict["constraint"]
+                    if "enabledOptions" in pinDict:
+                        pinOptionsToEnable = pinDict["enabledOptions"]
+                    if "disabledOptions" in pinDict:
+                        pinOptionsToDisable = pinDict["disabledOptions"]
+
+                outRef = raw_inst.createOutputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
+                outRef.setAsList(isinstance(pinDefaultValue, list))
+                outRef.setDefaultValue(pinDefaultValue)
+                outRef.setData(pinDefaultValue)
+                if pinOptionsToEnable is not None:
+                    outRef.enableOptions(pinOptionsToEnable)
+                if pinOptionsToDisable is not None:
+                    outRef.disableOptions(pinOptionsToDisable)
                 refs.append(outRef)
             else:
-                inp = raw_inst.createInputPin(argName, dataType, allowedPins=anyOpts, constraint=constraint)
-                inp.setAsList(isinstance(argDefaultValue, list))
-                inp.setData(argDefaultValue)
-                inp.setDefaultValue(argDefaultValue)
+                pinDataType = pinDescriptionTuple[0]
+                pinDefaultValue = pinDescriptionTuple[1]
+                pinDict = None
+                if len(pinDescriptionTuple) == 3:
+                    pinDict = pinDescriptionTuple[2]
+
+                if pinDict is not None:
+                    if "supportedDataTypes" in pinDict:
+                        anyOpts = pinDict["supportedDataTypes"]
+                    if "constraint" in pinDict:
+                        constraint = pinDict["constraint"]
+                    if "enabledOptions" in pinDict:
+                        pinOptionsToEnable = pinDict["enabledOptions"]
+                    if "disabledOptions" in pinDict:
+                        pinOptionsToDisable = pinDict["disabledOptions"]
+
+                inp = raw_inst.createInputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
+                inp.setAsList(isinstance(pinDefaultValue, list))
+                inp.setData(pinDefaultValue)
+                inp.setDefaultValue(pinDefaultValue)
+                if pinOptionsToEnable is not None:
+                    inp.enableOptions(pinOptionsToEnable)
+                if pinOptionsToDisable is not None:
+                    inp.disableOptions(pinOptionsToDisable)
 
         raw_inst.autoAffectPins()
         return raw_inst

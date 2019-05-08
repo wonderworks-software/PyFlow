@@ -54,8 +54,6 @@ class Matrix44Pin(PinBase):
     def processData(data):
         if isinstance(data, Matrix44):
             return data
-        elif isinstance(data, list) and len(data) == 4:
-            return Matrix44([data[0], data[1], data[2], data[3]])
         raise(Exception('Invalid Matrix44 data'))
 
     def setData(self, data):

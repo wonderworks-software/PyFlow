@@ -36,26 +36,10 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
         defaults = func.__defaults__
         if defaults:
             spec = getargspec(func)
-            nanno = len(defaults)
-            for (i, name) in enumerate(spec.args[-nanno:]):
+            for (i, name) in enumerate(spec.args[-len(defaults):]):
                 if len(defaults[i]) < 1 or defaults[i][0] is empty:
                     continue
-                if defaults[i][0] == "Reference":
-                    func.__annotations__[name] = defaults[i][1]
-                else:
-                    if defaults[i][0] == 'AnyPin':
-                        func.__annotations__[name] = [defaults[i]]
-                    else:
-                        func.__annotations__[name] = defaults[i][0]
-
-            customDefaults = []
-            for d in func.__defaults__:
-                if len(d) > 1:
-                    if isinstance(d[1], tuple):
-                        customDefaults.append(d[1][1])
-                    else:
-                        customDefaults.append(d[1])
-            func.__defaults__ = tuple(customDefaults) or None
+                func.__annotations__[name] = defaults[i]
         return func
 
     if returns == empty:

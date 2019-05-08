@@ -54,11 +54,6 @@ class QuatPin(PinBase):
     def processData(data):
         if isinstance(data, Quaternion):
             return data
-        elif isinstance(data, list) and len(data) == 4:
-            # here serialized data will be handled
-            # when node desirializes itself, it creates all pins
-            # and then sets data to them. Here, data will be set fo the first time after deserialization
-            return Quaternion(data)
         raise(Exception('Invalid Quaternion data'))
 
     def setData(self, data):
