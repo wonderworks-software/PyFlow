@@ -16,9 +16,9 @@ class UIAnyPin(UIPinBase):
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
         self._defaultColor = self._color
         self._rawPin.typeChanged.connect(self.setType)
-        self._rawPin.onSetDefaultType.connect(self.onSetDefaultType)
+        self._rawPin.dataTypeBeenSet.connect(self.dataTypeBeenSet)
 
-    def onSetDefaultType(self, *args, **kwargs):
+    def dataTypeBeenSet(self, *args, **kwargs):
         self.setDefault(self._rawPin.defColor())
 
     def checkFree(self, checked=[], selfChek=True):

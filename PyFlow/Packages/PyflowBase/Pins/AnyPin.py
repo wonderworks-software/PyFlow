@@ -15,7 +15,7 @@ class AnyPin(PinBase):
     def __init__(self, name, parent, direction, **kwargs):
         super(AnyPin, self).__init__(name, parent, direction, **kwargs)
         self.typeChanged = Signal(str)
-        self.onSetDefaultType = Signal()
+        self.dataTypeBeenSet = Signal()
         self.setDefaultValue(None)
         self._free = True
         self._isAny = True
@@ -23,6 +23,7 @@ class AnyPin(PinBase):
         self.activeDataType = self.__class__.__name__
         # if True, setType and setDefault will work only once
         self.singleInit = False
+        self.changeTypeOnConnection = True
 
     @PinBase.dataType.getter
     def dataType(self):
@@ -65,8 +66,6 @@ class AnyPin(PinBase):
     def serialize(self):
         dt = super(AnyPin, self).serialize()
         constrainedType = self.activeDataType
-        dt['constrainedType'] = constrainedType
-        dt['singleInit'] = self.singleInit
         if constrainedType != self.__class__.__name__:
             pinClass = findPinClassByType(constrainedType)
             # serialize with active type's encoder
@@ -76,7 +75,8 @@ class AnyPin(PinBase):
     def pinConnected(self, other):
         self._data = getPinDefaultValueByType(other.dataType)
         self.onPinConnected.send(other)
-        traverseConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))
+        if self.changeTypeOnConnection:
+            traverseConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))
         super(AnyPin, self).pinConnected(other)
 
     def updateOnConnectionCallback(self, pin, other):
@@ -92,7 +92,8 @@ class AnyPin(PinBase):
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
-        traverseConstrainedPins(self, lambda pin, other=other: self.updateOnDisconnectionCallback(pin, other))
+        if self.changeTypeOnConnection:
+            traverseConstrainedPins(self, lambda pin, other=other: self.updateOnDisconnectionCallback(pin, other))
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
@@ -129,13 +130,16 @@ class AnyPin(PinBase):
 
         self.call = lambda: None
 
-        self.onSetDefaultType.send()
+        self.dataTypeBeenSet.send()
 
         self.setDefaultValue(None)
         if not self.hasConnections():
             self._free = True
 
     def setType(self, other):
+        if not self.changeTypeOnConnection:
+            return
+
         if self.activeDataType != self.__class__.__name__ and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
