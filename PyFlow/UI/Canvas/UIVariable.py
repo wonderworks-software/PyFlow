@@ -124,7 +124,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         # current value
         def valSetter(x):
             self._rawVariable.value = x
-        w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType), None)
+        w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType))
         if w:
             w.setWidgetValue(self._rawVariable.value)
             w.setObjectName(self._rawVariable.name)
@@ -159,6 +159,8 @@ class UIVariable(QWidget, IPropertiesViewSupport):
                     # mark node as invalid
                     # TODO: For future. Like in ue4, if variable is removed, it can be recreated from node (e.g. promote to variable)
                     print('leave')
+        else:
+            self.variablesWidget.killVar(self)
 
     @property
     def dataType(self):
@@ -215,8 +217,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
             # value will be calculated for this type of variables
             template['value'] = None
         else:
-            template['value'] = json.dumps(self._rawVariable.value, cls=pinClass.jsonEncoderClass(
-            )) if not pinClass.isPrimitiveType() else self._rawVariable.value
+            template['value'] = json.dumps(self._rawVariable.value, cls=pinClass.jsonEncoderClass())
 
         template['type'] = self._rawVariable.dataType
         template['package'] = self._rawVariable.packageName
@@ -237,8 +238,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         if data['dataType'] == 'AnyPin':
             var.value = getPinDefaultValueByType('AnyPin')
         else:
-            var.value = data['value'] if pinClass.isPrimitiveType() else json.loads(
-                data['value'], cls=pinClass.jsonDecoderClass())
+            var.value = json.loads(data['value'], cls=pinClass.jsonDecoderClass())
 
         return var
 

@@ -15,23 +15,19 @@ class AnyPin(PinBase):
     def __init__(self, name, parent, direction, **kwargs):
         super(AnyPin, self).__init__(name, parent, direction, **kwargs)
         self.typeChanged = Signal(str)
-        self.onSetDefaultType = Signal()
+        self.dataTypeBeenSet = Signal()
         self.setDefaultValue(None)
         self._free = True
-        self.isAny = True
+        self._isAny = True
         self.super = None
         self.activeDataType = self.__class__.__name__
-        self.isArrayByDefault = False
         # if True, setType and setDefault will work only once
         self.singleInit = False
+        self.changeTypeOnConnection = True
 
     @PinBase.dataType.getter
     def dataType(self):
         return self.activeDataType
-
-    @staticmethod
-    def isPrimitiveType():
-        return False
 
     @staticmethod
     def supportedDataTypes():
@@ -60,7 +56,7 @@ class AnyPin(PinBase):
     def setData(self, data):
         if self.activeDataType != self.__class__.__name__:
             assert(self.super is not None)
-            if not self.isArray():
+            if not self.isList():
                 data = self.super.processData(data)
             else:
                 data = [self.super.processData(i) for i in data]
@@ -70,70 +66,38 @@ class AnyPin(PinBase):
     def serialize(self):
         dt = super(AnyPin, self).serialize()
         constrainedType = self.activeDataType
-        dt['constrainedType'] = constrainedType
-        dt['singleInit'] = self.singleInit
-        dt['isArrayByDefault'] = self.isArrayByDefault
         if constrainedType != self.__class__.__name__:
             pinClass = findPinClassByType(constrainedType)
             # serialize with active type's encoder
-            if not pinClass.isPrimitiveType():
-                encodedValue = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
-            else:
-                encodedValue = json.dumps(self.currentData())
-            dt['value'] = encodedValue
+            dt['value'] = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
         return dt
 
     def pinConnected(self, other):
         self._data = getPinDefaultValueByType(other.dataType)
         self.onPinConnected.send(other)
-        self.updateOnConnection(other)
+        if self.changeTypeOnConnection:
+            traverseConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))
         super(AnyPin, self).pinConnected(other)
 
-    def updateOnConnection(self, other):
-        if self.constraint is None:
-            self.setType(other)
-            self._free = False
-        else:
-            if other.dataType != self.activeDataType:
-                self._free = False
-                self.setType(other)
-                for p in getConnectedPins(self):
-                    if p.isAny:
-                        p.updateOnConnection(other)
-                for pin in self.owningNode().constraints[self.constraint]:
-                    if pin != self:
-                        pin.setType(other, bUpdateIsArray=False)
-                        pin._free = False
-                        for p in getConnectedPins(pin):
-                            if p.isAny:
-                                p.updateOnConnection(pin)
+    def updateOnConnectionCallback(self, pin, other):
+        free = pin.checkFree([])
+        if other.dataType != pin.activeDataType and free:
+            pin._free = False
+            pin.setType(other)
+
+    def updateOnDisconnectionCallback(self, pin, other):
+        free = self.checkFree([])
+        if free:
+            pin.setDefault()
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
-        if self.constraint is None:
-            if not self.hasConnections():
-                self.setDefault()
-                self._free = True
-            else:
-                self.onSetDefaultType.send()
-        elif not self._free:
-            self._free = self.checkFree([])
-            if self._free:
-                self.setDefault()
-                for pin in self.owningNode().constraints[self.constraint]:
-                    if pin != self:
-                        pin.setDefault()
-                        pin._free = True
-                        for pin in list(pin.affected_by) + list(pin.affects):
-                            pin.pinDisconnected(other)
-
-    def queryConstrainedPins(self):
-        print("constraint", self.constraint)
-        print("node constraints", self.owningNode().constraints)
+        if self.changeTypeOnConnection:
+            traverseConstrainedPins(self, lambda pin, other=other: self.updateOnDisconnectionCallback(pin, other))
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
-        if self.constraint is None or self.activeDataType == "AnyPin":
+        if self.constraint is None or self.dataType == self.__class__.__name__:
             return True
         else:
             con = []
@@ -166,26 +130,28 @@ class AnyPin(PinBase):
 
         self.call = lambda: None
 
-        self.onSetDefaultType.send()
+        self.dataTypeBeenSet.send()
 
         self.setDefaultValue(None)
-        self.setAsArray(self.isArrayByDefault)
+        if not self.hasConnections():
+            self._free = True
 
-    def setType(self, other, bUpdateIsArray=True):
+    def setType(self, other):
+        if not self.changeTypeOnConnection:
+            return
+
         if self.activeDataType != self.__class__.__name__ and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
 
-        if self.activeDataType == self.__class__.__name__ or self.activeDataType not in other.supportedDataTypes():
+        if self.activeDataType == self.__class__.__name__ or self.activeDataType in other.supportedDataTypes():
             self.super = other.__class__
             self.activeDataType = other.dataType
             self.color = other.color
             self._data = getPinDefaultValueByType(self.activeDataType)
             self.setDefaultValue(self._data)
             self.dirty = other.dirty
-            self.isPrimitiveType = other.isPrimitiveType
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
-            if bUpdateIsArray:
-                self.setAsArray(other.isArray() | self.isArrayByDefault)
+            self._free = self.activeDataType == self.__class__.__name__

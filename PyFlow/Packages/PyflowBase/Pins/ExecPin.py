@@ -8,8 +8,9 @@ class ExecPin(PinBase):
     def __init__(self, name, parent, direction, **kwargs):
         super(ExecPin, self).__init__(name, parent, direction, **kwargs)
         self.dirty = False
-        self._isArray = False
-        self.supportsOnlyArray = False
+        self._isList = False
+        if self.direction == PinDirection.Input:
+            self.enableOptions(PinOptions.AllowMultipleConnections)
 
     def isExec(self):
         return True
@@ -17,14 +18,9 @@ class ExecPin(PinBase):
     def pinConnected(self, other):
         super(ExecPin, self).pinConnected(other)
 
-    def setAsArray(self, bIsArray):
-        # exec is not a type, it cannot be an array
-        self._isArray = False
-        self.supportsOnlyArray = False
-
-    @staticmethod
-    def isPrimitiveType():
-        return True
+    def setAsList(self, bIsList):
+        # exec is not a type, it cannot be an list
+        self._isList = False
 
     @staticmethod
     def IsValuePin():

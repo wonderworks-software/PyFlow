@@ -130,11 +130,17 @@ class IPin(IItemBase):
         '''
         raise NotImplementedError('isExec method of IPin is not implemented')
 
-    def isArray(self):
+    def isList(self):
         '''
-        is this pin holds an array of values or not
+        is this pin holds an list of values or not
         '''
-        raise NotImplementedError('isArray method of IPin is not implemented')
+        raise NotImplementedError('isList method of IPin is not implemented')
+
+    def isAny(self):
+        '''
+        is this pin of type Any or not
+        '''
+        raise NotImplementedError('isAny method of IPin is not implemented')
 
     @staticmethod
     def pinDataTypeHint():
@@ -213,35 +219,6 @@ class IPin(IItemBase):
     def dataType(self, value):
         raise NotImplementedError('dataType setter method of IPin is not implemented')
 
-    def isUserStruct(self):
-        raise NotImplementedError('isUserStruct method of IPin is not implemented')
-
-    def getUserStruct(self):
-        raise NotImplementedError('getUserStruct method of IPin is not implemented')
-
-    def setUserStruct(self, inStruct):
-        raise NotImplementedError('setUserStruct method of IPin is not implemented')
-
-    def setRenamingEnabled(self, bEnabled):
-        raise NotImplementedError('setRenamingEnabled method of IPin is not implemented')
-
-    def setDynamic(self, bDynamic):
-        raise NotImplementedError('setDynamic method of IPin is not implemented')
-
-    def renamingEnabled(self):
-        raise NotImplementedError('renamingEnabled method of IPin is not implemented')
-
-    def isDynamic(self):
-        raise NotImplementedError('isDynamic method of IPin is not implemented')
-
-    @staticmethod
-    def isPrimitiveType():
-        '''
-        is this pin data is primitive type (int, str, bool, ...)
-        if not, json encoder/decoder needs to be provided
-        '''
-        raise NotImplementedError('IsPrimitiveType method of IPin is not implemented')
-
     @staticmethod
     def jsonEncoderClass():
         raise NotImplementedError('jsonEncoderClass method of IPin is not implemented')
@@ -249,6 +226,9 @@ class IPin(IItemBase):
     @staticmethod
     def jsonDecoderClass():
         raise NotImplementedError('jsonEncoderClass method of IPin is not implemented')
+
+    def setAsList(self, bIsList):
+        raise NotImplementedError('setAsList method of IPin is not implemented')
 
 
 class INode(IItemBase):
@@ -268,10 +248,10 @@ class INode(IItemBase):
         """
         raise NotImplementedError('call method of INode is not implemented')
 
-    def createInputPin(self, pinName, dataType, foo=None):
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
         raise NotImplementedError('createInputPin method of INode is not implemented')
 
-    def createOutputPin(self, pinName, dataType, foo=None):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
         raise NotImplementedError('createOutputPin method of INode is not implemented')
 
     def getUniqPinName(self, name):

@@ -16,11 +16,9 @@ class UIAnyPin(UIPinBase):
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
         self._defaultColor = self._color
         self._rawPin.typeChanged.connect(self.setType)
-        self._rawPin.onSetDefaultType.connect(self.onSetDefaultType)
-        self.actionQueryConstraints = self.menu.addAction("Query constraints")
-        self.actionQueryConstraints.triggered.connect(self._rawPin.queryConstrainedPins)
+        self._rawPin.dataTypeBeenSet.connect(self.dataTypeBeenSet)
 
-    def onSetDefaultType(self, *args, **kwargs):
+    def dataTypeBeenSet(self, *args, **kwargs):
         self.setDefault(self._rawPin.defColor())
 
     def checkFree(self, checked=[], selfChek=True):
@@ -29,15 +27,6 @@ class UIAnyPin(UIPinBase):
     @property
     def activeDataType(self):
         return self._rawPin.activeDataType
-
-    def pinConnected(self, other):
-        self._rawPin.updateOnConnection(other._rawPin)
-        UIPinBase.pinConnected(self, other)
-        self.OnPinConnected.emit(other)
-
-    def pinDisconnected(self, other):
-        UIPinBase.pinDisconnected(self, other)
-        self.OnPinConnected.emit(other)
 
     def setDefault(self, defcolor):
         self._color = QtGui.QColor(*defcolor)
@@ -66,7 +55,7 @@ class UIAnyPin(UIPinBase):
     def paint(self, painter, option, widget):
         if self.isExec():
             PinPainter.asExecPin(self, painter, option, widget)
-        elif self.isArray():
+        elif self.isList():
             PinPainter.asArrayPin(self, painter, option, widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)

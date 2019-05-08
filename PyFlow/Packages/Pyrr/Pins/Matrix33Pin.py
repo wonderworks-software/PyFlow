@@ -31,10 +31,6 @@ class Matrix33Pin(PinBase):
         return True
 
     @staticmethod
-    def isPrimitiveType():
-        return False
-
-    @staticmethod
     def jsonEncoderClass():
         return M33Encoder
 
@@ -54,18 +50,10 @@ class Matrix33Pin(PinBase):
     def pinDataTypeHint():
         return 'Matrix33Pin', Matrix33()
 
-    def serialize(self):
-        data = PinBase.serialize(self)
-        m = self.currentData()
-        data['value'] = [m.c1.tolist(), m.c2.tolist(), m.c3.tolist()]
-        return data
-
     @staticmethod
     def processData(data):
         if isinstance(data, Matrix33):
             return data
-        elif isinstance(data, list) and len(data) == 3:
-            return Matrix33([data[0], data[1], data[2]])
         raise(Exception('Invalid Matrix33 data'))
 
     def setData(self, data):

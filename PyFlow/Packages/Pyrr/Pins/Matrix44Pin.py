@@ -31,10 +31,6 @@ class Matrix44Pin(PinBase):
         return True
 
     @staticmethod
-    def isPrimitiveType():
-        return False
-
-    @staticmethod
     def jsonEncoderClass():
         return M44Encoder
 
@@ -54,18 +50,10 @@ class Matrix44Pin(PinBase):
     def pinDataTypeHint():
         return 'Matrix44Pin', Matrix44()
 
-    def serialize(self):
-        data = PinBase.serialize(self)
-        m = self.currentData()
-        data['value'] = [m.c1.tolist(), m.c2.tolist(), m.c3.tolist(), m.c4.tolist()]
-        return data
-
     @staticmethod
     def processData(data):
         if isinstance(data, Matrix44):
             return data
-        elif isinstance(data, list) and len(data) == 4:
-            return Matrix44([data[0], data[1], data[2], data[3]])
         raise(Exception('Invalid Matrix44 data'))
 
     def setData(self, data):

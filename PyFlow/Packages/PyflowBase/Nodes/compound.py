@@ -114,12 +114,10 @@ class compound(NodeBase):
                                                outPin.defaultValue(),
                                                outPin.call,
                                                outPin.constraint)
-        if subgraphInputPin.isAny:
+        if subgraphInputPin.isAny():
             subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
             subgraphInputPin.singleInit = True
             subgraphInputPin.setType(outPin)
-        subgraphInputPin.setRenamingEnabled(False)
-        subgraphInputPin.setDynamic(False)
         self.__inputsMap[subgraphInputPin] = outPin
         pinAffects(subgraphInputPin, outPin)
         # connect
@@ -133,13 +131,13 @@ class compound(NodeBase):
             if subgraphInputPin.hasConnections() and subgraphInputPin.dataType != other.dataType:
                 subgraphInputPin.disconnectAll()
             subgraphInputPin._data = other.currentData()
-            if subgraphInputPin.isAny:
+            if subgraphInputPin.isAny():
                 subgraphInputPin.setType(other)
         outPin.onPinConnected.connect(onInnerConnected, weak=False)
 
         # handle outer connect/disconnect
         def onSubgraphInputConnected(other):
-            if outPin.isAny:
+            if outPin.isAny():
                 outPin.setType(other)
         subgraphInputPin.onPinConnected.connect(onSubgraphInputConnected, weak=False)
 
@@ -159,7 +157,7 @@ class compound(NodeBase):
                                                  inPin.defaultValue(),
                                                  None,
                                                  inPin.constraint)
-        if subgraphOutputPin.isAny:
+        if subgraphOutputPin.isAny():
             subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
             subgraphOutputPin.singleInit = True
             subgraphOutputPin.setType(inPin)
@@ -167,8 +165,6 @@ class compound(NodeBase):
         if subgraphOutputPin.isExec():
             inPin.onExecute.connect(subgraphOutputPin.call)
 
-        subgraphOutputPin.setRenamingEnabled(False)
-        subgraphOutputPin.setDynamic(False)
         self.__outputsMap[subgraphOutputPin] = inPin
         pinAffects(inPin, subgraphOutputPin)
 
@@ -181,13 +177,13 @@ class compound(NodeBase):
         # and change default value
         def onInnerInpPinConnected(other):
             subgraphOutputPin._data = other.currentData()
-            if subgraphOutputPin.isAny:
+            if subgraphOutputPin.isAny():
                 subgraphOutputPin.setType(other)
         inPin.onPinConnected.connect(onInnerInpPinConnected, weak=False)
 
         # handle outer connect/disconnect
         def onSubgraphOutputConnected(other):
-            if inPin.isAny:
+            if inPin.isAny():
                 inPin.setType(other)
         subgraphOutputPin.onPinConnected.connect(onSubgraphOutputConnected, weak=False)
 

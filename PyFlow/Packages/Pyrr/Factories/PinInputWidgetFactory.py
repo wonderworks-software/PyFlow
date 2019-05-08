@@ -514,7 +514,7 @@ class Matrix44InputWidget(InputWidgetRaw):
         super(Matrix44InputWidget, self).resizeEvent(event)
 
 
-def getInputWidget(dataType, dataSetter, defaultValue, userStructClass):
+def getInputWidget(dataType, dataSetter, defaultValue):
     '''
     factory method
     '''

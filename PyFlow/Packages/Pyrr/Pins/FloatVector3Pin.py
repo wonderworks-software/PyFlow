@@ -42,15 +42,6 @@ class FloatVector3Pin(PinBase):
     def pinDataTypeHint():
         return 'FloatVector3Pin', Vector3()
 
-    def serialize(self):
-        data = PinBase.serialize(self)
-        data['value'] = self.currentData().xyz.tolist()
-        return data
-
-    @staticmethod
-    def isPrimitiveType():
-        return False
-
     @staticmethod
     def jsonEncoderClass():
         return Vector3Encoder
@@ -63,8 +54,6 @@ class FloatVector3Pin(PinBase):
     def processData(data):
         if isinstance(data, Vector3):
             return data
-        elif isinstance(data, list) and len(data) == 3:
-            return Vector3(data)
         raise(Exception('Invalid Vector3 data'))
 
     def setData(self, data):

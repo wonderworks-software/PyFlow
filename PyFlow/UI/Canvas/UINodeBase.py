@@ -644,11 +644,11 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
             inputsCategory = CollapsibleFormWidget(headName="Inputs")
             sortedInputs = sorted(self.UIinputs.values(), key=lambda x: x.name)
             for inp in sortedInputs:
-                if inp.isArray():
-                    # TODO: create array input widget
+                if inp.isList():
+                    # TODO: create list input widget
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData
-                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getUserStruct())
+                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue())
                 if w:
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
@@ -666,13 +666,6 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         doc.setHtml(self.description())
         Info.addWidget(widget=doc)
         propertiesWidget.addWidget(Info)
-
-    def propertyEditingFinished(self):
-        le = QApplication.instance().focusWidget()
-        if isinstance(le, QLineEdit):
-            nodeName, attr = le.objectName().split('.')
-            Pin = self.getPin(attr)
-            Pin.setData(le.text())
 
     def getChainedNodes(self):
         nodes = []
@@ -704,8 +697,6 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         """
         lod = self.canvasRef().getLodValueFromCurrentScale(3)
         for uiPin in self.UIPins.values():
-            uiPin.syncDynamic()
-            uiPin.syncRenamable()
             label = uiPin.getLabel()()
             if label.visibilityPolicy == VisibilityPolicy.Auto:
                 if lod <= 2:
@@ -874,6 +865,8 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         self.update()
         self.nodeMainGWidget.update()
         self.updateNodeShape()
+        p.syncDynamic()
+        p.syncRenamable()
         return p
 
     def collapsePinGroup(self, container):

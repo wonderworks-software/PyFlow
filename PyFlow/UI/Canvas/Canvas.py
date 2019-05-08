@@ -1302,14 +1302,6 @@ class Canvas(QGraphicsView):
         if isinstance(obj, IPropertiesViewSupport):
             self.requestFillProperties.emit(obj.createPropertiesWidget)
 
-    def propertyEditingFinished(self):
-        le = QApplication.instance().focusWidget()
-        if isinstance(le, QLineEdit):
-            nodeName, attr = le.objectName().split('.')
-            node = self.findNode(nodeName)
-            Pin = node.getPin(attr)
-            Pin.setData(le.text())
-
     def wheelEvent(self, event):
         (xfo, invRes) = self.transform().inverted()
         topLeft = xfo.map(self.rect().topLeft())
@@ -1396,7 +1388,7 @@ class Canvas(QGraphicsView):
             pin = nodeInstance.getPin(inpJson['name'], PinSelectionGroup.Inputs)
             if pin:
                 pin.uid = uuid.UUID(inpJson['uuid'])
-                pin.setData(inpJson['value'])
+                pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
                 if inpJson['bDirty']:
                     pin.setDirty()
                 else:
@@ -1406,7 +1398,7 @@ class Canvas(QGraphicsView):
             pin = nodeInstance.getPin(outJson['name'], PinSelectionGroup.Outputs)
             if pin:
                 pin.uid = uuid.UUID(outJson['uuid'])
-                pin.setData(outJson['value'])
+                pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
                 if outJson['bDirty']:
                     pin.setDirty()
                 else:

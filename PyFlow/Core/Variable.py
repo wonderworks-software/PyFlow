@@ -11,8 +11,6 @@ from PyFlow.Core.Interfaces import ISerializable
 class Variable(ISerializable):
     def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, uid=None):
         super(Variable, self).__init__()
-        assert(isinstance(name, str))
-        assert(isinstance(dataType, str))
         # signals
         self.nameChanged = Signal(str)
         self.valueChanged = Signal(str)
@@ -125,7 +123,7 @@ class Variable(ISerializable):
         if self.dataType == 'AnyPin':
             template['value'] = None
         else:
-            template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass()) if not pinClass.isPrimitiveType() else self.value
+            template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass())
         template['dataType'] = self.dataType
         template['accessLevel'] = self.accessLevel.value
         template['package'] = self._packageName
@@ -140,7 +138,7 @@ class Variable(ISerializable):
 
         if dataType != "AnyPin":
             pinClass = findPinClassByType(dataType)
-            value = jsonData['value'] if pinClass.isPrimitiveType() else json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass())
+            value = json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass())
         else:
             value = getPinDefaultValueByType("AnyPin")
 

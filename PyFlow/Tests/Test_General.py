@@ -1,6 +1,6 @@
 from PyFlow.Tests.TestsBase import *
 from PyFlow.Core.Common import *
-
+from collections import Counter
 
 class TestGeneral(unittest.TestCase):
 
@@ -14,13 +14,13 @@ class TestGeneral(unittest.TestCase):
         packages = GET_PACKAGES()
         man = GraphManager()
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
-        subgraphNodeInstance = subgraphNodeClass('compound')
+        subgraphNodeInstance = subgraphNodeClass(str('compound'))
         man.activeGraph().addNode(subgraphNodeInstance)
 
         # step inside compound
         man.selectGraph(subgraphNodeInstance.name)
-        self.assertCountEqual(man.location(), [man.findRootGraph().name, subgraphNodeInstance.name])
-        self.assertCountEqual(subgraphNodeInstance.rawGraph.location(), man.location())
+        self.assertEqual(Counter(man.location()), Counter([man.findRootGraph().name, subgraphNodeInstance.name]))
+        self.assertEqual(Counter(subgraphNodeInstance.rawGraph.location()), Counter(man.location()))
 
     def test_add_int_no_exec(self):
         man = GraphManager()
@@ -36,7 +36,7 @@ class TestGeneral(unittest.TestCase):
 
         addNode1.setData('a', 5)
 
-        connection = connectPins(addNode1['out'], addNode2['a'])
+        connection = connectPins(addNode1[str('out')], addNode2[str('a')])
         self.assertEqual(connection, True, "FAILED TO ADD EDGE")
         self.assertEqual(addNode2.getData('out'), 5, "NODES EVALUATION IS INCORRECT")
 
@@ -44,11 +44,12 @@ class TestGeneral(unittest.TestCase):
         packages = GET_PACKAGES()
         randomLib = packages['PyflowBase'].GetFunctionLibraries()["RandomLib"]
         defaultLib = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"]
+        classNodes = packages['PyflowBase'].GetNodeClasses()
         randomLibFoos = randomLib.getFunctions()
         defaultLibFoos = defaultLib.getFunctions()
 
         randintNode = NodeBase.initializeFromFunction(randomLibFoos["randint"])
-        printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
+        printNode = classNodes["consoleOutput"]("print")
 
         man = GraphManager()
 
@@ -58,11 +59,11 @@ class TestGeneral(unittest.TestCase):
         self.assertIsNotNone(randintNode)
         self.assertIsNotNone(printNode)
 
-        pPrintInputValuePin = printNode['entity']
-        pRandIntInExecPin = randintNode.getPin('inExec', PinSelectionGroup.Inputs)
+        pPrintInputValuePin = printNode[str('entity')]
+        pRandIntInExecPin = randintNode.getPin(str('inExec'), PinSelectionGroup.Inputs)
 
-        edge1Created = connectPins(randintNode[DEFAULT_OUT_EXEC_NAME], printNode[DEFAULT_IN_EXEC_NAME])
-        edge2Created = connectPins(randintNode['Result'], pPrintInputValuePin)
+        edge1Created = connectPins(randintNode[str(DEFAULT_OUT_EXEC_NAME)], printNode[str(DEFAULT_IN_EXEC_NAME)])
+        edge2Created = connectPins(randintNode[str('Result')], pPrintInputValuePin)
         self.assertEqual(edge1Created, True, "FAILED TO CONNECT EXECS")
         self.assertEqual(edge2Created, True, "FAILED TO CONNECT INT AND ANY")
 
@@ -87,8 +88,8 @@ class TestGeneral(unittest.TestCase):
         man.activeGraph().addNode(n2)
         man.activeGraph().addNode(n3)
 
-        n1Out = n1.getPin('out', PinSelectionGroup.Outputs)
-        n3b = n3.getPin('b', PinSelectionGroup.Inputs)
+        n1Out = n1.getPin(str('out'), PinSelectionGroup.Outputs)
+        n3b = n3.getPin(str('b'), PinSelectionGroup.Inputs)
         # connect n1.out and n3.b
         c1 = connectPins(n1Out, n3b)
         # check connection was created
@@ -98,7 +99,7 @@ class TestGeneral(unittest.TestCase):
         # check n3.b affected by n1.out
         self.assertEqual(n1Out in n3b.affected_by, True)
 
-        n2Out = n2.getPin('out', PinSelectionGroup.Outputs)
+        n2Out = n2.getPin(str('out'), PinSelectionGroup.Outputs)
         # connect n2.out to n3.b
         # n3.b is connected with n1.out
         # we expect n3.b breaks all connections before connecting with n2.out
@@ -125,8 +126,8 @@ class TestGeneral(unittest.TestCase):
         man.activeGraph().addNode(addNode1)
         man.activeGraph().addNode(addNode2)
 
-        pinOut = addNode1.getPin('out', PinSelectionGroup.Outputs)
-        pinInp = addNode2.getPin('a', PinSelectionGroup.Inputs)
+        pinOut = addNode1.getPin(str('out'), PinSelectionGroup.Outputs)
+        pinInp = addNode2.getPin(str('a'), PinSelectionGroup.Inputs)
         bConnected = connectPins(pinOut, pinInp)
         self.assertEqual(bConnected, True, "FAILED TO ADD EDGE")
         self.assertEqual(arePinsConnected(pinOut, pinInp), True)
@@ -193,7 +194,7 @@ class TestGeneral(unittest.TestCase):
         # two variables. One from subgraph1 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
-        self.assertCountEqual(varsValues, [0, 1], "variables are incorrect")
+        self.assertEqual(Counter(varsValues), Counter([0, 1]), "variables are incorrect")
         man.selectRootGraph()
 
         # goto subgraph2 and ask variables there
@@ -202,11 +203,12 @@ class TestGeneral(unittest.TestCase):
         # two variables. One from subgraph2 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
         varsValues = [i.value for i in vars]
-        self.assertCountEqual(varsValues, [0, 2], "variables are incorrect")
+        self.assertEqual(Counter(varsValues), Counter([0, 2]), "variables are incorrect")
         man.selectRootGraph()
 
     def test_get_any_var(self):
         packages = GET_PACKAGES()
+        classNodes = packages["PyflowBase"].GetNodeClasses()
 
         man = GraphManager()
 
@@ -221,14 +223,14 @@ class TestGeneral(unittest.TestCase):
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
-        printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
+        printerInstance = classNodes["consoleOutput"]("print")
         man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
-        varOutPin = varGetterInstance.getPin('value', PinSelectionGroup.Outputs)
+        varOutPin = varGetterInstance.getPin(str('value'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(varOutPin)
-        printInPin = printerInstance.getPin('entity', PinSelectionGroup.Inputs)
-        printInExecPin = printerInstance.getPin('inExec', PinSelectionGroup.Inputs)
+        printInPin = printerInstance.getPin(str('entity'), PinSelectionGroup.Inputs)
+        printInExecPin = printerInstance.getPin(str('inExec'), PinSelectionGroup.Inputs)
         connected = connectPins(varOutPin, printInPin)
         self.assertEqual(connected, True, "var getter is not connected")
 
@@ -246,28 +248,29 @@ class TestGeneral(unittest.TestCase):
 
     def test_get_bool_var(self):
         packages = GET_PACKAGES()
+        classNodes = packages["PyflowBase"].GetNodeClasses()
 
         man = GraphManager()
 
         # create bool variable
-        v1 = man.activeGraph().createVariable('BoolPin')
+        v1 = man.activeGraph().createVariable(str('BoolPin'))
         v1.value = False
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
         # since variable is bool, bool pin will be created
-        varGetterInstance = varGetterClass('v1Getter', v1)
+        varGetterInstance = varGetterClass(str('v1Getter'), v1)
         man.activeGraph().addNode(varGetterInstance)
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
-        printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
+        printerInstance = classNodes["consoleOutput"]("print")
         man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
-        varOutPin = varGetterInstance.getPin('value', PinSelectionGroup.Outputs)
-        printInPin = printerInstance.getPin('entity', PinSelectionGroup.Inputs)
-        printInExecPin = printerInstance.getPin('inExec', PinSelectionGroup.Inputs)
+        varOutPin = varGetterInstance.getPin(str('value'), PinSelectionGroup.Outputs)
+        printInPin = printerInstance.getPin(str('entity'), PinSelectionGroup.Inputs)
+        printInExecPin = printerInstance.getPin(str('inExec'), PinSelectionGroup.Inputs)
         connected = connectPins(varOutPin, printInPin)
         self.assertEqual(connected, True, "var getter is not connected")
 
@@ -294,18 +297,18 @@ class TestGeneral(unittest.TestCase):
 
         # create variable getter node
         varGetterClass = packages["PyflowBase"].GetNodeClasses()['getVar']
-        varGetterInstance = varGetterClass('v1Getter', v1)
+        varGetterInstance = varGetterClass(str('v1Getter'), v1)
         man.activeGraph().addNode(varGetterInstance)
 
         # create print node
         defaultLib = packages["PyflowBase"].GetFunctionLibraries()['DefaultLib']
-        printerInstance = NodeBase.initializeFromFunction(defaultLib.getFunctions()['pyprint'])
+        printerInstance = packages["PyflowBase"].GetNodeClasses()['consoleOutput']("print")
         man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
-        varOutPin = varGetterInstance.getPin('value', PinSelectionGroup.Outputs)
-        printInPin = printerInstance.getPin('entity', PinSelectionGroup.Inputs)
-        printInExecPin = printerInstance.getPin('inExec', PinSelectionGroup.Inputs)
+        varOutPin = varGetterInstance.getPin(str('value'), PinSelectionGroup.Outputs)
+        printInPin = printerInstance.getPin(str('entity'), PinSelectionGroup.Inputs)
+        printInExecPin = printerInstance.getPin(str('inExec'), PinSelectionGroup.Inputs)
         connected = connectPins(varOutPin, printInPin)
         self.assertEqual(connected, True, "var getter is not connected")
 
@@ -327,14 +330,14 @@ class TestGeneral(unittest.TestCase):
 
         # create variable setter node
         varSetterClass = packages["PyflowBase"].GetNodeClasses()['setVar']
-        varSetterInstance = varSetterClass('v1Setter', v1)
+        varSetterInstance = varSetterClass(str('v1Setter'), v1)
         setterAdded = man.activeGraph().addNode(varSetterInstance)
         self.assertEqual(setterAdded, True)
 
         # set new value to setter node input pin
-        inExecPin = varSetterInstance.getPin('exec', PinSelectionGroup.Inputs)
-        inPin = varSetterInstance.getPin('inp', PinSelectionGroup.Inputs)
-        outPin = varSetterInstance.getPin('out', PinSelectionGroup.Outputs)
+        inExecPin = varSetterInstance.getPin(str('exec'), PinSelectionGroup.Inputs)
+        inPin = varSetterInstance.getPin(str('inp'), PinSelectionGroup.Inputs)
+        outPin = varSetterInstance.getPin(str('out'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(inExecPin)
         self.assertIsNotNone(inPin)
         self.assertIsNotNone(outPin)
@@ -354,20 +357,20 @@ class TestGeneral(unittest.TestCase):
         man = GraphManager()
 
         # create bool type variable
-        v1 = man.activeGraph().createVariable('BoolPin')
+        v1 = man.activeGraph().createVariable(str('BoolPin'))
         # this will accept only bools
         v1.value = False
 
         # create variable setter node
         varSetterClass = packages["PyflowBase"].GetNodeClasses()['setVar']
-        varSetterInstance = varSetterClass('v1Setter', v1)
+        varSetterInstance = varSetterClass(str('v1Setter'), v1)
         setterAdded = man.activeGraph().addNode(varSetterInstance)
         self.assertEqual(setterAdded, True)
 
         # set new value to setter node input pin
-        inExecPin = varSetterInstance.getPin('exec', PinSelectionGroup.Inputs)
-        inPin = varSetterInstance.getPin('inp', PinSelectionGroup.Inputs)
-        outPin = varSetterInstance.getPin('out', PinSelectionGroup.Outputs)
+        inExecPin = varSetterInstance.getPin(str('exec'), PinSelectionGroup.Inputs)
+        inPin = varSetterInstance.getPin(str('inp'), PinSelectionGroup.Inputs)
+        outPin = varSetterInstance.getPin(str('out'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(inExecPin)
         self.assertIsNotNone(inPin)
         self.assertIsNotNone(outPin)
@@ -394,7 +397,7 @@ class TestGeneral(unittest.TestCase):
 
         # create empty compound
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
-        subgraphNodeInstance = subgraphNodeClass('compound')
+        subgraphNodeInstance = subgraphNodeClass(str('compound'))
         man.activeGraph().addNode(subgraphNodeInstance)
 
         # step inside compound
@@ -429,9 +432,9 @@ class TestGeneral(unittest.TestCase):
         inPin.setName("innerOutPinName")
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name, "name is not synchronized")
 
-        subgraphInPin = subgraphNodeInstance.getPin('innerInPinName', PinSelectionGroup.Inputs)
+        subgraphInPin = subgraphNodeInstance.getPin(str('innerInPinName'), PinSelectionGroup.Inputs)
         self.assertIsNotNone(subgraphInPin, "failed to find compound out pin")
-        subgraphOutPin = subgraphNodeInstance.getPin('innerOutPinName', PinSelectionGroup.Outputs)
+        subgraphOutPin = subgraphNodeInstance.getPin(str('innerOutPinName'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(subgraphOutPin, "failed to find compound out pin")
 
         # add simple calculation
@@ -443,23 +446,23 @@ class TestGeneral(unittest.TestCase):
         subgraphNodeInstance.addNode(addNode2)
         addNode1.setData("b", 1)
         addNode2.setData("b", 1)
-        connection = connectPins(addNode1.getPin('out', PinSelectionGroup.Outputs), addNode2.getPin('a', PinSelectionGroup.Inputs))
+        connection = connectPins(addNode1.getPin(str('out'), PinSelectionGroup.Outputs), addNode2.getPin(str('a'), PinSelectionGroup.Inputs))
         self.assertEqual(connection, True)
 
         # connect add nodes with graph inputs/outputs
         # this connections should change outside companion pins types and update its values by type's default values
-        connected = connectPins(inputs1.getPin('innerInPinName'), addNode1.getPin('a'))
+        connected = connectPins(inputs1.getPin(str('innerInPinName')), addNode1.getPin(str('a')))
         self.assertIsNotNone(subgraphInPin.currentData(), "outer pin data is invalid")
         self.assertEqual(connected, True)
-        self.assertIsNotNone(inputs1.getPin('innerInPinName').currentData(), "output companion pin data is incorrect")
+        self.assertIsNotNone(inputs1.getPin(str('innerInPinName')).currentData(), "output companion pin data is incorrect")
 
-        connected = connectPins(outputs1.getPin('innerOutPinName'), addNode2.getPin('out'))
+        connected = connectPins(outputs1.getPin(str('innerOutPinName')), addNode2.getPin(str('out')))
         self.assertIsNotNone(subgraphOutPin.currentData(), "outer pin data is")
         self.assertEqual(connected, True)
-        self.assertIsNotNone(outputs1.getPin('innerOutPinName').currentData(), "output companion pin data is incorrect")
+        self.assertIsNotNone(outputs1.getPin(str('innerOutPinName')).currentData(), "output companion pin data is incorrect")
 
         # go back to root graph
-        man.selectGraph("root")
+        man.selectGraph(str("root"))
         self.assertEqual(man.activeGraph().name, "root", "failed to return back to root from compound node")
 
         # check exposed pins added
@@ -468,29 +471,29 @@ class TestGeneral(unittest.TestCase):
 
         # connect getter to compound output pin
         defaultLibFoos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
-        printNode = NodeBase.initializeFromFunction(defaultLibFoos["pyprint"])
+        printNode = packages["PyflowBase"].GetNodeClasses()['consoleOutput']("print")
         man.activeGraph().addNode(printNode)
 
-        connected = connectPins(printNode.getPin('entity'), subgraphOutPin)
+        connected = connectPins(printNode.getPin(str('entity')), subgraphOutPin)
         self.assertEqual(connected, True)
 
         # check value
-        printNode.getPin('inExec').call()
-        self.assertEqual(printNode.getPin('entity').currentData(), 2)
+        printNode.getPin(str('inExec')).call()
+        self.assertEqual(printNode.getPin(str('entity')).currentData(), 2)
 
         # connect another add node to exposed compound input
         addNode3 = NodeBase.initializeFromFunction(foos["add"])
         man.activeGraph().addNode(addNode3)
         addNode3.setData('a', 1)
-        connected = connectPins(addNode3.getPin('out'), subgraphInPin)
+        connected = connectPins(addNode3.getPin(str('out')), subgraphInPin)
         self.assertEqual(connected, True)
 
         # any pin should be connected, because we have int calculations inside compound
         self.assertEqual(subgraphInPin.hasConnections(), True, "compound input pin has no connections")
 
         # check value
-        printNode.getPin('inExec').call()
-        self.assertEqual(printNode.getPin('entity').currentData(), 3)
+        printNode.getPin(str('inExec')).call()
+        self.assertEqual(printNode.getPin(str('entity')).currentData(), 3)
 
         # kill inner pins and check outer companions killed also
         self.assertEqual(len(subgraphNodeInstance.pins), 2)
@@ -510,7 +513,7 @@ class TestGeneral(unittest.TestCase):
 
         # create empty compound
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
-        subgraphNodeInstance = subgraphNodeClass('compound')
+        subgraphNodeInstance = subgraphNodeClass(str('compound'))
         man.activeGraph().addNode(subgraphNodeInstance)
 
         # step inside compound
@@ -539,15 +542,15 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
         inPin.setName('outAnyExec')
 
-        subgraphInAnyExec = subgraphNodeInstance.getPin('inAnyExec', PinSelectionGroup.Inputs)
+        subgraphInAnyExec = subgraphNodeInstance.getPin(str('inAnyExec'), PinSelectionGroup.Inputs)
         self.assertIsNotNone(subgraphInAnyExec, "failed to find compound input exec pin")
-        subgraphOutAnyExec = subgraphNodeInstance.getPin('outAnyExec', PinSelectionGroup.Outputs)
+        subgraphOutAnyExec = subgraphNodeInstance.getPin(str('outAnyExec'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(subgraphOutAnyExec, "failed to find compound out exec pin")
 
         # add print node inside
         foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
 
-        printNode1 = NodeBase.initializeFromFunction(foos["pyprint"])
+        printNode1 = packages["PyflowBase"].GetNodeClasses()['consoleOutput']("print")
         man.activeGraph().addNode(printNode1)
         printNode1.setData("entity", "hello from compound")
 
@@ -571,10 +574,10 @@ class TestGeneral(unittest.TestCase):
 
         man.activeGraph().addNode(addNode1)
         man.activeGraph().addNode(addNode2)
-        connected = connectPins(addNode1['out'], addNode2['a'])
+        connected = connectPins(addNode1[str('out')], addNode2[str('a')])
         addNode1.setData('a', 5)
         self.assertEqual(connected, True)
-        self.assertEqual(addNode2.getData('out'), 5, "Incorrect calc")
+        self.assertEqual(addNode2.getData(str('out')), 5, "Incorrect calc")
 
         # save and clear
         dataJson = man.serialize()
@@ -583,7 +586,7 @@ class TestGeneral(unittest.TestCase):
         # load
         man.deserialize(dataJson)
 
-        restoredAddNode2 = man.activeGraph().findNode('add1')
+        restoredAddNode2 = man.activeGraph().findNode(str('add1'))
         self.assertEqual(restoredAddNode2.getData('out'), 5, "Incorrect calc")
 
     def test_graph_depth(self):
@@ -591,7 +594,7 @@ class TestGeneral(unittest.TestCase):
         packages = GET_PACKAGES()
 
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
-        subgraphNodeInstance = subgraphNodeClass('compound')
+        subgraphNodeInstance = subgraphNodeClass(str(str('compound')))
         man.activeGraph().addNode(subgraphNodeInstance)
 
         self.assertEqual(man.activeGraph().depth(), 1)
@@ -604,7 +607,7 @@ class TestGeneral(unittest.TestCase):
         packages = GET_PACKAGES()
 
         subgraphNodeClass = packages['PyflowBase'].GetNodeClasses()['compound']
-        subgraphNodeInstance = subgraphNodeClass('compound')
+        subgraphNodeInstance = subgraphNodeClass(str('compound'))
         man.activeGraph().addNode(subgraphNodeInstance)
         man.selectGraph(subgraphNodeInstance)
 
@@ -617,7 +620,7 @@ class TestGeneral(unittest.TestCase):
         man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.namePinInputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.inputs.values())[0].name, outPin.name)
-        self.assertEqual(outPin.isDynamic(), True)
+        self.assertEqual(outPin.optionEnabled(PinOptions.Dynamic), True)
 
         # change inner pin name and check it is reflected outside
         outPin.setName("first")
@@ -629,7 +632,7 @@ class TestGeneral(unittest.TestCase):
         man.Tick(0.02)
         self.assertEqual(len(subgraphNodeInstance.namePinOutputsMap), 1, "failed to expose input pin")
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
-        self.assertEqual(inPin.isDynamic(), True)
+        self.assertEqual(inPin.optionEnabled(PinOptions.RenamingEnabled), True)
 
         # change inner pin name and check it is reflected outside
         inPin.setName("first")
@@ -643,9 +646,10 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(man.activeGraph(), None)
         man.deserialize(saved)
         self.assertIsNotNone(man.activeGraph())
-        self.assertEqual(nameBefore, man.getAllNodes()[0].name, "names are incorrect")
+        nameAfter = man.getAllNodes(classNameFilters="compound")[0].name
+        self.assertEqual(nameBefore, nameAfter, "names are incorrect {0} - {1}".format(nameBefore, nameAfter))
         depthsAfter = [g.depth() for g in man.getAllGraphs()]
-        self.assertCountEqual(depthsBefore, depthsAfter, "failed to restore graphs depths")
+        self.assertEqual(Counter(depthsBefore), Counter(depthsAfter), "failed to restore graphs depths")
 
 
 if __name__ == '__main__':

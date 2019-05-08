@@ -6,8 +6,6 @@ from PyFlow.UI.UIInterfaces import IPackage
 # Pins
 from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
 from PyFlow.Packages.PyflowBase.Pins.BoolPin import BoolPin
-# TODO: Enums not working for now, fix this.
-from PyFlow.Packages.PyflowBase.Pins.EnumPin import EnumPin
 from PyFlow.Packages.PyflowBase.Pins.ExecPin import ExecPin
 from PyFlow.Packages.PyflowBase.Pins.FloatPin import FloatPin
 from PyFlow.Packages.PyflowBase.Pins.IntPin import IntPin
@@ -32,6 +30,7 @@ from PyFlow.Packages.PyflowBase.Nodes.doN import doN
 from PyFlow.Packages.PyflowBase.Nodes.doOnce import doOnce
 from PyFlow.Packages.PyflowBase.Nodes.flipFlop import flipFlop
 from PyFlow.Packages.PyflowBase.Nodes.forLoop import forLoop
+from PyFlow.Packages.PyflowBase.Nodes.forEachLoop import forEachLoop
 from PyFlow.Packages.PyflowBase.Nodes.forLoopWithBreak import forLoopWithBreak
 from PyFlow.Packages.PyflowBase.Nodes.retriggerableDelay import retriggerableDelay
 from PyFlow.Packages.PyflowBase.Nodes.sequence import sequence
@@ -43,6 +42,9 @@ from PyFlow.Packages.PyflowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyflowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyflowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyflowBase.Nodes.makeList import makeList
+from PyFlow.Packages.PyflowBase.Nodes.consoleOutput import consoleOutput
+from PyFlow.Packages.PyflowBase.Nodes.copyList import copyList
+from PyFlow.Packages.PyflowBase.Nodes.address import address
 from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
     graphInputs,
     graphOutputs
@@ -100,13 +102,16 @@ _NODES = {
     graphOutputs.__name__: graphOutputs,
     compound.__name__: compound,
     pythonNode.__name__: pythonNode,
-    makeList.__name__: makeList
+    makeList.__name__: makeList,
+    consoleOutput.__name__: consoleOutput,
+    forEachLoop.__name__: forEachLoop,
+    copyList.__name__: copyList,
+    address.__name__: address
 }
 
 _PINS = {
     AnyPin.__name__: AnyPin,
     BoolPin.__name__: BoolPin,
-    EnumPin.__name__: EnumPin,
     ExecPin.__name__: ExecPin,
     FloatPin.__name__: FloatPin,
     IntPin.__name__: IntPin,

@@ -40,8 +40,7 @@ class graphInputs(NodeBase):
         if name is None:
             name = self.getUniqPinName('in')
         p = self.createOutputPin(name, dataType)
-        p.setDynamic(True)
-        p.setRenamingEnabled(True)
+        p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         p.singleInit = True
         return p
 
@@ -108,7 +107,6 @@ class graphOutputs(NodeBase):
         if name is None:
             name = self.getUniqPinName('out')
         p = self.createInputPin(name, dataType)
-        p.setDynamic(True)
-        p.setRenamingEnabled(True)
+        p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         p.singleInit = True
         return p

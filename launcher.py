@@ -1,3 +1,4 @@
+from nine import str
 from Qt.QtWidgets import QApplication, QStyleFactory
 from Qt import QtGui
 from Qt import QtCore

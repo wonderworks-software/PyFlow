@@ -2,6 +2,7 @@ from blinker import Signal
 import uuid
 from copy import deepcopy
 import weakref
+import json
 
 from PyFlow.Core.Interfaces import IPin
 from PyFlow.Core.Common import *
@@ -11,7 +12,7 @@ from PyFlow import getPinDefaultValueByType
 class PinBase(IPin):
     _packageName = ""
 
-    def __init__(self, name, owningNode, direction, userStructClass=None):
+    def __init__(self, name, owningNode, direction):
         super(PinBase, self).__init__()
         # signals
         self.serializationHook = Signal()
@@ -20,39 +21,49 @@ class PinBase(IPin):
         self.nameChanged = Signal(str)
         self.killed = Signal()
         self.onExecute = Signal(object)
-
+        self.containerTypeChanged = Signal()
+        ## Access to the node
+        self.owningNode = weakref.ref(owningNode)
         self._uid = uuid.uuid4()
-        self._userStructClass = userStructClass
         self._data = None
         self._defaultValue = None
+        # What to do if connect with busy pin. Used when AllowMultipleConnections flag is disabled
+        self.reconnectionPolicy = PinReconnectionPolicy.DisconnectIfHasConnections
         ## This flag for lazy evaluation
-        # @sa @ref PinBase::getData
         self.dirty = True
         ## List of pins this pin connected to
         self.affects = set()
         ## List of pins connected to this pin
         self.affected_by = set()
-        ## Access to the node
-        self.owningNode = weakref.ref(owningNode)
 
         self.name = name
         ## Defines is this input pin or output
         self.direction = direction
-        ## For rand int node and stuff like that
-        self._alwaysPushDirty = False
-        ## Can be renamed or not (for switch on string node)
-        self._renamingEnabled = False
-        ## For example sequence nodes output execs are dynamically created and can be deleted from node as well
-        self._dynamic = False
 
         # gui class weak ref
         self._wrapper = None
         # Constraint ports
         self.constraint = None
-        self.isAny = False
+        self._isAny = False
 
-        self._isArray = False
-        self.supportsOnlyArray = False
+        # Flags
+        self._flags = PinOptions.Storable
+
+        self._isList = False
+
+    def enableOptions(self, *options):
+        for option in options:
+            self._flags = self._flags | option
+
+    def disableOptions(self, *options):
+        for option in options:
+            self._flags = self._flags & ~option
+
+    def optionEnabled(self, option):
+        return bool(self._flags & option)
+
+    def isAny(self):
+        return self._isAny
 
     @property
     def packageName(self):
@@ -74,13 +85,33 @@ class PinBase(IPin):
     def isExec(self):
         return False
 
-    def setAsArray(self, bIsArray):
-        self._isArray = bool(bIsArray)
-        if bIsArray:
-            self._data = []
+    def setAsList(self, bIsList):
+        """Sets this pin to be a list.
 
-    def isArray(self):
-        return self._isArray
+        Every registered pin can hold a list of values instead of single one. List pins can be connected
+        only with another list pins by default. This behavior can be changed by disabling `PinOptions.SupportsOnlyList` option.
+
+        Value pins can be connected only with value pins if option `PinOptions.ListSupported` is not enabled.
+
+        By default input value pin can have only one connection, this also can be modified by enabling `PinOptions.AllowMultipleConnections` flag.
+
+        Args:
+
+            bIsList (bool): list or not
+        """
+        bIsList = bool(bIsList)
+        if self._isList == bIsList:
+            return
+
+        self._isList = bIsList
+        if bIsList:
+            self._data = []
+        # list pins supports only lists by default
+        self.enableOptions(PinOptions.SupportsOnlyList)
+        self.containerTypeChanged.send()
+
+    def isList(self):
+        return self._isList
 
     @staticmethod
     def IsValuePin():
@@ -93,46 +124,31 @@ class PinBase(IPin):
     def getWrapper(self):
         return self._wrapper
 
-    def setRenamingEnabled(self, bEnabled):
-        self._renamingEnabled = bEnabled
-
-    def renamingEnabled(self):
-        return self._renamingEnabled
-
-    def setDynamic(self, bDynamic):
-        self._dynamic = bDynamic
-
-    def isDynamic(self):
-        return self._dynamic
-
-    def isAlwaysPushDirty(self):
-        return self._alwaysPushDirty
-
-    def setAlwaysPushDirty(self, bValue=False):
-        assert(isinstance(bValue, bool))
-        self._alwaysPushDirty = bValue
-
     # ISerializable interface
     def serialize(self):
 
-        uidString = str(self.uid)
+        storable = self.optionEnabled(PinOptions.Storable)
+
+        serializedData = None
+        if storable:
+            serializedData = json.dumps(self.currentData(), cls=self.jsonEncoderClass())
+        else:
+            serializedData = json.dumps(self.defaultValue(), cls=self.jsonEncoderClass())
 
         data = {
             'name': self.name,
             'fullName': self.getName(),
             'dataType': self.__class__.__name__,
             'direction': int(self.direction),
-            'value': self.currentData(),
-            'uuid': uidString,
+            'value': serializedData,
+            'uuid': str(self.uid),
             'bDirty': self.dirty,
-            'dynamic': self.isDynamic(),
-            'renamingEnabled': self.renamingEnabled(),
-            'alwaysPushDirty': self._alwaysPushDirty,
-            'linkedTo': list(self.linkedTo)
+            'linkedTo': list(self.linkedTo),
+            'options': [i.value for i in PinOptions if self.optionEnabled(i)]
         }
 
         # Wrapper class can subscribe to this signal and return
-        # UI specific data which will be considered on serialization.
+        # UI specific data which will be considered on serialization
         # Blinker returns a tuple (receiver, return val)
         wrapperData = self.serializationHook.send(self)
         if wrapperData is not None:
@@ -154,7 +170,7 @@ class PinBase(IPin):
 
     def setName(self, name, force=False):
         if not force:
-            if not self.renamingEnabled():
+            if not self.optionEnabled(PinOptions.RenamingEnabled):
                 return False
         if name == self.name:
             return False
@@ -177,7 +193,10 @@ class PinBase(IPin):
         return ()
 
     def defaultValue(self):
-        return self._defaultValue
+        if self.isList():
+            return []
+        else:
+            return self._defaultValue
 
     # TODO: Move this to separate class (e.g. ExecutionEngine) with PIMPL
     ## retrieving the data
@@ -212,7 +231,7 @@ class PinBase(IPin):
             for i in self.affects:
                 i._data = self.currentData()
                 i.setClean()
-        if self.direction == PinDirection.Input or self._alwaysPushDirty:
+        if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
             push(self)
 
     ## Calling execution pin
@@ -244,15 +263,6 @@ class PinBase(IPin):
     @property
     def dataType(self):
         return self.__class__.__name__
-
-    def isUserStruct(self):
-        return self._userStructClass is not None
-
-    def getUserStruct(self):
-        return self._userStructClass
-
-    def setUserStruct(self, inStruct):
-        self._userStructClass = inStruct
 
     # PinBase methods
 
@@ -311,3 +321,11 @@ class PinBase(IPin):
             self.owningNode().constraints[constraint].append(self)
         else:
             self.owningNode().constraints[constraint] = [self]
+
+    @staticmethod
+    def jsonEncoderClass():
+        return json.JSONEncoder
+
+    @staticmethod
+    def jsonDecoderClass():
+        return json.JSONDecoder

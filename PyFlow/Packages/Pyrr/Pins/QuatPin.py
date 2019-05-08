@@ -31,10 +31,6 @@ class QuatPin(PinBase):
         return True
 
     @staticmethod
-    def isPrimitiveType():
-        return False
-
-    @staticmethod
     def jsonEncoderClass():
         return QuatEncoder
 
@@ -54,22 +50,10 @@ class QuatPin(PinBase):
     def pinDataTypeHint():
         return 'QuatPin', Quaternion()
 
-    def serialize(self):
-        # note how custom class can be serialized
-        # here we store quats xyzw as list
-        data = PinBase.serialize(self)
-        data['value'] = self.currentData().xyzw.tolist()
-        return data
-
     @staticmethod
     def processData(data):
         if isinstance(data, Quaternion):
             return data
-        elif isinstance(data, list) and len(data) == 4:
-            # here serialized data will be handled
-            # when node desirializes itself, it creates all pins
-            # and then sets data to them. Here, data will be set fo the first time after deserialization
-            return Quaternion(data)
         raise(Exception('Invalid Quaternion data'))
 
     def setData(self, data):

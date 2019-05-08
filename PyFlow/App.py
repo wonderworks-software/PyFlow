@@ -391,7 +391,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         for tool in self._tools:
             if isinstance(tool, ShelfTool):
                 settings.beginGroup("ShelfTools")
-                settings.beginGroup(tool.uniqueName())
+                settings.beginGroup(tool.name())
                 tool.saveState(settings)
                 settings.endGroup()
                 settings.endGroup()
