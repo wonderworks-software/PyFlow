@@ -43,7 +43,6 @@ from PyFlow.Packages.PyflowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyflowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyflowBase.Nodes.makeList import makeList
 from PyFlow.Packages.PyflowBase.Nodes.consoleOutput import consoleOutput
-from PyFlow.Packages.PyflowBase.Nodes.copyList import copyList
 from PyFlow.Packages.PyflowBase.Nodes.address import address
 from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
     graphInputs,
@@ -105,7 +104,6 @@ _NODES = {
     makeList.__name__: makeList,
     consoleOutput.__name__: consoleOutput,
     forEachLoop.__name__: forEachLoop,
-    copyList.__name__: copyList,
     address.__name__: address
 }
 

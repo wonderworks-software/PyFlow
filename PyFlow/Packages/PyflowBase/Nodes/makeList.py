@@ -8,6 +8,7 @@ class makeList(NodeBase):
         self.arrayData = self.createInputPin('data', 'AnyPin', constraint="1")
         self.arrayData.setAsList(True)
         self.arrayData.enableOptions(PinOptions.AllowMultipleConnections)
+        self.arrayData.disableOptions(PinOptions.SupportsOnlyList)
         self.arrayData.changeTypeOnConnection = False
 
         self.sorted = self.createInputPin('sorted', 'BoolPin')

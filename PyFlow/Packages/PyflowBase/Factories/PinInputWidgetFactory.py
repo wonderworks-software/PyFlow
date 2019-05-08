@@ -156,5 +156,3 @@ def getInputWidget(dataType, dataSetter, defaultValue):
         return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None)
     if dataType == 'AnyPin':
         return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None)
-    if dataType == 'ListPin':
-        return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None)

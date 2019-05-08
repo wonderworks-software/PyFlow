@@ -492,6 +492,8 @@ class NodeBase(INode):
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
                 p.disableOptions(returnPinOptionsToDisable)
+            if retConstraint is None:
+                p.changeTypeOnConnection = False
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
@@ -527,6 +529,8 @@ class NodeBase(INode):
                     outRef.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
                     outRef.disableOptions(pinOptionsToDisable)
+                if constraint is None and outRef.isAny():
+                    outRef.changeTypeOnConnection = False
                 refs.append(outRef)
             else:
                 pinDataType = pinDescriptionTuple[0]
@@ -553,6 +557,8 @@ class NodeBase(INode):
                     inp.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
                     inp.disableOptions(pinOptionsToDisable)
+                if constraint is None and inp.isAny():
+                    inp.changeTypeOnConnection = False
 
         raw_inst.autoAffectPins()
         return raw_inst

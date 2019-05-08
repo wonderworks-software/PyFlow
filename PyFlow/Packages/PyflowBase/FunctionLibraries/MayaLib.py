@@ -41,7 +41,7 @@ class MayaLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('ListPin', []), meta={'Category': 'Maya', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('AnyPin', []), meta={'Category': 'Maya', 'Keywords': []})
     def listSelection():
         return pm.ls(sl=True)
 

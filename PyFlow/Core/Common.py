@@ -159,6 +159,10 @@ def canConnectPins(src, dst):
     if src.direction == dst.direction:
         return False
 
+    if not src.isList() and dst.isList():
+        if dst.optionEnabled(PinOptions.SupportsOnlyList):
+            return False
+
     if src.isList() and not dst.isList():
         if not dst.optionEnabled(PinOptions.ListSupported):
             return False
@@ -174,7 +178,7 @@ def canConnectPins(src, dst):
         return False
 
     if dst.isAny():
-        if src.dataType not in findPinClassByType(dst.activeDataType).supportedDataTypes():
+        if src.dataType not in dst.supportedDataTypes():
             return False
 
     if src.isExec() and not dst.isExec():

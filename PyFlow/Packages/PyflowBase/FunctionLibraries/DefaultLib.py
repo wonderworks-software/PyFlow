@@ -16,8 +16,8 @@ class DefaultLib(FunctionLibraryBase):
         super(DefaultLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "1"}), meta={'Category': 'GenericTypes', 'Keywords': ['id']})
-    def copyObject(obj=('AnyPin', None, {"constraint": "1"}), deepCopy=("BoolPin", False)):
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ListSupported}), meta={'Category': 'GenericTypes', 'Keywords': ['id']})
+    def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ListSupported}), deepCopy=("BoolPin", False)):
         '''shallow or deep copy of an object'''
         copyFunction = deepcopy if deepCopy else copy
         return copyFunction(obj)
