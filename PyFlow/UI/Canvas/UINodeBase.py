@@ -463,10 +463,9 @@ class UINodeBase(QGraphicsObject, IPropertiesViewSupport):
         self.updateWidth()
         self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.childrenBoundingRect().height()))
         if self.isCallable():
-            if 'flow' not in self.category().lower():
-                if self.label().bUseTextureBg:
-                    self.headColor = Colors.NodeNameRectBlue
-                    self.label().color = Colors.NodeNameRectBlue
+            if self.label().bUseTextureBg:
+                self.headColor = Colors.NodeNameRectBlue
+                self.label().color = Colors.NodeNameRectBlue
         self.setToolTip(self.description())
         self.update()
 
