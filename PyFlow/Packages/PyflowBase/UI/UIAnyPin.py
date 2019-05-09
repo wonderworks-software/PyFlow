@@ -14,7 +14,7 @@ from Qt import QtGui
 class UIAnyPin(UIPinBase):
     def __init__(self, owningNode, raw_pin):
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
-        self._defaultColor = self._color
+        self._defaultColor = self._pinColor
         self._rawPin.typeChanged.connect(self.setType)
         self._rawPin.dataTypeBeenSet.connect(self.dataTypeBeenSet)
 
@@ -29,7 +29,7 @@ class UIAnyPin(UIPinBase):
         return self._rawPin.activeDataType
 
     def setDefault(self, defcolor):
-        self._color = QtGui.QColor(*defcolor)
+        self._pinColor = QtGui.QColor(*defcolor)
         for e in self.connections:
             e.setColor(QtGui.QColor(*defcolor))
         self.OnPinChanged.emit(self)
@@ -37,9 +37,9 @@ class UIAnyPin(UIPinBase):
 
     def setType(self, dataType):
         colorTuple = findPinClassByType(dataType).color()
-        self._color = QtGui.QColor(*colorTuple)
+        self._pinColor = QtGui.QColor(*colorTuple)
         for e in self.connections:
-            e.setColor(self._color)
+            e.setColor(self._pinColor)
         self.OnPinChanged.emit(self)
         self.update()
 

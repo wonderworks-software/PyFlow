@@ -1091,7 +1091,7 @@ class Canvas(QGraphicsView):
             else:
                 self.realTimeLine.setPen(self.realTimeLineNormalPen)
 
-            p1 = self.pressed_item.scenePos() + self.pressed_item.boundingRect().center()
+            p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
             p2 = self.mapToScene(self.mousePos)
 
             distance = p2.x() - p1.x()

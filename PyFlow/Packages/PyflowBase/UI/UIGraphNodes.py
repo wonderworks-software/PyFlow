@@ -16,10 +16,7 @@ class UIGraphInputs(UINodeBase):
         actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.createPinDialog)
-        self.label().hide()
-        self.resizable = True
-        self.portsMainLayout.removeItem(self.inputsLayout)
-        self.minWidth = 25
+        self.labelTextColor = Colors.AbsoluteBlack
 
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
@@ -37,9 +34,9 @@ class UIGraphInputs(UINodeBase):
     def onAddOutPin(self, name=None, dataType="AnyPin"):
         rawPin = self._rawNode.addOutPin(name, dataType)
         uiPin = self._createUIPinWrapper(rawPin)
-        uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
-        self.updateWidth()
+        uiPin.labelColor = Colors.AbsoluteBlack
         self.pinCreated.emit(uiPin)
+        self.updateNodeShape()
         return uiPin
 
     def postCreate(self, jsonTemplate):
@@ -47,23 +44,12 @@ class UIGraphInputs(UINodeBase):
         UINodeBase.postCreate(self, jsonTemplate)
 
         for uiPin in self.UIPins.values():
-            uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
+            uiPin.labelColor = Colors.AbsoluteBlack
 
         try:
             self.displayName = jsonTemplate['name']
         except:
             self.displayName = self.canvasRef().getUniqNodeDisplayName("Inputs")
-
-        self.label().setPlainText(self.displayName)
-        if "resize" in jsonTemplate['meta']:
-            self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
-            self._rect.setRight(jsonTemplate['meta']['resize']['w'])
-            self.updateWidth()
-            self.w = self._rect.width()
-        else:
-            self._rect.setWidth(25)
-            self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
 
     def paint(self, painter, option, widget):
         NodePainter.asGraphSides(self, painter, option, widget)
@@ -78,10 +64,6 @@ class UIGraphOutputs(UINodeBase):
         actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.createPinDialog)
-        self.label().hide()
-        self.resizable = True
-        self.portsMainLayout.removeItem(self.outputsLayout)
-        self.minWidth = 25
 
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
@@ -99,32 +81,20 @@ class UIGraphOutputs(UINodeBase):
     def onAddInPin(self, name=None, dataType="AnyPin"):
         rawPin = self._rawNode.addInPin(name, dataType)
         uiPin = self._createUIPinWrapper(rawPin)
-        uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
-        self.updateWidth()
+        uiPin.labelColor = Colors.AbsoluteBlack
         self.pinCreated.emit(uiPin)
+        self.updateNodeShape()
         return uiPin
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
         for uiPin in self.UIPins.values():
-            uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
-        # recreate dynamically created pins
+            uiPin.labelColor = Colors.AbsoluteBlack
 
         try:
             self.displayName = jsonTemplate['meta']['label']
         except:
             self.displayName = self.canvasRef().getUniqNodeDisplayName("Outputs")
-        self.label().setPlainText(self.displayName)
-
-        if "resize" in jsonTemplate['meta']:
-            self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
-            self._rect.setRight(jsonTemplate['meta']['resize']['w'])
-            self.updateWidth()
-            self.w = self._rect.width()
-        else:
-            self._rect.setWidth(25)
-            self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
 
     def paint(self, painter, option, widget):
         NodePainter.asGraphSides(self, painter, option, widget)

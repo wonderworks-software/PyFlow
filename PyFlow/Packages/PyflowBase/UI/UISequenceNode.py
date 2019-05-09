@@ -28,5 +28,4 @@ class UISequenceNode(UINodeBase):
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.OnPinDeleted.connect(self.onPinWasKilled)
         uiPin.setDisplayName("Then {}".format(rawPin.name))
-        self.updateWidth()
         return uiPin

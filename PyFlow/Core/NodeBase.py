@@ -504,7 +504,7 @@ class NodeBase(INode):
             pinOptionsToEnable = None
             pinOptionsToDisable = None
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
-            if "Reference" in pinDescriptionTuple:
+            if str("Reference") == pinDescriptionTuple[0]:
                 pinDataType = pinDescriptionTuple[1][0]
                 pinDefaultValue = pinDescriptionTuple[1][1]
                 pinDict = None

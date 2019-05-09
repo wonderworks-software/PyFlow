@@ -3,11 +3,28 @@ from Qt import QtGui, QtCore
 
 from PyFlow.UI.Canvas.Painters import PinPainter
 from PyFlow import findPinClassByType, getAllPinClasses
+from PyFlow.Core.Common import PinDirection
 
 from PyFlow.UI import RESOURCES_DIR
 
 
 _PIN_SIZE = 15
+
+class _FakeCanvas(object):
+    def __init__(self):
+        super(_FakeCanvas, self).__init__()
+
+    def getLodValueFromCurrentScale(self, lod):
+        return 1
+
+
+class _FakeNode(object):
+    def __init__(self):
+        super(_FakeNode, self).__init__()
+        self.fakeCanvas = _FakeCanvas()
+
+    def canvasRef(self):
+        return self.fakeCanvas
 
 
 class _FakePin(object):
@@ -27,13 +44,33 @@ class _PinWidget(QtWidgets.QWidget):
     def __init__(self, dataType, parent=None):
         super(_PinWidget, self).__init__(parent)
         self.dataType = dataType
+        self.fakeOwningNode = _FakeNode()
         self._rawPin = _FakePin()
-        self._color = QtGui.QColor(*findPinClassByType(self.dataType).color())
+        self._pinColor = QtGui.QColor(*findPinClassByType(self.dataType).color())
+        self.labelColor = QtCore.Qt.white
         self.hovered = False
-        self.setMinimumHeight(_PIN_SIZE + 10)
-        self.setMinimumWidth(_PIN_SIZE + 10)
+        self.pinSize = _PIN_SIZE
+        self._font = QtGui.QFont("Consolas")
+        self._font.setPointSize(14)
+        self.direction = PinDirection.Input
+        self.name = self.dataType
+
         self.setMouseTracking(True)
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+
+    def sizeHint(self):
+        textWidth = QtGui.QFontMetrics(self._font).width(self.dataType) + _PIN_SIZE
+        textHeight = max(QtGui.QFontMetrics(self._font).height(), _PIN_SIZE + 6)
+        return QtCore.QSize(textWidth, textHeight)
+
+    def pinCenter(self):
+        return QtCore.QPointF(_PIN_SIZE, _PIN_SIZE / 2)
+
+    def displayName(self):
+        return self.dataType
+
+    def owningNode(self):
+        return self.fakeOwningNode
 
     def enterEvent(self, event):
         super(_PinWidget, self).enterEvent(event)
@@ -46,7 +83,7 @@ class _PinWidget(QtWidgets.QWidget):
         self.update()
 
     def color(self):
-        return self._color
+        return self._pinColor
 
     @property
     def width(self):
@@ -68,16 +105,6 @@ class _PinWidget(QtWidgets.QWidget):
         painter.end()
 
 
-class _PinWidgetEntry(QtWidgets.QWidget):
-    def __init__(self, dataType, parent=None):
-        super(_PinWidgetEntry, self).__init__(parent)
-        self.dataType = dataType
-        self.mainLayout = QtWidgets.QHBoxLayout(self)
-        self.mainLayout.setContentsMargins(1, 1, 1, 1)
-        self.mainLayout.addWidget(_PinWidget(dataType))
-        self.mainLayout.addWidget(QtWidgets.QLabel(dataType))
-
-
 class _PinsListWidget(QtWidgets.QListWidget):
     """docstring for _PinsListWidget."""
     def __init__(self, parent=None):
@@ -89,9 +116,8 @@ class _PinsListWidget(QtWidgets.QListWidget):
         self.populate(pattern)
 
     def createEntry(self, dataType):
-        widget = _PinWidgetEntry(dataType)
+        widget = _PinWidget(dataType)
         item = QtWidgets.QListWidgetItem(self)
-        item.setSizeHint(QtCore.QSize(_PIN_SIZE, _PIN_SIZE + 20))
         self.setItemWidget(item, widget)
 
     def populate(self, pattern=""):

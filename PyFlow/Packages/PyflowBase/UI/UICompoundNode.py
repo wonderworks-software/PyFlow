@@ -11,7 +11,6 @@ class UICompoundNode(UINodeBase):
         self._rawNode.pinExposed.connect(self._createUIPinWrapper)
 
     def updateSize(self, name):
-        self.updateWidth()
         self.updateNodeShape()
 
     def getGraph(self):

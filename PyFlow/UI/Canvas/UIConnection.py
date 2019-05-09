@@ -122,10 +122,7 @@ class UIConnection(QGraphicsPathItem):
         return script
 
     def __str__(self):
-        return '{0}.{1} >>> {2}.{3}'.format(self.source().owningNode().name,
-                                            self.source()._rawPin.name,
-                                            self.destination().owningNode().name,
-                                            self.destination()._rawPin.name)
+        return '{0} >>> {1}'.format(self.source()._rawPin.getName(), self.destination()._rawPin.getName())
 
     def drawThick(self):
         self.pen.setWidthF(self.thickness + (self.thickness / 1.5))
@@ -145,8 +142,8 @@ class UIConnection(QGraphicsPathItem):
         self.update()
 
     def getEndPoints(self):
-        p1 = self.drawSource.boundingRect().center() + self.drawSource.scenePos()
-        p2 = self.drawDestination.boundingRect().center() + self.drawDestination.scenePos()
+        p1 = self.drawSource.scenePos() + self.drawSource.pinCenter()
+        p2 = self.drawDestination.scenePos() + self.drawDestination.pinCenter()
         return p1, p2
 
     def mousePressEvent(self, event):

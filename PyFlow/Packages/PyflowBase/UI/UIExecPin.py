@@ -14,6 +14,7 @@ class UIExecPin(UIPinBase):
         super(UIExecPin, self).__init__(owningNode, raw_pin)
 
     def paint(self, painter, option, widget):
+        # PinPainter.asValuePin(self, painter, option, widget)
         PinPainter.asExecPin(self, painter, option, widget)
 
     def hoverEnterEvent(self, event):

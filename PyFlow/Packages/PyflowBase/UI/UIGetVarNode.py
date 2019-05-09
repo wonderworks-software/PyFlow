@@ -21,21 +21,15 @@ from PyFlow.UI.Canvas.Painters import NodePainter
 class UIGetVarNode(UINodeBase):
     def __init__(self, raw_node):
         super(UIGetVarNode, self).__init__(raw_node)
-        self.label().opt_font.setPointSizeF(6.5)
+        self.drawlabel = False
+        # self.label().opt_font.setPointSizeF(6.5)
 
     @property
     def var(self):
         return self._rawNode.var
 
-    def handlePinLabelsVisibility(self):
-        pass
-
     def postCreate(self, jsonTemplate=None):
         super(UIGetVarNode, self).postCreate(jsonTemplate)
-
-        self.label().hide()
-        for out in self.UIoutputs.values():
-            out.getLabel()().hide()
 
         self.updateNodeShape(label=jsonTemplate['meta']['label'])
 
@@ -43,39 +37,31 @@ class UIGetVarNode(UINodeBase):
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
-    def boundingRect(self):
-        return QtCore.QRectF(0, -3, self.w, 20)
+        self.displayName = "Get {}".format(self.var.name)
+
+        for out in self.UIoutputs.values():
+            out.bLabelHidden = True
 
     def serialize(self):
         template = UINodeBase.serialize(self)
         template['meta']['var'] = self.var.serialize()
         return template
 
-    def onUpdatePropertyView(self, propertiesLayout):
-        widget = VariablesWidget.createPropertiesWidgetForVariable(self.var)
-        if widget is not None:
-            propertiesLayout.addWidget(widget)
-
     def onVarDataTypeChanged(self, dataType):
         # recreate pin
         recreatedPin = self._rawNode.recreateOutput(dataType)
         self.UIOut = self._createUIPinWrapper(self._rawNode.out)
-
-        self.updateNodeShape(self.var.name)
         self.onVarNameChanged(self.var.name)
 
-        self.UIOut.getLabel()().hide()
-        self.UIOut.getLabel()().visibilityPolicy = VisibilityPolicy.AlwaysHidden
-
     def onVarNameChanged(self, newName):
-        self.displayName = newName
-        self.label().setPlainText(newName)
+        self.displayName = "Get {}".format(newName)
         self.setName(newName)
-        self.updateNodeShape(label=self.label().toPlainText())
+        self.updateNodeShape(label=self.displayName)
 
     def onVarValueChanged(self, *args, **kwargs):
         for out in self._rawNode.outputs.values():
             push(out)
 
     def paint(self, painter, option, widget):
+        # NodePainter.default(self, painter, option, widget)
         NodePainter.asVariableGetter(self, painter, option, widget)
