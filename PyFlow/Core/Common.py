@@ -201,6 +201,10 @@ def canConnectPins(src, dst):
         if not src.optionEnabled(PinOptions.ExecSupported):
             return False
 
+    if src.IsValuePin() and dst.IsValuePin():
+        # TODO: check supported types
+        pass
+
     if src.owningNode == dst.owningNode:
         return False
 
