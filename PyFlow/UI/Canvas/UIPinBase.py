@@ -222,6 +222,8 @@ class UIPinBase(QGraphicsWidget):
             uniqueName = self._rawPin.owningNode().graph().graphManager.getUniqName(name)
             self.setName(uniqueName)
             self.setDisplayName(uniqueName)
+            self.owningNode().invalidateNodeLayouts()
+            self.owningNode().updateNodeShape()
 
     def syncDynamic(self):
         self.setMenuItemEnabled("Remove", self._rawPin.optionEnabled(PinOptions.Dynamic))

@@ -184,6 +184,9 @@ def canConnectPins(src, dst):
     if src.isExec() and not dst.isExec():
         return False
 
+    if not src.isExec() and dst.isExec():
+        return False
+
     if src.owningNode == dst.owningNode:
         return False
 

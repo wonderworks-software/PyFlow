@@ -9,6 +9,7 @@ from Qt import QtCore
 from Qt import QtGui
 
 from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.Commands.RemoveNodes import RemoveNodes
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
@@ -17,11 +18,13 @@ from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 # Variable setter node
 class UISetVarNode(UINodeBase):
     """docstring for UISetVarNode"""
-
     def __init__(self, raw_node):
         super(UISetVarNode, self).__init__(raw_node)
         self.UIIn = None
         self.UIOut = None
+        self.image = RESOURCES_DIR + "/gear.svg"
+        self.headColorOverride = Colors.Gray
+        self.color = Colors.DarkGray
 
     @property
     def var(self):

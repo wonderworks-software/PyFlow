@@ -54,6 +54,7 @@ class _PinWidget(QtWidgets.QWidget):
         self._font.setPointSize(14)
         self.direction = PinDirection.Input
         self.name = self.dataType
+        self.bLabelHidden = False
 
         self.setMouseTracking(True)
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)

@@ -1,4 +1,5 @@
 from PyFlow.Core.Common import *
+from PyFlow.UI.Utils.Settings import *
 
 
 class VisibilityPolicy(IntEnum):
@@ -34,16 +35,24 @@ class NodeDefaults(object):
     """docstring for NodeDefaults."""
     def __init__(self):
         self.__contentMargins = 3
-        self.__pinsLayoutSpacing = 10
-        self.__cornersRoundFactor = 3
+        self.__layoutsSpacing = 10
+        self.__cornersRoundFactor = 6
+
+    @property
+    def PURE_NODE_HEAD_COLOR(self):
+        return Colors.NodeNameRectGreen
+
+    @property
+    def CALLABLE_NODE_HEAD_COLOR(self):
+        return Colors.NodeNameRectBlue
 
     @property
     def CONTENT_MARGINS(self):
         return self.__contentMargins
 
     @property
-    def PINS_LAYOUT_SPACING(self):
-        return self.__pinsLayoutSpacing
+    def LAYOUTS_SPACING(self):
+        return self.__layoutsSpacing
 
     @property
     def CORNERS_ROUND_FACTOR(self):

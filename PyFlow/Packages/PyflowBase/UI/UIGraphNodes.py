@@ -5,6 +5,8 @@ from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
 from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI import RESOURCES_DIR
+from PyFlow.UI.Canvas.UICommon import *
 
 
 class UIGraphInputs(UINodeBase):
@@ -16,7 +18,9 @@ class UIGraphInputs(UINodeBase):
         actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.createPinDialog)
-        self.labelTextColor = Colors.AbsoluteBlack
+        self.color = Colors.DarkGray
+        self.headColorOverride = Colors.Gray
+        self.image = RESOURCES_DIR + "/gear.svg"
 
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
@@ -36,6 +40,11 @@ class UIGraphInputs(UINodeBase):
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.labelColor = Colors.AbsoluteBlack
         self.pinCreated.emit(uiPin)
+
+        geo = self.geometry()
+        geo.setWidth(50)
+        self.setGeometry(geo)
+
         self.updateNodeShape()
         return uiPin
 
@@ -52,7 +61,7 @@ class UIGraphInputs(UINodeBase):
             self.displayName = self.canvasRef().getUniqNodeDisplayName("Inputs")
 
     def paint(self, painter, option, widget):
-        NodePainter.asGraphSides(self, painter, option, widget)
+        NodePainter.default(self, painter, option, widget)
 
 
 class UIGraphOutputs(UINodeBase):
@@ -64,6 +73,9 @@ class UIGraphOutputs(UINodeBase):
         actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.createPinDialog)
+        self.color = Colors.DarkGray
+        self.headColorOverride = Colors.Gray
+        self.image = RESOURCES_DIR + "/gear.svg"
 
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
@@ -97,4 +109,4 @@ class UIGraphOutputs(UINodeBase):
             self.displayName = self.canvasRef().getUniqNodeDisplayName("Outputs")
 
     def paint(self, painter, option, widget):
-        NodePainter.asGraphSides(self, painter, option, widget)
+        NodePainter.default(self, painter, option, widget)
