@@ -31,7 +31,7 @@ from PyFlow.UI.Canvas.UIPinBase import (
     getUIPinInstance,
     UIGroupPinBase
 )
-from PyFlow.UI.Canvas.UICommon import VisibilityPolicy
+from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
@@ -131,7 +131,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # GUI Layout
         self._labelTextColor = QtCore.Qt.white
         self.nodeLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.nodeLayout.setContentsMargins(3, 3, 3, 3)
+        self.nodeLayout.setContentsMargins(NodeDefaults().CONTENT_MARGINS,
+                                           NodeDefaults().CONTENT_MARGINS,
+                                           NodeDefaults().CONTENT_MARGINS,
+                                           NodeDefaults().CONTENT_MARGINS)
         self.nodeLayout.setSpacing(10)
         self.nodeNameFont = QtGui.QFont("Consolas")
         self.nodeNameFont.setPointSize(6)
@@ -140,6 +143,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeLayout.setStretchFactor(self.nodeNameWidget, 1)
         self.pinsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.pinsLayout.setContentsMargins(0, 0, 0, 0)
+        self.pinsLayout.setSpacing(NodeDefaults().PINS_LAYOUT_SPACING)
         self.nodeLayout.addItem(self.pinsLayout)
         self.nodeLayout.setStretchFactor(self.pinsLayout, 2)
         self.inputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
@@ -150,7 +154,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.pinsLayout.addItem(self.outputsLayout)
         self.setLayout(self.nodeLayout)
 
-        self.icon = None
+        self.image = None
         self.canvasRef = None
         self._menu = QMenu()
 
@@ -179,6 +183,19 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # Core Nodes Support
         self.isTemp = False
         self.isCommentNode = False
+
+        self.actionTest = self._menu.addAction("Test")
+        self.actionTest.triggered.connect(self.onTest)
+
+    def onTest(self):
+        def worker(item):
+            print(item, item.boundingRect().size())
+            for child in item.childItems():
+                worker(child)
+        worker(self)
+
+    def getImageDrawPosition(self):
+        return self.boundingRect().topRight()
 
     @property
     def labelTextColor(self):
@@ -396,7 +413,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 pinwidth2 = max(pinwidth2, i.width)
         return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
 
+    def invalidateNodeLayouts(self):
+        self.inputsLayout.invalidate()
+        self.outputsLayout.invalidate()
+        self.pinsLayout.invalidate()
+        self.nodeLayout.invalidate()
+
     def updateNodeShape(self, label=None):
+        self.prepareGeometryChange()
+        self.invalidateNodeLayouts()
         self.updateGeometry()
         self.setToolTip(self.description())
         self.update()

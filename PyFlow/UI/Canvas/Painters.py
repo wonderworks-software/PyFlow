@@ -5,6 +5,7 @@ from Qt import QtGui
 from Qt.QtWidgets import QStyle
 
 from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.Common import *
 
 
@@ -40,7 +41,7 @@ class NodePainter(object):
             r.setHeight(r.height() - pen.width())
             r.setX(pen.width())
             r.setY(r.y() + pen.width())
-            painter.drawRoundedRect(r, NodePainter._cornerRoundFactor, NodePainter._cornerRoundFactor)
+            painter.drawRoundedRect(r, NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
         else:
             painter.drawRect(r)
 
@@ -78,6 +79,8 @@ class NodePainter(object):
             painter.drawRoundedRect(r, NodePainter._cornerRoundFactor, NodePainter._cornerRoundFactor)
         else:
             painter.drawRect(r)
+        if node.image is not None:
+            painter.drawImage(node.getImageDrawPosition(), node.image)
 
     @staticmethod
     def asVariableGetter(node, painter, option, widget):
