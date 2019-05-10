@@ -7,9 +7,9 @@ class reroute(NodeBase):
     def __init__(self, name):
         super(reroute, self).__init__(name)
         self.input = self.createInputPin("in", 'AnyPin', constraint="1")
-        self.input.enableOptions(PinOptions.ListSupported)
+        self.input.enableOptions(PinOptions.ListSupported | PinOptions.ExecSupported)
         self.output = self.createOutputPin("out", 'AnyPin', constraint="1")
-        self.output.enableOptions(PinOptions.ListSupported)
+        self.output.enableOptions(PinOptions.ListSupported | PinOptions.ExecSupported)
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
 
@@ -22,4 +22,4 @@ class reroute(NodeBase):
         return 'Common'
 
     def compute(self, *args, **kwargs):
-        self.output.setData(copy(self.input.getData()))
+        self.output.setData(self.input.getData())

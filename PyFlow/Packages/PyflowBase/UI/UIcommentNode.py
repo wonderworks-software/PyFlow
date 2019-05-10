@@ -44,9 +44,8 @@ QPushButton:pressed{
 class commentNodeName(NodeName):
     """doc string for commentNodeName"""
 
-    def __init__(self, parent, bUseTextureBg=False, color=Colors.AbsoluteBlack):
-        super(commentNodeName, self).__init__(
-            parent, bUseTextureBg, color=color)
+    def __init__(self, parent, bUseTextureBg=False):
+        super(commentNodeName, self).__init__(parent, bUseTextureBg)
         self.color = color
         self.color.setAlpha(80)
         self.setAcceptHoverEvents(True)
@@ -232,7 +231,7 @@ class UIcommentNode(UINodeBase):
         # restore text and size
         self.minWidth = width
         height = self.minHeight
-        labelHeight = self.label().h
+        # labelHeight = self.label().h
         text = self.__class__.__name__
         # initial color is black
         color = self.color
@@ -242,7 +241,7 @@ class UIcommentNode(UINodeBase):
             height = jsonTemplate['meta']['resize']['h']
 
         if 'commentNode' in jsonTemplate['meta']:
-            labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
+            # labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
             text = jsonTemplate['meta']['commentNode']['text']
             color = QtGui.QColor(*jsonTemplate['meta']['commentNode']['color'])
 
@@ -260,12 +259,12 @@ class UIcommentNode(UINodeBase):
 
         self.color = color
         self.update()
-        self.scene().removeItem(self.label())
-        delattr(self, 'label')
+        # self.scene().removeItem(self.label())
+        # delattr(self, 'label')
         self.label = weakref.ref(commentNodeName(self, False, Colors.White))
         self.label().setPlainText(text)
         self.label().width = self._rect.width()
-        self.label().h = labelHeight
+        # self.label().h = labelHeight
         self.label().color = color
         self.label().update()
         self.label().adjustSizes()

@@ -168,16 +168,16 @@ class SceneClass(QGraphicsScene):
                         if valid:
                             self.hoverItems.append(item)
                             item.drawThick()
-                    elif isinstance(item, UIRerouteNode):
-                        self.hoverItems.append(item)
-                        item.showPins()
+                    # elif isinstance(item, UIRerouteNode):
+                    #     self.hoverItems.append(item)
+                    #     item.showPins()
                 for item in self.hoverItems:
                     if item not in hoverItems:
                         self.hoverItems.remove(item)
                         if isinstance(item, UIConnection):
                             item.restoreThick()
-                        elif isinstance(item, UIRerouteNode):
-                            item.hidePins()
+                        # elif isinstance(item, UIRerouteNode):
+                        #     item.hidePins()
                     else:
                         if isinstance(item, UIConnection):
                             item.drawThick()
@@ -663,11 +663,11 @@ class Canvas(QGraphicsView):
                 nodeTemplate['uuid'] = str(uuid.uuid4())
 
                 instance = self.createNode(nodeTemplate)
-                if rect:
-                    instance._rect.setRight(rect.width())
-                    instance._rect.setBottom(rect.height())
-                    instance.label().width = rect.width()
-                    instance.label().adjustSizes()
+                # if rect:
+                    # instance._rect.setRight(rect.width())
+                    # instance._rect.setBottom(rect.height())
+                    # instance.label().width = rect.width()
+                    # instance.label().adjustSizes()
 
             if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
                 self.alignSelectedNodes(Direction.Left)
@@ -897,7 +897,7 @@ class Canvas(QGraphicsView):
         nodeTemplate['uuid'] = str(uuid.uuid4())
         nodeTemplate['meta']['label'] = "reroute"
         reruteNode = self.createNode(nodeTemplate)
-        reruteNode.color = self.pressed_item.color
+        # reruteNode.color = self.pressed_item.color
         reruteNode.translate(-reruteNode.boundingRect().center().x(), -5)
         return reruteNode
 
@@ -1101,15 +1101,15 @@ class Canvas(QGraphicsView):
             path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()),
                          QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
             self.realTimeLine.setPath(path)
-            for item in hoverItems:
-                if isinstance(item, UIRerouteNode):
-                    self.hoverItems.append(item)
-                    item.showPins()
-            for item in self.hoverItems:
-                if item not in hoverItems:
-                    self.hoverItems.remove(item)
-                    if isinstance(item, UIRerouteNode):
-                        item.hidePins()
+            # for item in hoverItems:
+            #     if isinstance(item, UIRerouteNode):
+            #         self.hoverItems.append(item)
+            #         item.showPins()
+            # for item in self.hoverItems:
+            #     if item not in hoverItems:
+            #         self.hoverItems.remove(item)
+            #         if isinstance(item, UIRerouteNode):
+            #             item.hidePins()
             if modifiers == QtCore.Qt.AltModifier:
                 self._drawRealtimeLine = False
                 if self.realTimeLine in self.scene().items():

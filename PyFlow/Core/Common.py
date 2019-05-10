@@ -159,6 +159,9 @@ def canConnectPins(src, dst):
     if src.direction == dst.direction:
         return False
 
+    if arePinsConnected(src, dst):
+        return False
+
     if not src.isList() and dst.isList():
         if dst.optionEnabled(PinOptions.SupportsOnlyList):
             return False
@@ -177,15 +180,26 @@ def canConnectPins(src, dst):
     if cycle_check(src, dst):
         return False
 
-    if dst.isAny():
+    if src.isAny() and dst.isExec():
+        srcIsFree = src.checkFree([])
+        if not srcIsFree:
+            if src.dataType not in dst.supportedDataTypes():
+                return False
+        else:
+            if not src.optionEnabled(PinOptions.ExecSupported):
+                return False
+
+    if dst.isAny() and not src.isExec():
         if src.dataType not in dst.supportedDataTypes():
             return False
 
     if src.isExec() and not dst.isExec():
-        return False
+        if not dst.optionEnabled(PinOptions.ExecSupported):
+            return False
 
     if not src.isExec() and dst.isExec():
-        return False
+        if not src.optionEnabled(PinOptions.ExecSupported):
+            return False
 
     if src.owningNode == dst.owningNode:
         return False
@@ -220,7 +234,7 @@ def connectPins(src, dst):
             if not src.optionEnabled(PinOptions.AllowMultipleConnections):
                 src.disconnectAll()
 
-    if src.isExec() and dst.isExec():
+    if src.optionEnabled(PinOptions.ExecSupported) and dst.optionEnabled(PinOptions.ExecSupported):
         src.onExecute.connect(dst.call)
 
     pinAffects(src, dst)
@@ -292,7 +306,7 @@ def disconnectPins(src, dst):
         src.pinDisconnected(dst)
         dst.pinDisconnected(src)
         push(dst)
-        if src.isExec() and dst.isExec():
+        if src.optionEnabled(PinOptions.ExecSupported) and dst.optionEnabled(PinOptions.ExecSupported):
             src.onExecute.disconnect(dst.call)
         return True
     return False
@@ -369,6 +383,7 @@ class PinOptions(Flag):
     Dynamic = auto()
     AlwaysPushDirty = auto()
     Storable = auto()
+    ExecSupported = auto()
 
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes
