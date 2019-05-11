@@ -41,6 +41,7 @@ from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyflowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyflowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyflowBase.Nodes.reroute import reroute
+from PyFlow.Packages.PyflowBase.Nodes.rerouteExecs import rerouteExecs
 from PyFlow.Packages.PyflowBase.Nodes.makeList import makeList
 from PyFlow.Packages.PyflowBase.Nodes.consoleOutput import consoleOutput
 from PyFlow.Packages.PyflowBase.Nodes.address import address
@@ -97,6 +98,7 @@ _NODES = {
     getVar.__name__: getVar,
     setVar.__name__: setVar,
     reroute.__name__: reroute,
+    rerouteExecs.__name__: rerouteExecs,
     graphInputs.__name__: graphInputs,
     graphOutputs.__name__: graphOutputs,
     compound.__name__: compound,

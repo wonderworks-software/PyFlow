@@ -17,7 +17,6 @@ class UIRerouteNode(UINodeBase):
         self.color = Colors.DarkGray
         self.image = RESOURCES_DIR + "/reroute.svg"
 
-
     def kill(self, *args, **kwargs):
         inp = list(self.UIinputs.values())[0]
         out = list(self.UIoutputs.values())[0]
@@ -36,6 +35,7 @@ class UIRerouteNode(UINodeBase):
         super(UIRerouteNode, self).postCreate(jsonTemplate)
         self.input = self.getPin("in")
         self.output = self.getPin("out")
+        self.displayName = "reroute"
         self.updateNodeShape()
 
     def paint(self, painter, option, widget):

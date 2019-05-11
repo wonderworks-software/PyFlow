@@ -11,7 +11,6 @@ class ExecPin(PinBase):
         self._isList = False
         if self.direction == PinDirection.Input:
             self.enableOptions(PinOptions.AllowMultipleConnections)
-        self.enableOptions(PinOptions.ExecSupported)
 
     def isExec(self):
         return True

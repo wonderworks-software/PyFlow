@@ -3,13 +3,11 @@ from PyFlow.Core.Common import *
 from copy import copy
 
 
-class reroute(NodeBase):
+class rerouteExecs(NodeBase):
     def __init__(self, name):
-        super(reroute, self).__init__(name)
-        self.input = self.createInputPin("in", 'AnyPin', constraint="1")
-        self.input.enableOptions(PinOptions.ListSupported)
-        self.output = self.createOutputPin("out", 'AnyPin', constraint="1")
-        self.output.enableOptions(PinOptions.ListSupported)
+        super(rerouteExecs, self).__init__(name)
+        self.input = self.createInputPin("in", 'ExecPin')
+        self.output = self.createOutputPin("out", 'ExecPin')
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
 
@@ -22,4 +20,4 @@ class reroute(NodeBase):
         return 'Common'
 
     def compute(self, *args, **kwargs):
-        self.output.setData(self.input.getData())
+        pass

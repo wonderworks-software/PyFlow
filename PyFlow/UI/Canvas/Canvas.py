@@ -234,8 +234,7 @@ class SceneClass(QGraphicsScene):
                     setNodeTemplate = dict(nodeTemplate)
                     setterAction = m.addAction('Set')
                     setNodeTemplate['type'] = 'setVar'
-                    setterAction.triggered.connect(
-                        lambda: self.parent().createNode(setNodeTemplate))
+                    setterAction.triggered.connect(lambda: self.parent().createNode(setNodeTemplate))
                     m.exec_(QtGui.QCursor.pos(), None)
                 if modifiers == QtCore.Qt.ControlModifier:
                     nodeTemplate['type'] = 'getVar'
@@ -886,18 +885,20 @@ class Canvas(QGraphicsView):
             node = node.parentItem()
         return node
 
-    def getReruteNode(self, pos):
+    def getReruteNode(self, pos, connection):
+        nodeClassName = "reroute"
+        if connection.drawSource._rawPin.isExec() and connection.drawDestination._rawPin.isExec():
+            nodeClassName = "rerouteExecs"
         nodeTemplate = NodeBase.jsonTemplate()
         nodeTemplate['package'] = "PyflowBase"
         nodeTemplate['lib'] = None
-        nodeTemplate['type'] = "reroute"
+        nodeTemplate['type'] = nodeClassName
         nodeTemplate['name'] = "reroute"
         nodeTemplate['x'] = self.mapToScene(pos).x()
         nodeTemplate['y'] = self.mapToScene(pos).y()
         nodeTemplate['uuid'] = str(uuid.uuid4())
         nodeTemplate['meta']['label'] = "reroute"
         reruteNode = self.createNode(nodeTemplate)
-        # reruteNode.color = self.pressed_item.color
         reruteNode.translate(-reruteNode.boundingRect().center().x(), -5)
         return reruteNode
 
@@ -992,7 +993,7 @@ class Canvas(QGraphicsView):
                 else:
                     # super(Canvas, self).mousePressEvent(event)
                     if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.AltModifier:
-                        reruteNode = self.getReruteNode(event.pos())
+                        reruteNode = self.getReruteNode(event.pos(), self.pressed_item)
                         self.clearSelection()
                         reruteNode.setSelected(True)
                         for inp in reruteNode.UIinputs.values():

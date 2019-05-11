@@ -5,6 +5,7 @@ from PyFlow.Packages.PyflowBase.Nodes.sequence import sequence
 from PyFlow.Packages.PyflowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyflowBase.Nodes.reroute import reroute
+from PyFlow.Packages.PyflowBase.Nodes.rerouteExecs import rerouteExecs
 from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
     graphInputs,
     graphOutputs
@@ -37,7 +38,7 @@ def createUINode(raw_instance):
         return UISequenceNode(raw_instance)
     if isinstance(raw_instance, commentNode):
         return UIcommentNode(raw_instance)
-    if isinstance(raw_instance, reroute):
+    if isinstance(raw_instance, reroute) or isinstance(raw_instance, rerouteExecs):
         return UIRerouteNode(raw_instance)
     if isinstance(raw_instance, graphInputs):
         return UIGraphInputs(raw_instance)

@@ -70,7 +70,7 @@ class UIConnection(QGraphicsPathItem):
         if not arePinsConnected(self.source()._rawPin, self.destination()._rawPin):
             self.canvasRef().removeConnection(self)
 
-        if self.drawSource._rawPin.optionEnabled(PinOptions.ExecSupported) and self.drawDestination._rawPin.optionEnabled(PinOptions.ExecSupported):
+        if self.drawSource._rawPin.isExec() or self.drawDestination._rawPin.isExec():
             if self.thickness != 2:
                 self.thickness = 2
                 self.pen.setWidthF(self.thickness)

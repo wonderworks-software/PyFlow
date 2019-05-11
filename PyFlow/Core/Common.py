@@ -120,9 +120,9 @@ def arePinsConnected(src, dst):
         src PinBase -- left hand side pin
         dst PinBase -- right hand side pin
     """
-    if src.owningNode() == dst.owningNode():
-        return False
     if src.direction == dst.direction:
+        return False
+    if src.owningNode() == dst.owningNode():
         return False
     if src.direction == PinDirection.Input:
         src, dst = dst, src
@@ -153,14 +153,20 @@ def canConnectPins(src, dst):
     if src is None or dst is None:
         return False
 
-    if src.direction == PinDirection.Input:
-        src, dst = dst, src
-
     if src.direction == dst.direction:
         return False
 
     if arePinsConnected(src, dst):
         return False
+
+    if src.direction == PinDirection.Input:
+        src, dst = dst, src
+
+    if cycle_check(src, dst):
+        return False
+
+    if src.isExec() and dst.isExec():
+        return True
 
     if not src.isList() and dst.isList():
         if dst.optionEnabled(PinOptions.SupportsOnlyList):
@@ -174,36 +180,26 @@ def canConnectPins(src, dst):
         if not dst.optionEnabled(PinOptions.AllowMultipleConnections) and dst.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection:
             return False
 
+    if src.hasConnections():
+        if not src.optionEnabled(PinOptions.AllowMultipleConnections) and src.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection:
+            return False
+
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
         return False
 
-    if cycle_check(src, dst):
-        return False
-
     if src.isAny() and dst.isExec():
-        srcIsFree = src.checkFree([])
-        if not srcIsFree:
-            if src.dataType not in dst.supportedDataTypes():
-                return False
-        else:
-            if not src.optionEnabled(PinOptions.ExecSupported):
-                return False
+        if src.dataType not in dst.supportedDataTypes():
+            return False
 
     if dst.isAny() and not src.isExec():
         if src.dataType not in dst.supportedDataTypes():
             return False
 
     if src.isExec() and not dst.isExec():
-        if not dst.optionEnabled(PinOptions.ExecSupported):
-            return False
+        return False
 
     if not src.isExec() and dst.isExec():
-        if not src.optionEnabled(PinOptions.ExecSupported):
-            return False
-
-    if src.IsValuePin() and dst.IsValuePin():
-        # TODO: check supported types
-        pass
+        return False
 
     if src.owningNode == dst.owningNode:
         return False
@@ -238,7 +234,7 @@ def connectPins(src, dst):
             if not src.optionEnabled(PinOptions.AllowMultipleConnections):
                 src.disconnectAll()
 
-    if src.optionEnabled(PinOptions.ExecSupported) and dst.optionEnabled(PinOptions.ExecSupported):
+    if src.isExec() and dst.isExec():
         src.onExecute.connect(dst.call)
 
     pinAffects(src, dst)
@@ -310,7 +306,7 @@ def disconnectPins(src, dst):
         src.pinDisconnected(dst)
         dst.pinDisconnected(src)
         push(dst)
-        if src.optionEnabled(PinOptions.ExecSupported) and dst.optionEnabled(PinOptions.ExecSupported):
+        if src.isExec() and dst.isExec():
             src.onExecute.disconnect(dst.call)
         return True
     return False
@@ -387,7 +383,6 @@ class PinOptions(Flag):
     Dynamic = auto()
     AlwaysPushDirty = auto()
     Storable = auto()
-    ExecSupported = auto()
 
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes
