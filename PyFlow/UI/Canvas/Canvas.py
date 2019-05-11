@@ -567,9 +567,9 @@ class Canvas(QGraphicsView):
         if nodesRect is None:
             return
         windowRect = self.mapToScene(self.rect()).boundingRect()
+
         # pan to center of window
         delta = windowRect.topLeft() - nodesRect.topLeft()
-        # delta += QtCore.QPointF(windowRect.width(), windowRect.height())
         delta *= self.currentViewScale()
         self.pan(delta)
 
@@ -584,6 +584,8 @@ class Canvas(QGraphicsView):
         scale = sx if sy > sx else sy
         self.zoom(scale)
 
+        return scale
+
     def ensureNodesRectAlmostEqualWindowRect(self, tolerance=10.0):
         windowRect = self.mapToScene(self.rect()).boundingRect()
         nodesRect = self.getNodesRect()
@@ -593,8 +595,7 @@ class Canvas(QGraphicsView):
 
     def frameSelectedNodes(self):
         self.frameRect(self.getNodesRect(True))
-        if not self.ensureNodesRectAlmostEqualWindowRect():
-            self.frameRect(self.getNodesRect(True))
+        self.frameRect(self.getNodesRect(True))
 
     def frameAllNodes(self):
         self.frameRect(self.getNodesRect())
@@ -1526,8 +1527,8 @@ class Canvas(QGraphicsView):
     def zoom(self, scale_factor):
         self.factor = self.transform().m22()
         futureScale = self.factor * scale_factor
-        if futureScale < self._minimum_scale:
-            return
-        if futureScale > self._maximum_scale:
-            return
+        if futureScale <= self._minimum_scale:
+            scale_factor = (self._minimum_scale) / self.factor
+        if futureScale >= self._maximum_scale:
+            scale_factor = (self._maximum_scale - 0.1) / self.factor
         self.scale(scale_factor, scale_factor)
