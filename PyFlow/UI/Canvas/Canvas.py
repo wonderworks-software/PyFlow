@@ -359,8 +359,8 @@ class Canvas(QGraphicsView):
         self._mousePressed = False
         self._shadows = False
         self._panSpeed = 1.0
-        self._minimum_scale = 0.5
-        self._maximum_scale = 2.0
+        self._minimum_scale = 0.2
+        self._maximum_scale = 3.0
 
         self.setDragMode(QGraphicsView.RubberBandDrag)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
@@ -566,28 +566,40 @@ class Canvas(QGraphicsView):
     def frameRect(self, nodesRect):
         if nodesRect is None:
             return
-        windowRect = self.rect()
+        windowRect = self.mapToScene(self.rect()).boundingRect()
+        # pan to center of window
+        delta = windowRect.topLeft() - nodesRect.topLeft()
+        # delta += QtCore.QPointF(windowRect.width(), windowRect.height())
+        delta *= self.currentViewScale()
+        self.pan(delta)
 
-        scaleX = float(windowRect.width()) / float(nodesRect.width())
-        scaleY = float(windowRect.height()) / float(nodesRect.height())
-        if scaleY > scaleX:
-            scale = scaleX
-        else:
-            scale = scaleY
-
+        # zoom to fit content
+        ws = windowRect.size()
+        nodesRect += QtCore.QMargins(0, 20, 150, 20)
+        rs = nodesRect.size()
+        widthRef = ws.width()
+        heightRef = ws.height()
+        sx = widthRef / nodesRect.width()
+        sy = heightRef / nodesRect.height()
+        scale = sx if sy > sx else sy
         self.zoom(scale)
 
-        sceneRect = self.sceneRect()
-        delta = sceneRect.center() - nodesRect.center()
-        self.pan(delta)
-        # Update the main panel when reframing.
-        self.update()
+    def ensureNodesRectAlmostEqualWindowRect(self, tolerance=10.0):
+        windowRect = self.mapToScene(self.rect()).boundingRect()
+        nodesRect = self.getNodesRect()
+        errorPoint = windowRect.topLeft() - nodesRect.topLeft()
+        error = abs(errorPoint.x() + errorPoint.y())
+        return error < tolerance
 
     def frameSelectedNodes(self):
         self.frameRect(self.getNodesRect(True))
+        if not self.ensureNodesRectAlmostEqualWindowRect():
+            self.frameRect(self.getNodesRect(True))
 
     def frameAllNodes(self):
         self.frameRect(self.getNodesRect())
+        if not self.ensureNodesRectAlmostEqualWindowRect():
+            self.frameRect(self.getNodesRect())
 
     def getNodesRect(self, selected=False):
         rectangles = []
@@ -667,6 +679,10 @@ class Canvas(QGraphicsView):
                     # instance._rect.setBottom(rect.height())
                     # instance.label().width = rect.width()
                     # instance.label().adjustSizes()
+
+            if all([event.key() == QtCore.Qt.Key_Space, modifiers == QtCore.Qt.ControlModifier]):
+                self.showNodeBox()
+                return
 
             if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
                 self.alignSelectedNodes(Direction.Left)
@@ -1042,7 +1058,6 @@ class Canvas(QGraphicsView):
                             selectedNodes = self.selectedNodes()
                             copiedNodes = self.copyNodes()
                             self.pasteNodes(move=False, data=copiedNodes)
-
         else:
             super(Canvas, self).mousePressEvent(event)
 
@@ -1053,6 +1068,7 @@ class Canvas(QGraphicsView):
         y = -delta.y() / scale
         rect.translate(x, y)
         self.setSceneRect(rect)
+        self.update()
 
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
@@ -1102,15 +1118,6 @@ class Canvas(QGraphicsView):
             path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()),
                          QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
             self.realTimeLine.setPath(path)
-            # for item in hoverItems:
-            #     if isinstance(item, UIRerouteNode):
-            #         self.hoverItems.append(item)
-            #         item.showPins()
-            # for item in self.hoverItems:
-            #     if item not in hoverItems:
-            #         self.hoverItems.remove(item)
-            #         if isinstance(item, UIRerouteNode):
-            #             item.hidePins()
             if modifiers == QtCore.Qt.AltModifier:
                 self._drawRealtimeLine = False
                 if self.realTimeLine in self.scene().items():
@@ -1311,9 +1318,6 @@ class Canvas(QGraphicsView):
         zoomFactor = 1.0 + event.delta() * self._mouseWheelZoomRate
 
         self.zoom(zoomFactor)
-
-        # Call update to redraw background
-        self.update()
 
     def stepToCompound(self, compoundNode):
         self.graphManager.selectGraph(compoundNode)
@@ -1527,8 +1531,3 @@ class Canvas(QGraphicsView):
         if futureScale > self._maximum_scale:
             return
         self.scale(scale_factor, scale_factor)
-
-    def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_Tab:
-            self.showNodeBox()
-        return False

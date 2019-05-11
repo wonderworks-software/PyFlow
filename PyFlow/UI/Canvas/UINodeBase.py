@@ -14,6 +14,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt import QtSvg
 from Qt.QtWidgets import QGraphicsTextItem
+from Qt.QtWidgets import QGraphicsPixmapItem
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QGraphicsObject
 from Qt.QtWidgets import QLabel
@@ -38,12 +39,54 @@ from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
+from PyFlow.UI import RESOURCES_DIR
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *
 
 from collections import OrderedDict
 
 UI_NODES_FACTORIES = {}
+
+
+class ActionButton(QGraphicsWidget):
+    """docstring for NodeActionsBar."""
+    def __init__(self, svgFilePath, action, parent=None):
+        super(ActionButton, self).__init__(parent)
+        self.setAcceptHoverEvents(True)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.action = action
+        self.svgIcon = QtSvg.QGraphicsSvgItem(svgFilePath, self)
+        self.setGraphicsItem(self)
+        self.hovered = False
+
+    def hoverEnterEvent(self, event):
+        self.hovered = True
+        self.update()
+
+    def hoverLeaveEvent(self, event):
+        self.hovered = False
+        self.update()
+
+    def mousePressEvent(self, event):
+        if self.action is not None and not self.parentItem().isSelected() and self.hasFocus():
+            self.action.triggered.emit()
+            self.clearFocus()
+
+    def paint(self, painter, option, widget):
+        super(ActionButton, self).paint(painter, option, widget)
+        if self.hovered:
+            frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
+            painter.setPen(QtCore.Qt.NoPen)
+            painter.setBrush(QtGui.QColor(50, 50, 50, 50))
+            painter.drawRect(frame)
+
+    def setGeometry(self, rect):
+        self.prepareGeometryChange()
+        super(QGraphicsWidget, self).setGeometry(rect)
+        self.setPos(rect.topLeft())
+
+    def sizeHint(self, which, constraint):
+        return QtCore.QSizeF(10, 10)
 
 
 class NodeName(QGraphicsWidget):
@@ -69,8 +112,8 @@ class NodeName(QGraphicsWidget):
 
     def sizeHint(self, which, constraint):
         font = self.parentItem().nodeNameFont
-        textWidth = QtGui.QFontMetrics(font).width(self.parentItem().displayName)
-        textHeight = QtGui.QFontMetrics(font).height()
+        textWidth = QtGui.QFontMetrics(font).width(self.parentItem().displayName) + NodeDefaults().CONTENT_MARGINS * 2
+        textHeight = QtGui.QFontMetrics(font).height() + 5
         return QtCore.QSizeF(textWidth, textHeight)
 
     def setGeometry(self, rect):
@@ -106,13 +149,18 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.setFlag(QGraphicsWidget.ItemIsFocusable)
         self.setFlag(QGraphicsWidget.ItemIsSelectable)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
-        # self.setFlag(QGraphicsWidget.ItemSendsScenePositionChanges)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        # self.setZValue(1)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self._rawNode = raw_node
         self._rawNode.setWrapper(self)
         self._rawNode.killed.connect(self.kill)
         self._rawNode.tick.connect(self.Tick)
+
+        self.custom_widget_data = {}
+        # node name
+        self._displayName = self.name
+
+        # GUI Layout
         self.opt_node_base_color = Colors.NodeBackgrounds
         self.opt_selected_pen_color = Colors.NodeSelectedPenColor
         self.opt_pen_selected_type = QtCore.Qt.SolidLine
@@ -124,13 +172,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.headColor = headColorOverride
         self.height_offset = 3
         self._w = 0
-        self.h = 40
-        self.custom_widget_data = {}
-        # node name
-        self._displayName = self.name
-
-        # GUI Layout
+        self.h = 25
         self._labelTextColor = QtCore.Qt.white
+
+        self.drawLayoutsDebug = False
         self.nodeLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.nodeLayout.setContentsMargins(NodeDefaults().CONTENT_MARGINS,
                                            NodeDefaults().CONTENT_MARGINS,
@@ -139,9 +184,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
         self.nodeNameFont = QtGui.QFont("Consolas")
         self.nodeNameFont.setPointSize(6)
+
+        self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal, self.nodeLayout)
+        self.nodeLayout.addItem(self.headerLayout)
         self.nodeNameWidget = NodeName(self)
-        self.nodeLayout.addItem(self.nodeNameWidget)
-        self.nodeLayout.setStretchFactor(self.nodeNameWidget, 1)
+        self.headerLayout.addItem(self.nodeNameWidget)
+        self.headerLayout.setContentsMargins(0, 0, 0, 0)
+        self.headerLayout.setSpacing(3)
+
         self.pinsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.pinsLayout.setContentsMargins(0, 0, 0, 0)
         self.pinsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
@@ -149,11 +199,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeLayout.setStretchFactor(self.pinsLayout, 2)
         self.inputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.inputsLayout.setContentsMargins(0, 0, 0, 0)
-        # self.inputsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
+        self.inputsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
         self.outputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.outputsLayout.setContentsMargins(0, 0, 0, 0)
-        # self.outputsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
+        self.outputsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
         self.pinsLayout.addItem(self.inputsLayout)
+        pinLayoutSpacer = QGraphicsWidget()
+        pinLayoutSpacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.pinsLayout.addItem(pinLayoutSpacer)
         self.pinsLayout.addItem(self.outputsLayout)
         self.setLayout(self.nodeLayout)
         self.svgIcon = QtSvg.QGraphicsSvgItem(self)
@@ -189,9 +242,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.isTemp = False
         self.isCommentNode = False
 
-        self.actionTest = self._menu.addAction("Test")
-        self.actionTest.triggered.connect(self.onTest)
-
     @property
     def image(self):
         return self._image
@@ -203,13 +253,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         elementName = QtCore.QFileInfo(value).baseName()
         self.svgIcon.setElementId(elementName)
         # self.svgIcon.setPos(self.geometry().topRight())
-
-    def onTest(self):
-        def worker(item):
-            print(item, item.boundingRect().size())
-            for child in item.childItems():
-                worker(child)
-        worker(self)
 
     def getImageDrawRect(self):
         topRight = self.boundingRect().topRight()
@@ -235,21 +278,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         return "class[{0}];name[{1}];graph[{2}]".format(self.__class__.__name__, self.getName(), graphName)
 
     def sizeHint(self, which, constraint):
-        size = QtCore.QSizeF(0, self.childrenBoundingRect().height() + NodeDefaults().LAYOUTS_SPACING)
+        size = QtCore.QSizeF(0, self.getNodeHeight())
         pinsWidth = self.getPinsWidth() + NodeDefaults().LAYOUTS_SPACING
-        textWidth = QtGui.QFontMetrics(self.nodeNameFont).width(self.displayName) + NodeDefaults().CONTENT_MARGINS * 2 + NodeDefaults().LAYOUTS_SPACING
+        textWidth = self.headerLayout.geometry().width() + NodeDefaults().CONTENT_MARGINS * 2
 
         if pinsWidth < textWidth:
             size.setWidth(textWidth)
         else:
             size.setWidth(pinsWidth)
-
-        if size.height() < self.minHeight:
-            size.setHeight(self.minHeight)
-
-        # exclude svg icon
-        if self.svgIcon.renderer().isValid():
-            size.setHeight(size.height() - self.svgIcon.renderer().defaultSize().height() + PinDefaults().PIN_SIZE)
 
         return size
 
@@ -400,7 +436,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         for i in self._rawNode.getOrderedPins():
             self._createUIPinWrapper(i)
 
-        self.updateNodeShape(label=jsonTemplate['meta']['label'])
+        self.updateNodeShape()
         self.setPos(self._rawNode.x, self._rawNode.y)
 
         if self.canvasRef().graphManager.activeGraph() != self._rawNode.graph():
@@ -416,6 +452,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
         else:
             self.headColor = self.headColorOverride
+
+        # NOTE: actions with icons will added next to node name
+        for action in self._menu.actions():
+            actionData = action.data()
+            if isinstance(actionData, NodeActionSvgFileData):
+                self.headerLayout.addItem(ActionButton(actionData.filePath(), action, self))
 
     def isCallable(self):
         return self._rawNode.isCallable()
@@ -440,6 +482,28 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             p = self.getPin(pinName, PinSelectionGroup.Outputs)
             p.setData(data)
 
+    def getNodeHeight(self):
+        h = self.nodeNameWidget.sizeHint(None, None).height()
+        h += self.nodeLayout.spacing()
+        try:
+            numInputs = len(self.UIinputs)
+            numOutputs = len(self.UIoutputs)
+            pins = self.UIinputs.values() if numInputs > numOutputs else self.UIoutputs.values()
+            h += NodeDefaults().CONTENT_MARGINS * 2
+
+            for pin in pins:
+                h += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
+        except:
+            pass
+
+        if h < self.minHeight:
+            h = self.minHeight
+
+        # exclude svg icon
+        # if self.svgIcon.renderer().isValid():
+        #     h -= self.svgIcon.renderer().defaultSize().height() + PinDefaults().PIN_SIZE
+        return h
+
     def getPinsWidth(self):
         iwidth = 0
         owidth = 0
@@ -458,14 +522,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.inputsLayout.invalidate()
         self.outputsLayout.invalidate()
         self.pinsLayout.invalidate()
+        self.headerLayout.invalidate()
         self.nodeLayout.invalidate()
 
-    def updateNodeShape(self, label=None):
+    def updateNodeShape(self):
         self.prepareGeometryChange()
         self.invalidateNodeLayouts()
         self.updateGeometry()
-        self.setToolTip(self.description())
         self.update()
+        self.canvasRef().update()
 
     def onChangeColor(self, label=False):
         res = QColorDialog.getColor(self.color, None, 'Node color setup')
@@ -486,9 +551,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)
-        # painter.setBrush(QtGui.QColor(100, 100, 100))
-        # painter.drawRoundedRect(self.boundingRect(), 5, 5)
-        # painter.drawRoundedRect(self.mapFromParent(self.geometry()).boundingRect(), 5, 5)
+        if self.drawLayoutsDebug:
+            painter.drawRect(self.headerLayout.geometry())
+            painter.drawRect(self.nodeLayout.geometry())
+            painter.drawRect(self.inputsLayout.geometry())
+            painter.drawRect(self.outputsLayout.geometry())
 
     def shouldResize(self, cursorPos):
         cursorPos = self.mapFromScene(cursorPos)

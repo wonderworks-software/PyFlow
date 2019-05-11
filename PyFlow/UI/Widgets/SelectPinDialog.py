@@ -108,6 +108,8 @@ class _PinWidget(QtWidgets.QWidget):
 
 class _PinsListWidget(QtWidgets.QListWidget):
     """docstring for _PinsListWidget."""
+    returnPressed = QtCore.Signal()
+
     def __init__(self, parent=None):
         super(_PinsListWidget, self).__init__()
         self.populate(pattern="")
@@ -120,6 +122,11 @@ class _PinsListWidget(QtWidgets.QListWidget):
         widget = _PinWidget(dataType)
         item = QtWidgets.QListWidgetItem(self)
         self.setItemWidget(item, widget)
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Return:
+            self.returnPressed.emit()
+        super(_PinsListWidget, self).keyPressEvent(event)
 
     def populate(self, pattern=""):
         for pinClass in getAllPinClasses():
@@ -150,13 +157,20 @@ class SelectPinDialog(QtWidgets.QDialog):
 
         self.content = _PinsListWidget()
         self.mainLayout.addWidget(self.content)
+        self.content.itemClicked.connect(self.onItemClicked)
+        self.content.returnPressed.connect(self.onReturnPressed)
 
-        self.dialogButtonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
-        self.dialogButtonBox.accepted.connect(self.onAccept)
-        self.dialogButtonBox.rejected.connect(self.onReject)
-        self.mainLayout.addWidget(self.dialogButtonBox)
-        self.setModal(True)
         self._result = None
+
+    def onReturnPressed(self):
+        widget = self.content.itemWidget(self.content.currentItem())
+        self._result = widget.dataType
+        self.close()
+
+    def onItemClicked(self, item):
+        widget = self.content.itemWidget(item)
+        self._result = widget.dataType
+        self.close()
 
     def showEvent(self, event):
         super(SelectPinDialog, self).showEvent(event)
@@ -167,11 +181,3 @@ class SelectPinDialog(QtWidgets.QDialog):
 
     def getResult(self):
         return self._result
-
-    def onReject(self):
-        self.close()
-
-    def onAccept(self):
-        widget = self.content.itemWidget(self.content.currentItem())
-        self._result = widget.dataType
-        self.close()

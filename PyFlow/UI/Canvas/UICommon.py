@@ -35,8 +35,13 @@ class NodeDefaults(object):
     """docstring for NodeDefaults."""
     def __init__(self):
         self.__contentMargins = 3
-        self.__layoutsSpacing = 10
+        self.__layoutsSpacing = 5
         self.__cornersRoundFactor = 6
+        self.__svgIconKey = "svgIcon"
+
+    @property
+    def SVG_ICON_KEY(self):
+        return self.__svgIconKey
 
     @property
     def PURE_NODE_HEAD_COLOR(self):
@@ -57,3 +62,12 @@ class NodeDefaults(object):
     @property
     def CORNERS_ROUND_FACTOR(self):
         return self.__cornersRoundFactor
+
+
+class NodeActionSvgFileData(object):
+    def __init__(self, svgFilePath):
+        super(NodeActionSvgFileData, self).__init__()
+        self.svgFilePath = svgFilePath
+
+    def filePath(self):
+        return self.svgFilePath

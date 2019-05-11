@@ -14,9 +14,8 @@ class UIGraphInputs(UINodeBase):
 
     def __init__(self, raw_node):
         super(UIGraphInputs, self).__init__(raw_node)
-        actionRename = self._menu.addAction("Rename")
-        actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
+        actionAddOut.setData(NodeActionSvgFileData(RESOURCES_DIR + "/pin.svg"))
         actionAddOut.triggered.connect(self.createPinDialog)
         self.color = Colors.DarkGray
         self.headColorOverride = Colors.Gray
@@ -27,6 +26,7 @@ class UIGraphInputs(UINodeBase):
         if confirmed and name != self.name and name != "":
             self.displayName = self.canvasRef().getUniqNodeDisplayName(name)
             self.update()
+        self.setFocus()
 
     def createPinDialog(self):
         self.d = SelectPinDialog()
@@ -34,6 +34,7 @@ class UIGraphInputs(UINodeBase):
         dataType = self.d.getResult()
         if dataType is not None:
             self.onAddOutPin(None, dataType)
+        self.setFocus()
 
     def onAddOutPin(self, name=None, dataType="AnyPin"):
         rawPin = self._rawNode.addOutPin(name, dataType)
@@ -59,9 +60,6 @@ class UIGraphInputs(UINodeBase):
             self.displayName = jsonTemplate['name']
         except:
             self.displayName = self.canvasRef().getUniqNodeDisplayName("Inputs")
-
-    def paint(self, painter, option, widget):
-        NodePainter.default(self, painter, option, widget)
 
 
 class UIGraphOutputs(UINodeBase):
@@ -107,6 +105,3 @@ class UIGraphOutputs(UINodeBase):
             self.displayName = jsonTemplate['meta']['label']
         except:
             self.displayName = self.canvasRef().getUniqNodeDisplayName("Outputs")
-
-    def paint(self, painter, option, widget):
-        NodePainter.default(self, painter, option, widget)
