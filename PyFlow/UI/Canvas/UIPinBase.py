@@ -338,6 +338,7 @@ class UIPinBase(QGraphicsWidget):
             self.owningNode().outputsLayout.removeItem(self)
 
         self.OnPinDeleted.emit(self)
+        scene.removeItem(self)
         self.owningNode().updateNodeShape()
 
     def assignRawPin(self, rawPin):
