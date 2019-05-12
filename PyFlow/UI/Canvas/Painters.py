@@ -47,7 +47,7 @@ class NodePainter(object):
         painter.setBrush(br)
         if node.drawlabel:
             lr = QtCore.QRectF(r)
-            lr.setHeight(node.labelHeight)
+            lr.setHeight(node.labelHeight + NodeDefaults().CONTENT_MARGINS / 2)
             headColor = node.headColor
             if node.isTemp:
                 headColor = headColor.lighter(50)

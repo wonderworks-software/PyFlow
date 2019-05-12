@@ -111,10 +111,16 @@ class NodeName(QGraphicsWidget):
         self.update()
 
     def sizeHint(self, which, constraint):
-        font = self.parentItem().nodeNameFont
-        textWidth = QtGui.QFontMetrics(font).width(self.parentItem().displayName) + NodeDefaults().CONTENT_MARGINS * 2
-        textHeight = QtGui.QFontMetrics(font).height() + 5
-        return QtCore.QSizeF(textWidth, textHeight)
+        nameFont = self.parentItem().nodeNameFont
+        typeFont = self.parentItem().nodeTypeFont
+
+        nameTextWidth = QtGui.QFontMetrics(nameFont).width(self.parentItem().displayName) + NodeDefaults().CONTENT_MARGINS * 2
+        nameTextHeight = QtGui.QFontMetrics(nameFont).height()
+
+        typeTextWidth = QtGui.QFontMetrics(nameFont).width(self.parentItem().displayName) + NodeDefaults().CONTENT_MARGINS * 2
+        typeTextHeight = QtGui.QFontMetrics(typeFont).height()
+
+        return QtCore.QSizeF(max(nameTextWidth, typeTextWidth), nameTextHeight + typeTextHeight)
 
     def setGeometry(self, rect):
         self.prepareGeometryChange()
@@ -126,14 +132,19 @@ class NodeName(QGraphicsWidget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
 
         if lod < 3:
-            text = self.parentItem().displayName
+            nodeName = self.parentItem().name
+            nodeType = self.parentItem()._rawNode.__class__.__name__
             painter.setFont(self.parentItem().nodeNameFont)
-            painter.setPen(QtGui.QPen(self.parentItem().labelTextColor, 0.5))
-            width = QtGui.QFontMetrics(painter.font()).width(text)
+            painter.setPen(QtGui.QPen(self.parentItem().labelTextColor, 0.7))
+            width = QtGui.QFontMetrics(painter.font()).width(nodeName)
             height = QtGui.QFontMetrics(painter.font()).height()
             yCenter = (frame.height() / 2) + (height / 2.5)
             x = PinDefaults().PIN_SIZE / 2
-            painter.drawText(x, yCenter, text)
+            painter.drawText(x, yCenter - height / 2, nodeName)
+            painter.setFont(self.parentItem().nodeTypeFont)
+            painter.setPen(QtGui.QPen(self.parentItem().typeTextColor, 0.5))
+            height = QtGui.QFontMetrics(painter.font()).height()
+            painter.drawText(x, yCenter + height / 3, nodeType)
 
 
 class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
@@ -164,7 +175,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.opt_node_base_color = Colors.NodeBackgrounds
         self.opt_selected_pen_color = Colors.NodeSelectedPenColor
         self.opt_pen_selected_type = QtCore.Qt.SolidLine
-        self.labelHeight = 15
+        self._collapsed = False
         self._left_stretch = 0
         self.color = color
         self.drawlabel = True
@@ -174,6 +185,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._w = 0
         self.h = 25
         self._labelTextColor = QtCore.Qt.white
+        self._typeTextColor = QtCore.Qt.white
 
         self.drawLayoutsDebug = False
         self.nodeLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
@@ -184,6 +196,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
         self.nodeNameFont = QtGui.QFont("Consolas")
         self.nodeNameFont.setPointSize(6)
+
+        self.nodeTypeFont = QtGui.QFont("Consolas")
+        self.nodeTypeFont.setPointSize(4)
+        self.nodeTypeFont.setItalic(True)
 
         self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal, self.nodeLayout)
         self.nodeLayout.addItem(self.headerLayout)
@@ -242,6 +258,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.isTemp = False
         self.isCommentNode = False
 
+    def setCollapsed(self, bCollapsed=False):
+        self._collapsed = bCollapsed
+
     @property
     def image(self):
         return self._image
@@ -265,13 +284,20 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         return r
 
     @property
+    def typeTextColor(self):
+        return self._typeTextColor
+
+    @typeTextColor.setter
+    def typeTextColor(self, value):
+        self._typeTextColor = value
+
+    @property
     def labelTextColor(self):
         return self._labelTextColor
 
     @labelTextColor.setter
     def labelTextColor(self, value):
         self._labelTextColor = value
-        self.nodeNameWidget.color = value
 
     def __repr__(self):
         graphName = self._rawNode.graph().name if self._rawNode.graph is not None else str(None)
@@ -482,6 +508,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             p = self.getPin(pinName, PinSelectionGroup.Outputs)
             p.setData(data)
 
+    @property
+    def labelHeight(self):
+        return self.nodeNameWidget.sizeHint(None, None).height()
+
     def getNodeHeight(self):
         h = self.nodeNameWidget.sizeHint(None, None).height()
         h += self.nodeLayout.spacing()
@@ -499,9 +529,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         if h < self.minHeight:
             h = self.minHeight
 
-        # exclude svg icon
-        # if self.svgIcon.renderer().isValid():
-        #     h -= self.svgIcon.renderer().defaultSize().height() + PinDefaults().PIN_SIZE
         return h
 
     def getPinsWidth(self):

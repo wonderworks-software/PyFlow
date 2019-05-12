@@ -348,13 +348,6 @@ class UIPinBase(QGraphicsWidget):
             self._rawPin.setWrapper(self)
             self._pinColor = QtGui.QColor(*self._rawPin.color())
 
-    @staticmethod
-    def deserialize(owningNode, jsonData):
-        # find raw pin class by type
-        # call deserialize on it
-        # create ui wrapper
-        return None
-
     def serializationHook(self, *args, **kwargs):
         data = {}
         data['bLabelHidden'] = self.bLabelHidden
@@ -363,9 +356,6 @@ class UIPinBase(QGraphicsWidget):
 
     def serialize(self):
         return self._rawPin.serialize()
-
-    def ungrabMouseEvent(self, event):
-        super(UIPinBase, self).ungrabMouseEvent(event)
 
     def getContainer(self):
         return self._container

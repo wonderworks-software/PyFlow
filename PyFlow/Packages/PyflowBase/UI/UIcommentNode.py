@@ -216,7 +216,7 @@ class UIcommentNode(UINodeBase):
         # else:
         bottom = self.prevRect
         template['meta']['commentNode'] = {
-            'labelHeight': self.label().h,
+            # 'labelHeight': self.label().h,
             'text': self.label().toPlainText(),
             'color': (self.color.toTuple()),
             'expanded': self.expanded,
