@@ -50,14 +50,15 @@ UI_NODES_FACTORIES = {}
 
 class ActionButton(QGraphicsWidget):
     """docstring for NodeActionsBar."""
-    def __init__(self, svgFilePath, action, parent=None):
-        super(ActionButton, self).__init__(parent)
+    def __init__(self, svgFilePath, action, uiNode):
+        super(ActionButton, self).__init__(uiNode)
         self.setAcceptHoverEvents(True)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.action = action
         self.svgIcon = QtSvg.QGraphicsSvgItem(svgFilePath, self)
         self.setGraphicsItem(self)
         self.hovered = False
+        uiNode._actionButtons.add(self)
 
     def hoverEnterEvent(self, event):
         self.hovered = True
@@ -68,7 +69,10 @@ class ActionButton(QGraphicsWidget):
         self.update()
 
     def mousePressEvent(self, event):
-        if self.action is not None and not self.parentItem().isSelected() and self.hasFocus():
+        if self.parentItem().isSelected():
+            self.parentItem().setSelected(False)
+
+        if self.action is not None and self.hasFocus():
             self.action.triggered.emit()
             self.clearFocus()
 
@@ -207,6 +211,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.headerLayout.addItem(self.nodeNameWidget)
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         self.headerLayout.setSpacing(3)
+        nameActionsSpacer = QGraphicsWidget()
+        nameActionsSpacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.headerLayout.addItem(nameActionsSpacer)
 
         self.pinsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.pinsLayout.setContentsMargins(0, 0, 0, 0)
@@ -253,6 +260,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # Group Pins
         self.inputGroupPins = {}
         self.outputGroupPins = {}
+
+        # Action buttons
+        self._actionButtons = set()
 
         # Core Nodes Support
         self.isTemp = False
@@ -305,11 +315,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     def sizeHint(self, which, constraint):
         size = QtCore.QSizeF(0, self.getNodeHeight())
-        pinsWidth = self.getPinsWidth() + NodeDefaults().LAYOUTS_SPACING
-        textWidth = self.headerLayout.geometry().width() + NodeDefaults().CONTENT_MARGINS * 2
+        pinsWidth = self.getPinsWidth() + self.pinsLayout.spacing()
+        headerWidth = QtGui.QFontMetrics(self.nodeNameFont).width(self.displayName) + NodeDefaults().CONTENT_MARGINS * 2
 
-        if pinsWidth < textWidth:
-            size.setWidth(textWidth)
+        # actions width, `+ 1` means hidden spacer item. 10 is svg icon size, probably need to move this value to some preferences
+        headerWidth += (len(self._actionButtons) + 1) * 10
+        headerWidth += (len(self._actionButtons) + 1) * self.headerLayout.spacing()
+
+        if pinsWidth < headerWidth:
+            size.setWidth(headerWidth)
         else:
             size.setWidth(pinsWidth)
 

@@ -195,7 +195,7 @@ class PinPainter(object):
                 x = frame.width() - textWidth - pin.pinSize - 1
             yCenter = textHeight - textHeight / 3
             painter.setPen(QtGui.QPen(pin.labelColor, 0.5, QtCore.Qt.SolidLine))
-            painter.drawText(x, yCenter, pin.name)
+            painter.drawText(x, yCenter, pin.displayName())
 
         pinCenter = pin.pinCenter()
         radialGrad = QtGui.QRadialGradient(pinCenter.x(), pinCenter.y() - 0.3, halfPinSize * 0.8)
@@ -234,7 +234,7 @@ class PinPainter(object):
                 x = frame.width() - textWidth - pin.pinSize - 1
             yCenter = textHeight - textHeight / 3
             painter.setPen(QtGui.QPen(pin.labelColor, 0.5, QtCore.Qt.SolidLine))
-            painter.drawText(x, yCenter, pin.name)
+            painter.drawText(x, yCenter, pin.displayName())
 
         if pin._rawPin.hasConnections():
             painter.setBrush(QtGui.QBrush(pin.color()))

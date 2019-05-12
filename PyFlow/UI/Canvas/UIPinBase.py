@@ -88,7 +88,6 @@ class UIGroupPinBase(QGraphicsWidget):
         self.update()
 
 
-# TODO: Make ui pin compound with label in horizontal layout
 class UIPinBase(QGraphicsWidget):
     '''
     Pin ui wrapper
@@ -371,7 +370,7 @@ class UIPinBase(QGraphicsWidget):
         height = QtGui.QFontMetrics(self._font).height()
         width = self.pinSize
         if not self.bLabelHidden:
-            width += QtGui.QFontMetrics(self._font).width(self._rawPin.name) + 5
+            width += QtGui.QFontMetrics(self._font).width(self.displayName()) + 5
         return QtCore.QSizeF(width, height)
 
     def shape(self):
