@@ -49,7 +49,7 @@ class UISetVarNode(UINodeBase):
     def onVarNameChanged(self, newName):
         self.displayName = 'Set {}'.format(newName)
         self.setName(newName)
-        self.updateNodeShape(label=self.displayName)
+        self.updateNodeShape()
 
     @staticmethod
     def category():

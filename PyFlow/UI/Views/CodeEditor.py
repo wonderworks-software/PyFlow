@@ -357,7 +357,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         node.autoAffectPins()
 
         # reset node shape
-        node.updateNodeShape(lbText)
+        node.updateNodeShape()
 
     def gatherPinNames(self):
         names = []
