@@ -47,7 +47,7 @@ from collections import OrderedDict
 
 UI_NODES_FACTORIES = {}
 
-
+# TODO: support multiple svg files. Load them once
 class ActionButton(QGraphicsWidget):
     """docstring for NodeActionsBar."""
     def __init__(self, svgFilePath, action, uiNode):
@@ -82,7 +82,7 @@ class ActionButton(QGraphicsWidget):
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
             painter.setPen(QtCore.Qt.NoPen)
             painter.setBrush(QtGui.QColor(50, 50, 50, 50))
-            painter.drawRect(frame)
+            painter.drawRoundedRect(frame, 2, 2)
 
     def setGeometry(self, rect):
         self.prepareGeometryChange()
@@ -268,8 +268,28 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.isTemp = False
         self.isCommentNode = False
 
-    def setCollapsed(self, bCollapsed=False):
-        self._collapsed = bCollapsed
+        # collapse action test
+        self.actionToggleCollapse = self._menu.addAction("ToggleCollapse")
+        self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
+        self.actionToggleCollapse.setData(NodeActionSvgFileData(RESOURCES_DIR + "/collapse.svg"))
+
+    def toggleCollapsed(self):
+        self.collapsed = not self.collapsed
+
+    @property
+    def collapsed(self):
+        return self._collapsed
+
+    @collapsed.setter
+    def collapsed(self, bCollapsed):
+        if bCollapsed != self._collapsed:
+            self._collapsed = bCollapsed
+            for i in range(0, self.inputsLayout.count()):
+                inp = self.inputsLayout.itemAt(i)
+                inp.setVisible(not bCollapsed)
+            for o in range(0, self.outputsLayout.count()):
+                out = self.outputsLayout.itemAt(o)
+                out.setVisible(not bCollapsed)
 
     @property
     def image(self):
@@ -311,7 +331,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     def __repr__(self):
         graphName = self._rawNode.graph().name if self._rawNode.graph is not None else str(None)
-        return "class[{0}];name[{1}];graph[{2}]".format(self.__class__.__name__, self.getName(), graphName)
+        return "<class[{0}]; name[{1}]; graph[{2}]>".format(self.__class__.__name__, self.getName(), graphName)
 
     def sizeHint(self, which, constraint):
         size = QtCore.QSizeF(0, self.getNodeHeight())
@@ -321,6 +341,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # actions width, `+ 1` means hidden spacer item. 10 is svg icon size, probably need to move this value to some preferences
         headerWidth += (len(self._actionButtons) + 1) * 10
         headerWidth += (len(self._actionButtons) + 1) * self.headerLayout.spacing()
+
+        if self.collapsed:
+            headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS
 
         if pinsWidth < headerWidth:
             size.setWidth(headerWidth)
@@ -536,7 +559,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             h += NodeDefaults().CONTENT_MARGINS * 2
 
             for pin in pins:
-                h += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
+                if pin.isVisible():
+                    h += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
         except:
             pass
 

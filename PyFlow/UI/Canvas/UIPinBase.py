@@ -13,6 +13,7 @@ from Qt.QtWidgets import QSizePolicy
 from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.Painters import PinPainter
+from PyFlow.UI.Canvas.UICommon import PinDefaults
 
 
 UI_PINS_FACTORIES = {}
@@ -370,7 +371,10 @@ class UIPinBase(QGraphicsWidget):
         height = QtGui.QFontMetrics(self._font).height()
         width = self.pinSize
         if not self.bLabelHidden:
-            width += QtGui.QFontMetrics(self._font).width(self.displayName()) + 5
+            width += QtGui.QFontMetrics(self._font).width(self.displayName()) + PinDefaults().PIN_SIZE
+        if not self.isVisible():
+            width = 0
+            height = 0
         return QtCore.QSizeF(width, height)
 
     def shape(self):
