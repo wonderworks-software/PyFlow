@@ -28,7 +28,7 @@ class UIGetVarNode(UINodeBase):
     def postCreate(self, jsonTemplate=None):
         super(UIGetVarNode, self).postCreate(jsonTemplate)
 
-        self.updateNodeShape(label=jsonTemplate['meta']['label'])
+        self.updateNodeShape()
 
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
