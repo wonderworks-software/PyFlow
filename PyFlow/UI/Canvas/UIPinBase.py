@@ -164,7 +164,15 @@ class UIPinBase(QGraphicsWidget):
         pinY = (frame.height() / 2)
         if self.direction == PinDirection.Output:
             pinX = frame.width() - self.pinSize + halfPinSize
-        return QtCore.QPointF(pinX, pinY)
+        result = QtCore.QPointF(pinX, pinY)
+        if self.owningNode().collapsed:
+            labelHeight = self.owningNode().labelHeight
+            labelHeight += self.owningNode().nodeLayout.spacing()
+            if self.direction == PinDirection.Input:
+                result = self.mapFromParent(QtCore.QPointF(0, labelHeight))
+            if self.direction == PinDirection.Output:
+                result = self.mapFromParent(QtCore.QPointF(self.owningNode().sizeHint(None, None).width(), labelHeight))
+        return result
 
     def onContainerTypeChanged(self, *args, **kwargs):
         # underlined pin is changed to list or dict

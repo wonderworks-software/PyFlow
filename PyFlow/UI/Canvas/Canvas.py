@@ -36,6 +36,7 @@ from PyFlow.UI.Canvas.UIConnection import UIConnection
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import NodeName
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
+from PyFlow.UI.Canvas.UINodeBase import ActionButton
 from PyFlow.UI.Canvas.UIPinBase import UIPinBase
 from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.NodeBox import NodesBox
@@ -1299,6 +1300,12 @@ class Canvas(QGraphicsView):
         manhattanLengthTest = (self.mousePressPose - event.pos()).manhattanLength() <= 2
         if all([event.button() == QtCore.Qt.LeftButton, releasedNode is not None,
                 pressedNode is not None, pressedNode == releasedNode, manhattanLengthTest]):
+
+                # check if clicking on node action button
+                if self.released_item is not None:
+                    if isinstance(self.released_item.parentItem(), ActionButton):
+                        return
+
                 self.tryFillPropertiesView(pressedNode)
         elif event.button() == QtCore.Qt.LeftButton:
             self.requestClearProperties.emit()

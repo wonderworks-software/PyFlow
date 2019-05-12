@@ -211,9 +211,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.headerLayout.addItem(self.nodeNameWidget)
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         self.headerLayout.setSpacing(3)
-        nameActionsSpacer = QGraphicsWidget()
-        nameActionsSpacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.headerLayout.addItem(nameActionsSpacer)
+        self.nameActionsSpacer = QGraphicsWidget()
+        self.nameActionsSpacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.headerLayout.addItem(self.nameActionsSpacer)
 
         self.pinsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.pinsLayout.setContentsMargins(0, 0, 0, 0)
@@ -338,12 +338,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         pinsWidth = self.getPinsWidth() + self.pinsLayout.spacing()
         headerWidth = QtGui.QFontMetrics(self.nodeNameFont).width(self.displayName) + NodeDefaults().CONTENT_MARGINS * 2
 
-        # actions width, `+ 1` means hidden spacer item. 10 is svg icon size, probably need to move this value to some preferences
-        headerWidth += (len(self._actionButtons) + 1) * 10
-        headerWidth += (len(self._actionButtons) + 1) * self.headerLayout.spacing()
-
-        if self.collapsed:
-            headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS
+        # actions width. 10 is svg icon size, probably need to move this value to some preferences
+        numActions = len(self._actionButtons)
+        headerWidth += numActions * 10
+        headerWidth += numActions * self.headerLayout.spacing()
+        headerWidth += self.nameActionsSpacer.boundingRect().width()
+        headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
 
         if pinsWidth < headerWidth:
             size.setWidth(headerWidth)
