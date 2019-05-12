@@ -212,6 +212,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         self.headerLayout.setSpacing(3)
         self.nameActionsSpacer = QGraphicsWidget()
+        self.nameActionsSpacer.setObjectName("nameActionsSpacer")
         self.nameActionsSpacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.headerLayout.addItem(self.nameActionsSpacer)
 
@@ -227,9 +228,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.outputsLayout.setContentsMargins(0, 0, 0, 0)
         self.outputsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
         self.pinsLayout.addItem(self.inputsLayout)
-        pinLayoutSpacer = QGraphicsWidget()
-        pinLayoutSpacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.pinsLayout.addItem(pinLayoutSpacer)
+        self.pinLayoutSpacer = QGraphicsWidget()
+        self.pinLayoutSpacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.pinLayoutSpacer.setObjectName("pinLayoutSpacer")
+        self.pinsLayout.addItem(self.pinLayoutSpacer)
         self.pinsLayout.addItem(self.outputsLayout)
         self.setLayout(self.nodeLayout)
         self.svgIcon = QtSvg.QGraphicsSvgItem(self)
@@ -290,6 +292,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             for o in range(0, self.outputsLayout.count()):
                 out = self.outputsLayout.itemAt(o)
                 out.setVisible(not bCollapsed)
+            self.pinLayoutSpacer.setVisible(not bCollapsed)
 
     @property
     def image(self):
@@ -336,14 +339,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def sizeHint(self, which, constraint):
         size = QtCore.QSizeF(0, self.getNodeHeight())
         pinsWidth = self.getPinsWidth() + self.pinsLayout.spacing()
-        headerWidth = QtGui.QFontMetrics(self.nodeNameFont).width(self.displayName) + NodeDefaults().CONTENT_MARGINS * 2
-
-        # actions width. 10 is svg icon size, probably need to move this value to some preferences
-        numActions = len(self._actionButtons)
-        headerWidth += numActions * 10
-        headerWidth += numActions * self.headerLayout.spacing()
-        headerWidth += self.nameActionsSpacer.boundingRect().width()
-        headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
+        headerWidth = self.labelWidth
 
         if pinsWidth < headerWidth:
             size.setWidth(headerWidth)
@@ -548,6 +544,19 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     @property
     def labelHeight(self):
         return self.nodeNameWidget.sizeHint(None, None).height()
+
+    @property
+    def labelWidth(self):
+        headerWidth = QtGui.QFontMetrics(self.nodeNameFont).width(self.displayName) + NodeDefaults().CONTENT_MARGINS * 2
+
+        # actions width. 10 is svg icon size, probably need to move this value to some preferences
+        numActions = len(self._actionButtons)
+        headerWidth += numActions * 10
+        headerWidth += numActions * self.headerLayout.spacing()
+        if self.collapsed:
+            headerWidth += self.nameActionsSpacer.boundingRect().width()
+        headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
+        return headerWidth
 
     def getNodeHeight(self):
         h = self.nodeNameWidget.sizeHint(None, None).height()
