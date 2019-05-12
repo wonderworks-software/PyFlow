@@ -39,6 +39,7 @@ from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
+from PyFlow.UI.Canvas.NodeActionButton import NodeActionButtonBase
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *
@@ -47,50 +48,19 @@ from collections import OrderedDict
 
 UI_NODES_FACTORIES = {}
 
-# TODO: support multiple svg files. Load them once
-class ActionButton(QGraphicsWidget):
-    """docstring for NodeActionsBar."""
+
+class CollapseNodeActionButton(NodeActionButtonBase):
+    """docstring for CollapseNodeActionButton."""
     def __init__(self, svgFilePath, action, uiNode):
-        super(ActionButton, self).__init__(uiNode)
-        self.setAcceptHoverEvents(True)
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.action = action
-        self.svgIcon = QtSvg.QGraphicsSvgItem(svgFilePath, self)
-        self.setGraphicsItem(self)
-        self.hovered = False
-        uiNode._actionButtons.add(self)
-
-    def hoverEnterEvent(self, event):
-        self.hovered = True
-        self.update()
-
-    def hoverLeaveEvent(self, event):
-        self.hovered = False
-        self.update()
+        super(CollapseNodeActionButton, self).__init__(svgFilePath, action, uiNode)
+        self.svgIcon.setElementId("Collapse")
 
     def mousePressEvent(self, event):
-        if self.parentItem().isSelected():
-            self.parentItem().setSelected(False)
-
-        if self.action is not None and self.hasFocus():
-            self.action.triggered.emit()
-            self.clearFocus()
-
-    def paint(self, painter, option, widget):
-        super(ActionButton, self).paint(painter, option, widget)
-        if self.hovered:
-            frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
-            painter.setPen(QtCore.Qt.NoPen)
-            painter.setBrush(QtGui.QColor(50, 50, 50, 50))
-            painter.drawRoundedRect(frame, 2, 2)
-
-    def setGeometry(self, rect):
-        self.prepareGeometryChange()
-        super(QGraphicsWidget, self).setGeometry(rect)
-        self.setPos(rect.topLeft())
-
-    def sizeHint(self, which, constraint):
-        return QtCore.QSizeF(10, 10)
+        super(CollapseNodeActionButton, self).mousePressEvent(event)
+        if self.parentItem().collapsed:
+            self.svgIcon.setElementId("Expand")
+        else:
+            self.svgIcon.setElementId("Collapse")
 
 
 class NodeName(QGraphicsWidget):
@@ -272,8 +242,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         # collapse action test
         self.actionToggleCollapse = self._menu.addAction("ToggleCollapse")
+        self.actionToggleCollapse.setToolTip("Toggles node's body collapsed or not")
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
-        self.actionToggleCollapse.setData(NodeActionSvgFileData(RESOURCES_DIR + "/collapse.svg"))
+        self.actionToggleCollapse.setData(NodeActionButtonInfo(RESOURCES_DIR + "/nodeCollapse.svg", CollapseNodeActionButton))
 
     def toggleCollapsed(self):
         self.collapsed = not self.collapsed
@@ -477,6 +448,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         if self.resizable:
             template['meta']['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
         template['displayName'] = self.displayName
+        template['collapsed'] = self.collapsed
         return template
 
     def serialize(self):
@@ -512,11 +484,21 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         else:
             self.headColor = self.headColorOverride
 
-        # NOTE: actions with icons will added next to node name
+        # NOTE: actions with action button class specified will be added next to node name
         for action in self._menu.actions():
             actionData = action.data()
-            if isinstance(actionData, NodeActionSvgFileData):
-                self.headerLayout.addItem(ActionButton(actionData.filePath(), action, self))
+            if isinstance(actionData, NodeActionButtonInfo):
+                actionButtonClass = actionData.actionButtonClass()
+                svgFilePath = actionData.filePath()
+                if actionButtonClass is None:
+                    actionButtonClass = NodeActionButtonBase
+                self.headerLayout.addItem(actionButtonClass(svgFilePath, action, self))
+
+        if jsonTemplate is not None:
+            if "collapsed" in jsonTemplate["wrapper"]:
+                self.collapsed = jsonTemplate["wrapper"]["collapsed"]
+
+        self.setToolTip(self.description())
 
     def isCallable(self):
         return self._rawNode.isCallable()

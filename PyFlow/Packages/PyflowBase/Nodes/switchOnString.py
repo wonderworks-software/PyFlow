@@ -7,8 +7,8 @@ class switchOnString(NodeBase):
     def __init__(self, name):
         super(switchOnString, self).__init__(name)
         self.inExecPin = self.createInputPin('inExec', 'ExecPin', None, self.compute)
-        self.inString = self.createInputPin('String', 'StringPin')
-        self.defaultPin = self.createOutputPin('Default', 'ExecPin')
+        self.inString = self.createInputPin('string', 'StringPin')
+        self.defaultPin = self.createOutputPin('default', 'ExecPin')
 
     def addOutPin(self):
         name = self.getUniqPinName("option")

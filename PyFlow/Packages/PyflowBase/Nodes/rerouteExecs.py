@@ -11,6 +11,10 @@ class rerouteExecs(NodeBase):
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
 
+    def postCreate(self, jsonTemplate=None):
+        super(rerouteExecs, self).postCreate(jsonTemplate=jsonTemplate)
+        self.setName("reroute")
+
     @staticmethod
     def pinTypeHints():
         return {'inputs': [], 'outputs': []}

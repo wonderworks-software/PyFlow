@@ -15,7 +15,7 @@ class UIGraphInputs(UINodeBase):
     def __init__(self, raw_node):
         super(UIGraphInputs, self).__init__(raw_node)
         actionAddOut = self._menu.addAction("Add pin")
-        actionAddOut.setData(NodeActionSvgFileData(RESOURCES_DIR + "/pin.svg"))
+        actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
         actionAddOut.triggered.connect(self.createPinDialog)
         self.color = Colors.DarkGray
         self.headColorOverride = Colors.Gray

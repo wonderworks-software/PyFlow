@@ -64,10 +64,18 @@ class NodeDefaults(object):
         return self.__cornersRoundFactor
 
 
-class NodeActionSvgFileData(object):
-    def __init__(self, svgFilePath):
-        super(NodeActionSvgFileData, self).__init__()
-        self.svgFilePath = svgFilePath
+class NodeActionButtonInfo(object):
+    """Used to populate node header with buttons representing node's actions from node's menu.
+
+    See UINodeBase constructor and postCrate method.
+    """
+    def __init__(self, defaultSvgIcon, actionButtonClass=None):
+        super(NodeActionButtonInfo, self).__init__()
+        self._defaultSvgIcon = defaultSvgIcon
+        self._actionButtonClass = actionButtonClass
+
+    def actionButtonClass(self):
+        return self._actionButtonClass
 
     def filePath(self):
-        return self.svgFilePath
+        return self._defaultSvgIcon

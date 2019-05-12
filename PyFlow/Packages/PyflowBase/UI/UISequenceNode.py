@@ -1,13 +1,14 @@
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Canvas.UICommon import NodeActionSvgFileData
+from PyFlow.UI.Canvas.UICommon import NodeActionButtonInfo
 
 
 class UISequenceNode(UINodeBase):
     def __init__(self, raw_node):
         super(UISequenceNode, self).__init__(raw_node)
         actionAddOut = self._menu.addAction("Add out pin")
-        actionAddOut.setData(NodeActionSvgFileData(RESOURCES_DIR + "/pin.svg"))
+        actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
+        actionAddOut.setToolTip("Adds output execution pin")
         actionAddOut.triggered.connect(self.onAddOutPin)
 
     def onPinWasKilled(self, uiPin):

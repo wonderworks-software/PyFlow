@@ -377,9 +377,9 @@ class UIPinBase(QGraphicsWidget):
 
     def sizeHint(self, which, constraint):
         height = QtGui.QFontMetrics(self._font).height()
-        width = self.pinSize
+        width = self.pinSize * 2
         if not self.bLabelHidden:
-            width += QtGui.QFontMetrics(self._font).width(self.displayName()) + PinDefaults().PIN_SIZE
+            width += QtGui.QFontMetrics(self._font).width(self.displayName())
         if not self.isVisible():
             width = 0
             height = 0
