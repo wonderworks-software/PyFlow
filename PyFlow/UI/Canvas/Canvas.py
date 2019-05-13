@@ -1081,14 +1081,12 @@ class Canvas(QGraphicsView):
         if self.itemAt(event.pos()) and isinstance(node, UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
             if resizeOpts["resize"] or node.bResize:
-                if resizeOpts["direction"] == (1, -1):
-                    self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
-                elif resizeOpts["direction"] in [(1, 0), (-1, 0)]:
+                if resizeOpts["direction"] in [(1, 0), (-1, 0)]:
                     self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
-                elif resizeOpts["direction"] == (0, -1):
+                elif resizeOpts["direction"] in [(0, 1), (0, -1)]:
                     self.viewport().setCursor(QtCore.Qt.SizeVerCursor)
-                elif resizeOpts["direction"] == (-1, -1):
-                    self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)
+                elif resizeOpts["direction"] == (1, 1):
+                    self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
 
         if self._drawRealtimeLine:
             if isinstance(self.pressed_item, PinBase):

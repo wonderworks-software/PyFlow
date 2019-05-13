@@ -221,7 +221,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.resizable = False
         self.bResize = False
         self.resizeDirection = (0, 0)
-        self.resizeStripsSize = 3
+        self.resizeStripsSize = 2
         self.resizeStrips = [0, 0, 0, 0, 0]  # Left, Top, Right, Bottom, BottomRight
 
         self.lastMousePos = QtCore.QPointF()
@@ -620,48 +620,43 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         if self.resizable:
             height = self.geometry().height()
             width = self.geometry().width()
+            rf = NodeDefaults().CORNERS_ROUND_FACTOR
+            painter.setPen(QtCore.Qt.NoPen)
+            painter.setBrush(QtGui.QColor(128, 128, 128, 200))
+
             # left strip
             if self.resizeStrips[0]:
-                painter.drawRect(0, self.resizeStripsSize, self.resizeStripsSize, height - self.resizeStripsSize * 2)
+                painter.drawRect(0, rf, self.resizeStripsSize, height - rf * 2)
             # top strip
             if self.resizeStrips[1]:
-                painter.drawRect(self.resizeStripsSize, 0, width - self.resizeStripsSize * 2, self.resizeStripsSize)
+                painter.drawRect(rf, 0, width - rf * 2, self.resizeStripsSize)
             # right strip
             if self.resizeStrips[2]:
-                painter.drawRect(width - self.resizeStripsSize, self.resizeStripsSize, self.resizeStripsSize, height - self.resizeStripsSize * 2)
+                painter.drawRect(width - self.resizeStripsSize, rf, self.resizeStripsSize, height - rf * 2)
             # bottom strip
             if self.resizeStrips[3]:
-                painter.drawRect(self.resizeStripsSize, height - self.resizeStripsSize, width - self.resizeStripsSize * 2, self.resizeStripsSize)
+                painter.drawRect(rf, height - self.resizeStripsSize, width - rf * 2, self.resizeStripsSize)
             # bottom right strip
             if self.resizeStrips[4]:
-                painter.drawRect(width - self.resizeStripsSize, height - self.resizeStripsSize, self.resizeStripsSize, self.resizeStripsSize)
+                painter.drawRect(width - rf, height - rf, rf, rf)
 
     def shouldResize(self, cursorPos):
-        cursorPos = self.mapFromScene(cursorPos)
-        margin = 4
-        rect = self.boundingRect()
-        pBottomRight = rect.bottomRight()
-        pBottomLeft = rect.bottomLeft()
-        bottomRightRect = QtCore.QRectF(
-            pBottomRight.x() - margin, pBottomRight.y() - margin, margin, margin)
-        bottomLeftRect = QtCore.QRectF(
-            pBottomLeft.x(), pBottomLeft.y() - margin, 5, 5)
         result = {"resize": False, "direction": self.resizeDirection}
-        if bottomRightRect.contains(cursorPos):
-            result["resize"] = True
-            result["direction"] = (1, -1)
-        elif bottomLeftRect.contains(cursorPos):
-            result["resize"] = True
-            result["direction"] = (-1, -1)
-        elif cursorPos.x() > (rect.width() - margin):
-            result["resize"] = True
-            result["direction"] = (1, 0)
-        elif cursorPos.y() > (rect.bottom() - margin):
-            result["resize"] = True
-            result["direction"] = (0, -1)
-        elif cursorPos.x() < (rect.x() + margin):
+        if self.resizeStrips[0] == 1:
             result["resize"] = True
             result["direction"] = (-1, 0)
+        elif self.resizeStrips[1] == 1:
+            result["resize"] = True
+            result["direction"] = (0, -1)
+        elif self.resizeStrips[2] == 1:
+            result["resize"] = True
+            result["direction"] = (1, 0)
+        elif self.resizeStrips[3] == 1:
+            result["resize"] = True
+            result["direction"] = (0, -1)
+        elif self.resizeStrips[4] == 1:
+            result["resize"] = True
+            result["direction"] = (1, 1)
         return result
 
     def contextMenuEvent(self, event):
@@ -845,12 +840,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def hoverMoveEvent(self, event):
         height = self.geometry().height()
         width = self.geometry().width()
+        rf = NodeDefaults().CORNERS_ROUND_FACTOR
 
-        leftStrip = QtCore.QRectF(0, self.resizeStripsSize, self.resizeStripsSize, height - self.resizeStripsSize * 2)
-        topStrip = QtCore.QRectF(self.resizeStripsSize, 0, width - self.resizeStripsSize * 2, self.resizeStripsSize)
-        rightStrip = QtCore.QRectF(width - self.resizeStripsSize, self.resizeStripsSize, self.resizeStripsSize, height - self.resizeStripsSize * 2)
-        bottomStrip = QtCore.QRectF(self.resizeStripsSize, height - self.resizeStripsSize, width - self.resizeStripsSize * 2, self.resizeStripsSize)
-        bottomRightStrip = QtCore.QRectF(width - self.resizeStripsSize, height - self.resizeStripsSize, self.resizeStripsSize, self.resizeStripsSize)
+        leftStrip = QtCore.QRectF(0, rf, self.resizeStripsSize, height - rf * 2)
+        topStrip = QtCore.QRectF(rf, 0, width - rf * 2, self.resizeStripsSize)
+        rightStrip = QtCore.QRectF(width - self.resizeStripsSize, rf, self.resizeStripsSize, height - rf * 2)
+        bottomStrip = QtCore.QRectF(rf, height - self.resizeStripsSize, width - rf * 2, self.resizeStripsSize)
+        bottomRightStrip = QtCore.QRectF(width - rf, height - rf, rf, rf)
 
         # detect where on the node
         self.resizeStrips[0] = 1 if leftStrip.contains(event.pos()) else 0
