@@ -136,6 +136,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.setAcceptHoverEvents(True)
         self._rawNode = raw_node
         self._rawNode.setWrapper(self)
         self._rawNode.killed.connect(self.kill)
@@ -158,6 +159,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.height_offset = 3
         self._w = 0
         self.h = 25
+        self.minWidth = 25
+        self.minHeight = self.h
         self._labelTextColor = QtCore.Qt.white
         self._typeTextColor = QtCore.Qt.white
 
@@ -212,14 +215,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._menu = QMenu()
 
         # Resizing Options
-        self.minWidth = 25
-        self.minHeight = self.h
         self.initialRectWidth = 0.0
         self.initialRectHeight = 0.0
         self.expanded = True
         self.resizable = False
         self.bResize = False
         self.resizeDirection = (0, 0)
+        self.resizeStripsSize = 3
+        self.resizeStrips = [0, 0, 0, 0, 0]  # Left, Top, Right, Bottom, BottomRight
+
         self.lastMousePos = QtCore.QPointF()
 
         # Hiding/Moving By Group/collapse/By Pin
@@ -308,16 +312,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         return "<class[{0}]; name[{1}]; graph[{2}]>".format(self.__class__.__name__, self.getName(), graphName)
 
     def sizeHint(self, which, constraint):
-        size = QtCore.QSizeF(0, self.getNodeHeight())
-        pinsWidth = self.getPinsWidth() + self.pinsLayout.spacing()
-        headerWidth = self.labelWidth
-
-        if pinsWidth < headerWidth:
-            size.setWidth(headerWidth)
-        else:
-            size.setWidth(pinsWidth)
-
-        return size
+        return QtCore.QSizeF(self.getNodeWidth(), self.getNodeHeight())
 
     def setGeometry(self, rect):
         self.prepareGeometryChange()
@@ -540,6 +535,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
         return headerWidth
 
+    def getNodeWidth(self):
+        pinsWidth = self.getPinsWidth() + self.pinsLayout.spacing()
+        headerWidth = self.labelWidth
+
+        if pinsWidth < headerWidth:
+            return headerWidth
+        else:
+            return pinsWidth
+
     def getNodeHeight(self):
         h = self.nodeNameWidget.sizeHint(None, None).height()
         h += self.nodeLayout.spacing()
@@ -612,6 +616,25 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             painter.drawRect(self.nodeLayout.geometry())
             painter.drawRect(self.inputsLayout.geometry())
             painter.drawRect(self.outputsLayout.geometry())
+
+        if self.resizable:
+            height = self.geometry().height()
+            width = self.geometry().width()
+            # left strip
+            if self.resizeStrips[0]:
+                painter.drawRect(0, self.resizeStripsSize, self.resizeStripsSize, height - self.resizeStripsSize * 2)
+            # top strip
+            if self.resizeStrips[1]:
+                painter.drawRect(self.resizeStripsSize, 0, width - self.resizeStripsSize * 2, self.resizeStripsSize)
+            # right strip
+            if self.resizeStrips[2]:
+                painter.drawRect(width - self.resizeStripsSize, self.resizeStripsSize, self.resizeStripsSize, height - self.resizeStripsSize * 2)
+            # bottom strip
+            if self.resizeStrips[3]:
+                painter.drawRect(self.resizeStripsSize, height - self.resizeStripsSize, width - self.resizeStripsSize * 2, self.resizeStripsSize)
+            # bottom right strip
+            if self.resizeStrips[4]:
+                painter.drawRect(width - self.resizeStripsSize, height - self.resizeStripsSize, self.resizeStripsSize, self.resizeStripsSize)
 
     def shouldResize(self, cursorPos):
         cursorPos = self.mapFromScene(cursorPos)
@@ -814,6 +837,28 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             for uiPin in self.UIPins.values():
                 for connection in uiPin.uiConnectionList:
                     connection.show()
+
+    def hoverLeaveEvent(self, event):
+        self.resizeStrips = [0, 0, 0, 0, 0]
+        self.update()
+
+    def hoverMoveEvent(self, event):
+        height = self.geometry().height()
+        width = self.geometry().width()
+
+        leftStrip = QtCore.QRectF(0, self.resizeStripsSize, self.resizeStripsSize, height - self.resizeStripsSize * 2)
+        topStrip = QtCore.QRectF(self.resizeStripsSize, 0, width - self.resizeStripsSize * 2, self.resizeStripsSize)
+        rightStrip = QtCore.QRectF(width - self.resizeStripsSize, self.resizeStripsSize, self.resizeStripsSize, height - self.resizeStripsSize * 2)
+        bottomStrip = QtCore.QRectF(self.resizeStripsSize, height - self.resizeStripsSize, width - self.resizeStripsSize * 2, self.resizeStripsSize)
+        bottomRightStrip = QtCore.QRectF(width - self.resizeStripsSize, height - self.resizeStripsSize, self.resizeStripsSize, self.resizeStripsSize)
+
+        # detect where on the node
+        self.resizeStrips[0] = 1 if leftStrip.contains(event.pos()) else 0
+        self.resizeStrips[1] = 1 if topStrip.contains(event.pos()) else 0
+        self.resizeStrips[2] = 1 if rightStrip.contains(event.pos()) else 0
+        self.resizeStrips[3] = 1 if bottomStrip.contains(event.pos()) else 0
+        self.resizeStrips[4] = 1 if bottomRightStrip.contains(event.pos()) else 0
+        self.update()
 
     def Tick(self, delta, *args, **kwargs):
         # NOTE: Do not call wrapped raw node Tick method here!
