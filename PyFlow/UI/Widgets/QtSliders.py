@@ -4,6 +4,8 @@ import sys
 import struct
 from Qt import QtGui, QtCore, QtWidgets
 
+from Qt.QtTest import QTest
+
 maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
 FLOAT_RANGE_MAX = maxint + 0.1
@@ -486,7 +488,6 @@ class floatInput(QtWidgets.QDoubleSpinBox):
 
 class inputDrager(QtWidgets.QDialog):
     valueChanged = QtCore.Signal(float)
-
     def __init__(self, parent, factor, *args, **kargs):
         super(inputDrager, self).__init__(*args, **kargs)
         self.parent = parent
@@ -510,17 +511,17 @@ class inputDrager(QtWidgets.QDialog):
         self.frame.layout().addWidget(self.valueLabel)
         self.layout().addWidget(self.frame)
         self.setStyleSheet(dragerStyleSheet)
-        size = 50
-        self.setMinimumHeight(size)
-        self.setMinimumWidth(size)
-        self.setMaximumHeight(size)
-        self.setMaximumWidth(size)
+        self.size = 35
+        self.setMinimumHeight(self.size)
+        self.setMinimumWidth(self.size)
+        self.setMaximumHeight(self.size)
+        self.setMaximumWidth(self.size)
         #self.setWindowFlags(QtCore.Qt.Popup)
         self._value = 0
         self._startValue = 0
         self._factor = factor
-        self.startDragpos = QtCore.QPointF()
-        self.setMouseTracking(True)
+        self.startDragpos = QtCore.QPointF(QtGui.QCursor.pos())
+        #self.setMouseTracking(True)
         self.installEventFilter(self)
         self.setAttribute(QtCore.Qt.WA_Hover)
         self.label.installEventFilter(self)
@@ -536,31 +537,18 @@ class inputDrager(QtWidgets.QDialog):
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.HoverEnter:
             self._value = 0
-            self.startDragpos = event.pos()
+            self.startDragpos = self.mapToGlobal(event.pos())
+            self.setStyleSheet(dragerStyleSheetHover)
+            self.parent.activeDrag = self
+            for drag in self.parent.drags:
+                if drag != self:
+                    drag.setStyleSheet(dragerStyleSheet)            
         if event.type() == QtCore.QEvent.HoverLeave:
             self._value = 0
-            self.startDragpos = event.pos()
-        elif event.type() == QtCore.QEvent.MouseMove:
-            deltaX = event.pos().x() - self.startDragpos.x()
-            if event.pos().x() > self.width() or event.pos().x() < 0:
-                self._value = (deltaX / 8) * self._factor
-                self.valueLabel.setText(str(self._value))
-                self.setStyleSheet(dragerStyleSheetHover)
-                self.valueChanged.emit(self._startValue + self._value)
-            else:
-                self._value = 0
-                self.valueLabel.setText(str(self._value))
-                self.startDragpos = event.pos()
-                self._startValue = self.parent._value
-                self.valueChanged.emit(0)
+            self.startDragpos = self.mapToGlobal(event.pos())
+            if event.pos().y() > self.height() or event.pos().y() < 0:
+                self.setStyleSheet(dragerStyleSheet)
 
-        elif event.type() == QtCore.QEvent.MouseButtonRelease:
-            deltaX = event.pos().x() - self.startDragpos.x()
-            self._value = (deltaX / 8) * self._factor
-            self.valueLabel.setText(str(self._value))
-            #self.hide()
-            self.setStyleSheet(dragerStyleSheet)
-            self.valueChanged.emit(self._startValue + self._value)
         return False
 
 class dragers(QtWidgets.QDialog):
@@ -573,15 +561,21 @@ class dragers(QtWidgets.QDialog):
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(0,0,0,0)
         self.setWindowFlags(QtCore.Qt.Popup)
+        self.activeDrag = None
+        self.drags = []
+        self.dragsPos = []
         for i in [100.0,10.0,1.0,0.1,0.01,0.001,0.0001]:
             drag = inputDrager(self,i)
             drag.valueChanged.connect(self.setValue)
+            self.drags.append(drag)
             self.layout().addWidget(drag)
 
         self.installEventFilter(self)
     def show(self):
         self._startValue = self.parent().value()
-        super(dragers, self).show()  
+        super(dragers, self).show()
+        for drag in self.drags:
+            self.dragsPos.append(drag.pos())
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonRelease:
@@ -589,6 +583,21 @@ class dragers(QtWidgets.QDialog):
             self.parent().setValue(self._startValue+self._value)
             self.parent().editingFinished.emit()
             del(self)
+        elif event.type() == QtCore.QEvent.MouseMove:
+            if self.activeDrag:
+                self.activeDrag.setStyleSheet(dragerStyleSheetHover)
+                deltaX = self.activeDrag.mapToGlobal(event.pos()).x() - self.activeDrag.startDragpos.x()
+                if event.pos().x() > self.activeDrag.width() or event.pos().x() < 0:
+                    self.activeDrag._value = (deltaX / 8) * self.activeDrag._factor
+                    self.activeDrag.valueLabel.setText(str(self.activeDrag._value))
+                    self.activeDrag.valueChanged.emit(self.activeDrag._startValue + self.activeDrag._value)
+                else:
+                    self.activeDrag._value = 0
+                    self.activeDrag.valueLabel.setText(str(self.activeDrag._value))
+                    self.activeDrag.startDragpos = self.activeDrag.mapToGlobal(event.pos())
+                    self.activeDrag._startValue = self.activeDrag.parent._value
+                    self.activeDrag.valueChanged.emit(0)
+
         return False
 
     def setValue(self,value):
