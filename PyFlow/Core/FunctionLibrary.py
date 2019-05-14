@@ -20,7 +20,7 @@ empty = {}
 # @param[in] func decorated function
 # @param[in] returns it can be tuple with [data type identifier](@ref PyFlow.Core.Common.DataTypes) + default value, or None
 # @param[in] meta dictionary with category path, keywords and any additional info
-# @param[in] nodeType determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created
+# @param[in] nodeType determines whether it is a Pure node or Callable. If Callable - input and output execution pins will be created
 # @sa [NodeTypes](@ref PyFlow.Core.Common.NodeTypes) FunctionLibraries
 def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     def wrapper(func):

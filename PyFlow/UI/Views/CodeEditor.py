@@ -30,7 +30,7 @@ them as you would like them to be located on the node.
 When save button is pressed, function with code you wrote will be generated and used as node's compute method.
 
     Examples:
-        # you can acess pins in two ways
+        # you can access pins in two ways
         # like so
         >>> self.pinName.getData()
         >>> self.pinName.setData(value)

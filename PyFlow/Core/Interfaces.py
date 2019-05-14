@@ -178,7 +178,7 @@ class IPin(IItemBase):
         Defines how data is processed.
 
         Returns:
-            procesed data
+            processed data
         '''
 
         return data

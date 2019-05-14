@@ -40,7 +40,7 @@ class InputWidgetRaw(QWidget, IInputWidget):
     def __init__(self, parent=None, dataSetCallback=None, defaultValue=None, **kwds):
         super(InputWidgetRaw, self).__init__(parent=parent, **kwds)
         self._defaultValue = defaultValue
-        # fuction with signature void(object)
+        # function with signature void(object)
         # this will set data to pin
         self.dataSetCallback = dataSetCallback
         self._widget = None

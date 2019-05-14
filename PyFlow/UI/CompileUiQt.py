@@ -10,7 +10,7 @@ INTERPRETER_PATH = 'python.exe'
 def ui_to_py(ui_file):
     '''
     << ui_to_py(ui_file, py_file_name) >>
-    convert *.ui to *.py to te same folder
+    convert *.ui to *.py to the same folder
     '''
     if not os.path.isfile(ui_file):
         msg = 'no such file'

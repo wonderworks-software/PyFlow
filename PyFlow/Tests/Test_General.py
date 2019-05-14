@@ -104,7 +104,7 @@ class TestGeneral(unittest.TestCase):
         # n3.b is connected with n1.out
         # we expect n3.b breaks all connections before connecting with n2.out
         c2 = connectPins(n2Out, n3b)
-        # check connections successfull
+        # check connections successful
         self.assertEqual(c2, True)
         # check n2.out affects on n3.b
         self.assertEqual(n3b in n2Out.affects, True, "incorrect connection")
