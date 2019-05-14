@@ -109,12 +109,14 @@ class NodeName(QGraphicsWidget):
         if lod < 3:
             nodeName = self.parentItem().name
             nodeType = self.parentItem()._rawNode.__class__.__name__
+            nodeResizable = self.parentItem().resizable
             painter.setFont(self.parentItem().nodeNameFont)
             painter.setPen(QtGui.QPen(self.parentItem().labelTextColor, 0.7))
             width = QtGui.QFontMetrics(painter.font()).width(nodeName)
             height = QtGui.QFontMetrics(painter.font()).height()
             yCenter = (frame.height() / 2) + (height / 2.5)
             x = PinDefaults().PIN_SIZE / 2
+
             painter.drawText(x, yCenter - height / 2, nodeName)
             painter.setFont(self.parentItem().nodeTypeFont)
             painter.setPen(QtGui.QPen(self.parentItem().typeTextColor, 0.5))

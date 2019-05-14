@@ -55,10 +55,9 @@ class UIcommentNode(UINodeBase):
         pass
 
     def postCreate(self, jsonTemplate):
-        width = self.minWidth
         UINodeBase.postCreate(self, jsonTemplate)
         # restore text and size
-        self.minWidth = width
+        self.minWidth = self.labelWidth
         height = self.minHeight
         text = self.__class__.__name__
         # initial color is black
