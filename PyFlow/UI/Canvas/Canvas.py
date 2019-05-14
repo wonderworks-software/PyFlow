@@ -228,7 +228,7 @@ class SceneClass(QGraphicsScene):
 
                     def varGetterCreator():
                         n = self.parent().createNode(nodeTemplate)
-                        n.updateNodeShape(label=n.var.name)
+                        n.updateNodeShape()
                     getterAction.triggered.connect(varGetterCreator)
 
                     setNodeTemplate = dict(nodeTemplate)
