@@ -472,16 +472,16 @@ class floatInput(QtWidgets.QDoubleSpinBox):
         super(floatInput, self).__init__(*args, **kargs)
         self.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         self.setStyleSheet(sliderStyleSheetA)
-        self.dragger = dragers(self)
         self.lineEdit().installEventFilter(self)
         self.installEventFilter(self)
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             if event.button() == QtCore.Qt.MiddleButton:
-                self.dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
-                ) - self.dragger.width() / 2, event.pos().y() - self.dragger.height() / 2)))
-                self.dragger.show()
+                dragger = dragers(self)
+                dragger.show()
+                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
+                ) - dragger.width() / 2, event.pos().y() - dragger.height() / 2)))
         return False
 
 class inputDrager(QtWidgets.QDialog):
@@ -588,6 +588,7 @@ class dragers(QtWidgets.QDialog):
             self.hide()
             self.parent().setValue(self._startValue+self._value)
             self.parent().editingFinished.emit()
+            del(self)
         return False
 
     def setValue(self,value):
@@ -602,11 +603,12 @@ class testWidg(QtWidgets.QWidget):
 
         self.setLayout(QtWidgets.QVBoxLayout())
         # self.layout().addWidget(doubleSlider())
-        self.layout().addWidget(pyf_Slider(self, style=0))
+        for i in range(10):
+            self.layout().addWidget(pyf_Slider(self, style=0))
         #self.layout().addWidget(pyf_Slider(self, style=1))
         # self.layout().addWidget(pyf_HueSlider(self))
         # self.layout().addWidget(pyf_GradientSlider(self))
-        self.layout().addWidget(floatInput())
+        #self.layout().addWidget(floatInput())
         self.setStyleSheet("background:grey")
 
 
