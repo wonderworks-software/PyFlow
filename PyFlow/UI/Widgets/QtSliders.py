@@ -4,8 +4,6 @@ import sys
 import struct
 from Qt import QtGui, QtCore, QtWidgets
 
-from Qt.QtTest import QTest
-
 maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 FLOAT_RANGE_MIN = 0.1 + (-maxint - 1.0)
 FLOAT_RANGE_MAX = maxint + 0.1

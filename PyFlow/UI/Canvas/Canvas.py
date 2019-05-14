@@ -338,6 +338,7 @@ class Canvas(QGraphicsView):
     requestFillProperties = QtCore.Signal(object)
     requestClearProperties = QtCore.Signal()
 
+    USETAB = True
     def __init__(self, graphManager, parent=None):
         super(Canvas, self).__init__()
         self.graphManager = graphManager
@@ -408,7 +409,8 @@ class Canvas(QGraphicsView):
         self.codeEditors = {}
         self._UIConnections = {}
         self.boundingRect = self.rect()
-        self.installEventFilter(self)
+        if self.USETAB:
+            self.installEventFilter(self)
 
     def onGraphChanged(self, newGraph):
         for node in self.nodes.values():
@@ -1558,3 +1560,9 @@ class Canvas(QGraphicsView):
         if futureScale >= self._maximum_scale:
             scale_factor = (self._maximum_scale - 0.1) / self.factor
         self.scale(scale_factor, scale_factor)
+
+
+    def eventFilter(self, object, event):
+        if event.type()== QtCore.QEvent.KeyPress and event.key()== QtCore.Qt.Key_Tab:
+            self.showNodeBox()
+        return False
