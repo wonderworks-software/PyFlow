@@ -100,7 +100,7 @@ QSlider::handle:horizontal {
     width: 6px;
  }
 """
-dragerStyleSheet = """
+dragerstyleSheet = """
 QGroupBox{
     border: 1.25 solid lightgrey;
     background : black;
@@ -111,7 +111,7 @@ QLabel{
     color: white;
 }
 """
-dragerStyleSheetHover = """
+dragerstyleSheetHover = """
 QGroupBox{
     border: 1.25 solid lightgrey;
     background : orange;
@@ -123,9 +123,127 @@ QLabel{
 }
 """
 
+class inputDrager(QtWidgets.QWidget):
+    ## PopUp Draggers Houdini Style
+    valueChanged = QtCore.Signal(float)
+    def __init__(self, parent, factor, *args, **kargs):
+        super(inputDrager, self).__init__(*args, **kargs)
+        self.parent = parent
+        self.setLayout(QtWidgets.QVBoxLayout())
+        self.frame = QtWidgets.QGroupBox()
+        self.frame.setLayout(QtWidgets.QVBoxLayout())
+        self.label = QtWidgets.QLabel(str(factor))
+        self.valueLabel = QtWidgets.QLabel("0")
+        self.frame.setContentsMargins(0, 0, 0, 0)
+        self.frame.layout().setContentsMargins(0, 0, 0, 0)
+        self.frame.layout().setSpacing(0)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+        font = self.label.font()
+        font.setPointSize(8)
+        self.label.setFont(font)
+        self.valueLabel.setFont(font)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.valueLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.frame.layout().addWidget(self.label)
+        self.frame.layout().addWidget(self.valueLabel)
+        self.layout().addWidget(self.frame)
+        self.setStyleSheet(dragerstyleSheet)
+        self.size = 35
+        self.setMinimumHeight(self.size)
+        self.setMinimumWidth(self.size)
+        self.setMaximumHeight(self.size)
+        self.setMaximumWidth(self.size)
+        self._value = 0
+        self._startValue = 0
+        self._factor = factor
+        self.startDragpos = QtCore.QPointF(QtGui.QCursor.pos())
+        self.setAttribute(QtCore.Qt.WA_Hover)        
+        self.installEventFilter(self)
+        self.label.installEventFilter(self)
+        self.valueLabel.installEventFilter(self)
+
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            self._value = 0
+            self.valueLabel.setText(str(self._value))
+            self.startDragpos = event.pos()
+            self._startValue = self.parent._value            
+        if event.type() == QtCore.QEvent.HoverEnter:
+            self._value = 0
+            self.startDragpos = self.mapToGlobal(event.pos())
+            self.setStyleSheet(dragerstyleSheetHover)
+            self.parent.activeDrag = self
+            for drag in self.parent.drags:
+                if drag != self:
+                    drag.setStyleSheet(dragerstyleSheet)            
+        if event.type() == QtCore.QEvent.HoverLeave:
+            self._value = 0
+            self.startDragpos = self.mapToGlobal(event.pos())
+            if event.pos().y() > self.height() or event.pos().y() < 0:
+                self.setStyleSheet(dragerstyleSheet)
+
+        return False
+
+class draggers(QtWidgets.QWidget):
+    ## PopUp Draggers Houdini Style
+    def __init__(self, parent=None,isFloat=True):
+        super(draggers, self).__init__(parent)    
+        self._value = 0
+        self._startValue = 0
+        self.setLayout(QtWidgets.QVBoxLayout())
+        self.layout().setSpacing(0)
+        self.layout().setContentsMargins(0,0,0,0)
+        self.setWindowFlags(QtCore.Qt.Popup)
+        self.activeDrag = None
+        self.drags = []
+        self.dragsPos = []
+        lista = [100.0,10.0,1.0,0.1,0.01,0.001,0.0001]
+        if not isFloat:
+            lista = [100,10,1]
+        for i in lista:
+            drag = inputDrager(self,i)
+            drag.valueChanged.connect(self.setValue)
+            self.drags.append(drag)
+            self.layout().addWidget(drag)
+        self.installEventFilter(self)
+
+    def setValue(self,value):
+        self._value = value
+        self.parent().setValue(self._startValue+self._value)
+        self.parent().editingFinished.emit()
+
+    def show(self):
+        self._startValue = self.parent().value()
+        super(draggers, self).show()
+        for drag in self.drags:
+            self.dragsPos.append(drag.pos())
+
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.MouseMove:
+            if self.activeDrag:
+                self.activeDrag.setStyleSheet(dragerstyleSheetHover)
+                deltaX = self.activeDrag.mapToGlobal(event.pos()).x() - self.activeDrag.startDragpos.x()
+                if event.pos().x() > self.activeDrag.width() or event.pos().x() < 0:
+                    self.activeDrag._value = (deltaX / 8) * self.activeDrag._factor
+                    self.activeDrag.valueLabel.setText(str(self.activeDrag._value))
+                    self.activeDrag.valueChanged.emit(self.activeDrag._startValue + self.activeDrag._value)
+                else:
+                    self.activeDrag._value = 0
+                    self.activeDrag.valueLabel.setText(str(self.activeDrag._value))
+                    self.activeDrag.startDragpos = self.activeDrag.mapToGlobal(event.pos())
+                    self.activeDrag._startValue = self.activeDrag.parent._value
+                    self.activeDrag.valueChanged.emit(0)
+
+        if event.type() == QtCore.QEvent.MouseButtonRelease:
+            self.hide()
+            self.parent().setValue(self._startValue+self._value)
+            self.parent().editingFinished.emit()
+            del(self)
+        return False
 
 class slider(QtWidgets.QSlider):
-
+    ## Customized Int Slider
     def __init__(self, decimals=3, *args, **kargs):
         super(slider, self).__init__(*args, **kargs)
         self.setOrientation(QtCore.Qt.Horizontal)
@@ -195,9 +313,8 @@ class slider(QtWidgets.QSlider):
         self.deltaValue = 0
         super(slider, self).keyPressEvent(event)
 
-
 class doubleSlider(slider):
-
+    ## Customized Float Slider
     doubleValueChanged = QtCore.Signal(float)
 
     def __init__(self, decimals=3, *args, **kargs):
@@ -240,29 +357,54 @@ class doubleSlider(slider):
     def setValue(self, value):
         super(doubleSlider, self).setValue(int(value * self._multi))
 
+class valueBox(QtWidgets.QDoubleSpinBox):
+    ## Input Text Values with Draggers
+    def __init__(self,type="float",*args, **kargs):
+        super(valueBox, self).__init__(*args, **kargs)
+        self.isFloat = type=="float"
+        if not self.isFloat:
+            self.setDecimals(0)
+        self.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        self.setStyleSheet(sliderStyleSheetA)
+        self.lineEdit().installEventFilter(self)
+        self.installEventFilter(self)
+
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if event.button() == QtCore.Qt.MiddleButton:
+                dragger = draggers(self,self.isFloat)
+                dragger.show()
+                if self.isFloat:
+                    dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
+                    ) - dragger.width() / 2, event.pos().y() - dragger.height() / 2)))
+                else:
+                    dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
+                    ) - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))
+        return False
 
 class pyf_Slider(QtWidgets.QWidget):
 
     valueChanged = QtCore.Signal(float)
 
-    def __init__(self, parent, type=0, style="int", name=None, *args):
+    def __init__(self, parent, type="float", style=0, name=None, *args):
         super(pyf_Slider, self).__init__(parent=parent, *args)
         self.parent = parent
         self.setLayout(QtWidgets.QHBoxLayout())
-        self.label = None
-        if name:
-            self.label = QtWidgets.QLabel(name + "  ")
+        self.input = valueBox(type=type)
+        self.input.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         if type == "int":
             self.sld = slider()
+            self.input.setDecimals(0)
         else:
             self.sld = doubleSlider()
-        self.input = floatInput()
-        self.input.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
-        self.input.setDecimals(3)
+            self.input.setDecimals(3)
+
         self.layout().setContentsMargins(10, 0, 0, 0)
         self.input.setContentsMargins(0, 0, 0, 0)
         self.sld.setContentsMargins(0, 0, 0, 0)
+        self.label = None  
         if name:
+            self.label = QtWidgets.QLabel(name + "  ")
             self.layout().addWidget(self.label)
         self.layout().addWidget(self.input)
         self.layout().addWidget(self.sld)
@@ -297,7 +439,6 @@ class pyf_Slider(QtWidgets.QWidget):
         self.setDisplayMinimun(0)
         self.setDisplayMaximum(1)
         self.setValue(0.5)
-        # self.setDisabled(True)
 
     @property
     def _value_range(self):
@@ -370,7 +511,6 @@ class pyf_Slider(QtWidgets.QWidget):
     def showSlider(self):
         self.sld.show()
 
-
 class pyf_HueSlider(doubleSlider):
 
     def __init__(self, parent, *args):
@@ -422,7 +562,6 @@ class pyf_HueSlider(doubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
-
 class pyf_GradientSlider(doubleSlider):
 
     def __init__(self, parent, *args):
@@ -465,159 +604,19 @@ class pyf_GradientSlider(doubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
-
-class floatInput(QtWidgets.QDoubleSpinBox):
-
-    def __init__(self, *args, **kargs):
-        super(floatInput, self).__init__(*args, **kargs)
-        self.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
-        self.setStyleSheet(sliderStyleSheetA)
-        self.lineEdit().installEventFilter(self)
-        self.installEventFilter(self)
-
-    def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress:
-            if event.button() == QtCore.Qt.MiddleButton:
-                dragger = dragers(self)
-                dragger.show()
-                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
-                ) - dragger.width() / 2, event.pos().y() - dragger.height() / 2)))
-        return False
-
-class inputDrager(QtWidgets.QDialog):
-    valueChanged = QtCore.Signal(float)
-    def __init__(self, parent, factor, *args, **kargs):
-        super(inputDrager, self).__init__(*args, **kargs)
-        self.parent = parent
-        self.setLayout(QtWidgets.QVBoxLayout())
-        self.frame = QtWidgets.QGroupBox()
-        self.frame.setLayout(QtWidgets.QVBoxLayout())
-        self.label = QtWidgets.QLabel(str(factor))
-        self.valueLabel = QtWidgets.QLabel("0")
-        self.frame.setContentsMargins(0, 0, 0, 0)
-        self.frame.layout().setContentsMargins(0, 0, 0, 0)
-        self.frame.layout().setSpacing(0)
-        self.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().setSpacing(0)
-        font = self.label.font()
-        font.setPointSize(8)
-        self.label.setFont(font)
-        self.valueLabel.setFont(font)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.valueLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.frame.layout().addWidget(self.label)
-        self.frame.layout().addWidget(self.valueLabel)
-        self.layout().addWidget(self.frame)
-        self.setStyleSheet(dragerStyleSheet)
-        self.size = 35
-        self.setMinimumHeight(self.size)
-        self.setMinimumWidth(self.size)
-        self.setMaximumHeight(self.size)
-        self.setMaximumWidth(self.size)
-        #self.setWindowFlags(QtCore.Qt.Popup)
-        self._value = 0
-        self._startValue = 0
-        self._factor = factor
-        self.startDragpos = QtCore.QPointF(QtGui.QCursor.pos())
-        #self.setMouseTracking(True)
-        self.installEventFilter(self)
-        self.setAttribute(QtCore.Qt.WA_Hover)
-        self.label.installEventFilter(self)
-        self.valueLabel.installEventFilter(self)
-
-    def mousePressEvent(self, event):
-        self._value = 0
-        self.valueLabel.setText(str(self._value))
-        self.startDragpos = event.pos()
-        self._startValue = self.parent._value
-        super(inputDrager, self).mousePressEvent(event)
-
-    def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.HoverEnter:
-            self._value = 0
-            self.startDragpos = self.mapToGlobal(event.pos())
-            self.setStyleSheet(dragerStyleSheetHover)
-            self.parent.activeDrag = self
-            for drag in self.parent.drags:
-                if drag != self:
-                    drag.setStyleSheet(dragerStyleSheet)            
-        if event.type() == QtCore.QEvent.HoverLeave:
-            self._value = 0
-            self.startDragpos = self.mapToGlobal(event.pos())
-            if event.pos().y() > self.height() or event.pos().y() < 0:
-                self.setStyleSheet(dragerStyleSheet)
-
-        return False
-
-class dragers(QtWidgets.QDialog):
-
-    def __init__(self, parent=None):
-        super(dragers, self).__init__(parent)    
-        self._value = 0
-        self._startValue = 0
-        self.setLayout(QtWidgets.QVBoxLayout())
-        self.layout().setSpacing(0)
-        self.layout().setContentsMargins(0,0,0,0)
-        self.setWindowFlags(QtCore.Qt.Popup)
-        self.activeDrag = None
-        self.drags = []
-        self.dragsPos = []
-        for i in [100.0,10.0,1.0,0.1,0.01,0.001,0.0001]:
-            drag = inputDrager(self,i)
-            drag.valueChanged.connect(self.setValue)
-            self.drags.append(drag)
-            self.layout().addWidget(drag)
-
-        self.installEventFilter(self)
-    def show(self):
-        self._startValue = self.parent().value()
-        super(dragers, self).show()
-        for drag in self.drags:
-            self.dragsPos.append(drag.pos())
-
-    def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseButtonRelease:
-            self.hide()
-            self.parent().setValue(self._startValue+self._value)
-            self.parent().editingFinished.emit()
-            del(self)
-        elif event.type() == QtCore.QEvent.MouseMove:
-            if self.activeDrag:
-                self.activeDrag.setStyleSheet(dragerStyleSheetHover)
-                deltaX = self.activeDrag.mapToGlobal(event.pos()).x() - self.activeDrag.startDragpos.x()
-                if event.pos().x() > self.activeDrag.width() or event.pos().x() < 0:
-                    self.activeDrag._value = (deltaX / 8) * self.activeDrag._factor
-                    self.activeDrag.valueLabel.setText(str(self.activeDrag._value))
-                    self.activeDrag.valueChanged.emit(self.activeDrag._startValue + self.activeDrag._value)
-                else:
-                    self.activeDrag._value = 0
-                    self.activeDrag.valueLabel.setText(str(self.activeDrag._value))
-                    self.activeDrag.startDragpos = self.activeDrag.mapToGlobal(event.pos())
-                    self.activeDrag._startValue = self.activeDrag.parent._value
-                    self.activeDrag.valueChanged.emit(0)
-
-        return False
-
-    def setValue(self,value):
-        self._value = value
-        self.parent().setValue(self._startValue+self._value)
-        self.parent().editingFinished.emit()
-
 class testWidg(QtWidgets.QWidget):
 
     def __init__(self, parent):
         super(testWidg, self).__init__(parent)
 
         self.setLayout(QtWidgets.QVBoxLayout())
-        # self.layout().addWidget(doubleSlider())
-        for i in range(10):
-            self.layout().addWidget(pyf_Slider(self, style=0))
-        #self.layout().addWidget(pyf_Slider(self, style=1))
-        # self.layout().addWidget(pyf_HueSlider(self))
-        # self.layout().addWidget(pyf_GradientSlider(self))
-        #self.layout().addWidget(floatInput())
+        self.layout().addWidget(doubleSlider())
+        self.layout().addWidget(pyf_Slider(self, style=0))
+        self.layout().addWidget(pyf_Slider(self, type = "int",style=1))
+        self.layout().addWidget(pyf_HueSlider(self))
+        self.layout().addWidget(pyf_GradientSlider(self))
+        self.layout().addWidget(valueBox(type="int"))
         self.setStyleSheet("background:grey")
-
 
 def main():
 
@@ -627,7 +626,6 @@ def main():
     ex.setStyle(QtWidgets.QStyleFactory.create("motif"))
     ex.show()
     sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
     main()
