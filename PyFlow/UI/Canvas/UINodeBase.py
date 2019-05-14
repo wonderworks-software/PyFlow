@@ -419,7 +419,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._rawNode.setName(name)
 
     def getPin(self, name, pinsGroup=PinSelectionGroup.BothSides):
-        pin = self._rawNode.getPin(name, pinsGroup)
+        pin = self._rawNode.getPin(str(name), pinsGroup)
         if pin is not None:
             if pin.getWrapper() is not None:
                 return pin.getWrapper()()
