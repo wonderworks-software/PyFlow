@@ -1,6 +1,7 @@
 from Qt import QtCore, QtGui
 from Qt import QtSvg
 from Qt.QtWidgets import QGraphicsWidget
+from Qt.QtWidgets import QSizePolicy
 
 
 class NodeActionButtonBase(QGraphicsWidget):
@@ -13,6 +14,7 @@ class NodeActionButtonBase(QGraphicsWidget):
         self.setAcceptHoverEvents(True)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setGraphicsItem(self)
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
         self.action = action
         self.svgIcon = QtSvg.QGraphicsSvgItem(svgFilePath, self)
         self.setToolTip(self.action.toolTip())

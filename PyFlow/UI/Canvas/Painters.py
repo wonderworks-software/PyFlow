@@ -77,8 +77,30 @@ class NodePainter(object):
             painter.drawRoundedRect(r, NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
         else:
             painter.drawRect(r)
-        # if node.image is not None:
-        #     painter.drawImage(node.getImageDrawRect(), node.image)
+
+        if node.resizable and not node.collapsed:
+            height = node.geometry().height()
+            width = node.geometry().width()
+            rf = NodeDefaults().CORNERS_ROUND_FACTOR
+            pen.setColor(node.canvasRef().window().styleSheetEditor.style.MainColor)
+            pen.setStyle(node.opt_pen_selected_type)
+            painter.setPen(pen)
+
+            # left strip
+            if node.resizeStrips[0]:
+                painter.drawLine(0, rf, 0, height - rf)
+            # top strip
+            if node.resizeStrips[1]:
+                painter.drawLine(rf, 0, width - rf, 0)
+            # right strip
+            if node.resizeStrips[2]:
+                painter.drawLine(width, rf, width, height - rf)
+            # bottom strip
+            if node.resizeStrips[3]:
+                painter.drawLine(rf, height, width - rf, height)
+            # bottom right strip
+            if node.resizeStrips[4]:
+                painter.drawArc(width - rf, height - rf, rf, rf, 0, -90 * 16)
 
     @staticmethod
     def asVariableGetter(node, painter, option, widget):

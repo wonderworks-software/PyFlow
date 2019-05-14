@@ -11,7 +11,6 @@ class UISwitchOnString(UINodeBase):
         actionAddOut.setToolTip("Adds an option")
         actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
         actionAddOut.triggered.connect(self.onAddOutPin)
-        self.resizable = True
 
     def postCreate(self, jsonTemplate=None):
         super(UISwitchOnString, self).postCreate(jsonTemplate=jsonTemplate)

@@ -459,6 +459,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # populate tools
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
+
         settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
         instance.restoreGeometry(settings.value('Editor/geometry'))
         instance.restoreState(settings.value('Editor/state'))
