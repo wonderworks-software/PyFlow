@@ -415,6 +415,10 @@ class Canvas(QGraphicsView):
     def onGraphChanged(self, newGraph):
         for node in self.nodes.values():
             node.setVisible(node._rawNode.graph() == newGraph)
+        for commentNode in self.getAllNodes():
+            if commentNode.isCommentNode:
+                if commentNode.collapsed:
+                    commentNode.hideCollapsedNodes()
 
     @property
     def manipulationMode(self):
@@ -996,7 +1000,6 @@ class Canvas(QGraphicsView):
             # elif modifiers not in  [QtCore.Qt.ShiftModifier,QtCore.Qt.ControlModifier]:
             #    super(Canvas, self).mousePressEvent(event)
             self.node_box.hide()
-
         elif not isinstance(self.pressed_item, EditableLabel) or (isinstance(self.pressed_item, EditableLabel) and not self.pressed_item._beingEdited):
             # else:
             if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():

@@ -33,6 +33,11 @@ class UIcommentNode(UINodeBase):
         self.isCommentNode = True
         self.resizable = True
         self.nodesToMove = set()
+        self.__collapsedNodes = set()
+
+    def hideCollapsedNodes(self):
+        for node in self.__collapsedNodes:
+            node.hide()
 
     def mousePressEvent(self, event):
         super(UIcommentNode, self).mousePressEvent(event)
@@ -44,15 +49,16 @@ class UIcommentNode(UINodeBase):
         self.nodesToMove.clear()
 
     def aboutToCollapse(self, futureCollapseState):
-        # if futureCollapseState:
-        #     self.nodesToMove.clear()
-        #     for node in self.getCollidingNodes():
-        #         self.nodesToMove.add(node)
-        #         node.hide()
-        # else:
-        #     for node in self.nodesToMove:
-        #         node.show()
-        pass
+        if futureCollapseState:
+            self.nodesToMove.clear()
+            for node in self.getCollidingNodes():
+                self.nodesToMove.add(node)
+                node.hide()
+                self.__collapsedNodes.add(node)
+        else:
+            for node in self.nodesToMove:
+                node.show()
+                self.__collapsedNodes.remove(node)
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
@@ -107,9 +113,6 @@ class UIcommentNode(UINodeBase):
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
         painter.drawRoundedRect(r, 3, 3)
-
-    def createActionButtons(self):
-        pass
 
     def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
