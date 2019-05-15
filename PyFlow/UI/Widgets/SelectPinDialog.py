@@ -10,6 +10,7 @@ from PyFlow.UI import RESOURCES_DIR
 
 _PIN_SIZE = 15
 
+
 class _FakeCanvas(object):
     def __init__(self):
         super(_FakeCanvas, self).__init__()
@@ -56,7 +57,7 @@ class _PinWidget(QtWidgets.QWidget):
         self.name = self.dataType
         self.bLabelHidden = False
 
-        self.setMouseTracking(True)
+        self.setMouseTracking(True) 
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
     def sizeHint(self):

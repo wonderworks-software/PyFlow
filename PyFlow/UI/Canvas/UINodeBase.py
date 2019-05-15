@@ -69,14 +69,31 @@ class NodeName(QGraphicsWidget):
         super(NodeName, self).__init__(parent)
         self.setAcceptHoverEvents(True)
         self.labelItem = QGraphicsTextItem()
+        self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
+        self._font = QtGui.QFont("Consolas")
+        self._font.setPointSize(6)
+        self.labelItem.setFont(self._font)
+
         self.setGraphicsItem(self.labelItem)
         self.hovered = False
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        self.labelItem.setPlainText(self.parentItem().displayName)
-        self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
-        self.font = QtGui.QFont("Consolas")
-        self.font.setPointSize(6)
-        self.labelItem.setFont(self.font)
+
+    def getFont(self):
+        return self.labelItem.font()
+
+    def getPlainText(self):
+        return self.labelItem.toPlainText()
+
+    def getHtml(self):
+        return self.labelItem.toHtml()
+
+    def setHtml(self, html):
+        self.labelItem.setHtml(html)
+        self._font.setPointSize(6)
+        self.labelItem.setFont(self._font)
+
+    def mouseDoubleClickEvent(self, event):
+        super(NodeName, self).mouseDoubleClickEvent(event)
 
     def IsRenamable(self):
         return False
@@ -417,7 +434,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             template['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
         template['displayName'] = self.displayName
         template['collapsed'] = self.collapsed
+        template['headerHtml'] = self.nodeNameWidget.getHtml()
         return template
+
+    def setHeaderHtml(self, html):
+        self.nodeNameWidget.setHtml(html)
 
     def serialize(self):
         return self._rawNode.serialize()
@@ -463,9 +484,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         self.createActionButtons()
 
+        headerHtml = self.name
         if jsonTemplate is not None:
             if "collapsed" in jsonTemplate["wrapper"]:
                 self.collapsed = jsonTemplate["wrapper"]["collapsed"]
+            if "headerHtml" in jsonTemplate["wrapper"]:
+                headerHtml = jsonTemplate["wrapper"]["headerHtml"]
 
         self.setToolTip(self.description())
         if self.resizable:
@@ -478,6 +502,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             self._rect.setWidth(w)
             self._rect.setHeight(h)
             self.updateNodeShape()
+
+        self.nodeNameWidget.setHtml(headerHtml)
 
     def createActionButtons(self):
         # NOTE: actions with action button class specified will be added next to node name
@@ -560,7 +586,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             h = max(self._rect.height(), h)
 
         if self.collapsed:
-            h = self.minHeight
+            h = max(self.minHeight, self.labelHeight)
 
         return h
 
@@ -622,10 +648,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 s2 = commentNode.boundingRect().size()
                 if s1.width() > s2.width() and s1.height() > s2.height():
                     smallest = commentNode
+                if self in commentNode.owningNodes:
+                    commentNode.owningNodes.remove(self)
             owningCommentNode = smallest
         self.owningCommentNode = owningCommentNode
         if self.owningCommentNode is not None:
-            self.owningCommentNode.owningNodes.add(self)
+            if owningCommentNode._rawNode.graph() == self.canvasRef().graphManager.activeGraph():
+                self.owningCommentNode.owningNodes.add(self)
 
     def getCollidedNodes(self, bFullyCollided=True, classNameFilters=set()):
         collidingItems = self.collidingItems()
@@ -638,11 +667,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                         if classNameFilters:
                             if node.__class__.__name__ not in classNameFilters:
                                 continue
+                        if node._rawNode.graph() != self.canvasRef().graphManager.activeGraph():
+                            continue
                         collidingNodes.add(node)
             else:
                 if node is not self and isinstance(node, UINodeBase):
                     if classNameFilters:
                         if node.__class__.__name__ not in classNameFilters:
+                            continue
+                    if node._rawNode.graph() != self.canvasRef().graphManager.activeGraph():
                             continue
                     collidingNodes.add(node)
         return collidingNodes
@@ -743,7 +776,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.updateOwningCommentNode()
         if self.owningCommentNode != self.pressedCommentNode:
             if self.pressedCommentNode is not None:
-                self.pressedCommentNode.owningNodes.remove(self)
+                if self in self.pressedCommentNode.owningNodes:
+                    self.pressedCommentNode.owningNodes.remove(self)
         super(UINodeBase, self).mouseReleaseEvent(event)
 
     def clone(self):

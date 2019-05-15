@@ -39,6 +39,17 @@ class NodeBase(INode):
         self.lib = None
         self.isCompoundNode = False
         self._lastError = None
+        self.__wrapperJsonData = None
+
+    @property
+    def wrapperJsonData(self):
+        try:
+            dt = self.__wrapperJsonData.copy()
+            self.__wrapperJsonData.clear()
+            self.__wrapperJsonData = None
+            return dt
+        except:
+            return None
 
     def isValid(self):
         return self._lastError is None
@@ -386,6 +397,10 @@ class NodeBase(INode):
                     pin.setDirty()
                 else:
                     pin.setClean()
+
+            # store data for wrapper
+            if "wrapper" in jsonTemplate:
+                self.__wrapperJsonData = jsonTemplate["wrapper"]
 
         if self.isCallable():
             self.bCallable = True
