@@ -48,8 +48,14 @@ class UICommentNode(UINodeBase):
             if not self.collapsed:
                 node.setVisible(bVisible)
 
-    def checkOwningCommentNode(self):
-        super(UICommentNode, self).checkOwningCommentNode()
+    def updateOwningCommentNode(self):
+        super(UICommentNode, self).updateOwningCommentNode()
+        # check if owning nodes still colliding with us. If not, remove those from owning nodes
+        collidedNodes = self.getCollidedNodes()
+        for node in list(self.owningNodes):
+            if node not in collidedNodes:
+                self.owningNodes.remove(node)
+
         if self.owningCommentNode is not None:
             self.setZValue(self.owningCommentNode.zValue() + 1)
 
@@ -72,8 +78,9 @@ class UICommentNode(UINodeBase):
     def mouseReleaseEvent(self, event):
         super(UICommentNode, self).mouseReleaseEvent(event)
         if not self.collapsed:
-            for node in self.getCollidedNodes():
-                node.checkOwningCommentNode()
+            collidingNodes = self.getCollidedNodes()
+            for node in collidingNodes:
+                node.updateOwningCommentNode()
 
     def aboutToCollapse(self, futureCollapseState):
         if futureCollapseState:

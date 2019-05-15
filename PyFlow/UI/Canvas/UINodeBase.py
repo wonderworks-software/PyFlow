@@ -68,9 +68,15 @@ class NodeName(QGraphicsWidget):
     def __init__(self, parent=None):
         super(NodeName, self).__init__(parent)
         self.setAcceptHoverEvents(True)
-        self.setGraphicsItem(self)
+        self.labelItem = QGraphicsTextItem()
+        self.setGraphicsItem(self.labelItem)
         self.hovered = False
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        self.labelItem.setPlainText(self.parentItem().displayName)
+        self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
+        self.font = QtGui.QFont("Consolas")
+        self.font.setPointSize(6)
+        self.labelItem.setFont(self.font)
 
     def IsRenamable(self):
         return False
@@ -86,42 +92,7 @@ class NodeName(QGraphicsWidget):
         self.update()
 
     def sizeHint(self, which, constraint):
-        nameFont = self.parentItem().nodeNameFont
-        typeFont = self.parentItem().nodeTypeFont
-
-        nameTextWidth = QtGui.QFontMetrics(nameFont).width(self.parentItem().displayName) + NodeDefaults().CONTENT_MARGINS * 2
-        nameTextHeight = QtGui.QFontMetrics(nameFont).height()
-
-        typeTextWidth = QtGui.QFontMetrics(nameFont).width(self.parentItem().displayName) + NodeDefaults().CONTENT_MARGINS * 2
-        typeTextHeight = QtGui.QFontMetrics(typeFont).height()
-
-        return QtCore.QSizeF(max(nameTextWidth, typeTextWidth), nameTextHeight + typeTextHeight)
-
-    def setGeometry(self, rect):
-        self.prepareGeometryChange()
-        super(QGraphicsWidget, self).setGeometry(rect)
-        self.setPos(rect.topLeft())
-
-    def paint(self, painter, option, widget):
-        lod = self.parentItem().canvasRef().getLodValueFromCurrentScale(3)
-        frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
-
-        if lod < 3:
-            nodeName = self.parentItem().name
-            nodeType = self.parentItem()._rawNode.__class__.__name__
-            nodeResizable = self.parentItem().resizable
-            painter.setFont(self.parentItem().nodeNameFont)
-            painter.setPen(QtGui.QPen(self.parentItem().labelTextColor, 0.7))
-            width = QtGui.QFontMetrics(painter.font()).width(nodeName)
-            height = QtGui.QFontMetrics(painter.font()).height()
-            yCenter = (frame.height() / 2) + (height / 2.5)
-            x = PinDefaults().PIN_SIZE / 2
-
-            painter.drawText(x, yCenter - height / 2, nodeName)
-            painter.setFont(self.parentItem().nodeTypeFont)
-            painter.setPen(QtGui.QPen(self.parentItem().typeTextColor, 0.5))
-            height = QtGui.QFontMetrics(painter.font()).height()
-            painter.drawText(x, yCenter + height / 3, nodeType)
+        return self.labelItem.boundingRect().size()
 
 
 class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
@@ -160,13 +131,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.drawlabel = True
         self.headColorOverride = headColorOverride
         self.headColor = headColorOverride
-        self.height_offset = 3
         self._w = 0
-        self.h = 25
+        self.h = 30
         self.minWidth = 25
         self.minHeight = self.h
         self._labelTextColor = QtCore.Qt.white
-        self._typeTextColor = QtCore.Qt.white
 
         self.drawLayoutsDebug = False
         self.nodeLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
@@ -304,14 +273,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         r.setHeight(24)
         r.translate(topRight)
         return r
-
-    @property
-    def typeTextColor(self):
-        return self._typeTextColor
-
-    @typeTextColor.setter
-    def typeTextColor(self, value):
-        self._typeTextColor = value
 
     @property
     def labelTextColor(self):
@@ -559,7 +520,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     @property
     def labelWidth(self):
-        headerWidth = QtGui.QFontMetrics(self.nodeNameFont).width(self.displayName) + NodeDefaults().CONTENT_MARGINS * 2
+        headerWidth = self.nodeNameWidget.sizeHint(None, None).width()
 
         # actions width. 10 is svg icon size, probably need to move this value to some preferences
         numActions = len(self._actionButtons)
@@ -639,10 +600,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             if label:
                 self.update()
 
-    def checkOwningCommentNode(self):
+    def updateOwningCommentNode(self):
 
         if self.owningCommentNode is not None and self.owningCommentNode.collapsed:
             return
+
         collidingItems = self.collidingItems(QtCore.Qt.ContainsItemShape)
         collidingNodes = set()
         for item in collidingItems:
@@ -664,7 +626,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.owningCommentNode = owningCommentNode
         if self.owningCommentNode is not None:
             self.owningCommentNode.owningNodes.add(self)
-            print(self.owningCommentNode.name)
 
     def getCollidedNodes(self, bFullyCollided=True, classNameFilters=set()):
         collidingItems = self.collidingItems()
@@ -720,7 +681,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._menu.exec_(event.screenPos())
 
     def mousePressEvent(self, event):
-        print(self.zValue())
         self.update()
         self.pressedCommentNode = self.owningCommentNode
         super(UINodeBase, self).mousePressEvent(event)
@@ -780,7 +740,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def mouseReleaseEvent(self, event):
         self.bResize = False
         self.update()
-        self.checkOwningCommentNode()
+        self.updateOwningCommentNode()
         if self.owningCommentNode != self.pressedCommentNode:
             if self.pressedCommentNode is not None:
                 self.pressedCommentNode.owningNodes.remove(self)
@@ -805,9 +765,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         le_name = QLineEdit(self.getName())
         le_name.setReadOnly(True)
-        # if self.label().IsRenamable():
-        #     le_name.setReadOnly(False)
-        #     le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
         baseCategory.addWidget("Name", le_name)
 
         leUid = QLineEdit(str(self._rawNode.graph().name))

@@ -18,6 +18,12 @@ class SelectionRect(QtWidgets.QGraphicsWidget):
         self.__modifiers = modifiers
         self.setPos(self.__mouseDownPos)
         self.resize(0, 0)
+        self.selectFullyIntersectedItems = False
+
+    def collidesWithItem(self, item):
+        if self.selectFullyIntersectedItems:
+            return self.sceneBoundingRect().contains(item.sceneBoundingRect())
+        return super(SelectionRect, self).collidesWithItem(item)
 
     def setDragPoint(self, dragPoint, modifiers):
         self.__modifiers = modifiers

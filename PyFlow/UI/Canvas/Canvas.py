@@ -251,7 +251,6 @@ class SceneClass(QGraphicsScene):
                     nodeTemplate['meta']['label'] = varData['name']
                     self.parent().createNode(nodeTemplate)
                     return
-
             else:
                 packageName = jsonData["package"]
                 nodeType = jsonData["type"]
@@ -269,6 +268,7 @@ class SceneClass(QGraphicsScene):
                     nodeTemplate['meta']['label'] = nodeType
                     nodeTemplate['uuid'] = str(uuid.uuid4())
                     if self.tempnode:
+                        self.tempnode.updateOwningCommentNode()
                         self.tempnode.isTemp = False
                         self.tempnode.update()
                         node = self.tempnode
@@ -339,6 +339,7 @@ class Canvas(QGraphicsView):
     requestClearProperties = QtCore.Signal()
 
     USETAB = True
+
     def __init__(self, graphManager, parent=None):
         super(Canvas, self).__init__()
         self.graphManager = graphManager
@@ -693,7 +694,7 @@ class Canvas(QGraphicsView):
                     instance._rect.setBottom(rect.height())
                 instance.updateNodeShape()
                 for node in self.selectedNodes():
-                    node.checkOwningCommentNode()
+                    node.updateOwningCommentNode()
 
             if all([event.key() == QtCore.Qt.Key_Space, modifiers == QtCore.Qt.ControlModifier]):
                 self.showNodeBox()
@@ -980,6 +981,7 @@ class Canvas(QGraphicsView):
                 if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
                     self.manipulationMode = CanvasManipulationMode.SELECT
                     self._selectionRect = SelectionRect(graph=self, mouseDownPos=self.mapToScene(event.pos()), modifiers=modifiers)
+                    self._selectionRect.selectFullyIntersectedItems = True
                     self._mouseDownSelection = [node for node in self.selectedNodes()]
                     if modifiers not in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
                         self.clearSelection()
