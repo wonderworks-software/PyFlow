@@ -248,10 +248,10 @@ class INode(IItemBase):
         """
         raise NotImplementedError('call method of INode is not implemented')
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None,structConstraint = None, allowedPins=[]):
         raise NotImplementedError('createInputPin method of INode is not implemented')
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None,structConstraint = None, allowedPins=[]):
         raise NotImplementedError('createOutputPin method of INode is not implemented')
 
     def getUniqPinName(self, name):

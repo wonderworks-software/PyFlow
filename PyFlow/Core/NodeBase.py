@@ -36,6 +36,7 @@ class NodeBase(INode):
         self.bCallable = False
         self._wrapper = None
         self._constraints = {}
+        self._structConstraints = {}
         self.lib = None
         self.isCompoundNode = False
         self._lastError = None
@@ -56,6 +57,10 @@ class NodeBase(INode):
     @property
     def constraints(self):
         return self._constraints
+
+    @property
+    def structConstraints(self):
+        return self._structConstraints
 
     def getOrderedPins(self):
         return self.pinsCreationOrder.values()
@@ -250,7 +255,7 @@ class NodeBase(INode):
                     continue
                 pinAffects(i, o)
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None,structConstraint=None, allowedPins=[]):
         # if dataType == 'ExecPin':
         #     assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
 
@@ -270,9 +275,11 @@ class NodeBase(INode):
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
+        if structConstraint is not None:
+            p.updatestructConstraint(structConstraint)               
         return p
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None,structConstraint=None, allowedPins=[]):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         if foo:
@@ -287,6 +294,8 @@ class NodeBase(INode):
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
+        if structConstraint is not None:
+            p.updatestructConstraint(structConstraint)            
         return p
 
     def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):
@@ -487,7 +496,7 @@ class NodeBase(INode):
             p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
-            p.setAsList(isinstance(returnDefaultValue, list))
+            p.initAsList(isinstance(returnDefaultValue, list))
             if returnPinOptionsToEnable is not None:
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
@@ -522,7 +531,7 @@ class NodeBase(INode):
                         pinOptionsToDisable = pinDict["disabledOptions"]
 
                 outRef = raw_inst.createOutputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
-                outRef.setAsList(isinstance(pinDefaultValue, list))
+                outRef.initAsList(isinstance(pinDefaultValue, list))
                 outRef.setDefaultValue(pinDefaultValue)
                 outRef.setData(pinDefaultValue)
                 if pinOptionsToEnable is not None:
@@ -550,7 +559,7 @@ class NodeBase(INode):
                         pinOptionsToDisable = pinDict["disabledOptions"]
 
                 inp = raw_inst.createInputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
-                inp.setAsList(isinstance(pinDefaultValue, list))
+                inp.initAsList(isinstance(pinDefaultValue, list))
                 inp.setData(pinDefaultValue)
                 inp.setDefaultValue(pinDefaultValue)
                 if pinOptionsToEnable is not None:

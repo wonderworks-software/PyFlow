@@ -79,14 +79,14 @@ class AnyPin(PinBase):
             traverseConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))
         super(AnyPin, self).pinConnected(other)
 
-    def updateOnConnectionCallback(self, pin, other):
+    def updateOnConnectionCallback(self, pin, other):        
         free = pin.checkFree([])
-        if other.dataType != pin.activeDataType and free:
+        if  free:
             pin._free = False
             pin.setType(other)
 
     def updateOnDisconnectionCallback(self, pin, other):
-        free = self.checkFree([])
+        free = pin.checkFree([])
         if free:
             pin.setDefault()
 
@@ -135,7 +135,8 @@ class AnyPin(PinBase):
         self.setDefaultValue(None)
         if not self.hasConnections():
             self._free = True
-
+        if (self._free and self.structConstraint == None ) or (self._free and self.structConstraint != None and all([x._free for x in self.owningNode().structConstraints[self.structConstraint]])):
+            self.setAsList(False or self._alwaysList)
         self.supportedDataTypes = lambda: tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
 
     def setType(self, other):
@@ -152,9 +153,17 @@ class AnyPin(PinBase):
             self.color = other.color
             self._data = getPinDefaultValueByType(self.activeDataType)
             self.setDefaultValue(self._data)
+            if self.hasConnections():
+                self.setAsList(any([x.isList() for x in list(self.affected_by)]) or self._alwaysList)
+            elif self.structConstraint != None:
+                self.setAsList(any([x.isList() for x in self.owningNode().structConstraints[self.structConstraint]]) or self._alwaysList)
+            else:
+                self.setAsList(other.isList or self._alwaysList)
+
             self.dirty = other.dirty
             self.jsonEncoderClass = other.jsonEncoderClass
             self.jsonDecoderClass = other.jsonDecoderClass
             self.typeChanged.send(self.activeDataType)
             self.supportedDataTypes = other.supportedDataTypes
             self._free = self.activeDataType == self.__class__.__name__
+

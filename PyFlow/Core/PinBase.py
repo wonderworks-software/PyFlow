@@ -44,12 +44,14 @@ class PinBase(IPin):
         self._wrapper = None
         # Constraint ports
         self.constraint = None
+        self.structConstraint = None
         self._isAny = False
 
         # Flags
         self._flags = PinOptions.Storable
 
         self._isList = False
+        self._alwaysList = False
 
     def enableOptions(self, *options):
         for option in options:
@@ -85,6 +87,12 @@ class PinBase(IPin):
     def isExec(self):
         return False
 
+    def initAsList(self,bIsList):
+        """Sets this pins to be a list always"""
+        bIsList = bool(bIsList)
+        self._alwaysList = bIsList
+        self.setAsList(bIsList)
+
     def setAsList(self, bIsList):
         """Sets this pin to be a list.
 
@@ -108,6 +116,7 @@ class PinBase(IPin):
             self._data = []
         # list pins supports only lists by default
         self.enableOptions(PinOptions.SupportsOnlyList)
+        self.changeTypeOnConnection = True
         self.containerTypeChanged.send()
 
     def isList(self):
@@ -320,6 +329,13 @@ class PinBase(IPin):
             self.owningNode().constraints[constraint].append(self)
         else:
             self.owningNode().constraints[constraint] = [self]
+
+    def updatestructConstraint(self,constraint):
+        self.structConstraint = constraint
+        if constraint in self.owningNode().structConstraints:
+            self.owningNode().structConstraints[constraint].append(self)
+        else:
+            self.owningNode().structConstraints[constraint] = [self]
 
     @staticmethod
     def jsonEncoderClass():

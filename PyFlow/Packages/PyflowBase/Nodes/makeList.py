@@ -6,16 +6,16 @@ class makeList(NodeBase):
     def __init__(self, name):
         super(makeList, self).__init__(name)
         self.arrayData = self.createInputPin('data', 'AnyPin', constraint="1")
-        self.arrayData.setAsList(True)
+        self.arrayData.initAsList(True)
         self.arrayData.enableOptions(PinOptions.AllowMultipleConnections)
         self.arrayData.disableOptions(PinOptions.SupportsOnlyList)
-        self.arrayData.changeTypeOnConnection = False
+        #self.arrayData.changeTypeOnConnection = False
 
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
         self.outArray = self.createOutputPin('out', 'AnyPin', constraint="1")
-        self.outArray.setAsList(True)
-        self.outArray.changeTypeOnConnection = False
+        self.outArray.initAsList(True)
+        #self.outArray.changeTypeOnConnection = False
 
         self.result = self.createOutputPin('result', 'BoolPin')
 
@@ -38,7 +38,11 @@ class makeList(NodeBase):
     def compute(self, *args, **kwargs):
         outArray = []
         for i in sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y):
-            outArray.append(i.getData())
+            if isinstance(i.getData(),list):
+                for e in i.getData():
+                    outArray.append(e)
+            else:
+                outArray.append(i.getData())
 
         isSorted = self.sorted.getData()
         isReversed = self.reversed.getData()

@@ -7,7 +7,7 @@ class forEachLoop(NodeBase):
         super(forEachLoop, self).__init__(name)
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.list = self.createInputPin('list', 'AnyPin', constraint="1")
-        self.list.setAsList(True)
+        self.list.initAsList(True)
         self.list.enableOptions(PinOptions.ListSupported)
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
