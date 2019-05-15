@@ -418,7 +418,7 @@ class Canvas(QGraphicsView):
         for commentNode in self.getAllNodes():
             if commentNode.isCommentNode:
                 if commentNode.collapsed:
-                    commentNode.hideCollapsedNodes()
+                    commentNode.hideOwningNodes()
 
     @property
     def manipulationMode(self):

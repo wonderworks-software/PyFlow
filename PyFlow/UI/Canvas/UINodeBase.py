@@ -234,6 +234,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.lastMousePos = QtCore.QPointF()
 
         # Hiding/Moving By Group/collapse/By Pin
+        self.pressedCommentNode = None
         self.owningCommentNode = None
         self.edgesToHide = []
         self.nodesNamesToMove = []
@@ -467,7 +468,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         if change == QGraphicsItem.ItemPositionChange:
             self._rawNode.setPosition(value.x(), value.y())
         if change == QGraphicsItem.ItemVisibleChange:
-            self.onVisibilityChanged(bool(value))
+            if self.owningCommentNode is not None:
+                if self.owningCommentNode.collapsed:
+                    self.onVisibilityChanged(False)
+                else:
+                    self.onVisibilityChanged(bool(value))
         return super(UINodeBase, self).itemChange(change, value)
 
     def autoAffectPins(self):
@@ -638,7 +643,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         if self.owningCommentNode is not None and self.owningCommentNode.collapsed:
             return
-
         collidingItems = self.collidingItems(QtCore.Qt.ContainsItemShape)
         collidingNodes = set()
         for item in collidingItems:
@@ -659,6 +663,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             owningCommentNode = smallest
         self.owningCommentNode = owningCommentNode
         if self.owningCommentNode is not None:
+            self.owningCommentNode.owningNodes.add(self)
             print(self.owningCommentNode.name)
 
     def getCollidedNodes(self, bFullyCollided=True, classNameFilters=set()):
@@ -717,6 +722,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def mousePressEvent(self, event):
         print(self.zValue())
         self.update()
+        self.pressedCommentNode = self.owningCommentNode
         super(UINodeBase, self).mousePressEvent(event)
         self.mousePressPos = event.scenePos()
         self.origPos = self.pos()
@@ -775,6 +781,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.bResize = False
         self.update()
         self.checkOwningCommentNode()
+        if self.owningCommentNode != self.pressedCommentNode:
+            if self.pressedCommentNode is not None:
+                self.pressedCommentNode.owningNodes.remove(self)
         super(UINodeBase, self).mouseReleaseEvent(event)
 
     def clone(self):

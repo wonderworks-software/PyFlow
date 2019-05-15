@@ -39,14 +39,14 @@ class UICommentNode(UINodeBase):
         UICommentNode.layer += 1
         self.setZValue(UICommentNode.layer)
 
-    def hideCollapsedNodes(self):
-        for node in self.__collapsedNodes:
+    def hideOwningNodes(self):
+        for node in self.owningNodes:
             node.hide()
 
     def onVisibilityChanged(self, bVisible):
         for node in self.owningNodes:
-            if node.owningCommentNode == self:
-                node.setVisible(True)
+            if not self.collapsed:
+                node.setVisible(bVisible)
 
     def checkOwningCommentNode(self):
         super(UICommentNode, self).checkOwningCommentNode()
@@ -55,8 +55,6 @@ class UICommentNode(UINodeBase):
 
     def mousePressEvent(self, event):
         super(UICommentNode, self).mousePressEvent(event)
-        for node in self.getCollidedNodes():
-            self.owningNodes.add(node)
 
         zValue = self.zValue()
         partiallyCollidedComments = set()
@@ -74,18 +72,11 @@ class UICommentNode(UINodeBase):
     def mouseReleaseEvent(self, event):
         super(UICommentNode, self).mouseReleaseEvent(event)
         if not self.collapsed:
-            self.owningNodes.clear()
             for node in self.getCollidedNodes():
                 node.checkOwningCommentNode()
 
-    def updateOwningNodes(self):
-        self.owningNodes.clear()
-        for node in self.getCollidedNodes():
-            self.owningNodes.add(node)
-
     def aboutToCollapse(self, futureCollapseState):
         if futureCollapseState:
-            self.updateOwningNodes()
             for node in self.owningNodes:
                 if node.owningCommentNode is self:
                     node.hide()
