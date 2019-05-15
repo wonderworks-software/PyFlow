@@ -140,6 +140,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setAcceptHoverEvents(True)
+        self.setZValue(NodeDefaults().Z_LAYER)
         self._rawNode = raw_node
         self._rawNode.setWrapper(self)
         self._rawNode.killed.connect(self.kill)
@@ -233,6 +234,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.lastMousePos = QtCore.QPointF()
 
         # Hiding/Moving By Group/collapse/By Pin
+        self.owningCommentNode = None
         self.edgesToHide = []
         self.nodesNamesToMove = []
         self.pinsToMove = {}
@@ -458,9 +460,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def serialize(self):
         return self._rawNode.serialize()
 
+    def onVisibilityChanged(self, bVisible):
+        pass
+
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange:
             self._rawNode.setPosition(value.x(), value.y())
+        if change == QGraphicsItem.ItemVisibleChange:
+            self.onVisibilityChanged(bool(value))
         return super(UINodeBase, self).itemChange(change, value)
 
     def autoAffectPins(self):
@@ -625,17 +632,53 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             res.setAlpha(80)
             self.color = res
             if label:
-                # self.label().color = res
                 self.update()
-                # self.label().update()
 
-    def getCollidingNodes(self):
+    def checkOwningCommentNode(self):
+
+        if self.owningCommentNode is not None and self.owningCommentNode.collapsed:
+            return
+
+        collidingItems = self.collidingItems(QtCore.Qt.ContainsItemShape)
+        collidingNodes = set()
+        for item in collidingItems:
+            if item.sceneBoundingRect().contains(self.sceneBoundingRect()) and isinstance(item, UINodeBase):
+                if item.isCommentNode:
+                    collidingNodes.add(item)
+        owningCommentNode = None
+        if len(collidingNodes) == 1:
+            owningCommentNode = list(collidingNodes)[0]
+        elif len(collidingNodes) > 1:
+            # find smallest rect
+            smallest = list(collidingNodes)[0]
+            for commentNode in collidingNodes:
+                s1 = smallest.boundingRect().size()
+                s2 = commentNode.boundingRect().size()
+                if s1.width() > s2.width() and s1.height() > s2.height():
+                    smallest = commentNode
+            owningCommentNode = smallest
+        self.owningCommentNode = owningCommentNode
+        if self.owningCommentNode is not None:
+            print(self.owningCommentNode.name)
+
+    def getCollidedNodes(self, bFullyCollided=True, classNameFilters=set()):
         collidingItems = self.collidingItems()
         collidingNodes = set()
         for item in collidingItems:
             node = item.topLevelItem()
-            if node is not self and isinstance(node, UINodeBase):
-                collidingNodes.add(node)
+            if bFullyCollided:
+                if self.sceneBoundingRect().contains(node.sceneBoundingRect()):
+                    if node is not self and isinstance(node, UINodeBase):
+                        if classNameFilters:
+                            if node.__class__.__name__ not in classNameFilters:
+                                continue
+                        collidingNodes.add(node)
+            else:
+                if node is not self and isinstance(node, UINodeBase):
+                    if classNameFilters:
+                        if node.__class__.__name__ not in classNameFilters:
+                            continue
+                    collidingNodes.add(node)
         return collidingNodes
 
     def translate(self, x, y):
@@ -672,6 +715,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._menu.exec_(event.screenPos())
 
     def mousePressEvent(self, event):
+        print(self.zValue())
         self.update()
         super(UINodeBase, self).mousePressEvent(event)
         self.mousePressPos = event.scenePos()
@@ -730,6 +774,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def mouseReleaseEvent(self, event):
         self.bResize = False
         self.update()
+        self.checkOwningCommentNode()
         super(UINodeBase, self).mouseReleaseEvent(event)
 
     def clone(self):
@@ -812,7 +857,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         del(self)
 
     def collidesWithCommentNode(self):
-        nodes = self.getCollidingNodes()
+        nodes = self.getCollidedNodes()
         result = None
         for n in nodes:
             if n.isCommentNode:

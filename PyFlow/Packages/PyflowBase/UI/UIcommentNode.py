@@ -16,6 +16,8 @@ from Qt.QtWidgets import QMenu
 from Qt import QtGui
 from Qt import QtCore
 
+from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Utils.Settings import (Spacings, Colors)
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import NodeName
@@ -24,41 +26,72 @@ from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 import weakref
 
 
-class UIcommentNode(UINodeBase):
+class UICommentNode(UINodeBase):
+    layer = 0
+
     def __init__(self, raw_node):
-        super(UIcommentNode, self).__init__(raw_node)
+        super(UICommentNode, self).__init__(raw_node)
         self.color = Colors.AbsoluteBlack
-        self.setZValue(-2)
         self.color.setAlpha(80)
         self.isCommentNode = True
         self.resizable = True
-        self.nodesToMove = set()
-        self.__collapsedNodes = set()
+        self.owningNodes = set()
+        UICommentNode.layer += 1
+        self.setZValue(UICommentNode.layer)
 
     def hideCollapsedNodes(self):
         for node in self.__collapsedNodes:
             node.hide()
 
+    def onVisibilityChanged(self, bVisible):
+        for node in self.owningNodes:
+            if node.owningCommentNode == self:
+                node.setVisible(True)
+
+    def checkOwningCommentNode(self):
+        super(UICommentNode, self).checkOwningCommentNode()
+        if self.owningCommentNode is not None:
+            self.setZValue(self.owningCommentNode.zValue() + 1)
+
     def mousePressEvent(self, event):
-        super(UIcommentNode, self).mousePressEvent(event)
-        for node in self.getCollidingNodes():
-            self.nodesToMove.add(node)
+        super(UICommentNode, self).mousePressEvent(event)
+        for node in self.getCollidedNodes():
+            self.owningNodes.add(node)
+
+        zValue = self.zValue()
+        partiallyCollidedComments = set()
+        for node in self.getCollidedNodes(False):
+            if node.isCommentNode:
+                partiallyCollidedComments.add(node)
+                if self.zValue() <= node.zValue():
+                    if self.sceneBoundingRect().contains(node.sceneBoundingRect()):
+                        continue
+                    zValue += 1
+        if len(partiallyCollidedComments) == 0:
+            zValue = 0
+        self.setZValue(zValue)
 
     def mouseReleaseEvent(self, event):
-        super(UIcommentNode, self).mouseReleaseEvent(event)
-        self.nodesToMove.clear()
+        super(UICommentNode, self).mouseReleaseEvent(event)
+        if not self.collapsed:
+            self.owningNodes.clear()
+            for node in self.getCollidedNodes():
+                node.checkOwningCommentNode()
+
+    def updateOwningNodes(self):
+        self.owningNodes.clear()
+        for node in self.getCollidedNodes():
+            self.owningNodes.add(node)
 
     def aboutToCollapse(self, futureCollapseState):
         if futureCollapseState:
-            self.nodesToMove.clear()
-            for node in self.getCollidingNodes():
-                self.nodesToMove.add(node)
-                node.hide()
-                self.__collapsedNodes.add(node)
+            self.updateOwningNodes()
+            for node in self.owningNodes:
+                if node.owningCommentNode is self:
+                    node.hide()
         else:
-            for node in self.nodesToMove:
+            for node in self.owningNodes:
                 node.show()
-                self.__collapsedNodes.remove(node)
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
@@ -75,10 +108,10 @@ class UIcommentNode(UINodeBase):
             color = QtGui.QColor(*jsonTemplate['meta']['commentNode']['color'])
 
     def translate(self, x, y):
-        for n in self.nodesToMove:
+        for n in self.owningNodes:
             if not n.isSelected():
                 n.translate(x, y)
-        super(UIcommentNode, self).translate(x, y)
+        super(UICommentNode, self).translate(x, y)
 
     def isRenamable(self):
         return True
@@ -113,6 +146,7 @@ class UIcommentNode(UINodeBase):
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
         painter.drawRoundedRect(r, 3, 3)
+        NodePainter.drawResizeHandles(self, painter, option, widget)
 
     def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")

@@ -38,6 +38,11 @@ class NodeDefaults(object):
         self.__layoutsSpacing = 5
         self.__cornersRoundFactor = 6
         self.__svgIconKey = "svgIcon"
+        self.__layer = 1000000
+
+    @property
+    def Z_LAYER(self):
+        return self.__layer
 
     @property
     def SVG_ICON_KEY(self):

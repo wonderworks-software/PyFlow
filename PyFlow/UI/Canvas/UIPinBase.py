@@ -111,7 +111,7 @@ class UIPinBase(QGraphicsWidget):
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(self.DeviceCoordinateCache)
         self.setAcceptHoverEvents(True)
-        self.setZValue(2)
+        self.setZValue(1)
         self.setParentItem(owningNode)
 
         self.UiNode = weakref.ref(owningNode)

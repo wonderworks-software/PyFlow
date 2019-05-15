@@ -16,7 +16,7 @@ from PyFlow.Packages.PyflowBase.UI.UISwitchOnStringNode import UISwitchOnString
 from PyFlow.Packages.PyflowBase.UI.UIGetVarNode import UIGetVarNode
 from PyFlow.Packages.PyflowBase.UI.UISetVarNode import UISetVarNode
 from PyFlow.Packages.PyflowBase.UI.UISequenceNode import UISequenceNode
-from PyFlow.Packages.PyflowBase.UI.UIcommentNode import UIcommentNode
+from PyFlow.Packages.PyflowBase.UI.UICommentNode import UICommentNode
 from PyFlow.Packages.PyflowBase.UI.UIRerouteNode import UIRerouteNode
 from PyFlow.Packages.PyflowBase.UI.UIPythonNode import UIPythonNode
 from PyFlow.Packages.PyflowBase.UI.UIGraphNodes import (
@@ -37,7 +37,7 @@ def createUINode(raw_instance):
     if isinstance(raw_instance, sequence):
         return UISequenceNode(raw_instance)
     if isinstance(raw_instance, commentNode):
-        return UIcommentNode(raw_instance)
+        return UICommentNode(raw_instance)
     if isinstance(raw_instance, reroute) or isinstance(raw_instance, rerouteExecs):
         return UIRerouteNode(raw_instance)
     if isinstance(raw_instance, graphInputs):

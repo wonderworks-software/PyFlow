@@ -10,7 +10,7 @@ class SelectionRect(QtWidgets.QGraphicsWidget):
 
     def __init__(self, graph, mouseDownPos, modifiers):
         super(SelectionRect, self).__init__()
-        self.setZValue(-1)
+        self.setZValue(2)
 
         self.__graph = graph
         self.__graph.scene().addItem(self)

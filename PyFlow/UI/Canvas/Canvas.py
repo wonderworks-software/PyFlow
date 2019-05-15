@@ -672,7 +672,7 @@ class Canvas(QGraphicsView):
                     rect.setLeft(rect.left() - 30)
 
                     rect.setRight(rect.right() + 100)
-                    rect.setBottom(rect.bottom() + 100)
+                    rect.setBottom(rect.bottom() + 30)
 
                 nodeTemplate = NodeBase.jsonTemplate()
                 nodeTemplate['package'] = "PyflowBase"
@@ -691,6 +691,9 @@ class Canvas(QGraphicsView):
                 if rect:
                     instance._rect.setRight(rect.width())
                     instance._rect.setBottom(rect.height())
+                instance.updateNodeShape()
+                for node in self.selectedNodes():
+                    node.checkOwningCommentNode()
 
             if all([event.key() == QtCore.Qt.Key_Space, modifiers == QtCore.Qt.ControlModifier]):
                 self.showNodeBox()
