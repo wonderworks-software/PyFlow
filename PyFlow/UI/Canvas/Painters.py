@@ -64,6 +64,7 @@ class NodePainter(object):
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
         painter.drawRoundedRect(frame, 3, 3)
+        painter.drawLine(frame.left() + 5, node.labelHeight, frame.right() - 5, node.labelHeight)
         NodePainter.drawResizeHandles(node, painter, option, widget)
 
     @staticmethod

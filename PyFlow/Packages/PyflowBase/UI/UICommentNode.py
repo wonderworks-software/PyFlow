@@ -75,11 +75,6 @@ class UICommentNode(UINodeBase):
 
     def updateOwningCommentNode(self):
         super(UICommentNode, self).updateOwningCommentNode()
-        # check if owning nodes still colliding with us. If not, remove those from owning nodes
-        collidedNodes = self.getCollidedNodes()
-        for node in list(self.owningNodes):
-            if node not in collidedNodes:
-                self.owningNodes.remove(node)
 
         if self.owningCommentNode is not None:
             self.setZValue(self.owningCommentNode.zValue() + 1)
