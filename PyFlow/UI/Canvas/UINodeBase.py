@@ -92,9 +92,6 @@ class NodeName(QGraphicsWidget):
         self._font.setPointSize(6)
         self.labelItem.setFont(self._font)
 
-    def mouseDoubleClickEvent(self, event):
-        super(NodeName, self).mouseDoubleClickEvent(event)
-
     def IsRenamable(self):
         return False
 
@@ -218,6 +215,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.resizeStrips = [0, 0, 0, 0, 0]  # Left, Top, Right, Bottom, BottomRight
 
         self.lastMousePos = QtCore.QPointF()
+        self.mousePressPos = QtCore.QPointF()
 
         # Hiding/Moving By Group/collapse/By Pin
         self.pressedCommentNode = None
@@ -503,7 +501,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             self._rect.setHeight(h)
             self.updateNodeShape()
 
-        self.nodeNameWidget.setHtml(headerHtml)
+        self.setHeaderHtml(headerHtml)
 
     def createActionButtons(self):
         # NOTE: actions with action button class specified will be added next to node name
@@ -715,6 +713,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     def mousePressEvent(self, event):
         self.update()
+        self.mousePressPos = event.pos()
         self.pressedCommentNode = self.owningCommentNode
         super(UINodeBase, self).mousePressEvent(event)
         self.mousePressPos = event.scenePos()

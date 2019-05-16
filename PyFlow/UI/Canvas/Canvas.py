@@ -516,8 +516,7 @@ class Canvas(QGraphicsView):
     def OnDoubleClick(self, pos):
         if self.pressed_item and isinstance(self.pressed_item, NodeName):
             if self.pressed_item.IsRenamable():
-                name, result = QInputDialog.getText(
-                    self, "New name dialog", "Enter new name:")
+                name, result = QInputDialog.getText(self, "New name dialog", "Enter new name:")
                 if result:
                     self.pressed_item.parentItem().setName(name)
                     self.updatePropertyView(self.pressed_item.parentItem())
@@ -755,6 +754,8 @@ class Canvas(QGraphicsView):
             newName = getUniqNameFromList(existingNames, node['name'])
             existingNames.append(newName)
             renameData[node['name']] = newName
+            # rename old name in header data
+            node["wrapper"]["headerHtml"] = node["wrapper"]["headerHtml"].replace(node['name'], newName)
             node['name'] = newName
             node['uuid'] = str(uuid.uuid4())
             for inp in node['inputs']:
@@ -816,6 +817,7 @@ class Canvas(QGraphicsView):
         newNodes = {}
 
         nodesData = deepcopy(nodes)
+        createdNodes = set()
         for node in nodesData:
             oldName = node["name"]
 
@@ -823,6 +825,7 @@ class Canvas(QGraphicsView):
                 node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'])
 
             n = self.createNode(node)
+            createdNodes.add(n)
 
             if n is None:
                 continue
@@ -845,6 +848,8 @@ class Canvas(QGraphicsView):
                 except:
                     print(outPinJson['fullName'], "not found")
                     continue
+        for newNode in createdNodes:
+            newNode.updateOwningCommentNode()
 
     @dispatch(str)
     def findNode(self, name):

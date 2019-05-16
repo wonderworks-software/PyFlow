@@ -48,7 +48,7 @@ class UICommentNode(UINodeBase):
 
     def serializationHook(self):
         original = super(UICommentNode, self).serializationHook()
-        original["owningNodes"] = [n.name for n in self.owningNodes]
+        original["owningNodes"] = list(set([n.name for n in self.owningNodes]))
         return original
 
     def onChangeMessage(self):
@@ -62,7 +62,8 @@ class UICommentNode(UINodeBase):
                 self.nodeNameWidget.setHtml(html)
                 self.updateNodeShape()
         except:
-            self.setFocus()
+            pass
+        self.setFocus()
 
     def hideOwningNodes(self):
         for node in self.owningNodes:
@@ -79,7 +80,11 @@ class UICommentNode(UINodeBase):
         if self.owningCommentNode is not None:
             self.setZValue(self.owningCommentNode.zValue() + 1)
 
+    def itemChange(self, change, value):
+        return super(UICommentNode, self).itemChange(change, value)
+
     def mousePressEvent(self, event):
+        self.mousePressPos = event.pos()
         super(UICommentNode, self).mousePressEvent(event)
 
         zValue = self.zValue()
@@ -148,14 +153,6 @@ class UICommentNode(UINodeBase):
                 connection.sourcePositionOverride = None
                 connection.destinationPositionOverride = None
             self.partiallyIntersectedConnections.clear()
-
-    def postCreate(self, jsonTemplate=None):
-        UINodeBase.postCreate(self, jsonTemplate)
-        # restore text and size
-        self.minWidth = self.labelWidth
-        if jsonTemplate is not None:
-            if "owningNodes" in jsonTemplate["wrapper"]:
-                print(jsonTemplate["wrapper"]["owningNodes"])
 
     def translate(self, x, y):
         for n in self.owningNodes:
