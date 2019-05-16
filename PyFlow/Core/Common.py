@@ -169,11 +169,11 @@ def canConnectPins(src, dst):
         return True
 
     if not src.isArray() and dst.isArray():
-        if dst.optionEnabled(PinOptions.SupportsOnlyArrays):
+        if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src._currStructure == PinStructure.Multi and src.canChangeStructure(dst._currStructure)):
             return False
 
     if src.isArray() and not dst.isArray():
-        if not dst.optionEnabled(PinOptions.ArraySupported):
+        if not dst.optionEnabled(PinOptions.ArraySupported) and not (dst._currStructure == PinStructure.Multi and dst.canChangeStructure(src._currStructure)):
             return False
 
     if dst.hasConnections():
@@ -204,7 +204,7 @@ def canConnectPins(src, dst):
     if src.IsValuePin() and dst.IsValuePin():
         if src.dataType not in dst.supportedDataTypes():
             return False
-
+       
     if src.owningNode == dst.owningNode:
         return False
 
@@ -241,6 +241,8 @@ def connectPins(src, dst):
     if src.isExec() and dst.isExec():
         src.onExecute.connect(dst.call)
 
+    src.aboutToConnect(dst)
+    dst.aboutToConnect(src)
     pinAffects(src, dst)
     src.setDirty()
 

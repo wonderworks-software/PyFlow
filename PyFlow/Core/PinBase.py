@@ -291,6 +291,7 @@ class PinBase(IPin):
     @structureType.setter
     def structureType(self,structure):
         self._structure = structure
+        self._currStructure = structure
 
     # PinBase methods
 
@@ -306,8 +307,7 @@ class PinBase(IPin):
             return self._defaultValue
         return self._data
 
-    def pinConnected(self, other):
-        self.onPinConnected.send(other)
+    def aboutToConnect(self,other):
         if self.structureType == PinStructure.Multi and self._currStructure != other._currStructure:
             free = self.canChangeStructure(other._currStructure,[])
             if free:
@@ -317,7 +317,10 @@ class PinBase(IPin):
                 traversed = set()
                 traversed.add(self)   
                 self.updateConstrainedPins(traversed,self.isArray(),self._flags)             
-            #traverseStructConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))        
+            #traverseStructConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))           
+    def pinConnected(self, other):
+        self.onPinConnected.send(other)
+     
         push(self)
 
     def updateOnConnectionCallback(self, pin, other):   
