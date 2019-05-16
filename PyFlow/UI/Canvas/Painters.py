@@ -40,6 +40,33 @@ class NodePainter(object):
                 painter.drawArc(width - rf, height - rf, rf, rf, 0, -90 * 16)
 
     @staticmethod
+    def asCommentNode(node, painter, option, widget):
+        frame = QtCore.QRectF(QtCore.QPointF(0, 0), node.geometry().size())
+        painter.setPen(QtCore.Qt.NoPen)
+        painter.setBrush(QtCore.Qt.darkGray)
+
+        color = Colors.NodeBackgrounds
+        if node.isSelected():
+            color = color.lighter(150)
+
+        painter.setBrush(node.color)
+        pen = QtGui.QPen(QtCore.Qt.black, 0.75)
+        if option.state & QStyle.State_Selected:
+            pen.setColor(Colors.Yellow)
+            pen.setStyle(QtCore.Qt.SolidLine)
+        painter.setPen(pen)
+        painter.drawRoundedRect(frame, 3, 3)
+
+        if option.state & QStyle.State_Selected:
+            pen.setColor(Colors.Yellow)
+            pen.setStyle(node.opt_pen_selected_type)
+            pen.setWidth(pen.width() * 1.5)
+        painter.setPen(pen)
+        painter.setBrush(QtGui.QColor(0, 0, 0, 0))
+        painter.drawRoundedRect(frame, 3, 3)
+        NodePainter.drawResizeHandles(node, painter, option, widget)
+
+    @staticmethod
     def default(node, painter, option, widget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), node.geometry().size())
         # use 3 levels of detail
@@ -106,29 +133,6 @@ class NodePainter(object):
             painter.drawRect(r)
 
         NodePainter.drawResizeHandles(node, painter, option, widget)
-        # if node.resizable and not node.collapsed:
-        #     height = node.geometry().height()
-        #     width = node.geometry().width()
-        #     rf = NodeDefaults().CORNERS_ROUND_FACTOR
-        #     pen.setColor(node.canvasRef().window().styleSheetEditor.style.MainColor)
-        #     pen.setStyle(node.opt_pen_selected_type)
-        #     painter.setPen(pen)
-
-        #     # left strip
-        #     if node.resizeStrips[0]:
-        #         painter.drawLine(0, rf, 0, height - rf)
-        #     # top strip
-        #     if node.resizeStrips[1]:
-        #         painter.drawLine(rf, 0, width - rf, 0)
-        #     # right strip
-        #     if node.resizeStrips[2]:
-        #         painter.drawLine(width, rf, width, height - rf)
-        #     # bottom strip
-        #     if node.resizeStrips[3]:
-        #         painter.drawLine(rf, height, width - rf, height)
-        #     # bottom right strip
-        #     if node.resizeStrips[4]:
-        #         painter.drawArc(width - rf, height - rf, rf, rf, 0, -90 * 16)
 
     @staticmethod
     def asVariableGetter(node, painter, option, widget):

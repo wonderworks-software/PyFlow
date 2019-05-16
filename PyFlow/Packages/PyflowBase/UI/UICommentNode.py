@@ -5,6 +5,7 @@ from types import MethodType
 from Qt.QtWidgets import QGraphicsTextItem
 from Qt.QtWidgets import QGraphicsItem
 from Qt.QtWidgets import QGraphicsWidget
+from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QGraphicsItemGroup
 from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QStyle
@@ -17,12 +18,14 @@ from Qt import QtGui
 from Qt import QtCore
 
 from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Utils.Settings import (Spacings, Colors)
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import NodeName
 from PyFlow.UI.Canvas.UIPinBase import UICommentPinBase
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
 import weakref
 
 
@@ -38,6 +41,28 @@ class UICommentNode(UINodeBase):
         self.owningNodes = set()
         UICommentNode.layer += 1
         self.setZValue(UICommentNode.layer)
+        self.editMessageAction = self._menu.addAction("Edit message")
+        self.editMessageAction.setData(NodeActionButtonInfo(RESOURCES_DIR + "/rename.svg"))
+        self.editMessageAction.triggered.connect(self.onChangeMessage)
+        self.partiallyIntersectedConnections = set()
+
+    def serializationHook(self):
+        original = super(UICommentNode, self).serializationHook()
+        original["owningNodes"] = [n.name for n in self.owningNodes]
+        return original
+
+    def onChangeMessage(self):
+        dialog = TextEditDialog(self.nodeNameWidget.getFont(), self.labelTextColor)
+        dialog.move(QtGui.QCursor.pos())
+        dialog.zoomIn(10)
+        dialog.exec_()
+        try:
+            html, accepted = dialog.getResult()
+            if accepted:
+                self.nodeNameWidget.setHtml(html)
+                self.updateNodeShape()
+        except:
+            self.setFocus()
 
     def hideOwningNodes(self):
         for node in self.owningNodes:
@@ -87,23 +112,34 @@ class UICommentNode(UINodeBase):
             for node in self.owningNodes:
                 if node.owningCommentNode is self:
                     node.hide()
+                    for pin in node.UIPins.values():
+                        fullyIntersectedConnections = set()
+                        for connection in pin.uiConnectionList:
+                            connection.hide()
+                            if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
+                                fullyIntersectedConnections.add(connection)
+                            if self.sceneBoundingRect().intersects(connection.sceneBoundingRect()):
+                                if connection not in fullyIntersectedConnections:
+                                    self.partiallyIntersectedConnections.add(connection)
+                        for con in fullyIntersectedConnections:
+                            con.hide()
+            # TODO: change endpoint targets to look to comment node header left or right sides
+            print(self.partiallyIntersectedConnections)
         else:
             for node in self.owningNodes:
                 node.show()
+                for pin in node.UIPins.values():
+                    for connection in pin.uiConnectionList:
+                        connection.show()
+            self.partiallyIntersectedConnections.clear()
 
-    def postCreate(self, jsonTemplate):
+    def postCreate(self, jsonTemplate=None):
         UINodeBase.postCreate(self, jsonTemplate)
         # restore text and size
         self.minWidth = self.labelWidth
-        height = self.minHeight
-        text = self.__class__.__name__
-        # initial color is black
-        color = self.color
-
-        if 'commentNode' in jsonTemplate['meta']:
-            # labelHeight = jsonTemplate['meta']['commentNode']['labelHeight']
-            text = jsonTemplate['meta']['commentNode']['text']
-            color = QtGui.QColor(*jsonTemplate['meta']['commentNode']['color'])
+        if jsonTemplate is not None:
+            if "owningNodes" in jsonTemplate["wrapper"]:
+                print(jsonTemplate["wrapper"]["owningNodes"])
 
     def translate(self, x, y):
         for n in self.owningNodes:
@@ -111,40 +147,8 @@ class UICommentNode(UINodeBase):
                 n.translate(x, y)
         super(UICommentNode, self).translate(x, y)
 
-    def isRenamable(self):
-        return True
-
     def paint(self, painter, option, widget):
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.setBrush(QtCore.Qt.darkGray)
-
-        color = Colors.NodeBackgrounds
-        if self.isSelected():
-            color = color.lighter(150)
-
-        painter.setBrush(self.color)
-        pen = QtGui.QPen(QtCore.Qt.black, 0.75)
-        if option.state & QStyle.State_Selected:
-            # pen.setColor(self.graph().window().styleSheetEditor.style.MainColor)
-            pen.setColor(Colors.Yellow)
-            pen.setStyle(QtCore.Qt.SolidLine)
-        painter.setPen(pen)
-        r = QtCore.QRectF(self._rect)
-        r.setWidth(r.width() - pen.width())
-        r.setHeight(r.height() - pen.width())
-        r.setX(pen.width())
-        r.setY(r.y() + pen.width())
-        painter.drawRoundedRect(r, 3, 3)
-
-        if option.state & QStyle.State_Selected:
-            pen.setColor(Colors.Yellow)
-            pen.setStyle(self.opt_pen_selected_type)
-            pen.setWidth(pen.width() * 1.5)
-            # pen.setColor(node.graph().parent.styleSheetEditor.style.MainColor)
-        painter.setPen(pen)
-        painter.setBrush(QtGui.QColor(0, 0, 0, 0))
-        painter.drawRoundedRect(r, 3, 3)
-        NodePainter.drawResizeHandles(self, painter, option, widget)
+        NodePainter.asCommentNode(self, painter, option, widget)
 
     def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")

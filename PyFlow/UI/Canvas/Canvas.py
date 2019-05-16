@@ -1455,12 +1455,17 @@ class Canvas(QGraphicsView):
 
     def createWrappersForGraph(self, rawGraph):
         # when raw graph was created, we need to create all ui wrappers for it
+        uiNodesJsonData = {}
         for node in rawGraph.getNodes():
             if node.getWrapper() is not None:
                 continue
             uiNode = getUINodeInstance(node)
-            self.addNode(uiNode, node.serialize(), parentGraph=rawGraph)
+            uiNodeJsonTemplate = node.serialize()
+            uiNodeJsonTemplate["wrapper"] = node.wrapperJsonData
+            self.addNode(uiNode, uiNodeJsonTemplate, parentGraph=rawGraph)
             uiNode.updateNodeShape()
+            uiNodesJsonData[uiNode] = uiNodeJsonTemplate
+
         # restore ui connections
         for rawNode in rawGraph.getNodes():
             uiNode = rawNode.getWrapper()
@@ -1469,6 +1474,16 @@ class Canvas(QGraphicsView):
                     inRawPin = rawNode.graph().findPin(rhsPinUid)
                     inUiPin = inRawPin.getWrapper()()
                     self.createUIConnectionForConnectedPins(outUiPin, inUiPin)
+
+        # comments should update collapsing info after everything was created
+        for uiNode, data in uiNodesJsonData.items():
+            if "wrapper" in data:
+                if "owningNodes" in data["wrapper"]:
+                    if uiNode.isCommentNode:
+                        for owningNodeName in data["wrapper"]["owningNodes"]:
+                            node = self.findNode(owningNodeName)
+                            uiNode.owningNodes.add(node)
+                        uiNode.hideOwningNodes()
 
     def addNode(self, uiNode, jsonTemplate, parentGraph=None):
         """Adds node to a graph
