@@ -12,7 +12,7 @@ from PyFlow.Packages.PyflowBase.Pins.IntPin import IntPin
 from PyFlow.Packages.PyflowBase.Pins.StringPin import StringPin
 
 # Function based nodes
-from PyFlow.Packages.PyflowBase.FunctionLibraries.ListLib import ListLib
+from PyFlow.Packages.PyflowBase.FunctionLibraries.ArrayLib import ArrayLib
 from PyFlow.Packages.PyflowBase.FunctionLibraries.BoolLib import BoolLib
 from PyFlow.Packages.PyflowBase.FunctionLibraries.DefaultLib import DefaultLib
 from PyFlow.Packages.PyflowBase.FunctionLibraries.FloatLib import FloatLib
@@ -42,7 +42,7 @@ from PyFlow.Packages.PyflowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyflowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyflowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyflowBase.Nodes.rerouteExecs import rerouteExecs
-from PyFlow.Packages.PyflowBase.Nodes.makeList import makeList
+from PyFlow.Packages.PyflowBase.Nodes.makeArray import makeArray
 from PyFlow.Packages.PyflowBase.Nodes.consoleOutput import consoleOutput
 from PyFlow.Packages.PyflowBase.Nodes.address import address
 from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
@@ -68,7 +68,7 @@ from PyFlow.Packages.PyflowBase.Factories.UINodeFactory import createUINode
 
 
 _FOO_LIBS = {
-    ListLib.__name__: ListLib(PACKAGE_NAME),
+    ArrayLib.__name__: ArrayLib(PACKAGE_NAME),
     BoolLib.__name__: BoolLib(PACKAGE_NAME),
     DefaultLib.__name__: DefaultLib(PACKAGE_NAME),
     FloatLib.__name__: FloatLib(PACKAGE_NAME),
@@ -103,7 +103,7 @@ _NODES = {
     graphOutputs.__name__: graphOutputs,
     compound.__name__: compound,
     pythonNode.__name__: pythonNode,
-    makeList.__name__: makeList,
+    makeArray.__name__: makeArray,
     consoleOutput.__name__: consoleOutput,
     forEachLoop.__name__: forEachLoop,
     address.__name__: address

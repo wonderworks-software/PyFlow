@@ -2,20 +2,16 @@ from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
 
 
-class makeList(NodeBase):
+class makeArray(NodeBase):
     def __init__(self, name):
-        super(makeList, self).__init__(name)
-        self.arrayData = self.createInputPin('data', 'AnyPin', constraint="1")
-        self.arrayData.initAsList(True)
+        super(makeArray, self).__init__(name)
+        self.arrayData = self.createInputPin('data', 'AnyPin', structure=PinStructure.Array, constraint="1")
         self.arrayData.enableOptions(PinOptions.AllowMultipleConnections)
-        self.arrayData.disableOptions(PinOptions.SupportsOnlyList)
-        #self.arrayData.changeTypeOnConnection = False
+        self.arrayData.disableOptions(PinOptions.SupportsOnlyArrays)
 
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
-        self.outArray = self.createOutputPin('out', 'AnyPin', constraint="1")
-        self.outArray.initAsList(True)
-        #self.outArray.changeTypeOnConnection = False
+        self.outArray = self.createOutputPin('out', 'AnyPin', structure=PinStructure.Array, constraint="1")
 
         self.result = self.createOutputPin('result', 'BoolPin')
 
@@ -25,7 +21,7 @@ class makeList(NodeBase):
 
     @staticmethod
     def category():
-        return 'List'
+        return 'Array'
 
     @staticmethod
     def keywords():

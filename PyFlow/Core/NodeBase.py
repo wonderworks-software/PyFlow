@@ -266,7 +266,7 @@ class NodeBase(INode):
                     continue
                 pinAffects(i, o)
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None,structConstraint=None, allowedPins=[]):
+    def createInputPin(self, pinName, dataType, structure=PinStructure.Single, defaultValue=None, foo=None, constraint=None,structConstraint=None, allowedPins=[]):
         # if dataType == 'ExecPin':
         #     assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
 
@@ -274,6 +274,12 @@ class NodeBase(INode):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
         p.direction = PinDirection.Input
+        p.structureType = structure
+        if structure == PinStructure.Array:
+            p.initAsArray(True)
+        elif structure == PinStructure.Multi:
+            p.enableOptions(PinOptions.ArraySupported)
+
         if foo:
             # p.call = foo
             p.onExecute.connect(foo, weak=False)
@@ -290,11 +296,13 @@ class NodeBase(INode):
             p.updatestructConstraint(structConstraint)               
         return p
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None,structConstraint=None, allowedPins=[]):
+    def createOutputPin(self, pinName, dataType, structure=PinStructure.Single, defaultValue=None, foo=None, constraint=None,structConstraint=None, allowedPins=[]):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
+        p.structureType = structure
+        if structure == PinStructure.Array:
+            p.initAsArray(True)
         if foo:
-            # p.call = foo
             p.onExecute.connect(foo, weak=False)
         if defaultValue is not None:
             p.setDefaultValue(defaultValue)
@@ -416,15 +424,6 @@ class NodeBase(INode):
 
         self.autoAffectPins()
 
-    def updateConstraints(self):
-        self._constraints = {}
-        for pin in self.inputs.values() + self.outputs.values():
-            if pin.constraint is not None:
-                if pin.constraint in self._constraints:
-                    self._constraints[pin.constraint].append(pin)
-                else:
-                    self._constraints[pin.constraint] = [pin]
-
     @staticmethod
     # Constructs a node from given annotated function
     def initializeFromFunction(foo):
@@ -511,7 +510,7 @@ class NodeBase(INode):
             p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
-            p.initAsList(isinstance(returnDefaultValue, list))
+            p.initAsArray(isinstance(returnDefaultValue, list))
             if returnPinOptionsToEnable is not None:
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
@@ -546,7 +545,7 @@ class NodeBase(INode):
                         pinOptionsToDisable = pinDict["disabledOptions"]
 
                 outRef = raw_inst.createOutputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
-                outRef.initAsList(isinstance(pinDefaultValue, list))
+                outRef.initAsArray(isinstance(pinDefaultValue, list))
                 outRef.setDefaultValue(pinDefaultValue)
                 outRef.setData(pinDefaultValue)
                 if pinOptionsToEnable is not None:
@@ -574,7 +573,7 @@ class NodeBase(INode):
                         pinOptionsToDisable = pinDict["disabledOptions"]
 
                 inp = raw_inst.createInputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
-                inp.initAsList(isinstance(pinDefaultValue, list))
+                inp.initAsArray(isinstance(pinDefaultValue, list))
                 inp.setData(pinDefaultValue)
                 inp.setDefaultValue(pinDefaultValue)
                 if pinOptionsToEnable is not None:

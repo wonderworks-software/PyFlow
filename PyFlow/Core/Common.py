@@ -168,12 +168,12 @@ def canConnectPins(src, dst):
     if src.isExec() and dst.isExec():
         return True
 
-    if not src.isList() and dst.isList():
-        if dst.optionEnabled(PinOptions.SupportsOnlyList):
+    if not src.isArray() and dst.isArray():
+        if dst.optionEnabled(PinOptions.SupportsOnlyArrays):
             return False
 
-    if src.isList() and not dst.isList():
-        if not dst.optionEnabled(PinOptions.ListSupported):
+    if src.isArray() and not dst.isArray():
+        if not dst.optionEnabled(PinOptions.ArraySupported):
             return False
 
     if dst.hasConnections():
@@ -296,6 +296,24 @@ def traverseConstrainedPins(startFrom, callback):
 
     worker(startFrom)
 
+def traverseStructConstrainedPins(startFrom, callback):
+    """Iterates over all constrained chained pins passes pin into callback function. Callback will be executed once for every pin
+    """  
+    traversed = set()
+
+    def worker(pin):
+        traversed.add(pin)
+        callback(pin)
+        nodePins = set()
+        if pin.structConstraint is not None:
+            nodePins = set(pin.owningNode().structConstraints[pin.structConstraint])
+        for connectedPin in getConnectedPins(pin):
+            nodePins.add(connectedPin)
+        for neighbor in nodePins:
+            if neighbor not in traversed:
+                worker(neighbor)
+
+    worker(startFrom)
 
 def disconnectPins(src, dst):
     """Disconnects two pins
@@ -382,14 +400,19 @@ class PinReconnectionPolicy(IntEnum):
 
 
 class PinOptions(Flag):
-    ListSupported = auto()
-    SupportsOnlyList = auto()
+    ArraySupported = auto()
+    SupportsOnlyArrays = auto()
     AllowMultipleConnections = auto()
     RenamingEnabled = auto()
     Dynamic = auto()
     AlwaysPushDirty = auto()
     Storable = auto()
 
+##Used for determine Pin Structure Type
+class PinStructure(IntEnum):
+    Single = 0
+    Array = 1
+    Multi = 2
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes
 class PinSelectionGroup(IntEnum):

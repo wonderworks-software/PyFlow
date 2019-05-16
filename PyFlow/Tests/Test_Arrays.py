@@ -16,7 +16,7 @@ class TestArrays(unittest.TestCase):
         man = GraphManager()
         nodes = packages['PyflowBase'].GetNodeClasses()
         foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
-        makeListNode = nodes['makeList']("mkList")
+        makeListNode = nodes['makeArray']("mkList")
         man.activeGraph().addNode(makeListNode)
         makeIntNode = NodeBase.initializeFromFunction(foos['makeInt'])
         makeIntNode2 = NodeBase.initializeFromFunction(foos['makeInt'])

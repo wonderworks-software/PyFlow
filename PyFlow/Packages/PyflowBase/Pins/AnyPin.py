@@ -56,7 +56,7 @@ class AnyPin(PinBase):
     def setData(self, data):
         if self.activeDataType != self.__class__.__name__:
             assert(self.super is not None)
-            if not self.isList():
+            if not self.isArray():
                 data = self.super.processData(data)
             else:
                 data = [self.super.processData(i) for i in data]
@@ -135,8 +135,8 @@ class AnyPin(PinBase):
         self.setDefaultValue(None)
         if not self.hasConnections():
             self._free = True
-        if (self._free and self.structConstraint == None ) or (self._free and self.structConstraint != None and all([x._free for x in self.owningNode().structConstraints[self.structConstraint]])):
-            self.setAsList(False or self._alwaysList)
+        #if (self._free and self.structConstraint == None ) or (self._free and self.structConstraint != None and all([x._free for x in self.owningNode().structConstraints[self.structConstraint]])):
+        #    self.setAsArray(False or self._alwaysList)
         self.supportedDataTypes = lambda: tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
 
     def setType(self, other):
@@ -153,12 +153,13 @@ class AnyPin(PinBase):
             self.color = other.color
             self._data = getPinDefaultValueByType(self.activeDataType)
             self.setDefaultValue(self._data)
-            if self.hasConnections():
-                self.setAsList(any([x.isList() for x in list(self.affected_by)]) or self._alwaysList)
-            elif self.structConstraint != None:
-                self.setAsList(any([x.isList() for x in self.owningNode().structConstraints[self.structConstraint]]) or self._alwaysList)
-            else:
-                self.setAsList(other.isList or self._alwaysList)
+            
+            #if self.hasConnections():
+            #    self.setAsArray(any([x.isArray() for x in list(self.affected_by)]) or self._alwaysList)
+            #elif self.structConstraint != None:
+            #    self.setAsArray(any([x.isArray() for x in self.owningNode().structConstraints[self.structConstraint]]) or self._alwaysList)
+            #else:
+            #    self.setAsArray(other.isArray or self._alwaysList)
 
             self.dirty = other.dirty
             self.jsonEncoderClass = other.jsonEncoderClass

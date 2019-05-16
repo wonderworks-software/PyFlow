@@ -390,11 +390,11 @@ class UIPinBase(QGraphicsWidget):
         path.addEllipse(self.boundingRect())
         return path
 
-    def isList(self):
-        return self._rawPin.isList()
+    def isArray(self):
+        return self._rawPin.isArray()
 
     def paint(self, painter, option, widget):
-        if self.isList():
+        if self.isArray():
             PinPainter.asArrayPin(self, painter, option, widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)

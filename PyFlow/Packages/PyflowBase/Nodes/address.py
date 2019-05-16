@@ -5,8 +5,7 @@ from PyFlow.Core.Common import *
 class address(NodeBase):
     def __init__(self, name):
         super(address, self).__init__(name)
-        self.obj = self.createInputPin("obj", "AnyPin")
-        self.obj.enableOptions(PinOptions.ListSupported)
+        self.obj = self.createInputPin("obj", "AnyPin", structure=PinStructure.Multi)
         self.addr = self.createOutputPin('out', 'StringPin')
 
     @staticmethod
