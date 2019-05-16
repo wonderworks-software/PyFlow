@@ -313,10 +313,11 @@ class PinBase(IPin):
             if free:
                 self._structFree = False
                 self.setAsArray(other._currStructure==PinStructure.Array)
+                self._currStructure = other._currStructure
                 self._flags = other._flags
                 traversed = set()
                 traversed.add(self)   
-                self.updateConstrainedPins(traversed,self.isArray(),self._flags)             
+                self.updateConstrainedPins(traversed,self.isArray(),self._flags,connecting=True)             
             #traverseStructConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))           
     def pinConnected(self, other):
         self.onPinConnected.send(other)
@@ -329,7 +330,7 @@ class PinBase(IPin):
             pin._structFree = False
             pin.setAsArray(other._currStructure==PinStructure.Array)
 
-    def updateConstrainedPins(self,traversed,array,flags):
+    def updateConstrainedPins(self,traversed,array,flags,connecting=False):
         nodePins = set()
         if self.structConstraint is not None:
             nodePins = set(self.owningNode().structConstraints[self.structConstraint])
@@ -341,8 +342,12 @@ class PinBase(IPin):
             if neighbor not in traversed:
                 neighbor.setAsArray(array)
                 neighbor._flags = flags
+                if connecting:
+                    neighbor._currStructure = self._currStructure
+                else:
+                    neighbor._currStructure = neighbor._structure
                 traversed.add(neighbor) 
-                neighbor.updateConstrainedPins(traversed,array,flags)
+                neighbor.updateConstrainedPins(traversed,array,flags,connecting=connecting)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
