@@ -107,6 +107,20 @@ class UICommentNode(UINodeBase):
             for node in collidingNodes:
                 node.updateOwningCommentNode()
 
+    def getLeftSideEdgesPoint(self):
+        frame = self.sceneBoundingRect()
+        x = frame.topLeft().x()
+        y = frame.topLeft().y() + self.labelHeight
+        result = QtCore.QPointF(x, y)
+        return result
+
+    def getRightSideEdgesPoint(self):
+        frame = self.sceneBoundingRect()
+        x = frame.topRight().x()
+        y = frame.topRight().y() + self.labelHeight
+        result = QtCore.QPointF(x, y)
+        return result
+
     def aboutToCollapse(self, futureCollapseState):
         if futureCollapseState:
             for node in self.owningNodes:
@@ -115,22 +129,29 @@ class UICommentNode(UINodeBase):
                     for pin in node.UIPins.values():
                         fullyIntersectedConnections = set()
                         for connection in pin.uiConnectionList:
-                            connection.hide()
                             if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
                                 fullyIntersectedConnections.add(connection)
+                                connection.hide()
                             if self.sceneBoundingRect().intersects(connection.sceneBoundingRect()):
                                 if connection not in fullyIntersectedConnections:
                                     self.partiallyIntersectedConnections.add(connection)
                         for con in fullyIntersectedConnections:
                             con.hide()
-            # TODO: change endpoint targets to look to comment node header left or right sides
-            print(self.partiallyIntersectedConnections)
+            # override endpoints getting methods
+            for connection in self.partiallyIntersectedConnections:
+                if not self.sceneBoundingRect().contains(connection.drawDestination.scenePos()):
+                    connection.sourcePositionOverride = self.getRightSideEdgesPoint
+                if not self.sceneBoundingRect().contains(connection.drawSource.scenePos()):
+                    connection.destinationPositionOverride = self.getLeftSideEdgesPoint
         else:
             for node in self.owningNodes:
                 node.show()
                 for pin in node.UIPins.values():
                     for connection in pin.uiConnectionList:
                         connection.show()
+            for connection in self.partiallyIntersectedConnections:
+                connection.sourcePositionOverride = None
+                connection.destinationPositionOverride = None
             self.partiallyIntersectedConnections.clear()
 
     def postCreate(self, jsonTemplate=None):

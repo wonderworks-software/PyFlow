@@ -29,6 +29,11 @@ class UIConnection(QGraphicsPathItem):
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 
+        # Overrides for getting endpoints positions
+        # if None - pin centers will be used
+        self.sourcePositionOverride = None
+        self.destinationPositionOverride = None
+
         self.mPath = QtGui.QPainterPath()
 
         self.cp1 = QtCore.QPointF(0.0, 0.0)
@@ -56,6 +61,7 @@ class UIConnection(QGraphicsPathItem):
         self.destination().uiConnectionList.append(self)
         self.source().pinConnected(self.destination())
         self.destination().pinConnected(self.source())
+
 
     def __repr__(self):
         return "{0} -> {1}".format(self.source().getName(), self.destination().getName())
@@ -136,7 +142,12 @@ class UIConnection(QGraphicsPathItem):
 
     def getEndPoints(self):
         p1 = self.drawSource.scenePos() + self.drawSource.pinCenter()
+        if self.sourcePositionOverride is not None:
+            p1 = self.sourcePositionOverride()
+
         p2 = self.drawDestination.scenePos() + self.drawDestination.pinCenter()
+        if self.destinationPositionOverride is not None:
+            p2 = self.destinationPositionOverride()
         return p1, p2
 
     def mousePressEvent(self, event):
