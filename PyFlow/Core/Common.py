@@ -259,15 +259,17 @@ def traverseNeighborPins(startFrom, callback):
     traversed = set()
 
     def worker(pin):
-        traversed.add(pin)
-        callback(pin)
-        nodePins = pin.owningNode().pins.copy()
-        for connectedPin in getConnectedPins(pin):
-            nodePins.add(connectedPin)
-        for neighbor in nodePins:
-            if neighbor not in traversed:
-                worker(neighbor)
-
+        if pin not in traversed:
+            traversed.add(pin)
+            callback(pin)
+            nodePins = pin.owningNode().pins.copy()
+            for connectedPin in getConnectedPins(pin):
+                if connectedPin in traversed:
+                    continue
+                nodePins.add(connectedPin)
+            for neighbor in list(nodePins):
+                if neighbor not in traversed:
+                    worker(neighbor)
     worker(startFrom)
 
 
