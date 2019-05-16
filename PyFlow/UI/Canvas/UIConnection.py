@@ -170,9 +170,6 @@ class UIConnection(QGraphicsPathItem):
         multiply = 3
         self.mPath = QtGui.QPainterPath()
 
-        direction = QtGui.QVector2D(p1) - QtGui.QVector2D(p2)
-        direction.normalize()
-
         self.mPath.moveTo(p1)
         if xDistance < 0:
             self.mPath.cubicTo(QtCore.QPoint(p1.x() + xDistance / -multiply, p1.y()),

@@ -44,6 +44,7 @@ class UICommentNode(UINodeBase):
         self.editMessageAction = self._menu.addAction("Edit message")
         self.editMessageAction.setData(NodeActionButtonInfo(RESOURCES_DIR + "/rename.svg"))
         self.editMessageAction.triggered.connect(self.onChangeMessage)
+        self.partiallyIntersectedConnections = set()
 
     def serializationHook(self):
         original = super(UICommentNode, self).serializationHook()
@@ -111,9 +112,26 @@ class UICommentNode(UINodeBase):
             for node in self.owningNodes:
                 if node.owningCommentNode is self:
                     node.hide()
+                    for pin in node.UIPins.values():
+                        fullyIntersectedConnections = set()
+                        for connection in pin.uiConnectionList:
+                            connection.hide()
+                            if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
+                                fullyIntersectedConnections.add(connection)
+                            if self.sceneBoundingRect().intersects(connection.sceneBoundingRect()):
+                                if connection not in fullyIntersectedConnections:
+                                    self.partiallyIntersectedConnections.add(connection)
+                        for con in fullyIntersectedConnections:
+                            con.hide()
+            # TODO: change endpoint targets to look to comment node header left or right sides
+            print(self.partiallyIntersectedConnections)
         else:
             for node in self.owningNodes:
                 node.show()
+                for pin in node.UIPins.values():
+                    for connection in pin.uiConnectionList:
+                        connection.show()
+            self.partiallyIntersectedConnections.clear()
 
     def postCreate(self, jsonTemplate=None):
         UINodeBase.postCreate(self, jsonTemplate)
