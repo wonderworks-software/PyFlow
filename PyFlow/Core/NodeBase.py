@@ -266,7 +266,7 @@ class NodeBase(INode):
                     continue
                 pinAffects(i, o)
 
-    def createInputPin(self, pinName, dataType, structure=PinStructure.Single, defaultValue=None, foo=None, constraint=None,structConstraint=None, allowedPins=[]):
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None,structure=PinStructure.Single, constraint=None,structConstraint=None, allowedPins=[]):
         # if dataType == 'ExecPin':
         #     assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
 
