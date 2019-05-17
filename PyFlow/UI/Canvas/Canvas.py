@@ -856,8 +856,8 @@ class Canvas(QGraphicsView):
                     continue
 
         # Hacks here!!
-        # All nodes are copied. Nodes now do not know about under whic comments they areself
-        # Expand all coped execs first
+        # All nodes are copied. Nodes now do not know about under which comments they are
+        # Expand all coped comments first
         for newNode, data in createdNodes.items():
             if newNode.isCommentNode:
                 newNode.collapsed = False
