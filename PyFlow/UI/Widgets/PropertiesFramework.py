@@ -148,6 +148,12 @@ class CollapsibleFormWidget(CollapsibleWidget):
             if widget:
                 widget.setVisible(pattern.lower() in widget.getLabel().lower())
 
+    def insertWidget(self, index=0,label=None, widget=None):
+        if widget is None or isinstance(widget, CollapsibleWidget):
+            return False
+        self.Layout.insertWidget(index,PropertyEntry(str(label), widget))
+        return True
+
     def addWidget(self, label=None, widget=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
             return False

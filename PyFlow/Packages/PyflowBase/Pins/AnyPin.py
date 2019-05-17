@@ -1,5 +1,6 @@
 from blinker import Signal
 import json
+from Qt import QtGui
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
@@ -70,30 +71,34 @@ class AnyPin(PinBase):
             pinClass = findPinClassByType(constrainedType)
             # serialize with active type's encoder
             dt['value'] = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
+            dt['currDataType'] = constrainedType
+            print dt['currDataType']
         return dt
 
     def pinConnected(self, other):
         self._data = getPinDefaultValueByType(other.dataType)
         self.onPinConnected.send(other)
         if self.changeTypeOnConnection:
-            traverseConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))
+            traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, other.dataType))
         super(AnyPin, self).pinConnected(other)
 
-    def updateOnConnectionCallback(self, pin, other):        
+    def updateOnConnectionCallback(self, pin, dataType):        
         free = pin.checkFree([])
         if  free:
             pin._free = False
-            pin.setType(other)
+            pin.setDefault()
+            pin.setType(dataType)
 
-    def updateOnDisconnectionCallback(self, pin, other):
+    def updateOnDisconnectionCallback(self, pin):
         free = pin.checkFree([])
         if free:
+            pin._free = True
             pin.setDefault()
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
         if self.changeTypeOnConnection:
-            traverseConstrainedPins(self, lambda pin, other=other: self.updateOnDisconnectionCallback(pin, other))
+            traverseConstrainedPins(self, lambda pin: self.updateOnDisconnectionCallback(pin))
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
@@ -135,36 +140,36 @@ class AnyPin(PinBase):
         self.setDefaultValue(None)
         if not self.hasConnections():
             self._free = True
-        #if (self._free and self.structConstraint == None ) or (self._free and self.structConstraint != None and all([x._free for x in self.owningNode().structConstraints[self.structConstraint]])):
-        #    self.setAsArray(False or self._alwaysList)
+
         self.supportedDataTypes = lambda: tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
 
-    def setType(self, other):
+    def initType(self,dataType):
+        if self.checkFree([]):
+            traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType))
+
+    def setType(self, dataType):
         if not self.changeTypeOnConnection:
             return
 
         if self.activeDataType != self.__class__.__name__ and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
-
-        if self.activeDataType == self.__class__.__name__ or self.activeDataType in other.supportedDataTypes():
-            self.super = other.__class__
-            self.activeDataType = other.dataType
-            self.color = other.color
+        otherClass = findPinClassByType(dataType)
+        if self.activeDataType == self.__class__.__name__ or self.activeDataType in otherClass.supportedDataTypes():
+            
+            self.super = otherClass#other.__class__
+            self.activeDataType = dataType#other.dataType
             self._data = getPinDefaultValueByType(self.activeDataType)
             self.setDefaultValue(self._data)
-            
-            #if self.hasConnections():
-            #    self.setAsArray(any([x.isArray() for x in list(self.affected_by)]) or self._alwaysList)
-            #elif self.structConstraint != None:
-            #    self.setAsArray(any([x.isArray() for x in self.owningNode().structConstraints[self.structConstraint]]) or self._alwaysList)
-            #else:
-            #    self.setAsArray(other.isArray or self._alwaysList)
 
-            self.dirty = other.dirty
-            self.jsonEncoderClass = other.jsonEncoderClass
-            self.jsonDecoderClass = other.jsonDecoderClass
+            self.color = QtGui.QColor(*otherClass.color())
+            self.dirty = True
+            self.jsonEncoderClass = otherClass.jsonEncoderClass
+            self.jsonDecoderClass = otherClass.jsonDecoderClass
+            self.supportedDataTypes = otherClass.supportedDataTypes
+
             self.typeChanged.send(self.activeDataType)
-            self.supportedDataTypes = other.supportedDataTypes
             self._free = self.activeDataType == self.__class__.__name__
+
+
 

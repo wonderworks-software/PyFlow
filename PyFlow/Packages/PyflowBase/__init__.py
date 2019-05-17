@@ -51,6 +51,7 @@ from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
 )
 from PyFlow.Packages.PyflowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyflowBase.Nodes.compound import compound
+from PyFlow.Packages.PyflowBase.Nodes.constant import constant
 
 from PyFlow.Packages.PyflowBase.Tools.ScreenshotTool import ScreenshotTool
 from PyFlow.Packages.PyflowBase.Tools.AlignLeftTool import AlignLeftTool
@@ -106,7 +107,8 @@ _NODES = {
     makeArray.__name__: makeArray,
     consoleOutput.__name__: consoleOutput,
     forEachLoop.__name__: forEachLoop,
-    address.__name__: address
+    address.__name__: address,
+    constant.__name__: constant
 }
 
 _PINS = {

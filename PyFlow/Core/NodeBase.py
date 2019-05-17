@@ -296,7 +296,7 @@ class NodeBase(INode):
             p.updatestructConstraint(structConstraint)               
         return p
 
-    def createOutputPin(self, pinName, dataType, structure=PinStructure.Single, defaultValue=None, foo=None, constraint=None,structConstraint=None, allowedPins=[]):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None,structure=PinStructure.Single, constraint=None,structConstraint=None, allowedPins=[]):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         p.structureType = structure
@@ -395,7 +395,12 @@ class NodeBase(INode):
 
                 pin = self.getPin(str(inpJson['name']), PinSelectionGroup.Inputs)
                 pin.uid = uuid.UUID(inpJson['uuid'])
+
+                #if "currDataType" in inpJson:
+                #    pin.initType(inpJson["currDataType"])  
+
                 pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
+
                 if inpJson['bDirty']:
                     pin.setDirty()
                 else:
@@ -409,7 +414,11 @@ class NodeBase(INode):
 
                 pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
                 pin.uid = uuid.UUID(outJson['uuid'])
-                pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
+
+                #if "currDataType" in outJson:
+                #    pin.initType(outJson["currDataType"])    
+
+                pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))               
                 if outJson['bDirty']:
                     pin.setDirty()
                 else:

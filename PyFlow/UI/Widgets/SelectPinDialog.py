@@ -182,3 +182,5 @@ class SelectPinDialog(QtWidgets.QDialog):
 
     def getResult(self):
         return self._result
+
+

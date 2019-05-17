@@ -815,6 +815,16 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         propertiesWidget.addWidget(baseCategory)
 
+        self.createInputWidgets(propertiesWidget)
+
+        Info = CollapsibleFormWidget(headName="Info", collapsed=True)
+        doc = QTextBrowser()
+        doc.setOpenExternalLinks(True)
+        doc.setHtml(self.description())
+        Info.addWidget(widget=doc)
+        propertiesWidget.addWidget(Info)
+
+    def createInputWidgets(self,propertiesWidget):
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
             inputsCategory = CollapsibleFormWidget(headName="Inputs")
@@ -835,13 +845,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                     if inp.hasConnections():
                         w.setEnabled(False)
             propertiesWidget.addWidget(inputsCategory)
-
-        Info = CollapsibleFormWidget(headName="Info", collapsed=True)
-        doc = QTextBrowser()
-        doc.setOpenExternalLinks(True)
-        doc.setHtml(self.description())
-        Info.addWidget(widget=doc)
-        propertiesWidget.addWidget(Info)
+            return inputsCategory
 
     def getChainedNodes(self):
         nodes = []
