@@ -1,18 +1,11 @@
 from Qt import QtCore
 from Qt import QtGui
-from Qt.QtWidgets import QGraphicsItem
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QTextBrowser
 from Qt.QtWidgets import QComboBox
 
-from PyFlow.Core.Common import getConnectedPins
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Utils.Settings import *
-from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
-from PyFlow.UI.Widgets.InputWidgets import createInputWidget
-
+from PyFlow import findPinClassByType
 
 
 from PyFlow.Core.Common import *
@@ -23,6 +16,11 @@ class UIConstantNode(UINodeBase):
         self.hover = False
         self.headColorOverride = Colors.Gray
         self.color = Colors.DarkGray
+        self.headColor = self.headColorOverride = QtGui.QColor(*findPinClassByType("AnyPin").color())
+        if self.headColor.lightnessF() > 0.75:
+            self.labelTextColor = QtCore.Qt.black
+        else:
+            self.labelTextColor = QtCore.Qt.white
 
     def kill(self, *args, **kwargs):
         inp = list(self.UIinputs.values())[0]
@@ -42,20 +40,32 @@ class UIConstantNode(UINodeBase):
         super(UIConstantNode, self).postCreate(jsonTemplate)
         self.input = self.getPin("in")
         self.output = self.getPin("out")
+        self.input.OnPinConnected.connect(self.changeOnConection)
+        self.output.OnPinConnected.connect(self.changeOnConection)
+        self.changeType(self.input.dataType)
         self.displayName = "constant"
         self.updateNodeShape()
 
-    def changeType(self,dataType):
-        self._rawNode.changeType(dataType)
+    def changeOnConection(self,other):
+        self.changeType(other.dataType)
+
+
+    def changeType(self,dataType,changeColor=False):
+        self.headColor = self.headColorOverride = QtGui.QColor(*findPinClassByType(dataType).color())
+        if self.headColor.lightnessF() > 0.75:
+            self.labelTextColor = QtCore.Qt.black
+        else:
+            self.labelTextColor = QtCore.Qt.white
+        self.update()
         self.canvasRef().tryFillPropertiesView(self)
 
     def createInputWidgets ( self,propertiesWidget):
         inputsCategory = super(UIConstantNode, self).createInputWidgets(propertiesWidget)
-        d = QComboBox()#_PinsListWidget()
+        self.selector = QComboBox()#_PinsListWidget()
         for i in self._rawNode.pinTypes:
-            d.addItem(i) 
+            self.selector.addItem(i)         
         if self.input.dataType in self._rawNode.pinTypes:
-            d.setCurrentIndex(self._rawNode.pinTypes.index(self.input.dataType))
-        d.activated.connect(self.changeType)
-        inputsCategory.insertWidget(0,"test",d)
+            self.selector.setCurrentIndex(self._rawNode.pinTypes.index(self.input.dataType))
+        self.selector.activated.connect(self._rawNode.updateType)
+        inputsCategory.insertWidget(0,"test",self.selector)
         

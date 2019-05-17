@@ -35,6 +35,9 @@ class UIAnyPin(UIPinBase):
         self.OnPinChanged.emit(self)
         self.update()
 
+    def initType(self,dataType):
+        self._rawPin.initType(dataType)
+
     def setType(self, dataType):
         colorTuple = findPinClassByType(dataType).color()
         self._pinColor = QtGui.QColor(*colorTuple)

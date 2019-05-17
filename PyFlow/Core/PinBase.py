@@ -317,11 +317,10 @@ class PinBase(IPin):
                 self._flags = other._flags
                 traversed = set()
                 traversed.add(self)   
-                self.updateConstrainedPins(traversed,self.isArray(),self._flags,connecting=True)             
-            #traverseStructConstrainedPins(self, lambda pin, other=other: self.updateOnConnectionCallback(pin, other))           
+                self.updateConstrainedPins(traversed,self.isArray(),self._flags,connecting=True)                     
+
     def pinConnected(self, other):
         self.onPinConnected.send(other)
-     
         push(self)
 
     def updateOnConnectionCallback(self, pin, other):   

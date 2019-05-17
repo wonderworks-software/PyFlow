@@ -92,6 +92,9 @@ class NodeName(QGraphicsWidget):
         self._font.setPointSize(6)
         self.labelItem.setFont(self._font)
 
+    def setTextColor(self,color):
+        self.labelItem.setDefaultTextColor(color)
+
     def mouseDoubleClickEvent(self, event):
         super(NodeName, self).mouseDoubleClickEvent(event)
 
@@ -298,6 +301,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     @labelTextColor.setter
     def labelTextColor(self, value):
         self._labelTextColor = value
+        self.nodeNameWidget.setTextColor(self._labelTextColor)
 
     def __repr__(self):
         graphName = self._rawNode.graph().name if self._rawNode.graph is not None else str(None)

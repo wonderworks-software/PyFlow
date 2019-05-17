@@ -72,14 +72,13 @@ class AnyPin(PinBase):
             # serialize with active type's encoder
             dt['value'] = json.dumps(self.currentData(), cls=pinClass.jsonEncoderClass())
             dt['currDataType'] = constrainedType
-            print dt['currDataType']
         return dt
 
     def pinConnected(self, other):
         self._data = getPinDefaultValueByType(other.dataType)
-        self.onPinConnected.send(other)
         if self.changeTypeOnConnection:
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, other.dataType))
+        self.onPinConnected.send(other)
         super(AnyPin, self).pinConnected(other)
 
     def updateOnConnectionCallback(self, pin, dataType):        
@@ -146,6 +145,8 @@ class AnyPin(PinBase):
     def initType(self,dataType):
         if self.checkFree([]):
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType))
+            return True
+        return False
 
     def setType(self, dataType):
         if not self.changeTypeOnConnection:
@@ -162,7 +163,7 @@ class AnyPin(PinBase):
             self._data = getPinDefaultValueByType(self.activeDataType)
             self.setDefaultValue(self._data)
 
-            self.color = QtGui.QColor(*otherClass.color())
+            self.color = otherClass.color
             self.dirty = True
             self.jsonEncoderClass = otherClass.jsonEncoderClass
             self.jsonDecoderClass = otherClass.jsonDecoderClass
