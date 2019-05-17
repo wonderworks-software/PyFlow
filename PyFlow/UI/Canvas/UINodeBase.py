@@ -455,6 +455,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                     self.onVisibilityChanged(bool(value))
         return super(UINodeBase, self).itemChange(change, value)
 
+    def isUnderActiveGraph(self):
+        return self._rawNode.graph() == self.canvasRef().graphManager.activeGraph()
+
     def autoAffectPins(self):
         self._rawNode.autoAffectPins()
 

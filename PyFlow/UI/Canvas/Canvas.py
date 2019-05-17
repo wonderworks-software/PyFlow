@@ -416,6 +416,7 @@ class Canvas(QGraphicsView):
     def onGraphChanged(self, newGraph):
         for node in self.nodes.values():
             node.setVisible(node._rawNode.graph() == newGraph)
+
         for commentNode in self.getAllNodes():
             if commentNode.isCommentNode:
                 if commentNode.collapsed:
@@ -785,6 +786,11 @@ class Canvas(QGraphicsView):
     def copyNodes(self):
         nodes = []
         selectedNodes = [i for i in self.nodes.values() if i.isSelected()]
+
+        for node in selectedNodes:
+            if node.isCommentNode and node.collapsed:
+                selectedNodes.extend(node.owningNodes)
+
         if len(selectedNodes) == 0:
             return
 
@@ -817,7 +823,7 @@ class Canvas(QGraphicsView):
         newNodes = {}
 
         nodesData = deepcopy(nodes)
-        createdNodes = set()
+        createdNodes = {}
         for node in nodesData:
             oldName = node["name"]
 
@@ -825,7 +831,7 @@ class Canvas(QGraphicsView):
                 node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'])
 
             n = self.createNode(node)
-            createdNodes.add(n)
+            createdNodes[n] = node
 
             if n is None:
                 continue
@@ -848,8 +854,23 @@ class Canvas(QGraphicsView):
                 except:
                     print(outPinJson['fullName'], "not found")
                     continue
-        for newNode in createdNodes:
-            newNode.updateOwningCommentNode()
+
+        # Hacks here!!
+        # All nodes are copied. Nodes now do not know about under whic comments they areself
+        # Expand all coped execs first
+        for newNode, data in createdNodes.items():
+            if newNode.isCommentNode:
+                newNode.collapsed = False
+
+        # Non comment nodes now can update owning comments
+        for newNode, data in createdNodes.items():
+            if not newNode.isCommentNode:
+                newNode.updateOwningCommentNode()
+
+        # Restore comments collapsed state
+        for newNode, data in createdNodes.items():
+            if newNode.isCommentNode:
+                newNode.collapsed = data["wrapper"]["collapsed"]
 
     @dispatch(str)
     def findNode(self, name):
@@ -1480,15 +1501,22 @@ class Canvas(QGraphicsView):
                     inUiPin = inRawPin.getWrapper()()
                     self.createUIConnectionForConnectedPins(outUiPin, inUiPin)
 
+        for uiNode, data in uiNodesJsonData.items():
+            if uiNode.isUnderActiveGraph():
+                uiNode.show()
+                if uiNode.isCommentNode:
+                    uiNode.collapsed = False
+
+        for uiNode, data in uiNodesJsonData.items():
+            if uiNode.isUnderActiveGraph():
+                if not uiNode.isCommentNode:
+                    uiNode.updateOwningCommentNode()
+
         # comments should update collapsing info after everything was created
         for uiNode, data in uiNodesJsonData.items():
-            if "wrapper" in data:
-                if "owningNodes" in data["wrapper"]:
-                    if uiNode.isCommentNode:
-                        for owningNodeName in data["wrapper"]["owningNodes"]:
-                            node = self.findNode(owningNodeName)
-                            uiNode.owningNodes.add(node)
-                        uiNode.hideOwningNodes()
+            if uiNode.isCommentNode:
+                uiNode.hideOwningNodes()
+                uiNode.collapsed = data["wrapper"]["collapsed"]
 
     def addNode(self, uiNode, jsonTemplate, parentGraph=None):
         """Adds node to a graph

@@ -62,7 +62,6 @@ class UIConnection(QGraphicsPathItem):
         self.source().pinConnected(self.destination())
         self.destination().pinConnected(self.source())
 
-
     def __repr__(self):
         return "{0} -> {1}".format(self.source().getName(), self.destination().getName())
 
