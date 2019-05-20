@@ -17,7 +17,8 @@ class constant(NodeBase):
         self.input.call = self.output.call
         self.pinTypes = []
         for pinClass in getAllPinClasses():
-            self.pinTypes.append(pinClass.__name__ )
+            if pinClass.IsValuePin():
+                self.pinTypes.append(pinClass.__name__ )
 
     @staticmethod
     def pinTypeHints():
@@ -36,12 +37,11 @@ class constant(NodeBase):
         self.changeType(other.dataType)
 
     def updateType(self,dataTypeIndex):
-        self.changeType(self.pinTypes[dataTypeIndex])
+        self.changeType(self.pinTypes[dataTypeIndex],True)
 
-    def changeType(self,dataType):
-        a = self.input.initType(dataType)
-        b = self.output.initType(dataType)
-        self._wrapper.changeType(dataType)
+    def changeType(self,dataType,init=False):
+        a = self.input.initType(dataType,init)
+        b = self.output.initType(dataType,init)
 
 
     def compute(self, *args, **kwargs):

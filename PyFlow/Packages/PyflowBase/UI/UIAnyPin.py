@@ -17,34 +17,47 @@ class UIAnyPin(UIPinBase):
         self._defaultColor = self._pinColor
         self._rawPin.typeChanged.connect(self.setType)
         self._rawPin.dataTypeBeenSet.connect(self.dataTypeBeenSet)
+        self._rawPin.onPinDisconnected.connect(self.disconnect)
+        self.prevDataType = "AnyPin"
+        self.prevColor = None
 
     def dataTypeBeenSet(self, *args, **kwargs):
+        self.prevColor = None
+        self.prevDataType = None        
         self.setDefault(self._rawPin.defColor())
 
     def checkFree(self, checked=[], selfChek=True):
         return self._rawPin.checkFree(checked, selfChek)
+
+    def disconnect(self,other):
+        self.prevColor = None
+        self.prevDataType = None
 
     @property
     def activeDataType(self):
         return self._rawPin.activeDataType
 
     def setDefault(self, defcolor):
-        self._pinColor = QtGui.QColor(*defcolor)
-        for e in self.connections:
-            e.setColor(QtGui.QColor(*defcolor))
-        self.OnPinChanged.emit(self)
-        self.update()
+        if defcolor != self.prevColor:
+            self.prevColor = defcolor        
+            self._pinColor = QtGui.QColor(*defcolor)
+            for e in self.connections:
+                e.setColor(QtGui.QColor(*defcolor))
+            self.OnPinChanged.emit(self)
+            self.update()
 
     def initType(self,dataType):
         self._rawPin.initType(dataType)
 
     def setType(self, dataType):
-        colorTuple = findPinClassByType(dataType).color()
-        self._pinColor = QtGui.QColor(*colorTuple)
-        for e in self.connections:
-            e.setColor(self._pinColor)
-        self.OnPinChanged.emit(self)
-        self.update()
+        if dataType != self.prevDataType:
+            self.prevDataType = dataType
+            colorTuple = findPinClassByType(dataType).color()
+            self._pinColor = QtGui.QColor(*colorTuple)
+            for e in self.connections:
+                e.setColor(self._pinColor)
+            self.OnPinChanged.emit(self)
+            self.update()
 
     def hoverEnterEvent(self, event):
         super(UIPinBase, self).hoverEnterEvent(event)

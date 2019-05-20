@@ -17,10 +17,12 @@ class UIConstantNode(UINodeBase):
         self.headColorOverride = Colors.Gray
         self.color = Colors.DarkGray
         self.headColor = self.headColorOverride = QtGui.QColor(*findPinClassByType("AnyPin").color())
+        self.selector = None
         if self.headColor.lightnessF() > 0.75:
             self.labelTextColor = QtCore.Qt.black
         else:
             self.labelTextColor = QtCore.Qt.white
+        self.prevDataType = "AnyPin"
 
     def kill(self, *args, **kwargs):
         inp = list(self.UIinputs.values())[0]
@@ -40,17 +42,18 @@ class UIConstantNode(UINodeBase):
         super(UIConstantNode, self).postCreate(jsonTemplate)
         self.input = self.getPin("in")
         self.output = self.getPin("out")
-        self.input.OnPinConnected.connect(self.changeOnConection)
-        self.output.OnPinConnected.connect(self.changeOnConection)
+        self.input.OnPinChanged.connect(self.changeOnConection)
+        self.output.OnPinChanged.connect(self.changeOnConection)
         self.changeType(self.input.dataType)
         self.displayName = "constant"
         self.updateNodeShape()
 
     def changeOnConection(self,other):
-        self.changeType(other.dataType)
+        if other.dataType != self.prevDataType:
+            self.prevDataType = other.dataType
+            self.changeType(other.dataType)
 
-
-    def changeType(self,dataType,changeColor=False):
+    def changeType(self,dataType):
         self.headColor = self.headColorOverride = QtGui.QColor(*findPinClassByType(dataType).color())
         if self.headColor.lightnessF() > 0.75:
             self.labelTextColor = QtCore.Qt.black
@@ -61,7 +64,7 @@ class UIConstantNode(UINodeBase):
 
     def createInputWidgets ( self,propertiesWidget):
         inputsCategory = super(UIConstantNode, self).createInputWidgets(propertiesWidget)
-        self.selector = QComboBox()#_PinsListWidget()
+        self.selector = QComboBox()
         for i in self._rawNode.pinTypes:
             self.selector.addItem(i)         
         if self.input.dataType in self._rawNode.pinTypes:

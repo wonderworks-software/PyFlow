@@ -191,9 +191,9 @@ def canConnectPins(src, dst):
         if src.dataType not in dst.supportedDataTypes():
             return False
 
-    if dst.isAny() and not src.isExec():
-        if src.dataType not in dst.supportedDataTypes() and src.dataType != "AnyPin":
-            return False
+    #if dst.isAny() and not src.isExec():
+    #    if src.dataType not in dst.supportedDataTypes() and src.dataType != "AnyPin":
+    #        return False
 
     if src.isExec() and not dst.isExec():
         return False
@@ -202,7 +202,7 @@ def canConnectPins(src, dst):
         return False
 
     if src.IsValuePin() and dst.IsValuePin():
-        if src.dataType not in dst.supportedDataTypes() and src.dataType != "AnyPin":
+        if src.dataType not in dst.supportedDataTypes() and dst.dataType not in src.supportedDataTypes():# and src.dataType != "AnyPin" and dst.dataType != "AnyPin":
             return False
        
     if src.owningNode == dst.owningNode:

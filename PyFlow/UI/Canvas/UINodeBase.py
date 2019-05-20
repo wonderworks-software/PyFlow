@@ -240,6 +240,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # Core nodes support
         self.isTemp = False
         self.isCommentNode = False
+        
+        self.propertyEditor = None
 
         # collapse action
         self.actionToggleCollapse = self._menu.addAction("ToggleCollapse")
@@ -799,6 +801,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._rawNode.call(name)
 
     def createPropertiesWidget(self, propertiesWidget):
+        self.propertyEditor = weakref.ref(propertiesWidget)
         baseCategory = CollapsibleFormWidget(headName="Base")
 
         le_name = QLineEdit(self.getName())
@@ -817,16 +820,16 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         leType.setReadOnly(True)
         baseCategory.addWidget("Type", leType)
 
-        propertiesWidget.addWidget(baseCategory)
+        self.propertyEditor().addWidget(baseCategory)
 
-        self.createInputWidgets(propertiesWidget)
+        self.createInputWidgets(self.propertyEditor())
 
         Info = CollapsibleFormWidget(headName="Info", collapsed=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())
         Info.addWidget(widget=doc)
-        propertiesWidget.addWidget(Info)
+        self.propertyEditor().addWidget(Info)
 
     def createInputWidgets(self,propertiesWidget):
         # inputs
