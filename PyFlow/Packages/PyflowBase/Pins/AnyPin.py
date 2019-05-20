@@ -25,6 +25,7 @@ class AnyPin(PinBase):
         # if True, setType and setDefault will work only once
         self.singleInit = False
         self.initialized = False
+        self.tempInitialized = False
         self.changeTypeOnConnection = True
 
     @PinBase.dataType.getter
@@ -84,22 +85,23 @@ class AnyPin(PinBase):
 
     def updateOnConnectionCallback(self, pin, dataType,init=False):        
         free = pin.checkFree([])
+        print pin,dataType,free
         if  free:
             if (dataType == "AnyPin" and not init):#(initialize or dataType != "AnyPin"):
                 return
             else:
                 pin._free = False
                 if init:
-                    self.initialized = True
+                    pin.initialized = True
                 #pin.setDefault()
+
                 pin.setType(dataType)
 
     def updateOnDisconnectionCallback(self, pin):
         free = pin.checkFree([])
         if free:
             pin._free = True
-            if not self.initialized:
-                pin.setDefault()
+            #pin.setDefault()
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
