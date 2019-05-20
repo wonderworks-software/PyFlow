@@ -627,6 +627,16 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             if label:
                 self.update()
 
+    def getTopMostOwningComment(self):
+        if self.owningCommentNode is None:
+            return None
+        topMostComment = self.owningCommentNode
+        parent = self.owningCommentNode.owningCommentNode
+        while parent is not None:
+            topMostComment = parent
+            parent = topMostComment.owningCommentNode
+        return topMostComment
+
     def updateOwningCommentNode(self):
 
         if self.owningCommentNode is not None and self.owningCommentNode.collapsed:

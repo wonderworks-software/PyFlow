@@ -414,8 +414,13 @@ class Canvas(QGraphicsView):
             self.installEventFilter(self)
 
     def onGraphChanged(self, newGraph):
+        self.validateCommentNodesOwnership()
         for node in self.nodes.values():
-            node.setVisible(node._rawNode.graph() == newGraph)
+            bVisible = node._rawNode.graph() == newGraph
+            node.setVisible(bVisible)
+            for pin in node.UIPins.values():
+                for connection in pin.uiConnectionList:
+                    connection.setVisible(bVisible)
 
         for commentNode in self.getAllNodes():
             if commentNode.isCommentNode:
@@ -864,8 +869,7 @@ class Canvas(QGraphicsView):
 
         # Non comment nodes now can update owning comments
         for newNode, data in createdNodes.items():
-            if not newNode.isCommentNode:
-                newNode.updateOwningCommentNode()
+            newNode.updateOwningCommentNode()
 
         # Restore comments collapsed state
         for newNode, data in createdNodes.items():
@@ -988,7 +992,33 @@ class Canvas(QGraphicsView):
         node.translate(-20, 0)
         return node
 
+    def validateCommentNodesOwnership(self):
+        comments = {}
+        defaultNodes = set()
+        # expand all comment nodes and reset owning nodes info
+        for node in self.getAllNodes():
+            if node.isUnderActiveGraph():
+                if node.isCommentNode:
+                    comments[node] = node.collapsed
+                    node.collapsed = False
+                    node.owningNodes.clear()
+                else:
+                    defaultNodes.add(node)
+
+        # apply comment to comment membership
+        for commentNode in comments:
+            commentNode.updateOwningCommentNode()
+
+        # apply node to comment membership
+        for node in defaultNodes:
+            node.updateOwningCommentNode()
+
+        # restore comments collapse state
+        for comment, wasCollapsed in comments.items():
+            comment.collapsed = wasCollapsed
+
     def mousePressEvent(self, event):
+        self.validateCommentNodesOwnership()
         if self.pressed_item and isinstance(self.pressed_item, EditableLabel):
             if self.pressed_item != self.itemAt(event.pos()):
                 self.pressed_item.setOutFocus()
@@ -1345,6 +1375,8 @@ class Canvas(QGraphicsView):
             self.requestClearProperties.emit()
         self.resizing = False
 
+        self.validateCommentNodesOwnership()
+
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
@@ -1515,7 +1547,6 @@ class Canvas(QGraphicsView):
         # comments should update collapsing info after everything was created
         for uiNode, data in uiNodesJsonData.items():
             if uiNode.isCommentNode:
-                uiNode.hideOwningNodes()
                 uiNode.collapsed = data["wrapper"]["collapsed"]
 
     def addNode(self, uiNode, jsonTemplate, parentGraph=None):

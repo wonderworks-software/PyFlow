@@ -65,14 +65,36 @@ class UICommentNode(UINodeBase):
             pass
         self.setFocus()
 
+    def kill(self, *args, **kwargs):
+        # Do not forget to remove collapsed nodes!
+        if self.collapsed:
+            for node in self.owningNodes:
+                node.kill()
+        super(UICommentNode, self).kill(*args, **kwargs)
+
     def hideOwningNodes(self):
         for node in self.owningNodes:
             node.hide()
+            # hide fully contained connections
+            for pin in node.UIPins.values():
+                for connection in pin.uiConnectionList:
+                    if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
+                        connection.hide()
 
     def onVisibilityChanged(self, bVisible):
         for node in self.owningNodes:
             if not self.collapsed:
                 node.setVisible(bVisible)
+                for pin in node.UIPins.values():
+                    for connection in pin.uiConnectionList:
+                        if bVisible:
+                            connection.setVisible(bVisible)
+                        else:
+                            # Hide connection only if fully contained
+                            if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
+                                connection.setVisible(bVisible)
+                            else:
+                                print(connection)
 
     def updateOwningCommentNode(self):
         super(UICommentNode, self).updateOwningCommentNode()
