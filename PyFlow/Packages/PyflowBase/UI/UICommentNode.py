@@ -24,6 +24,7 @@ from PyFlow.UI.Utils.Settings import (Spacings, Colors)
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import NodeName
 from PyFlow.UI.Canvas.UIPinBase import UICommentPinBase
+from PyFlow.UI.Canvas.UIConnection import UIConnection
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
 import weakref
@@ -88,13 +89,11 @@ class UICommentNode(UINodeBase):
                 for pin in node.UIPins.values():
                     for connection in pin.uiConnectionList:
                         if bVisible:
-                            connection.setVisible(bVisible)
+                            connection.setVisible(True)
                         else:
                             # Hide connection only if fully contained
                             if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
-                                connection.setVisible(bVisible)
-                            else:
-                                print(connection)
+                                connection.setVisible(False)
 
     def updateOwningCommentNode(self):
         super(UICommentNode, self).updateOwningCommentNode()
@@ -143,8 +142,21 @@ class UICommentNode(UINodeBase):
         result = QtCore.QPointF(x, y)
         return result
 
+    def getPartiallyCollidedConnections(self):
+        collidingItems = self.collidingItems()
+        collidingConnections = set()
+        for item in collidingItems:
+            if isinstance(item, UIConnection):
+                rect = self.sceneBoundingRect()
+                containsSrc = rect.contains(item.source().scenePos())
+                containsDst = rect.contains(item.destination().scenePos())
+                if containsSrc + containsDst == 1:
+                    collidingConnections.add(item)
+        return collidingConnections
+
     def aboutToCollapse(self, futureCollapseState):
         if futureCollapseState:
+            self.partiallyIntersectedConnections = self.getPartiallyCollidedConnections()
             for node in self.owningNodes:
                 if node.owningCommentNode is self:
                     node.hide()
@@ -154,9 +166,6 @@ class UICommentNode(UINodeBase):
                             if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
                                 fullyIntersectedConnections.add(connection)
                                 connection.hide()
-                            if self.sceneBoundingRect().intersects(connection.sceneBoundingRect()):
-                                if connection not in fullyIntersectedConnections:
-                                    self.partiallyIntersectedConnections.add(connection)
                         for con in fullyIntersectedConnections:
                             con.hide()
             # override endpoints getting methods
