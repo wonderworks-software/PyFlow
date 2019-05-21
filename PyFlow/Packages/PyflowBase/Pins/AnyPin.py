@@ -78,8 +78,8 @@ class AnyPin(PinBase):
         return dt
 
     def pinConnected(self, other):
-        self._data = getPinDefaultValueByType(other.dataType)
         if self.changeTypeOnConnection:
+            self._data = getPinDefaultValueByType(other.dataType)
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, other.dataType,False,other))
         self.onPinConnected.send(other)
         super(AnyPin, self).pinConnected(other)
@@ -108,7 +108,9 @@ class AnyPin(PinBase):
         free = pin.checkFree([])
         if free:
             pin._free = True
-            pin.setDefault()
+            #pin.setDefault()
+            pin._supportedDataTypes = pin._defaultSupportedDataTypes
+            pin.supportedDataTypes = lambda: pin._supportedDataTypes
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
@@ -177,6 +179,7 @@ class AnyPin(PinBase):
 
     def initType(self,dataType,initializing=False):
         if self.checkFree([]):
+            self._data = getPinDefaultValueByType(dataType)
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType,initializing))
             return True
         return False

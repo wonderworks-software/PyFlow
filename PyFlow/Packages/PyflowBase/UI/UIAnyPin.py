@@ -49,7 +49,7 @@ class UIAnyPin(UIPinBase):
             self.update()
 
     def selectInit(self):
-        self.d = SelectPinDialog(validPins=self._rawPin.allowedDataTypes([],self._rawPin._supportedDataTypes))
+        self.d = SelectPinDialog(validPins=self._rawPin._defaultSupportedDataTypes)
         self.d.exec_()
         dataType = self.d.getResult()
         if dataType == "AnyPin":
