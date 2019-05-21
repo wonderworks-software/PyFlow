@@ -52,7 +52,7 @@ class PinBase(IPin):
         self._structure = PinStructure.Single
         self._currStructure = self._structure
         self._structFree = True
-
+        self._free = False
         self._isAny = False
         self._isArray = False
         self._alwaysList = False

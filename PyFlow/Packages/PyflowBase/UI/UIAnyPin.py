@@ -52,10 +52,7 @@ class UIAnyPin(UIPinBase):
         self.d = SelectPinDialog(validPins=self._rawPin._defaultSupportedDataTypes)
         self.d.exec_()
         dataType = self.d.getResult()
-        if dataType == "AnyPin":
-            self._rawPin.resetDefault()       
-        elif dataType is not None:
-            self.initType(dataType,True)     
+        self.initType(dataType,True)     
 
     def initType(self,dataType,init=False):
         self._rawPin.initType(dataType,init)
