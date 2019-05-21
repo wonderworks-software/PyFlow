@@ -289,7 +289,7 @@ class NodeBase(INode):
         if dataType == "AnyPin" and allowedPins:
             def supportedDataTypes():
                 return allowedPins
-            p._supportedDataTypes = p._defaultSupportedDataTypes = allowedPins
+            p._supportedDataTypes = p._defaultSupportedDataTypes = tuple(allowedPins)
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
@@ -397,7 +397,8 @@ class NodeBase(INode):
                 pin = self.getPin(str(inpJson['name']), PinSelectionGroup.Inputs)
                 pin.uid = uuid.UUID(inpJson['uuid'])
                 if "currDataType" in inpJson:
-                    pin.setType(inpJson["currDataType"])                  
+                    pin.setType(inpJson["currDataType"]) 
+                pin.changeTypeOnConnection= inpJson['changeType']
                 pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
 
                 if inpJson['bDirty']:
@@ -414,7 +415,8 @@ class NodeBase(INode):
                 pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
                 pin.uid = uuid.UUID(outJson['uuid']) 
                 if "currDataType" in outJson:
-                    pin.setType(outJson["currDataType"]    )            
+                    pin.setType(outJson["currDataType"]    )     
+                pin.changeTypeOnConnection= inpJson['changeType']       
                 pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))               
                 if outJson['bDirty']:
                     pin.setDirty()

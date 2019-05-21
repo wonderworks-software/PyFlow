@@ -56,6 +56,7 @@ class PinBase(IPin):
         self._isAny = False
         self._isArray = False
         self._alwaysList = False
+        self.changeTypeOnConnection = False
         self._defaultSupportedDataTypes = self._supportedDataTypes = self.supportedDataTypes()
 
     def enableOptions(self, *options):
@@ -165,7 +166,8 @@ class PinBase(IPin):
             'uuid': str(self.uid),
             'bDirty': self.dirty,
             'linkedTo': list(self.linkedTo),
-            'options': [i.value for i in PinOptions if self.optionEnabled(i)]
+            'options': [i.value for i in PinOptions if self.optionEnabled(i)],
+            'changeType':self.changeTypeOnConnection
         }
 
         # Wrapper class can subscribe to this signal and return
@@ -213,7 +215,7 @@ class PinBase(IPin):
     def supportedDataTypes():
         return ()
 
-    def allowedDataTypes(self, checked=[], dataTypes=[]):
+    def allowedDataTypes(self, checked=[], dataTypes=[],selfChek=True,defaults=False):
         return self.supportedDataTypes()
 
     def defaultValue(self):

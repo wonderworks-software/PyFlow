@@ -1,6 +1,6 @@
 from Qt import QtCore
 from Qt import QtGui
-from Qt.QtWidgets import QComboBox
+from Qt.QtWidgets import QComboBox,QCheckBox
 
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Utils.Settings import *
@@ -62,13 +62,23 @@ class UIConstantNode(UINodeBase):
         self.update()
         self.canvasRef().tryFillPropertiesView(self)
 
+    def overrideTypeChanged(self,toogle):
+        self.input._rawPin.changeTypeOnConnection = bool(toogle)
+        self.output._rawPin.changeTypeOnConnection = bool(toogle)
+        self.selector.setEnabled(toogle)
+        
     def createInputWidgets ( self,propertiesWidget):
         inputsCategory = super(UIConstantNode, self).createInputWidgets(propertiesWidget)
         self.selector = QComboBox()
+        self.overrideType = QCheckBox()
+        self.overrideType.setChecked(self.input._rawPin.changeTypeOnConnection)
+        self.overrideType.stateChanged.connect(self.overrideTypeChanged)
         for i in self._rawNode.pinTypes:
             self.selector.addItem(i)         
         if self.input.dataType in self._rawNode.pinTypes:
             self.selector.setCurrentIndex(self._rawNode.pinTypes.index(self.input.dataType))
         self.selector.activated.connect(self._rawNode.updateType)
-        inputsCategory.insertWidget(0,"test",self.selector)
+        self.selector.setEnabled(self.input._rawPin.changeTypeOnConnection)
+        inputsCategory.insertWidget(0,"dataType",self.selector)
+        inputsCategory.insertWidget(1,"Change Type On Connection",self.overrideType)
         
