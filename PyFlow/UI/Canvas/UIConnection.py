@@ -10,6 +10,7 @@ from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QMenu
 
 from PyFlow.UI.Utils.Settings import Colors
+from PyFlow.UI.Canvas.UICommon import NodeDefaults
 from PyFlow.Core.Common import *
 
 
@@ -39,7 +40,7 @@ class UIConnection(QGraphicsPathItem):
         self.cp1 = QtCore.QPointF(0.0, 0.0)
         self.cp2 = QtCore.QPointF(0.0, 0.0)
 
-        self.setZValue(-1)
+        self.setZValue(NodeDefaults().Z_LAYER - 1)
 
         self.color = self.source().color()
 

@@ -46,10 +46,12 @@ class UICommentNode(UINodeBase):
         self.editMessageAction.setData(NodeActionButtonInfo(RESOURCES_DIR + "/rename.svg"))
         self.editMessageAction.triggered.connect(self.onChangeMessage)
         self.partiallyIntersectedConnections = set()
+        self.partiallyIntersectedConnectionsEndpointOverrides = {}
 
     def serializationHook(self):
         original = super(UICommentNode, self).serializationHook()
         original["owningNodes"] = list(set([n.name for n in self.owningNodes]))
+        original["color"] = self.color.rgba()
         return original
 
     def onChangeMessage(self):
@@ -70,6 +72,7 @@ class UICommentNode(UINodeBase):
         # Do not forget to remove collapsed nodes!
         if self.collapsed:
             for node in self.owningNodes:
+                assert(node is not None)
                 node.kill()
         super(UICommentNode, self).kill(*args, **kwargs)
 
@@ -157,6 +160,11 @@ class UICommentNode(UINodeBase):
     def aboutToCollapse(self, futureCollapseState):
         if futureCollapseState:
             self.partiallyIntersectedConnections = self.getPartiallyCollidedConnections()
+
+            # save overrides information
+            for connection in self.partiallyIntersectedConnections:
+                self.partiallyIntersectedConnectionsEndpointOverrides[connection] = (connection.sourcePositionOverride, connection.destinationPositionOverride)
+
             for node in self.owningNodes:
                 if node.owningCommentNode is self:
                     node.hide()
@@ -168,6 +176,7 @@ class UICommentNode(UINodeBase):
                                 connection.hide()
                         for con in fullyIntersectedConnections:
                             con.hide()
+
             # override endpoints getting methods
             for connection in self.partiallyIntersectedConnections:
                 if not self.sceneBoundingRect().contains(connection.drawDestination.scenePos()):
@@ -180,10 +189,17 @@ class UICommentNode(UINodeBase):
                 for pin in node.UIPins.values():
                     for connection in pin.uiConnectionList:
                         connection.show()
-            for connection in self.partiallyIntersectedConnections:
-                connection.sourcePositionOverride = None
-                connection.destinationPositionOverride = None
+            for connection, overrides in self.partiallyIntersectedConnectionsEndpointOverrides.items():
+                srcVisible, dstVisible = connection.source().isVisible(), connection.destination().isVisible()
+                connection.sourcePositionOverride = overrides[0] if not srcVisible else None
+                connection.destinationPositionOverride = overrides[1] if not dstVisible else None
             self.partiallyIntersectedConnections.clear()
+            self.partiallyIntersectedConnectionsEndpointOverrides.clear()
+
+    def postCreate(self, jsonTemplate=None):
+        super(UICommentNode, self).postCreate(jsonTemplate=jsonTemplate)
+        if "color" in jsonTemplate["wrapper"]:
+            self.color = QtGui.QColor.fromRgba(jsonTemplate["wrapper"]["color"])
 
     def translate(self, x, y):
         for n in self.owningNodes:

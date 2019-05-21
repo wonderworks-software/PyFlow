@@ -202,6 +202,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         for graph in self.graphManager.getAllGraphs():
             self.canvasWidget.createWrappersForGraph(graph)
         self.graphManager.selectRootGraph()
+        self.canvasWidget.validateCommentNodesOwnership()
 
     def load(self):
         name_filter = "Graph files (*.json)"

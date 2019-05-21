@@ -998,7 +998,7 @@ class Canvas(QGraphicsView):
         # expand all comment nodes and reset owning nodes info
         for node in self.getAllNodes():
             if node.isUnderActiveGraph():
-                if node.isCommentNode:
+                if node.isCommentNode and node.owningCommentNode is None:
                     comments[node] = node.collapsed
                     node.collapsed = False
                     node.owningNodes.clear()
@@ -1041,7 +1041,6 @@ class Canvas(QGraphicsView):
                     self._mouseDownSelection = [node for node in self.selectedNodes()]
                     if modifiers not in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
                         self.clearSelection()
-                        # super(Canvas, self).mousePressEvent(event)
                 else:
                     if hasattr(self, "_selectionRect") and self._selectionRect is not None:
                         self._selectionRect.destroy()
@@ -1052,14 +1051,11 @@ class Canvas(QGraphicsView):
                     self._lastPanPoint = self.mapToScene(event.pos())
                 elif event.button() == QtCore.Qt.RightButton:
                     self.manipulationMode = CanvasManipulationMode.ZOOM
-                    # self._lastMousePos = event.pos()
                     self._lastTransform = QtGui.QTransform(self.transform())
                     self._lastSceneRect = self.sceneRect()
                     self._lastSceneCenter = self._lastSceneRect.center()
                     self._lastScenePos = self.mapToScene(event.pos())
                     self._lastOffsetFromSceneCenter = self._lastScenePos - self._lastSceneCenter
-            # elif modifiers not in  [QtCore.Qt.ShiftModifier,QtCore.Qt.ControlModifier]:
-            #    super(Canvas, self).mousePressEvent(event)
             self.node_box.hide()
         elif not isinstance(self.pressed_item, EditableLabel) or (isinstance(self.pressed_item, EditableLabel) and not self.pressed_item._beingEdited):
             # else:

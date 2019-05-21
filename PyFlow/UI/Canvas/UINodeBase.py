@@ -865,8 +865,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         return nodes
 
     def kill(self, *args, **kwargs):
-        self.scene().removeItem(self)
-        del(self)
+        scene = self.scene()
+        if scene is not None:
+            self.scene().removeItem(self)
+            del(self)
 
     def collidesWithCommentNode(self):
         nodes = self.getCollidedNodes()
