@@ -993,7 +993,7 @@ class Canvas(QGraphicsView):
         # expand all comment nodes and reset owning nodes info
         for node in self.getAllNodes():
             if node.isUnderActiveGraph():
-                if node.isCommentNode and node.owningCommentNode is None:
+                if node.isCommentNode:
                     comments[node] = node.collapsed
                     node.collapsed = False
                     node.owningNodes.clear()
@@ -1014,7 +1014,7 @@ class Canvas(QGraphicsView):
         self.state = state
 
     def mousePressEvent(self, event):
-        # self.validateCommentNodesOwnership()
+        self.validateCommentNodesOwnership()
         if self.pressed_item and isinstance(self.pressed_item, EditableLabel):
             if self.pressed_item != self.itemAt(event.pos()):
                 self.pressed_item.setOutFocus()
@@ -1367,7 +1367,7 @@ class Canvas(QGraphicsView):
             self.requestClearProperties.emit()
         self.resizing = False
 
-        # self.validateCommentNodesOwnership()
+        self.validateCommentNodesOwnership()
 
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]

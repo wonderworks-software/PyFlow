@@ -189,9 +189,11 @@ class UICommentNode(UINodeBase):
             # override endpoints getting methods
             for connection in self.partiallyIntersectedConnections:
                 si, sc, di, dc = self.intersectsOrContainsEndpointNodes(connection)
+                scrComment = connection.source().owningNode().owningCommentNode
+                dstComment = connection.destination().owningNode().owningCommentNode
                 if not all([si, sc]):
                     connection.destinationPositionOverride = self.getLeftSideEdgesPoint
-                if not all([di, dc]):
+                elif not all([di, dc]):
                     connection.sourcePositionOverride = self.getRightSideEdgesPoint
         else:
             for node in self.owningNodes:
