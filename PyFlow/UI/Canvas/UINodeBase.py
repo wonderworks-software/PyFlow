@@ -627,11 +627,26 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             if label:
                 self.update()
 
+    def isUnderCollapsedComment(self):
+        if self.owningCommentNode is None:
+            return False
+        else:
+            if self.owningCommentNode.collapsed:
+                return True
+
+        parent = self.owningCommentNode.owningCommentNode
+        while parent is not None:
+            upperComment = parent
+            if upperComment.collapsed:
+                return True
+            parent = upperComment.owningCommentNode
+        return False
+
     def getTopMostOwningComment(self):
         if self.owningCommentNode is None:
             return None
         topMostComment = self.owningCommentNode
-        parent = self.owningCommentNode.owningCommentNode
+        parent = topMostComment.owningCommentNode
         while parent is not None:
             topMostComment = parent
             parent = topMostComment.owningCommentNode
@@ -891,9 +906,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             collidedCommentNode = self.collidesWithCommentNode()
             if collidedCommentNode is None:
                 self.show()
-                for uiPin in self.UIPins.values():
-                    for connection in uiPin.uiConnectionList:
-                        connection.show()
+                # for uiPin in self.UIPins.values():
+                #     for connection in uiPin.uiConnectionList:
+                #         connection.show()
             else:
                 if collidedCommentNode.collapsed:
                     self.hide()

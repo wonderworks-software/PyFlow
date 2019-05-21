@@ -8,6 +8,20 @@ class VisibilityPolicy(IntEnum):
     Auto = 3
 
 
+class CanvasState(IntEnum):
+    DEFAULT = 0
+    COMMENT_OWNERSHIP_VALIDATION = 1
+
+
+class CanvasManipulationMode(IntEnum):
+    NONE = 0
+    SELECT = 1
+    PAN = 2
+    MOVE = 3
+    ZOOM = 4
+    COPY = 5
+
+
 ## This function clears property view's layout.
 # @param[in] layout QLayout class
 def clearLayout(layout):

@@ -31,6 +31,7 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QPushButton
 
 from PyFlow.UI.Utils.Settings import Colors
+from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Canvas.SelectionRect import SelectionRect
 from PyFlow.UI.Canvas.UIConnection import UIConnection
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
@@ -315,15 +316,6 @@ class SceneClass(QGraphicsScene):
             super(SceneClass, self).dropEvent(event)
 
 
-class CanvasManipulationMode(IntEnum):
-    NONE = 0
-    SELECT = 1
-    PAN = 2
-    MOVE = 3
-    ZOOM = 4
-    COPY = 5
-
-
 class Canvas(QGraphicsView):
     _manipulationMode = CanvasManipulationMode.NONE
 
@@ -342,6 +334,7 @@ class Canvas(QGraphicsView):
 
     def __init__(self, graphManager, parent=None):
         super(Canvas, self).__init__()
+        self.state = CanvasState.DEFAULT
         self.graphManager = graphManager
         self.graphManager.graphChanged.connect(self.onGraphChanged)
         self.undoStack = QUndoStack(self)
@@ -993,6 +986,8 @@ class Canvas(QGraphicsView):
         return node
 
     def validateCommentNodesOwnership(self):
+        state = self.state
+        self.state = CanvasState.COMMENT_OWNERSHIP_VALIDATION
         comments = {}
         defaultNodes = set()
         # expand all comment nodes and reset owning nodes info
@@ -1016,9 +1011,10 @@ class Canvas(QGraphicsView):
         # restore comments collapse state
         for comment, wasCollapsed in comments.items():
             comment.collapsed = wasCollapsed
+        self.state = state
 
     def mousePressEvent(self, event):
-        self.validateCommentNodesOwnership()
+        # self.validateCommentNodesOwnership()
         if self.pressed_item and isinstance(self.pressed_item, EditableLabel):
             if self.pressed_item != self.itemAt(event.pos()):
                 self.pressed_item.setOutFocus()
@@ -1371,7 +1367,7 @@ class Canvas(QGraphicsView):
             self.requestClearProperties.emit()
         self.resizing = False
 
-        self.validateCommentNodesOwnership()
+        # self.validateCommentNodesOwnership()
 
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]

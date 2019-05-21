@@ -197,9 +197,6 @@ class UIConnection(QGraphicsPathItem):
     def kill(self):
         self.canvasRef().removeConnection(self)
 
-    def destination_port_name(self):
-        return self.destination().getName()
-
     def paint(self, painter, option, widget):
         lod = self.canvasRef().getLodValueFromCurrentScale(5)
 

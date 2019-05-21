@@ -87,16 +87,19 @@ class UICommentNode(UINodeBase):
 
     def onVisibilityChanged(self, bVisible):
         for node in self.owningNodes:
+            nodeUnderCollapsedComment = node.isUnderCollapsedComment()
             if not self.collapsed:
                 node.setVisible(bVisible)
                 for pin in node.UIPins.values():
                     for connection in pin.uiConnectionList:
                         if bVisible:
-                            connection.setVisible(True)
+                            if not nodeUnderCollapsedComment:
+                                connection.setVisible(True)
                         else:
                             # Hide connection only if fully contained
                             if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
                                 connection.setVisible(False)
+        self.canvasRef().update()
 
     def updateOwningCommentNode(self):
         super(UICommentNode, self).updateOwningCommentNode()
@@ -145,21 +148,35 @@ class UICommentNode(UINodeBase):
         result = QtCore.QPointF(x, y)
         return result
 
-    def getPartiallyCollidedConnections(self):
+    def getCollidedConnections(self, bFully=False):
         collidingItems = self.collidingItems()
         collidingConnections = set()
         for item in collidingItems:
             if isinstance(item, UIConnection):
-                rect = self.sceneBoundingRect()
-                containsSrc = rect.contains(item.source().scenePos())
-                containsDst = rect.contains(item.destination().scenePos())
-                if containsSrc + containsDst == 1:
-                    collidingConnections.add(item)
+                si, sc, di, dc = self.intersectsOrContainsEndpointNodes(item)
+                if bFully:
+                    if all([si, sc, di, dc]):
+                        collidingConnections.add(item)
+                else:
+                    if any([si, sc, di, dc]) and not all([si, sc, di, dc]):
+                        collidingConnections.add(item)
         return collidingConnections
 
+    def intersectsOrContainsEndpointNodes(self, connection):
+        intersectsSrcNode = self.sceneBoundingRect().intersects(connection.source().owningNode().sceneBoundingRect())
+        containsSrcNode = self.sceneBoundingRect().contains(connection.source().owningNode().sceneBoundingRect())
+        intersectsDstNode = self.sceneBoundingRect().intersects(connection.destination().owningNode().sceneBoundingRect())
+        containsDstNode = self.sceneBoundingRect().contains(connection.destination().owningNode().sceneBoundingRect())
+        return intersectsSrcNode, containsSrcNode, intersectsDstNode, containsDstNode
+
     def aboutToCollapse(self, futureCollapseState):
+        if self.canvasRef().state == CanvasState.COMMENT_OWNERSHIP_VALIDATION:
+            return
+
         if futureCollapseState:
-            self.partiallyIntersectedConnections = self.getPartiallyCollidedConnections()
+            self.partiallyIntersectedConnections = self.getCollidedConnections()
+            fullyIntersectedConnections = self.getCollidedConnections(True)
+            [c.hide() for c in fullyIntersectedConnections]
 
             # save overrides information
             for connection in self.partiallyIntersectedConnections:
@@ -168,33 +185,30 @@ class UICommentNode(UINodeBase):
             for node in self.owningNodes:
                 if node.owningCommentNode is self:
                     node.hide()
-                    for pin in node.UIPins.values():
-                        fullyIntersectedConnections = set()
-                        for connection in pin.uiConnectionList:
-                            if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
-                                fullyIntersectedConnections.add(connection)
-                                connection.hide()
-                        for con in fullyIntersectedConnections:
-                            con.hide()
 
             # override endpoints getting methods
             for connection in self.partiallyIntersectedConnections:
-                if not self.sceneBoundingRect().contains(connection.drawDestination.scenePos()):
-                    connection.sourcePositionOverride = self.getRightSideEdgesPoint
-                if not self.sceneBoundingRect().contains(connection.drawSource.scenePos()):
+                si, sc, di, dc = self.intersectsOrContainsEndpointNodes(connection)
+                if not all([si, sc]):
                     connection.destinationPositionOverride = self.getLeftSideEdgesPoint
+                if not all([di, dc]):
+                    connection.sourcePositionOverride = self.getRightSideEdgesPoint
         else:
             for node in self.owningNodes:
-                node.show()
-                for pin in node.UIPins.values():
-                    for connection in pin.uiConnectionList:
-                        connection.show()
+                nodeUnderCollapsedComment = node.isUnderCollapsedComment()
+                if not nodeUnderCollapsedComment:
+                    node.show()
+                    for pin in node.UIPins.values():
+                        for connection in pin.uiConnectionList:
+                            connection.show()
+            self.update()
             for connection, overrides in self.partiallyIntersectedConnectionsEndpointOverrides.items():
                 srcVisible, dstVisible = connection.source().isVisible(), connection.destination().isVisible()
                 connection.sourcePositionOverride = overrides[0] if not srcVisible else None
                 connection.destinationPositionOverride = overrides[1] if not dstVisible else None
             self.partiallyIntersectedConnections.clear()
             self.partiallyIntersectedConnectionsEndpointOverrides.clear()
+        self.canvasRef().update()
 
     def postCreate(self, jsonTemplate=None):
         super(UICommentNode, self).postCreate(jsonTemplate=jsonTemplate)
