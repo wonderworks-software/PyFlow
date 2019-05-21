@@ -6,7 +6,7 @@ from PyFlow.UI.Utils.Settings import Colors
 from PyFlow.UI.Canvas.Painters import PinPainter
 from PyFlow import getAllPinClasses
 from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
-
+from PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
 from PyFlow.UI.Canvas.UIPinBase import UIPinBase
 from Qt import QtGui
 
@@ -18,6 +18,8 @@ class UIAnyPin(UIPinBase):
         self._rawPin.typeChanged.connect(self.setType)
         self._rawPin.dataTypeBeenSet.connect(self.dataTypeBeenSet)
         self._rawPin.onPinDisconnected.connect(self.disconnect)
+        self.menu.addAction("InitAs").triggered.connect(self.selectInit)
+
         self.prevDataType = "AnyPin"
         self.prevColor = None
 
@@ -46,8 +48,17 @@ class UIAnyPin(UIPinBase):
             self.OnPinChanged.emit(self)
             self.update()
 
-    def initType(self,dataType):
-        self._rawPin.initType(dataType)
+    def selectInit(self):
+        self.d = SelectPinDialog(validPins=self._rawPin.allowedDataTypes([],self._rawPin._supportedDataTypes))
+        self.d.exec_()
+        dataType = self.d.getResult()
+        if dataType == "AnyPin":
+            self._rawPin.resetDefault()       
+        elif dataType is not None:
+            self.initType(dataType,True)     
+
+    def initType(self,dataType,init=False):
+        self._rawPin.initType(dataType,init)
 
     def setType(self, dataType):
         if dataType != self.prevDataType:
@@ -63,7 +74,7 @@ class UIAnyPin(UIPinBase):
         super(UIPinBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        supportedTypes = self._rawPin.supportedDataTypes()
+        supportedTypes = self._rawPin.allowedDataTypes([],self._rawPin._supportedDataTypes)
         hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes)
         self.setToolTip(hoverMessage)
         event.accept()

@@ -27,6 +27,7 @@ class AnyPin(PinBase):
         self.initialized = False
         self.tempInitialized = False
         self.changeTypeOnConnection = True
+        self._defaultSupportedDataTypes = self._supportedDataTypes = tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
 
     @PinBase.dataType.getter
     def dataType(self):
@@ -79,34 +80,39 @@ class AnyPin(PinBase):
     def pinConnected(self, other):
         self._data = getPinDefaultValueByType(other.dataType)
         if self.changeTypeOnConnection:
-            traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, other.dataType,False))
+            traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, other.dataType,False,other))
         self.onPinConnected.send(other)
         super(AnyPin, self).pinConnected(other)
 
-    def updateOnConnectionCallback(self, pin, dataType,init=False):        
+    def updateOnConnectionCallback(self, pin, dataType,init=False,other=None):        
         free = pin.checkFree([])
-        print pin,dataType,free
+        #print pin,free
         if  free:
             if (dataType == "AnyPin" and not init):#(initialize or dataType != "AnyPin"):
                 return
-            else:
+            elif dataType in pin.allowedDataTypes([],pin._supportedDataTypes) or dataType == "AnyPin":
                 pin._free = False
                 if init:
                     pin.initialized = True
-                #pin.setDefault()
-
-                pin.setType(dataType)
+                if other:
+                    pin._supportedDataTypes = other.allowedDataTypes([],other._supportedDataTypes)  
+                else:
+                    pin._supportedDataTypes = findPinClassByType(dataType).supportedDataTypes()                 
+                if dataType == "AnyPin":
+                    pin.setDefault()
+                else:
+                    pin.setType(dataType)
+               
 
     def updateOnDisconnectionCallback(self, pin):
         free = pin.checkFree([])
         if free:
             pin._free = True
-            #pin.setDefault()
+            pin.setDefault()
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
-        if self.changeTypeOnConnection:
-            traverseConstrainedPins(self, lambda pin: self.updateOnDisconnectionCallback(pin))
+        self.resetDefault()
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
@@ -133,6 +139,23 @@ class AnyPin(PinBase):
                         free = port.checkFree(checked)
             return free
 
+    def allowedDataTypes(self, checked=[], dataTypes=[]):
+        # if self.constraint is None:
+        con = []
+        neis = []
+        if self.hasConnections():
+            for c in getConnectedPins(self):
+                if c not in checked:
+                    con.append(c)
+        if self.constraint:
+            neis = self.owningNode().constraints[self.constraint]
+        for port in neis + con:
+            if port not in checked:
+                checked.append(port)
+                dataTypes = list(set(dataTypes) & set(port._supportedDataTypes))
+                dataTypes = port.allowedDataTypes(checked,dataTypes)
+        return dataTypes
+
     def setDefault(self):
         if self.activeDataType != self.__class__.__name__ and self.singleInit:
             # Marked as single init. Type already been set. Skip
@@ -149,13 +172,18 @@ class AnyPin(PinBase):
         if not self.hasConnections():
             self._free = True
 
-        self.supportedDataTypes = lambda: tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
+        self._supportedDataTypes = self._defaultSupportedDataTypes
+        self.supportedDataTypes = lambda: self._supportedDataTypes
 
     def initType(self,dataType,initializing=False):
         if self.checkFree([]):
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType,initializing))
             return True
         return False
+
+    def resetDefault(self):
+        if self.changeTypeOnConnection:
+            traverseConstrainedPins(self, lambda pin: self.updateOnDisconnectionCallback(pin))
 
     def setType(self, dataType):
         if not self.changeTypeOnConnection:
@@ -164,6 +192,7 @@ class AnyPin(PinBase):
         if self.activeDataType != self.__class__.__name__ and self.singleInit:
             # Marked as single init. Type already been set. Skip
             return
+
         otherClass = findPinClassByType(dataType)
         #if self.activeDataType == self.__class__.__name__ or self.activeDataType in otherClass.supportedDataTypes():
             

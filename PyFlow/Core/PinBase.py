@@ -56,6 +56,7 @@ class PinBase(IPin):
         self._isAny = False
         self._isArray = False
         self._alwaysList = False
+        self._defaultSupportedDataTypes = self._supportedDataTypes = self.supportedDataTypes()
 
     def enableOptions(self, *options):
         for option in options:
@@ -211,6 +212,9 @@ class PinBase(IPin):
     @staticmethod
     def supportedDataTypes():
         return ()
+
+    def allowedDataTypes(self, checked=[], dataTypes=[]):
+        return self.supportedDataTypes()
 
     def defaultValue(self):
         if self.isArray():

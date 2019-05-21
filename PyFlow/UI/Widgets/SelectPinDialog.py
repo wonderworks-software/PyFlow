@@ -111,9 +111,9 @@ class _PinsListWidget(QtWidgets.QListWidget):
     """docstring for _PinsListWidget."""
     returnPressed = QtCore.Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,validPins=None):
         super(_PinsListWidget, self).__init__()
-        self.populate(pattern="")
+        self.populate(pattern="",validPins=validPins)
 
     def filterContent(self, pattern):
         self.clear()
@@ -129,20 +129,21 @@ class _PinsListWidget(QtWidgets.QListWidget):
             self.returnPressed.emit()
         super(_PinsListWidget, self).keyPressEvent(event)
 
-    def populate(self, pattern=""):
+    def populate(self, pattern="",validPins=[pin.__name__ for pin in getAllPinClasses()]):
         for pinClass in getAllPinClasses():
             className = pinClass.__name__
-            if len(pattern) > 0:
-                if pattern.lower() in className.lower():
+            if className in validPins:
+                if len(pattern) > 0:
+                    if pattern.lower() in className.lower():
+                        self.createEntry(className)
+                else:
                     self.createEntry(className)
-            else:
-                self.createEntry(className)
         self.setCurrentRow(0)
 
 
 class SelectPinDialog(QtWidgets.QDialog):
     """docstring for SelectPinDialog."""
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,validPins=None):
         super(SelectPinDialog, self).__init__(None)
         self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.setWindowTitle("Select pin")
@@ -156,7 +157,7 @@ class SelectPinDialog(QtWidgets.QDialog):
         self.searchBox.textChanged.connect(self.filterContent)
         self.mainLayout.addWidget(self.searchBox)
 
-        self.content = _PinsListWidget()
+        self.content = _PinsListWidget(validPins=validPins)
         self.mainLayout.addWidget(self.content)
         self.content.itemClicked.connect(self.onItemClicked)
         self.content.returnPressed.connect(self.onReturnPressed)

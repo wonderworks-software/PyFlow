@@ -289,6 +289,7 @@ class NodeBase(INode):
         if dataType == "AnyPin" and allowedPins:
             def supportedDataTypes():
                 return allowedPins
+            p._supportedDataTypes = p._defaultSupportedDataTypes = allowedPins
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
