@@ -159,6 +159,8 @@ class UICommentNode(UINodeBase):
                         collidingConnections.add(item)
                 else:
                     if any([si, sc, di, dc]) and not all([si, sc, di, dc]):
+                        if not sc and not dc:
+                            continue
                         collidingConnections.add(item)
         return collidingConnections
 
@@ -206,8 +208,28 @@ class UICommentNode(UINodeBase):
             self.update()
             for connection, overrides in self.partiallyIntersectedConnectionsEndpointOverrides.items():
                 srcVisible, dstVisible = connection.source().isVisible(), connection.destination().isVisible()
-                connection.sourcePositionOverride = overrides[0] if not srcVisible else None
-                connection.destinationPositionOverride = overrides[1] if not dstVisible else None
+
+                scrComment = connection.source().owningNode().owningCommentNode
+                if not srcVisible and not scrComment.collapsed:
+                    connection.sourcePositionOverride = overrides[0]
+                else:
+                    if scrComment is not None:
+                        if not scrComment.collapsed:
+                            connection.sourcePositionOverride = None
+                    else:
+                        connection.sourcePositionOverride = None
+
+                dstComment = connection.destination().owningNode().owningCommentNode
+                if not dstVisible:
+                    if not dstComment.collapsed:
+                        connection.destinationPositionOverride = overrides[1]
+                else:
+                    if dstComment is not None:
+                        if not dstComment.collapsed:
+                            connection.destinationPositionOverride = None
+                    else:
+                        connection.destinationPositionOverride = None
+
             self.partiallyIntersectedConnections.clear()
             self.partiallyIntersectedConnectionsEndpointOverrides.clear()
         self.canvasRef().update()
