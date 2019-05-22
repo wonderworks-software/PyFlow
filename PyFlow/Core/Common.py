@@ -191,10 +191,6 @@ def canConnectPins(src, dst):
         if src.dataType not in dst.supportedDataTypes():
             return False
 
-    #if dst.isAny() and not src.isExec():
-    #    if src.dataType not in dst.supportedDataTypes() and src.dataType != "AnyPin":
-    #        return False
-
     if src.isExec() and not dst.isExec():
         return False
 
@@ -206,10 +202,14 @@ def canConnectPins(src, dst):
         if src.dataType not in dst.allowedDataTypes([],dst._supportedDataTypes) and dst.dataType not in src.allowedDataTypes([],src._supportedDataTypes):
             if not dst.changeTypeOnConnection and not src.changeTypeOnConnection:
                 return False
-                
-            if all([src.dataType not in dst.allowedDataTypes([],dst._defaultSupportedDataTypes,defaults=True)+["AnyPin"] or not dst.checkFree([]),
-                    dst.dataType not in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"]  or not src.checkFree([])]):
-                return False              
+            if all([src.dataType not in dst.allowedDataTypes([],dst._defaultSupportedDataTypes,defaults=True)+["AnyPin"] or not dst.checkFree([],selfChek=False),
+                    dst.dataType not in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"]  or not src.checkFree([],selfChek=False)]):
+                return False
+
+        elif all([src.dataType not in dst.allowedDataTypes([],dst._supportedDataTypes) ,
+                (not (src.checkFree([]) and dst.dataType not in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"])),
+                (not (dst.checkFree([]) and src.dataType not in dst.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"]))]):
+                return False
        
     if src.owningNode == dst.owningNode:
         return False
