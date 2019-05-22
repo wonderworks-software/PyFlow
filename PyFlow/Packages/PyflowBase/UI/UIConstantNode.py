@@ -66,19 +66,33 @@ class UIConstantNode(UINodeBase):
         self.input._rawPin.changeTypeOnConnection = bool(toogle)
         self.output._rawPin.changeTypeOnConnection = bool(toogle)
         self.selector.setEnabled(toogle)
-        
+
+    def selectStructure(self,name):
+        self.input._rawPin.changeStructure(PinStructure(name),self.input._rawPin._origFlags)
+        self.output._rawPin.changeStructure(PinStructure(name),self.output._rawPin._origFlags)
+
     def createInputWidgets ( self,propertiesWidget):
         inputsCategory = super(UIConstantNode, self).createInputWidgets(propertiesWidget)
-        self.selector = QComboBox()
-        self.overrideType = QCheckBox()
-        self.overrideType.setChecked(self.input._rawPin.changeTypeOnConnection)
-        self.overrideType.stateChanged.connect(self.overrideTypeChanged)
+        selector = QComboBox()
+        overrideType = QCheckBox()
+        overrideType.setChecked(self.input._rawPin.changeTypeOnConnection)
+        overrideType.stateChanged.connect(self.overrideTypeChanged)
         for i in self._rawNode.pinTypes:
-            self.selector.addItem(i)         
+            selector.addItem(i)         
         if self.input.dataType in self._rawNode.pinTypes:
-            self.selector.setCurrentIndex(self._rawNode.pinTypes.index(self.input.dataType))
-        self.selector.activated.connect(self._rawNode.updateType)
-        self.selector.setEnabled(self.input._rawPin.changeTypeOnConnection)
-        inputsCategory.insertWidget(0,"dataType",self.selector)
-        inputsCategory.insertWidget(1,"Change Type On Connection",self.overrideType)
+            selector.setCurrentIndex(self._rawNode.pinTypes.index(self.input.dataType))
+
+        structSelector =  QComboBox()
+        for i in [i.name for i in list(PinStructure)]:
+            structSelector.addItem(i)
+
+        structSelector.setCurrentIndex(self.input._rawPin._currStructure)
+
+        selector.activated.connect(self._rawNode.updateType)
+        structSelector.activated.connect(self.selectStructure)
+
+        selector.setEnabled(self.input._rawPin.changeTypeOnConnection)
+        inputsCategory.insertWidget(0,"DataType",selector)
+        inputsCategory.insertWidget(1,"Change Type On Connection",overrideType)
+        inputsCategory.insertWidget(1,"Structure",structSelector)
         

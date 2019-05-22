@@ -317,27 +317,23 @@ class PinBase(IPin):
         return self._data
 
     def aboutToConnect(self,other):
-        if self.structureType == PinStructure.Multi and self._currStructure != other._currStructure:
-            free = self.canChangeStructure(other._currStructure,[])
+        self.changeStructure(other._currStructure,other._flags)  
+        self.onPinConnected.send(other)  
+
+    def changeStructure(self,newStruct,flags):
+        if self.structureType == PinStructure.Multi and self._currStructure != newStruct:
+            free = self.canChangeStructure(newStruct,[])
             if free:
                 self._structFree = False
-                self.setAsArray(other._currStructure==PinStructure.Array)
-                self._currStructure = other._currStructure
-                self._flags = other._flags
+                self.setAsArray(newStruct==PinStructure.Array)
+                self._currStructure = newStruct
+                self._flags = flags
                 traversed = set()
                 traversed.add(self)   
                 self.updateConstrainedPins(traversed,self.isArray(),self._flags,connecting=True)  
-                self.onPinConnected.send(other)                   
 
     def pinConnected(self, other):
-        #self.onPinConnected.send(other)
         push(self)
-
-    def updateOnConnectionCallback(self, pin, other):   
-        free = pin.canChangeStructure(other._currStructure,[])
-        if  free and self.structureType == PinStructure.Multi:
-            pin._structFree = False
-            pin.setAsArray(other._currStructure==PinStructure.Array)
 
     def updateConstrainedPins(self,traversed,array,flags,connecting=False):
         nodePins = set()
@@ -355,6 +351,7 @@ class PinBase(IPin):
                     neighbor._currStructure = self._currStructure
                 else:
                     neighbor._currStructure = neighbor._structure
+                    neighbor._data = neighbor.defaultValue()
                 traversed.add(neighbor) 
                 neighbor.updateConstrainedPins(traversed,array,flags,connecting=connecting)
 
@@ -362,14 +359,17 @@ class PinBase(IPin):
         self.onPinDisconnected.send(other)
         if self.direction == PinDirection.Output:
             otherPinName = other.getName()
+        """
         free = self.canChangeStructure(self._structure,[])
         if free:
             self._structFree = True
             self.setAsArray(False)
             self._flags = self._origFlags
+            self._data = self.defaultValue()
             traversed = set()
             traversed.add(self)   
-            self.updateConstrainedPins(traversed,False,self._flags)              
+            self.updateConstrainedPins(traversed,False,self._flags)  
+        """            
         push(other)
 
     def canChangeStructure(self,newStruct, checked=[], selfChek=True):

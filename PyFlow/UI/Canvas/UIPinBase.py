@@ -9,6 +9,7 @@ from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QSizePolicy
+from Qt.QtWidgets import QComboBox
 
 from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.Settings import *
@@ -131,6 +132,8 @@ class UIPinBase(QGraphicsWidget):
         self.actionDisconnect.triggered.connect(self._rawPin.disconnectAll)
         self.actionResetValue = self.menu.addAction("Reset value")
         self.actionResetValue.triggered.connect(self.resetToDefault)
+        if self._rawPin._structure == PinStructure.Multi:
+            self.menu.addAction("changeStructure").triggered.connect(self.selectStructure)
 
         # GUI
         self._font = QtGui.QFont("Consolas")
@@ -428,6 +431,12 @@ class UIPinBase(QGraphicsWidget):
     def pinDisconnected(self, other):
         self.OnPinDisconnected.emit(other)
         self.update()
+
+    def selectStructure(self):
+        item, ok = QInputDialog.getItem(None, "", 
+           "", ([i.name for i in list(PinStructure)]), 0, False)
+        if ok and item:
+            self._rawPin.changeStructure(PinStructure[item],self._rawPin._origFlags)
 
 
 def REGISTER_UI_PIN_FACTORY(packageName, factory):

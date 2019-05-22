@@ -10,9 +10,6 @@ class constant(NodeBase):
         super(constant, self).__init__(name)
         self.input = self.createInputPin("in", 'AnyPin', structure=PinStructure.Multi, constraint="1",structConstraint="1")
         self.output = self.createOutputPin("out", 'AnyPin', structure=PinStructure.Multi, constraint="1",structConstraint="1")
-        #self.input.typeChanged.connect(self.changeType)
-        #self.output.typeChanged.connect(self.changeType)
-
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
         self.pinTypes = []

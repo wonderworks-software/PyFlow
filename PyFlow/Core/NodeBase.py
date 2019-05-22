@@ -399,7 +399,10 @@ class NodeBase(INode):
                 if "currDataType" in inpJson:
                     pin.setType(inpJson["currDataType"]) 
                 pin.changeTypeOnConnection= inpJson['changeType']
-                pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
+                try:
+                    pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
+                except:
+                    pin.setData(pin.defaultValue())
 
                 if inpJson['bDirty']:
                     pin.setDirty()
@@ -416,8 +419,11 @@ class NodeBase(INode):
                 pin.uid = uuid.UUID(outJson['uuid']) 
                 if "currDataType" in outJson:
                     pin.setType(outJson["currDataType"]    )     
-                pin.changeTypeOnConnection= inpJson['changeType']       
-                pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))               
+                pin.changeTypeOnConnection= inpJson['changeType']
+                try:    
+                    pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
+                except:
+                    pin.setData(pin.defaultValue())                    
                 if outJson['bDirty']:
                     pin.setDirty()
                 else:

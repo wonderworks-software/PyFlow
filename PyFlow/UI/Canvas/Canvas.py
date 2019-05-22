@@ -1430,7 +1430,10 @@ class Canvas(QGraphicsView):
             pin = nodeInstance.getPin(inpJson['name'], PinSelectionGroup.Inputs)
             if pin:
                 pin.uid = uuid.UUID(inpJson['uuid'])
-                pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))               
+                try:
+                    pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
+                except:
+                    pin.setData(pin.defaultValue())
                 if inpJson['bDirty']:
                     pin.setDirty()
                 else:
@@ -1440,7 +1443,10 @@ class Canvas(QGraphicsView):
             pin = nodeInstance.getPin(outJson['name'], PinSelectionGroup.Outputs)
             if pin:
                 pin.uid = uuid.UUID(outJson['uuid'])
-                pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))               
+                try:
+                    pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
+                except:
+                    pin.setData(pin.defaultValue())
                 if outJson['bDirty']:
                     pin.setDirty()
                 else:
