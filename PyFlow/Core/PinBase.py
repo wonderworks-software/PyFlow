@@ -124,7 +124,7 @@ class PinBase(IPin):
             self._data = []
             # list pins supports only lists by default
             self.enableOptions(PinOptions.SupportsOnlyArrays)
-            self.changeTypeOnConnection = True
+            #self.changeTypeOnConnection = True
             self._currStructure = PinStructure.Array
         else:
             self._flags = self._origFlags

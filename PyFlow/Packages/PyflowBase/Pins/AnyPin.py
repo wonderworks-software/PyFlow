@@ -207,8 +207,11 @@ class AnyPin(PinBase):
         otherClass = findPinClassByType(dataType)
         self.super = otherClass
         self.activeDataType = dataType
-        self._data = getPinDefaultValueByType(self.activeDataType)
-        self.setDefaultValue(self._data)
+        if not self.isArray():
+            self._data = getPinDefaultValueByType(self.activeDataType)
+        else:
+            self._data = []
+        self.setDefaultValue(self._data)            
 
         self.color = otherClass.color
         self.dirty = True

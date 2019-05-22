@@ -203,9 +203,11 @@ def canConnectPins(src, dst):
         if src.dataType in dst.allowedDataTypes([],dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([],src._supportedDataTypes):
             return True
         else:
-            if src.dataType in dst.allowedDataTypes([],dst._defaultSupportedDataTypes,selfChek=False,defaults=True)+["AnyPin"] and dst.checkFree([],selfChek=False):
+            if all([src.dataType in dst.allowedDataTypes([],dst._defaultSupportedDataTypes,selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections),defaults=True)+["AnyPin"],
+                dst.checkFree([],selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections))]):
                 return True
-            if dst.dataType in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"]  and src.checkFree([]):
+            if all([dst.dataType in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"],
+                src.checkFree([])]):
                 return True
         return False
         """
