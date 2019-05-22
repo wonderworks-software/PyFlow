@@ -63,6 +63,15 @@ class UIConnection(QGraphicsPathItem):
         self.source().pinConnected(self.destination())
         self.destination().pinConnected(self.source())
 
+    def isUnderCollapsedComment(self):
+        srcNode = self.source().owningNode()
+        dstNode = self.destination().owningNode()
+        srcComment = srcNode.owningCommentNode
+        dstComment = dstNode.owningCommentNode
+        if srcComment is not None and dstComment is not None and srcComment == dstComment and srcComment.collapsed:
+            return True
+        return False
+
     def isUnderActiveGraph(self):
         return self.canvasRef().graphManager.activeGraph() == self.source()._rawPin.owningNode().graph()
 
@@ -72,6 +81,47 @@ class UIConnection(QGraphicsPathItem):
     def setColor(self, color):
         self.pen.setColor(color)
         self.color = color
+
+    def updateEndpointsPositions(self):
+        srcNode = self.source().owningNode()
+        dstNode = self.destination().owningNode()
+
+        srcComment = srcNode.owningCommentNode
+        if srcComment is not None:
+            # if comment is collapsed or under another comment, move point to top most collapsed comment's right side
+            srcNodeUnderCollapsedComment = srcComment.isUnderCollapsedComment()
+            topMostCollapsedComment = srcNode.getTopMostOwningCollapsedComment()
+            if srcComment.collapsed:
+                rightSideEndpointGetter = srcComment.getRightSideEdgesPoint
+                if srcNodeUnderCollapsedComment:
+                    rightSideEndpointGetter = topMostCollapsedComment.getRightSideEdgesPoint
+                self.sourcePositionOverride = rightSideEndpointGetter
+            else:
+                if srcNodeUnderCollapsedComment:
+                    self.sourcePositionOverride = topMostCollapsedComment.getRightSideEdgesPoint
+                else:
+                    self.sourcePositionOverride = None
+        else:
+            # if no comment return source point back to pin
+            self.sourcePositionOverride = None
+
+        # Same for right hand side
+        dstComment = dstNode.owningCommentNode
+        if dstComment is not None:
+            dstNodeUnderCollapsedComment = dstComment.isUnderCollapsedComment()
+            topMostCollapsedComment = dstNode.getTopMostOwningCollapsedComment()
+            if dstComment.collapsed:
+                rightSideEndpointGetter = dstComment.getLeftSideEdgesPoint
+                if dstNodeUnderCollapsedComment:
+                    rightSideEndpointGetter = topMostCollapsedComment.getLeftSideEdgesPoint
+                self.destinationPositionOverride = rightSideEndpointGetter
+            else:
+                if dstNodeUnderCollapsedComment:
+                    self.destinationPositionOverride = topMostCollapsedComment.getLeftSideEdgesPoint
+                else:
+                    self.destinationPositionOverride = None
+        else:
+            self.destinationPositionOverride = None
 
     def Tick(self):
         # check if this instance represents existing connection

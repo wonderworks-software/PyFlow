@@ -456,7 +456,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         return super(UINodeBase, self).itemChange(change, value)
 
     def isUnderActiveGraph(self):
-        return self._rawNode.graph() == self.canvasRef().graphManager.activeGraph()
+        return self._rawNode.isUnderActiveGraph()
 
     def autoAffectPins(self):
         self._rawNode.autoAffectPins()
@@ -642,14 +642,35 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             parent = upperComment.owningCommentNode
         return False
 
-    def getTopMostOwningComment(self):
+    def getTopMostOwningCollapsedComment(self):
+        """Returns top most owning comment. If bCollapsed=True, it will stop when first collapsed comment is found.
+        """
         if self.owningCommentNode is None:
             return None
+        # build chain of comments collapse states
         topMostComment = self.owningCommentNode
         parent = topMostComment.owningCommentNode
+
+        chain = OrderedDict()
+        chain[topMostComment] = topMostComment.collapsed
+
         while parent is not None:
             topMostComment = parent
+            chain[topMostComment] = topMostComment.collapsed
             parent = topMostComment.owningCommentNode
+
+        last = None
+        for comment, collapsed in chain.items():
+            if not comment.isVisible():
+                continue
+            if last is not None:
+                if collapsed + last.collapsed == 1:
+                    topMostComment = last
+                    break
+                last = comment
+            else:
+                last = comment
+
         return topMostComment
 
     def updateOwningCommentNode(self):

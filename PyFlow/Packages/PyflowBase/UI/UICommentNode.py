@@ -153,6 +153,12 @@ class UICommentNode(UINodeBase):
         collidingConnections = set()
         for item in collidingItems:
             if isinstance(item, UIConnection):
+
+                if not item.source().owningNode().isUnderActiveGraph():
+                    continue
+                if not item.destination().owningNode().isUnderActiveGraph():
+                    continue
+
                 si, sc, di, dc = self.intersectsOrContainsEndpointNodes(item)
                 if bFully:
                     if all([si, sc, di, dc]):
@@ -165,10 +171,12 @@ class UICommentNode(UINodeBase):
         return collidingConnections
 
     def intersectsOrContainsEndpointNodes(self, connection):
-        intersectsSrcNode = self.sceneBoundingRect().intersects(connection.source().owningNode().sceneBoundingRect())
-        containsSrcNode = self.sceneBoundingRect().contains(connection.source().owningNode().sceneBoundingRect())
-        intersectsDstNode = self.sceneBoundingRect().intersects(connection.destination().owningNode().sceneBoundingRect())
-        containsDstNode = self.sceneBoundingRect().contains(connection.destination().owningNode().sceneBoundingRect())
+        srcOwningNode = connection.source().owningNode()
+        dstOwningNode = connection.destination().owningNode()
+        intersectsSrcNode = self.sceneBoundingRect().intersects(srcOwningNode.sceneBoundingRect())
+        containsSrcNode = self.sceneBoundingRect().contains(srcOwningNode.sceneBoundingRect())
+        intersectsDstNode = self.sceneBoundingRect().intersects(dstOwningNode.sceneBoundingRect())
+        containsDstNode = self.sceneBoundingRect().contains(dstOwningNode.sceneBoundingRect())
         return intersectsSrcNode, containsSrcNode, intersectsDstNode, containsDstNode
 
     def aboutToCollapse(self, futureCollapseState):
@@ -191,7 +199,7 @@ class UICommentNode(UINodeBase):
             # override endpoints getting methods
             for connection in self.partiallyIntersectedConnections:
                 si, sc, di, dc = self.intersectsOrContainsEndpointNodes(connection)
-                scrComment = connection.source().owningNode().owningCommentNode
+                srcComment = connection.source().owningNode().owningCommentNode
                 dstComment = connection.destination().owningNode().owningCommentNode
                 if not all([si, sc]):
                     connection.destinationPositionOverride = self.getLeftSideEdgesPoint
@@ -205,30 +213,13 @@ class UICommentNode(UINodeBase):
                     for pin in node.UIPins.values():
                         for connection in pin.uiConnectionList:
                             connection.show()
+                            if pin.direction == PinDirection.Output:
+                                connection.sourcePositionOverride = None
+                            if pin.direction == PinDirection.Input:
+                                connection.destinationPositionOverride = None
             self.update()
             for connection, overrides in self.partiallyIntersectedConnectionsEndpointOverrides.items():
-                srcVisible, dstVisible = connection.source().isVisible(), connection.destination().isVisible()
-
-                scrComment = connection.source().owningNode().owningCommentNode
-                if not srcVisible and not scrComment.collapsed:
-                    connection.sourcePositionOverride = overrides[0]
-                else:
-                    if scrComment is not None:
-                        if not scrComment.collapsed:
-                            connection.sourcePositionOverride = None
-                    else:
-                        connection.sourcePositionOverride = None
-
-                dstComment = connection.destination().owningNode().owningCommentNode
-                if not dstVisible:
-                    if not dstComment.collapsed:
-                        connection.destinationPositionOverride = overrides[1]
-                else:
-                    if dstComment is not None:
-                        if not dstComment.collapsed:
-                            connection.destinationPositionOverride = None
-                    else:
-                        connection.destinationPositionOverride = None
+                connection.updateEndpointsPositions()
 
             self.partiallyIntersectedConnections.clear()
             self.partiallyIntersectedConnectionsEndpointOverrides.clear()
