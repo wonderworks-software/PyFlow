@@ -205,10 +205,9 @@ def canConnectPins(src, dst):
             if all([src.dataType not in dst.allowedDataTypes([],dst._defaultSupportedDataTypes,defaults=True)+["AnyPin"] or not dst.checkFree([],selfChek=False),
                     dst.dataType not in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"]  or not src.checkFree([],selfChek=False)]):
                 return False
-
         elif all([src.dataType not in dst.allowedDataTypes([],dst._supportedDataTypes) ,
-                (not (src.checkFree([]) and dst.dataType not in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"])),
-                (not (dst.checkFree([]) and src.dataType not in dst.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"]))]):
+                (not (src.checkFree([],selfChek=False) and dst.dataType not in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"])),
+                (not (dst.checkFree([],selfChek=False) and src.dataType not in dst.allowedDataTypes([],dst._defaultSupportedDataTypes,defaults=True)+["AnyPin"]))]):
                 return False
        
     if src.owningNode == dst.owningNode:

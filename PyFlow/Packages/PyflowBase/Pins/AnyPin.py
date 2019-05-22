@@ -215,7 +215,7 @@ class AnyPin(PinBase):
         self.jsonEncoderClass = otherClass.jsonEncoderClass
         self.jsonDecoderClass = otherClass.jsonDecoderClass
         self.supportedDataTypes = otherClass.supportedDataTypes
-        self._supportedDataTypes = findPinClassByType(dataType).supportedDataTypes() 
+        self._supportedDataTypes = otherClass.supportedDataTypes() 
 
         self.typeChanged.send(self.activeDataType)
         self._free = self.activeDataType == self.__class__.__name__
