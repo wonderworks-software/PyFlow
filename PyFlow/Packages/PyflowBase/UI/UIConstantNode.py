@@ -17,7 +17,6 @@ class UIConstantNode(UINodeBase):
         self.headColorOverride = Colors.Gray
         self.color = Colors.DarkGray
         self.headColor = self.headColorOverride = QtGui.QColor(*findPinClassByType("AnyPin").color())
-        self.selector = None
         if self.headColor.lightnessF() > 0.75:
             self.labelTextColor = QtCore.Qt.black
         else:
@@ -65,7 +64,6 @@ class UIConstantNode(UINodeBase):
     def overrideTypeChanged(self,toogle):
         self.input._rawPin.changeTypeOnConnection = bool(toogle)
         self.output._rawPin.changeTypeOnConnection = bool(toogle)
-        self.selector.setEnabled(toogle)
 
     def selectStructure(self,name):
         self.input._rawPin.changeStructure(PinStructure(name),self.input._rawPin._origFlags)
@@ -77,6 +75,7 @@ class UIConstantNode(UINodeBase):
         overrideType = QCheckBox()
         overrideType.setChecked(self.input._rawPin.changeTypeOnConnection)
         overrideType.stateChanged.connect(self.overrideTypeChanged)
+        overrideType.stateChanged.connect(selector.setEnabled)
         for i in self._rawNode.pinTypes:
             selector.addItem(i)         
         if self.input.dataType in self._rawNode.pinTypes:
