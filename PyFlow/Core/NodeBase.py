@@ -306,6 +306,8 @@ class NodeBase(INode):
         p.structureType = structure
         if structure == PinStructure.Array:
             p.initAsArray(True)
+        elif structure == PinStructure.Multi:
+            p.enableOptions(PinOptions.ArraySupported)            
         if foo:
             p.onExecute.connect(foo, weak=False)
         if defaultValue is not None:

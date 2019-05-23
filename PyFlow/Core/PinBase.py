@@ -107,7 +107,7 @@ class PinBase(IPin):
         Every registered pin can hold a list of values instead of single one. List pins can be connected
         only with another list pins by default. This behavior can be changed by disabling `PinOptions.SupportsOnlyArrays` option.
 
-        Value pins can be connected only with value pins if option `PinOptions.ArraySupported` is not enabled.
+        Value pins can be connected only with value pins if option `PinOptions.v` is not enabled.
 
         By default input value pin can have only one connection, this also can be modified by enabling `PinOptions.AllowMultipleConnections` flag.
 
@@ -321,17 +321,29 @@ class PinBase(IPin):
         self.onPinConnected.send(other)  
 
     def changeStructure(self,newStruct,flags,init=False):
-        #if self.structureType == PinStructure.Multi and self._currStructure != newStruct or init:
-        free = self.canChangeStructure(newStruct,[])
-        if free :
-            self._structFree = False
-            self.setAsArray(newStruct==PinStructure.Array)
-            self._currStructure = newStruct
-                
-            self._flags = flags
-            traversed = set()
-            traversed.add(self)   
-            self.updateConstrainedPins(traversed,self.isArray(),self._flags,connecting=True) 
+        if self.structureType == PinStructure.Multi and self._currStructure != newStruct:
+            if newStruct == PinStructure.Array and not (self.optionEnabled(PinOptions.ArraySupported) or init):
+                return
+            else:
+                free = self.canChangeStructure(newStruct,[])
+                print self,free
+                if free :
+                    self._structFree = False
+                    if not init:
+                        self.setAsArray(newStruct==PinStructure.Array)
+                    else:
+                        self.initAsArray(newStruct==PinStructure.Array)
+                    self._currStructure = newStruct
+                    self._flags = flags
+                    if newStruct == PinStructure.Single :
+                        self.disableOptions(PinOptions.ArraySupported)
+                        self.disableOptions(PinOptions.SupportsOnlyArrays)
+                    else :
+                        self.enableOptions(PinOptions.ArraySupported)
+                    
+                    traversed = set()
+                    traversed.add(self)   
+                    self.updateConstrainedPins(traversed,self.isArray(),self._flags,connecting=True) 
 
     def pinConnected(self, other):
         push(self)
