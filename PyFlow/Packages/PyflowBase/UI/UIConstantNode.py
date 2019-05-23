@@ -68,6 +68,7 @@ class UIConstantNode(UINodeBase):
     def selectStructure(self,name):
         self.input._rawPin.changeStructure(PinStructure(name),True)
         self.output._rawPin.changeStructure(PinStructure(name),True)
+        self.canvasRef().tryFillPropertiesView(self)
 
     def createInputWidgets ( self,propertiesWidget):
         inputsCategory = super(UIConstantNode, self).createInputWidgets(propertiesWidget)
