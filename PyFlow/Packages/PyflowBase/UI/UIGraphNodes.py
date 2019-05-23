@@ -5,6 +5,8 @@ from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
 from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI import RESOURCES_DIR
+from PyFlow.UI.Canvas.UICommon import *
 
 
 class UIGraphInputs(UINodeBase):
@@ -12,20 +14,19 @@ class UIGraphInputs(UINodeBase):
 
     def __init__(self, raw_node):
         super(UIGraphInputs, self).__init__(raw_node)
-        actionRename = self._menu.addAction("Rename")
-        actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
+        actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
         actionAddOut.triggered.connect(self.createPinDialog)
-        self.label().hide()
-        self.resizable = True
-        self.portsMainLayout.removeItem(self.inputsLayout)
-        self.minWidth = 25
+        self.color = Colors.DarkGray
+        self.headColorOverride = Colors.Gray
+        self.image = RESOURCES_DIR + "/gear.svg"
 
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
             self.displayName = self.canvasRef().getUniqNodeDisplayName(name)
             self.update()
+        self.setFocus()
 
     def createPinDialog(self):
         self.d = SelectPinDialog()
@@ -33,13 +34,19 @@ class UIGraphInputs(UINodeBase):
         dataType = self.d.getResult()
         if dataType is not None:
             self.onAddOutPin(None, dataType)
+        self.setFocus()
 
     def onAddOutPin(self, name=None, dataType="AnyPin"):
         rawPin = self._rawNode.addOutPin(name, dataType)
         uiPin = self._createUIPinWrapper(rawPin)
-        uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
-        self.updateWidth()
+        uiPin.labelColor = Colors.AbsoluteBlack
         self.pinCreated.emit(uiPin)
+
+        geo = self.geometry()
+        geo.setWidth(50)
+        self.setGeometry(geo)
+
+        self.updateNodeShape()
         return uiPin
 
     def postCreate(self, jsonTemplate):
@@ -47,26 +54,12 @@ class UIGraphInputs(UINodeBase):
         UINodeBase.postCreate(self, jsonTemplate)
 
         for uiPin in self.UIPins.values():
-            uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
+            uiPin.labelColor = Colors.AbsoluteBlack
 
         try:
             self.displayName = jsonTemplate['name']
         except:
             self.displayName = self.canvasRef().getUniqNodeDisplayName("Inputs")
-
-        self.label().setPlainText(self.displayName)
-        if "resize" in jsonTemplate['meta']:
-            self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
-            self._rect.setRight(jsonTemplate['meta']['resize']['w'])
-            self.updateWidth()
-            self.w = self._rect.width()
-        else:
-            self._rect.setWidth(25)
-            self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
-
-    def paint(self, painter, option, widget):
-        NodePainter.asGraphSides(self, painter, option, widget)
 
 
 class UIGraphOutputs(UINodeBase):
@@ -78,10 +71,9 @@ class UIGraphOutputs(UINodeBase):
         actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.triggered.connect(self.createPinDialog)
-        self.label().hide()
-        self.resizable = True
-        self.portsMainLayout.removeItem(self.outputsLayout)
-        self.minWidth = 25
+        self.color = Colors.DarkGray
+        self.headColorOverride = Colors.Gray
+        self.image = RESOURCES_DIR + "/gear.svg"
 
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
@@ -99,32 +91,17 @@ class UIGraphOutputs(UINodeBase):
     def onAddInPin(self, name=None, dataType="AnyPin"):
         rawPin = self._rawNode.addInPin(name, dataType)
         uiPin = self._createUIPinWrapper(rawPin)
-        uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
-        self.updateWidth()
+        uiPin.labelColor = Colors.AbsoluteBlack
         self.pinCreated.emit(uiPin)
+        self.updateNodeShape()
         return uiPin
 
     def postCreate(self, jsonTemplate):
         UINodeBase.postCreate(self, jsonTemplate)
         for uiPin in self.UIPins.values():
-            uiPin.getLabel()().setColor(Colors.AbsoluteBlack)
-        # recreate dynamically created pins
+            uiPin.labelColor = Colors.AbsoluteBlack
 
         try:
             self.displayName = jsonTemplate['meta']['label']
         except:
             self.displayName = self.canvasRef().getUniqNodeDisplayName("Outputs")
-        self.label().setPlainText(self.displayName)
-
-        if "resize" in jsonTemplate['meta']:
-            self._rect.setBottom(jsonTemplate['meta']['resize']['h'])
-            self._rect.setRight(jsonTemplate['meta']['resize']['w'])
-            self.updateWidth()
-            self.w = self._rect.width()
-        else:
-            self._rect.setWidth(25)
-            self.updateWidth()
-        self.nodeMainGWidget.setGeometry(QtCore.QRectF(0, 0, self.w, self.boundingRect().height()))
-
-    def paint(self, painter, option, widget):
-        NodePainter.asGraphSides(self, painter, option, widget)

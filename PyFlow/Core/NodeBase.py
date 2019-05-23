@@ -36,9 +36,21 @@ class NodeBase(INode):
         self.bCallable = False
         self._wrapper = None
         self._constraints = {}
+        self._structConstraints = {}
         self.lib = None
         self.isCompoundNode = False
         self._lastError = None
+        self.__wrapperJsonData = None
+
+    @property
+    def wrapperJsonData(self):
+        try:
+            dt = self.__wrapperJsonData.copy()
+            self.__wrapperJsonData.clear()
+            self.__wrapperJsonData = None
+            return dt
+        except:
+            return None
 
     def isValid(self):
         return self._lastError is None
@@ -56,6 +68,10 @@ class NodeBase(INode):
     @property
     def constraints(self):
         return self._constraints
+
+    @property
+    def structConstraints(self):
+        return self._structConstraints
 
     def getOrderedPins(self):
         return self.pinsCreationOrder.values()
@@ -250,7 +266,7 @@ class NodeBase(INode):
                     continue
                 pinAffects(i, o)
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None,structure=PinStructure.Single, constraint=None,structConstraint=None, allowedPins=[]):
         # if dataType == 'ExecPin':
         #     assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
 
@@ -258,6 +274,12 @@ class NodeBase(INode):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
         p.direction = PinDirection.Input
+        p.structureType = structure
+        if structure == PinStructure.Array:
+            p.initAsArray(True)
+        elif structure == PinStructure.Multi:
+            p.enableOptions(PinOptions.ArraySupported)
+
         if foo:
             # p.call = foo
             p.onExecute.connect(foo, weak=False)
@@ -267,16 +289,21 @@ class NodeBase(INode):
         if dataType == "AnyPin" and allowedPins:
             def supportedDataTypes():
                 return allowedPins
+            p._supportedDataTypes = p._defaultSupportedDataTypes = tuple(allowedPins)
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
+        if structConstraint is not None:
+            p.updatestructConstraint(structConstraint)               
         return p
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, allowedPins=[]):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None,structure=PinStructure.Single, constraint=None,structConstraint=None, allowedPins=[]):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
+        p.structureType = structure
+        if structure == PinStructure.Array:
+            p.initAsArray(True)
         if foo:
-            # p.call = foo
             p.onExecute.connect(foo, weak=False)
         if defaultValue is not None:
             p.setDefaultValue(defaultValue)
@@ -287,6 +314,8 @@ class NodeBase(INode):
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
+        if structConstraint is not None:
+            p.updatestructConstraint(structConstraint)            
         return p
 
     def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):
@@ -367,7 +396,14 @@ class NodeBase(INode):
 
                 pin = self.getPin(str(inpJson['name']), PinSelectionGroup.Inputs)
                 pin.uid = uuid.UUID(inpJson['uuid'])
-                pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
+                if "currDataType" in inpJson:
+                    pin.setType(inpJson["currDataType"]) 
+                pin.changeTypeOnConnection= inpJson['changeType']
+                try:
+                    pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
+                except:
+                    pin.setData(pin.defaultValue())
+
                 if inpJson['bDirty']:
                     pin.setDirty()
                 else:
@@ -380,26 +416,27 @@ class NodeBase(INode):
                     continue
 
                 pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
-                pin.uid = uuid.UUID(outJson['uuid'])
-                pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
+                pin.uid = uuid.UUID(outJson['uuid']) 
+                if "currDataType" in outJson:
+                    pin.setType(outJson["currDataType"]    )     
+                pin.changeTypeOnConnection= inpJson['changeType']
+                try:    
+                    pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
+                except:
+                    pin.setData(pin.defaultValue())                    
                 if outJson['bDirty']:
                     pin.setDirty()
                 else:
                     pin.setClean()
 
+            # store data for wrapper
+            if "wrapper" in jsonTemplate:
+                self.__wrapperJsonData = jsonTemplate["wrapper"]
+
         if self.isCallable():
             self.bCallable = True
 
         self.autoAffectPins()
-
-    def updateConstraints(self):
-        self._constraints = {}
-        for pin in self.inputs.values() + self.outputs.values():
-            if pin.constraint is not None:
-                if pin.constraint in self._constraints:
-                    self._constraints[pin.constraint].append(pin)
-                else:
-                    self._constraints[pin.constraint] = [pin]
 
     @staticmethod
     # Constructs a node from given annotated function
@@ -487,7 +524,7 @@ class NodeBase(INode):
             p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
-            p.setAsList(isinstance(returnDefaultValue, list))
+            p.initAsArray(isinstance(returnDefaultValue, list))
             if returnPinOptionsToEnable is not None:
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
@@ -504,7 +541,7 @@ class NodeBase(INode):
             pinOptionsToEnable = None
             pinOptionsToDisable = None
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
-            if "Reference" in pinDescriptionTuple:
+            if str("Reference") == pinDescriptionTuple[0]:
                 pinDataType = pinDescriptionTuple[1][0]
                 pinDefaultValue = pinDescriptionTuple[1][1]
                 pinDict = None
@@ -522,7 +559,7 @@ class NodeBase(INode):
                         pinOptionsToDisable = pinDict["disabledOptions"]
 
                 outRef = raw_inst.createOutputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
-                outRef.setAsList(isinstance(pinDefaultValue, list))
+                outRef.initAsArray(isinstance(pinDefaultValue, list))
                 outRef.setDefaultValue(pinDefaultValue)
                 outRef.setData(pinDefaultValue)
                 if pinOptionsToEnable is not None:
@@ -550,7 +587,7 @@ class NodeBase(INode):
                         pinOptionsToDisable = pinDict["disabledOptions"]
 
                 inp = raw_inst.createInputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
-                inp.setAsList(isinstance(pinDefaultValue, list))
+                inp.initAsArray(isinstance(pinDefaultValue, list))
                 inp.setData(pinDefaultValue)
                 inp.setDefaultValue(pinDefaultValue)
                 if pinOptionsToEnable is not None:

@@ -7,14 +7,14 @@ from PyFlow.Core import(
 from PyFlow.Core.Common import *
 
 
-class ListLib(FunctionLibraryBase):
-    '''doc string for ListLib'''
+class ArrayLib(FunctionLibraryBase):
+    '''doc string for ArrayLib'''
     def __init__(self, packageName):
-        super(ListLib, self).__init__(packageName)
+        super(ArrayLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
-    def appendToList(ls=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
+    def appendToArray(ls=('AnyPin', [], {'constraint': '1'}),
                      elem=('AnyPin', None, {'constraint': '1'}),
                      duplicate=('BoolPin', True),
                      deepCopy=('BoolPin', False)):
@@ -27,8 +27,8 @@ class ListLib(FunctionLibraryBase):
         return outArr
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
-    def extendList(lhs=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
+    def extendArray(lhs=('AnyPin', [], {'constraint': '1'}),
                    rhs=('AnyPin', [], {'constraint': '1'}),
                    duplicate=('BoolPin', True),
                    deepCopy=('BoolPin', False)):
@@ -41,8 +41,8 @@ class ListLib(FunctionLibraryBase):
         return outArr
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
-    def insertToList(ls=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
+    def insertToArray(ls=('AnyPin', [], {'constraint': '1'}),
                      elem=('AnyPin', None, {'constraint': '1'}),
                      index=('IntPin', 0),
                      duplicate=('BoolPin', True),
@@ -56,8 +56,8 @@ class ListLib(FunctionLibraryBase):
         return outArr
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("AnyPin", [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
-    def removeFromList(ls=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=("AnyPin", [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
+    def removeFromArray(ls=('AnyPin', [], {'constraint': '1'}),
                        elem=('AnyPin', None, {'constraint': '1'}),
                        duplicate=('BoolPin', True),
                        deepCopy=('BoolPin', False),
@@ -74,8 +74,8 @@ class ListLib(FunctionLibraryBase):
         return outArr
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("AnyPin", None, {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
-    def popFromList(ls=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=("AnyPin", None, {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
+    def popFromArray(ls=('AnyPin', [], {'constraint': '1'}),
                     index=('IntPin', -1),
                     duplicate=('BoolPin', True),
                     deepCopy=('BoolPin', False),
@@ -97,8 +97,8 @@ class ListLib(FunctionLibraryBase):
         return poppedElem if poppedElem is not None else 0
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, {'constraint': '1'}), meta={'Category': 'List', 'Keywords': []})
-    def selectInList(arr=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {'constraint': '1'}), meta={'Category': 'Array', 'Keywords': []})
+    def selectInArray(arr=('AnyPin', [], {'constraint': '1'}),
                      Index=("IntPin", 0),
                      Result=("Reference", ("BoolPin", False))):
         try:
@@ -109,14 +109,14 @@ class ListLib(FunctionLibraryBase):
             Result(False)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'List', 'Keywords': ['in']})
-    def listContains(ls=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Array', 'Keywords': ['in']})
+    def arrayContains(ls=('AnyPin', [], {'constraint': '1'}),
                      element=("AnyPin", None, {'constraint': '1'})):
         return element in ls
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'List', 'Keywords': []})
-    def clearList(ls=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
+    def clearArray(ls=('AnyPin', [], {'constraint': '1'}),
                   duplicate=('BoolPin', True),
                   deepCopy=('BoolPin', False)):
         outArr = ls
@@ -127,8 +127,8 @@ class ListLib(FunctionLibraryBase):
         return outArr
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'List', 'Keywords': ['in']})
-    def listElementIndex(ls=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Array', 'Keywords': ['in']})
+    def arrayElementIndex(ls=('AnyPin', [], {'constraint': '1'}),
                          element=("AnyPin", None, {'constraint': '1'}),
                          result=("Reference", ("BoolPin", False))):
         if element in ls:
@@ -139,8 +139,8 @@ class ListLib(FunctionLibraryBase):
             return 0
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'List', 'Keywords': ['in']})
-    def listElementCount(ls=('AnyPin', [], {'constraint': '1'}),
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Array', 'Keywords': ['in']})
+    def arrayElementCount(ls=('AnyPin', [], {'constraint': '1'}),
                          element=("AnyPin", None, {'constraint': '1'}),
                          result=("Reference", ("BoolPin", False))):
         if element in ls:

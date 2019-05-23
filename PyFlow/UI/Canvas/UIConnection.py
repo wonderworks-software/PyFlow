@@ -42,8 +42,7 @@ class UIConnection(QGraphicsPathItem):
         if source.isExec():
             self.thickness = 2
 
-        self.pen = QtGui.QPen(self.color, self.thickness,
-                              QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        self.pen = QtGui.QPen(self.color, self.thickness, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
         points = self.getEndPoints()
         self.updateCurve(points[0], points[1])
@@ -71,17 +70,11 @@ class UIConnection(QGraphicsPathItem):
         if not arePinsConnected(self.source()._rawPin, self.destination()._rawPin):
             self.canvasRef().removeConnection(self)
 
-        if self.fade > 0:
-            self.pen.setWidthF(self.thickness + self.fade * 2)
-            r = abs(lerp(self.color.red(), Colors.Yellow.red(),
-                         clamp(self.fade, 0, 1)))
-            g = abs(lerp(self.color.green(),
-                         Colors.Yellow.green(), clamp(self.fade, 0, 1)))
-            b = abs(lerp(self.color.blue(), Colors.Yellow.blue(),
-                         clamp(self.fade, 0, 1)))
-            self.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
-            self.fade -= 0.1
-            self.update()
+        if self.drawSource._rawPin.isExec() or self.drawDestination._rawPin.isExec():
+            if self.thickness != 2:
+                self.thickness = 2
+                self.pen.setWidthF(self.thickness)
+                self.update()
 
     def contextMenuEvent(self, event):
         self._menu.exec_(event.screenPos())
@@ -122,10 +115,7 @@ class UIConnection(QGraphicsPathItem):
         return script
 
     def __str__(self):
-        return '{0}.{1} >>> {2}.{3}'.format(self.source().owningNode().name,
-                                            self.source()._rawPin.name,
-                                            self.destination().owningNode().name,
-                                            self.destination()._rawPin.name)
+        return '{0} >>> {1}'.format(self.source()._rawPin.getName(), self.destination()._rawPin.getName())
 
     def drawThick(self):
         self.pen.setWidthF(self.thickness + (self.thickness / 1.5))
@@ -145,8 +135,8 @@ class UIConnection(QGraphicsPathItem):
         self.update()
 
     def getEndPoints(self):
-        p1 = self.drawSource.boundingRect().center() + self.drawSource.scenePos()
-        p2 = self.drawDestination.boundingRect().center() + self.drawDestination.scenePos()
+        p1 = self.drawSource.scenePos() + self.drawSource.pinCenter()
+        p2 = self.drawDestination.scenePos() + self.drawDestination.pinCenter()
         return p1, p2
 
     def mousePressEvent(self, event):
@@ -179,9 +169,6 @@ class UIConnection(QGraphicsPathItem):
         xDistance = p2.x() - p1.x()
         multiply = 3
         self.mPath = QtGui.QPainterPath()
-
-        direction = QtGui.QVector2D(p1) - QtGui.QVector2D(p2)
-        direction.normalize()
 
         self.mPath.moveTo(p1)
         if xDistance < 0:

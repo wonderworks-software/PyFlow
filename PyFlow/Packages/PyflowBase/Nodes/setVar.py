@@ -9,8 +9,8 @@ from PyFlow import CreateRawPin
 class setVar(NodeBase):
     def __init__(self, name, var=None):
         super(setVar, self).__init__(name)
-        self.inExec = self.createInputPin('exec', 'ExecPin', None, self.compute)
-        self.outExec = self.createOutputPin('exec', 'ExecPin')
+        self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
+        self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
         self.var = var
         self.inp = CreateRawPin("inp", self, self.var.dataType, PinDirection.Input)
         self.out = CreateRawPin("out", self, self.var.dataType, PinDirection.Output)

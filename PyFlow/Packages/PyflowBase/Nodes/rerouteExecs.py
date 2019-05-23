@@ -3,13 +3,17 @@ from PyFlow.Core.Common import *
 from copy import copy
 
 
-class reroute(NodeBase):
+class rerouteExecs(NodeBase):
     def __init__(self, name):
-        super(reroute, self).__init__(name)
-        self.input = self.createInputPin("in", 'AnyPin', structure=PinStructure.Multi, constraint="1",structConstraint="1")
-        self.output = self.createOutputPin("out", 'AnyPin', structure=PinStructure.Multi, constraint="1",structConstraint="1")
+        super(rerouteExecs, self).__init__(name)
+        self.input = self.createInputPin("in", 'ExecPin')
+        self.output = self.createOutputPin("out", 'ExecPin')
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
+
+    def postCreate(self, jsonTemplate=None):
+        super(rerouteExecs, self).postCreate(jsonTemplate=jsonTemplate)
+        self.setName("reroute")
 
     @staticmethod
     def pinTypeHints():
@@ -20,4 +24,4 @@ class reroute(NodeBase):
         return 'Common'
 
     def compute(self, *args, **kwargs):
-        self.output.setData(self.input.getData())
+        pass

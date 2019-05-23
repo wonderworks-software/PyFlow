@@ -3,11 +3,29 @@ from Qt import QtGui, QtCore
 
 from PyFlow.UI.Canvas.Painters import PinPainter
 from PyFlow import findPinClassByType, getAllPinClasses
+from PyFlow.Core.Common import PinDirection
 
 from PyFlow.UI import RESOURCES_DIR
 
 
 _PIN_SIZE = 15
+
+
+class _FakeCanvas(object):
+    def __init__(self):
+        super(_FakeCanvas, self).__init__()
+
+    def getLodValueFromCurrentScale(self, lod):
+        return 1
+
+
+class _FakeNode(object):
+    def __init__(self):
+        super(_FakeNode, self).__init__()
+        self.fakeCanvas = _FakeCanvas()
+
+    def canvasRef(self):
+        return self.fakeCanvas
 
 
 class _FakePin(object):
@@ -27,13 +45,34 @@ class _PinWidget(QtWidgets.QWidget):
     def __init__(self, dataType, parent=None):
         super(_PinWidget, self).__init__(parent)
         self.dataType = dataType
+        self.fakeOwningNode = _FakeNode()
         self._rawPin = _FakePin()
-        self._color = QtGui.QColor(*findPinClassByType(self.dataType).color())
+        self._pinColor = QtGui.QColor(*findPinClassByType(self.dataType).color())
+        self.labelColor = QtCore.Qt.white
         self.hovered = False
-        self.setMinimumHeight(_PIN_SIZE + 10)
-        self.setMinimumWidth(_PIN_SIZE + 10)
-        self.setMouseTracking(True)
+        self.pinSize = _PIN_SIZE
+        self._font = QtGui.QFont("Consolas")
+        self._font.setPointSize(14)
+        self.direction = PinDirection.Input
+        self.name = self.dataType
+        self.bLabelHidden = False
+
+        self.setMouseTracking(True) 
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+
+    def sizeHint(self):
+        textWidth = QtGui.QFontMetrics(self._font).width(self.dataType) + _PIN_SIZE
+        textHeight = max(QtGui.QFontMetrics(self._font).height(), _PIN_SIZE + 6)
+        return QtCore.QSize(textWidth, textHeight)
+
+    def pinCenter(self):
+        return QtCore.QPointF(_PIN_SIZE, _PIN_SIZE / 2)
+
+    def displayName(self):
+        return self.dataType
+
+    def owningNode(self):
+        return self.fakeOwningNode
 
     def enterEvent(self, event):
         super(_PinWidget, self).enterEvent(event)
@@ -46,7 +85,7 @@ class _PinWidget(QtWidgets.QWidget):
         self.update()
 
     def color(self):
-        return self._color
+        return self._pinColor
 
     @property
     def width(self):
@@ -68,46 +107,43 @@ class _PinWidget(QtWidgets.QWidget):
         painter.end()
 
 
-class _PinWidgetEntry(QtWidgets.QWidget):
-    def __init__(self, dataType, parent=None):
-        super(_PinWidgetEntry, self).__init__(parent)
-        self.dataType = dataType
-        self.mainLayout = QtWidgets.QHBoxLayout(self)
-        self.mainLayout.setContentsMargins(1, 1, 1, 1)
-        self.mainLayout.addWidget(_PinWidget(dataType))
-        self.mainLayout.addWidget(QtWidgets.QLabel(dataType))
-
-
 class _PinsListWidget(QtWidgets.QListWidget):
     """docstring for _PinsListWidget."""
-    def __init__(self, parent=None):
+    returnPressed = QtCore.Signal()
+
+    def __init__(self, parent=None,validPins=None):
         super(_PinsListWidget, self).__init__()
-        self.populate(pattern="")
+        self.populate(pattern="",validPins=validPins)
 
     def filterContent(self, pattern):
         self.clear()
         self.populate(pattern)
 
     def createEntry(self, dataType):
-        widget = _PinWidgetEntry(dataType)
+        widget = _PinWidget(dataType)
         item = QtWidgets.QListWidgetItem(self)
-        item.setSizeHint(QtCore.QSize(_PIN_SIZE, _PIN_SIZE + 20))
         self.setItemWidget(item, widget)
 
-    def populate(self, pattern=""):
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Return:
+            self.returnPressed.emit()
+        super(_PinsListWidget, self).keyPressEvent(event)
+
+    def populate(self, pattern="",validPins=[pin.__name__ for pin in getAllPinClasses()]):
         for pinClass in getAllPinClasses():
             className = pinClass.__name__
-            if len(pattern) > 0:
-                if pattern.lower() in className.lower():
+            if className in validPins:
+                if len(pattern) > 0:
+                    if pattern.lower() in className.lower():
+                        self.createEntry(className)
+                else:
                     self.createEntry(className)
-            else:
-                self.createEntry(className)
         self.setCurrentRow(0)
 
 
 class SelectPinDialog(QtWidgets.QDialog):
     """docstring for SelectPinDialog."""
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,validPins=None):
         super(SelectPinDialog, self).__init__(None)
         self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.setWindowTitle("Select pin")
@@ -121,15 +157,22 @@ class SelectPinDialog(QtWidgets.QDialog):
         self.searchBox.textChanged.connect(self.filterContent)
         self.mainLayout.addWidget(self.searchBox)
 
-        self.content = _PinsListWidget()
+        self.content = _PinsListWidget(validPins=validPins)
         self.mainLayout.addWidget(self.content)
+        self.content.itemClicked.connect(self.onItemClicked)
+        self.content.returnPressed.connect(self.onReturnPressed)
 
-        self.dialogButtonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
-        self.dialogButtonBox.accepted.connect(self.onAccept)
-        self.dialogButtonBox.rejected.connect(self.onReject)
-        self.mainLayout.addWidget(self.dialogButtonBox)
-        self.setModal(True)
         self._result = None
+
+    def onReturnPressed(self):
+        widget = self.content.itemWidget(self.content.currentItem())
+        self._result = widget.dataType
+        self.close()
+
+    def onItemClicked(self, item):
+        widget = self.content.itemWidget(item)
+        self._result = widget.dataType
+        self.close()
 
     def showEvent(self, event):
         super(SelectPinDialog, self).showEvent(event)
@@ -141,10 +184,4 @@ class SelectPinDialog(QtWidgets.QDialog):
     def getResult(self):
         return self._result
 
-    def onReject(self):
-        self.close()
 
-    def onAccept(self):
-        widget = self.content.itemWidget(self.content.currentItem())
-        self._result = widget.dataType
-        self.close()

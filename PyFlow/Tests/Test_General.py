@@ -335,7 +335,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(setterAdded, True)
 
         # set new value to setter node input pin
-        inExecPin = varSetterInstance.getPin(str('exec'), PinSelectionGroup.Inputs)
+        inExecPin = varSetterInstance.getPin(DEFAULT_IN_EXEC_NAME, PinSelectionGroup.Inputs)
         inPin = varSetterInstance.getPin(str('inp'), PinSelectionGroup.Inputs)
         outPin = varSetterInstance.getPin(str('out'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(inExecPin)
@@ -368,7 +368,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(setterAdded, True)
 
         # set new value to setter node input pin
-        inExecPin = varSetterInstance.getPin(str('exec'), PinSelectionGroup.Inputs)
+        inExecPin = varSetterInstance.getPin(DEFAULT_IN_EXEC_NAME, PinSelectionGroup.Inputs)
         inPin = varSetterInstance.getPin(str('inp'), PinSelectionGroup.Inputs)
         outPin = varSetterInstance.getPin(str('out'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(inExecPin)
@@ -553,15 +553,6 @@ class TestGeneral(unittest.TestCase):
         printNode1 = packages["PyflowBase"].GetNodeClasses()['consoleOutput']("print")
         man.activeGraph().addNode(printNode1)
         printNode1.setData("entity", "hello from compound")
-
-        # connect print node execs to graph input/output
-        # this should change pin types to execs on graph nodes as well as on owning compound node
-        connection = connectPins(outPin, printNode1.getPin(DEFAULT_IN_EXEC_NAME))
-        self.assertEqual(connection, True)
-        self.assertEqual(subgraphInAnyExec.activeDataType, "ExecPin", "failed to change data type to exec")
-        # Print in exec connected to compound input node. Calling from outside exec
-        # output is not connected
-        subgraphInAnyExec.call(message="TEMP")
 
     def test_graph_serialization(self):
         man = GraphManager()

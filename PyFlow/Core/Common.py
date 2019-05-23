@@ -120,9 +120,9 @@ def arePinsConnected(src, dst):
         src PinBase -- left hand side pin
         dst PinBase -- right hand side pin
     """
-    if src.owningNode() == dst.owningNode():
-        return False
     if src.direction == dst.direction:
+        return False
+    if src.owningNode() == dst.owningNode():
         return False
     if src.direction == PinDirection.Input:
         src, dst = dst, src
@@ -153,37 +153,79 @@ def canConnectPins(src, dst):
     if src is None or dst is None:
         return False
 
-    if src.direction == PinDirection.Input:
-        src, dst = dst, src
-
     if src.direction == dst.direction:
         return False
 
-    if not src.isList() and dst.isList():
-        if dst.optionEnabled(PinOptions.SupportsOnlyList):
+    if arePinsConnected(src, dst):
+        return False
+
+    if src.direction == PinDirection.Input:
+        src, dst = dst, src
+
+    if cycle_check(src, dst):
+        return False
+
+    if src.isExec() and dst.isExec():
+        return True
+
+    if not src.isArray() and dst.isArray():
+        if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src._currStructure == PinStructure.Multi and src.canChangeStructure(dst._currStructure)):
             return False
 
-    if src.isList() and not dst.isList():
-        if not dst.optionEnabled(PinOptions.ListSupported):
+    if src.isArray() and not dst.isArray():
+        if not dst.optionEnabled(PinOptions.ArraySupported) and not (dst._currStructure == PinStructure.Multi and dst.canChangeStructure(src._currStructure)):
             return False
 
     if dst.hasConnections():
         if not dst.optionEnabled(PinOptions.AllowMultipleConnections) and dst.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection:
             return False
 
+    if src.hasConnections():
+        if not src.optionEnabled(PinOptions.AllowMultipleConnections) and src.reconnectionPolicy == PinReconnectionPolicy.ForbidConnection:
+            return False
+
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
         return False
 
-    if cycle_check(src, dst):
-        return False
-
-    if dst.isAny():
+    if src.isAny() and dst.isExec():
         if src.dataType not in dst.supportedDataTypes():
             return False
 
     if src.isExec() and not dst.isExec():
         return False
 
+    if not src.isExec() and dst.isExec():
+        return False
+
+            
+    if src.IsValuePin() and dst.IsValuePin():
+        
+        if src.dataType in dst.allowedDataTypes([],dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([],src._supportedDataTypes):
+            return True
+        else:
+            if all([src.dataType in dst.allowedDataTypes([],dst._defaultSupportedDataTypes,selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections),defaults=True)+["AnyPin"],
+                dst.checkFree([],selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections))]):
+                return True
+            if all([dst.dataType in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"],
+                src.checkFree([])]):
+                return True
+        return False
+        """
+
+        if src.dataType not in dst.allowedDataTypes([],dst._supportedDataTypes) and dst.dataType not in src.allowedDataTypes([],src._supportedDataTypes):
+            if not dst.changeTypeOnConnection and not src.changeTypeOnConnection:
+                return False
+            if all([src.dataType not in dst.allowedDataTypes([],dst._defaultSupportedDataTypes,defaults=True)+["AnyPin"] or not dst.checkFree([],selfChek=False),
+                    dst.dataType not in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"]  or not src.checkFree([])]):
+                print "1"
+                return False
+        elif all([src.dataType not in dst.allowedDataTypes([],dst._supportedDataTypes) ,
+                (not (src.checkFree([]) and dst.dataType not in src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True)+["AnyPin"])),
+                (not (dst.checkFree([],selfChek=False) and src.dataType not in dst.allowedDataTypes([],dst._defaultSupportedDataTypes,defaults=True)+["AnyPin"]))]):
+                print "2"
+                return False
+        """
+       
     if src.owningNode == dst.owningNode:
         return False
 
@@ -220,6 +262,8 @@ def connectPins(src, dst):
     if src.isExec() and dst.isExec():
         src.onExecute.connect(dst.call)
 
+    src.aboutToConnect(dst)
+    dst.aboutToConnect(src)
     pinAffects(src, dst)
     src.setDirty()
 
@@ -238,15 +282,17 @@ def traverseNeighborPins(startFrom, callback):
     traversed = set()
 
     def worker(pin):
-        traversed.add(pin)
-        callback(pin)
-        nodePins = pin.owningNode().pins.copy()
-        for connectedPin in getConnectedPins(pin):
-            nodePins.add(connectedPin)
-        for neighbor in nodePins:
-            if neighbor not in traversed:
-                worker(neighbor)
-
+        if pin not in traversed:
+            traversed.add(pin)
+            callback(pin)
+            nodePins = pin.owningNode().pins.copy()
+            for connectedPin in getConnectedPins(pin):
+                if connectedPin in traversed:
+                    continue
+                nodePins.add(connectedPin)
+            for neighbor in list(nodePins):
+                if neighbor not in traversed:
+                    worker(neighbor)
     worker(startFrom)
 
 
@@ -273,6 +319,24 @@ def traverseConstrainedPins(startFrom, callback):
 
     worker(startFrom)
 
+def traverseStructConstrainedPins(startFrom, callback):
+    """Iterates over all constrained chained pins passes pin into callback function. Callback will be executed once for every pin
+    """  
+    traversed = set()
+
+    def worker(pin):
+        traversed.add(pin)
+        callback(pin)
+        nodePins = set()
+        if pin.structConstraint is not None:
+            nodePins = set(pin.owningNode().structConstraints[pin.structConstraint])
+        for connectedPin in getConnectedPins(pin):
+            nodePins.add(connectedPin)
+        for neighbor in nodePins:
+            if neighbor not in traversed:
+                worker(neighbor)
+
+    worker(startFrom)
 
 def disconnectPins(src, dst):
     """Disconnects two pins
@@ -359,14 +423,19 @@ class PinReconnectionPolicy(IntEnum):
 
 
 class PinOptions(Flag):
-    ListSupported = auto()
-    SupportsOnlyList = auto()
+    ArraySupported = auto()
+    SupportsOnlyArrays = auto()
     AllowMultipleConnections = auto()
     RenamingEnabled = auto()
     Dynamic = auto()
     AlwaysPushDirty = auto()
     Storable = auto()
 
+##Used for determine Pin Structure Type
+class PinStructure(IntEnum):
+    Single = 0
+    Array = 1
+    Multi = 2
 
 ## Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes
 class PinSelectionGroup(IntEnum):

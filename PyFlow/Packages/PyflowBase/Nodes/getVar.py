@@ -14,6 +14,7 @@ class getVar(NodeBase):
         assert(isinstance(var, Variable))
         self.var = var
         self.out = CreateRawPin('value', self, var.dataType, PinDirection.Output)
+        self.out.enableOptions(PinOptions.RenamingEnabled)
         self.var.valueChanged.connect(self.onVarValueChanged)
         self.var.killed.connect(self.kill)
 
@@ -25,6 +26,7 @@ class getVar(NodeBase):
         del self.out
         self.out = None
         self.out = CreateRawPin('value', self, dataType, PinDirection.Output)
+        self.out.enableOptions(PinOptions.RenamingEnabled)
         return self.out
 
     def onVarValueChanged(self, *args, **kwargs):
