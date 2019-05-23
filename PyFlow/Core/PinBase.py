@@ -121,14 +121,13 @@ class PinBase(IPin):
 
         self._isArray = bIsList
         if bIsList:
-            self._data = []
             # list pins supports only lists by default
             self.enableOptions(PinOptions.SupportsOnlyArrays)
             #self.changeTypeOnConnection = True
             self._currStructure = PinStructure.Array
         else:
             self._currStructure = self._structure
-
+        self._data = self.defaultValue()
         self.containerTypeChanged.send()
 
     def isArray(self):
