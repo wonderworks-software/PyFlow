@@ -8,6 +8,35 @@ class VisibilityPolicy(IntEnum):
     Auto = 3
 
 
+class CanvasState(IntEnum):
+    DEFAULT = 0
+    COMMENT_OWNERSHIP_VALIDATION = 1
+
+
+class CanvasManipulationMode(IntEnum):
+    NONE = 0
+    SELECT = 1
+    PAN = 2
+    MOVE = 3
+    ZOOM = 4
+    COPY = 5
+
+
+def lineRectIntersection(l, r):
+    it_left, impactLeft = l.intersect(QtCore.QLineF(r.topLeft(), r.bottomLeft()))
+    if it_left == QtCore.QLineF.BoundedIntersection:
+        return impactLeft
+    it_top, impactTop = l.intersect(QtCore.QLineF(r.topLeft(), r.topRight()))
+    if it_top == QtCore.QLineF.BoundedIntersection:
+        return impactTop
+    it_bottom, impactBottom = l.intersect(QtCore.QLineF(r.bottomLeft(), r.bottomRight()))
+    if it_bottom == QtCore.QLineF.BoundedIntersection:
+        return impactBottom
+    it_right, impactRight = l.intersect(QtCore.QLineF(r.topRight(), r.bottomRight()))
+    if it_right == QtCore.QLineF.BoundedIntersection:
+        return impactRight
+
+
 ## This function clears property view's layout.
 # @param[in] layout QLayout class
 def clearLayout(layout):

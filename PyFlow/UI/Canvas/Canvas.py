@@ -31,6 +31,7 @@ from Qt.QtWidgets import QGraphicsProxyWidget
 from Qt.QtWidgets import QPushButton
 
 from PyFlow.UI.Utils.Settings import Colors
+from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Canvas.SelectionRect import SelectionRect
 from PyFlow.UI.Canvas.UIConnection import UIConnection
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
@@ -315,15 +316,6 @@ class SceneClass(QGraphicsScene):
             super(SceneClass, self).dropEvent(event)
 
 
-class CanvasManipulationMode(IntEnum):
-    NONE = 0
-    SELECT = 1
-    PAN = 2
-    MOVE = 3
-    ZOOM = 4
-    COPY = 5
-
-
 class Canvas(QGraphicsView):
     _manipulationMode = CanvasManipulationMode.NONE
 
@@ -342,6 +334,7 @@ class Canvas(QGraphicsView):
 
     def __init__(self, graphManager, parent=None):
         super(Canvas, self).__init__()
+        self.state = CanvasState.DEFAULT
         self.graphManager = graphManager
         self.graphManager.graphChanged.connect(self.onGraphChanged)
         self.undoStack = QUndoStack(self)
@@ -415,11 +408,23 @@ class Canvas(QGraphicsView):
 
     def onGraphChanged(self, newGraph):
         for node in self.nodes.values():
-            node.setVisible(node._rawNode.graph() == newGraph)
-        for commentNode in self.getAllNodes():
-            if commentNode.isCommentNode:
-                if commentNode.collapsed:
-                    commentNode.hideOwningNodes()
+            bVisible = node._rawNode.graph() == newGraph
+            node.setVisible(bVisible)
+            for pin in node.UIPins.values():
+                for connection in pin.uiConnectionList:
+                    if bVisible:
+                        if not connection.isUnderCollapsedComment():
+                            connection.setVisible(bVisible)
+                    else:
+                        connection.setVisible(bVisible)
+
+        self.validateCommentNodesOwnership(newGraph)
+        for commentNode in newGraph.getNodes():
+            uiCommentNode = commentNode.getWrapper()
+            if uiCommentNode.isCommentNode:
+                if uiCommentNode.collapsed:
+                    uiCommentNode.hideOwningNodes()
+        self.validateConnections(newGraph)
 
     @property
     def manipulationMode(self):
@@ -516,8 +521,7 @@ class Canvas(QGraphicsView):
     def OnDoubleClick(self, pos):
         if self.pressed_item and isinstance(self.pressed_item, NodeName):
             if self.pressed_item.IsRenamable():
-                name, result = QInputDialog.getText(
-                    self, "New name dialog", "Enter new name:")
+                name, result = QInputDialog.getText(self, "New name dialog", "Enter new name:")
                 if result:
                     self.pressed_item.parentItem().setName(name)
                     self.updatePropertyView(self.pressed_item.parentItem())
@@ -755,6 +759,8 @@ class Canvas(QGraphicsView):
             newName = getUniqNameFromList(existingNames, node['name'])
             existingNames.append(newName)
             renameData[node['name']] = newName
+            # rename old name in header data
+            node["wrapper"]["headerHtml"] = node["wrapper"]["headerHtml"].replace(node['name'], newName)
             node['name'] = newName
             node['uuid'] = str(uuid.uuid4())
             for inp in node['inputs']:
@@ -784,6 +790,11 @@ class Canvas(QGraphicsView):
     def copyNodes(self):
         nodes = []
         selectedNodes = [i for i in self.nodes.values() if i.isSelected()]
+
+        for node in selectedNodes:
+            if node.isCommentNode and node.collapsed:
+                selectedNodes.extend(node.owningNodes)
+
         if len(selectedNodes) == 0:
             return
 
@@ -816,6 +827,7 @@ class Canvas(QGraphicsView):
         newNodes = {}
 
         nodesData = deepcopy(nodes)
+        createdNodes = {}
         for node in nodesData:
             oldName = node["name"]
 
@@ -823,6 +835,7 @@ class Canvas(QGraphicsView):
                 node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'])
 
             n = self.createNode(node)
+            createdNodes[n] = node
 
             if n is None:
                 continue
@@ -845,6 +858,22 @@ class Canvas(QGraphicsView):
                 except:
                     print(outPinJson['fullName'], "not found")
                     continue
+
+        # Hacks here!!
+        # All nodes are copied. Nodes now do not know about under which comments they are
+        # Expand all coped comments first
+        for newNode, data in createdNodes.items():
+            if newNode.isCommentNode:
+                newNode.collapsed = False
+
+        # Non comment nodes now can update owning comments
+        for newNode, data in createdNodes.items():
+            newNode.updateOwningCommentNode()
+
+        # Restore comments collapsed state
+        for newNode, data in createdNodes.items():
+            if newNode.isCommentNode:
+                newNode.collapsed = data["wrapper"]["collapsed"]
 
     @dispatch(str)
     def findNode(self, name):
@@ -962,7 +991,71 @@ class Canvas(QGraphicsView):
         node.translate(-20, 0)
         return node
 
+    def validateConnections(self, graph):
+        """Hides show if needed. Changes endpoints positions if needed
+        """
+        checked = set()
+        for node in graph.getNodes():
+            uiNode = node.getWrapper()
+            for pin in uiNode.UIPins.values():
+                for connection in pin.uiConnectionList:
+                    if connection in checked:
+                        continue
+
+                    # override src endpoint to comment left side if connected
+                    # node is hidden and under collapsed comment
+                    srcNode = connection.source().owningNode()
+                    if srcNode.isUnderActiveGraph():
+                        comment = srcNode.owningCommentNode
+                        if comment is not None and comment.collapsed and not srcNode.isVisible():
+                            connection.sourcePositionOverride = comment.getRightSideEdgesPoint
+
+                    # override dst endpoint to comment right side if connected
+                    # node is hidden and under collapsed comment
+                    dstNode = connection.destination().owningNode()
+                    if dstNode.isUnderActiveGraph():
+                        comment = dstNode.owningCommentNode
+                        if comment is not None and comment.collapsed and not dstNode.isVisible():
+                            connection.destinationPositionOverride = comment.getLeftSideEdgesPoint
+
+                    if connection.isUnderCollapsedComment():
+                        connection.hide()
+                    if not connection.source().owningNode().isUnderActiveGraph() or not connection.destination().owningNode().isUnderActiveGraph():
+                        connection.hide()
+
+                    checked.add(connection)
+
+    def validateCommentNodesOwnership(self, graph):
+        state = self.state
+        self.state = CanvasState.COMMENT_OWNERSHIP_VALIDATION
+        comments = {}
+        defaultNodes = set()
+        # expand all comment nodes and reset owning nodes info
+        for node in graph.getNodes():
+            uiNode = node.getWrapper()
+            if uiNode.isUnderActiveGraph():
+                if uiNode.isCommentNode:
+                    comments[uiNode] = uiNode.collapsed
+                    uiNode.collapsed = False
+                    uiNode.owningNodes.clear()
+                else:
+                    defaultNodes.add(uiNode)
+
+        # apply comment to comment membership
+        for commentNode in comments:
+            commentNode.updateOwningCommentNode()
+
+        # apply node to comment membership
+        for node in defaultNodes:
+            node.updateOwningCommentNode()
+
+        # restore comments collapse state
+        for comment, wasCollapsed in comments.items():
+            comment.collapsed = wasCollapsed
+        self.state = state
+
     def mousePressEvent(self, event):
+        self.validateCommentNodesOwnership(self.graphManager.activeGraph())
         if self.pressed_item and isinstance(self.pressed_item, EditableLabel):
             if self.pressed_item != self.itemAt(event.pos()):
                 self.pressed_item.setOutFocus()
@@ -985,7 +1078,6 @@ class Canvas(QGraphicsView):
                     self._mouseDownSelection = [node for node in self.selectedNodes()]
                     if modifiers not in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
                         self.clearSelection()
-                        # super(Canvas, self).mousePressEvent(event)
                 else:
                     if hasattr(self, "_selectionRect") and self._selectionRect is not None:
                         self._selectionRect.destroy()
@@ -996,14 +1088,11 @@ class Canvas(QGraphicsView):
                     self._lastPanPoint = self.mapToScene(event.pos())
                 elif event.button() == QtCore.Qt.RightButton:
                     self.manipulationMode = CanvasManipulationMode.ZOOM
-                    # self._lastMousePos = event.pos()
                     self._lastTransform = QtGui.QTransform(self.transform())
                     self._lastSceneRect = self.sceneRect()
                     self._lastSceneCenter = self._lastSceneRect.center()
                     self._lastScenePos = self.mapToScene(event.pos())
                     self._lastOffsetFromSceneCenter = self._lastScenePos - self._lastSceneCenter
-            # elif modifiers not in  [QtCore.Qt.ShiftModifier,QtCore.Qt.ControlModifier]:
-            #    super(Canvas, self).mousePressEvent(event)
             self.node_box.hide()
         elif not isinstance(self.pressed_item, EditableLabel) or (isinstance(self.pressed_item, EditableLabel) and not self.pressed_item._beingEdited):
             # else:
@@ -1319,6 +1408,8 @@ class Canvas(QGraphicsView):
             self.requestClearProperties.emit()
         self.resizing = False
 
+        self.validateCommentNodesOwnership(self.graphManager.activeGraph())
+
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
 
@@ -1481,15 +1572,23 @@ class Canvas(QGraphicsView):
                     inUiPin = inRawPin.getWrapper()()
                     self.createUIConnectionForConnectedPins(outUiPin, inUiPin)
 
+        for uiNode, data in uiNodesJsonData.items():
+            if uiNode.isUnderActiveGraph():
+                uiNode.show()
+                if uiNode.isCommentNode:
+                    uiNode.collapsed = False
+
+        for uiNode, data in uiNodesJsonData.items():
+            if uiNode.isUnderActiveGraph():
+                if not uiNode.isCommentNode:
+                    uiNode.updateOwningCommentNode()
+
         # comments should update collapsing info after everything was created
         for uiNode, data in uiNodesJsonData.items():
-            if "wrapper" in data:
-                if "owningNodes" in data["wrapper"]:
-                    if uiNode.isCommentNode:
-                        for owningNodeName in data["wrapper"]["owningNodes"]:
-                            node = self.findNode(owningNodeName)
-                            uiNode.owningNodes.add(node)
-                        uiNode.hideOwningNodes()
+            if uiNode.isCommentNode:
+                uiNode.collapsed = data["wrapper"]["collapsed"]
+        self.validateCommentNodesOwnership(rawGraph)
+        self.validateConnections(rawGraph)
 
     def addNode(self, uiNode, jsonTemplate, parentGraph=None):
         """Adds node to a graph
@@ -1590,8 +1689,7 @@ class Canvas(QGraphicsView):
             scale_factor = (self._maximum_scale - 0.1) / self.factor
         self.scale(scale_factor, scale_factor)
 
-
     def eventFilter(self, object, event):
-        if event.type()== QtCore.QEvent.KeyPress and event.key()== QtCore.Qt.Key_Tab:
+        if event.type()== QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_Tab:
             self.showNodeBox()
         return False

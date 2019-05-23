@@ -221,6 +221,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.resizeStrips = [0, 0, 0, 0, 0]  # Left, Top, Right, Bottom, BottomRight
 
         self.lastMousePos = QtCore.QPointF()
+        self.mousePressPos = QtCore.QPointF()
 
         # Hiding/Moving By Group/collapse/By Pin
         self.pressedCommentNode = None
@@ -463,6 +464,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                     self.onVisibilityChanged(bool(value))
         return super(UINodeBase, self).itemChange(change, value)
 
+    def isUnderActiveGraph(self):
+        return self._rawNode.isUnderActiveGraph()
+
     def autoAffectPins(self):
         self._rawNode.autoAffectPins()
 
@@ -509,7 +513,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             self._rect.setHeight(h)
             self.updateNodeShape()
 
-        self.nodeNameWidget.setHtml(headerHtml)
+        self.setHeaderHtml(headerHtml)
 
     def createActionButtons(self):
         # NOTE: actions with action button class specified will be added next to node name
@@ -632,6 +636,52 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             if label:
                 self.update()
 
+    def isUnderCollapsedComment(self):
+        if self.owningCommentNode is None:
+            return False
+        else:
+            if self.owningCommentNode.collapsed:
+                return True
+
+        parent = self.owningCommentNode.owningCommentNode
+        while parent is not None:
+            upperComment = parent
+            if upperComment.collapsed:
+                return True
+            parent = upperComment.owningCommentNode
+        return False
+
+    def getTopMostOwningCollapsedComment(self):
+        """Returns top most owning comment. If bCollapsed=True, it will stop when first collapsed comment is found.
+        """
+        if self.owningCommentNode is None:
+            return None
+        # build chain of comments collapse states
+        topMostComment = self.owningCommentNode
+        parent = topMostComment.owningCommentNode
+
+        chain = OrderedDict()
+        chain[topMostComment] = topMostComment.collapsed
+
+        while parent is not None:
+            topMostComment = parent
+            chain[topMostComment] = topMostComment.collapsed
+            parent = topMostComment.owningCommentNode
+
+        last = None
+        for comment, collapsed in chain.items():
+            if not comment.isVisible():
+                continue
+            if last is not None:
+                if collapsed + last.collapsed == 1:
+                    topMostComment = last
+                    break
+                last = comment
+            else:
+                last = comment
+
+        return topMostComment
+
     def updateOwningCommentNode(self):
 
         if self.owningCommentNode is not None and self.owningCommentNode.collapsed:
@@ -721,6 +771,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     def mousePressEvent(self, event):
         self.update()
+        self.mousePressPos = event.pos()
         self.pressedCommentNode = self.owningCommentNode
         super(UINodeBase, self).mousePressEvent(event)
         self.mousePressPos = event.scenePos()
@@ -864,8 +915,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         return nodes
 
     def kill(self, *args, **kwargs):
-        self.scene().removeItem(self)
-        del(self)
+        scene = self.scene()
+        if scene is not None:
+            self.scene().removeItem(self)
+            del(self)
 
     def collidesWithCommentNode(self):
         nodes = self.getCollidedNodes()
@@ -888,9 +941,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             collidedCommentNode = self.collidesWithCommentNode()
             if collidedCommentNode is None:
                 self.show()
-                for uiPin in self.UIPins.values():
-                    for connection in uiPin.uiConnectionList:
-                        connection.show()
+                # for uiPin in self.UIPins.values():
+                #     for connection in uiPin.uiConnectionList:
+                #         connection.show()
             else:
                 if collidedCommentNode.collapsed:
                     self.hide()

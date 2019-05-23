@@ -10,6 +10,7 @@ from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QMenu
 
 from PyFlow.UI.Utils.Settings import Colors
+from PyFlow.UI.Canvas.UICommon import NodeDefaults
 from PyFlow.Core.Common import *
 
 
@@ -29,12 +30,17 @@ class UIConnection(QGraphicsPathItem):
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
         self.setAcceptHoverEvents(True)
 
+        # Overrides for getting endpoints positions
+        # if None - pin centers will be used
+        self.sourcePositionOverride = None
+        self.destinationPositionOverride = None
+
         self.mPath = QtGui.QPainterPath()
 
         self.cp1 = QtCore.QPointF(0.0, 0.0)
         self.cp2 = QtCore.QPointF(0.0, 0.0)
 
-        self.setZValue(-1)
+        self.setZValue(NodeDefaults().Z_LAYER - 1)
 
         self.color = self.source().color()
 
@@ -57,12 +63,65 @@ class UIConnection(QGraphicsPathItem):
         self.source().pinConnected(self.destination())
         self.destination().pinConnected(self.source())
 
+    def isUnderCollapsedComment(self):
+        srcNode = self.source().owningNode()
+        dstNode = self.destination().owningNode()
+        srcComment = srcNode.owningCommentNode
+        dstComment = dstNode.owningCommentNode
+        if srcComment is not None and dstComment is not None and srcComment == dstComment and srcComment.collapsed:
+            return True
+        return False
+
+    def isUnderActiveGraph(self):
+        return self.canvasRef().graphManager.activeGraph() == self.source()._rawPin.owningNode().graph()
+
     def __repr__(self):
         return "{0} -> {1}".format(self.source().getName(), self.destination().getName())
 
     def setColor(self, color):
         self.pen.setColor(color)
         self.color = color
+
+    def updateEndpointsPositions(self):
+        srcNode = self.source().owningNode()
+        dstNode = self.destination().owningNode()
+
+        srcComment = srcNode.owningCommentNode
+        if srcComment is not None:
+            # if comment is collapsed or under another comment, move point to top most collapsed comment's right side
+            srcNodeUnderCollapsedComment = srcComment.isUnderCollapsedComment()
+            topMostCollapsedComment = srcNode.getTopMostOwningCollapsedComment()
+            if srcComment.collapsed:
+                rightSideEndpointGetter = srcComment.getRightSideEdgesPoint
+                if srcNodeUnderCollapsedComment:
+                    rightSideEndpointGetter = topMostCollapsedComment.getRightSideEdgesPoint
+                self.sourcePositionOverride = rightSideEndpointGetter
+            else:
+                if srcNodeUnderCollapsedComment:
+                    self.sourcePositionOverride = topMostCollapsedComment.getRightSideEdgesPoint
+                else:
+                    self.sourcePositionOverride = None
+        else:
+            # if no comment return source point back to pin
+            self.sourcePositionOverride = None
+
+        # Same for right hand side
+        dstComment = dstNode.owningCommentNode
+        if dstComment is not None:
+            dstNodeUnderCollapsedComment = dstComment.isUnderCollapsedComment()
+            topMostCollapsedComment = dstNode.getTopMostOwningCollapsedComment()
+            if dstComment.collapsed:
+                rightSideEndpointGetter = dstComment.getLeftSideEdgesPoint
+                if dstNodeUnderCollapsedComment:
+                    rightSideEndpointGetter = topMostCollapsedComment.getLeftSideEdgesPoint
+                self.destinationPositionOverride = rightSideEndpointGetter
+            else:
+                if dstNodeUnderCollapsedComment:
+                    self.destinationPositionOverride = topMostCollapsedComment.getLeftSideEdgesPoint
+                else:
+                    self.destinationPositionOverride = None
+        else:
+            self.destinationPositionOverride = None
 
     def Tick(self):
         # check if this instance represents existing connection
@@ -136,7 +195,12 @@ class UIConnection(QGraphicsPathItem):
 
     def getEndPoints(self):
         p1 = self.drawSource.scenePos() + self.drawSource.pinCenter()
+        if self.sourcePositionOverride is not None:
+            p1 = self.sourcePositionOverride()
+
         p2 = self.drawDestination.scenePos() + self.drawDestination.pinCenter()
+        if self.destinationPositionOverride is not None:
+            p2 = self.destinationPositionOverride()
         return p1, p2
 
     def mousePressEvent(self, event):
@@ -182,9 +246,6 @@ class UIConnection(QGraphicsPathItem):
 
     def kill(self):
         self.canvasRef().removeConnection(self)
-
-    def destination_port_name(self):
-        return self.destination().getName()
 
     def paint(self, painter, option, widget):
         lod = self.canvasRef().getLodValueFromCurrentScale(5)

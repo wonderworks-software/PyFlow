@@ -190,6 +190,9 @@ class NodeBase(INode):
             template['wrapper'] = wrapper.serializationHook()
         return template
 
+    def isUnderActiveGraph(self):
+        return self.graph() == self.graph().graphManager.activeGraph()
+
     def kill(self, *args, **kwargs):
         if self.uid not in self.graph().nodes:
             # already killed

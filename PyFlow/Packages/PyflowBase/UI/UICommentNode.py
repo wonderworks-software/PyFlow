@@ -24,6 +24,7 @@ from PyFlow.UI.Utils.Settings import (Spacings, Colors)
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import NodeName
 from PyFlow.UI.Canvas.UIPinBase import UICommentPinBase
+from PyFlow.UI.Canvas.UIConnection import UIConnection
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
 import weakref
@@ -45,10 +46,12 @@ class UICommentNode(UINodeBase):
         self.editMessageAction.setData(NodeActionButtonInfo(RESOURCES_DIR + "/rename.svg"))
         self.editMessageAction.triggered.connect(self.onChangeMessage)
         self.partiallyIntersectedConnections = set()
+        self.partiallyIntersectedConnectionsEndpointOverrides = {}
 
     def serializationHook(self):
         original = super(UICommentNode, self).serializationHook()
-        original["owningNodes"] = [n.name for n in self.owningNodes]
+        original["owningNodes"] = list(set([n.name for n in self.owningNodes]))
+        original["color"] = self.color.rgba()
         return original
 
     def onChangeMessage(self):
@@ -62,29 +65,53 @@ class UICommentNode(UINodeBase):
                 self.nodeNameWidget.setHtml(html)
                 self.updateNodeShape()
         except:
-            self.setFocus()
+            pass
+        self.setFocus()
+
+    def kill(self, *args, **kwargs):
+        # Do not forget to remove collapsed nodes!
+        if self.collapsed:
+            for node in self.owningNodes:
+                assert(node is not None)
+                node.kill()
+        super(UICommentNode, self).kill(*args, **kwargs)
 
     def hideOwningNodes(self):
         for node in self.owningNodes:
             node.hide()
+            # hide fully contained connections
+            for pin in node.UIPins.values():
+                for connection in pin.uiConnectionList:
+                    if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
+                        connection.hide()
 
     def onVisibilityChanged(self, bVisible):
         for node in self.owningNodes:
+            nodeUnderCollapsedComment = node.isUnderCollapsedComment()
             if not self.collapsed:
                 node.setVisible(bVisible)
+                for pin in node.UIPins.values():
+                    for connection in pin.uiConnectionList:
+                        if bVisible:
+                            if not nodeUnderCollapsedComment:
+                                connection.setVisible(True)
+                        else:
+                            # Hide connection only if fully contained
+                            if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
+                                connection.setVisible(False)
+        self.canvasRef().update()
 
     def updateOwningCommentNode(self):
         super(UICommentNode, self).updateOwningCommentNode()
-        # check if owning nodes still colliding with us. If not, remove those from owning nodes
-        collidedNodes = self.getCollidedNodes()
-        for node in list(self.owningNodes):
-            if node not in collidedNodes:
-                self.owningNodes.remove(node)
 
         if self.owningCommentNode is not None:
             self.setZValue(self.owningCommentNode.zValue() + 1)
 
+    def itemChange(self, change, value):
+        return super(UICommentNode, self).itemChange(change, value)
+
     def mousePressEvent(self, event):
+        self.mousePressPos = event.pos()
         super(UICommentNode, self).mousePressEvent(event)
 
         zValue = self.zValue()
@@ -107,39 +134,101 @@ class UICommentNode(UINodeBase):
             for node in collidingNodes:
                 node.updateOwningCommentNode()
 
+    def getLeftSideEdgesPoint(self):
+        frame = self.sceneBoundingRect()
+        x = frame.topLeft().x()
+        y = frame.topLeft().y() + self.labelHeight
+        result = QtCore.QPointF(x, y)
+        return result
+
+    def getRightSideEdgesPoint(self):
+        frame = self.sceneBoundingRect()
+        x = frame.topRight().x()
+        y = frame.topRight().y() + self.labelHeight
+        result = QtCore.QPointF(x, y)
+        return result
+
+    def getCollidedConnections(self, bFully=False):
+        collidingItems = self.collidingItems()
+        collidingConnections = set()
+        for item in collidingItems:
+            if isinstance(item, UIConnection):
+
+                if not item.source().owningNode().isUnderActiveGraph():
+                    continue
+                if not item.destination().owningNode().isUnderActiveGraph():
+                    continue
+
+                si, sc, di, dc = self.intersectsOrContainsEndpointNodes(item)
+                if bFully:
+                    if all([si, sc, di, dc]):
+                        collidingConnections.add(item)
+                else:
+                    if any([si, sc, di, dc]) and not all([si, sc, di, dc]):
+                        if not sc and not dc:
+                            continue
+                        collidingConnections.add(item)
+        return collidingConnections
+
+    def intersectsOrContainsEndpointNodes(self, connection):
+        srcOwningNode = connection.source().owningNode()
+        dstOwningNode = connection.destination().owningNode()
+        intersectsSrcNode = self.sceneBoundingRect().intersects(srcOwningNode.sceneBoundingRect())
+        containsSrcNode = self.sceneBoundingRect().contains(srcOwningNode.sceneBoundingRect())
+        intersectsDstNode = self.sceneBoundingRect().intersects(dstOwningNode.sceneBoundingRect())
+        containsDstNode = self.sceneBoundingRect().contains(dstOwningNode.sceneBoundingRect())
+        return intersectsSrcNode, containsSrcNode, intersectsDstNode, containsDstNode
+
     def aboutToCollapse(self, futureCollapseState):
+        if self.canvasRef().state == CanvasState.COMMENT_OWNERSHIP_VALIDATION:
+            return
+
         if futureCollapseState:
+            self.partiallyIntersectedConnections = self.getCollidedConnections()
+            fullyIntersectedConnections = self.getCollidedConnections(True)
+            [c.hide() for c in fullyIntersectedConnections]
+
+            # save overrides information
+            for connection in self.partiallyIntersectedConnections:
+                self.partiallyIntersectedConnectionsEndpointOverrides[connection] = (connection.sourcePositionOverride, connection.destinationPositionOverride)
+
             for node in self.owningNodes:
                 if node.owningCommentNode is self:
                     node.hide()
-                    for pin in node.UIPins.values():
-                        fullyIntersectedConnections = set()
-                        for connection in pin.uiConnectionList:
-                            connection.hide()
-                            if self.sceneBoundingRect().contains(connection.sceneBoundingRect()):
-                                fullyIntersectedConnections.add(connection)
-                            if self.sceneBoundingRect().intersects(connection.sceneBoundingRect()):
-                                if connection not in fullyIntersectedConnections:
-                                    self.partiallyIntersectedConnections.add(connection)
-                        for con in fullyIntersectedConnections:
-                            con.hide()
-            # TODO: change endpoint targets to look to comment node header left or right sides
-            print(self.partiallyIntersectedConnections)
+
+            # override endpoints getting methods
+            for connection in self.partiallyIntersectedConnections:
+                si, sc, di, dc = self.intersectsOrContainsEndpointNodes(connection)
+                srcComment = connection.source().owningNode().owningCommentNode
+                dstComment = connection.destination().owningNode().owningCommentNode
+                if not all([si, sc]):
+                    connection.destinationPositionOverride = self.getLeftSideEdgesPoint
+                elif not all([di, dc]):
+                    connection.sourcePositionOverride = self.getRightSideEdgesPoint
         else:
             for node in self.owningNodes:
-                node.show()
-                for pin in node.UIPins.values():
-                    for connection in pin.uiConnectionList:
-                        connection.show()
+                nodeUnderCollapsedComment = node.isUnderCollapsedComment()
+                if not nodeUnderCollapsedComment:
+                    node.show()
+                    for pin in node.UIPins.values():
+                        for connection in pin.uiConnectionList:
+                            connection.show()
+                            if pin.direction == PinDirection.Output:
+                                connection.sourcePositionOverride = None
+                            if pin.direction == PinDirection.Input:
+                                connection.destinationPositionOverride = None
+            self.update()
+            for connection, overrides in self.partiallyIntersectedConnectionsEndpointOverrides.items():
+                connection.updateEndpointsPositions()
+
             self.partiallyIntersectedConnections.clear()
+            self.partiallyIntersectedConnectionsEndpointOverrides.clear()
+        self.canvasRef().update()
 
     def postCreate(self, jsonTemplate=None):
-        UINodeBase.postCreate(self, jsonTemplate)
-        # restore text and size
-        self.minWidth = self.labelWidth
-        if jsonTemplate is not None:
-            if "owningNodes" in jsonTemplate["wrapper"]:
-                print(jsonTemplate["wrapper"]["owningNodes"])
+        super(UICommentNode, self).postCreate(jsonTemplate=jsonTemplate)
+        if "color" in jsonTemplate["wrapper"]:
+            self.color = QtGui.QColor.fromRgba(jsonTemplate["wrapper"]["color"])
 
     def translate(self, x, y):
         for n in self.owningNodes:
