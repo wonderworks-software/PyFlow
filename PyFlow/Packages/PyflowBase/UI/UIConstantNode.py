@@ -66,8 +66,8 @@ class UIConstantNode(UINodeBase):
         self.output._rawPin.changeTypeOnConnection = bool(toogle)
 
     def selectStructure(self,name):
-        self.input._rawPin.changeStructure(PinStructure(name),self.input._rawPin._origFlags,True)
-        self.output._rawPin.changeStructure(PinStructure(name),self.output._rawPin._origFlags,True)
+        self.input._rawPin.changeStructure(PinStructure(name),True)
+        self.output._rawPin.changeStructure(PinStructure(name),True)
 
     def createInputWidgets ( self,propertiesWidget):
         inputsCategory = super(UIConstantNode, self).createInputWidgets(propertiesWidget)

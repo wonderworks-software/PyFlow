@@ -404,6 +404,12 @@ class NodeBase(INode):
                 if "currDataType" in inpJson:
                     pin.setType(inpJson["currDataType"]) 
                 pin.changeTypeOnConnection= inpJson['changeType']
+                for opt in PinOptions:
+                    if opt.value in inpJson["options"]:
+                        pin.enableOptions(opt)
+                    else:
+                        pin.disableOptions(opt)
+                pin.changeStructure(inpJson["structure"],True)
                 try:
                     pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
                 except:
@@ -424,7 +430,13 @@ class NodeBase(INode):
                 pin.uid = uuid.UUID(outJson['uuid']) 
                 if "currDataType" in outJson:
                     pin.setType(outJson["currDataType"]    )     
-                pin.changeTypeOnConnection= inpJson['changeType']
+                pin.changeTypeOnConnection= outJson['changeType']
+                for opt in PinOptions:
+                    if opt.value in outJson["options"]:
+                        pin.enableOptions(opt)
+                    else:
+                        pin.disableOptions(opt)                
+                pin.changeStructure(outJson["structure"],True)
                 try:    
                     pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
                 except:

@@ -127,7 +127,6 @@ class PinBase(IPin):
             #self.changeTypeOnConnection = True
             self._currStructure = PinStructure.Array
         else:
-            self._flags = self._origFlags
             self._currStructure = self._structure
 
         self.containerTypeChanged.send()
@@ -167,7 +166,8 @@ class PinBase(IPin):
             'bDirty': self.dirty,
             'linkedTo': list(self.linkedTo),
             'options': [i.value for i in PinOptions if self.optionEnabled(i)],
-            'changeType':self.changeTypeOnConnection
+            'changeType':self.changeTypeOnConnection,
+            'structure' : int(self._currStructure),
         }
 
         # Wrapper class can subscribe to this signal and return
@@ -317,38 +317,33 @@ class PinBase(IPin):
         return self._data
 
     def aboutToConnect(self,other):
-        self.changeStructure(other._currStructure,other._flags)  
+        self.changeStructure(other._currStructure)  
         self.onPinConnected.send(other)  
 
-    def changeStructure(self,newStruct,flags,init=False):
+    def changeStructure(self,newStruct,init=False):
         if self.structureType == PinStructure.Multi and self._currStructure != newStruct:
             if newStruct == PinStructure.Array and not (self.optionEnabled(PinOptions.ArraySupported) or init):
                 return
             else:
                 free = self.canChangeStructure(newStruct,[])
-                print self,free
                 if free :
                     self._structFree = False
-                    if not init:
-                        self.setAsArray(newStruct==PinStructure.Array)
-                    else:
-                        self.initAsArray(newStruct==PinStructure.Array)
+                    self.setAsArray(newStruct==PinStructure.Array)
                     self._currStructure = newStruct
-                    self._flags = flags
                     if newStruct == PinStructure.Single :
                         self.disableOptions(PinOptions.ArraySupported)
                         self.disableOptions(PinOptions.SupportsOnlyArrays)
                     else :
                         self.enableOptions(PinOptions.ArraySupported)
-                    
+
                     traversed = set()
                     traversed.add(self)   
-                    self.updateConstrainedPins(traversed,self.isArray(),self._flags,connecting=True) 
+                    self.updateConstrainedPins(traversed,newStruct,connecting=True) 
 
     def pinConnected(self, other):
         push(self)
 
-    def updateConstrainedPins(self,traversed,array,flags,connecting=False):
+    def updateConstrainedPins(self,traversed,newStruct,connecting=False):
         nodePins = set()
         if self.structConstraint is not None:
             nodePins = set(self.owningNode().structConstraints[self.structConstraint])
@@ -358,31 +353,24 @@ class PinBase(IPin):
                     nodePins.add(connectedPin)    
         for neighbor in nodePins:
             if neighbor not in traversed:
-                neighbor.setAsArray(array)
-                neighbor._flags = flags
+                neighbor.setAsArray(newStruct==PinStructure.Array)
                 if connecting:
                     neighbor._currStructure = self._currStructure
+                    if newStruct == PinStructure.Single :
+                        neighbor.disableOptions(PinOptions.ArraySupported)
+                        neighbor.disableOptions(PinOptions.SupportsOnlyArrays)
+                    else :
+                        neighbor.enableOptions(PinOptions.ArraySupported)
                 else:
                     neighbor._currStructure = neighbor._structure
                     neighbor._data = neighbor.defaultValue()
                 traversed.add(neighbor) 
-                neighbor.updateConstrainedPins(traversed,array,flags,connecting=connecting)
+                neighbor.updateConstrainedPins(traversed,newStruct,connecting=connecting)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
         if self.direction == PinDirection.Output:
-            otherPinName = other.getName()
-        """
-        free = self.canChangeStructure(self._structure,[])
-        if free:
-            self._structFree = True
-            self.setAsArray(False)
-            self._flags = self._origFlags
-            self._data = self.defaultValue()
-            traversed = set()
-            traversed.add(self)   
-            self.updateConstrainedPins(traversed,False,self._flags)  
-        """            
+            otherPinName = other.getName()      
         push(other)
 
     def canChangeStructure(self,newStruct, checked=[], selfChek=True):
