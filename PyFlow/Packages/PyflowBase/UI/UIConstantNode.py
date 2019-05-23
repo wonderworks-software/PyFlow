@@ -61,22 +61,14 @@ class UIConstantNode(UINodeBase):
         self.update()
         self.canvasRef().tryFillPropertiesView(self)
 
-    def overrideTypeChanged(self,toogle):
-        self.input._rawPin.changeTypeOnConnection = bool(toogle)
-        self.output._rawPin.changeTypeOnConnection = bool(toogle)
-
     def selectStructure(self,name):
-        self.input._rawPin.changeStructure(PinStructure(name),True)
-        self.output._rawPin.changeStructure(PinStructure(name),True)
         self.canvasRef().tryFillPropertiesView(self)
 
     def createInputWidgets ( self,propertiesWidget):
         inputsCategory = super(UIConstantNode, self).createInputWidgets(propertiesWidget)
         selector = QComboBox()
         overrideType = QCheckBox()
-        overrideType.setChecked(self.input._rawPin.changeTypeOnConnection)
-        overrideType.stateChanged.connect(self.overrideTypeChanged)
-        overrideType.stateChanged.connect(selector.setEnabled)
+        
         for i in self._rawNode.pinTypes:
             selector.addItem(i)         
         if self.input.dataType in self._rawNode.pinTypes:
@@ -86,12 +78,16 @@ class UIConstantNode(UINodeBase):
         for i in [i.name for i in list(PinStructure)]:
             structSelector.addItem(i)
 
+        overrideType.setChecked(self.input._rawPin.changeTypeOnConnection)
         structSelector.setCurrentIndex(self.input._rawPin._currStructure)
+        selector.setEnabled(self.input._rawPin.changeTypeOnConnection)
 
+        overrideType.stateChanged.connect(selector.setEnabled)
+        overrideType.stateChanged.connect(self._rawNode.overrideTypeChanged)
         selector.activated.connect(self._rawNode.updateType)
+        structSelector.activated.connect(self._rawNode.selectStructure)
         structSelector.activated.connect(self.selectStructure)
 
-        selector.setEnabled(self.input._rawPin.changeTypeOnConnection)
         inputsCategory.insertWidget(0,"DataType",selector)
         inputsCategory.insertWidget(1,"Change Type On Connection",overrideType)
         inputsCategory.insertWidget(1,"Structure",structSelector)
