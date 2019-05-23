@@ -306,6 +306,8 @@ class NodeBase(INode):
         p.structureType = structure
         if structure == PinStructure.Array:
             p.initAsArray(True)
+        elif structure == PinStructure.Multi:
+            p.enableOptions(PinOptions.ArraySupported)            
         if foo:
             p.onExecute.connect(foo, weak=False)
         if defaultValue is not None:
@@ -402,6 +404,12 @@ class NodeBase(INode):
                 if "currDataType" in inpJson:
                     pin.setType(inpJson["currDataType"]) 
                 pin.changeTypeOnConnection= inpJson['changeType']
+                for opt in PinOptions:
+                    if opt.value in inpJson["options"]:
+                        pin.enableOptions(opt)
+                    else:
+                        pin.disableOptions(opt)
+                pin.changeStructure(inpJson["structure"],True)
                 try:
                     pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
                 except:
@@ -421,9 +429,15 @@ class NodeBase(INode):
                 pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
                 pin.uid = uuid.UUID(outJson['uuid'])
                 if "currDataType" in outJson:
-                    pin.setType(outJson["currDataType"])
-                pin.changeTypeOnConnection = inpJson['changeType']
-                try:
+                    pin.setType(outJson["currDataType"]) 
+                pin.changeTypeOnConnection= outJson['changeType']
+                for opt in PinOptions:
+                    if opt.value in outJson["options"]:
+                        pin.enableOptions(opt)
+                    else:
+                        pin.disableOptions(opt)                
+                pin.changeStructure(outJson["structure"],True)
+                try:    
                     pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
                 except:
                     pin.setData(pin.defaultValue())

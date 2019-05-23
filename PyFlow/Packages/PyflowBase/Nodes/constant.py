@@ -33,12 +33,20 @@ class constant(NodeBase):
     def onPinConected(self,other):
         self.changeType(other.dataType)
 
+    def overrideTypeChanged(self,toogle):
+        self.input.changeTypeOnConnection = bool(toogle)
+        self.output.changeTypeOnConnection = bool(toogle)
+
     def updateType(self,dataTypeIndex):
         self.changeType(self.pinTypes[dataTypeIndex],True)
 
     def changeType(self,dataType,init=False):
         a = self.input.initType(dataType,init)
         b = self.output.initType(dataType,init)
+
+    def selectStructure(self,name):
+        self.input.changeStructure(PinStructure(name),True)
+        self.output.changeStructure(PinStructure(name),True)
 
 
     def compute(self, *args, **kwargs):

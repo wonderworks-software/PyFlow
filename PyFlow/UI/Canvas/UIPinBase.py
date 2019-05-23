@@ -436,7 +436,7 @@ class UIPinBase(QGraphicsWidget):
         item, ok = QInputDialog.getItem(None, "", 
            "", ([i.name for i in list(PinStructure)]), 0, False)
         if ok and item:
-            self._rawPin.changeStructure(PinStructure[item],self._rawPin._origFlags)
+            self._rawPin.changeStructure(PinStructure[item],True)
 
 
 def REGISTER_UI_PIN_FACTORY(packageName, factory):
