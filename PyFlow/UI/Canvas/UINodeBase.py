@@ -941,9 +941,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             collidedCommentNode = self.collidesWithCommentNode()
             if collidedCommentNode is None:
                 self.show()
-                # for uiPin in self.UIPins.values():
-                #     for connection in uiPin.uiConnectionList:
-                #         connection.show()
             else:
                 if collidedCommentNode.collapsed:
                     self.hide()

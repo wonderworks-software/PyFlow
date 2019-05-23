@@ -1025,7 +1025,7 @@ class Canvas(QGraphicsView):
 
                     checked.add(connection)
 
-    def validateCommentNodesOwnership(self, graph):
+    def validateCommentNodesOwnership(self, graph, bExpandComments=True):
         state = self.state
         self.state = CanvasState.COMMENT_OWNERSHIP_VALIDATION
         comments = {}
@@ -1036,8 +1036,10 @@ class Canvas(QGraphicsView):
             if uiNode.isUnderActiveGraph():
                 if uiNode.isCommentNode:
                     comments[uiNode] = uiNode.collapsed
-                    uiNode.collapsed = False
-                    uiNode.owningNodes.clear()
+                    if not uiNode.collapsed:
+                        if bExpandComments:
+                            uiNode.collapsed = False
+                        uiNode.owningNodes.clear()
                 else:
                     defaultNodes.add(uiNode)
 
@@ -1055,7 +1057,6 @@ class Canvas(QGraphicsView):
         self.state = state
 
     def mousePressEvent(self, event):
-        self.validateCommentNodesOwnership(self.graphManager.activeGraph())
         if self.pressed_item and isinstance(self.pressed_item, EditableLabel):
             if self.pressed_item != self.itemAt(event.pos()):
                 self.pressed_item.setOutFocus()
@@ -1064,6 +1065,10 @@ class Canvas(QGraphicsView):
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         node = self.nodeFromInstance(self.pressed_item)
+
+        expandComments = False
+        self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
+
         if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
@@ -1408,7 +1413,7 @@ class Canvas(QGraphicsView):
             self.requestClearProperties.emit()
         self.resizing = False
 
-        self.validateCommentNodesOwnership(self.graphManager.activeGraph())
+        self.validateCommentNodesOwnership(self.graphManager.activeGraph(), False)
 
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]

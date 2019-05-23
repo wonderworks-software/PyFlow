@@ -419,14 +419,14 @@ class NodeBase(INode):
                     continue
 
                 pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
-                pin.uid = uuid.UUID(outJson['uuid']) 
+                pin.uid = uuid.UUID(outJson['uuid'])
                 if "currDataType" in outJson:
-                    pin.setType(outJson["currDataType"]    )     
-                pin.changeTypeOnConnection= inpJson['changeType']
-                try:    
+                    pin.setType(outJson["currDataType"])
+                pin.changeTypeOnConnection = inpJson['changeType']
+                try:
                     pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
                 except:
-                    pin.setData(pin.defaultValue())                    
+                    pin.setData(pin.defaultValue())
                 if outJson['bDirty']:
                     pin.setDirty()
                 else:
