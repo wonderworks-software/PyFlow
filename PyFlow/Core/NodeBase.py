@@ -406,7 +406,9 @@ class NodeBase(INode):
                         pin.enableOptions(opt)
                     else:
                         pin.disableOptions(opt)
-                pin.changeStructure(inpJson["structure"],True)
+                pin.changeStructure(inpJson["structure"])
+                pin._alwaysList = inpJson['alwaysList']
+                pin._alwaysSingle = inpJson['alwaysSingle']
                 try:
                     pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
                 except:
@@ -433,7 +435,9 @@ class NodeBase(INode):
                         pin.enableOptions(opt)
                     else:
                         pin.disableOptions(opt)                
-                pin.changeStructure(outJson["structure"],True)
+                pin.changeStructure(outJson["structure"])
+                pin._alwaysList = outJson['alwaysList']
+                pin._alwaysSingle = outJson['alwaysSingle']                
                 try:    
                     pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
                 except:

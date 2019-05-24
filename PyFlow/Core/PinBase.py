@@ -178,6 +178,8 @@ class PinBase(IPin):
             'options': [i.value for i in PinOptions if self.optionEnabled(i)],
             'changeType':self.changeTypeOnConnection,
             'structure' : int(self._currStructure),
+            'alwaysList' : self._alwaysList,
+            'alwaysSingle' :self._alwaysSingle
         }
 
         # Wrapper class can subscribe to this signal and return
@@ -331,7 +333,8 @@ class PinBase(IPin):
         self.onPinConnected.send(other)  
 
     def changeStructure(self,newStruct,init=False):
-        if self.canChangeStructure(newStruct,[],init=init) :
+        free = self.canChangeStructure(newStruct,[],init=init)
+        if  free:
             self.updateConstrainedPins(set(),newStruct,init,connecting=True) 
 
     def pinConnected(self, other):
@@ -345,23 +348,20 @@ class PinBase(IPin):
             nodePins = set([self])
         for connectedPin in getConnectedPins(self):
             if connectedPin.structureType == PinStructure.Multi:
-                if connectedPin.canChangeStructure(self._currStructure,[],init=init):
+                if connectedPin.canChangeStructure(self._currStructure,init=init):
                     nodePins.add(connectedPin)    
         for neighbor in nodePins:
             if neighbor not in traversed:
                 neighbor.setAsArray(newStruct==PinStructure.Array)
                 if connecting:
                     if init:
-                        self._alwaysList = newStruct==PinStructure.Array
-                        self._alwaysSingle = newStruct==PinStructure.Single
-                        neighbor._currStructure = newStruct
-                    else:
-                        neighbor._currStructure = neighbor._structure
+                        neighbor._alwaysList = newStruct==PinStructure.Array
+                        neighbor._alwaysSingle = newStruct==PinStructure.Single
+                    neighbor._currStructure = newStruct
                     neighbor.enableOptions(PinOptions.ArraySupported)
                     if newStruct == PinStructure.Single:
                         neighbor.disableOptions(PinOptions.ArraySupported)
                         neighbor.disableOptions(PinOptions.SupportsOnlyArrays)
-                        
                 else:
                     neighbor._currStructure = neighbor._structure
                     neighbor._data = neighbor.defaultValue()
@@ -371,7 +371,7 @@ class PinBase(IPin):
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
         if self.direction == PinDirection.Output:
-            otherPinName = other.getName()      
+            otherPinName = other.getName() 
         push(other)
 
     def canChangeStructure(self,newStruct, checked=[], selfChek=True,init=False):
@@ -397,11 +397,23 @@ class PinBase(IPin):
             if selfChek:
                 if self._currStructure == PinStructure.Single and newStruct == PinStructure.Array and not self.optionEnabled(PinOptions.ArraySupported) and self.hasConnections():
                     free = False
+                    for pin in getConnectedPins(self):
+                        if pin._structure == PinStructure.Multi:
+                            free = True
+                        else:
+                            free = False
+                            break
                 if self._currStructure == PinStructure.Array and newStruct == PinStructure.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections():
-                    free = False            
+                    free = False
+                    for pin in getConnectedPins(self):
+                        if pin._structure == PinStructure.Multi:
+                            free = True
+                        else:
+                            free = False
+                            break
             if free:
                 for port in self.owningNode().structConstraints[self.structConstraint] + con:
-                    if port not in checked and free:
+                    if port not in checked:
                         checked.append(port)
                         free = port.canChangeStructure(newStruct,checked,True,init=init)
                         if not free:
