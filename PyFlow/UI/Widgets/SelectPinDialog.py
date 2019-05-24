@@ -156,7 +156,8 @@ class SelectPinDialog(QtWidgets.QDialog):
         self.searchBox.setPlaceholderText("search...")
         self.searchBox.textChanged.connect(self.filterContent)
         self.mainLayout.addWidget(self.searchBox)
-
+        if not validPins:
+            validPins = [pin.__name__ for pin in getAllPinClasses()]
         self.content = _PinsListWidget(validPins=validPins)
         self.mainLayout.addWidget(self.content)
         self.content.itemClicked.connect(self.onItemClicked)
