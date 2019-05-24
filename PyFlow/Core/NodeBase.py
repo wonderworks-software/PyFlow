@@ -465,6 +465,7 @@ class NodeBase(INode):
         returnType = returnDefaultValue = None
         returnPinOptionsToEnable = None
         returnPinOptionsToDisable = None
+        retStructConstraint = None
         if foo.__annotations__['return'] is not None:
             returnType = foo.__annotations__['return'][0]
             returnDefaultValue = foo.__annotations__['return'][1]
@@ -473,6 +474,8 @@ class NodeBase(INode):
                     retAnyOpts = foo.__annotations__['return'][2]["supportedDataTypes"]
                 if "constraint" in foo.__annotations__['return'][2]:
                     retConstraint = foo.__annotations__['return'][2]["constraint"]
+                if "structConstraint" in foo.__annotations__['return'][2]:
+                    retStructConstraint = foo.__annotations__['return'][2]["structConstraint"]                    
                 if "enabledOptions" in foo.__annotations__['return'][2]:
                     returnPinOptionsToEnable = foo.__annotations__['return'][2]["enabledOptions"]
                 if "disabledOptions" in foo.__annotations__['return'][2]:
@@ -538,7 +541,7 @@ class NodeBase(INode):
             raw_inst.bCallable = True
 
         if returnType is not None:
-            p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint)
+            p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint,structConstraint=retStructConstraint)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
             p.initAsArray(isinstance(returnDefaultValue, list))
@@ -548,6 +551,8 @@ class NodeBase(INode):
                 p.disableOptions(returnPinOptionsToDisable)
             if retConstraint is None:
                 p.changeTypeOnConnection = False
+            if not p.isArray() and p.optionEnabled(PinOptions.ArraySupported):
+                p.structureType = PinStructure.Multi
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
@@ -555,6 +560,7 @@ class NodeBase(INode):
             pinDescriptionTuple = foo.__annotations__[argName]
             anyOpts = None
             constraint = None
+            structConstraint= None
             pinOptionsToEnable = None
             pinOptionsToDisable = None
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
@@ -570,12 +576,14 @@ class NodeBase(INode):
                         anyOpts = pinDict["supportedDataTypes"]
                     if "constraint" in pinDict:
                         constraint = pinDict["constraint"]
+                    if "structConstraint" in pinDict:
+                        structConstraint = pinDict["structConstraint"]                        
                     if "enabledOptions" in pinDict:
                         pinOptionsToEnable = pinDict["enabledOptions"]
                     if "disabledOptions" in pinDict:
                         pinOptionsToDisable = pinDict["disabledOptions"]
 
-                outRef = raw_inst.createOutputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
+                outRef = raw_inst.createOutputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint,structConstraint=structConstraint)
                 outRef.initAsArray(isinstance(pinDefaultValue, list))
                 outRef.setDefaultValue(pinDefaultValue)
                 outRef.setData(pinDefaultValue)
@@ -585,6 +593,8 @@ class NodeBase(INode):
                     outRef.disableOptions(pinOptionsToDisable)
                 if constraint is None and outRef.isAny():
                     outRef.changeTypeOnConnection = False
+                if not outRef.isArray() and outRef.optionEnabled(PinOptions.ArraySupported):
+                    outRef.structureType = PinStructure.Multi                    
                 refs.append(outRef)
             else:
                 pinDataType = pinDescriptionTuple[0]
@@ -598,12 +608,14 @@ class NodeBase(INode):
                         anyOpts = pinDict["supportedDataTypes"]
                     if "constraint" in pinDict:
                         constraint = pinDict["constraint"]
+                    if "structConstraint" in pinDict:
+                        structConstraint = pinDict["structConstraint"]                        
                     if "enabledOptions" in pinDict:
                         pinOptionsToEnable = pinDict["enabledOptions"]
                     if "disabledOptions" in pinDict:
                         pinOptionsToDisable = pinDict["disabledOptions"]
 
-                inp = raw_inst.createInputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint)
+                inp = raw_inst.createInputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint,structConstraint=structConstraint)
                 inp.initAsArray(isinstance(pinDefaultValue, list))
                 inp.setData(pinDefaultValue)
                 inp.setDefaultValue(pinDefaultValue)
@@ -613,6 +625,8 @@ class NodeBase(INode):
                     inp.disableOptions(pinOptionsToDisable)
                 if constraint is None and inp.isAny():
                     inp.changeTypeOnConnection = False
-
+                if not inp.isArray() and inp.optionEnabled(PinOptions.ArraySupported):
+                    inp.structureType = PinStructure.Multi   
+                    
         raw_inst.autoAffectPins()
         return raw_inst
