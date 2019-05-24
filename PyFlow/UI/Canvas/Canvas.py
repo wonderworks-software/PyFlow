@@ -1332,7 +1332,7 @@ class Canvas(QGraphicsView):
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
         self._lastMousePos = event.pos()
 
-    def findPinNearPosition(self, scenePos, tolerance=10):
+    def findPinNearPosition(self, scenePos, tolerance=3):
         rect = QtCore.QRect(QtCore.QPoint(scenePos.x() - tolerance, scenePos.y() - tolerance),
                             QtCore.QPoint(scenePos.x() + tolerance, scenePos.y() + tolerance))
         items = self.items(rect)
