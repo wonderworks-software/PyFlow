@@ -358,7 +358,6 @@ class Canvas(QGraphicsView):
         self._minimum_scale = 0.2
         self._maximum_scale = 3.0
 
-        self.setDragMode(QGraphicsView.RubberBandDrag)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -383,7 +382,6 @@ class Canvas(QGraphicsView):
         self.mousePos = QtCore.QPointF(0, 0)
         self._lastMousePos = QtCore.QPointF(0, 0)
         self._right_button = False
-        self._is_rubber_band_selection = False
         self._drawRealtimeLine = False
         self._update_items = False
         self._resize_group_mode = False
@@ -1143,6 +1141,9 @@ class Canvas(QGraphicsView):
                             if node.bResize:
                                 return
                         if event.button() == QtCore.Qt.MidButton:
+                            if node.isCommentNode:
+                                self.manipulationMode = CanvasManipulationMode.PAN
+                                return
                             if modifiers != QtCore.Qt.ShiftModifier:
                                 self.clearSelection()
                             node.setSelected(True)
