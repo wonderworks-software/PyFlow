@@ -944,9 +944,9 @@ class Canvas(QGraphicsView):
             node = node.parentItem()
         return node
 
-    def getReruteNode(self, pos, connection):
+    def getReruteNode(self, pos, connection=None):
         nodeClassName = "reroute"
-        if connection.drawSource._rawPin.isExec() and connection.drawDestination._rawPin.isExec():
+        if connection and connection.drawSource._rawPin.isExec() and connection.drawDestination._rawPin.isExec():
             nodeClassName = "rerouteExecs"
         nodeTemplate = NodeBase.jsonTemplate()
         nodeTemplate['package'] = "PyflowBase"
@@ -1235,11 +1235,11 @@ class Canvas(QGraphicsView):
                 self.clearSelection()
                 reruteNode.setSelected(True)
                 for inp in reruteNode.UIinputs.values():
-                    if self.canConnectPins(self.pressed_item, inp):
+                    if canConnectPins(self.pressed_item._rawPin, inp._rawPin):
                         self.connectPins(self.pressed_item, inp)
                         break
                 for out in reruteNode.UIoutputs.values():
-                    if self.canConnectPins(self.pressed_item, out):
+                    if canConnectPins(self.pressed_item._rawPin, out._rawPin):
                         self.connectPins(self.pressed_item, out)
                         break
                 self.pressed_item = reruteNode
