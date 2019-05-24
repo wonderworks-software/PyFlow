@@ -70,7 +70,9 @@ class UIGraphOutputs(UINodeBase):
         actionRename = self._menu.addAction("Rename")
         actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
-        actionAddOut.triggered.connect(self.createPinDialog)
+        actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
+        actionAddOut.triggered.connect(self.createPinDialog)        
+
         self.color = Colors.DarkGray
         self.headColorOverride = Colors.Gray
         self.image = RESOURCES_DIR + "/gear.svg"

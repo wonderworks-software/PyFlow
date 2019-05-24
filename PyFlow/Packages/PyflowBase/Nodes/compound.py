@@ -113,11 +113,19 @@ class compound(NodeBase):
                                                outPin.__class__.__name__,
                                                outPin.defaultValue(),
                                                outPin.call,
-                                               outPin.constraint)
+                                               outPin.structureType,
+                                               outPin.constraint,
+                                               outPin.structConstraint)
         if subgraphInputPin.isAny():
             subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
-            subgraphInputPin.singleInit = True
+            #subgraphInputPin.singleInit = True
             subgraphInputPin.setType(outPin.dataType)
+        outPin.owningNode().constraints[outPin.constraint].append(subgraphInputPin)
+        self.constraints[outPin.constraint].append(outPin)
+
+        outPin.owningNode().structConstraints[outPin.structConstraint].append(subgraphInputPin)
+        self.structConstraints[outPin.structConstraint].append(outPin)
+
         self.__inputsMap[subgraphInputPin] = outPin
         pinAffects(subgraphInputPin, outPin)
         # connect
@@ -125,21 +133,6 @@ class compound(NodeBase):
         def forceRename(name):
             subgraphInputPin.setName(name, force=True)
         outPin.nameChanged.connect(forceRename, weak=False)
-
-        # handle inner connect/disconnect
-        def onInnerConnected(other):
-            if subgraphInputPin.hasConnections() and subgraphInputPin.dataType != other.dataType:
-                subgraphInputPin.disconnectAll()
-            subgraphInputPin._data = other.currentData()
-            if subgraphInputPin.isAny():
-                subgraphInputPin.setType(other.dataType)
-        outPin.onPinConnected.connect(onInnerConnected, weak=False)
-
-        # handle outer connect/disconnect
-        def onSubgraphInputConnected(other):
-            if outPin.isAny():
-                outPin.setType(other.dataType)
-        subgraphInputPin.onPinConnected.connect(onSubgraphInputConnected, weak=False)
 
         # broadcast for UI wrapper class
         self.pinExposed.send(subgraphInputPin)
@@ -156,14 +149,21 @@ class compound(NodeBase):
                                                  inPin.__class__.__name__,
                                                  inPin.defaultValue(),
                                                  None,
-                                                 inPin.constraint)
+                                                 inPin.structureType,
+                                                 inPin.constraint,
+                                                 inPin.structConstraint)
         if subgraphOutputPin.isAny():
             subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
-            subgraphOutputPin.singleInit = True
             subgraphOutputPin.setType(inPin.dataType)
 
         if subgraphOutputPin.isExec():
             inPin.onExecute.connect(subgraphOutputPin.call)
+
+        inPin.owningNode().constraints[inPin.constraint].append(subgraphOutputPin)
+        self.constraints[inPin.constraint].append(inPin)
+
+        inPin.owningNode().structConstraints[inPin.structConstraint].append(subgraphOutputPin)
+        self.structConstraints[inPin.structConstraint].append(inPin)
 
         self.__outputsMap[subgraphOutputPin] = inPin
         pinAffects(inPin, subgraphOutputPin)
@@ -172,20 +172,6 @@ class compound(NodeBase):
         def forceRename(name):
             subgraphOutputPin.setName(name, force=True)
         inPin.nameChanged.connect(forceRename, weak=False)
-
-        # watch if something is connected to inner companion
-        # and change default value
-        def onInnerInpPinConnected(other):
-            subgraphOutputPin._data = other.currentData()
-            if subgraphOutputPin.isAny():
-                subgraphOutputPin.setType(other.dataType)
-        inPin.onPinConnected.connect(onInnerInpPinConnected, weak=False)
-
-        # handle outer connect/disconnect
-        def onSubgraphOutputConnected(other):
-            if inPin.isAny():
-                inPin.setType(other.dataType)
-        subgraphOutputPin.onPinConnected.connect(onSubgraphOutputConnected, weak=False)
 
         # broadcast for UI wrapper class
         self.pinExposed.send(subgraphOutputPin)

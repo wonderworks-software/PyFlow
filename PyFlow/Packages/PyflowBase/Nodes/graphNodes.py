@@ -39,9 +39,8 @@ class graphInputs(NodeBase):
     def addOutPin(self, name=None, dataType="AnyPin"):
         if name is None:
             name = self.getUniqPinName('in')
-        p = self.createOutputPin(name, dataType)
+        p = self.createOutputPin(name, dataType,constraint=name,structConstraint=name,structure=PinStructure.Multi)
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
-        p.singleInit = True
         return p
 
     def compute(self, *args, **kwargs):
@@ -103,10 +102,8 @@ class graphOutputs(NodeBase):
                     inDyn.uid = uuid.UUID(inPinJson['uuid'])
 
     def addInPin(self, name=None, dataType="AnyPin"):
-        # TODO: add dataType parameter to create specific pins
         if name is None:
             name = self.getUniqPinName('out')
-        p = self.createInputPin(name, dataType)
+        p = self.createInputPin(name, dataType,constraint=name,structConstraint=name,structure=PinStructure.Multi)
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
-        p.singleInit = True
         return p
