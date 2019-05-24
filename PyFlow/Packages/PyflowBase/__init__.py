@@ -43,6 +43,7 @@ from PyFlow.Packages.PyflowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyflowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyflowBase.Nodes.rerouteExecs import rerouteExecs
 from PyFlow.Packages.PyflowBase.Nodes.makeArray import makeArray
+from PyFlow.Packages.PyflowBase.Nodes.makeList import makeList
 from PyFlow.Packages.PyflowBase.Nodes.consoleOutput import consoleOutput
 from PyFlow.Packages.PyflowBase.Nodes.address import address
 from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
@@ -105,6 +106,7 @@ _NODES = {
     compound.__name__: compound,
     pythonNode.__name__: pythonNode,
     makeArray.__name__: makeArray,
+    makeList.__name__: makeList,
     consoleOutput.__name__: consoleOutput,
     forEachLoop.__name__: forEachLoop,
     address.__name__: address,

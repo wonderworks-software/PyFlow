@@ -161,10 +161,12 @@ class PinBase(IPin):
         storable = self.optionEnabled(PinOptions.Storable)
 
         serializedData = None
-        if storable:
-            serializedData = json.dumps(self.currentData(), cls=self.jsonEncoderClass())
-        else:
-            serializedData = json.dumps(self.defaultValue(), cls=self.jsonEncoderClass())
+        # Lists support. Arrays with arbitrary values will not be serialized
+        if not (self._currStructure == PinStructure.Array and self.dataType == "AnyPin"):
+            if storable:
+                serializedData = json.dumps(self.currentData(), cls=self.jsonEncoderClass())
+            else:
+                serializedData = json.dumps(self.defaultValue(), cls=self.jsonEncoderClass())
 
         data = {
             'name': self.name,
@@ -176,10 +178,10 @@ class PinBase(IPin):
             'bDirty': self.dirty,
             'linkedTo': list(self.linkedTo),
             'options': [i.value for i in PinOptions if self.optionEnabled(i)],
-            'changeType':self.changeTypeOnConnection,
-            'structure' : int(self._currStructure),
-            'alwaysList' : self._alwaysList,
-            'alwaysSingle' :self._alwaysSingle
+            'changeType': self.changeTypeOnConnection,
+            'structure': int(self._currStructure),
+            'alwaysList': self._alwaysList,
+            'alwaysSingle': self._alwaysSingle
         }
 
         # Wrapper class can subscribe to this signal and return

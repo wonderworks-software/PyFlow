@@ -198,18 +198,17 @@ def canConnectPins(src, dst):
         return False
 
     if src.IsValuePin() and dst.IsValuePin():
-        
-        if src.dataType in dst.allowedDataTypes([],dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([],src._supportedDataTypes):
+
+        if src.dataType in dst.allowedDataTypes([], dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
             return True
         else:
-            if all([src.dataType in list(dst.allowedDataTypes([],dst._defaultSupportedDataTypes,selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections),defaults=True))+["AnyPin"],
-                dst.checkFree([],selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections))]):
+            if all([src.dataType in list(dst.allowedDataTypes([], dst._defaultSupportedDataTypes, selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections), defaults=True)) + ["AnyPin"],
+                   dst.checkFree([], selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections))]):
                 return True
-            if all([dst.dataType in list(src.allowedDataTypes([],src._defaultSupportedDataTypes,defaults=True))+["AnyPin"],
-                src.checkFree([])]):
+            if all([dst.dataType in list(src.allowedDataTypes([], src._defaultSupportedDataTypes, defaults=True)) + ["AnyPin"],
+                   src.checkFree([])]):
                 return True
-        return False
-       
+
     if src.owningNode == dst.owningNode:
         return False
 
