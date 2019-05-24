@@ -35,9 +35,22 @@ class NodePainter(object):
             # bottom strip
             if node.resizeStrips[3]:
                 painter.drawLine(rf, height, width - rf, height)
+
             # bottom right strip
             if node.resizeStrips[4]:
                 painter.drawArc(width - rf, height - rf, rf, rf, 0, -90 * 16)
+
+            # bottom left strip
+            if node.resizeStrips[5]:
+                painter.drawArc(0, height - rf, rf, rf, -90 * 16, -90 * 16)
+
+            # top left strip
+            if node.resizeStrips[6]:
+                painter.drawArc(0, 0, rf, rf, 90 * 16, 90 * 16)
+
+            # top right strip
+            if node.resizeStrips[7]:
+                painter.drawArc(width - rf, 0, rf, rf, 90 * 16, -90 * 16)
 
     @staticmethod
     def asCommentNode(node, painter, option, widget):

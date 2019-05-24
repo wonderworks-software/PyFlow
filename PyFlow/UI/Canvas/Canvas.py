@@ -1194,6 +1194,8 @@ class Canvas(QGraphicsView):
                     self.viewport().setCursor(QtCore.Qt.SizeVerCursor)
                 elif resizeOpts["direction"] in [(1, 1), (-1, -1)]:
                     self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
+                elif resizeOpts["direction"] in [(-1, 1), (1, -1)]:
+                    self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)
 
         if self._drawRealtimeLine:
             if isinstance(self.pressed_item, PinBase):
