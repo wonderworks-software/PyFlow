@@ -231,9 +231,10 @@ class UICommentNode(UINodeBase):
             self.color = QtGui.QColor.fromRgba(jsonTemplate["wrapper"]["color"])
 
     def translate(self, x, y):
-        for n in self.owningNodes:
-            if not n.isSelected():
-                n.translate(x, y)
+        if not self.bResize:
+            for n in self.owningNodes:
+                if not n.isSelected():
+                    n.translate(x, y)
         super(UICommentNode, self).translate(x, y)
 
     def paint(self, painter, option, widget):

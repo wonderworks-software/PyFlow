@@ -358,7 +358,6 @@ class Canvas(QGraphicsView):
         self._minimum_scale = 0.2
         self._maximum_scale = 3.0
 
-        self.setDragMode(QGraphicsView.RubberBandDrag)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -383,7 +382,6 @@ class Canvas(QGraphicsView):
         self.mousePos = QtCore.QPointF(0, 0)
         self._lastMousePos = QtCore.QPointF(0, 0)
         self._right_button = False
-        self._is_rubber_band_selection = False
         self._drawRealtimeLine = False
         self._update_items = False
         self._resize_group_mode = False
@@ -1025,7 +1023,7 @@ class Canvas(QGraphicsView):
 
                     checked.add(connection)
 
-    def validateCommentNodesOwnership(self, graph):
+    def validateCommentNodesOwnership(self, graph, bExpandComments=True):
         state = self.state
         self.state = CanvasState.COMMENT_OWNERSHIP_VALIDATION
         comments = {}
@@ -1036,8 +1034,10 @@ class Canvas(QGraphicsView):
             if uiNode.isUnderActiveGraph():
                 if uiNode.isCommentNode:
                     comments[uiNode] = uiNode.collapsed
-                    uiNode.collapsed = False
-                    uiNode.owningNodes.clear()
+                    if not uiNode.collapsed:
+                        if bExpandComments:
+                            uiNode.collapsed = False
+                        uiNode.owningNodes.clear()
                 else:
                     defaultNodes.add(uiNode)
 
@@ -1055,7 +1055,6 @@ class Canvas(QGraphicsView):
         self.state = state
 
     def mousePressEvent(self, event):
-        self.validateCommentNodesOwnership(self.graphManager.activeGraph())
         if self.pressed_item and isinstance(self.pressed_item, EditableLabel):
             if self.pressed_item != self.itemAt(event.pos()):
                 self.pressed_item.setOutFocus()
@@ -1064,6 +1063,10 @@ class Canvas(QGraphicsView):
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         node = self.nodeFromInstance(self.pressed_item)
+
+        expandComments = False
+        self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
+
         if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
@@ -1138,6 +1141,9 @@ class Canvas(QGraphicsView):
                             if node.bResize:
                                 return
                         if event.button() == QtCore.Qt.MidButton:
+                            if node.isCommentNode:
+                                self.manipulationMode = CanvasManipulationMode.PAN
+                                return
                             if modifiers != QtCore.Qt.ShiftModifier:
                                 self.clearSelection()
                             node.setSelected(True)
@@ -1188,6 +1194,8 @@ class Canvas(QGraphicsView):
                     self.viewport().setCursor(QtCore.Qt.SizeVerCursor)
                 elif resizeOpts["direction"] in [(1, 1), (-1, -1)]:
                     self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
+                elif resizeOpts["direction"] in [(-1, 1), (1, -1)]:
+                    self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)
 
         if self._drawRealtimeLine:
             if isinstance(self.pressed_item, PinBase):
@@ -1408,7 +1416,7 @@ class Canvas(QGraphicsView):
             self.requestClearProperties.emit()
         self.resizing = False
 
-        self.validateCommentNodesOwnership(self.graphManager.activeGraph())
+        self.validateCommentNodesOwnership(self.graphManager.activeGraph(), False)
 
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]

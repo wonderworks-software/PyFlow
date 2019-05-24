@@ -70,6 +70,8 @@ class NodeName(QGraphicsWidget):
         self.setAcceptHoverEvents(True)
         self.labelItem = QGraphicsTextItem()
         self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
+        self.labelItem.setAcceptHoverEvents(True)
+        self.labelItem.hoverMoveEvent = self.hoverMoveEvent
         self._font = QtGui.QFont("Consolas")
         self._font.setPointSize(6)
         self.labelItem.setFont(self._font)
@@ -105,6 +107,9 @@ class NodeName(QGraphicsWidget):
         super(NodeName, self).hoverEnterEvent(event)
         self.hovered = True
         self.update()
+
+    def hoverMoveEvent(self, event):
+        self.parentItem().hoverMoveEvent(event)
 
     def hoverLeaveEvent(self, event):
         super(NodeName, self).hoverLeaveEvent(event)
@@ -218,7 +223,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.bResize = False
         self.resizeDirection = (0, 0)
         self.resizeStripsSize = 2
-        self.resizeStrips = [0, 0, 0, 0, 0]  # Left, Top, Right, Bottom, BottomRight
+        self.resizeStrips = [0, 0, 0, 0,  # Left, Top, Right, Bottom
+                             0, 0, 0, 0]  # BottomRight, BottomLeft, TopLeft, TopRight
 
         self.lastMousePos = QtCore.QPointF()
         self.mousePressPos = QtCore.QPointF()
@@ -241,7 +247,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # Core nodes support
         self.isTemp = False
         self.isCommentNode = False
-        
+
         self.propertyEditor = None
 
         # collapse action
@@ -749,21 +755,30 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     def shouldResize(self, cursorPos):
         result = {"resize": False, "direction": self.resizeDirection}
-        if self.resizeStrips[0] == 1:
+        if self.resizeStrips[0] == 1:   # left
             result["resize"] = True
             result["direction"] = (-1, 0)
-        if self.resizeStrips[1] == 1:
+        if self.resizeStrips[1] == 1:   # top
             result["resize"] = True
             result["direction"] = (0, -1)
-        if self.resizeStrips[2] == 1:
+        if self.resizeStrips[2] == 1:   # right
             result["resize"] = True
             result["direction"] = (1, 0)
-        elif self.resizeStrips[3] == 1:
+        if self.resizeStrips[3] == 1:   # bottom
             result["resize"] = True
             result["direction"] = (0, 1)
-        elif self.resizeStrips[4] == 1:
+        if self.resizeStrips[4] == 1:   # bottom right
             result["resize"] = True
             result["direction"] = (1, 1)
+        if self.resizeStrips[5] == 1:   # bottom left
+            result["resize"] = True
+            result["direction"] = (-1, 1)
+        if self.resizeStrips[6] == 1:   # top left
+            result["resize"] = True
+            result["direction"] = (-1, -1)
+        if self.resizeStrips[7] == 1:   # top right
+            result["resize"] = True
+            result["direction"] = (1, -1)
         return result
 
     def contextMenuEvent(self, event):
@@ -792,20 +807,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # resize
         if self.bResize:
             delta = event.scenePos() - self.mousePressPos
-            if self.resizeDirection == (1, 0):
-                # right connection resize
-                newWidth = delta.x() + self.initialRectWidth
-                if newWidth > self.minWidth:
-                    self._rect.setWidth(newWidth)
-                    self.w = newWidth
-                    self.updateNodeShape()
-            elif self.resizeDirection == (0, 1):
-                newHeight = delta.y() + self.initialRectHeight
-                if newHeight > self.minHeight:
-                    self._rect.setHeight(newHeight)
-                    self.updateNodeShape()
-            elif self.resizeDirection == (-1, 0):
-                # left connection resize
+            if self.resizeDirection == (-1, 0):   # left
                 posdelta = self.mapToScene(event.pos()) - self.origPos
                 posdelta2 = self.mapToScene(event.pos()) - self.initPos
                 newWidth = -posdelta2.x() + self.initialRectWidth
@@ -814,7 +816,27 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                     self.origPos = self.pos()
                     self._rect.setWidth(newWidth)
                     self.updateNodeShape()
-            elif self.resizeDirection == (1, 1):
+            elif self.resizeDirection == (0, -1):    # top
+                posdelta = self.mapToScene(event.pos()) - self.origPos
+                posdelta2 = self.mapToScene(event.pos()) - self.initPos
+                minHeight = -posdelta2.y() + self.initialRectHeight
+                if minHeight > self.minHeight:
+                    self.translate(0, posdelta.y())
+                    self.origPos = self.pos()
+                    self._rect.setHeight(minHeight)
+                    self.updateNodeShape()
+            elif self.resizeDirection == (1, 0):  # right
+                newWidth = delta.x() + self.initialRectWidth
+                if newWidth > self.minWidth:
+                    self._rect.setWidth(newWidth)
+                    self.w = newWidth
+                    self.updateNodeShape()
+            elif self.resizeDirection == (0, 1):    # bottom
+                newHeight = delta.y() + self.initialRectHeight
+                if newHeight > self.minHeight:
+                    self._rect.setHeight(newHeight)
+                    self.updateNodeShape()
+            elif self.resizeDirection == (1, 1):    # bottom right
                 newWidth = delta.x() + self.initialRectWidth
                 newHeight = delta.y() + self.initialRectHeight
                 if newWidth > self.minWidth:
@@ -824,6 +846,45 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 if newHeight > self.minHeight:
                     self._rect.setHeight(newHeight)
                     self.updateNodeShape()
+            elif self.resizeDirection == (-1, 1):    # bottom left
+                newHeight = delta.y() + self.initialRectHeight
+                if newHeight > self.minHeight:
+                    self._rect.setHeight(newHeight)
+                posdelta = self.mapToScene(event.pos()) - self.origPos
+                posdelta2 = self.mapToScene(event.pos()) - self.initPos
+                newWidth = -posdelta2.x() + self.initialRectWidth
+                if newWidth > self.minWidth:
+                    self.translate(posdelta.x(), 0)
+                    self.origPos = self.pos()
+                    self._rect.setWidth(newWidth)
+                self.updateNodeShape()
+            elif self.resizeDirection == (-1, -1):    # top left
+                posdelta = self.mapToScene(event.pos()) - self.origPos
+                posdelta2 = self.mapToScene(event.pos()) - self.initPos
+                minHeight = -posdelta2.y() + self.initialRectHeight
+                if minHeight > self.minHeight:
+                    self.translate(0, posdelta.y())
+                    self.origPos = self.pos()
+                    self._rect.setHeight(minHeight)
+                newWidth = -posdelta2.x() + self.initialRectWidth
+                if newWidth > self.minWidth:
+                    self.translate(posdelta.x(), 0)
+                    self.origPos = self.pos()
+                    self._rect.setWidth(newWidth)
+                self.updateNodeShape()
+            elif self.resizeDirection == (1, -1):  # top right
+                posdelta = self.mapToScene(event.pos()) - self.origPos
+                posdelta2 = self.mapToScene(event.pos()) - self.initPos
+                minHeight = -posdelta2.y() + self.initialRectHeight
+                if minHeight > self.minHeight:
+                    self.translate(0, posdelta.y())
+                    self.origPos = self.pos()
+                    self._rect.setHeight(minHeight)
+                newWidth = delta.x() + self.initialRectWidth
+                if newWidth > self.minWidth:
+                    self._rect.setWidth(newWidth)
+                    self.w = newWidth
+                self.updateNodeShape()
             self.update()
         self.lastMousePos = event.pos()
 
@@ -941,9 +1002,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             collidedCommentNode = self.collidesWithCommentNode()
             if collidedCommentNode is None:
                 self.show()
-                # for uiPin in self.UIPins.values():
-                #     for connection in uiPin.uiConnectionList:
-                #         connection.show()
             else:
                 if collidedCommentNode.collapsed:
                     self.hide()
@@ -951,7 +1009,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                     self.show()
 
     def hoverLeaveEvent(self, event):
-        self.resizeStrips = [0, 0, 0, 0, 0]
+        for i in range(len(self.resizeStrips)):
+            self.resizeStrips[i] = 0
         self.update()
 
     def hoverMoveEvent(self, event):
@@ -964,14 +1023,23 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             topStrip = QtCore.QRectF(rf, 0, width - rf * 2, self.resizeStripsSize)
             rightStrip = QtCore.QRectF(width - self.resizeStripsSize, rf, self.resizeStripsSize, height - rf * 2)
             bottomStrip = QtCore.QRectF(rf, height - self.resizeStripsSize, width - rf * 2, self.resizeStripsSize)
+
             bottomRightStrip = QtCore.QRectF(width - rf, height - rf, rf, rf)
+            bottomLeftStrip = QtCore.QRectF(0, height - rf, rf, rf)
+            topLeftStrip = QtCore.QRectF(0, 0, rf, rf)
+            topRightStrip = QtCore.QRectF(width - rf, 0, rf, rf)
 
             # detect where on the node
             self.resizeStrips[0] = 1 if leftStrip.contains(event.pos()) else 0
             self.resizeStrips[1] = 1 if topStrip.contains(event.pos()) else 0
             self.resizeStrips[2] = 1 if rightStrip.contains(event.pos()) else 0
             self.resizeStrips[3] = 1 if bottomStrip.contains(event.pos()) else 0
+
             self.resizeStrips[4] = 1 if bottomRightStrip.contains(event.pos()) else 0
+            self.resizeStrips[5] = 1 if bottomLeftStrip.contains(event.pos()) else 0
+            self.resizeStrips[6] = 1 if topLeftStrip.contains(event.pos()) else 0
+            self.resizeStrips[7] = 1 if topRightStrip.contains(event.pos()) else 0
+
             self.update()
 
     def Tick(self, delta, *args, **kwargs):
