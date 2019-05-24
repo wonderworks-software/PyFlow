@@ -3,6 +3,7 @@ import uuid
 from copy import deepcopy
 import weakref
 import json
+from nine import str
 
 from PyFlow.Core.Interfaces import IPin
 from PyFlow.Core.Common import *
@@ -37,6 +38,7 @@ class PinBase(IPin):
         self.affected_by = set()
 
         self.name = name
+        self._group = ""
         ## Defines is this input pin or output
         self.direction = direction
 
@@ -59,6 +61,14 @@ class PinBase(IPin):
         self._alwaysSingle = False
         self.changeTypeOnConnection = False
         self._defaultSupportedDataTypes = self._supportedDataTypes = self.supportedDataTypes()
+
+    @property
+    def group(self):
+        return self._group
+
+    @group.setter
+    def group(self, value):
+        self._group = str(value)
 
     def enableOptions(self, *options):
         for option in options:

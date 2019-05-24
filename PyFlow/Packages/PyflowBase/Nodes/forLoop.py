@@ -6,7 +6,7 @@ class forLoop(NodeBase):
     def __init__(self, name):
         super(forLoop, self).__init__(name)
         self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
-        self.firstIndex = self.createInputPin('Start', 'IntPin')
+        self.firstIndex = self.createInputPin('Start', 'IntPin', group="testGroup")
         self.lastIndex = self.createInputPin('Stop', 'IntPin')
         self.step = self.createInputPin('Step', 'IntPin')
         self.step.setData(1)

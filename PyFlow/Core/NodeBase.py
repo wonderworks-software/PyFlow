@@ -269,22 +269,18 @@ class NodeBase(INode):
                     continue
                 pinAffects(i, o)
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None,structure=PinStructure.Single, constraint=None,structConstraint=None, allowedPins=[]):
-        # if dataType == 'ExecPin':
-        #     assert(foo is not None), "Invalid parameters for input exec pin. Call function must be specified"
-
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group=""):
         # check unique name
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
-        p.direction = PinDirection.Input
         p.structureType = structure
+        p.group = group
         if structure == PinStructure.Array:
             p.initAsArray(True)
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
         if foo:
-            # p.call = foo
             p.onExecute.connect(foo, weak=False)
         if defaultValue is not None:
             p.setDefaultValue(defaultValue)
@@ -297,17 +293,18 @@ class NodeBase(INode):
         if constraint is not None:
             p.updateConstraint(constraint)
         if structConstraint is not None:
-            p.updatestructConstraint(structConstraint)               
+            p.updatestructConstraint(structConstraint)
         return p
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None,structure=PinStructure.Single, constraint=None,structConstraint=None, allowedPins=[]):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group=""):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         p.structureType = structure
+        p.group = group
         if structure == PinStructure.Array:
             p.initAsArray(True)
         elif structure == PinStructure.Multi:
-            p.enableOptions(PinOptions.ArraySupported)            
+            p.enableOptions(PinOptions.ArraySupported)
         if foo:
             p.onExecute.connect(foo, weak=False)
         if defaultValue is not None:
@@ -320,7 +317,7 @@ class NodeBase(INode):
         if constraint is not None:
             p.updateConstraint(constraint)
         if structConstraint is not None:
-            p.updatestructConstraint(structConstraint)            
+            p.updatestructConstraint(structConstraint)
         return p
 
     def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):
