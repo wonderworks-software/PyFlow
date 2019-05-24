@@ -119,7 +119,7 @@ class GraphBase(ISerializable):
             for nodeOutputJson in nodeJson['outputs']:
                 lhsPin = self.findPin(str(nodeOutputJson['fullName']))
                 for rhsPinFullName in nodeOutputJson['linkedTo']:
-                    rhsPin = self.findPin(rhsPinFullName)
+                    rhsPin = self.findPin(str(rhsPinFullName))
                     connected = connectPins(lhsPin, rhsPin)
                     assert(connected is True), "Failed to restore connection"
 
