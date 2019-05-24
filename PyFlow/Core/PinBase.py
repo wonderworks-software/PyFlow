@@ -341,6 +341,8 @@ class PinBase(IPin):
         nodePins = set()
         if self.structConstraint is not None:
             nodePins = set(self.owningNode().structConstraints[self.structConstraint])
+        else:
+            nodePins = set([self])
         for connectedPin in getConnectedPins(self):
             if connectedPin.structureType == PinStructure.Multi:
                 if connectedPin.canChangeStructure(self._currStructure,[],init=init):
