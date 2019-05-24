@@ -80,10 +80,10 @@ class AnyPin(PinBase):
     def pinConnected(self, other):
         super(AnyPin, self).pinConnected(other)
 
-    def aboutToConnect(self,other):
+    def aboutToConnect(self, other):
         if self.changeTypeOnConnection:
             dataType = other.dataType
-            traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType,False,other))
+            traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, False, other))
         super(AnyPin, self).aboutToConnect(other)
 
     def pinDisconnected(self, other):
@@ -91,31 +91,32 @@ class AnyPin(PinBase):
         #if self.changeTypeOnConnection:
         #    traverseConstrainedPins(self, lambda pin: self.updateOnDisconnectionCallback(pin))
 
-    def updateOnConnectionCallback(self, pin, dataType,init=False,other=None):        
+    def updateOnConnectionCallback(self, pin, dataType, init=False, other=None):
         free = pin.checkFree([])
-
-        if  free:
+        if free:
             if (dataType == "AnyPin" and not init):
                 if not other:
                     return
                 else:
-                    if pin.dataType != "AnyPin" and pin.dataType in other.allowedDataTypes([],other._supportedDataTypes):
+                    if pin.dataType != "AnyPin" and pin.dataType in other.allowedDataTypes([], other._supportedDataTypes):
                         dataType = pin.dataType
 
-            if any([dataType in pin.allowedDataTypes([],pin._supportedDataTypes),
-                      dataType == "AnyPin" ,
-                      (pin.checkFree([],False) and dataType in pin.allowedDataTypes([],pin._defaultSupportedDataTypes,defaults=True))]):
+            if any([dataType in pin.allowedDataTypes([], pin._supportedDataTypes),
+                    dataType == "AnyPin",
+                    (pin.checkFree([], False) and dataType in pin.allowedDataTypes([], pin._defaultSupportedDataTypes, defaults=True))]):
                 a = pin.setType(dataType)
                 if a:
                     if init:
                         pin.initialized = True
                     if other:
-                        pin._supportedDataTypes = other.allowedDataTypes([],other._supportedDataTypes)             
+                        if pin.changeTypeOnConnection:
+                            pin._supportedDataTypes = other.allowedDataTypes([], other._supportedDataTypes)             
                     if dataType == "AnyPin":
-                        pin._supportedDataTypes = pin._defaultSupportedDataTypes
-                        pin.supportedDataTypes = lambda: pin._supportedDataTypes
+                        if pin.changeTypeOnConnection:
+                            pin._supportedDataTypes = pin._defaultSupportedDataTypes
+                            pin.supportedDataTypes = lambda: pin._supportedDataTypes
                         pin._free = True
-                
+
     def updateOnDisconnectionCallback(self, pin):
         free = pin.checkFree([])
         if free:
@@ -149,7 +150,9 @@ class AnyPin(PinBase):
                         free = port.checkFree(checked)
             return free
 
-    def allowedDataTypes(self, checked=[], dataTypes=[],selfChek=True,defaults=False):
+    def allowedDataTypes(self, checked=[], dataTypes=[], selfChek=True, defaults=False):
+        if not self.changeTypeOnConnection:
+            return self._defaultSupportedDataTypes
         con = []
         neis = []
         if selfChek:
@@ -158,7 +161,7 @@ class AnyPin(PinBase):
                     if c not in checked:
                         con.append(c)
         else:
-            checked.append(self)                        
+            checked.append(self)
         if self.constraint:
             neis = self.owningNode().constraints[self.constraint]
         for port in neis + con:
@@ -218,7 +221,7 @@ class AnyPin(PinBase):
         self.jsonEncoderClass = otherClass.jsonEncoderClass
         self.jsonDecoderClass = otherClass.jsonDecoderClass
         self.supportedDataTypes = otherClass.supportedDataTypes
-        self._supportedDataTypes = otherClass.supportedDataTypes() 
+        self._supportedDataTypes = otherClass.supportedDataTypes()
 
         self.typeChanged.send(self.activeDataType)
         self._free = self.activeDataType == self.__class__.__name__
