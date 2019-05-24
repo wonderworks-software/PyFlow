@@ -31,7 +31,7 @@ from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UIPinBase import (
     UIPinBase,
     getUIPinInstance,
-    UIGroupPinBase
+    UIPinGroup
 )
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
@@ -1049,51 +1049,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # self.handleVisibility()
         pass
 
-    def addGroupContainer(self, portType, groupName="group"):
-        container = QGraphicsWidget()
-        container.setObjectName('{0}PinGroupContainerWidget'.format(self.name))
-        lyt = QGraphicsLinearLayout()
-        lyt.setOrientation(QtCore.Qt.Vertical)
-        lyt.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        lyt.setContentsMargins(1, 1, 1, 1)
-        container.group_name = EditableLabel(name=groupName, node=self, canvas=self.canvasRef())
-        font = QtGui.QFont('Consolas')
-        font.setBold(True)
-        font.setPointSize(500)
-        container.group_name._font = font
-        container.group_name.nameLabel.setFont(font)
-        container.group_name.nameLabel.update()
-        container.group_name.setObjectName(
-            '{0}_GroupConnector'.format(container.group_name))
-        container.group_name.setContentsMargins(0, 0, 0, 0)
-        container.group_name.setColor(Colors.AbsoluteBlack)
-        grpCon = self.addContainer()
-        container.groupIcon = UIGroupPinBase(container)
-        lyt.addItem(grpCon)
-        container.setLayout(lyt)
-        if portType == PinDirection.Input:
-            container.group_name.nameLabel.setAlignment(
-                QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-            grpCon.layout().addItem(container.groupIcon)
-            grpCon.layout().addItem(container.group_name)
-        else:
-            container.group_name.nameLabel.setAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-            grpCon.layout().addItem(container.group_name)
-            grpCon.layout().addItem(container.groupIcon)
-        return container
-
-    def addContainer(self):
-        container = QGraphicsWidget()
-        container.setObjectName('{0}PinContainerWidget'.format(self.name))
-        container.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
-        container.sizeHint(QtCore.Qt.MinimumSize, QtCore.QSizeF(50.0, 10.0))
-        lyt = QGraphicsLinearLayout()
-        lyt.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        lyt.setContentsMargins(1, 1, 1, 1)
-        container.setLayout(lyt)
-        return container
-
     def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None):
         wrapper = rawPin.getWrapper()
         if wrapper is not None:
@@ -1105,6 +1060,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         name = rawPin.name
         lblName = name
         if rawPin.direction == PinDirection.Input:
+            if rawPin.group != "":
+                # TODO: check if group with this name is not exist
+                # put pin in a group layout
+                # add group in inputs layout
+                pass
             self.inputsLayout.addItem(p)
             self.inputsLayout.setAlignment(p, QtCore.Qt.AlignLeft)
 
@@ -1122,34 +1082,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         if self.collapsed:
             p.hide()
         return p
-
-    def collapsePinGroup(self, container):
-        for i in range(1, container.layout().count()):
-            item = container.layout().itemAt(i)
-            pin = item.layout().itemAt(0) if isinstance(
-                item.layout().itemAt(0), UIPinBase) else item.layout().itemAt(1)
-            if pin.hasConnections:
-                if pin.direction == PinDirection.Input:
-                    for ege in pin.connections:
-                        ege.drawDestination = container.layout().itemAt(0).layout().itemAt(0)
-                if pin.direction == PinDirection.Output:
-                    for ege in pin.connections:
-                        ege.drawSource = container.layout().itemAt(0).layout().itemAt(1)
-            item.hide()
-
-    def expandPinGroup(self, container):
-        for i in range(1, container.layout().count()):
-            item = container.layout().itemAt(i)
-            pin = item.layout().itemAt(0) if isinstance(
-                item.layout().itemAt(0), UIPinBase) else item.layout().itemAt(1)
-            if pin.hasConnections:
-                if pin.direction == PinDirection.Input:
-                    for ege in pin.connections:
-                        ege.drawDestination = pin
-                if pin.direction == PinDirection.Output:
-                    for ege in pin.connections:
-                        ege.drawSource = pin
-            item.show()
 
 
 def REGISTER_UI_NODE_FACTORY(packageName, factory):

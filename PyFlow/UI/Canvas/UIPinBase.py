@@ -10,6 +10,7 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QComboBox
+from Qt.QtWidgets import QGraphicsLinearLayout
 
 from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.Settings import *
@@ -20,74 +21,16 @@ from PyFlow.UI.Canvas.UICommon import PinDefaults
 UI_PINS_FACTORIES = {}
 
 
-class UICommentPinBase(QGraphicsWidget):
+class UIPinGroup(QGraphicsWidget):
+    def __init__(self, parent=None):
+        super(UIPinGroup, self).__init__(parent)
+        self.setAcceptHoverEvents(True)
+        self.layout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(5)
 
-    def __init__(self, parent):
-        super(UICommentPinBase, self).__init__(parent)
-        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
-        self.pinSize = 8 + 1
-        self.height = 8 + 1
-        self.setGeometry(0, 0, self.pinSize, self.height)
-        self.expanded = True
-
-    def boundingRect(self):
-        return QtCore.QRectF(0, 0, 8, 8)
-
-    def sizeHint(self, which, constraint):
-        try:
-            return QtCore.QSizeF(self.pinSize, self.height)
-        except:
-            return QGraphicsWidget.sizeHint(self, which, constraint)
-
-    def shape(self):
-        path = QtGui.QPainterPath()
-        path.addEllipse(self.boundingRect())
-        return path
-
-    def paint(self, painter, option, widget):
-        pass
-        # PinPainter.asGroupPin(self, painter, option, widget)
-
-
-class UIGroupPinBase(QGraphicsWidget):
-
-    onCollapsed = QtCore.Signal(object)
-    onExpanded = QtCore.Signal(object)
-
-    def __init__(self, container):
-        super(UIGroupPinBase, self).__init__()
-        self._container = container
-        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
-        self.pinSize = 8 + 1
-        self.height = 8 + 1
-        self.setGeometry(0, 0, self.pinSize, self.height)
-        self.expanded = True
-
-    def boundingRect(self):
-        return QtCore.QRectF(0, 0, 8, 8)
-
-    def sizeHint(self, which, constraint):
-        try:
-            return QtCore.QSizeF(self.pinSize, self.height)
-        except:
-            return QGraphicsWidget.sizeHint(self, which, constraint)
-
-    def shape(self):
-        path = QtGui.QPainterPath()
-        path.addEllipse(self.boundingRect())
-        return path
-
-    def paint(self, painter, option, widget):
-        PinPainter.asGroupPin(self, painter, option, widget)
-
-    def mousePressEvent(self, event):
-        QGraphicsWidget.mousePressEvent(self, event)
-        if self.expanded:
-            self.onCollapsed.emit(self._container)
-        else:
-            self.onExpanded.emit(self._container)
-        self.expanded = not self.expanded
-        self.update()
+    def addPin(self, pin):
+        self.layout.addItem(pin)
 
 
 class UIPinBase(QGraphicsWidget):
