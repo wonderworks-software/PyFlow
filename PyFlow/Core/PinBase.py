@@ -320,29 +320,17 @@ class PinBase(IPin):
         self.onPinConnected.send(other)  
 
     def changeStructure(self,newStruct,init=False):
-        if self.structureType == PinStructure.Multi and self._currStructure != newStruct:
-            if newStruct == PinStructure.Array and not (self.optionEnabled(PinOptions.ArraySupported) or init):
-                return
-            else:
-                free = self.canChangeStructure(newStruct,[])
-                if free :
-                    self._structFree = False
-                    self.setAsArray(newStruct==PinStructure.Array)
-                    self._currStructure = newStruct
-                    if newStruct == PinStructure.Single :
-                        self.disableOptions(PinOptions.ArraySupported)
-                        self.disableOptions(PinOptions.SupportsOnlyArrays)
-                    else :
-                        self.enableOptions(PinOptions.ArraySupported)
-
-                    traversed = set()
-                    traversed.add(self)   
-                    self.updateConstrainedPins(traversed,newStruct,connecting=True) 
+        #if self._structure == PinStructure.Multi and self._currStructure != newStruct:
+        #    if newStruct == PinStructure.Array and not (self.optionEnabled(PinOptions.ArraySupported) or init):
+        #        return
+        #    else:
+        if self.canChangeStructure(newStruct,[]) :
+            self.updateConstrainedPins(set(),newStruct,init,connecting=True) 
 
     def pinConnected(self, other):
         push(self)
 
-    def updateConstrainedPins(self,traversed,newStruct,connecting=False):
+    def updateConstrainedPins(self,traversed,newStruct,init=False,connecting=False):
         nodePins = set()
         if self.structConstraint is not None:
             nodePins = set(self.owningNode().structConstraints[self.structConstraint])
@@ -354,17 +342,20 @@ class PinBase(IPin):
             if neighbor not in traversed:
                 neighbor.setAsArray(newStruct==PinStructure.Array)
                 if connecting:
-                    neighbor._currStructure = self._currStructure
-                    if newStruct == PinStructure.Single :
+                    if init:
+                        neighbor._currStructure = newStruct
+                    else:
+                        neighbor._currStructure = neighbor._structure
+                    neighbor.enableOptions(PinOptions.ArraySupported)
+                    if newStruct == PinStructure.Single:
                         neighbor.disableOptions(PinOptions.ArraySupported)
                         neighbor.disableOptions(PinOptions.SupportsOnlyArrays)
-                    else :
-                        neighbor.enableOptions(PinOptions.ArraySupported)
+                        
                 else:
                     neighbor._currStructure = neighbor._structure
                     neighbor._data = neighbor.defaultValue()
                 traversed.add(neighbor) 
-                neighbor.updateConstrainedPins(traversed,newStruct,connecting=connecting)
+                neighbor.updateConstrainedPins(traversed,newStruct,init,connecting=connecting)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
@@ -390,14 +381,18 @@ class PinBase(IPin):
                 free = True
                 checked.append(self)
             free = True
-            for port in self.owningNode().structConstraints[self.structConstraint] + con:
-                if port not in checked:
-                    checked.append(port)
-                    if self.owningNode() == port.owningNode() and self.structConstraint != port.structConstraint :
-                        if port.structureType != newStruct:
-                            free = False
-                    else:
-                        free = port.canChangeStructure(newStruct,checked,selfChek)
+            if selfChek:
+                if self._currStructure == PinStructure.Single and newStruct == PinStructure.Array and not self.optionEnabled(PinOptions.ArraySupported) and self.hasConnections():
+                    free = False
+                if self._currStructure == PinStructure.Array and newStruct == PinStructure.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections():
+                    free = False            
+            if free:
+                for port in self.owningNode().structConstraints[self.structConstraint] + con:
+                    if port not in checked and free:
+                        checked.append(port)
+                        free = port.canChangeStructure(newStruct,checked,True)
+                        if not free:
+                            break
             return free
 
     def setClean(self):
