@@ -187,7 +187,7 @@ class AnyPin(PinBase):
 
     def initType(self,dataType,initializing=False):
         if self.checkFree([]):
-            traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType,initializing))
+            traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, initializing))
             return True
         return False
 

@@ -39,7 +39,7 @@ class graphInputs(NodeBase):
     def addOutPin(self, name=None, dataType="AnyPin"):
         if name is None:
             name = self.getUniqPinName('in')
-        p = self.createOutputPin(name, dataType,constraint=name,structConstraint=name,structure=PinStructure.Multi)
+        p = self.createOutputPin(name, dataType, constraint=name, structConstraint=name, structure=PinStructure.Multi)
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         return p
 

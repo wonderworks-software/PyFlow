@@ -41,7 +41,7 @@ class UIAnyPin(UIPinBase):
 
     def setDefault(self, defcolor):
         if defcolor != self.prevColor:
-            self.prevColor = defcolor        
+            self.prevColor = defcolor
             self._pinColor = QtGui.QColor(*defcolor)
             for e in self.connections:
                 e.setColor(QtGui.QColor(*defcolor))
@@ -50,6 +50,11 @@ class UIAnyPin(UIPinBase):
 
     def selectInit(self):
         validPins = self._rawPin._defaultSupportedDataTypes + ("AnyPin",)
+
+        # List can't become array
+        if self._rawPin._currStructure != PinStructure.Single:
+            validPins = tuple([i for i in validPins if i != "ListPin"])
+
         self.d = SelectPinDialog(validPins=validPins)
         self.d.exec_()
         dataType = self.d.getResult()

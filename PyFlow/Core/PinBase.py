@@ -381,6 +381,8 @@ class PinBase(IPin):
     def canChangeStructure(self, newStruct, checked=[], selfChek=True, init=False):
         if not init and (self._alwaysList or self._alwaysSingle):
             return False
+        if self.isList():
+            return False
         if self.structConstraint is None and self.structureType == PinStructure.Multi:#(newStruct !=PinStructure.Array and self.structureType == PinStructure.Array and self.optionEnabled(PinOptions.AllowMultipleConnections))
             return True
         elif self.structureType != PinStructure.Multi:
