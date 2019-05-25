@@ -10,27 +10,82 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QComboBox
+from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QGraphicsLinearLayout
 
 from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.Painters import PinPainter
-from PyFlow.UI.Canvas.UICommon import PinDefaults
+from PyFlow.UI.Canvas.UICommon import PinDefaults, NodeDefaults
 
 
 UI_PINS_FACTORIES = {}
 
+headerBtnStyle = """
+QPushButton {
+    background-color: rgb(55, 55, 55);
+    border-style: outset;
+    border-radius: 1px;
+    border-width: 1px;
+    padding: 0px;
+    margin: 0px;
+    font-size: 8px;
+    font-family: "Consolas";
+    color: white;
+}
+"""
 
 class UIPinGroup(QGraphicsWidget):
-    def __init__(self, parent=None):
+    def __init__(self, scene, name, parent=None):
         super(UIPinGroup, self).__init__(parent)
         self.setAcceptHoverEvents(True)
+        self.borderPen = QtGui.QPen(Colors.DarkGray, 0.5, QtCore.Qt.SolidLine)
+        self._scene = scene
         self.layout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setSpacing(5)
+        self.layout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
+        self.setLayout(self.layout)
+        headerBtn = QPushButton(name)
+        headerBtn.setStyleSheet(headerBtnStyle)
+        headerBtn.setFlat(True)
+        headerBtn.setContentsMargins(0, 0, 0, 0)
+        headerBtn.setMaximumHeight(10)
+        headerBtn.clicked.connect(self.toggleCollapsed)
+        self.headerWidget = self._scene.addWidget(headerBtn)
+        self.layout.addItem(self.headerWidget)
+        self._pins = set()
+        self.bCollapsed = False
+
+    def paint(self, painter, option, widget):
+        super(UIPinGroup, self).paint(painter, option, widget)
+        if not self.bCollapsed:
+            painter.setPen(self.borderPen)
+            rect = self.boundingRect()
+            rect.setTop(self.getHeight())
+            painter.drawRect(rect)
+            painter.fillRect(rect, QtGui.QColor(255, 255, 255, 8))
+
+    def getWidth(self):
+        return self.headerWidget.boundingRect().width()
+
+    def getHeight(self):
+        return self.headerWidget.boundingRect().height()
+
+    def setCollapsed(self, bCollapsed):
+        for pin in self._pins:
+            pin.setVisible(not bCollapsed)
+        self.bCollapsed = bCollapsed
+
+    def toggleCollapsed(self):
+        self.setCollapsed(not self.bCollapsed)
 
     def addPin(self, pin):
         self.layout.addItem(pin)
+        if pin.direction == PinDirection.Input:
+            self.layout.setAlignment(pin, QtCore.Qt.AlignLeft)
+        if pin.direction == PinDirection.Output:
+            self.layout.setAlignment(pin, QtCore.Qt.AlignRight)
+        self._pins.add(pin)
 
 
 class UIPinBase(QGraphicsWidget):

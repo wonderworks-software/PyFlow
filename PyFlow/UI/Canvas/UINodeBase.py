@@ -251,6 +251,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.propertyEditor = None
 
         # collapse action
+        self._groups = {"input": {}, "output": {}}
         self.actionToggleCollapse = self._menu.addAction("ToggleCollapse")
         self.actionToggleCollapse.setToolTip("Toggles node's body collapsed or not")
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
@@ -448,6 +449,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         template['displayName'] = self.displayName
         template['collapsed'] = self.collapsed
         template['headerHtml'] = self.nodeNameWidget.getHtml()
+        if len(self._groups) > 0:
+            template['groups'] = {'input': {}, 'output': {}}
+            for name, grp in self._groups['input'].items():
+                template['groups']['input'][name] = grp.bCollapsed
+            for name, grp in self._groups['output'].items():
+                template['groups']['output'][name] = grp.bCollapsed
         return template
 
     def setHeaderHtml(self, html):
@@ -506,6 +513,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 self.collapsed = jsonTemplate["wrapper"]["collapsed"]
             if "headerHtml" in jsonTemplate["wrapper"]:
                 headerHtml = jsonTemplate["wrapper"]["headerHtml"]
+            if "groups" in jsonTemplate["wrapper"]:
+                for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["input"].items():
+                    self._groups["input"][groupName].setCollapsed(collapsed)
+                for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["output"].items():
+                    self._groups["output"][groupName].setCollapsed(collapsed)
 
         self.setToolTip(self.description())
         if self.resizable:
@@ -592,6 +604,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             for pin in pins:
                 if pin.isVisible():
                     h += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
+            igrhHeight = 0
+            ogrhHeight = 0
+            for grp in self._groups["input"].values():
+                igrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
+            for grp in self._groups["output"].values():
+                ogrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
+            h += max(igrhHeight, ogrhHeight)
         except:
             pass
 
@@ -614,10 +633,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         for i in self.UIPins.values():
             if i.direction == PinDirection.Input:
                 iwidth = max(iwidth, i.sizeHint(None, None).width())
-                # pinwidth = max(pinwidth, i.width)
             else:
                 owidth = max(owidth, i.sizeHint(None, None).width())
-                # pinwidth2 = max(pinwidth2, i.width)
+        for igrp in self._groups["input"].values():
+            w = igrp.getWidth()
+            iwidth = max(iwidth, w)
+        for ogrp in self._groups["output"].values():
+            w = ogrp.getWidth()
+            owidth = max(owidth, w)
         return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
 
     def invalidateNodeLayouts(self):
@@ -1057,25 +1080,44 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         p = getUIPinInstance(self, rawPin)
         p.call = rawPin.call
 
+        grpItem = None
+        if rawPin.group != "":
+            groupNames = list(self._groups["input"].keys()) + list(self._groups["output"].keys())
+            if rawPin.group not in groupNames:
+                grpItem = UIPinGroup(self.scene(), rawPin.group)
+            else:
+                if rawPin.direction == PinDirection.Input:
+                    grpItem = self._groups["input"][rawPin.group]
+                if rawPin.direction == PinDirection.Output:
+                    grpItem = self._groups["output"][rawPin.group]
+
+            grpItem.addPin(p)
+            self.inputsLayout.addItem(grpItem)
+            self.inputsLayout.setAlignment(grpItem, QtCore.Qt.AlignLeft)
+
         name = rawPin.name
         lblName = name
         if rawPin.direction == PinDirection.Input:
-            if rawPin.group != "":
-                # TODO: check if group with this name is not exist
-                # put pin in a group layout
-                # add group in inputs layout
-                pass
-            self.inputsLayout.addItem(p)
-            self.inputsLayout.setAlignment(p, QtCore.Qt.AlignLeft)
+            if grpItem is not None:
+                self._groups["input"][rawPin.group] = grpItem
+                self.inputsLayout.addItem(grpItem)
+                self.inputsLayout.setAlignment(grpItem, QtCore.Qt.AlignLeft)
+            else:
+                self.inputsLayout.addItem(p)
+                self.inputsLayout.setAlignment(p, QtCore.Qt.AlignLeft)
 
         elif rawPin.direction == PinDirection.Output:
-            self.outputsLayout.addItem(p)
-            self.outputsLayout.setAlignment(p, QtCore.Qt.AlignRight)
+            if grpItem is not None:
+                self._groups["output"][rawPin.group] = grpItem
+                self.outputsLayout.addItem(grpItem)
+                self.outputsLayout.setAlignment(grpItem, QtCore.Qt.AlignRight)
+            else:
+                self.outputsLayout.addItem(p)
+                self.outputsLayout.setAlignment(p, QtCore.Qt.AlignRight)
 
         p.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.update()
-        # self.nodeMainGWidget.update()
         self.updateNodeShape()
         p.syncDynamic()
         p.syncRenamable()

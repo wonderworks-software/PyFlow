@@ -115,7 +115,8 @@ class compound(NodeBase):
                                                outPin.call,
                                                outPin.structureType,
                                                outPin.constraint,
-                                               outPin.structConstraint)
+                                               outPin.structConstraint,
+                                               group=outPin.owningNode().name)
         if subgraphInputPin.isAny():
             subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
             #subgraphInputPin.singleInit = True
@@ -151,7 +152,8 @@ class compound(NodeBase):
                                                  None,
                                                  inPin.structureType,
                                                  inPin.constraint,
-                                                 inPin.structConstraint)
+                                                 inPin.structConstraint,
+                                                 group=inPin.owningNode().name)
         if subgraphOutputPin.isAny():
             subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
             subgraphOutputPin.setType(inPin.dataType)
