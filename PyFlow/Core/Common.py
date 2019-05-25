@@ -50,6 +50,8 @@ def lerp(start, end, alpha):
 def GetRangePct(MinValue, MaxValue, Value):
     return (Value - MinValue) / (MaxValue - MinValue)
 
+def sign(x):
+    return x and (1, -1)[x < 0]
 
 ## Computes the value of the first specified argument clamped to a range defined by the second and third specified arguments
 # @param[in] n

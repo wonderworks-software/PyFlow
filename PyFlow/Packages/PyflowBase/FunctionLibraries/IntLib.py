@@ -1,5 +1,3 @@
-from numpy import sign
-
 from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
@@ -98,8 +96,8 @@ class IntLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []})
-    def sign(a=('IntPin', 0)):
+    def sign(x=('IntPin', 0)):
         '''
         Sign (integer, returns -1 if A &lt; 0, 0 if A is zero, and +1 if A &gt; 0)
         '''
-        return int(sign(a))
+        return int(sign(x))

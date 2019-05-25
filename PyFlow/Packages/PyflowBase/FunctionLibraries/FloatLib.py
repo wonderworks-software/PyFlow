@@ -1,5 +1,4 @@
 from math import pi
-from numpy import sign
 
 from PyFlow.Core import(
     FunctionLibraryBase,
@@ -31,7 +30,7 @@ class FloatLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
     def multByPi(a=('FloatPin', 0.0)):
         '''
-        Multiplies the input value by pi
+        Multiplies the input value by pi.
         '''
         return a * pi
 
@@ -50,25 +49,9 @@ class FloatLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
-    def selectFloat(A=('FloatPin', 0.0), B=('FloatPin', 0.0), PickA=('BoolPin', False)):
+    def roundf(Value=('FloatPin', 0.0), Digits=('IntPin', 0)):
         '''
-        If bPickA is true, A is returned, otherwise B is
-        '''
-        return A if PickA else B
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
-    def signf(a=('FloatPin', 0.0)):
-        '''
-        Returns -1 if x &lt; 0, 0 if x==0, 1 if x &gt; 0
-        '''
-        return float(sign(a))
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
-    def roundf(Value=('FloatPin', 0.0), Digits=('IntPin', 1)):
-        '''
-        Round a number to a given precision in decimal digits (default 0 digits)
+        Round a number to a given precision in decimal digits.
         '''
         return round(Value, Digits)
 
