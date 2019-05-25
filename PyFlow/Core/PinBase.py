@@ -74,12 +74,12 @@ class PinBase(IPin):
     def enableOptions(self, *options):
         for option in options:
             self._flags = self._flags | option
-            self._origFlags = self._flags
+        self._origFlags = self._flags
 
     def disableOptions(self, *options):
         for option in options:
             self._flags = self._flags & ~option
-            self._origFlags = self._flags
+        self._origFlags = self._flags
 
     def optionEnabled(self, option):
         return bool(self._flags & option)

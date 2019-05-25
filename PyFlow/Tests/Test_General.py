@@ -25,18 +25,20 @@ class TestGeneral(unittest.TestCase):
     def test_add_int_no_exec(self):
         man = GraphManager()
         packages = GET_PACKAGES()
-        intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
-        foos = intlib.getFunctions()
+        mathLib = packages['PyflowBase'].GetFunctionLibraries()["MathAbstractLib"]
+        defaultLib = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"]
+        foos = mathLib.getFunctions()
+        defaultLibFoos = defaultLib.getFunctions()
 
-        addNode1 = NodeBase.initializeFromFunction(foos["add"])
+        makeIntNode = NodeBase.initializeFromFunction(defaultLibFoos["makeInt"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
-        man.activeGraph().addNode(addNode1)
+        man.activeGraph().addNode(makeIntNode)
         man.activeGraph().addNode(addNode2)
 
-        addNode1.setData('a', 5)
+        makeIntNode.setData('i', 5)
 
-        connection = connectPins(addNode1[str('out')], addNode2[str('a')])
+        connection = connectPins(makeIntNode[str('out')], addNode2[str('a')])
         self.assertEqual(connection, True, "FAILED TO ADD EDGE")
         self.assertEqual(addNode2.getData('out'), 5, "NODES EVALUATION IS INCORRECT")
 
@@ -115,7 +117,7 @@ class TestGeneral(unittest.TestCase):
 
     def test_are_pins_connected(self):
         packages = GET_PACKAGES()
-        intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
+        intlib = packages['PyflowBase'].GetFunctionLibraries()["MathAbstractLib"]
         foos = intlib.getFunctions()
 
         addNode1 = NodeBase.initializeFromFunction(foos["add"])
@@ -439,8 +441,9 @@ class TestGeneral(unittest.TestCase):
 
         # add simple calculation
         foos = packages['PyflowBase'].GetFunctionLibraries()["IntLib"].getFunctions()
+        defaultFoos = packages['PyflowBase'].GetFunctionLibraries()["MathAbstractLib"].getFunctions()
 
-        addNode1 = NodeBase.initializeFromFunction(foos["add"])
+        addNode1 = NodeBase.initializeFromFunction(defaultFoos["add"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
         subgraphNodeInstance.addNode(addNode1)
         subgraphNodeInstance.addNode(addNode2)
@@ -557,16 +560,18 @@ class TestGeneral(unittest.TestCase):
     def test_graph_serialization(self):
         man = GraphManager()
         packages = GET_PACKAGES()
-        intlib = packages['PyflowBase'].GetFunctionLibraries()["IntLib"]
-        foos = intlib.getFunctions()
+        lib = packages['PyflowBase'].GetFunctionLibraries()["MathAbstractLib"]
+        defaultLib = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"]
+        foos = lib.getFunctions()
+        defFoos = defaultLib.getFunctions()
 
-        addNode1 = NodeBase.initializeFromFunction(foos["add"])
+        makeInt = NodeBase.initializeFromFunction(defFoos["makeInt"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
 
-        man.activeGraph().addNode(addNode1)
+        man.activeGraph().addNode(makeInt)
         man.activeGraph().addNode(addNode2)
-        connected = connectPins(addNode1[str('out')], addNode2[str('a')])
-        addNode1.setData('a', 5)
+        connected = connectPins(makeInt[str('out')], addNode2[str('a')])
+        makeInt.setData('i', 5)
         self.assertEqual(connected, True)
         self.assertEqual(addNode2.getData(str('out')), 5, "Incorrect calc")
 
@@ -577,7 +582,7 @@ class TestGeneral(unittest.TestCase):
         # load
         man.deserialize(dataJson)
 
-        restoredAddNode2 = man.activeGraph().findNode(str('add1'))
+        restoredAddNode2 = man.activeGraph().findNode(str('makeInt'))
         self.assertEqual(restoredAddNode2.getData('out'), 5, "Incorrect calc")
 
     def test_graph_depth(self):
