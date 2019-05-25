@@ -106,3 +106,19 @@ class DefaultLib(FunctionLibraryBase):
     def clock():
         '''Returns the CPU time or real time since the start of the process or since the first call of clock().'''
         return time.clock()
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "3"}), meta={'Category': 'DefaultLib', 'Keywords': []})
+    def select(A=('AnyPin', None, {"constraint": "1"}), B=('AnyPin', None, {"constraint": "2"}), PickA=('BoolPin', False),
+               aPicked=("Reference", ("BoolPin", False))):
+        '''
+        If bPickA is true, A is returned, otherwise B.
+        '''
+        aPicked(PickA)
+        return A if PickA else B
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('StringPin', ""), meta={'Category': 'Utils', 'Keywords': []})
+    def objectType(obj=("AnyPin", None, {"constraint": "1"})):
+        '''Returns <u>type(obj).__name__</u>'''
+        return type(obj).__name__

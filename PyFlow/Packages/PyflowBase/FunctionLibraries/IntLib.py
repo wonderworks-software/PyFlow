@@ -13,15 +13,6 @@ class IntLib(FunctionLibraryBase):
         super(IntLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': ['+', 'append']})
-    ## Sum of two ints
-    def add(a=('IntPin', 0), b=('IntPin', 0)):
-        '''
-        Sum of two ints
-        '''
-        return a + b
-
-    @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Bits manipulation', 'Keywords': []})
     def bitwiseAnd(a=('IntPin', 0), b=('IntPin', 0)):
         '''
@@ -104,14 +95,6 @@ class IntLib(FunctionLibraryBase):
         '''
         mask = 1 << offset
         return(intType ^ mask)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []})
-    def selectInt(A=('IntPin', 0), B=('IntPin', 0), PickA=('BoolPin', False)):
-        '''
-        If bPickA is true, A is returned, otherwise B is
-        '''
-        return A if PickA else B
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Math|Int', 'Keywords': []})

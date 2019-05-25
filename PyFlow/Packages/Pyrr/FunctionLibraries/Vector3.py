@@ -19,6 +19,15 @@ class Vector3(FunctionLibraryBase):
         return v
 
     @staticmethod
+    @IMPLEMENT_NODE(returns=("FloatPin", 0.0), meta={'Category': 'Math|Basic', 'Keywords': ['vector', '|', 'dot', 'product']})
+    def dotProduct(a=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatVector4Pin", "FloatVector3Pin", "QuatPin"]}),
+                   b=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatVector4Pin", "FloatVector3Pin", "QuatPin"]})):
+        '''Dot product'''
+        if type(a) == "Quaternion":
+            return a.dot(b)
+        return a | b
+
+    @staticmethod
     @IMPLEMENT_NODE(returns=('FloatVector3Pin', pyrr.Vector3()), nodeType=NodeTypes.Pure, meta={'Category': 'Math|Vector3', 'Keywords': ['vector3']})
     def v3UnitLenX():
         '''Unit length x vector3.'''
