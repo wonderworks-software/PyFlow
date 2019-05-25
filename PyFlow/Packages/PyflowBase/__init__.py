@@ -24,6 +24,7 @@ from PyFlow.Packages.PyflowBase.FunctionLibraries.RandomLib import RandomLib
 
 # Class based nodes
 from PyFlow.Packages.PyflowBase.Nodes.branch import branch
+from PyFlow.Packages.PyflowBase.Nodes.tick import tick
 from PyFlow.Packages.PyflowBase.Nodes.charge import charge
 from PyFlow.Packages.PyflowBase.Nodes.delay import delay
 from PyFlow.Packages.PyflowBase.Nodes.deltaTime import deltaTime
@@ -111,7 +112,8 @@ _NODES = {
     consoleOutput.__name__: consoleOutput,
     forEachLoop.__name__: forEachLoop,
     address.__name__: address,
-    constant.__name__: constant
+    constant.__name__: constant,
+    tick.__name__: tick
 }
 
 _PINS = {
