@@ -57,6 +57,7 @@ class PinBase(IPin):
         self._free = False
         self._isAny = False
         self._isArray = False
+        self._isList = False
         self._alwaysList = False
         self._alwaysSingle = False
         self.changeTypeOnConnection = False
@@ -142,6 +143,9 @@ class PinBase(IPin):
 
     def isArray(self):
         return self._isArray
+
+    def isList(self):
+        return self.dataType == "ListPin"
 
     @staticmethod
     def IsValuePin():
@@ -371,16 +375,15 @@ class PinBase(IPin):
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
         if self.direction == PinDirection.Output:
-            otherPinName = other.getName() 
+            otherPinName = other.getName()
         push(other)
 
-    def canChangeStructure(self,newStruct, checked=[], selfChek=True,init=False):
-        # if self.constraint is None:
+    def canChangeStructure(self, newStruct, checked=[], selfChek=True, init=False):
         if not init and (self._alwaysList or self._alwaysSingle):
             return False
         if self.structConstraint is None and self.structureType == PinStructure.Multi:#(newStruct !=PinStructure.Array and self.structureType == PinStructure.Array and self.optionEnabled(PinOptions.AllowMultipleConnections))
             return True
-        elif self.structureType != PinStructure.Multi :
+        elif self.structureType != PinStructure.Multi:
             return False
         else:
             con = []

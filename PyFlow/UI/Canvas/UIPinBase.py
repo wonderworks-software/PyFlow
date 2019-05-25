@@ -92,6 +92,7 @@ class UIPinBase(QGraphicsWidget):
         self.uiConnectionList = []
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+        self.pinCircleDrawOffset = QtCore.QPointF()
 
     @property
     def labelColor(self):
@@ -335,6 +336,9 @@ class UIPinBase(QGraphicsWidget):
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
         return path
+
+    def isList(self):
+        return self._rawPin.isList()
 
     def isArray(self):
         return self._rawPin.isArray()

@@ -399,8 +399,8 @@ class NodeBase(INode):
                 pin = self.getPin(str(inpJson['name']), PinSelectionGroup.Inputs)
                 pin.uid = uuid.UUID(inpJson['uuid'])
                 if "currDataType" in inpJson:
-                    pin.setType(inpJson["currDataType"]) 
-                pin.changeTypeOnConnection= inpJson['changeType']
+                    pin.setType(inpJson["currDataType"])
+                pin.changeTypeOnConnection = inpJson['changeType']
                 for opt in PinOptions:
                     if opt.value in inpJson["options"]:
                         pin.enableOptions(opt)
@@ -428,17 +428,17 @@ class NodeBase(INode):
                 pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
                 pin.uid = uuid.UUID(outJson['uuid'])
                 if "currDataType" in outJson:
-                    pin.setType(outJson["currDataType"]) 
-                pin.changeTypeOnConnection= outJson['changeType']
+                    pin.setType(outJson["currDataType"])
+                pin.changeTypeOnConnection = outJson['changeType']
                 for opt in PinOptions:
                     if opt.value in outJson["options"]:
                         pin.enableOptions(opt)
                     else:
-                        pin.disableOptions(opt)                
+                        pin.disableOptions(opt)
                 pin.changeStructure(outJson["structure"])
                 pin._alwaysList = outJson['alwaysList']
-                pin._alwaysSingle = outJson['alwaysSingle']                
-                try:    
+                pin._alwaysSingle = outJson['alwaysSingle']
+                try:
                     pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
                 except:
                     pin.setData(pin.defaultValue())

@@ -56,8 +56,9 @@ class _PinWidget(QtWidgets.QWidget):
         self.direction = PinDirection.Input
         self.name = self.dataType
         self.bLabelHidden = False
+        self.pinCircleDrawOffset = QtCore.QPointF()
 
-        self.setMouseTracking(True) 
+        self.setMouseTracking(True)
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
     def sizeHint(self):
@@ -102,6 +103,9 @@ class _PinWidget(QtWidgets.QWidget):
         if self.dataType == "ExecPin":
             self._rawPin.setConnected(True)
             PinPainter.asExecPin(self, painter, None, None)
+        elif self.dataType == "ListPin":
+            self.pinCircleDrawOffset = QtCore.QPointF(0, -4)
+            PinPainter.asListPin(self, painter, None, None)
         else:
             PinPainter.asValuePin(self, painter, None, None)
         painter.end()
@@ -129,7 +133,7 @@ class _PinsListWidget(QtWidgets.QListWidget):
             self.returnPressed.emit()
         super(_PinsListWidget, self).keyPressEvent(event)
 
-    def populate(self, pattern="",validPins=[pin.__name__ for pin in getAllPinClasses()]):
+    def populate(self, pattern="", validPins=[pin.__name__ for pin in getAllPinClasses()]):
         for pinClass in getAllPinClasses():
             className = pinClass.__name__
             if className in validPins:
@@ -184,5 +188,3 @@ class SelectPinDialog(QtWidgets.QDialog):
 
     def getResult(self):
         return self._result
-
-

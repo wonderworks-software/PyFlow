@@ -219,6 +219,3 @@ class AnyPin(PinBase):
         self._free = self.activeDataType == self.__class__.__name__
 
         return True
-
-
-

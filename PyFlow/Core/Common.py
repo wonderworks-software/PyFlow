@@ -169,11 +169,15 @@ def canConnectPins(src, dst):
         return True
 
     if not src.isArray() and dst.isArray():
-        if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure,[]) or dst.canChangeStructure(src._currStructure,[],selfChek=False)):
+        if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
             return False
 
     if src.isArray() and not dst.isArray():
-        if not dst.optionEnabled(PinOptions.ArraySupported) and not (src.canChangeStructure(dst._currStructure,[]) or dst.canChangeStructure(src._currStructure,[],selfChek=False)):
+        if dst.isList():
+            return True
+        srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
+        dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfChek=False)
+        if not dst.optionEnabled(PinOptions.ArraySupported) and not (srcCanChangeStruct or dstCanCnahgeStruct):
             return False
 
     if dst.hasConnections():
