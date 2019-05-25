@@ -49,14 +49,14 @@ class UIAnyPin(UIPinBase):
             self.update()
 
     def selectInit(self):
-        self.d = SelectPinDialog(validPins=self._rawPin._defaultSupportedDataTypes+("AnyPin",))
+        self.d = SelectPinDialog(validPins=self._rawPin._defaultSupportedDataTypes + ("AnyPin",))
         self.d.exec_()
         dataType = self.d.getResult()
         if dataType is not None:
-            self.initType(dataType,True)     
+            self.initType(dataType, True)
 
-    def initType(self,dataType,init=False):
-        self._rawPin.initType(dataType,init)
+    def initType(self, dataType, init=False):
+        self._rawPin.initType(dataType, init)
 
     def setType(self, dataType):
         if dataType != self.prevDataType:
@@ -82,5 +82,7 @@ class UIAnyPin(UIPinBase):
             PinPainter.asExecPin(self, painter, option, widget)
         elif self.isArray():
             PinPainter.asArrayPin(self, painter, option, widget)
+        elif self.activeDataType == "ListPin":
+            PinPainter.asListPin(self, painter, option, widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)

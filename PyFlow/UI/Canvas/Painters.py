@@ -336,7 +336,6 @@ class PinPainter(object):
                                      QtCore.QPointF(0, 0),
                                      QtCore.QPointF(pin.pinSize, 0)])
         painter.drawPolygon(arrow)
-        # painter.drawRect(0,0,pin.pinSize,pin.pinSize)
 
     @staticmethod
     def asArrayPin(pin, painter, option, widget):
@@ -354,6 +353,39 @@ class PinPainter(object):
                 x = row * cellW + pinCenter.x() - halfPinSize
                 y = column * cellH + pinCenter.y() - halfPinSize
                 painter.drawRect(x, y, cellW, cellH)
+
+        if lod < 3:
+            frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
+            halfPinSize = pin.pinSize / 2
+            painter.setFont(pin._font)
+            textWidth = QtGui.QFontMetrics(painter.font()).width(pin.displayName())
+            textHeight = QtGui.QFontMetrics(painter.font()).height()
+            x = 1 + pin.pinSize + halfPinSize
+            if pin.direction == PinDirection.Output:
+                x = frame.width() - textWidth - pin.pinSize - 1
+            yCenter = textHeight - textHeight / 3
+            painter.setPen(PinPainter._valuePinNamePen)
+            painter.drawText(x, yCenter, pin.name)
+
+            if pin.hovered:
+                painter.setPen(QtCore.Qt.NoPen)
+                painter.setBrush(QtGui.QColor(128, 128, 128, 30))
+                painter.drawRoundedRect(frame, 3, 3)
+
+    @staticmethod
+    def asListPin(pin, painter, option, widget):
+        lod = pin.owningNode().canvasRef().getLodValueFromCurrentScale(3)
+        cellW = pin.pinSize
+        cellH = pin.pinSize / 3
+        pinCenter = pin.pinCenter()
+        halfPinSize = pin.pinSize / 2
+
+        painter.setBrush(QtGui.QBrush(pin.color()))
+        painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.2))
+        for row in range(3):
+            x = pinCenter.x() - halfPinSize
+            y = row * cellH + halfPinSize
+            painter.drawRect(x, y, cellW, cellH)
 
         if lod < 3:
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())

@@ -106,35 +106,34 @@ class PinBase(IPin):
     def isExec(self):
         return False
 
-    def initAsArray(self,bIsList):
+    def initAsArray(self, bIsArray):
         """Sets this pins to be a list always"""
-        bIsList = bool(bIsList)
-        self._alwaysList = bIsList
-        self.setAsArray(bIsList)
+        bIsArray = bool(bIsArray)
+        self._alwaysList = bIsArray
+        self.setAsArray(bIsArray)
 
-    def setAsArray(self, bIsList):
-        """Sets this pin to be a list.
+    def setAsArray(self, bIsArray):
+        """Sets this pin to be a array.
 
-        Every registered pin can hold a list of values instead of single one. List pins can be connected
-        only with another list pins by default. This behavior can be changed by disabling `PinOptions.SupportsOnlyArrays` option.
+        Every registered pin can hold a array of values instead of single one. Array pins can be connected
+        only with another array pins by default. This behavior can be changed by disabling `PinOptions.SupportsOnlyArrays` option.
 
-        Value pins can be connected only with value pins if option `PinOptions.v` is not enabled.
+        Value pins can be connected only with value pins if option `PinOptions.ArraySupported` is not enabled.
 
         By default input value pin can have only one connection, this also can be modified by enabling `PinOptions.AllowMultipleConnections` flag.
 
         Args:
 
-            bIsList (bool): list or not
+            bIsArray (bool): array or not
         """
-        bIsList = bool(bIsList)
-        if self._isArray == bIsList:
+        bIsArray = bool(bIsArray)
+        if self._isArray == bIsArray:
             return
 
-        self._isArray = bIsList
-        if bIsList:
+        self._isArray = bIsArray
+        if bIsArray:
             # list pins supports only lists by default
             self.enableOptions(PinOptions.SupportsOnlyArrays)
-            #self.changeTypeOnConnection = True
             self._currStructure = PinStructure.Array
         else:
             self._currStructure = self._structure
@@ -161,8 +160,7 @@ class PinBase(IPin):
         storable = self.optionEnabled(PinOptions.Storable)
 
         serializedData = None
-        # Lists support. Arrays with arbitrary values will not be serialized
-        if not (self._currStructure == PinStructure.Array and self.dataType == "AnyPin"):
+        if not self.dataType == "AnyPin":
             if storable:
                 serializedData = json.dumps(self.currentData(), cls=self.jsonEncoderClass())
             else:
@@ -330,19 +328,19 @@ class PinBase(IPin):
             return self._defaultValue
         return self._data
 
-    def aboutToConnect(self,other):
-        self.changeStructure(other._currStructure)  
-        self.onPinConnected.send(other)  
+    def aboutToConnect(self, other):
+        self.changeStructure(other._currStructure)
+        self.onPinConnected.send(other)
 
-    def changeStructure(self,newStruct,init=False):
-        free = self.canChangeStructure(newStruct,[],init=init)
-        if  free:
-            self.updateConstrainedPins(set(),newStruct,init,connecting=True) 
+    def changeStructure(self, newStruct, init=False):
+        free = self.canChangeStructure(newStruct, [], init=init)
+        if free:
+            self.updateConstrainedPins(set(), newStruct, init, connecting=True)
 
     def pinConnected(self, other):
         push(self)
 
-    def updateConstrainedPins(self,traversed,newStruct,init=False,connecting=False):
+    def updateConstrainedPins(self, traversed, newStruct, init=False, connecting=False):
         nodePins = set()
         if self.structConstraint is not None:
             nodePins = set(self.owningNode().structConstraints[self.structConstraint])
@@ -350,15 +348,15 @@ class PinBase(IPin):
             nodePins = set([self])
         for connectedPin in getConnectedPins(self):
             if connectedPin.structureType == PinStructure.Multi:
-                if connectedPin.canChangeStructure(self._currStructure,init=init):
-                    nodePins.add(connectedPin)    
+                if connectedPin.canChangeStructure(self._currStructure, init=init):
+                    nodePins.add(connectedPin)
         for neighbor in nodePins:
             if neighbor not in traversed:
-                neighbor.setAsArray(newStruct==PinStructure.Array)
+                neighbor.setAsArray(newStruct == PinStructure.Array)
                 if connecting:
                     if init:
-                        neighbor._alwaysList = newStruct==PinStructure.Array
-                        neighbor._alwaysSingle = newStruct==PinStructure.Single
+                        neighbor._alwaysList = newStruct == PinStructure.Array
+                        neighbor._alwaysSingle = newStruct == PinStructure.Single
                     neighbor._currStructure = newStruct
                     neighbor.enableOptions(PinOptions.ArraySupported)
                     if newStruct == PinStructure.Single:
@@ -367,8 +365,8 @@ class PinBase(IPin):
                 else:
                     neighbor._currStructure = neighbor._structure
                     neighbor._data = neighbor.defaultValue()
-                traversed.add(neighbor) 
-                neighbor.updateConstrainedPins(traversed,newStruct,init,connecting=connecting)
+                traversed.add(neighbor)
+                neighbor.updateConstrainedPins(traversed, newStruct, init, connecting=connecting)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)

@@ -110,20 +110,12 @@ class AnyPin(PinBase):
                         pin.initialized = True
                     if other:
                         if pin.changeTypeOnConnection:
-                            pin._supportedDataTypes = other.allowedDataTypes([], other._supportedDataTypes)             
+                            pin._supportedDataTypes = other.allowedDataTypes([], other._supportedDataTypes)
                     if dataType == "AnyPin":
                         if pin.changeTypeOnConnection:
                             pin._supportedDataTypes = pin._defaultSupportedDataTypes
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes
                         pin._free = True
-
-    def updateOnDisconnectionCallback(self, pin):
-        free = pin.checkFree([])
-        if free:
-            pin._free = True
-            #pin.setDefault()
-            #pin._supportedDataTypes = pin._defaultSupportedDataTypes
-            #pin.supportedDataTypes = lambda: pin._supportedDataTypes
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
@@ -214,7 +206,7 @@ class AnyPin(PinBase):
             self._data = getPinDefaultValueByType(self.activeDataType)
         else:
             self._data = []
-        self.setDefaultValue(self._data)            
+        self.setDefaultValue(self._data)
 
         self.color = otherClass.color
         self.dirty = True
