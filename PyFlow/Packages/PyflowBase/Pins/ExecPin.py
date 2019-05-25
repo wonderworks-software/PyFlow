@@ -18,7 +18,7 @@ class ExecPin(PinBase):
     def pinConnected(self, other):
         super(ExecPin, self).pinConnected(other)
 
-    def setAsArray(self, bIsList):
+    def setAsArray(self, bIsArray):
         # exec is not a type, it cannot be an list
         self._isArray = False
 

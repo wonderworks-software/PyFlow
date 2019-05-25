@@ -227,7 +227,7 @@ class IPin(IItemBase):
     def jsonDecoderClass():
         raise NotImplementedError('jsonEncoderClass method of IPin is not implemented')
 
-    def setAsArray(self, bIsList):
+    def setAsArray(self, bIsArray):
         raise NotImplementedError('setAsArray method of IPin is not implemented')
 
 
