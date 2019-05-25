@@ -16,11 +16,33 @@ class DefaultLib(FunctionLibraryBase):
         super(DefaultLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported,"constraint":"1","structConstraint":"1"}), meta={'Category': 'GenericTypes', 'Keywords': ['id']})
-    def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported,"constraint":"1","structConstraint":"1"}), deepCopy=("BoolPin", False)):
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported, "constraint": "1", "structConstraint": "1"}), meta={'Category': 'GenericTypes', 'Keywords': ['id']})
+    def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported, "constraint": "1", "structConstraint": "1"}), deepCopy=("BoolPin", False)):
         '''Shallow or deep copy of an object.'''
         copyFunction = deepcopy if deepCopy else copy
         return copyFunction(obj)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['in']})
+    def contains(obj=('AnyPin', None, {"constraint": "1"}), element=("AnyPin", None, {"constraint": "2"})):
+        """Python's <u>in</u> keyword. <u>element in obj</u> will be executed"""
+        try:
+            return element in obj
+        except:
+            return False
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get']})
+    def getItem(obj=('AnyPin', None, {"constraint": "1"}),
+                element=("AnyPin", None, {"constraint": "2"}),
+                result=("Reference", ("AnyPin", None, {"Constraint": "3"}))):
+        """Python's <u>[]</u> operator. <u>obj[element]</u> will be executed."""
+        try:
+            result(obj[element])
+            return True
+        except:
+            result(None)
+            return False
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})
@@ -76,7 +98,7 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("StringPin", ''), meta={'Category': 'Conversion', 'Keywords': []})
-    def toString(i=('AnyPin', 0)):
+    def toString(i=('AnyPin', None)):
         return str(i)
 
     @staticmethod
