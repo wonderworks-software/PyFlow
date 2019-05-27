@@ -1,0 +1,5 @@
+
+MAJOR = 1
+MINOR = 1
+
+VERSION_STRING = "v{0}.{1}".format(MAJOR, MINOR)

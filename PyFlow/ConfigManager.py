@@ -1,23 +1,23 @@
 import os
+import json
 from enum import Enum
 from Qt import QtCore, QtGui
 
 from PyFlow.Core.Common import SingletonDecorator
+from PyFlow.Input import InputAction, InputManager
 
 
 @SingletonDecorator
 class ConfigManager(object):
-    """docstring for ConfigManager."""
+    """Responsible for creating default configs creation and config's file paths."""
     CONFIGS_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "Configs")
     APP_SETTINGS_PATH = os.path.join(CONFIGS_DIR, "config.ini")
-    INPUT_CONFIG_PATH = os.path.join(CONFIGS_DIR, "input.ini")
+    INPUT_CONFIG_PATH = os.path.join(CONFIGS_DIR, "input.json")
 
     def __init__(self, *args, **kwargs):
         if not os.path.exists(self.INPUT_CONFIG_PATH):
             self.createDefaultInput()
 
     def createDefaultInput(self):
-        input_config = QtCore.QSettings(self.INPUT_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        # input_config.beginGroup("Canvas")
-        # input_config.setValue("Pan", QtGui.QKeySequence(QtCore.Qt.Key))
-        # input_config.endGroup()
+        InputManager().registerAction(InputAction("Pan", "Navigation", QtCore.Qt.MouseButton.MiddleButton))
+        InputManager().registerAction(InputAction("Pan", "Navigation", QtCore.Qt.MouseButton.LeftButton, modifiers=[QtCore.Qt.AltModifier]))

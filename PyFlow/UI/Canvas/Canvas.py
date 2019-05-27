@@ -52,6 +52,7 @@ from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.GraphManager import GraphManager
+from PyFlow.Input import InputManager, InputAction
 from PyFlow.UI.Views.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
@@ -1067,6 +1068,9 @@ class Canvas(QGraphicsView):
         expandComments = False
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
 
+        currentInputAction = InputAction("temp", "temp", event.button(), modifiers=modifiers)
+        panActionVariants = InputManager()["Pan"]
+
         if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
@@ -1086,7 +1090,7 @@ class Canvas(QGraphicsView):
                         self._selectionRect.destroy()
                         self._selectionRect = None
                 LeftPaning = event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.AltModifier
-                if event.button() == QtCore.Qt.MiddleButton or LeftPaning:
+                if currentInputAction in panActionVariants:
                     self.manipulationMode = CanvasManipulationMode.PAN
                     self._lastPanPoint = self.mapToScene(event.pos())
                 elif event.button() == QtCore.Qt.RightButton:
