@@ -33,7 +33,7 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get']})
-    def getItem(obj=('AnyPin', None, {"constraint": "1"}),
+    def getItem(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported}),
                 element=("AnyPin", None, {"constraint": "2"}),
                 result=("Reference", ("AnyPin", None, {"Constraint": "3"}))):
         """Python's <u>[]</u> operator. <u>obj[element]</u> will be executed."""
