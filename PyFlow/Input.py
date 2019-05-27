@@ -7,7 +7,7 @@ from PyFlow.Core.Common import *
 
 
 class InputAction(object):
-    def __init__(self, name, group="default", mouse=QtCore.Qt.MouseButton.NoButton, keys=[], modifiers=QtCore.Qt.NoModifier):
+    def __init__(self, name="defaultName", group="default", mouse=QtCore.Qt.MouseButton.NoButton, keys=[], modifiers=QtCore.Qt.NoModifier):
         self._name = name
         self._group = group
         self.__data = {"mouse": mouse, "keys": keys, "modifiers": modifiers}
@@ -20,9 +20,24 @@ class InputAction(object):
         om = other.getData()["mouse"]
         ok = other.getData()["keys"]
         omod = other.getData()["modifiers"]
+        try:
+            smod == omod
+        except:
+            print("stop")
         return all([sm == om,
                     Counter(sk) == Counter(ok),
                     smod == omod])
+
+    def __ne__(self, other):
+        sm = self.__data["mouse"]
+        sk = self.__data["keys"]
+        smod = self.__data["modifiers"]
+        om = other.getData()["mouse"]
+        ok = other.getData()["keys"]
+        omod = other.getData()["modifiers"]
+        return not all([sm == om,
+                        Counter(sk) == Counter(ok),
+                        smod == omod])
 
     def getName(self):
         return self._name
@@ -91,9 +106,9 @@ class InputAction(object):
             self.__data["mouse"] = QtCore.Qt.MouseButton(jsonData["mouse"])
             self.__data["keys"] = [QtCore.Qt.Key(i) for i in jsonData["keys"]]
             self.__data["modifiers"] = self._listOfModifiersToEnum([QtCore.Qt.KeyboardModifier(i) for i in jsonData["modifiers"]])
-            return True
+            return self
         except:
-            return False
+            return None
 
 
 @SingletonDecorator
@@ -107,12 +122,23 @@ class InputManager(object):
         # try find input action by name
         if key in self.__actions:
             return self.__actions[key]
-        return None
+        return []
 
     def __contains__(self, item):
         return item.getName() in self.__actions
 
     def registerAction(self, action):
         self.__actions[action.getName()].append(action)
-        print("registering input action", action.getName())
 
+    def loadFromData(self, data):
+        for actionName, actionVariants in data.items():
+            for variant in actionVariants:
+                actionInstance = InputAction().fromJson(variant)
+                self.registerAction(actionInstance)
+
+    def serialize(self):
+        result = defaultdict(list)
+        for actionName in self.__actions:
+            for actionVariant in self.__actions[actionName]:
+                result[actionName].append(actionVariant.toJson())
+        return result

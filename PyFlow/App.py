@@ -41,6 +41,8 @@ from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow import INITIALIZE
+from PyFlow.Input import InputManager
+from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 
 
@@ -376,7 +378,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer.timeout.disconnect()
         self.canvasWidget.shoutDown()
         # save editor config
-        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
+        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
         # clear file each time to capture opened dock tools
         settings.clear()
         settings.sync()
@@ -404,6 +406,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             tool.onDestroy()
         settings.endGroup()
         settings.sync()
+        with open(ConfigManager().INPUT_CONFIG_PATH, "w") as f:
+            inputData = InputManager().serialize()
+            json.dump(inputData, f, indent=4)
         QMainWindow.closeEvent(self, event)
 
     def editTheme(self):

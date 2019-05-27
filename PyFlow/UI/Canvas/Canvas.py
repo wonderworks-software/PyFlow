@@ -1070,6 +1070,7 @@ class Canvas(QGraphicsView):
 
         currentInputAction = InputAction("temp", "temp", event.button(), modifiers=modifiers)
         panActionVariants = InputManager()["Pan"]
+        zoomActionVariants = InputManager()["Zoom"]
 
         if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
@@ -1093,7 +1094,8 @@ class Canvas(QGraphicsView):
                 if currentInputAction in panActionVariants:
                     self.manipulationMode = CanvasManipulationMode.PAN
                     self._lastPanPoint = self.mapToScene(event.pos())
-                elif event.button() == QtCore.Qt.RightButton:
+                # elif event.button() == QtCore.Qt.RightButton:
+                elif currentInputAction in zoomActionVariants:
                     self.manipulationMode = CanvasManipulationMode.ZOOM
                     self._lastTransform = QtGui.QTransform(self.transform())
                     self._lastSceneRect = self.sceneRect()
