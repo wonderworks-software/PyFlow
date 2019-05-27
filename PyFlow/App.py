@@ -26,6 +26,7 @@ from Qt.QtWidgets import QFileDialog
 from Qt.QtWidgets import QDockWidget
 
 from PyFlow import Packages
+from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.Canvas import Canvas
 from PyFlow.Core.Common import Direction
 from PyFlow.UI.Canvas.UICommon import clearLayout
@@ -44,7 +45,6 @@ from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
-SETTINGS_PATH = os.path.join(FILE_DIR, "config.ini")
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 EDITOR_TARGET_FPS = 120
 
@@ -460,7 +460,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
 
-        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
         instance.restoreGeometry(settings.value('Editor/geometry'))
         instance.restoreState(settings.value('Editor/state'))
         settings.beginGroup("Tools")
@@ -516,4 +516,5 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                         ToolInstance = instance.invokeDockToolByName(packageName, toolName, settings)
                         settings.endGroup()
                     settings.endGroup()
+
         return instance
