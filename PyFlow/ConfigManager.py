@@ -13,6 +13,7 @@ class ConfigManager(object):
     CONFIGS_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "Configs")
     APP_SETTINGS_PATH = os.path.join(CONFIGS_DIR, "config.ini")
     INPUT_CONFIG_PATH = os.path.join(CONFIGS_DIR, "input.json")
+    PREFERENCES_CONFIG_PATH = os.path.join(CONFIGS_DIR, "prefs.ini")
 
     def __init__(self, *args, **kwargs):
         if not os.path.exists(self.INPUT_CONFIG_PATH):

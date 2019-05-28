@@ -88,7 +88,7 @@ class PreferencesWindow(QMainWindow):
         self.categoriesVerticalLayout.addWidget(pbSavePrefs)
 
     def showEvent(self, event):
-        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
         settings.beginGroup("Preferences")
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
@@ -98,7 +98,7 @@ class PreferencesWindow(QMainWindow):
         settings.endGroup()
 
     def savePreferences(self):
-        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
         settings.beginGroup("Preferences")
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
