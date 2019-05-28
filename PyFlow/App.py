@@ -401,9 +401,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             tool.onDestroy()
         settings.endGroup()
         settings.sync()
+
         with open(ConfigManager().INPUT_CONFIG_PATH, "w") as f:
             inputData = InputManager().serialize()
             json.dump(inputData, f, indent=4)
+
         QMainWindow.closeEvent(self, event)
 
     def editTheme(self):

@@ -20,10 +20,7 @@ class InputAction(object):
         om = other.getData()["mouse"]
         ok = other.getData()["keys"]
         omod = other.getData()["modifiers"]
-        try:
-            smod == omod
-        except:
-            print("stop")
+        smod == omod
         return all([sm == om,
                     Counter(sk) == Counter(ok),
                     smod == omod])
