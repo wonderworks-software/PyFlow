@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui',
-# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui' applies.
+# Form implementation generated from reading ui file 'd:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui',
+# licensing of 'd:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui' applies.
 #
-# Created: Sat May  4 12:25:24 2019
-#      by: pyside2-uic  running on PySide2 5.12.0
+# Created: Tue May 28 09:39:11 2019
+#      by: pyside2-uic  running on PySide2 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -80,42 +80,12 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.SceneWidget, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 863, 26))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 863, 21))
         self.menuBar.setObjectName("menuBar")
         MainWindow.setMenuBar(self.menuBar)
         self.toolBar = QtWidgets.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
-        self.dockWidgetNodeView = QtWidgets.QDockWidget(MainWindow)
-        self.dockWidgetNodeView.setMinimumSize(QtCore.QSize(200, 113))
-        self.dockWidgetNodeView.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea|QtCore.Qt.LeftDockWidgetArea|QtCore.Qt.RightDockWidgetArea)
-        self.dockWidgetNodeView.setObjectName("dockWidgetNodeView")
-        self.dockWidgetContents = QtWidgets.QWidget()
-        self.dockWidgetContents.setObjectName("dockWidgetContents")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.dockWidgetContents)
-        self.verticalLayout.setSpacing(0)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.scrollArea = QtWidgets.QScrollArea(self.dockWidgetContents)
-        self.scrollArea.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollArea.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.scrollArea.setObjectName("scrollArea")
-        self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 198, 475))
-        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
-        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_5.setObjectName("verticalLayout_5")
-        self.propertiesLayout = QtWidgets.QVBoxLayout()
-        self.propertiesLayout.setObjectName("propertiesLayout")
-        self.verticalLayout_5.addLayout(self.propertiesLayout)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_5.addItem(spacerItem)
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.verticalLayout.addWidget(self.scrollArea)
-        self.dockWidgetNodeView.setWidget(self.dockWidgetContents)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidgetNodeView)
         self.toolBar.addSeparator()
 
         self.retranslateUi(MainWindow)
@@ -126,5 +96,4 @@ class Ui_MainWindow(object):
         self.label_2.setText(QtCompat.translate("MainWindow", "Name:", None, -1))
         self.label.setText(QtCompat.translate("MainWindow", "Category:", None, -1))
         self.toolBar.setWindowTitle(QtCompat.translate("MainWindow", "toolBar", None, -1))
-        self.dockWidgetNodeView.setWindowTitle(QtCompat.translate("MainWindow", "PropertyView", None, -1))
 

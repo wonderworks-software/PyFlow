@@ -26,6 +26,7 @@ from Qt.QtWidgets import QFileDialog
 from Qt.QtWidgets import QDockWidget
 
 from PyFlow import Packages
+from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.Canvas import Canvas
 from PyFlow.Core.Common import Direction
 from PyFlow.UI.Canvas.UICommon import clearLayout
@@ -40,11 +41,12 @@ from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow import INITIALIZE
+from PyFlow.Input import InputManager
+from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
-SETTINGS_PATH = os.path.join(FILE_DIR, "config.ini")
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 EDITOR_TARGET_FPS = 120
 
@@ -114,7 +116,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer = QtCore.QTimer()
         self._current_file_name = 'Untitled'
         self.populateMenu()
-        self.dockWidgetNodeView.setVisible(True)
 
     def populateMenu(self):
         fileMenu = self.menuBar.addMenu("File")
@@ -318,10 +319,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def createPopupMenu(self):
         pass
 
-    def toggleHistory(self):
-        self.dockWidgetUndoStack.setVisible(
-            not self.dockWidgetUndoStack.isVisible())
-
     def newPlugin(self, pluginType):
         name, result = QInputDialog.getText(
             self, 'Plugin name', 'Enter plugin name')
@@ -376,7 +373,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer.timeout.disconnect()
         self.canvasWidget.shoutDown()
         # save editor config
-        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
+        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
         # clear file each time to capture opened dock tools
         settings.clear()
         settings.sync()
@@ -404,6 +401,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             tool.onDestroy()
         settings.endGroup()
         settings.sync()
+
+        with open(ConfigManager().INPUT_CONFIG_PATH, "w") as f:
+            inputData = InputManager().serialize()
+            json.dump(inputData, f, indent=4)
+
         QMainWindow.closeEvent(self, event)
 
     def editTheme(self):
@@ -413,18 +415,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         pass
         # if self.styleSheetEditor:
         #    self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
-
-    def togglePropertyView(self):
-        if self.dockWidgetNodeView.isVisible():
-            self.dockWidgetNodeView.setVisible(False)
-        else:
-            self.dockWidgetNodeView.setVisible(True)
-
-    def toggleVariables(self):
-        if self.dockWidgetVariables.isVisible():
-            self.dockWidgetVariables.hide()
-        else:
-            self.dockWidgetVariables.show()
 
     def shortcuts_info(self):
 
@@ -460,7 +450,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
 
-        settings = QtCore.QSettings(SETTINGS_PATH, QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
         instance.restoreGeometry(settings.value('Editor/geometry'))
         instance.restoreState(settings.value('Editor/state'))
         settings.beginGroup("Tools")
@@ -516,4 +506,5 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                         ToolInstance = instance.invokeDockToolByName(packageName, toolName, settings)
                         settings.endGroup()
                     settings.endGroup()
+
         return instance
