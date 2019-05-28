@@ -44,6 +44,7 @@ from PyFlow import INITIALIZE
 from PyFlow.Input import InputManager
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
+from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
 
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -90,6 +91,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.setWindowIcon(QtGui.QIcon(RESOURCES_DIR + "/LogoBpApp.png"))
         self._tools = set()
 
+        self.preferencesWindow = PreferencesWindow(self)
         self.styleSheetEditor = StyleSheetEditor()
         self.graphManager = GraphManager()
         self.canvasWidget = Canvas(self.graphManager, self)
@@ -138,11 +140,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         editMenu = self.menuBar.addMenu("Edit")
         preferencesAction = editMenu.addAction("Preferences")
         preferencesAction.setIcon(QtGui.QIcon(RESOURCES_DIR + "/options_icon.png"))
+        preferencesAction.triggered.connect(self.showPreferencesWindow)
 
         helpMenu = self.menuBar.addMenu("Help")
         shortcutsAction = helpMenu.addAction("Shortcuts")
         shortcutsAction.setIcon(QtGui.QIcon(RESOURCES_DIR + "/shortcuts_icon.png"))
         shortcutsAction.triggered.connect(self.shortcuts_info)
+
+    def showPreferencesWindow(self):
+        self.preferencesWindow.show()
 
     def registerToolInstance(self, instance):
         """Registers tool instance reference
