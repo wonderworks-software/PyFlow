@@ -122,6 +122,8 @@ QLabel{
     color: white;
 }
 """
+def clamp(n, vmin, vmax):
+    return max(min(n, vmax), vmin)
 
 class inputDrager(QtWidgets.QWidget):
     ## PopUp Draggers Houdini Style
@@ -244,7 +246,7 @@ class draggers(QtWidgets.QWidget):
 
 class slider(QtWidgets.QSlider):
     ## Customized Int Slider
-    def __init__(self, decimals=3, *args, **kargs):
+    def __init__(self, decimals=4, *args, **kargs):
         super(slider, self).__init__(*args, **kargs)
         self.setOrientation(QtCore.Qt.Horizontal)
         self.deltaValue = 0
@@ -317,7 +319,7 @@ class doubleSlider(slider):
     ## Customized Float Slider
     doubleValueChanged = QtCore.Signal(float)
 
-    def __init__(self, decimals=3, *args, **kargs):
+    def __init__(self, decimals=4, *args, **kargs):
         super(doubleSlider, self).__init__(*args, **kargs)
         self._multi = 10 ** decimals
         self._min_value = 0
@@ -364,6 +366,8 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         self.isFloat = type=="float"
         if not self.isFloat:
             self.setDecimals(0)
+        else:
+            self.setDecimals(4)
         self.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         self.setStyleSheet(sliderStyleSheetA)
         self.lineEdit().installEventFilter(self)
@@ -394,10 +398,8 @@ class pyf_Slider(QtWidgets.QWidget):
         self.input.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         if type == "int":
             self.sld = slider()
-            self.input.setDecimals(0)
         else:
             self.sld = doubleSlider()
-            self.input.setDecimals(3)
 
         self.layout().setContentsMargins(10, 0, 0, 0)
         self.input.setContentsMargins(0, 0, 0, 0)
@@ -564,13 +566,11 @@ class pyf_HueSlider(doubleSlider):
 
 class pyf_GradientSlider(doubleSlider):
 
-    def __init__(self, parent, *args):
+    def __init__(self, parent,color1=QtGui.QColor(),color2=QtGui.QColor(255,255,255), *args):
         super(pyf_GradientSlider, self).__init__(parent=parent, *args)
         self.parent = parent
-        self.color1 = QtGui.QColor()
-        self.color1.setHslF(0, 0, 0, 1)
-        self.color2 = QtGui.QColor()
-        self.color2.setHslF(0, 1, 1, 1)
+        self.color1 = color1
+        self.color2 = color2
         self.setMinimum(0.0)
         self.setMaximum(1.0)
         self.setStyleSheet(sliderStyleSheetC)
@@ -604,6 +604,114 @@ class pyf_GradientSlider(doubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
+class pyf_ColorSlider(QtWidgets.QWidget):
+
+    valueChanged = QtCore.Signal(list)
+
+    def __init__(self, parent, type="float",alpha=False,h = 50, *args):
+        super(pyf_ColorSlider, self).__init__(parent=parent, *args)
+        self.parent = parent
+        self.setLayout(QtWidgets.QHBoxLayout())
+        self.type = type
+        self.alpha = alpha
+        self.RBox = valueBox(type=self.type)
+        self.GBox = valueBox(type=self.type)
+        self.BBox = valueBox(type=self.type)
+        self.ABox = valueBox(type=self.type)
+
+        for i in [self.RBox,self.GBox,self.BBox,self.ABox]:
+            i.setMinimum(0)
+            if type == "int":
+                i.setMaximum(255)
+            else:
+                i.setMaximum(1.0)
+        
+
+        self.R = pyf_GradientSlider(self,color2=QtGui.QColor(255,0,0))
+        self.G = pyf_GradientSlider(self,color2=QtGui.QColor(0,255,0))
+        self.B = pyf_GradientSlider(self,color2=QtGui.QColor(0,0,255))
+        self.A = pyf_GradientSlider(self,color2=QtGui.QColor(255,255,255))
+
+        div = 1.0
+        if self.type == "int":
+            div = 255.0
+
+        self.RBox.editingFinished.connect( lambda: self.R.setValue(float(self.RBox.value())/div))
+        self.R.doubleValueChanged.connect( lambda: self.RBox.setValue(self.R.value()*div))
+        self.GBox.editingFinished.connect( lambda: self.G.setValue(float(self.GBox.value())/div))
+        self.G.doubleValueChanged.connect( lambda: self.GBox.setValue(self.G.value()*div))
+        self.BBox.editingFinished.connect( lambda: self.B.setValue(float(self.BBox.value())/div))
+        self.B.doubleValueChanged.connect( lambda: self.BBox.setValue(self.B.value()*div))
+        self.ABox.editingFinished.connect( lambda: self.A.setValue(float(self.ABox.value())/div))
+        self.A.doubleValueChanged.connect( lambda: self.ABox.setValue(self.A.value()*div))
+                        
+        rLay = QtWidgets.QHBoxLayout()
+        rLay.addWidget(self.RBox)
+        rLay.addWidget(self.R)
+        gLay = QtWidgets.QHBoxLayout()
+        gLay.addWidget(self.GBox)
+        gLay.addWidget(self.G)
+        bLay = QtWidgets.QHBoxLayout()
+        bLay.addWidget(self.BBox)
+        bLay.addWidget(self.B)        
+        aLay = QtWidgets.QHBoxLayout()
+        aLay.addWidget(self.ABox)
+        aLay.addWidget(self.A)
+
+        self.A.setValue(1.0)
+        self.Color  = QtWidgets.QPushButton()
+        self.Color.clicked.connect(self.showColorDialog)
+
+        self.Color.setMaximumWidth(h)
+        self.Color.setMinimumWidth(h)
+        self.Color.setMaximumHeight(h-12)
+        self.Color.setMinimumHeight(h-12)        
+        self.slidersLay = QtWidgets.QVBoxLayout()
+        inpList =  [rLay,gLay,bLay]
+
+        if self.alpha:
+            inpList.append(aLay)
+        else:
+            self.A.hide()
+
+        for i in [self.R,self.G,self.B,self.A,self.RBox,self.GBox,self.BBox,self.ABox]:
+            
+            i.setMaximumHeight(h/(len(inpList)+1))
+            i.setMinimumHeight(h/(len(inpList)+1))
+        for i in [self.R,self.G,self.B,self.A]:
+            i.doubleValueChanged.connect(self.colorChanged)
+
+        for i in inpList:
+            self.slidersLay.addLayout(i)
+
+        self.setMaximumHeight(h)
+        self.layout().addWidget(self.Color)
+        self.layout().addLayout(self.slidersLay)
+        self.layout().setSpacing(5)
+        self.slidersLay.setSpacing(0)
+        self.style = "QPushButton{ background-color: rgba(%f,%f,%f,%f);border-color: black;border-radius: 2px;border-style: outset;border-width: 1px;}\nQPushButton:pressed{ border-style: inset;border-color: beige}"
+        self.Color.setStyleSheet(self.style % (self.R.value()*255,self.G.value()*255,self.B.value()*255,self.A.value()*255))
+
+    def colorChanged(self,value):
+        self.Color.setStyleSheet(self.style % (self.R.value()*255,self.G.value()*255,self.B.value()*255,self.A.value()*255))
+        valueList = [self.R.value(),self.G.value(),self.B.value()]
+        if self.alpha:
+            valueList.append(self.A.value())
+        if self.type == "int":
+            valueList = [clamp(int(i*255),0,255) for i in valueList]
+        self.valueChanged.emit(valueList)   
+
+    def showColorDialog(self):
+        if self.alpha:
+            color = QtWidgets.QColorDialog.getColor(options=QtWidgets.QColorDialog.ShowAlphaChannel)
+        else:
+            color = QtWidgets.QColorDialog.getColor()
+        if color.isValid():
+            self.R.setValue(color.redF())
+            self.G.setValue(color.greenF())
+            self.B.setValue(color.blueF())
+            self.A.setValue(color.alphaF())
+
 class testWidg(QtWidgets.QWidget):
 
     def __init__(self, parent):
@@ -616,7 +724,10 @@ class testWidg(QtWidgets.QWidget):
         self.layout().addWidget(pyf_HueSlider(self))
         self.layout().addWidget(pyf_GradientSlider(self))
         self.layout().addWidget(valueBox(type="int"))
+        self.layout().addWidget(pyf_ColorSlider(self))
         self.setStyleSheet("background:grey")
+
+
 
 def main():
 
