@@ -116,7 +116,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer = QtCore.QTimer()
         self._current_file_name = 'Untitled'
         self.populateMenu()
-        self.dockWidgetNodeView.setVisible(True)
 
     def populateMenu(self):
         fileMenu = self.menuBar.addMenu("File")
@@ -320,10 +319,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def createPopupMenu(self):
         pass
 
-    def toggleHistory(self):
-        self.dockWidgetUndoStack.setVisible(
-            not self.dockWidgetUndoStack.isVisible())
-
     def newPlugin(self, pluginType):
         name, result = QInputDialog.getText(
             self, 'Plugin name', 'Enter plugin name')
@@ -418,18 +413,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         pass
         # if self.styleSheetEditor:
         #    self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
-
-    def togglePropertyView(self):
-        if self.dockWidgetNodeView.isVisible():
-            self.dockWidgetNodeView.setVisible(False)
-        else:
-            self.dockWidgetNodeView.setVisible(True)
-
-    def toggleVariables(self):
-        if self.dockWidgetVariables.isVisible():
-            self.dockWidgetVariables.hide()
-        else:
-            self.dockWidgetVariables.show()
 
     def shortcuts_info(self):
 
