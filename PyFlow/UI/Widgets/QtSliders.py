@@ -725,16 +725,40 @@ class testWidg(QtWidgets.QWidget):
         self.layout().addWidget(pyf_GradientSlider(self))
         self.layout().addWidget(valueBox(type="int"))
         self.layout().addWidget(pyf_ColorSlider(self))
-        self.setStyleSheet("background:grey")
 
 
 
 def main():
-
+    import os
     app = QtWidgets.QApplication(sys.argv)
 
+    app.setStyle(QtWidgets.QStyleFactory.create("plastique"))
     ex = testWidg(None)
-    ex.setStyle(QtWidgets.QStyleFactory.create("motif"))
+    dark_palette = app.palette()
+
+    dark_palette.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
+    dark_palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
+    dark_palette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53, 53, 53))
+    dark_palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Text, QtCore.Qt.black)
+    dark_palette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
+    dark_palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.black)
+    dark_palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
+    dark_palette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+    dark_palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+    dark_palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
+
+    app.setPalette(dark_palette)
+    FILE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    STYLE_PATH = os.path.join(FILE_DIR,  "style.css")   
+    try:
+        with open(STYLE_PATH, 'r') as f:
+            styleString = f.read()
+            app.setStyleSheet(styleString)
+    except Exception as e:
+        print(e)     
     ex.show()
     sys.exit(app.exec_())
 
