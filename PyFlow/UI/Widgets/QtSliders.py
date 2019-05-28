@@ -122,6 +122,26 @@ QLabel{
     color: white;
 }
 """
+timeStyleSheet = """
+
+QSlider,QSlider:disabled,QSlider:focus     {  
+                          background: qcolor(0,0,0,0);   }
+
+QSlider:item:hover    {   background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #eaa553);
+                          color: #000000;              }
+
+QWidget:item:selected {   background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);      }
+
+ QSlider::groove:horizontal {
+ 
+    border: 1px solid #999999;
+    background: qcolor(0,0,0,0);
+ }
+QSlider::handle:horizontal {
+    background:  qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(255,160,47, 141), stop:0.497175 rgba(255,160,47, 200), stop:0.497326 rgba(255,160,47, 200), stop:1 rgba(255,160,47, 147));
+    width: 3px;
+ } 
+"""
 def clamp(n, vmin, vmax):
     return max(min(n, vmax), vmin)
 
@@ -527,8 +547,8 @@ class pyf_HueSlider(doubleSlider):
         self.setMaximum(1.0)
 
     def setColor(self, color):
-        if isinstance(color, QtGui.QColor):
-            self.color = color
+        if isinstance(color, list) and len(color)==3:
+            self.color = QtGui.QColor(color[0]*255.0,color[1]*255.0,color[2]*255.0)
             self.defColor = self.color.name()
             self.update()
 
@@ -542,7 +562,8 @@ class pyf_HueSlider(doubleSlider):
         c = QtGui.QColor(self.defColor)
         h, s, l, a = c.getHslF()
         c.setHslF((h + hue) % 1, s, self.light, a)
-        return c
+        rgb = c.getRgbF() 
+        return list(rgb)
 
     def paintEvent(self, event):
 
@@ -558,7 +579,8 @@ class pyf_HueSlider(doubleSlider):
 
         gradient = QtGui.QLinearGradient(0, 0, w, h)
         for i in range(11):
-            gradient.setColorAt(i * 0.1, self.getHue(i * 0.1))
+            hue = self.getHue(i * 0.1)
+            gradient.setColorAt(i * 0.1, QtGui.QColor(hue[0]*255,hue[1]*255,hue[2]*255))
 
         qp.setBrush(QtGui.QBrush(gradient))
 
@@ -566,11 +588,11 @@ class pyf_HueSlider(doubleSlider):
 
 class pyf_GradientSlider(doubleSlider):
 
-    def __init__(self, parent,color1=QtGui.QColor(),color2=QtGui.QColor(255,255,255), *args):
+    def __init__(self, parent,color1=[0,0,0],color2=[255,255,255], *args):
         super(pyf_GradientSlider, self).__init__(parent=parent, *args)
         self.parent = parent
-        self.color1 = color1
-        self.color2 = color2
+        self.color1 = QtGui.QColor(color1[0],color1[1],color1[2])
+        self.color2 = QtGui.QColor(color2[0],color2[1],color2[2])
         self.setMinimum(0.0)
         self.setMaximum(1.0)
         self.setStyleSheet(sliderStyleSheetC)
@@ -582,8 +604,7 @@ class pyf_GradientSlider(doubleSlider):
         r2 = (r1 - r) * self.value() + r
         g2 = (g1 - g) * self.value() + g
         b2 = (b1 - b) * self.value() + b
-        c = QtGui.QColor(r2, g2, b2)
-        return c
+        return [r2, g2, b2]
 
     def paintEvent(self, event):
 
@@ -626,11 +647,10 @@ class pyf_ColorSlider(QtWidgets.QWidget):
             else:
                 i.setMaximum(1.0)
         
-
-        self.R = pyf_GradientSlider(self,color2=QtGui.QColor(255,0,0))
-        self.G = pyf_GradientSlider(self,color2=QtGui.QColor(0,255,0))
-        self.B = pyf_GradientSlider(self,color2=QtGui.QColor(0,0,255))
-        self.A = pyf_GradientSlider(self,color2=QtGui.QColor(255,255,255))
+        self.R = pyf_GradientSlider(self,color2=[255,0,0])
+        self.G = pyf_GradientSlider(self,color2=[0,255,0])
+        self.B = pyf_GradientSlider(self,color2=[0,0,255])
+        self.A = pyf_GradientSlider(self,color2=[255,255,255])
 
         div = 1.0
         if self.type == "int":
@@ -712,6 +732,145 @@ class pyf_ColorSlider(QtWidgets.QWidget):
             self.B.setValue(color.blueF())
             self.A.setValue(color.alphaF())
 
+class pyf_timeline(QtWidgets.QSlider):
+    def __init__(self, parent,*args):
+        super(pyf_timeline, self).__init__(parent=parent,*args)
+        self.parent = parent
+        self.cachedFrmaes = []
+        self.missingFrames=[]
+        self.hover = False
+        self.hoverPos = None
+        self.PressPos = None
+        self.MovePos = None
+        self.setRange(0,30)
+        self.origMax = self.maximum()
+        self.oriMin = self.minimum()
+        self.setOrientation(QtCore.Qt.Horizontal)
+        self.setStyleSheet(timeStyleSheet)
+        self.setMouseTracking(True)
+        self.setPageStep(1)
+        self.setMinimumSize(1, 40)
+        self.installEventFilter(self)
+    def setRange(self,min,max,setOrig=True):
+        if setOrig:
+            self.origMax = max
+            self.oriMin = min
+        return super(pyf_timeline, self).setRange( min, max)
+    def setCached(self,cached):
+        self.cachedFrmaes = cached
+    def setMissing(self,missing):
+        self.missingFrames = missing        
+    def paintEvent(self, event):
+
+        qp = QtGui.QPainter()
+        qp.begin(self)
+        self.drawWidget(qp)
+        qp.end()        
+        super(pyf_timeline, self).paintEvent(event)
+    def drawWidget(self, qp):
+        font = QtGui.QFont('Serif', 7, QtGui.QFont.Light)
+        qp.setFont(font)
+
+        w = self.width()
+        h = self.height()
+        nb =  (self.maximum()-self.minimum())
+        fStep = float(w) / nb
+        step = max(1,int(round(fStep)))
+        
+        pen = QtGui.QPen(QtGui.QColor(200, 200, 200), 1, 
+            QtCore.Qt.SolidLine)
+            
+        qp.setPen(pen)
+        qp.setBrush(QtCore.Qt.NoBrush)
+        #qp.drawRect(0, 0, w-50, h-50)
+        
+        pxNb = int(round((nb+1)*step))
+        r = range(self.minimum(),self.maximum()+1,1)
+        metrics = qp.fontMetrics()
+        fh = metrics.height()      
+        for e,i in enumerate(range(0,pxNb, step)):
+            pos = self.style().sliderPositionFromValue(self.minimum(),self.maximum(),r[e],self.width())
+            half = h/2
+            if r[e] in self.cachedFrmaes:
+                qp.setPen(QtGui.QColor(0, 255, 0))
+                qp.setBrush(QtGui.QColor(0, 255, 0))
+                qp.drawRect(pos-(fStep/2),half+5, fStep, 1.5)  
+                qp.setPen(pen)
+                qp.setBrush(QtCore.Qt.NoBrush)
+            elif r[e] in self.missingFrames:
+                qp.setPen(QtGui.QColor(255, 0, 0))
+                qp.setBrush(QtGui.QColor(255, 0, 0))
+                qp.drawRect(pos-(fStep/2),half+5, fStep, 1.5)  
+                qp.setPen(pen)
+                qp.setBrush(QtCore.Qt.NoBrush)                
+            if (r[e]%5) == 0:
+                s = 4
+                text = r[e]
+                fw = metrics.width(str(text))
+                qp.drawText((pos)-fw/2, h-fh/3, str(text))
+            else:
+                s = 1.5
+            qp.drawLine(pos,half+s, pos,half-s)
+        pos = self.style().sliderPositionFromValue(self.minimum(),self.maximum(),self.value(),self.width())
+        fw = metrics.width("0")
+        qp.setPen(QtGui.QColor(255,160,47))
+        if self.value() > self.maximum()-(self.maximum()/2):
+            fw += metrics.width(str(self.value()))
+            fw *= -1
+        qp.drawText((pos)+fw, 0+fh, str(self.value())) 
+        if self.hover:
+            val = self.style().sliderValueFromPosition(self.minimum(),self.maximum(),self.hoverPos.x(),self.width())
+            if val != self.value():
+                    pos = self.style().sliderPositionFromValue(self.minimum(),self.maximum(),val,self.width())
+                    fw = metrics.width("0")
+                    if val > self.maximum()-(self.maximum()/2):
+                        fw += metrics.width(str(val))
+                        fw *= -1
+                    pen2 = QtGui.QPen(QtGui.QColor(255,160,47,100), 2, QtCore.Qt.SolidLine)
+                    qp.setPen(pen2)
+                    qp.drawLine(pos,0, pos,h)
+                    qp.drawText((pos)+fw, 0+fh, str(val)) 
+        qp.setPen(pen)       
+    def mousePressEvent(self,event):
+        if event.modifiers() == QtCore.Qt.AltModifier:
+            self.PressPos = event.globalPos()
+            self.MovePos = event.globalPos()
+        if event.button() == QtCore.Qt.LeftButton and event.modifiers() != QtCore.Qt.AltModifier:
+            butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
+            nevent = QtGui.QMouseEvent(event.type(),QtCore.QPointF(event.pos()),QtCore.QPointF(event.globalPos()),QtCore.Qt.MidButton,butts,event.modifiers())
+            super(pyf_timeline, self).mousePressEvent(nevent)
+        elif event.modifiers() != QtCore.Qt.AltModifier:
+            super(pyf_timeline, self).mousePressEvent(event)
+    def wheelEvent(self,event):
+        newMin = self.minimum()+(round(120/event.delta()))
+        newMax = self.maximum()-(round(120/event.delta()))
+        self.setRange(newMin,newMax)
+        self.repaint()
+    def eventFilter(self, widget, event):
+        if event.type() == QtCore.QEvent.MouseMove:
+            self.hover = True
+            self.hoverPos = event.pos()
+            self.repaint()
+        elif event.type() == QtCore.QEvent.Leave:
+            self.hover = False
+            self.repaint()
+        return super(pyf_timeline, self).eventFilter( widget, event)
+
+    def mouseMoveEvent(self, event):
+        if event.modifiers() == QtCore.Qt.AltModifier:
+            if event.buttons() in [QtCore.Qt.MidButton,QtCore.Qt.LeftButton] :
+                globalPos = event.globalPos()
+                diff = globalPos - self.MovePos
+                a = (self.width()/(self.maximum()-self.minimum()))
+                if abs(diff.x()) > a : 
+                    self.MovePos = globalPos
+                    newMin = self.minimum()-(1*(diff.x()/abs(diff.x())))
+                    newMax = self.maximum()-(1*(diff.x()/abs(diff.x())))
+                    self.setRange(newMin,newMax)
+                    self.repaint()
+        else:
+            return super(pyf_timeline, self).mouseMoveEvent( event)
+
 class testWidg(QtWidgets.QWidget):
 
     def __init__(self, parent):
@@ -725,6 +884,7 @@ class testWidg(QtWidgets.QWidget):
         self.layout().addWidget(pyf_GradientSlider(self))
         self.layout().addWidget(valueBox(type="int"))
         self.layout().addWidget(pyf_ColorSlider(self))
+        self.layout().addWidget(pyf_timeline(self))
 
 
 
