@@ -9,14 +9,14 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/launcher.py",
-            "console": "integratedTerminal"
+            "console": "externalTerminal"
         },
         {
             "name": "Python: Current File (Integrated Terminal)",
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "externalTerminal"
         },
         {
             "name": "Python: Attach",
