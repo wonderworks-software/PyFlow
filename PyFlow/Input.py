@@ -13,7 +13,6 @@ class InputAction(object):
         self.__data = {"mouse": mouse, "keys": keys, "modifiers": modifiers}
 
     def __eq__(self, other):
-        # TODO: compare name and group?
         sm = self.__data["mouse"]
         sk = self.__data["keys"]
         smod = self.__data["modifiers"]

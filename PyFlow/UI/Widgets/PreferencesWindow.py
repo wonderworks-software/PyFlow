@@ -114,13 +114,3 @@ class PreferencesWindow(QMainWindow):
         index = self.stackedWidget.addWidget(widget)
         self._indexes[name] = (index, widget)
         categoryButton.clicked.connect(lambda idx=index: self.stackedWidget.setCurrentIndex(idx))
-
-
-if __name__ == "__main__":
-    import sys
-    a = QApplication(sys.argv)
-
-    w = PreferencesWindow()
-    w.show()
-
-    sys.exit(a.exec_())
