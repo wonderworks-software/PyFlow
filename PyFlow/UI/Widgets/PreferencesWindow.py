@@ -1,5 +1,6 @@
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
+
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Input import InputAction, InputManager
 from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
@@ -7,6 +8,7 @@ from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureW
 from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
 from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget, InputActionWidgetType
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.UI.Canvas.UICommon import clearLayout
 
 
 class CategoryButton(QPushButton):
@@ -38,12 +40,12 @@ class InputPreferences(CategoryWidgetBase):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.layout.setSpacing(2)
-        self.inputActions = set()
 
     def serialize(self, settings):
         pass
 
     def onShow(self, settings):
+        clearLayout(self.layout)
         for actionName, variants in InputManager().getData().items():
             category = CollapsibleFormWidget(headName=actionName, hideLabels=True)
             for inputActionVariant in variants:
@@ -54,6 +56,25 @@ class InputPreferences(CategoryWidgetBase):
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
+
+
+class GeneralPreferences(CategoryWidgetBase):
+    """docstring for GeneralPreferences."""
+    def __init__(self, parent=None):
+        super(GeneralPreferences, self).__init__(parent)
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(1, 1, 1, 1)
+        self.layout.setSpacing(2)
+        w = CollapsibleFormWidget(headName="Python node")
+        le = QLineEdit("notepad.exe @FILE")
+        w.addWidget("Editor cmd:", le)
+        self.layout.addWidget(w)
+
+        spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.layout.addItem(spacerItem)
+
+    def serialize(self, settings):
+        pass
 
 
 class PreferencesWindow(QMainWindow):
@@ -95,10 +116,17 @@ class PreferencesWindow(QMainWindow):
         self.setCentralWidget(self.centralWidget)
         self.splitter.setSizes([150, 450])
         self._indexes = {}
-        self.addCategory("Input", InputPreferences())
         pbSavePrefs = QPushButton("Save")
         pbSavePrefs.clicked.connect(self.savePreferences)
         self.categoriesVerticalLayout.addWidget(pbSavePrefs)
+
+        self.addCategory("Input", InputPreferences())
+        self.addCategory("General", GeneralPreferences())
+        self.selectByName("General")
+
+    def selectByName(self, name):
+        if name in self._indexes:
+            self.stackedWidget.setCurrentIndex(self._indexes[name][0])
 
     def showEvent(self, event):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
@@ -127,4 +155,7 @@ class PreferencesWindow(QMainWindow):
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         index = self.stackedWidget.addWidget(widget)
         self._indexes[name] = (index, widget)
-        categoryButton.clicked.connect(lambda idx=index: self.stackedWidget.setCurrentIndex(idx)) 
+        categoryButton.clicked.connect(lambda checked=False, idx=index: self.switchCategoryContent(idx))
+
+    def switchCategoryContent(self, index):
+        self.stackedWidget.setCurrentIndex(index)

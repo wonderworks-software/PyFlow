@@ -31,6 +31,7 @@ class UICompoundNode(UINodeBase):
     def onGraphNameChanged(self, newName):
         self.displayName = newName
         self.name = newName
+        self.setHeaderHtml(self.name)
 
     def postCreate(self, jsonTemplate=None):
         super(UICompoundNode, self).postCreate(jsonTemplate)
