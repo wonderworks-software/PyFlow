@@ -209,8 +209,11 @@ class inputDrager(QtWidgets.QWidget):
 
 class draggers(QtWidgets.QWidget):
     ## PopUp Draggers Houdini Style
-    def __init__(self, parent=None,isFloat=True):
+    def __init__(self, parent=None,isFloat=True,startValue=0.0):
         super(draggers, self).__init__(parent)    
+        if not isFloat:
+            startValue = int(startValue)
+        self.initValue = startValue
         self._value = 0
         self._startValue = 0
         self.setLayout(QtWidgets.QVBoxLayout())
@@ -248,11 +251,11 @@ class draggers(QtWidgets.QWidget):
                 deltaX = self.activeDrag.mapToGlobal(event.pos()).x() - self.activeDrag.startDragpos.x()
                 if event.pos().x() > self.activeDrag.width() or event.pos().x() < 0:
                     self.activeDrag._value = (deltaX / 8) * self.activeDrag._factor
-                    self.activeDrag.valueLabel.setText(str(self.activeDrag._value))
+                    self.activeDrag.valueLabel.setText(str(self.initValue+self.activeDrag._value))
                     self.activeDrag.valueChanged.emit(self.activeDrag._startValue + self.activeDrag._value)
                 else:
                     self.activeDrag._value = 0
-                    self.activeDrag.valueLabel.setText(str(self.activeDrag._value))
+                    self.activeDrag.valueLabel.setText(str(self.initValue+self.activeDrag._value))
                     self.activeDrag.startDragpos = self.activeDrag.mapToGlobal(event.pos())
                     self.activeDrag._startValue = self.activeDrag.parent._value
                     self.activeDrag.valueChanged.emit(0)
@@ -381,14 +384,15 @@ class doubleSlider(slider):
 
 class valueBox(QtWidgets.QDoubleSpinBox):
     ## Input Text Values with Draggers
-    def __init__(self,type="float",*args, **kargs):
+    def __init__(self,type="float",buttons=False,*args, **kargs):
         super(valueBox, self).__init__(*args, **kargs)
         self.isFloat = type=="float"
         if not self.isFloat:
             self.setDecimals(0)
         else:
             self.setDecimals(4)
-        self.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        if not buttons:
+            self.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         self.setStyleSheet(sliderStyleSheetA)
         self.lineEdit().installEventFilter(self)
         self.installEventFilter(self)
@@ -396,7 +400,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             if event.button() == QtCore.Qt.MiddleButton:
-                dragger = draggers(self,self.isFloat)
+                dragger = draggers(self,self.isFloat,startValue=self.value())
                 dragger.show()
                 if self.isFloat:
                     dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
@@ -877,14 +881,16 @@ class testWidg(QtWidgets.QWidget):
         super(testWidg, self).__init__(parent)
 
         self.setLayout(QtWidgets.QVBoxLayout())
-        self.layout().addWidget(doubleSlider())
         self.layout().addWidget(pyf_Slider(self, style=0))
         self.layout().addWidget(pyf_Slider(self, type = "int",style=1))
         self.layout().addWidget(pyf_HueSlider(self))
         self.layout().addWidget(pyf_GradientSlider(self))
         self.layout().addWidget(valueBox(type="int"))
+        self.layout().addWidget(valueBox(type="float",buttons=True))
         self.layout().addWidget(pyf_ColorSlider(self))
-        self.layout().addWidget(pyf_timeline(self))
+        tim = pyf_timeline(self)
+        tim.setCached([0,1,2,3,4,15,20])
+        self.layout().addWidget(tim)
 
 
 
