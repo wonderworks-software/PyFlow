@@ -27,9 +27,9 @@ Watch [video](https://youtu.be/chnRrr1Qfj8)
 # Installation
 1. Download repository.
 2. Install [conda](https://conda.io/miniconda.html) with pyside2 and python 2.7 environment. [Instruction](https://fredrikaverpil.github.io/2017/08/28/pyside2-easy-install/) here
-3. Go to **Scripts/** folder and install dependencies
+3. Go to **PyFlow/** folder and install dependencies
 	```bash
-	pip install Qt.py pyrr enum34 blinker treelib
+	pip install -r requirements.txt
 	```
 4. Execute **starter.bat**
 

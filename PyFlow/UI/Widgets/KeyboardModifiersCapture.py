@@ -12,11 +12,19 @@ class KeyboardModifiersCaptureWidget(QPushButton):
         self.setCheckable(True)
         self.setToolTip("<b>Left click</b> to start capturing.<br><b>Enter</b> to accept.<br><b>Esc</b> to clear")
 
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.actionReset = QAction("Reset")
+        self.actionReset.triggered.connect(self.resetToDefault)
+        self.addAction(self.actionReset)
+
+    def resetToDefault(self):
+        self.currentModifiers = QtCore.Qt.NoModifier
+
     @staticmethod
     def modifiersToString(modifiers):
         if modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
             return "None"
-        return QtGui.QKeySequence(modifiers).toString()
+        return QtGui.QKeySequence(modifiers).toString()[:-1]
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
@@ -37,7 +45,7 @@ class KeyboardModifiersCaptureWidget(QPushButton):
         super(KeyboardModifiersCaptureWidget, self).keyPressEvent(event)
         key = event.key()
         if key == QtCore.Qt.Key_Escape:
-            self.currentModifiers = QtCore.Qt.NoModifier
+            self.resetToDefault()
             return
 
         if key == QtCore.Qt.Key_Return and self.bCapturing:

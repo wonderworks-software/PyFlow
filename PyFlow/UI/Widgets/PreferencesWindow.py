@@ -2,6 +2,9 @@ from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Input import InputAction, InputManager
+from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
+from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
+from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
 
 
 class CategoryButton(QPushButton):
@@ -33,20 +36,19 @@ class InputPreferences(CategoryWidgetBase):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(1, 1, 1, 1)
 
-        self.layout.addWidget(QLabel("Mouse button"))
-
-        self.cb = QComboBox()
-        self.cb.addItems(["Hello", "World"])
-        self.layout.addWidget(self.cb)
+        self.layout.addWidget(QLabel("View zoom"))
+        self.layout.addWidget(MouseButtonCaptureWidget())
+        self.layout.addWidget(KeyboardModifiersCaptureWidget())
+        self.layout.addWidget(KeyCaptureWidget())
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
     def serialize(self, settings):
-        settings.setValue("myComboBoxValue", self.cb.currentText())
+        pass
 
     def deserialize(self, settings):
-        self.cb.setCurrentIndex(self.cb.findText(settings.value("myComboBoxValue")))
+        pass
 
 
 class PreferencesWindow(QMainWindow):
