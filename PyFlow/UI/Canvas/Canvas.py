@@ -536,10 +536,6 @@ class Canvas(QGraphicsView):
         for e in list(self.connections.values()):
             e.Tick()
 
-    def notify(self, message, duration):
-        self.parent.statusBar.showMessage(message, duration)
-        print(message)
-
     def isShortcutsEnabled(self):
         return self._sortcuts_enabled
 

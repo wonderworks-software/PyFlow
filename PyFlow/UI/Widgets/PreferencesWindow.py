@@ -1,6 +1,7 @@
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
 from PyFlow.ConfigManager import ConfigManager
+from PyFlow.Input import InputAction, InputManager
 
 
 class CategoryButton(QPushButton):
@@ -14,6 +15,9 @@ class CategoryWidgetBase(QWidget):
     """docstring for CategoryWidgetBase."""
     def __init__(self, parent=None):
         super(CategoryWidgetBase, self).__init__(parent)
+
+    def initDefaults(self):
+        pass
 
     def serialize(self, settings):
         pass
