@@ -1,15 +1,31 @@
 from collections import Counter
 from collections import defaultdict
-from Qt import QtCore
+from enum import Enum
+from Qt import QtCore, QtGui
 
 from PyFlow.Core.Common import *
 
 
+class InputActionType(Enum):
+    Mouse = 1
+    Keyboard = 2
+
+
 class InputAction(object):
-    def __init__(self, name="defaultName", group="default", mouse=QtCore.Qt.MouseButton.NoButton, key=None, modifiers=QtCore.Qt.NoModifier):
+    def __init__(self, name="defaultName", actionType=InputActionType.Keyboard, group="default", mouse=QtCore.Qt.MouseButton.NoButton, key=None, modifiers=QtCore.Qt.NoModifier):
+        self.__actionType = actionType
         self._name = name
         self._group = group
         self.__data = {"mouse": mouse, "key": key, "modifiers": modifiers}
+
+    def __str__(self):
+        return "{0} {1} {2}".format(QtGui.QKeySequence(self.getModifiers()).toString(),
+                                     self.getMouseButton().name.decode('utf=8'),
+                                     QtGui.QKeySequence(self.getKey()).toString())
+
+    @property
+    def actionType(self):
+        return self.__actionType
 
     def __eq__(self, other):
         sm = self.__data["mouse"]

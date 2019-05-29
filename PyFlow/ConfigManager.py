@@ -4,7 +4,7 @@ from enum import Enum
 from Qt import QtCore, QtGui
 
 from PyFlow.Core.Common import SingletonDecorator
-from PyFlow.Input import InputAction, InputManager
+from PyFlow.Input import InputAction, InputManager, InputActionType
 
 
 @SingletonDecorator
@@ -24,6 +24,6 @@ class ConfigManager(object):
                 InputManager().loadFromData(data)
 
     def createDefaultInput(self):
-        InputManager().registerAction(InputAction("Canvas.Pan", "Navigation", QtCore.Qt.MouseButton.MiddleButton))
-        InputManager().registerAction(InputAction("Canvas.Pan", "Navigation", QtCore.Qt.MouseButton.LeftButton, modifiers=QtCore.Qt.AltModifier))
-        InputManager().registerAction(InputAction("Canvas.Zoom", "Navigation", QtCore.Qt.MouseButton.RightButton))
+        InputManager().registerAction(InputAction(name="Canvas.Pan", actionType=InputActionType.Mouse, group="Navigation", mouse=QtCore.Qt.MouseButton.MiddleButton))
+        InputManager().registerAction(InputAction(name="Canvas.Pan", actionType=InputActionType.Mouse, group="Navigation", mouse=QtCore.Qt.MouseButton.LeftButton, modifiers=QtCore.Qt.AltModifier))
+        InputManager().registerAction(InputAction(name="Canvas.Zoom", actionType=InputActionType.Mouse, group="Navigation", mouse=QtCore.Qt.MouseButton.RightButton))

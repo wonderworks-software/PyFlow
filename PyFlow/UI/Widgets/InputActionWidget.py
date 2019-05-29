@@ -1,24 +1,17 @@
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
-from enum import Enum
 
+from PyFlow.Input import InputActionType
 from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
 from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
 from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
 
 
-class InputActionWidgetType(Enum):
-    Mouse = 1   # do not show key capture
-    Keyboard = 2    # do not show mouse capture
-    All = 3
-
-
 class InputActionWidget(QWidget):
     """docstring for InputActionWidget."""
-    def __init__(self, parent=None, actionType=InputActionWidgetType.Keyboard, inputActionRef=None):
+    def __init__(self, parent=None, inputActionRef=None):
         super(InputActionWidget, self).__init__(parent)
         self.currentActionRef = inputActionRef
-        self.__actionType = actionType
         self.layout = QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
@@ -29,9 +22,7 @@ class InputActionWidget(QWidget):
         self.layout.addWidget(modifiersLabel)
         self.layout.addWidget(self.modifiersWidget)
 
-        isAll = actionType == InputActionWidgetType.All
-
-        if actionType == InputActionWidgetType.Keyboard or isAll:
+        if self.actionType == InputActionType.Keyboard:
             keyLabel = QLabel("Key:")
             keyLabel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
             self.keyCapture = KeyCaptureWidget()
@@ -39,7 +30,7 @@ class InputActionWidget(QWidget):
             self.layout.addWidget(keyLabel)
             self.layout.addWidget(self.keyCapture)
 
-        if actionType == InputActionWidgetType.Mouse or isAll:
+        if self.actionType == InputActionType.Mouse:
             mouseLabel = QLabel("Mouse:")
             mouseLabel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
             self.mouseCapture = MouseButtonCaptureWidget()
@@ -88,4 +79,4 @@ class InputActionWidget(QWidget):
 
     @property
     def actionType(self):
-        return self.__actionType
+        return self.currentActionRef.actionType

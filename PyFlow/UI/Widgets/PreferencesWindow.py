@@ -6,7 +6,7 @@ from PyFlow.Input import InputAction, InputManager
 from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
 from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
 from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
-from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget, InputActionWidgetType
+from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.UI.Canvas.UICommon import clearLayout
 
@@ -49,7 +49,7 @@ class InputPreferences(CategoryWidgetBase):
         for actionName, variants in InputManager().getData().items():
             category = CollapsibleFormWidget(headName=actionName, hideLabels=True)
             for inputActionVariant in variants:
-                actionWidget = InputActionWidget(actionType=InputActionWidgetType.All, inputActionRef=inputActionVariant)
+                actionWidget = InputActionWidget(inputActionRef=inputActionVariant)
                 actionWidget.setAction(inputActionVariant)
                 category.addWidget(widget=actionWidget)
             self.layout.addWidget(category)

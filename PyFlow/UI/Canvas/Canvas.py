@@ -52,7 +52,7 @@ from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.GraphManager import GraphManager
-from PyFlow.Input import InputManager, InputAction
+from PyFlow.Input import InputManager, InputAction, InputActionType
 from PyFlow.UI.Views.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
@@ -1064,7 +1064,7 @@ class Canvas(QGraphicsView):
         expandComments = False
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
 
-        currentInputAction = InputAction("temp", "temp", event.button(), modifiers=modifiers)
+        currentInputAction = InputAction("temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers)
         panActionVariants = InputManager()["Canvas.Pan"]
         zoomActionVariants = InputManager()["Canvas.Zoom"]
 
