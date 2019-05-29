@@ -1700,6 +1700,6 @@ class Canvas(QGraphicsView):
         self.scale(scale_factor, scale_factor)
 
     def eventFilter(self, object, event):
-        if event.type()== QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_Tab:
+        if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_Tab:
             self.showNodeBox()
         return False

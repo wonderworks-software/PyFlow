@@ -94,7 +94,7 @@ class NodeName(QGraphicsWidget):
         self._font.setPointSize(6)
         self.labelItem.setFont(self._font)
 
-    def setTextColor(self,color):
+    def setTextColor(self, color):
         self.labelItem.setDefaultTextColor(color)
 
     def mouseDoubleClickEvent(self, event):
@@ -514,10 +514,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             if "headerHtml" in jsonTemplate["wrapper"]:
                 headerHtml = jsonTemplate["wrapper"]["headerHtml"]
             if "groups" in jsonTemplate["wrapper"]:
-                for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["input"].items():
-                    self._groups["input"][groupName].setCollapsed(collapsed)
-                for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["output"].items():
-                    self._groups["output"][groupName].setCollapsed(collapsed)
+                try:
+                    for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["input"].items():
+                        self._groups["input"][groupName].setCollapsed(collapsed)
+                    for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["output"].items():
+                        self._groups["output"][groupName].setCollapsed(collapsed)
+                except:
+                    pass
 
         self.setToolTip(self.description())
         if self.resizable:
@@ -598,12 +601,21 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         try:
             numInputs = len(self.UIinputs)
             numOutputs = len(self.UIoutputs)
-            pins = self.UIinputs.values() if numInputs > numOutputs else self.UIoutputs.values()
+            ipins = self.UIinputs.values()
+            opins = self.UIoutputs.values()
             h += NodeDefaults().CONTENT_MARGINS * 2
 
-            for pin in pins:
+            iPinsHeight = 0
+            for pin in ipins:
                 if pin.isVisible():
-                    h += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
+                    iPinsHeight += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
+            oPinsHeight = 0
+            for pin in opins:
+                if pin.isVisible():
+                    oPinsHeight += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
+
+            h += max(iPinsHeight, oPinsHeight)
+
             igrhHeight = 0
             ogrhHeight = 0
             for grp in self._groups["input"].values():

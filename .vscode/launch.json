@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/launcher.py",
-            "console": "externalTerminal"
+            "console": "integratedTerminal"
         },
         {
             "name": "Python: Current File (Integrated Terminal)",
