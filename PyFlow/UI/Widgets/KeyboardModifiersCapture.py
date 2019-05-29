@@ -4,6 +4,8 @@ from Qt import QtCore, QtGui
 
 class KeyboardModifiersCaptureWidget(QPushButton):
     """docstring for KeyboardModifiersCaptureWidget."""
+    captured = QtCore.Signal(object)
+
     def __init__(self, parent=None):
         super(KeyboardModifiersCaptureWidget, self).__init__(parent)
         self._currentModifiers = QtCore.Qt.NoModifier
@@ -40,6 +42,7 @@ class KeyboardModifiersCaptureWidget(QPushButton):
     def currentModifiers(self, value):
         self._currentModifiers = value
         self.setText(self.modifiersToString(self._currentModifiers))
+        self.captured.emit(self._currentModifiers)
 
     def keyPressEvent(self, event):
         super(KeyboardModifiersCaptureWidget, self).keyPressEvent(event)

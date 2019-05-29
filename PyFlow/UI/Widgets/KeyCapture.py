@@ -4,6 +4,8 @@ from Qt import QtCore, QtGui
 
 class KeyCaptureWidget(QPushButton):
     """docstring for KeyCaptureWidget."""
+    captured = QtCore.Signal(object)
+
     def __init__(self, parent=None):
         super(KeyCaptureWidget, self).__init__(parent)
         self.bCapturing = False
@@ -35,6 +37,7 @@ class KeyCaptureWidget(QPushButton):
             self.setText(QtGui.QKeySequence(self._currentKey).toString())
             self.bCapturing = False
             self.setChecked(False)
+            self.captured.emit(self._currentKey)
 
     def mousePressEvent(self, event):
         super(KeyCaptureWidget, self).mousePressEvent(event)

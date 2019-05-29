@@ -15,8 +15,9 @@ class InputActionWidgetType(Enum):
 
 class InputActionWidget(QWidget):
     """docstring for InputActionWidget."""
-    def __init__(self, parent=None, actionType=InputActionWidgetType.Keyboard):
+    def __init__(self, parent=None, actionType=InputActionWidgetType.Keyboard, inputActionRef=None):
         super(InputActionWidget, self).__init__(parent)
+        self.currentActionRef = inputActionRef
         self.__actionType = actionType
         self.layout = QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -24,6 +25,7 @@ class InputActionWidget(QWidget):
         modifiersLabel = QLabel("Modifiers:")
         modifiersLabel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         self.modifiersWidget = KeyboardModifiersCaptureWidget()
+        self.modifiersWidget.captured.connect(self.updateActionModifiers)
         self.layout.addWidget(modifiersLabel)
         self.layout.addWidget(self.modifiersWidget)
 
@@ -33,6 +35,7 @@ class InputActionWidget(QWidget):
             keyLabel = QLabel("Key:")
             keyLabel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
             self.keyCapture = KeyCaptureWidget()
+            self.keyCapture.captured.connect(self.updateActionKey)
             self.layout.addWidget(keyLabel)
             self.layout.addWidget(self.keyCapture)
 
@@ -40,8 +43,21 @@ class InputActionWidget(QWidget):
             mouseLabel = QLabel("Mouse:")
             mouseLabel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
             self.mouseCapture = MouseButtonCaptureWidget()
+            self.mouseCapture.captured.connect(self.updateActionMouse)
             self.layout.addWidget(mouseLabel)
             self.layout.addWidget(self.mouseCapture)
+
+    def updateActionMouse(self, value):
+        if self.currentActionRef is not None:
+            self.currentActionRef.setMouseButton(value)
+
+    def updateActionKey(self, value):
+        if self.currentActionRef is not None:
+            self.currentActionRef.setKey(value)
+
+    def updateActionModifiers(self, value):
+        if self.currentActionRef is not None:
+            self.currentActionRef.setModifiers(value)
 
     def setAction(self, inputAction):
         self.modifiersWidget.currentModifiers = inputAction.getModifiers()

@@ -4,6 +4,8 @@ from Qt import QtCore, QtGui
 
 class MouseButtonCaptureWidget(QPushButton):
     """docstring for MouseButtonCaptureWidget."""
+    captured = QtCore.Signal(object)
+
     def __init__(self, parent=None):
         super(MouseButtonCaptureWidget, self).__init__(parent)
         self._currentButton = QtCore.Qt.MouseButton.NoButton
@@ -22,6 +24,7 @@ class MouseButtonCaptureWidget(QPushButton):
         self.setText(self._currentButton.name.decode('utf-8'))
         self.setChecked(False)
         self.bCapturing = False
+        self.captured.emit(self._currentButton)
 
     def keyPressEvent(self, event):
         super(MouseButtonCaptureWidget, self).keyPressEvent(event)

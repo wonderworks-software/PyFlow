@@ -27,7 +27,7 @@ class CategoryWidgetBase(QWidget):
     def serialize(self, settings):
         pass
 
-    def deserialize(self, settings):
+    def onShow(self, settings):
         pass
 
 
@@ -38,15 +38,16 @@ class InputPreferences(CategoryWidgetBase):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.layout.setSpacing(2)
+        self.inputActions = set()
 
     def serialize(self, settings):
         pass
 
-    def deserialize(self, settings):
+    def onShow(self, settings):
         for actionName, variants in InputManager().getData().items():
             category = CollapsibleFormWidget(headName=actionName, hideLabels=True)
             for inputActionVariant in variants:
-                actionWidget = InputActionWidget(actionType=InputActionWidgetType.All)
+                actionWidget = InputActionWidget(actionType=InputActionWidgetType.All, inputActionRef=inputActionVariant)
                 actionWidget.setAction(inputActionVariant)
                 category.addWidget(widget=actionWidget)
             self.layout.addWidget(category)
@@ -75,6 +76,7 @@ class PreferencesWindow(QMainWindow):
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 497, 596))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.scrollArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setContentsMargins(1, 1, 1, 1)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
@@ -88,10 +90,10 @@ class PreferencesWindow(QMainWindow):
         self.scrollArea.setMinimumWidth(200)
         self.stackedWidget = QStackedWidget(self.splitter)
         self.stackedWidget.setObjectName("stackedWidget")
+        self.stackedWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.verticalLayout.addWidget(self.splitter)
         self.setCentralWidget(self.centralWidget)
-        self.splitter.setStretchFactor(0, 1)
-        self.splitter.setStretchFactor(1, 2)
+        self.splitter.setSizes([150, 450])
         self._indexes = {}
         self.addCategory("Input", InputPreferences())
         pbSavePrefs = QPushButton("Save")
@@ -104,7 +106,7 @@ class PreferencesWindow(QMainWindow):
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
             settings.beginGroup(name)
-            widget.deserialize(settings)
+            widget.onShow(settings)
             settings.endGroup()
         settings.endGroup()
 
@@ -122,6 +124,7 @@ class PreferencesWindow(QMainWindow):
     def addCategory(self, name, widget):
         categoryButton = CategoryButton(text=name)
         self.categoriesVerticalLayout.insertWidget(0, categoryButton)
+        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         index = self.stackedWidget.addWidget(widget)
         self._indexes[name] = (index, widget)
-        categoryButton.clicked.connect(lambda idx=index: self.stackedWidget.setCurrentIndex(idx))
+        categoryButton.clicked.connect(lambda idx=index: self.stackedWidget.setCurrentIndex(idx)) 
