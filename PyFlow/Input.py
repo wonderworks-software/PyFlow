@@ -104,7 +104,11 @@ class InputAction(object):
         saveData["name"] = self._name
         saveData["group"] = self._group
         saveData["mouse"] = int(self.__data["mouse"])
-        saveData["key"] = self.__data["key"]
+        saveData["actionType"] = self.actionType.value
+
+        key = self.__data["key"]
+        saveData["key"] = int(key) if key is not None else None
+
         modifiersList = self._modifiersToList(self.__data["modifiers"])
         saveData["modifiers"] = [int(i) for i in modifiersList]
         return saveData
@@ -114,8 +118,10 @@ class InputAction(object):
             self._name = jsonData["name"]
             self._group = jsonData["group"]
             self.__data["mouse"] = QtCore.Qt.MouseButton(jsonData["mouse"])
-            self.__data["key"] = jsonData["key"]
+            keyJson = jsonData["key"]
+            self.__data["key"] = QtCore.Qt.Key(keyJson) if isinstance(keyJson, int) else None
             self.__data["modifiers"] = self._listOfModifiersToEnum([QtCore.Qt.KeyboardModifier(i) for i in jsonData["modifiers"]])
+            self.__actionType = InputActionType(jsonData["actionType"])
             return self
         except:
             return None

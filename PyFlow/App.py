@@ -41,6 +41,7 @@ from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow import INITIALIZE
+from PyFlow.Input import InputAction, InputActionType
 from PyFlow.Input import InputManager
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
@@ -192,13 +193,20 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
-        if all([event.key() == QtCore.Qt.Key_N, modifiers == QtCore.Qt.ControlModifier]):
+        currentInputAction = InputAction(name="temp", actionType=InputActionType.Keyboard, key=event.key(), modifiers=modifiers)
+
+        actionSaveVariants = InputManager()["App.Save"]
+        actionNewFileVariants = InputManager()["App.NewFile"]
+        actionLoadVariants = InputManager()["App.Load"]
+        actionSaveAsVariants = InputManager()["App.SaveAs"]
+
+        if currentInputAction in actionNewFileVariants:
             self.newFile()
-        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier]):
+        if currentInputAction in actionSaveVariants:
             self.save()
-        if all([event.key() == QtCore.Qt.Key_O, modifiers == QtCore.Qt.ControlModifier]):
+        if currentInputAction in actionLoadVariants:
             self.load()
-        if all([event.key() == QtCore.Qt.Key_S, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+        if currentInputAction in actionSaveAsVariants:
             self.save_as()
 
     def loadFromData(self, data, fpath=""):
@@ -407,10 +415,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             tool.onDestroy()
         settings.endGroup()
         settings.sync()
-
-        with open(ConfigManager().INPUT_CONFIG_PATH, "w") as f:
-            inputData = InputManager().serialize()
-            json.dump(inputData, f, indent=4)
 
         QMainWindow.closeEvent(self, event)
 

@@ -184,7 +184,7 @@ class PropertiesWidget(QtWidgets.QWidget):
     """docstring for PropertiesWidget."""
     spawnDuplicate = QtCore.Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, searchByHeaders=False):
         super(PropertiesWidget, self).__init__(parent)
         self.setWindowTitle("Properties view")
         self.mainLayout = QtWidgets.QVBoxLayout(self)
@@ -193,7 +193,7 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.searchBox = QtWidgets.QLineEdit(self)
         self.searchBox.setObjectName("lineEdit")
         self.searchBox.setPlaceholderText(str("search..."))
-        self.searchBox.textChanged.connect(self.searchTextChanged)
+        self.searchBox.textChanged.connect(self.filterByHeaders if searchByHeaders else self.filterByHeadersAndFields)
         self.searchBoxWidget = QtWidgets.QWidget()
         self.searchBoxLayout = QtWidgets.QHBoxLayout(self.searchBoxWidget)
         self.searchBoxLayout.setContentsMargins(1, 1, 1, 1)
@@ -217,7 +217,18 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.mainLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
 
-    def searchTextChanged(self, text):
+    def filterByHeaders(self, text):
+        count = self.contentLayout.count()
+        for i in range(count):
+            item = self.contentLayout.itemAt(i)
+            w = item.widget()
+            if w:
+                if text.lower() in w.title().lower():
+                    w.show()
+                else:
+                    w.hide()
+
+    def filterByHeadersAndFields(self, text):
         count = self.contentLayout.count()
         for i in range(count):
             item = self.contentLayout.itemAt(i)

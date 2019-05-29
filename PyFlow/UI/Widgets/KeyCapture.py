@@ -50,7 +50,7 @@ class KeyCaptureWidget(QPushButton):
         key = event.key()
         modifiers = event.modifiers()
         if modifiers == QtCore.Qt.NoModifier:
-            self.currentKey = key
+            self.currentKey = QtCore.Qt.Key(key)
         if not modifiers == QtCore.Qt.NoModifier:
             self.resetToDefault()
 

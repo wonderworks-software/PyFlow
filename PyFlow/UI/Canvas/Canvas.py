@@ -695,10 +695,7 @@ class Canvas(QGraphicsView):
                 for node in self.selectedNodes():
                     node.updateOwningCommentNode()
 
-            if all([event.key() == QtCore.Qt.Key_Space, modifiers == QtCore.Qt.ControlModifier]):
-                self.showNodeBox()
-                return
-
+            # TODO: move to input manager
             if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
                 self.alignSelectedNodes(Direction.Left)
                 return

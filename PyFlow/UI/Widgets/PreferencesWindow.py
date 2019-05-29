@@ -1,3 +1,4 @@
+import json
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
 
@@ -7,7 +8,7 @@ from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
 from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
 from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
 from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.Canvas.UICommon import clearLayout
 
 
@@ -18,10 +19,11 @@ class CategoryButton(QPushButton):
         self.setMinimumHeight(30)
 
 
-class CategoryWidgetBase(QWidget):
+class CategoryWidgetBase(QScrollArea):
     """docstring for CategoryWidgetBase."""
     def __init__(self, parent=None):
         super(CategoryWidgetBase, self).__init__(parent)
+        self.setWidgetResizable(True)
 
     def initDefaults(self):
         pass
@@ -37,22 +39,31 @@ class InputPreferences(CategoryWidgetBase):
     """docstring for InputPreferences."""
     def __init__(self, parent=None):
         super(InputPreferences, self).__init__(parent)
-        self.layout = QVBoxLayout(self)
+        self.content = QWidget()
+        self.layout = QVBoxLayout(self.content)
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.layout.setSpacing(2)
+        self.setWidget(self.content)
 
     def serialize(self, settings):
-        pass
+        data = InputManager().serialize()
+        with open(ConfigManager().INPUT_CONFIG_PATH, "w") as f:
+            json.dump(data, f, indent=4)
 
     def onShow(self, settings):
         clearLayout(self.layout)
+        properties = PropertiesWidget(searchByHeaders=True)
+        properties.lockCheckBox.hide()
+        properties.tearOffCopy.hide()
         for actionName, variants in InputManager().getData().items():
             category = CollapsibleFormWidget(headName=actionName, hideLabels=True)
             for inputActionVariant in variants:
                 actionWidget = InputActionWidget(inputActionRef=inputActionVariant)
                 actionWidget.setAction(inputActionVariant)
                 category.addWidget(widget=actionWidget)
-            self.layout.addWidget(category)
+            properties.addWidget(category)
+            category.setCollapsed(True)
+        self.layout.addWidget(properties)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
