@@ -7,7 +7,7 @@ class KeyboardModifiersCaptureWidget(QPushButton):
     def __init__(self, parent=None):
         super(KeyboardModifiersCaptureWidget, self).__init__(parent)
         self._currentModifiers = QtCore.Qt.NoModifier
-        self.setText("None")
+        self.setText("NoModifier")
         self.bCapturing = False
         self.setCheckable(True)
         self.setToolTip("<b>Left click</b> to start capturing.<br><b>Enter</b> to accept.<br><b>Esc</b> to clear")
@@ -23,7 +23,7 @@ class KeyboardModifiersCaptureWidget(QPushButton):
     @staticmethod
     def modifiersToString(modifiers):
         if modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
-            return "None"
+            return "NoModifier"
         return QtGui.QKeySequence(modifiers).toString()[:-1]
 
     def mousePressEvent(self, event):

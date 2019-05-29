@@ -24,6 +24,6 @@ class ConfigManager(object):
                 InputManager().loadFromData(data)
 
     def createDefaultInput(self):
-        InputManager().registerAction(InputAction("Pan", "Navigation", QtCore.Qt.MouseButton.MiddleButton))
-        InputManager().registerAction(InputAction("Pan", "Navigation", QtCore.Qt.MouseButton.LeftButton, modifiers=QtCore.Qt.AltModifier))
-        InputManager().registerAction(InputAction("Zoom", "Navigation", QtCore.Qt.MouseButton.RightButton))
+        InputManager().registerAction(InputAction("Canvas.Pan", "Navigation", QtCore.Qt.MouseButton.MiddleButton))
+        InputManager().registerAction(InputAction("Canvas.Pan", "Navigation", QtCore.Qt.MouseButton.LeftButton, modifiers=QtCore.Qt.AltModifier))
+        InputManager().registerAction(InputAction("Canvas.Zoom", "Navigation", QtCore.Qt.MouseButton.RightButton))

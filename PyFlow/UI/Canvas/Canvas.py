@@ -1065,8 +1065,8 @@ class Canvas(QGraphicsView):
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
 
         currentInputAction = InputAction("temp", "temp", event.button(), modifiers=modifiers)
-        panActionVariants = InputManager()["Pan"]
-        zoomActionVariants = InputManager()["Zoom"]
+        panActionVariants = InputManager()["Canvas.Pan"]
+        zoomActionVariants = InputManager()["Canvas.Zoom"]
 
         if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False

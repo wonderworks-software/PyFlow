@@ -8,7 +8,7 @@ class KeyCaptureWidget(QPushButton):
         super(KeyCaptureWidget, self).__init__(parent)
         self.bCapturing = False
         self._currentKey = None
-        self.setText("None")
+        self.setText("NoKey")
         self.setCheckable(True)
         self.setToolTip("<b>Left mouse button</b> to start capture.<br>Modifiers will not be accepted.")
 
@@ -27,7 +27,7 @@ class KeyCaptureWidget(QPushButton):
     @currentKey.setter
     def currentKey(self, value):
         if value is None:
-            self.setText("None")
+            self.setText("NoKey")
             self.bCapturing = False
             self.setChecked(False)
         else:

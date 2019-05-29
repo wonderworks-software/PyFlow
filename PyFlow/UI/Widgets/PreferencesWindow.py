@@ -5,6 +5,8 @@ from PyFlow.Input import InputAction, InputManager
 from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
 from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
 from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
+from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget, InputActionWidgetType
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 
 
 class CategoryButton(QPushButton):
@@ -35,20 +37,22 @@ class InputPreferences(CategoryWidgetBase):
         super(InputPreferences, self).__init__(parent)
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(1, 1, 1, 1)
-
-        self.layout.addWidget(QLabel("View zoom"))
-        self.layout.addWidget(MouseButtonCaptureWidget())
-        self.layout.addWidget(KeyboardModifiersCaptureWidget())
-        self.layout.addWidget(KeyCaptureWidget())
-
-        spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self.layout.addItem(spacerItem)
+        self.layout.setSpacing(2)
 
     def serialize(self, settings):
         pass
 
     def deserialize(self, settings):
-        pass
+        for actionName, variants in InputManager().getData().items():
+            category = CollapsibleFormWidget(headName=actionName, hideLabels=True)
+            for inputActionVariant in variants:
+                actionWidget = InputActionWidget(actionType=InputActionWidgetType.All)
+                actionWidget.setAction(inputActionVariant)
+                category.addWidget(widget=actionWidget)
+            self.layout.addWidget(category)
+
+        spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.layout.addItem(spacerItem)
 
 
 class PreferencesWindow(QMainWindow):
@@ -74,6 +78,7 @@ class PreferencesWindow(QMainWindow):
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setContentsMargins(1, 1, 1, 1)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.verticalLayout_3.setSpacing(2)
         self.categoriesVerticalLayout = QVBoxLayout()
         self.categoriesVerticalLayout.setObjectName("categoriesLayout")
         spacer = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)

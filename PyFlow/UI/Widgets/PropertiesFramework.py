@@ -69,8 +69,8 @@ class CollapsibleWidget(QtWidgets.QWidget):
         self.contentVisibleIcon = self.pbHead.style().standardIcon(QtWidgets.QStyle.SP_ArrowDown)
         self.updateIcon()
 
-    def addWidget(self, *args, **kwargs):
-        pass
+    def addWidget(self, widget):
+        self.mainVLayout.addWidget(widget)
 
     def removeSpacer(self):
         if self.spacerItem is not None:
@@ -109,14 +109,15 @@ class CollapsibleWidget(QtWidgets.QWidget):
 
 class PropertyEntry(QtWidgets.QWidget):
     """docstring for PropertyEntry."""
-    def __init__(self, label, widget, parent=None):
+    def __init__(self, label, widget, parent=None, hideLabel=False):
         super(PropertyEntry, self).__init__(parent)
         self.label = label
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.setContentsMargins(1, 1, 1, 1)
-        label = QtWidgets.QLabel(label)
-        label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred))
-        self.layout.addWidget(label)
+        if not hideLabel:
+            label = QtWidgets.QLabel(label)
+            label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred))
+            self.layout.addWidget(label)
         self.layout.addWidget(widget)
 
     def getLabel(self):
@@ -124,8 +125,9 @@ class PropertyEntry(QtWidgets.QWidget):
 
 
 class CollapsibleFormWidget(CollapsibleWidget):
-    def __init__(self, parent=None, headName="Collapse", noSpacer=True, collapsed=False):
+    def __init__(self, parent=None, headName="Collapse", noSpacer=True, collapsed=False, hideLabels=False):
         super(CollapsibleFormWidget, self).__init__(parent, headName=headName, noSpacer=noSpacer, collapsed=collapsed)
+        self.hideLabels = hideLabels
         self.Layout = QtWidgets.QVBoxLayout(self.ContentWidget)
         self.Layout.setObjectName("CollapseWidgetFormLayout")
         self.Layout.setSpacing(2)
@@ -148,16 +150,16 @@ class CollapsibleFormWidget(CollapsibleWidget):
             if widget:
                 widget.setVisible(pattern.lower() in widget.getLabel().lower())
 
-    def insertWidget(self, index=0,label=None, widget=None):
+    def insertWidget(self, index=0, label=None, widget=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
             return False
-        self.Layout.insertWidget(index,PropertyEntry(str(label), widget))
+        self.Layout.insertWidget(index, PropertyEntry(str(label), widget))
         return True
 
     def addWidget(self, label=None, widget=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
             return False
-        self.Layout.addWidget(PropertyEntry(str(label), widget))
+        self.Layout.addWidget(PropertyEntry(str(label), widget, hideLabel=self.hideLabels))
         return True
 
 

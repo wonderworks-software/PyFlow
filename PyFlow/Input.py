@@ -1,38 +1,37 @@
 from collections import Counter
 from collections import defaultdict
-
 from Qt import QtCore
 
 from PyFlow.Core.Common import *
 
 
 class InputAction(object):
-    def __init__(self, name="defaultName", group="default", mouse=QtCore.Qt.MouseButton.NoButton, keys=[], modifiers=QtCore.Qt.NoModifier):
+    def __init__(self, name="defaultName", group="default", mouse=QtCore.Qt.MouseButton.NoButton, key=None, modifiers=QtCore.Qt.NoModifier):
         self._name = name
         self._group = group
-        self.__data = {"mouse": mouse, "keys": keys, "modifiers": modifiers}
+        self.__data = {"mouse": mouse, "key": key, "modifiers": modifiers}
 
     def __eq__(self, other):
         sm = self.__data["mouse"]
-        sk = self.__data["keys"]
+        sk = self.__data["key"]
         smod = self.__data["modifiers"]
         om = other.getData()["mouse"]
-        ok = other.getData()["keys"]
+        ok = other.getData()["key"]
         omod = other.getData()["modifiers"]
         smod == omod
         return all([sm == om,
-                    Counter(sk) == Counter(ok),
+                    sk == ok,
                     smod == omod])
 
     def __ne__(self, other):
         sm = self.__data["mouse"]
-        sk = self.__data["keys"]
+        sk = self.__data["key"]
         smod = self.__data["modifiers"]
         om = other.getData()["mouse"]
-        ok = other.getData()["keys"]
+        ok = other.getData()["key"]
         omod = other.getData()["modifiers"]
         return not all([sm == om,
-                        Counter(sk) == Counter(ok),
+                        sk == ok,
                         smod == omod])
 
     def getName(self):
@@ -45,18 +44,17 @@ class InputAction(object):
         assert(isinstance(btn, QtCore.Qt.MouseButton))
         self.__data["mouse"] = btn
 
-    def setKeys(self, keys=[]):
-        for i in keys:
-            assert(isinstance(i, QtCore.Qt.Key))
-        self.__data["keys"] = keys
+    def getMouseButton(self):
+        return self.__data["mouse"]
 
-    def getKeys(self):
-        return self.__data["keys"]
+    def setKey(self, key=[]):
+        assert(isinstance(key, QtCore.Qt.Key))
+        self.__data["key"] = key
 
-    def containsKeys(self, keysList=[]):
-        return Counter(self.__data["keys"]) == Counter(keysList)
+    def getKey(self):
+        return self.__data["key"]
 
-    def setModifiers(self, modifiers=[]):
+    def setModifiers(self, modifiers=QtCore.Qt.NoModifier):
         self.__data["modifiers"] = modifiers
 
     def getModifiers(self):
@@ -90,7 +88,7 @@ class InputAction(object):
         saveData["name"] = self._name
         saveData["group"] = self._group
         saveData["mouse"] = int(self.__data["mouse"])
-        saveData["keys"] = [int(i) for i in self.__data["keys"]]
+        saveData["key"] = self.__data["key"]
         modifiersList = self._modifiersToList(self.__data["modifiers"])
         saveData["modifiers"] = [int(i) for i in modifiersList]
         return saveData
@@ -100,7 +98,7 @@ class InputAction(object):
             self._name = jsonData["name"]
             self._group = jsonData["group"]
             self.__data["mouse"] = QtCore.Qt.MouseButton(jsonData["mouse"])
-            self.__data["keys"] = [QtCore.Qt.Key(i) for i in jsonData["keys"]]
+            self.__data["key"] = jsonData["key"]
             self.__data["modifiers"] = self._listOfModifiersToEnum([QtCore.Qt.KeyboardModifier(i) for i in jsonData["modifiers"]])
             return self
         except:
@@ -123,8 +121,12 @@ class InputManager(object):
     def __contains__(self, item):
         return item.getName() in self.__actions
 
+    def getData(self):
+        return self.__actions
+
     def registerAction(self, action):
-        self.__actions[action.getName()].append(action)
+        if action not in self.__actions[action.getName()]:
+            self.__actions[action.getName()].append(action)
 
     def loadFromData(self, data):
         for actionName, actionVariants in data.items():

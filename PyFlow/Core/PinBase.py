@@ -231,12 +231,12 @@ class PinBase(IPin):
     def supportedDataTypes():
         return ()
 
-    def allowedDataTypes(self, checked=[], dataTypes=[],selfChek=True,defaults=False):
+    def allowedDataTypes(self, checked=[], dataTypes=[], selfChek=True, defaults=False):
         return list(self.supportedDataTypes())
 
     def checkFree(self, checked=[], selfChek=True):
         return False
-        
+
     def defaultValue(self):
         if self.isArray():
             return []
