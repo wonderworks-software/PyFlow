@@ -67,6 +67,8 @@ class NodeName(QGraphicsWidget):
     def __init__(self, parent=None):
         super(NodeName, self).__init__(parent)
         self.setAcceptHoverEvents(True)
+        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.labelItem = QGraphicsTextItem()
         self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
         self.labelItem.setAcceptHoverEvents(True)
@@ -89,9 +91,12 @@ class NodeName(QGraphicsWidget):
         return self.labelItem.toHtml()
 
     def setHtml(self, html):
+        self.prepareGeometryChange()
         self.labelItem.setHtml(html)
         self._font.setPointSize(6)
         self.labelItem.setFont(self._font)
+        self.updateGeometry()
+        self.update()
 
     def setTextColor(self, color):
         self.labelItem.setDefaultTextColor(color)
@@ -582,8 +587,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         numActions = len(self._actionButtons)
         headerWidth += numActions * 10
         headerWidth += numActions * self.headerLayout.spacing()
+        spacerWidth = self.nameActionsSpacer.boundingRect().width()
         if self.collapsed and not self.resizable:
-            headerWidth += self.nameActionsSpacer.boundingRect().width()
+            headerWidth += spacerWidth
         headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
         return headerWidth
 
