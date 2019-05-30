@@ -697,7 +697,6 @@ class Canvas(QGraphicsView):
                 for node in self.selectedNodes():
                     node.updateOwningCommentNode()
 
-            # TODO: move to input manager
             if currentInputAction in InputManager()["Canvas.AlignLeft"]:
                 self.alignSelectedNodes(Direction.Left)
                 return
@@ -711,31 +710,31 @@ class Canvas(QGraphicsView):
                 self.alignSelectedNodes(Direction.Down)
                 return
 
-            if all([event.key() == QtCore.Qt.Key_Z, modifiers == QtCore.Qt.ControlModifier]):
+            if currentInputAction in InputManager()["Canvas.Undo"]:
                     self.undoStack.undo()
-            if all([event.key() == QtCore.Qt.Key_Y, modifiers == QtCore.Qt.ControlModifier]):
+            if currentInputAction in InputManager()["Canvas.Redo"]:
                     self.undoStack.redo()
 
-            if all([event.key() == QtCore.Qt.Key_F, modifiers == QtCore.Qt.NoModifier]):
+            if currentInputAction in InputManager()["Canvas.FrameSelected"]:
                 self.frameSelectedNodes()
-            if all([event.key() == QtCore.Qt.Key_H, modifiers == QtCore.Qt.NoModifier]):
+            if currentInputAction in InputManager()["Canvas.FrameAll"]:
                 self.frameAllNodes()
 
-            if all([event.key() == QtCore.Qt.Key_Equal, modifiers == QtCore.Qt.ControlModifier]):
+            if currentInputAction in InputManager()["Canvas.ZoomIn"]:
                 self.zoomDelta(True)
-            if all([event.key() == QtCore.Qt.Key_Minus, modifiers == QtCore.Qt.ControlModifier]):
+            if currentInputAction in InputManager()["Canvas.ZoomOut"]:
                 self.zoomDelta(False)
-            if all([event.key() == QtCore.Qt.Key_R, modifiers == QtCore.Qt.ControlModifier]):
+            if currentInputAction in InputManager()["Canvas.ResetScale"]:
                 self.reset_scale()
 
-            if event.key() == QtCore.Qt.Key_Delete:
+            if currentInputAction in InputManager()["Canvas.KillSelectedNodes"]:
                 self.killSelectedNodes()
 
-            if all([event.key() == QtCore.Qt.Key_D, modifiers == QtCore.Qt.ControlModifier]):
-                self.duplicateNodes()
-            if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.ControlModifier]):
+            if currentInputAction in InputManager()["Canvas.CopyNodes"]:
                 self.copyNodes()
-            if all([event.key() == QtCore.Qt.Key_V, modifiers == QtCore.Qt.ControlModifier]):
+            if currentInputAction in InputManager()["Canvas.DuplicateNodes"]:
+                self.duplicateNodes()
+            if currentInputAction in InputManager()["Canvas.PasteNodes"]:
                 self.pasteNodes()
 
         QGraphicsView.keyPressEvent(self, event)
@@ -1064,9 +1063,6 @@ class Canvas(QGraphicsView):
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
 
         currentInputAction = InputAction("temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers)
-        panActionVariants = InputManager()["Canvas.Pan"]
-        zoomActionVariants = InputManager()["Canvas.Zoom"]
-
         if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
@@ -1086,11 +1082,11 @@ class Canvas(QGraphicsView):
                         self._selectionRect.destroy()
                         self._selectionRect = None
                 LeftPaning = event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.AltModifier
-                if currentInputAction in panActionVariants:
+                if currentInputAction in InputManager()["Canvas.Pan"]:
                     self.manipulationMode = CanvasManipulationMode.PAN
                     self._lastPanPoint = self.mapToScene(event.pos())
                 # elif event.button() == QtCore.Qt.RightButton:
-                elif currentInputAction in zoomActionVariants:
+                elif currentInputAction in InputManager()["Canvas.Zoom"]:
                     self.manipulationMode = CanvasManipulationMode.ZOOM
                     self._lastTransform = QtGui.QTransform(self.transform())
                     self._lastSceneRect = self.sceneRect()
@@ -1103,71 +1099,69 @@ class Canvas(QGraphicsView):
             if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
                 self.node_box.hide()
                 self.node_box.lineEdit.clear()
-            if isinstance(self.pressed_item, QGraphicsItem):
-                if isinstance(self.pressed_item, UIPinBase):
-                    if event.button() == QtCore.Qt.LeftButton:
-                        self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
-                        self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
-                        self._drawRealtimeLine = True
-                        self.autoPanController.start()
-                    if modifiers == QtCore.Qt.AltModifier:
-                        self.removeEdgeCmd(self.pressed_item.connections)
-                        self._drawRealtimeLine = False
+            if isinstance(self.pressed_item, UIPinBase):
+                if event.button() == QtCore.Qt.LeftButton:
+                    self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
+                    self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    self._drawRealtimeLine = True
+                    self.autoPanController.start()
+                if currentInputAction in InputManager()["Canvas.DisconnectPin"]:
+                    self.removeEdgeCmd(self.pressed_item.connections)
+                    self._drawRealtimeLine = False
+            else:
+                if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.AltModifier:
+                    reruteNode = self.getReruteNode(event.pos(), self.pressed_item)
+                    self.clearSelection()
+                    reruteNode.setSelected(True)
+                    for inp in reruteNode.UIinputs.values():
+                        if canConnectPins(self.pressed_item.source()._rawPin, inp._rawPin):
+                            drawPin = self.pressed_item.drawSource
+                            if self.pressed_item.source().isExec():
+                                self.pressed_item.kill()
+                            self.connectPins(self.pressed_item.source(), inp)
+                            for conection in inp.connections:
+                                conection.drawSource = drawPin
+                            break
+                    for out in reruteNode.UIoutputs.values():
+                        drawPin = self.pressed_item.drawDestination
+                        if canConnectPins(out._rawPin, self.pressed_item.destination()._rawPin):
+                            self.connectPins(out, self.pressed_item.destination())
+                            for conection in out.connections:
+                                conection.drawDestination = drawPin
+                            break
+                    self.pressed_item = reruteNode
+                    self.manipulationMode = CanvasManipulationMode.MOVE
                 else:
-                    # super(Canvas, self).mousePressEvent(event)
-                    if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.AltModifier:
-                        reruteNode = self.getReruteNode(event.pos(), self.pressed_item)
-                        self.clearSelection()
-                        reruteNode.setSelected(True)
-                        for inp in reruteNode.UIinputs.values():
-                            if canConnectPins(self.pressed_item.source()._rawPin, inp._rawPin):
-                                drawPin = self.pressed_item.drawSource
-                                if self.pressed_item.source().isExec():
-                                    self.pressed_item.kill()
-                                self.connectPins(self.pressed_item.source(), inp)
-                                for conection in inp.connections:
-                                    conection.drawSource = drawPin
-                                break
-                        for out in reruteNode.UIoutputs.values():
-                            drawPin = self.pressed_item.drawDestination
-                            if canConnectPins(out._rawPin, self.pressed_item.destination()._rawPin):
-                                self.connectPins(out, self.pressed_item.destination())
-                                for conection in out.connections:
-                                    conection.drawDestination = drawPin
-                                break
-                        self.pressed_item = reruteNode
-                        self.manipulationMode = CanvasManipulationMode.MOVE
+                    if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
+                        if node.bResize:
+                            return
+                    if currentInputAction in InputManager()["Canvas.DragChainedNodes"]:
+                        if node.isCommentNode:
+                            self.manipulationMode = CanvasManipulationMode.PAN
+                            return
+                        if modifiers != QtCore.Qt.ShiftModifier:
+                            self.clearSelection()
+                        node.setSelected(True)
+                        selectedNodes = self.selectedNodes()
+                        if len(selectedNodes) > 0:
+                            for snode in selectedNodes:
+                                for n in node.getChainedNodes():
+                                    n.setSelected(True)
+                                snode.setSelected(True)
                     else:
-                        if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
-                            if node.bResize:
-                                return
-                        if event.button() == QtCore.Qt.MidButton:
-                            if node.isCommentNode:
-                                self.manipulationMode = CanvasManipulationMode.PAN
-                                return
-                            if modifiers != QtCore.Qt.ShiftModifier:
-                                self.clearSelection()
+                        if modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.AltModifier]:
+                            super(Canvas, self).mousePressEvent(event)
+                        if modifiers == QtCore.Qt.ControlModifier:
+                            node.setSelected(not node.isSelected())
+                        if modifiers == QtCore.Qt.ShiftModifier:
                             node.setSelected(True)
-                            selectedNodes = self.selectedNodes()
-                            if len(selectedNodes) > 0:
-                                for snode in selectedNodes:
-                                    for n in node.getChainedNodes():
-                                        n.setSelected(True)
-                                    snode.setSelected(True)
-                        else:
-                            if modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.AltModifier]:
-                                super(Canvas, self).mousePressEvent(event)
-                            if modifiers == QtCore.Qt.ControlModifier:
-                                node.setSelected(not node.isSelected())
-                            if modifiers == QtCore.Qt.ShiftModifier:
-                                node.setSelected(True)
-                        if all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.NoModifier]):
-                            self.manipulationMode = CanvasManipulationMode.MOVE
-                        elif all([(event.button() == QtCore.Qt.MidButton or event.button() == QtCore.Qt.LeftButton), modifiers == QtCore.Qt.AltModifier]):
-                            self.manipulationMode = CanvasManipulationMode.MOVE
-                            selectedNodes = self.selectedNodes()
-                            copiedNodes = self.copyNodes()
-                            self.pasteNodes(move=False, data=copiedNodes)
+                    if currentInputAction in InputManager()["Canvas.DragNodes"]:
+                        self.manipulationMode = CanvasManipulationMode.MOVE
+                    if currentInputAction in InputManager()["Canvas.DragCopyNodes"]:
+                        self.manipulationMode = CanvasManipulationMode.MOVE
+                        selectedNodes = self.selectedNodes()
+                        copiedNodes = self.copyNodes()
+                        self.pasteNodes(move=False, data=copiedNodes)
         else:
             super(Canvas, self).mousePressEvent(event)
 

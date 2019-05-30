@@ -85,7 +85,7 @@ class GeneralPreferences(CategoryWidgetBase):
         self.layout.setSpacing(2)
         w = CollapsibleFormWidget(headName="Python node")
         le = QLineEdit("notepad.exe @FILE")
-        w.addWidget("Editor cmd:", le)
+        w.addWidget("Editor cmd", le)
         self.layout.addWidget(w)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)

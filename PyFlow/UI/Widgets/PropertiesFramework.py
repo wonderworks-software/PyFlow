@@ -114,8 +114,8 @@ class PropertyEntry(QtWidgets.QWidget):
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.setContentsMargins(1, 1, 1, 1)
         if not hideLabel:
-            label = QtWidgets.QLabel(label)
-            label.setStyleSheet("background-color: rgb(80, 80, 80)")
+            label = QtWidgets.QLabel(label + ":")
+            label.setStyleSheet("font: bold")
             label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred))
             self.layout.addWidget(label)
         self.layout.addWidget(widget)
