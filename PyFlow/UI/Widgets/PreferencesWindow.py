@@ -18,6 +18,8 @@ class CategoryButton(QPushButton):
     def __init__(self, icon=None, text="test", parent=None):
         super(CategoryButton, self).__init__(text, parent)
         self.setMinimumHeight(30)
+        self.setCheckable(True)
+        self.setAutoExclusive(True)
 
 
 class CategoryWidgetBase(QScrollArea):
@@ -134,6 +136,7 @@ class PreferencesWindow(QMainWindow):
         self.setCentralWidget(self.centralWidget)
         self.splitter.setSizes([150, 450])
         self._indexes = {}
+        self.categoryButtons = {}
         pbSavePrefs = QPushButton("Save")
         pbSavePrefs.clicked.connect(self.savePreferences)
         self.categoriesVerticalLayout.addWidget(pbSavePrefs)
@@ -173,7 +176,12 @@ class PreferencesWindow(QMainWindow):
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         index = self.stackedWidget.addWidget(widget)
         self._indexes[name] = (index, widget)
+        self.categoryButtons[index] = categoryButton
         categoryButton.clicked.connect(lambda checked=False, idx=index: self.switchCategoryContent(idx))
 
     def switchCategoryContent(self, index):
         self.stackedWidget.setCurrentIndex(index)
+        #for but in self.categoryButtons.values():
+        #    but.setChecked(False)
+        self.categoryButtons[index].toggle()
+

@@ -160,6 +160,9 @@ QPushButton::pressed{
     background-color: rgb(146, 146, 146);
     border-style: inset;
 }
+QPushButton::checked {
+    background-color: rgba(215, 128, 26,128);
+}
 
 QDockWidget::close-button, QDockWidget::float-button {
     border: 1px solid transparent;
