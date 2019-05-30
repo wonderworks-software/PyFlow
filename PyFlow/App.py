@@ -47,6 +47,7 @@ from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
 
+import PyFlow.UI.resources
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")

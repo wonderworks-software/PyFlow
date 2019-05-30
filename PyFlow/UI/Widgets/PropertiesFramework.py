@@ -65,8 +65,8 @@ class CollapsibleWidget(QtWidgets.QWidget):
         self.mainVLayout.addItem(self.spacerItem)
         self.setWindowTitle(self.objectName())
         self.pbHead.setStyleSheet(self.pbHead.styleSheet() + "\nText-align:left;")
-        self.contentHiddenIcon = self.pbHead.style().standardIcon(QtWidgets.QStyle.SP_ArrowRight)
-        self.contentVisibleIcon = self.pbHead.style().standardIcon(QtWidgets.QStyle.SP_ArrowDown)
+        self.contentHiddenIcon = self.pbHead.style().standardIcon(QtWidgets.QStyle.SP_TitleBarUnshadeButton)
+        self.contentVisibleIcon = self.pbHead.style().standardIcon(QtWidgets.QStyle.SP_TitleBarShadeButton)
         self.updateIcon()
 
     def addWidget(self, widget):

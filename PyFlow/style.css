@@ -166,21 +166,37 @@ QPlainTextEdit
     selection-color: #ffffff;
 }
 
-QPushButton {
-    background-color: rgb(94, 94, 94);
+QPushButton,QComboBox {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 rgb(80,80,80),stop: 0.6 rgb(60,60,60),stop: 1.0 rgb(50, 50, 50));
     border-style: outset;
     border-width: 1px;
-    border-radius: 3px;
-    border-color: rgb(112, 112, 112);
-    padding: 3px;
+    border-radius: 1px;
+    border-color: rgb(10, 10, 10);
 
 }
+
+QPushButton{
+    padding: 3px;
+}
 QComboBox{
-    background-color: rgb(94, 94, 94);
-    border-style: outset;
-    border-width: 1px;
-    border-radius: 3px;
-    border-color: rgb(112, 112, 112);
+    padding: 2px;
+}
+
+QComboBox::drop-down {
+    background-color: rgba(0,0,0,100);    
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+
+    border-left-width: 0px;
+    border-top-right-radius: 1px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 1px;
+
+}
+
+QComboBox::down-arrow {
+     image:   url(":/doubleArrow.png");/*"titlebar-unshade");*/
 }
 
 QPushButton::pressed{
@@ -188,4 +204,12 @@ QPushButton::pressed{
     border-style: inset;
 }
 
+QDockWidget::close-button, QDockWidget::float-button {
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 0px;
+}
 
+QDockWidget::close-button:hover, QDockWidget::float-button:hover {
+    background: rgba(215, 128, 26,128);
+}
