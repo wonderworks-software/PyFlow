@@ -158,6 +158,7 @@ class PreferencesWindow(QMainWindow):
             widget.onShow(settings)
             settings.endGroup()
         settings.endGroup()
+        self.categoryButtons[1].toggle()
 
     def savePreferences(self):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
