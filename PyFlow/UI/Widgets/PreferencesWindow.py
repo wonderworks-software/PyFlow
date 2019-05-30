@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
 
@@ -52,15 +53,21 @@ class InputPreferences(CategoryWidgetBase):
 
     def onShow(self, settings):
         clearLayout(self.layout)
-        properties = PropertiesWidget(searchByHeaders=True)
+        properties = PropertiesWidget()
         properties.lockCheckBox.hide()
         properties.tearOffCopy.hide()
+
+        groupActions = defaultdict(list)
         for actionName, variants in InputManager().getData().items():
-            category = CollapsibleFormWidget(headName=actionName, hideLabels=True)
+            for action in variants:
+                groupActions[action.group].append(action)
+
+        for groupName, variants in groupActions.items():
+            category = CollapsibleFormWidget(headName=groupName)
             for inputActionVariant in variants:
                 actionWidget = InputActionWidget(inputActionRef=inputActionVariant)
                 actionWidget.setAction(inputActionVariant)
-                category.addWidget(widget=actionWidget)
+                category.addWidget(label=inputActionVariant.getName(), widget=actionWidget)
             properties.addWidget(category)
             category.setCollapsed(True)
         self.layout.addWidget(properties)

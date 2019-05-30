@@ -663,6 +663,8 @@ class Canvas(QGraphicsView):
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
+        currentInputAction = InputAction("temp", InputActionType.Keyboard, "temp", key=event.key(), modifiers=modifiers)
+
         if self.isShortcutsEnabled():
             if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
                 # create comment node
@@ -696,16 +698,16 @@ class Canvas(QGraphicsView):
                     node.updateOwningCommentNode()
 
             # TODO: move to input manager
-            if all([event.key() == QtCore.Qt.Key_Left, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            if currentInputAction in InputManager()["Canvas.AlignLeft"]:
                 self.alignSelectedNodes(Direction.Left)
                 return
-            if all([event.key() == QtCore.Qt.Key_Up, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            if currentInputAction in InputManager()["Canvas.AlignTop"]:
                 self.alignSelectedNodes(Direction.Up)
                 return
-            if all([event.key() == QtCore.Qt.Key_Right, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            if currentInputAction in InputManager()["Canvas.AlignRight"]:
                 self.alignSelectedNodes(Direction.Right)
                 return
-            if all([event.key() == QtCore.Qt.Key_Down, modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]):
+            if currentInputAction in InputManager()["Canvas.AlignBottom"]:
                 self.alignSelectedNodes(Direction.Down)
                 return
 

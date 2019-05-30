@@ -115,6 +115,7 @@ class PropertyEntry(QtWidgets.QWidget):
         self.layout.setContentsMargins(1, 1, 1, 1)
         if not hideLabel:
             label = QtWidgets.QLabel(label)
+            label.setStyleSheet("background-color: rgb(80, 80, 80)")
             label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred))
             self.layout.addWidget(label)
         self.layout.addWidget(widget)
@@ -238,6 +239,7 @@ class PropertiesWidget(QtWidgets.QWidget):
                     w.hide()
                 else:
                     w.show()
+                    w.setCollapsed(False)
 
     def isLocked(self):
         return self.lockCheckBox.checkState() == QtCore.Qt.Checked

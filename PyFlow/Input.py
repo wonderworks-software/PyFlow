@@ -20,8 +20,12 @@ class InputAction(object):
 
     def __str__(self):
         return "{0} {1} {2}".format(QtGui.QKeySequence(self.getModifiers()).toString(),
-                                     self.getMouseButton().name.decode('utf=8'),
-                                     QtGui.QKeySequence(self.getKey()).toString())
+                                    self.getMouseButton().name.decode('utf=8'),
+                                    QtGui.QKeySequence(self.getKey()).toString())
+
+    @property
+    def group(self):
+        return self._group
 
     @property
     def actionType(self):

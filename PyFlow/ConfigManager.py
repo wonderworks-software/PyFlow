@@ -28,6 +28,11 @@ class ConfigManager(object):
         InputManager().registerAction(InputAction(name="Canvas.Pan", actionType=InputActionType.Mouse, group="Navigation", mouse=QtCore.Qt.MouseButton.LeftButton, modifiers=QtCore.Qt.AltModifier))
         InputManager().registerAction(InputAction(name="Canvas.Zoom", actionType=InputActionType.Mouse, group="Navigation", mouse=QtCore.Qt.MouseButton.RightButton))
 
+        InputManager().registerAction(InputAction(name="Canvas.AlignLeft", actionType=InputActionType.Keyboard, group="Refactoring", modifiers=QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier, key=QtCore.Qt.Key_Left))
+        InputManager().registerAction(InputAction(name="Canvas.AlignTop", actionType=InputActionType.Keyboard, group="Refactoring", modifiers=QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier, key=QtCore.Qt.Key_Up))
+        InputManager().registerAction(InputAction(name="Canvas.AlignRight", actionType=InputActionType.Keyboard, group="Refactoring", modifiers=QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier, key=QtCore.Qt.Key_Right))
+        InputManager().registerAction(InputAction(name="Canvas.AlignBottom", actionType=InputActionType.Keyboard, group="Refactoring", modifiers=QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier, key=QtCore.Qt.Key_Down))
+
         InputManager().registerAction(InputAction(name="App.NewFile", actionType=InputActionType.Keyboard, group="IO", key=QtCore.Qt.Key_N, modifiers=QtCore.Qt.ControlModifier))
         InputManager().registerAction(InputAction(name="App.Save", actionType=InputActionType.Keyboard, group="IO", key=QtCore.Qt.Key_S, modifiers=QtCore.Qt.ControlModifier))
         InputManager().registerAction(InputAction(name="App.SaveAs", actionType=InputActionType.Keyboard, group="IO", key=QtCore.Qt.Key_S, modifiers=QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier))
