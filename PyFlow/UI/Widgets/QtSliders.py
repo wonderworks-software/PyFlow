@@ -635,7 +635,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
 
     valueChanged = QtCore.Signal(list)
 
-    def __init__(self, parent, type="float",alpha=False,h = 50, *args):
+    def __init__(self, parent=None,startColor=None, type="float",alpha=False,h = 50, *args):
         super(pyf_ColorSlider, self).__init__(parent=parent, *args)
         self.parent = parent
         self.setLayout(QtWidgets.QHBoxLayout())
@@ -715,11 +715,20 @@ class pyf_ColorSlider(QtWidgets.QWidget):
         self.layout().addLayout(self.slidersLay)
         self.layout().setSpacing(5)
         self.slidersLay.setSpacing(0)
-        self.style = "QPushButton{ background-color: rgba(%f,%f,%f,%f);border-color: black;border-radius: 2px;border-style: outset;border-width: 1px;}\nQPushButton:pressed{ border-style: inset;border-color: beige}"
-        self.Color.setStyleSheet(self.style % (self.R.value()*255,self.G.value()*255,self.B.value()*255,self.A.value()*255))
+        self.styleSheetString = "QPushButton{ background-color: rgba(%f,%f,%f,%f);border-color: black;border-radius: 2px;border-style: outset;border-width: 1px;}\nQPushButton:pressed{ border-style: inset;border-color: beige}"
+        if isinstance(startColor,list) and len(startColor)>=3:
+            self.setColor(startColor)
+        self.Color.setStyleSheet(self.styleSheetString % (self.R.value()*255,self.G.value()*255,self.B.value()*255,self.A.value()*255))
+
+    def setColor(self,color):
+        self.R.setValue(color[0])
+        self.G.setValue(color[1])
+        self.B.setValue(color[2])
+        if len(color)>3:
+            self.A.setValue(color[3])
 
     def colorChanged(self,value):
-        self.Color.setStyleSheet(self.style % (self.R.value()*255,self.G.value()*255,self.B.value()*255,self.A.value()*255))
+        self.Color.setStyleSheet(self.styleSheetString % (self.R.value()*255,self.G.value()*255,self.B.value()*255,self.A.value()*255))
         valueList = [self.R.value(),self.G.value(),self.B.value()]
         if self.alpha:
             valueList.append(self.A.value())
