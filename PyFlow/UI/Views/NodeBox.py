@@ -51,7 +51,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.setFrameShadow(QFrame.Sunken)
         self.setObjectName("tree_nodes")
         self.setSortingEnabled(True)
-        self.sortByColumn(0)
+        self.sortByColumn(0,QtCore.Qt.AscendingOrder)
         self.setColumnCount(0)
         self.setHeaderHidden(True)
         self.bUseDragAndDrop = useDragAndDrop
