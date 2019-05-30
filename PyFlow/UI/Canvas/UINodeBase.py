@@ -971,7 +971,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         self.createInputWidgets(self.propertyEditor())
 
-        Info = CollapsibleFormWidget(headName="Info", collapsed=True)
+        Info = CollapsibleFormWidget(headName="Info", collapsed=True, hideLabels=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())
