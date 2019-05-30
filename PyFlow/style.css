@@ -1,3 +1,19 @@
+QWidget{
+    color: #e4e4e4;
+    background-color: rgb(53, 53, 53);
+}
+
+*::item::selected{
+    background: rgba(215, 128, 26,255);
+}
+*::item::hover{
+    background: rgba(215, 128, 26,128);
+}
+*::item::alternate{
+    background-color : rgb(53, 53, 53);
+}
+
+
 QToolTip
 {
      border: 1px solid black;
@@ -8,44 +24,18 @@ QToolTip
 
 QLineEdit
 {
-    background-color: #202020;
-    color: #e4e4e4;
     padding: 1px;
     border: 1px solid #1e1e1e;
 }
 
-QAbstractItemView
-{
-    color: #e4e4e4;
-}
-
-QSpinBox
+QLineEdit,QSpinBox,QDoubleSpinBox,QPlainTextEdit
 {
     background-color: #202020;
-    color: #e4e4e4;
 }
 
-QSpinBox:hover
+QSpinBox::hover,QDoubleSpinBox::hover::hover
 {
     background-color: #5f5f5f;
-    color: #e4e4e4;
-}
-
-QDoubleSpinBox
-{
-    background-color: #202020;
-    color: #e4e4e4;
-}
-
-QDoubleSpinBox:hover
-{
-    background-color: #5f5f5f;
-    color: #e4e4e4;
-}
-
-QLabel
-{
-    color: #e4e4e4;
 }
 
 
@@ -53,18 +43,13 @@ QLabel
 /*** QMenu style ***/
 
 QMenu {
-    background-color: white;
+    background-color: rgb(80, 80, 80);
     margin: 2px; /* some spacing around the menu */
 }
 
 QMenu::item {
     padding: 2px 25px 2px 20px;
     border: 1px solid transparent; /* reserve space for selection border */
-}
-
-QMenu::item:selected {
-    border-color: darkblue;
-    background: rgba(100, 100, 100, 150);
 }
 
 QMenu::icon:checked { /* appearance of a 'checked' icon */
@@ -89,11 +74,6 @@ QMenu::indicator {
     height: 13px;
 }
 
-
-QTextBrowser
-{
-    color: #e4e4e4;
-}
 
 QTabWidget::pane {
     border: 1px solid black;
@@ -173,12 +153,15 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
 /*** Rubber band color ***/
 QWidget
 {
-    selection-background-color: rgba(150, 150, 150, 128);
+    selection-background-color: rgb(215, 128, 26,128);
+}
+
+QToolBar {
+    border-width: 0px;
 }
 
 QPlainTextEdit
 {
-    color: #ffff00; background-color: #242424;
     selection-background-color: #3b3b3b;
     selection-color: #ffffff;
 }
@@ -190,8 +173,19 @@ QPushButton {
     border-radius: 3px;
     border-color: rgb(112, 112, 112);
     padding: 3px;
+
 }
-QPushButton:pressed {
+QComboBox{
+    background-color: rgb(94, 94, 94);
+    border-style: outset;
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: rgb(112, 112, 112);
+}
+
+QPushButton::pressed{
     background-color: rgb(146, 146, 146);
     border-style: inset;
 }
+
+
