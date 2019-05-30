@@ -15,7 +15,7 @@ elif __binding__ == "PyQt5":
 
 
 def main():
-	print 'Encoding : Resources'
+	print('Encoding : Resources')
 	filepath=  os.path.abspath("./resources")
 	resourceFile = 'Resources.qrc'
 
@@ -25,7 +25,7 @@ def main():
 			for file in files:
 				if '.qrc' not in file:
 					dirname = os.path.relpath(os.path.join(root,file))
-					print dirname
+					print(dirname)
 					write ='     <file alias="%s">%s</file>\n'%(file,dirname)
 					outf.write(write)
 		outf.write("  </qresource>\n</RCC>")
@@ -33,10 +33,10 @@ def main():
 	args = [os.path.join(path,app),"-compress", "2","-threshold" ,"3",'-o', os.path.join(os.path.dirname(filepath),r'resources.py'), resourceFile]
 	p=subprocess.Popen(args,shell = False,stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
 	out, err = p.communicate()
-	print   out
-	print   err
+	print(out)
+	print(err)
 	#import resources
-	print 'Compiled : Resources'
+	print('Compiled : Resources')
       
 if __name__ == "__main__":
    main()    

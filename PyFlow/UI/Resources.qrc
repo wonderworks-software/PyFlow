@@ -12,9 +12,11 @@
      <file alias="folder_open_icon.png">resources\folder_open_icon.png</file>
      <file alias="function.png">resources\function.png</file>
      <file alias="gear.svg">resources\gear.svg</file>
+     <file alias="keyboard-32.png">resources\keyboard-32.png</file>
      <file alias="locked.png">resources\locked.png</file>
      <file alias="logoBp.png">resources\logoBp.png</file>
      <file alias="LogoBpApp.png">resources\LogoBpApp.png</file>
+     <file alias="mouse-32.png">resources\mouse-32.png</file>
      <file alias="multithreaded_icon.png">resources\multithreaded_icon.png</file>
      <file alias="new_file_icon.png">resources\new_file_icon.png</file>
      <file alias="nodeCollapse.svg">resources\nodeCollapse.svg</file>
@@ -34,6 +36,7 @@
      <file alias="script.png">resources\script.png</file>
      <file alias="searching-magnifying-glass.png">resources\searching-magnifying-glass.png</file>
      <file alias="shadow_icon.png">resources\shadow_icon.png</file>
+     <file alias="shift-32.png">resources\shift-32.png</file>
      <file alias="shortcuts_icon.png">resources\shortcuts_icon.png</file>
      <file alias="tear_off_copy.png">resources\tear_off_copy.png</file>
      <file alias="unlocked.png">resources\unlocked.png</file>

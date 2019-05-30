@@ -15,16 +15,18 @@ class InputActionWidget(QWidget):
         self.layout = QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
-        modifiersLabel = QLabel("Modifiers:")
+        modifiersLabel = QLabel()
         modifiersLabel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        modifiersLabel.setPixmap(QtGui.QPixmap(":/shift-32.png"))
         self.modifiersWidget = KeyboardModifiersCaptureWidget()
         self.modifiersWidget.captured.connect(self.updateActionModifiers)
         self.layout.addWidget(modifiersLabel)
         self.layout.addWidget(self.modifiersWidget)
 
         if self.actionType == InputActionType.Keyboard:
-            keyLabel = QLabel("Key:")
+            keyLabel = QLabel()
             keyLabel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+            keyLabel.setPixmap(QtGui.QPixmap(":/keyboard-32.png"))
             self.keyCapture = KeyCaptureWidget()
             self.keyCapture.captured.connect(self.updateActionKey)
             self.layout.addWidget(keyLabel)
@@ -33,6 +35,7 @@ class InputActionWidget(QWidget):
         if self.actionType == InputActionType.Mouse:
             mouseLabel = QLabel("Mouse:")
             mouseLabel.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+            mouseLabel.setPixmap(QtGui.QPixmap(":/mouse-32.png"))
             self.mouseCapture = MouseButtonCaptureWidget()
             self.mouseCapture.captured.connect(self.updateActionMouse)
             self.layout.addWidget(mouseLabel)

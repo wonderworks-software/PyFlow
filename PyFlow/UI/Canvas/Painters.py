@@ -315,7 +315,7 @@ class PinPainter(object):
                                  QtCore.QPointF(2 + pin.pinSize, pin.pinSize / 2.0),
                                  QtCore.QPointF(2 + pin.pinSize / 2.0, pin.pinSize),
                                  QtCore.QPointF(2, pin.pinSize)]).translated(xOffset, 1)
-        painter.drawPolygon(arrow.translated(0, halfPinSize / 2))
+        painter.drawPolygon(arrow)
         if pin.hovered:
             painter.setPen(QtCore.Qt.NoPen)
             painter.setBrush(QtGui.QColor(128, 128, 128, 30))
