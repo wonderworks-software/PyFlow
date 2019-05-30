@@ -163,20 +163,20 @@ class CollapsibleFormWidget(CollapsibleWidget):
         return True
 
 
-lockUnlockCheckboxStyle = """
-QCheckBox {{
+lockUnlockCheckboxStyle = r"""
+QCheckBox {
     spacing: 5px;
-}}
-QCheckBox::indicator {{
+}
+QCheckBox::indicator {
     width: 20px;
     height: 20px;
-}}
-QCheckBox::indicator:unchecked {{
-    image: url(":/unlocked.png");
-}}
-QCheckBox::indicator:checked {{
-    image: url(":/locked.png");
-}}
+}
+QCheckBox::indicator:unchecked {
+    image: url(':/unlocked.png');
+}
+QCheckBox::indicator:checked {
+    image: url(':/locked.png');
+}
 """
 
 
