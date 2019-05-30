@@ -33,7 +33,6 @@ from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManager
 from PyFlow.UI.Views.NodeBox import NodesBox
-from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Widgets import GraphEditor_ui
 from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
@@ -90,7 +89,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
         self.setupUi(self)
-        self.setWindowIcon(QtGui.QIcon(RESOURCES_DIR + "/LogoBpApp.png"))
+        self.setWindowIcon(QtGui.QIcon(":/LogoBpApp.png"))
         self._tools = set()
 
         self.preferencesWindow = PreferencesWindow(self)
@@ -124,29 +123,29 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def populateMenu(self):
         fileMenu = self.menuBar.addMenu("File")
         newFileAction = fileMenu.addAction("New file")
-        newFileAction.setIcon(QtGui.QIcon(RESOURCES_DIR + "/new_file_icon.png"))
+        newFileAction.setIcon(QtGui.QIcon(":/new_file_icon.png"))
         newFileAction.triggered.connect(self.newFile)
 
         loadAction = fileMenu.addAction("Load")
-        loadAction.setIcon(QtGui.QIcon(RESOURCES_DIR + "/folder_open_icon.png"))
+        loadAction.setIcon(QtGui.QIcon(":/folder_open_icon.png"))
         loadAction.triggered.connect(self.load)
 
         saveAction = fileMenu.addAction("Save")
-        saveAction.setIcon(QtGui.QIcon(RESOURCES_DIR + "/save_icon.png"))
+        saveAction.setIcon(QtGui.QIcon(":/save_icon.png"))
         saveAction.triggered.connect(self.save)
 
         saveAsAction = fileMenu.addAction("Save as")
-        saveAsAction.setIcon(QtGui.QIcon(RESOURCES_DIR + "/save_as_icon.png"))
+        saveAsAction.setIcon(QtGui.QIcon(":/save_as_icon.png"))
         saveAsAction.triggered.connect(lambda: self.save(True))
 
         editMenu = self.menuBar.addMenu("Edit")
         preferencesAction = editMenu.addAction("Preferences")
-        preferencesAction.setIcon(QtGui.QIcon(RESOURCES_DIR + "/options_icon.png"))
+        preferencesAction.setIcon(QtGui.QIcon(":/options_icon.png"))
         preferencesAction.triggered.connect(self.showPreferencesWindow)
 
         helpMenu = self.menuBar.addMenu("Help")
         shortcutsAction = helpMenu.addAction("Shortcuts")
-        shortcutsAction.setIcon(QtGui.QIcon(RESOURCES_DIR + "/shortcuts_icon.png"))
+        shortcutsAction.setIcon(QtGui.QIcon(":/shortcuts_icon.png"))
         shortcutsAction.triggered.connect(self.shortcuts_info)
 
     def showPreferencesWindow(self):

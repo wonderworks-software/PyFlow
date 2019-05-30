@@ -40,7 +40,6 @@ from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.Canvas.NodeActionButton import NodeActionButtonBase
-from PyFlow.UI import RESOURCES_DIR
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *
 
@@ -255,7 +254,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.actionToggleCollapse = self._menu.addAction("ToggleCollapse")
         self.actionToggleCollapse.setToolTip("Toggles node's body collapsed or not")
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
-        self.actionToggleCollapse.setData(NodeActionButtonInfo(RESOURCES_DIR + "/nodeCollapse.svg", CollapseNodeActionButton))
+        self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
 
     def toggleCollapsed(self):
         self.collapsed = not self.collapsed

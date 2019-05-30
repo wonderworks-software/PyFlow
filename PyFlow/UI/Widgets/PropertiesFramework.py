@@ -1,5 +1,4 @@
 from nine import str
-from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UICommon import clearLayout
 
 from Qt import QtWidgets
@@ -172,12 +171,12 @@ QCheckBox::indicator {{
     height: 20px;
 }}
 QCheckBox::indicator:unchecked {{
-    image: url({0});
+    image: url(":/unlocked.png");
 }}
 QCheckBox::indicator:checked {{
-    image: url({1});
+    image: url(":/locked.png");
 }}
-""".format(RESOURCES_DIR + "/unlocked.png", RESOURCES_DIR + "/locked.png")
+"""
 
 
 class PropertiesWidget(QtWidgets.QWidget):
@@ -204,7 +203,7 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.tearOffCopy = QtWidgets.QPushButton()
         self.tearOffCopy.setStyleSheet("")
         self.tearOffCopy.setFlat(True)
-        self.tearOffCopy.setIcon(QtGui.QIcon(RESOURCES_DIR + "/tear_off_copy.png"))
+        self.tearOffCopy.setIcon(QtGui.QIcon(":/tear_off_copy.png"))
         self.tearOffCopy.clicked.connect(self.spawnDuplicate.emit)
         self.searchBoxLayout.addWidget(self.tearOffCopy)
         self.mainLayout.addWidget(self.searchBoxWidget)

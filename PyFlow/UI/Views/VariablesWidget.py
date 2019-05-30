@@ -17,7 +17,6 @@ from Qt.QtWidgets import (
 
 from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.VariablesWidget_ui import Ui_Form
-from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.Core.Common import *
 

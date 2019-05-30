@@ -196,7 +196,7 @@ QComboBox::drop-down {
 }
 
 QComboBox::down-arrow {
-     image:   url(":/doubleArrow.png");/*"titlebar-unshade");*/
+     image:  url(":/doubleArrow.png");
 }
 
 QPushButton::pressed{
