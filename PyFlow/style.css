@@ -214,30 +214,31 @@ QDockWidget::close-button:hover, QDockWidget::float-button:hover {
     background: rgba(215, 128, 26,128);
 }
 
- QScrollBar:vertical {
+QScrollBar:vertical,QScrollBar:horizontal {
      border: 1px solid black;
      background: rgb(146, 146, 146);
      width: 15px;
+     height: 15px;
      margin: 0px 0 0px 0;
- }
- QScrollBar::handle:vertical {
+}
+QScrollBar::handle:vertical,QScrollBar::handle:horizontal {
     background: rgb(80, 80, 80);
     border: 0px solid black;
- }
+}
 
- QScrollBar::add-line:vertical {
+QScrollBar::add-line:vertical, QScrollBar::add-line:horizontal {
      border: 1px solid black;
      height: 0px;
      subcontrol-position: bottom;
      subcontrol-origin: margin;
- }
+}
 
- QScrollBar::sub-line:vertical {
+QScrollBar::sub-line:vertical,QScrollBar::sub-line:horizontal {
      border: 1px solid black;
      height: 0px;
      subcontrol-position: top;
      subcontrol-origin: margin;
- }
+}
 
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal,
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical,
