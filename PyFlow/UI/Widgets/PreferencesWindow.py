@@ -181,7 +181,5 @@ class PreferencesWindow(QMainWindow):
 
     def switchCategoryContent(self, index):
         self.stackedWidget.setCurrentIndex(index)
-        #for but in self.categoryButtons.values():
-        #    but.setChecked(False)
         self.categoryButtons[index].toggle()
 
