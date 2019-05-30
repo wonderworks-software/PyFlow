@@ -13,6 +13,7 @@ from multipledispatch import dispatch
 
 from Qt import QtCore
 from Qt import QtGui
+from Qt import QtWidgets
 from Qt.QtWidgets import QGraphicsScene
 from Qt.QtWidgets import QFileDialog
 from Qt.QtWidgets import QLineEdit
@@ -1054,21 +1055,21 @@ class Canvas(QGraphicsView):
             if self.pressed_item != self.itemAt(event.pos()):
                 self.pressed_item.setOutFocus()
         self.pressed_item = self.itemAt(event.pos())
+        node = self.nodeFromInstance(self.pressed_item)
         self.pressedPin = self.findPinNearPosition(event.pos())
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
-        node = self.nodeFromInstance(self.pressed_item)
-
         expandComments = False
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
-
         currentInputAction = InputAction("temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers)
-        if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier, isinstance(self.pressed_item, UINodeBase) and node.isCommentNode, isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
+        if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
+                (isinstance(self.pressed_item, UINodeBase) or isinstance(self.pressed_item,QtWidgets.QGraphicsWidget)) and node.isCommentNode,
+                isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
-            if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
+            if (isinstance(node, UINodeBase) or isinstance(self.pressed_item,QtWidgets.QGraphicsWidget)) and (node.isCommentNode or node.resizable):
                 super(Canvas, self).mousePressEvent(event)
                 self.resizing = node.bResize
-                node.setSelected(False)
+                node.setSelected(False)          
             if not self.resizing:
                 if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
                     self.manipulationMode = CanvasManipulationMode.SELECT
@@ -1161,7 +1162,7 @@ class Canvas(QGraphicsView):
                         self.manipulationMode = CanvasManipulationMode.MOVE
                         selectedNodes = self.selectedNodes()
                         copiedNodes = self.copyNodes()
-                        self.pasteNodes(move=False, data=copiedNodes)
+                        self.pasteNodes(move=False, data=copiedNodes)                     
         else:
             super(Canvas, self).mousePressEvent(event)
 
@@ -1178,7 +1179,7 @@ class Canvas(QGraphicsView):
         self.mousePos = event.pos()
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         modifiers = event.modifiers()
-        node = self.nodeFromInstance(self.itemAt(event.pos()))
+        node = self.nodeFromInstance(self.itemAt(event.pos()))           
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         if self.itemAt(event.pos()) and isinstance(node, UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
