@@ -35,7 +35,6 @@ from PyFlow.Core.GraphManager import GraphManager
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Widgets import GraphEditor_ui
-from PyFlow.UI.Utils.StyleSheetEditor import StyleSheetEditor
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.Tool import GET_TOOLS
@@ -93,7 +92,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self._tools = set()
 
         self.preferencesWindow = PreferencesWindow(self)
-        self.styleSheetEditor = StyleSheetEditor()
         self.graphManager = GraphManager()
         self.canvasWidget = Canvas(self.graphManager, self)
         self.canvasWidget.requestFillProperties.connect(self.onRequestFillProperties)
@@ -417,14 +415,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         settings.sync()
 
         QMainWindow.closeEvent(self, event)
-
-    def editTheme(self):
-        self.styleSheetEditor.show()
-
-    def updateStyle(self):
-        pass
-        # if self.styleSheetEditor:
-        #    self.setStyleSheet(self.styleSheetEditor.getStyleSheet())
 
     def shortcuts_info(self):
 

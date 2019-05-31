@@ -1,0 +1,215 @@
+/*** COLORING ***/
+
+
+QWidget,QToolTip{
+    color: %s;                      /*Main Text Color*/
+}
+
+*::item::alternate,
+QWidget,
+QTabBar::tab:!selected
+{
+    background-color: %s;           /*BG Color*/
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal,
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical,
+QScrollBar::sub-line:vertical,QScrollBar::add-line:vertical,
+QScrollBar::sub-line:horizontal,QScrollBar::add-line:horizontal 
+{
+     background: %s;                /*Darker Bg Color*/
+}
+
+QMenu,QToolTip,QTabBar::tab:selected,
+QScrollBar::handle:vertical,QScrollBar::handle:horizontal
+{
+     background-color: %s;          /*Bright Bg Color*/
+}
+
+*::item::selected,
+QPushButton::pressed
+{
+    background:                %s;  /*Main Color */
+}
+
+*::item::hover,
+QPushButton::checked,
+QDockWidget::close-button:hover,QDockWidget::float-button:hover,
+QTabBar::tab:!selected:hover,
+QMenu::icon:checked,QMenu::separator
+{
+    background:                %s;  /*Main Color SemiTransparent*/
+}
+QWidget
+{
+    selection-background-color: %s; /*Main Color SemiTransparent*/
+}
+
+
+QLineEdit,QToolTip,QPushButton,QComboBox,
+QTabWidget::pane,QTabBar::tab,
+QScrollBar:vertical,QScrollBar:horizontal,
+QScrollBar::add-line:vertical,QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:vertical,QScrollBar::sub-line:horizontal
+{
+    border: 1px solid %s;           /*Border Color*/
+}
+
+QLineEdit,QPlainTextEdit,
+QSpinBox,QDoubleSpinBox
+{
+    background-color: %s;           /*Input Fields*/
+}
+
+QLineEdit::hover,QSpinBox::hover,QDoubleSpinBox::hover
+{
+    background-color: %s;           /*Input Fields Hovered*/
+}
+
+QPlainTextEdit
+{
+    selection-background-color: %s; /*Input Text Selected BG*/
+    selection-color: %s;            /*Input Text Selected color*/
+}
+
+QScrollBar:vertical,QScrollBar:horizontal 
+{
+     background: %s;                /*CrollBar color*/
+}
+
+QPushButton,QComboBox 
+{
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 %s,
+                                stop: 0.6 %s,
+                                stop: 1.0 %s);  /*Gradient For Push Buttons And ComboBox*/
+}
+
+QComboBox::drop-down {
+    background-color: %s;               /*Combo Box Black Bg On Arrow*/
+}
+/*** ENCD COLORING ***/
+
+QMenu {
+    margin: 2px; /* some spacing around the menu */
+}
+
+QMenu::item {
+    padding: 2px 25px 2px 20px;
+    border: 1px solid transparent; /* reserve space for selection border */
+}
+
+QMenu::icon:checked { /* appearance of a 'checked' icon */
+    border: 1px inset gray;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    left: 1px;
+}
+
+QMenu::separator {
+    height: 2px;
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+QMenu::indicator {
+    width: 13px;
+    height: 13px;
+}
+
+QTabWidget::pane,QTabBar::tab {
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-style: none;
+}
+
+QTabBar::tab:top:!selected {
+    margin-top: 5px;
+}
+QTabBar::tab:bottom:!selected {
+    margin-bottom: 3px;
+}
+
+QTabBar::tab:top, QTabBar::tab:bottom {
+    min-width: 8ex;
+    margin-right: -1px;
+    padding: 2px 2px 2px 2px;
+}
+
+QTabBar::tab:top:last, QTabBar::tab:bottom:last,
+QTabBar::tab:top:only-one, QTabBar::tab:bottom:only-one {
+    margin-right: 0;
+}
+
+QTabBar::tab:left:!selected {
+    margin-right: 3px;
+}
+
+QTabBar::tab:right:!selected {
+    margin-left: 3px;
+}
+
+QTabBar::tab:left, QTabBar::tab:right {
+    min-height: 8ex;
+    margin-bottom: -1px;
+    padding: 5px 5px 5px 5px;
+}
+
+QToolBar {
+    border-width: 0px;
+}
+
+QPushButton,QComboBox {
+    border-style: outset;
+    border-width: 1px;
+    border-radius: 1px;
+}
+
+QPushButton{
+    padding: 3px;
+}
+
+QPushButton::pressed{
+    border-style: inset;
+}
+
+QDockWidget::close-button, QDockWidget::float-button {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 0px;
+}
+
+
+QScrollBar:vertical,QScrollBar:horizontal {
+     width: 15px;
+     height: 15px;
+     margin: 0px 0 0px 0;
+}
+
+QScrollBar::handle:vertical,QScrollBar::handle:horizontal {
+    border: 0px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:vertical,QScrollBar::sub-line:horizontal {
+     height: 0px;
+}
+
+QComboBox{
+    padding: 2px;
+}
+
+QComboBox::drop-down {   
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left-width: 0px;
+    border-top-right-radius: 1px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 1px;
+}
+QComboBox::down-arrow {
+     image:  url(":/doubleArrow.png");
+}
+

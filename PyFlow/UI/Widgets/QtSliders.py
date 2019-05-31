@@ -12,9 +12,9 @@ INT_RANGE_MAX = maxint + 0
 
 
 try:
-    from PyFlow.UI import InteractiveColor
-    color = "rgb(%s)"%InteractiveColor
-    Qcolor = QtGui.QColor(int(InteractiveColor.split(",")[0]),int(InteractiveColor.split(",")[1]),int(InteractiveColor.split(",")[2]))
+    from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+    color = "rgba%s"%str(editableStyleSheet().MainColor.getRgb())
+    Qcolor = sty.MainColor
 except:
     color = "orange"
     Qcolor = QtGui.QColor(color)

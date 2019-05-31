@@ -7,8 +7,10 @@ from Qt.QtWidgets import QStyle
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.Common import *
-from PyFlow.UI import InteractiveColor
-InteractiveColor = QtGui.QColor(int(InteractiveColor.split(",")[0]),int(InteractiveColor.split(",")[1]),int(InteractiveColor.split(",")[2]))
+
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+
+InteractiveColor = editableStyleSheet().MainColor
 
 # Determines how to paint the node
 class NodePainter(object):
@@ -20,7 +22,7 @@ class NodePainter(object):
             height = node.geometry().height()
             width = node.geometry().width()
             rf = NodeDefaults().CORNERS_ROUND_FACTOR
-            pen.setColor(node.canvasRef().window().styleSheetEditor.style.MainColor)
+            pen.setColor(InteractiveColor)
             pen.setStyle(node.opt_pen_selected_type)
             painter.setPen(pen)
 
@@ -66,7 +68,7 @@ class NodePainter(object):
         painter.setBrush(node.color)
         pen = QtGui.QPen(QtCore.Qt.black, 0.75)
         if option.state & QStyle.State_Selected:
-            pen.setColor(Colors.Yellow)
+            pen.setColor(InteractiveColor)
             pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)
         painter.drawRoundedRect(frame, 3, 3)

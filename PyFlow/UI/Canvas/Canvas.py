@@ -343,7 +343,6 @@ class Canvas(QGraphicsView):
         self.parent = parent
         # connect with App class signals
         self.parent.newFileExecuted.connect(self.onNewFile)
-        self.styleSheetEditor = self.parent.styleSheetEditor
         self.menu = QMenu()
         self.setScene(SceneClass(self))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -363,7 +362,7 @@ class Canvas(QGraphicsView):
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        # Antialias -- Change to styleSheetEditor
+        # Antialias -- Change to Settings
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setRenderHint(QtGui.QPainter.TextAntialiasing)
         ##
