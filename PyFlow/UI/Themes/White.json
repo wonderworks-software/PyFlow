@@ -24,6 +24,22 @@
                 255
             ]
         ], 
+        "CanvasGridColorDarker": [
+            [
+                79, 
+                79, 
+                79, 
+                255
+            ]
+        ], 
+        "InputFieldHover": [
+            [
+                255, 
+                255, 
+                255, 
+                255
+            ]
+        ], 
         "InputTextSelbg": [
             [
                 59, 
@@ -56,11 +72,11 @@
                 255
             ]
         ], 
-        "InputFieldHover": [
+        "CanvastextColor": [
             [
-                255, 
-                255, 
-                255, 
+                64, 
+                64, 
+                64, 
                 255
             ]
         ], 
@@ -93,6 +109,22 @@
                 0, 
                 0, 
                 0, 
+                255
+            ]
+        ], 
+        "CanvasGridColor": [
+            [
+                99, 
+                99, 
+                99, 
+                255
+            ]
+        ], 
+        "CanvasBgColor": [
+            [
+                149, 
+                149, 
+                149, 
                 255
             ]
         ]
