@@ -3,13 +3,14 @@ import inspect
 import os
 from PyFlow.UI.Utils.Settings import Colors
 from PyFlow.Core.Common import clamp
-
+from PyFlow.Core.Common import SingletonDecorator
 
 # def clamp(val,min_value,max_value):
 #     return max(min(val, max_value), min_value)
 FILE_DIR = os.path.dirname(__file__)
-STYLE_PATH = os.path.join(FILE_DIR,  "style.css")  
-
+STYLE_PATH = os.path.join(FILE_DIR,  "style.css") 
+ 
+@SingletonDecorator
 class editableStyleSheet():
   def __init__(self):
 
