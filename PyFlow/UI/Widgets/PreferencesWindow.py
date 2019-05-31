@@ -1,6 +1,7 @@
 import json
 from collections import defaultdict
 import inspect
+import os
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
 
@@ -14,6 +15,9 @@ from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, Propert
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+
+FILE_DIR = os.path.dirname(__file__)
+THEMES_PATH =   os.path.join(os.path.dirname(FILE_DIR),"Themes")
 class CategoryButton(QPushButton):
     """docstring for CategoryButton."""
     def __init__(self, icon=None, text="test", parent=None):
@@ -106,6 +110,11 @@ class ThemePreferences(CategoryWidgetBase):
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.layout.setSpacing(2)
         self.setWidget(self.content)
+
+
+    def onShow(self, settings):
+        clearLayout(self.layout)
+        editableStyleSheet().loadPresests(THEMES_PATH)
         properties = PropertiesWidget()
         properties.lockCheckBox.hide()
         properties.tearOffCopy.hide()        
@@ -116,14 +125,27 @@ class ThemePreferences(CategoryWidgetBase):
         for name,obj in options:
             if isinstance(obj,QtGui.QColor):
                 color = pyf_ColorSlider(type="int",alpha=len(list(obj.getRgbF()))==4,startColor=list(obj.getRgbF()))
-                color.valueChanged.connect(lambda  color,name=name: editableStyleSheet().setColor(name,color) )
+                color.valueChanged.connect(lambda  color,name=name,update=True: editableStyleSheet().setColor(name,color,update) )
                 if name in ["TextColor","MainColor","BorderColor","ButtonsColor","DropDownButton"]:
                     general.addWidget(name, color)
                 elif name in ["BgColorDark","BgColorDarker","BgColorBright","BorderColor"]:
                     bg.addWidget(name, color)
                 elif name in ["InputFieldColor","InputFieldHover","InputTextSelbg","InputTextSelColor"]:
                     inputFields.addWidget(name,color)
+        self.selector = QComboBox()
+        for name in editableStyleSheet().presests.keys():
+            self.selector.addItem(name)
 
+        if isinstance(settings,str) or isinstance(settings,unicode):
+            self.selector.setCurrentIndex(editableStyleSheet().presests.keys().index(settings))
+        elif settings and settings.value('Theme_Name'):
+            self.selector.setCurrentIndex(editableStyleSheet().presests.keys().index(settings.value('Theme_Name')))
+
+        self.layout.addWidget(self.selector)
+        self.selector.activated.connect(self.setPreset)
+        general.setCollapsed(True)
+        bg.setCollapsed(True)
+        inputFields.setCollapsed(True)
         properties.addWidget(general)          
         properties.addWidget(bg)          
         properties.addWidget(inputFields)          
@@ -132,10 +154,37 @@ class ThemePreferences(CategoryWidgetBase):
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
+        lay = QHBoxLayout()
+        pbSaveTheme = QPushButton("SaveThemeAs")
+        pbSaveTheme.clicked.connect(self.saveThemeAs)
+        pbDeleteTheme = QPushButton("RemoveTheme")
+        pbDeleteTheme.clicked.connect(self.deleteTheme)        
+        lay.addWidget(pbSaveTheme)
+        lay.addWidget(pbDeleteTheme)
+        self.layout.addLayout(lay)
+
+    def setPreset(self,index):
+        data= editableStyleSheet().presests[self.selector.currentText()]
+        editableStyleSheet().loadFromData(data)
+        self.onShow(self.selector.currentText())
+
+    def deleteTheme(self):
+        if os.path.exists(os.path.join(THEMES_PATH,self.selector.currentText()+".json")):
+            os.remove(os.path.join(THEMES_PATH,self.selector.currentText()+".json"))
+            self.selector.removeItem(self.selector.currentIndex())
+            self.onShow(self.selector.currentText())
+            self.setPreset(0)
+
+    def saveThemeAs(self):
+        text, okPressed = QInputDialog.getText(self, "Get text","Your name:", QLineEdit.Normal, "")
+        if okPressed and text != '':
+            data = editableStyleSheet().serialize()
+            with open(os.path.join(THEMES_PATH,text+".json"), "w") as f:
+                json.dump(data, f, indent=4)
+                self.onShow(text)
+
     def serialize(self, settings):
-        data = editableStyleSheet().serialize()
-        with open(ConfigManager().THEME_CONFIG_PATH, "w") as f:
-            json.dump(data, f, indent=4)
+        settings.setValue("Theme_Name", self.selector.currentText())
 
 class PreferencesWindow(QMainWindow):
     """docstring for PreferencesWindow."""

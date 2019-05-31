@@ -1,15 +1,19 @@
-from Qt import QtGui,QtWidgets
+from Qt import QtGui,QtWidgets,QtCore
 import inspect
+import json
 import os
 from PyFlow.UI.Utils.Settings import Colors
 from PyFlow.Core.Common import clamp
 from PyFlow.Core.Common import SingletonDecorator
+from PyFlow.ConfigManager import ConfigManager
+
 from collections import defaultdict
 # def clamp(val,min_value,max_value):
 #     return max(min(val, max_value), min_value)
 FILE_DIR = os.path.dirname(__file__)
 STYLE_PATH = os.path.join(FILE_DIR,  "style.css") 
- 
+THEMES_PATH =   os.path.join(os.path.dirname(FILE_DIR),"Themes")
+
 @SingletonDecorator
 class editableStyleSheet():
     def __init__(self):
@@ -34,6 +38,16 @@ class editableStyleSheet():
         self.DropDownButton = QtGui.QColor(0,0,0,100)
 
         self.storeDeffaults()
+        self.presests = {}
+        self.loadPresests(THEMES_PATH)
+        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
+        settings.beginGroup("Preferences")
+        settings.beginGroup("Theme")
+        try:
+            if settings.value('Theme_Name'):
+                self.loadFromData(self.presests[settings.value('Theme_Name')])
+        except:
+            pass
 
     def storeDeffaults(self):
         for name,obj in inspect.getmembers(self):
@@ -45,13 +59,24 @@ class editableStyleSheet():
         for name,obj in inspect.getmembers(self):
             if isinstance(obj,QtGui.QColor):        
                 result[name].append(obj.getRgb())
-        return result
+        return {"PyFLowStyleSheet":result}
+
+    def loadPresests(self,folder):
+        self.presests = {}
+        for file in os.listdir(folder):
+            name,type =  os.path.splitext(file)
+            if type == ".json":
+                with open(os.path.join(folder,file), "r") as f:
+                    data = json.load(f)             
+                    self.presests[name] = data
 
     def loadFromData(self,data):
-        for name in data.keys():
-            self.setColor(name,data[name][0])
-
-    def setColor(self,name,color):
+        if data.keys()[0] == "PyFLowStyleSheet":
+            data = data["PyFLowStyleSheet"]
+            for name in data.keys():
+                self.setColor(name,data[name][0])
+            self.updateApp()
+    def setColor(self,name,color,update=False):
         if not isinstance(color,QtGui.QColor):
             if isinstance(color,list) and len(color)>=3:
                 a = 255
@@ -64,10 +89,14 @@ class editableStyleSheet():
             if isinstance(obj,QtGui.QColor):
                 if objname == name and obj.getRgb() != color.getRgb():
                     obj.setRgb(color.rgba())
-                    app = QtWidgets.QApplication.instance()
-                    app.setStyleSheet(self.getStyleSheet())
-                    for widget in app.allWidgets():
-                        widget.update()
+                    if update:
+                        self.updateApp()
+    def updateApp(self):
+        app = QtWidgets.QApplication.instance()
+        if app:
+            app.setStyleSheet(self.getStyleSheet())
+            for widget in app.allWidgets():
+                widget.update()        
 
     def getStyleSheet(self):
         MainColor_Lighter = QtGui.QColor(self.MainColor)
@@ -93,6 +122,7 @@ class editableStyleSheet():
                                 "rgba%s"%str(ButtonG3.getRgb()),
                                 "rgba%s"%str(self.DropDownButton.getRgb())                        
                                 )
+
     def getSliderStyleSheet(self,name):
 
         Styles = {"sliderStyleSheetA" : """

@@ -1,0 +1,100 @@
+{
+    "PyFLowStyleSheet": {
+        "BorderColor": [
+            [
+                0, 
+                0, 
+                0, 
+                255
+            ]
+        ], 
+        "BgColorDark": [
+            [
+                171, 
+                171, 
+                171, 
+                255
+            ]
+        ], 
+        "ButtonsColor": [
+            [
+                144, 
+                144, 
+                144, 
+                255
+            ]
+        ], 
+        "InputTextSelbg": [
+            [
+                59, 
+                59, 
+                59, 
+                255
+            ]
+        ], 
+        "BgColorBright": [
+            [
+                190, 
+                190, 
+                190, 
+                255
+            ]
+        ], 
+        "DropDownButton": [
+            [
+                49, 
+                49, 
+                49, 
+                255
+            ]
+        ], 
+        "BgColorDarker": [
+            [
+                93, 
+                93, 
+                93, 
+                255
+            ]
+        ], 
+        "InputFieldHover": [
+            [
+                255, 
+                255, 
+                255, 
+                255
+            ]
+        ], 
+        "InputTextSelColor": [
+            [
+                255, 
+                255, 
+                255, 
+                255
+            ]
+        ], 
+        "MainColor": [
+            [
+                200, 
+                245, 
+                255, 
+                255
+            ]
+        ], 
+        "InputFieldColor": [
+            [
+                201, 
+                201, 
+                201, 
+                255
+            ]
+        ], 
+        "TextColor": [
+            [
+                0, 
+                0, 
+                0, 
+                255
+            ]
+        ]
+    }
+}

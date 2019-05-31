@@ -637,6 +637,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
 
     def contextMenuEvent(self, event):
         self._menu.exec_(event.globalPos())
+        
 class pyf_timeline(QtWidgets.QSlider):
     def __init__(self, parent,*args):
         super(pyf_timeline, self).__init__(parent=parent,*args)
