@@ -68,7 +68,7 @@ from PyFlow.Core.Common import *
 from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyflowBase.UI.UIRerouteNode import UIRerouteNode
 from PyFlow.Packages.PyflowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
-
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     nodeClassName = jsonTemplate['type']
@@ -321,12 +321,12 @@ class SceneClass(QGraphicsScene):
 class Canvas(QGraphicsView):
     _manipulationMode = CanvasManipulationMode.NONE
 
-    _backgroundColor = Colors.SceneBackground  # QtGui.QColor(50, 50, 50)
-    _gridPenS = Colors.GridColor
-    _gridPenL = Colors.GridColorDarker
-    _gridSizeFine = 10
-    _gridSizeCourse = 100
+    _realTimeLineInvalidPen = Colors.Red
+    _realTimeLineNormalPen = Colors.White
+    _realTimeLineValidPen = Colors.Green
 
+    _gridSizeFine = 10
+    _gridSizeCourse = 100    
     _mouseWheelZoomRate = 0.0005
 
     requestFillProperties = QtCore.Signal(object)
@@ -360,7 +360,7 @@ class Canvas(QGraphicsView):
         self._maximum_scale = 3.0
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-        self.setCacheMode(QGraphicsView.CacheBackground)
+        #self.setCacheMode(QGraphicsView.CacheBackground)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         # Antialias -- Change to Settings
         self.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -375,9 +375,9 @@ class Canvas(QGraphicsView):
         self._current_file_name = 'Untitled'
         self.realTimeLine = QGraphicsPathItem(None, self.scene())
         self.realTimeLine.name = 'RealTimeLine'
-        self.realTimeLineInvalidPen = QtGui.QPen(Colors.Red, 2.0, QtCore.Qt.SolidLine)
-        self.realTimeLineNormalPen = QtGui.QPen(Colors.White, 2.0, QtCore.Qt.DashLine)
-        self.realTimeLineValidPen = QtGui.QPen(Colors.Green, 2.0, QtCore.Qt.SolidLine)
+        self.realTimeLineInvalidPen = QtGui.QPen(self._realTimeLineInvalidPen, 2.0, QtCore.Qt.SolidLine)
+        self.realTimeLineNormalPen = QtGui.QPen(self._realTimeLineNormalPen, 2.0, QtCore.Qt.DashLine)
+        self.realTimeLineValidPen = QtGui.QPen(self._realTimeLineValidPen, 2.0, QtCore.Qt.SolidLine)
         self.realTimeLine.setPen(self.realTimeLineNormalPen)
         self.mousePressPose = QtCore.QPointF(0, 0)
         self.mousePos = QtCore.QPointF(0, 0)
@@ -1439,8 +1439,7 @@ class Canvas(QGraphicsView):
 
         polygon = self.mapToScene(self.viewport().rect())
 
-        color = self._backgroundColor
-        painter.fillRect(rect, QtGui.QBrush(color))
+        painter.fillRect(rect, QtGui.QBrush(editableStyleSheet().CanvasBgColor))
 
         left = int(rect.left()) - (int(rect.left()) % self._gridSizeFine)
         top = int(rect.top()) - (int(rect.top()) % self._gridSizeFine)
@@ -1452,7 +1451,7 @@ class Canvas(QGraphicsView):
             while y < float(rect.bottom()):
                 gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
                 y += self._gridSizeFine
-            painter.setPen(QtGui.QPen(self._gridPenS, 1))
+            painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
             painter.drawLines(gridLines)
 
             # Draw vertical fine lines
@@ -1461,7 +1460,7 @@ class Canvas(QGraphicsView):
             while x < float(rect.right()):
                 gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
                 x += self._gridSizeFine
-            painter.setPen(QtGui.QPen(self._gridPenS, 1))
+            painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
             painter.drawLines(gridLines)
 
         # Draw thick grid
@@ -1470,7 +1469,7 @@ class Canvas(QGraphicsView):
 
         # Draw vertical thick lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenL, 1.5))
+        painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker, 1.5))
         x = left
         while x < rect.right():
             gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
@@ -1479,7 +1478,7 @@ class Canvas(QGraphicsView):
 
         # Draw horizontal thick lines
         gridLines = []
-        painter.setPen(QtGui.QPen(self._gridPenL, 1.5))
+        painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker, 1.5))
         y = top
         while y < rect.bottom():
             gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
@@ -1496,14 +1495,14 @@ class Canvas(QGraphicsView):
         while y < float(rect.bottom()):
             y += self._gridSizeFine
             if abs(y) % 100 == 0 and y > rect.top() + 30:
-                painter.setPen(QtGui.QPen(Colors.Gray))
+                painter.setPen(QtGui.QPen(editableStyleSheet().CanvastextColor))
                 painter.drawText(rect.left(), y - 1.0, str(y))
 
         x = float(left)
         while x < rect.right():
             x += self._gridSizeCourse
             if abs(x) % 100 == 0 and x > rect.left() + 30:
-                painter.setPen(QtGui.QPen(Colors.Gray))
+                painter.setPen(QtGui.QPen(editableStyleSheet().CanvastextColor))
                 painter.drawText(x, rect.top() + painter.font().pointSize(), str(x))
 
     def _createNode(self, jsonTemplate):

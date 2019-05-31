@@ -121,6 +121,7 @@ class ThemePreferences(CategoryWidgetBase):
         general = CollapsibleFormWidget(headName="Genral")
         bg = CollapsibleFormWidget(headName="BackGround")
         inputFields = CollapsibleFormWidget(headName="InputFields")
+        canvas = CollapsibleFormWidget(headName="Canvas")
         options = inspect.getmembers(editableStyleSheet())
         for name,obj in options:
             if isinstance(obj,QtGui.QColor):
@@ -132,6 +133,8 @@ class ThemePreferences(CategoryWidgetBase):
                     bg.addWidget(name, color)
                 elif name in ["InputFieldColor","InputFieldHover","InputTextSelbg","InputTextSelColor"]:
                     inputFields.addWidget(name,color)
+                elif name in ["CanvasBgColor","CanvastextColor","CanvasGridColor","CanvasGridColorDarker"]:
+                    canvas.addWidget(name,color)
         self.selector = QComboBox()
         for name in editableStyleSheet().presests.keys():
             self.selector.addItem(name)
@@ -146,8 +149,10 @@ class ThemePreferences(CategoryWidgetBase):
         general.setCollapsed(True)
         bg.setCollapsed(True)
         inputFields.setCollapsed(True)
+        canvas.setCollapsed(True)
         properties.addWidget(general)          
-        properties.addWidget(bg)          
+        properties.addWidget(bg)
+        properties.addWidget(canvas) 
         properties.addWidget(inputFields)          
         self.layout.addWidget(properties)
 

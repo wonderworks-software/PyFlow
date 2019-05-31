@@ -37,6 +37,15 @@ class editableStyleSheet():
         self.ButtonsColor = QtGui.QColor(60,60,60)
         self.DropDownButton = QtGui.QColor(0,0,0,100)
 
+
+
+        self.CanvasBgColor = QtGui.QColor(35, 35, 35)
+        self.CanvastextColor = QtGui.QColor(64, 64, 64)
+        self.CanvasGridColor = QtGui.QColor(20, 20, 20, 100)
+        self.CanvasGridColorDarker = QtGui.QColor(20, 20, 20)
+        
+
+
         self.storeDeffaults()
         self.presests = {}
         self.loadPresests(THEMES_PATH)
