@@ -7,7 +7,8 @@ from Qt.QtWidgets import QStyle
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.Common import *
-
+from PyFlow.UI import InteractiveColor
+InteractiveColor = QtGui.QColor(int(InteractiveColor.split(",")[0]),int(InteractiveColor.split(",")[1]),int(InteractiveColor.split(",")[2]))
 
 # Determines how to paint the node
 class NodePainter(object):
@@ -71,7 +72,7 @@ class NodePainter(object):
         painter.drawRoundedRect(frame, 3, 3)
 
         if option.state & QStyle.State_Selected:
-            pen.setColor(Colors.Yellow)
+            pen.setColor(InteractiveColor)
             pen.setStyle(node.opt_pen_selected_type)
             pen.setWidth(pen.width() * 1.5)
         painter.setPen(pen)
@@ -136,7 +137,7 @@ class NodePainter(object):
 
         if option.state & QStyle.State_Selected:
             # pen.setColor(Colors.Yellow)
-            pen.setColor(node.canvasRef().window().styleSheetEditor.style.MainColor)
+            pen.setColor(InteractiveColor)
             pen.setStyle(node.opt_pen_selected_type)
             pen.setWidth(pen.width() * 1.5)
         painter.setPen(pen)
@@ -164,7 +165,7 @@ class NodePainter(object):
         painter.setBrush(br)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            pen.setColor(node.canvasRef().window().styleSheetEditor.style.MainColor)
+            pen.setColor(InteractiveColor)
             pen.setStyle(node.opt_pen_selected_type)
         painter.setPen(pen)
         painter.drawRoundedRect(node.boundingRect(), NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
@@ -193,50 +194,13 @@ class NodePainter(object):
         width = pen.width()
         if option.state & QStyle.State_Selected:
             # pen.setColor(Colors.Yellow)
-            pen.setColor(
-                node.canvasRef().window().styleSheetEditor.style.MainColor)
+            pen.setColor(InteractiveColor)
             pen.setStyle(node.opt_pen_selected_type)
             pen.setWidth(width * 1.5)
         painter.setPen(pen)
         painter.drawEllipse(node.boundingRect().center(), node.boundingRect(
         ).width() / 2, node.boundingRect().width() / 2)
 
-    @staticmethod
-    def asGraphSides(node, painter, option, widget):
-        frame = QtCore.QRectF(QtCore.QPointF(0, 0), node.geometry().size())
-        color = Colors.White
-        if node.isSelected():
-            color = color.lighter(150)
-
-        linearGrad = QtGui.QRadialGradient(QtCore.QPointF(40, 40), 300)
-        linearGrad.setColorAt(0, color)
-        linearGrad.setColorAt(1, color.lighter(180))
-        br = QtGui.QBrush(linearGrad)
-        painter.setBrush(br)
-
-        pen = QtGui.QPen(QtCore.Qt.black, 0.75)
-        painter.setPen(pen)
-        r = frame
-        r.setWidth(r.width() - pen.width())
-        r.setHeight(r.height() - pen.width())
-        r.setX(pen.width())
-        r.setY(r.y() + pen.width())
-        painter.drawRoundedRect(r, NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
-        pen = QtGui.QPen(Colors.AbsoluteBlack, 0.5)
-        painter.setPen(pen)
-        font = painter.font()
-        if option.state & QStyle.State_Selected:
-            pen.setColor(node.canvasRef().window().styleSheetEditor.style.MainColor)
-            pen.setStyle(node.opt_pen_selected_type)
-            pen.setWidth(pen.width() * 1.5)
-            painter.setPen(pen)
-            painter.setBrush(QtGui.QColor(0, 0, 0, 0))
-            r = QtCore.QRectF(node.boundingRect())
-            r.setWidth(r.width() - pen.width())
-            r.setHeight(r.height() - pen.width())
-            r.setX(pen.width())
-            r.setY(r.y() + pen.width())
-            painter.drawRoundedRect(r, NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
 
 # Determines how to paint a pin
 class PinPainter(object):

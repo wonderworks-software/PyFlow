@@ -12,10 +12,13 @@ INT_RANGE_MAX = maxint + 0
 
 
 try:
-    from PyFlow.UI import InteractiveColor as color
-    color = "rgb(%s)"%color
+    from PyFlow.UI import InteractiveColor
+    color = "rgb(%s)"%InteractiveColor
+    Qcolor = QtGui.QColor(int(InteractiveColor.split(",")[0]),int(InteractiveColor.split(",")[1]),int(InteractiveColor.split(",")[2]))
 except:
     color = "orange"
+    Qcolor = QtGui.QColor(color)
+
 
 sliderStyleSheetA = """
 QWidget{
@@ -146,6 +149,8 @@ QSlider::handle:horizontal {
     width: 3px;
  } 
 """%color
+
+
 def clamp(n, vmin, vmax):
     return max(min(n, vmax), vmin)
 
@@ -830,7 +835,7 @@ class pyf_timeline(QtWidgets.QSlider):
             qp.drawLine(pos,half+s, pos,half-s)
         pos = self.style().sliderPositionFromValue(self.minimum(),self.maximum(),self.value(),self.width())
         fw = metrics.width("0")
-        qp.setPen(QtGui.QColor(color))
+        qp.setPen(QtGui.QColor(Qcolor))
         if self.value() > self.maximum()-(self.maximum()/2):
             fw += metrics.width(str(self.value()))
             fw *= -1
@@ -843,7 +848,7 @@ class pyf_timeline(QtWidgets.QSlider):
                     if val > self.maximum()-(self.maximum()/2):
                         fw += metrics.width(str(val))
                         fw *= -1
-                    color2 = QtGui.QColor(color)
+                    color2 = QtGui.QColor(Qcolor)
                     color2.setAlpha(100)
                     pen2 = QtGui.QPen(color2, 2, QtCore.Qt.SolidLine)
                     qp.setPen(pen2)
