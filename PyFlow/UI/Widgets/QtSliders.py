@@ -10,17 +10,24 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
+
+try:
+    from PyFlow.UI import InteractiveColor as color
+    color = "rgb(%s)"%color
+except:
+    color = "orange"
+
 sliderStyleSheetA = """
 QWidget{
     border: 1.25 solid black;
 }
 QSlider::groove:horizontal,
     QSlider::sub-page:horizontal {
-    background: orange;
+    background: %s;
 }
 QSlider::add-page:horizontal,
     QSlider::sub-page:horizontal:disabled {
-    background: rgb(53, 53, 53);
+    background: rgb(32, 32, 32);
 }
 QSlider::add-page:horizontal:disabled {
     background: grey;
@@ -28,27 +35,27 @@ QSlider::add-page:horizontal:disabled {
 QSlider::handle:horizontal {
     width: 1px;
  }
-"""
+"""%color
 sliderStyleSheetB = """
 QSlider::groove:horizontal {
     border: 1px solid #bbb;
     background: white;
-    height: 2px;
-    border-radius: 4px;
+    height: 3px;
+    border-radius: 2px;
 }
 
 QSlider::sub-page:horizontal {
-    background: orange;
-    border: 1px solid #777;
-    height: 2px;
-    border-radius: 4px;
+    background: %s;
+    border: 0px solid #777;
+    height: 3px;
+    border-radius: 2px;
 }
 
 QSlider::add-page:horizontal {
     background: #fff;
     border: 1px solid #777;
-    height: 2px;
-    border-radius: 4px;
+    height: 3px;
+    border-radius: 2px;
 }
 
 QSlider::handle:horizontal {
@@ -82,10 +89,10 @@ QSlider::add-page:horizontal:disabled {
 QSlider::handle:horizontal:disabled {
     background: #eee;
     border: 1px solid #aaa;
-    border-radius: 4px;
+    border-radius: 2px;
     height : 10;
 }
-"""
+"""%color
 sliderStyleSheetC = """
 
 QSlider,QSlider:disabled,QSlider:focus     {
@@ -115,7 +122,7 @@ QLabel{
 dragerstyleSheetHover = """
 QGroupBox{
     border: 0.5 solid darkgrey;
-    background : orange;
+    background : %s;
     color: white;
 }
 QLabel{
@@ -123,16 +130,11 @@ QLabel{
     border: 0 solid transparent;
     color: white;
 }
-"""
+"""%color
 timeStyleSheet = """
 
 QSlider,QSlider:disabled,QSlider:focus     {  
                           background: qcolor(0,0,0,0);   }
-
-QSlider:item:hover    {   background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #eaa553);
-                          color: #000000;              }
-
-QWidget:item:selected {   background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);      }
 
  QSlider::groove:horizontal {
  
@@ -140,10 +142,10 @@ QWidget:item:selected {   background-color: QLinearGradient( x1: 0, y1: 0, x2: 0
     background: qcolor(0,0,0,0);
  }
 QSlider::handle:horizontal {
-    background:  qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(255,160,47, 141), stop:0.497175 rgba(255,160,47, 200), stop:0.497326 rgba(255,160,47, 200), stop:1 rgba(255,160,47, 147));
+    background:  %s;
     width: 3px;
  } 
-"""
+"""%color
 def clamp(n, vmin, vmax):
     return max(min(n, vmax), vmin)
 
@@ -828,7 +830,7 @@ class pyf_timeline(QtWidgets.QSlider):
             qp.drawLine(pos,half+s, pos,half-s)
         pos = self.style().sliderPositionFromValue(self.minimum(),self.maximum(),self.value(),self.width())
         fw = metrics.width("0")
-        qp.setPen(QtGui.QColor(255,160,47))
+        qp.setPen(QtGui.QColor(color))
         if self.value() > self.maximum()-(self.maximum()/2):
             fw += metrics.width(str(self.value()))
             fw *= -1
@@ -841,7 +843,9 @@ class pyf_timeline(QtWidgets.QSlider):
                     if val > self.maximum()-(self.maximum()/2):
                         fw += metrics.width(str(val))
                         fw *= -1
-                    pen2 = QtGui.QPen(QtGui.QColor(255,160,47,100), 2, QtCore.Qt.SolidLine)
+                    color2 = QtGui.QColor(color)
+                    color2.setAlpha(100)
+                    pen2 = QtGui.QPen(color2, 2, QtCore.Qt.SolidLine)
                     qp.setPen(pen2)
                     qp.drawLine(pos,0, pos,h)
                     qp.drawText((pos)+fw, 0+fh, str(val)) 

@@ -23,7 +23,7 @@ QScrollBar::sub-line:horizontal,QScrollBar::add-line:horizontal
 *::item::selected,
 QPushButton::pressed
 {
-    background: rgba(215, 128, 26,255); /*Orange */
+    background:                rgba(215, 128, 26 ,255); /*Orange */
 }
 
 *::item::hover,
@@ -32,11 +32,11 @@ QDockWidget::close-button:hover,QDockWidget::float-button:hover,
 QTabBar::tab:!selected:hover,
 QMenu::icon:checked,QMenu::separator
 {
-    background:                 rgba(215, 128, 26,128); /*Orange SemiTransparent*/
+    background:                rgba(215, 128, 26, 128); /*Orange SemiTransparent*/
 }
 QWidget
 {
-    selection-background-color: rgb(215, 128, 26,128);  /*Orange SemiTransparent*/
+    selection-background-color: rgb(215, 128, 26, 128);  /*Orange SemiTransparent*/
 }
 
 QMenu,QToolTip,QTabBar::tab:selected,
