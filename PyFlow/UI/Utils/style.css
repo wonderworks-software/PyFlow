@@ -61,20 +61,15 @@ QSpinBox,QDoubleSpinBox
     background-color: %s;           /*Input Fields*/
 }
 
-QLineEdit::hover,QSpinBox::hover,QDoubleSpinBox::hover
+QSpinBox::hover,QDoubleSpinBox::hover
 {
     background-color: %s;           /*Input Fields Hovered*/
 }
 
-QPlainTextEdit
+QPlainTextEdit,QLineEdit,QSpinBox,QDoubleSpinBox
 {
     selection-background-color: %s; /*Input Text Selected BG*/
     selection-color: %s;            /*Input Text Selected color*/
-}
-
-QScrollBar:vertical,QScrollBar:horizontal 
-{
-     background: %s;                /*CrollBar color*/
 }
 
 QPushButton,QComboBox 

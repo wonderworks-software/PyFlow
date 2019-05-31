@@ -1,7 +1,6 @@
 import sys
 import os
 from Qt.QtWidgets import QApplication, QStyleFactory
-from Qt import QtGui
 from PyFlow.App import PyFlow
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 

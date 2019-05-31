@@ -5,7 +5,7 @@ from Qt import QtCore, QtGui
 
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.Input import InputAction, InputManager, InputActionType
-
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 @SingletonDecorator
 class ConfigManager(object):
@@ -14,6 +14,7 @@ class ConfigManager(object):
     APP_SETTINGS_PATH = os.path.join(CONFIGS_DIR, "config.ini")
     INPUT_CONFIG_PATH = os.path.join(CONFIGS_DIR, "input.json")
     PREFERENCES_CONFIG_PATH = os.path.join(CONFIGS_DIR, "prefs.ini")
+    THEME_CONFIG_PATH = os.path.join(CONFIGS_DIR, "theme.json")
 
     def __init__(self, *args, **kwargs):
         if not os.path.exists(self.INPUT_CONFIG_PATH):
@@ -22,6 +23,11 @@ class ConfigManager(object):
             with open(self.INPUT_CONFIG_PATH, "r") as f:
                 data = json.load(f)
                 InputManager().loadFromData(data)
+        if os.path.exists(self.THEME_CONFIG_PATH):
+            with open(self.THEME_CONFIG_PATH, "r") as f:
+                data = json.load(f)            
+                editableStyleSheet().loadFromData(data)
+
 
     def createDefaultInput(self):
         InputManager().registerAction(InputAction(name="Canvas.Pan", actionType=InputActionType.Mouse, group="Navigation", mouse=QtCore.Qt.MouseButton.MiddleButton))

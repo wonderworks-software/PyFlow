@@ -1,5 +1,6 @@
 import json
 from collections import defaultdict
+import inspect
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
 
@@ -11,8 +12,8 @@ from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
 from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.Canvas.UICommon import clearLayout
-
-
+from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 class CategoryButton(QPushButton):
     """docstring for CategoryButton."""
     def __init__(self, icon=None, text="test", parent=None):
@@ -96,6 +97,45 @@ class GeneralPreferences(CategoryWidgetBase):
     def serialize(self, settings):
         pass
 
+class ThemePreferences(CategoryWidgetBase):
+    """docstring for ThemePreferences."""
+    def __init__(self, parent=None):
+        super(ThemePreferences, self).__init__(parent)
+        self.content = QWidget()
+        self.layout = QVBoxLayout(self.content)
+        self.layout.setContentsMargins(1, 1, 1, 1)
+        self.layout.setSpacing(2)
+        self.setWidget(self.content)
+        properties = PropertiesWidget()
+        properties.lockCheckBox.hide()
+        properties.tearOffCopy.hide()        
+        general = CollapsibleFormWidget(headName="Genral")
+        bg = CollapsibleFormWidget(headName="BackGround")
+        inputFields = CollapsibleFormWidget(headName="InputFields")
+        options = inspect.getmembers(editableStyleSheet())
+        for name,obj in options:
+            if isinstance(obj,QtGui.QColor):
+                color = pyf_ColorSlider(type="int",alpha=len(list(obj.getRgbF()))==4,startColor=list(obj.getRgbF()))
+                color.valueChanged.connect(lambda  color,name=name: editableStyleSheet().setColor(name,color) )
+                if name in ["TextColor","MainColor","BorderColor","ButtonsColor","DropDownButton"]:
+                    general.addWidget(name, color)
+                elif name in ["BgColorDark","BgColorDarker","BgColorBright","BorderColor"]:
+                    bg.addWidget(name, color)
+                elif name in ["InputFieldColor","InputFieldHover","InputTextSelbg","InputTextSelColor"]:
+                    inputFields.addWidget(name,color)
+
+        properties.addWidget(general)          
+        properties.addWidget(bg)          
+        properties.addWidget(inputFields)          
+        self.layout.addWidget(properties)
+
+        spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.layout.addItem(spacerItem)
+
+    def serialize(self, settings):
+        data = editableStyleSheet().serialize()
+        with open(ConfigManager().THEME_CONFIG_PATH, "w") as f:
+            json.dump(data, f, indent=4)
 
 class PreferencesWindow(QMainWindow):
     """docstring for PreferencesWindow."""
@@ -143,6 +183,7 @@ class PreferencesWindow(QMainWindow):
 
         self.addCategory("Input", InputPreferences())
         self.addCategory("General", GeneralPreferences())
+        self.addCategory("Theme", ThemePreferences())
         self.selectByName("General")
 
     def selectByName(self, name):

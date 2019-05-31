@@ -10,145 +10,8 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
-
-try:
-    from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-    color = "rgba%s"%str(editableStyleSheet().MainColor.getRgb())
-    Qcolor = sty.MainColor
-except:
-    color = "orange"
-    Qcolor = QtGui.QColor(color)
-
-
-sliderStyleSheetA = """
-QWidget{
-    border: 1.25 solid black;
-}
-QSlider::groove:horizontal,
-    QSlider::sub-page:horizontal {
-    background: %s;
-}
-QSlider::add-page:horizontal,
-    QSlider::sub-page:horizontal:disabled {
-    background: rgb(32, 32, 32);
-}
-QSlider::add-page:horizontal:disabled {
-    background: grey;
-}
-QSlider::handle:horizontal {
-    width: 1px;
- }
-"""%color
-sliderStyleSheetB = """
-QSlider::groove:horizontal {
-    border: 1px solid #bbb;
-    background: white;
-    height: 3px;
-    border-radius: 2px;
-}
-
-QSlider::sub-page:horizontal {
-    background: %s;
-    border: 0px solid #777;
-    height: 3px;
-    border-radius: 2px;
-}
-
-QSlider::add-page:horizontal {
-    background: #fff;
-    border: 1px solid #777;
-    height: 3px;
-    border-radius: 2px;
-}
-
-QSlider::handle:horizontal {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 #eee, stop:1 #ccc);
-    border: 1px solid #777;
-    width: 4px;
-    margin-top: -8px;
-    margin-bottom: -8px;
-    border-radius: 2px;
-    height : 10px;
-}
-
-QSlider::handle:horizontal:hover {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 #fff, stop:1 #ddd);
-    border: 1px solid #444;
-    border-radius: 2px;
-}
-
-QSlider::sub-page:horizontal:disabled {
-    background: #bbb;
-    border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-    background: #eee;
-    border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-    background: #eee;
-    border: 1px solid #aaa;
-    border-radius: 2px;
-    height : 10;
-}
-"""%color
-sliderStyleSheetC = """
-
-QSlider,QSlider:disabled,QSlider:focus     {
-                          background: qcolor(0,0,0,0);   }
-
- QSlider::groove:horizontal {
-    border: 1px solid #999999;
-    background: qcolor(0,0,0,0);
- }
-QSlider::handle:horizontal {
-    background:  rgba(100,100,100,255);
-    width: 6px;
- }
-"""
-dragerstyleSheet = """
-QGroupBox{
-    border: 0.5 solid darkgrey;
-    background : black;
-    color: white;
-}
-QLabel{
-    background: transparent;
-    border: 0 solid transparent;
-    color: white;
-}
-"""
-dragerstyleSheetHover = """
-QGroupBox{
-    border: 0.5 solid darkgrey;
-    background : %s;
-    color: white;
-}
-QLabel{
-    background: transparent;
-    border: 0 solid transparent;
-    color: white;
-}
-"""%color
-timeStyleSheet = """
-
-QSlider,QSlider:disabled,QSlider:focus     {  
-                          background: qcolor(0,0,0,0);   }
-
- QSlider::groove:horizontal {
- 
-    border: 1px solid #999999;
-    background: qcolor(0,0,0,0);
- }
-QSlider::handle:horizontal {
-    background:  %s;
-    width: 3px;
- } 
-"""%color
+sys.path.append(r"C:\Users\pedro\OneDrive\pcTools_v5\PyFlow_v2")
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
 def clamp(n, vmin, vmax):
@@ -179,7 +42,7 @@ class inputDrager(QtWidgets.QWidget):
         self.frame.layout().addWidget(self.label)
         self.frame.layout().addWidget(self.valueLabel)
         self.layout().addWidget(self.frame)
-        self.setStyleSheet(dragerstyleSheet)
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheet"))
         self.size = 35
         self.setMinimumHeight(self.size)
         self.setMinimumWidth(self.size)
@@ -203,16 +66,16 @@ class inputDrager(QtWidgets.QWidget):
         if event.type() == QtCore.QEvent.HoverEnter:
             self._value = 0
             self.startDragpos = self.mapToGlobal(event.pos())
-            self.setStyleSheet(dragerstyleSheetHover)
+            self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheetHover"))
             self.parent.activeDrag = self
             for drag in self.parent.drags:
                 if drag != self:
-                    drag.setStyleSheet(dragerstyleSheet)            
+                    drag.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheet"))            
         if event.type() == QtCore.QEvent.HoverLeave:
             self._value = 0
             self.startDragpos = self.mapToGlobal(event.pos())
             if event.pos().y() > self.height() or event.pos().y() < 0:
-                self.setStyleSheet(dragerstyleSheet)
+                self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheet"))
 
         return False
 
@@ -256,7 +119,7 @@ class draggers(QtWidgets.QWidget):
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseMove:
             if self.activeDrag:
-                self.activeDrag.setStyleSheet(dragerstyleSheetHover)
+                self.activeDrag.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheetHover"))
                 deltaX = self.activeDrag.mapToGlobal(event.pos()).x() - self.activeDrag.startDragpos.x()
                 if event.pos().x() > self.activeDrag.width() or event.pos().x() < 0:
                     self.activeDrag._value = (deltaX / 8) * self.activeDrag._factor
@@ -402,7 +265,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
             self.setDecimals(4)
         if not buttons:
             self.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
-        self.setStyleSheet(sliderStyleSheetA)
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
         self.lineEdit().installEventFilter(self)
         self.installEventFilter(self)
 
@@ -418,6 +281,9 @@ class valueBox(QtWidgets.QDoubleSpinBox):
                     dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
                     ) - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))
         return False
+    def update(self):
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
+        super(valueBox, self).update()
 
 class pyf_Slider(QtWidgets.QWidget):
 
@@ -452,12 +318,12 @@ class pyf_Slider(QtWidgets.QWidget):
         self.sld.setMinimumHeight(h)
         self.input.setMaximumHeight(h)
         self.input.setMinimumHeight(h)
-        if style == 0:
+        self.stypeSheetType = style
+        if self.stypeSheetType == 0:
             self.layout().setSpacing(0)
-            self.sld.setStyleSheet(sliderStyleSheetA)
-        elif style == 1:
-            self.sld.setStyleSheet(sliderStyleSheetB)
-        self.input.setStyleSheet(sliderStyleSheetA)
+            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
+        elif self.stypeSheetType == 1:
+            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetB"))
         if type == "int":
             self.sld.valueChanged.connect(
                 lambda: self.setValue(self.sld.value()))
@@ -474,6 +340,13 @@ class pyf_Slider(QtWidgets.QWidget):
         self.setDisplayMinimun(0)
         self.setDisplayMaximum(1)
         self.setValue(0.5)
+    def update(self):
+        if self.stypeSheetType == 0:
+            self.layout().setSpacing(0)
+            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
+        elif self.stypeSheetType == 1:
+            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetB"))
+        super(pyf_Slider, self).update()
 
     @property
     def _value_range(self):
@@ -554,7 +427,7 @@ class pyf_HueSlider(doubleSlider):
         self.color = QtGui.QColor()
         self.color.setHslF(0, 1, 0.5, 1)
         self.defColor = self.color.name()
-        self.setStyleSheet(sliderStyleSheetC)
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetC"))
         self.light = 0.5
         self.setMinimum(0.0)
         self.setMaximum(1.0)
@@ -608,7 +481,7 @@ class pyf_GradientSlider(doubleSlider):
         self.color2 = QtGui.QColor(color2[0],color2[1],color2[2])
         self.setMinimum(0.0)
         self.setMaximum(1.0)
-        self.setStyleSheet(sliderStyleSheetC)
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetC"))
 
     def getColor(self):
         r, g, b = self.color1.getRGB()
@@ -642,7 +515,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
 
     valueChanged = QtCore.Signal(list)
 
-    def __init__(self, parent=None,startColor=None, type="float",alpha=False,h = 50, *args):
+    def __init__(self, parent=None,startColor=[0,0,0], type="float",alpha=False,h = 50, *args):
         super(pyf_ColorSlider, self).__init__(parent=parent, *args)
         self.parent = parent
         self.setLayout(QtWidgets.QHBoxLayout())
@@ -723,9 +596,17 @@ class pyf_ColorSlider(QtWidgets.QWidget):
         self.layout().setSpacing(5)
         self.slidersLay.setSpacing(0)
         self.styleSheetString = "QPushButton{ background-color: rgba(%f,%f,%f,%f);border-color: black;border-radius: 2px;border-style: outset;border-width: 1px;}\nQPushButton:pressed{ border-style: inset;border-color: beige}"
+        self.defaultColor = startColor
         if isinstance(startColor,list) and len(startColor)>=3:
             self.setColor(startColor)
         self.Color.setStyleSheet(self.styleSheetString % (self.R.value()*255,self.G.value()*255,self.B.value()*255,self.A.value()*255))
+        self._menu = QtWidgets.QMenu()
+        self.actionReset = self._menu.addAction("ResetValue")
+        self.actionReset.triggered.connect(self.onResetValue)
+
+    def onResetValue(self):
+        if self.defaultColor:
+            self.setColor(self.defaultColor)
 
     def setColor(self,color):
         self.R.setValue(color[0])
@@ -754,6 +635,8 @@ class pyf_ColorSlider(QtWidgets.QWidget):
             self.B.setValue(color.blueF())
             self.A.setValue(color.alphaF())
 
+    def contextMenuEvent(self, event):
+        self._menu.exec_(event.globalPos())
 class pyf_timeline(QtWidgets.QSlider):
     def __init__(self, parent,*args):
         super(pyf_timeline, self).__init__(parent=parent,*args)
@@ -768,11 +651,14 @@ class pyf_timeline(QtWidgets.QSlider):
         self.origMax = self.maximum()
         self.oriMin = self.minimum()
         self.setOrientation(QtCore.Qt.Horizontal)
-        self.setStyleSheet(timeStyleSheet)
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("timeStyleSheet"))
         self.setMouseTracking(True)
         self.setPageStep(1)
         self.setMinimumSize(1, 40)
         self.installEventFilter(self)
+    def update(self):
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("timeStyleSheet"))
+        super(pyf_timeline,self).update()
     def setRange(self,min,max,setOrig=True):
         if setOrig:
             self.origMax = max
@@ -835,7 +721,7 @@ class pyf_timeline(QtWidgets.QSlider):
             qp.drawLine(pos,half+s, pos,half-s)
         pos = self.style().sliderPositionFromValue(self.minimum(),self.maximum(),self.value(),self.width())
         fw = metrics.width("0")
-        qp.setPen(QtGui.QColor(Qcolor))
+        qp.setPen(editableStyleSheet().MainColor)
         if self.value() > self.maximum()-(self.maximum()/2):
             fw += metrics.width(str(self.value()))
             fw *= -1
@@ -848,7 +734,7 @@ class pyf_timeline(QtWidgets.QSlider):
                     if val > self.maximum()-(self.maximum()/2):
                         fw += metrics.width(str(val))
                         fw *= -1
-                    color2 = QtGui.QColor(Qcolor)
+                    color2 = QtGui.QColor(editableStyleSheet().MainColor)
                     color2.setAlpha(100)
                     pen2 = QtGui.QPen(color2, 2, QtCore.Qt.SolidLine)
                     qp.setPen(pen2)
@@ -916,18 +802,13 @@ class testWidg(QtWidgets.QWidget):
 
 def main():
     import os
+    import sys
+
     app = QtWidgets.QApplication(sys.argv)
 
     app.setStyle(QtWidgets.QStyleFactory.create("plastique"))
     ex = testWidg(None)
-    FILE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    STYLE_PATH = os.path.join(FILE_DIR,  "style.css")   
-    try:
-        with open(STYLE_PATH, 'r') as f:
-            styleString = f.read()
-            app.setStyleSheet(styleString)
-    except Exception as e:
-        print(e)     
+    app.setStyleSheet(editableStyleSheet().getStyleSheet())  
     ex.show()
     sys.exit(app.exec_())
 
