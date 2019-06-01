@@ -243,7 +243,6 @@ class PinBase(IPin):
         else:
             return self._defaultValue
 
-    # TODO: Move this to separate class (e.g. ExecutionEngine) with PIMPL
     ## retrieving the data
     def getData(self):
         if self.direction == PinDirection.Output:
