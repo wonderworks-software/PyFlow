@@ -18,11 +18,15 @@ class ConfigManager(object):
     def __init__(self, *args, **kwargs):
         if not os.path.exists(self.INPUT_CONFIG_PATH):
             self.createDefaultInput()
+            data = InputManager().serialize()
+            if not os.path.exists(os.path.dirname(self.INPUT_CONFIG_PATH)):
+                os.makedirs(os.path.dirname(self.INPUT_CONFIG_PATH))
+            with open(self.INPUT_CONFIG_PATH, "w") as f:
+                json.dump(data, f)
         else:
             with open(self.INPUT_CONFIG_PATH, "r") as f:
                 data = json.load(f)
                 InputManager().loadFromData(data)
-
 
     def createDefaultInput(self):
         InputManager().registerAction(InputAction(name="Canvas.Pan", actionType=InputActionType.Mouse, group="Navigation", mouse=QtCore.Qt.MouseButton.MiddleButton))
