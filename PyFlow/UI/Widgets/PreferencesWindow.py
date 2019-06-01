@@ -4,6 +4,7 @@ import inspect
 import os
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
+from nine import str
 
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Input import InputAction, InputManager
@@ -111,38 +112,37 @@ class ThemePreferences(CategoryWidgetBase):
         self.layout.setSpacing(2)
         self.setWidget(self.content)
 
-
     def onShow(self, settings):
         clearLayout(self.layout)
         editableStyleSheet().loadPresests(THEMES_PATH)
         properties = PropertiesWidget()
         properties.lockCheckBox.hide()
-        properties.tearOffCopy.hide()        
-        general = CollapsibleFormWidget(headName="Genral")
+        properties.tearOffCopy.hide()
+        general = CollapsibleFormWidget(headName="General")
         bg = CollapsibleFormWidget(headName="BackGround")
         inputFields = CollapsibleFormWidget(headName="InputFields")
         canvas = CollapsibleFormWidget(headName="Canvas")
         options = inspect.getmembers(editableStyleSheet())
-        for name,obj in options:
-            if isinstance(obj,QtGui.QColor):
-                color = pyf_ColorSlider(type="int",alpha=len(list(obj.getRgbF()))==4,startColor=list(obj.getRgbF()))
-                color.valueChanged.connect(lambda  color,name=name,update=True: editableStyleSheet().setColor(name,color,update) )
-                if name in ["TextColor","MainColor","BorderColor","ButtonsColor","DropDownButton"]:
+        for name, obj in options:
+            if isinstance(obj, QtGui.QColor):
+                color = pyf_ColorSlider(type="int", alpha=len(list(obj.getRgbF())) == 4, startColor=list(obj.getRgbF()))
+                color.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
+                if name in ["TextColor", "MainColor", "BorderColor", "ButtonsColor", "DropDownButton"]:
                     general.addWidget(name, color)
-                elif name in ["BgColorDark","BgColorDarker","BgColorBright","BorderColor"]:
+                elif name in ["BgColorDark", "BgColorDarker", "BgColorBright", "BorderColor"]:
                     bg.addWidget(name, color)
-                elif name in ["InputFieldColor","InputFieldHover","InputTextSelbg","InputTextSelColor"]:
-                    inputFields.addWidget(name,color)
-                elif name in ["CanvasBgColor","CanvastextColor","CanvasGridColor","CanvasGridColorDarker"]:
-                    canvas.addWidget(name,color)
+                elif name in ["InputFieldColor", "InputFieldHover", "InputTextSelbg", "InputTextSelColor"]:
+                    inputFields.addWidget(name, color)
+                elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
+                    canvas.addWidget(name, color)
         self.selector = QComboBox()
         for name in editableStyleSheet().presests.keys():
             self.selector.addItem(name)
 
-        if isinstance(settings,str) or isinstance(settings,unicode):
-            self.selector.setCurrentIndex(editableStyleSheet().presests.keys().index(settings))
+        if isinstance(settings, str):
+            self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings))
         elif settings and settings.value('Theme_Name'):
-            self.selector.setCurrentIndex(editableStyleSheet().presests.keys().index(settings.value('Theme_Name')))
+            self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings.value('Theme_Name')))
 
         self.layout.addWidget(self.selector)
         self.selector.activated.connect(self.setPreset)
@@ -150,10 +150,10 @@ class ThemePreferences(CategoryWidgetBase):
         bg.setCollapsed(True)
         inputFields.setCollapsed(True)
         canvas.setCollapsed(True)
-        properties.addWidget(general)          
+        properties.addWidget(general)
         properties.addWidget(bg)
-        properties.addWidget(canvas) 
-        properties.addWidget(inputFields)          
+        properties.addWidget(canvas)
+        properties.addWidget(inputFields)
         self.layout.addWidget(properties)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -163,28 +163,28 @@ class ThemePreferences(CategoryWidgetBase):
         pbSaveTheme = QPushButton("SaveThemeAs")
         pbSaveTheme.clicked.connect(self.saveThemeAs)
         pbDeleteTheme = QPushButton("RemoveTheme")
-        pbDeleteTheme.clicked.connect(self.deleteTheme)        
+        pbDeleteTheme.clicked.connect(self.deleteTheme)
         lay.addWidget(pbSaveTheme)
         lay.addWidget(pbDeleteTheme)
         self.layout.addLayout(lay)
 
-    def setPreset(self,index):
-        data= editableStyleSheet().presests[self.selector.currentText()]
+    def setPreset(self, index):
+        data = editableStyleSheet().presests[self.selector.currentText()]
         editableStyleSheet().loadFromData(data)
         self.onShow(self.selector.currentText())
 
     def deleteTheme(self):
-        if os.path.exists(os.path.join(THEMES_PATH,self.selector.currentText()+".json")):
-            os.remove(os.path.join(THEMES_PATH,self.selector.currentText()+".json"))
+        if os.path.exists(os.path.join(THEMES_PATH, self.selector.currentText() + ".json")):
+            os.remove(os.path.join(THEMES_PATH, self.selector.currentText() + ".json"))
             self.selector.removeItem(self.selector.currentIndex())
             self.onShow(self.selector.currentText())
             self.setPreset(0)
 
     def saveThemeAs(self):
-        text, okPressed = QInputDialog.getText(self, "Get text","Your name:", QLineEdit.Normal, "")
+        text, okPressed = QInputDialog.getText(self, "Get text", "Your name:", QLineEdit.Normal, "")
         if okPressed and text != '':
             data = editableStyleSheet().serialize()
-            with open(os.path.join(THEMES_PATH,text+".json"), "w") as f:
+            with open(os.path.join(THEMES_PATH, text + ".json"), "w") as f:
                 json.dump(data, f, indent=4)
                 self.onShow(text)
 
@@ -278,4 +278,3 @@ class PreferencesWindow(QMainWindow):
     def switchCategoryContent(self, index):
         self.stackedWidget.setCurrentIndex(index)
         self.categoryButtons[index].toggle()
-
