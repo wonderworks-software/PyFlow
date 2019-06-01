@@ -1,0 +1,132 @@
+{
+    "PyFLowStyleSheet": {
+        "BorderColor": [
+            [
+                0, 
+                0, 
+                0, 
+                255
+            ]
+        ], 
+        "BgColorDark": [
+            [
+                171, 
+                171, 
+                171, 
+                255
+            ]
+        ], 
+        "ButtonsColor": [
+            [
+                144, 
+                144, 
+                144, 
+                255
+            ]
+        ], 
+        "CanvasGridColorDarker": [
+            [
+                79, 
+                79, 
+                79, 
+                255
+            ]
+        ], 
+        "InputFieldHover": [
+            [
+                255, 
+                255, 
+                255, 
+                255
+            ]
+        ], 
+        "InputTextSelbg": [
+            [
+                59, 
+                59, 
+                59, 
+                255
+            ]
+        ], 
+        "BgColorBright": [
+            [
+                54, 
+                165, 
+                165, 
+                255
+            ]
+        ], 
+        "DropDownButton": [
+            [
+                49, 
+                49, 
+                49, 
+                255
+            ]
+        ], 
+        "BgColorDarker": [
+            [
+                93, 
+                93, 
+                93, 
+                255
+            ]
+        ], 
+        "CanvastextColor": [
+            [
+                64, 
+                64, 
+                64, 
+                255
+            ]
+        ], 
+        "InputTextSelColor": [
+            [
+                255, 
+                255, 
+                255, 
+                255
+            ]
+        ], 
+        "MainColor": [
+            [
+                200, 
+                245, 
+                255, 
+                255
+            ]
+        ], 
+        "InputFieldColor": [
+            [
+                201, 
+                201, 
+                201, 
+                255
+            ]
+        ], 
+        "TextColor": [
+            [
+                0, 
+                0, 
+                0, 
+                255
+            ]
+        ], 
+        "CanvasGridColor": [
+            [
+                99, 
+                99, 
+                99, 
+                255
+            ]
+        ], 
+        "CanvasBgColor": [
+            [
+                149, 
+                149, 
+                149, 
+                255
+            ]
+        ]
+    }
+}

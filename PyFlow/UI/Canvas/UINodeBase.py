@@ -40,7 +40,6 @@ from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.Canvas.NodeActionButton import NodeActionButtonBase
-from PyFlow.UI import RESOURCES_DIR
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *
 
@@ -68,6 +67,8 @@ class NodeName(QGraphicsWidget):
     def __init__(self, parent=None):
         super(NodeName, self).__init__(parent)
         self.setAcceptHoverEvents(True)
+        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.labelItem = QGraphicsTextItem()
         self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
         self.labelItem.setAcceptHoverEvents(True)
@@ -90,9 +91,12 @@ class NodeName(QGraphicsWidget):
         return self.labelItem.toHtml()
 
     def setHtml(self, html):
+        self.prepareGeometryChange()
         self.labelItem.setHtml(html)
         self._font.setPointSize(6)
         self.labelItem.setFont(self._font)
+        self.updateGeometry()
+        self.update()
 
     def setTextColor(self, color):
         self.labelItem.setDefaultTextColor(color)
@@ -255,7 +259,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.actionToggleCollapse = self._menu.addAction("ToggleCollapse")
         self.actionToggleCollapse.setToolTip("Toggles node's body collapsed or not")
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
-        self.actionToggleCollapse.setData(NodeActionButtonInfo(RESOURCES_DIR + "/nodeCollapse.svg", CollapseNodeActionButton))
+        self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
 
     def toggleCollapsed(self):
         self.collapsed = not self.collapsed
@@ -583,8 +587,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         numActions = len(self._actionButtons)
         headerWidth += numActions * 10
         headerWidth += numActions * self.headerLayout.spacing()
+        spacerWidth = self.nameActionsSpacer.boundingRect().width()
         if self.collapsed and not self.resizable:
-            headerWidth += self.nameActionsSpacer.boundingRect().width()
+            headerWidth += spacerWidth
         headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
         return headerWidth
 
@@ -971,7 +976,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         self.createInputWidgets(self.propertyEditor())
 
-        Info = CollapsibleFormWidget(headName="Info", collapsed=True)
+        Info = CollapsibleFormWidget(headName="Info", collapsed=True, hideLabels=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())

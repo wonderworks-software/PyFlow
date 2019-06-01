@@ -1,5 +1,4 @@
 from nine import str
-from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UICommon import clearLayout
 
 from Qt import QtWidgets
@@ -65,8 +64,8 @@ class CollapsibleWidget(QtWidgets.QWidget):
         self.mainVLayout.addItem(self.spacerItem)
         self.setWindowTitle(self.objectName())
         self.pbHead.setStyleSheet(self.pbHead.styleSheet() + "\nText-align:left;")
-        self.contentHiddenIcon = self.pbHead.style().standardIcon(QtWidgets.QStyle.SP_ArrowRight)
-        self.contentVisibleIcon = self.pbHead.style().standardIcon(QtWidgets.QStyle.SP_ArrowDown)
+        self.contentHiddenIcon = self.pbHead.style().standardIcon(QtWidgets.QStyle.SP_TitleBarUnshadeButton)
+        self.contentVisibleIcon = self.pbHead.style().standardIcon(QtWidgets.QStyle.SP_TitleBarShadeButton)
         self.updateIcon()
 
     def addWidget(self, widget):
@@ -115,7 +114,8 @@ class PropertyEntry(QtWidgets.QWidget):
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.setContentsMargins(1, 1, 1, 1)
         if not hideLabel:
-            label = QtWidgets.QLabel(label)
+            label = QtWidgets.QLabel(label + ":")
+            label.setStyleSheet("font: bold")
             label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred))
             self.layout.addWidget(label)
         self.layout.addWidget(widget)
@@ -163,21 +163,21 @@ class CollapsibleFormWidget(CollapsibleWidget):
         return True
 
 
-lockUnlockCheckboxStyle = """
-QCheckBox {{
+lockUnlockCheckboxStyle = r"""
+QCheckBox {
     spacing: 5px;
-}}
-QCheckBox::indicator {{
+}
+QCheckBox::indicator {
     width: 20px;
     height: 20px;
-}}
-QCheckBox::indicator:unchecked {{
-    image: url({0});
-}}
-QCheckBox::indicator:checked {{
-    image: url({1});
-}}
-""".format(RESOURCES_DIR + "/unlocked.png", RESOURCES_DIR + "/locked.png")
+}
+QCheckBox::indicator:unchecked {
+    image: url(':/unlocked.png');
+}
+QCheckBox::indicator:checked {
+    image: url(':/locked.png');
+}
+"""
 
 
 class PropertiesWidget(QtWidgets.QWidget):
@@ -204,7 +204,7 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.tearOffCopy = QtWidgets.QPushButton()
         self.tearOffCopy.setStyleSheet("")
         self.tearOffCopy.setFlat(True)
-        self.tearOffCopy.setIcon(QtGui.QIcon(RESOURCES_DIR + "/tear_off_copy.png"))
+        self.tearOffCopy.setIcon(QtGui.QIcon(":/tear_off_copy.png"))
         self.tearOffCopy.clicked.connect(self.spawnDuplicate.emit)
         self.searchBoxLayout.addWidget(self.tearOffCopy)
         self.mainLayout.addWidget(self.searchBoxWidget)
@@ -239,6 +239,7 @@ class PropertiesWidget(QtWidgets.QWidget):
                     w.hide()
                 else:
                     w.show()
+                    w.setCollapsed(False)
 
     def isLocked(self):
         return self.lockCheckBox.checkState() == QtCore.Qt.Checked

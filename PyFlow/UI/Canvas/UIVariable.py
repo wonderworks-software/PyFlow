@@ -19,7 +19,6 @@ from Qt.QtWidgets import QInputDialog
 from PyFlow.Core.Common import *
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
-from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget, CollapsibleFormWidget
 from PyFlow import getPinDefaultValueByType
 from PyFlow import findPinClassByType
@@ -93,13 +92,13 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         self.horizontalLayout.addItem(spacerItem)
         # find refs
         self.pbFindRefs = QPushButton("")
-        self.pbFindRefs.setIcon(QtGui.QIcon(RESOURCES_DIR + "/searching-magnifying-glass.png"))
+        self.pbFindRefs.setIcon(QtGui.QIcon(":/searching-magnifying-glass.png"))
         self.pbFindRefs.setObjectName("pbFindRefs")
         self.horizontalLayout.addWidget(self.pbFindRefs)
         self.pbFindRefs.clicked.connect(self.onFindRefsClicked)
         #  kill variable
         self.pbKill = QPushButton("")
-        self.pbKill.setIcon(QtGui.QIcon(RESOURCES_DIR + "/delete_icon.png"))
+        self.pbKill.setIcon(QtGui.QIcon(":/delete_icon.png"))
         self.pbKill.setObjectName("pbKill")
         self.horizontalLayout.addWidget(self.pbKill)
         self.pbKill.clicked.connect(self.onKillClicked)

@@ -26,6 +26,7 @@ from PyFlow.UI.Canvas.UINodeBase import NodeName
 from PyFlow.UI.Canvas.UIConnection import UIConnection
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
+from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
 import weakref
 
 
@@ -238,37 +239,19 @@ class UICommentNode(UINodeBase):
 
     def paint(self, painter, option, widget):
         NodePainter.asCommentNode(self, painter, option, widget)
+        
+    def updateColor(self,color):
+        res = QtGui.QColor(color[0],color[1],color[2],color[3])
+        if res.isValid():
+            self.color = res
+            self.update()     
 
-    def createPropertiesWidget(self, propertiesWidget):
-        baseCategory = CollapsibleFormWidget(headName="Base")
-        # name
-        le_name = QLineEdit(self.getName())
-        le_name.setReadOnly(True)
-        # if self.isRenamable():
-        le_name.setReadOnly(False)
-        le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
-        baseCategory.addWidget("Name", le_name)
-
-        # type
-        leType = QLineEdit(self.__class__.__name__)
-        leType.setReadOnly(True)
-        baseCategory.addWidget("Type", leType)
-
-        # pos
-        le_pos = QLineEdit("{0} x {1}".format(self.pos().x(), self.pos().y()))
-        baseCategory.addWidget("Pos", le_pos)
-        propertiesWidget.addWidget(baseCategory)
-
+    def createInputWidgets ( self,propertiesWidget):
+        inputsCategory = super(UICommentNode, self).createInputWidgets(propertiesWidget)
         appearanceCategory = CollapsibleFormWidget(headName="Appearance")
-        pb = QPushButton("...")
-        pb.clicked.connect(lambda: self.onChangeColor(True))
+        pb = pyf_ColorSlider(type="int",alpha=True,startColor=list(self.color.getRgbF()))
+        pb.valueChanged.connect(self.updateColor)
         appearanceCategory.addWidget("Color", pb)
         propertiesWidget.addWidget(appearanceCategory)
 
-        infoCategory = CollapsibleFormWidget(headName="Info")
 
-        doc = QTextBrowser()
-        doc.setOpenExternalLinks(True)
-        doc.setHtml(self.description())
-        infoCategory.addWidget("", doc)
-        propertiesWidget.addWidget(infoCategory)

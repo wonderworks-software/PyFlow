@@ -5,8 +5,6 @@ from PyFlow.UI.Canvas.Painters import PinPainter
 from PyFlow import findPinClassByType, getAllPinClasses
 from PyFlow.Core.Common import PinDirection
 
-from PyFlow.UI import RESOURCES_DIR
-
 
 _PIN_SIZE = 15
 
@@ -151,7 +149,7 @@ class SelectPinDialog(QtWidgets.QDialog):
         super(SelectPinDialog, self).__init__(None)
         self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.setWindowTitle("Select pin")
-        self.setWindowIcon(QtGui.QIcon(RESOURCES_DIR + "/pin.png"))
+        self.setWindowIcon(QtGui.QIcon(":/pin.png"))
         self.resize(QtCore.QSize(400, 300))
 
         self.mainLayout = QtWidgets.QVBoxLayout(self)
