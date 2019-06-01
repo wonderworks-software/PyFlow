@@ -23,6 +23,10 @@ class NodeBase(INode):
 
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
+        # memo
+        self.cacheMaxSize = 1000
+        self.cache = {}
+
         self.killed = Signal()
         self.tick = Signal(float)
 
@@ -232,6 +236,35 @@ class NodeBase(INode):
     def setName(self, name):
         self.name = str(name)
 
+    def useCache(self):
+        # if cached results exists - return them without calling compute
+        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        # TODO: mutable types will not work since they are not hashable
+        if args in self.cache:
+            for outPin, data in self.cache[args].items():
+                outPin.setData(data)
+            return True
+        return False
+
+    def afterCompute(self):
+        if len(self.cache) >= self.cacheMaxSize:
+            return
+
+        # cache results
+        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        if args in self.cache:
+            return
+
+        cache = {}
+        for pin in self.outputs.values():
+            cache[pin] = pin.currentData()
+        self.cache[args] = cache
+
+    def processNode(self, *args, **kwargs):
+        if not self.useCache():
+            self.compute()
+        self.afterCompute()
+
     # INode interface
 
     def compute(self, *args, **kwargs):
@@ -328,11 +361,15 @@ class NodeBase(INode):
     def getData(self, pinName, pinSelectionGroup=PinSelectionGroup.BothSides):
         p = self.getPin(str(pinName), pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
-        return p.getData()
+        return p.currentData()
 
     def getUniqPinName(self, name):
         pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))]
         return getUniqNameFromList(pinNames, name)
+
+    def __repr__(self):
+        graphName = self.graph().name if self.graph is not None else str(None)
+        return "<class[{0}]; name[{1}]; graph[{2}]>".format(self.__class__.__name__, self.getName(), graphName)
 
     def call(self, name, *args, **kwargs):
         namePinOutputsMap = self.namePinOutputsMap

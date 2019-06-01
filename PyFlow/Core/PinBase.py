@@ -7,6 +7,7 @@ from nine import str
 
 from PyFlow.Core.Interfaces import IPin
 from PyFlow.Core.Common import *
+from PyFlow.Core.EvaluationEngine import EvaluationEngine
 from PyFlow import getPinDefaultValueByType
 
 
@@ -245,26 +246,7 @@ class PinBase(IPin):
 
     ## retrieving the data
     def getData(self):
-        if self.direction == PinDirection.Output:
-            if self.dirty:
-                self.owningNode().compute()
-            self.setClean()
-            return self.currentData()
-        if self.direction == PinDirection.Input:
-            if not self.dirty:
-                return self.currentData()
-            if self.dirty or self.owningNode().bCallable:
-                connectedOutputs = [i for i in self.affected_by if i.direction == PinDirection.Output]
-                if len(connectedOutputs) == 1:
-                    compute_order = self.owningNode().graph().getEvaluationOrder(connectedOutputs[0].owningNode())
-                    # call from left to right
-                    for layer in reversed(sorted([i for i in compute_order.keys()])):
-                        for node in compute_order[layer]:
-                            node.compute()
-                    return self.currentData()
-                else:
-                    self.setClean()
-                    return self.currentData()
+        return EvaluationEngine.getPinData(self)
 
     ## Setting the data
     def setData(self, data):

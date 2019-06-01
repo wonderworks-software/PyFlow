@@ -6,8 +6,27 @@ class EvaluationEngine(object):
     def __init__(self):
         super(EvaluationEngine, self).__init__()
 
-    def getPinData(self, pin):
-        pass
+    @staticmethod
+    def getPinData(pin):
+        if not pin.hasConnections():
+            return pin.currentData()
+
+        bOwningNodeCallable = pin.owningNode().bCallable
+
+        if not bOwningNodeCallable:
+            return pin.currentData()
+
+        compute_order = EvaluationEngine.getEvaluationOrder(pin.owningNode())
+        evaluated = set()
+        for layerIndex in reversed(list(compute_order.keys())):
+            nodeList = compute_order[layerIndex]
+            # nodeList can be computed parallel
+            for node in nodeList:
+                node.processNode()
+
+        if not bOwningNodeCallable:
+            pin.owningNode().processNode()
+        return pin.currentData()
 
     @staticmethod
     def getEvaluationOrder(node):
@@ -18,11 +37,8 @@ class EvaluationEngine(object):
         if not node.bCallable:
             order[0].append(node)
 
-        def foo(n, process=True):
-            if not process:
-                return
-            next_layer_nodes = EvaluationEngine.getNextLayerNodes(n, PinDirection.Input)
-
+        def foo(n):
+            next_layer_nodes = EvaluationEngine.getNextLayerNodes(n)
             layer_idx = max(order.keys()) + 1
             for n in next_layer_nodes:
                 if layer_idx not in order:
@@ -43,10 +59,8 @@ class EvaluationEngine(object):
     @staticmethod
     def getNextLayerNodes(node, direction=PinDirection.Input):
         nodes = []
-        '''
-            callable nodes skipped
-            because execution flow is defined by execution wires
-        '''
+        # callable nodes skipped
+        # because execution flow is defined by execution wires
         if direction == PinDirection.Input:
             nodeInputs = node.inputs
             if not len(nodeInputs) == 0:
