@@ -14,20 +14,6 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
-    def appendToArray(ls=('AnyPin', [], {'constraint': '1'}),
-                      elem=('AnyPin', None, {'constraint': '1'}),
-                      duplicate=('BoolPin', True),
-                      deepCopy=('BoolPin', False)):
-        """Add an item to the end of the list."""
-        outArr = ls
-        if duplicate:
-            copyFunction = deepcopy if deepCopy else copy
-            outArr = copyFunction(ls)
-        outArr.append(elem)
-        return outArr
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
     def extendArray(lhs=('AnyPin', [], {'constraint': '1'}),
                     rhs=('AnyPin', [], {'constraint': '1'}),
                     duplicate=('BoolPin', True),

@@ -9,6 +9,7 @@ class graphInputs(NodeBase):
     """
     def __init__(self, name):
         super(graphInputs, self).__init__(name)
+        self.bCacheEnabled = False
 
     @staticmethod
     def pinTypeHints():
@@ -44,9 +45,9 @@ class graphInputs(NodeBase):
         return p
 
     def compute(self, *args, **kwargs):
-        for i in self.outputs.values():
-            for j in i.affected_by:
-                i.setData(j.getData())
+        for o in self.outputs.values():
+            for i in o.affected_by:
+                o.setData(i.getData())
 
     def postCreate(self, jsonTemplate=None):
         super(graphInputs, self).postCreate(jsonTemplate=jsonTemplate)
@@ -64,6 +65,7 @@ class graphOutputs(NodeBase):
     """
     def __init__(self, name):
         super(graphOutputs, self).__init__(name)
+        self.bCacheEnabled = False
 
     def getUniqPinName(self, name):
         result = name
@@ -104,6 +106,11 @@ class graphOutputs(NodeBase):
     def addInPin(self, name=None, dataType="AnyPin"):
         if name is None:
             name = self.getUniqPinName('out')
-        p = self.createInputPin(name, dataType,constraint=name,structConstraint=name,structure=PinStructure.Multi)
+        p = self.createInputPin(name, dataType, constraint=name, structConstraint=name, structure=PinStructure.Multi)
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         return p
+
+    def compute(self, *args, **kwargs):
+        for i in self.inputs.values():
+            for o in i.affects:
+                o.setData(i.getData())

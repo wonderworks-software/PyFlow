@@ -9,6 +9,9 @@ class ListPin(PinBase):
         self.setDefaultValue([])
         self.disableOptions(PinOptions.Storable)
 
+    def setAsArray(self, bIsArray):
+        pass
+
     @staticmethod
     def IsValuePin():
         return True

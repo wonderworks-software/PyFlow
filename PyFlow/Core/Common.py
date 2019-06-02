@@ -36,7 +36,6 @@ INT_RANGE_MAX = maxint + 0
 DEFAULT_IN_EXEC_NAME = str('inExec')
 DEFAULT_OUT_EXEC_NAME = str('outExec')
 
-
 ## Performs a linear interpolation
 # @param[in] start the value to interpolate from
 # @param[in] end the value to interpolate to

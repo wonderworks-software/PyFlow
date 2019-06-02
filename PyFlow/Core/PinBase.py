@@ -7,6 +7,7 @@ from nine import str
 
 from PyFlow.Core.Interfaces import IPin
 from PyFlow.Core.Common import *
+from PyFlow.Core.EvaluationEngine import EvaluationEngine
 from PyFlow import getPinDefaultValueByType
 
 
@@ -114,19 +115,6 @@ class PinBase(IPin):
         self.setAsArray(bIsArray)
 
     def setAsArray(self, bIsArray):
-        """Sets this pin to be a array.
-
-        Every registered pin can hold a array of values instead of single one. Array pins can be connected
-        only with another array pins by default. This behavior can be changed by disabling `PinOptions.SupportsOnlyArrays` option.
-
-        Value pins can be connected only with value pins if option `PinOptions.ArraySupported` is not enabled.
-
-        By default input value pin can have only one connection, this also can be modified by enabling `PinOptions.AllowMultipleConnections` flag.
-
-        Args:
-
-            bIsArray (bool): array or not
-        """
         bIsArray = bool(bIsArray)
         if self._isArray == bIsArray:
             return
@@ -243,29 +231,9 @@ class PinBase(IPin):
         else:
             return self._defaultValue
 
-    # TODO: Move this to separate class (e.g. ExecutionEngine) with PIMPL
     ## retrieving the data
     def getData(self):
-        if self.direction == PinDirection.Output:
-            if self.dirty:
-                self.owningNode().compute()
-            self.setClean()
-            return self.currentData()
-        if self.direction == PinDirection.Input:
-            if not self.dirty:
-                return self.currentData()
-            if self.dirty or self.owningNode().bCallable:
-                connectedOutputs = [i for i in self.affected_by if i.direction == PinDirection.Output]
-                if len(connectedOutputs) == 1:
-                    compute_order = self.owningNode().graph().getEvaluationOrder(connectedOutputs[0].owningNode())
-                    # call from left to right
-                    for layer in reversed(sorted([i for i in compute_order.keys()])):
-                        for node in compute_order[layer]:
-                            node.compute()
-                    return self.currentData()
-                else:
-                    self.setClean()
-                    return self.currentData()
+        return EvaluationEngine().getPinData(self)
 
     ## Setting the data
     def setData(self, data):

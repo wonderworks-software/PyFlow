@@ -7,6 +7,7 @@ from PyFlow.Core import(
 )
 from PyFlow.Core.Common import *
 
+VARS_MEMORY = {}
 
 class DefaultLib(FunctionLibraryBase):
     '''
@@ -14,6 +15,21 @@ class DefaultLib(FunctionLibraryBase):
     '''
     def __init__(self, packageName):
         super(DefaultLib, self).__init__(packageName)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('AnyPin', None), meta={'Category': 'PlainPython', 'Keywords': [], 'CacheEnabled': False})
+    def getMemoryVar(varName=('StringPin', None)):
+        '''Returns python variable.'''
+        val = None
+        if varName in VARS_MEMORY:
+            val = VARS_MEMORY[varName]
+        return val
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'PlainPython', 'Keywords': []})
+    def setMemoryVar(varName=('StringPin', None), value=('AnyPin', None)):
+        '''Creates python variable.'''
+        VARS_MEMORY[varName] = value
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported, "constraint": "1", "structConstraint": "1"}), meta={'Category': 'GenericTypes', 'Keywords': ['id']})
@@ -122,3 +138,31 @@ class DefaultLib(FunctionLibraryBase):
     def objectType(obj=("AnyPin", None, {"constraint": "1"})):
         '''Returns <u>type(obj).__name__</u>'''
         return type(obj).__name__
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get'], 'CacheEnabled': False})
+    def appendTo(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported}),
+                 element=("AnyPin", None, {"constraint": "2"}),
+                 result=("Reference", ("AnyPin", None, {"constraint": "1"}))):
+        """Calls <u>obj.append(element)</u>. And returns object. If failed - object is unchanged"""
+        try:
+            obj.append(element)
+            result(obj)
+            return True
+        except:
+            result(obj)
+            return False
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get']})
+    def addTo(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported}),
+              element=("AnyPin", None, {"constraint": "2"}),
+              result=("Reference", ("AnyPin", None, {"constraint": "1"}))):
+        """Calls <u>obj.add(element)</u>. And returns object. If failed - object is unchanged"""
+        try:
+            obj.add(element)
+            result(obj)
+            return True
+        except:
+            result(obj)
+            return False

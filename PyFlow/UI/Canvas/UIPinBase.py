@@ -14,6 +14,7 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QGraphicsLinearLayout
 
 from PyFlow.Core.Common import *
+from PyFlow.Core.EvaluationEngine import EvaluationEngine
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.Painters import PinPainter
 from PyFlow.UI.Canvas.UICommon import PinDefaults, NodeDefaults
@@ -132,6 +133,8 @@ class UIPinBase(QGraphicsWidget):
         self.actionResetValue.triggered.connect(self.resetToDefault)
         if self._rawPin._structure == PinStructure.Multi:
             self.menu.addAction("changeStructure").triggered.connect(self.selectStructure)
+        self.actionGetData = self.menu.addAction("GetData")
+        self.actionGetData.triggered.connect(self.onGetData)
 
         # GUI
         self._font = QtGui.QFont("Consolas")
@@ -148,6 +151,10 @@ class UIPinBase(QGraphicsWidget):
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.pinCircleDrawOffset = QtCore.QPointF()
+
+    def onGetData(self):
+        data = EvaluationEngine.getPinData(self._rawPin)
+        print(data)
 
     @property
     def labelColor(self):
