@@ -261,7 +261,7 @@ class PreferencesWindow(QMainWindow):
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
             bInitDefaults = False
-            if groups not in groups:
+            if name not in groups:
                 bInitDefaults = True
             settings.beginGroup(name)
             if bInitDefaults:
