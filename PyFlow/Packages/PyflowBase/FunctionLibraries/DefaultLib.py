@@ -19,7 +19,7 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None), meta={'Category': 'PlainPython', 'Keywords': [], 'CacheEnabled': False})
     def getMemoryVar(varName=('StringPin', None)):
-        '''Returns python variable value from.'''
+        '''Returns python variable.'''
         val = None
         if varName in VARS_MEMORY:
             val = VARS_MEMORY[varName]
@@ -28,7 +28,7 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'PlainPython', 'Keywords': []})
     def setMemoryVar(varName=('StringPin', None), value=('AnyPin', None)):
-        '''Creates python variable inside.'''
+        '''Creates python variable.'''
         VARS_MEMORY[varName] = value
 
     @staticmethod
