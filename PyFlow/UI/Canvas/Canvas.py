@@ -326,7 +326,7 @@ class Canvas(QGraphicsView):
     _realTimeLineValidPen = Colors.Green
 
     _gridSizeFine = 10
-    _gridSizeCourse = 100    
+    _gridSizeCourse = 100
     _mouseWheelZoomRate = 0.0005
 
     requestFillProperties = QtCore.Signal(object)
