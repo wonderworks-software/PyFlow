@@ -239,12 +239,14 @@ class NodeBase(INode):
     def useCache(self):
         # if cached results exists - return them without calling compute
         args = tuple([pin.currentData() for pin in self.inputs.values()])
-        # TODO: mutable types will not work since they are not hashable
-        if args in self.cache:
-            for outPin, data in self.cache[args].items():
-                outPin.setData(data)
-            return True
-        return False
+        try:
+            # mutable unhashable types will not be cached
+            if args in self.cache:
+                for outPin, data in self.cache[args].items():
+                    outPin.setData(data)
+                return True
+        except:
+            return False
 
     def afterCompute(self):
         if len(self.cache) >= self.cacheMaxSize:
@@ -252,7 +254,11 @@ class NodeBase(INode):
 
         # cache results
         args = tuple([pin.currentData() for pin in self.inputs.values()])
-        if args in self.cache:
+        try:
+            # mutable unhashable types will not be cached
+            if args in self.cache:
+                return
+        except:
             return
 
         cache = {}

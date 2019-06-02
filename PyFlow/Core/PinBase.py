@@ -115,19 +115,6 @@ class PinBase(IPin):
         self.setAsArray(bIsArray)
 
     def setAsArray(self, bIsArray):
-        """Sets this pin to be a array.
-
-        Every registered pin can hold a array of values instead of single one. Array pins can be connected
-        only with another array pins by default. This behavior can be changed by disabling `PinOptions.SupportsOnlyArrays` option.
-
-        Value pins can be connected only with value pins if option `PinOptions.ArraySupported` is not enabled.
-
-        By default input value pin can have only one connection, this also can be modified by enabling `PinOptions.AllowMultipleConnections` flag.
-
-        Args:
-
-            bIsArray (bool): array or not
-        """
         bIsArray = bool(bIsArray)
         if self._isArray == bIsArray:
             return
@@ -246,7 +233,7 @@ class PinBase(IPin):
 
     ## retrieving the data
     def getData(self):
-        return EvaluationEngine.getPinData(self)
+        return EvaluationEngine().getPinData(self)
 
     ## Setting the data
     def setData(self, data):

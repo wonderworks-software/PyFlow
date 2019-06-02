@@ -1,10 +1,11 @@
 from PyFlow.Core.Common import *
+from PyFlow.Core.Interfaces import IEvaluationEngine
 
 
-class EvaluationEngine(object):
-    """docstring for EvaluationEngine."""
+class DefaultEvaluationEngine_Impl(IEvaluationEngine):
+    """docstring for DefaultEvaluationEngine_Impl."""
     def __init__(self):
-        super(EvaluationEngine, self).__init__()
+        super(DefaultEvaluationEngine_Impl, self).__init__()
 
     @staticmethod
     def getPinData(pin):
@@ -16,11 +17,11 @@ class EvaluationEngine(object):
         if not bOwningNodeCallable:
             return pin.currentData()
 
-        compute_order = EvaluationEngine.getEvaluationOrder(pin.owningNode())
+        compute_order = DefaultEvaluationEngine_Impl.getEvaluationOrder(pin.owningNode())
         evaluated = set()
         for layerIndex in reversed(list(compute_order.keys())):
             nodeList = compute_order[layerIndex]
-            # nodeList can be computed parallel
+            # this for loop can be parallel
             for node in nodeList:
                 node.processNode()
 
@@ -38,7 +39,7 @@ class EvaluationEngine(object):
             order[0].append(node)
 
         def foo(n):
-            next_layer_nodes = EvaluationEngine.getNextLayerNodes(n)
+            next_layer_nodes = DefaultEvaluationEngine_Impl.getNextLayerNodes(n)
             layer_idx = max(order.keys()) + 1
             for n in next_layer_nodes:
                 if layer_idx not in order:
@@ -79,3 +80,13 @@ class EvaluationEngine(object):
                             if not p.owningNode().bCallable:
                                 nodes.append(p.owningNode())
             return nodes
+
+
+@SingletonDecorator
+class EvaluationEngine(object):
+    """docstring for EvaluationEngine."""
+    def __init__(self):
+        self._impl = DefaultEvaluationEngine_Impl()
+
+    def getPinData(self, pin):
+        return self._impl.getPinData(pin)
