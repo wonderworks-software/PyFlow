@@ -95,8 +95,7 @@ class VariablesWidget(QWidget, Ui_Form):
         return uiVariable
 
     def clearProperties(self):
-        propertiesLayout = self.canvas.parent.propertiesLayout
-        clearLayout(propertiesLayout)
+        self.canvas.requestClearProperties.emit()
 
     def onUpdatePropertyView(self, uiVariable):
         self.canvas.requestFillProperties.emit(uiVariable.createPropertiesWidget)

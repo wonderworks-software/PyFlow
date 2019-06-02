@@ -582,11 +582,15 @@ class NodeBase(INode):
 
         raw_inst.compute = MethodType(compute, raw_inst)
 
+        if 'CacheEnabled' in meta:
+            raw_inst.bCacheEnabled = meta['CacheEnabled']
+
         # create execs if callable
         if nodeType == NodeTypes.Callable:
             inputExec = raw_inst.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
             outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin', None)
             raw_inst.bCallable = True
+            raw_inst.bCacheEnabled = False
 
         if returnType is not None:
             p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint, structConstraint=retStructConstraint)
