@@ -5,7 +5,6 @@ from Qt.QtWidgets import QUndoView
 from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QVBoxLayout
 
-from PyFlow.Packages.PyflowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.VariablesWidget import VariablesWidget
 
@@ -25,7 +24,7 @@ class VariablesTool(DockTool):
 
     @staticmethod
     def getIcon():
-        return QtGui.QIcon(RESOURCES_DIR + "/variable.png")
+        return QtGui.QIcon(":variable.png")
 
     @staticmethod
     def isSingleton():
