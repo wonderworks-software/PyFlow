@@ -261,7 +261,10 @@ class NodeBoxTreeWidget(QTreeWidget):
             event.ignore()
             return
 
-        mousePos = canvas.mapToScene(canvas.mousePressPose)
+        try:
+            mousePos = canvas.mapToScene(canvas.mousePressPose)
+        except:
+            mousePos = canvas.mapToScene(canvas.mousePressPose.toPoint())
 
         jsonTemplate = NodeBase.jsonTemplate()
         jsonTemplate['package'] = packageName
