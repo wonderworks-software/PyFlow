@@ -24,6 +24,7 @@ class NodeBase(INode):
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
         # memo
+        self.bCacheEnabled = True
         self.cacheMaxSize = 1000
         self.cache = {}
 
@@ -267,9 +268,12 @@ class NodeBase(INode):
         self.cache[args] = cache
 
     def processNode(self, *args, **kwargs):
-        if not self.useCache():
+        if self.bCacheEnabled:
+            if not self.useCache():
+                self.compute()
+            self.afterCompute()
+        else:
             self.compute()
-        self.afterCompute()
 
     # INode interface
 

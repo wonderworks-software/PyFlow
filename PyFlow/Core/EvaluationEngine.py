@@ -18,7 +18,6 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
             return pin.currentData()
 
         compute_order = DefaultEvaluationEngine_Impl.getEvaluationOrder(pin.owningNode())
-        evaluated = set()
         for layerIndex in reversed(list(compute_order.keys())):
             nodeList = compute_order[layerIndex]
             # this for loop can be parallel
@@ -58,28 +57,35 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
         return order
 
     @staticmethod
-    def getNextLayerNodes(node, direction=PinDirection.Input):
-        nodes = []
-        # callable nodes skipped
-        # because execution flow is defined by execution wires
-        if direction == PinDirection.Input:
-            nodeInputs = node.inputs
-            if not len(nodeInputs) == 0:
-                for i in nodeInputs.values():
-                    if not len(i.affected_by) == 0:
-                        for a in i.affected_by:
-                            if not a.owningNode().bCallable:
-                                nodes.append(a.owningNode())
-            return nodes
-        if direction == PinDirection.Output:
-            nodeOutputs = node.outputs
-            if not len(nodeOutputs) == 0:
-                for i in nodeOutputs.values():
-                    if not len(i.affects) == 0:
-                        for p in i.affects:
-                            if not p.owningNode().bCallable:
-                                nodes.append(p.owningNode())
-            return nodes
+    def getNextLayerNodes(node):
+        nodes = set()
+        nodeInputs = node.inputs
+
+        if not len(nodeInputs) == 0:
+            for inputPin in nodeInputs.values():
+                if not len(inputPin.affected_by) == 0:
+                    # check if it is compound node and dive in
+                    affectedByPins = set()
+                    for pin in inputPin.affected_by:
+                        if pin.owningNode().isCompoundNode:
+                            innerPin = pin.owningNode().outputsMap[pin]
+                            affectedByPins.add(innerPin)
+                        else:
+                            affectedByPins.add(pin)
+
+                    for outPin in affectedByPins:
+                        outPinNode = outPin.owningNode()
+                        if not outPinNode.bCallable:
+                            nodes.add(outPinNode)
+        elif node.__class__.__name__ == "graphInputs":
+            # graph inputs node
+            for subgraphInputPin in node.outputs.values():
+                for outPin in subgraphInputPin.affected_by:
+                    owningNode = outPin.owningNode()
+                    # if owningNode.isCompoundNode:
+                    #     continue
+                    nodes.add(owningNode)
+        return nodes
 
 
 @SingletonDecorator

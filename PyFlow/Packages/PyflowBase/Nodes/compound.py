@@ -22,6 +22,15 @@ class compound(NodeBase):
         self._rawGraph = None
         self.__inputsMap = {}
         self.__outputsMap = {}
+        self.bCacheEnabled = False
+
+    @property
+    def inputsMap(self):
+        return self.__inputsMap
+
+    @property
+    def outputsMap(self):
+        return self.__outputsMap
 
     @property
     def rawGraph(self):
