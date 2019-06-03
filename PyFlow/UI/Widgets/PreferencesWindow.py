@@ -148,9 +148,11 @@ class ThemePreferences(CategoryWidgetBase):
             self.selector.addItem(name)
 
         if isinstance(settings, str):
-            self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings))
+            if settings in editableStyleSheet().presests:
+                self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings))
         elif settings and settings.value('Theme_Name'):
-            self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings.value('Theme_Name')))
+            if settings.value('Theme_Name') in editableStyleSheet().presests:
+                self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings.value('Theme_Name')))
 
         self.layout.addWidget(self.selector)
         self.selector.activated.connect(self.setPreset)
