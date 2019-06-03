@@ -935,9 +935,12 @@ class Canvas(QGraphicsView):
         if isinstance(instance, UINodeBase):
             return instance
         node = instance
-        while (isinstance(node, QGraphicsItem) or isinstance(node, QGraphicsWidget) or isinstance(node, QGraphicsProxyWidget)) and node.parentItem() is not None:
+        while (isinstance(node, QGraphicsItem) or isinstance(node, QGraphicsWidget) or isinstance(node, QGraphicsProxyWidget)) and node.parentItem():
             node = node.parentItem()
-        return node
+        if isinstance(node, UINodeBase):
+            return node
+        else:
+            return None
 
     def getReruteNode(self, pos, connection=None):
         nodeClassName = "reroute"
@@ -1061,11 +1064,13 @@ class Canvas(QGraphicsView):
         expandComments = False
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
         currentInputAction = InputAction("temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers)
-        if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
-                (isinstance(self.pressed_item, UINodeBase) or isinstance(self.pressed_item,QtWidgets.QGraphicsWidget)) and node.isCommentNode,
+        if any([not self.pressed_item,
+                isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
+                isinstance(self.pressed_item, UINodeBase)  and node.isCommentNode,
+                isinstance(self.pressed_item, QGraphicsWidget ) and node.isCommentNode and self.pressed_item.objectName()=="pinLayoutSpacer",
                 isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
-            if (isinstance(node, UINodeBase) or isinstance(self.pressed_item,QtWidgets.QGraphicsWidget)) and (node.isCommentNode or node.resizable):
+            if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(Canvas, self).mousePressEvent(event)
                 self.resizing = node.bResize
                 node.setSelected(False)          
