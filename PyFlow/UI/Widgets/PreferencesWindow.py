@@ -14,7 +14,7 @@ from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
 from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.Canvas.UICommon import clearLayout
-from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
+from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider,pyf_Slider
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 FILE_DIR = os.path.dirname(__file__)
@@ -133,16 +133,26 @@ class ThemePreferences(CategoryWidgetBase):
         options = inspect.getmembers(editableStyleSheet())
         for name, obj in options:
             if isinstance(obj, QtGui.QColor):
-                color = pyf_ColorSlider(type="int", alpha=len(list(obj.getRgbF())) == 4, startColor=list(obj.getRgbF()))
-                color.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
+                inp = pyf_ColorSlider(type="int", alpha=len(list(obj.getRgbF())) == 4, startColor=list(obj.getRgbF()))
+                inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
                 if name in ["TextColor", "MainColor", "BorderColor", "ButtonsColor", "DropDownButton"]:
-                    general.addWidget(name, color)
+                    general.addWidget(name, inp)
                 elif name in ["BgColorDark", "BgColorDarker", "BgColorBright", "BorderColor"]:
-                    bg.addWidget(name, color)
+                    bg.addWidget(name, inp)
                 elif name in ["InputFieldColor", "InputFieldHover", "InputTextSelbg", "InputTextSelColor"]:
-                    inputFields.addWidget(name, color)
+                    inputFields.addWidget(name, inp)
                 elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
-                    canvas.addWidget(name, color)
+                    canvas.addWidget(name, inp)
+            elif isinstance(obj,list):
+                if name in ["gridSizeFine", "gridSizeCourse"]:
+                    inp = pyf_Slider(self)
+                    inp.setValue(obj[0])
+                    inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
+                elif name in ["drawNumbers"]:
+                    inp = QCheckBox()
+                    inp.setChecked(obj[0])
+                    inp.stateChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
+                canvas.addWidget(name, inp)
         self.selector = QComboBox()
         for name in editableStyleSheet().presests.keys():
             self.selector.addItem(name)

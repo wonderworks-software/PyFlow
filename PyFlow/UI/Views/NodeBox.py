@@ -290,7 +290,6 @@ class NodeBoxTreeWidget(QTreeWidget):
 
     def update(self):
         for category in self.categoryPaths.values():
-            print category.parent()
             if not category.parent():
                 category.setBackground(
                     0, editableStyleSheet().BgColorBright)

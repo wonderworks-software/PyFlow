@@ -295,7 +295,8 @@ class pyf_Slider(QtWidgets.QWidget):
         self.setLayout(QtWidgets.QHBoxLayout())
         self.input = valueBox(type=type)
         self.input.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
-        if type == "int":
+        self.type = type
+        if self.type == "int":
             self.sld = slider()
         else:
             self.sld = doubleSlider()
@@ -324,7 +325,7 @@ class pyf_Slider(QtWidgets.QWidget):
             self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
         elif self.stypeSheetType == 1:
             self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetB"))
-        if type == "int":
+        if self.type == "int":
             self.sld.valueChanged.connect(
                 lambda: self.setValue(self.sld.value()))
         else:
@@ -374,6 +375,8 @@ class pyf_Slider(QtWidgets.QWidget):
                     max(self.minimum, value * 2))
             self.sld.setValue(value)
             self._value = self.sld.value()
+            if self.type == "int":
+                self._value = int(self._value)
             self.input.setValue(self.value())
             self.valueChanged.emit(self._value)
 

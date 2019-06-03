@@ -16,6 +16,11 @@
                 255
             ]
         ], 
+        "gridSizeFine": [
+            [
+                10.0
+            ]
+        ], 
         "ButtonsColor": [
             [
                 60, 
@@ -88,6 +93,11 @@
                 255
             ]
         ], 
+        "drawNumbers": [
+            [
+                2
+            ]
+        ], 
         "MainColor": [
             [
                 215, 
@@ -110,6 +120,11 @@
                 228, 
                 228, 
                 255
+            ]
+        ], 
+        "gridSizeCourse": [
+            [
+                100
             ]
         ], 
         "CanvasGridColor": [

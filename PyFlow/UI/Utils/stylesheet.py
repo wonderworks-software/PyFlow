@@ -14,6 +14,8 @@ FILE_DIR = os.path.dirname(__file__)
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 
+       
+
 @SingletonDecorator
 class editableStyleSheet():
     def __init__(self):
@@ -39,8 +41,13 @@ class editableStyleSheet():
 
         self.CanvasBgColor = QtGui.QColor(35, 35, 35)
         self.CanvastextColor = QtGui.QColor(64, 64, 64)
+
         self.CanvasGridColor = QtGui.QColor(20, 20, 20, 100)
         self.CanvasGridColorDarker = QtGui.QColor(20, 20, 20)
+
+        self.gridSizeFine = [10]
+        self.gridSizeCourse = [100]
+        self.drawNumbers = [0]
 
         self.storeDeffaults()
         self.presests = {}
@@ -64,6 +71,9 @@ class editableStyleSheet():
         for name, obj in inspect.getmembers(self):
             if isinstance(obj, QtGui.QColor):
                 result[name].append(obj.getRgb())
+            elif isinstance(obj, list):
+                result[name].append(obj)
+
         return {"PyFLowStyleSheet": result}
 
     def loadPresests(self, folder):
@@ -72,31 +82,38 @@ class editableStyleSheet():
             name, _type = os.path.splitext(file)
             if _type == ".json":
                 with open(os.path.join(folder, file), "r") as f:
-                    data = json.load(f)
-                    self.presests[name] = data
+                    try:
+                        data = json.load(f)
+                        self.presests[name] = data
+                    except:
+                        pass
 
     def loadFromData(self, data):
         if list(data.keys())[0] == "PyFLowStyleSheet":
             data = data["PyFLowStyleSheet"]
             for name in data.keys():
-                self.setColor(name, data[name][0])
+                if isinstance(data[name],list):
+                    self.setColor(name, data[name][0])
             self.updateApp()
 
     def setColor(self, name, color, update=False):
+        value = color
         if not isinstance(color, QtGui.QColor):
             if isinstance(color, list) and len(color) >= 3:
                 a = 255
                 if len(color) == 4:
                     a = color[3]
                 color = QtGui.QColor(color[0], color[1], color[2], a)
-            else:
-                return
         for objname, obj in inspect.getmembers(self):
-            if isinstance(obj, QtGui.QColor):
-                if objname == name and obj.getRgb() != color.getRgb():
-                    obj.setRgb(color.rgba())
-                    if update:
-                        self.updateApp()
+            if objname == name:
+                if isinstance(obj, QtGui.QColor):
+                    obj.setRgba(color.rgba())
+                elif isinstance(obj,list):
+                    if isinstance(value,list):
+                        value = value[0]
+                    obj[0] = value
+                if update:
+                    self.updateApp()
 
     def updateApp(self):
         app = QtWidgets.QApplication.instance()

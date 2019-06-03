@@ -16,6 +16,11 @@
                 255
             ]
         ], 
+        "gridSizeFine": [
+            [
+                10.0
+            ]
+        ], 
         "ButtonsColor": [
             [
                 144, 
@@ -50,10 +55,10 @@
         ], 
         "BgColorBright": [
             [
-                54, 
-                165, 
-                165, 
-                255
+                195, 
+                204, 
+                214, 
+                170
             ]
         ], 
         "DropDownButton": [
@@ -88,6 +93,11 @@
                 255
             ]
         ], 
+        "drawNumbers": [
+            [
+                2
+            ]
+        ], 
         "MainColor": [
             [
                 200, 
@@ -112,12 +122,17 @@
                 255
             ]
         ], 
+        "gridSizeCourse": [
+            [
+                100
+            ]
+        ], 
         "CanvasGridColor": [
             [
-                99, 
-                99, 
-                99, 
-                255
+                98, 
+                98, 
+                98, 
+                99
             ]
         ], 
         "CanvasBgColor": [
