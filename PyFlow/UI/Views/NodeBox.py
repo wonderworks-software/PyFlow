@@ -198,7 +198,8 @@ class NodeBoxTreeWidget(QTreeWidget):
             if dataType is not None:
                 for categoryItem in self.categoryPaths.values():
                     categoryItem.setExpanded(True)
-        self.sortItems(0,QtCore.Qt.SortOrder.AscendingOrder)
+        try: self.sortItems(0,QtCore.Qt.SortOrder.AscendingOrder)
+        except: self.sortItems(0,QtCore.Qt.AscendingOrder)
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
         key = event.key()
