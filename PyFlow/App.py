@@ -456,12 +456,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         toolbar = instance.getToolbar()
 
         settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
-        v=settings.value('Editor/geometry')
-        if v != None:
-            instance.restoreGeometry(v)
-        v=settings.value('Editor/state')
-        if v != None:
-            instance.restoreState(v)
+        geo = settings.value('Editor/geometry')
+        if geo is not None:
+            instance.restoreGeometry(geo)
+        state = settings.value('Editor/state')
+        if state is not None:
+            instance.restoreState(state)
         settings.beginGroup("Tools")
         for packageName, registeredToolSet in GET_TOOLS().items():
             for ToolClass in registeredToolSet:

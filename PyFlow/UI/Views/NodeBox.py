@@ -51,7 +51,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.setFrameShadow(QFrame.Sunken)
         self.setObjectName("tree_nodes")
         self.setSortingEnabled(True)
-        self.sortByColumn(0,QtCore.Qt.AscendingOrder)
+        self.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.setColumnCount(0)
         self.setHeaderHidden(True)
         self.bUseDragAndDrop = useDragAndDrop
@@ -198,8 +198,8 @@ class NodeBoxTreeWidget(QTreeWidget):
             if dataType is not None:
                 for categoryItem in self.categoryPaths.values():
                     categoryItem.setExpanded(True)
-        try: self.sortItems(0,QtCore.Qt.SortOrder.AscendingOrder)
-        except: self.sortItems(0,QtCore.Qt.AscendingOrder)
+            self.sortItems(0, QtCore.Qt.AscendingOrder)
+
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
         key = event.key()

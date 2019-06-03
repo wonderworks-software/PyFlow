@@ -7,10 +7,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-try:
-	from PySide2 import QtCore
-except:
-	from Qt import QtCore
+from Qt import QtCore
 
 
 qt_resource_data = b"\
