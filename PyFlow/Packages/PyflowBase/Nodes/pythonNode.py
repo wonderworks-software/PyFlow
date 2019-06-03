@@ -44,17 +44,17 @@ class pythonNode(NodeBase):
         # recreate pins
         for i in jsonTemplate['inputs']:
             inPin = self.createInputPin(i['name'],
-                                     i['dataType'],
-                                     getPinDefaultValueByType(i['dataType']))
+                                        i['dataType'],
+                                        getPinDefaultValueByType(i['dataType']))
             inPin.setData(i['value'])
             inPin.dirty = i['bDirty']
 
         for o in jsonTemplate['outputs']:
             compute = self.compute if o['dataType'] in ('AnyPin', 'ExecPin') else None
             outPin = self.createOutputPin(o['name'],
-                                       o['dataType'],
-                                       getPinDefaultValueByType(o['dataType']),
-                                       compute)
+                                          o['dataType'],
+                                          getPinDefaultValueByType(o['dataType']),
+                                          compute)
 
         self.autoAffectPins()
 

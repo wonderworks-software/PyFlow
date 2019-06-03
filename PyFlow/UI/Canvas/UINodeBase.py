@@ -318,8 +318,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeNameWidget.setTextColor(self._labelTextColor)
 
     def __repr__(self):
-        graphName = self._rawNode.graph().name if self._rawNode.graph is not None else str(None)
-        return "<class[{0}]; name[{1}]; graph[{2}]>".format(self.__class__.__name__, self.getName(), graphName)
+        return self._rawNode.__repr__()
 
     def sizeHint(self, which, constraint):
         return QtCore.QSizeF(self.getNodeWidth(), self.getNodeHeight())

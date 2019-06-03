@@ -273,3 +273,13 @@ class ICodeCompiler(object):
 
     def compile(self, code):
         raise NotImplementedError('compile method of ICodeCompiler is not implemented')
+
+
+class IEvaluationEngine(object):
+    """docstring for IEvaluationEngine."""
+    def __init__(self):
+        super(IEvaluationEngine, self).__init__()
+
+    @staticmethod
+    def getPinData(pin):
+        raise NotImplementedError('getPinData method of IEvaluationEngine is not implemented')

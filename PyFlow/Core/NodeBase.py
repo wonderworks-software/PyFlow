@@ -23,6 +23,11 @@ class NodeBase(INode):
 
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
+        # memo
+        self.bCacheEnabled = True
+        self.cacheMaxSize = 1000
+        self.cache = {}
+
         self.killed = Signal()
         self.tick = Signal(float)
 
@@ -232,6 +237,44 @@ class NodeBase(INode):
     def setName(self, name):
         self.name = str(name)
 
+    def useCache(self):
+        # if cached results exists - return them without calling compute
+        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        try:
+            # mutable unhashable types will not be cached
+            if args in self.cache:
+                for outPin, data in self.cache[args].items():
+                    outPin.setData(data)
+                return True
+        except:
+            return False
+
+    def afterCompute(self):
+        if len(self.cache) >= self.cacheMaxSize:
+            return
+
+        # cache results
+        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        try:
+            # mutable unhashable types will not be cached
+            if args in self.cache:
+                return
+        except:
+            return
+
+        cache = {}
+        for pin in self.outputs.values():
+            cache[pin] = pin.currentData()
+        self.cache[args] = cache
+
+    def processNode(self, *args, **kwargs):
+        if self.bCacheEnabled:
+            if not self.useCache():
+                self.compute()
+            self.afterCompute()
+        else:
+            self.compute()
+
     # INode interface
 
     def compute(self, *args, **kwargs):
@@ -328,11 +371,15 @@ class NodeBase(INode):
     def getData(self, pinName, pinSelectionGroup=PinSelectionGroup.BothSides):
         p = self.getPin(str(pinName), pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
-        return p.getData()
+        return p.currentData()
 
     def getUniqPinName(self, name):
         pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))]
         return getUniqNameFromList(pinNames, name)
+
+    def __repr__(self):
+        graphName = self.graph().name if self.graph is not None else str(None)
+        return "<class[{0}]; name[{1}]; graph[{2}]>".format(self.__class__.__name__, self.getName(), graphName)
 
     def call(self, name, *args, **kwargs):
         namePinOutputsMap = self.namePinOutputsMap
@@ -535,11 +582,15 @@ class NodeBase(INode):
 
         raw_inst.compute = MethodType(compute, raw_inst)
 
+        if 'CacheEnabled' in meta:
+            raw_inst.bCacheEnabled = meta['CacheEnabled']
+
         # create execs if callable
         if nodeType == NodeTypes.Callable:
             inputExec = raw_inst.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
             outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin', None)
             raw_inst.bCallable = True
+            raw_inst.bCacheEnabled = False
 
         if returnType is not None:
             p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint, structConstraint=retStructConstraint)

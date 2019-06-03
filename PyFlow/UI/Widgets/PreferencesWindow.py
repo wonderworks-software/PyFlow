@@ -18,7 +18,8 @@ from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 FILE_DIR = os.path.dirname(__file__)
-THEMES_PATH =   os.path.join(os.path.dirname(FILE_DIR),"Themes")
+THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
+
 class CategoryButton(QPushButton):
     """docstring for CategoryButton."""
     def __init__(self, icon=None, text="test", parent=None):
@@ -34,7 +35,7 @@ class CategoryWidgetBase(QScrollArea):
         super(CategoryWidgetBase, self).__init__(parent)
         self.setWidgetResizable(True)
 
-    def initDefaults(self):
+    def initDefaults(self, settings):
         pass
 
     def serialize(self, settings):
@@ -92,15 +93,22 @@ class GeneralPreferences(CategoryWidgetBase):
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.layout.setSpacing(2)
         w = CollapsibleFormWidget(headName="Python node")
-        le = QLineEdit("notepad.exe @FILE")
-        w.addWidget("Editor cmd", le)
+        self.lePythonEditor = QLineEdit("notepad.exe @FILE")
+        w.addWidget("Editor cmd", self.lePythonEditor)
         self.layout.addWidget(w)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
+    def initDefaults(self, settings):
+        settings.setValue("EditorCmd", "notepad.exe @FILE")
+
     def serialize(self, settings):
-        pass
+        settings.setValue("EditorCmd", self.lePythonEditor.text())
+
+    def onShow(self, settings):
+        self.lePythonEditor.setText(settings.value("EditorCmd"))
+
 
 class ThemePreferences(CategoryWidgetBase):
     """docstring for ThemePreferences."""
@@ -240,13 +248,32 @@ class PreferencesWindow(QMainWindow):
         self.addCategory("Theme", ThemePreferences())
         self.selectByName("General")
 
+        self.tryCreateDefaults()
+
     def selectByName(self, name):
         if name in self._indexes:
             self.stackedWidget.setCurrentIndex(self._indexes[name][0])
 
+    def tryCreateDefaults(self):
+        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
+        settings.beginGroup("Preferences")
+        groups = settings.childGroups()
+        for name, indexWidget in self._indexes.items():
+            index, widget = indexWidget
+            bInitDefaults = False
+            if name not in groups:
+                bInitDefaults = True
+            settings.beginGroup(name)
+            if bInitDefaults:
+                widget.initDefaults(settings)
+            settings.endGroup()
+        settings.endGroup()
+        settings.sync()
+
     def showEvent(self, event):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
         settings.beginGroup("Preferences")
+        groups = settings.childGroups()
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
             settings.beginGroup(name)

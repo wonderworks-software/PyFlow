@@ -446,6 +446,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         instance.startMainLoop()
         INITIALIZE()
 
+        # create app folder in documents
+        appUserFolder = os.path.expanduser('~/PyFlow')
+        if not os.path.exists(appUserFolder):
+            os.makedirs(appUserFolder)
+
         # populate tools
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
