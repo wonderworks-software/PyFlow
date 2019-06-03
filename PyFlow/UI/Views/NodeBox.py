@@ -19,6 +19,7 @@ from PyFlow import GET_PACKAGES
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
 
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 class NodeBoxLineEdit(QLineEdit):
     def __init__(self, parent, events=True):
@@ -29,10 +30,10 @@ class NodeBoxLineEdit(QLineEdit):
         self.setLocale(QtCore.QLocale(QtCore.QLocale.English,
                                       QtCore.QLocale.UnitedStates))
         self.setObjectName("le_nodes")
-        style = "background-color: rgb(80, 80, 80);" +\
-                "border-radius: 2px;" +\
+        style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
-                "border-color: black; border-style: outset; border-width: 1px;"
+                " border-style: outset;"+\
+                " border-width: 1px;"
         self.setStyleSheet(style)
         self.setPlaceholderText("enter node name..")
 
@@ -40,11 +41,10 @@ class NodeBoxLineEdit(QLineEdit):
 class NodeBoxTreeWidget(QTreeWidget):
     def __init__(self, parent, useDragAndDrop=True):
         super(NodeBoxTreeWidget, self).__init__(parent)
-        style = "background-color: rgb(40, 40, 40);" +\
-                "selection-background-color: rgb(50, 50, 50);" +\
-                "border-radius: 2px;" +\
+        style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
-                "border-color: black; border-style: outset; border-width: 1px;"
+                "border-style: outset;"+\
+                " border-width: 1px;"
         self.setStyleSheet(style)
         self.setParent(parent)
         self.setFrameShape(QFrame.NoFrame)
@@ -94,7 +94,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                     rootFolderItem.setFlags(QtCore.Qt.ItemIsEnabled)
                     rootFolderItem.setText(0, folderName)
                     rootFolderItem.setBackground(
-                        folderId, QtGui.QColor(80, 85, 80))
+                        folderId, editableStyleSheet().BgColorBright)
                     self.categoryPaths[categoryPath] = rootFolderItem
             else:
                 parentCategoryPath = categoryPath
@@ -106,7 +106,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                     childCategoryItem.bCategory = True
                     childCategoryItem.setText(0, folderName)
                     childCategoryItem.setBackground(
-                        0, QtGui.QColor(80, 85, 80))
+                        0, editableStyleSheet().BgColorBright.lighter(150))
                     self.categoryPaths[categoryPath] = childCategoryItem
         # create node under constructed folder
         nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
@@ -288,6 +288,16 @@ class NodeBoxTreeWidget(QTreeWidget):
         else:
             canvas.createNode(jsonTemplate)
 
+    def update(self):
+        for category in self.categoryPaths.values():
+            print category.parent()
+            if not category.parent():
+                category.setBackground(
+                    0, editableStyleSheet().BgColorBright)
+            else:
+                category.setBackground(
+                    0, editableStyleSheet().BgColorBright.lighter(150))                
+        super(NodeBoxTreeWidget, self).update()
 
 class NodesBox(QWidget):
     """doc string for NodesBox"""
