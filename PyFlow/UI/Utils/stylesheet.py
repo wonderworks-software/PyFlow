@@ -27,27 +27,19 @@ class editableStyleSheet():
         self.BgColor = QtGui.QColor(53, 53, 53)
         self.BgColorDarker = QtGui.QColor(50, 50, 50)
         self.BgColorBright = QtGui.QColor(82, 82, 82)
-
         self.BorderColor = QtGui.QColor(10, 10, 10)
 
         self.InputFieldColor = QtGui.QColor(32, 32, 32)
-        self.InputFieldHover = QtGui.QColor(95, 95, 95)
-
-        self.InputTextSelbg = QtGui.QColor(59, 59, 59)
-        self.InputTextSelColor = QtGui.QColor(255, 255, 255)
+        self.TextSelectedColor = QtGui.QColor(255, 255, 255)
 
         self.ButtonsColor = QtGui.QColor(60, 60, 60)
-        self.DropDownButton = QtGui.QColor(0, 0, 0, 100)
 
         self.CanvasBgColor = QtGui.QColor(35, 35, 35)
-        self.CanvastextColor = QtGui.QColor(64, 64, 64)
-
         self.CanvasGridColor = QtGui.QColor(20, 20, 20, 100)
         self.CanvasGridColorDarker = QtGui.QColor(20, 20, 20)
-
-        self.gridSizeFine = [10]
-        self.gridSizeCourse = [100]
-        self.drawNumbers = [0]
+        self.GridSizeFine = [10]
+        self.GridSizeHuge = [100]
+        self.DrawNumbers = [0]
 
         self.storeDeffaults()
         self.presests = {}
@@ -127,6 +119,7 @@ class editableStyleSheet():
         MainColor_Lighter.setAlpha(128)
         ButtonG1 = self.ButtonsColor.lighter(120)
         ButtonG3 = self.ButtonsColor.darker(110)
+        InputFieldHover = self.InputFieldColor.lighter(200)
         with open(STYLE_PATH, 'r') as f:
             styleString = f.read()
             return styleString % ("rgba%s" % str(self.TextColor.getRgb()),
@@ -138,13 +131,13 @@ class editableStyleSheet():
                                   "rgba%s" % str(MainColor_Lighter.getRgb()),
                                   "rgba%s" % str(self.BorderColor.getRgb()),
                                   "rgba%s" % str(self.InputFieldColor.getRgb()),
-                                  "rgba%s" % str(self.InputFieldHover.getRgb()),
-                                  "rgba%s" % str(self.InputTextSelbg.getRgb()),
-                                  "rgba%s" % str(self.InputTextSelColor.getRgb()),
+                                  "rgba%s" % str(InputFieldHover.getRgb()),
+                                  "rgba%s" % str(MainColor_Lighter.getRgb()),
+                                  "rgba%s" % str(self.TextSelectedColor.getRgb()),
                                   "rgba%s" % str(ButtonG1.getRgb()),
                                   "rgba%s" % str(self.ButtonsColor.getRgb()),
                                   "rgba%s" % str(ButtonG3.getRgb()),
-                                  "rgba%s" % str(self.DropDownButton.getRgb())
+                                  "rgba%s" % str(QtGui.QColor(0, 0, 0, 100).getRgb())
                                   )
 
     def getSliderStyleSheet(self, name):

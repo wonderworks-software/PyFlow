@@ -1444,8 +1444,8 @@ class Canvas(QGraphicsView):
 
         painter.fillRect(rect, QtGui.QBrush(editableStyleSheet().CanvasBgColor))
 
-        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().gridSizeFine[0])
-        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().gridSizeFine[0])
+        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
+        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
 
         if lod < 3:
             # Draw horizontal fine lines
@@ -1453,7 +1453,7 @@ class Canvas(QGraphicsView):
             y = float(top)
             while y < float(rect.bottom()):
                 gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
-                y += editableStyleSheet().gridSizeFine[0]
+                y += editableStyleSheet().GridSizeFine[0]
             painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
             painter.drawLines(gridLines)
 
@@ -1462,13 +1462,13 @@ class Canvas(QGraphicsView):
             x = float(left)
             while x < float(rect.right()):
                 gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
-                x += editableStyleSheet().gridSizeFine[0]
+                x += editableStyleSheet().GridSizeFine[0]
             painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
             painter.drawLines(gridLines)
 
         # Draw thick grid
-        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().gridSizeCourse[0])
-        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().gridSizeCourse[0])
+        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeHuge[0])
+        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeHuge[0])
 
         # Draw vertical thick lines
         gridLines = []
@@ -1476,7 +1476,7 @@ class Canvas(QGraphicsView):
         x = left
         while x < rect.right():
             gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
-            x += editableStyleSheet().gridSizeCourse[0]
+            x += editableStyleSheet().GridSizeHuge[0]
         painter.drawLines(gridLines)
 
         # Draw horizontal thick lines
@@ -1485,9 +1485,9 @@ class Canvas(QGraphicsView):
         y = top
         while y < rect.bottom():
             gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
-            y += editableStyleSheet().gridSizeCourse[0]
+            y += editableStyleSheet().GridSizeHuge[0]
         painter.drawLines(gridLines)
-        if editableStyleSheet().drawNumbers[0] >= 1:
+        if editableStyleSheet().DrawNumbers[0] >= 1:
             # draw numbers
             scale = self.currentViewScale()
             f = painter.font()
@@ -1495,17 +1495,18 @@ class Canvas(QGraphicsView):
             f.setFamily("Consolas")
             painter.setFont(f)
             y = float(top)
+            
             while y < float(rect.bottom()):
-                y += editableStyleSheet().gridSizeFine[0]
+                y += editableStyleSheet().GridSizeFine[0]
                 if abs(y) % 100 == 0 and y > rect.top() + 30:
-                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvastextColor))
+                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
                     painter.drawText(rect.left(), y - 1.0, str(y))
 
             x = float(left)
             while x < rect.right():
-                x += editableStyleSheet().gridSizeCourse[0]
+                x += editableStyleSheet().GridSizeHuge[0]
                 if abs(x) % 100 == 0 and x > rect.left() + 30:
-                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvastextColor))
+                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
                     painter.drawText(x, rect.top() + painter.font().pointSize(), str(x))
 
     def _createNode(self, jsonTemplate):
