@@ -489,10 +489,6 @@ class Canvas(QGraphicsView):
         """
         return list(self.nodes.values())
 
-    def getUniqNodeDisplayName(self, name):
-        nodes_names = [n.displayName for n in self.nodes.values()]
-        return getUniqNameFromList(nodes_names, name)
-
     def showNodeBox(self, dataType=None, pinType=None):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())

@@ -44,7 +44,6 @@ class UIConstantNode(UINodeBase):
         self.input.OnPinChanged.connect(self.changeOnConection)
         self.output.OnPinChanged.connect(self.changeOnConection)
         self.changeType(self.input.dataType)
-        self.displayName = "constant"
         self.updateNodeShape()
 
     def changeOnConection(self,other):

@@ -24,7 +24,6 @@ class UIGraphInputs(UINodeBase):
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
-            self.displayName = self.canvasRef().getUniqNodeDisplayName(name)
             self.update()
         self.setFocus()
 
@@ -56,11 +55,6 @@ class UIGraphInputs(UINodeBase):
         for uiPin in self.UIPins.values():
             uiPin.labelColor = Colors.AbsoluteBlack
 
-        try:
-            self.displayName = jsonTemplate['name']
-        except:
-            self.displayName = self.canvasRef().getUniqNodeDisplayName("Inputs")
-
 
 class UIGraphOutputs(UINodeBase):
     pinCreated = QtCore.Signal(object)
@@ -80,7 +74,6 @@ class UIGraphOutputs(UINodeBase):
     def rename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
-            self.displayName = self.canvasRef().getUniqNodeDisplayName(name)
             self.update()
 
     def createPinDialog(self):
@@ -102,8 +95,3 @@ class UIGraphOutputs(UINodeBase):
         UINodeBase.postCreate(self, jsonTemplate)
         for uiPin in self.UIPins.values():
             uiPin.labelColor = Colors.AbsoluteBlack
-
-        try:
-            self.displayName = jsonTemplate['meta']['label']
-        except:
-            self.displayName = self.canvasRef().getUniqNodeDisplayName("Outputs")

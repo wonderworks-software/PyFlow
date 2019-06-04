@@ -321,7 +321,6 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         lbText = self.leLabel.text()
         if not lbText == '':
             node.label().setPlainText(lbText)
-            node.displayName = lbText
 
         # assign compute method
         code = self.plainTextEdit.toPlainText()

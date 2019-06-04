@@ -147,8 +147,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._rawNode.tick.connect(self.Tick)
 
         self.custom_widget_data = {}
-        # node name
-        self._displayName = self.name
 
         # GUI Layout
         self.opt_node_base_color = Colors.NodeBackgrounds
@@ -353,16 +351,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._rawNode.setName(value)
 
     @property
-    def displayName(self):
-        return self._displayName
-
-    @displayName.setter
-    def displayName(self, value):
-        self._displayName = value
-        self.displayNameChanged.emit(self._displayName)
-        self.updateNodeShape()
-
-    @property
     def pins(self):
         return self._rawNode.pins
 
@@ -457,7 +445,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         template = {}
         if self.resizable:
             template['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
-        template['displayName'] = self.displayName
         template['collapsed'] = self.collapsed
         template['headerHtml'] = self.nodeNameWidget.getHtml()
         if len(self._groups) > 0:
