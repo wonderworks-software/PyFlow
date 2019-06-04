@@ -24,7 +24,7 @@ class editableStyleSheet():
 
         self.MainColor = QtGui.QColor(215, 128, 26)
 
-        self.BgColorDark = QtGui.QColor(53, 53, 53)
+        self.BgColor = QtGui.QColor(53, 53, 53)
         self.BgColorDarker = QtGui.QColor(50, 50, 50)
         self.BgColorBright = QtGui.QColor(82, 82, 82)
 
@@ -130,7 +130,7 @@ class editableStyleSheet():
         with open(STYLE_PATH, 'r') as f:
             styleString = f.read()
             return styleString % ("rgba%s" % str(self.TextColor.getRgb()),
-                                  "rgba%s" % str(self.BgColorDark.getRgb()),
+                                  "rgba%s" % str(self.BgColor.getRgb()),
                                   "rgba%s" % str(self.BgColorDarker.getRgb()),
                                   "rgba%s" % str(self.BgColorBright.getRgb()),
                                   "rgba%s" % str(self.MainColor.getRgb()),
