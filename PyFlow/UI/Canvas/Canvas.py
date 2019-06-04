@@ -644,9 +644,18 @@ class Canvas(QGraphicsView):
         assert(None not in allNodes), "Bad nodes!"
         return [i for i in allNodes if i.isSelected()]
 
+    def selectedConnections(self):
+        return [i for i in self.connections.values() if i.isSelected()]
+
     def clearSelection(self):
         for node in self.selectedNodes():
             node.setSelected(False)
+
+        for connection in self.selectedConnections():
+            connection.setSelected(False)
+
+    def killSelectedConnections(self):
+        self.removeEdgeCmd(self.selectedConnections())
 
     def killSelectedNodes(self):
         selectedNodes = self.selectedNodes()
@@ -723,6 +732,7 @@ class Canvas(QGraphicsView):
 
             if currentInputAction in InputManager()["Canvas.KillSelectedNodes"]:
                 self.killSelectedNodes()
+                self.killSelectedConnections()
 
             if currentInputAction in InputManager()["Canvas.CopyNodes"]:
                 self.copyNodes()
@@ -1060,20 +1070,21 @@ class Canvas(QGraphicsView):
         currentInputAction = InputAction("temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers)
         if any([not self.pressed_item,
                 isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
-                isinstance(self.pressed_item, UINodeBase)  and node.isCommentNode,
-                isinstance(self.pressed_item, QGraphicsWidget ) and node.isCommentNode and self.pressed_item.objectName()=="pinLayoutSpacer",
+                isinstance(self.pressed_item, UINodeBase) and node.isCommentNode,
+                isinstance(self.pressed_item, QGraphicsWidget) and node.isCommentNode and self.pressed_item.objectName() == "pinLayoutSpacer",
                 isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(Canvas, self).mousePressEvent(event)
                 self.resizing = node.bResize
-                node.setSelected(False)          
+                node.setSelected(False)
             if not self.resizing:
                 if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
                     self.manipulationMode = CanvasManipulationMode.SELECT
                     self._selectionRect = SelectionRect(graph=self, mouseDownPos=self.mapToScene(event.pos()), modifiers=modifiers)
                     self._selectionRect.selectFullyIntersectedItems = True
                     self._mouseDownSelection = [node for node in self.selectedNodes()]
+                    self._mouseDownConnectionsSelection = [node for node in self.selectedConnections()]
                     if modifiers not in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
                         self.clearSelection()
                 else:
@@ -1248,9 +1259,10 @@ class Canvas(QGraphicsView):
                 nodes = [node for node in self.getAllNodes() if not node.isCommentNode]
             else:
                 nodes = self.getAllNodes()
+
             if modifiers == QtCore.Qt.ControlModifier:
+                # handle nodes
                 for node in nodes:
-                    # if node not in [self.inputsItem,self.outputsItem]:
                     if node in self._mouseDownSelection:
                         if node.isSelected() and self._selectionRect.collidesWithItem(node):
                             node.setSelected(False)
@@ -1263,20 +1275,43 @@ class Canvas(QGraphicsView):
                             if node not in self._mouseDownSelection:
                                 node.setSelected(False)
 
+                # handle connections
+                for wire in self.connections.values():
+                    if wire in self._mouseDownConnectionsSelection:
+                        if wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                            wire.setSelected(False)
+                        elif not wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                            wire.setSelected(True)
+                    else:
+                        if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                            wire.setSelected(True)
+                        elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                            if wire not in self._mouseDownConnectionsSelection:
+                                wire.setSelected(False)
+
             elif modifiers == QtCore.Qt.ShiftModifier:
                 for node in nodes:
-                    # if node not in [self.inputsItem,self.outputsItem]:
                     if not node.isSelected() and self._selectionRect.collidesWithItem(node):
                         node.setSelected(True)
                     elif node.isSelected() and not self._selectionRect.collidesWithItem(node):
                         if node not in self._mouseDownSelection:
                             node.setSelected(False)
 
+                for wire in self.connections.values():
+                    if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        wire.setSelected(True)
+                    elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        if wire not in self._mouseDownConnectionsSelection:
+                            wire.setSelected(False)
+
             elif modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
                 for node in nodes:
-                    # if node not in [self.inputsItem,self.outputsItem]:
                     if self._selectionRect.collidesWithItem(node):
                         node.setSelected(False)
+
+                for wire in self.connections.values():
+                    if QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        wire.setSelected(False)
             else:
                 self.clearSelection()
                 for node in nodes:
@@ -1285,6 +1320,13 @@ class Canvas(QGraphicsView):
                         node.setSelected(True)
                     elif node.isSelected() and not self._selectionRect.collidesWithItem(node):
                         node.setSelected(False)
+
+                for wire in self.connections.values():
+                    if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        wire.setSelected(True)
+                    elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        wire.setSelected(False)
+
         elif self.manipulationMode == CanvasManipulationMode.MOVE:
             newPos = self.mapToScene(event.pos())
             scaledDelta = mouseDelta / self.currentViewScale()
