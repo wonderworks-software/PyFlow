@@ -90,9 +90,6 @@ _defaultWordList = kwlist + \
      'setClean()', 'setDirty()'] + dir(builtins)
 
 
-# TODO: Rewrite this
-
-
 class WCompletionTextEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super(WCompletionTextEdit, self).__init__(parent)
@@ -337,7 +334,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
             w = self.lwOutputs.itemWidget(self.lwOutputs.item(index))
             if isinstance(w, WPinWidget):
                 dataType = w.dataType()
-                rawPin = node._rawNode.createOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType), foo=node.compute)
+                rawPin = node._rawNode.createOutputPin(w.name(), w.dataType(), getPinDefaultValueByType(dataType))
                 uiPin = node._createUIPinWrapper(rawPin)
                 w.lePinName.setText(uiPin.name)
                 uiPin.getLabel()().setVisible(not w.shouldHideLabel())

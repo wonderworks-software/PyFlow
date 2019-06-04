@@ -226,18 +226,22 @@ class NodeBoxTreeWidget(QTreeWidget):
 
             nodeClassName = self.currentItem().text(0)
             name = nodeClassName
-            pos = canvas.mapToScene(canvas.mouseReleasePos)
-            nodeTemplate = NodeBase.jsonTemplate()
-            nodeTemplate['package'] = packageName
-            nodeTemplate['lib'] = libName
-            nodeTemplate['type'] = pressed_text
-            nodeTemplate['name'] = name
-            nodeTemplate['x'] = pos.x()
-            nodeTemplate['y'] = pos.y()
-            nodeTemplate['meta']['label'] = nodeClassName
-            nodeTemplate['uuid'] = str(uuid.uuid4())
+            try:
+                # TODO: replace position gathering method to canvas center
+                pos = canvas.mapToScene(canvas.mouseReleasePos)
+                nodeTemplate = NodeBase.jsonTemplate()
+                nodeTemplate['package'] = packageName
+                nodeTemplate['lib'] = libName
+                nodeTemplate['type'] = pressed_text
+                nodeTemplate['name'] = name
+                nodeTemplate['x'] = pos.x()
+                nodeTemplate['y'] = pos.y()
+                nodeTemplate['meta']['label'] = nodeClassName
+                nodeTemplate['uuid'] = str(uuid.uuid4())
 
-            canvas.createNode(nodeTemplate)
+                canvas.createNode(nodeTemplate)
+            except:
+                pass
 
     def mousePressEvent(self, event):
         super(NodeBoxTreeWidget, self).mousePressEvent(event)

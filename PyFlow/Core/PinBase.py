@@ -145,6 +145,30 @@ class PinBase(IPin):
     def getWrapper(self):
         return self._wrapper
 
+    def deserialize(self, jsonData):
+        self.setName(jsonData["name"])
+        self.uid = uuid.UUID(jsonData['uuid'])
+
+        for opt in PinOptions:
+            if opt.value in jsonData["options"]:
+                self.enableOptions(opt)
+            else:
+                self.disableOptions(opt)
+
+        self.changeStructure(jsonData["structure"])
+        self._alwaysList = jsonData['alwaysList']
+        self._alwaysSingle = jsonData['alwaysSingle']
+
+        try:
+            self.setData(json.loads(jsonData['value'], cls=self.jsonDecoderClass()))
+        except:
+            self.setData(self.defaultValue())
+
+        if jsonData['bDirty']:
+            self.setDirty()
+        else:
+            self.setClean()
+
     # ISerializable interface
     def serialize(self):
 

@@ -261,6 +261,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
         self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
 
+    def onNodeErrorOccured(self, *args, **kwargs):
+        # change node ui to invalid
+        print("NODE ERROR", args)
+
+    def onNodeErrorCleared(self, *args, **kwargs):
+        # restore node ui to clean
+        pass
+
     def toggleCollapsed(self):
         self.collapsed = not self.collapsed
 
@@ -486,6 +494,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def autoAffectPins(self):
         self._rawNode.autoAffectPins()
 
+    def updateNodeHeaderColor(self):
+        if self.headColorOverride is None:
+            if self.isCallable():
+                self.headColor = NodeDefaults().CALLABLE_NODE_HEAD_COLOR
+            else:
+                self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
+        else:
+            self.headColor = self.headColorOverride
+
     def postCreate(self, jsonTemplate=None):
         # create ui pin wrappers
         for i in self._rawNode.getOrderedPins():
@@ -500,13 +517,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         if not self.drawlabel:
             self.nodeNameWidget.hide()
 
-        if self.headColorOverride is None:
-            if self.isCallable():
-                self.headColor = NodeDefaults().CALLABLE_NODE_HEAD_COLOR
-            else:
-                self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
-        else:
-            self.headColor = self.headColorOverride
+        self.updateNodeHeaderColor()
 
         self.createActionButtons()
 

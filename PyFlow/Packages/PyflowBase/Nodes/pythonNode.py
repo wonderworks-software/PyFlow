@@ -12,13 +12,44 @@ from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow import getPinDefaultValueByType
-from PyFlow.Core.PyCodeCompiler import Py3FunctionCompiler
+from PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
 
 
 class pythonNode(NodeBase):
     def __init__(self, name):
         super(pythonNode, self).__init__(name)
-        self.currentComputeCode = ''
+        self._nodeData = ''
+        self.bCacheEnabled = False
+
+    @property
+    def nodeData(self):
+        return self._nodeData
+
+    @nodeData.setter
+    def nodeData(self, codeString):
+        self._nodeData = codeString
+        # compile and get symbols
+        mem = Py3CodeCompiler().compile(codeString)
+
+        # clear node pins
+        for i in list(self.inputs.values()):
+            i.kill()
+        for o in list(self.outputs.values()):
+            o.kill()
+
+        # define pins
+        pinsDefinitionFunction = mem["definePins"]
+        pinsDefinitionFunction(self)
+        self.autoAffectPins()
+
+        # assign compute code
+        computeFunction = mem["compute"]
+
+        def nodeCompute(*args, **kwargs):
+            computeFunction(self)
+
+        self.compute = MethodType(nodeCompute, self)
+        self.bCallable = self.isCallable()
 
     @staticmethod
     def pinTypeHints():
@@ -26,7 +57,7 @@ class pythonNode(NodeBase):
 
     def serialize(self):
         default = super(pythonNode, self).serialize()
-        default['computeCode'] = self.currentComputeCode
+        default['nodeData'] = self.nodeData
         return default
 
     def postCreate(self, jsonTemplate=None):
@@ -35,26 +66,16 @@ class pythonNode(NodeBase):
         if jsonTemplate is None:
             return
 
-        if 'computeCode' in jsonTemplate:
-            self.currentComputeCode = jsonTemplate['computeCode']
-            compute = Py3FunctionCompiler(
-                'compute').compile(self.currentComputeCode)
-            self.compute = MethodType(compute, self)
+        if 'nodeData' in jsonTemplate:
+            self.nodeData = jsonTemplate['nodeData']
 
-        # recreate pins
-        for i in jsonTemplate['inputs']:
-            inPin = self.createInputPin(i['name'],
-                                        i['dataType'],
-                                        getPinDefaultValueByType(i['dataType']))
-            inPin.setData(i['value'])
-            inPin.dirty = i['bDirty']
+        for inpJson in jsonTemplate['inputs']:
+            pin = self.getPin(inpJson["name"])
+            pin.deserialize(inpJson)
 
-        for o in jsonTemplate['outputs']:
-            compute = self.compute if o['dataType'] in ('AnyPin', 'ExecPin') else None
-            outPin = self.createOutputPin(o['name'],
-                                          o['dataType'],
-                                          getPinDefaultValueByType(o['dataType']),
-                                          compute)
+        for outJson in jsonTemplate['outputs']:
+            pin = self.getPin(outJson["name"])
+            pin.deserialize(outJson)
 
         self.autoAffectPins()
 
