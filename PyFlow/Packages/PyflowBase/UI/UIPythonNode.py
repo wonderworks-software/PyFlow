@@ -14,7 +14,7 @@ INITIAL_CODE = """
 
 from PyFlow.Core.Common import *
 
-def definePins(node):
+def prepareNode(node):
     node.createInputPin(pinName="inExec", dataType="ExecPin", foo=node.processNode)
     node.createOutputPin(pinName="outExec", dataType="ExecPin")
     node.createInputPin(pinName="a", dataType="IntPin", defaultValue=0, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group="")
@@ -84,6 +84,7 @@ class UIPythonNode(UINodeBase):
                 self._createUIPinWrapper(pin)
             self.updateNodeShape()
             self.updateNodeHeaderColor()
+            self.setHeaderHtml(self._rawNode.getName())
 
     def onEdit(self):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)

@@ -38,7 +38,7 @@ class pythonNode(NodeBase):
             o.kill()
 
         # define pins
-        pinsDefinitionFunction = mem["definePins"]
+        pinsDefinitionFunction = mem["prepareNode"]
         pinsDefinitionFunction(self)
         self.autoAffectPins()
 
