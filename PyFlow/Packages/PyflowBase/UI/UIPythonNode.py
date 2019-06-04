@@ -1,6 +1,7 @@
 from types import MethodType
 import subprocess
 import os
+import uuid
 
 from Qt.QtWidgets import QAction
 from Qt import QtGui, QtCore
@@ -40,6 +41,7 @@ class UIPythonNode(UINodeBase):
         self._filePath = ''
         self.watcher = QtCore.QFileSystemWatcher()
         self.fileHandle = None
+        self.currentEditorProcess = None
 
     def mouseDoubleClickEvent(self, event):
         super(UIPythonNode, self).mouseDoubleClickEvent(event)
@@ -61,6 +63,23 @@ class UIPythonNode(UINodeBase):
     def nodeData(self, value):
         self._rawNode.nodeData = value
 
+    def Tick(self, delta, *args, **kwargs):
+        if self.currentEditorProcess is not None:
+            result = self.currentEditorProcess.poll()
+            if result == 0:
+                if self._filePath != "":
+                    if os.path.exists(self._filePath):
+                        try:
+                            if self.fileHandle is not None:
+                                self.fileHandle.close()
+                            os.remove(self._filePath)
+                            self._filePath = ""
+                            self.currentEditorProcess = None
+                            self.fileHandle = None
+                        except Exception as e:
+                            print(e)
+                            pass
+
     def onFileChanged(self, path):
         if not os.path.exists(path):
             self._filePath = ''
@@ -77,26 +96,38 @@ class UIPythonNode(UINodeBase):
             self.fileHandle.seek(0)
             codeString = self.fileHandle.read()
 
-            self._rawNode.nodeData = codeString
-
-            # create wrappers
-            for pin in self._rawNode.getOrderedPins():
-                self._createUIPinWrapper(pin)
-            self.updateNodeShape()
-            self.updateNodeHeaderColor()
-            self.setHeaderHtml(self._rawNode.getName())
+            nodeData = self.nodeData
+            try:
+                self.nodeData = codeString
+                # create wrappers
+                for pin in self._rawNode.getOrderedPins():
+                    self._createUIPinWrapper(pin)
+                self.updateNodeShape()
+                self.updateNodeHeaderColor()
+                self.setHeaderHtml(self._rawNode.getName())
+                print(self.getName(), "successfully compiled")
+            except Exception as e:
+                print("Failed to compile node", self.getName(), "Error:", e)
 
     def onEdit(self):
+        if self.currentEditorProcess is not None:
+            print("already opened")
+            return
+
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
         editCmd = settings.value("Preferences/General/EditorCmd")
 
         appUserFolder = os.path.expanduser('~/PyFlow')
         if self._filePath == "":
             # if no file assotiated - create one
-            self._filePath = os.path.join(appUserFolder, "{0}.py".format(self.getName()))
+            self._filePath = os.path.join(appUserFolder, "{0}_{1}.py".format(self.getName(), str(uuid.uuid4())))
+
         if not os.path.exists(self._filePath):
             f = open(self._filePath, 'w')
-            f.write(INITIAL_CODE)
+            if self.nodeData == "":
+                f.write(INITIAL_CODE)
+            else:
+                f.write(self.nodeData)
             f.close()
 
         filePathString = '"{}"'.format(self._filePath)
@@ -112,4 +143,4 @@ class UIPythonNode(UINodeBase):
             pass
 
         self.watcher.fileChanged.connect(self.onFileChanged)
-        subprocess.Popen(editCmd)
+        self.currentEditorProcess = subprocess.Popen(editCmd)
