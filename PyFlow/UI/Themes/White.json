@@ -8,14 +8,6 @@
                 255
             ]
         ], 
-        "BgColor": [
-            [
-                171, 
-                171, 
-                171, 
-                255
-            ]
-        ], 
         "gridSizeFine": [
             [
                 10.0
@@ -37,19 +29,19 @@
                 255
             ]
         ], 
-        "InputFieldHover": [
+        "CanvastextColor": [
             [
-                255, 
-                255, 
-                255, 
+                64, 
+                64, 
+                64, 
                 255
             ]
         ], 
         "InputTextSelbg": [
             [
-                59, 
-                59, 
-                59, 
+                202, 
+                228, 
+                255, 
                 255
             ]
         ], 
@@ -63,10 +55,10 @@
         ], 
         "DropDownButton": [
             [
-                49, 
-                49, 
-                49, 
-                255
+                138, 
+                255, 
+                247, 
+                138
             ]
         ], 
         "BgColorDarker": [
@@ -77,19 +69,27 @@
                 255
             ]
         ], 
-        "CanvastextColor": [
+        "BgColor": [
             [
-                64, 
-                64, 
-                64, 
+                171, 
+                171, 
+                171, 
+                255
+            ]
+        ], 
+        "InputFieldHover": [
+            [
+                255, 
+                255, 
+                255, 
                 255
             ]
         ], 
         "InputTextSelColor": [
             [
-                255, 
-                255, 
-                255, 
+                0, 
+                0, 
+                0, 
                 255
             ]
         ], 
@@ -124,7 +124,7 @@
         ], 
         "gridSizeCourse": [
             [
-                100
+                100.0
             ]
         ], 
         "CanvasGridColor": [
