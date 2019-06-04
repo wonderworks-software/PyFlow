@@ -205,8 +205,8 @@ class ThemePreferences(CategoryWidgetBase):
         if okPressed and text != '':
             data = editableStyleSheet().serialize()
             with open(os.path.join(THEMES_PATH, text + ".json"), "w") as f:
-                json.dump(data, f, indent=4)
-                self.onShow(text)
+                json.dump(data, f,separators=(',', ':'))
+            self.onShow(text)
 
     def serialize(self, settings):
         settings.setValue("Theme_Name", self.selector.currentText())
