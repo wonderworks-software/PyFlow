@@ -267,7 +267,7 @@ class PreferencesWindow(QMainWindow):
         self.addCategory("General", GeneralPreferences())
         self.addCategory("Theme", ThemePreferences())
         self.selectByName("General")
-
+        self.categoryButtons[1].toggle()
         self.tryCreateDefaults()
 
     def selectByName(self, name):
@@ -300,11 +300,10 @@ class PreferencesWindow(QMainWindow):
             widget.onShow(settings)
             settings.endGroup()
         settings.endGroup()
-        self.categoryButtons[1].toggle()
 
     def saveAndClosePrefs(self):
         self.savePreferences()
-        self.hide()
+        self.close()
 
     def savePreferences(self):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
