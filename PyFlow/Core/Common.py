@@ -415,6 +415,7 @@ class PinOptions(Flag):
     ArraySupported = auto()
     SupportsOnlyArrays = auto()
     AllowMultipleConnections = auto()
+    ChangeTypeOnConnection = auto()
     RenamingEnabled = auto()
     Dynamic = auto()
     AlwaysPushDirty = auto()

@@ -78,9 +78,9 @@ class UIConstantNode(UINodeBase):
         for i in [i.name for i in list(PinStructure)]:
             structSelector.addItem(i)
 
-        overrideType.setChecked(self.input._rawPin.changeTypeOnConnection)
+        overrideType.setChecked(self.input._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection))
         structSelector.setCurrentIndex(self.input._rawPin._currStructure)
-        selector.setEnabled(self.input._rawPin.changeTypeOnConnection)
+        selector.setEnabled(self.input._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection))
 
         overrideType.stateChanged.connect(selector.setEnabled)
         overrideType.stateChanged.connect(self._rawNode.overrideTypeChanged)

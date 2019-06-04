@@ -10,7 +10,7 @@ class forEachLoop(NodeBase):
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
         self.elem = self.createOutputPin('element', 'AnyPin')
-        self.elem.changeTypeOnConnection = False
+        self.elem.disableOptions(PinOptions.ChangeTypeOnConnection)
         self.completed = self.createOutputPin('Completed', 'ExecPin')
 
     @staticmethod

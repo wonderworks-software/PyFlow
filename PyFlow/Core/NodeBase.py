@@ -447,7 +447,6 @@ class NodeBase(INode):
                 pin.uid = uuid.UUID(inpJson['uuid'])
                 if "currDataType" in inpJson:
                     pin.setType(inpJson["currDataType"])
-                pin.changeTypeOnConnection = inpJson['changeType']
                 for opt in PinOptions:
                     if opt.value in inpJson["options"]:
                         pin.enableOptions(opt)
@@ -476,7 +475,6 @@ class NodeBase(INode):
                 pin.uid = uuid.UUID(outJson['uuid'])
                 if "currDataType" in outJson:
                     pin.setType(outJson["currDataType"])
-                pin.changeTypeOnConnection = outJson['changeType']
                 for opt in PinOptions:
                     if opt.value in outJson["options"]:
                         pin.enableOptions(opt)
@@ -601,8 +599,6 @@ class NodeBase(INode):
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
                 p.disableOptions(returnPinOptionsToDisable)
-            if retConstraint is None:
-                p.changeTypeOnConnection = False
             if not p.isArray() and p.optionEnabled(PinOptions.ArraySupported):
                 p.structureType = PinStructure.Multi
 
@@ -643,8 +639,6 @@ class NodeBase(INode):
                     outRef.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
                     outRef.disableOptions(pinOptionsToDisable)
-                if constraint is None and outRef.isAny():
-                    outRef.changeTypeOnConnection = False
                 if not outRef.isArray() and outRef.optionEnabled(PinOptions.ArraySupported):
                     outRef.structureType = PinStructure.Multi
                 refs.append(outRef)
@@ -675,8 +669,6 @@ class NodeBase(INode):
                     inp.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
                     inp.disableOptions(pinOptionsToDisable)
-                if constraint is None and inp.isAny():
-                    inp.changeTypeOnConnection = False
                 if not inp.isArray() and inp.optionEnabled(PinOptions.ArraySupported):
                     inp.structureType = PinStructure.Multi
 

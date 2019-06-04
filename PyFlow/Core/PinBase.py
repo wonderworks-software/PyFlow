@@ -61,7 +61,6 @@ class PinBase(IPin):
         self._isList = False
         self._alwaysList = False
         self._alwaysSingle = False
-        self.changeTypeOnConnection = False
         self._defaultSupportedDataTypes = self._supportedDataTypes = self.supportedDataTypes()
 
     @property
@@ -168,7 +167,6 @@ class PinBase(IPin):
             'bDirty': self.dirty,
             'linkedTo': list(self.linkedTo),
             'options': [i.value for i in PinOptions if self.optionEnabled(i)],
-            'changeType': self.changeTypeOnConnection,
             'structure': int(self._currStructure),
             'alwaysList': self._alwaysList,
             'alwaysSingle': self._alwaysSingle

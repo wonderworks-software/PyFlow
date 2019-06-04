@@ -34,8 +34,12 @@ class constant(NodeBase):
         self.changeType(other.dataType)
 
     def overrideTypeChanged(self,toogle):
-        self.input.changeTypeOnConnection = bool(toogle)
-        self.output.changeTypeOnConnection = bool(toogle)
+        if bool(toogle):
+            self.input.enableOptions(PinOptions.ChangeTypeOnConnection)
+            self.output.enableOptions(PinOptions.ChangeTypeOnConnection)
+        else:
+            self.input.disableOptions(PinOptions.ChangeTypeOnConnection)
+            self.output.disableOptions(PinOptions.ChangeTypeOnConnection)            
 
     def updateType(self,dataTypeIndex):
         self.changeType(self.pinTypes[dataTypeIndex],True)
