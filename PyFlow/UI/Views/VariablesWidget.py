@@ -86,7 +86,7 @@ class VariablesWidget(QWidget, Ui_Form):
     def createVariableWrapperAndAddToList(self, rawVariable):
         uiVariable = UIVariable(rawVariable, self)
         item = QListWidgetItem(self.listWidget)
-        item.setSizeHint(QtCore.QSize(60, 38))
+        item.setSizeHint(QtCore.QSize(60, 20))
         self.listWidget.setItemWidget(item, uiVariable)
         return uiVariable
 
