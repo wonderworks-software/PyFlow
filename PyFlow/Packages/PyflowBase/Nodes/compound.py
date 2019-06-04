@@ -158,7 +158,6 @@ class compound(NodeBase):
         subgraphOutputPin = self.createOutputPin(inPin.name,
                                                  inPin.__class__.__name__,
                                                  inPin.defaultValue(),
-                                                 None,
                                                  inPin.structureType,
                                                  inPin.constraint,
                                                  inPin.structConstraint,

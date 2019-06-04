@@ -77,6 +77,12 @@ class AnyPin(PinBase):
             dt['currDataType'] = constrainedType
         return dt
 
+    def deserialize(self, jsonData):
+        super(AnyPin, self).deserialize(jsonData)
+        if "currDataType" in jsonData:
+            self.setType(jsonData["currDataType"])
+        self.changeTypeOnConnection = jsonData['changeType']
+
     def pinConnected(self, other):
         super(AnyPin, self).pinConnected(other)
 

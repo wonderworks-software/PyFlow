@@ -26,5 +26,18 @@ class Py3FunctionCompiler(ICodeCompiler):
         if len(lines) == 0:
             foo += "\n\tpass"
         codeObject = compile(foo, "fake", "exec")
-        exec(codeObject, globals())
-        return globals()[self._fooName]
+        mem = {}
+        exec(codeObject, mem)
+        return mem[self._fooName]
+
+
+class Py3CodeCompiler(ICodeCompiler):
+    """docstring for Py3CodeCompiler."""
+    def __init__(self):
+        super(Py3CodeCompiler, self).__init__()
+
+    def compile(self, code):
+        codeObject = compile(code, "fake", "exec")
+        mem = {}
+        exec(codeObject, mem)
+        return mem
