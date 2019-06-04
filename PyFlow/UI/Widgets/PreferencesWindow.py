@@ -175,11 +175,14 @@ class ThemePreferences(CategoryWidgetBase):
         self.layout.addItem(spacerItem)
 
         lay = QHBoxLayout()
-        pbSaveTheme = QPushButton("SaveThemeAs")
-        pbSaveTheme.clicked.connect(self.saveThemeAs)
+        pbSaveTheme = QPushButton("SaveTheme")
+        pbSaveTheme.clicked.connect(self.saveTheme)
+        pbSaveThemeAs = QPushButton("SaveThemeAs")
+        pbSaveThemeAs.clicked.connect(self.saveThemeAs)
         pbDeleteTheme = QPushButton("RemoveTheme")
         pbDeleteTheme.clicked.connect(self.deleteTheme)
         lay.addWidget(pbSaveTheme)
+        lay.addWidget(pbSaveThemeAs)
         lay.addWidget(pbDeleteTheme)
         self.layout.addLayout(lay)
 
@@ -195,13 +198,18 @@ class ThemePreferences(CategoryWidgetBase):
             self.onShow(self.selector.currentText())
             self.setPreset(0)
 
-    def saveThemeAs(self):
-        text, okPressed = QInputDialog.getText(self, "Get text", "Your name:", QLineEdit.Normal, "")
-        if okPressed and text != '':
+    def saveTheme(self):
+        self.saveThemeAs(self.selector.currentText())
+
+    def saveThemeAs(self,fileName=None):
+        okPressed = True
+        if not fileName:
+            fileName, okPressed = QInputDialog.getText(self, "Get text", "Your name:", QLineEdit.Normal, "")
+        if okPressed and fileName != '':
             data = editableStyleSheet().serialize()
-            with open(os.path.join(THEMES_PATH, text + ".json"), "w") as f:
+            with open(os.path.join(THEMES_PATH, fileName + ".json"), "w") as f:
                 json.dump(data, f,separators=(',', ':'))
-            self.onShow(text)
+            self.onShow(fileName)
 
     def serialize(self, settings):
         settings.setValue("Theme_Name", self.selector.currentText())
@@ -246,9 +254,14 @@ class PreferencesWindow(QMainWindow):
         self.splitter.setSizes([150, 450])
         self._indexes = {}
         self.categoryButtons = {}
-        pbSavePrefs = QPushButton("Save")
+        self.buttonsLay = QHBoxLayout()
+        pbSavePrefs = QPushButton("SaveAsDefault")
         pbSavePrefs.clicked.connect(self.savePreferences)
-        self.categoriesVerticalLayout.addWidget(pbSavePrefs)
+        pbSaveAndClosePrefs = QPushButton("SaveAndClose")
+        pbSaveAndClosePrefs.clicked.connect(self.saveAndClosePrefs)        
+        self.buttonsLay.addWidget(pbSavePrefs)
+        self.buttonsLay.addWidget(pbSaveAndClosePrefs)
+        self.categoriesVerticalLayout.addLayout(self.buttonsLay)
 
         self.addCategory("Input", InputPreferences())
         self.addCategory("General", GeneralPreferences())
@@ -288,6 +301,10 @@ class PreferencesWindow(QMainWindow):
             settings.endGroup()
         settings.endGroup()
         self.categoryButtons[1].toggle()
+
+    def saveAndClosePrefs(self):
+        self.savePreferences()
+        self.hide()
 
     def savePreferences(self):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
