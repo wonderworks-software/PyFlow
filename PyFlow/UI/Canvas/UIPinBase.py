@@ -153,7 +153,7 @@ class UIPinBase(QGraphicsWidget):
         self.pinCircleDrawOffset = QtCore.QPointF()
 
     def onGetData(self):
-        data = EvaluationEngine.getPinData(self._rawPin)
+        data = EvaluationEngine().getPinData(self._rawPin)
         print(data)
 
     @property
