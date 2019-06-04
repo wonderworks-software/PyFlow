@@ -128,27 +128,24 @@ class ThemePreferences(CategoryWidgetBase):
         properties.tearOffCopy.hide()
         general = CollapsibleFormWidget(headName="General")
         bg = CollapsibleFormWidget(headName="BackGround")
-        inputFields = CollapsibleFormWidget(headName="InputFields")
         canvas = CollapsibleFormWidget(headName="Canvas")
         options = inspect.getmembers(editableStyleSheet())
         for name, obj in options:
             if isinstance(obj, QtGui.QColor):
                 inp = pyf_ColorSlider(type="int", alpha=len(list(obj.getRgbF())) == 4, startColor=list(obj.getRgbF()))
                 inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
-                if name in ["TextColor", "MainColor", "BorderColor", "ButtonsColor", "DropDownButton"]:
+                if name in ["TextColor", "MainColor", "TextSelectedColor","ButtonsColor" ]:
                     general.addWidget(name, inp)
-                elif name in ["BgColor", "BgColorDarker", "BgColorBright"]:
+                elif name in ["InputFieldColor","BgColor", "BgColorDarker", "BgColorBright","BorderColor"]:
                     bg.addWidget(name, inp)
-                elif name in ["InputFieldColor", "InputFieldHover", "InputTextSelbg", "InputTextSelColor"]:
-                    inputFields.addWidget(name, inp)
                 elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
                     canvas.addWidget(name, inp)
             elif isinstance(obj,list):
-                if name in ["gridSizeFine", "gridSizeCourse"]:
+                if name in ["GridSizeFine", "GridSizeHuge"]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
                     inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
-                elif name in ["drawNumbers"]:
+                elif name in ["DrawNumbers"]:
                     inp = QCheckBox()
                     inp.setChecked(obj[0])
                     inp.stateChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
@@ -168,12 +165,10 @@ class ThemePreferences(CategoryWidgetBase):
         self.selector.activated.connect(self.setPreset)
         general.setCollapsed(True)
         bg.setCollapsed(True)
-        inputFields.setCollapsed(True)
         canvas.setCollapsed(True)
         properties.addWidget(general)
         properties.addWidget(bg)
         properties.addWidget(canvas)
-        properties.addWidget(inputFields)
         self.layout.addWidget(properties)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
