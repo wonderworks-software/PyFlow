@@ -14,6 +14,8 @@ FILE_DIR = os.path.dirname(__file__)
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 
+       
+
 @SingletonDecorator
 class editableStyleSheet():
     def __init__(self):
@@ -22,25 +24,22 @@ class editableStyleSheet():
 
         self.MainColor = QtGui.QColor(215, 128, 26)
 
-        self.BgColorDark = QtGui.QColor(53, 53, 53)
+        self.BgColor = QtGui.QColor(53, 53, 53)
         self.BgColorDarker = QtGui.QColor(50, 50, 50)
         self.BgColorBright = QtGui.QColor(82, 82, 82)
-
         self.BorderColor = QtGui.QColor(10, 10, 10)
 
         self.InputFieldColor = QtGui.QColor(32, 32, 32)
-        self.InputFieldHover = QtGui.QColor(95, 95, 95)
-
-        self.InputTextSelbg = QtGui.QColor(59, 59, 59)
-        self.InputTextSelColor = QtGui.QColor(255, 255, 255)
+        self.TextSelectedColor = QtGui.QColor(255, 255, 255)
 
         self.ButtonsColor = QtGui.QColor(60, 60, 60)
-        self.DropDownButton = QtGui.QColor(0, 0, 0, 100)
 
         self.CanvasBgColor = QtGui.QColor(35, 35, 35)
-        self.CanvastextColor = QtGui.QColor(64, 64, 64)
         self.CanvasGridColor = QtGui.QColor(20, 20, 20, 100)
         self.CanvasGridColorDarker = QtGui.QColor(20, 20, 20)
+        self.GridSizeFine = [10]
+        self.GridSizeHuge = [100]
+        self.DrawNumbers = [0]
 
         self.storeDeffaults()
         self.presests = {}
@@ -64,6 +63,9 @@ class editableStyleSheet():
         for name, obj in inspect.getmembers(self):
             if isinstance(obj, QtGui.QColor):
                 result[name].append(obj.getRgb())
+            elif isinstance(obj, list):
+                result[name].append(obj)
+
         return {"PyFLowStyleSheet": result}
 
     def loadPresests(self, folder):
@@ -72,31 +74,38 @@ class editableStyleSheet():
             name, _type = os.path.splitext(file)
             if _type == ".json":
                 with open(os.path.join(folder, file), "r") as f:
-                    data = json.load(f)
-                    self.presests[name] = data
+                    try:
+                        data = json.load(f)
+                        self.presests[name] = data
+                    except:
+                        pass
 
     def loadFromData(self, data):
         if list(data.keys())[0] == "PyFLowStyleSheet":
             data = data["PyFLowStyleSheet"]
             for name in data.keys():
-                self.setColor(name, data[name][0])
+                if isinstance(data[name],list):
+                    self.setColor(name, data[name][0])
             self.updateApp()
 
     def setColor(self, name, color, update=False):
+        value = color
         if not isinstance(color, QtGui.QColor):
             if isinstance(color, list) and len(color) >= 3:
                 a = 255
                 if len(color) == 4:
                     a = color[3]
                 color = QtGui.QColor(color[0], color[1], color[2], a)
-            else:
-                return
         for objname, obj in inspect.getmembers(self):
-            if isinstance(obj, QtGui.QColor):
-                if objname == name and obj.getRgb() != color.getRgb():
-                    obj.setRgb(color.rgba())
-                    if update:
-                        self.updateApp()
+            if objname == name:
+                if isinstance(obj, QtGui.QColor):
+                    obj.setRgba(color.rgba())
+                elif isinstance(obj,list):
+                    if isinstance(value,list):
+                        value = value[0]
+                    obj[0] = value
+                if update:
+                    self.updateApp()
 
     def updateApp(self):
         app = QtWidgets.QApplication.instance()
@@ -110,10 +119,11 @@ class editableStyleSheet():
         MainColor_Lighter.setAlpha(128)
         ButtonG1 = self.ButtonsColor.lighter(120)
         ButtonG3 = self.ButtonsColor.darker(110)
+        InputFieldHover = self.InputFieldColor.lighter(200)
         with open(STYLE_PATH, 'r') as f:
             styleString = f.read()
             return styleString % ("rgba%s" % str(self.TextColor.getRgb()),
-                                  "rgba%s" % str(self.BgColorDark.getRgb()),
+                                  "rgba%s" % str(self.BgColor.getRgb()),
                                   "rgba%s" % str(self.BgColorDarker.getRgb()),
                                   "rgba%s" % str(self.BgColorBright.getRgb()),
                                   "rgba%s" % str(self.MainColor.getRgb()),
@@ -121,13 +131,13 @@ class editableStyleSheet():
                                   "rgba%s" % str(MainColor_Lighter.getRgb()),
                                   "rgba%s" % str(self.BorderColor.getRgb()),
                                   "rgba%s" % str(self.InputFieldColor.getRgb()),
-                                  "rgba%s" % str(self.InputFieldHover.getRgb()),
-                                  "rgba%s" % str(self.InputTextSelbg.getRgb()),
-                                  "rgba%s" % str(self.InputTextSelColor.getRgb()),
+                                  "rgba%s" % str(InputFieldHover.getRgb()),
+                                  "rgba%s" % str(MainColor_Lighter.getRgb()),
+                                  "rgba%s" % str(self.TextSelectedColor.getRgb()),
                                   "rgba%s" % str(ButtonG1.getRgb()),
                                   "rgba%s" % str(self.ButtonsColor.getRgb()),
                                   "rgba%s" % str(ButtonG3.getRgb()),
-                                  "rgba%s" % str(self.DropDownButton.getRgb())
+                                  "rgba%s" % str(QtGui.QColor(0, 0, 0, 100).getRgb())
                                   )
 
     def getSliderStyleSheet(self, name):

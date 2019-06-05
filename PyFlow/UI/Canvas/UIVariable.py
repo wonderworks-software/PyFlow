@@ -36,12 +36,15 @@ class TypeWidget(QWidget):
     def paintEvent(self, event):
         painter = QtGui.QPainter()
         painter.begin(self)
-
+        painter.setRenderHint(QtGui.QPainter.Antialiasing);
         painter.setBrush(QtGui.QColor.fromRgb(*self.color))
+        pen = QtGui.QPen()
+        pen.setColor(QtGui.QColor(0,0,0,0))
+        painter.setPen(pen)        
         rect = event.rect()
         rect.setHeight(10)
-        rect.setWidth(20)
-        rect.moveTop(12)
+        rect.setWidth(15)
+        rect.moveTop(3)
         painter.drawRoundedRect(rect, 5, 5)
 
         painter.end()
@@ -76,7 +79,6 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         super(UIVariable, self).__init__(parent)
         self._rawVariable = rawVariable
         self.variablesWidget = variablesWidget
-
         # ui
         self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setSpacing(1)
@@ -86,6 +88,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         self.widget.setObjectName("widget")
         self.horizontalLayout.addWidget(self.widget)
         self.labelName = QLabel(self)
+        self.labelName.setStyleSheet("background:transparent")
         self.labelName.setObjectName("labelName")
         self.horizontalLayout.addWidget(self.labelName)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -229,7 +232,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
 
         varUid = uuid.UUID(data['uuid'])
         # TODO: this is probably bad. Too long call chain
-        var = graph.parent.variablesWidget.createVariable(
+        var = graph.getApp().variablesWidget.createVariable(
             dataType=data['dataType'], accessLevel=AccessLevel(data['accessLevel']), uid=varUid)
         var.setName(data['name'])
         var.setDataType(data['dataType'])

@@ -22,7 +22,7 @@ class PropertiesTool(DockTool):
         self.propertiesWidget.spawnDuplicate.connect(self.onTearOffCopy)
 
     def onTearOffCopy(self, *args, **kwargs):
-        instance = self.canvas.parent.invokeDockToolByName("PyflowBase", self.name())
+        instance = self.canvas.getApp().invokeDockToolByName("PyflowBase", self.name())
         instance.assignPropertiesWidget(self.fillDelegate)
         instance.setFloating(True)
         instance.resize(self.size())

@@ -147,8 +147,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._rawNode.tick.connect(self.Tick)
 
         self.custom_widget_data = {}
-        # node name
-        self._displayName = self.name
 
         # GUI Layout
         self.opt_node_base_color = Colors.NodeBackgrounds
@@ -159,7 +157,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.color = color
         self.drawlabel = True
         self.headColorOverride = headColorOverride
-        self.headColor = headColorOverride
+        self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
         self._w = 0
         self.h = 30
         self.minWidth = 25
@@ -261,6 +259,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
         self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
 
+    def onNodeErrorOccured(self, *args, **kwargs):
+        # change node ui to invalid
+        print("NODE ERROR", args)
+
+    def onNodeErrorCleared(self, *args, **kwargs):
+        # restore node ui to clean
+        pass
+
     def toggleCollapsed(self):
         self.collapsed = not self.collapsed
 
@@ -343,16 +349,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     @name.setter
     def name(self, value):
         self._rawNode.setName(value)
-
-    @property
-    def displayName(self):
-        return self._displayName
-
-    @displayName.setter
-    def displayName(self, value):
-        self._displayName = value
-        self.displayNameChanged.emit(self._displayName)
-        self.updateNodeShape()
 
     @property
     def pins(self):
@@ -449,7 +445,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         template = {}
         if self.resizable:
             template['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
-        template['displayName'] = self.displayName
         template['collapsed'] = self.collapsed
         template['headerHtml'] = self.nodeNameWidget.getHtml()
         if len(self._groups) > 0:
@@ -486,7 +481,18 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def autoAffectPins(self):
         self._rawNode.autoAffectPins()
 
+    def updateNodeHeaderColor(self):
+        if self.headColorOverride is None:
+            if self.isCallable():
+                self.headColor = NodeDefaults().CALLABLE_NODE_HEAD_COLOR
+            else:
+                self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
+        else:
+            self.headColor = self.headColorOverride
+
     def postCreate(self, jsonTemplate=None):
+        self.updateNodeHeaderColor()
+
         # create ui pin wrappers
         for i in self._rawNode.getOrderedPins():
             self._createUIPinWrapper(i)
@@ -499,14 +505,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         if not self.drawlabel:
             self.nodeNameWidget.hide()
-
-        if self.headColorOverride is None:
-            if self.isCallable():
-                self.headColor = NodeDefaults().CALLABLE_NODE_HEAD_COLOR
-            else:
-                self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
-        else:
-            self.headColor = self.headColorOverride
 
         self.createActionButtons()
 

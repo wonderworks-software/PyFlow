@@ -14,11 +14,12 @@ from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
 from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.Canvas.UICommon import clearLayout
-from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
+from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider, pyf_Slider
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 FILE_DIR = os.path.dirname(__file__)
 THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
+
 
 class CategoryButton(QPushButton):
     """docstring for CategoryButton."""
@@ -92,19 +93,27 @@ class GeneralPreferences(CategoryWidgetBase):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.layout.setSpacing(2)
-        w = CollapsibleFormWidget(headName="Python node")
+
+        commonCategory = CollapsibleFormWidget(headName="Common")
+        self.tempFilesDir = QLineEdit(os.path.expanduser('~/PyFlowTemp'))
+        commonCategory.addWidget("TempFilesDir", self.tempFilesDir)
+        self.layout.addWidget(commonCategory)
+
+        pythonNodeCategory = CollapsibleFormWidget(headName="Python node")
         self.lePythonEditor = QLineEdit("notepad.exe @FILE")
-        w.addWidget("Editor cmd", self.lePythonEditor)
-        self.layout.addWidget(w)
+        pythonNodeCategory.addWidget("Editor cmd", self.lePythonEditor)
+        self.layout.addWidget(pythonNodeCategory)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
     def initDefaults(self, settings):
         settings.setValue("EditorCmd", "notepad.exe @FILE")
+        settings.setValue("TempFilesDir", os.path.expanduser('~/PyFlowTemp'))
 
     def serialize(self, settings):
         settings.setValue("EditorCmd", self.lePythonEditor.text())
+        settings.setValue("TempFilesDir", self.tempFilesDir.text())
 
     def onShow(self, settings):
         self.lePythonEditor.setText(settings.value("EditorCmd"))
@@ -128,21 +137,28 @@ class ThemePreferences(CategoryWidgetBase):
         properties.tearOffCopy.hide()
         general = CollapsibleFormWidget(headName="General")
         bg = CollapsibleFormWidget(headName="BackGround")
-        inputFields = CollapsibleFormWidget(headName="InputFields")
         canvas = CollapsibleFormWidget(headName="Canvas")
         options = inspect.getmembers(editableStyleSheet())
         for name, obj in options:
             if isinstance(obj, QtGui.QColor):
-                color = pyf_ColorSlider(type="int", alpha=len(list(obj.getRgbF())) == 4, startColor=list(obj.getRgbF()))
-                color.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
-                if name in ["TextColor", "MainColor", "BorderColor", "ButtonsColor", "DropDownButton"]:
-                    general.addWidget(name, color)
-                elif name in ["BgColorDark", "BgColorDarker", "BgColorBright", "BorderColor"]:
-                    bg.addWidget(name, color)
-                elif name in ["InputFieldColor", "InputFieldHover", "InputTextSelbg", "InputTextSelColor"]:
-                    inputFields.addWidget(name, color)
+                inp = pyf_ColorSlider(type="int", alpha=len(list(obj.getRgbF())) == 4, startColor=list(obj.getRgbF()))
+                inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
+                if name in ["TextColor", "MainColor", "TextSelectedColor", "ButtonsColor"]:
+                    general.addWidget(name, inp)
+                elif name in ["InputFieldColor", "BgColor", "BgColorDarker", "BgColorBright", "BorderColor"]:
+                    bg.addWidget(name, inp)
                 elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
-                    canvas.addWidget(name, color)
+                    canvas.addWidget(name, inp)
+            elif isinstance(obj, list):
+                if name in ["GridSizeFine", "GridSizeHuge"]:
+                    inp = pyf_Slider(self)
+                    inp.setValue(obj[0])
+                    inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
+                elif name in ["DrawNumbers"]:
+                    inp = QCheckBox()
+                    inp.setChecked(obj[0])
+                    inp.stateChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
+                canvas.addWidget(name, inp)
         self.selector = QComboBox()
         for name in editableStyleSheet().presests.keys():
             self.selector.addItem(name)
@@ -158,23 +174,24 @@ class ThemePreferences(CategoryWidgetBase):
         self.selector.activated.connect(self.setPreset)
         general.setCollapsed(True)
         bg.setCollapsed(True)
-        inputFields.setCollapsed(True)
         canvas.setCollapsed(True)
         properties.addWidget(general)
         properties.addWidget(bg)
         properties.addWidget(canvas)
-        properties.addWidget(inputFields)
         self.layout.addWidget(properties)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
         lay = QHBoxLayout()
-        pbSaveTheme = QPushButton("SaveThemeAs")
-        pbSaveTheme.clicked.connect(self.saveThemeAs)
+        pbSaveTheme = QPushButton("SaveTheme")
+        pbSaveTheme.clicked.connect(self.saveTheme)
+        pbSaveThemeAs = QPushButton("SaveThemeAs")
+        pbSaveThemeAs.clicked.connect(self.saveThemeAs)
         pbDeleteTheme = QPushButton("RemoveTheme")
         pbDeleteTheme.clicked.connect(self.deleteTheme)
         lay.addWidget(pbSaveTheme)
+        lay.addWidget(pbSaveThemeAs)
         lay.addWidget(pbDeleteTheme)
         self.layout.addLayout(lay)
 
@@ -190,16 +207,22 @@ class ThemePreferences(CategoryWidgetBase):
             self.onShow(self.selector.currentText())
             self.setPreset(0)
 
-    def saveThemeAs(self):
-        text, okPressed = QInputDialog.getText(self, "Get text", "Your name:", QLineEdit.Normal, "")
-        if okPressed and text != '':
+    def saveTheme(self):
+        self.saveThemeAs(self.selector.currentText())
+
+    def saveThemeAs(self, fileName=None):
+        okPressed = True
+        if not fileName:
+            fileName, okPressed = QInputDialog.getText(self, "Get text", "Your name:", QLineEdit.Normal, "")
+        if okPressed and fileName != '':
             data = editableStyleSheet().serialize()
-            with open(os.path.join(THEMES_PATH, text + ".json"), "w") as f:
-                json.dump(data, f, indent=4)
-                self.onShow(text)
+            with open(os.path.join(THEMES_PATH, fileName + ".json"), "w") as f:
+                json.dump(data, f, separators=(',', ':'))
+            self.onShow(fileName)
 
     def serialize(self, settings):
         settings.setValue("Theme_Name", self.selector.currentText())
+
 
 class PreferencesWindow(QMainWindow):
     """docstring for PreferencesWindow."""
@@ -241,15 +264,20 @@ class PreferencesWindow(QMainWindow):
         self.splitter.setSizes([150, 450])
         self._indexes = {}
         self.categoryButtons = {}
-        pbSavePrefs = QPushButton("Save")
+        self.buttonsLay = QHBoxLayout()
+        pbSavePrefs = QPushButton("SaveAsDefault")
         pbSavePrefs.clicked.connect(self.savePreferences)
-        self.categoriesVerticalLayout.addWidget(pbSavePrefs)
+        pbSaveAndClosePrefs = QPushButton("SaveAndClose")
+        pbSaveAndClosePrefs.clicked.connect(self.saveAndClosePrefs)        
+        self.buttonsLay.addWidget(pbSavePrefs)
+        self.buttonsLay.addWidget(pbSaveAndClosePrefs)
+        self.categoriesVerticalLayout.addLayout(self.buttonsLay)
 
         self.addCategory("Input", InputPreferences())
         self.addCategory("General", GeneralPreferences())
         self.addCategory("Theme", ThemePreferences())
         self.selectByName("General")
-
+        self.categoryButtons[1].toggle()
         self.tryCreateDefaults()
 
     def selectByName(self, name):
@@ -282,7 +310,10 @@ class PreferencesWindow(QMainWindow):
             widget.onShow(settings)
             settings.endGroup()
         settings.endGroup()
-        self.categoryButtons[1].toggle()
+
+    def saveAndClosePrefs(self):
+        self.savePreferences()
+        self.close()
 
     def savePreferences(self):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)

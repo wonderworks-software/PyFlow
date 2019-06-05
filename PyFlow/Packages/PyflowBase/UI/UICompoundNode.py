@@ -29,7 +29,6 @@ class UICompoundNode(UINodeBase):
         super(UICompoundNode, self).kill()
 
     def onGraphNameChanged(self, newName):
-        self.displayName = newName
         self.name = newName
         self.setHeaderHtml(self.name)
 
@@ -37,4 +36,3 @@ class UICompoundNode(UINodeBase):
         super(UICompoundNode, self).postCreate(jsonTemplate)
         self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
         self._rawNode.rawGraph.nameChanged.connect(self.onGraphNameChanged)
-        self.displayName = self._rawNode.name

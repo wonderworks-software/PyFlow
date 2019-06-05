@@ -70,6 +70,7 @@ from PyFlow.Packages.PyflowBase.UI.UIRerouteNode import UIRerouteNode
 from PyFlow.Packages.PyflowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
+
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     nodeClassName = jsonTemplate['type']
     nodeName = jsonTemplate['name']
@@ -325,8 +326,6 @@ class Canvas(QGraphicsView):
     _realTimeLineNormalPen = Colors.White
     _realTimeLineValidPen = Colors.Green
 
-    _gridSizeFine = 10
-    _gridSizeCourse = 100
     _mouseWheelZoomRate = 0.0005
 
     requestFillProperties = QtCore.Signal(object)
@@ -334,15 +333,15 @@ class Canvas(QGraphicsView):
 
     USETAB = True
 
-    def __init__(self, graphManager, parent=None):
+    def __init__(self, graphManager, pyFlowInstance=None):
         super(Canvas, self).__init__()
         self.state = CanvasState.DEFAULT
         self.graphManager = graphManager
         self.graphManager.graphChanged.connect(self.onGraphChanged)
         self.undoStack = QUndoStack(self)
-        self.parent = parent
+        self.pyFlowInstance = pyFlowInstance
         # connect with App class signals
-        self.parent.newFileExecuted.connect(self.onNewFile)
+        self.pyFlowInstance.newFileExecuted.connect(self.onNewFile)
         self.menu = QMenu()
         self.setScene(SceneClass(self))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -360,7 +359,6 @@ class Canvas(QGraphicsView):
         self._maximum_scale = 3.0
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-        #self.setCacheMode(QGraphicsView.CacheBackground)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         # Antialias -- Change to Settings
         self.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -404,6 +402,9 @@ class Canvas(QGraphicsView):
         self.boundingRect = self.rect()
         if self.USETAB:
             self.installEventFilter(self)
+
+    def getApp(self):
+        return self.pyFlowInstance
 
     def onGraphChanged(self, newGraph):
         for node in self.nodes.values():
@@ -490,10 +491,6 @@ class Canvas(QGraphicsView):
         """returns all ui nodes list
         """
         return list(self.nodes.values())
-
-    def getUniqNodeDisplayName(self, name):
-        nodes_names = [n.displayName for n in self.nodes.values()]
-        return getUniqNameFromList(nodes_names, name)
 
     def showNodeBox(self, dataType=None, pinType=None):
         self.node_box.show()
@@ -650,9 +647,18 @@ class Canvas(QGraphicsView):
         assert(None not in allNodes), "Bad nodes!"
         return [i for i in allNodes if i.isSelected()]
 
+    def selectedConnections(self):
+        return [i for i in self.connections.values() if i.isSelected()]
+
     def clearSelection(self):
         for node in self.selectedNodes():
             node.setSelected(False)
+
+        for connection in self.selectedConnections():
+            connection.setSelected(False)
+
+    def killSelectedConnections(self):
+        self.removeEdgeCmd(self.selectedConnections())
 
     def killSelectedNodes(self):
         selectedNodes = self.selectedNodes()
@@ -727,8 +733,9 @@ class Canvas(QGraphicsView):
             if currentInputAction in InputManager()["Canvas.ResetScale"]:
                 self.reset_scale()
 
-            if currentInputAction in InputManager()["Canvas.KillSelectedNodes"]:
+            if currentInputAction in InputManager()["Canvas.KillSelected"]:
                 self.killSelectedNodes()
+                self.killSelectedConnections()
 
             if currentInputAction in InputManager()["Canvas.CopyNodes"]:
                 self.copyNodes()
@@ -935,9 +942,12 @@ class Canvas(QGraphicsView):
         if isinstance(instance, UINodeBase):
             return instance
         node = instance
-        while (isinstance(node, QGraphicsItem) or isinstance(node, QGraphicsWidget) or isinstance(node, QGraphicsProxyWidget)) and node.parentItem() is not None:
+        while (isinstance(node, QGraphicsItem) or isinstance(node, QGraphicsWidget) or isinstance(node, QGraphicsProxyWidget)) and node.parentItem():
             node = node.parentItem()
-        return node
+        if isinstance(node, UINodeBase):
+            return node
+        else:
+            return None
 
     def getReruteNode(self, pos, connection=None):
         nodeClassName = "reroute"
@@ -1061,20 +1071,23 @@ class Canvas(QGraphicsView):
         expandComments = False
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
         currentInputAction = InputAction("temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers)
-        if any([not self.pressed_item, isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
-                (isinstance(self.pressed_item, UINodeBase) or isinstance(self.pressed_item,QtWidgets.QGraphicsWidget)) and node.isCommentNode,
+        if any([not self.pressed_item,
+                isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
+                isinstance(self.pressed_item, UINodeBase) and node.isCommentNode,
+                isinstance(self.pressed_item, QGraphicsWidget) and node.isCommentNode and self.pressed_item.objectName() == "pinLayoutSpacer",
                 isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
-            if (isinstance(node, UINodeBase) or isinstance(self.pressed_item,QtWidgets.QGraphicsWidget)) and (node.isCommentNode or node.resizable):
+            if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(Canvas, self).mousePressEvent(event)
                 self.resizing = node.bResize
-                node.setSelected(False)          
+                node.setSelected(False)
             if not self.resizing:
                 if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
                     self.manipulationMode = CanvasManipulationMode.SELECT
                     self._selectionRect = SelectionRect(graph=self, mouseDownPos=self.mapToScene(event.pos()), modifiers=modifiers)
                     self._selectionRect.selectFullyIntersectedItems = True
                     self._mouseDownSelection = [node for node in self.selectedNodes()]
+                    self._mouseDownConnectionsSelection = [node for node in self.selectedConnections()]
                     if modifiers not in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier]:
                         self.clearSelection()
                 else:
@@ -1249,9 +1262,10 @@ class Canvas(QGraphicsView):
                 nodes = [node for node in self.getAllNodes() if not node.isCommentNode]
             else:
                 nodes = self.getAllNodes()
+
             if modifiers == QtCore.Qt.ControlModifier:
+                # handle nodes
                 for node in nodes:
-                    # if node not in [self.inputsItem,self.outputsItem]:
                     if node in self._mouseDownSelection:
                         if node.isSelected() and self._selectionRect.collidesWithItem(node):
                             node.setSelected(False)
@@ -1264,20 +1278,43 @@ class Canvas(QGraphicsView):
                             if node not in self._mouseDownSelection:
                                 node.setSelected(False)
 
+                # handle connections
+                for wire in self.connections.values():
+                    if wire in self._mouseDownConnectionsSelection:
+                        if wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                            wire.setSelected(False)
+                        elif not wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                            wire.setSelected(True)
+                    else:
+                        if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                            wire.setSelected(True)
+                        elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                            if wire not in self._mouseDownConnectionsSelection:
+                                wire.setSelected(False)
+
             elif modifiers == QtCore.Qt.ShiftModifier:
                 for node in nodes:
-                    # if node not in [self.inputsItem,self.outputsItem]:
                     if not node.isSelected() and self._selectionRect.collidesWithItem(node):
                         node.setSelected(True)
                     elif node.isSelected() and not self._selectionRect.collidesWithItem(node):
                         if node not in self._mouseDownSelection:
                             node.setSelected(False)
 
+                for wire in self.connections.values():
+                    if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        wire.setSelected(True)
+                    elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        if wire not in self._mouseDownConnectionsSelection:
+                            wire.setSelected(False)
+
             elif modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
                 for node in nodes:
-                    # if node not in [self.inputsItem,self.outputsItem]:
                     if self._selectionRect.collidesWithItem(node):
                         node.setSelected(False)
+
+                for wire in self.connections.values():
+                    if QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        wire.setSelected(False)
             else:
                 self.clearSelection()
                 for node in nodes:
@@ -1286,6 +1323,13 @@ class Canvas(QGraphicsView):
                         node.setSelected(True)
                     elif node.isSelected() and not self._selectionRect.collidesWithItem(node):
                         node.setSelected(False)
+
+                for wire in self.connections.values():
+                    if not wire.isSelected() and QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        wire.setSelected(True)
+                    elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
+                        wire.setSelected(False)
+
         elif self.manipulationMode == CanvasManipulationMode.MOVE:
             newPos = self.mapToScene(event.pos())
             scaledDelta = mouseDelta / self.currentViewScale()
@@ -1441,8 +1485,8 @@ class Canvas(QGraphicsView):
 
         painter.fillRect(rect, QtGui.QBrush(editableStyleSheet().CanvasBgColor))
 
-        left = int(rect.left()) - (int(rect.left()) % self._gridSizeFine)
-        top = int(rect.top()) - (int(rect.top()) % self._gridSizeFine)
+        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
+        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
 
         if lod < 3:
             # Draw horizontal fine lines
@@ -1450,7 +1494,7 @@ class Canvas(QGraphicsView):
             y = float(top)
             while y < float(rect.bottom()):
                 gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
-                y += self._gridSizeFine
+                y += editableStyleSheet().GridSizeFine[0]
             painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
             painter.drawLines(gridLines)
 
@@ -1459,13 +1503,13 @@ class Canvas(QGraphicsView):
             x = float(left)
             while x < float(rect.right()):
                 gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
-                x += self._gridSizeFine
+                x += editableStyleSheet().GridSizeFine[0]
             painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
             painter.drawLines(gridLines)
 
         # Draw thick grid
-        left = int(rect.left()) - (int(rect.left()) % self._gridSizeCourse)
-        top = int(rect.top()) - (int(rect.top()) % self._gridSizeCourse)
+        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeHuge[0])
+        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeHuge[0])
 
         # Draw vertical thick lines
         gridLines = []
@@ -1473,7 +1517,7 @@ class Canvas(QGraphicsView):
         x = left
         while x < rect.right():
             gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
-            x += self._gridSizeCourse
+            x += editableStyleSheet().GridSizeHuge[0]
         painter.drawLines(gridLines)
 
         # Draw horizontal thick lines
@@ -1482,28 +1526,29 @@ class Canvas(QGraphicsView):
         y = top
         while y < rect.bottom():
             gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
-            y += self._gridSizeCourse
+            y += editableStyleSheet().GridSizeHuge[0]
         painter.drawLines(gridLines)
+        if editableStyleSheet().DrawNumbers[0] >= 1:
+            # draw numbers
+            scale = self.currentViewScale()
+            f = painter.font()
+            f.setPointSize(6 / min(scale, 1))
+            f.setFamily("Consolas")
+            painter.setFont(f)
+            y = float(top)
+            
+            while y < float(rect.bottom()):
+                y += editableStyleSheet().GridSizeFine[0]
+                if abs(y) % 100 == 0 and y > rect.top() + 30:
+                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
+                    painter.drawText(rect.left(), y - 1.0, str(y))
 
-        # draw numbers
-        scale = self.currentViewScale()
-        f = painter.font()
-        f.setPointSize(6 / min(scale, 1))
-        f.setFamily("Consolas")
-        painter.setFont(f)
-        y = float(top)
-        while y < float(rect.bottom()):
-            y += self._gridSizeFine
-            if abs(y) % 100 == 0 and y > rect.top() + 30:
-                painter.setPen(QtGui.QPen(editableStyleSheet().CanvastextColor))
-                painter.drawText(rect.left(), y - 1.0, str(y))
-
-        x = float(left)
-        while x < rect.right():
-            x += self._gridSizeCourse
-            if abs(x) % 100 == 0 and x > rect.left() + 30:
-                painter.setPen(QtGui.QPen(editableStyleSheet().CanvastextColor))
-                painter.drawText(x, rect.top() + painter.font().pointSize(), str(x))
+            x = float(left)
+            while x < rect.right():
+                x += editableStyleSheet().GridSizeHuge[0]
+                if abs(x) % 100 == 0 and x > rect.left() + 30:
+                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
+                    painter.drawText(x, rect.top() + painter.font().pointSize(), str(x))
 
     def _createNode(self, jsonTemplate):
         # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones

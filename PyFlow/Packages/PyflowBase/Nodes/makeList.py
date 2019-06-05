@@ -9,7 +9,7 @@ class makeList(NodeBase):
         self.listData.enableOptions(PinOptions.AllowMultipleConnections)
         self.listData.enableOptions(PinOptions.ArraySupported)
         self.listData.disableOptions(PinOptions.SupportsOnlyArrays)
-        self.listData.changeTypeOnConnection = False
+        self.listData.disableOptions(PinOptions.ChangeTypeOnConnection)
 
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')

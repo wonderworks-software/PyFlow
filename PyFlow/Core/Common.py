@@ -415,18 +415,21 @@ class PinOptions(Flag):
     ArraySupported = auto()
     SupportsOnlyArrays = auto()
     AllowMultipleConnections = auto()
+    ChangeTypeOnConnection = auto()
     RenamingEnabled = auto()
     Dynamic = auto()
     AlwaysPushDirty = auto()
     Storable = auto()
 
-##Used for determine Pin Structure Type
+
+# Used for determine Pin Structure Type
 class PinStructure(IntEnum):
     Single = 0
     Array = 1
     Multi = 2
 
-## Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes
+
+# Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes
 class PinSelectionGroup(IntEnum):
     Inputs = 0
     Outputs = 1

@@ -8,6 +8,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QMenu
+from Qt.QtWidgets import QStyle
 
 from PyFlow.UI.Utils.Settings import Colors
 from PyFlow.UI.Canvas.UICommon import NodeDefaults
@@ -18,6 +19,9 @@ from PyFlow.Core.Common import *
 class UIConnection(QGraphicsPathItem):
     def __init__(self, source, destination, canvas):
         QGraphicsPathItem.__init__(self)
+        self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
+        self.setAcceptHoverEvents(True)
+        self.setFlag(QGraphicsPathItem.ItemIsSelectable)
         self._menu = QMenu()
         self.actionDisconnect = self._menu.addAction("Disconnect")
         self.actionDisconnect.triggered.connect(self.kill)
@@ -27,8 +31,6 @@ class UIConnection(QGraphicsPathItem):
         self.destination = weakref.ref(destination)
         self.drawSource = self.source()
         self.drawDestination = self.destination()
-        self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
-        self.setAcceptHoverEvents(True)
 
         # Overrides for getting endpoints positions
         # if None - pin centers will be used
@@ -43,6 +45,7 @@ class UIConnection(QGraphicsPathItem):
         self.setZValue(NodeDefaults().Z_LAYER - 1)
 
         self.color = self.source().color()
+        self.selectedColor = Colors.Blue
 
         self.thickness = 1
         if source.isExec():
@@ -62,6 +65,9 @@ class UIConnection(QGraphicsPathItem):
         self.destination().uiConnectionList.append(self)
         self.source().pinConnected(self.destination())
         self.destination().pinConnected(self.source())
+
+    def setSelected(self, value):
+        super(UIConnection, self).setSelected(value)
 
     def isUnderCollapsedComment(self):
         srcNode = self.source().owningNode()
@@ -134,6 +140,12 @@ class UIConnection(QGraphicsPathItem):
                 self.thickness = 2
                 self.pen.setWidthF(self.thickness)
                 self.update()
+
+        if self.isSelected():
+            self.pen.setColor(self.selectedColor)
+        else:
+            self.pen.setColor(self.color)
+        self.update()
 
     def contextMenuEvent(self, event):
         self._menu.exec_(event.screenPos())
@@ -248,6 +260,9 @@ class UIConnection(QGraphicsPathItem):
         self.canvasRef().removeConnection(self)
 
     def paint(self, painter, option, widget):
+
+        option.state &= ~QStyle.State_Selected
+
         lod = self.canvasRef().getLodValueFromCurrentScale(5)
 
         self.setPen(self.pen)

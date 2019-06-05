@@ -47,7 +47,6 @@ class UISetVarNode(UINodeBase):
         self.onVarNameChanged(self.var.name)
 
     def onVarNameChanged(self, newName):
-        self.displayName = 'Set {}'.format(newName)
         self.setName(newName)
         self.updateNodeShape()
 

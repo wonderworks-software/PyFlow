@@ -61,7 +61,6 @@ class PinBase(IPin):
         self._isList = False
         self._alwaysList = False
         self._alwaysSingle = False
-        self.changeTypeOnConnection = False
         self._defaultSupportedDataTypes = self._supportedDataTypes = self.supportedDataTypes()
 
     @property
@@ -146,6 +145,30 @@ class PinBase(IPin):
     def getWrapper(self):
         return self._wrapper
 
+    def deserialize(self, jsonData):
+        self.setName(jsonData["name"])
+        self.uid = uuid.UUID(jsonData['uuid'])
+
+        for opt in PinOptions:
+            if opt.value in jsonData["options"]:
+                self.enableOptions(opt)
+            else:
+                self.disableOptions(opt)
+
+        self.changeStructure(jsonData["structure"])
+        self._alwaysList = jsonData['alwaysList']
+        self._alwaysSingle = jsonData['alwaysSingle']
+
+        try:
+            self.setData(json.loads(jsonData['value'], cls=self.jsonDecoderClass()))
+        except:
+            self.setData(self.defaultValue())
+
+        if jsonData['bDirty']:
+            self.setDirty()
+        else:
+            self.setClean()
+
     # ISerializable interface
     def serialize(self):
 
@@ -168,7 +191,6 @@ class PinBase(IPin):
             'bDirty': self.dirty,
             'linkedTo': list(self.linkedTo),
             'options': [i.value for i in PinOptions if self.optionEnabled(i)],
-            'changeType': self.changeTypeOnConnection,
             'structure': int(self._currStructure),
             'alwaysList': self._alwaysList,
             'alwaysSingle': self._alwaysSingle

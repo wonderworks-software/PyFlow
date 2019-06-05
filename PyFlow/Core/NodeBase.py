@@ -30,6 +30,8 @@ class NodeBase(INode):
 
         self.killed = Signal()
         self.tick = Signal(float)
+        self.errorOccured = Signal(object)
+        self.errorCleared = Signal()
 
         self._uid = uuid.uuid4() if uid is None else uid
         self.graph = None
@@ -62,9 +64,11 @@ class NodeBase(INode):
 
     def clearError(self):
         self._lastError = None
+        self.errorCleared.send()
 
     def setError(self, err):
         self._lastError = str(err)
+        self.errorOccured.send(self._lastError)
 
     @property
     def packageName(self):
@@ -235,7 +239,7 @@ class NodeBase(INode):
         return self.name
 
     def setName(self, name):
-        self.name = str(name)
+        self.name = self.graph().graphManager.getUniqNodeName(str(name))
 
     def useCache(self):
         # if cached results exists - return them without calling compute
@@ -270,7 +274,11 @@ class NodeBase(INode):
     def processNode(self, *args, **kwargs):
         if self.bCacheEnabled:
             if not self.useCache():
-                self.compute()
+                try:
+                    self.compute()
+                    self.clearError()
+                except Exception as e:
+                    self.setError(e)
             self.afterCompute()
         else:
             self.compute()
@@ -318,6 +326,7 @@ class NodeBase(INode):
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
         p.structureType = structure
         p.group = group
+
         if structure == PinStructure.Array:
             p.initAsArray(True)
         elif structure == PinStructure.Multi:
@@ -325,9 +334,13 @@ class NodeBase(INode):
 
         if foo:
             p.onExecute.connect(foo, weak=False)
+
         if defaultValue is not None:
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
+        else:
+            p.setDefaultValue(getPinDefaultValueByType(dataType))
+
         if dataType == "AnyPin" and allowedPins:
             def supportedDataTypes():
                 return allowedPins
@@ -339,20 +352,23 @@ class NodeBase(INode):
             p.updatestructConstraint(structConstraint)
         return p
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group=""):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group=""):
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         p.structureType = structure
         p.group = group
+
         if structure == PinStructure.Array:
             p.initAsArray(True)
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
-        if foo:
-            p.onExecute.connect(foo, weak=False)
+
         if defaultValue is not None:
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
+        else:
+            p.setDefaultValue(getPinDefaultValueByType(dataType))
+
         if dataType == "AnyPin" and allowedPins:
             def supportedDataTypes():
                 return allowedPins
@@ -444,27 +460,7 @@ class NodeBase(INode):
                     continue
 
                 pin = self.getPin(str(inpJson['name']), PinSelectionGroup.Inputs)
-                pin.uid = uuid.UUID(inpJson['uuid'])
-                if "currDataType" in inpJson:
-                    pin.setType(inpJson["currDataType"])
-                pin.changeTypeOnConnection = inpJson['changeType']
-                for opt in PinOptions:
-                    if opt.value in inpJson["options"]:
-                        pin.enableOptions(opt)
-                    else:
-                        pin.disableOptions(opt)
-                pin.changeStructure(inpJson["structure"])
-                pin._alwaysList = inpJson['alwaysList']
-                pin._alwaysSingle = inpJson['alwaysSingle']
-                try:
-                    pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
-                except:
-                    pin.setData(pin.defaultValue())
-
-                if inpJson['bDirty']:
-                    pin.setDirty()
-                else:
-                    pin.setClean()
+                pin.deserialize(inpJson)
 
             for outJson in jsonTemplate['outputs']:
                 dynamicEnabled = PinOptions.Dynamic.value in outJson["options"]
@@ -473,26 +469,7 @@ class NodeBase(INode):
                     continue
 
                 pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
-                pin.uid = uuid.UUID(outJson['uuid'])
-                if "currDataType" in outJson:
-                    pin.setType(outJson["currDataType"])
-                pin.changeTypeOnConnection = outJson['changeType']
-                for opt in PinOptions:
-                    if opt.value in outJson["options"]:
-                        pin.enableOptions(opt)
-                    else:
-                        pin.disableOptions(opt)
-                pin.changeStructure(outJson["structure"])
-                pin._alwaysList = outJson['alwaysList']
-                pin._alwaysSingle = outJson['alwaysSingle']
-                try:
-                    pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
-                except:
-                    pin.setData(pin.defaultValue())
-                if outJson['bDirty']:
-                    pin.setDirty()
-                else:
-                    pin.setClean()
+                pin.deserialize(outJson)
 
             # store data for wrapper
             if "wrapper" in jsonTemplate:
@@ -588,7 +565,7 @@ class NodeBase(INode):
         # create execs if callable
         if nodeType == NodeTypes.Callable:
             inputExec = raw_inst.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
-            outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin', None)
+            outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
             raw_inst.bCallable = True
             raw_inst.bCacheEnabled = False
 
@@ -601,8 +578,6 @@ class NodeBase(INode):
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
                 p.disableOptions(returnPinOptionsToDisable)
-            if retConstraint is None:
-                p.changeTypeOnConnection = False
             if not p.isArray() and p.optionEnabled(PinOptions.ArraySupported):
                 p.structureType = PinStructure.Multi
 
@@ -643,8 +618,6 @@ class NodeBase(INode):
                     outRef.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
                     outRef.disableOptions(pinOptionsToDisable)
-                if constraint is None and outRef.isAny():
-                    outRef.changeTypeOnConnection = False
                 if not outRef.isArray() and outRef.optionEnabled(PinOptions.ArraySupported):
                     outRef.structureType = PinStructure.Multi
                 refs.append(outRef)
@@ -675,8 +648,6 @@ class NodeBase(INode):
                     inp.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
                     inp.disableOptions(pinOptionsToDisable)
-                if constraint is None and inp.isAny():
-                    inp.changeTypeOnConnection = False
                 if not inp.isArray() and inp.optionEnabled(PinOptions.ArraySupported):
                     inp.structureType = PinStructure.Multi
 

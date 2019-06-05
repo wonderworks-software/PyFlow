@@ -19,6 +19,7 @@ from PyFlow import GET_PACKAGES
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
 
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 class NodeBoxLineEdit(QLineEdit):
     def __init__(self, parent, events=True):
@@ -29,10 +30,10 @@ class NodeBoxLineEdit(QLineEdit):
         self.setLocale(QtCore.QLocale(QtCore.QLocale.English,
                                       QtCore.QLocale.UnitedStates))
         self.setObjectName("le_nodes")
-        style = "background-color: rgb(80, 80, 80);" +\
-                "border-radius: 2px;" +\
+        style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
-                "border-color: black; border-style: outset; border-width: 1px;"
+                " border-style: outset;"+\
+                " border-width: 1px;"
         self.setStyleSheet(style)
         self.setPlaceholderText("enter node name..")
 
@@ -40,18 +41,17 @@ class NodeBoxLineEdit(QLineEdit):
 class NodeBoxTreeWidget(QTreeWidget):
     def __init__(self, parent, useDragAndDrop=True):
         super(NodeBoxTreeWidget, self).__init__(parent)
-        style = "background-color: rgb(40, 40, 40);" +\
-                "selection-background-color: rgb(50, 50, 50);" +\
-                "border-radius: 2px;" +\
+        style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
-                "border-color: black; border-style: outset; border-width: 1px;"
+                "border-style: outset;"+\
+                " border-width: 1px;"
         self.setStyleSheet(style)
         self.setParent(parent)
         self.setFrameShape(QFrame.NoFrame)
         self.setFrameShadow(QFrame.Sunken)
         self.setObjectName("tree_nodes")
         self.setSortingEnabled(True)
-        self.sortByColumn(0,QtCore.Qt.AscendingOrder)
+        self.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.setColumnCount(0)
         self.setHeaderHidden(True)
         self.bUseDragAndDrop = useDragAndDrop
@@ -94,7 +94,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                     rootFolderItem.setFlags(QtCore.Qt.ItemIsEnabled)
                     rootFolderItem.setText(0, folderName)
                     rootFolderItem.setBackground(
-                        folderId, QtGui.QColor(80, 85, 80))
+                        folderId, editableStyleSheet().BgColorBright)
                     self.categoryPaths[categoryPath] = rootFolderItem
             else:
                 parentCategoryPath = categoryPath
@@ -106,7 +106,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                     childCategoryItem.bCategory = True
                     childCategoryItem.setText(0, folderName)
                     childCategoryItem.setBackground(
-                        0, QtGui.QColor(80, 85, 80))
+                        0, editableStyleSheet().BgColorBright.lighter(150))
                     self.categoryPaths[categoryPath] = childCategoryItem
         # create node under constructed folder
         nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
@@ -198,8 +198,13 @@ class NodeBoxTreeWidget(QTreeWidget):
             if dataType is not None:
                 for categoryItem in self.categoryPaths.values():
                     categoryItem.setExpanded(True)
+<<<<<<< HEAD
         try: self.sortItems(0,QtCore.Qt.SortOrder.AscendingOrder)
         except: self.sortItems(0,QtCore.Qt.AscendingOrder)
+=======
+            self.sortItems(0, QtCore.Qt.AscendingOrder)
+
+>>>>>>> 04d5fb137048885c1a4692013da51148f7be9109
     def keyPressEvent(self, event):
         super(NodeBoxTreeWidget, self).keyPressEvent(event)
         key = event.key()
@@ -226,18 +231,22 @@ class NodeBoxTreeWidget(QTreeWidget):
 
             nodeClassName = self.currentItem().text(0)
             name = nodeClassName
-            pos = canvas.mapToScene(canvas.mouseReleasePos)
-            nodeTemplate = NodeBase.jsonTemplate()
-            nodeTemplate['package'] = packageName
-            nodeTemplate['lib'] = libName
-            nodeTemplate['type'] = pressed_text
-            nodeTemplate['name'] = name
-            nodeTemplate['x'] = pos.x()
-            nodeTemplate['y'] = pos.y()
-            nodeTemplate['meta']['label'] = nodeClassName
-            nodeTemplate['uuid'] = str(uuid.uuid4())
+            try:
+                # TODO: replace position gathering method to canvas center
+                pos = canvas.mapToScene(canvas.mouseReleasePos)
+                nodeTemplate = NodeBase.jsonTemplate()
+                nodeTemplate['package'] = packageName
+                nodeTemplate['lib'] = libName
+                nodeTemplate['type'] = pressed_text
+                nodeTemplate['name'] = name
+                nodeTemplate['x'] = pos.x()
+                nodeTemplate['y'] = pos.y()
+                nodeTemplate['meta']['label'] = nodeClassName
+                nodeTemplate['uuid'] = str(uuid.uuid4())
 
-            canvas.createNode(nodeTemplate)
+                canvas.createNode(nodeTemplate)
+            except:
+                pass
 
     def mousePressEvent(self, event):
         super(NodeBoxTreeWidget, self).mousePressEvent(event)
@@ -288,6 +297,15 @@ class NodeBoxTreeWidget(QTreeWidget):
         else:
             canvas.createNode(jsonTemplate)
 
+    def update(self):
+        for category in self.categoryPaths.values():
+            if not category.parent():
+                category.setBackground(
+                    0, editableStyleSheet().BgColorBright)
+            else:
+                category.setBackground(
+                    0, editableStyleSheet().BgColorBright.lighter(150))                
+        super(NodeBoxTreeWidget, self).update()
 
 class NodesBox(QWidget):
     """doc string for NodesBox"""

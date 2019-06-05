@@ -57,7 +57,7 @@ class VariablesWidget(QWidget, Ui_Form):
         self.pbNewVar.clicked.connect(self.createVariable)
         self.listWidget = VariablesListWidget()
         self.lytListWidget.addWidget(self.listWidget)
-        self.canvas.parent.newFileExecuted.connect(self.actualize)
+        self.canvas.getApp().newFileExecuted.connect(self.actualize)
 
     def actualize(self):
         self.clear()
@@ -86,7 +86,7 @@ class VariablesWidget(QWidget, Ui_Form):
     def createVariableWrapperAndAddToList(self, rawVariable):
         uiVariable = UIVariable(rawVariable, self)
         item = QListWidgetItem(self.listWidget)
-        item.setSizeHint(QtCore.QSize(60, 38))
+        item.setSizeHint(QtCore.QSize(60, 20))
         self.listWidget.setItemWidget(item, uiVariable)
         return uiVariable
 
