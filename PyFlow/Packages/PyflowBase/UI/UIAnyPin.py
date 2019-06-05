@@ -25,13 +25,13 @@ class UIAnyPin(UIPinBase):
 
     def dataTypeBeenSet(self, *args, **kwargs):
         self.prevColor = None
-        self.prevDataType = None        
+        self.prevDataType = None
         self.setDefault(self._rawPin.defColor())
 
     def checkFree(self, checked=[], selfChek=True):
         return self._rawPin.checkFree(checked, selfChek)
 
-    def disconnect(self,other):
+    def disconnect(self, other):
         self.prevColor = None
         self.prevDataType = None
 

@@ -5,10 +5,10 @@ import json
 from PyFlow import findPinClassByType
 from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Common import *
-from PyFlow.Core.Interfaces import ISerializable
+from PyFlow.Core.Interfaces import IItemBase
 
 
-class Variable(ISerializable):
+class Variable(IItemBase):
     def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, uid=None):
         super(Variable, self).__init__()
         # signals
@@ -30,6 +30,16 @@ class Variable(ISerializable):
         self._uid = uuid.uuid4() if uid is None else uid
         assert(isinstance(self._uid, uuid.UUID))
         self.updatePackageName()
+        self._uiWrapper = None
+
+    def getWrapper(self):
+        if self._uiWrapper is not None:
+            return self._uiWrapper()
+        return None
+
+    def setWrapper(self, wrapper):
+        if self._uiWrapper is None:
+            self._uiWrapper = weakref.ref(wrapper)
 
     def location(self):
         return self.graph.location()

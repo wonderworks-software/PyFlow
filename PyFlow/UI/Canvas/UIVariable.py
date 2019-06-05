@@ -108,6 +108,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
 
         QtCore.QMetaObject.connectSlotsByName(self)
         self.setName(self._rawVariable.name)
+        self._rawVariable.setWrapper(self)
 
     def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
@@ -155,12 +156,14 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         if len(refs) > 0:
             item, accepted = QInputDialog.getItem(None, 'Decide!', 'What to do with getters and setters in canvas?', ['kill', 'leave'], editable=False)
             if accepted:
+                self.variablesWidget.killVar(self)
                 if item == 'kill':
-                    self.variablesWidget.killVar(self)
+                    for i in refs:
+                        i.kill()
                 elif item == 'leave':
                     # mark node as invalid
-                    # TODO: For future. Like in ue4, if variable is removed, it can be recreated from node (e.g. promote to variable)
-                    print('leave')
+                    for i in refs:
+                        i.setError("Undefined variable")
         else:
             self.variablesWidget.killVar(self)
 

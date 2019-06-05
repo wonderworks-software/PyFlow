@@ -11,6 +11,8 @@ from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 InteractiveColor = editableStyleSheet().MainColor
+InvalidNodePenColor = Colors.Red
+
 
 # Determines how to paint the node
 class NodePainter(object):
@@ -23,7 +25,7 @@ class NodePainter(object):
             width = node.geometry().width()
             rf = NodeDefaults().CORNERS_ROUND_FACTOR
             pen.setColor(InteractiveColor)
-            pen.setStyle(node.opt_pen_selected_type)
+            pen.setStyle(node.optPenSelectedType)
             painter.setPen(pen)
 
             # left strip
@@ -75,7 +77,7 @@ class NodePainter(object):
 
         if option.state & QStyle.State_Selected:
             pen.setColor(InteractiveColor)
-            pen.setStyle(node.opt_pen_selected_type)
+            pen.setStyle(node.optPenSelectedType)
             pen.setWidth(pen.width() * 1.5)
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
@@ -91,6 +93,7 @@ class NodePainter(object):
         SWITCH_LOD = 3
 
         color = node.color
+
         color.setAlpha(230)
         if node.isSelected():
             color = color.lighter(150)
@@ -137,11 +140,16 @@ class NodePainter(object):
             else:
                 painter.fillRect(lr, headColor)
 
-        if option.state & QStyle.State_Selected:
-            # pen.setColor(Colors.Yellow)
-            pen.setColor(InteractiveColor)
-            pen.setStyle(node.opt_pen_selected_type)
+        if not node.isValid():
+            pen.setColor(InvalidNodePenColor)
+            pen.setStyle(node.optPenErrorType)
             pen.setWidth(pen.width() * 1.5)
+        else:
+            if option.state & QStyle.State_Selected:
+                pen.setColor(InteractiveColor)
+                pen.setStyle(node.optPenSelectedType)
+                pen.setWidth(pen.width() * 1.5)
+
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
         if lod < SWITCH_LOD:
@@ -168,7 +176,7 @@ class NodePainter(object):
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
             pen.setColor(InteractiveColor)
-            pen.setStyle(node.opt_pen_selected_type)
+            pen.setStyle(node.optPenSelectedType)
         painter.setPen(pen)
         painter.drawRoundedRect(node.boundingRect(), NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
         painter.setFont(node.nodeNameFont)
@@ -197,7 +205,7 @@ class NodePainter(object):
         if option.state & QStyle.State_Selected:
             # pen.setColor(Colors.Yellow)
             pen.setColor(InteractiveColor)
-            pen.setStyle(node.opt_pen_selected_type)
+            pen.setStyle(node.optPenSelectedType)
             pen.setWidth(width * 1.5)
         painter.setPen(pen)
         painter.drawEllipse(node.boundingRect().center(), node.boundingRect(

@@ -272,6 +272,9 @@ class NodeBase(INode):
         self.cache[args] = cache
 
     def processNode(self, *args, **kwargs):
+        if not self.isValid():
+            return
+
         if self.bCacheEnabled:
             if not self.useCache():
                 try:

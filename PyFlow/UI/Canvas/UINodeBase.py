@@ -145,13 +145,16 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._rawNode.setWrapper(self)
         self._rawNode.killed.connect(self.kill)
         self._rawNode.tick.connect(self.Tick)
+        self._rawNode.errorOccured.connect(self.onNodeErrorOccured)
+        self._rawNode.errorCleared.connect(self.onNodeErrorCleared)
 
         self.custom_widget_data = {}
 
         # GUI Layout
         self.opt_node_base_color = Colors.NodeBackgrounds
         self.opt_selected_pen_color = Colors.NodeSelectedPenColor
-        self.opt_pen_selected_type = QtCore.Qt.SolidLine
+        self.optPenSelectedType = QtCore.Qt.SolidLine
+        self.optPenErrorType = QtCore.Qt.DashLine
         self._collapsed = False
         self._left_stretch = 0
         self.color = color
@@ -259,13 +262,18 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
         self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
 
+    def isValid(self):
+        return self._rawNode.isValid()
+
     def onNodeErrorOccured(self, *args, **kwargs):
         # change node ui to invalid
-        print("NODE ERROR", args)
+        errorString = args[0]
+        print("Node error:", errorString)
+        self.setToolTip(errorString)
 
     def onNodeErrorCleared(self, *args, **kwargs):
         # restore node ui to clean
-        pass
+        self.setToolTip(self.description())
 
     def toggleCollapsed(self):
         self.collapsed = not self.collapsed

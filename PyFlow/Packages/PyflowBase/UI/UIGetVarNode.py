@@ -36,6 +36,15 @@ class UIGetVarNode(UINodeBase):
         outPin = list(self._rawNode.pins)[0]
         outPin.setName(self.var.name)
 
+        # do not allow changing data type from node
+        # change it using variable's properties
+        pinWrapper = outPin.getWrapper()
+        if pinWrapper:
+            pinWrapper().setMenuItemEnabled("InitAs", False)
+            # do not allow renaming pin
+            outPin.disableOptions(PinOptions.RenamingEnabled)
+            pinWrapper().syncRenamable()
+
     def serialize(self):
         template = UINodeBase.serialize(self)
         template['meta']['var'] = self.var.serialize()
@@ -45,8 +54,9 @@ class UIGetVarNode(UINodeBase):
         # recreate pin
         currentPinName = self._rawNode.out.name
         recreatedPin = self._rawNode.recreateOutput(dataType)
-        self.UIOut = self._createUIPinWrapper(self._rawNode.out)
         recreatedPin.setName(currentPinName)
+        recreatedPin.disableOptions(PinOptions.RenamingEnabled)
+        self.UIOut = self._createUIPinWrapper(self._rawNode.out)
         self.updateNodeShape()
 
     def onVarNameChanged(self, newName):
