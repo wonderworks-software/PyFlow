@@ -44,11 +44,6 @@ class UIPythonNode(UINodeBase):
 
         self.fileHandle = None
         self.currentEditorProcess = None
-        self.pathsAction = self._menu.addAction("show paths")
-        self.pathsAction.triggered.connect(self.printPaths)
-
-    def printPaths(self):
-        print(UIPythonNode.watcher.files())
 
     def mouseDoubleClickEvent(self, event):
         super(UIPythonNode, self).mouseDoubleClickEvent(event)
