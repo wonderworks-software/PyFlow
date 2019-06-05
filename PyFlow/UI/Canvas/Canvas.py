@@ -508,6 +508,8 @@ class Canvas(QGraphicsView):
         self._UIConnections.clear()
         self.node_box.hide()
         self.node_box.lineEdit.clear()
+        for node in self.nodes.values():
+            node.shoutDown()
 
     def mouseDoubleClickEvent(self, event):
         QGraphicsView.mouseDoubleClickEvent(self, event)

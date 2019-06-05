@@ -98,17 +98,20 @@ class UIPythonNode(UINodeBase):
                 self.updateNodeShape()
                 self.updateNodeHeaderColor()
                 self.setHeaderHtml(self.getName())
-                print(self.getName(), "successfully compiled")
-            except Exception as e:
-                print("Failed to compile node", self.getName(), "Error:", e)
+            except:
+                pass
+
+    def shoutDown(self):
+        if self.fileHandle is not None:
+            self.fileHandle.close()
 
     def kill(self, *args, **kwargs):
         try:
             if self.fileHandle is not None:
                 self.fileHandle.close()
             os.remove(self._filePath)
-        except Exception as e:
-            print(e)
+        except:
+            pass
         super(UIPythonNode, self).kill()
 
     def onEdit(self):

@@ -415,7 +415,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         settings.sync()
 
         # remove temp directory
-        shutil.rmtree(self.currentTempDir, ignore_errors=True)
+        shutil.rmtree(self.currentTempDir)
 
         QMainWindow.closeEvent(self, event)
 

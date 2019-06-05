@@ -342,6 +342,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         super(QGraphicsWidget, self).setGeometry(rect)
         self.setPos(rect.topLeft())
 
+    def setError(self, errorString):
+        self._rawNode.setError(errorString)
+
+    def clearError(self):
+        self._rawNode.clearError()
+
+    def shoutDown(self):
+        pass
+
     @property
     def uid(self):
         return self._rawNode._uid

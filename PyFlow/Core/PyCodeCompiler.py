@@ -36,8 +36,8 @@ class Py3CodeCompiler(ICodeCompiler):
     def __init__(self):
         super(Py3CodeCompiler, self).__init__()
 
-    def compile(self, code):
-        codeObject = compile(code, "fake", "exec")
+    def compile(self, code, moduleName="fake"):
+        codeObject = compile(code, moduleName, "exec")
         mem = {}
         exec(codeObject, mem)
         return mem

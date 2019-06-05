@@ -117,6 +117,7 @@ class GeneralPreferences(CategoryWidgetBase):
 
     def onShow(self, settings):
         self.lePythonEditor.setText(settings.value("EditorCmd"))
+        self.tempFilesDir.setText(settings.value("TempFilesDir"))
 
 
 class ThemePreferences(CategoryWidgetBase):

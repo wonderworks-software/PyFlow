@@ -30,7 +30,7 @@ class pythonNode(NodeBase):
         try:
             self._nodeData = codeString
             # compile and get symbols
-            mem = Py3CodeCompiler().compile(codeString)
+            mem = Py3CodeCompiler().compile(codeString, self.getName())
 
             # clear node pins
             for i in list(self.inputs.values()):
@@ -51,8 +51,9 @@ class pythonNode(NodeBase):
 
             self.compute = MethodType(nodeCompute, self)
             self.bCallable = self.isCallable()
+            self.clearError()
         except Exception as e:
-            print(e)
+            self.setError(str(e))
 
     @staticmethod
     def pinTypeHints():
