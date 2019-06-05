@@ -730,7 +730,7 @@ class Canvas(QGraphicsView):
             if currentInputAction in InputManager()["Canvas.ResetScale"]:
                 self.reset_scale()
 
-            if currentInputAction in InputManager()["Canvas.KillSelectedNodes"]:
+            if currentInputAction in InputManager()["Canvas.KillSelected"]:
                 self.killSelectedNodes()
                 self.killSelectedConnections()
 

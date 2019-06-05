@@ -45,7 +45,7 @@ class ConfigManager(object):
 
         InputManager().registerAction(InputAction(name="Canvas.Undo", actionType=InputActionType.Keyboard, group="Editing", modifiers=QtCore.Qt.ControlModifier, key=QtCore.Qt.Key_Z))
         InputManager().registerAction(InputAction(name="Canvas.Redo", actionType=InputActionType.Keyboard, group="Editing", modifiers=QtCore.Qt.ControlModifier, key=QtCore.Qt.Key_Y))
-        InputManager().registerAction(InputAction(name="Canvas.KillSelectedNodes", actionType=InputActionType.Keyboard, group="Editing", key=QtCore.Qt.Key_Delete))
+        InputManager().registerAction(InputAction(name="Canvas.KillSelected", actionType=InputActionType.Keyboard, group="Editing", key=QtCore.Qt.Key_Delete))
         InputManager().registerAction(InputAction(name="Canvas.CopyNodes", actionType=InputActionType.Keyboard, group="Editing", key=QtCore.Qt.Key_C, modifiers=QtCore.Qt.ControlModifier))
         InputManager().registerAction(InputAction(name="Canvas.DragCopyNodes", actionType=InputActionType.Mouse, group="Editing", mouse=QtCore.Qt.MouseButton.LeftButton, modifiers=QtCore.Qt.AltModifier))
         InputManager().registerAction(InputAction(name="Canvas.DragCopyNodes", actionType=InputActionType.Mouse, group="Editing", mouse=QtCore.Qt.MouseButton.MiddleButton, modifiers=QtCore.Qt.AltModifier))
