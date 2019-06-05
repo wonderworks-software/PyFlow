@@ -333,15 +333,15 @@ class Canvas(QGraphicsView):
 
     USETAB = True
 
-    def __init__(self, graphManager, parent=None):
+    def __init__(self, graphManager, pyFlowInstance=None):
         super(Canvas, self).__init__()
         self.state = CanvasState.DEFAULT
         self.graphManager = graphManager
         self.graphManager.graphChanged.connect(self.onGraphChanged)
         self.undoStack = QUndoStack(self)
-        self.parent = parent
+        self.pyFlowInstance = pyFlowInstance
         # connect with App class signals
-        self.parent.newFileExecuted.connect(self.onNewFile)
+        self.pyFlowInstance.newFileExecuted.connect(self.onNewFile)
         self.menu = QMenu()
         self.setScene(SceneClass(self))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -359,7 +359,6 @@ class Canvas(QGraphicsView):
         self._maximum_scale = 3.0
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-        #self.setCacheMode(QGraphicsView.CacheBackground)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         # Antialias -- Change to Settings
         self.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -405,7 +404,7 @@ class Canvas(QGraphicsView):
             self.installEventFilter(self)
 
     def getApp(self):
-        return self.parent
+        return self.pyFlowInstance
 
     def onGraphChanged(self, newGraph):
         for node in self.nodes.values():
