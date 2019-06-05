@@ -114,7 +114,7 @@ class UIPythonNode(UINodeBase):
     def onEdit(self):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
         editCmd = settings.value("Preferences/General/EditorCmd")
-        tempFilesDir = settings.value("Preferences/General/TempFilesDir")
+        tempFilesDir = self.canvasRef().getApp().getTempDirectory()
 
         if self._filePath == "":
             # if no file assotiated - create one

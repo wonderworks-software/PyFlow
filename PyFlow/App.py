@@ -6,6 +6,8 @@ from time import clock
 import pkgutil
 import uuid
 import shutil
+from string import ascii_letters
+import random
 
 from Qt import QtGui
 from Qt import QtCore
@@ -53,23 +55,12 @@ STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 EDITOR_TARGET_FPS = 120
 
 
-def open_file(filename):
-    if sys.platform == "win32":
-        os.startfile(filename)
-    else:
-        opener = "open" if sys.platform == "darwin" else "xdg-open"
-        subprocess.call([opener, filename])
-
-
-class PluginType:
-    pNode = 0
-    pCommand = 1
-    pFunctionLibrary = 2
-    pPin = 3
-
-
-def _implementPlugin(name, pluginType):
-    pass
+def generateRandomString(numSymbolds=5):
+    result = ""
+    for i in range(numSymbolds):
+        letter = random.choice(ascii_letters)
+        result += letter
+    return result
 
 
 def getOrCreateMenu(menuBar, title):
@@ -91,6 +82,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.setupUi(self)
         self.setWindowIcon(QtGui.QIcon(":/LogoBpApp.png"))
         self._tools = set()
+        self.currentTempDir = ""
 
         self.preferencesWindow = PreferencesWindow(self)
         self.graphManager = GraphManager()
@@ -118,6 +110,13 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer = QtCore.QTimer()
         self._current_file_name = 'Untitled'
         self.populateMenu()
+
+    def getTempDirectory(self):
+        """Returns unique temp directory for application instance.
+
+        This folder and all it's content will be removed from disc on application shutdown.
+        """
+        return self.currentTempDir
 
     def populateMenu(self):
         fileMenu = self.menuBar.addMenu("File")
@@ -416,9 +415,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         settings.sync()
 
         # remove temp directory
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        tempFilesDir = settings.value("Preferences/General/TempFilesDir")
-        shutil.rmtree(tempFilesDir, ignore_errors=True)
+        shutil.rmtree(self.currentTempDir, ignore_errors=True)
 
         QMainWindow.closeEvent(self, event)
 
@@ -453,10 +450,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         INITIALIZE()
 
         # create app folder in documents
+        # random string used for cases when multiple instances of app are running in the same time
         prefs = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
-        tempFilesDir = prefs.value("Preferences/General/TempFilesDir")
-        if not os.path.exists(tempFilesDir):
-            os.makedirs(tempFilesDir)
+        tempDirPath = prefs.value("Preferences/General/TempFilesDir")
+        if tempDirPath[-1:] in ('/', '\\'):
+            tempDirPath = tempDirPath[:-1]
+        instance.currentTempDir = "{0}_{1}".format(tempDirPath, generateRandomString())
+
+        if not os.path.exists(instance.currentTempDir):
+            os.makedirs(instance.currentTempDir)
 
         # populate tools
         canvas = instance.getCanvas()

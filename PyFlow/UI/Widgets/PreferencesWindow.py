@@ -20,6 +20,7 @@ from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 FILE_DIR = os.path.dirname(__file__)
 THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 
+
 class CategoryButton(QPushButton):
     """docstring for CategoryButton."""
     def __init__(self, icon=None, text="test", parent=None):
@@ -221,6 +222,7 @@ class ThemePreferences(CategoryWidgetBase):
 
     def serialize(self, settings):
         settings.setValue("Theme_Name", self.selector.currentText())
+
 
 class PreferencesWindow(QMainWindow):
     """docstring for PreferencesWindow."""

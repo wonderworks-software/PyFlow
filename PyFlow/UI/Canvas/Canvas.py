@@ -70,6 +70,7 @@ from PyFlow.Packages.PyflowBase.UI.UIRerouteNode import UIRerouteNode
 from PyFlow.Packages.PyflowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
+
 def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     nodeClassName = jsonTemplate['type']
     nodeName = jsonTemplate['name']
@@ -402,6 +403,9 @@ class Canvas(QGraphicsView):
         self.boundingRect = self.rect()
         if self.USETAB:
             self.installEventFilter(self)
+
+    def getApp(self):
+        return self.parent
 
     def onGraphChanged(self, newGraph):
         for node in self.nodes.values():

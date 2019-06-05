@@ -232,7 +232,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
 
         varUid = uuid.UUID(data['uuid'])
         # TODO: this is probably bad. Too long call chain
-        var = graph.parent.variablesWidget.createVariable(
+        var = graph.getApp().variablesWidget.createVariable(
             dataType=data['dataType'], accessLevel=AccessLevel(data['accessLevel']), uid=varUid)
         var.setName(data['name'])
         var.setDataType(data['dataType'])
