@@ -14,7 +14,7 @@ from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
 from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.Canvas.UICommon import clearLayout
-from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider,pyf_Slider
+from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider, pyf_Slider
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 FILE_DIR = os.path.dirname(__file__)
@@ -92,19 +92,27 @@ class GeneralPreferences(CategoryWidgetBase):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.layout.setSpacing(2)
-        w = CollapsibleFormWidget(headName="Python node")
+
+        commonCategory = CollapsibleFormWidget(headName="Common")
+        self.tempFilesDir = QLineEdit(os.path.expanduser('~/PyFlowTemp'))
+        commonCategory.addWidget("TempFilesDir", self.tempFilesDir)
+        self.layout.addWidget(commonCategory)
+
+        pythonNodeCategory = CollapsibleFormWidget(headName="Python node")
         self.lePythonEditor = QLineEdit("notepad.exe @FILE")
-        w.addWidget("Editor cmd", self.lePythonEditor)
-        self.layout.addWidget(w)
+        pythonNodeCategory.addWidget("Editor cmd", self.lePythonEditor)
+        self.layout.addWidget(pythonNodeCategory)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
     def initDefaults(self, settings):
         settings.setValue("EditorCmd", "notepad.exe @FILE")
+        settings.setValue("TempFilesDir", os.path.expanduser('~/PyFlowTemp'))
 
     def serialize(self, settings):
         settings.setValue("EditorCmd", self.lePythonEditor.text())
+        settings.setValue("TempFilesDir", self.tempFilesDir.text())
 
     def onShow(self, settings):
         self.lePythonEditor.setText(settings.value("EditorCmd"))
@@ -133,14 +141,14 @@ class ThemePreferences(CategoryWidgetBase):
         for name, obj in options:
             if isinstance(obj, QtGui.QColor):
                 inp = pyf_ColorSlider(type="int", alpha=len(list(obj.getRgbF())) == 4, startColor=list(obj.getRgbF()))
-                inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
-                if name in ["TextColor", "MainColor", "TextSelectedColor","ButtonsColor" ]:
+                inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
+                if name in ["TextColor", "MainColor", "TextSelectedColor", "ButtonsColor"]:
                     general.addWidget(name, inp)
-                elif name in ["InputFieldColor","BgColor", "BgColorDarker", "BgColorBright","BorderColor"]:
+                elif name in ["InputFieldColor", "BgColor", "BgColorDarker", "BgColorBright", "BorderColor"]:
                     bg.addWidget(name, inp)
                 elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
                     canvas.addWidget(name, inp)
-            elif isinstance(obj,list):
+            elif isinstance(obj, list):
                 if name in ["GridSizeFine", "GridSizeHuge"]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
@@ -201,14 +209,14 @@ class ThemePreferences(CategoryWidgetBase):
     def saveTheme(self):
         self.saveThemeAs(self.selector.currentText())
 
-    def saveThemeAs(self,fileName=None):
+    def saveThemeAs(self, fileName=None):
         okPressed = True
         if not fileName:
             fileName, okPressed = QInputDialog.getText(self, "Get text", "Your name:", QLineEdit.Normal, "")
         if okPressed and fileName != '':
             data = editableStyleSheet().serialize()
             with open(os.path.join(THEMES_PATH, fileName + ".json"), "w") as f:
-                json.dump(data, f,separators=(',', ':'))
+                json.dump(data, f, separators=(',', ':'))
             self.onShow(fileName)
 
     def serialize(self, settings):

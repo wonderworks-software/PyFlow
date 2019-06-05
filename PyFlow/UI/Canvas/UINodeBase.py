@@ -157,7 +157,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.color = color
         self.drawlabel = True
         self.headColorOverride = headColorOverride
-        self.headColor = headColorOverride
+        self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
         self._w = 0
         self.h = 30
         self.minWidth = 25
@@ -491,6 +491,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             self.headColor = self.headColorOverride
 
     def postCreate(self, jsonTemplate=None):
+        self.updateNodeHeaderColor()
+
         # create ui pin wrappers
         for i in self._rawNode.getOrderedPins():
             self._createUIPinWrapper(i)
@@ -503,8 +505,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         if not self.drawlabel:
             self.nodeNameWidget.hide()
-
-        self.updateNodeHeaderColor()
 
         self.createActionButtons()
 

@@ -5,6 +5,7 @@ import json
 from time import clock
 import pkgutil
 import uuid
+import shutil
 
 from Qt import QtGui
 from Qt import QtCore
@@ -414,6 +415,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         settings.endGroup()
         settings.sync()
 
+        # remove temp directory
+        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
+        tempFilesDir = settings.value("Preferences/General/TempFilesDir")
+        shutil.rmtree(tempFilesDir, ignore_errors=True)
+
         QMainWindow.closeEvent(self, event)
 
     def shortcuts_info(self):
@@ -447,9 +453,10 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         INITIALIZE()
 
         # create app folder in documents
-        appUserFolder = os.path.expanduser('~/PyFlow')
-        if not os.path.exists(appUserFolder):
-            os.makedirs(appUserFolder)
+        prefs = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
+        tempFilesDir = prefs.value("Preferences/General/TempFilesDir")
+        if not os.path.exists(tempFilesDir):
+            os.makedirs(tempFilesDir)
 
         # populate tools
         canvas = instance.getCanvas()

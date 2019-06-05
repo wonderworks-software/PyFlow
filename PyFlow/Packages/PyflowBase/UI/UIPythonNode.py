@@ -33,15 +33,22 @@ def compute(node):
 
 
 class UIPythonNode(UINodeBase):
+    watcher = QtCore.QFileSystemWatcher()
+
     def __init__(self, raw_node):
         super(UIPythonNode, self).__init__(raw_node)
 
         self.actionEdit = self._menu.addAction("Edit")
         self.actionEdit.triggered.connect(self.onEdit)
         self._filePath = ''
-        self.watcher = QtCore.QFileSystemWatcher()
+
         self.fileHandle = None
         self.currentEditorProcess = None
+        self.pathsAction = self._menu.addAction("show paths")
+        self.pathsAction.triggered.connect(self.printPaths)
+
+    def printPaths(self):
+        print(UIPythonNode.watcher.files())
 
     def mouseDoubleClickEvent(self, event):
         super(UIPythonNode, self).mouseDoubleClickEvent(event)
@@ -59,28 +66,19 @@ class UIPythonNode(UINodeBase):
     def nodeData(self):
         return self._rawNode.nodeData
 
+    def postCreate(self, jsonTemplate=None):
+        super(UIPythonNode, self).postCreate(jsonTemplate)
+        self.setHeaderHtml(self.getName())
+
     @nodeData.setter
     def nodeData(self, value):
         self._rawNode.nodeData = value
 
-    def Tick(self, delta, *args, **kwargs):
-        if self.currentEditorProcess is not None:
-            result = self.currentEditorProcess.poll()
-            if result == 0:
-                if self._filePath != "":
-                    if os.path.exists(self._filePath):
-                        try:
-                            if self.fileHandle is not None:
-                                self.fileHandle.close()
-                            os.remove(self._filePath)
-                            self._filePath = ""
-                            self.currentEditorProcess = None
-                            self.fileHandle = None
-                        except Exception as e:
-                            print(e)
-                            pass
-
     def onFileChanged(self, path):
+        uidStr = str(self.uid)
+        if uidStr not in path:
+            return
+
         if not os.path.exists(path):
             self._filePath = ''
             if self.fileHandle is not None:
@@ -104,23 +102,28 @@ class UIPythonNode(UINodeBase):
                     self._createUIPinWrapper(pin)
                 self.updateNodeShape()
                 self.updateNodeHeaderColor()
-                self.setHeaderHtml(self._rawNode.getName())
+                self.setHeaderHtml(self.getName())
                 print(self.getName(), "successfully compiled")
             except Exception as e:
                 print("Failed to compile node", self.getName(), "Error:", e)
 
-    def onEdit(self):
-        if self.currentEditorProcess is not None:
-            print("already opened")
-            return
+    def kill(self, *args, **kwargs):
+        try:
+            if self.fileHandle is not None:
+                self.fileHandle.close()
+            os.remove(self._filePath)
+        except Exception as e:
+            print(e)
+        super(UIPythonNode, self).kill()
 
+    def onEdit(self):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
         editCmd = settings.value("Preferences/General/EditorCmd")
+        tempFilesDir = settings.value("Preferences/General/TempFilesDir")
 
-        appUserFolder = os.path.expanduser('~/PyFlow')
         if self._filePath == "":
             # if no file assotiated - create one
-            self._filePath = os.path.join(appUserFolder, "{0}_{1}.py".format(self.getName(), str(uuid.uuid4())))
+            self._filePath = os.path.join(tempFilesDir, "{}.py".format(str(self.uid)))
 
         if not os.path.exists(self._filePath):
             f = open(self._filePath, 'w')
@@ -135,12 +138,13 @@ class UIPythonNode(UINodeBase):
 
         # create file watcher
         if self._filePath not in self.watcher.files():
-            self.watcher.addPath(self._filePath)
+            UIPythonNode.watcher.addPath(self._filePath)
 
         try:
-            self.watcher.fileChanged.disconnect(self.onFileChanged)
+            UIPythonNode.watcher.fileChanged.disconnect(self.onFileChanged)
         except:
             pass
 
-        self.watcher.fileChanged.connect(self.onFileChanged)
+        result = UIPythonNode.watcher.fileChanged.connect(self.onFileChanged)
         self.currentEditorProcess = subprocess.Popen(editCmd)
+        self.fileHandle = open(self._filePath, 'r')

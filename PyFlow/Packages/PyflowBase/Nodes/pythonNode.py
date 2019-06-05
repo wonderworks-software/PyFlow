@@ -27,29 +27,32 @@ class pythonNode(NodeBase):
 
     @nodeData.setter
     def nodeData(self, codeString):
-        self._nodeData = codeString
-        # compile and get symbols
-        mem = Py3CodeCompiler().compile(codeString)
+        try:
+            self._nodeData = codeString
+            # compile and get symbols
+            mem = Py3CodeCompiler().compile(codeString)
 
-        # clear node pins
-        for i in list(self.inputs.values()):
-            i.kill()
-        for o in list(self.outputs.values()):
-            o.kill()
+            # clear node pins
+            for i in list(self.inputs.values()):
+                i.kill()
+            for o in list(self.outputs.values()):
+                o.kill()
 
-        # define pins
-        pinsDefinitionFunction = mem["prepareNode"]
-        pinsDefinitionFunction(self)
-        self.autoAffectPins()
+            # define pins
+            pinsDefinitionFunction = mem["prepareNode"]
+            pinsDefinitionFunction(self)
+            self.autoAffectPins()
 
-        # assign compute code
-        computeFunction = mem["compute"]
+            # assign compute code
+            computeFunction = mem["compute"]
 
-        def nodeCompute(*args, **kwargs):
-            computeFunction(self)
+            def nodeCompute(*args, **kwargs):
+                computeFunction(self)
 
-        self.compute = MethodType(nodeCompute, self)
-        self.bCallable = self.isCallable()
+            self.compute = MethodType(nodeCompute, self)
+            self.bCallable = self.isCallable()
+        except Exception as e:
+            print(e)
 
     @staticmethod
     def pinTypeHints():
