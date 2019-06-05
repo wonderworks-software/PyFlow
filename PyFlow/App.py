@@ -453,6 +453,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # random string used for cases when multiple instances of app are running in the same time
         prefs = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
         tempDirPath = prefs.value("Preferences/General/TempFilesDir")
+        if tempDirPath == None:
+            tempDirPath = "/tmp/pyflow"
         if tempDirPath[-1:] in ('/', '\\'):
             tempDirPath = tempDirPath[:-1]
         instance.currentTempDir = "{0}_{1}".format(tempDirPath, generateRandomString())

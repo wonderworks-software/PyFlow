@@ -239,7 +239,12 @@ class NodeBase(INode):
         return self.name
 
     def setName(self, name):
-        self.name = self.graph().graphManager.getUniqNodeName(str(name))
+        # self.graph is sometimes still none
+        try:
+            assert self.graph != None
+            self.name = self.graph().graphManager.getUniqNodeName(str(name))
+        except:
+            self.name = name
 
     def useCache(self):
         # if cached results exists - return them without calling compute
