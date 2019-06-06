@@ -251,8 +251,9 @@ def connectPins(src, dst):
     if src.isExec() and dst.isExec():
         src.onExecute.connect(dst.call)
 
-    src.aboutToConnect(dst)
     dst.aboutToConnect(src)
+    src.aboutToConnect(dst)
+    
     pinAffects(src, dst)
     src.setDirty()
 
