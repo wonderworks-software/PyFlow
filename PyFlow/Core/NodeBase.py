@@ -500,8 +500,8 @@ class NodeBase(INode):
                 if pin.dataType == "AnyPin" :
                     if pin.activeDataType == "AnyPin" and pin.optionEnabled(PinOptions.ChangeTypeOnConnection) :
                         pin.super = None
-                        pin._lastError = "AnyPin"       
-                    elif pin._lastError == "AnyPin" :
+                        pin._lastError = "AnyPin Not Initialized"       
+                    elif pin._lastError == "AnyPin Not Initialized" :
                         pin._lastError = None  
                         pin.super = pin.__class__               
             self.checkForErrors()

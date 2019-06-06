@@ -79,7 +79,7 @@ class AnyPin(PinBase):
 
         if self.activeDataType == "AnyPin" and self.optionEnabled(PinOptions.ChangeTypeOnConnection):
             self.super = None
-            self._lastError = "AnyPin"       
+            self._lastError = "AnyPin Not Initialized"       
         else:
             self._lastError = None  
             self.super = AnyPin
