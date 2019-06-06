@@ -479,6 +479,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def onVisibilityChanged(self, bVisible):
         pass
 
+    def location(self):
+        return self._rawNode.location()
+
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange:
             self._rawNode.setPosition(value.x(), value.y())
@@ -518,6 +521,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.updateNodeShape()
         self.setPos(self._rawNode.x, self._rawNode.y)
 
+        assert(self.canvasRef() is not None), "CANVAS IS NONE"
+        assert(self.canvasRef().graphManager.activeGraph() is not None), "ACTIVEGRAPH IS NONE"
+        if self._rawNode.graph is None:
+            print(self._rawNode.getName())
+        assert(self._rawNode.graph() is not None), "NODE GRAPH IS NONE"
         if self.canvasRef().graphManager.activeGraph() != self._rawNode.graph():
             self.hide()
 

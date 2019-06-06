@@ -251,7 +251,7 @@ class SceneClass(QGraphicsScene):
                     return
                 if modifiers == QtCore.Qt.AltModifier:
                     nodeTemplate['type'] = 'setVar'
-                    nodeTemplate['uuid'] = varData['uuid']
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
                     nodeTemplate['varUid'] = varData['uuid']
                     nodeTemplate['meta']['label'] = varData['name']
                     self.parent().createNode(nodeTemplate)
@@ -331,6 +331,9 @@ class Canvas(QGraphicsView):
 
     requestFillProperties = QtCore.Signal(object)
     requestClearProperties = QtCore.Signal()
+
+    # argument is a list of ui nodes
+    requestShowSearchResults = QtCore.Signal(object)
 
     USETAB = True
 
@@ -426,6 +429,12 @@ class Canvas(QGraphicsView):
                 if uiCommentNode.collapsed:
                     uiCommentNode.hideOwningNodes()
         self.validateConnections(newGraph)
+
+    def jumpToNode(self, uiNode):
+        self.graphManager.selectGraph(uiNode.graph())
+        self.clearSelection()
+        uiNode.setSelected(True)
+        self.frameSelectedNodes()
 
     @property
     def manipulationMode(self):

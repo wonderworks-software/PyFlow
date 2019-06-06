@@ -134,6 +134,9 @@ class CollapsibleFormWidget(CollapsibleWidget):
         self.Layout.setContentsMargins(0, 0, 0, 5)
         self.updateIcon()
 
+    def setSpacing(self, spacing=2):
+        self.Layout.setSpacing(spacing)
+
     def isAllWidgetsHidden(self):
         count = self.Layout.count()
         hidden = 0
@@ -216,6 +219,15 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.mainLayout.addItem(self.spacerItem)
         self.mainLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+
+    def setLockCheckBoxVisible(self, bVisible):
+        self.lockCheckBox.setVisible(bVisible)
+
+    def setTearOffCopyVisible(self, bVisible):
+        self.tearOffCopy.setVisible(bVisible)
+
+    def setSearchBoxVisible(self, bVisible):
+        self.searchBox.setVisible(bVisible)
 
     def filterByHeaders(self, text):
         count = self.contentLayout.count()

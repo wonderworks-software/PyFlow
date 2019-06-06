@@ -150,6 +150,9 @@ class NodeBase(INode):
     def getWrapper(self):
         return self._wrapper
 
+    def location(self):
+        return self.graph().location()
+
     @property
     def uid(self):
         return self._uid

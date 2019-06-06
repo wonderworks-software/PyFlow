@@ -147,8 +147,8 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         propertiesWidget.addWidget(valueCategory)
 
     def onFindRefsClicked(self):
-        refs = self._rawVariable.findRefs()
-        print(refs)
+        refs = [n.getWrapper() for n in self._rawVariable.findRefs()]
+        self.variablesWidget.canvas.requestShowSearchResults.emit(refs)
 
     def onKillClicked(self):
         # check refs and ask user what to do
