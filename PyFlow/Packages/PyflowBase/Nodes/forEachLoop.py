@@ -6,11 +6,10 @@ class forEachLoop(NodeBase):
     def __init__(self, name):
         super(forEachLoop, self).__init__(name)
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.array = self.createInputPin('array', 'AnyPin')
+        self.array = self.createInputPin('array', 'AnyPin',structure=PinStructure.Array,constraint="1")
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
-        self.elem = self.createOutputPin('element', 'AnyPin')
-        self.elem.disableOptions(PinOptions.ChangeTypeOnConnection)
+        self.elem = self.createOutputPin('element', 'AnyPin',constraint="1")
         self.completed = self.createOutputPin('Completed', 'ExecPin')
 
     @staticmethod
