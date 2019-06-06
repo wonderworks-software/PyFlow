@@ -76,6 +76,7 @@ def getOrCreateMenu(menuBar, title):
 ## App itself
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     newFileExecuted = QtCore.Signal(bool)
+    fileBeenLoaded = QtCore.Signal()
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
@@ -215,6 +216,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         for graph in self.graphManager.getAllGraphs():
             self.canvasWidget.createWrappersForGraph(graph)
         self.graphManager.selectRootGraph()
+        self.fileBeenLoaded.emit()
 
     def load(self):
         name_filter = "Graph files (*.json)"
