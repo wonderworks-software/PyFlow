@@ -70,6 +70,21 @@ class NodeBase(INode):
         self._lastError = str(err)
         self.errorOccured.send(self._lastError)
 
+    def checkForErrors(self):
+        failed = False
+        error = None
+        for pin in self._pins:
+            if not failed:
+                if pin._lastError != None:
+                    failed = True
+                    error = pin._lastError
+                else:
+                    failed = False
+                    error = None
+        if failed:
+            self.setError(error)
+        else:
+            self.clearError()
     @property
     def packageName(self):
         return self._packageName

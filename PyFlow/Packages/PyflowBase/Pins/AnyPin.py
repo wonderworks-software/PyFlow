@@ -18,16 +18,14 @@ class AnyPin(PinBase):
         self.typeChanged = Signal(str)
         self.dataTypeBeenSet = Signal()
         self.setDefaultValue(None)
-        self._free = True
         self._isAny = True
-        self.super = None
+        self.super = AnyPin
         self.activeDataType = self.__class__.__name__
         # if True, setType and setDefault will work only once
         self.singleInit = False
-        self.initialized = False
-        self.tempInitialized = False
         self.enableOptions(PinOptions.ChangeTypeOnConnection)
         self._defaultSupportedDataTypes = self._supportedDataTypes = tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
+
 
     @PinBase.dataType.getter
     def dataType(self):
@@ -51,19 +49,36 @@ class AnyPin(PinBase):
 
     @staticmethod
     def pinDataTypeHint():
-        return 'AnyPin', ""
+        return 'AnyPin', None
 
     @staticmethod
     def processData(data):
         return data
 
     def setData(self, data):
-        if self.activeDataType != self.__class__.__name__:
-            assert(self.super is not None)
+                
+            #if self.activeDataType != self.__class__.__name__:
+            #    assert(self.super is not None)
+        if self.activeDataType == self.__class__.__name__:
+            for pin in [pin for pin in getAllPinClasses() if pin.IsValuePin()]:
+                if type(getPinDefaultValueByType(pin.__name__)) == type(data):
+                    if pin.__name__ != self.__class__.__name__:
+                        self.setType(pin.__name__)
+                        print pin.__name__
+                        break
+                else:
+                    self.super = None
+        try:
             if not self.isArray():
                 data = self.super.processData(data)
             else:
                 data = [self.super.processData(i) for i in data]
+            self._lastError = None
+        except Exception as e:
+            data = getPinDefaultValueByType(self.activeDataType)
+            self._lastError = e
+        self.owningNode().checkForErrors()
+
         self._data = data
         PinBase.setData(self, self._data)
 
@@ -109,8 +124,6 @@ class AnyPin(PinBase):
                     (pin.checkFree([], False) and dataType in pin.allowedDataTypes([], pin._defaultSupportedDataTypes, defaults=True))]):
                 a = pin.setType(dataType)
                 if a:
-                    if init:
-                        pin.initialized = True
                     if other:
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
                             pin._supportedDataTypes = other.allowedDataTypes([], other._supportedDataTypes)
@@ -118,7 +131,6 @@ class AnyPin(PinBase):
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
                             pin._supportedDataTypes = pin._defaultSupportedDataTypes
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes
-                        pin._free = True
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
@@ -174,7 +186,7 @@ class AnyPin(PinBase):
             # Marked as single init. Type already been set. Skip
             return
 
-        self.super = None
+        self.super = AnyPin
         self.activeDataType = self.__class__.__name__
 
         self.call = lambda: None
@@ -182,8 +194,6 @@ class AnyPin(PinBase):
         self.dataTypeBeenSet.send()
 
         self.setDefaultValue(None)
-        if not self.hasConnections():
-            self._free = True
 
         self._supportedDataTypes = self._defaultSupportedDataTypes
         self.supportedDataTypes = lambda: self._supportedDataTypes
@@ -204,11 +214,12 @@ class AnyPin(PinBase):
 
         otherClass = findPinClassByType(dataType)
         self.super = otherClass
+        print self.super
         self.activeDataType = dataType
         if not self.isArray():
-            self._data = getPinDefaultValueByType(self.activeDataType)
+            self.setData(getPinDefaultValueByType(self.activeDataType))
         else:
-            self._data = []
+            self.setData([])
         self.setDefaultValue(self._data)
 
         self.color = otherClass.color
@@ -219,6 +230,5 @@ class AnyPin(PinBase):
         self._supportedDataTypes = otherClass.supportedDataTypes()
 
         self.typeChanged.send(self.activeDataType)
-        self._free = self.activeDataType == self.__class__.__name__
 
         return True

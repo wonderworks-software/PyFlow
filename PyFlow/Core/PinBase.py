@@ -24,6 +24,11 @@ class PinBase(IPin):
         self.killed = Signal()
         self.onExecute = Signal(object)
         self.containerTypeChanged = Signal()
+
+        self.errorOccured = Signal(object)
+        self.errorCleared = Signal()    
+        self._lastError = None
+            
         ## Access to the node
         self.owningNode = weakref.ref(owningNode)
         self._uid = uuid.uuid4()
@@ -54,8 +59,6 @@ class PinBase(IPin):
         self._origFlags = self._flags
         self._structure = PinStructure.Single
         self._currStructure = self._structure
-        self._structFree = True
-        self._free = False
         self._isAny = False
         self._isArray = False
         self._isList = False
