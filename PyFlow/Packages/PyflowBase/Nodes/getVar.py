@@ -12,19 +12,24 @@ class getVar(NodeBase):
     def __init__(self, name, var=None):
         super(getVar, self).__init__(name)
         assert(isinstance(var, Variable))
-        self.var = var
+        self._var = var
         self.out = self.createOutputPin('value', "AnyPin")
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
-        self.var.valueChanged.connect(self.onVarValueChanged)
+        self._var.valueChanged.connect(self.onVarValueChanged)
         self.bCacheEnabled = False
 
-    def assignVariableByName(self, name):
-        gm = self.graph().graphManager
-        var = gm.findVariable(name)
-        if var:
-            self.var = var
-            self.out.setType(var.dataType)
+    @property
+    def var(self):
+        return self._var
+
+    @var.setter
+    def var(self, newVar):
+        self._var.valueChanged.disconnect(self.onVarValueChanged)
+        self._var = newVar
+        self._var.valueChanged.connect(self.onVarValueChanged)
+        self.out.disconnectAll()
+        self.out.setType(self._var.dataType)
 
     def postCreate(self, jsonTemplate=None):
         super(getVar, self).postCreate(jsonTemplate)

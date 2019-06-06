@@ -29,6 +29,10 @@ class UIGetVarNode(UINodeBase):
     def var(self):
         return self._rawNode.var
 
+    @var.setter
+    def var(self, newVar):
+        self._rawNode.var = newVar
+
     def postCreate(self, jsonTemplate=None):
         super(UIGetVarNode, self).postCreate(jsonTemplate)
 
@@ -54,10 +58,23 @@ class UIGetVarNode(UINodeBase):
         template['meta']['var'] = self.var.serialize()
         return template
 
+    def onVarSelected(self, varName):
+
+        if self.var.name == varName:
+            return
+
+        var = self.canvasRef().graphManager.findVariable(varName)
+        free = self._rawNode.out.checkFree([])
+
+        if var:
+            self.var = var
+
     def createInputWidgets(self, propertiesWidget):
         inputsCategory = CollapsibleFormWidget(headName="Inputs")
         validVars = self.graph().getVarList()
         cbVars = EnumComboBox([v.name for v in validVars])
+        cbVars.setCurrentText(self.var.name)
+        cbVars.changeCallback.connect(self.onVarSelected)
         inputsCategory.addWidget("var", cbVars)
 
         propertiesWidget.addWidget(inputsCategory)
