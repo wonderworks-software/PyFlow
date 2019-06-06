@@ -159,8 +159,8 @@ class AnyPin(PinBase):
             return free
 
     def allowedDataTypes(self, checked=[], dataTypes=[], selfChek=True, defaults=False):
-        if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
-            return self._defaultSupportedDataTypes
+        #if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
+        #    return self._defaultSupportedDataTypes
         con = []
         neis = []
         if selfChek:
