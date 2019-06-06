@@ -88,7 +88,7 @@ class UISetVarNode(UINodeBase):
             self.updateHeaderText()
 
     def createInputWidgets(self, propertiesWidget):
-        inputsCategory = CollapsibleFormWidget(headName="Inputs")
+        inputsCategory = CollapsibleFormWidget(headName="Variable")
         validVars = self.graph().getVarList()
         cbVars = EnumComboBox([v.name for v in validVars])
         cbVars.setCurrentText(self.var.name)
@@ -96,6 +96,8 @@ class UISetVarNode(UINodeBase):
         inputsCategory.addWidget("var", cbVars)
 
         propertiesWidget.addWidget(inputsCategory)
+
+        super(UISetVarNode, self).createInputWidgets(propertiesWidget)
 
     def postCreate(self, template):
         super(UISetVarNode, self).postCreate(template)
