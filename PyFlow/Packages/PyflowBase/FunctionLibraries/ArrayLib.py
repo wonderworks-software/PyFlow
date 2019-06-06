@@ -134,3 +134,11 @@ class ArrayLib(FunctionLibraryBase):
         else:
             result(False)
             return 0
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('AnyPin',None, {'constraint': '1'}), meta={'Category': 'Array', 'Keywords': []})
+    def arraySum(Value=('AnyPin', [], {'constraint': '1'})):
+        '''
+        Sum of list of floats
+        '''
+        return sum(Value)
