@@ -13,20 +13,25 @@ class getVar(NodeBase):
         super(getVar, self).__init__(name)
         assert(isinstance(var, Variable))
         self.var = var
-        self.out = CreateRawPin('value', self, var.dataType, PinDirection.Output)
+        self.out = self.createOutputPin('value', "AnyPin")
         self.out.disableOptions(PinOptions.RenamingEnabled)
+
         self.var.valueChanged.connect(self.onVarValueChanged)
+        self.bCacheEnabled = False
+
+    def assignVariableByName(self, name):
+        gm = self.graph().graphManager
+        var = gm.findVariable(name)
+        if var:
+            self.var = var
+            self.out.setType(var.dataType)
+
+    def postCreate(self, jsonTemplate=None):
+        super(getVar, self).postCreate(jsonTemplate)
+        self.out.setType(self.var.dataType)
 
     def variableUid(self):
         return self.var.uid
-
-    def recreateOutput(self, dataType):
-        self.out.kill()
-        del self.out
-        self.out = None
-        self.out = CreateRawPin('value', self, dataType, PinDirection.Output)
-        self.out.disableOptions(PinOptions.RenamingEnabled)
-        return self.out
 
     def onVarValueChanged(self, *args, **kwargs):
         push(self.out)

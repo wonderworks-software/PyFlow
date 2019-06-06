@@ -2,6 +2,8 @@
 
 Builtin node to access variable value.
 """
+from copy import copy
+
 from Qt import QtCore
 from Qt import QtGui
 
@@ -11,6 +13,8 @@ from PyFlow.UI.Utils.Settings import *
 from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 
 
 # Variable getter node
@@ -50,14 +54,17 @@ class UIGetVarNode(UINodeBase):
         template['meta']['var'] = self.var.serialize()
         return template
 
+    def createInputWidgets(self, propertiesWidget):
+        inputsCategory = CollapsibleFormWidget(headName="Inputs")
+        validVars = self.graph().getVarList()
+        cbVars = EnumComboBox([v.name for v in validVars])
+        inputsCategory.addWidget("var", cbVars)
+
+        propertiesWidget.addWidget(inputsCategory)
+
     def onVarDataTypeChanged(self, dataType):
-        # recreate pin
-        currentPinName = self._rawNode.out.name
-        recreatedPin = self._rawNode.recreateOutput(dataType)
-        recreatedPin.setName(currentPinName)
-        recreatedPin.disableOptions(PinOptions.RenamingEnabled)
-        self.UIOut = self._createUIPinWrapper(self._rawNode.out)
-        self.updateNodeShape()
+        self._rawNode.out.disconnectAll()
+        self._rawNode.out.setType(dataType)
 
     def onVarNameChanged(self, newName):
         pin = list(self._rawNode.pins)[0]

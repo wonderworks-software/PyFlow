@@ -253,8 +253,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.isTemp = False
         self.isCommentNode = False
 
-        self.propertyEditor = None
-
         # collapse action
         self._groups = {"input": {}, "output": {}}
         self.actionToggleCollapse = self._menu.addAction("ToggleCollapse")
@@ -491,6 +489,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 else:
                     self.onVisibilityChanged(bool(value))
         return super(UINodeBase, self).itemChange(change, value)
+
+    def graph(self):
+        return self._rawNode.graph()
 
     def isUnderActiveGraph(self):
         return self._rawNode.isUnderActiveGraph()
@@ -967,7 +968,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._rawNode.call(name)
 
     def createPropertiesWidget(self, propertiesWidget):
-        self.propertyEditor = weakref.ref(propertiesWidget)
         baseCategory = CollapsibleFormWidget(headName="Base")
 
         le_name = QLineEdit(self.getName())
@@ -986,18 +986,18 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         leType.setReadOnly(True)
         baseCategory.addWidget("Type", leType)
 
-        self.propertyEditor().addWidget(baseCategory)
+        propertiesWidget.addWidget(baseCategory)
 
-        self.createInputWidgets(self.propertyEditor())
+        self.createInputWidgets(propertiesWidget)
 
         Info = CollapsibleFormWidget(headName="Info", collapsed=True, hideLabels=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())
         Info.addWidget(widget=doc)
-        self.propertyEditor().addWidget(Info)
+        propertiesWidget.addWidget(Info)
 
-    def createInputWidgets(self,propertiesWidget):
+    def createInputWidgets(self, propertiesWidget):
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
             inputsCategory = CollapsibleFormWidget(headName="Inputs")

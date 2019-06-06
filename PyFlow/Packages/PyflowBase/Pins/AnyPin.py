@@ -188,7 +188,7 @@ class AnyPin(PinBase):
         self._supportedDataTypes = self._defaultSupportedDataTypes
         self.supportedDataTypes = lambda: self._supportedDataTypes
 
-    def initType(self,dataType,initializing=False):
+    def initType(self, dataType, initializing=False):
         if self.checkFree([]):
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, initializing))
             return True
