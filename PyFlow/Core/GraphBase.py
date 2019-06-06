@@ -1,6 +1,7 @@
 import weakref
 from blinker import Signal
 from multipledispatch import dispatch
+from collections import Counter
 
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodeBase
@@ -264,14 +265,17 @@ class GraphBase(ISerializable):
             variableLocation = var.location()
             if len(variableLocation) > len(self.location()):
                 return False
+            if len(variableLocation) == len(self.location()):
+                if Counter(variableLocation) != Counter(self.location()):
+                    return False
 
+        node.graph = weakref.ref(self)
         if jsonTemplate is not None:
             jsonTemplate['name'] = self.graphManager.getUniqName(jsonTemplate['name'])
         else:
             node.setName(self.graphManager.getUniqName(node.name))
 
         self.nodes[node.uid] = node
-        node.graph = weakref.ref(self)
         node.postCreate(jsonTemplate)
         return True
 

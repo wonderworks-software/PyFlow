@@ -5,6 +5,7 @@ from copy import deepcopy
 import json
 import uuid
 import weakref
+from collections import Counter
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -1564,8 +1565,7 @@ class Canvas(QGraphicsView):
             if len(variableLocation) > len(graphLocation):
                 return None
             if len(variableLocation) == len(graphLocation):
-                if variableLocation != graphLocation:
-                    print("different graphs")
+                if Counter(variableLocation) != Counter(graphLocation):
                     return None
 
         nodeInstance = getNodeInstance(jsonTemplate, self)
