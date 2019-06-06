@@ -496,9 +496,9 @@ class NodeBase(INode):
             if "wrapper" in jsonTemplate:
                 self.__wrapperJsonData = jsonTemplate["wrapper"]
             for pin in self._pins:
-                pin._origFlags = pin._flags
                 if pin.dataType == "AnyPin" :
-                    if pin.activeDataType == "AnyPin" and pin.optionEnabled(PinOptions.ChangeTypeOnConnection) :
+                    pin.canChange = pin.canChangeTypeOnConection([],pin.optionEnabled(PinOptions.ChangeTypeOnConnection))
+                    if pin.activeDataType == "AnyPin" and pin.canChange :
                         pin.super = None
                         pin._lastError = "AnyPin Not Initialized"       
                     elif pin._lastError == "AnyPin Not Initialized" :

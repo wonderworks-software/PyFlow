@@ -77,10 +77,12 @@ class PinBase(IPin):
     def enableOptions(self, *options):
         for option in options:
             self._flags = self._flags | option
+        self._origFlags = self._flags
 
     def disableOptions(self, *options):
         for option in options:
             self._flags = self._flags & ~option
+        self._origFlags = self._flags
 
     def optionEnabled(self, option):
         return bool(self._flags & option)
@@ -369,7 +371,27 @@ class PinBase(IPin):
         if self.direction == PinDirection.Output:
             otherPinName = other.getName()
         push(other)
-
+    def canChangeTypeOnConection(self, checked=[], can=True,extraPins=[], selfChek=True):
+        if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
+            return False
+        con = []
+        neis = []
+        if selfChek:
+            print self,self.hasConnections()
+            if self.hasConnections():
+                for c in getConnectedPins(self):
+                    if c not in checked:
+                        con.append(c)
+        else:
+            checked.append(self)
+        if self.constraint:
+            neis = self.owningNode().constraints[self.constraint]
+        for port in neis + con+extraPins:
+            if port not in checked and can:
+                checked.append(port)
+                can = port.canChangeTypeOnConection(checked,can,selfChek=True)
+                print port,can
+        return can
     def canChangeStructure(self, newStruct, checked=[], selfChek=True, init=False):
         if not init and (self._alwaysList or self._alwaysSingle):
             return False
