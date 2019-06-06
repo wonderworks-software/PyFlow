@@ -56,18 +56,15 @@ class AnyPin(PinBase):
         return data
 
     def setData(self, data):
-                
-            #if self.activeDataType != self.__class__.__name__:
-            #    assert(self.super is not None)
-        if self.activeDataType == self.__class__.__name__:
-            for pin in [pin for pin in getAllPinClasses() if pin.IsValuePin()]:
-                if type(getPinDefaultValueByType(pin.__name__)) == type(data):
-                    if pin.__name__ != self.__class__.__name__:
-                        self.setType(pin.__name__)
-                        print pin.__name__
-                        break
-                else:
-                    self.super = None
+        for pin in [pin for pin in getAllPinClasses() if pin.IsValuePin()]:
+            pType = type(getPinDefaultValueByType(pin.__name__))
+            if str(pType) == "<type 'str'>" and not str(type(data)) == "<type 'str'>":
+                pType = unicode
+            if pType == type(data):              
+                if pin.__name__ != self.activeDataType:
+                    self.setType(pin.__name__)
+                    self.super = pin
+                break
         try:
             if not self.isArray():
                 data = self.super.processData(data)
@@ -77,6 +74,10 @@ class AnyPin(PinBase):
         except Exception as e:
             data = getPinDefaultValueByType(self.activeDataType)
             self._lastError = e
+
+        if self.activeDataType == "AnyPin" and not self._lastError:
+            self.super = None
+            self._lastError = "AnyPin"            
         self.owningNode().checkForErrors()
 
         self._data = data
@@ -214,7 +215,6 @@ class AnyPin(PinBase):
 
         otherClass = findPinClassByType(dataType)
         self.super = otherClass
-        print self.super
         self.activeDataType = dataType
         if not self.isArray():
             self.setData(getPinDefaultValueByType(self.activeDataType))

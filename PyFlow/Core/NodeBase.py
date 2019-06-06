@@ -85,6 +85,9 @@ class NodeBase(INode):
             self.setError(error)
         else:
             self.clearError()
+        wrapper = self.getWrapper()
+        if wrapper:
+            wrapper.update()
     @property
     def packageName(self):
         return self._packageName
@@ -353,7 +356,7 @@ class NodeBase(INode):
         if foo:
             p.onExecute.connect(foo, weak=False)
 
-        if defaultValue is not None:
+        if defaultValue is not None or dataType == "AnyPin":
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
         else:

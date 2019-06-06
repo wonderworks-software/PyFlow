@@ -1,7 +1,9 @@
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 
-
+class temp():
+    def __init__(self):
+        pass
 class ListPin(PinBase):
     """doc string for ListPin"""
     def __init__(self, name, parent, direction, **kwargs):
@@ -18,7 +20,7 @@ class ListPin(PinBase):
 
     @staticmethod
     def pinDataTypeHint():
-        return 'ListPin', []
+        return 'ListPin', temp
 
     @staticmethod
     def color():
