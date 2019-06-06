@@ -837,6 +837,8 @@ class Canvas(QGraphicsView):
                 node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'])
 
             n = self.createNode(node)
+            if n is None:
+                continue
             createdNodes[n] = node
 
             if n is None:
@@ -1558,8 +1560,13 @@ class Canvas(QGraphicsView):
         if jsonTemplate['type'] in ['getVar', 'setVar']:
             var = self.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
             variableLocation = var.location()
-            if len(variableLocation) > len(self.graphManager.activeGraph().location()):
+            graphLocation = self.graphManager.activeGraph().location()
+            if len(variableLocation) > len(graphLocation):
                 return None
+            if len(variableLocation) == len(graphLocation):
+                if variableLocation != graphLocation:
+                    print("different graphs")
+                    return None
 
         nodeInstance = getNodeInstance(jsonTemplate, self)
         assert(nodeInstance is not None), "Node instance is not found!"
