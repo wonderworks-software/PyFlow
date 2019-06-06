@@ -115,9 +115,9 @@ class AnyPin(PinBase):
             if (dataType == "AnyPin" and not init):
                 if not other:
                     return
-                else:
-                    if pin.dataType != "AnyPin" and pin.dataType in other.allowedDataTypes([], other._supportedDataTypes):
-                        dataType = pin.dataType
+                #else:
+                #    if pin.dataType != "AnyPin" and pin.dataType in other.allowedDataTypes([], other._supportedDataTypes):
+                #        dataType = pin.dataType
 
             if any([dataType in pin.allowedDataTypes([], pin._supportedDataTypes),
                     dataType == "AnyPin",

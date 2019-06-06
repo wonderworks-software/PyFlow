@@ -562,6 +562,8 @@ class NodeBase(INode):
         # generate compute method from function
         def compute(self, *args, **kwargs):
             # arguments will be taken from inputs
+            if not self.isValid():
+                return
             kwds = {}
             for i in list(self.inputs.values()):
                 if not i.isExec():

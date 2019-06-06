@@ -273,7 +273,8 @@ class PinBase(IPin):
 
     ## Calling execution pin
     def call(self, *args, **kwargs):
-        self.onExecute.send(*args, **kwargs)
+        if self.owningNode().isValid():
+            self.onExecute.send(*args, **kwargs)
 
     def disconnectAll(self):
         # if input pin
