@@ -40,7 +40,7 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['in']})
-    def contains(obj=('AnyPin', None, {"constraint": "1"}), element=("AnyPin", None, {"constraint": "2"})):
+    def contains(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported}), element=("AnyPin", None, {"constraint": "1"})):
         """Python's <u>in</u> keyword. <u>element in obj</u> will be executed"""
         try:
             return element in obj
@@ -49,9 +49,9 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get']})
-    def getItem(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported}),
-                element=("AnyPin", None, {"constraint": "2"}),
-                result=("Reference", ("AnyPin", None, {"Constraint": "3"}))):
+    def getItem(obj=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported}),
+                element=("AnyPin", None),
+                result=("Reference", ("AnyPin", None,{"constraint": "1","enabledOptions": PinOptions.ArraySupported}))):
         """Python's <u>[]</u> operator. <u>obj[element]</u> will be executed."""
         try:
             result(obj[element])
@@ -99,17 +99,17 @@ class DefaultLib(FunctionLibraryBase):
     # Conversions
     @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Conversion', 'Keywords': ["Bool"]})
-    def toBool(i=('AnyPin', 0, {"supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
+    def toBool(i=('AnyPin', None, {"supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
         return bool(i)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("IntPin", 0), meta={'Category': 'Conversion', 'Keywords': []})
-    def toInt(i=('AnyPin', 0, {"supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
+    def toInt(i=('AnyPin', None, {"supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
         return int(i)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("FloatPin", False), meta={'Category': 'Conversion', 'Keywords': []})
-    def toFloat(i=('AnyPin', 0, {"supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
+    def toFloat(i=('AnyPin', None, {"supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
         return float(i)
 
     @staticmethod
@@ -125,7 +125,7 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "3"}), meta={'Category': 'DefaultLib', 'Keywords': []})
-    def select(A=('AnyPin', None, {"constraint": "1"}), B=('AnyPin', None, {"constraint": "2"}), PickA=('BoolPin', False),
+    def select(A=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported}), B=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported}), PickA=('BoolPin', False),
                aPicked=("Reference", ("BoolPin", False))):
         '''
         If bPickA is true, A is returned, otherwise B.
@@ -135,15 +135,15 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ""), meta={'Category': 'Utils', 'Keywords': []})
-    def objectType(obj=("AnyPin", None, {"constraint": "1"})):
+    def objectType(obj=("AnyPin", None, {"enabledOptions": PinOptions.ArraySupported})):
         '''Returns <u>type(obj).__name__</u>'''
         return type(obj).__name__
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get'], 'CacheEnabled': False})
-    def appendTo(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported}),
-                 element=("AnyPin", None, {"constraint": "2"}),
-                 result=("Reference", ("AnyPin", None, {"constraint": "1"}))):
+    def appendTo(obj=('AnyPin', None, {"constraint": "1","structConstraint":"1", "enabledOptions": PinOptions.ArraySupported}),
+                 element=("AnyPin", None,{"constraint": "1"}),
+                 result=("Reference", ("AnyPin", None, {"constraint": "1","structConstraint":"1","enabledOptions": PinOptions.ArraySupported}))):
         """Calls <u>obj.append(element)</u>. And returns object. If failed - object is unchanged"""
         try:
             obj.append(element)
@@ -155,9 +155,9 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get']})
-    def addTo(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported}),
-              element=("AnyPin", None, {"constraint": "2"}),
-              result=("Reference", ("AnyPin", None, {"constraint": "1"}))):
+    def addTo(obj=('AnyPin', None, {"constraint": "1","structConstraint":"1", "enabledOptions": PinOptions.ArraySupported}),
+              element=("AnyPin", None,{"constraint": "1"}),
+              result=("Reference", ("AnyPin", None, {"constraint": "1","structConstraint":"1","enabledOptions": PinOptions.ArraySupported}))):
         """Calls <u>obj.add(element)</u>. And returns object. If failed - object is unchanged"""
         try:
             obj.add(element)

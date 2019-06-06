@@ -4,6 +4,8 @@ from PyFlow.Core.Common import *
 class temp():
     def __init__(self):
         pass
+    def serialize(self):
+        return "a"
 class ListPin(PinBase):
     """doc string for ListPin"""
     def __init__(self, name, parent, direction, **kwargs):
@@ -20,7 +22,7 @@ class ListPin(PinBase):
 
     @staticmethod
     def pinDataTypeHint():
-        return 'ListPin', temp
+        return 'ListPin', temp()
 
     @staticmethod
     def color():

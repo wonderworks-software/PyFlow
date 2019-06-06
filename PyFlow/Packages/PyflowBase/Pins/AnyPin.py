@@ -62,7 +62,8 @@ class AnyPin(PinBase):
                 pType = unicode
             if pType == type(data):              
                 if pin.__name__ != self.activeDataType:
-                    self.setType(pin.__name__)
+                    traverseConstrainedPins(self, lambda x: self.updateOnConnectionCallback(x, pin.__name__, False, None))
+                    #self.setType(pin.__name__)
                     self.super = pin
                 break
         try:
@@ -74,10 +75,15 @@ class AnyPin(PinBase):
         except Exception as e:
             data = getPinDefaultValueByType(self.activeDataType)
             self._lastError = e
-
-        if self.activeDataType == "AnyPin" and not self._lastError:
             self.super = None
-            self._lastError = "AnyPin"            
+
+        if self.activeDataType == "AnyPin" and self.optionEnabled(PinOptions.ChangeTypeOnConnection):
+            self.super = None
+            self._lastError = "AnyPin"       
+        else:
+            self._lastError = None  
+            self.super = AnyPin
+
         self.owningNode().checkForErrors()
 
         self._data = data
@@ -109,6 +115,8 @@ class AnyPin(PinBase):
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
+        if self.checkFree():
+            self._flags= self._origFlags
 
     def updateOnConnectionCallback(self, pin, dataType, init=False, other=None):
         free = pin.checkFree([])
@@ -159,8 +167,8 @@ class AnyPin(PinBase):
             return free
 
     def allowedDataTypes(self, checked=[], dataTypes=[], selfChek=True, defaults=False):
-        #if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
-        #    return self._defaultSupportedDataTypes
+        if not self.optionEnabled(PinOptions.ChangeTypeOnConnection) and self.activeDataType == "AnyPin":
+            return self._defaultSupportedDataTypes
         con = []
         neis = []
         if selfChek:
@@ -228,7 +236,6 @@ class AnyPin(PinBase):
         self.jsonDecoderClass = otherClass.jsonDecoderClass
         self.supportedDataTypes = otherClass.supportedDataTypes
         self._supportedDataTypes = otherClass.supportedDataTypes()
-
         self.typeChanged.send(self.activeDataType)
 
         return True

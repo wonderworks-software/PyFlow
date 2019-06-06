@@ -495,6 +495,16 @@ class NodeBase(INode):
             # store data for wrapper
             if "wrapper" in jsonTemplate:
                 self.__wrapperJsonData = jsonTemplate["wrapper"]
+            for pin in self._pins:
+                pin._origFlags = pin._flags
+                if pin.dataType == "AnyPin" :
+                    if pin.activeDataType == "AnyPin" and pin.optionEnabled(PinOptions.ChangeTypeOnConnection) :
+                        pin.super = None
+                        pin._lastError = "AnyPin"       
+                    elif pin._lastError == "AnyPin" :
+                        pin._lastError = None  
+                        pin.super = pin.__class__               
+            self.checkForErrors()
 
         if self.isCallable():
             self.bCallable = True
