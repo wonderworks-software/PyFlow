@@ -70,7 +70,7 @@ class UIPythonNode(UINodeBase):
         self._rawNode.nodeData = value
 
     def onFileChanged(self, path):
-        uidStr = str(self.uid)
+        uidStr = str(self.uid).replace("-", "")
         if uidStr not in path:
             return
 
@@ -121,7 +121,8 @@ class UIPythonNode(UINodeBase):
 
         if self._filePath == "":
             # if no file assotiated - create one
-            self._filePath = os.path.join(tempFilesDir, "{}.py".format(str(self.uid)))
+            uidStr = str(self.uid).replace("-", "")
+            self._filePath = os.path.join(tempFilesDir, "{}.py".format(uidStr))
 
         if not os.path.exists(self._filePath):
             f = open(self._filePath, 'w')

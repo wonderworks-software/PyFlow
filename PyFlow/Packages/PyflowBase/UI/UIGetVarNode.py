@@ -31,7 +31,11 @@ class UIGetVarNode(UINodeBase):
 
     @var.setter
     def var(self, newVar):
+        self.var.nameChanged.disconnect(self.onVarNameChanged)
+        self.var.dataTypeChanged.disconnect(self.onVarDataTypeChanged)
         self._rawNode.var = newVar
+        self.var.nameChanged.connect(self.onVarNameChanged)
+        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
     def postCreate(self, jsonTemplate=None):
         super(UIGetVarNode, self).postCreate(jsonTemplate)
@@ -44,14 +48,12 @@ class UIGetVarNode(UINodeBase):
         outPin = list(self._rawNode.pins)[0]
         outPin.setName(self.var.name)
 
-        # do not allow changing data type from node
-        # change it using variable's properties
         pinWrapper = outPin.getWrapper()
         if pinWrapper:
             pinWrapper().setMenuItemEnabled("InitAs", False)
-            # do not allow renaming pin
             outPin.disableOptions(PinOptions.RenamingEnabled)
             pinWrapper().syncRenamable()
+        self.updateHeaderText()
 
     def serialize(self):
         template = UINodeBase.serialize(self)
@@ -59,7 +61,6 @@ class UIGetVarNode(UINodeBase):
         return template
 
     def onVarSelected(self, varName):
-
         if self.var.name == varName:
             return
 
@@ -67,7 +68,15 @@ class UIGetVarNode(UINodeBase):
         free = self._rawNode.out.checkFree([])
 
         if var:
+            linkedTo = getConnectedPins(self._rawNode.out)
             self.var = var
+
+            self._createUIPinWrapper(self._rawNode.out)
+            for i in linkedTo:
+                if i.isAny():
+                    i.setDefault()
+                self.canvasRef().connectPinsInternal(self._rawNode.out.getWrapper()(), i.getWrapper()())
+            self.updateHeaderText()
 
     def createInputWidgets(self, propertiesWidget):
         inputsCategory = CollapsibleFormWidget(headName="Inputs")
@@ -83,10 +92,12 @@ class UIGetVarNode(UINodeBase):
         self._rawNode.out.disconnectAll()
         self._rawNode.out.setType(dataType)
 
-    def onVarNameChanged(self, newName):
-        pin = list(self._rawNode.pins)[0]
-        pin.setName(newName)
+    def updateHeaderText(self):
+        self.setHeaderHtml("Get {0}".format(self.var.name))
         self.updateNodeShape()
+
+    def onVarNameChanged(self, newName):
+        self.updateHeaderText()
 
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)

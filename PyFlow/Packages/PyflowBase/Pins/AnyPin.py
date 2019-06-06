@@ -166,7 +166,7 @@ class AnyPin(PinBase):
                     dataTypes = list(set(dataTypes) & set(port._supportedDataTypes))
                 else:
                     dataTypes = list(set(dataTypes) & set(port._defaultSupportedDataTypes))
-                dataTypes = port.allowedDataTypes(checked,dataTypes,selfChek=True,defaults=defaults)
+                dataTypes = port.allowedDataTypes(checked, dataTypes, selfChek=True, defaults=defaults)
         return dataTypes
 
     def setDefault(self):
