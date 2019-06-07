@@ -75,6 +75,9 @@ def getOrCreateMenu(menuBar, title):
 
 ## App itself
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
+
+    appInstance = None
+
     newFileExecuted = QtCore.Signal(bool)
     fileBeenLoaded = QtCore.Signal()
 
@@ -333,12 +336,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def createPopupMenu(self):
         pass
 
-    def newPlugin(self, pluginType):
-        name, result = QInputDialog.getText(
-            self, 'Plugin name', 'Enter plugin name')
-        if result:
-            _implementPlugin(name, pluginType)
-
     def getToolClassByName(self, packageName, toolName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
         for ToolClass in registeredTools[packageName]:
@@ -354,6 +351,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 if ToolClass.name() == toolName:
                     return ToolClass()
         return None
+
+    def getRegisteredTools(self):
+        return self._tools
 
     def invokeDockToolByName(self, packageName, name, settings=None):
         # invokeDockToolByName Invokes dock tool by tool name and package name
@@ -447,6 +447,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     @staticmethod
     def instance(parent=None):
+        if PyFlow.appInstance is not None:
+            return PyFlow.appInstance
+
         instance = PyFlow(parent)
         instance.startMainLoop()
         INITIALIZE()
@@ -527,4 +530,5 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                         settings.endGroup()
                     settings.endGroup()
 
+        PyFlow.appInstance = instance
         return instance

@@ -40,7 +40,7 @@ class TypeWidget(QWidget):
         painter.setBrush(QtGui.QColor.fromRgb(*self.color))
         pen = QtGui.QPen()
         pen.setColor(QtGui.QColor(0,0,0,0))
-        painter.setPen(pen)        
+        painter.setPen(pen)
         rect = event.rect()
         rect.setHeight(10)
         rect.setWidth(15)
@@ -147,7 +147,11 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         propertiesWidget.addWidget(valueCategory)
 
     def onFindRefsClicked(self):
+        from PyFlow.App import PyFlow
         refs = [n.getWrapper() for n in self._rawVariable.findRefs()]
+        app = PyFlow.instance()
+        if "Search results" not in [t.name() for t in app.getRegisteredTools()]:
+            app.invokeDockToolByName("PyflowBase", "Search results")
         self.variablesWidget.canvas.requestShowSearchResults.emit(refs)
 
     def onKillClicked(self):
