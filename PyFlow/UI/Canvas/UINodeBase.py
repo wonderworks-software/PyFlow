@@ -477,6 +477,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def setHeaderHtml(self, html):
         self.nodeNameWidget.setHtml(html)
 
+    def getHeaderHtml(self):
+        return self.nodeNameWidget.getHtml()
+
     def serialize(self):
         return self._rawNode.serialize()
 

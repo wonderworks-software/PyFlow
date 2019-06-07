@@ -28,6 +28,7 @@ from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QFileDialog
 from Qt.QtWidgets import QDockWidget
 
+from PyFlow import version
 from PyFlow import Packages
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.Canvas import Canvas
@@ -231,6 +232,14 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if not fpath == '':
             with open(fpath, 'r') as f:
                 data = json.load(f)
+
+                if "fileVersion" in data:
+                    fileVersion = version.Version.fromString(data["fileVersion"])
+                    print("File version - {0}\nPyFlow version - {1}".format(str(fileVersion), str(version.currentVersion())))
+                else:
+                    # handle first release graph files
+                    pass
+
                 self.loadFromData(data, fpath)
 
     def save(self, save_as=False):
@@ -264,6 +273,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
                 saveData = self.graphManager.serialize()
+                saveData["fileVersion"] = str(version.currentVersion())
                 json.dump(saveData, f, indent=4)
 
             print(str("// saved: '{0}'".format(self._current_file_name)))
