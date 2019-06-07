@@ -207,8 +207,6 @@ class NodeBase(INode):
 
     def kill(self, *args, **kwargs):
         if self.uid not in self.graph().nodes:
-            # already killed
-            # this block executes for variable getter/setter
             return
 
         self.killed.send()
@@ -248,7 +246,7 @@ class NodeBase(INode):
         # if cached results exists - return them without calling compute
         args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
         try:
-            # mutable unhashable types will not be cached
+            # not hashable types will not be cached
             if args in self.cache:
                 for outPin, data in self.cache[args].items():
                     outPin.setData(data)
@@ -263,7 +261,7 @@ class NodeBase(INode):
         # cache results
         args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
         try:
-            # mutable unhashable types will not be cached
+            # not hashable types will not be cached
             if args in self.cache:
                 return
         except:
