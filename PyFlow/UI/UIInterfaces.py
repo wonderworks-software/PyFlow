@@ -9,9 +9,30 @@ class IPropertiesViewSupport(object):
         pass
 
 
+class IDataExporter(object):
+    def __init__(self):
+        super(IDataExporter, self).__init__()
+
+    @staticmethod
+    def displayName():
+        raise NotImplementedError('displayName method of IDataExporter is not implemented')
+
+    @staticmethod
+    def toolTip():
+        return ''
+
+    @staticmethod
+    def doExport(pyFlowInstance):
+        raise NotImplementedError('doExport method of IDataExporter is not implemented')
+
+
 class IPackage(object):
     def __init__(self):
         super(IPackage, self).__init__()
+
+    @staticmethod
+    def GetExporters():
+        raise NotImplementedError('GetExporters method of IPackage is not implemented')
 
     @staticmethod
     def GetFunctionLibraries():
