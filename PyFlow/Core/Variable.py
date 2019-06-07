@@ -94,7 +94,11 @@ class Variable(IItemBase):
             if self.dataType not in supportedDataTypes:
                 return
 
-        if self._value != value:
+        try:
+            if self._value != value:
+                self._value = value
+                self.valueChanged.send(value)
+        except:
             self._value = value
             self.valueChanged.send(value)
 

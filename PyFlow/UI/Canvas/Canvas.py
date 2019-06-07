@@ -5,6 +5,7 @@ from copy import deepcopy
 import json
 import uuid
 import weakref
+from collections import Counter
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -250,7 +251,7 @@ class SceneClass(QGraphicsScene):
                     return
                 if modifiers == QtCore.Qt.AltModifier:
                     nodeTemplate['type'] = 'setVar'
-                    nodeTemplate['uuid'] = varData['uuid']
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
                     nodeTemplate['varUid'] = varData['uuid']
                     nodeTemplate['meta']['label'] = varData['name']
                     self.parent().createNode(nodeTemplate)
@@ -330,6 +331,9 @@ class Canvas(QGraphicsView):
 
     requestFillProperties = QtCore.Signal(object)
     requestClearProperties = QtCore.Signal()
+
+    # argument is a list of ui nodes
+    requestShowSearchResults = QtCore.Signal(object)
 
     USETAB = True
 
@@ -425,6 +429,12 @@ class Canvas(QGraphicsView):
                 if uiCommentNode.collapsed:
                     uiCommentNode.hideOwningNodes()
         self.validateConnections(newGraph)
+
+    def jumpToNode(self, uiNode):
+        self.graphManager.selectGraph(uiNode.graph())
+        self.clearSelection()
+        uiNode.setSelected(True)
+        self.frameSelectedNodes()
 
     @property
     def manipulationMode(self):
@@ -837,6 +847,8 @@ class Canvas(QGraphicsView):
                 node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'])
 
             n = self.createNode(node)
+            if n is None:
+                continue
             createdNodes[n] = node
 
             if n is None:
@@ -1558,8 +1570,12 @@ class Canvas(QGraphicsView):
         if jsonTemplate['type'] in ['getVar', 'setVar']:
             var = self.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
             variableLocation = var.location()
-            if len(variableLocation) > len(self.graphManager.activeGraph().location()):
+            graphLocation = self.graphManager.activeGraph().location()
+            if len(variableLocation) > len(graphLocation):
                 return None
+            if len(variableLocation) == len(graphLocation):
+                if Counter(variableLocation) != Counter(graphLocation):
+                    return None
 
         nodeInstance = getNodeInstance(jsonTemplate, self)
         assert(nodeInstance is not None), "Node instance is not found!"

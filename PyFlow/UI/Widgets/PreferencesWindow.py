@@ -64,8 +64,8 @@ class InputPreferences(CategoryWidgetBase):
     def onShow(self, settings):
         clearLayout(self.layout)
         properties = PropertiesWidget()
-        properties.lockCheckBox.hide()
-        properties.tearOffCopy.hide()
+        properties.setLockCheckBoxVisible(False)
+        properties.setTearOffCopyVisible(False)
 
         groupActions = defaultdict(list)
         for actionName, variants in InputManager().getData().items():
@@ -134,8 +134,8 @@ class ThemePreferences(CategoryWidgetBase):
         clearLayout(self.layout)
         editableStyleSheet().loadPresests(THEMES_PATH)
         properties = PropertiesWidget()
-        properties.lockCheckBox.hide()
-        properties.tearOffCopy.hide()
+        properties.setLockCheckBoxVisible(False)
+        properties.setTearOffCopyVisible(False)
         general = CollapsibleFormWidget(headName="General")
         bg = CollapsibleFormWidget(headName="BackGround")
         canvas = CollapsibleFormWidget(headName="Canvas")

@@ -57,15 +57,15 @@ class UICommentNode(UINodeBase):
     def onChangeMessage(self):
         dialog = TextEditDialog(self.nodeNameWidget.getFont(), self.labelTextColor)
         dialog.move(QtGui.QCursor.pos())
-        dialog.zoomIn(10)
+        dialog.setHtml(self.getHeaderHtml())
         dialog.exec_()
         try:
             html, accepted = dialog.getResult()
             if accepted:
                 self.nodeNameWidget.setHtml(html)
                 self.updateNodeShape()
-        except:
-            pass
+        except Exception as e:
+            print(e)
         self.setFocus()
 
     def kill(self, *args, **kwargs):

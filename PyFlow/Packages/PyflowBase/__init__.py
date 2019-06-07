@@ -58,6 +58,7 @@ from PyFlow.Packages.PyflowBase.Nodes.constant import constant
 
 from PyFlow.Packages.PyflowBase.Tools.ScreenshotTool import ScreenshotTool
 from PyFlow.Packages.PyflowBase.Tools.NodeBoxTool import NodeBoxTool
+from PyFlow.Packages.PyflowBase.Tools.SearchResultsTool import SearchResultsTool
 from PyFlow.Packages.PyflowBase.Tools.AlignLeftTool import AlignLeftTool
 from PyFlow.Packages.PyflowBase.Tools.AlignRightTool import AlignRightTool
 from PyFlow.Packages.PyflowBase.Tools.AlignTopTool import AlignTopTool
@@ -138,6 +139,7 @@ _TOOLS[HistoryTool.__name__] = HistoryTool
 _TOOLS[PropertiesTool.__name__] = PropertiesTool
 _TOOLS[VariablesTool.__name__] = VariablesTool
 _TOOLS[NodeBoxTool.__name__] = NodeBoxTool
+_TOOLS[SearchResultsTool.__name__] = SearchResultsTool
 
 
 class PyflowBase(IPackage):

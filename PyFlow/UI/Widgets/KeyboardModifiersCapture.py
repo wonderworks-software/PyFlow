@@ -15,7 +15,7 @@ class KeyboardModifiersCaptureWidget(QPushButton):
         self.setToolTip("<b>Left click</b> to start capturing.<br><b>Enter</b> to accept.<br><b>Esc</b> to clear")
 
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self.actionReset = QAction("Reset",None)
+        self.actionReset = QAction("Reset", None)
         self.actionReset.triggered.connect(self.resetToDefault)
         self.addAction(self.actionReset)
 

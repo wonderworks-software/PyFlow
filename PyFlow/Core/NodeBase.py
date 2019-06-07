@@ -150,6 +150,9 @@ class NodeBase(INode):
     def getWrapper(self):
         return self._wrapper
 
+    def location(self):
+        return self.graph().location()
+
     @property
     def uid(self):
         return self._uid
@@ -204,8 +207,6 @@ class NodeBase(INode):
 
     def kill(self, *args, **kwargs):
         if self.uid not in self.graph().nodes:
-            # already killed
-            # this block executes for variable getter/setter
             return
 
         self.killed.send()
@@ -239,13 +240,13 @@ class NodeBase(INode):
         return self.name
 
     def setName(self, name):
-        self.name = self.graph().graphManager.getUniqNodeName(str(name))
+        self.name = str(name)
 
     def useCache(self):
         # if cached results exists - return them without calling compute
-        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
         try:
-            # mutable unhashable types will not be cached
+            # not hashable types will not be cached
             if args in self.cache:
                 for outPin, data in self.cache[args].items():
                     outPin.setData(data)
@@ -258,9 +259,9 @@ class NodeBase(INode):
             return
 
         # cache results
-        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
         try:
-            # mutable unhashable types will not be cached
+            # not hashable types will not be cached
             if args in self.cache:
                 return
         except:
@@ -284,7 +285,11 @@ class NodeBase(INode):
                     self.setError(e)
             self.afterCompute()
         else:
-            self.compute()
+            try:
+                self.compute()
+                self.clearError()
+            except Exception as e:
+                self.setError(e)
 
     # INode interface
 

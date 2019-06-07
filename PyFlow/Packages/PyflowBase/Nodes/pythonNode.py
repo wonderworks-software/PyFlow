@@ -25,6 +25,9 @@ class pythonNode(NodeBase):
     def nodeData(self):
         return self._nodeData
 
+    def ensureNameUnique(self):
+        self.setName(self.graph().graphManager.getUniqNodeName(self.name))
+
     @nodeData.setter
     def nodeData(self, codeString):
         try:
@@ -33,15 +36,16 @@ class pythonNode(NodeBase):
             mem = Py3CodeCompiler().compile(codeString, self.getName())
 
             # clear node pins
-            for i in list(self.inputs.values()):
+            for i in list(self.pins):
                 i.kill()
-            for o in list(self.outputs.values()):
-                o.kill()
+            self.pins.clear()
 
-            # define pins
-            pinsDefinitionFunction = mem["prepareNode"]
-            pinsDefinitionFunction(self)
+            # define pins, name etc
+            prepareNodeFunction = mem["prepareNode"]
+            prepareNodeFunction(self)
             self.autoAffectPins()
+
+            self.ensureNameUnique()
 
             # assign compute code
             computeFunction = mem["compute"]

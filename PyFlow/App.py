@@ -28,6 +28,7 @@ from Qt.QtWidgets import QSpacerItem
 from Qt.QtWidgets import QFileDialog
 from Qt.QtWidgets import QDockWidget
 
+from PyFlow import version
 from PyFlow import Packages
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.Canvas import Canvas
@@ -75,7 +76,11 @@ def getOrCreateMenu(menuBar, title):
 
 ## App itself
 class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
+
+    appInstance = None
+
     newFileExecuted = QtCore.Signal(bool)
+    fileBeenLoaded = QtCore.Signal()
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
@@ -215,6 +220,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         for graph in self.graphManager.getAllGraphs():
             self.canvasWidget.createWrappersForGraph(graph)
         self.graphManager.selectRootGraph()
+        self.fileBeenLoaded.emit()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -226,6 +232,14 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if not fpath == '':
             with open(fpath, 'r') as f:
                 data = json.load(f)
+
+                if "fileVersion" in data:
+                    fileVersion = version.Version.fromString(data["fileVersion"])
+                    print("File version - {0}\nPyFlow version - {1}".format(str(fileVersion), str(version.currentVersion())))
+                else:
+                    # handle first release graph files
+                    pass
+
                 self.loadFromData(data, fpath)
 
     def save(self, save_as=False):
@@ -259,6 +273,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
                 saveData = self.graphManager.serialize()
+                saveData["fileVersion"] = str(version.currentVersion())
                 json.dump(saveData, f, indent=4)
 
             print(str("// saved: '{0}'".format(self._current_file_name)))
@@ -331,12 +346,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def createPopupMenu(self):
         pass
 
-    def newPlugin(self, pluginType):
-        name, result = QInputDialog.getText(
-            self, 'Plugin name', 'Enter plugin name')
-        if result:
-            _implementPlugin(name, pluginType)
-
     def getToolClassByName(self, packageName, toolName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
         for ToolClass in registeredTools[packageName]:
@@ -352,6 +361,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 if ToolClass.name() == toolName:
                     return ToolClass()
         return None
+
+    def getRegisteredTools(self):
+        return self._tools
 
     def invokeDockToolByName(self, packageName, name, settings=None):
         # invokeDockToolByName Invokes dock tool by tool name and package name
@@ -445,6 +457,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     @staticmethod
     def instance(parent=None):
+        if PyFlow.appInstance is not None:
+            return PyFlow.appInstance
+
         instance = PyFlow(parent)
         instance.startMainLoop()
         INITIALIZE()
@@ -525,4 +540,5 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                         settings.endGroup()
                     settings.endGroup()
 
+        PyFlow.appInstance = instance
         return instance

@@ -11,11 +11,27 @@ class setVar(NodeBase):
         super(setVar, self).__init__(name)
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
-        self.var = var
+        self._var = var
         self.inp = CreateRawPin("value", self, self.var.dataType, PinDirection.Input)
         self.inp.disableOptions(PinOptions.RenamingEnabled)
         self.out = CreateRawPin("value", self, self.var.dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
+
+    @property
+    def var(self):
+        return self._var
+
+    @var.setter
+    def var(self, newVar):
+        self._var = newVar
+
+    @var.setter
+    def var(self, newVar):
+        oldDataType = self._var.dataType
+        self._var = newVar
+        if self._var.dataType != oldDataType:
+            self.recreateInput(self._var.dataType)
+            self.recreateOutput(self._var.dataType)
 
     def recreateInput(self, dataType):
         self.inp.kill()
@@ -23,7 +39,7 @@ class setVar(NodeBase):
         self.inp = None
         self.inp = CreateRawPin('value', self, dataType, PinDirection.Input)
         self.inp.disableOptions(PinOptions.RenamingEnabled)
-        return self.out
+        return self.inp
 
     def recreateOutput(self, dataType):
         self.out.kill()
