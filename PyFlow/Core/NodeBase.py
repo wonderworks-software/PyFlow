@@ -246,7 +246,7 @@ class NodeBase(INode):
 
     def useCache(self):
         # if cached results exists - return them without calling compute
-        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
         try:
             # mutable unhashable types will not be cached
             if args in self.cache:
@@ -261,7 +261,7 @@ class NodeBase(INode):
             return
 
         # cache results
-        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
         try:
             # mutable unhashable types will not be cached
             if args in self.cache:
@@ -287,7 +287,11 @@ class NodeBase(INode):
                     self.setError(e)
             self.afterCompute()
         else:
-            self.compute()
+            try:
+                self.compute()
+                self.clearError()
+            except Exception as e:
+                self.setError(e)
 
     # INode interface
 
