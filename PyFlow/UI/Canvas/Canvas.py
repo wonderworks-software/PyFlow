@@ -1176,7 +1176,7 @@ class Canvas(QGraphicsView):
                         self.manipulationMode = CanvasManipulationMode.MOVE
                         selectedNodes = self.selectedNodes()
                         copiedNodes = self.copyNodes()
-                        self.pasteNodes(move=False, data=copiedNodes)                     
+                        self.pasteNodes(move=False, data=copiedNodes)
         else:
             super(Canvas, self).mousePressEvent(event)
 
@@ -1193,7 +1193,7 @@ class Canvas(QGraphicsView):
         self.mousePos = event.pos()
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         modifiers = event.modifiers()
-        node = self.nodeFromInstance(self.itemAt(event.pos()))           
+        node = self.nodeFromInstance(self.itemAt(event.pos()))
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         if self.itemAt(event.pos()) and isinstance(node, UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))

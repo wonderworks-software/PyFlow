@@ -75,7 +75,7 @@ class NodeBase(INode):
         error = None
         for pin in self._pins:
             if not failed:
-                if pin._lastError != None:
+                if pin._lastError is not None:
                     failed = True
                     error = pin._lastError
                 else:
@@ -88,6 +88,7 @@ class NodeBase(INode):
         wrapper = self.getWrapper()
         if wrapper:
             wrapper.update()
+
     @property
     def packageName(self):
         return self._packageName
@@ -496,14 +497,14 @@ class NodeBase(INode):
             if "wrapper" in jsonTemplate:
                 self.__wrapperJsonData = jsonTemplate["wrapper"]
             for pin in self._pins:
-                if pin.dataType == "AnyPin" :
-                    pin.canChange = pin.canChangeTypeOnConection([],pin.optionEnabled(PinOptions.ChangeTypeOnConnection))
-                    if pin.activeDataType == "AnyPin" and pin.canChange :
+                if pin.dataType == "AnyPin":
+                    pin.canChange = pin.canChangeTypeOnConection([], pin.optionEnabled(PinOptions.ChangeTypeOnConnection))
+                    if pin.activeDataType == "AnyPin" and pin.canChange:
                         pin.super = None
-                        pin._lastError = "AnyPin Not Initialized"       
-                    elif pin._lastError == "AnyPin Not Initialized" :
-                        pin._lastError = None  
-                        pin.super = pin.__class__               
+                        pin._lastError = "AnyPin Not Initialized"
+                    elif pin._lastError == "AnyPin Not Initialized":
+                        pin._lastError = None
+                        pin.super = pin.__class__
             self.checkForErrors()
 
         if self.isCallable():
