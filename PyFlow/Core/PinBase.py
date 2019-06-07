@@ -26,9 +26,9 @@ class PinBase(IPin):
         self.containerTypeChanged = Signal()
 
         self.errorOccured = Signal(object)
-        self.errorCleared = Signal()    
+        self.errorCleared = Signal()
         self._lastError = None
-            
+
         ## Access to the node
         self.owningNode = weakref.ref(owningNode)
         self._uid = uuid.uuid4()
@@ -308,7 +308,7 @@ class PinBase(IPin):
         return self._structure
 
     @structureType.setter
-    def structureType(self,structure):
+    def structureType(self, structure):
         self._structure = structure
         self._currStructure = structure
 
@@ -371,13 +371,14 @@ class PinBase(IPin):
         if self.direction == PinDirection.Output:
             otherPinName = other.getName()
         push(other)
-    def canChangeTypeOnConection(self, checked=[], can=True,extraPins=[], selfChek=True):
+
+    def canChangeTypeOnConection(self, checked=[], can=True, extraPins=[], selfChek=True):
         if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
             return False
         con = []
         neis = []
         if selfChek:
-            print self,self.hasConnections()
+            print(self, self.hasConnections())
             if self.hasConnections():
                 for c in getConnectedPins(self):
                     if c not in checked:
@@ -386,18 +387,19 @@ class PinBase(IPin):
             checked.append(self)
         if self.constraint:
             neis = self.owningNode().constraints[self.constraint]
-        for port in neis + con+extraPins:
+        for port in neis + con + extraPins:
             if port not in checked and can:
                 checked.append(port)
-                can = port.canChangeTypeOnConection(checked,can,selfChek=True)
-                print port,can
+                can = port.canChangeTypeOnConection(checked, can, selfChek=True)
+                print(port, can)
         return can
+
     def canChangeStructure(self, newStruct, checked=[], selfChek=True, init=False):
         if not init and (self._alwaysList or self._alwaysSingle):
             return False
         if self.isList():
             return False
-        if self.structConstraint is None and self.structureType == PinStructure.Multi:#(newStruct !=PinStructure.Array and self.structureType == PinStructure.Array and self.optionEnabled(PinOptions.AllowMultipleConnections))
+        if self.structConstraint is None and self.structureType == PinStructure.Multi:
             return True
         elif self.structureType != PinStructure.Multi:
             return False
@@ -434,7 +436,7 @@ class PinBase(IPin):
                 for port in self.owningNode().structConstraints[self.structConstraint] + con:
                     if port not in checked:
                         checked.append(port)
-                        free = port.canChangeStructure(newStruct,checked,True,init=init)
+                        free = port.canChangeStructure(newStruct, checked, True, init=init)
                         if not free:
                             break
             return free
@@ -473,7 +475,7 @@ class PinBase(IPin):
         else:
             self.owningNode().constraints[constraint] = [self]
 
-    def updatestructConstraint(self,constraint):
+    def updatestructConstraint(self, constraint):
         self.structConstraint = constraint
         if constraint in self.owningNode().structConstraints:
             self.owningNode().structConstraints[constraint].append(self)

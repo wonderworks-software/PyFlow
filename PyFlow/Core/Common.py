@@ -36,6 +36,7 @@ INT_RANGE_MAX = maxint + 0
 DEFAULT_IN_EXEC_NAME = str('inExec')
 DEFAULT_OUT_EXEC_NAME = str('outExec')
 
+
 ## Performs a linear interpolation
 # @param[in] start the value to interpolate from
 # @param[in] end the value to interpolate to
@@ -49,8 +50,10 @@ def lerp(start, end, alpha):
 def GetRangePct(MinValue, MaxValue, Value):
     return (Value - MinValue) / (MaxValue - MinValue)
 
+
 def sign(x):
     return x and (1, -1)[x < 0]
+
 
 ## Computes the value of the first specified argument clamped to a range defined by the second and third specified arguments
 # @param[in] n
@@ -253,7 +256,7 @@ def connectPins(src, dst):
 
     dst.aboutToConnect(src)
     src.aboutToConnect(dst)
-    
+
     pinAffects(src, dst)
     src.setDirty()
 
@@ -309,9 +312,10 @@ def traverseConstrainedPins(startFrom, callback):
 
     worker(startFrom)
 
+
 def traverseStructConstrainedPins(startFrom, callback):
     """Iterates over all constrained chained pins passes pin into callback function. Callback will be executed once for every pin
-    """  
+    """
     traversed = set()
 
     def worker(pin):
@@ -327,6 +331,7 @@ def traverseStructConstrainedPins(startFrom, callback):
                 worker(neighbor)
 
     worker(startFrom)
+
 
 def disconnectPins(src, dst):
     """Disconnects two pins
