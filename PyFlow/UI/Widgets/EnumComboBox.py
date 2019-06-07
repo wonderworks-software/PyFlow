@@ -17,6 +17,8 @@ class EnumComboBox(QComboBox):
         self.pFilterModel = QtCore.QSortFilterProxyModel(self)
         self.pFilterModel.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
+        self.setInsertPolicy(self.NoInsert)
+
         self.completer.setPopup(self.view())
 
         self.setCompleter(self.completer)
@@ -65,7 +67,7 @@ if __name__ == "__main__":
     def clb(string):
         print(string)
 
-    w = EnumComboBox(["A", "B"])
+    w = EnumComboBox(["A", "B", "TEST"])
     w.changeCallback.connect(clb)
 
     w.show()
