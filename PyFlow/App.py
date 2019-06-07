@@ -138,7 +138,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 continue
             pkgMenu = exportersMenu.addMenu(packageName)
             for exporterName, exporterClass in exporters.items():
-                exporterAction = pkgMenu.addAction(exporterName)
+                exporterAction = pkgMenu.addAction(exporterClass.displayName())
+                exporterAction.setToolTip(exporterClass.toolTip())
                 exporterAction.triggered.connect(lambda checked=False, app=self: exporterClass.doExport(app))
 
         editMenu = self.menuBar.addMenu("Edit")
