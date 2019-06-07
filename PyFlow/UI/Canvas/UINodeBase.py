@@ -1056,24 +1056,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 break
         return result
 
-    def handleVisibility(self):
-        if self._rawNode.graph() != self.canvasRef().graphManager.activeGraph():
-            # if current graph != node's graph - hide node and connections
-            self.hide()
-            for uiPin in self.UIPins.values():
-                for connection in uiPin.uiConnectionList:
-                    connection.hide()
-        else:
-            # if current graph == node's graph - show it only if its not under collapsed comment node
-            collidedCommentNode = self.collidesWithCommentNode()
-            if collidedCommentNode is None:
-                self.show()
-            else:
-                if collidedCommentNode.collapsed:
-                    self.hide()
-                else:
-                    self.show()
-
     def hoverLeaveEvent(self, event):
         for i in range(len(self.resizeStrips)):
             self.resizeStrips[i] = 0
@@ -1112,7 +1094,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # NOTE: Do not call wrapped raw node Tick method here!
         # this ui node tick called from underlined raw node's emitted signal
         # do here only UI stuff
-        # self.handleVisibility()
         pass
 
     def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None):
