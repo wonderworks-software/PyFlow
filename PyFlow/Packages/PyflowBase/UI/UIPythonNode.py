@@ -67,6 +67,11 @@ class UIPythonNode(UINodeBase):
 
     @nodeData.setter
     def nodeData(self, value):
+        for groupsSide, groups in self.groups.items():
+            for grp in list(groups.values()):
+                grp.kill()
+        self.groups['input'].clear()
+        self.groups['output'].clear()
         self._rawNode.nodeData = value
 
     def onFileChanged(self, path):

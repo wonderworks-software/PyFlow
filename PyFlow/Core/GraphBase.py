@@ -209,7 +209,9 @@ class GraphBase(ISerializable):
         return None
 
     @dispatch(uuid.UUID)
-    def findNode(self, uuid):
+    def findNode(self, uid):
+        if uid in self.nodes:
+            return self.nodes[uid]
         return None
 
     def getNodesByClassName(self, className):

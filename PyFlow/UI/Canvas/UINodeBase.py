@@ -260,6 +260,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
         self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
 
+    @property
+    def groups(self):
+        return self._groups
+
     def isValid(self):
         return self._rawNode.isValid()
 
@@ -462,11 +466,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             template['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
         template['collapsed'] = self.collapsed
         template['headerHtml'] = self.nodeNameWidget.getHtml()
-        if len(self._groups) > 0:
+        if len(self.groups) > 0:
             template['groups'] = {'input': {}, 'output': {}}
-            for name, grp in self._groups['input'].items():
+            for name, grp in self.groups['input'].items():
                 template['groups']['input'][name] = grp.bCollapsed
-            for name, grp in self._groups['output'].items():
+            for name, grp in self.groups['output'].items():
                 template['groups']['output'][name] = grp.bCollapsed
         return template
 
@@ -543,9 +547,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             if "groups" in jsonTemplate["wrapper"]:
                 try:
                     for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["input"].items():
-                        self._groups["input"][groupName].setCollapsed(collapsed)
+                        self.groups["input"][groupName].setCollapsed(collapsed)
                     for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["output"].items():
-                        self._groups["output"][groupName].setCollapsed(collapsed)
+                        self.groups["output"][groupName].setCollapsed(collapsed)
                 except:
                     pass
 
@@ -646,9 +650,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
             igrhHeight = 0
             ogrhHeight = 0
-            for grp in self._groups["input"].values():
+            for grp in self.groups["input"].values():
                 igrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
-            for grp in self._groups["output"].values():
+            for grp in self.groups["output"].values():
                 ogrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
             h += max(igrhHeight, ogrhHeight)
         except:
@@ -675,10 +679,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 iwidth = max(iwidth, i.sizeHint(None, None).width())
             else:
                 owidth = max(owidth, i.sizeHint(None, None).width())
-        for igrp in self._groups["input"].values():
+        for igrp in self.groups["input"].values():
             w = igrp.getWidth()
             iwidth = max(iwidth, w)
-        for ogrp in self._groups["output"].values():
+        for ogrp in self.groups["output"].values():
             w = ogrp.getWidth()
             owidth = max(owidth, w)
         return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
@@ -1121,14 +1125,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         grpItem = None
         if rawPin.group != "":
-            groupNames = list(self._groups["input"].keys()) + list(self._groups["output"].keys())
+            groupNames = list(self.groups["input"].keys()) + list(self.groups["output"].keys())
             if rawPin.group not in groupNames:
-                grpItem = UIPinGroup(self.scene(), rawPin.group)
+                grpItem = UIPinGroup(self.scene(), rawPin.group, self)
             else:
                 if rawPin.direction == PinDirection.Input:
-                    grpItem = self._groups["input"][rawPin.group]
+                    grpItem = self.groups["input"][rawPin.group]
                 if rawPin.direction == PinDirection.Output:
-                    grpItem = self._groups["output"][rawPin.group]
+                    grpItem = self.groups["output"][rawPin.group]
 
             grpItem.addPin(p)
             self.inputsLayout.addItem(grpItem)
@@ -1138,7 +1142,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         lblName = name
         if rawPin.direction == PinDirection.Input:
             if grpItem is not None:
-                self._groups["input"][rawPin.group] = grpItem
+                self.groups["input"][rawPin.group] = grpItem
                 self.inputsLayout.addItem(grpItem)
                 self.inputsLayout.setAlignment(grpItem, QtCore.Qt.AlignLeft)
             else:
@@ -1147,7 +1151,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         elif rawPin.direction == PinDirection.Output:
             if grpItem is not None:
-                self._groups["output"][rawPin.group] = grpItem
+                self.groups["output"][rawPin.group] = grpItem
                 self.outputsLayout.addItem(grpItem)
                 self.outputsLayout.setAlignment(grpItem, QtCore.Qt.AlignRight)
             else:
