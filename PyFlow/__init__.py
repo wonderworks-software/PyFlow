@@ -82,7 +82,6 @@ def INITIALIZE():
     from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
     from PyFlow.UI.Canvas.UIPinBase import REGISTER_UI_PIN_FACTORY
 
-    # TODO: Check for duplicated package names
     for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
         if ispkg:
             mod = importer.find_module(modname).load_module(modname)

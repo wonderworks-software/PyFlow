@@ -4,6 +4,7 @@ from blinker import Signal
 
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.Common import *
+from PyFlow.Core import version
 
 ROOT_GRAPH_NAME = str('root')
 
@@ -31,7 +32,9 @@ class GraphManager(object):
 
     def serialize(self):
         rootGraph = self.findRootGraph()
-        return rootGraph.serialize()
+        saved = rootGraph.serialize()
+        saved["fileVersion"] = str(version.currentVersion())
+        return saved
 
     @dispatch(str)
     def removeGraph(self, name):
@@ -55,6 +58,13 @@ class GraphManager(object):
             del graph
 
     def deserialize(self, data):
+        if "fileVersion" in data:
+            fileVersion = version.Version.fromString(data["fileVersion"])
+            print("App version:", str(version.currentVersion()))
+            print("File version:", str(fileVersion))
+        else:
+            # handle older version
+            pass
         self.clear(keepRoot=False)
         self._activeGraph = GraphBase(str('root'), self)
         self._activeGraph.populateFromJson(data)
@@ -90,6 +100,14 @@ class GraphManager(object):
         if name in graphs:
             return graphs[name]
         return None
+
+    def findPinByName(self, pinFullName):
+        result = None
+        for graph in self.getAllGraphs():
+            result = graph.findPin(pinFullName)
+            if result is not None:
+                break
+        return result
 
     @dispatch(str)
     def findNode(self, name):

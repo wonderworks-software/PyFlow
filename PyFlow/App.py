@@ -11,25 +11,9 @@ import random
 
 from Qt import QtGui
 from Qt import QtCore
-from Qt.QtWidgets import QMainWindow
-from Qt.QtWidgets import QApplication
-from Qt.QtWidgets import QStyleFactory
-from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QTextEdit
-from Qt.QtWidgets import QMessageBox
-from Qt.QtWidgets import QAction
-from Qt.QtWidgets import QMenu
-from Qt.QtWidgets import QInputDialog
-from Qt.QtWidgets import QHBoxLayout
-from Qt.QtWidgets import QUndoView
-from Qt.QtWidgets import QToolButton
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QSpacerItem
-from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QDockWidget
+from Qt.QtWidgets import *
 
-from PyFlow import version
-from PyFlow import Packages
+from PyFlow import GET_PACKAGES
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.Canvas import Canvas
 from PyFlow.Core.Common import Direction
@@ -123,6 +107,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         """
         return self.currentTempDir
 
+    def getMenuBar(self):
+        return self.menuBar
+
     def populateMenu(self):
         fileMenu = self.menuBar.addMenu("File")
         newFileAction = fileMenu.addAction("New file")
@@ -140,6 +127,25 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         saveAsAction = fileMenu.addAction("Save as")
         saveAsAction.setIcon(QtGui.QIcon(":/save_as_icon.png"))
         saveAsAction.triggered.connect(lambda: self.save(True))
+
+        IOMenu = fileMenu.addMenu("Custom IO")
+        for packageName, package in GET_PACKAGES().items():
+            # exporters
+            exporters = None
+            try:
+                exporters = package.GetExporters()
+            except:
+                continue
+            pkgMenu = IOMenu.addMenu(packageName)
+            for exporterName, exporterClass in exporters.items():
+                fileFormatMenu = pkgMenu.addMenu(exporterClass.displayName())
+                fileFormatMenu.setToolTip(exporterClass.toolTip())
+                if exporterClass.createExporterMenu():
+                    exportAction = fileFormatMenu.addAction("Export")
+                    exportAction.triggered.connect(lambda checked=False, app=self: exporterClass.doExport(app))
+                if exporterClass.createImporterMenu():
+                    importAction = fileFormatMenu.addAction("Import")
+                    importAction.triggered.connect(lambda checked=False, app=self: exporterClass.doImport(app))
 
         editMenu = self.menuBar.addMenu("Edit")
         preferencesAction = editMenu.addAction("Preferences")
@@ -212,15 +218,18 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if currentInputAction in actionSaveAsVariants:
             self.save_as()
 
-    def loadFromData(self, data, fpath=""):
-        self.newFile(keepRoot=False)
-        # load raw data
-        self.graphManager.deserialize(data)
+    def afterLoad(self):
         # create ui nodes
         for graph in self.graphManager.getAllGraphs():
             self.canvasWidget.createWrappersForGraph(graph)
         self.graphManager.selectRootGraph()
         self.fileBeenLoaded.emit()
+
+    def loadFromData(self, data, fpath=""):
+        self.newFile(keepRoot=False)
+        # load raw data
+        self.graphManager.deserialize(data)
+        self.afterLoad()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -232,14 +241,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if not fpath == '':
             with open(fpath, 'r') as f:
                 data = json.load(f)
-
-                if "fileVersion" in data:
-                    fileVersion = version.Version.fromString(data["fileVersion"])
-                    print("File version - {0}\nPyFlow version - {1}".format(str(fileVersion), str(version.currentVersion())))
-                else:
-                    # handle first release graph files
-                    pass
-
                 self.loadFromData(data, fpath)
 
     def save(self, save_as=False):
@@ -273,9 +274,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
                 saveData = self.graphManager.serialize()
-                saveData["fileVersion"] = str(version.currentVersion())
                 json.dump(saveData, f, indent=4)
-
             print(str("// saved: '{0}'".format(self._current_file_name)))
 
     def newFile(self, keepRoot=True):
@@ -460,9 +459,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if PyFlow.appInstance is not None:
             return PyFlow.appInstance
 
+        INITIALIZE()
         instance = PyFlow(parent)
         instance.startMainLoop()
-        INITIALIZE()
 
         # create app folder in documents
         # random string used for cases when multiple instances of app are running in the same time

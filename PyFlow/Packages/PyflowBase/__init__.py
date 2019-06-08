@@ -67,6 +67,8 @@ from PyFlow.Packages.PyflowBase.Tools.HistoryTool import HistoryTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.Packages.PyflowBase.Tools.VariablesTool import VariablesTool
 
+from PyFlow.Packages.PyflowBase.Exporters.PythonScriptExporter import PythonScriptExporter
+
 # Factories
 from PyFlow.Packages.PyflowBase.Factories.UIPinFactory import createUIPin
 from PyFlow.Packages.PyflowBase.Factories.PinInputWidgetFactory import getInputWidget
@@ -142,9 +144,17 @@ _TOOLS[NodeBoxTool.__name__] = NodeBoxTool
 _TOOLS[SearchResultsTool.__name__] = SearchResultsTool
 
 
+_EXPORTERS = OrderedDict()
+_EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
+
+
 class PyflowBase(IPackage):
     def __init__(self):
         super(PyflowBase, self).__init__()
+
+    @staticmethod
+    def GetExporters():
+        return _EXPORTERS
 
     @staticmethod
     def GetFunctionLibraries():
