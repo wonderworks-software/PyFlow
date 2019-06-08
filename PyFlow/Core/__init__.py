@@ -11,7 +11,8 @@ __all__ = [
     "FunctionLibraryBase",
     "IMPLEMENT_NODE",
     "Common",
-    "PinUtils"
+    "PinUtils",
+    "version"
 ]
 
 from PyFlow.Core.PinBase import PinBase
@@ -21,3 +22,4 @@ from PyFlow.Core.GraphManager import GraphManager
 from PyFlow.Core.FunctionLibrary import FunctionLibraryBase
 from PyFlow.Core.FunctionLibrary import IMPLEMENT_NODE
 from PyFlow.Core import Common
+from PyFlow.Core import version

@@ -13,7 +13,6 @@ from Qt import QtGui
 from Qt import QtCore
 from Qt.QtWidgets import *
 
-from PyFlow import version
 from PyFlow import GET_PACKAGES
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.Canvas import Canvas
@@ -274,9 +273,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
                 saveData = self.graphManager.serialize()
-                saveData["fileVersion"] = str(version.currentVersion())
                 json.dump(saveData, f, indent=4)
-
             print(str("// saved: '{0}'".format(self._current_file_name)))
 
     def newFile(self, keepRoot=True):

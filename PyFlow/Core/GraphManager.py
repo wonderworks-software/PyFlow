@@ -4,6 +4,7 @@ from blinker import Signal
 
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.Common import *
+from PyFlow.Core import version
 
 ROOT_GRAPH_NAME = str('root')
 
@@ -31,7 +32,9 @@ class GraphManager(object):
 
     def serialize(self):
         rootGraph = self.findRootGraph()
-        return rootGraph.serialize()
+        saved = rootGraph.serialize()
+        saved["fileVersion"] = str(version.currentVersion())
+        return saved
 
     @dispatch(str)
     def removeGraph(self, name):
