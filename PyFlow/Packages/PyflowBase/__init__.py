@@ -67,7 +67,8 @@ from PyFlow.Packages.PyflowBase.Tools.HistoryTool import HistoryTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.Packages.PyflowBase.Tools.VariablesTool import VariablesTool
 
-from PyFlow.Packages.PyflowBase.Exporters.PyFlowProgramExporter import PyFlowProgramExporter
+from PyFlow.Packages.PyflowBase.Exporters.PythonScriptExporter import PythonScriptExporter
+from PyFlow.Packages.PyflowBase.Importers.PythonScriptImporter import PythonScriptImporter
 
 # Factories
 from PyFlow.Packages.PyflowBase.Factories.UIPinFactory import createUIPin
@@ -145,12 +146,19 @@ _TOOLS[SearchResultsTool.__name__] = SearchResultsTool
 
 
 _EXPORTERS = OrderedDict()
-_EXPORTERS[PyFlowProgramExporter.__name__] = PyFlowProgramExporter
+_EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
+
+_IMPORTERS = OrderedDict()
+_IMPORTERS[PythonScriptImporter.__name__] = PythonScriptImporter
 
 
 class PyflowBase(IPackage):
     def __init__(self):
         super(PyflowBase, self).__init__()
+
+    @staticmethod
+    def GetImporters():
+        return _IMPORTERS
 
     @staticmethod
     def GetExporters():

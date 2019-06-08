@@ -26,6 +26,23 @@ class IDataExporter(object):
         raise NotImplementedError('doExport method of IDataExporter is not implemented')
 
 
+class IDataImporter(object):
+    def __init__(self):
+        super(IDataImporter, self).__init__()
+
+    @staticmethod
+    def displayName():
+        raise NotImplementedError('displayName method of IDataImporter is not implemented')
+
+    @staticmethod
+    def toolTip():
+        return ''
+
+    @staticmethod
+    def doImport(pyFlowInstance):
+        raise NotImplementedError('doImport method of IDataImporter is not implemented')
+
+
 class IPackage(object):
     def __init__(self):
         super(IPackage, self).__init__()
@@ -33,6 +50,10 @@ class IPackage(object):
     @staticmethod
     def GetExporters():
         raise NotImplementedError('GetExporters method of IPackage is not implemented')
+
+    @staticmethod
+    def GetImporters():
+        raise NotImplementedError('GetImporters method of IPackage is not implemented')
 
     @staticmethod
     def GetFunctionLibraries():

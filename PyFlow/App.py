@@ -128,8 +128,22 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         saveAsAction.setIcon(QtGui.QIcon(":/save_as_icon.png"))
         saveAsAction.triggered.connect(lambda: self.save(True))
 
+        importersMenu = fileMenu.addMenu("Import")
         exportersMenu = fileMenu.addMenu("Export")
         for packageName, package in GET_PACKAGES().items():
+            # importers
+            importers = None
+            try:
+                importers = package.GetImporters()
+            except:
+                continue
+            pkgMenu = importersMenu.addMenu(packageName)
+            for importerName, importerClass in importers.items():
+                importerAction = pkgMenu.addAction(importerClass.displayName())
+                importerAction.setToolTip(importerClass.toolTip())
+                importerAction.triggered.connect(lambda checked=False, app=self: importerClass.doImport(app))
+
+            # exporters
             exporters = None
             try:
                 exporters = package.GetExporters()

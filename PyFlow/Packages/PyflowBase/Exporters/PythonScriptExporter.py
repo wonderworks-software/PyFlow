@@ -1,14 +1,14 @@
 from PyFlow.UI.UIInterfaces import IDataExporter
 
 
-class PyFlowProgramExporter(IDataExporter):
-    """docstring for PyFlowProgramExporter."""
+class PythonScriptExporter(IDataExporter):
+    """docstring for PythonScriptExporter."""
     def __init__(self):
-        super(PyFlowProgramExporter, self).__init__()
+        super(PythonScriptExporter, self).__init__()
 
     @staticmethod
     def toolTip():
-        return "Exports program as single script that can be evaluated outside the editor."
+        return "Exports program as python script."
 
     @staticmethod
     def displayName():
