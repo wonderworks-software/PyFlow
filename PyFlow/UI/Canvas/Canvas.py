@@ -173,16 +173,11 @@ class SceneClass(QGraphicsScene):
                         if valid:
                             self.hoverItems.append(item)
                             item.drawThick()
-                    # elif isinstance(item, UIRerouteNode):
-                    #     self.hoverItems.append(item)
-                    #     item.showPins()
                 for item in self.hoverItems:
                     if item not in hoverItems:
                         self.hoverItems.remove(item)
                         if isinstance(item, UIConnection):
                             item.restoreThick()
-                        # elif isinstance(item, UIRerouteNode):
-                        #     item.hidePins()
                     else:
                         if isinstance(item, UIConnection):
                             item.drawThick()
@@ -1097,7 +1092,15 @@ class Canvas(QGraphicsView):
                 self.resizing = node.bResize
                 node.setSelected(False)
             if not self.resizing:
-                if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
+                if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.NoModifier:
+                    closestPin = self.findPinNearPosition(event.pos(), 20)
+                    if closestPin is not None:
+                        if closestPin.direction == PinDirection.Input:
+                            self.pressed_item.destinationPositionOverride = lambda: self.mapToScene(self.mousePos)
+                        elif closestPin.direction == PinDirection.Output:
+                            self.pressed_item.sourcePositionOverride = lambda: self.mapToScene(self.mousePos)
+                        self.reconnectingWires.add(self.pressed_item)
+                elif event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
                     self.manipulationMode = CanvasManipulationMode.SELECT
                     self._selectionRect = SelectionRect(graph=self, mouseDownPos=self.mapToScene(event.pos()), modifiers=modifiers)
                     self._selectionRect.selectFullyIntersectedItems = True
@@ -1113,7 +1116,6 @@ class Canvas(QGraphicsView):
                 if currentInputAction in InputManager()["Canvas.Pan"]:
                     self.manipulationMode = CanvasManipulationMode.PAN
                     self._lastPanPoint = self.mapToScene(event.pos())
-                # elif event.button() == QtCore.Qt.RightButton:
                 elif currentInputAction in InputManager()["Canvas.Zoom"]:
                     self.manipulationMode = CanvasManipulationMode.ZOOM
                     self._lastTransform = QtGui.QTransform(self.transform())
@@ -1416,20 +1418,16 @@ class Canvas(QGraphicsView):
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
         if len(self.reconnectingWires) > 0:
-            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 5, event.pos().y() - 4),
-                                     QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
-            hoverPins = [i for i in self.items(mouseRect) if isinstance(i, UIPinBase)]
-            if len(hoverPins) == 1:
-                closestItem = hoverPins[0]
+            if self.releasedPin is not None:
                 for wire in self.reconnectingWires:
                     if wire.destinationPositionOverride is not None:
                         lhsPin = wire.source()
                         self.removeConnection(wire)
-                        self.connectPinsInternal(lhsPin, closestItem)
+                        self.connectPinsInternal(lhsPin, self.releasedPin)
                     elif wire.sourcePositionOverride is not None:
                         rhsPin = wire.destination()
                         self.removeConnection(wire)
-                        self.connectPinsInternal(closestItem, rhsPin)
+                        self.connectPinsInternal(self.releasedPin, rhsPin)
             else:
                 for wire in self.reconnectingWires:
                     self.removeConnection(wire)
