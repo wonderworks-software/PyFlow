@@ -1188,7 +1188,7 @@ class Canvas(QGraphicsView):
                         self.manipulationMode = CanvasManipulationMode.MOVE
                         selectedNodes = self.selectedNodes()
                         copiedNodes = self.copyNodes()
-                        self.pasteNodes(move=False, data=copiedNodes)                     
+                        self.pasteNodes(move=False, data=copiedNodes)
         else:
             super(Canvas, self).mousePressEvent(event)
 
@@ -1205,7 +1205,7 @@ class Canvas(QGraphicsView):
         self.mousePos = event.pos()
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         modifiers = event.modifiers()
-        node = self.nodeFromInstance(self.itemAt(event.pos()))           
+        node = self.nodeFromInstance(self.itemAt(event.pos()))
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         if self.itemAt(event.pos()) and isinstance(node, UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
@@ -1230,17 +1230,19 @@ class Canvas(QGraphicsView):
                                      QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
             hoverItems = self.items(mouseRect)
 
+            p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
+            p2 = self.mapToScene(self.mousePos)
+
             hoveredPins = [pin for pin in hoverItems if isinstance(pin, UIPinBase)]
             if len(hoveredPins) > 0:
                 item = hoveredPins[0]
                 if isinstance(item, UIPinBase) and isinstance(self.pressed_item, UIPinBase):
                     canBeConnected = canConnectPins(self.pressed_item._rawPin, item._rawPin)
                     self.realTimeLine.setPen(self.realTimeLineValidPen if canBeConnected else self.realTimeLineInvalidPen)
+                    if canBeConnected:
+                        p2 = item.scenePos() + item.pinCenter()
             else:
                 self.realTimeLine.setPen(self.realTimeLineNormalPen)
-
-            p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
-            p2 = self.mapToScene(self.mousePos)
 
             distance = p2.x() - p1.x()
             multiply = 3
