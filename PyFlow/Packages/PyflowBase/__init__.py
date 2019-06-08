@@ -68,6 +68,7 @@ from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.Packages.PyflowBase.Tools.VariablesTool import VariablesTool
 
 from PyFlow.Packages.PyflowBase.Exporters.PythonScriptExporter import PythonScriptExporter
+from PyFlow.Packages.PyflowBase.Exporters.CPPCompiler import CPPCompiler
 
 # Factories
 from PyFlow.Packages.PyflowBase.Factories.UIPinFactory import createUIPin
@@ -146,6 +147,7 @@ _TOOLS[SearchResultsTool.__name__] = SearchResultsTool
 
 _EXPORTERS = OrderedDict()
 _EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
+_EXPORTERS[CPPCompiler.__name__] = CPPCompiler
 
 
 class PyflowBase(IPackage):
