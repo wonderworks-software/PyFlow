@@ -406,6 +406,7 @@ class Canvas(QGraphicsView):
         self.boundingRect = self.rect()
         if self.USETAB:
             self.installEventFilter(self)
+        self.reconnectingWires = set()
 
     def getApp(self):
         return self.pyFlowInstance
@@ -787,7 +788,7 @@ class Canvas(QGraphicsView):
             for out in node['outputs']:
                 newLinkedToNames = []
                 for linkedToFullName in out['linkedTo']:
-                    oldNodeName, pinName = linkedToFullName.rsplit('.', 1)
+                    oldNodeName, pinName = linkedToFullName.rsplit('_', 1)
                     if oldNodeName in renameData:
                         newNodeName = renameData[oldNodeName]
                         newPinFullName = "{0}.{1}".format(newNodeName, pinName)
@@ -1122,16 +1123,22 @@ class Canvas(QGraphicsView):
                     self._lastOffsetFromSceneCenter = self._lastScenePos - self._lastSceneCenter
             self.node_box.hide()
         elif not isinstance(self.pressed_item, EditableLabel) or (isinstance(self.pressed_item, EditableLabel) and not self.pressed_item._beingEdited):
-            # else:
             if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
                 self.node_box.hide()
                 self.node_box.lineEdit.clear()
             if isinstance(self.pressed_item, UIPinBase):
-                if event.button() == QtCore.Qt.LeftButton:
+                if event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.NoModifier:
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
                     self._drawRealtimeLine = True
                     self.autoPanController.start()
+                elif event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.ControlModifier:
+                    for wire in self.pressed_item.uiConnectionList:
+                        if self.pressed_item.direction == PinDirection.Input:
+                            wire.destinationPositionOverride = lambda: self.mapToScene(self.mousePos)
+                        elif self.pressed_item.direction == PinDirection.Output:
+                            wire.sourcePositionOverride = lambda: self.mapToScene(self.mousePos)
+                        self.reconnectingWires.add(wire)
                 if currentInputAction in InputManager()["Canvas.DisconnectPin"]:
                     self.removeEdgeCmd(self.pressed_item.connections)
                     self._drawRealtimeLine = False
@@ -1399,12 +1406,39 @@ class Canvas(QGraphicsView):
     def mouseReleaseEvent(self, event):
         super(Canvas, self).mouseReleaseEvent(event)
 
+        modifiers = event.modifiers()
+
         self.autoPanController.stop()
         self.mouseReleasePos = event.pos()
         self.released_item = self.itemAt(event.pos())
         self.releasedPin = self.findPinNearPosition(event.pos())
         self._resize_group_mode = False
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+
+        if len(self.reconnectingWires) > 0:
+            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 5, event.pos().y() - 4),
+                                     QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
+            hoverPins = [i for i in self.items(mouseRect) if isinstance(i, UIPinBase)]
+            if len(hoverPins) == 1:
+                closestItem = hoverPins[0]
+                for wire in self.reconnectingWires:
+                    if wire.destinationPositionOverride is not None:
+                        lhsPin = wire.source()
+                        self.removeConnection(wire)
+                        self.connectPinsInternal(lhsPin, closestItem)
+                    elif wire.sourcePositionOverride is not None:
+                        rhsPin = wire.destination()
+                        self.removeConnection(wire)
+                        self.connectPinsInternal(closestItem, rhsPin)
+            else:
+                for wire in self.reconnectingWires:
+                    self.removeConnection(wire)
+
+            for wire in self.reconnectingWires:
+                wire.sourcePositionOverride = None
+                wire.destinationPositionOverride = None
+            self.reconnectingWires.clear()
+
         for n in self.getAllNodes():
             if not n.isCommentNode:
                 n.setFlag(QGraphicsItem.ItemIsMovable)
@@ -1422,12 +1456,12 @@ class Canvas(QGraphicsView):
         if event.button() == QtCore.Qt.RightButton:
             # show nodebox only if drag is small and no items under cursor
             if self.pressed_item is None or (isinstance(self.pressed_item, UINodeBase) and self.nodeFromInstance(self.pressed_item).isCommentNode):
-                dragDiff = self.mapToScene(
-                    self.mousePressPose) - self.mapToScene(event.pos())
-                if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
-                    self.showNodeBox()
+                if modifiers == QtCore.Qt.NoModifier:
+                    dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
+                    if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
+                        self.showNodeBox()
         elif event.button() == QtCore.Qt.LeftButton and self.releasedPin is None:
-            if isinstance(self.pressed_item, UIPinBase) and not self.resizing:
+            if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
                 # node box tree pops up
                 # with nodes taking supported data types of pressed Pin as input
                 self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction)
