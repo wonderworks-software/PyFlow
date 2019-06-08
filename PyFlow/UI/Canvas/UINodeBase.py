@@ -542,7 +542,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.createActionButtons()
 
         headerHtml = self.name
-        if jsonTemplate is not None:
+        if jsonTemplate is not None and jsonTemplate["wrapper"] is not None:
             if "collapsed" in jsonTemplate["wrapper"]:
                 self.collapsed = jsonTemplate["wrapper"]["collapsed"]
             if "headerHtml" in jsonTemplate["wrapper"]:

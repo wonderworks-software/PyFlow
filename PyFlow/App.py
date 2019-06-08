@@ -128,32 +128,24 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         saveAsAction.setIcon(QtGui.QIcon(":/save_as_icon.png"))
         saveAsAction.triggered.connect(lambda: self.save(True))
 
-        importersMenu = fileMenu.addMenu("Import")
-        exportersMenu = fileMenu.addMenu("Export")
+        IOMenu = fileMenu.addMenu("Custom IO")
         for packageName, package in GET_PACKAGES().items():
-            # importers
-            importers = None
-            try:
-                importers = package.GetImporters()
-            except:
-                continue
-            pkgMenu = importersMenu.addMenu(packageName)
-            for importerName, importerClass in importers.items():
-                importerAction = pkgMenu.addAction(importerClass.displayName())
-                importerAction.setToolTip(importerClass.toolTip())
-                importerAction.triggered.connect(lambda checked=False, app=self: importerClass.doImport(app))
-
             # exporters
             exporters = None
             try:
                 exporters = package.GetExporters()
             except:
                 continue
-            pkgMenu = exportersMenu.addMenu(packageName)
+            pkgMenu = IOMenu.addMenu(packageName)
             for exporterName, exporterClass in exporters.items():
-                exporterAction = pkgMenu.addAction(exporterClass.displayName())
-                exporterAction.setToolTip(exporterClass.toolTip())
-                exporterAction.triggered.connect(lambda checked=False, app=self: exporterClass.doExport(app))
+                fileFormatMenu = pkgMenu.addMenu(exporterClass.displayName())
+                fileFormatMenu.setToolTip(exporterClass.toolTip())
+                if exporterClass.createExporterMenu():
+                    exportAction = fileFormatMenu.addAction("Export")
+                    exportAction.triggered.connect(lambda checked=False, app=self: exporterClass.doExport(app))
+                if exporterClass.createImporterMenu():
+                    importAction = fileFormatMenu.addAction("Import")
+                    importAction.triggered.connect(lambda checked=False, app=self: exporterClass.doImport(app))
 
         editMenu = self.menuBar.addMenu("Edit")
         preferencesAction = editMenu.addAction("Preferences")
@@ -226,15 +218,18 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if currentInputAction in actionSaveAsVariants:
             self.save_as()
 
-    def loadFromData(self, data, fpath=""):
-        self.newFile(keepRoot=False)
-        # load raw data
-        self.graphManager.deserialize(data)
+    def afterLoad(self):
         # create ui nodes
         for graph in self.graphManager.getAllGraphs():
             self.canvasWidget.createWrappersForGraph(graph)
         self.graphManager.selectRootGraph()
         self.fileBeenLoaded.emit()
+
+    def loadFromData(self, data, fpath=""):
+        self.newFile(keepRoot=False)
+        # load raw data
+        self.graphManager.deserialize(data)
+        self.afterLoad()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -246,14 +241,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         if not fpath == '':
             with open(fpath, 'r') as f:
                 data = json.load(f)
-
-                if "fileVersion" in data:
-                    fileVersion = version.Version.fromString(data["fileVersion"])
-                    print("File version - {0}\nPyFlow version - {1}".format(str(fileVersion), str(version.currentVersion())))
-                else:
-                    # handle first release graph files
-                    pass
-
                 self.loadFromData(data, fpath)
 
     def save(self, save_as=False):

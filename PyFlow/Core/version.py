@@ -17,7 +17,7 @@ class Version(object):
         return Version(int(major), int(minor), int(patch))
 
     def __str__(self):
-        return "{0}.{1}.{2}".format(self.minor, self.major, self.patch)
+        return "{0}.{1}.{2}".format(self.major, self.minor, self.patch)
 
     @property
     def major(self):
@@ -35,6 +35,11 @@ class Version(object):
         return all([self.major == other.major,
                     self.minor == other.minor,
                     self.patch == other.patch])
+
+    def __ge__(self, other):
+        lhs = int("".join([str(self.major), str(self.minor), str(self.patch)]))
+        rhs = int("".join([str(other.major), str(other.minor), str(other.patch)]))
+        return lhs >= rhs
 
     def __gt__(self, other):
         lhs = int("".join([str(self.major), str(self.minor), str(self.patch)]))
