@@ -172,6 +172,15 @@ class IPin(IItemBase):
         raise NotImplementedError('pinDataTypeHint method of IPin is not implemented')
 
     @staticmethod
+    def internalDataStructure():
+        """
+        Static hint of what realPyton type is this pin
+
+        """
+
+        raise NotImplementedError('internalDataStructure method of IPin is not implemented')
+
+    @staticmethod
     def processData(data):
         '''
         Defines how data is processed.
@@ -179,8 +188,9 @@ class IPin(IItemBase):
         Returns:
             procesed data
         '''
-
-        return data
+        #return data
+        raise NotImplementedError('processData method of IPin is not implemented')
+        
 
     @staticmethod
     def supportedDataTypes():

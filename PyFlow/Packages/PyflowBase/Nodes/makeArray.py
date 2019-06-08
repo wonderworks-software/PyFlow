@@ -55,5 +55,5 @@ class makeArray(NodeBase):
             outArray = list(reversed(outArray))
 
         self.outArray.setData(outArray)
-        self.arrayData._data = outArray
+        self.arrayData.setData(outArray)
         self.result.setData(True)

@@ -20,8 +20,6 @@ class AnyPin(PinBase):
         self.dataTypeBeenSet = Signal()
         self.setDefaultValue(None)
         self._isAny = True
-        self.super = AnyPin
-        self.activeDataType = self.__class__.__name__
         # if True, setType and setDefault will work only once
         self.singleInit = False
         self.enableOptions(PinOptions.ChangeTypeOnConnection)
@@ -53,40 +51,47 @@ class AnyPin(PinBase):
         return 'AnyPin', None
 
     @staticmethod
+    def internalDataStructure():
+        return type(None)
+
+    @staticmethod
     def processData(data):
         return data
 
-    def setData(self, data):
+    def setTypeFromData(self,data):
         for pin in [pin for pin in getAllPinClasses() if pin.IsValuePin()]:
-            pType = type(getPinDefaultValueByType(pin.__name__))
-
-            if pType == type(data):
+            pType = pin.internalDataStructure()
+            if isinstance(data,pType):
                 if pin.__name__ != self.activeDataType:
-                    traverseConstrainedPins(self, lambda x: self.updateOnConnectionCallback(x, pin.__name__, False, None))
-                    self.super = pin
+                    if self.canChangeTypeOnConection([], self.optionEnabled(PinOptions.ChangeTypeOnConnection), []):
+                        traverseConstrainedPins(self, lambda x: self.updateOnConnectionCallback(x, pin.__name__, False, None))
                 break
-        try:
-            if not self.isArray():
-                data = self.super.processData(data)
-            else:
-                data = [self.super.processData(i) for i in data]
-            self._lastError = None
-        except Exception as e:
-            data = getPinDefaultValueByType(self.activeDataType)
-            self._lastError = e
-            self.super = None
-        can = self.canChange
-        if self.activeDataType == "AnyPin" and self.isArray and can:
-            self.super = None
-            self._lastError = "AnyPin Not Initialized"
-        else:
-            self._lastError = None
-            self.super = AnyPin
 
+    def updateError(self,traversed=[]):
+        nodePins= set()
+        if self.constraint:
+            nodePins = set(self.owningNode().constraints[self.constraint])
+        for connectedPin in getConnectedPins(self):
+            if connectedPin.isAny():
+                nodePins.add(connectedPin)
+        for neighbor in nodePins:
+            if neighbor not in traversed:
+                canChange = neighbor.canChangeTypeOnConection([], neighbor.optionEnabled(PinOptions.ChangeTypeOnConnection), [])
+                if neighbor.activeDataType == "AnyPin" and neighbor.isArray and canChange:
+                    neighbor.setError("AnyPin Not Initialized")
+                else:
+                    neighbor.clearError()
+                traversed.append(neighbor)
+                neighbor.updateError(traversed)
         self.owningNode().checkForErrors()
 
+          
+
+    def setData(self, data):
         self._data = data
+        self.setTypeFromData(data)
         PinBase.setData(self, self._data)
+        self.updateError([])
 
     def serialize(self):
         dt = super(AnyPin, self).serialize()
@@ -102,19 +107,21 @@ class AnyPin(PinBase):
         super(AnyPin, self).deserialize(jsonData)
         if "currDataType" in jsonData:
             self.setType(jsonData["currDataType"])
+        self.updateError([])
 
     def pinConnected(self, other):
         super(AnyPin, self).pinConnected(other)
+        self.updateError([])
 
     def aboutToConnect(self, other):
-        if self.optionEnabled(PinOptions.ChangeTypeOnConnection):
+        if self.canChangeTypeOnConection([], self.optionEnabled(PinOptions.ChangeTypeOnConnection), []):
             dataType = other.dataType
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, False, other))
         super(AnyPin, self).aboutToConnect(other)
 
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
-        self.canChange = self.optionEnabled(PinOptions.ChangeTypeOnConnection)
+        self.updateError([])
 
     def updateOnConnectionCallback(self, pin, dataType, init=False, other=None):
         free = pin.checkFree([])
@@ -134,12 +141,13 @@ class AnyPin(PinBase):
                     if other:
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
                             pin._supportedDataTypes = other.allowedDataTypes([], other._supportedDataTypes)
-                        pin.canChange = pin.canChangeTypeOnConection([], self.optionEnabled(PinOptions.ChangeTypeOnConnection), [other])
+                        #pin.canChange = pin.canChangeTypeOnConection([], self.optionEnabled(PinOptions.ChangeTypeOnConnection), [other])
                         pin.setType(dataType)
                     if dataType == "AnyPin":
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
                             pin._supportedDataTypes = pin._defaultSupportedDataTypes
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes
+                    pin.updateError([])
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
@@ -156,7 +164,8 @@ class AnyPin(PinBase):
             else:
                 free = True
                 checked.append(self)
-            free = self.optionEnabled(PinOptions.ChangeTypeOnConnection)
+            canChange = self.canChangeTypeOnConection([], self.optionEnabled(PinOptions.ChangeTypeOnConnection), [])                
+            free = canChange
             for port in self.owningNode().constraints[self.constraint] + con:
                 if port not in checked:
                     checked.append(port)
@@ -214,6 +223,9 @@ class AnyPin(PinBase):
         return False
 
     def setType(self, dataType):
+        if self.activeDataType == dataType:
+            return True
+
         if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
             return False
 

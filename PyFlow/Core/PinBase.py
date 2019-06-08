@@ -16,7 +16,7 @@ class PinBase(IPin):
 
     def __init__(self, name, owningNode, direction):
         super(PinBase, self).__init__()
-        # signals
+        # signals       
         self.serializationHook = Signal()
         self.onPinConnected = Signal(object)
         self.onPinDisconnected = Signal(object)
@@ -65,6 +65,10 @@ class PinBase(IPin):
         self._alwaysList = False
         self._alwaysSingle = False
         self._defaultSupportedDataTypes = self._supportedDataTypes = self.supportedDataTypes()
+        self.canChange = False
+        # DataTypes
+        self.super = self.__class__ 
+        self.activeDataType = self.__class__.__name__
 
     @property
     def group(self):
@@ -260,16 +264,36 @@ class PinBase(IPin):
     def getData(self):
         return EvaluationEngine().getPinData(self)
 
+    def clearError(self):
+        self._lastError = None
+        self.errorCleared.send()
+
+    def setError(self, err):
+        self._lastError = str(err)
+        self.errorOccured.send(self._lastError)
+
     ## Setting the data
     def setData(self, data):
-        self.setClean()
-        self._data = data
-        if self.direction == PinDirection.Output:
-            for i in self.affects:
-                i._data = self.currentData()
-                i.setClean()
-        if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
-            push(self)
+        try:
+            self.setClean()
+            if not self.isArray():
+                self._data = self.processData(data)
+            else:
+                self._data = [self.processData(i) for i in data]
+
+            if self.direction == PinDirection.Output:
+                for i in self.affects:
+                    i._data = self.currentData()
+                    i.setClean()
+            if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
+                push(self)
+            self.clearError()
+        except Exception as e:
+            self.setError(e)
+            self.setDirty()
+            #self.setData(self.defaultValue())
+
+        self.owningNode().checkForErrors()
 
     ## Calling execution pin
     def call(self, *args, **kwargs):
@@ -335,65 +359,6 @@ class PinBase(IPin):
         if free:
             self.updateConstrainedPins(set(), newStruct, init, connecting=True)
 
-    def pinConnected(self, other):
-        push(self)
-
-    def updateConstrainedPins(self, traversed, newStruct, init=False, connecting=False):
-        nodePins = set()
-        if self.structConstraint is not None:
-            nodePins = set(self.owningNode().structConstraints[self.structConstraint])
-        else:
-            nodePins = set([self])
-        for connectedPin in getConnectedPins(self):
-            if connectedPin.structureType == PinStructure.Multi:
-                if connectedPin.canChangeStructure(self._currStructure, init=init):
-                    nodePins.add(connectedPin)
-        for neighbor in nodePins:
-            if neighbor not in traversed:
-                neighbor.setAsArray(newStruct == PinStructure.Array)
-                if connecting:
-                    if init:
-                        neighbor._alwaysList = newStruct == PinStructure.Array
-                        neighbor._alwaysSingle = newStruct == PinStructure.Single
-                    neighbor._currStructure = newStruct
-                    neighbor.enableOptions(PinOptions.ArraySupported)
-                    if newStruct == PinStructure.Single:
-                        neighbor.disableOptions(PinOptions.ArraySupported)
-                        neighbor.disableOptions(PinOptions.SupportsOnlyArrays)
-                else:
-                    neighbor._currStructure = neighbor._structure
-                    neighbor._data = neighbor.defaultValue()
-                traversed.add(neighbor)
-                neighbor.updateConstrainedPins(traversed, newStruct, init, connecting=connecting)
-
-    def pinDisconnected(self, other):
-        self.onPinDisconnected.send(other)
-        if self.direction == PinDirection.Output:
-            otherPinName = other.getName()
-        push(other)
-
-    def canChangeTypeOnConection(self, checked=[], can=True, extraPins=[], selfChek=True):
-        if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
-            return False
-        con = []
-        neis = []
-        if selfChek:
-            print(self, self.hasConnections())
-            if self.hasConnections():
-                for c in getConnectedPins(self):
-                    if c not in checked:
-                        con.append(c)
-        else:
-            checked.append(self)
-        if self.constraint:
-            neis = self.owningNode().constraints[self.constraint]
-        for port in neis + con + extraPins:
-            if port not in checked and can:
-                checked.append(port)
-                can = port.canChangeTypeOnConection(checked, can, selfChek=True)
-                print(port, can)
-        return can
-
     def canChangeStructure(self, newStruct, checked=[], selfChek=True, init=False):
         if not init and (self._alwaysList or self._alwaysSingle):
             return False
@@ -441,11 +406,74 @@ class PinBase(IPin):
                             break
             return free
 
+    def updateConstrainedPins(self, traversed, newStruct, init=False, connecting=False):
+        nodePins = set()
+        if self.structConstraint is not None:
+            nodePins = set(self.owningNode().structConstraints[self.structConstraint])
+        else:
+            nodePins = set([self])
+        for connectedPin in getConnectedPins(self):
+            if connectedPin.structureType == PinStructure.Multi:
+                if connectedPin.canChangeStructure(self._currStructure, init=init):
+                    nodePins.add(connectedPin)
+        for neighbor in nodePins:
+            if neighbor not in traversed:
+                neighbor.setAsArray(newStruct == PinStructure.Array)
+                if connecting:
+                    if init:
+                        neighbor._alwaysList = newStruct == PinStructure.Array
+                        neighbor._alwaysSingle = newStruct == PinStructure.Single
+                    neighbor._currStructure = newStruct
+                    neighbor.enableOptions(PinOptions.ArraySupported)
+                    if newStruct == PinStructure.Single:
+                        neighbor.disableOptions(PinOptions.ArraySupported)
+                        neighbor.disableOptions(PinOptions.SupportsOnlyArrays)
+                else:
+                    neighbor._currStructure = neighbor._structure
+                    neighbor._data = neighbor.defaultValue()
+                traversed.add(neighbor)
+                neighbor.setData(neighbor.defaultValue())
+                neighbor.updateConstrainedPins(traversed, newStruct, init, connecting=connecting)
+
+    def pinConnected(self, other):
+        push(self)
+
+    def pinDisconnected(self, other):
+        self.onPinDisconnected.send(other)
+        push(other)
+
+    def canChangeTypeOnConection(self, checked=[], can=True, extraPins=[], selfChek=True):
+        if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
+            return False
+        con = []
+        neis = []
+        if selfChek:
+            if self.hasConnections():
+                for c in getConnectedPins(self):
+                    if c not in checked:
+                        con.append(c)
+        else:
+            checked.append(self)
+        if self.constraint:
+            neis = self.owningNode().constraints[self.constraint]
+        for port in neis + con + extraPins:
+            if port not in checked and can:
+                checked.append(port)
+                can = port.canChangeTypeOnConection(checked, can, selfChek=True)
+        return can
+
     def setClean(self):
         self.dirty = False
         if self.direction == PinDirection.Output:
             for i in self.affects:
                 i.dirty = False
+
+    def setDirty(self):
+        if self.isExec():
+            return
+        self.dirty = True
+        for i in self.affects:
+            i.dirty = True
 
     def hasConnections(self):
         numConnections = 0
@@ -454,13 +482,6 @@ class PinBase(IPin):
         elif self.direction == PinDirection.Output:
             numConnections += len(self.affects)
         return numConnections > 0
-
-    def setDirty(self):
-        if self.isExec():
-            return
-        self.dirty = True
-        for i in self.affects:
-            i.dirty = True
 
     def setDefaultValue(self, val):
         # In python, all user-defined classes are mutable

@@ -73,16 +73,18 @@ class NodeBase(INode):
     def checkForErrors(self):
         failed = False
         error = None
+        failedPins = {}
         for pin in self._pins:
             if not failed:
                 if pin._lastError is not None:
                     failed = True
                     error = pin._lastError
+                    failedPins[pin.name] = error
                 else:
                     failed = False
                     error = None
         if failed:
-            self.setError(error)
+            self.setError("Error on Pins:%s"%str(failedPins))
         else:
             self.clearError()
         wrapper = self.getWrapper()
@@ -496,15 +498,7 @@ class NodeBase(INode):
             # store data for wrapper
             if "wrapper" in jsonTemplate:
                 self.__wrapperJsonData = jsonTemplate["wrapper"]
-            for pin in self._pins:
-                if pin.dataType == "AnyPin":
-                    pin.canChange = pin.canChangeTypeOnConection([], pin.optionEnabled(PinOptions.ChangeTypeOnConnection))
-                    if pin.activeDataType == "AnyPin" and pin.canChange:
-                        pin.super = None
-                        pin._lastError = "AnyPin Not Initialized"
-                    elif pin._lastError == "AnyPin Not Initialized":
-                        pin._lastError = None
-                        pin.super = pin.__class__
+
             self.checkForErrors()
 
         if self.isCallable():

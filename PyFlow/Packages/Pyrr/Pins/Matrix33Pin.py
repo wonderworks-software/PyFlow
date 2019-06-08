@@ -51,14 +51,9 @@ class Matrix33Pin(PinBase):
         return 'Matrix33Pin', Matrix33()
 
     @staticmethod
-    def processData(data):
-        if isinstance(data, Matrix33):
-            return data
-        raise(Exception('Invalid Matrix33 data'))
+    def internalDataStructure():
+        return Matrix33
 
-    def setData(self, data):
-        try:
-            self._data = self.processData(data)
-        except:
-            self._data = self.defaultValue()
-        PinBase.setData(self, self._data)
+    @staticmethod
+    def processData(data):
+        return Matrix33Pin.internalDataStructure()(data)
