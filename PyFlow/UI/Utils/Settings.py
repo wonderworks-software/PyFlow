@@ -45,12 +45,12 @@ class Colors:
     GridColor = QtGui.QColor(20, 20, 20, 100)
     GridColorDarker = QtGui.QColor(20, 20, 20)
 
-    ConnectionLines = QtGui.QColor(255, 255, 255, 255)
+    ConnectionLines = QtGui.QColor(200, 200, 200, 255)
     Connectors = QtGui.QColor(0, 100, 0, 255)
     PinLinesA = QtGui.QColor(0, 90, 0, 0)
     PinLinesB = QtGui.QColor(0, 0, 90, 0)
     PinNameColor = QtGui.QColor(255, 255, 255, 255)
-    
+
     DirtyPen = QtGui.QColor(250, 250, 250, 200)
     Shadow = QtGui.QColor(20, 20, 20, 150)
     RubberRect = QtGui.QColor(255, 255, 255, 50)

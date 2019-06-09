@@ -250,3 +250,12 @@ class GraphManager(object):
         root = self.findRootGraph()
         print("Active graph: {0}".format(str(self.activeGraph().name)), "All graphs:", [g.name for g in self._graphs.values()])
         root.plot()
+
+
+@SingletonDecorator
+class GraphManagerSingleton(object):
+    def __init__(self):
+        self.man = GraphManager()
+
+    def get(self):
+        return self.man

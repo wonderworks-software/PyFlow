@@ -14,12 +14,13 @@ from Qt import QtCore
 from Qt.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
+from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.Canvas import Canvas
 from PyFlow.Core.Common import Direction
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.Core.GraphManager import GraphManager
+from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Widgets import GraphEditor_ui
@@ -74,11 +75,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.currentTempDir = ""
 
         self.preferencesWindow = PreferencesWindow(self)
-        self.graphManager = GraphManager()
-        self.canvasWidget = Canvas(self.graphManager, self)
+        self.graphManager = GraphManagerSingleton()
+        self.canvasWidget = Canvas(self.graphManager.get(), self)
         self.canvasWidget.requestFillProperties.connect(self.onRequestFillProperties)
         self.canvasWidget.requestClearProperties.connect(self.onRequestClearProperties)
-        self.graphManager.graphChanged.connect(self.updateGraphTreeLocation)
+        self.graphManager.get().graphChanged.connect(self.updateGraphTreeLocation)
         self.updateGraphTreeLocation()
         self.SceneLayout.addWidget(self.canvasWidget)
 
@@ -195,8 +196,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def setCompoundPropertiesWidgetVisible(self, bVisible):
         if bVisible:
             self.CompoundPropertiesWidget.show()
-            self.leCompoundName.setText(self.graphManager.activeGraph().name)
-            self.leCompoundCategory.setText(self.graphManager.activeGraph().category)
+            self.leCompoundName.setText(self.graphManager.get().activeGraph().name)
+            self.leCompoundCategory.setText(self.graphManager.get().activeGraph().category)
         else:
             self.CompoundPropertiesWidget.hide()
 
@@ -220,15 +221,15 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def afterLoad(self):
         # create ui nodes
-        for graph in self.graphManager.getAllGraphs():
+        for graph in self.graphManager.get().getAllGraphs():
             self.canvasWidget.createWrappersForGraph(graph)
-        self.graphManager.selectRootGraph()
+        self.graphManager.get().selectRootGraph()
         self.fileBeenLoaded.emit()
 
     def loadFromData(self, data, fpath=""):
         self.newFile(keepRoot=False)
         # load raw data
-        self.graphManager.deserialize(data)
+        self.graphManager.get().deserialize(data)
         self.afterLoad()
 
     def load(self):
@@ -273,7 +274,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
-                saveData = self.graphManager.serialize()
+                saveData = self.graphManager.get().serialize()
                 json.dump(saveData, f, indent=4)
             print(str("// saved: '{0}'".format(self._current_file_name)))
 
@@ -282,7 +283,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer.timeout.disconnect()
 
         # broadcast
-        self.graphManager.clear(keepRoot=keepRoot)
+        self.graphManager.get().clear(keepRoot=keepRoot)
         self.newFileExecuted.emit(keepRoot)
         self._current_file_name = 'Untitled'
         self.onRequestClearProperties()
@@ -304,11 +305,11 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
             btn.clicked.connect(lambda chk=False, name=folderName: onClicked(chk, name))
             self.layoutGraphPath.insertWidget(index, btn)
 
-        self.setCompoundPropertiesWidgetVisible(self.graphManager.activeGraph().depth() > 1)
+        self.setCompoundPropertiesWidgetVisible(self.graphManager.get().activeGraph().depth() > 1)
 
     def onActiveCompoundNameAccepted(self):
-        newName = self.graphManager.getUniqName(self.leCompoundName.text())
-        self.graphManager.activeGraph().name = newName
+        newName = self.graphManager.get().getUniqName(self.leCompoundName.text())
+        self.graphManager.get().activeGraph().name = newName
         self.leCompoundName.blockSignals(True)
         self.leCompoundName.setText(newName)
         self.leCompoundName.blockSignals(False)
@@ -316,7 +317,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def onActiveCompoundCategoryAccepted(self):
         newCategoryName = self.leCompoundCategory.text()
-        self.graphManager.activeGraph().category = newCategoryName
+        self.graphManager.get().activeGraph().category = newCategoryName
 
     def startMainLoop(self):
         self.tick_timer.timeout.connect(self.mainLoop)
@@ -335,7 +336,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # Tick all graphs
         # each graph will tick owning raw nodes
         # each raw node will tick it's ui wrapper if it exists
-        self.graphManager.Tick(deltaTime)
+        self.graphManager.get().Tick(deltaTime)
 
         # Tick canvas. Update ui only stuff such animation etc.
         self.canvasWidget.Tick(deltaTime)
