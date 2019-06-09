@@ -45,7 +45,7 @@ class UIConnection(QGraphicsPathItem):
         self.setZValue(NodeDefaults().Z_LAYER - 1)
 
         self.color = self.source().color()
-        self.selectedColor = Colors.Blue
+        self.selectedColor = self.color.lighter(150)
 
         self.thickness = 1
         if source.isExec():

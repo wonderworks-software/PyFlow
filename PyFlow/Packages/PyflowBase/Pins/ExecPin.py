@@ -36,7 +36,7 @@ class ExecPin(PinBase):
 
     @staticmethod
     def color():
-        return (255, 255, 255, 255)
+        return (200, 200, 200, 255)
 
     def setData(self, data):
         pass
