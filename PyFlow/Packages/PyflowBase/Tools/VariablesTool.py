@@ -32,8 +32,8 @@ class VariablesTool(DockTool):
 
     def onShow(self):
         super(VariablesTool, self).onShow()
-        varsWidget = VariablesWidget(self.canvas)
-        self.canvas.getApp().fileBeenLoaded.connect(varsWidget.actualize)
+        varsWidget = VariablesWidget(self.pyFlowInstance)
+        self.pyFlowInstance.fileBeenLoaded.connect(varsWidget.actualize)
         self.verticalLayout.addWidget(varsWidget)
 
     @staticmethod

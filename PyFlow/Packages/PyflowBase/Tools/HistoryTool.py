@@ -31,7 +31,7 @@ class HistoryTool(DockTool):
 
     def onShow(self):
         super(HistoryTool, self).onShow()
-        self.undoStackView.setStack(self.canvas.undoStack)
+        self.undoStackView.setStack(self.pyFlowInstance.undoStack)
 
     @staticmethod
     def defaultDockArea():
