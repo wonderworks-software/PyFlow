@@ -40,7 +40,7 @@ class SearchResultsTool(DockTool):
         for node in uiNodesList:
             locationString = ">".join(node.location())
             btn = QPushButton(locationString)
-            btn.clicked.connect(lambda checked=False, n=node: self.canvas.jumpToNode(n))
+            btn.clicked.connect(lambda checked=False, n=node: self.pyFlowInstance.getCanvas().jumpToNode(n))
             category.addWidget(node.getName(), btn)
         self.content.addWidget(category)
 
@@ -54,7 +54,7 @@ class SearchResultsTool(DockTool):
 
     def onShow(self):
         super(SearchResultsTool, self).onShow()
-        self.canvas.requestShowSearchResults.connect(self.onShowNodesResults)
+        self.pyFlowInstance.getCanvas().requestShowSearchResults.connect(self.onShowNodesResults)
 
     @staticmethod
     def toolTip():

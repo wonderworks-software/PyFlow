@@ -25,4 +25,4 @@ class AlignTopTool(ShelfTool):
         return str("AlignTopTool")
 
     def do(self):
-        self.canvas.alignSelectedNodes(Direction.Up)
+        self.pyFlowInstance.getCanvas().alignSelectedNodes(Direction.Up)

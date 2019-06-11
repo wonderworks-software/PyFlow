@@ -77,7 +77,7 @@ class PythonScriptExporter(IDataExporter):
                 fileVersion = Version.fromString(mem["EXPORTER_VERSION"])
                 if fileVersion >= PythonScriptExporter.version() and PythonScriptExporter.displayName() == mem["EXPORTER_NAME"]:
                     pyFlowInstance.newFile()
-                    ROOT_GRAPH = pyFlowInstance.graphManager.findRootGraph()
+                    ROOT_GRAPH = pyFlowInstance.graphManager.get().findRootGraph()
                     mem["createScene"](ROOT_GRAPH)
                     pyFlowInstance.afterLoad()
 
@@ -93,7 +93,7 @@ class PythonScriptExporter(IDataExporter):
         script += "EXPORTER_NAME = '{}'\n".format(PythonScriptExporter.displayName())
         script += "EXPORTER_VERSION = '{}'\n\n".format(str(PythonScriptExporter.version()))
 
-        rootGraph = pyFlowInstance.graphManager.findRootGraph()
+        rootGraph = pyFlowInstance.graphManager.get().findRootGraph()
 
         if len(rootGraph.getNodes()) == 0:
             QMessageBox.warning(pyFlowInstance, "Warning", "Nothing to export!")
@@ -111,7 +111,7 @@ class PythonScriptExporter(IDataExporter):
             for node in rootGraph.getNodes():
                 for outPin in node.outputs.values():
                     for inPinName in outPin.linkedTo:
-                        inPin = pyFlowInstance.graphManager.findPinByName(inPinName)
+                        inPin = pyFlowInstance.graphManager.get().findPinByName(inPinName)
                         graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(outPin.getName(), outPin.getName())
                         graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(inPin.getName(), inPin.getName())
                         graphScript += "connectPins({0}, {1})\n".format(outPin.getName(), inPin.getName())

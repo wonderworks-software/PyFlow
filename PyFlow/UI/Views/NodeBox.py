@@ -201,52 +201,8 @@ class NodeBoxTreeWidget(QTreeWidget):
                     categoryItem.setExpanded(True)
             self.sortItems(0, QtCore.Qt.AscendingOrder)
 
-    def keyPressEvent(self, event):
-        super(NodeBoxTreeWidget, self).keyPressEvent(event)
-        key = event.key()
-        canvas = self.parent().canvasRef()
-        if key == QtCore.Qt.Key_Return:
-            item_clicked = self.currentItem()
-            if not item_clicked:
-                event.ignore()
-                return
-            # check if clicked item is a category
-            if item_clicked.bCategory:
-                event.ignore()
-                return
-            # find top level parent
-            rootItem = item_clicked
-            while not rootItem.parent() is None:
-                rootItem = rootItem.parent()
-            packageName = rootItem.text(0)
-            pressed_text = item_clicked.text(0)
-            libName = item_clicked.libName
-            if pressed_text in self.categoryPaths.keys():
-                event.ignore()
-                return
-
-            nodeClassName = self.currentItem().text(0)
-            name = nodeClassName
-            try:
-                # TODO: replace position gathering method to canvas center
-                pos = canvas.mapToScene(canvas.mouseReleasePos)
-                nodeTemplate = NodeBase.jsonTemplate()
-                nodeTemplate['package'] = packageName
-                nodeTemplate['lib'] = libName
-                nodeTemplate['type'] = pressed_text
-                nodeTemplate['name'] = name
-                nodeTemplate['x'] = pos.x()
-                nodeTemplate['y'] = pos.y()
-                nodeTemplate['meta']['label'] = nodeClassName
-                nodeTemplate['uuid'] = str(uuid.uuid4())
-
-                canvas.createNode(nodeTemplate)
-            except:
-                pass
-
     def mousePressEvent(self, event):
         super(NodeBoxTreeWidget, self).mousePressEvent(event)
-        canvas = self.parent().canvasRef()
         item_clicked = self.currentItem()
         if not item_clicked:
             event.ignore()
@@ -267,31 +223,21 @@ class NodeBoxTreeWidget(QTreeWidget):
             event.ignore()
             return
 
-        try:
-            mousePos = canvas.mapToScene(canvas.mousePressPose)
-        except:
-            mousePos = canvas.mapToScene(canvas.mousePressPose.toPoint())
-
         jsonTemplate = NodeBase.jsonTemplate()
         jsonTemplate['package'] = packageName
         jsonTemplate['lib'] = libName
         jsonTemplate['type'] = pressed_text
         jsonTemplate['name'] = pressed_text
         jsonTemplate['uuid'] = str(uuid.uuid4())
-        jsonTemplate['x'] = mousePos.x()
-        jsonTemplate['y'] = mousePos.y()
         jsonTemplate['meta']['label'] = pressed_text
 
-        if self.bUseDragAndDrop:
-            drag = QtGui.QDrag(self)
-            mime_data = QtCore.QMimeData()
+        drag = QtGui.QDrag(self)
+        mime_data = QtCore.QMimeData()
 
-            pressed_text = json.dumps(jsonTemplate)
-            mime_data.setText(pressed_text)
-            drag.setMimeData(mime_data)
-            drag.exec_()
-        else:
-            canvas.createNode(jsonTemplate)
+        pressed_text = json.dumps(jsonTemplate)
+        mime_data.setText(pressed_text)
+        drag.setMimeData(mime_data)
+        drag.exec_()
 
     def update(self):
         for category in self.categoryPaths.values():
@@ -300,15 +246,14 @@ class NodeBoxTreeWidget(QTreeWidget):
                     0, editableStyleSheet().BgColorBright)
             else:
                 category.setBackground(
-                    0, editableStyleSheet().BgColorBright.lighter(150))                
+                    0, editableStyleSheet().BgColorBright.lighter(150))
         super(NodeBoxTreeWidget, self).update()
 
 class NodesBox(QWidget):
     """doc string for NodesBox"""
 
-    def __init__(self, parent, canvas=None):
+    def __init__(self, parent):
         super(NodesBox, self).__init__(parent)
-        self.canvasRef = weakref.ref(canvas)
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.setObjectName("verticalLayout")
         self.verticalLayout.setContentsMargins(4, 4, 4, 4)

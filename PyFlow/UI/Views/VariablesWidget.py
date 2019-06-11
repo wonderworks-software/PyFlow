@@ -49,20 +49,20 @@ class VariablesListWidget(QListWidget):
 class VariablesWidget(QWidget, Ui_Form):
     """docstring for VariablesWidget"""
 
-    def __init__(self, canvas, parent=None):
+    def __init__(self, pyFlowInstance, parent=None):
         super(VariablesWidget, self).__init__(parent)
         self.setupUi(self)
-        self.canvas = canvas
-        self.canvas.graphManager.graphChanged.connect(self.onGraphChanged)
+        self.pyFlowInstance = pyFlowInstance
+        self.pyFlowInstance.graphManager.get().graphChanged.connect(self.onGraphChanged)
         self.pbNewVar.clicked.connect(self.createVariable)
         self.listWidget = VariablesListWidget()
         self.lytListWidget.addWidget(self.listWidget)
-        self.canvas.getApp().newFileExecuted.connect(self.actualize)
+        self.pyFlowInstance.newFileExecuted.connect(self.actualize)
 
     def actualize(self):
         self.clear()
         # populate current graph
-        graph = self.canvas.graphManager.activeGraph()
+        graph = self.pyFlowInstance.graphManager.get().activeGraph()
         if graph:
             for var in graph.getVarList():
                 self.createVariableWrapperAndAddToList(var)
@@ -91,12 +91,12 @@ class VariablesWidget(QWidget, Ui_Form):
         return uiVariable
 
     def createVariable(self, dataType=str('AnyPin'), accessLevel=AccessLevel.public, uid=None):
-        rawVariable = self.canvas.graphManager.activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
+        rawVariable = self.pyFlowInstance.graphManager.get().activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
         uiVariable = self.createVariableWrapperAndAddToList(rawVariable)
         return uiVariable
 
     def clearProperties(self):
-        self.canvas.requestClearProperties.emit()
+        self.pyFlowInstance.onRequestClearProperties()
 
     def onUpdatePropertyView(self, uiVariable):
-        self.canvas.requestFillProperties.emit(uiVariable.createPropertiesWidget)
+        self.pyFlowInstance.onRequestFillProperties(uiVariable.createPropertiesWidget)

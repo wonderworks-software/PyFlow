@@ -46,7 +46,7 @@ class CPPCompiler(IDataExporter):
                 fileVersion = Version.fromString(mem["EXPORTER_VERSION"])
                 if fileVersion >= CPPCompiler.version() and CPPCompiler.displayName() == mem["EXPORTER_NAME"]:
                     pyFlowInstance.newFile()
-                    ROOT_GRAPH = pyFlowInstance.graphManager.findRootGraph()
+                    ROOT_GRAPH = pyFlowInstance.graphManager.get().findRootGraph()
                     mem["createScene"](ROOT_GRAPH)
                     pyFlowInstance.afterLoad()
 
@@ -62,12 +62,12 @@ class CPPCompiler(IDataExporter):
         script += "int main()\n"
         script += "{\n"
 
-        rootGraph = pyFlowInstance.graphManager.findRootGraph()
+        rootGraph = pyFlowInstance.graphManager.get().findRootGraph()
         if len(rootGraph.getNodes()) == 0:
             QMessageBox.warning(pyFlowInstance, "Warning", "Nothing to export!")
             return
 
-        consoleOutNode = pyFlowInstance.graphManager.findNode("consoleOutput")
+        consoleOutNode = pyFlowInstance.graphManager.get().findNode("consoleOutput")
         if consoleOutNode is None:
             QMessageBox.warning(pyFlowInstance, "Warning", "Console out node not found")
             return
