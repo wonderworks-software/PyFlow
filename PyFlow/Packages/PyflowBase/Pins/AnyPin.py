@@ -40,11 +40,11 @@ class AnyPin(PinBase):
 
     @staticmethod
     def defColor():
-        return (255, 255, 255, 255)
+        return (200, 200, 200, 255)
 
     @staticmethod
     def color():
-        return (255, 255, 255, 255)
+        return (200, 200, 200, 255)
 
     @staticmethod
     def pinDataTypeHint():
