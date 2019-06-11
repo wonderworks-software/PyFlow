@@ -79,7 +79,7 @@ class UIConstantNode(UINodeBase):
 
         overrideType.setChecked(self.input._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection))
         structSelector.setCurrentIndex(self.input._rawPin._currStructure)
-        selector.setEnabled(self.input._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection))
+        #selector.setEnabled(self.input._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection))
 
         overrideType.stateChanged.connect(selector.setEnabled)
         overrideType.stateChanged.connect(self._rawNode.overrideTypeChanged)
@@ -88,6 +88,6 @@ class UIConstantNode(UINodeBase):
         structSelector.activated.connect(self.selectStructure)
 
         inputsCategory.insertWidget(0,"DataType",selector)
-        inputsCategory.insertWidget(1,"Change Type On Connection",overrideType)
+        #inputsCategory.insertWidget(1,"Change Type On Connection",overrideType)
         inputsCategory.insertWidget(1,"Structure",structSelector)
         

@@ -11,6 +11,8 @@ class constant(NodeBase):
         self.input = self.createInputPin("in", 'AnyPin', structure=PinStructure.Multi, constraint="1",structConstraint="1")
         self.output = self.createOutputPin("out", 'AnyPin', structure=PinStructure.Multi, constraint="1",structConstraint="1")
         pinAffects(self.input, self.output)
+        self.input.disableOptions(PinOptions.ChangeTypeOnConnection)
+        self.output.disableOptions(PinOptions.ChangeTypeOnConnection)          
         self.input.call = self.output.call
         self.pinTypes = []
         for pinClass in getAllPinClasses():
@@ -42,8 +44,12 @@ class constant(NodeBase):
             self.output.disableOptions(PinOptions.ChangeTypeOnConnection)            
 
     def updateType(self,dataTypeIndex):
+        self.input.enableOptions(PinOptions.ChangeTypeOnConnection)
+        self.output.enableOptions(PinOptions.ChangeTypeOnConnection)        
         self.changeType(self.pinTypes[dataTypeIndex],True)
-
+        self.input.disableOptions(PinOptions.ChangeTypeOnConnection)
+        self.output.disableOptions(PinOptions.ChangeTypeOnConnection)  
+     
     def changeType(self,dataType,init=False):
         a = self.input.initType(dataType,init)
         b = self.output.initType(dataType,init)
