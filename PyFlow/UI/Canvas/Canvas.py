@@ -5,6 +5,7 @@ from copy import deepcopy
 import json
 import uuid
 import weakref
+from collections import Counter
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -14,22 +15,7 @@ from multipledispatch import dispatch
 from Qt import QtCore
 from Qt import QtGui
 from Qt import QtWidgets
-from Qt.QtWidgets import QGraphicsScene
-from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QMenu
-from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QGraphicsItem
-from Qt.QtWidgets import QGraphicsTextItem
-from Qt.QtWidgets import QGraphicsPathItem
-from Qt.QtWidgets import QGraphicsView
-from Qt.QtWidgets import QApplication
-from Qt.QtWidgets import QInputDialog
-from Qt.QtWidgets import QUndoStack
-from Qt.QtWidgets import QGraphicsWidget
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QGraphicsProxyWidget
-from Qt.QtWidgets import QPushButton
+from Qt.QtWidgets import *
 
 from PyFlow.UI.Utils.Settings import Colors
 from PyFlow.UI.Canvas.UICommon import *
@@ -172,16 +158,11 @@ class SceneClass(QGraphicsScene):
                         if valid:
                             self.hoverItems.append(item)
                             item.drawThick()
-                    # elif isinstance(item, UIRerouteNode):
-                    #     self.hoverItems.append(item)
-                    #     item.showPins()
                 for item in self.hoverItems:
                     if item not in hoverItems:
                         self.hoverItems.remove(item)
                         if isinstance(item, UIConnection):
                             item.restoreThick()
-                        # elif isinstance(item, UIRerouteNode):
-                        #     item.hidePins()
                     else:
                         if isinstance(item, UIConnection):
                             item.drawThick()
@@ -250,7 +231,7 @@ class SceneClass(QGraphicsScene):
                     return
                 if modifiers == QtCore.Qt.AltModifier:
                     nodeTemplate['type'] = 'setVar'
-                    nodeTemplate['uuid'] = varData['uuid']
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
                     nodeTemplate['varUid'] = varData['uuid']
                     nodeTemplate['meta']['label'] = varData['name']
                     self.parent().createNode(nodeTemplate)
@@ -331,6 +312,9 @@ class Canvas(QGraphicsView):
     requestFillProperties = QtCore.Signal(object)
     requestClearProperties = QtCore.Signal()
 
+    # argument is a list of ui nodes
+    requestShowSearchResults = QtCore.Signal(object)
+
     USETAB = True
 
     def __init__(self, graphManager, pyFlowInstance=None):
@@ -338,7 +322,6 @@ class Canvas(QGraphicsView):
         self.state = CanvasState.DEFAULT
         self.graphManager = graphManager
         self.graphManager.graphChanged.connect(self.onGraphChanged)
-        self.undoStack = QUndoStack(self)
         self.pyFlowInstance = pyFlowInstance
         # connect with App class signals
         self.pyFlowInstance.newFileExecuted.connect(self.onNewFile)
@@ -395,13 +378,14 @@ class Canvas(QGraphicsView):
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
 
-        self.node_box = NodesBox(None, self)
+        self.node_box = NodesBox(None)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
         self._UIConnections = {}
         self.boundingRect = self.rect()
         if self.USETAB:
             self.installEventFilter(self)
+        self.reconnectingWires = set()
 
     def getApp(self):
         return self.pyFlowInstance
@@ -425,6 +409,12 @@ class Canvas(QGraphicsView):
                 if uiCommentNode.collapsed:
                     uiCommentNode.hideOwningNodes()
         self.validateConnections(newGraph)
+
+    def jumpToNode(self, uiNode):
+        self.graphManager.selectGraph(uiNode.graph())
+        self.clearSelection()
+        uiNode.setSelected(True)
+        self.frameSelectedNodes()
 
     @property
     def manipulationMode(self):
@@ -561,7 +551,7 @@ class Canvas(QGraphicsView):
         return uiPin
 
     def onNewFile(self, keepRoot=True):
-        self.undoStack.clear()
+        self.getApp().undoStack.clear()
         self.shoutDown()
 
     def getPinByFullName(self, full_name):
@@ -666,7 +656,7 @@ class Canvas(QGraphicsView):
         selectedNodes = self.selectedNodes()
         if self.isShortcutsEnabled() and len(selectedNodes) > 0:
             cmdRemove = cmdRemoveNodes(selectedNodes, self)
-            self.undoStack.push(cmdRemove)
+            self.getApp().undoStack.push(cmdRemove)
             self.requestClearProperties.emit()
 
     def keyPressEvent(self, event):
@@ -719,9 +709,9 @@ class Canvas(QGraphicsView):
                 return
 
             if currentInputAction in InputManager()["Canvas.Undo"]:
-                    self.undoStack.undo()
+                    self.getApp().undoStack.undo()
             if currentInputAction in InputManager()["Canvas.Redo"]:
-                    self.undoStack.redo()
+                    self.getApp().undoStack.redo()
 
             if currentInputAction in InputManager()["Canvas.FrameSelected"]:
                 self.frameSelectedNodes()
@@ -777,7 +767,7 @@ class Canvas(QGraphicsView):
             for out in node['outputs']:
                 newLinkedToNames = []
                 for linkedToFullName in out['linkedTo']:
-                    oldNodeName, pinName = linkedToFullName.rsplit('.', 1)
+                    oldNodeName, pinName = linkedToFullName.rsplit('_', 1)
                     if oldNodeName in renameData:
                         newNodeName = renameData[oldNodeName]
                         newPinFullName = "{0}.{1}".format(newNodeName, pinName)
@@ -837,6 +827,8 @@ class Canvas(QGraphicsView):
                 node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'])
 
             n = self.createNode(node)
+            if n is None:
+                continue
             createdNodes[n] = node
 
             if n is None:
@@ -1084,7 +1076,15 @@ class Canvas(QGraphicsView):
                 self.resizing = node.bResize
                 node.setSelected(False)
             if not self.resizing:
-                if event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
+                if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.NoModifier:
+                    closestPin = self.findPinNearPosition(event.pos(), 20)
+                    if closestPin is not None:
+                        if closestPin.direction == PinDirection.Input:
+                            self.pressed_item.destinationPositionOverride = lambda: self.mapToScene(self.mousePos)
+                        elif closestPin.direction == PinDirection.Output:
+                            self.pressed_item.sourcePositionOverride = lambda: self.mapToScene(self.mousePos)
+                        self.reconnectingWires.add(self.pressed_item)
+                elif event.button() == QtCore.Qt.LeftButton and modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
                     self.manipulationMode = CanvasManipulationMode.SELECT
                     self._selectionRect = SelectionRect(graph=self, mouseDownPos=self.mapToScene(event.pos()), modifiers=modifiers)
                     self._selectionRect.selectFullyIntersectedItems = True
@@ -1100,7 +1100,6 @@ class Canvas(QGraphicsView):
                 if currentInputAction in InputManager()["Canvas.Pan"]:
                     self.manipulationMode = CanvasManipulationMode.PAN
                     self._lastPanPoint = self.mapToScene(event.pos())
-                # elif event.button() == QtCore.Qt.RightButton:
                 elif currentInputAction in InputManager()["Canvas.Zoom"]:
                     self.manipulationMode = CanvasManipulationMode.ZOOM
                     self._lastTransform = QtGui.QTransform(self.transform())
@@ -1110,16 +1109,22 @@ class Canvas(QGraphicsView):
                     self._lastOffsetFromSceneCenter = self._lastScenePos - self._lastSceneCenter
             self.node_box.hide()
         elif not isinstance(self.pressed_item, EditableLabel) or (isinstance(self.pressed_item, EditableLabel) and not self.pressed_item._beingEdited):
-            # else:
             if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
                 self.node_box.hide()
                 self.node_box.lineEdit.clear()
             if isinstance(self.pressed_item, UIPinBase):
-                if event.button() == QtCore.Qt.LeftButton:
+                if event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.NoModifier:
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
                     self._drawRealtimeLine = True
                     self.autoPanController.start()
+                elif event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.ControlModifier:
+                    for wire in self.pressed_item.uiConnectionList:
+                        if self.pressed_item.direction == PinDirection.Input:
+                            wire.destinationPositionOverride = lambda: self.mapToScene(self.mousePos)
+                        elif self.pressed_item.direction == PinDirection.Output:
+                            wire.sourcePositionOverride = lambda: self.mapToScene(self.mousePos)
+                        self.reconnectingWires.add(wire)
                 if currentInputAction in InputManager()["Canvas.DisconnectPin"]:
                     self.removeEdgeCmd(self.pressed_item.connections)
                     self._drawRealtimeLine = False
@@ -1218,17 +1223,19 @@ class Canvas(QGraphicsView):
                                      QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
             hoverItems = self.items(mouseRect)
 
+            p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
+            p2 = self.mapToScene(self.mousePos)
+
             hoveredPins = [pin for pin in hoverItems if isinstance(pin, UIPinBase)]
             if len(hoveredPins) > 0:
                 item = hoveredPins[0]
                 if isinstance(item, UIPinBase) and isinstance(self.pressed_item, UIPinBase):
                     canBeConnected = canConnectPins(self.pressed_item._rawPin, item._rawPin)
                     self.realTimeLine.setPen(self.realTimeLineValidPen if canBeConnected else self.realTimeLineInvalidPen)
+                    if canBeConnected:
+                        p2 = item.scenePos() + item.pinCenter()
             else:
                 self.realTimeLine.setPen(self.realTimeLineNormalPen)
-
-            p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
-            p2 = self.mapToScene(self.mousePos)
 
             distance = p2.x() - p1.x()
             multiply = 3
@@ -1385,12 +1392,35 @@ class Canvas(QGraphicsView):
     def mouseReleaseEvent(self, event):
         super(Canvas, self).mouseReleaseEvent(event)
 
+        modifiers = event.modifiers()
+
         self.autoPanController.stop()
         self.mouseReleasePos = event.pos()
         self.released_item = self.itemAt(event.pos())
         self.releasedPin = self.findPinNearPosition(event.pos())
         self._resize_group_mode = False
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+
+        if len(self.reconnectingWires) > 0:
+            if self.releasedPin is not None:
+                for wire in self.reconnectingWires:
+                    if wire.destinationPositionOverride is not None:
+                        lhsPin = wire.source()
+                        self.removeConnection(wire)
+                        self.connectPinsInternal(lhsPin, self.releasedPin)
+                    elif wire.sourcePositionOverride is not None:
+                        rhsPin = wire.destination()
+                        self.removeConnection(wire)
+                        self.connectPinsInternal(self.releasedPin, rhsPin)
+            else:
+                for wire in self.reconnectingWires:
+                    self.removeConnection(wire)
+
+            for wire in self.reconnectingWires:
+                wire.sourcePositionOverride = None
+                wire.destinationPositionOverride = None
+            self.reconnectingWires.clear()
+
         for n in self.getAllNodes():
             if not n.isCommentNode:
                 n.setFlag(QGraphicsItem.ItemIsMovable)
@@ -1408,12 +1438,12 @@ class Canvas(QGraphicsView):
         if event.button() == QtCore.Qt.RightButton:
             # show nodebox only if drag is small and no items under cursor
             if self.pressed_item is None or (isinstance(self.pressed_item, UINodeBase) and self.nodeFromInstance(self.pressed_item).isCommentNode):
-                dragDiff = self.mapToScene(
-                    self.mousePressPose) - self.mapToScene(event.pos())
-                if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
-                    self.showNodeBox()
+                if modifiers == QtCore.Qt.NoModifier:
+                    dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
+                    if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
+                        self.showNodeBox()
         elif event.button() == QtCore.Qt.LeftButton and self.releasedPin is None:
-            if isinstance(self.pressed_item, UIPinBase) and not self.resizing:
+            if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
                 # node box tree pops up
                 # with nodes taking supported data types of pressed Pin as input
                 self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction)
@@ -1558,8 +1588,12 @@ class Canvas(QGraphicsView):
         if jsonTemplate['type'] in ['getVar', 'setVar']:
             var = self.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
             variableLocation = var.location()
-            if len(variableLocation) > len(self.graphManager.activeGraph().location()):
+            graphLocation = self.graphManager.activeGraph().location()
+            if len(variableLocation) > len(graphLocation):
                 return None
+            if len(variableLocation) == len(graphLocation):
+                if Counter(variableLocation) != Counter(graphLocation):
+                    return None
 
         nodeInstance = getNodeInstance(jsonTemplate, self)
         assert(nodeInstance is not None), "Node instance is not found!"
@@ -1596,7 +1630,7 @@ class Canvas(QGraphicsView):
 
     def createNode(self, jsonTemplate, **kwargs):
         cmd = cmdCreateNode(self, jsonTemplate, **kwargs)
-        self.undoStack.push(cmd)
+        self.getApp().undoStack.push(cmd)
         return cmd.nodeInstance
 
     def createWrappersForGraph(self, rawGraph):
@@ -1683,10 +1717,10 @@ class Canvas(QGraphicsView):
         if src and dst:
             if canConnectPins(src._rawPin, dst._rawPin):
                 cmd = cmdConnectPin(self, src, dst)
-                self.undoStack.push(cmd)
+                self.getApp().undoStack.push(cmd)
 
     def removeEdgeCmd(self, connections):
-        self.undoStack.push(cmdRemoveEdges(self, [e.serialize() for e in connections]))
+        self.getApp().undoStack.push(cmdRemoveEdges(self, [e.serialize() for e in connections]))
 
     def removeConnection(self, connection):
         src = connection.source()._rawPin
@@ -1742,3 +1776,110 @@ class Canvas(QGraphicsView):
         if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_Tab:
             self.showNodeBox()
         return False
+
+
+class CanvasWidget(QWidget):
+    """docstring for CanvasWidget."""
+    def __init__(self, graphManager, pyFlowInstance, parent=None):
+        super(CanvasWidget, self).__init__(parent)
+        self.manager = graphManager
+        self.pyFlowInstance = pyFlowInstance
+
+        self.mainLayout = QVBoxLayout(self)
+        self.mainLayout.setSpacing(1)
+        self.mainLayout.setContentsMargins(1, 1, 1, 1)
+        self.setContentsMargins(1, 1, 1, 1)
+        self.mainLayout.setObjectName("canvasWidgetMainLayout")
+        self.pathLayout = QHBoxLayout()
+        self.mainLayout.addLayout(self.pathLayout)
+        self.compoundPropertiesWidget = QWidget()
+        self.compoundPropertiesWidget.setContentsMargins(1, 1, 1, 1)
+        self.compoundPropertiesWidget.setObjectName("compoundPropertiesWidget")
+        self.compoundPropertiesLayout = QHBoxLayout(self.compoundPropertiesWidget)
+        self.compoundPropertiesLayout.setSpacing(1)
+        self.compoundPropertiesLayout.setContentsMargins(1, 1, 1, 1)
+        self.mainLayout.addWidget(self.compoundPropertiesWidget)
+
+        self.leCompoundName = QLineEdit()
+        self.leCompoundName.setObjectName("leCompoundName")
+        self.leCompoundCategory = QLineEdit()
+        self.leCompoundCategory.setObjectName("leCompoundCategory")
+
+        compoundNameLabel = QLabel("Name:")
+        compoundNameLabel.setObjectName("compoundNameLabel")
+        self.compoundPropertiesLayout.addWidget(compoundNameLabel)
+        self.compoundPropertiesLayout.addWidget(self.leCompoundName)
+
+        compoundCategoryLabel = QLabel("Category:")
+        compoundCategoryLabel.setObjectName("compoundCategoryLabel")
+        self.compoundPropertiesLayout.addWidget(compoundCategoryLabel)
+        self.compoundPropertiesLayout.addWidget(self.leCompoundCategory)
+
+        self.canvas = Canvas(graphManager, pyFlowInstance)
+        self.mainLayout.addWidget(self.canvas)
+
+        self.manager.graphChanged.connect(self.updateGraphTreeLocation)
+
+        self.canvas.requestFillProperties.connect(self.pyFlowInstance.onRequestFillProperties)
+        self.canvas.requestClearProperties.connect(self.pyFlowInstance.onRequestClearProperties)
+
+        rxLettersAndNumbers = QtCore.QRegExp('^[a-zA-Z0-9]*$')
+        nameValidator = QtGui.QRegExpValidator(rxLettersAndNumbers, self.leCompoundName)
+        self.leCompoundName.setValidator(nameValidator)
+        self.leCompoundName.returnPressed.connect(self.onActiveCompoundNameAccepted)
+
+        rxLetters = QtCore.QRegExp('^[a-zA-Z]*$')
+        categoryValidator = QtGui.QRegExpValidator(rxLetters, self.leCompoundCategory)
+        self.leCompoundCategory.setValidator(categoryValidator)
+        self.leCompoundCategory.returnPressed.connect(self.onActiveCompoundCategoryAccepted)
+
+        self.updateGraphTreeLocation()
+
+        self.pyFlowInstance.fileBeenLoaded.connect(self.onFileBeenLoaded)
+
+    def shoutDown(self):
+        self.canvas.shoutDown()
+
+    def Tick(self, delta):
+        self.canvas.Tick(delta)
+
+    def onFileBeenLoaded(self):
+        for graph in self.manager.getAllGraphs():
+            self.canvas.createWrappersForGraph(graph)
+
+    def updateGraphTreeLocation(self, *args, **kwargs):
+        location = self.canvas.location()
+        clearLayout(self.pathLayout)
+        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.pathLayout.addItem(spacerItem)
+        for folderName in location:
+            index = self.pathLayout.count() - 1
+            btn = QPushButton(folderName)
+
+            def onClicked(checked, name=None):
+                self.canvas.stepToCompound(name)
+
+            btn.clicked.connect(lambda chk=False, name=folderName: onClicked(chk, name))
+            self.pathLayout.insertWidget(index, btn)
+
+        self.setCompoundPropertiesWidgetVisible(self.manager.activeGraph().depth() > 1)
+
+    def setCompoundPropertiesWidgetVisible(self, bVisible):
+        if bVisible:
+            self.compoundPropertiesWidget.show()
+            self.leCompoundName.setText(self.manager.activeGraph().name)
+            self.leCompoundCategory.setText(self.manager.activeGraph().category)
+        else:
+            self.compoundPropertiesWidget.hide()
+
+    def onActiveCompoundNameAccepted(self):
+        newName = self.manager.getUniqName(self.leCompoundName.text())
+        self.manager.activeGraph().name = newName
+        self.leCompoundName.blockSignals(True)
+        self.leCompoundName.setText(newName)
+        self.leCompoundName.blockSignals(False)
+        self.updateGraphTreeLocation()
+
+    def onActiveCompoundCategoryAccepted(self):
+        newCategoryName = self.leCompoundCategory.text()
+        self.manager.activeGraph().category = newCategoryName

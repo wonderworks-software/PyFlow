@@ -8,10 +8,6 @@ INTERPRETER_PATH = 'python.exe'
 
 
 def ui_to_py(ui_file):
-    '''
-    << ui_to_py(ui_file, py_file_name) >>
-    convert *.ui to *.py to te same folder
-    '''
     if not os.path.isfile(ui_file):
         msg = 'no such file'
         print(msg)
@@ -46,4 +42,5 @@ def compile():
                     ui_to_py(uiFile)
 
 
-compile()
+if __name__ == '__main__':
+    compile()

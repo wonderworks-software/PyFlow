@@ -2,10 +2,19 @@ from Qt.QtWidgets import QUndoCommand
 
 
 class ConnectPin(QUndoCommand):
-    '''
-    Connects two pins
-    '''
+    """Connects two pins with a wire.
+    """
+
     def __init__(self, canvas, src, dst):
+        """Command constructor.
+
+        :param canvas: Canvas instance.
+        :type canvas: :class:`PyFlow.UI.Canvas`
+        :param src: UIPinBase instance.
+        :type src: :class:`PyFlow.UI.Canvas.UIPinBase`
+        :param dst: UIPinBase instance.
+        :type dst: :class:`PyFlow.UI.Canvas.UIPinBase`
+        """
         super(ConnectPin, self).__init__()
         self.canvas = canvas
         self.srcUid = src.uid

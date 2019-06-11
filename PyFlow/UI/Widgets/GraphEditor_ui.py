@@ -3,8 +3,8 @@
 # Form implementation generated from reading ui file 'd:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui',
 # licensing of 'd:/GIT/PyFlow/PyFlow/UI/Widgets\GraphEditor_ui.ui' applies.
 #
-# Created: Tue May 28 09:39:11 2019
-#      by: pyside2-uic  running on PySide2 5.12.3
+# Created: Tue Jun 11 12:28:18 2019
+#      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,8 +18,6 @@ class Ui_MainWindow(object):
         MainWindow.setDocumentMode(True)
         MainWindow.setDockNestingEnabled(True)
         MainWindow.setDockOptions(QtWidgets.QMainWindow.AllowNestedDocks|QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
-        MainWindow.setTabPosition(QtCore.Qt.AllDockWidgetAreas,QtWidgets.QTabWidget.North)
-        MainWindow.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.centralwidget.setObjectName("centralwidget")

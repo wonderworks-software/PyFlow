@@ -147,27 +147,6 @@ class IPin(IItemBase):
         Static hint of what data type is this pin, as well as default value for this data type.
 
         Used to easily find pin classes by type id.
-
-
-        Returns:
-            A tuple containing data type id as first element + default value for this data type as second.
-
-        Examples:
-            # printing hints
-            >>> somePin.pinDataTypeHint()
-            (0, 0.0)
-            >>> somePin.pinDataTypeHint()
-            (3, False)
-
-            # this is how it used in pins initialization
-            >>> def _REGISTER_PIN_TYPE(pinSubclass):
-            >>>     dType = pinSubclass.pinDataTypeHint()[0]
-            >>>     if dType not in _PINS:
-            >>>         _PINS[pinSubclass.pinDataTypeHint()[0]] = pinSubclass
-            >>>     else:
-            >>>         raise Exception("Error registering pin type {0}\n pin with ID [{1}] already registered".format(pinSubclass.__name__))
-
-        @sa [DataTypes](@ref Common.DataTypes)
         """
         raise NotImplementedError('pinDataTypeHint method of IPin is not implemented')
 

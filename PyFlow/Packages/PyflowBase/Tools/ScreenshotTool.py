@@ -51,5 +51,5 @@ class ScreenshotTool(ShelfTool):
         fName = QFileDialog.getSaveFileName(filter=name_filter)
         if not fName[0] == '':
             print("save screen to {0}".format(fName[0]))
-            img = self.canvas.grab()
+            img = self.pyFlowInstance.getCanvas().grab()
             img.save(fName[0], format=self.format, quality=100)

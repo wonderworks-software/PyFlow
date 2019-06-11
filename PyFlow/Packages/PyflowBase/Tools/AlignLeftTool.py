@@ -25,4 +25,4 @@ class AlignLeftTool(ShelfTool):
         return str("AlignLeftTool")
 
     def do(self):
-        self.canvas.alignSelectedNodes(Direction.Left)
+        self.pyFlowInstance.getCanvas().alignSelectedNodes(Direction.Left)

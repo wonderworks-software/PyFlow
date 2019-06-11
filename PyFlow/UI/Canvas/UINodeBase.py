@@ -253,14 +253,16 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.isTemp = False
         self.isCommentNode = False
 
-        self.propertyEditor = None
-
         # collapse action
         self._groups = {"input": {}, "output": {}}
         self.actionToggleCollapse = self._menu.addAction("ToggleCollapse")
         self.actionToggleCollapse.setToolTip("Toggles node's body collapsed or not")
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
         self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
+
+    @property
+    def groups(self):
+        return self._groups
 
     def isValid(self):
         return self._rawNode.isValid()
@@ -464,22 +466,28 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             template['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
         template['collapsed'] = self.collapsed
         template['headerHtml'] = self.nodeNameWidget.getHtml()
-        if len(self._groups) > 0:
+        if len(self.groups) > 0:
             template['groups'] = {'input': {}, 'output': {}}
-            for name, grp in self._groups['input'].items():
+            for name, grp in self.groups['input'].items():
                 template['groups']['input'][name] = grp.bCollapsed
-            for name, grp in self._groups['output'].items():
+            for name, grp in self.groups['output'].items():
                 template['groups']['output'][name] = grp.bCollapsed
         return template
 
     def setHeaderHtml(self, html):
         self.nodeNameWidget.setHtml(html)
 
+    def getHeaderHtml(self):
+        return self.nodeNameWidget.getHtml()
+
     def serialize(self):
         return self._rawNode.serialize()
 
     def onVisibilityChanged(self, bVisible):
         pass
+
+    def location(self):
+        return self._rawNode.location()
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange:
@@ -491,6 +499,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 else:
                     self.onVisibilityChanged(bool(value))
         return super(UINodeBase, self).itemChange(change, value)
+
+    def graph(self):
+        return self._rawNode.graph()
 
     def isUnderActiveGraph(self):
         return self._rawNode.isUnderActiveGraph()
@@ -517,6 +528,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.updateNodeShape()
         self.setPos(self._rawNode.x, self._rawNode.y)
 
+        assert(self.canvasRef() is not None), "CANVAS IS NONE"
+        assert(self.canvasRef().graphManager.activeGraph() is not None), "ACTIVEGRAPH IS NONE"
+        if self._rawNode.graph is None:
+            print(self._rawNode.getName())
+        assert(self._rawNode.graph() is not None), "NODE GRAPH IS NONE"
         if self.canvasRef().graphManager.activeGraph() != self._rawNode.graph():
             self.hide()
 
@@ -526,7 +542,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.createActionButtons()
 
         headerHtml = self.name
-        if jsonTemplate is not None:
+        if jsonTemplate is not None and jsonTemplate["wrapper"] is not None:
             if "collapsed" in jsonTemplate["wrapper"]:
                 self.collapsed = jsonTemplate["wrapper"]["collapsed"]
             if "headerHtml" in jsonTemplate["wrapper"]:
@@ -534,9 +550,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             if "groups" in jsonTemplate["wrapper"]:
                 try:
                     for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["input"].items():
-                        self._groups["input"][groupName].setCollapsed(collapsed)
+                        self.groups["input"][groupName].setCollapsed(collapsed)
                     for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["output"].items():
-                        self._groups["output"][groupName].setCollapsed(collapsed)
+                        self.groups["output"][groupName].setCollapsed(collapsed)
                 except:
                     pass
 
@@ -637,9 +653,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
             igrhHeight = 0
             ogrhHeight = 0
-            for grp in self._groups["input"].values():
+            for grp in self.groups["input"].values():
                 igrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
-            for grp in self._groups["output"].values():
+            for grp in self.groups["output"].values():
                 ogrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
             h += max(igrhHeight, ogrhHeight)
         except:
@@ -666,10 +682,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 iwidth = max(iwidth, i.sizeHint(None, None).width())
             else:
                 owidth = max(owidth, i.sizeHint(None, None).width())
-        for igrp in self._groups["input"].values():
+        for igrp in self.groups["input"].values():
             w = igrp.getWidth()
             iwidth = max(iwidth, w)
-        for ogrp in self._groups["output"].values():
+        for ogrp in self.groups["output"].values():
             w = ogrp.getWidth()
             owidth = max(owidth, w)
         return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
@@ -967,7 +983,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self._rawNode.call(name)
 
     def createPropertiesWidget(self, propertiesWidget):
-        self.propertyEditor = weakref.ref(propertiesWidget)
         baseCategory = CollapsibleFormWidget(headName="Base")
 
         le_name = QLineEdit(self.getName())
@@ -986,18 +1001,18 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         leType.setReadOnly(True)
         baseCategory.addWidget("Type", leType)
 
-        self.propertyEditor().addWidget(baseCategory)
+        propertiesWidget.addWidget(baseCategory)
 
-        self.createInputWidgets(self.propertyEditor())
+        self.createInputWidgets(propertiesWidget)
 
         Info = CollapsibleFormWidget(headName="Info", collapsed=True, hideLabels=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
         doc.setHtml(self.description())
         Info.addWidget(widget=doc)
-        self.propertyEditor().addWidget(Info)
+        propertiesWidget.addWidget(Info)
 
-    def createInputWidgets(self,propertiesWidget):
+    def createInputWidgets(self, propertiesWidget):
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
             inputsCategory = CollapsibleFormWidget(headName="Inputs")
@@ -1044,24 +1059,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 break
         return result
 
-    def handleVisibility(self):
-        if self._rawNode.graph() != self.canvasRef().graphManager.activeGraph():
-            # if current graph != node's graph - hide node and connections
-            self.hide()
-            for uiPin in self.UIPins.values():
-                for connection in uiPin.uiConnectionList:
-                    connection.hide()
-        else:
-            # if current graph == node's graph - show it only if its not under collapsed comment node
-            collidedCommentNode = self.collidesWithCommentNode()
-            if collidedCommentNode is None:
-                self.show()
-            else:
-                if collidedCommentNode.collapsed:
-                    self.hide()
-                else:
-                    self.show()
-
     def hoverLeaveEvent(self, event):
         for i in range(len(self.resizeStrips)):
             self.resizeStrips[i] = 0
@@ -1100,7 +1097,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # NOTE: Do not call wrapped raw node Tick method here!
         # this ui node tick called from underlined raw node's emitted signal
         # do here only UI stuff
-        # self.handleVisibility()
         pass
 
     def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None):
@@ -1113,14 +1109,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         grpItem = None
         if rawPin.group != "":
-            groupNames = list(self._groups["input"].keys()) + list(self._groups["output"].keys())
+            groupNames = list(self.groups["input"].keys()) + list(self.groups["output"].keys())
             if rawPin.group not in groupNames:
-                grpItem = UIPinGroup(self.scene(), rawPin.group)
+                grpItem = UIPinGroup(self.scene(), rawPin.group, self)
             else:
                 if rawPin.direction == PinDirection.Input:
-                    grpItem = self._groups["input"][rawPin.group]
+                    grpItem = self.groups["input"][rawPin.group]
                 if rawPin.direction == PinDirection.Output:
-                    grpItem = self._groups["output"][rawPin.group]
+                    grpItem = self.groups["output"][rawPin.group]
 
             grpItem.addPin(p)
             self.inputsLayout.addItem(grpItem)
@@ -1130,7 +1126,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         lblName = name
         if rawPin.direction == PinDirection.Input:
             if grpItem is not None:
-                self._groups["input"][rawPin.group] = grpItem
+                self.groups["input"][rawPin.group] = grpItem
                 self.inputsLayout.addItem(grpItem)
                 self.inputsLayout.setAlignment(grpItem, QtCore.Qt.AlignLeft)
             else:
@@ -1139,7 +1135,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         elif rawPin.direction == PinDirection.Output:
             if grpItem is not None:
-                self._groups["output"][rawPin.group] = grpItem
+                self.groups["output"][rawPin.group] = grpItem
                 self.outputsLayout.addItem(grpItem)
                 self.outputsLayout.setAlignment(grpItem, QtCore.Qt.AlignRight)
             else:

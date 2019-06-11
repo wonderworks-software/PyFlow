@@ -25,4 +25,4 @@ class AlignBottomTool(ShelfTool):
         return str("AlignBottomTool")
 
     def do(self):
-        self.canvas.alignSelectedNodes(Direction.Down)
+        self.pyFlowInstance.getCanvas().alignSelectedNodes(Direction.Down)

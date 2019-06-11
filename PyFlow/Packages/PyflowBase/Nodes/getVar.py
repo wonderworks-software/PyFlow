@@ -12,13 +12,12 @@ class getVar(NodeBase):
     def __init__(self, name, var=None):
         super(getVar, self).__init__(name)
         assert(isinstance(var, Variable))
-        self.var = var
-        self.out = CreateRawPin('value', self, var.dataType, PinDirection.Output)
+        self._var = var
+        self.out = self.createOutputPin('value', var.dataType)
         self.out.disableOptions(PinOptions.RenamingEnabled)
-        self.var.valueChanged.connect(self.onVarValueChanged)
 
-    def variableUid(self):
-        return self.var.uid
+        self._var.valueChanged.connect(self.onVarValueChanged)
+        self.bCacheEnabled = False
 
     def recreateOutput(self, dataType):
         self.out.kill()
@@ -27,6 +26,25 @@ class getVar(NodeBase):
         self.out = CreateRawPin('value', self, dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
         return self.out
+
+    @property
+    def var(self):
+        return self._var
+
+    @var.setter
+    def var(self, newVar):
+        oldDataType = self._var.dataType
+        self._var.valueChanged.disconnect(self.onVarValueChanged)
+        self._var = newVar
+        self._var.valueChanged.connect(self.onVarValueChanged)
+        if oldDataType != self._var.dataType:
+            self.recreateOutput(self._var.dataType)
+
+    def postCreate(self, jsonTemplate=None):
+        super(getVar, self).postCreate(jsonTemplate)
+
+    def variableUid(self):
+        return self.var.uid
 
     def onVarValueChanged(self, *args, **kwargs):
         push(self.out)

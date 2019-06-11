@@ -23,7 +23,6 @@ class NodeBase(INode):
 
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
-        # memo
         self.bCacheEnabled = True
         self.cacheMaxSize = 1000
         self.cache = {}
@@ -108,9 +107,7 @@ class NodeBase(INode):
 
     @property
     def inputs(self):
-        """Returns all input pins. Dictionary generated every time property called, so cache it when possible
-        Returns:
-            dict(uuid: PinBase)
+        """Returns all input pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
         for pin in self.pins:
@@ -120,9 +117,7 @@ class NodeBase(INode):
 
     @property
     def namePinInputsMap(self):
-        """Returns all input pins. Dictionary generated every time property called, so cache it when possible
-        Returns:
-            dict(str: PinBase)
+        """Returns all input pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
         for pin in self.pins:
@@ -132,9 +127,7 @@ class NodeBase(INode):
 
     @property
     def outputs(self):
-        """Returns all output pins. Dictionary generated every time property called, so cache it when possible
-        Returns:
-            dict(uuid: PinBase)
+        """Returns all output pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
         for pin in self.pins:
@@ -144,9 +137,7 @@ class NodeBase(INode):
 
     @property
     def namePinOutputsMap(self):
-        """Returns all output pins. Dictionary generated every time property called, so cache it when possible
-        Returns:
-            dict(str: PinBase)
+        """Returns all output pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
         for pin in self.pins:
@@ -162,6 +153,9 @@ class NodeBase(INode):
 
     def getWrapper(self):
         return self._wrapper
+
+    def location(self):
+        return self.graph().location()
 
     @property
     def uid(self):
@@ -217,8 +211,6 @@ class NodeBase(INode):
 
     def kill(self, *args, **kwargs):
         if self.uid not in self.graph().nodes:
-            # already killed
-            # this block executes for variable getter/setter
             return
 
         self.killed.send()
@@ -252,13 +244,13 @@ class NodeBase(INode):
         return self.name
 
     def setName(self, name):
-        self.name = self.graph().graphManager.getUniqNodeName(str(name))
+        self.name = str(name)
 
     def useCache(self):
         # if cached results exists - return them without calling compute
-        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
         try:
-            # mutable unhashable types will not be cached
+            # not hashable types will not be cached
             if args in self.cache:
                 for outPin, data in self.cache[args].items():
                     outPin.setData(data)
@@ -271,9 +263,9 @@ class NodeBase(INode):
             return
 
         # cache results
-        args = tuple([pin.currentData() for pin in self.inputs.values()])
+        args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
         try:
-            # mutable unhashable types will not be cached
+            # not hashable types will not be cached
             if args in self.cache:
                 return
         except:
@@ -297,7 +289,11 @@ class NodeBase(INode):
                     self.setError(e)
             self.afterCompute()
         else:
-            self.compute()
+            try:
+                self.compute()
+                self.clearError()
+            except Exception as e:
+                self.setError(e)
 
     # INode interface
 

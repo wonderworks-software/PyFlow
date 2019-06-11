@@ -1,7 +1,7 @@
 from PyFlow.Tests.TestsBase import *
 from PyFlow.Core.Common import *
 from collections import Counter
-from PyFlow.Input import InputAction
+from PyFlow.Input import *
 from Qt import QtCore
 
 
@@ -26,8 +26,8 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(Counter(subgraphNodeInstance.rawGraph.location()), Counter(man.location()))
 
     def test_input_action(self):
-        a1 = InputAction("a1", "g1", QtCore.Qt.MouseButton.LeftButton, [], QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier)
-        a2 = InputAction("a1", "g1", QtCore.Qt.MouseButton.LeftButton, [], QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier)
+        a1 = InputAction("a1", InputActionType.Keyboard, "g1", QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.NoButton, QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier)
+        a2 = InputAction("a1", InputActionType.Keyboard, "g1", QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.NoButton, QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier)
         self.assertEqual(a1, a2)
 
         a2.setModifiers(QtCore.Qt.ControlModifier)
@@ -44,19 +44,27 @@ class TestGeneral(unittest.TestCase):
         packages = GET_PACKAGES()
         mathLib = packages['PyflowBase'].GetFunctionLibraries()["MathAbstractLib"]
         defaultLib = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"]
+        classNodes = packages['PyflowBase'].GetNodeClasses()
         foos = mathLib.getFunctions()
         defaultLibFoos = defaultLib.getFunctions()
 
         makeIntNode = NodeBase.initializeFromFunction(defaultLibFoos["makeInt"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
+        printNode = classNodes["consoleOutput"]("print")
 
         man.activeGraph().addNode(makeIntNode)
         man.activeGraph().addNode(addNode2)
+        man.activeGraph().addNode(printNode)
 
         makeIntNode.setData('i', 5)
 
         connection = connectPins(makeIntNode[str('out')], addNode2[str('a')])
         self.assertEqual(connection, True, "FAILED TO ADD EDGE")
+
+        connection = connectPins(addNode2[str('out')], printNode[str("entity")])
+        self.assertEqual(connection, True, "FAILED TO ADD EDGE")
+        printNode[DEFAULT_IN_EXEC_NAME].call()
+
         self.assertEqual(addNode2.getData('out'), 5, "NODES EVALUATION IS INCORRECT")
 
     def test_foo_node_ref_set_data(self):
@@ -333,9 +341,6 @@ class TestGeneral(unittest.TestCase):
 
         man.activeGraph().killVariable(v1)
         self.assertEqual(v1 not in man.activeGraph().vars, True, "variable not killed")
-        self.assertEqual(varGetterInstance.uid not in man.activeGraph().nodes, True, "get var not killed")
-        connected = arePinsConnected(varOutPin, printInPin)
-        self.assertEqual(connected, False, "get var node is removed, but pins are still connected")
 
     def test_set_any_var(self):
         packages = GET_PACKAGES()
@@ -355,8 +360,8 @@ class TestGeneral(unittest.TestCase):
 
         # set new value to setter node input pin
         inExecPin = varSetterInstance.getPin(DEFAULT_IN_EXEC_NAME, PinSelectionGroup.Inputs)
-        inPin = varSetterInstance.getPin(str('inp'), PinSelectionGroup.Inputs)
-        outPin = varSetterInstance.getPin(str('out'), PinSelectionGroup.Outputs)
+        inPin = varSetterInstance.getPin(str('value'), PinSelectionGroup.Inputs)
+        outPin = varSetterInstance.getPin(str('value'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(inExecPin)
         self.assertIsNotNone(inPin)
         self.assertIsNotNone(outPin)
@@ -388,8 +393,8 @@ class TestGeneral(unittest.TestCase):
 
         # set new value to setter node input pin
         inExecPin = varSetterInstance.getPin(DEFAULT_IN_EXEC_NAME, PinSelectionGroup.Inputs)
-        inPin = varSetterInstance.getPin(str('inp'), PinSelectionGroup.Inputs)
-        outPin = varSetterInstance.getPin(str('out'), PinSelectionGroup.Outputs)
+        inPin = varSetterInstance.getPin(str('value'), PinSelectionGroup.Inputs)
+        outPin = varSetterInstance.getPin(str('value'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(inExecPin)
         self.assertIsNotNone(inPin)
         self.assertIsNotNone(outPin)
@@ -455,17 +460,28 @@ class TestGeneral(unittest.TestCase):
         packages = GET_PACKAGES()
         lib = packages['PyflowBase'].GetFunctionLibraries()["MathAbstractLib"]
         defaultLib = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"]
+        classNodes = packages['PyflowBase'].GetNodeClasses()
         foos = lib.getFunctions()
         defFoos = defaultLib.getFunctions()
 
         makeInt = NodeBase.initializeFromFunction(defFoos["makeInt"])
         addNode2 = NodeBase.initializeFromFunction(foos["add"])
+        printNode = classNodes["consoleOutput"]("printer")
 
         man.activeGraph().addNode(makeInt)
         man.activeGraph().addNode(addNode2)
-        connected = connectPins(makeInt[str('out')], addNode2[str('a')])
+        man.activeGraph().addNode(printNode)
+
         makeInt.setData('i', 5)
+
+        connected = connectPins(makeInt[str('out')], addNode2[str('a')])
         self.assertEqual(connected, True)
+
+        connected = connectPins(addNode2[str('out')], printNode[str('entity')])
+        self.assertEqual(connected, True)
+
+        printNode[DEFAULT_IN_EXEC_NAME].call()
+
         self.assertEqual(addNode2.getData(str('out')), 5, "Incorrect calc")
 
         # save and clear

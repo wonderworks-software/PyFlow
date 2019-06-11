@@ -1,5 +1,0 @@
-MAJOR = 1
-MINOR = 1
-PATCH = 0
-
-VERSION_STRING = "{0}.{1}.{2}".format(MAJOR, MINOR, PATCH)

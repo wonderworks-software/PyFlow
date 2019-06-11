@@ -235,7 +235,7 @@ class PinBase(IPin):
         return True
 
     def getName(self):
-        return self.owningNode().name + '.' + self.name
+        return self.owningNode().name + '_' + self.name
 
     # IPin interface
 
@@ -333,6 +333,10 @@ class PinBase(IPin):
     @property
     def structureType(self):
         return self._structure
+
+    @property
+    def currentStructure(self):
+        return self._currStructure
 
     @structureType.setter
     def structureType(self, structure):

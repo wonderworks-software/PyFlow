@@ -57,6 +57,7 @@ from PyFlow.Packages.PyflowBase.Nodes.constant import constant
 
 from PyFlow.Packages.PyflowBase.Tools.ScreenshotTool import ScreenshotTool
 from PyFlow.Packages.PyflowBase.Tools.NodeBoxTool import NodeBoxTool
+from PyFlow.Packages.PyflowBase.Tools.SearchResultsTool import SearchResultsTool
 from PyFlow.Packages.PyflowBase.Tools.AlignLeftTool import AlignLeftTool
 from PyFlow.Packages.PyflowBase.Tools.AlignRightTool import AlignRightTool
 from PyFlow.Packages.PyflowBase.Tools.AlignTopTool import AlignTopTool
@@ -64,6 +65,9 @@ from PyFlow.Packages.PyflowBase.Tools.AlignBottomTool import AlignBottomTool
 from PyFlow.Packages.PyflowBase.Tools.HistoryTool import HistoryTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.Packages.PyflowBase.Tools.VariablesTool import VariablesTool
+
+from PyFlow.Packages.PyflowBase.Exporters.PythonScriptExporter import PythonScriptExporter
+from PyFlow.Packages.PyflowBase.Exporters.CPPCompiler import CPPCompiler
 
 # Factories
 from PyFlow.Packages.PyflowBase.Factories.UIPinFactory import createUIPin
@@ -136,11 +140,21 @@ _TOOLS[HistoryTool.__name__] = HistoryTool
 _TOOLS[PropertiesTool.__name__] = PropertiesTool
 _TOOLS[VariablesTool.__name__] = VariablesTool
 _TOOLS[NodeBoxTool.__name__] = NodeBoxTool
+_TOOLS[SearchResultsTool.__name__] = SearchResultsTool
+
+
+_EXPORTERS = OrderedDict()
+_EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
+_EXPORTERS[CPPCompiler.__name__] = CPPCompiler
 
 
 class PyflowBase(IPackage):
     def __init__(self):
         super(PyflowBase, self).__init__()
+
+    @staticmethod
+    def GetExporters():
+        return _EXPORTERS
 
     @staticmethod
     def GetFunctionLibraries():

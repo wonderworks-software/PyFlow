@@ -1,5 +1,3 @@
-"""@file Pin.py
-"""
 import weakref
 
 from Qt import QtCore
@@ -37,9 +35,11 @@ QPushButton {
 """
 
 class UIPinGroup(QGraphicsWidget):
-    def __init__(self, scene, name, parent=None):
-        super(UIPinGroup, self).__init__(parent)
+    def __init__(self, scene, name, owningNode=None):
+        super(UIPinGroup, self).__init__(owningNode)
+        self.owningNode = weakref.ref(owningNode)
         self.setAcceptHoverEvents(True)
+        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.borderPen = QtGui.QPen(Colors.DarkGray, 0.5, QtCore.Qt.SolidLine)
         self._scene = scene
         self.layout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
@@ -56,6 +56,13 @@ class UIPinGroup(QGraphicsWidget):
         self.layout.addItem(self.headerWidget)
         self._pins = set()
         self.bCollapsed = False
+
+    def kill(self):
+        for pin in self._pins:
+            pin._rawPin.kill()
+        self._pins.clear()
+        self._scene.removeItem(self)
+        del self
 
     def paint(self, painter, option, widget):
         super(UIPinGroup, self).paint(painter, option, widget)
@@ -90,9 +97,8 @@ class UIPinGroup(QGraphicsWidget):
 
 
 class UIPinBase(QGraphicsWidget):
-    '''
-    Pin ui wrapper
-    '''
+    """UI pin wrapper.
+    """
 
     # Event called when pin is connected
     OnPinConnected = QtCore.Signal(object)
@@ -106,6 +112,14 @@ class UIPinBase(QGraphicsWidget):
     OnPinDeleted = QtCore.Signal(object)
 
     def __init__(self, owningNode, raw_pin):
+        """UI wrapper for :class:`PyFlow.Core.PinBase`
+
+        :param owningNode: Owning node
+        :type owningNode: :class:`PyFlow.Core.NodeBase`
+        :param raw_pin: PinBase reference
+        :type raw_pin: :class:`PyFlow.Core.PinBase`
+        """
+
         super(UIPinBase, self).__init__()
         self.setGraphicsItem(self)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
@@ -436,10 +450,9 @@ class UIPinBase(QGraphicsWidget):
         self.update()
 
     def selectStructure(self):
-        item, ok = QInputDialog.getItem(None, "", 
-           "", ([i.name for i in list(PinStructure)]), 0, False)
+        item, ok = QInputDialog.getItem(None, "", "", ([i.name for i in list(PinStructure)]), 0, False)
         if ok and item:
-            self._rawPin.changeStructure(PinStructure[item],True)
+            self._rawPin.changeStructure(PinStructure[item], True)
 
 
 def REGISTER_UI_PIN_FACTORY(packageName, factory):

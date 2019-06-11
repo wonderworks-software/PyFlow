@@ -5,9 +5,6 @@ from Qt.QtWidgets import QUndoCommand
 
 
 class CreateNode(QUndoCommand):
-    '''
-    Creates a node
-    '''
     def __init__(self, canvas, jsonTemplate, **kwargs):
         super(CreateNode, self).__init__()
         self.kwargs = kwargs

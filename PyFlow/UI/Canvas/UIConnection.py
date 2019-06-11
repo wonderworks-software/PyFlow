@@ -1,6 +1,3 @@
-"""@file UIConnection.py
-UIConnection is a cubic spline curve. It represents connecton between two pins.
-"""
 import weakref
 from uuid import UUID, uuid4
 
@@ -17,6 +14,8 @@ from PyFlow.Core.Common import *
 
 # UIConnection between pins
 class UIConnection(QGraphicsPathItem):
+    """UIConnection is a cubic spline curve. It represents connecton between two pins.
+    """
     def __init__(self, source, destination, canvas):
         QGraphicsPathItem.__init__(self)
         self.setAcceptedMouseButtons(QtCore.Qt.LeftButton)
@@ -45,7 +44,7 @@ class UIConnection(QGraphicsPathItem):
         self.setZValue(NodeDefaults().Z_LAYER - 1)
 
         self.color = self.source().color()
-        self.selectedColor = Colors.Blue
+        self.selectedColor = self.color.lighter(150)
 
         self.thickness = 1
         if source.isExec():

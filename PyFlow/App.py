@@ -1,3 +1,6 @@
+"""Application class here
+"""
+
 import os
 import sys
 import subprocess
@@ -11,33 +14,18 @@ import random
 
 from Qt import QtGui
 from Qt import QtCore
-from Qt.QtWidgets import QMainWindow
-from Qt.QtWidgets import QApplication
-from Qt.QtWidgets import QStyleFactory
-from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QTextEdit
-from Qt.QtWidgets import QMessageBox
-from Qt.QtWidgets import QAction
-from Qt.QtWidgets import QMenu
-from Qt.QtWidgets import QInputDialog
-from Qt.QtWidgets import QHBoxLayout
-from Qt.QtWidgets import QUndoView
-from Qt.QtWidgets import QToolButton
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QSpacerItem
-from Qt.QtWidgets import QFileDialog
-from Qt.QtWidgets import QDockWidget
+from Qt.QtWidgets import *
 
-from PyFlow import Packages
+from PyFlow import GET_PACKAGES
+from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
-from PyFlow.UI.Canvas.Canvas import Canvas
+from PyFlow.UI.Canvas.Canvas import CanvasWidget
 from PyFlow.Core.Common import Direction
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.Core.GraphBase import GraphBase
-from PyFlow.Core.GraphManager import GraphManager
+from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
-from PyFlow.UI.Widgets import GraphEditor_ui
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.Tool import GET_TOOLS
@@ -74,34 +62,35 @@ def getOrCreateMenu(menuBar, title):
 
 
 ## App itself
-class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
+class PyFlow(QMainWindow):
+
+    appInstance = None
+
     newFileExecuted = QtCore.Signal(bool)
+    fileBeenLoaded = QtCore.Signal()
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.undoStack = QUndoStack(self)
+        self.setContentsMargins(1, 1, 1, 1)
+        self.graphManager = GraphManagerSingleton()
+        self.canvasWidget = CanvasWidget(self.graphManager.get(), self)
+        self.canvasWidget.setObjectName("canvasWidget")
+        self.setCentralWidget(self.canvasWidget)
+
+        self.menuBar = QMenuBar(self)
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 863, 21))
+        self.menuBar.setObjectName("menuBar")
+        self.setMenuBar(self.menuBar)
+        self.toolBar = QToolBar(self)
+        self.toolBar.setObjectName("toolBar")
+        self.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
+
         self.setWindowIcon(QtGui.QIcon(":/LogoBpApp.png"))
         self._tools = set()
         self.currentTempDir = ""
 
         self.preferencesWindow = PreferencesWindow(self)
-        self.graphManager = GraphManager()
-        self.canvasWidget = Canvas(self.graphManager, self)
-        self.canvasWidget.requestFillProperties.connect(self.onRequestFillProperties)
-        self.canvasWidget.requestClearProperties.connect(self.onRequestClearProperties)
-        self.graphManager.graphChanged.connect(self.updateGraphTreeLocation)
-        self.updateGraphTreeLocation()
-        self.SceneLayout.addWidget(self.canvasWidget)
-
-        rxLettersAndNumbers = QtCore.QRegExp('^[a-zA-Z0-9]*$')
-        nameValidator = QtGui.QRegExpValidator(rxLettersAndNumbers, self.leCompoundName)
-        self.leCompoundName.setValidator(nameValidator)
-        self.leCompoundName.returnPressed.connect(self.onActiveCompoundNameAccepted)
-
-        rxLetters = QtCore.QRegExp('^[a-zA-Z]*$')
-        categoryValidator = QtGui.QRegExpValidator(rxLetters, self.leCompoundCategory)
-        self.leCompoundCategory.setValidator(categoryValidator)
-        self.leCompoundCategory.returnPressed.connect(self.onActiveCompoundCategoryAccepted)
 
         self.setMouseTracking(True)
 
@@ -117,6 +106,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         This folder and all it's content will be removed from disc on application shutdown.
         """
         return self.currentTempDir
+
+    def getMenuBar(self):
+        return self.menuBar
 
     def populateMenu(self):
         fileMenu = self.menuBar.addMenu("File")
@@ -135,6 +127,25 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         saveAsAction = fileMenu.addAction("Save as")
         saveAsAction.setIcon(QtGui.QIcon(":/save_as_icon.png"))
         saveAsAction.triggered.connect(lambda: self.save(True))
+
+        IOMenu = fileMenu.addMenu("Custom IO")
+        for packageName, package in GET_PACKAGES().items():
+            # exporters
+            exporters = None
+            try:
+                exporters = package.GetExporters()
+            except:
+                continue
+            pkgMenu = IOMenu.addMenu(packageName)
+            for exporterName, exporterClass in exporters.items():
+                fileFormatMenu = pkgMenu.addMenu(exporterClass.displayName())
+                fileFormatMenu.setToolTip(exporterClass.toolTip())
+                if exporterClass.createExporterMenu():
+                    exportAction = fileFormatMenu.addAction("Export")
+                    exportAction.triggered.connect(lambda checked=False, app=self: exporterClass.doExport(app))
+                if exporterClass.createImporterMenu():
+                    importAction = fileFormatMenu.addAction("Import")
+                    importAction.triggered.connect(lambda checked=False, app=self: exporterClass.doImport(app))
 
         editMenu = self.menuBar.addMenu("Edit")
         preferencesAction = editMenu.addAction("Preferences")
@@ -179,15 +190,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         return self.toolBar
 
     def getCanvas(self):
-        return self.canvasWidget
-
-    def setCompoundPropertiesWidgetVisible(self, bVisible):
-        if bVisible:
-            self.CompoundPropertiesWidget.show()
-            self.leCompoundName.setText(self.graphManager.activeGraph().name)
-            self.leCompoundCategory.setText(self.graphManager.activeGraph().category)
-        else:
-            self.CompoundPropertiesWidget.hide()
+        return self.canvasWidget.canvas
 
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
@@ -210,11 +213,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
     def loadFromData(self, data, fpath=""):
         self.newFile(keepRoot=False)
         # load raw data
-        self.graphManager.deserialize(data)
-        # create ui nodes
-        for graph in self.graphManager.getAllGraphs():
-            self.canvasWidget.createWrappersForGraph(graph)
-        self.graphManager.selectRootGraph()
+        self.graphManager.get().deserialize(data)
+        self.fileBeenLoaded.emit()
+        self.graphManager.get().selectRootGraph()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -258,9 +259,8 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
-                saveData = self.graphManager.serialize()
+                saveData = self.graphManager.get().serialize()
                 json.dump(saveData, f, indent=4)
-
             print(str("// saved: '{0}'".format(self._current_file_name)))
 
     def newFile(self, keepRoot=True):
@@ -268,41 +268,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         self.tick_timer.timeout.disconnect()
 
         # broadcast
-        self.graphManager.clear(keepRoot=keepRoot)
+        self.graphManager.get().clear(keepRoot=keepRoot)
         self.newFileExecuted.emit(keepRoot)
         self._current_file_name = 'Untitled'
         self.onRequestClearProperties()
 
         self.startMainLoop()
-
-    def updateGraphTreeLocation(self, *args, **kwargs):
-        location = self.canvasWidget.location()
-        clearLayout(self.layoutGraphPath)
-        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.layoutGraphPath.addItem(spacerItem)
-        for folderName in location:
-            index = self.layoutGraphPath.count() - 1
-            btn = QPushButton(folderName)
-
-            def onClicked(checked, name=None):
-                self.canvasWidget.stepToCompound(name)
-
-            btn.clicked.connect(lambda chk=False, name=folderName: onClicked(chk, name))
-            self.layoutGraphPath.insertWidget(index, btn)
-
-        self.setCompoundPropertiesWidgetVisible(self.graphManager.activeGraph().depth() > 1)
-
-    def onActiveCompoundNameAccepted(self):
-        newName = self.graphManager.getUniqName(self.leCompoundName.text())
-        self.graphManager.activeGraph().name = newName
-        self.leCompoundName.blockSignals(True)
-        self.leCompoundName.setText(newName)
-        self.leCompoundName.blockSignals(False)
-        self.updateGraphTreeLocation()
-
-    def onActiveCompoundCategoryAccepted(self):
-        newCategoryName = self.leCompoundCategory.text()
-        self.graphManager.activeGraph().category = newCategoryName
 
     def startMainLoop(self):
         self.tick_timer.timeout.connect(self.mainLoop)
@@ -321,7 +292,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
         # Tick all graphs
         # each graph will tick owning raw nodes
         # each raw node will tick it's ui wrapper if it exists
-        self.graphManager.Tick(deltaTime)
+        self.graphManager.get().Tick(deltaTime)
 
         # Tick canvas. Update ui only stuff such animation etc.
         self.canvasWidget.Tick(deltaTime)
@@ -330,12 +301,6 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     def createPopupMenu(self):
         pass
-
-    def newPlugin(self, pluginType):
-        name, result = QInputDialog.getText(
-            self, 'Plugin name', 'Enter plugin name')
-        if result:
-            _implementPlugin(name, pluginType)
 
     def getToolClassByName(self, packageName, toolName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
@@ -352,6 +317,9 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                 if ToolClass.name() == toolName:
                     return ToolClass()
         return None
+
+    def getRegisteredTools(self):
+        return self._tools
 
     def invokeDockToolByName(self, packageName, name, settings=None):
         # invokeDockToolByName Invokes dock tool by tool name and package name
@@ -376,7 +344,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     pass
             else:
                 self.addDockWidget(ToolInstance.defaultDockArea(), ToolInstance)
-            ToolInstance.setCanvas(self.canvasWidget)
+            ToolInstance.setAppInstance(self)
             ToolInstance.onShow()
         return ToolInstance
 
@@ -445,9 +413,12 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
 
     @staticmethod
     def instance(parent=None):
+        if PyFlow.appInstance is not None:
+            return PyFlow.appInstance
+
+        INITIALIZE()
         instance = PyFlow(parent)
         instance.startMainLoop()
-        INITIALIZE()
 
         # create app folder in documents
         # random string used for cases when multiple instances of app are running in the same time
@@ -478,7 +449,7 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                     ToolInstance = ToolClass()
                     # prevent to be garbage collected
                     instance.registerToolInstance(ToolInstance)
-                    ToolInstance.setCanvas(canvas)
+                    ToolInstance.setAppInstance(instance)
                     action = QAction(instance)
                     action.setIcon(ToolInstance.getIcon())
                     action.setText(ToolInstance.name())
@@ -525,4 +496,5 @@ class PyFlow(QMainWindow, GraphEditor_ui.Ui_MainWindow):
                         settings.endGroup()
                     settings.endGroup()
 
+        PyFlow.appInstance = instance
         return instance

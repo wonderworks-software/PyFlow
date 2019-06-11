@@ -101,6 +101,30 @@ def findGoodId(ids):
         return ID + 1
 
 
+def wrapStringToFunctionDef(functionName, scriptString, kwargs=None):
+    """wrapStringToFunctionDef Generates function string
+
+    example: wrapStringToFunctionDef('test', 'print(a)', {'a': 5})
+
+    def test(a=5):
+        print(a)
+    """
+    kwargsString = ""
+    if kwargs is not None:
+        for argname, argValue in kwargs.items():
+            if isinstance(argValue, str):
+                argValue = "'{}'".format(argValue)
+            kwargsString += "{0}={1}, ".format(argname, argValue)
+        kwargsString = kwargsString[:-2]
+
+    result = "def {0}({1}):\n".format(functionName, kwargsString)
+
+    for scriptLine in scriptString.split('\n'):
+        result += "\t{}".format(scriptLine)
+        result += '\n'
+    return result
+
+
 ## Check for cycle connected nodes
 # @param[in] left hand side pin
 # @param[in] right hand side pin

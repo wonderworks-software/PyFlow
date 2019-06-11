@@ -9,7 +9,7 @@ class ToolBase(object):
     def __init__(self):
         super(ToolBase, self).__init__()
         self.uid = uuid.uuid4()
-        self.canvas = None
+        self.pyFlowInstance = None
 
     def onShow(self):
         print(self.name(), "invoked")
@@ -27,9 +27,9 @@ class ToolBase(object):
         else:
             self.uid = uuid.uuid4()
 
-    def setCanvas(self, canvas):
-        if self.canvas is None:
-            self.canvas = canvas
+    def setAppInstance(self, pyFlowInstance):
+        if self.pyFlowInstance is None:
+            self.pyFlowInstance = pyFlowInstance
 
     @staticmethod
     def toolTip():

@@ -2,6 +2,8 @@
 
 Builtin node to access variable value.
 """
+from copy import copy
+
 from Qt import QtCore
 from Qt import QtGui
 
@@ -11,6 +13,8 @@ from PyFlow.UI.Utils.Settings import *
 from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
+from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 
 
 # Variable getter node
@@ -25,6 +29,14 @@ class UIGetVarNode(UINodeBase):
     def var(self):
         return self._rawNode.var
 
+    @var.setter
+    def var(self, newVar):
+        self.var.nameChanged.disconnect(self.onVarNameChanged)
+        self.var.dataTypeChanged.disconnect(self.onVarDataTypeChanged)
+        self._rawNode.var = newVar
+        self.var.nameChanged.connect(self.onVarNameChanged)
+        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+
     def postCreate(self, jsonTemplate=None):
         super(UIGetVarNode, self).postCreate(jsonTemplate)
 
@@ -36,33 +48,56 @@ class UIGetVarNode(UINodeBase):
         outPin = list(self._rawNode.pins)[0]
         outPin.setName(self.var.name)
 
-        # do not allow changing data type from node
-        # change it using variable's properties
         pinWrapper = outPin.getWrapper()
         if pinWrapper:
             pinWrapper().setMenuItemEnabled("InitAs", False)
-            # do not allow renaming pin
             outPin.disableOptions(PinOptions.RenamingEnabled)
             pinWrapper().syncRenamable()
+        self.updateHeaderText()
 
     def serialize(self):
         template = UINodeBase.serialize(self)
         template['meta']['var'] = self.var.serialize()
         return template
 
+    def onVarSelected(self, varName):
+        if self.var.name == varName:
+            return
+
+        var = self.canvasRef().graphManager.findVariable(varName)
+        free = self._rawNode.out.checkFree([])
+
+        if var:
+            linkedTo = getConnectedPins(self._rawNode.out)
+            self.var = var
+
+            self._createUIPinWrapper(self._rawNode.out)
+            for i in linkedTo:
+                if i.isAny():
+                    i.setDefault()
+                self.canvasRef().connectPinsInternal(self._rawNode.out.getWrapper()(), i.getWrapper()())
+            self.updateHeaderText()
+
+    def createInputWidgets(self, propertiesWidget):
+        inputsCategory = CollapsibleFormWidget(headName="Inputs")
+        validVars = self.graph().getVarList()
+        cbVars = EnumComboBox([v.name for v in validVars])
+        cbVars.setCurrentText(self.var.name)
+        cbVars.changeCallback.connect(self.onVarSelected)
+        inputsCategory.addWidget("var", cbVars)
+
+        propertiesWidget.addWidget(inputsCategory)
+
     def onVarDataTypeChanged(self, dataType):
-        # recreate pin
-        currentPinName = self._rawNode.out.name
-        recreatedPin = self._rawNode.recreateOutput(dataType)
-        recreatedPin.setName(currentPinName)
-        recreatedPin.disableOptions(PinOptions.RenamingEnabled)
-        self.UIOut = self._createUIPinWrapper(self._rawNode.out)
+        self._rawNode.out.disconnectAll()
+        self._rawNode.out.setType(dataType)
+
+    def updateHeaderText(self):
+        self.setHeaderHtml("Get {0}".format(self.var.name))
         self.updateNodeShape()
 
     def onVarNameChanged(self, newName):
-        pin = list(self._rawNode.pins)[0]
-        pin.setName(newName)
-        self.updateNodeShape()
+        self.updateHeaderText()
 
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)
