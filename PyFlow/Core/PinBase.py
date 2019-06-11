@@ -282,7 +282,7 @@ class PinBase(IPin):
                 if isinstance(data,list):
                     self._data = [self.processData(i) for i in data]
                 else:
-                    self._data = [self.processData(i)]
+                    self._data = [self.processData(data)]
 
             if self.direction == PinDirection.Output:
                 for i in self.affects:
