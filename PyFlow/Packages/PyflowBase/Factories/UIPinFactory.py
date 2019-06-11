@@ -4,7 +4,6 @@ from PyFlow.Packages.PyflowBase.Pins.ExecPin import ExecPin
 
 from PyFlow.Packages.PyflowBase.UI.UIAnyPin import UIAnyPin
 from PyFlow.Packages.PyflowBase.UI.UIExecPin import UIExecPin
-from PyFlow.Packages.PyflowBase.UI.UIListPin import UIListPin
 
 
 def createUIPin(owningNode, raw_instance):

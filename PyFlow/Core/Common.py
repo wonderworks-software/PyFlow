@@ -201,8 +201,6 @@ def canConnectPins(src, dst):
             return False
 
     if src.isArray() and not dst.isArray():
-        if dst.isList():
-            return True
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
         dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfChek=False)
         if not dst.optionEnabled(PinOptions.ArraySupported) and not (srcCanChangeStruct or dstCanCnahgeStruct):

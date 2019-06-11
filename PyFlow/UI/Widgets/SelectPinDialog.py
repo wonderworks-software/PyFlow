@@ -101,9 +101,6 @@ class _PinWidget(QtWidgets.QWidget):
         if self.dataType == "ExecPin":
             self._rawPin.setConnected(True)
             PinPainter.asExecPin(self, painter, None, None)
-        elif self.dataType == "ListPin":
-            self.pinCircleDrawOffset = QtCore.QPointF(0, -4)
-            PinPainter.asListPin(self, painter, None, None)
         else:
             PinPainter.asValuePin(self, painter, None, None)
         painter.end()

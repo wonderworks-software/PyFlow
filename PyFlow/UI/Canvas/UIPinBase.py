@@ -407,9 +407,6 @@ class UIPinBase(QGraphicsWidget):
         path.addEllipse(self.boundingRect())
         return path
 
-    def isList(self):
-        return self._rawPin.isList()
-
     def isArray(self):
         return self._rawPin.isArray()
 

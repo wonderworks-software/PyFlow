@@ -16,9 +16,10 @@ class makeList(NodeBase):
 
         self.result = self.createOutputPin('result', 'BoolPin')
         self.checkForErrors()
+        
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['ListPin'], 'outputs': ['ListPin']}
+        return {'inputs': ['AnyPin'], 'outputs': ['AnyPin']}
 
     @staticmethod
     def category():

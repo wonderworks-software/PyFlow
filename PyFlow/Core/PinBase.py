@@ -138,9 +138,6 @@ class PinBase(IPin):
     def isArray(self):
         return self._isArray
 
-    def isList(self):
-        return self.dataType == "ListPin"
-
     @staticmethod
     def IsValuePin():
         return True
@@ -368,8 +365,6 @@ class PinBase(IPin):
 
     def canChangeStructure(self, newStruct, checked=[], selfChek=True, init=False):
         if not init and (self._alwaysList or self._alwaysSingle):
-            return False
-        if self.isList():
             return False
         if self.structConstraint is None and self.structureType == PinStructure.Multi:
             return True
