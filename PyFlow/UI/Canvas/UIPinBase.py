@@ -1,5 +1,3 @@
-"""@file Pin.py
-"""
 import weakref
 
 from Qt import QtCore
@@ -99,9 +97,8 @@ class UIPinGroup(QGraphicsWidget):
 
 
 class UIPinBase(QGraphicsWidget):
-    '''
-    Pin ui wrapper
-    '''
+    """UI pin wrapper.
+    """
 
     # Event called when pin is connected
     OnPinConnected = QtCore.Signal(object)
@@ -115,6 +112,14 @@ class UIPinBase(QGraphicsWidget):
     OnPinDeleted = QtCore.Signal(object)
 
     def __init__(self, owningNode, raw_pin):
+        """UI wrapper for :class:`PyFlow.Core.PinBase`
+
+        :param owningNode: Owning node
+        :type owningNode: :class:`PyFlow.Core.NodeBase`
+        :param raw_pin: PinBase reference
+        :type raw_pin: :class:`PyFlow.Core.PinBase`
+        """
+
         super(UIPinBase, self).__init__()
         self.setGraphicsItem(self)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)

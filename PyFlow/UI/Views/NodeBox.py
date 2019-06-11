@@ -21,6 +21,7 @@ from PyFlow.Core.NodeBase import NodeBase
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
+
 class NodeBoxLineEdit(QLineEdit):
     def __init__(self, parent, events=True):
         super(NodeBoxLineEdit, self).__init__(parent)

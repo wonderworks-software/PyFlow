@@ -1,3 +1,6 @@
+"""Application class here
+"""
+
 import os
 import sys
 import subprocess

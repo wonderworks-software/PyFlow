@@ -1,19 +1,5 @@
+"""Core functionality of the PyFlow.
 """
-@package Core
-
-Core functionality of the PyFlow.
-"""
-
-__all__ = [
-    "PinBase",
-    "NodeBase",
-    "GraphBase",
-    "FunctionLibraryBase",
-    "IMPLEMENT_NODE",
-    "Common",
-    "PinUtils",
-    "version"
-]
 
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase

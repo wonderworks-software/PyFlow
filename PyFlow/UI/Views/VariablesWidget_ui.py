@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'e:/GIT/PyFlow/PyFlow/UI/Views\VariablesWidget_ui.ui',
-# licensing of 'e:/GIT/PyFlow/PyFlow/UI/Views\VariablesWidget_ui.ui' applies.
+# Form implementation generated from reading ui file 'd:/GIT/PyFlow/PyFlow/UI/Views\VariablesWidget_ui.ui',
+# licensing of 'd:/GIT/PyFlow/PyFlow/UI/Views\VariablesWidget_ui.ui' applies.
 #
-# Created: Sat May  4 12:25:23 2019
+# Created: Tue Jun 11 12:28:18 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!

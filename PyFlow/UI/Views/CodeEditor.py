@@ -1,55 +1,3 @@
-"""@file CodeEditor.py
-
-The code editor is a widget for [pythonNode](@ref PyFlow.Nodes.pythonNode.pythonNode)
-To open it, create pythonNode first, then right click on it and click 'edit'. Code editor will pop up.
-@image html codeEditorInput.jpg
-The editor is divided into two parts.
-
-**The first part** is a place where you will define and sort pins. To sort pins, simply drag
-
-them as you would like them to be located on the node.
-
-1. node name
-
-2. create new input button. To the right there is a button for output pin creation also.
-
-3. remove selected pins
-
-4. pin widget. Here you can specify pin name and data type, as well as label visibility.
-
-5. spin box to change editor font size
-
-6. reset ui to defaults
-
-7. apply to node. This button will populate node with data from code editor ui.
-
-@image html codeEditorCode.jpg
-
-**The second part** is actually the text editor. Here you can read/write pins data, import python modules and use them in calculationis.
-
-When save button is pressed, function with code you wrote will be generated and used as node's compute method.
-
-    Examples:
-        # you can acess pins in two ways
-        # like so
-        >>> self.pinName.getData()
-        >>> self.pinName.setData(value)
-        # or like so
-        >>> self.getData('pinName')
-        >>> self.setData('pinName', value)
-
-        # this code
-        >>> import math
-        >>> print(math.pi)
-        # will be turned into the following
-        >>> def compute(self, *args, **kwargs):
-        >>>     import math
-        >>>     print(math.pi)
-        # and then used inside the node
-
-
-"""
-
 import weakref
 from keyword import kwlist
 import sys
@@ -208,8 +156,6 @@ class WPinWidget(QWidget, PinWidget_ui.Ui_Form):
         return self.cbType.currentText()
 
 
-# @brief Used to write code into pythonNode
-# @details See [Package description](@ref CodeEditor) for details
 class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     def __init__(self, graph, node, uid):
         super(CodeEditor, self).__init__()
@@ -243,8 +189,6 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.pbAddInput.clicked.connect(self.addDefaultInput)
         self.pbAddOutput.clicked.connect(self.addDefaultOutput)
         self.pbSave.clicked.connect(self.applyData)
-        # self.pbResetUI.clicked.connect(self.resetUiData)
-        # self.pbResetNode.clicked.connect(self.resetNode)
         self.pbKillSelectedItems.clicked.connect(self.onKillSelectedPins)
         self.resetUiData()
         self.populate()
@@ -298,8 +242,6 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.lwInputs.clear()
         self.lwOutputs.clear()
 
-    # @brief this method resets python node to its initial state
-    # @details kills all inputs and outputs including all containers etc.
     def resetNode(self):
         node = self.graph.nodes[self.nodeUid]
         for i in list(node.inputs.values()):
@@ -309,8 +251,6 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
 
         # TODO: Reset node size
 
-    # slot called when Save button is pressed
-    # @sa CodeEditor
     def applyData(self):
         # reset node
         # TODO: do not remove pins if data is the same

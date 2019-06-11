@@ -23,7 +23,6 @@ class NodeBase(INode):
 
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
-        # memo
         self.bCacheEnabled = True
         self.cacheMaxSize = 1000
         self.cache = {}
@@ -95,9 +94,7 @@ class NodeBase(INode):
 
     @property
     def inputs(self):
-        """Returns all input pins. Dictionary generated every time property called, so cache it when possible
-        Returns:
-            dict(uuid: PinBase)
+        """Returns all input pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
         for pin in self.pins:
@@ -107,9 +104,7 @@ class NodeBase(INode):
 
     @property
     def namePinInputsMap(self):
-        """Returns all input pins. Dictionary generated every time property called, so cache it when possible
-        Returns:
-            dict(str: PinBase)
+        """Returns all input pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
         for pin in self.pins:
@@ -119,9 +114,7 @@ class NodeBase(INode):
 
     @property
     def outputs(self):
-        """Returns all output pins. Dictionary generated every time property called, so cache it when possible
-        Returns:
-            dict(uuid: PinBase)
+        """Returns all output pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
         for pin in self.pins:
@@ -131,9 +124,7 @@ class NodeBase(INode):
 
     @property
     def namePinOutputsMap(self):
-        """Returns all output pins. Dictionary generated every time property called, so cache it when possible
-        Returns:
-            dict(str: PinBase)
+        """Returns all output pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
         for pin in self.pins:
