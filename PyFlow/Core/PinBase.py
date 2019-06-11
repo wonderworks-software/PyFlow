@@ -279,11 +279,14 @@ class PinBase(IPin):
             if not self.isArray():
                 self._data = self.processData(data)
             else:
-                self._data = [self.processData(i) for i in data]
+                if isinstance(data,list):
+                    self._data = [self.processData(i) for i in data]
+                else:
+                    self._data = [self.processData(i)]
 
             if self.direction == PinDirection.Output:
                 for i in self.affects:
-                    i._data = self.currentData()
+                    i.setData(self.currentData())
                     i.setClean()
             if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
                 push(self)

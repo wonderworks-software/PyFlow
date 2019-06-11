@@ -79,7 +79,7 @@ class UIAnyPin(UIPinBase):
         self.update()
         self.hovered = True
         supportedTypes = self._rawPin.allowedDataTypes([], self._rawPin._supportedDataTypes)
-        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes)
+        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}\r\nCanChangeType: {3}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes,self._rawPin.canChangeTypeOnConection([], self._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection), []))
         self.setToolTip(hoverMessage)
         event.accept()
 

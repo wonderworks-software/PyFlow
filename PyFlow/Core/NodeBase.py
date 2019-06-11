@@ -71,19 +71,11 @@ class NodeBase(INode):
         self.errorOccured.send(self._lastError)
 
     def checkForErrors(self):
-        failed = False
-        error = None
         failedPins = {}
         for pin in self._pins:
-            if not failed:
-                if pin._lastError is not None:
-                    failed = True
-                    error = pin._lastError
-                    failedPins[pin.name] = error
-                else:
-                    failed = False
-                    error = None
-        if failed:
+            if pin._lastError is not None:
+                failedPins[pin.name] = pin._lastError
+        if len(failedPins):
             self.setError("Error on Pins:%s"%str(failedPins))
         else:
             self.clearError()
@@ -499,13 +491,14 @@ class NodeBase(INode):
             if "wrapper" in jsonTemplate:
                 self.__wrapperJsonData = jsonTemplate["wrapper"]
 
-            self.checkForErrors()
+            
 
         if self.isCallable():
             self.bCallable = True
 
         self.autoAffectPins()
-
+        self.checkForErrors()
+        
     @staticmethod
     # Constructs a node from given annotated function
     def initializeFromFunction(foo):

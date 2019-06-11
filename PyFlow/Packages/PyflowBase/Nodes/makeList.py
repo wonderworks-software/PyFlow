@@ -5,9 +5,8 @@ from PyFlow.Core.Common import *
 class makeList(NodeBase):
     def __init__(self, name):
         super(makeList, self).__init__(name)
-        self.listData = self.createInputPin('data', 'AnyPin')
+        self.listData = self.createInputPin('data', 'AnyPin',structure=PinStructure.Array)
         self.listData.enableOptions(PinOptions.AllowMultipleConnections)
-        self.listData.enableOptions(PinOptions.ArraySupported)
         self.listData.disableOptions(PinOptions.SupportsOnlyArrays)
         self.listData.disableOptions(PinOptions.ChangeTypeOnConnection)
         self.sorted = self.createInputPin('sorted', 'BoolPin')
@@ -16,7 +15,7 @@ class makeList(NodeBase):
         self.outList.disableOptions(PinOptions.ChangeTypeOnConnection)
 
         self.result = self.createOutputPin('result', 'BoolPin')
-
+        self.checkForErrors()
     @staticmethod
     def pinTypeHints():
         return {'inputs': ['ListPin'], 'outputs': ['ListPin']}
