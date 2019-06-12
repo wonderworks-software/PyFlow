@@ -120,8 +120,8 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {"enabledOptions": PinOptions.AlwaysPushDirty}), meta={'Category': 'Utils', 'Keywords': []})
     def clock():
-        '''Returns the CPU time or real time since the start of the process or since the first call of clock().'''
-        return time.clock()
+        '''Returns the CPU time or real time since the start of the process or since the first call of process_time().'''
+        return time.process_time()
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "3"}), meta={'Category': 'DefaultLib', 'Keywords': []})
