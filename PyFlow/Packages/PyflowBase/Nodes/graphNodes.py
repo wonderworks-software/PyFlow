@@ -42,6 +42,8 @@ class graphInputs(NodeBase):
             name = self.getUniqPinName('in')
         p = self.createOutputPin(name, dataType, constraint=name, structConstraint=name, structure=PinStructure.Multi)
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
+        if dataType == "AnyPin":
+            p.enableOptions(PinOptions.AllowAny)
         return p
 
     def compute(self, *args, **kwargs):
@@ -108,6 +110,8 @@ class graphOutputs(NodeBase):
             name = self.getUniqPinName('out')
         p = self.createInputPin(name, dataType, constraint=name, structConstraint=name, structure=PinStructure.Multi)
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
+        if dataType == "AnyPin":
+            p.enableOptions(PinOptions.AllowAny)        
         return p
 
     def compute(self, *args, **kwargs):

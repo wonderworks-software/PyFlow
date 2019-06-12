@@ -8,6 +8,8 @@ class reroute(NodeBase):
         super(reroute, self).__init__(name)
         self.input = self.createInputPin("in", 'AnyPin', structure=PinStructure.Multi, constraint="1",structConstraint="1")
         self.output = self.createOutputPin("out", 'AnyPin', structure=PinStructure.Multi, constraint="1",structConstraint="1")
+        self.input.enableOptions(PinOptions.AllowAny)
+        self.output.enableOptions(PinOptions.AllowAny)
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
 
