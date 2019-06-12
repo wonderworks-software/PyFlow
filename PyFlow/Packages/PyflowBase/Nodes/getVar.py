@@ -13,7 +13,7 @@ class getVar(NodeBase):
         super(getVar, self).__init__(name)
         assert(isinstance(var, Variable))
         self._var = var
-        self.out = self.createOutputPin('value', var.dataType)
+        self.out = self.createOutputPin('out', var.dataType)
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
         self._var.valueChanged.connect(self.onVarValueChanged)
@@ -23,7 +23,7 @@ class getVar(NodeBase):
         self.out.kill()
         del self.out
         self.out = None
-        self.out = CreateRawPin('value', self, dataType, PinDirection.Output)
+        self.out = CreateRawPin('out', self, dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
         return self.out
 
