@@ -25,28 +25,6 @@ class DefaultLib(FunctionLibraryBase):
         return copyFunction(obj)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['in'], "CacheEnabled": False})
-    def contains(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}), element=("AnyPin", None, {"constraint": "1"})):
-        """Python's <u>in</u> keyword. <u>element in obj</u> will be executed"""
-        try:
-            return element in obj
-        except:
-            return False
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get'], "CacheEnabled": False})
-    def getItem(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
-                element=("AnyPin", None),
-                result=("Reference", ("AnyPin", None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}))):
-        """Python's <u>[]</u> operator. <u>obj[element]</u> will be executed."""
-        try:
-            result(obj[element])
-            return True
-        except:
-            result(None)
-            return False
-
-    @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})
     def clearConsole():
         '''Cross platform clears console.'''
@@ -129,18 +107,41 @@ class DefaultLib(FunctionLibraryBase):
         return type(obj).__name__
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get'], 'CacheEnabled': False})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['in'], "CacheEnabled": False})
+    def contains(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}), element=("AnyPin", None, {"constraint": "1"})):
+        """Python's <u>in</u> keyword. <u>element in obj</u> will be executed"""
+        try:
+            return element in obj
+        except:
+            return False
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=("AnyPin", None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
+                    meta={'Category': 'DefaultLib', 'Keywords': ['get'], "CacheEnabled": False})
+    def getItem(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
+                element=("AnyPin", None),
+                result=("Reference", ("BoolPin", False))):
+        """Python's <u>[]</u> operator. <u>obj[element]</u> will be executed."""
+        try:
+            result(True)
+            return obj[element]
+        except:
+            result(False)
+            return None
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=("AnyPin", None, {"constraint": "1", "structConstraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}), meta={'Category': 'DefaultLib', 'Keywords': ['get'], 'CacheEnabled': False})
     def appendTo(obj=('AnyPin', None, {"constraint": "1", "structConstraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
                  element=("AnyPin", None, {"constraint": "1"}),
-                 result=("Reference", ("AnyPin", None, {"constraint": "1", "structConstraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}))):
+                 result=("Reference", ('BoolPin', False))):
         """Calls <u>obj.append(element)</u>. And returns object. If failed - object is unchanged"""
         try:
             obj.append(element)
-            result(obj)
-            return True
+            result(True)
+            return obj
         except:
-            result(obj)
-            return False
+            result(False)
+            return obj
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get']})
