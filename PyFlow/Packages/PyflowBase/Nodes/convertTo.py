@@ -11,7 +11,7 @@ class convertTo(NodeBase):
         self.input = self.createInputPin("in", 'AnyPin',defaultValue=None)
         self.output = self.createOutputPin("result", 'AnyPin',defaultValue=None)
         pinAffects(self.input, self.output)
-        self.input.disableOptions(PinOptions.ChangeTypeOnConnection)
+        #self.input.disableOptions(PinOptions.ChangeTypeOnConnection)
         self.input.enableOptions(PinOptions.AllowAny)
         self.pinTypes = []
         for pinClass in getAllPinClasses():

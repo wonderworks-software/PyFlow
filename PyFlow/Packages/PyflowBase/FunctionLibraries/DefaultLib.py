@@ -60,27 +60,6 @@ class DefaultLib(FunctionLibraryBase):
         '''Make boolean.'''
         return b
 
-    # Conversions
-    @staticmethod
-    @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Conversion', 'Keywords': ["Bool"]})
-    def toBool(i=('AnyPin', None, {"enabledOptions": PinOptions.AllowAny, "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
-        return bool(i)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=("IntPin", 0), meta={'Category': 'Conversion', 'Keywords': []})
-    def toInt(i=('AnyPin', None, {"enabledOptions": PinOptions.AllowAny, "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
-        return int(i)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=("FloatPin", False), meta={'Category': 'Conversion', 'Keywords': []})
-    def toFloat(i=('AnyPin', None, {"enabledOptions": PinOptions.AllowAny, "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin"]})):
-        return float(i)
-
-    @staticmethod
-    @IMPLEMENT_NODE(returns=("StringPin", ''), meta={'Category': 'Conversion', 'Keywords': []})
-    def toString(i=('AnyPin', None, {"enabledOptions": PinOptions.AllowAny})):
-        return str(i)
-
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {"enabledOptions": PinOptions.AlwaysPushDirty}), meta={'Category': 'Utils', 'Keywords': [], "CacheEnabled": False})
     def clock():
