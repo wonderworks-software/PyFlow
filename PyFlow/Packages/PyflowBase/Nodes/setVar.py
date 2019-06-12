@@ -12,9 +12,9 @@ class setVar(NodeBase):
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
         self._var = var
-        self.inp = CreateRawPin("value", self, self.var.dataType, PinDirection.Input)
+        self.inp = CreateRawPin("inp", self, self.var.dataType, PinDirection.Input)
         self.inp.disableOptions(PinOptions.RenamingEnabled)
-        self.out = CreateRawPin("value", self, self.var.dataType, PinDirection.Output)
+        self.out = CreateRawPin("out", self, self.var.dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
     @property
@@ -37,7 +37,7 @@ class setVar(NodeBase):
         self.inp.kill()
         del self.inp
         self.inp = None
-        self.inp = CreateRawPin('value', self, dataType, PinDirection.Input)
+        self.inp = CreateRawPin('inp', self, dataType, PinDirection.Input)
         self.inp.disableOptions(PinOptions.RenamingEnabled)
         return self.inp
 
@@ -45,7 +45,7 @@ class setVar(NodeBase):
         self.out.kill()
         del self.out
         self.out = None
-        self.out = CreateRawPin('value', self, dataType, PinDirection.Output)
+        self.out = CreateRawPin('out', self, dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
         return self.out
 
