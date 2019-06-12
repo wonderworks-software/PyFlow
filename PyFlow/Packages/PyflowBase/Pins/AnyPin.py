@@ -25,6 +25,7 @@ class AnyPin(PinBase):
         self.enableOptions(PinOptions.ChangeTypeOnConnection)
         self._defaultSupportedDataTypes = self._supportedDataTypes = tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
         self.canChange = True
+        self.super = None
 
     @PinBase.dataType.getter
     def dataType(self):
@@ -60,10 +61,14 @@ class AnyPin(PinBase):
 
     def enableOptions(self, *options):
         super(AnyPin, self).enableOptions(*options)
+        if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
+            self.super = AnyPin
         self.updateError([])
 
     def disableOptions(self, *options):
         super(AnyPin, self).disableOptions(*options)
+        if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
+            self.super = AnyPin        
         self.updateError([])
 
     def setTypeFromData(self,data):
@@ -85,15 +90,17 @@ class AnyPin(PinBase):
                 nodePins.add(connectedPin)
         for neighbor in nodePins:
             if neighbor not in traversed:
-                if neighbor.activeDataType == "AnyPin" and neighbor.canChangeTypeOnConection([], neighbor.optionEnabled(PinOptions.ChangeTypeOnConnection), []):#
+                if neighbor.activeDataType == "AnyPin" and neighbor.canChangeTypeOnConection([], neighbor.optionEnabled(PinOptions.ChangeTypeOnConnection), []):
                     neighbor.setError("AnyPin Not Initialized")
+                    neighbor.super = None
                 else:
                     neighbor.clearError()
+                    neighbor.super = AnyPin
                 traversed.append(neighbor)
                 neighbor.updateError(traversed)
 
     def setData(self, data):
-        self.setTypeFromData(data)
+        #self.setTypeFromData(data)
         PinBase.setData(self, data)
         self.updateError([])
         #self.owningNode().checkForErrors()
@@ -152,7 +159,6 @@ class AnyPin(PinBase):
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
                             pin._supportedDataTypes = pin._defaultSupportedDataTypes
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes
-        pin.updateError([])
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:

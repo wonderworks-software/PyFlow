@@ -229,7 +229,10 @@ def canConnectPins(src, dst):
 
     if src.IsValuePin() and dst.IsValuePin():
 
-        if src.dataType in dst.allowedDataTypes([], dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):                   
+        if src.dataType in dst.allowedDataTypes([], dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
+            if all([src.dataType == "AnyPin" and not src.canChangeTypeOnConection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), []),
+                    (dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny) or not dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []))]):
+                return False         
             return True
         else:
             if all([src.dataType in list(dst.allowedDataTypes([], dst._defaultSupportedDataTypes, selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections), defaults=True)) + ["AnyPin"],
@@ -448,7 +451,7 @@ class PinOptions(Flag):
     Dynamic = auto()
     AlwaysPushDirty = auto()
     Storable = auto()
-
+    AllowAny = auto()
 
 # Used for determine Pin Structure Type
 class PinStructure(IntEnum):

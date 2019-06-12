@@ -271,15 +271,16 @@ class PinBase(IPin):
 
     ## Setting the data
     def setData(self, data):
+        e = None
         try:
             self.setClean()
             if not self.isArray():
-                self._data = self.processData(data)
+                self._data = self.super.processData(data)
             else:
                 if isinstance(data,list):
-                    self._data = [self.processData(i) for i in data]
+                    self._data = [self.super.processData(i) for i in data]
                 else:
-                    self._data = [self.processData(data)]
+                    self._data = [self.super.processData(data)]
 
             if self.direction == PinDirection.Output:
                 for i in self.affects:
@@ -288,12 +289,13 @@ class PinBase(IPin):
             if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
                 push(self)
             self.clearError()
-        except Exception as e:
+        except Exception as exc:
+            e = exc
             self.setError(e)
             self.setDirty()
             #self.setData(self.defaultValue())
 
-        self.owningNode().checkForErrors()
+        self.owningNode().checkForErrors(e)
 
     ## Calling execution pin
     def call(self, *args, **kwargs):
