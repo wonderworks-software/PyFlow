@@ -52,7 +52,7 @@ class DefaultLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get']})
     def getItem(obj=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported|PinOptions.AllowAny}),
                 element=("AnyPin", None),
-                result=("Reference", ("AnyPin", None,{"constraint": "1","enabledOptions": PinOptions.ArraySupported}))):
+                result=("Reference", ("AnyPin", None,{"constraint": "1","enabledOptions": PinOptions.ArraySupported|PinOptions.AllowAny}))):
         """Python's <u>[]</u> operator. <u>obj[element]</u> will be executed."""
         try:
             result(obj[element])
@@ -115,7 +115,7 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("StringPin", ''), meta={'Category': 'Conversion', 'Keywords': []})
-    def toString(i=('AnyPin', None,{"enabledOptions": PinOptions.AllowAny,})):
+    def toString(i=('AnyPin', None,{"enabledOptions": PinOptions.AllowAny})):
         return str(i)
 
     @staticmethod
@@ -147,7 +147,7 @@ class DefaultLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get'], 'CacheEnabled': False})
     def appendTo(obj=('AnyPin', None, {"constraint": "1","structConstraint":"1", "enabledOptions": PinOptions.ArraySupported|PinOptions.AllowAny}),
                  element=("AnyPin", None,{"constraint": "1"}),
-                 result=("Reference", ("AnyPin", None, {"constraint": "1","structConstraint":"1","enabledOptions": PinOptions.ArraySupported}))):
+                 result=("Reference", ("AnyPin", None, {"constraint": "1","structConstraint":"1","enabledOptions": PinOptions.ArraySupported|PinOptions.AllowAny}))):
         """Calls <u>obj.append(element)</u>. And returns object. If failed - object is unchanged"""
         try:
             obj.append(element)
@@ -161,7 +161,7 @@ class DefaultLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['get']})
     def addTo(obj=('AnyPin', None, {"constraint": "1","structConstraint":"1", "enabledOptions": PinOptions.ArraySupported|PinOptions.AllowAny}),
               element=("AnyPin", None,{"constraint": "1"}),
-              result=("Reference", ("AnyPin", None, {"constraint": "1","structConstraint":"1","enabledOptions": PinOptions.ArraySupported}))):
+              result=("Reference", ("AnyPin", None, {"constraint": "1","structConstraint":"1","enabledOptions": PinOptions.ArraySupported|PinOptions.AllowAny}))):
         """Calls <u>obj.add(element)</u>. And returns object. If failed - object is unchanged"""
         try:
             obj.add(element)
