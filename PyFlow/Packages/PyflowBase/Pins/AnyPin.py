@@ -103,7 +103,7 @@ class AnyPin(PinBase):
     def setData(self, data):
         #self.setTypeFromData(data)
         PinBase.setData(self, data)
-        self.updateError([])
+        #self.updateError([])
         #self.owningNode().checkForErrors()
 
     def serialize(self):
