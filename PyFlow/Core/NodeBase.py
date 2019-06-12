@@ -69,7 +69,7 @@ class NodeBase(INode):
         self._lastError = str(err)
         self.errorOccured.send(self._lastError)
 
-    def checkForErrors(self,currentError=None):
+    def checkForErrors(self, currentError=None):
         failedPins = {}
         for pin in self._pins:
             if pin._lastError is not None:

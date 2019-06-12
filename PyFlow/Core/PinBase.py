@@ -294,7 +294,7 @@ class PinBase(IPin):
             self.setError(e)
             self.setDirty()
 
-        self.owningNode().checkForErrors(e)
+        # self.owningNode().checkForErrors(e)
 
     ## Calling execution pin
     def call(self, *args, **kwargs):
