@@ -6,6 +6,7 @@ from PyFlow.Core import(
     IMPLEMENT_NODE
 )
 from PyFlow.Core.Common import *
+from nine import IS_PYTHON2
 
 VARS_MEMORY = {}
 
@@ -121,7 +122,10 @@ class DefaultLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {"enabledOptions": PinOptions.AlwaysPushDirty}), meta={'Category': 'Utils', 'Keywords': []})
     def clock():
         '''Returns the CPU time or real time since the start of the process or since the first call of process_time().'''
-        return time.process_time()
+        if IS_PYTHON2:
+            return time.clock()
+        else:
+            return time.process_time()
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "3"}), meta={'Category': 'DefaultLib', 'Keywords': []})
