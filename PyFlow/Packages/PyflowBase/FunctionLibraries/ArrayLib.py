@@ -1,5 +1,3 @@
-from copy import copy, deepcopy
-
 from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
@@ -15,70 +13,45 @@ class ArrayLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
     def extendArray(lhs=('AnyPin', [], {'constraint': '1'}),
-                    rhs=('AnyPin', [], {'constraint': '1'}),
-                    duplicate=('BoolPin', True),
-                    deepCopy=('BoolPin', False)):
+                    rhs=('AnyPin', [], {'constraint': '1'})):
         """Extend the list by appending all the items from the iterable."""
-        outArr = lhs
-        if duplicate:
-            copyFunction = deepcopy if deepCopy else copy
-            outArr = copyFunction(lhs)
-        outArr.extend(rhs)
-        return outArr
+        lhs.extend(rhs)
+        return lhs
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
     def insertToArray(ls=('AnyPin', [], {'constraint': '1'}),
                       elem=('AnyPin', None, {'constraint': '1'}),
-                      index=('IntPin', 0),
-                      duplicate=('BoolPin', True),
-                      deepCopy=('BoolPin', False)):
+                      index=('IntPin', 0)):
         """Insert an item at a given position. The first argument is the index of the element before which to insert."""
-        outArr = ls
-        if duplicate:
-            copyFunction = deepcopy if deepCopy else copy
-            outArr = copyFunction(ls)
-        outArr.insert(index, elem)
-        return outArr
+        ls.insert(index, elem)
+        return ls
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("AnyPin", [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
     def removeFromArray(ls=('AnyPin', [], {'constraint': '1'}),
                         elem=('AnyPin', None, {'constraint': '1'}),
-                        duplicate=('BoolPin', True),
-                        deepCopy=('BoolPin', False),
                         removed=('Reference', ('BoolPin', False))):
-        outArr = ls
-        if duplicate:
-            copyFunction = deepcopy if deepCopy else copy
-            outArr = copyFunction(ls)
-        if elem not in outArr:
+        if elem not in ls:
             removed(False)
             return
-        outArr.remove(elem)
+        ls.remove(elem)
         removed(True)
-        return outArr
+        return ls
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("AnyPin", None, {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
     def popFromArray(ls=('AnyPin', [], {'constraint': '1'}),
                      index=('IntPin', -1),
-                     duplicate=('BoolPin', True),
-                     deepCopy=('BoolPin', False),
                      popped=('Reference', ('BoolPin', False)),
                      outLs=('Reference', ('AnyPin', [], {'constraint': '1'}))):
-        lsCopy = ls
-        if duplicate:
-            copyFunction = deepcopy if deepCopy else copy
-            lsCopy = copyFunction(ls)
-
         poppedElem = None
         try:
-            poppedElem = lsCopy.pop(index)
+            poppedElem = ls.pop(index)
             popped(True)
         except:
             popped(False)
-        outLs(lsCopy)
+        outLs(ls)
 
         return poppedElem if poppedElem is not None else 0
 
@@ -101,15 +74,9 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1'}), nodeType=NodeTypes.Callable, meta={'Category': 'Array', 'Keywords': []})
-    def clearArray(ls=('AnyPin', [], {'constraint': '1'}),
-                   duplicate=('BoolPin', True),
-                   deepCopy=('BoolPin', False)):
-        outArr = ls
-        if duplicate:
-            copyFunction = deepcopy if deepCopy else copy
-            outArr = copyFunction(ls)
-        outArr.clear()
-        return outArr
+    def clearArray(ls=('AnyPin', [], {'constraint': '1'})):
+        ls.clear()
+        return ls
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Array', 'Keywords': ['in']})

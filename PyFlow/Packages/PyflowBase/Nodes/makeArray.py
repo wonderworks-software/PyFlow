@@ -33,8 +33,10 @@ class makeArray(NodeBase):
 
     def compute(self, *args, **kwargs):
         outArray = []
-        for i in sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y):
-            if isinstance(i.getData(),list):
+        ySortedPins = sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y)
+
+        for i in ySortedPins:
+            if isinstance(i.getData(), list):
                 for e in i.getData():
                     outArray.append(e)
             else:

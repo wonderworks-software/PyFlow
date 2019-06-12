@@ -87,16 +87,13 @@ class TestGeneral(unittest.TestCase):
         self.assertIsNotNone(printNode)
 
         pPrintInputValuePin = printNode[str('entity')]
-        pRandIntInExecPin = randintNode.getPin(str('inExec'), PinSelectionGroup.Inputs)
 
-        edge1Created = connectPins(randintNode[str(DEFAULT_OUT_EXEC_NAME)], printNode[str(DEFAULT_IN_EXEC_NAME)])
         edge2Created = connectPins(randintNode[str('Result')], pPrintInputValuePin)
-        self.assertEqual(edge1Created, True, "FAILED TO CONNECT EXECS")
         self.assertEqual(edge2Created, True, "FAILED TO CONNECT INT AND ANY")
 
         values = set()
         for i in range(10):
-            pRandIntInExecPin.call()
+            printNode[DEFAULT_IN_EXEC_NAME].call()
             values.add(pPrintInputValuePin.currentData())
         self.assertGreater(len(values), 1)
 

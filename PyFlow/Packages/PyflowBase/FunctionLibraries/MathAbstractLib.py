@@ -28,12 +28,7 @@ class MathAbstractLib(FunctionLibraryBase):
         '''
         Operator <b>></b>.
         '''
-        try:
-            result(True)
-            return a > b
-        except:
-            result(False)
-            return None
+        return a > b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': [">"]})
@@ -43,12 +38,7 @@ class MathAbstractLib(FunctionLibraryBase):
         '''
         Operator <b>>=</b>.
         '''
-        try:
-            result(True)
-            return a >= b
-        except:
-            result(False)
-            return None
+        return a >= b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["<"]})
@@ -57,93 +47,53 @@ class MathAbstractLib(FunctionLibraryBase):
         '''
         Operator <b><</b>.
         '''
-        try:
-            result(True)
-            return a < b
-        except:
-            result(False)
-            return None
+        return a < b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["<"]})
-    def isLessOrEqual(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"}),
-                      result=("Reference", ("BoolPin", False))):
+    def isLessOrEqual(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"})):
         '''
         Operator <b><=</b>.
         '''
-        try:
-            result(True)
-            return a <= b
-        except:
-            result(False)
-            return None
+        return a <= b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=(("AnyPin", None, {"constraint": "1"})), meta={'Category': 'Math|Basic', 'Keywords': ['+', 'append', "sum"]})
-    def add(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"}), result=("Reference", ("BoolPin", False))):
+    def add(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"})):
         '''
         Operator <b>+</b>.
         '''
-        try:
-            result(True)
-            return a + b
-        except:
-            result(False)
+        return a + b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=(("AnyPin", None, {"constraint": "1"})), meta={'Category': 'Math|Basic', 'Keywords': ['-']})
-    def subtract(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"}),
-                 result=("Reference", ("BoolPin", False))):
+    def subtract(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"})):
         '''
         Operator <b>-</b>.
         '''
-        try:
-            result(True)
-            return a - b
-        except:
-            result(False)
-            return None
+        return a - b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("AnyPin", None, {"constraint": "1"}), meta={'Category': 'Math|Basic', 'Keywords': ['/', "divide"]})
-    def divide(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"}),
-               result=("Reference", ("BoolPin", False))):
+    def divide(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"})):
         '''
         Operator <b>/</b>.
         '''
-        try:
-            d = a / b
-            result(True)
-            return d
-        except:
-            result(False)
-            return -1
+        return a / b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=(("AnyPin", None, {"constraint": "1"})), meta={'Category': 'Math|Basic', 'Keywords': ['*', "multiply"]})
-    def multiply(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"}),
-                 result=("Reference", ("BoolPin", False))):
+    def multiply(a=("AnyPin", None, {"constraint": "1"}), b=("AnyPin", None, {"constraint": "1"})):
         '''
         Operator <b>*<b>.
         '''
-        try:
-            result(True)
-            return a * b
-        except:
-            result(False)
-            return None
+        return a * b
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={'Category': 'Math|Basic', 'Keywords': ["in", "range"]})
-    def inRange(Value=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                  "Matrix33Pin", "Matrix44Pin", "QuatPin",
-                                                                                  "FloatVector3Pin", "FloatVector4Pin"]}),
-                RangeMin=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                     "Matrix33Pin", "Matrix44Pin", "QuatPin",
-                                                                                     "FloatVector3Pin", "FloatVector4Pin"]}),
-                RangeMax=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["BoolPin", "FloatPin", "IntPin",
-                                                                                     "Matrix33Pin", "Matrix44Pin", "QuatPin",
-                                                                                     "FloatVector3Pin", "FloatVector4Pin"]}),
+    def inRange(Value=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
+                RangeMin=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
+                RangeMax=("AnyPin", None, {"constraint": "1", "supportedDataTypes": ["FloatPin", "IntPin"]}),
                 InclusiveMin=("BoolPin", False),
                 InclusiveMax=("BoolPin", False)):
         '''
