@@ -81,8 +81,8 @@ class AnyPin(PinBase):
                         self.owningNode().checkForErrors()
                 break
 
-    def updateError(self,traversed=[]):
-        nodePins= set([self])
+    def updateError(self, traversed=[]):
+        nodePins = set([self])
         if self.constraint:
             nodePins = set(self.owningNode().constraints[self.constraint])
         for connectedPin in getConnectedPins(self):
@@ -101,10 +101,7 @@ class AnyPin(PinBase):
                 neighbor.updateError(traversed)
 
     def setData(self, data):
-        #self.setTypeFromData(data)
         PinBase.setData(self, data)
-        #self.updateError([])
-        #self.owningNode().checkForErrors()
 
     def serialize(self):
         dt = super(AnyPin, self).serialize()

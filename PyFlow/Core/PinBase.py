@@ -16,7 +16,7 @@ class PinBase(IPin):
 
     def __init__(self, name, owningNode, direction):
         super(PinBase, self).__init__()
-        # signals       
+        # signals
         self.serializationHook = Signal()
         self.onPinConnected = Signal(object)
         self.onPinDisconnected = Signal(object)
@@ -277,7 +277,7 @@ class PinBase(IPin):
             if not self.isArray():
                 self._data = self.super.processData(data)
             else:
-                if isinstance(data,list):
+                if isinstance(data, list):
                     self._data = [self.super.processData(i) for i in data]
                 else:
                     self._data = [self.super.processData(data)]
@@ -293,7 +293,6 @@ class PinBase(IPin):
             e = exc
             self.setError(e)
             self.setDirty()
-            #self.setData(self.defaultValue())
 
         self.owningNode().checkForErrors(e)
 
