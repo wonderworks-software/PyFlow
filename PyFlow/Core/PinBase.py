@@ -271,7 +271,6 @@ class PinBase(IPin):
 
     ## Setting the data
     def setData(self, data):
-        e = None
         try:
             self.setClean()
             if not self.isArray():
@@ -290,11 +289,10 @@ class PinBase(IPin):
                 push(self)
             self.clearError()
         except Exception as exc:
-            e = exc
-            self.setError(e)
+            self.setError(exc)
             self.setDirty()
 
-        self.owningNode().checkForErrors(e)
+        #self.owningNode().checkForErrors()
 
     ## Calling execution pin
     def call(self, *args, **kwargs):

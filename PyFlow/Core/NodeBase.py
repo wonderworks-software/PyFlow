@@ -69,19 +69,15 @@ class NodeBase(INode):
         self._lastError = str(err)
         self.errorOccured.send(self._lastError)
 
-    def checkForErrors(self,currentError=None):
+    def checkForErrors(self):
         failedPins = {}
         for pin in self._pins:
             if pin._lastError is not None:
                 failedPins[pin.name] = pin._lastError
         if len(failedPins):
-            if currentError:
-                self.setError("Error on node:%s\r\nError on Pins:%s"%(currentError,str(failedPins)))
-            else:
-                self.setError("Error on Pins:%s"%str(failedPins))
+            self.setError("Error on Pins:%s"%str(failedPins))
         else:
-            if not currentError:
-                self.clearError()
+            self.clearError()
         wrapper = self.getWrapper()
         if wrapper:
             wrapper.update()
