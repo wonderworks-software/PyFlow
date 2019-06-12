@@ -270,8 +270,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def onNodeErrorOccured(self, *args, **kwargs):
         # change node ui to invalid
         errorString = args[0]
-        print(self._rawNode.name,"Node error:", errorString)
+        print(self._rawNode.name, "Node error:", errorString)
         self.setToolTip(errorString)
+        self.update()
 
     def onNodeErrorCleared(self, *args, **kwargs):
         # restore node ui to clean
