@@ -54,6 +54,7 @@ from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
 from PyFlow.Packages.PyflowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyflowBase.Nodes.compound import compound
 from PyFlow.Packages.PyflowBase.Nodes.constant import constant
+from PyFlow.Packages.PyflowBase.Nodes.convertTo import convertTo
 
 from PyFlow.Packages.PyflowBase.Tools.ScreenshotTool import ScreenshotTool
 from PyFlow.Packages.PyflowBase.Tools.NodeBoxTool import NodeBoxTool
@@ -117,7 +118,8 @@ _NODES = {
     forEachLoop.__name__: forEachLoop,
     address.__name__: address,
     constant.__name__: constant,
-    tick.__name__: tick
+    tick.__name__: tick,
+    convertTo.__name__ : convertTo,
 }
 
 _PINS = {
