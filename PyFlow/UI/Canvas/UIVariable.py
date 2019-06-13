@@ -110,7 +110,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         propertiesWidget.addWidget(baseCategory)
 
         # structure type
-        cbStructure = EnumComboBox([i.name for i in PinStructure])
+        cbStructure = EnumComboBox([i.name for i in (PinStructure.Single, PinStructure.Array)])
         cbStructure.setEditable(False)
         cbStructure.setCurrentIndex(cbStructure.findText(self._rawVariable.structure.name))
         cbStructure.changeCallback.connect(self.onStructureChanged)
