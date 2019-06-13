@@ -349,7 +349,7 @@ class PinPainter(object):
     @staticmethod
     def asListPin(pin, painter, option, widget):
         lod = pin.owningNode().canvasRef().getLodValueFromCurrentScale(3)
-        cellW = pin.pinSize
+        cellW = pin.pinSize / 3
         cellH = pin.pinSize / 3
         pinCenter = pin.pinCenter()
         halfPinSize = pin.pinSize / 2
@@ -358,8 +358,10 @@ class PinPainter(object):
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.2))
         for row in range(3):
             x = pinCenter.x() - halfPinSize
-            y = row * cellH + halfPinSize + pin.pinCircleDrawOffset.y()
+            y = row * cellH + (halfPinSize / 2) + pin.pinCircleDrawOffset.y()
+            # TODO: use different colors for key and value
             painter.drawRect(x, y, cellW, cellH)
+            painter.drawRect(x + cellW, y, cellW * 2, cellH)
 
         if lod < 3:
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
