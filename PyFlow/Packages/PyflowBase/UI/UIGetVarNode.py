@@ -36,6 +36,7 @@ class UIGetVarNode(UINodeBase):
         self._rawNode.var = newVar
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+        self._createUIPinWrapper(self._rawNode.out)
 
     def onVarStructureChanged(self, newStruct):
         self.canvasRef().pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
@@ -76,8 +77,6 @@ class UIGetVarNode(UINodeBase):
         if var:
             linkedTo = getConnectedPins(self._rawNode.out)
             self.var = var
-
-            self._createUIPinWrapper(self._rawNode.out)
             self._rawNode.updateStructure()
             for i in linkedTo:
                 if i.isAny():
@@ -104,6 +103,7 @@ class UIGetVarNode(UINodeBase):
             self._rawNode.out.setType(dataType)
         else:
             self._rawNode.recreateOutput(dataType)
+            self._createUIPinWrapper(self._rawNode.out)
         self.canvasRef().pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
         self._rawNode.checkForErrors()
         self.update()

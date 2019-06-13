@@ -139,7 +139,6 @@ class Variable(IItemBase):
         assert(isinstance(value, uuid.UUID))
         graph.vars[value] = graph.vars.pop(self._uid)
         self._uid = value
-        # self.uuidChanged.send(value)
 
     def serialize(self):
         pinClass = findPinClassByType(self.dataType)

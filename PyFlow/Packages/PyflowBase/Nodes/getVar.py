@@ -48,12 +48,10 @@ class getVar(NodeBase):
 
     @var.setter
     def var(self, newVar):
-        oldDataType = self._var.dataType
         self._var.valueChanged.disconnect(self.onVarValueChanged)
         self._var = newVar
         self._var.valueChanged.connect(self.onVarValueChanged)
-        if oldDataType != self._var.dataType:
-            self.recreateOutput(self._var.dataType)
+        self.recreateOutput(self._var.dataType)
 
     def postCreate(self, jsonTemplate=None):
         super(getVar, self).postCreate(jsonTemplate)
