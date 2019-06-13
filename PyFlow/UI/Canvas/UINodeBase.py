@@ -259,6 +259,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.actionToggleCollapse.setToolTip("Toggles node's body collapsed or not")
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
         self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
+        self.actionRefresh = self._menu.addAction("Refresh")
+        self.actionRefresh.triggered.connect(self._rawNode.checkForErrors)
 
     @property
     def groups(self):

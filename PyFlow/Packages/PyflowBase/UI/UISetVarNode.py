@@ -41,6 +41,9 @@ class UISetVarNode(UINodeBase):
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
+    def onVarStructureChanged(self, newStruct):
+        self.canvasRef().requestClearProperties.emit()
+
     def serialize(self):
         template = UINodeBase.serialize(self)
         template['meta']['var'] = self.var.serialize()
@@ -60,6 +63,7 @@ class UISetVarNode(UINodeBase):
         self._createUIPinWrapper(self._rawNode.out)
 
         self.updateHeaderText()
+        self._rawNode.updateStructure()
         self.autoAffectPins()
 
     def onVarSelected(self, varName):
@@ -75,6 +79,7 @@ class UISetVarNode(UINodeBase):
 
             self._createUIPinWrapper(self._rawNode.inp)
             self._createUIPinWrapper(self._rawNode.out)
+            self._rawNode.updateStructure()
             for i in outLinkedTo:
                 if i.isAny():
                     i.setDefault()

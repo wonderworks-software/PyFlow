@@ -17,7 +17,21 @@ class getVar(NodeBase):
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
         self._var.valueChanged.connect(self.onVarValueChanged)
+        self._var.structureChanged.connect(self.onVarStructureChanged)
         self.bCacheEnabled = False
+
+    def updateStructure(self):
+        self.out.disconnectAll()
+        if self._var.structure == PinStructure.Single:
+            self.out.setAsArray(False)
+        if self._var.structure == PinStructure.Array:
+            self.out.setAsArray(True)
+        if self._var.structure == PinStructure.Multi:
+            self.out.setAsArray(False)
+
+    def onVarStructureChanged(self, newStructure):
+        self.out.structureType = newStructure
+        self.updateStructure()
 
     def recreateOutput(self, dataType):
         self.out.kill()
@@ -25,6 +39,7 @@ class getVar(NodeBase):
         self.out = None
         self.out = CreateRawPin('out', self, dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
+        self.updateStructure()
         return self.out
 
     @property
@@ -42,6 +57,7 @@ class getVar(NodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(getVar, self).postCreate(jsonTemplate)
+        self.updateStructure()
 
     def variableUid(self):
         return self.var.uid

@@ -21,6 +21,7 @@ from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget, CollapsibleFormWidget
 from PyFlow import getPinDefaultValueByType
+from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow import findPinClassByType
 from PyFlow import getAllPinClasses
 
@@ -110,6 +111,10 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         self.setName(self._rawVariable.name)
         self._rawVariable.setWrapper(self)
 
+    def onStructureChanged(self, name):
+        self._rawVariable.structure = PinStructure[name]
+        self.variablesWidget.pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
+
     def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
         # name
@@ -119,19 +124,29 @@ class UIVariable(QWidget, IPropertiesViewSupport):
 
         # data type
         cbTypes = VarTypeComboBox(self)
-        baseCategory.addWidget("Type", cbTypes)
         propertiesWidget.addWidget(baseCategory)
+        # structure type
+        cbStructure = EnumComboBox([i.name for i in PinStructure])
+        cbStructure.setEditable(False)
+        cbStructure.setCurrentIndex(cbStructure.findText(self._rawVariable.structure.name))
+        cbStructure.changeCallback.connect(self.onStructureChanged)
+        propertiesWidget.addWidget(baseCategory)
+        baseCategory.addWidget("Type", cbTypes)
+        baseCategory.addWidget("Structure", cbStructure)
 
         valueCategory = CollapsibleFormWidget(headName="Value")
 
         # current value
-        def valSetter(x):
-            self._rawVariable.value = x
-        w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType))
-        if w:
-            w.setWidgetValue(self._rawVariable.value)
-            w.setObjectName(self._rawVariable.name)
-            valueCategory.addWidget(self._rawVariable.name, w)
+        # TODO: Make widget for array structure?
+        if self._rawVariable.structure == PinStructure.Single:
+            if not type(self._rawVariable.value) in {list, set, dict, tuple}:
+                def valSetter(x):
+                    self._rawVariable.value = x
+                w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType))
+                if w:
+                    w.setWidgetValue(self._rawVariable.value)
+                    w.setObjectName(self._rawVariable.name)
+                    valueCategory.addWidget(self._rawVariable.name, w)
 
         # access level
         cb = QComboBox()

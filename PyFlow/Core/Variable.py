@@ -9,12 +9,13 @@ from PyFlow.Core.Interfaces import IItemBase
 
 
 class Variable(IItemBase):
-    def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, uid=None):
+    def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, structure=PinStructure.Single, uid=None):
         super(Variable, self).__init__()
         # signals
         self.nameChanged = Signal(str)
         self.valueChanged = Signal(str)
         self.dataTypeChanged = Signal(str)
+        self.structureChanged = Signal(str)
         self.accessLevelChanged = Signal(str)
         self.packageNameChanged = Signal(str)
         self.uuidChanged = Signal(object)
@@ -25,6 +26,7 @@ class Variable(IItemBase):
         self._name = name
         self._value = value
         self._dataType = dataType
+        self._structure = structure
         self._accessLevel = accessLevel
         self._packageName = None
         self._uid = uuid.uuid4() if uid is None else uid
@@ -116,6 +118,19 @@ class Variable(IItemBase):
             self.dataTypeChanged.send(value)
 
     @property
+    def structure(self):
+        return self._structure
+
+    @structure.setter
+    def structure(self, value):
+        assert(isinstance(value, PinStructure))
+        if value != self._structure:
+            self._structure = value
+            if self._structure == PinStructure.Array:
+                self.value = list()
+            self.structureChanged.send(self._structure)
+
+    @property
     def uid(self):
         return self._uid
 
@@ -139,7 +154,8 @@ class Variable(IItemBase):
         else:
             template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass())
         template['dataType'] = self.dataType
-        template['accessLevel'] = self.accessLevel.value
+        template['structure'] = self.structure.name
+        template['accessLevel'] = self.accessLevel.name
         template['package'] = self._packageName
         template['uuid'] = uidString
 
@@ -156,9 +172,10 @@ class Variable(IItemBase):
         else:
             value = getPinDefaultValueByType("AnyPin")
 
-        accessLevel = AccessLevel(jsonData['accessLevel'])
+        accessLevel = AccessLevel[jsonData['accessLevel']]
+        structure = PinStructure[jsonData['structure']]
         uid = uuid.UUID(jsonData['uuid'])
-        return Variable(graph, value, name, dataType, accessLevel, uid)
+        return Variable(graph, value, name, dataType, accessLevel, structure, uid)
 
     @staticmethod
     def jsonTemplate():

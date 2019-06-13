@@ -37,6 +37,12 @@ class UIGetVarNode(UINodeBase):
         self.var.nameChanged.connect(self.onVarNameChanged)
         self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
+    def onVarStructureChanged(self, newStruct):
+        self.canvasRef().pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
+        self._rawNode.checkForErrors()
+        self.update()
+        self.update()
+
     def postCreate(self, jsonTemplate=None):
         super(UIGetVarNode, self).postCreate(jsonTemplate)
 
@@ -72,11 +78,15 @@ class UIGetVarNode(UINodeBase):
             self.var = var
 
             self._createUIPinWrapper(self._rawNode.out)
+            self._rawNode.updateStructure()
             for i in linkedTo:
                 if i.isAny():
                     i.setDefault()
                 self.canvasRef().connectPinsInternal(self._rawNode.out.getWrapper()(), i.getWrapper()())
             self.updateHeaderText()
+        self.canvasRef().pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
+        self._rawNode.checkForErrors()
+        self.update()
 
     def createInputWidgets(self, propertiesWidget):
         inputsCategory = CollapsibleFormWidget(headName="Inputs")
@@ -90,7 +100,13 @@ class UIGetVarNode(UINodeBase):
 
     def onVarDataTypeChanged(self, dataType):
         self._rawNode.out.disconnectAll()
-        self._rawNode.out.setType(dataType)
+        if self._rawNode.out.isAny():
+            self._rawNode.out.setType(dataType)
+        else:
+            self._rawNode.recreateOutput(dataType)
+        self.canvasRef().pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
+        self._rawNode.checkForErrors()
+        self.update()
 
     def updateHeaderText(self):
         self.setHeaderHtml("Get {0}".format(self.var.name))

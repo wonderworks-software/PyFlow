@@ -17,6 +17,29 @@ class setVar(NodeBase):
         self.out = CreateRawPin("out", self, self.var.dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
+        self._var.structureChanged.connect(self.onVarStructureChanged)
+
+    def updateStructure(self):
+        self.out.disconnectAll()
+        self.inp.disconnectAll()
+        if self._var.structure == PinStructure.Single:
+            self.out.setAsArray(False)
+            self.inp.setAsArray(False)
+        if self._var.structure == PinStructure.Array:
+            self.out.setAsArray(True)
+            self.inp.setAsArray(True)
+        if self._var.structure == PinStructure.Multi:
+            self.out.setAsArray(False)
+            self.inp.setAsArray(False)
+
+    def onVarStructureChanged(self, newStructure):
+        self.out.structureType = newStructure
+        self.updateStructure()
+
+    def postCreate(self, jsonTemplate=None):
+        super(setVar, self).postCreate(jsonTemplate)
+        self.updateStructure()
+
     @property
     def var(self):
         return self._var
