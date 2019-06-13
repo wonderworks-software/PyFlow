@@ -51,14 +51,9 @@ class QuatPin(PinBase):
         return 'QuatPin', Quaternion()
 
     @staticmethod
-    def processData(data):
-        if isinstance(data, Quaternion):
-            return data
-        raise(Exception('Invalid Quaternion data'))
+    def internalDataStructure():
+        return Quaternion
 
-    def setData(self, data):
-        try:
-            self._data = self.processData(data)
-        except:
-            self._data = self.defaultValue()
-        PinBase.setData(self, self._data)
+    @staticmethod
+    def processData(data):
+        return QuatPin.internalDataStructure()(data)

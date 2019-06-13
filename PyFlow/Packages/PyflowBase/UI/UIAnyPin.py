@@ -49,12 +49,9 @@ class UIAnyPin(UIPinBase):
             self.update()
 
     def selectInit(self):
-        validPins = self._rawPin._defaultSupportedDataTypes + ("AnyPin",)
-
-        # List can't become array
-        if self._rawPin._currStructure != PinStructure.Single:
-            validPins = tuple([i for i in validPins if i != "ListPin"])
-
+        validPins = list(self._rawPin._defaultSupportedDataTypes)
+        if "AnyPin" in validPins:
+            validPins.remove("AnyPin")
         self.d = SelectPinDialog(validPins=validPins)
         self.d.exec_()
         dataType = self.d.getResult()
@@ -79,7 +76,7 @@ class UIAnyPin(UIPinBase):
         self.update()
         self.hovered = True
         supportedTypes = self._rawPin.allowedDataTypes([], self._rawPin._supportedDataTypes)
-        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes)
+        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}\r\nCanChangeType: {3}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes,self._rawPin.canChangeTypeOnConection([], self._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection), []))
         self.setToolTip(hoverMessage)
         event.accept()
 
@@ -88,7 +85,5 @@ class UIAnyPin(UIPinBase):
             PinPainter.asExecPin(self, painter, option, widget)
         elif self.isArray():
             PinPainter.asArrayPin(self, painter, option, widget)
-        elif self.isList():
-            PinPainter.asListPin(self, painter, option, widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)

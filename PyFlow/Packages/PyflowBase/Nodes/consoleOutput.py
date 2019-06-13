@@ -7,6 +7,7 @@ class consoleOutput(NodeBase):
         super(consoleOutput, self).__init__(name)
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.entity = self.createInputPin('entity', 'AnyPin', structure=PinStructure.Multi)
+        self.entity.enableOptions(PinOptions.AllowAny)
         self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
 
     @staticmethod

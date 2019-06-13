@@ -141,7 +141,7 @@ class draggers(QtWidgets.QWidget):
 
 class slider(QtWidgets.QSlider):
     ## Customized Int Slider
-    def __init__(self, decimals=4, *args, **kargs):
+    def __init__(self, *args, **kargs):
         super(slider, self).__init__(*args, **kargs)
         self.setOrientation(QtCore.Qt.Horizontal)
         self.deltaValue = 0
@@ -287,7 +287,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
 
 class pyf_Slider(QtWidgets.QWidget):
 
-    valueChanged = QtCore.Signal(float)
+    valueChanged = QtCore.Signal(object)
 
     def __init__(self, parent, type="float", style=0, name=None, *args):
         super(pyf_Slider, self).__init__(parent=parent, *args)
@@ -363,6 +363,8 @@ class pyf_Slider(QtWidgets.QWidget):
 
     def value(self):
         self._value = self.sld.value()
+        if self.type == "int":
+            self._value = int(self._value)    
         return self._value
 
     def setValue(self, value):
@@ -375,10 +377,8 @@ class pyf_Slider(QtWidgets.QWidget):
                     max(self.minimum, value * 2))
             self.sld.setValue(value)
             self._value = self.sld.value()
-            if self.type == "int":
-                self._value = int(self._value)
             self.input.setValue(self.value())
-            self.valueChanged.emit(self._value)
+            self.valueChanged.emit(self.value())
 
     def setMinimum(self, value):
         self.input.setMinimum(value)
@@ -801,7 +801,6 @@ class testWidg(QtWidgets.QWidget):
         tim = pyf_timeline(self)
         tim.setCached([0,1,2,3,4,15,20])
         self.layout().addWidget(tim)
-
 
 
 def main():

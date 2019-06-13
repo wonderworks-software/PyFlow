@@ -17,7 +17,27 @@ class getVar(NodeBase):
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
         self._var.valueChanged.connect(self.onVarValueChanged)
+        self._var.structureChanged.connect(self.onVarStructureChanged)
+        self._var.dataTypeChanged.connect(self.onDataTypeChanged)
         self.bCacheEnabled = False
+
+    def onDataTypeChanged(self, dataType):
+        self.recreateOutput(dataType)
+        self.checkForErrors()
+        wrapper = self.getWrapper()
+        if wrapper:
+            wrapper.onVariableWasChanged()
+
+    def updateStructure(self):
+        self.out.disconnectAll()
+        if self._var.structure == PinStructure.Single:
+            self.out.setAsArray(False)
+        if self._var.structure == PinStructure.Array:
+            self.out.setAsArray(True)
+
+    def onVarStructureChanged(self, newStructure):
+        self.out.structureType = newStructure
+        self.updateStructure()
 
     def recreateOutput(self, dataType):
         self.out.kill()
@@ -25,6 +45,7 @@ class getVar(NodeBase):
         self.out = None
         self.out = CreateRawPin('out', self, dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
+        self.updateStructure()
         return self.out
 
     @property
@@ -33,15 +54,22 @@ class getVar(NodeBase):
 
     @var.setter
     def var(self, newVar):
-        oldDataType = self._var.dataType
+        self._var.dataTypeChanged.disconnect(self.onDataTypeChanged)
+        self._var.structureChanged.disconnect(self.onVarStructureChanged)
         self._var.valueChanged.disconnect(self.onVarValueChanged)
         self._var = newVar
         self._var.valueChanged.connect(self.onVarValueChanged)
-        if oldDataType != self._var.dataType:
-            self.recreateOutput(self._var.dataType)
+        self._var.structureChanged.connect(self.onVarStructureChanged)
+        self._var.dataTypeChanged.connect(self.onDataTypeChanged)
+        self.recreateOutput(self._var.dataType)
+        self.checkForErrors()
+        wrapper = self.getWrapper()
+        if wrapper:
+            wrapper.onVariableWasChanged()
 
     def postCreate(self, jsonTemplate=None):
         super(getVar, self).postCreate(jsonTemplate)
+        self.updateStructure()
 
     def variableUid(self):
         return self.var.uid

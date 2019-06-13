@@ -33,18 +33,12 @@ class UIGraphInputs(UINodeBase):
         dataType = self.d.getResult()
         if dataType is not None:
             self.onAddOutPin(None, dataType)
-        self.setFocus()
 
     def onAddOutPin(self, name=None, dataType="AnyPin"):
         rawPin = self._rawNode.addOutPin(name, dataType)
         uiPin = self._createUIPinWrapper(rawPin)
         uiPin.labelColor = Colors.AbsoluteBlack
         self.pinCreated.emit(uiPin)
-
-        geo = self.geometry()
-        geo.setWidth(50)
-        self.setGeometry(geo)
-
         self.updateNodeShape()
         return uiPin
 
@@ -65,7 +59,7 @@ class UIGraphOutputs(UINodeBase):
         actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
-        actionAddOut.triggered.connect(self.createPinDialog)        
+        actionAddOut.triggered.connect(self.createPinDialog)
 
         self.color = Colors.DarkGray
         self.headColorOverride = Colors.Gray

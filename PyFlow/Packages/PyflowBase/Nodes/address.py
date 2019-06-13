@@ -6,6 +6,7 @@ class address(NodeBase):
     def __init__(self, name):
         super(address, self).__init__(name)
         self.obj = self.createInputPin("obj", "AnyPin", structure=PinStructure.Multi)
+        self.obj.enableOptions(PinOptions.AllowAny)
         self.addr = self.createOutputPin('out', 'StringPin')
 
     @staticmethod

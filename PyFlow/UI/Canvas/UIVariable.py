@@ -21,6 +21,7 @@ from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget, CollapsibleFormWidget
 from PyFlow import getPinDefaultValueByType
+from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow import findPinClassByType
 from PyFlow import getAllPinClasses
 
@@ -39,7 +40,7 @@ class TypeWidget(QWidget):
         painter.setRenderHint(QtGui.QPainter.Antialiasing);
         painter.setBrush(QtGui.QColor.fromRgb(*self.color))
         pen = QtGui.QPen()
-        pen.setColor(QtGui.QColor(0,0,0,0))
+        pen.setColor(QtGui.QColor(0, 0, 0, 0))
         painter.setPen(pen)
         rect = event.rect()
         rect.setHeight(10)
@@ -48,29 +49,6 @@ class TypeWidget(QWidget):
         painter.drawRoundedRect(rect, 5, 5)
 
         painter.end()
-
-
-# Changes type of variable
-class VarTypeComboBox(QComboBox):
-    def __init__(self, var, parent=None):
-        super(VarTypeComboBox, self).__init__(parent)
-        self._bJustSpawned = True
-        self.var = var
-        self.types = [pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()]
-        for i in self.types:
-            self.addItem(i)
-        self.currentIndexChanged.connect(self.onCurrentIndexChanged)
-        self.setCurrentIndex(self.findText(var.dataType))
-        self._bJustSpawned = False
-
-    def onCurrentIndexChanged(self, index):
-        if self._bJustSpawned:
-            val = self.var.value
-
-        self.var.setDataType(self.itemText(index), self._bJustSpawned)
-
-        if self._bJustSpawned:
-            self.var.value = val
 
 
 # Variable class
@@ -110,6 +88,13 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         self.setName(self._rawVariable.name)
         self._rawVariable.setWrapper(self)
 
+    def onStructureChanged(self, name):
+        self._rawVariable.structure = PinStructure[name]
+        self.variablesWidget.pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
+
+    def setDataType(self, dataType):
+        self.dataType = dataType
+
     def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
         # name
@@ -118,20 +103,34 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         baseCategory.addWidget("Name", le_name)
 
         # data type
-        cbTypes = VarTypeComboBox(self)
-        baseCategory.addWidget("Type", cbTypes)
+        cbTypes = EnumComboBox([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() if pin.__name__ != "AnyPin"])
+        cbTypes.setCurrentIndex(cbTypes.findText(self.dataType))
+        cbTypes.setEditable(False)
+        cbTypes.changeCallback.connect(self.setDataType)
         propertiesWidget.addWidget(baseCategory)
+
+        # structure type
+        cbStructure = EnumComboBox([i.name for i in (PinStructure.Single, PinStructure.Array)])
+        cbStructure.setEditable(False)
+        cbStructure.setCurrentIndex(cbStructure.findText(self._rawVariable.structure.name))
+        cbStructure.changeCallback.connect(self.onStructureChanged)
+        propertiesWidget.addWidget(baseCategory)
+        baseCategory.addWidget("Type", cbTypes)
+        baseCategory.addWidget("Structure", cbStructure)
 
         valueCategory = CollapsibleFormWidget(headName="Value")
 
         # current value
-        def valSetter(x):
-            self._rawVariable.value = x
-        w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType))
-        if w:
-            w.setWidgetValue(self._rawVariable.value)
-            w.setObjectName(self._rawVariable.name)
-            valueCategory.addWidget(self._rawVariable.name, w)
+        # TODO: Make widget for array structure?
+        if self._rawVariable.structure == PinStructure.Single:
+            if not type(self._rawVariable.value) in {list, set, dict, tuple}:
+                def valSetter(x):
+                    self._rawVariable.value = x
+                w = createInputWidget(self._rawVariable.dataType, valSetter, getPinDefaultValueByType(self._rawVariable.dataType))
+                if w:
+                    w.setWidgetValue(self._rawVariable.value)
+                    w.setObjectName(self._rawVariable.name)
+                    valueCategory.addWidget(self._rawVariable.name, w)
 
         # access level
         cb = QComboBox()
@@ -178,6 +177,9 @@ class UIVariable(QWidget, IPropertiesViewSupport):
     @ dataType.setter
     def dataType(self, value):
         self._rawVariable.dataType = value
+        self.widget.color = findPinClassByType(self._rawVariable.dataType).color()
+        self.widget.update()
+        self.variablesWidget.onUpdatePropertyView(self)
 
     @property
     def packageName(self):
@@ -258,16 +260,6 @@ class UIVariable(QWidget, IPropertiesViewSupport):
     @value.setter
     def value(self, data):
         self._rawVariable.value = data
-
-    # Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
-    # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
-    def setDataType(self, dataType, _bJustSpawned=False):
-        self._rawVariable.dataType = dataType
-        self.widget.color = findPinClassByType(self.dataType).color()
-        self.widget.update()
-        if _bJustSpawned:
-            return
-        self.variablesWidget.onUpdatePropertyView(self)
 
     def mousePressEvent(self, event):
         super(UIVariable, self).mousePressEvent(event)

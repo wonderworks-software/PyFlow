@@ -87,6 +87,11 @@ class UIPinGroup(QGraphicsWidget):
     def toggleCollapsed(self):
         self.setCollapsed(not self.bCollapsed)
 
+    def pinWasKilled(self, pin):
+        self._pins.remove(pin)
+        if len(self._pins) == 0:
+            self.kill()
+
     def addPin(self, pin):
         self.layout.addItem(pin)
         if pin.direction == PinDirection.Input:
@@ -94,6 +99,7 @@ class UIPinGroup(QGraphicsWidget):
         if pin.direction == PinDirection.Output:
             self.layout.setAlignment(pin, QtCore.Qt.AlignRight)
         self._pins.add(pin)
+        pin.OnPinDeleted.connect(self.pinWasKilled)
 
 
 class UIPinBase(QGraphicsWidget):
@@ -353,7 +359,6 @@ class UIPinBase(QGraphicsWidget):
         """
         scene = self.scene()
         if scene is None:
-            # already deleted
             del self
             return
 
@@ -363,6 +368,10 @@ class UIPinBase(QGraphicsWidget):
             self.owningNode().outputsLayout.removeItem(self)
 
         self.OnPinDeleted.emit(self)
+        scene = self.scene()
+        if scene is None:
+            del self
+            return
         scene.removeItem(self)
         self.owningNode().updateNodeShape()
 
@@ -406,9 +415,6 @@ class UIPinBase(QGraphicsWidget):
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
         return path
-
-    def isList(self):
-        return self._rawPin.isList()
 
     def isArray(self):
         return self._rawPin.isArray()

@@ -25,17 +25,16 @@ class UIGetVarNode(UINodeBase):
         self.headColorOverride = Colors.Gray
         self.color = Colors.DarkGray
 
+    def onVariableWasChanged(self):
+        self._createUIPinWrapper(self._rawNode.out)
+
     @property
     def var(self):
         return self._rawNode.var
 
     @var.setter
     def var(self, newVar):
-        self.var.nameChanged.disconnect(self.onVarNameChanged)
-        self.var.dataTypeChanged.disconnect(self.onVarDataTypeChanged)
         self._rawNode.var = newVar
-        self.var.nameChanged.connect(self.onVarNameChanged)
-        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
     def postCreate(self, jsonTemplate=None):
         super(UIGetVarNode, self).postCreate(jsonTemplate)
@@ -43,7 +42,6 @@ class UIGetVarNode(UINodeBase):
         self.updateNodeShape()
 
         self.var.nameChanged.connect(self.onVarNameChanged)
-        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
         outPin = list(self._rawNode.pins)[0]
         outPin.setName(self.var.name)
@@ -70,13 +68,15 @@ class UIGetVarNode(UINodeBase):
         if var:
             linkedTo = getConnectedPins(self._rawNode.out)
             self.var = var
-
-            self._createUIPinWrapper(self._rawNode.out)
+            self._rawNode.updateStructure()
             for i in linkedTo:
                 if i.isAny():
                     i.setDefault()
                 self.canvasRef().connectPinsInternal(self._rawNode.out.getWrapper()(), i.getWrapper()())
             self.updateHeaderText()
+        self.canvasRef().pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
+        self._rawNode.checkForErrors()
+        self.update()
 
     def createInputWidgets(self, propertiesWidget):
         inputsCategory = CollapsibleFormWidget(headName="Inputs")
@@ -87,10 +87,6 @@ class UIGetVarNode(UINodeBase):
         inputsCategory.addWidget("var", cbVars)
 
         propertiesWidget.addWidget(inputsCategory)
-
-    def onVarDataTypeChanged(self, dataType):
-        self._rawNode.out.disconnectAll()
-        self._rawNode.out.setType(dataType)
 
     def updateHeaderText(self):
         self.setHeaderHtml("Get {0}".format(self.var.name))

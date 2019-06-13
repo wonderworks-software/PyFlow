@@ -24,6 +24,7 @@ else:
     from enum import IntEnum, Flag, auto
 
 from PyFlow import findPinClassByType
+from PyFlow.Core.version import Version
 
 maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 
@@ -35,6 +36,7 @@ INT_RANGE_MAX = maxint + 0
 
 DEFAULT_IN_EXEC_NAME = str('inExec')
 DEFAULT_OUT_EXEC_NAME = str('outExec')
+
 
 ## Performs a linear interpolation
 # @param[in] start the value to interpolate from
@@ -49,8 +51,10 @@ def lerp(start, end, alpha):
 def GetRangePct(MinValue, MaxValue, Value):
     return (Value - MinValue) / (MaxValue - MinValue)
 
+
 def sign(x):
     return x and (1, -1)[x < 0]
+
 
 ## Computes the value of the first specified argument clamped to a range defined by the second and third specified arguments
 # @param[in] n
@@ -68,6 +72,17 @@ def clamp(n, vmin, vmax):
 def roundup(x, to):
     return int(math.ceil(x / to)) * to
 
+## Clearing a list in python previous to 3.2 is not posible with list.clear()
+# @param[in] list list to clear
+# @returns cleared List
+currVersion =  Version(sys.version_info.major,sys.version_info.minor,0)
+python32 =  Version(3,2,0)
+if currVersion <= python32:
+    def clearList(list):
+        del list[:]
+else:
+    def clearList(list):
+        list.clear()
 
 def findGoodId(ids):
     """Finds good minimum unique int from iterable. Starting from 1
@@ -198,8 +213,6 @@ def canConnectPins(src, dst):
             return False
 
     if src.isArray() and not dst.isArray():
-        if dst.isList():
-            return True
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
         dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfChek=False)
         if not dst.optionEnabled(PinOptions.ArraySupported) and not (srcCanChangeStruct or dstCanCnahgeStruct):
@@ -229,6 +242,9 @@ def canConnectPins(src, dst):
     if src.IsValuePin() and dst.IsValuePin():
 
         if src.dataType in dst.allowedDataTypes([], dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
+            if all([src.dataType == "AnyPin" and not src.canChangeTypeOnConection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), []),
+                    (dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny) or not dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []))]):
+                return False         
             return True
         else:
             if all([src.dataType in list(dst.allowedDataTypes([], dst._defaultSupportedDataTypes, selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections), defaults=True)) + ["AnyPin"],
@@ -275,8 +291,9 @@ def connectPins(src, dst):
     if src.isExec() and dst.isExec():
         src.onExecute.connect(dst.call)
 
-    src.aboutToConnect(dst)
     dst.aboutToConnect(src)
+    src.aboutToConnect(dst)
+
     pinAffects(src, dst)
     src.setDirty()
 
@@ -332,9 +349,10 @@ def traverseConstrainedPins(startFrom, callback):
 
     worker(startFrom)
 
+
 def traverseStructConstrainedPins(startFrom, callback):
     """Iterates over all constrained chained pins passes pin into callback function. Callback will be executed once for every pin
-    """  
+    """
     traversed = set()
 
     def worker(pin):
@@ -350,6 +368,7 @@ def traverseStructConstrainedPins(startFrom, callback):
                 worker(neighbor)
 
     worker(startFrom)
+
 
 def disconnectPins(src, dst):
     """Disconnects two pins
@@ -444,7 +463,7 @@ class PinOptions(Flag):
     Dynamic = auto()
     AlwaysPushDirty = auto()
     Storable = auto()
-
+    AllowAny = auto()
 
 # Used for determine Pin Structure Type
 class PinStructure(IntEnum):

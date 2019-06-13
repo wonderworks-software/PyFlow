@@ -69,6 +69,19 @@ class NodeBase(INode):
         self._lastError = str(err)
         self.errorOccured.send(self._lastError)
 
+    def checkForErrors(self):
+        failedPins = {}
+        for pin in self._pins:
+            if pin._lastError is not None:
+                failedPins[pin.name] = pin._lastError
+        if len(failedPins):
+            self._lastError = "Error on Pins:%s"%str(failedPins)
+        else:
+            self.clearError()
+        wrapper = self.getWrapper()
+        if wrapper:
+            wrapper.update()
+
     @property
     def packageName(self):
         return self._packageName
@@ -334,9 +347,11 @@ class NodeBase(INode):
         if foo:
             p.onExecute.connect(foo, weak=False)
 
-        if defaultValue is not None:
+        if defaultValue is not None or dataType == "AnyPin":
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
+            if dataType == "AnyPin":
+                p.setTypeFromData(defaultValue)
         else:
             p.setDefaultValue(getPinDefaultValueByType(dataType))
 
@@ -362,9 +377,11 @@ class NodeBase(INode):
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
-        if defaultValue is not None:
+        if defaultValue is not None or dataType == "AnyPin":
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
+            if dataType == "AnyPin":
+                p.setTypeFromData(defaultValue)            
         else:
             p.setDefaultValue(getPinDefaultValueByType(dataType))
 
@@ -474,11 +491,14 @@ class NodeBase(INode):
             if "wrapper" in jsonTemplate:
                 self.__wrapperJsonData = jsonTemplate["wrapper"]
 
+            
+
         if self.isCallable():
             self.bCallable = True
 
         self.autoAffectPins()
-
+        self.checkForErrors()
+        
     @staticmethod
     # Constructs a node from given annotated function
     def initializeFromFunction(foo):
@@ -543,6 +563,8 @@ class NodeBase(INode):
         # generate compute method from function
         def compute(self, *args, **kwargs):
             # arguments will be taken from inputs
+            if not self.isValid():
+                return
             kwds = {}
             for i in list(self.inputs.values()):
                 if not i.isExec():

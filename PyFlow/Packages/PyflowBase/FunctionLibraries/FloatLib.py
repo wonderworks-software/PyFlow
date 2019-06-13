@@ -55,10 +55,4 @@ class FloatLib(FunctionLibraryBase):
         '''
         return round(Value, Digits)
 
-    @staticmethod
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Float', 'Keywords': []})
-    def arraySum(Value=('FloatPin', [])):
-        '''
-        Sum of list of floats
-        '''
-        return sum(Value)
+

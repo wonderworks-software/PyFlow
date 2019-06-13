@@ -5,21 +5,23 @@ from PyFlow.Core.Common import *
 class makeList(NodeBase):
     def __init__(self, name):
         super(makeList, self).__init__(name)
-        self.listData = self.createInputPin('data', 'AnyPin')
+        self.listData = self.createInputPin('data', 'AnyPin',structure=PinStructure.Array)
         self.listData.enableOptions(PinOptions.AllowMultipleConnections)
-        self.listData.enableOptions(PinOptions.ArraySupported)
         self.listData.disableOptions(PinOptions.SupportsOnlyArrays)
         self.listData.disableOptions(PinOptions.ChangeTypeOnConnection)
-
+        self.listData.enableOptions(PinOptions.AllowAny)
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
-        self.outList = self.createOutputPin('out', 'ListPin')
+        self.outList = self.createOutputPin('out', 'AnyPin',structure=PinStructure.Array)
+        self.outList.disableOptions(PinOptions.ChangeTypeOnConnection)
+        self.outList.enableOptions(PinOptions.AllowAny)
 
         self.result = self.createOutputPin('result', 'BoolPin')
-
+        self.checkForErrors()
+        
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['ListPin'], 'outputs': ['ListPin']}
+        return {'inputs': ['AnyPin'], 'outputs': ['AnyPin']}
 
     @staticmethod
     def category():

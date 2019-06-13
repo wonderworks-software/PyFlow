@@ -51,14 +51,9 @@ class FloatVector4Pin(PinBase):
         return (173, 216, 230, 255)
 
     @staticmethod
-    def processData(data):
-        if isinstance(data, Vector4):
-            return data
-        raise(Exception('Invalid Vector4 data'))
+    def internalDataStructure():
+        return Vector4
 
-    def setData(self, data):
-        try:
-            self._data = self.processData(data)
-        except:
-            self._data = self.defaultValue()
-        PinBase.setData(self, self._data)
+    @staticmethod
+    def processData(data):
+        return FloatVector4Pin.internalDataStructure()(data)

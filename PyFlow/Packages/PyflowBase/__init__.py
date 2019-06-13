@@ -10,7 +10,6 @@ from PyFlow.Packages.PyflowBase.Pins.ExecPin import ExecPin
 from PyFlow.Packages.PyflowBase.Pins.FloatPin import FloatPin
 from PyFlow.Packages.PyflowBase.Pins.IntPin import IntPin
 from PyFlow.Packages.PyflowBase.Pins.StringPin import StringPin
-from PyFlow.Packages.PyflowBase.Pins.ListPin import ListPin
 
 # Function based nodes
 from PyFlow.Packages.PyflowBase.FunctionLibraries.ArrayLib import ArrayLib
@@ -55,6 +54,7 @@ from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
 from PyFlow.Packages.PyflowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyflowBase.Nodes.compound import compound
 from PyFlow.Packages.PyflowBase.Nodes.constant import constant
+from PyFlow.Packages.PyflowBase.Nodes.convertTo import convertTo
 
 from PyFlow.Packages.PyflowBase.Tools.ScreenshotTool import ScreenshotTool
 from PyFlow.Packages.PyflowBase.Tools.NodeBoxTool import NodeBoxTool
@@ -118,7 +118,8 @@ _NODES = {
     forEachLoop.__name__: forEachLoop,
     address.__name__: address,
     constant.__name__: constant,
-    tick.__name__: tick
+    tick.__name__: tick,
+    convertTo.__name__ : convertTo,
 }
 
 _PINS = {
@@ -127,8 +128,7 @@ _PINS = {
     ExecPin.__name__: ExecPin,
     FloatPin.__name__: FloatPin,
     IntPin.__name__: IntPin,
-    StringPin.__name__: StringPin,
-    ListPin.__name__: ListPin
+    StringPin.__name__: StringPin
 }
 
 # Toolbar will be created in following order

@@ -25,12 +25,10 @@ class IntPin(PinBase):
         return ('IntPin', 'FloatPin',)
 
     @staticmethod
-    def processData(data):
-        return int(data)
+    def internalDataStructure():
+        return int
 
-    def setData(self, data):
-        try:
-            self._data = self.processData(data)
-        except:
-            self._data = self.defaultValue()
-        PinBase.setData(self, self._data)
+    @staticmethod
+    def processData(data):
+        return IntPin.internalDataStructure()(data)
+

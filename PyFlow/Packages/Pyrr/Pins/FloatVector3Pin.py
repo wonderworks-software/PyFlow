@@ -51,14 +51,9 @@ class FloatVector3Pin(PinBase):
         return Vector3Decoder
 
     @staticmethod
-    def processData(data):
-        if isinstance(data, Vector3):
-            return data
-        raise(Exception('Invalid Vector3 data'))
+    def internalDataStructure():
+        return Vector3
 
-    def setData(self, data):
-        try:
-            self._data = self.processData(data)
-        except:
-            self._data = self.defaultValue()
-        PinBase.setData(self, self._data)
+    @staticmethod
+    def processData(data):
+        return FloatVector3Pin.internalDataStructure()(data)

@@ -12,10 +12,42 @@ class setVar(NodeBase):
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
         self._var = var
-        self.inp = CreateRawPin("inp", self, self.var.dataType, PinDirection.Input)
+        self.inp = CreateRawPin("inp", self, self._var.dataType, PinDirection.Input)
         self.inp.disableOptions(PinOptions.RenamingEnabled)
-        self.out = CreateRawPin("out", self, self.var.dataType, PinDirection.Output)
+        self.out = CreateRawPin("out", self, self._var.dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
+
+        self._var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+        self._var.structureChanged.connect(self.onVarStructureChanged)
+
+    def updateStructure(self):
+        self.out.disconnectAll()
+        self.inp.disconnectAll()
+        if self.var.structure == PinStructure.Single:
+            self.out.setAsArray(False)
+            self.inp.setAsArray(False)
+        if self.var.structure == PinStructure.Array:
+            self.out.setAsArray(True)
+            self.inp.setAsArray(True)
+
+    def onVarStructureChanged(self, newStructure):
+        self.out.structureType = newStructure
+        self.inp.structureType = newStructure
+        self.updateStructure()
+
+    def onVarDataTypeChanged(self, dataType):
+        self.recreateInput(dataType)
+        self.recreateOutput(dataType)
+        self.autoAffectPins()
+        self.updateStructure()
+        self.checkForErrors()
+        wrapper = self.getWrapper()
+        if wrapper:
+            wrapper.onVariableWasChanged()
+
+    def postCreate(self, jsonTemplate=None):
+        super(setVar, self).postCreate(jsonTemplate)
+        self.updateStructure()
 
     @property
     def var(self):
@@ -23,15 +55,19 @@ class setVar(NodeBase):
 
     @var.setter
     def var(self, newVar):
+        self._var.structureChanged.disconnect(self.onVarStructureChanged)
+        self._var.dataTypeChanged.disconnect(self.onVarDataTypeChanged)
         self._var = newVar
-
-    @var.setter
-    def var(self, newVar):
-        oldDataType = self._var.dataType
-        self._var = newVar
-        if self._var.dataType != oldDataType:
-            self.recreateInput(self._var.dataType)
-            self.recreateOutput(self._var.dataType)
+        self._var.structureChanged.connect(self.onVarStructureChanged)
+        self._var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+        self.recreateInput(newVar.dataType)
+        self.recreateOutput(newVar.dataType)
+        self.autoAffectPins()
+        self.updateStructure()
+        self.checkForErrors()
+        wrapper = self.getWrapper()
+        if wrapper:
+            wrapper.onVariableWasChanged()
 
     def recreateInput(self, dataType):
         self.inp.kill()

@@ -1,6 +1,6 @@
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
-
+from nine import str
 
 class StringPin(PinBase):
     """doc string for StringPin"""
@@ -25,12 +25,9 @@ class StringPin(PinBase):
         return 'StringPin', ''
 
     @staticmethod
-    def processData(data):
-        return str(data)
+    def internalDataStructure():
+        return str
 
-    def setData(self, data):
-        try:
-            self._data = self.processData(data)
-        except:
-            self._data = self.defaultValue()
-        PinBase.setData(self, self._data)
+    @staticmethod
+    def processData(data):
+        return StringPin.internalDataStructure()(data)
