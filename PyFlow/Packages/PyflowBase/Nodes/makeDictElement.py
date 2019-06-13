@@ -11,7 +11,8 @@ class makeDictElement(NodeBase):
         self.value.enableOptions(PinOptions.AllowAny)
         self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=(), structure=PinStructure.Single, constraint="2")
         self.outArray.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
-
+        self.outArray.onPinConnected.connect(self.outPinConnected)
+        self.outArray.onPinDisconnected.connect(self.outPinDisConnected)
     @staticmethod
     def pinTypeHints():
         return {'inputs': ['AnyPin'], 'outputs': ['AnyPin']}
@@ -27,6 +28,27 @@ class makeDictElement(NodeBase):
     @staticmethod
     def description():
         return 'Creates a Dict Element'
+
+    def outPinDisConnected(self,inp):
+        dictNode = inp.getDictNode([])
+        if dictNode:
+            for i in dictNode.arrayData.affected_by:
+                dictItem = i.getDictElementNode([])
+                if dictItem:
+                    if dictItem.key in self.constraints[self.key.constraint]:
+                        self.constraints[self.key.constraint].remove(dictItem.key)
+                    if self.key in dictItem.constraints[self.key.constraint]:
+                        dictItem.constraints[self.key.constraint].remove(self.key)
+
+    def outPinConnected(self,inp):
+        dictNode = inp.getDictNode([])
+        if dictNode:
+            for i in dictNode.arrayData.affected_by:
+                dictItem = i.getDictElementNode([])
+                if dictItem:
+                    self.constraints[self.key.constraint].append(dictItem.key)
+                    dictItem.constraints[self.key.constraint].append(self.key)
+                    self.key.setType(dictItem.key.dataType)
 
     def compute(self, *args, **kwargs):
         self.outArray.setData(dictElement(self.key.getData(), self.value.getData()))
