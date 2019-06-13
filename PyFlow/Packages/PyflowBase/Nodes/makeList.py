@@ -6,10 +6,9 @@ class makeList(NodeBase):
     def __init__(self, name):
         super(makeList, self).__init__(name)
         self.listData = self.createInputPin('data', 'AnyPin',structure=PinStructure.Array)
-        self.listData.enableOptions(PinOptions.AllowMultipleConnections)
-        self.listData.disableOptions(PinOptions.SupportsOnlyArrays)
-        self.listData.disableOptions(PinOptions.ChangeTypeOnConnection)
-        self.listData.enableOptions(PinOptions.AllowAny)
+        self.listData.enableOptions(PinOptions.AllowMultipleConnections| PinOptions.DictElementSuported | PinOptions.AllowAny)
+        self.listData.disableOptions(PinOptions.ChangeTypeOnConnection | PinOptions.SupportsOnlyArrays)
+        
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
         self.outList = self.createOutputPin('out', 'AnyPin',structure=PinStructure.Array)
