@@ -350,6 +350,8 @@ class NodeBase(INode):
         if defaultValue is not None or dataType == "AnyPin":
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
+            if dataType == "AnyPin":
+                p.setTypeFromData(defaultValue)
         else:
             p.setDefaultValue(getPinDefaultValueByType(dataType))
 
@@ -375,9 +377,11 @@ class NodeBase(INode):
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
-        if defaultValue is not None:
+        if defaultValue is not None or dataType == "AnyPin":
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
+            if dataType == "AnyPin":
+                p.setTypeFromData(defaultValue)            
         else:
             p.setDefaultValue(getPinDefaultValueByType(dataType))
 

@@ -50,8 +50,8 @@ class UIAnyPin(UIPinBase):
 
     def selectInit(self):
         validPins = list(self._rawPin._defaultSupportedDataTypes)
-        #if "AnyPin" in validPins:
-        #    validPins.remove("AnyPin")
+        if "AnyPin" in validPins:
+            validPins.remove("AnyPin")
         self.d = SelectPinDialog(validPins=validPins)
         self.d.exec_()
         dataType = self.d.getResult()

@@ -16,7 +16,7 @@ class constant(NodeBase):
         self.input.call = self.output.call
         self.pinTypes = []
         for pinClass in getAllPinClasses():
-            if pinClass.IsValuePin():
+            if pinClass.IsValuePin() and pinClass.__name__ != "AnyPin":
                 self.pinTypes.append(pinClass.__name__ )
         self.bCacheEnabled = False
 
