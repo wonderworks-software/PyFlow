@@ -18,7 +18,15 @@ class getVar(NodeBase):
 
         self._var.valueChanged.connect(self.onVarValueChanged)
         self._var.structureChanged.connect(self.onVarStructureChanged)
+        self._var.dataTypeChanged.connect(self.onDataTypeChanged)
         self.bCacheEnabled = False
+
+    def onDataTypeChanged(self, dataType):
+        self.recreateOutput(dataType)
+        self.checkForErrors()
+        wrapper = self.getWrapper()
+        if wrapper:
+            wrapper.onVariableWasChanged()
 
     def updateStructure(self):
         self.out.disconnectAll()
@@ -26,8 +34,6 @@ class getVar(NodeBase):
             self.out.setAsArray(False)
         if self._var.structure == PinStructure.Array:
             self.out.setAsArray(True)
-        if self._var.structure == PinStructure.Multi:
-            self.out.setAsArray(False)
 
     def onVarStructureChanged(self, newStructure):
         self.out.structureType = newStructure
@@ -48,10 +54,18 @@ class getVar(NodeBase):
 
     @var.setter
     def var(self, newVar):
+        self._var.dataTypeChanged.disconnect(self.onDataTypeChanged)
+        self._var.structureChanged.disconnect(self.onVarStructureChanged)
         self._var.valueChanged.disconnect(self.onVarValueChanged)
         self._var = newVar
         self._var.valueChanged.connect(self.onVarValueChanged)
+        self._var.structureChanged.connect(self.onVarStructureChanged)
+        self._var.dataTypeChanged.connect(self.onDataTypeChanged)
         self.recreateOutput(self._var.dataType)
+        self.checkForErrors()
+        wrapper = self.getWrapper()
+        if wrapper:
+            wrapper.onVariableWasChanged()
 
     def postCreate(self, jsonTemplate=None):
         super(getVar, self).postCreate(jsonTemplate)

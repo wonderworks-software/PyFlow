@@ -25,24 +25,16 @@ class UIGetVarNode(UINodeBase):
         self.headColorOverride = Colors.Gray
         self.color = Colors.DarkGray
 
+    def onVariableWasChanged(self):
+        self._createUIPinWrapper(self._rawNode.out)
+
     @property
     def var(self):
         return self._rawNode.var
 
     @var.setter
     def var(self, newVar):
-        self.var.nameChanged.disconnect(self.onVarNameChanged)
-        self.var.dataTypeChanged.disconnect(self.onVarDataTypeChanged)
         self._rawNode.var = newVar
-        self.var.nameChanged.connect(self.onVarNameChanged)
-        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
-        self._createUIPinWrapper(self._rawNode.out)
-
-    def onVarStructureChanged(self, newStruct):
-        self.canvasRef().pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
-        self._rawNode.checkForErrors()
-        self.update()
-        self.update()
 
     def postCreate(self, jsonTemplate=None):
         super(UIGetVarNode, self).postCreate(jsonTemplate)
@@ -50,7 +42,6 @@ class UIGetVarNode(UINodeBase):
         self.updateNodeShape()
 
         self.var.nameChanged.connect(self.onVarNameChanged)
-        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
 
         outPin = list(self._rawNode.pins)[0]
         outPin.setName(self.var.name)
@@ -96,17 +87,6 @@ class UIGetVarNode(UINodeBase):
         inputsCategory.addWidget("var", cbVars)
 
         propertiesWidget.addWidget(inputsCategory)
-
-    def onVarDataTypeChanged(self, dataType):
-        self._rawNode.out.disconnectAll()
-        if self._rawNode.out.isAny():
-            self._rawNode.out.setType(dataType)
-        else:
-            self._rawNode.recreateOutput(dataType)
-            self._createUIPinWrapper(self._rawNode.out)
-        self.canvasRef().pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
-        self._rawNode.checkForErrors()
-        self.update()
 
     def updateHeaderText(self):
         self.setHeaderHtml("Get {0}".format(self.var.name))
