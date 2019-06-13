@@ -35,36 +35,20 @@ class UISetVarNode(UINodeBase):
 
     @var.setter
     def var(self, newVar):
-        self.var.nameChanged.disconnect(self.onVarNameChanged)
-        self.var.dataTypeChanged.disconnect(self.onVarDataTypeChanged)
+        self.var.nameChanged.disconnect(self.updateHeaderText)
         self._rawNode.var = newVar
-        self.var.nameChanged.connect(self.onVarNameChanged)
-        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+        self.var.nameChanged.connect(self.updateHeaderText)
+        self._createUIPinWrapper(self._rawNode.inp)
+        self._createUIPinWrapper(self._rawNode.out)
 
-    def onVarStructureChanged(self, newStruct):
-        self.canvasRef().requestClearProperties.emit()
+    def onVariableWasChanged(self):
+        self._createUIPinWrapper(self._rawNode.inp)
+        self._createUIPinWrapper(self._rawNode.out)
 
     def serialize(self):
         template = UINodeBase.serialize(self)
         template['meta']['var'] = self.var.serialize()
         return template
-
-    def onVarDataTypeChanged(self, dataType):
-        # recreate inpnut
-        inPinName = self._rawNode.inp.name
-        recreatedInPin = self._rawNode.recreateInput(dataType)
-        recreatedInPin.setName(inPinName)
-        self._createUIPinWrapper(self._rawNode.inp)
-
-        # recreate output
-        outPinName = self._rawNode.out.name
-        recreatedOutPin = self._rawNode.recreateOutput(dataType)
-        recreatedOutPin.setName(outPinName)
-        self._createUIPinWrapper(self._rawNode.out)
-
-        self.updateHeaderText()
-        self._rawNode.updateStructure()
-        self.autoAffectPins()
 
     def onVarSelected(self, varName):
         if self.var.name == varName:
@@ -76,18 +60,11 @@ class UISetVarNode(UINodeBase):
             inLinkedTo = getConnectedPins(self._rawNode.inp)
             outLinkedTo = getConnectedPins(self._rawNode.out)
             self.var = var
-
-            self._createUIPinWrapper(self._rawNode.inp)
-            self._createUIPinWrapper(self._rawNode.out)
             self._rawNode.updateStructure()
             for i in outLinkedTo:
-                if i.isAny():
-                    i.setDefault()
                 self.canvasRef().connectPinsInternal(self._rawNode.out.getWrapper()(), i.getWrapper()())
 
             for o in inLinkedTo:
-                if o.isAny():
-                    o.setDefault()
                 self.canvasRef().connectPinsInternal(o.getWrapper()(), self._rawNode.inp.getWrapper()())
 
             self.updateHeaderText()
@@ -106,9 +83,8 @@ class UISetVarNode(UINodeBase):
 
     def postCreate(self, template):
         super(UISetVarNode, self).postCreate(template)
-        self.var.nameChanged.connect(self.onVarNameChanged)
-        self.var.dataTypeChanged.connect(self.onVarDataTypeChanged)
-        self.onVarNameChanged(self.var.name)
+        self.var.nameChanged.connect(self.updateHeaderText)
+        self.updateHeaderText()
 
         for pin in self.UIPins.values():
             pin.setMenuItemEnabled("InitAs", False)
@@ -116,9 +92,6 @@ class UISetVarNode(UINodeBase):
     def updateHeaderText(self):
         self.setHeaderHtml("Set {0}".format(self.var.name))
         self.updateNodeShape()
-
-    def onVarNameChanged(self, newName):
-        self.updateHeaderText()
 
     @staticmethod
     def category():
