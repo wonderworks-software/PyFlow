@@ -103,7 +103,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         baseCategory.addWidget("Name", le_name)
 
         # data type
-        cbTypes = EnumComboBox([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
+        cbTypes = EnumComboBox([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() if pin.__name__ != "AnyPin"])
         cbTypes.setCurrentIndex(cbTypes.findText(self.dataType))
         cbTypes.setEditable(False)
         cbTypes.changeCallback.connect(self.setDataType)
