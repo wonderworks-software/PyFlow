@@ -756,10 +756,10 @@ class Canvas(QGraphicsView):
             node['name'] = newName
             node['uuid'] = str(uuid.uuid4())
             for inp in node['inputs']:
-                inp['fullName'] = '{0}.{1}'.format(node['name'], inp['name'])
+                inp['fullName'] = '{0}_{1}'.format(node['name'], inp['name'])
                 inp['uuid'] = str(uuid.uuid4())
             for out in node['outputs']:
-                out['fullName'] = '{0}.{1}'.format(node['name'], out['name'])
+                out['fullName'] = '{0}_{1}'.format(node['name'], out['name'])
                 out['uuid'] = str(uuid.uuid4())
 
         # update connections
@@ -770,7 +770,7 @@ class Canvas(QGraphicsView):
                     oldNodeName, pinName = linkedToFullName.rsplit('_', 1)
                     if oldNodeName in renameData:
                         newNodeName = renameData[oldNodeName]
-                        newPinFullName = "{0}.{1}".format(newNodeName, pinName)
+                        newPinFullName = "{0}_{1}".format(newNodeName, pinName)
                         newLinkedToNames.append(newPinFullName)
                 out['linkedTo'] = newLinkedToNames
 
