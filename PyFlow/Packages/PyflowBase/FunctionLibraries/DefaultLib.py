@@ -72,8 +72,8 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "3"}), meta={'Category': 'DefaultLib', 'Keywords': []})
     def select(A=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
-                B=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny| PinOptions.DictElementSuported}),
-                PickA=('BoolPin', False),
+               B=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
+               PickA=('BoolPin', False),
                aPicked=("Reference", ("BoolPin", False))):
         '''
         If bPickA is true, A is returned, otherwise B.
@@ -87,7 +87,7 @@ class DefaultLib(FunctionLibraryBase):
         '''Returns <u>type(obj).__name__</u>'''
         t = type(obj).__name__
         if t == "dictElement":
-            t += ",key:{0},value:{1}".format(type(obj[1]).__name__,type(obj[0]).__name__)
+            t += ",key:{0},value:{1}".format(type(obj[1]).__name__, type(obj[0]).__name__)
         return t
 
     @staticmethod

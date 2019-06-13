@@ -121,11 +121,11 @@ class PinBase(IPin):
         """Sets this pins to be a list always"""
         self._alwaysList = bool(bIsArray)
         if bool(bIsArray):
-            self._alwaysDict = False        
+            self._alwaysDict = False
         self.setAsArray(bool(bIsArray))
 
     def initAsDict(self, bIsDict):
-        """Sets this pins to be a list always"""
+        """Sets this pins to be a dict always"""
         self._alwaysDict = bool(bIsDict)
         if bool(bIsDict):
             self._alwaysList = False

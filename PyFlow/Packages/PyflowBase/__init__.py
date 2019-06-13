@@ -46,8 +46,8 @@ from PyFlow.Packages.PyflowBase.Nodes.rerouteExecs import rerouteExecs
 from PyFlow.Packages.PyflowBase.Nodes.makeArray import makeArray
 from PyFlow.Packages.PyflowBase.Nodes.makeList import makeList
 from PyFlow.Packages.PyflowBase.Nodes.makeDict import makeDict
-from PyFlow.Packages.PyflowBase.Nodes.makeAnyDict import makeAnyDict
 from PyFlow.Packages.PyflowBase.Nodes.makeDictElement import makeDictElement
+from PyFlow.Packages.PyflowBase.Nodes.dictKeys import dictKeys
 
 
 
@@ -121,15 +121,15 @@ _NODES = {
     pythonNode.__name__: pythonNode,
     makeArray.__name__: makeArray,
     makeList.__name__: makeList,
-    makeDict.__name__ : makeDict,
-    makeAnyDict.__name__ : makeAnyDict,
-    makeDictElement.__name__ : makeDictElement,
+    makeDict.__name__: makeDict,
+    makeDictElement.__name__: makeDictElement,
     consoleOutput.__name__: consoleOutput,
     forEachLoop.__name__: forEachLoop,
     address.__name__: address,
     constant.__name__: constant,
     tick.__name__: tick,
-    convertTo.__name__ : convertTo,
+    convertTo.__name__: convertTo,
+    dictKeys.__name__: dictKeys
 }
 
 _PINS = {

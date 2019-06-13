@@ -9,7 +9,7 @@ class makeDictElement(NodeBase):
         self.key = self.createInputPin('key', 'AnyPin', structure=PinStructure.Single, constraint="1")
         self.value = self.createInputPin('value', 'AnyPin', structure=PinStructure.Multi, constraint="2")
         self.value.enableOptions(PinOptions.AllowAny)
-        self.outArray = self.createOutputPin('out', 'AnyPin',defaultValue=(), structure=PinStructure.Single,constraint="2")
+        self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=(), structure=PinStructure.Single, constraint="2")
         self.outArray.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
 
     @staticmethod
@@ -29,4 +29,4 @@ class makeDictElement(NodeBase):
         return 'Creates a Dict Element'
 
     def compute(self, *args, **kwargs):
-        self.outArray.setData(dictElement(self.key.getData(),self.value.getData()))
+        self.outArray.setData(dictElement(self.key.getData(), self.value.getData()))
