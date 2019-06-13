@@ -61,8 +61,9 @@ class PinBase(IPin):
         self._currStructure = self._structure
         self._isAny = False
         self._isArray = False
-        self._isList = False
+        self._isDict = False
         self._alwaysList = False
+        self._alwaysDict = False
         self._alwaysSingle = False
         self._defaultSupportedDataTypes = self._supportedDataTypes = self.supportedDataTypes()
         self.canChange = False
@@ -116,9 +117,17 @@ class PinBase(IPin):
 
     def initAsArray(self, bIsArray):
         """Sets this pins to be a list always"""
-        bIsArray = bool(bIsArray)
-        self._alwaysList = bIsArray
-        self.setAsArray(bIsArray)
+        self._alwaysList = bool(bIsArray)
+        if bool(bIsArray):
+            self._alwaysDict = False        
+        self.setAsArray(bool(bIsArray))
+
+    def initAsDict(self, bIsDict):
+        """Sets this pins to be a list always"""
+        self._alwaysDict = bool(bIsDict)
+        if bool(bIsDict):
+            self._alwaysList = False
+        self.setAsDict(bool(bIsDict))
 
     def setAsArray(self, bIsArray):
         bIsArray = bool(bIsArray)
@@ -130,6 +139,23 @@ class PinBase(IPin):
             # list pins supports only lists by default
             self.enableOptions(PinOptions.SupportsOnlyArrays)
             self._currStructure = PinStructure.Array
+            self._isDict = False
+        else:
+            self._currStructure = self._structure
+        self._data = self.defaultValue()
+        self.containerTypeChanged.send()
+
+    def setAsDict(self, bIsDict):
+        bIsDict = bool(bIsDict)
+        if self._isDict == bIsDict:
+            return
+
+        self._isDict = bIsDict
+        if bIsDict:
+            # list pins supports only lists by default
+            self.enableOptions(PinOptions.SupportsOnlyArrays)
+            self._currStructure = PinStructure.Dict
+            self._isArray = False
         else:
             self._currStructure = self._structure
         self._data = self.defaultValue()
@@ -137,6 +163,9 @@ class PinBase(IPin):
 
     def isArray(self):
         return self._isArray
+
+    def isDict(self):
+        return self._isDict
 
     @staticmethod
     def IsValuePin():
@@ -162,6 +191,7 @@ class PinBase(IPin):
         self.changeStructure(jsonData["structure"])
         self._alwaysList = jsonData['alwaysList']
         self._alwaysSingle = jsonData['alwaysSingle']
+        self._alwaysDict = jsonData['alwaysDict']
 
         try:
             self.setData(json.loads(jsonData['value'], cls=self.jsonDecoderClass()))
@@ -197,7 +227,8 @@ class PinBase(IPin):
             'options': [i.value for i in PinOptions if self.optionEnabled(i)],
             'structure': int(self._currStructure),
             'alwaysList': self._alwaysList,
-            'alwaysSingle': self._alwaysSingle
+            'alwaysSingle': self._alwaysSingle,
+            'alwaysDict' : self._alwaysDict
         }
 
         # Wrapper class can subscribe to this signal and return
@@ -254,6 +285,8 @@ class PinBase(IPin):
     def defaultValue(self):
         if self.isArray():
             return []
+        elif self.isDict():
+            return {}
         else:
             return self._defaultValue
 
@@ -273,13 +306,22 @@ class PinBase(IPin):
     def setData(self, data):
         try:
             self.setClean()
-            if not self.isArray():
+            if not self.isArray() and not self.isDict():
                 self._data = self.super.processData(data)
-            else:
+            elif self.isArray():
                 if isinstance(data, list):
                     self._data = [self.super.processData(i) for i in data]
                 else:
                     self._data = [self.super.processData(data)]
+            elif self.isDict():
+                self._data = {}
+                if isinstance(data, dict):
+                    for key,value in data.items():
+                        self._data[key] = self.super.processData(value)
+                elif isinstance(data,tuple):
+                    self._data[data[0]] = self.super.processData(data[1])
+                else:
+                    raise Exception("Non Valid Dict Input")
 
             if self.direction == PinDirection.Output:
                 for i in self.affects:
@@ -363,7 +405,7 @@ class PinBase(IPin):
             self.updateConstrainedPins(set(), newStruct, init, connecting=True)
 
     def canChangeStructure(self, newStruct, checked=[], selfChek=True, init=False):
-        if not init and (self._alwaysList or self._alwaysSingle):
+        if not init and (self._alwaysList or self._alwaysSingle or self._alwaysDict):
             return False
         if self.structConstraint is None and self.structureType == PinStructure.Multi:
             return True
@@ -382,22 +424,27 @@ class PinBase(IPin):
                 checked.append(self)
             free = True
             if selfChek:
+                def testfree():
+                    free = False
+                    for pin in getConnectedPins(self):
+                        if pin._structure == PinStructure.Multi:
+                            free = True
+                        else:
+                            free = False
+                            break  
+                    return free                  
                 if self._currStructure == PinStructure.Single and newStruct == PinStructure.Array and not self.optionEnabled(PinOptions.ArraySupported) and self.hasConnections():
-                    free = False
-                    for pin in getConnectedPins(self):
-                        if pin._structure == PinStructure.Multi:
-                            free = True
-                        else:
-                            free = False
-                            break
-                if self._currStructure == PinStructure.Array and newStruct == PinStructure.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections():
-                    free = False
-                    for pin in getConnectedPins(self):
-                        if pin._structure == PinStructure.Multi:
-                            free = True
-                        else:
-                            free = False
-                            break
+                    free = testfree()
+                elif self._currStructure == PinStructure.Single and newStruct == PinStructure.Dict and not self.optionEnabled(PinOptions.DictSupported) and self.hasConnections():
+                    free = testfree()                      
+                elif self._currStructure == PinStructure.Array and newStruct == PinStructure.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections():
+                    free = testfree()
+                elif self._currStructure == PinStructure.Array and newStruct == PinStructure.Dict and self.hasConnections():
+                    free = testfree()                    
+                elif self._currStructure == PinStructure.Dict and newStruct == PinStructure.Array and self.hasConnections():
+                    free = testfree()    
+                elif self._currStructure == PinStructure.Dict and newStruct == PinStructure.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections():
+                    free = testfree()
             if free:
                 for port in self.owningNode().structConstraints[self.structConstraint] + con:
                     if port not in checked:
@@ -420,14 +467,23 @@ class PinBase(IPin):
         for neighbor in nodePins:
             if neighbor not in traversed:
                 neighbor.setAsArray(newStruct == PinStructure.Array)
+                neighbor.setAsDict(newStruct == PinStructure.Dict)
                 if connecting:
                     if init:
                         neighbor._alwaysList = newStruct == PinStructure.Array
                         neighbor._alwaysSingle = newStruct == PinStructure.Single
+                        neighbor._alwaysDict = newStruct == PinStructure.Dict
                     neighbor._currStructure = newStruct
-                    neighbor.enableOptions(PinOptions.ArraySupported)
-                    if newStruct == PinStructure.Single:
-                        neighbor.disableOptions(PinOptions.ArraySupported)
+                    neighbor.disableOptions(PinOptions.ArraySupported)
+                    neighbor.disableOptions(PinOptions.DictSupported)
+                    if newStruct == PinStructure.Array:
+                        neighbor.enableOptions(PinOptions.ArraySupported)
+                    elif newStruct == PinStructure.Dict:
+                        neighbor.enableOptions(PinOptions.DictSupported)   
+                    elif newStruct == PinStructure.Multi:
+                        neighbor.enableOptions(PinOptions.ArraySupported)
+                        neighbor.enableOptions(PinOptions.DictSupported)
+                    elif newStruct == PinStructure.Single:
                         neighbor.disableOptions(PinOptions.SupportsOnlyArrays)
                 else:
                     neighbor._currStructure = neighbor._structure

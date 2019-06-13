@@ -1021,7 +1021,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             inputsCategory = CollapsibleFormWidget(headName="Inputs")
             sortedInputs = sorted(self.UIinputs.values(), key=lambda x: x.name)
             for inp in sortedInputs:
-                if inp.isArray():
+                if inp.isArray() or inp.isDict():
                     # TODO: create list input widget
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData

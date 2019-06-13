@@ -212,10 +212,20 @@ def canConnectPins(src, dst):
         if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
             return False
 
+    if not src.isDict() and dst.isDict():
+        if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
+            return False            
+
     if src.isArray() and not dst.isArray():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
         dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfChek=False)
         if not dst.optionEnabled(PinOptions.ArraySupported) and not (srcCanChangeStruct or dstCanCnahgeStruct):
+            return False
+
+    if src.isDict() and not dst.isDict():
+        srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
+        dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfChek=False)
+        if not dst.optionEnabled(PinOptions.DictSupported) and not (srcCanChangeStruct or dstCanCnahgeStruct):
             return False
 
     if dst.hasConnections():
@@ -456,6 +466,7 @@ class PinReconnectionPolicy(IntEnum):
 
 class PinOptions(Flag):
     ArraySupported = auto()
+    DictSupported = auto()
     SupportsOnlyArrays = auto()
     AllowMultipleConnections = auto()
     ChangeTypeOnConnection = auto()
@@ -469,7 +480,8 @@ class PinOptions(Flag):
 class PinStructure(IntEnum):
     Single = 0
     Array = 1
-    Multi = 2
+    Dict = 2
+    Multi = 3
 
 
 # Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes

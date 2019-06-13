@@ -419,9 +419,14 @@ class UIPinBase(QGraphicsWidget):
     def isArray(self):
         return self._rawPin.isArray()
 
+    def isDict(self):
+        return self._rawPin.isDict()
+
     def paint(self, painter, option, widget):
         if self.isArray():
             PinPainter.asArrayPin(self, painter, option, widget)
+        elif self.isDict():
+            PinPainter.asListPin(self,painter,option,widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)
 

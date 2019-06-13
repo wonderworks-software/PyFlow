@@ -80,10 +80,3 @@ class UIAnyPin(UIPinBase):
         self.setToolTip(hoverMessage)
         event.accept()
 
-    def paint(self, painter, option, widget):
-        if self.isExec():
-            PinPainter.asExecPin(self, painter, option, widget)
-        elif self.isArray():
-            PinPainter.asArrayPin(self, painter, option, widget)
-        else:
-            PinPainter.asValuePin(self, painter, option, widget)
