@@ -67,6 +67,8 @@ class PinBase(IPin):
         self._alwaysSingle = False
         self._defaultSupportedDataTypes = self._supportedDataTypes = self.supportedDataTypes()
         self.canChange = False
+        self._key = None
+        self._isDictElement = False
         # DataTypes
         self.super = self.__class__ 
         self.activeDataType = self.__class__.__name__
@@ -306,6 +308,8 @@ class PinBase(IPin):
     def setData(self, data):
         try:
             self.setClean()
+            if isinstance(data,dictElement) and not self.optionEnabled(PinOptions.DictElementSuported):
+                data = data[1]
             if not self.isArray() and not self.isDict():
                 self._data = self.super.processData(data)
             elif self.isArray():
@@ -318,7 +322,7 @@ class PinBase(IPin):
                 if isinstance(data, dict):
                     for key,value in data.items():
                         self._data[key] = self.super.processData(value)
-                elif isinstance(data,tuple):
+                elif isinstance(data,dictElement):
                     self._data[data[0]] = self.super.processData(data[1])
                 else:
                     raise Exception("Non Valid Dict Input")
@@ -494,6 +498,8 @@ class PinBase(IPin):
 
     def pinConnected(self, other):
         push(self)
+        if other._key is not None:
+            self._key = other._key
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
@@ -518,6 +524,46 @@ class PinBase(IPin):
                 checked.append(port)
                 can = port.canChangeTypeOnConection(checked, can, selfChek=True)
         return can
+
+    def supportDictElement(self,checked=[],can=True,selfChek=True):
+        if not self.optionEnabled(PinOptions.DictElementSuported):
+            return False
+        con = []
+        neis = []
+        if selfChek:
+            if self.hasConnections() and self.direction == PinDirection.Input:
+                for c in getConnectedPins(self):
+                    if c not in checked:
+                        con.append(c)
+        else:
+            checked.append(self)
+        if self.constraint and self.owningNode().__class__.__name__ != "makeDictElement":
+            neis = self.owningNode().constraints[self.constraint]
+        for port in neis + con:
+            if port not in checked and can:
+                checked.append(port)
+                can = port.supportDictElement(checked, can, selfChek=True)
+        return can   
+
+    def supportOnlyDictElement(self,checked=[],can=False,selfChek=True):
+        if self.isDict():
+            return True
+        con = []
+        neis = []
+        if selfChek:
+            if self.hasConnections() and self.direction == PinDirection.Output:
+                for c in getConnectedPins(self):
+                    if c not in checked:
+                        con.append(c)
+        else:
+            checked.append(self)
+        if self.constraint and self.owningNode().__class__.__name__ != "makeDictElement":
+            neis = self.owningNode().constraints[self.constraint]
+        for port in neis + con:
+            if port not in checked and not can:
+                checked.append(port)
+                can = port.supportOnlyDictElement(checked, can, selfChek=True)
+        return can   
 
     def setClean(self):
         self.dirty = False

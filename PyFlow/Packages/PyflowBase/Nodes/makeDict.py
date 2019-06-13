@@ -5,12 +5,12 @@ from PyFlow.Core.Common import *
 class makeDict(NodeBase):
     def __init__(self, name):
         super(makeDict, self).__init__(name)
-        self.arrayData = self.createInputPin('data', 'dictElementPin', structure=PinStructure.Dict, constraint="1")
-        self.arrayData.enableOptions(PinOptions.AllowMultipleConnections)
+        self.arrayData = self.createInputPin('data', 'AnyPin', structure=PinStructure.Dict, constraint="1")
+        self.arrayData.enableOptions(PinOptions.AllowMultipleConnections | PinOptions.AllowAny | PinOptions.DictElementSuported)
         self.arrayData.disableOptions(PinOptions.SupportsOnlyArrays)
 
         self.outArray = self.createOutputPin('out', 'AnyPin', structure=PinStructure.Dict, constraint="1")
-
+        self.outArray.enableOptions(PinOptions.AllowAny)
         self.result = self.createOutputPin('result', 'BoolPin')
 
     @staticmethod
@@ -34,9 +34,8 @@ class makeDict(NodeBase):
         ySortedPins = sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y)
 
         for i in ySortedPins:
-            if isinstance(i.getData(), tuple) and len(i.getData())==2:
+            if isinstance(i.getData(), dictElement):
                 outArray[i.getData()[0]] = i.getData()[1]
-
 
         self.outArray.setData(outArray)
         self.arrayData.setData(outArray)

@@ -26,6 +26,7 @@ else:
 from PyFlow import findPinClassByType
 from PyFlow.Core.version import Version
 
+
 maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 
 
@@ -215,7 +216,7 @@ def canConnectPins(src, dst):
     if not src.isDict() and dst.isDict():
         if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
             return False
-        elif src.__class__.__name__ != "dictElementPin" :
+        elif not src.supportDictElement([],src.optionEnabled(PinOptions.DictElementSuported)):#:
             return False
 
     if src.isArray() and not dst.isArray():
@@ -252,11 +253,12 @@ def canConnectPins(src, dst):
         return False
 
     if src.IsValuePin() and dst.IsValuePin():
-
         if src.dataType in dst.allowedDataTypes([], dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
             if all([src.dataType == "AnyPin" and not src.canChangeTypeOnConection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), []),
                     (dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny) or not dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []))]):
-                return False         
+                return False
+            if not src.supportDictElement([],src.optionEnabled(PinOptions.DictElementSuported)) and dst.supportOnlyDictElement([],dst.isDict()) :
+                return False    
             return True
         else:
             if all([src.dataType in list(dst.allowedDataTypes([], dst._defaultSupportedDataTypes, selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections), defaults=True)) + ["AnyPin"],
@@ -309,7 +311,7 @@ def connectPins(src, dst):
     pinAffects(src, dst)
     src.setDirty()
 
-    dst._data = src.currentData()
+    dst.setData(src.currentData())
 
     dst.pinConnected(src)
     src.pinConnected(dst)
@@ -460,6 +462,18 @@ class SingletonDecorator:
             self.instance = self.cls(*args, **kwds)
         return self.instance
 
+class dictElement(tuple):
+    def __new__ (self, a=None, b=None):
+        if a is None and b is None:
+            new = ()
+        elif b is None:
+            if isinstance(a,tuple) and len(a)<=2:
+                new = a
+            else:
+                raise Exception("non Valid Input")
+        else:
+            new = (a,b)
+        return super(dictElement, self).__new__(self, new)
 
 class PinReconnectionPolicy(IntEnum):
     DisconnectIfHasConnections = 0
@@ -477,6 +491,7 @@ class PinOptions(Flag):
     AlwaysPushDirty = auto()
     Storable = auto()
     AllowAny = auto()
+    DictElementSuported = auto()
 
 # Used for determine Pin Structure Type
 class PinStructure(IntEnum):

@@ -90,7 +90,7 @@ class AnyPin(PinBase):
                 nodePins.add(connectedPin)
         for neighbor in nodePins:
             if neighbor not in traversed:
-                if all([neighbor.activeDataType == "AnyPin" or neighbor.activeDataType == "dictElementPin",
+                if all([neighbor.activeDataType == "AnyPin",
                         neighbor.canChangeTypeOnConection([], neighbor.optionEnabled(PinOptions.ChangeTypeOnConnection), []) or not neighbor.optionEnabled(PinOptions.AllowAny)]) :
                     neighbor.setError("AnyPin Not Initialized")
                     neighbor.super = None

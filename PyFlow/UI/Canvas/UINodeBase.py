@@ -1029,7 +1029,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 if w:
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
-                    w.setWidgetValue(inp.currentData())
+                    data = inp.currentData()
+                    if isinstance(inp.currentData(),dictElement):
+                        data = inp.currentData()[1]
+                    w.setWidgetValue(data)
                     w.blockWidgetSignals(False)
                     w.setObjectName(inp.getName())
                     inputsCategory.addWidget(inp.name, w)

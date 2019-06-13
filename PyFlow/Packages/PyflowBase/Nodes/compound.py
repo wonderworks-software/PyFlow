@@ -130,7 +130,7 @@ class compound(NodeBase):
             subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
             #subgraphInputPin.singleInit = True
             #subgraphInputPin.setType(outPin.dataType)
-            subgraphInputPin.enableOptions(PinOptions.AllowAny)
+            subgraphInputPin.enableOptions(PinOptions.AllowAny| PinOptions.DictElementSuported)
             
         outPin.owningNode().constraints[outPin.constraint].append(subgraphInputPin)
         self.constraints[outPin.constraint].append(outPin)
@@ -167,7 +167,7 @@ class compound(NodeBase):
         if subgraphOutputPin.isAny():
             subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
             #subgraphOutputPin.setType(inPin.dataType)
-            subgraphOutputPin.enableOptions(PinOptions.AllowAny)
+            subgraphOutputPin.enableOptions(PinOptions.AllowAny| PinOptions.DictElementSuported)
 
         if subgraphOutputPin.isExec():
             inPin.onExecute.connect(subgraphOutputPin.call)
