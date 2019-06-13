@@ -1,6 +1,6 @@
-from Qt.QtCore import QTimer
-
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.Core.Common import *
 
 
 ## Timer node
@@ -13,32 +13,39 @@ class timer(NodeBase):
         self.resetPin = self.createInputPin("Reset", 'ExecPin', None, self.reset)
         self.interval = self.createInputPin("Delta(ms)", 'FloatPin')
         self.interval.setDefaultValue(0.2)
-        self._timer = QTimer()
-        self._timer.timeout.connect(self.compute)
+        self.accum = 0.0
+        self.bWorking = False
 
-    def kill(self):
-        self._timer.stop()
-        self._timer.timeout.disconnect()
-        NodeBase.kill(self)
+    def Tick(self, delta):
+        super(timer, self).Tick(delta)
+        if self.bWorking:
+            interval = self.interval.getData()
+            self.accum += delta
+            if self.accum >= interval:
+                self.out.call()
+                self.accum = 0.0
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['FloatPin', 'ExecPin'], 'outputs': ['ExecPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('ExecPin')
+        helper.addInputDataType('FloatPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     def reset(self, *args, **kwargs):
-        self.stop()
-        self.start()
+        print("reset")
 
     def stop(self, *args, **kwargs):
-        self._timer.stop()
+        self.bWorking = False
+        self.accum = 0.0
 
     def start(self, *args, **kwargs):
-        dt = self.interval.getData() * 1000.0
-        self._timer.start(dt)
+        self.accum = 0.0
+        self.bWorking = True
 
     @staticmethod
     def category():
         return 'Utils'
-
-    def compute(self, *args, **kwargs):
-        self.out.call(*args, **kwargs)

@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 
 
@@ -16,7 +17,15 @@ class forEachLoop(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['AnyPin', 'ExecPin'], 'outputs': ['ExecPin', 'AnyPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('ExecPin')
+        helper.addInputDataType('AnyPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addOutputDataType('AnyPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addInputStruct(PinStructure.Array)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

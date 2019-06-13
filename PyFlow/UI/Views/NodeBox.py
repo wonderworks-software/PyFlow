@@ -117,7 +117,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         if doc:
             nodeItem.setToolTip(0, doc)
 
-    def refresh(self, dataType=None, pattern='', pinType=None):
+    def refresh(self, dataType=None, pattern='', pinDirection=None, pinStructure=PinStructure.Single):
         self.clear()
         self.categoryPaths = {}
 
@@ -158,7 +158,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                             self.insertNode(nodeCategoryPath,
                                             name, foo.__doc__, libName)
                         else:
-                            if pinType == PinDirection.Output:
+                            if pinDirection == PinDirection.Output:
                                 if dataType in fooInpTypes:
                                     self.insertNode(
                                         nodeCategoryPath, name, foo.__doc__, libName)
@@ -172,29 +172,27 @@ class NodeBoxTreeWidget(QTreeWidget):
                 if node_class.__name__ in ('setVar', 'getVar'):
                     continue
 
-                nodeCategoryPath = "{0}|{1}".format(
-                    package_name, node_class.category())
+                nodeCategoryPath = "{0}|{1}".format(package_name, node_class.category())
 
-                checkString = node_class.__name__ + \
-                    nodeCategoryPath + ''.join(node_class.keywords())
+                checkString = node_class.__name__ + nodeCategoryPath + ''.join(node_class.keywords())
                 if pattern.lower() not in checkString.lower():
                     continue
                 if dataType is None:
-                    self.insertNode(
-                        nodeCategoryPath, node_class.__name__, node_class.description())
+                    self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
                 else:
                     # if pressed pin is output pin
                     # filter by nodes input types
-                    if pinType == PinDirection.Output:
-                        if dataType in node_class.pinTypeHints()['inputs']:
-                            self.insertNode(
-                                nodeCategoryPath, node_class.__name__, node_class.description())
+                    hints = node_class.pinTypeHints()
+                    if isinstance(hints, dict):
+                        print(node_class)
+                    if pinDirection == PinDirection.Output:
+                        if dataType in hints.inputTypes and pinStructure in hints.inputStructs:
+                            self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
                     else:
                         # if pressed pin is input pin
                         # filter by nodes output types
-                        if dataType in node_class.pinTypeHints()['outputs']:
-                            self.insertNode(
-                                nodeCategoryPath, node_class.__name__, node_class.description())
+                        if dataType in hints.outputTypes and pinStructure in hints.outputStructs:
+                            self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
             # expand all categories
             if dataType is not None:
                 for categoryItem in self.categoryPaths.values():

@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 
 
@@ -22,7 +23,13 @@ class charge(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['FloatPin', 'ExecPin'], 'outputs': ['ExecPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('ExecPin')
+        helper.addInputDataType('FloatPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

@@ -1,4 +1,6 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.Common import *
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 
 
 class forLoopWithBreak(NodeBase):
@@ -19,7 +21,14 @@ class forLoopWithBreak(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['ExecPin', 'IntPin'], 'outputs': ['ExecPin', 'IntPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('ExecPin')
+        helper.addInputDataType('IntPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addOutputDataType('IntPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     def interrupt(self, *args, **kwargs):
         self.stop = True

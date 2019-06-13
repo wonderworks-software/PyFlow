@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 
 
@@ -11,7 +12,12 @@ class address(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['AnyPin'], 'outputs': ['StringPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('AnyPin')
+        helper.addOutputDataType('StringPin')
+        helper.addInputStruct(PinStructure.Multi)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

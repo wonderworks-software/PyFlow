@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 
@@ -6,7 +7,7 @@ from PyFlow.Core.Common import *
 class switchOnString(NodeBase):
     def __init__(self, name):
         super(switchOnString, self).__init__(name)
-        self.inExecPin = self.createInputPin('inExec', 'ExecPin', None, self.compute)
+        self.inExecPin = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.inString = self.createInputPin('string', 'StringPin')
         self.defaultPin = self.createOutputPin('default', 'ExecPin')
 
@@ -19,7 +20,13 @@ class switchOnString(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['ExecPin', 'StringPin'], 'outputs': ['ExecPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('ExecPin')
+        helper.addInputDataType('StringPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

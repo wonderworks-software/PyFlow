@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 
 
@@ -16,7 +17,12 @@ class dictKeys(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('AnyPin')
+        helper.addOutputDataType('AnyPin')
+        helper.addInputStruct(PinStructure.Dict)
+        helper.addOutputStruct(PinStructure.Array)
+        return helper
 
     @staticmethod
     def category():

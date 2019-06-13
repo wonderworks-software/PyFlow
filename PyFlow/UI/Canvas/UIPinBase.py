@@ -260,6 +260,10 @@ class UIPinBase(QGraphicsWidget):
         self.setMenuItemEnabled("Remove", self._rawPin.optionEnabled(PinOptions.Dynamic))
 
     @property
+    def structureType(self):
+        return self._rawPin.structureType
+
+    @property
     def dirty(self):
         return self._rawPin.dirty
 

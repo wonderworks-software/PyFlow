@@ -482,10 +482,10 @@ class Canvas(QGraphicsView):
         """
         return list(self.nodes.values())
 
-    def showNodeBox(self, dataType=None, pinType=None):
+    def showNodeBox(self, dataType=None, pinDirection=None, pinStructure=PinStructure.Single):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
-        self.node_box.treeWidget.refresh(dataType, '', pinType)
+        self.node_box.treeWidget.refresh(dataType, '', pinDirection, pinStructure)
         self.node_box.lineEdit.setText("")
         if dataType is None:
             self.node_box.lineEdit.setFocus()
@@ -1444,9 +1444,8 @@ class Canvas(QGraphicsView):
                         self.showNodeBox()
         elif event.button() == QtCore.Qt.LeftButton and self.releasedPin is None:
             if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
-                # node box tree pops up
-                # with nodes taking supported data types of pressed Pin as input
-                self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction)
+                # suggest nodes that can be connected to pressed pin
+                self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction, self.pressed_item.structureType)
         self.manipulationMode = CanvasManipulationMode.NONE
         if not self.resizing:
             p_itm = self.pressedPin

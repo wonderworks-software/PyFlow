@@ -1,20 +1,28 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.Common import *
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 
 
 class delay(NodeBase):
     def __init__(self, name):
         super(delay, self).__init__(name)
-        self.inp0 = self.createInputPin('in0', 'ExecPin', None, self.compute)
+        self.inp0 = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.delay = self.createInputPin('Delay(s)', 'FloatPin')
         self.delay.setDefaultValue(0.2)
-        self.out0 = self.createOutputPin('out0', 'ExecPin')
+        self.out0 = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
         self.process = False
         self._total = 0.0
         self._currentDelay = 0.0
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['ExecPin', 'FloatPin'], 'outputs': ['ExecPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('ExecPin')
+        helper.addInputDataType('FloatPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

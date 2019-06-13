@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 
 
@@ -15,7 +16,13 @@ class makeDictElement(NodeBase):
         self.outArray.onPinDisconnected.connect(self.outPinDisConnected)
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['AnyPin'], 'outputs': ['AnyPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('AnyPin')
+        helper.addOutputDataType('AnyPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addInputStruct(PinStructure.Multi)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

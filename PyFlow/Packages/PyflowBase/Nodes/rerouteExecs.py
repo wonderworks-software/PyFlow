@@ -1,6 +1,6 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
-from copy import copy
 
 
 class rerouteExecs(NodeBase):
@@ -17,7 +17,12 @@ class rerouteExecs(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('ExecPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

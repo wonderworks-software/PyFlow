@@ -89,10 +89,6 @@ class compound(NodeBase):
             self.rawGraph.name = self.getName()
 
     @staticmethod
-    def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
-
-    @staticmethod
     def category():
         return 'Common'
 
