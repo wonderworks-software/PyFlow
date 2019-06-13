@@ -99,6 +99,7 @@ class AnyPin(PinBase):
                     neighbor.super = AnyPin
                 traversed.append(neighbor)
                 neighbor.updateError(traversed)
+                neighbor.owningNode().checkForErrors()
 
     def setData(self, data):
         PinBase.setData(self, data)
@@ -213,7 +214,7 @@ class AnyPin(PinBase):
             # Marked as single init. Type already been set. Skip
             return
 
-        self.super = AnyPin
+        self.super = None
         self.activeDataType = self.__class__.__name__
 
         self.call = lambda: None
@@ -244,7 +245,10 @@ class AnyPin(PinBase):
             return False
 
         otherClass = findPinClassByType(dataType)
-        self.super = otherClass
+        if dataType != "AnyPin":
+            self.super = otherClass
+        else:
+            self.super = None
         self.activeDataType = dataType
         if not self.isArray():
             self.setData(getPinDefaultValueByType(self.activeDataType))

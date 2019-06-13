@@ -75,7 +75,8 @@ class NodeBase(INode):
             if pin._lastError is not None:
                 failedPins[pin.name] = pin._lastError
         if len(failedPins):
-            self.setError("Error on Pins:%s"%str(failedPins))
+            self._lastError = "Error on Pins:%s"%str(failedPins)
+            #self.setError("Error on Pins:%s"%str(failedPins))
         else:
             self.clearError()
         wrapper = self.getWrapper()
