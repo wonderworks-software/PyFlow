@@ -341,6 +341,8 @@ class NodeBase(INode):
 
         if structure == PinStructure.Array:
             p.initAsArray(True)
+        elif structure == PinStructure.Dict:
+            p.initAsDict(True)         
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
@@ -374,6 +376,8 @@ class NodeBase(INode):
 
         if structure == PinStructure.Array:
             p.initAsArray(True)
+        elif structure == PinStructure.Dict:
+            p.initAsDict(True)               
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 

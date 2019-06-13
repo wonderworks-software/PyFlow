@@ -214,7 +214,9 @@ def canConnectPins(src, dst):
 
     if not src.isDict() and dst.isDict():
         if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
-            return False            
+            return False
+        elif src.__class__.__name__ != "dictElementPin" :
+            return False
 
     if src.isArray() and not dst.isArray():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
