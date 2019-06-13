@@ -192,9 +192,9 @@ class UIPinBase(QGraphicsWidget):
             labelHeight = self.owningNode().labelHeight
             labelHeight += self.owningNode().nodeLayout.spacing()
             if self.direction == PinDirection.Input:
-                result = self.mapFromParent(QtCore.QPointF(0, labelHeight))
+                result = self.mapFromItem(self.owningNode(), QtCore.QPointF(0, labelHeight))
             if self.direction == PinDirection.Output:
-                result = self.mapFromParent(QtCore.QPointF(self.owningNode().sizeHint(None, None).width(), labelHeight))
+                result = self.mapFromItem(self.owningNode(), QtCore.QPointF(self.owningNode().sizeHint(None, None).width(), labelHeight))
         return result
 
     def onContainerTypeChanged(self, *args, **kwargs):
