@@ -33,7 +33,7 @@ class UIMakeDictNode(UINodeBase):
         for i in self.input._rawPin._defaultSupportedDataTypes:
             selector.addItem(i)         
 
-        #selector.setCurrentIndex(self.input._rawPin._defaultSupportedDataTypes.index(self.input._rawPin.dataType))
+        selector.setCurrentIndex(self.input._rawPin._defaultSupportedDataTypes.index(self.input._rawPin.dataType))
 
         selector.activated.connect(self.changeType)
         inputsCategory.insertWidget(0,"DataType",selector)

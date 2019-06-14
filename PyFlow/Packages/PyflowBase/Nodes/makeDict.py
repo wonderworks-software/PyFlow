@@ -7,7 +7,7 @@ from PyFlow.Core.Common import *
 class makeDict(NodeBase):
     def __init__(self, name):
         super(makeDict, self).__init__(name)
-        self.KeyType = self.createInputPin('KeyType', 'AnyPin', constraint="1",allowedPins=_HASHABLES)
+        self.KeyType = self.createInputPin('KeyType', 'AnyPin',defaultValue=str(""), constraint="1",allowedPins=_HASHABLES)
         self.KeyType.disableOptions(PinOptions.ChangeTypeOnConnection)
         self.KeyType.hidden = True
         #self.ValueType = self.createInputPin('valueType', 'AnyPin', constraint="2")
