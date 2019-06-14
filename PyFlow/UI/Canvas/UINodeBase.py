@@ -9,6 +9,7 @@ Also, it implements [initializeFromFunction](@ref PyFlow.Core.Node.initializeFro
 import weakref
 from multipledispatch import dispatch
 from nine import str
+from docutils import core
 
 from Qt import QtCore
 from Qt import QtGui
@@ -278,7 +279,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     def onNodeErrorCleared(self, *args, **kwargs):
         # restore node ui to clean
-        self.setToolTip(self.description())
+        self.setToolTip(rst2html(self.description()))
 
     def toggleCollapsed(self):
         self.collapsed = not self.collapsed
@@ -559,7 +560,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 except:
                     pass
 
-        self.setToolTip(self.description())
+        self.setToolTip(rst2html(self.description()))
         if self.resizable:
             w = self.getNodeWidth()
             h = self.getNodeHeight()
@@ -1011,7 +1012,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         Info = CollapsibleFormWidget(headName="Info", collapsed=True, hideLabels=True)
         doc = QTextBrowser()
         doc.setOpenExternalLinks(True)
-        doc.setHtml(self.description())
+        doc.setHtml(rst2html(self.description()))
         Info.addWidget(widget=doc)
         propertiesWidget.addWidget(Info)
 

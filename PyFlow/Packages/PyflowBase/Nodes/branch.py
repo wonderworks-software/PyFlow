@@ -12,6 +12,10 @@ class branch(NodeBase):
         self.condition = self.createInputPin("Condition", 'BoolPin')
 
     @staticmethod
+    def description():
+        return """**If else** block."""
+
+    @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('ExecPin')

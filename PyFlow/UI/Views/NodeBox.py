@@ -7,16 +7,12 @@ except:
 
 from Qt import QtCore
 from Qt import QtGui
-from Qt.QtWidgets import QAbstractItemView
-from Qt.QtWidgets import QFrame
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QTreeWidget, QTreeWidgetItem
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QVBoxLayout
+from Qt.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
 
 from PyFlow.Core.Common import *
+from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.NodeBase import NodeBase
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
@@ -40,7 +36,10 @@ class NodeBoxLineEdit(QLineEdit):
 
 
 class NodeBoxTreeWidget(QTreeWidget):
-    def __init__(self, parent, useDragAndDrop=True):
+    showInfo = QtCore.Signal(object)
+    hideInfo = QtCore.Signal()
+
+    def __init__(self, parent, bNodeInfoEnabled=True, useDragAndDrop=True):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
@@ -61,6 +60,16 @@ class NodeBoxTreeWidget(QTreeWidget):
             self.setDragDropMode(QAbstractItemView.DragOnly)
         self.setAnimated(True)
         self.categoryPaths = {}
+        self.bNodeInfoEnabled = bNodeInfoEnabled
+        self.currentItemChanged.connect(self.onCurrentItemChanged)
+
+    def onCurrentItemChanged(self, current, previous):
+        if current is not None:
+            if self.bNodeInfoEnabled:
+                if not current.bCategory:
+                    self.showInfo.emit(current.toolTip(0))
+                else:
+                    self.hideInfo.emit()
 
     def _isCategoryExists(self, category_name, categories):
         bFound = False
@@ -101,13 +110,11 @@ class NodeBoxTreeWidget(QTreeWidget):
                 parentCategoryPath = categoryPath
                 categoryPath += '|{}'.format(folderName)
                 if categoryPath not in self.categoryPaths:
-                    childCategoryItem = QTreeWidgetItem(
-                        self.categoryPaths[parentCategoryPath])
+                    childCategoryItem = QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
                     childCategoryItem.setFlags(QtCore.Qt.ItemIsEnabled)
                     childCategoryItem.bCategory = True
                     childCategoryItem.setText(0, folderName)
-                    childCategoryItem.setBackground(
-                        0, editableStyleSheet().BgColorBright.lighter(150))
+                    childCategoryItem.setBackground(0, editableStyleSheet().BgColorBright.lighter(150))
                     self.categoryPaths[categoryPath] = childCategoryItem
         # create node under constructed folder
         nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
@@ -246,26 +253,53 @@ class NodeBoxTreeWidget(QTreeWidget):
                     0, editableStyleSheet().BgColorBright.lighter(150))
         super(NodeBoxTreeWidget, self).update()
 
+
 class NodesBox(QWidget):
     """doc string for NodesBox"""
 
-    def __init__(self, parent):
+    def __init__(self, parent, bNodeInfoEnabled=True):
         super(NodesBox, self).__init__(parent)
-        self.verticalLayout = QVBoxLayout(self)
+        self.mainLayout = QHBoxLayout(self)
+        self.mainLayout.setObjectName("mainLayout")
+        self.mainLayout.setContentsMargins(1, 1, 1, 1)
+        self.verticalLayout = QVBoxLayout()
+        self.mainLayout.addLayout(self.verticalLayout)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.verticalLayout.setContentsMargins(4, 4, 4, 4)
+        self.verticalLayout.setContentsMargins(1, 1, 1, 1)
         self.lineEdit = NodeBoxLineEdit(self)
         self.lineEdit.setObjectName("lineEdit")
         self.verticalLayout.addWidget(self.lineEdit)
-        self.treeWidget = NodeBoxTreeWidget(self)
+        self.lineEdit.textChanged.connect(self.leTextChanged)
+        self.nodeInfoWidget = QTextBrowser()
+        self.nodeInfoWidget.setObjectName("NodeBoxInfoBrowser")
+        self.nodeInfoWidget.setStyleSheet("")
+        self.nodeInfoWidget.setOpenExternalLinks(True)
+        self.mainLayout.addWidget(self.nodeInfoWidget)
+        self.nodeInfoWidget.setVisible(False)
+
+        self.treeWidget = NodeBoxTreeWidget(self, bNodeInfoEnabled, False)
         self.treeWidget.setObjectName("treeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)
-        self.lineEdit.textChanged.connect(self.leTextChanged)
         self.treeWidget.refresh()
 
+        self.treeWidget.showInfo.connect(self.onShowInfo)
+        self.treeWidget.hideInfo.connect(self.onHideInfo)
+
+    def showEvent(self, event):
+        self.nodeInfoWidget.setHtml("")
+        self.nodeInfoWidget.hide()
+
+    def onShowInfo(self, restructuredText):
+        self.nodeInfoWidget.show()
+        self.nodeInfoWidget.setHtml(rst2html(restructuredText))
+
+    def onHideInfo(self):
+        self.nodeInfoWidget.setHtml("")
+        self.nodeInfoWidget.hide()
+
     def sizeHint(self):
-        return QtCore.QSize(400, 250)
+        return QtCore.QSize(400, 300)
 
     def expandCategory(self):
         for i in self.treeWidget.categoryPaths:
