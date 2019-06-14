@@ -254,16 +254,43 @@ class NodeBoxTreeWidget(QTreeWidget):
         super(NodeBoxTreeWidget, self).update()
 
 
-class NodesBox(QWidget):
+class NodeBoxSizeGrip(QSizeGrip):
+    """docstring for NodeBoxSizeGrip."""
+    def __init__(self, parent=None):
+        super(NodeBoxSizeGrip, self).__init__(parent)
+
+
+class NodesBox(QFrame):
     """doc string for NodesBox"""
 
-    def __init__(self, parent, bNodeInfoEnabled=True):
+    def __init__(self, parent, bNodeInfoEnabled=True, bGripsEnabled=True):
         super(NodesBox, self).__init__(parent)
-        self.mainLayout = QHBoxLayout(self)
+        self.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        self.bDragging = False
+        self.lastCursorPos = QtCore.QPoint(0, 0)
+        self.offset = QtCore.QPoint(0, 0)
+        self.setMouseTracking(True)
+        self.mainLayout = QVBoxLayout(self)
         self.mainLayout.setObjectName("mainLayout")
+        self.mainLayout.setSpacing(1)
         self.mainLayout.setContentsMargins(1, 1, 1, 1)
-        self.verticalLayout = QVBoxLayout()
-        self.mainLayout.addLayout(self.verticalLayout)
+        self.splitter = QSplitter()
+        self.mainLayout.addWidget(self.splitter)
+        if bGripsEnabled:
+            self.sizeGrip = NodeBoxSizeGrip(self)
+            self.sizeGripLayout = QHBoxLayout()
+            self.sizeGripLayout.setSpacing(1)
+            self.sizeGripLayout.setContentsMargins(1, 1, 1, 1)
+            spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+            self.sizeGripLayout.addItem(spacerItem)
+            self.sizeGripLayout.addWidget(self.sizeGrip)
+            self.mainLayout.addLayout(self.sizeGripLayout)
+
+        self.nodeTreeWidget = QWidget()
+        self.nodeTreeWidget.setObjectName("nodeTreeWidget")
+        self.verticalLayout = QVBoxLayout(self.nodeTreeWidget)
+        self.verticalLayout.setSpacing(1)
+        self.splitter.addWidget(self.nodeTreeWidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.verticalLayout.setContentsMargins(1, 1, 1, 1)
         self.lineEdit = NodeBoxLineEdit(self)
@@ -274,7 +301,8 @@ class NodesBox(QWidget):
         self.nodeInfoWidget.setObjectName("NodeBoxInfoBrowser")
         self.nodeInfoWidget.setStyleSheet("")
         self.nodeInfoWidget.setOpenExternalLinks(True)
-        self.mainLayout.addWidget(self.nodeInfoWidget)
+        self.splitter.addWidget(self.nodeInfoWidget)
+        self.splitter.addWidget(self.nodeInfoWidget)
         self.nodeInfoWidget.setVisible(False)
 
         self.treeWidget = NodeBoxTreeWidget(self, bNodeInfoEnabled, False)
@@ -286,9 +314,13 @@ class NodesBox(QWidget):
         self.treeWidget.showInfo.connect(self.onShowInfo)
         self.treeWidget.hideInfo.connect(self.onHideInfo)
 
+    def hideEvent(self, event):
+        self.bDragging = False
+
     def showEvent(self, event):
         self.nodeInfoWidget.setHtml("")
         self.nodeInfoWidget.hide()
+        self.bDragging = False
 
     def onShowInfo(self, restructuredText):
         self.nodeInfoWidget.show()
@@ -299,7 +331,7 @@ class NodesBox(QWidget):
         self.nodeInfoWidget.hide()
 
     def sizeHint(self):
-        return QtCore.QSize(400, 300)
+        return QtCore.QSize(500, 300)
 
     def expandCategory(self):
         for i in self.treeWidget.categoryPaths:
@@ -313,3 +345,21 @@ class NodesBox(QWidget):
             return
         self.treeWidget.refresh(None, self.lineEdit.text())
         self.expandCategory()
+
+    def mousePressEvent(self, event):
+        super(NodesBox, self).mousePressEvent(event)
+        if event.pos().y() >= self.geometry().height() - 30:
+            self.bDragging = True
+            self.lastCursorPos = QtGui.QCursor.pos()
+
+    def mouseMoveEvent(self, event):
+        super(NodesBox, self).mouseMoveEvent(event)
+        if self.bDragging:
+            delta = QtGui.QCursor.pos() - self.lastCursorPos
+            currentPos = self.pos()
+            self.move(currentPos + delta)
+            self.lastCursorPos = QtGui.QCursor.pos()
+
+    def mouseReleaseEvent(self, event):
+        super(NodesBox, self).mouseReleaseEvent(event)
+        self.bDragging = False
