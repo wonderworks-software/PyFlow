@@ -48,13 +48,14 @@ class makeDict(NodeBase):
                         inp.constraints[inp.key.constraint].append(dictItem.key)
                     if inp.key not in dictItem.constraints[inp.key.constraint]:    
                         dictItem.constraints[inp.key.constraint].append(inp.key)
-                    inp.key.setType(dictItem.key.dataType)      
+                    inp.key.setType(dictItem.key.dataType)
+
     def inPinDisconnected(self,inp):
         inp = inp.getDictElementNode([])
-        if inp:
-            for i in self.arrayData.affected_by:
-                dictItem = i.getDictElementNode([])
-                if dictItem:
+        elements = [i.getDictElementNode([]) for i in self.arrayData.affected_by]
+        if inp is not None :
+            for dictItem in elements:
+                if dictItem is not None:
                     if dictItem.key in inp.constraints[inp.key.constraint]:
                         inp.constraints[inp.key.constraint].remove(dictItem.key)
                     if inp.key in dictItem.constraints[inp.key.constraint]:    

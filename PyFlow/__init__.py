@@ -63,6 +63,12 @@ def getHashableDataTypes():
                 validKeyTypes.append(pin.__name__)
     return validKeyTypes
 
+def getPinFromData(data):
+    for pin in [pin for pin in getAllPinClasses() if pin.IsValuePin()]:
+        pType = pin.internalDataStructure()
+        if data == pType:
+            return pin
+
 def CreateRawPin(name, owningNode, dataType, direction, **kwds):
     pinClass = findPinClassByType(dataType)
     if pinClass is None:

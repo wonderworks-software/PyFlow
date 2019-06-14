@@ -72,6 +72,7 @@ class PinBase(IPin):
         # DataTypes
         self.super = self.__class__ 
         self.activeDataType = self.__class__.__name__
+        self._keyType = None
 
     @property
     def group(self):
@@ -160,6 +161,7 @@ class PinBase(IPin):
             self._isArray = False
         else:
             self._currStructure = self._structure
+            self._keyType = None
         self._data = self.defaultValue()
         self.containerTypeChanged.send()
 
@@ -327,6 +329,23 @@ class PinBase(IPin):
                 else:
                     raise Exception("Non Valid Dict Input")
 
+                if len(self._data.keys()):
+                    self.updateConectedDicts([],type(self._data.keys()[0]))
+                else:
+                    if len(self.affected_by):
+                        for i in self.affected_by:
+                            elemnt = i.getDictElementNode([])
+                            dictN = i.getDictNode([])
+                            if elemnt:
+                                self.updateConectedDicts([],type(i.getDictElementNode([]).key.getData()))
+                                break
+                            elif dictN:
+                                if len(dictN.arrayData._data.keys()):
+                                    self.updateConectedDicts([],type(dictN.outArray._data.keys()[0]))
+                                    break
+                                elif len(dictN.outArray._data.keys()):
+                                    self.updateConectedDicts([],type(dictN.outArray._data.keys()[0]))
+                                    break  
             if self.direction == PinDirection.Output:
                 for i in self.affects:
                     i.setData(self.currentData())
@@ -499,11 +518,49 @@ class PinBase(IPin):
 
     def pinConnected(self, other):
         push(self)
+        if self.isDict():
+            if len(self._data.keys()):
+                self.updateConectedDicts([],type(self._data.keys()[0]))
+            else:
+                if len(self.affected_by):
+                    for i in self.affected_by:
+                        elemnt = i.getDictElementNode([])
+                        dictN = i.getDictNode([])
+                        if elemnt:
+                            self.updateConectedDicts([],type(i.getDictElementNode([]).key.getData()))
+                            break
+                        elif dictN:
+                            if len(dictN.arrayData._data.keys()):
+                                self.updateConectedDicts([],type(dictN.outArray._data.keys()[0]))
+                                break
+                            elif len(dictN.outArray._data.keys()):
+                                self.updateConectedDicts([],type(dictN.outArray._data.keys()[0]))
+                                break
 
+            #if len(self._data.keys()):
+            #    self.updateConectedDicts([],type(self._data.keys()[0]))     
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
         push(other)
+        if self.isDict():
+            if len(self._data.keys()):
+                self.updateConectedDicts([],type(self._data.keys()[0]))
+            else:
+                if len(self.affected_by):
+                    for i in self.affected_by:
+                        elemnt = i.getDictElementNode([])
+                        dictN = i.getDictNode([])
+                        if elemnt:
+                            self.updateConectedDicts([],type(i.getDictElementNode([]).key.getData()))
+                            break
+                        elif dictN:
+                            if len(dictN.arrayData._data.keys()):
+                                self.updateConectedDicts([],type(dictN.outArray._data.keys()[0]))
+                                break
+                            elif len(dictN.outArray._data.keys()):
+                                self.updateConectedDicts([],type(dictN.outArray._data.keys()[0]))
+                                break 
 
     def canChangeTypeOnConection(self, checked=[], can=True, extraPins=[], selfChek=True):
         if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
@@ -598,6 +655,27 @@ class PinBase(IPin):
                 checked.append(port)
                 can = port.supportOnlyDictElement(checked, can, selfChek=True)
         return can   
+
+    def updateKeyType(self,keyTpe=None):
+        self._keyType = keyTpe
+        self.getWrapper()().update() 
+
+    def updateConectedDicts(self,checked=[],keyTpe=None):
+        if not self.isDict():
+            return
+        con = []
+        neis = []
+        if self.hasConnections() :
+            for c in getConnectedPins(self):
+                if c not in checked:
+                    con.append(c)
+        if self.constraint:
+            neis = self.owningNode().constraints[self.constraint]                    
+        for port in con + neis:
+            if port not in checked and port.isDict():
+                checked.append(port)
+                port.updateKeyType(keyTpe)
+                port.updateConectedDicts(checked,keyTpe)
 
     def setClean(self):
         self.dirty = False

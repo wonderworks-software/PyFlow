@@ -149,7 +149,7 @@ class AnyPin(PinBase):
             if any([dataType in pin.allowedDataTypes([], pin._supportedDataTypes),
                     dataType == "AnyPin",
                     (pin.checkFree([], False) and dataType in pin.allowedDataTypes([], pin._defaultSupportedDataTypes, defaults=True))]):
-                a = pin.setType(dataType)
+                a = pin.setType(dataType)               
                 if a:
                     if other:
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
@@ -158,6 +158,7 @@ class AnyPin(PinBase):
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
                             pin._supportedDataTypes = pin._defaultSupportedDataTypes
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes
+
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
@@ -231,6 +232,7 @@ class AnyPin(PinBase):
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, initializing))
             self.updateError([])
             self.owningNode().checkForErrors()
+            self.dataBeenSet.send(self)
             return True
         return False
 

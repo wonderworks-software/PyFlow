@@ -4,6 +4,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QStyle
 
+from PyFlow import getPinFromData
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.Common import *
@@ -354,13 +355,18 @@ class PinPainter(object):
         halfPinSize = pin.pinSize / 2
 
         painter.setBrush(QtGui.QBrush(pin.color()))
+        keyPin = getPinFromData(pin._rawPin._keyType)
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.2))
         for row in range(3):
             x = pinCenter.x() - halfPinSize
             y = row * cellH + (halfPinSize / 2) + pin.pinCircleDrawOffset.y()
             # TODO: use different colors for key and value
-            painter.drawRect(x, y, cellW, cellH)
+            painter.setBrush(QtGui.QBrush(pin.color()))
             painter.drawRect(x + cellW, y, cellW * 2, cellH)
+            if keyPin:
+                painter.setBrush(QtGui.QBrush(QtGui.QColor(*keyPin.color())))
+            painter.drawRect(x, y, cellW, cellH)
+            
 
         if lod < 3:
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())

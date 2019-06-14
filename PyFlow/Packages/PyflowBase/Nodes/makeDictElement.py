@@ -41,22 +41,23 @@ class makeDictElement(NodeBase):
         return 'Creates a Dict Element'
 
     def dataBeenSet(self,pin=None):
-        #try:
-        self.outArray._data = dictElement(self.key.getData(), self.value.getData())
-        self.checkForErrors()
-        #except:
-        #    pass
+        try:
+            self.outArray._data = dictElement(self.key.getData(), self.value.getData())
+            self.checkForErrors()
+        except:
+            pass
 
     def outPinDisConnected(self,inp):
         dictNode = inp.getDictNode([])
         if dictNode:
-            for i in dictNode.arrayData.affected_by:
-                dictItem = i.getDictElementNode([])
-                if dictItem:
+            elements = [i.getDictElementNode([]) for i in dictNode.arrayData.affected_by]
+            for dictItem in elements:
+                if dictItem is not None and dictItem != self:
                     if dictItem.key in self.constraints[self.key.constraint]:
                         self.constraints[self.key.constraint].remove(dictItem.key)
                     if self.key in dictItem.constraints[self.key.constraint]:
                         dictItem.constraints[self.key.constraint].remove(self.key)
+        self.outPinConnected(self.outArray)
 
     def outPinConnected(self,inp):
         dictNode = inp.getDictNode([])
