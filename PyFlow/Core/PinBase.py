@@ -292,7 +292,7 @@ class PinBase(IPin):
         if self.isArray():
             return []
         elif self.isDict():
-            return pyf_dict("AnyPin","AnyPin")
+            return pyf_dict("StringPin","AnyPin")
         else:
             return self._defaultValue
 
