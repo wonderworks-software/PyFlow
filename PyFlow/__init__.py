@@ -4,7 +4,7 @@
 
 import importlib
 import pkgutil
-
+import collections
 from PyFlow.Packages import *
 
 
@@ -22,6 +22,7 @@ __all__ = [
 
 __PACKAGES = {}
 
+_HASHABLES = []
 
 def GET_PACKAGES():
     return __PACKAGES
@@ -53,6 +54,14 @@ def getPinDefaultValueByType(dataType):
         return pin.pinDataTypeHint()[1]
     return None
 
+def getHashableDataTypes():
+    validKeyTypes = []
+    for pin in getAllPinClasses():
+        t = pin.internalDataStructure()
+        if t != type(None) and t != None:
+            if isinstance(pin.internalDataStructure()(),collections.Hashable):
+                validKeyTypes.append(pin.__name__)
+    return validKeyTypes
 
 def CreateRawPin(name, owningNode, dataType, direction, **kwds):
     pinClass = findPinClassByType(dataType)
@@ -111,3 +120,4 @@ def INITIALIZE():
 
         for toolClass in package.GetToolClasses().values():
             REGISTER_TOOL(packageName, toolClass)
+    _HASHABLES.extend(getHashableDataTypes())

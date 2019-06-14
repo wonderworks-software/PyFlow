@@ -1,3 +1,4 @@
+from PyFlow import _HASHABLES
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
@@ -7,7 +8,8 @@ class makeDictElement(NodeBase):
     def __init__(self, name):
         super(makeDictElement, self).__init__(name)
         self.bCacheEnabled = False
-        self.key = self.createInputPin('key', 'AnyPin', structure=PinStructure.Single, constraint="1")
+
+        self.key = self.createInputPin('key', 'AnyPin', structure=PinStructure.Single, constraint="1",allowedPins=_HASHABLES)
         self.value = self.createInputPin('value', 'AnyPin', structure=PinStructure.Multi, constraint="2")
         self.value.enableOptions(PinOptions.AllowAny)
         self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=(), structure=PinStructure.Single, constraint="2")

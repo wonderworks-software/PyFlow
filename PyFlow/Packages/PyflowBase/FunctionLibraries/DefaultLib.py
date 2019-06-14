@@ -5,9 +5,9 @@ from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
 )
+from PyFlow import _HASHABLES
 from PyFlow.Core.Common import *
 from nine import IS_PYTHON2
-
 
 class DefaultLib(FunctionLibraryBase):
     '''
@@ -103,7 +103,7 @@ class DefaultLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=("AnyPin", None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
                     meta={'Category': 'DefaultLib', 'Keywords': ['get'], "CacheEnabled": False})
     def getItem(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
-                element=("AnyPin", None),
+                element=("AnyPin", None,{"supportedDataTypes":_HASHABLES }),
                 result=("Reference", ("BoolPin", False))):
         """Python's <u>[]</u> operator. <u>obj[element]</u> will be executed."""
         try:
