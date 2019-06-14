@@ -20,9 +20,9 @@ class UIMakeDictNode(UINodeBase):
         self.input = self.getPin("KeyType")
 
     def changeType(self,dataType):
-        self.input._rawPin.enableOptions(PinOptions.ChangeTypeOnConnection)
+        #self.input._rawPin.enableOptions(PinOptions.ChangeTypeOnConnection)
         self.input._rawPin.initType(self.input._rawPin._defaultSupportedDataTypes[dataType],True)
-        self.input._rawPin.disableOptions(PinOptions.ChangeTypeOnConnection)
+        #self.input._rawPin.disableOptions(PinOptions.ChangeTypeOnConnection)
 
     def selectStructure(self,name):
         self.canvasRef().tryFillPropertiesView(self)
