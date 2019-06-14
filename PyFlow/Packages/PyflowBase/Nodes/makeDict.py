@@ -8,7 +8,9 @@ class makeDict(NodeBase):
     def __init__(self, name):
         super(makeDict, self).__init__(name)
         self.KeyType = self.createInputPin('KeyType', 'AnyPin', constraint="1",allowedPins=_HASHABLES)
-        self.ValueType = self.createInputPin('valueType', 'AnyPin', constraint="2")
+        self.KeyType.disableOptions(PinOptions.ChangeTypeOnConnection)
+        self.KeyType.hidden = True
+        #self.ValueType = self.createInputPin('valueType', 'AnyPin', constraint="2")
 
         self.arrayData = self.createInputPin('data', 'AnyPin', structure=PinStructure.Dict, constraint="2")
         self.arrayData.enableOptions(PinOptions.AllowMultipleConnections | PinOptions.AllowAny | PinOptions.DictElementSuported)
@@ -55,11 +57,11 @@ class makeDict(NodeBase):
                 self.constraints[inp.key.constraint].append(inp.key)
             inp.key.setType(self.KeyType.dataType)
 
-            if self.ValueType not in inp.constraints[inp.value.constraint]:
-                inp.constraints[inp.value.constraint].append(self.ValueType)
-            if inp.value not in self.constraints[inp.value.constraint]:    
-                self.constraints[inp.value.constraint].append(inp.value)
-            inp.value.setType(self.ValueType.dataType)
+            #if self.ValueType not in inp.constraints[inp.value.constraint]:
+            #    inp.constraints[inp.value.constraint].append(self.ValueType)
+            #if inp.value not in self.constraints[inp.value.constraint]:    
+            #    self.constraints[inp.value.constraint].append(inp.value)
+            #inp.value.setType(self.ValueType.dataType)
 
     def inPinDisconnected(self,inp):
         inp = inp.getDictElementNode([])
@@ -70,14 +72,14 @@ class makeDict(NodeBase):
             if inp.key in self.constraints[inp.key.constraint]:    
                 self.constraints[inp.key.constraint].remove(inp.key)
 
-            if self.ValueType in inp.constraints[inp.value.constraint]:
-                inp.constraints[inp.value.constraint].remove(self.ValueType)
-            if inp.value in self.constraints[inp.value.constraint]:    
-                self.constraints[inp.value.constraint].remove(inp.value)  
-            inp.outPinConnected(inp.outArray)
+            #if self.ValueType in inp.constraints[inp.value.constraint]:
+            #    inp.constraints[inp.value.constraint].remove(self.ValueType)
+            #if inp.value in self.constraints[inp.value.constraint]:    
+            #    self.constraints[inp.value.constraint].remove(inp.value)  
+            #inp.outPinConnected(inp.outArray)
 
     def compute(self, *args, **kwargs):
-        outArray = pyf_dict(self.KeyType.dataType,self.ValueType.dataType)
+        outArray = pyf_dict(self.KeyType.dataType)
         ySortedPins = sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y)
 
         for i in ySortedPins:

@@ -55,10 +55,10 @@ class makeDictElement(NodeBase):
             if self.key in dictNode.constraints[self.key.constraint]:    
                 dictNode.constraints[self.key.constraint].remove(self.key)
 
-            if dictNode.ValueType in self.constraints[self.value.constraint]:
-                self.constraints[self.value.constraint].remove(dictNode.ValueType)
-            if self.value in dictNode.constraints[self.value.constraint]:    
-                dictNode.constraints[self.value.constraint].remove(self.value)
+            #if dictNode.ValueType in self.constraints[self.value.constraint]:
+            #    self.constraints[self.value.constraint].remove(dictNode.ValueType)
+            #if self.value in dictNode.constraints[self.value.constraint]:    
+            #    dictNode.constraints[self.value.constraint].remove(self.value)
 
         self.outPinConnected(self.outArray)
 
@@ -71,11 +71,11 @@ class makeDictElement(NodeBase):
                 dictNode.constraints[self.key.constraint].append(self.key)
             self.key.setType(dictNode.KeyType.dataType)
 
-            if dictNode.ValueType not in self.constraints[self.value.constraint]:
-                self.constraints[self.value.constraint].append(dictNode.ValueType)
-            if self.value not in dictNode.constraints[self.value.constraint]:    
-                dictNode.constraints[self.value.constraint].append(self.value)
-            self.value.setType(dictNode.ValueType.dataType)
+            #if dictNode.ValueType not in self.constraints[self.value.constraint]:
+            #    self.constraints[self.value.constraint].append(dictNode.ValueType)
+            #if self.value not in dictNode.constraints[self.value.constraint]:    
+            #    dictNode.constraints[self.value.constraint].append(self.value)
+            #self.value.setType(dictNode.ValueType.dataType)
 
     def compute(self, *args, **kwargs):
         self.outArray.setData(dictElement(self.key.getData(), self.value.getData()))

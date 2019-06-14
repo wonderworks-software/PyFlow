@@ -70,6 +70,7 @@ class PinBase(IPin):
         self._defaultSupportedDataTypes = self._supportedDataTypes = self.supportedDataTypes()
         self.canChange = False
         self._isDictElement = False
+        self.hidden = False
         # DataTypes
         self.super = self.__class__ 
         self.activeDataType = self.__class__.__name__

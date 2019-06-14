@@ -13,6 +13,8 @@ from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
 from PyFlow.Packages.PyflowBase.Nodes.compound import compound
 from PyFlow.Packages.PyflowBase.Nodes.constant import constant
 from PyFlow.Packages.PyflowBase.Nodes.convertTo import convertTo
+from PyFlow.Packages.PyflowBase.Nodes.makeDict import makeDict
+
 
 from PyFlow.Packages.PyflowBase.UI.UISwitchOnStringNode import UISwitchOnString
 from PyFlow.Packages.PyflowBase.UI.UIGetVarNode import UIGetVarNode
@@ -28,6 +30,7 @@ from PyFlow.Packages.PyflowBase.UI.UIGraphNodes import (
 from PyFlow.Packages.PyflowBase.UI.UICompoundNode import UICompoundNode
 from PyFlow.Packages.PyflowBase.UI.UIConstantNode import UIConstantNode
 from PyFlow.Packages.PyflowBase.UI.UIConvertToNode import UIConvertToNode
+from PyFlow.Packages.PyflowBase.UI.UIMakeDictNode import UIMakeDictNode
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
@@ -57,4 +60,6 @@ def createUINode(raw_instance):
         return UIConstantNode(raw_instance)
     if isinstance(raw_instance,convertTo):
         return UIConvertToNode(raw_instance)
+    if isinstance(raw_instance,makeDict):
+        return UIMakeDictNode(raw_instance)        
     return UINodeBase(raw_instance)
