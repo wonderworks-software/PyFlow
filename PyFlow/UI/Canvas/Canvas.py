@@ -486,7 +486,9 @@ class Canvas(QGraphicsView):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
         self.node_box.treeWidget.refresh(dataType, '', pinDirection, pinStructure)
+        self.node_box.lineEdit.blockSignals(True)
         self.node_box.lineEdit.setText("")
+        self.node_box.lineEdit.blockSignals(False)
         if dataType is None:
             self.node_box.lineEdit.setFocus()
 

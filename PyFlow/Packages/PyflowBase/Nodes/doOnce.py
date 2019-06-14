@@ -6,8 +6,8 @@ from PyFlow.Core.Common import *
 class doOnce(NodeBase):
     def __init__(self, name):
         super(doOnce, self).__init__(name)
-        self.inExec = self.createInputPin('inExec', 'ExecPin', self.compute)
-        self.reset = self.createInputPin('Reset', 'ExecPin', self.OnReset)
+        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
+        self.reset = self.createInputPin('Reset', 'ExecPin', None, self.OnReset)
         self.bStartClosed = self.createInputPin('Start closed', 'BoolPin')
         self.completed = self.createOutputPin('Completed', 'ExecPin')
         self.bClosed = False

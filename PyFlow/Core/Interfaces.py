@@ -167,9 +167,7 @@ class IPin(IItemBase):
         Returns:
             procesed data
         '''
-        #return data
         raise NotImplementedError('processData method of IPin is not implemented')
-        
 
     @staticmethod
     def supportedDataTypes():

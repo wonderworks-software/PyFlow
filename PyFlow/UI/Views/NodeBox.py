@@ -129,43 +129,42 @@ class NodeBoxTreeWidget(QTreeWidget):
                     foo = foo
                     libName = foo.__annotations__["lib"]
                     fooArgNames = getargspec(foo).args
-                    fooInpTypes = []
-                    fooOutTypes = []
+                    fooInpTypes = set()
+                    fooOutTypes = set()
+                    fooInpStructs = set()
+                    fooOutStructs = set()
                     if foo.__annotations__['nodeType'] == NodeTypes.Callable:
-                        fooInpTypes.append('ExecPin')
-                        fooOutTypes.append('ExecPin')
+                        fooInpTypes.add('ExecPin')
+                        fooOutTypes.add('ExecPin')
+                        fooInpStructs.add(PinStructure.Single)
+                        fooOutStructs.add(PinStructure.Single)
 
                     # consider return type if not None
                     if foo.__annotations__['return'] is not None:
-                        fooOutTypes.append(foo.__annotations__['return'][0])
+                        fooOutTypes.add(foo.__annotations__['return'][0])
+                        fooOutStructs.add(findStructFromValue(foo.__annotations__['return'][1]))
 
                     for index in range(len(fooArgNames)):
                         dType = foo.__annotations__[fooArgNames[index]]
                         # if tuple - this means ref pin type (output) + default value
                         # eg: (3, True) - bool with True default val
-                        if isinstance(dType, tuple):
-                            fooOutTypes.append(dType[0])
-                        else:
-                            fooInpTypes.append(dType)
+                        fooInpTypes.add(dType[0])
+                        fooInpStructs.add(findStructFromValue(dType[1]))
 
-                    nodeCategoryPath = "{0}|{1}".format(
-                        package_name, foo.__annotations__['meta']['Category'])
+                    nodeCategoryPath = "{0}|{1}".format(package_name, foo.__annotations__['meta']['Category'])
                     keywords = foo.__annotations__['meta']['Keywords']
                     checkString = name + nodeCategoryPath + ''.join(keywords)
                     if pattern.lower() in checkString.lower():
                         # create all nodes items if clicked on canvas
                         if dataType is None:
-                            self.insertNode(nodeCategoryPath,
-                                            name, foo.__doc__, libName)
+                            self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                         else:
                             if pinDirection == PinDirection.Output:
-                                if dataType in fooInpTypes:
-                                    self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__, libName)
+                                if dataType in fooInpTypes and pinStructure in fooInpStructs:
+                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                             else:
-                                if dataType in fooOutTypes:
-                                    self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__, libName)
+                                if dataType in fooOutTypes and pinStructure in fooOutStructs:
+                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
 
             # class based nodes
             for node_class in package.GetNodeClasses().values():

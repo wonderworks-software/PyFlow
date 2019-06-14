@@ -502,6 +502,14 @@ class PinStructure(IntEnum):
     Multi = 3
 
 
+def findStructFromValue(value):
+    if isinstance(value, list):
+        return PinStructure.Array
+    if isinstance(value, dict):
+        return PinStructure.Dict
+    return PinStructure.Single
+
+
 # Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes
 class PinSelectionGroup(IntEnum):
     Inputs = 0
