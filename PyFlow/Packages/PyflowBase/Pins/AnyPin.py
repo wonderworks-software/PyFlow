@@ -229,6 +229,7 @@ class AnyPin(PinBase):
     def initType(self, dataType, initializing=False):
         if self.checkFree([]):
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, initializing))
+            self.updateError([])
             self.owningNode().checkForErrors()
             return True
         return False
@@ -263,5 +264,6 @@ class AnyPin(PinBase):
         self.supportedDataTypes = otherClass.supportedDataTypes
         self._supportedDataTypes = otherClass.supportedDataTypes()
         self.typeChanged.send(self.activeDataType)
+        self.dataBeenSet.send(self)
 
         return True

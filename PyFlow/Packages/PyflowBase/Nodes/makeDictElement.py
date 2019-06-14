@@ -8,14 +8,16 @@ class makeDictElement(NodeBase):
     def __init__(self, name):
         super(makeDictElement, self).__init__(name)
         self.bCacheEnabled = False
-
-        self.key = self.createInputPin('key', 'AnyPin', structure=PinStructure.Single, constraint="1",allowedPins=_HASHABLES)
+        self.key = self.createInputPin('key', 'AnyPin',defaultValue=str("Test"), structure=PinStructure.Single, constraint="1",allowedPins=_HASHABLES)
         self.value = self.createInputPin('value', 'AnyPin', structure=PinStructure.Multi, constraint="2")
         self.value.enableOptions(PinOptions.AllowAny)
-        self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=(), structure=PinStructure.Single, constraint="2")
+        self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=dictElement(), structure=PinStructure.Single, constraint="2")
         self.outArray.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
         self.outArray.onPinConnected.connect(self.outPinConnected)
         self.outArray.onPinDisconnected.connect(self.outPinDisConnected)
+        self.key.dataBeenSet.connect(self.dataBeenSet)
+        self.value.dataBeenSet.connect(self.dataBeenSet)
+
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
@@ -37,6 +39,13 @@ class makeDictElement(NodeBase):
     @staticmethod
     def description():
         return 'Creates a Dict Element'
+
+    def dataBeenSet(self,pin=None):
+        #try:
+        self.outArray._data = dictElement(self.key.getData(), self.value.getData())
+        self.checkForErrors()
+        #except:
+        #    pass
 
     def outPinDisConnected(self,inp):
         dictNode = inp.getDictNode([])

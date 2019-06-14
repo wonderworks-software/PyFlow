@@ -24,6 +24,7 @@ class PinBase(IPin):
         self.killed = Signal()
         self.onExecute = Signal(object)
         self.containerTypeChanged = Signal()
+        self.dataBeenSet = Signal(object)
 
         self.errorOccured = Signal(object)
         self.errorCleared = Signal()
@@ -333,10 +334,11 @@ class PinBase(IPin):
             if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
                 push(self)
             self.clearError()
+            self.dataBeenSet.send(self)
         except Exception as exc:
             self.setError(exc)
             self.setDirty()
-
+        
         #self.owningNode().checkForErrors()
 
     ## Calling execution pin
