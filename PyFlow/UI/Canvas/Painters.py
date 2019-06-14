@@ -355,7 +355,7 @@ class PinPainter(object):
         halfPinSize = pin.pinSize / 2
 
         painter.setBrush(QtGui.QBrush(pin.color()))
-        keyPin = getPinFromData(pin._rawPin._keyType)
+        keyPin = findPinClassByType(pin._rawPin._keyType)
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.2))
         for row in range(3):
             x = pinCenter.x() - halfPinSize

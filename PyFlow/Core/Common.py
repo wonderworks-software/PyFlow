@@ -476,6 +476,27 @@ class dictElement(tuple):
             new = (a,b)
         return super(dictElement, self).__new__(self, new)
 
+
+class pyf_dict(dict):
+    def __init__(self,keyType,valueType, inpt={}):
+        super(pyf_dict, self).__init__(inpt)
+        self.keyType = keyType
+        self.valueType = valueType
+        
+    def __setitem__(self, key, item):
+        if type(key) == self.getClassFromType(self.keyType) and type(item) == self.getClassFromType(self.valueType):
+            super(pyf_dict, self).__setitem__(key, item)
+        else:
+            raise Exception(
+                "Valid key should be a {0}and value should be a {1}".format(self.getClassFromType(self.keyType), self.getClassFromType(self.valueType)))
+
+    def getClassFromType(self,pinType):
+        pin = findPinClassByType(pinType)
+        if pin:
+            pinClass = pin.internalDataStructure()
+            return pinClass
+        return None
+
 class PinReconnectionPolicy(IntEnum):
     DisconnectIfHasConnections = 0
     ForbidConnection = 1

@@ -8,7 +8,7 @@ class makeDictElement(NodeBase):
     def __init__(self, name):
         super(makeDictElement, self).__init__(name)
         self.bCacheEnabled = False
-        self.key = self.createInputPin('key', 'AnyPin',defaultValue=str("Test"), structure=PinStructure.Single, constraint="1",allowedPins=_HASHABLES)
+        self.key = self.createInputPin('key', 'AnyPin', structure=PinStructure.Single, constraint="1",allowedPins=_HASHABLES)
         self.value = self.createInputPin('value', 'AnyPin', structure=PinStructure.Multi, constraint="2")
         self.value.enableOptions(PinOptions.AllowAny)
         self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=dictElement(), structure=PinStructure.Single, constraint="2")
@@ -50,24 +50,32 @@ class makeDictElement(NodeBase):
     def outPinDisConnected(self,inp):
         dictNode = inp.getDictNode([])
         if dictNode:
-            elements = [i.getDictElementNode([]) for i in dictNode.arrayData.affected_by]
-            for dictItem in elements:
-                if dictItem is not None and dictItem != self:
-                    if dictItem.key in self.constraints[self.key.constraint]:
-                        self.constraints[self.key.constraint].remove(dictItem.key)
-                    if self.key in dictItem.constraints[self.key.constraint]:
-                        dictItem.constraints[self.key.constraint].remove(self.key)
+            if dictNode.KeyType in self.constraints[self.key.constraint]:
+                self.constraints[self.key.constraint].remove(dictNode.KeyType)
+            if self.key in dictNode.constraints[self.key.constraint]:    
+                dictNode.constraints[self.key.constraint].remove(self.key)
+
+            if dictNode.ValueType in self.constraints[self.value.constraint]:
+                self.constraints[self.value.constraint].remove(dictNode.ValueType)
+            if self.value in dictNode.constraints[self.value.constraint]:    
+                dictNode.constraints[self.value.constraint].remove(self.value)
+
         self.outPinConnected(self.outArray)
 
     def outPinConnected(self,inp):
         dictNode = inp.getDictNode([])
         if dictNode:
-            for i in dictNode.arrayData.affected_by:
-                dictItem = i.getDictElementNode([])
-                if dictItem:
-                    self.constraints[self.key.constraint].append(dictItem.key)
-                    dictItem.constraints[self.key.constraint].append(self.key)
-                    self.key.setType(dictItem.key.dataType)
+            if dictNode.KeyType not in self.constraints[self.key.constraint]:
+                self.constraints[self.key.constraint].append(dictNode.KeyType)
+            if self.key not in dictNode.constraints[self.key.constraint]:    
+                dictNode.constraints[self.key.constraint].append(self.key)
+            self.key.setType(dictNode.KeyType.dataType)
+
+            if dictNode.ValueType not in self.constraints[self.value.constraint]:
+                self.constraints[self.value.constraint].append(dictNode.ValueType)
+            if self.value not in dictNode.constraints[self.value.constraint]:    
+                dictNode.constraints[self.value.constraint].append(self.value)
+            self.value.setType(dictNode.ValueType.dataType)
 
     def compute(self, *args, **kwargs):
         self.outArray.setData(dictElement(self.key.getData(), self.value.getData()))
