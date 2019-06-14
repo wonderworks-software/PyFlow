@@ -218,6 +218,16 @@ def canConnectPins(src, dst):
             return False
         elif not src.supportDictElement([],src.optionEnabled(PinOptions.DictElementSuported)):#:
             return False
+        else:
+            dictElement = src.getDictElementNode([])
+            dictNode = dst.getDictNode([])
+            nodeFree = False
+            if dictNode:
+                nodeFree = dictNode.KeyType.checkFree([])
+            if dictElement:
+                if not dictElement.key.checkFree([]) and not nodeFree:
+                    if dst._data.keyType != dictElement.key.dataType:
+                        return False
 
     if src.isArray() and not dst.isArray():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
@@ -258,8 +268,8 @@ def canConnectPins(src, dst):
                     (dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny) or not dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []))]):
                 return False
             if not src.isDict() and dst.isDict():
-                if not src.supportDictElement([],src.optionEnabled(PinOptions.DictElementSuported)) and dst.supportOnlyDictElement([],dst.isDict()) :
-                    return False    
+                if not src.supportDictElement([],src.optionEnabled(PinOptions.DictElementSuported)) and dst.supportOnlyDictElement([],dst.isDict()):
+                    return False 
             return True
         else:
             if all([src.dataType in list(dst.allowedDataTypes([], dst._defaultSupportedDataTypes, selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections), defaults=True)) + ["AnyPin"],
