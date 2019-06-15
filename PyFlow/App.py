@@ -428,7 +428,12 @@ class PyFlow(QMainWindow):
         if PyFlow.appInstance is not None:
             return PyFlow.appInstance
 
-        INITIALIZE()
+        try:
+            INITIALIZE()
+        except Exception as e:
+            QMessageBox.critical(None, "Fatal error", str(e))
+            return
+
         instance = PyFlow(parent)
         instance.startMainLoop()
 

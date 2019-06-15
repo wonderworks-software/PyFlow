@@ -112,6 +112,8 @@ def INITIALIZE():
             package = getattr(mod, modname)()
             __PACKAGES[modname] = package
 
+    registeredINternalPinDataTypes = set()
+
     for name, package in __PACKAGES.items():
         packageName = package.__class__.__name__
         for node in package.GetNodeClasses().values():
@@ -119,6 +121,11 @@ def INITIALIZE():
 
         for pin in package.GetPinClasses().values():
             pin._packageName = packageName
+            if pin.IsValuePin():
+                internalType = pin.internalDataStructure()
+                if internalType in registeredINternalPinDataTypes:
+                    raise Exception("Pin with {0} internal data type alredy been registered".format(internalType))
+                registeredINternalPinDataTypes.add(internalType)
 
         uiPinsFactory = package.UIPinsFactory()
         REGISTER_UI_PIN_FACTORY(packageName, uiPinsFactory)

@@ -13,10 +13,11 @@ app.setStyle(QStyleFactory.create("plastique"))
 
 app.setStyleSheet(editableStyleSheet().getStyleSheet())
 instance = PyFlow.instance()
-app.setActiveWindow(instance)
-instance.show()
+if instance is not None:
+    app.setActiveWindow(instance)
+    instance.show()
 
-try:
-    sys.exit(app.exec_())
-except Exception as e:
-    print(e)
+    try:
+        sys.exit(app.exec_())
+    except Exception as e:
+        print(e)
