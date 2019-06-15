@@ -118,6 +118,13 @@ class AnyPin(PinBase):
         super(AnyPin, self).deserialize(jsonData)
         if "currDataType" in jsonData:
             self.setType(jsonData["currDataType"])
+
+        pinClass = findPinClassByType(self.activeDataType)
+        try:
+            self.setData(json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass()))
+        except:
+            self.setData(self.defaultValue())
+
         self.updateError([])
 
     def pinConnected(self, other):
