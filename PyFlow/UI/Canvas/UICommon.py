@@ -1,5 +1,12 @@
 from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.Settings import *
+from docutils import core
+
+
+def rst2html(rst):
+    if rst is not None:
+        return core.publish_string(rst, writer_name="html").decode("utf-8")
+    return ""
 
 
 class VisibilityPolicy(IntEnum):

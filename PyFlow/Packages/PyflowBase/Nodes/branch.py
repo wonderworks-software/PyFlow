@@ -1,4 +1,6 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.Common import *
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 
 
 class branch(NodeBase):
@@ -10,8 +12,18 @@ class branch(NodeBase):
         self.condition = self.createInputPin("Condition", 'BoolPin')
 
     @staticmethod
+    def description():
+        return """**If else** block."""
+
+    @staticmethod
     def pinTypeHints():
-        return {'inputs': ['ExecPin', 'BoolPin'], 'outputs': ['BoolPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('ExecPin')
+        helper.addInputDataType('BoolPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

@@ -118,6 +118,13 @@ class AnyPin(PinBase):
         super(AnyPin, self).deserialize(jsonData)
         if "currDataType" in jsonData:
             self.setType(jsonData["currDataType"])
+
+        pinClass = findPinClassByType(self.activeDataType)
+        try:
+            self.setData(json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass()))
+        except:
+            self.setData(self.defaultValue())
+
         self.updateError([])
 
     def pinConnected(self, other):
@@ -149,7 +156,7 @@ class AnyPin(PinBase):
             if any([dataType in pin.allowedDataTypes([], pin._supportedDataTypes),
                     dataType == "AnyPin",
                     (pin.checkFree([], False) and dataType in pin.allowedDataTypes([], pin._defaultSupportedDataTypes, defaults=True))]):
-                a = pin.setType(dataType)
+                a = pin.setType(dataType)               
                 if a:
                     if other:
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
@@ -158,6 +165,7 @@ class AnyPin(PinBase):
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
                             pin._supportedDataTypes = pin._defaultSupportedDataTypes
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes
+
 
     def checkFree(self, checked=[], selfChek=True):
         # if self.constraint is None:
@@ -229,7 +237,9 @@ class AnyPin(PinBase):
     def initType(self, dataType, initializing=False):
         if self.checkFree([]):
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, initializing))
+            self.updateError([])
             self.owningNode().checkForErrors()
+            self.dataBeenSet.send(self)
             return True
         return False
 
@@ -263,5 +273,6 @@ class AnyPin(PinBase):
         self.supportedDataTypes = otherClass.supportedDataTypes
         self._supportedDataTypes = otherClass.supportedDataTypes()
         self.typeChanged.send(self.activeDataType)
+        self.dataBeenSet.send(self)
 
         return True

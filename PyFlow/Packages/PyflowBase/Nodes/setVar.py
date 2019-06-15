@@ -94,10 +94,6 @@ class setVar(NodeBase):
         return default
 
     @staticmethod
-    def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
-
-    @staticmethod
     def category():
         return PACKAGE_NAME
 

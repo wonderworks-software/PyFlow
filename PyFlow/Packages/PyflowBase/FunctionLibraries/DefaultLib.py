@@ -5,9 +5,9 @@ from PyFlow.Core import(
     FunctionLibraryBase,
     IMPLEMENT_NODE
 )
+from PyFlow import getHashableDataTypes
 from PyFlow.Core.Common import *
 from nine import IS_PYTHON2
-
 
 class DefaultLib(FunctionLibraryBase):
     '''
@@ -17,9 +17,9 @@ class DefaultLib(FunctionLibraryBase):
         super(DefaultLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny, "constraint": "1", "structConstraint": "1"}),
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny| PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}),
                     meta={'Category': 'GenericTypes', 'Keywords': ['id'], "CacheEnabled": False})
-    def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny, "constraint": "1", "structConstraint": "1"}), deepCopy=("BoolPin", False)):
+    def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny| PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}), deepCopy=("BoolPin", False)):
         '''Shallow or deep copy of an object.'''
         copyFunction = deepcopy if deepCopy else copy
         return copyFunction(obj)
@@ -71,7 +71,9 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "3"}), meta={'Category': 'DefaultLib', 'Keywords': []})
-    def select(A=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported}), B=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported}), PickA=('BoolPin', False),
+    def select(A=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
+               B=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
+               PickA=('BoolPin', False),
                aPicked=("Reference", ("BoolPin", False))):
         '''
         If bPickA is true, A is returned, otherwise B.
@@ -81,13 +83,16 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ""), meta={'Category': 'Utils', 'Keywords': []})
-    def objectType(obj=("AnyPin", None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny})):
+    def objectType(obj=("AnyPin", None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported})):
         '''Returns <u>type(obj).__name__</u>'''
-        return type(obj).__name__
+        t = type(obj).__name__
+        if t == "dictElement":
+            t += ",key:{0},value:{1}".format(type(obj[1]).__name__, type(obj[0]).__name__)
+        return t
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['in'], "CacheEnabled": False})
-    def contains(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}), element=("AnyPin", None, {"constraint": "1"})):
+    def contains(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}), element=("AnyPin", None, {"constraint": "1"})):
         """Python's <u>in</u> keyword. <u>element in obj</u> will be executed"""
         try:
             return element in obj
@@ -98,7 +103,7 @@ class DefaultLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=("AnyPin", None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
                     meta={'Category': 'DefaultLib', 'Keywords': ['get'], "CacheEnabled": False})
     def getItem(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
-                element=("AnyPin", None),
+                element=("AnyPin", None, {"supportedDataTypes": getHashableDataTypes() }),
                 result=("Reference", ("BoolPin", False))):
         """Python's <u>[]</u> operator. <u>obj[element]</u> will be executed."""
         try:

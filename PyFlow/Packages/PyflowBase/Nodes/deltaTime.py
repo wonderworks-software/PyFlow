@@ -1,5 +1,6 @@
 from PyFlow.Core import NodeBase
-from PyFlow.Core.Common import push
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.Core.Common import *
 
 
 class deltaTime(NodeBase):
@@ -10,7 +11,10 @@ class deltaTime(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [], 'outputs': ['FloatPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addOutputDataType('FloatPin')
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

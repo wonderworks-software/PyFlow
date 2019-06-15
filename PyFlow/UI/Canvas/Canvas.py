@@ -482,11 +482,13 @@ class Canvas(QGraphicsView):
         """
         return list(self.nodes.values())
 
-    def showNodeBox(self, dataType=None, pinType=None):
+    def showNodeBox(self, dataType=None, pinDirection=None, pinStructure=PinStructure.Single):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
-        self.node_box.treeWidget.refresh(dataType, '', pinType)
+        self.node_box.treeWidget.refresh(dataType, '', pinDirection, pinStructure)
+        self.node_box.lineEdit.blockSignals(True)
         self.node_box.lineEdit.setText("")
+        self.node_box.lineEdit.blockSignals(False)
         if dataType is None:
             self.node_box.lineEdit.setFocus()
 
@@ -756,10 +758,10 @@ class Canvas(QGraphicsView):
             node['name'] = newName
             node['uuid'] = str(uuid.uuid4())
             for inp in node['inputs']:
-                inp['fullName'] = '{0}.{1}'.format(node['name'], inp['name'])
+                inp['fullName'] = '{0}_{1}'.format(node['name'], inp['name'])
                 inp['uuid'] = str(uuid.uuid4())
             for out in node['outputs']:
-                out['fullName'] = '{0}.{1}'.format(node['name'], out['name'])
+                out['fullName'] = '{0}_{1}'.format(node['name'], out['name'])
                 out['uuid'] = str(uuid.uuid4())
 
         # update connections
@@ -770,7 +772,7 @@ class Canvas(QGraphicsView):
                     oldNodeName, pinName = linkedToFullName.rsplit('_', 1)
                     if oldNodeName in renameData:
                         newNodeName = renameData[oldNodeName]
-                        newPinFullName = "{0}.{1}".format(newNodeName, pinName)
+                        newPinFullName = "{0}_{1}".format(newNodeName, pinName)
                         newLinkedToNames.append(newPinFullName)
                 out['linkedTo'] = newLinkedToNames
 
@@ -1444,9 +1446,8 @@ class Canvas(QGraphicsView):
                         self.showNodeBox()
         elif event.button() == QtCore.Qt.LeftButton and self.releasedPin is None:
             if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
-                # node box tree pops up
-                # with nodes taking supported data types of pressed Pin as input
-                self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction)
+                # suggest nodes that can be connected to pressed pin
+                self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction, self.pressed_item.structureType)
         self.manipulationMode = CanvasManipulationMode.NONE
         if not self.resizing:
             p_itm = self.pressedPin

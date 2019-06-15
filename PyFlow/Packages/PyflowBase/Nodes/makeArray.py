@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 
 
@@ -17,7 +18,16 @@ class makeArray(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['AnyPin'], 'outputs': ['AnyPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('AnyPin')
+        helper.addInputDataType('BoolPin')
+        helper.addOutputDataType('AnyPin')
+        helper.addOutputDataType('BoolPin')
+        helper.addInputStruct(PinStructure.Array)
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Array)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

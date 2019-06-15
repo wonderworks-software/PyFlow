@@ -7,16 +7,12 @@ except:
 
 from Qt import QtCore
 from Qt import QtGui
-from Qt.QtWidgets import QAbstractItemView
-from Qt.QtWidgets import QFrame
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QTreeWidget, QTreeWidgetItem
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QVBoxLayout
+from Qt.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
 
 from PyFlow.Core.Common import *
+from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.NodeBase import NodeBase
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
@@ -28,24 +24,26 @@ class NodeBoxLineEdit(QLineEdit):
         self.setParent(parent)
         self._events = events
         self.parent = parent
-        self.setLocale(QtCore.QLocale(QtCore.QLocale.English,
-                                      QtCore.QLocale.UnitedStates))
+        self.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.setObjectName("le_nodes")
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
-                " border-style: outset;"+\
-                " border-width: 1px;"
+                "border-style: outset;" +\
+                "border-width: 1px;"
         self.setStyleSheet(style)
         self.setPlaceholderText("enter node name..")
 
 
 class NodeBoxTreeWidget(QTreeWidget):
-    def __init__(self, parent, useDragAndDrop=True):
+    showInfo = QtCore.Signal(object)
+    hideInfo = QtCore.Signal()
+
+    def __init__(self, parent, bNodeInfoEnabled=True, useDragAndDrop=True):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
-                "border-style: outset;"+\
-                " border-width: 1px;"
+                "border-style: outset;" +\
+                "border-width: 1px;"
         self.setStyleSheet(style)
         self.setParent(parent)
         self.setFrameShape(QFrame.NoFrame)
@@ -61,6 +59,16 @@ class NodeBoxTreeWidget(QTreeWidget):
             self.setDragDropMode(QAbstractItemView.DragOnly)
         self.setAnimated(True)
         self.categoryPaths = {}
+        self.bNodeInfoEnabled = bNodeInfoEnabled
+        self.currentItemChanged.connect(self.onCurrentItemChanged)
+
+    def onCurrentItemChanged(self, current, previous):
+        if current is not None:
+            if self.bNodeInfoEnabled:
+                if not current.bCategory:
+                    self.showInfo.emit(current.toolTip(0))
+                else:
+                    self.hideInfo.emit()
 
     def _isCategoryExists(self, category_name, categories):
         bFound = False
@@ -101,13 +109,11 @@ class NodeBoxTreeWidget(QTreeWidget):
                 parentCategoryPath = categoryPath
                 categoryPath += '|{}'.format(folderName)
                 if categoryPath not in self.categoryPaths:
-                    childCategoryItem = QTreeWidgetItem(
-                        self.categoryPaths[parentCategoryPath])
+                    childCategoryItem = QTreeWidgetItem(self.categoryPaths[parentCategoryPath])
                     childCategoryItem.setFlags(QtCore.Qt.ItemIsEnabled)
                     childCategoryItem.bCategory = True
                     childCategoryItem.setText(0, folderName)
-                    childCategoryItem.setBackground(
-                        0, editableStyleSheet().BgColorBright.lighter(150))
+                    childCategoryItem.setBackground(0, editableStyleSheet().BgColorBright.lighter(150))
                     self.categoryPaths[categoryPath] = childCategoryItem
         # create node under constructed folder
         nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
@@ -117,7 +123,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         if doc:
             nodeItem.setToolTip(0, doc)
 
-    def refresh(self, dataType=None, pattern='', pinType=None):
+    def refresh(self, dataType=None, pattern='', pinDirection=None, pinStructure=PinStructure.Single):
         self.clear()
         self.categoryPaths = {}
 
@@ -129,72 +135,69 @@ class NodeBoxTreeWidget(QTreeWidget):
                     foo = foo
                     libName = foo.__annotations__["lib"]
                     fooArgNames = getargspec(foo).args
-                    fooInpTypes = []
-                    fooOutTypes = []
+                    fooInpTypes = set()
+                    fooOutTypes = set()
+                    fooInpStructs = set()
+                    fooOutStructs = set()
                     if foo.__annotations__['nodeType'] == NodeTypes.Callable:
-                        fooInpTypes.append('ExecPin')
-                        fooOutTypes.append('ExecPin')
+                        fooInpTypes.add('ExecPin')
+                        fooOutTypes.add('ExecPin')
+                        fooInpStructs.add(PinStructure.Single)
+                        fooOutStructs.add(PinStructure.Single)
 
                     # consider return type if not None
                     if foo.__annotations__['return'] is not None:
-                        fooOutTypes.append(foo.__annotations__['return'][0])
+                        fooOutTypes.add(foo.__annotations__['return'][0])
+                        fooOutStructs.add(findStructFromValue(foo.__annotations__['return'][1]))
 
                     for index in range(len(fooArgNames)):
                         dType = foo.__annotations__[fooArgNames[index]]
                         # if tuple - this means ref pin type (output) + default value
                         # eg: (3, True) - bool with True default val
-                        if isinstance(dType, tuple):
-                            fooOutTypes.append(dType[0])
-                        else:
-                            fooInpTypes.append(dType)
+                        fooInpTypes.add(dType[0])
+                        fooInpStructs.add(findStructFromValue(dType[1]))
 
-                    nodeCategoryPath = "{0}|{1}".format(
-                        package_name, foo.__annotations__['meta']['Category'])
+                    nodeCategoryPath = "{0}|{1}".format(package_name, foo.__annotations__['meta']['Category'])
                     keywords = foo.__annotations__['meta']['Keywords']
                     checkString = name + nodeCategoryPath + ''.join(keywords)
                     if pattern.lower() in checkString.lower():
                         # create all nodes items if clicked on canvas
                         if dataType is None:
-                            self.insertNode(nodeCategoryPath,
-                                            name, foo.__doc__, libName)
+                            self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                         else:
-                            if pinType == PinDirection.Output:
-                                if dataType in fooInpTypes:
-                                    self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__, libName)
+                            if pinDirection == PinDirection.Output:
+                                if dataType in fooInpTypes and pinStructure in fooInpStructs:
+                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                             else:
-                                if dataType in fooOutTypes:
-                                    self.insertNode(
-                                        nodeCategoryPath, name, foo.__doc__, libName)
+                                if dataType in fooOutTypes and pinStructure in fooOutStructs:
+                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
 
             # class based nodes
             for node_class in package.GetNodeClasses().values():
                 if node_class.__name__ in ('setVar', 'getVar'):
                     continue
 
-                nodeCategoryPath = "{0}|{1}".format(
-                    package_name, node_class.category())
+                nodeCategoryPath = "{0}|{1}".format(package_name, node_class.category())
 
-                checkString = node_class.__name__ + \
-                    nodeCategoryPath + ''.join(node_class.keywords())
+                checkString = node_class.__name__ + nodeCategoryPath + ''.join(node_class.keywords())
                 if pattern.lower() not in checkString.lower():
                     continue
                 if dataType is None:
-                    self.insertNode(
-                        nodeCategoryPath, node_class.__name__, node_class.description())
+                    self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
                 else:
                     # if pressed pin is output pin
                     # filter by nodes input types
-                    if pinType == PinDirection.Output:
-                        if dataType in node_class.pinTypeHints()['inputs']:
-                            self.insertNode(
-                                nodeCategoryPath, node_class.__name__, node_class.description())
+                    hints = node_class.pinTypeHints()
+                    if isinstance(hints, dict):
+                        print(node_class)
+                    if pinDirection == PinDirection.Output:
+                        if dataType in hints.inputTypes and pinStructure in hints.inputStructs:
+                            self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
                     else:
                         # if pressed pin is input pin
                         # filter by nodes output types
-                        if dataType in node_class.pinTypeHints()['outputs']:
-                            self.insertNode(
-                                nodeCategoryPath, node_class.__name__, node_class.description())
+                        if dataType in hints.outputTypes and pinStructure in hints.outputStructs:
+                            self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
             # expand all categories
             if dataType is not None:
                 for categoryItem in self.categoryPaths.values():
@@ -249,26 +252,101 @@ class NodeBoxTreeWidget(QTreeWidget):
                     0, editableStyleSheet().BgColorBright.lighter(150))
         super(NodeBoxTreeWidget, self).update()
 
-class NodesBox(QWidget):
+
+class NodeBoxSizeGrip(QSizeGrip):
+    """docstring for NodeBoxSizeGrip."""
+    def __init__(self, parent=None):
+        super(NodeBoxSizeGrip, self).__init__(parent)
+
+    def sizeHint(self):
+        return QtCore.QSize(13, 13)
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter()
+        painter.begin(self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        rect = event.rect()
+        painter.setBrush(QtGui.QColor(80, 80, 80, 255))
+        painter.drawRoundedRect(rect, 3, 3)
+        painter.drawPixmap(rect, QtGui.QPixmap(":resize_diagonal.png"))
+        painter.end()
+
+
+class NodesBox(QFrame):
     """doc string for NodesBox"""
 
-    def __init__(self, parent):
+    def __init__(self, parent, bNodeInfoEnabled=True, bGripsEnabled=True):
         super(NodesBox, self).__init__(parent)
-        self.verticalLayout = QVBoxLayout(self)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        self.bDragging = False
+        self.lastCursorPos = QtCore.QPoint(0, 0)
+        self.offset = QtCore.QPoint(0, 0)
+        self.setMouseTracking(True)
+        self.mainLayout = QVBoxLayout(self)
+        self.mainLayout.setObjectName("mainLayout")
+        self.mainLayout.setSpacing(1)
+        self.mainLayout.setContentsMargins(1, 1, 1, 1)
+        self.splitter = QSplitter()
+        self.splitter.setObjectName("nodeBoxSplitter")
+        self.mainLayout.addWidget(self.splitter)
+        if bGripsEnabled:
+            self.sizeGrip = NodeBoxSizeGrip(self)
+            self.sizeGrip.setObjectName("nodeBoxSizeGrip")
+            self.sizeGripLayout = QHBoxLayout()
+            self.sizeGripLayout.setObjectName("sizeGripLayout")
+            self.sizeGripLayout.setSpacing(1)
+            self.sizeGripLayout.setContentsMargins(1, 1, 1, 1)
+            spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+            self.sizeGripLayout.addItem(spacerItem)
+            self.sizeGripLayout.addWidget(self.sizeGrip)
+            self.mainLayout.addLayout(self.sizeGripLayout)
+
+        self.nodeTreeWidget = QWidget()
+        self.nodeTreeWidget.setObjectName("nodeTreeWidget")
+        self.nodeTreeWidget.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout = QVBoxLayout(self.nodeTreeWidget)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.verticalLayout.setContentsMargins(4, 4, 4, 4)
+        self.verticalLayout.setSpacing(1)
+        self.verticalLayout.setContentsMargins(1, 1, 1, 1)
+        self.splitter.addWidget(self.nodeTreeWidget)
         self.lineEdit = NodeBoxLineEdit(self)
         self.lineEdit.setObjectName("lineEdit")
         self.verticalLayout.addWidget(self.lineEdit)
-        self.treeWidget = NodeBoxTreeWidget(self)
-        self.treeWidget.setObjectName("treeWidget")
+        self.lineEdit.textChanged.connect(self.leTextChanged)
+        self.nodeInfoWidget = QTextBrowser()
+        self.nodeInfoWidget.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.nodeInfoWidget.setObjectName("nodeBoxInfoBrowser")
+        self.nodeInfoWidget.setOpenExternalLinks(True)
+        self.splitter.addWidget(self.nodeInfoWidget)
+        self.splitter.addWidget(self.nodeInfoWidget)
+        self.nodeInfoWidget.setVisible(bNodeInfoEnabled)
+
+        self.treeWidget = NodeBoxTreeWidget(self, bNodeInfoEnabled, False)
+        self.treeWidget.setObjectName("nodeBoxTreeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)
-        self.lineEdit.textChanged.connect(self.leTextChanged)
         self.treeWidget.refresh()
 
+        self.treeWidget.showInfo.connect(self.onShowInfo)
+        self.treeWidget.hideInfo.connect(self.onHideInfo)
+
+    def hideEvent(self, event):
+        self.bDragging = False
+
+    def showEvent(self, event):
+        self.nodeInfoWidget.setHtml("")
+        self.bDragging = False
+
+    def onShowInfo(self, restructuredText):
+        self.nodeInfoWidget.show()
+        self.nodeInfoWidget.setHtml(rst2html(restructuredText))
+
+    def onHideInfo(self):
+        self.nodeInfoWidget.setHtml("")
+
     def sizeHint(self):
-        return QtCore.QSize(400, 250)
+        return QtCore.QSize(500, 300)
 
     def expandCategory(self):
         for i in self.treeWidget.categoryPaths:
@@ -282,3 +360,21 @@ class NodesBox(QWidget):
             return
         self.treeWidget.refresh(None, self.lineEdit.text())
         self.expandCategory()
+
+    def mousePressEvent(self, event):
+        super(NodesBox, self).mousePressEvent(event)
+        if event.pos().y() >= self.geometry().height() - 30:
+            self.bDragging = True
+            self.lastCursorPos = QtGui.QCursor.pos()
+
+    def mouseMoveEvent(self, event):
+        super(NodesBox, self).mouseMoveEvent(event)
+        if self.bDragging:
+            delta = QtGui.QCursor.pos() - self.lastCursorPos
+            currentPos = self.pos()
+            self.move(currentPos + delta)
+            self.lastCursorPos = QtGui.QCursor.pos()
+
+    def mouseReleaseEvent(self, event):
+        super(NodesBox, self).mouseReleaseEvent(event)
+        self.bDragging = False

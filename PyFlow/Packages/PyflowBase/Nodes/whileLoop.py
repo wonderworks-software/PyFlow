@@ -1,10 +1,12 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.Common import *
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 
 
 class whileLoop(NodeBase):
     def __init__(self, name):
         super(whileLoop, self).__init__(name)
-        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.begin)
+        self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.begin)
         self.bCondition = self.createInputPin('Condition', 'BoolPin')
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
         self.completed = self.createOutputPin('Completed', 'ExecPin')
@@ -16,7 +18,12 @@ class whileLoop(NodeBase):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['BoolPin', 'ExecPin'], 'outputs': ['ExecPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('BoolPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

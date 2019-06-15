@@ -192,9 +192,9 @@ class UIPinBase(QGraphicsWidget):
             labelHeight = self.owningNode().labelHeight
             labelHeight += self.owningNode().nodeLayout.spacing()
             if self.direction == PinDirection.Input:
-                result = self.mapFromParent(QtCore.QPointF(0, labelHeight))
+                result = self.mapFromItem(self.owningNode(), QtCore.QPointF(0, labelHeight))
             if self.direction == PinDirection.Output:
-                result = self.mapFromParent(QtCore.QPointF(self.owningNode().sizeHint(None, None).width(), labelHeight))
+                result = self.mapFromItem(self.owningNode(), QtCore.QPointF(self.owningNode().sizeHint(None, None).width(), labelHeight))
         return result
 
     def onContainerTypeChanged(self, *args, **kwargs):
@@ -258,6 +258,10 @@ class UIPinBase(QGraphicsWidget):
 
     def syncDynamic(self):
         self.setMenuItemEnabled("Remove", self._rawPin.optionEnabled(PinOptions.Dynamic))
+
+    @property
+    def structureType(self):
+        return self._rawPin.structureType
 
     @property
     def dirty(self):
@@ -419,9 +423,14 @@ class UIPinBase(QGraphicsWidget):
     def isArray(self):
         return self._rawPin.isArray()
 
+    def isDict(self):
+        return self._rawPin.isDict()
+
     def paint(self, painter, option, widget):
         if self.isArray():
             PinPainter.asArrayPin(self, painter, option, widget)
+        elif self.isDict():
+            PinPainter.asListPin(self,painter,option,widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)
 
@@ -438,7 +447,8 @@ class UIPinBase(QGraphicsWidget):
         super(UIPinBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        hoverMessage = "Data: {0}\r\nDirty: {1}".format(str(self._rawPin.currentData()), self._rawPin.dirty)
+        supportedTypes = self._rawPin.allowedDataTypes([], self._rawPin._supportedDataTypes)
+        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes)
         self.setToolTip(hoverMessage)
         event.accept()
 

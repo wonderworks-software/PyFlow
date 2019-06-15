@@ -89,10 +89,6 @@ class compound(NodeBase):
             self.rawGraph.name = self.getName()
 
     @staticmethod
-    def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
-
-    @staticmethod
     def category():
         return 'Common'
 
@@ -128,10 +124,8 @@ class compound(NodeBase):
                                                group=outPin.owningNode().name)
         if subgraphInputPin.isAny():
             subgraphInputPin.supportedDataTypes = outPin.supportedDataTypes
-            #subgraphInputPin.singleInit = True
-            #subgraphInputPin.setType(outPin.dataType)
-            subgraphInputPin.enableOptions(PinOptions.AllowAny)
-            
+            subgraphInputPin.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
+
         outPin.owningNode().constraints[outPin.constraint].append(subgraphInputPin)
         self.constraints[outPin.constraint].append(outPin)
 
@@ -166,8 +160,7 @@ class compound(NodeBase):
                                                  group=inPin.owningNode().name)
         if subgraphOutputPin.isAny():
             subgraphOutputPin.supportedDataTypes = inPin.supportedDataTypes
-            #subgraphOutputPin.setType(inPin.dataType)
-            subgraphOutputPin.enableOptions(PinOptions.AllowAny)
+            subgraphOutputPin.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
 
         if subgraphOutputPin.isExec():
             inPin.onExecute.connect(subgraphOutputPin.call)
@@ -177,7 +170,6 @@ class compound(NodeBase):
 
         inPin.owningNode().structConstraints[inPin.structConstraint].append(subgraphOutputPin)
         self.structConstraints[inPin.structConstraint].append(inPin)
-            
 
         self.__outputsMap[subgraphOutputPin] = inPin
         pinAffects(inPin, subgraphOutputPin)

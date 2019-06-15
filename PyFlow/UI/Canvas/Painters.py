@@ -4,6 +4,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QStyle
 
+from PyFlow import getPinFromData
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.Common import *
@@ -289,7 +290,7 @@ class PinPainter(object):
                                  QtCore.QPointF(2 + pin.pinSize, pin.pinSize / 2.0),
                                  QtCore.QPointF(2 + pin.pinSize / 2.0, pin.pinSize),
                                  QtCore.QPointF(2, pin.pinSize)]).translated(xOffset, 1)
-        painter.drawPolygon(arrow.translated(0, halfPinSize / 2))
+        painter.drawPolygon(arrow)
         if pin.hovered:
             painter.setPen(QtCore.Qt.NoPen)
             painter.setBrush(QtGui.QColor(128, 128, 128, 30))
@@ -302,8 +303,7 @@ class PinPainter(object):
         # painter.setBrush(QtCore.Qt.NoBrush)
         if not pin.expanded:
             arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
-                                     QtCore.QPointF(
-                                         pin.pinSize, pin.pinSize / 2.0),
+                                     QtCore.QPointF(pin.pinSize, pin.pinSize / 2.0),
                                      QtCore.QPointF(0, pin.pinSize)])
         else:
             arrow = QtGui.QPolygonF([QtCore.QPointF(pin.pinSize / 2, pin.pinSize),
@@ -349,17 +349,24 @@ class PinPainter(object):
     @staticmethod
     def asListPin(pin, painter, option, widget):
         lod = pin.owningNode().canvasRef().getLodValueFromCurrentScale(3)
-        cellW = pin.pinSize
+        cellW = pin.pinSize / 3
         cellH = pin.pinSize / 3
         pinCenter = pin.pinCenter()
         halfPinSize = pin.pinSize / 2
 
         painter.setBrush(QtGui.QBrush(pin.color()))
+        keyPin = findPinClassByType(pin._rawPin._keyType)
         painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.2))
         for row in range(3):
             x = pinCenter.x() - halfPinSize
-            y = row * cellH + halfPinSize + pin.pinCircleDrawOffset.y()
+            y = row * cellH + (halfPinSize / 2) + pin.pinCircleDrawOffset.y()
+            # TODO: use different colors for key and value
+            painter.setBrush(QtGui.QBrush(pin.color()))
+            painter.drawRect(x + cellW, y, cellW * 2, cellH)
+            if keyPin:
+                painter.setBrush(QtGui.QBrush(QtGui.QColor(*keyPin.color())))
             painter.drawRect(x, y, cellW, cellH)
+            
 
         if lod < 3:
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())

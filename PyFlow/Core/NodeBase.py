@@ -18,6 +18,32 @@ from PyFlow.Core.Interfaces import INode
 from PyFlow import CreateRawPin
 
 
+class NodePinsSuggestionsHelper(object):
+    """Describes node's pins types and structs for inputs and outputs
+    separately. Used by nodebox to suggest good nodes.
+    """
+    def __init__(self):
+        super(NodePinsSuggestionsHelper, self).__init__()
+        self.template = {'types': {'inputs': [], 'outputs': []},
+                         'structs': {'inputs': [], 'outputs': []}}
+        self.inputTypes = set()
+        self.outputTypes = set()
+        self.inputStructs = set()
+        self.outputStructs = set()
+
+    def addInputDataType(self, dataType):
+        self.inputTypes.add(dataType)
+
+    def addOutputDataType(self, dataType):
+        self.outputTypes.add(dataType)
+
+    def addInputStruct(self, struct):
+        self.inputStructs.add(struct)
+
+    def addOutputStruct(self, struct):
+        self.outputStructs.add(struct)
+
+
 class NodeBase(INode):
     _packageName = ""
 
@@ -75,7 +101,7 @@ class NodeBase(INode):
             if pin._lastError is not None:
                 failedPins[pin.name] = pin._lastError
         if len(failedPins):
-            self._lastError = "Error on Pins:%s"%str(failedPins)
+            self._lastError = "Error on Pins:%s" % str(failedPins)
         else:
             self.clearError()
         wrapper = self.getWrapper()
@@ -234,7 +260,7 @@ class NodeBase(INode):
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
+        return NodePinsSuggestionsHelper()
 
     @staticmethod
     def description():
@@ -341,6 +367,8 @@ class NodeBase(INode):
 
         if structure == PinStructure.Array:
             p.initAsArray(True)
+        elif structure == PinStructure.Dict:
+            p.initAsDict(True)         
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
@@ -374,6 +402,8 @@ class NodeBase(INode):
 
         if structure == PinStructure.Array:
             p.initAsArray(True)
+        elif structure == PinStructure.Dict:
+            p.initAsDict(True)               
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
@@ -491,14 +521,16 @@ class NodeBase(INode):
             if "wrapper" in jsonTemplate:
                 self.__wrapperJsonData = jsonTemplate["wrapper"]
 
-            
-
         if self.isCallable():
             self.bCallable = True
 
+        # make no sense cache nodes without inputs
+        if len(self.inputs) == 0:
+            self.bCacheEnabled = False
+
         self.autoAffectPins()
         self.checkForErrors()
-        
+
     @staticmethod
     # Constructs a node from given annotated function
     def initializeFromFunction(foo):

@@ -1,4 +1,5 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 from PyFlow import findPinClassByType, getAllPinClasses
 from PyFlow import CreateRawPin
@@ -8,21 +9,26 @@ from multipledispatch import dispatch
 class constant(NodeBase):
     def __init__(self, name):
         super(constant, self).__init__(name)
-        self.input = self.createInputPin("in", 'AnyPin',defaultValue=0.0, structure=PinStructure.Multi, constraint="1",structConstraint="1")
-        self.output = self.createOutputPin("out", 'AnyPin',defaultValue=0.0, structure=PinStructure.Multi, constraint="1",structConstraint="1")
+        self.input = self.createInputPin("in", 'AnyPin', defaultValue=0.0, structure=PinStructure.Multi, constraint="1", structConstraint="1")
+        self.output = self.createOutputPin("out", 'AnyPin', defaultValue=0.0, structure=PinStructure.Multi, constraint="1", structConstraint="1")
         pinAffects(self.input, self.output)
         self.input.disableOptions(PinOptions.ChangeTypeOnConnection)
-        self.output.disableOptions(PinOptions.ChangeTypeOnConnection)          
+        self.output.disableOptions(PinOptions.ChangeTypeOnConnection)
         self.input.call = self.output.call
         self.pinTypes = []
         for pinClass in getAllPinClasses():
             if pinClass.IsValuePin() and pinClass.__name__ != "AnyPin":
-                self.pinTypes.append(pinClass.__name__ )
+                self.pinTypes.append(pinClass.__name__)
         self.bCacheEnabled = False
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('AnyPin')
+        helper.addOutputDataType('AnyPin')
+        helper.addInputStruct(PinStructure.Multi)
+        helper.addOutputStruct(PinStructure.Multi)
+        return helper
 
     @staticmethod
     def category():

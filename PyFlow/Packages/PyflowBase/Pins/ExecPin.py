@@ -33,7 +33,7 @@ class ExecPin(PinBase):
     @staticmethod
     def pinDataTypeHint():
         return 'ExecPin', None
-        
+
     @staticmethod
     def internalDataStructure():
         return None

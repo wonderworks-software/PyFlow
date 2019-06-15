@@ -57,12 +57,12 @@ class ArrayLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', [], {'constraint': '1',"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
                     meta={'Category': 'Array', 'Keywords': []})
-    def clearArray(ls=('AnyPin', [], {'constraint': '1',"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny})):
+    def clearArray(ls=('AnyPin', [], {'constraint': '1', "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny})):
         return clearList(ls)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Array', 'Keywords': ['in']})
-    def arrayElementIndex(ls=('AnyPin', [], {'constraint': '1',"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
+    def arrayElementIndex(ls=('AnyPin', [], {'constraint': '1', "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
                           element=("AnyPin", None, {'constraint': '1'}),
                           result=("Reference", ("BoolPin", False))):
         if element in ls:
@@ -74,7 +74,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Array', 'Keywords': ['in']})
-    def arrayElementCount(ls=('AnyPin', [], {'constraint': '1',"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
+    def arrayElementCount(ls=('AnyPin', [], {'constraint': '1', "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
                           element=("AnyPin", None, {'constraint': '1'}),
                           result=("Reference", ("BoolPin", False))):
         if element in ls:
@@ -85,7 +85,7 @@ class ArrayLib(FunctionLibraryBase):
             return 0
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin',None, {'constraint': '1'}), meta={'Category': 'Array', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {'constraint': '1'}), meta={'Category': 'Array', 'Keywords': []})
     def arraySum(Value=('AnyPin', [], {'constraint': '1'})):
         '''
         Sum of list of floats

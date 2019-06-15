@@ -37,7 +37,7 @@ class TypeWidget(QWidget):
     def paintEvent(self, event):
         painter = QtGui.QPainter()
         painter.begin(self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing);
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
         painter.setBrush(QtGui.QColor.fromRgb(*self.color))
         pen = QtGui.QPen()
         pen.setColor(QtGui.QColor(0, 0, 0, 0))

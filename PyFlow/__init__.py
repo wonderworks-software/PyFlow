@@ -4,7 +4,9 @@
 
 import importlib
 import pkgutil
-
+import collections
+from copy import copy
+import os
 from PyFlow.Packages import *
 
 
@@ -16,11 +18,13 @@ __all__ = [
     "getPinDefaultValueByType",
     "findPinClassByType",
     "getRawNodeInstance",
-    "getAllPinClasses"
+    "getAllPinClasses",
+    "getHashableDataTypes"
 ]
 
 
 __PACKAGES = {}
+__HASHABLE_TYPES = []
 
 
 def GET_PACKAGES():
@@ -52,6 +56,23 @@ def getPinDefaultValueByType(dataType):
     if pin:
         return pin.pinDataTypeHint()[1]
     return None
+
+
+def getHashableDataTypes():
+    if len(__HASHABLE_TYPES) == 0:
+        for pin in getAllPinClasses():
+            t = pin.internalDataStructure()
+            if t is not None:
+                if isinstance(pin.internalDataStructure()(), collections.Hashable):
+                    __HASHABLE_TYPES.append(pin.__name__)
+    return copy(__HASHABLE_TYPES)
+
+
+def getPinFromData(data):
+    for pin in [pin for pin in getAllPinClasses() if pin.IsValuePin()]:
+        pType = pin.internalDataStructure()
+        if data == pType:
+            return pin
 
 
 def CreateRawPin(name, owningNode, dataType, direction, **kwds):
@@ -86,11 +107,25 @@ def INITIALIZE():
     from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
     from PyFlow.UI.Canvas.UIPinBase import REGISTER_UI_PIN_FACTORY
 
-    for importer, modname, ispkg in pkgutil.iter_modules(Packages.__path__):
+    packagePaths = Packages.__path__
+
+    # check for additional package locations
+    if "PYFLOW_PACKAGES_PATHS" in os.environ:
+        delim = ';'
+        pathsString = os.environ["PYFLOW_PACKAGES_PATHS"]
+        # remove delimeters from right
+        pathsString = pathsString.rstrip(delim)
+        for packagesRoot in pathsString.split(delim):
+            if os.path.exists(packagesRoot):
+                packagePaths.append(packagesRoot)
+
+    for importer, modname, ispkg in pkgutil.iter_modules(packagePaths):
         if ispkg:
             mod = importer.find_module(modname).load_module(modname)
             package = getattr(mod, modname)()
             __PACKAGES[modname] = package
+
+    registeredInternalPinDataTypes = set()
 
     for name, package in __PACKAGES.items():
         packageName = package.__class__.__name__
@@ -99,6 +134,11 @@ def INITIALIZE():
 
         for pin in package.GetPinClasses().values():
             pin._packageName = packageName
+            if pin.IsValuePin():
+                internalType = pin.internalDataStructure()
+                if internalType in registeredInternalPinDataTypes:
+                    raise Exception("Pin with {0} internal data type alredy been registered".format(internalType))
+                registeredInternalPinDataTypes.add(internalType)
 
         uiPinsFactory = package.UIPinsFactory()
         REGISTER_UI_PIN_FACTORY(packageName, uiPinsFactory)
@@ -111,3 +151,4 @@ def INITIALIZE():
 
         for toolClass in package.GetToolClasses().values():
             REGISTER_TOOL(packageName, toolClass)
+    getHashableDataTypes()

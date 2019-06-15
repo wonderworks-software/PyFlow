@@ -105,6 +105,17 @@ class PyFlow(QMainWindow):
 
         This folder and all it's content will be removed from disc on application shutdown.
         """
+        if self.currentTempDir == "":
+            # create app folder in documents
+            # random string used for cases when multiple instances of app are running in the same time
+            prefs = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
+            tempDirPath = prefs.value("Preferences/General/TempFilesDir")
+            if tempDirPath[-1:] in ('/', '\\'):
+                tempDirPath = tempDirPath[:-1]
+            self.currentTempDir = "{0}_{1}".format(tempDirPath, generateRandomString())
+
+            if not os.path.exists(self.currentTempDir):
+                os.makedirs(self.currentTempDir)
         return self.currentTempDir
 
     def getMenuBar(self):
@@ -382,8 +393,9 @@ class PyFlow(QMainWindow):
         settings.endGroup()
         settings.sync()
 
-        # remove temp directory
-        shutil.rmtree(self.currentTempDir)
+        # remove temp directory if exists
+        if os.path.exists(self.currentTempDir):
+            shutil.rmtree(self.currentTempDir)
 
         QMainWindow.closeEvent(self, event)
 
@@ -416,20 +428,14 @@ class PyFlow(QMainWindow):
         if PyFlow.appInstance is not None:
             return PyFlow.appInstance
 
-        INITIALIZE()
+        try:
+            INITIALIZE()
+        except Exception as e:
+            QMessageBox.critical(None, "Fatal error", str(e))
+            return
+
         instance = PyFlow(parent)
         instance.startMainLoop()
-
-        # create app folder in documents
-        # random string used for cases when multiple instances of app are running in the same time
-        prefs = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
-        tempDirPath = prefs.value("Preferences/General/TempFilesDir")
-        if tempDirPath[-1:] in ('/', '\\'):
-            tempDirPath = tempDirPath[:-1]
-        instance.currentTempDir = "{0}_{1}".format(tempDirPath, generateRandomString())
-
-        if not os.path.exists(instance.currentTempDir):
-            os.makedirs(instance.currentTempDir)
 
         # populate tools
         canvas = instance.getCanvas()

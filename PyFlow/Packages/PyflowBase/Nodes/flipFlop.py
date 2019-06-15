@@ -1,18 +1,26 @@
 from PyFlow.Core import NodeBase
+from PyFlow.Core.Common import *
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 
 
 class flipFlop(NodeBase):
     def __init__(self, name):
         super(flipFlop, self).__init__(name)
         self.bState = True
-        self.inp0 = self.createInputPin('in0', 'ExecPin', None,  self.compute)
+        self.inp0 = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.outA = self.createOutputPin('A', 'ExecPin')
         self.outB = self.createOutputPin('B', 'ExecPin')
         self.bIsA = self.createOutputPin('IsA', 'BoolPin')
 
     @staticmethod
     def pinTypeHints():
-        return {'inputs': ['ExecPin'], 'outputs': ['ExecPin', 'BoolPin']}
+        helper = NodePinsSuggestionsHelper()
+        helper.addInputDataType('ExecPin')
+        helper.addOutputDataType('ExecPin')
+        helper.addOutputDataType('BoolPin')
+        helper.addInputStruct(PinStructure.Single)
+        helper.addOutputStruct(PinStructure.Single)
+        return helper
 
     @staticmethod
     def category():

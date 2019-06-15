@@ -18,7 +18,7 @@ class NodeBoxTool(DockTool):
     def onShow(self):
         super(NodeBoxTool, self).onShow()
         self.setMinimumSize(QtCore.QSize(200, 50))
-        self.content = NodesBox(self)
+        self.content = NodesBox(self, False, False)
         self.content.setObjectName("NodeBoxToolContent")
         self.setWidget(self.content)
 

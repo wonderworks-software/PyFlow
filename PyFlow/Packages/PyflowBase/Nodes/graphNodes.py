@@ -11,10 +11,6 @@ class graphInputs(NodeBase):
         super(graphInputs, self).__init__(name)
         self.bCacheEnabled = False
 
-    @staticmethod
-    def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
-
     def getUniqPinName(self, name):
         result = name
         if self.graph is not None:
@@ -43,7 +39,7 @@ class graphInputs(NodeBase):
         p = self.createOutputPin(name, dataType, constraint=name, structConstraint=name, structure=PinStructure.Multi)
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         if dataType == "AnyPin":
-            p.enableOptions(PinOptions.AllowAny)
+            p.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
         return p
 
     def compute(self, *args, **kwargs):
@@ -80,10 +76,6 @@ class graphOutputs(NodeBase):
         return result
 
     @staticmethod
-    def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
-
-    @staticmethod
     def category():
         return 'Common'
 
@@ -111,7 +103,7 @@ class graphOutputs(NodeBase):
         p = self.createInputPin(name, dataType, constraint=name, structConstraint=name, structure=PinStructure.Multi)
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         if dataType == "AnyPin":
-            p.enableOptions(PinOptions.AllowAny)        
+            p.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
         return p
 
     def compute(self, *args, **kwargs):

@@ -45,6 +45,13 @@ from PyFlow.Packages.PyflowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyflowBase.Nodes.rerouteExecs import rerouteExecs
 from PyFlow.Packages.PyflowBase.Nodes.makeArray import makeArray
 from PyFlow.Packages.PyflowBase.Nodes.makeList import makeList
+from PyFlow.Packages.PyflowBase.Nodes.makeDict import makeDict
+from PyFlow.Packages.PyflowBase.Nodes.makeDictElement import makeDictElement
+from PyFlow.Packages.PyflowBase.Nodes.dictKeys import dictKeys
+
+
+
+
 from PyFlow.Packages.PyflowBase.Nodes.consoleOutput import consoleOutput
 from PyFlow.Packages.PyflowBase.Nodes.address import address
 from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
@@ -114,12 +121,15 @@ _NODES = {
     pythonNode.__name__: pythonNode,
     makeArray.__name__: makeArray,
     makeList.__name__: makeList,
+    makeDict.__name__: makeDict,
+    makeDictElement.__name__: makeDictElement,
     consoleOutput.__name__: consoleOutput,
     forEachLoop.__name__: forEachLoop,
     address.__name__: address,
     constant.__name__: constant,
     tick.__name__: tick,
-    convertTo.__name__ : convertTo,
+    convertTo.__name__: convertTo,
+    dictKeys.__name__: dictKeys
 }
 
 _PINS = {
@@ -128,7 +138,7 @@ _PINS = {
     ExecPin.__name__: ExecPin,
     FloatPin.__name__: FloatPin,
     IntPin.__name__: IntPin,
-    StringPin.__name__: StringPin
+    StringPin.__name__: StringPin,
 }
 
 # Toolbar will be created in following order

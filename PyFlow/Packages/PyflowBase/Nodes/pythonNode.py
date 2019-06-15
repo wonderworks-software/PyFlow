@@ -59,10 +59,6 @@ class pythonNode(NodeBase):
         except Exception as e:
             self.setError(str(e))
 
-    @staticmethod
-    def pinTypeHints():
-        return {'inputs': [], 'outputs': []}
-
     def serialize(self):
         default = super(pythonNode, self).serialize()
         default['nodeData'] = self.nodeData
