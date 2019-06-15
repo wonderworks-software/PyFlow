@@ -108,13 +108,13 @@ class PythonScriptExporter(IDataExporter):
             graphScript += "\n# connect pins\n"
 
             # create connections
-            for node in rootGraph.getNodes():
-                for outPin in node.outputs.values():
-                    for inPinName in outPin.linkedTo:
-                        inPin = pyFlowInstance.graphManager.get().findPinByName(inPinName)
-                        graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(outPin.getName(), outPin.getName())
-                        graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(inPin.getName(), inPin.getName())
-                        graphScript += "connectPins({0}, {1})\n".format(outPin.getName(), inPin.getName())
+            # for node in rootGraph.getNodes():
+            #     for outPin in node.outputs.values():
+            #         for inPinName in outPin.linkedTo:
+            #             inPin = pyFlowInstance.graphManager.get().findPinByName(inPinName)
+            #             graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(outPin.getName(), outPin.getName())
+            #             graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(inPin.getName(), inPin.getName())
+            #             graphScript += "connectPins({0}, {1})\n".format(outPin.getName(), inPin.getName())
 
             wrappedGraphScript = wrapStringToFunctionDef("createScene", graphScript, {"ROOT_GRAPH": None})
 

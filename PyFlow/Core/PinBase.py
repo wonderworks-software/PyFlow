@@ -33,6 +33,7 @@ class PinBase(IPin):
 
         ## Access to the node
         self.owningNode = weakref.ref(owningNode)
+
         self._uid = uuid.uuid4()
         self._data = None
         self._defaultValue = None
@@ -71,10 +72,24 @@ class PinBase(IPin):
         self.canChange = False
         self._isDictElement = False
         self.hidden = False
+
         # DataTypes
         self.super = self.__class__ 
         self.activeDataType = self.__class__.__name__
         self._keyType = None
+
+        # registration
+        self.owningNode().pins.add(self)
+        self.owningNode().pinsCreationOrder[self.uid] = self
+
+        # This is for to be able to connect pins by location on node
+        self.pinIndex = 0
+        if direction == PinDirection.Input:
+            self.pinIndex = len(self.owningNode().orderedInputs)
+            self.owningNode().orderedInputs[self.pinIndex] = self
+        if direction == PinDirection.Output:
+            self.pinIndex = len(self.owningNode().orderedOutputs)
+            self.owningNode().orderedOutputs[self.pinIndex] = self
 
     @property
     def group(self):
@@ -108,10 +123,16 @@ class PinBase(IPin):
     def linkedTo(self):
         # store connection from out pins only
         # from left hand side to right hand side
-        result = set()
+        result = list()
+        res = {"lhsNodeName": "", "outPinId": 0, "rhsNodeName": "", "inPinId": 0}
         if self.direction == PinDirection.Output:
             for i in self.affects:
-                result.add(i.getName())
+                res["lhsNodeName"] = self.owningNode().getName()
+                res["outPinId"] = self.pinIndex
+                res["rhsNodeName"] = i.owningNode().getName()
+                res["inPinId"] = i.pinIndex
+                result.append(res)
+                # result.add(i.getName())
         return result
 
     def __repr__(self):
@@ -234,7 +255,7 @@ class PinBase(IPin):
             'structure': int(self._currStructure),
             'alwaysList': self._alwaysList,
             'alwaysSingle': self._alwaysSingle,
-            'alwaysDict' : self._alwaysDict
+            'alwaysDict': self._alwaysDict
         }
 
         # Wrapper class can subscribe to this signal and return
@@ -397,6 +418,12 @@ class PinBase(IPin):
         self.disconnectAll()
         if self in self.owningNode().pins:
             self.owningNode().pins.remove(self)
+        if self.uid in self.owningNode().pinsCreationOrder:
+            self.owningNode().pinsCreationOrder.pop(self.uid)
+        if self.pinIndex in self.owningNode().orderedInputs:
+            self.owningNode().orderedInputs.pop(self.pinIndex)
+        if self.pinIndex in self.owningNode().orderedOutputs:
+            self.owningNode().orderedOutputs.pop(self.pinIndex)
         self.killed.send()
         clearSignal(self.killed)
 
@@ -549,7 +576,7 @@ class PinBase(IPin):
         return node
 
     def getDictNode(self,checked=[],node=None):
-        if self.owningNode().__class__.__name__ == "makeDict":
+        if self.owningNode().__class__.__name__ == "makeDict" :#and self.name == "data":
             return self.owningNode()
         con = []
         neis = []

@@ -50,14 +50,9 @@ from PyFlow.Packages.PyflowBase.Nodes.makeDictElement import makeDictElement
 from PyFlow.Packages.PyflowBase.Nodes.dictKeys import dictKeys
 
 
-
-
 from PyFlow.Packages.PyflowBase.Nodes.consoleOutput import consoleOutput
 from PyFlow.Packages.PyflowBase.Nodes.address import address
-from PyFlow.Packages.PyflowBase.Nodes.graphNodes import (
-    graphInputs,
-    graphOutputs
-)
+from PyFlow.Packages.PyflowBase.Nodes.graphNodes import graphInputs, graphOutputs
 from PyFlow.Packages.PyflowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyflowBase.Nodes.compound import compound
 from PyFlow.Packages.PyflowBase.Nodes.constant import constant
@@ -73,6 +68,7 @@ from PyFlow.Packages.PyflowBase.Tools.AlignBottomTool import AlignBottomTool
 from PyFlow.Packages.PyflowBase.Tools.HistoryTool import HistoryTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.Packages.PyflowBase.Tools.VariablesTool import VariablesTool
+from PyFlow.Packages.PyflowBase.Tools.CompileTool import CompileTool
 
 from PyFlow.Packages.PyflowBase.Exporters.PythonScriptExporter import PythonScriptExporter
 from PyFlow.Packages.PyflowBase.Exporters.CPPCompiler import CPPCompiler
@@ -143,6 +139,7 @@ _PINS = {
 
 # Toolbar will be created in following order
 _TOOLS = OrderedDict()
+_TOOLS[CompileTool.__name__] = CompileTool
 _TOOLS[ScreenshotTool.__name__] = ScreenshotTool
 _TOOLS[AlignLeftTool.__name__] = AlignLeftTool
 _TOOLS[AlignRightTool.__name__] = AlignRightTool

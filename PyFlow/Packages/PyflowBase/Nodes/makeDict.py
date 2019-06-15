@@ -46,23 +46,20 @@ class makeDict(NodeBase):
     def updateDicts(self,dataType):
         self.arrayData.updateConectedDicts([],self.KeyType.dataType)
 
-    def inPinConnected(self,inp):
-        inp = inp.getDictElementNode([])
-        if inp:
+    def inPinConnected(self,inputpin):
+        inp = inputpin.getDictElementNode([])
+        if inp and inputpin.owningNode() != inp:
+            dataType = self.KeyType.dataType
+            if not inp.key.checkFree([]):
+                dataType = inp.key.dataType
+
             if self.KeyType not in inp.constraints[inp.key.constraint]:
                 inp.constraints[inp.key.constraint].append(self.KeyType)
             if inp.key not in self.constraints[inp.key.constraint]:    
                 self.constraints[inp.key.constraint].append(inp.key)
-            if inp.key.checkFree([]):
-                for i in inp.constraints[inp.key.constraint]:
-                    i.setType(self.KeyType.dataType)
-            else:
-                for i in self.constraints[inp.key.constraint]:
-                    i.setType(inp.key.dataType)                   
-            #if not inp.key.checkFree([]):
-            #    self.KeyType.aboutToConnect(inp.key)
-            #else:
-            #    inp.key.aboutToConnect(self.KeyType)
+            for i in self.constraints[inp.key.constraint]:
+                i.setType(dataType)  
+
 
     def inPinDisconnected(self,inp):
         inp = inp.getDictElementNode([])

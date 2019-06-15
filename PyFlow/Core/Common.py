@@ -267,7 +267,7 @@ def canConnectPins(src, dst):
             if all([src.dataType == "AnyPin" and not src.canChangeTypeOnConection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), []),
                     (dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny) or not dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []))]):
                 return False
-            if not src.isDict() and dst.isDict():
+            if not src.isDict() and dst.supportOnlyDictElement([],dst.isDict()):
                 if not src.supportDictElement([],src.optionEnabled(PinOptions.DictElementSuported)) and dst.supportOnlyDictElement([],dst.isDict()):
                     return False 
             return True
@@ -328,6 +328,25 @@ def connectPins(src, dst):
     src.pinConnected(dst)
     push(dst)
     return True
+
+
+def connectPinsByIndexes(lhsNode=None, lhsOutPinIndex=0, rhsNode=None, rhsInPinIndex=0):
+    if lhsNode is None:
+        return False
+
+    if rhsNode is None:
+        return False
+
+    if lhsOutPinIndex not in lhsNode.orderedOutputs:
+        return False
+
+    if rhsInPinIndex not in rhsNode.orderedInputs:
+        return False
+
+    lhsPin = lhsNode.orderedOutputs[lhsOutPinIndex]
+    rhsPin = rhsNode.orderedInputs[rhsInPinIndex]
+
+    return connectPins(lhsPin, rhsPin)
 
 
 def traverseNeighborPins(startFrom, callback):
@@ -483,24 +502,24 @@ class dictElement(tuple):
             else:
                 raise Exception("non Valid Input")
         else:
-            new = (a,b)
+            new = (a, b)
         return super(dictElement, self).__new__(self, new)
 
 
 class pyf_dict(dict):
-    def __init__(self,keyType,valueType=None, inpt={}):
+    def __init__(self, keyType, valueType=None, inpt={}):
         super(pyf_dict, self).__init__(inpt)
         self.keyType = keyType
         self.valueType = valueType
 
     def __setitem__(self, key, item):
-        if type(key) == self.getClassFromType(self.keyType):# and type(item) == self.getClassFromType(self.valueType):
+        if type(key) == self.getClassFromType(self.keyType): # and type(item) == self.getClassFromType(self.valueType):
             super(pyf_dict, self).__setitem__(key, item)
         else:
             raise Exception(
                 "Valid key should be a {0}".format(self.getClassFromType(self.keyType)))
 
-    def getClassFromType(self,pinType):
+    def getClassFromType(self, pinType):
         pin = findPinClassByType(pinType)
         if pin:
             pinClass = pin.internalDataStructure()

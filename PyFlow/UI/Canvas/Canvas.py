@@ -767,14 +767,13 @@ class Canvas(QGraphicsView):
         # update connections
         for node in copiedNodes:
             for out in node['outputs']:
-                newLinkedToNames = []
-                for linkedToFullName in out['linkedTo']:
-                    oldNodeName, pinName = linkedToFullName.rsplit('_', 1)
-                    if oldNodeName in renameData:
-                        newNodeName = renameData[oldNodeName]
-                        newPinFullName = "{0}_{1}".format(newNodeName, pinName)
-                        newLinkedToNames.append(newPinFullName)
-                out['linkedTo'] = newLinkedToNames
+                for linkedToData in out['linkedTo']:
+                    lhsNodeName = linkedToData["lhsNodeName"]
+                    rhsNodeName = linkedToData["rhsNodeName"]
+                    if lhsNodeName in renameData:
+                        linkedToData["lhsNodeName"] = renameData[lhsNodeName]
+                    if rhsNodeName in renameData:
+                        linkedToData["rhsNodeName"] = renameData[rhsNodeName]
 
         for node in copiedNodes:
             if node['type'] == 'compound':
@@ -792,19 +791,15 @@ class Canvas(QGraphicsView):
         if len(selectedNodes) == 0:
             return
 
-        existingNames = self.graphManager.getAllNames()
-
         for n in selectedNodes:
             nodeJson = n.serialize()
             nodes.append(nodeJson)
 
-        nodes = self.makeSerializedNodesUnique(nodes, extra=existingNames)
-
         if len(nodes) > 0:
-            n = json.dumps(nodes)
+            copyJsonStr = json.dumps(nodes)
             QApplication.clipboard().clear()
-            QApplication.clipboard().setText(n)
-            return n
+            QApplication.clipboard().setText(copyJsonStr)
+            return copyJsonStr
 
     def pasteNodes(self, move=True, data=None):
         if not data:
@@ -816,6 +811,9 @@ class Canvas(QGraphicsView):
         else:
             nodes = json.loads(data)
 
+        existingNames = self.graphManager.getAllNames()
+        nodes = self.makeSerializedNodesUnique(nodes, extra=existingNames)
+
         diff = QtCore.QPointF(self.mapToScene(self.mousePos)) - QtCore.QPointF(nodes[0]["x"], nodes[0]["y"])
         self.clearSelection()
         newNodes = {}
@@ -823,10 +821,6 @@ class Canvas(QGraphicsView):
         nodesData = deepcopy(nodes)
         createdNodes = {}
         for node in nodesData:
-            oldName = node["name"]
-
-            if node['type'] == 'compound':
-                node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'])
 
             n = self.createNode(node)
             if n is None:
@@ -840,20 +834,24 @@ class Canvas(QGraphicsView):
             if move:
                 n.setPos(n.scenePos() + diff)
 
-        for nodeJson in nodes:
+        for nodeJson in nodesData:
             for outPinJson in nodeJson['outputs']:
-                linkedToNames = outPinJson['linkedTo']
-                try:
-                    lhsPin = self.findPin(outPinJson['fullName'])
-                    if len(linkedToNames) > 0:
-                        for linkedToFullName in linkedToNames:
-                            linkedPin = self.findPin(linkedToFullName)
-                            connected = connectPins(lhsPin._rawPin, linkedPin._rawPin)
-                            if connected:
-                                self.createUIConnectionForConnectedPins(lhsPin, linkedPin)
-                except:
-                    print(outPinJson['fullName'], "not found")
-                    continue
+                linkDatas = outPinJson['linkedTo']
+                for linkData in linkDatas:
+                    try:
+                        lhsNode = self.findNode(nodeJson["name"])
+                        lhsNodePinId = linkData["outPinId"]
+                        lhsPin = lhsNode.orderedOutputs[lhsNodePinId]
+
+                        rhsNode = self.findNode(linkData["rhsNodeName"])
+                        rhsNodePinId = linkData["inPinId"]
+                        rhsPin = rhsNode.orderedInputs[rhsNodePinId]
+                        connected = connectPins(lhsPin, rhsPin)
+                        if connected:
+                            self.createUIConnectionForConnectedPins(lhsPin.getWrapper()(), rhsPin.getWrapper()())
+                    except Exception as e:
+                        print(outPinJson['fullName'], "not found")
+                        continue
 
         # Hacks here!!
         # All nodes are copied. Nodes now do not know about under which comments they are
@@ -1651,9 +1649,8 @@ class Canvas(QGraphicsView):
         for rawNode in rawGraph.getNodes():
             uiNode = rawNode.getWrapper()
             for outUiPin in uiNode.UIoutputs.values():
-                for rhsPinUid in outUiPin._rawPin.linkedTo:
-                    inRawPin = rawNode.graph().findPin(rhsPinUid)
-                    inUiPin = inRawPin.getWrapper()()
+                for inputRawPin in getConnectedPins(outUiPin._rawPin):
+                    inUiPin = inputRawPin.getWrapper()()
                     self.createUIConnectionForConnectedPins(outUiPin, inUiPin)
 
         for uiNode, data in uiNodesJsonData.items():
