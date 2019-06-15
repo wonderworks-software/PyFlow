@@ -484,9 +484,9 @@ class PyFlow(QMainWindow):
 
                 if issubclass(ToolClass, DockTool):
                     menus = instance.menuBar.findChildren(QMenu)
-                    helpMenuAction = [m for m in menus if m.title() == "Help"][0].menuAction()
+                    pluginsMenuAction = [m for m in menus if m.title() == "Plugins"][0].menuAction()
                     toolsMenu = getOrCreateMenu(instance.menuBar, "Tools")
-                    instance.menuBar.insertMenu(helpMenuAction, toolsMenu)
+                    instance.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
                     packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
                     toolsMenu.addMenu(packageSubMenu)
                     showToolAction = packageSubMenu.addAction(ToolClass.name())

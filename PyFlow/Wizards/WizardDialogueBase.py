@@ -15,6 +15,7 @@ class WizardDialogueBase(QDialog):
     def __init__(self, parent=None):
         super(WizardDialogueBase, self).__init__(parent)
         self.setWindowTitle("Package wizard")
+        self.setWindowIcon(QtGui.QIcon(":LogoBpApp.png"))
         self.resize(700, 500)
         self.mainLayout = QVBoxLayout(self)
         self.mainLayout.setObjectName("mainLayout")
