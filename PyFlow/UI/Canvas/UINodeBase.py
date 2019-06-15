@@ -560,7 +560,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 except:
                     pass
 
-        self.setToolTip(rst2html(self.description()))
+        description = self.description()
+        if description:
+            self.setToolTip(rst2html(description))
         if self.resizable:
             w = self.getNodeWidth()
             h = self.getNodeHeight()

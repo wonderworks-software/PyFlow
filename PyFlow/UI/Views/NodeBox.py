@@ -298,12 +298,13 @@ class NodesBox(QFrame):
         self.verticalLayout.addWidget(self.lineEdit)
         self.lineEdit.textChanged.connect(self.leTextChanged)
         self.nodeInfoWidget = QTextBrowser()
+        self.nodeInfoWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         self.nodeInfoWidget.setObjectName("NodeBoxInfoBrowser")
         self.nodeInfoWidget.setStyleSheet("")
         self.nodeInfoWidget.setOpenExternalLinks(True)
         self.splitter.addWidget(self.nodeInfoWidget)
         self.splitter.addWidget(self.nodeInfoWidget)
-        self.nodeInfoWidget.setVisible(False)
+        self.nodeInfoWidget.setVisible(bNodeInfoEnabled)
 
         self.treeWidget = NodeBoxTreeWidget(self, bNodeInfoEnabled, False)
         self.treeWidget.setObjectName("treeWidget")
@@ -319,7 +320,6 @@ class NodesBox(QFrame):
 
     def showEvent(self, event):
         self.nodeInfoWidget.setHtml("")
-        self.nodeInfoWidget.hide()
         self.bDragging = False
 
     def onShowInfo(self, restructuredText):
@@ -328,7 +328,6 @@ class NodesBox(QFrame):
 
     def onHideInfo(self):
         self.nodeInfoWidget.setHtml("")
-        self.nodeInfoWidget.hide()
 
     def sizeHint(self):
         return QtCore.QSize(500, 300)
