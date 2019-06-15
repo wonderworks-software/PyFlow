@@ -313,6 +313,7 @@ class NodeBase(INode):
                 try:
                     self.compute()
                     self.clearError()
+                    self.checkForErrors()
                 except Exception as e:
                     self.setError(e)
             self.afterCompute()
@@ -320,6 +321,7 @@ class NodeBase(INode):
             try:
                 self.compute()
                 self.clearError()
+                self.checkForErrors()
             except Exception as e:
                 self.setError(e)
 
