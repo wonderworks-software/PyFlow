@@ -125,9 +125,25 @@ class NodeBase(INode):
     def getOrderedPins(self):
         return self.pinsCreationOrder.values()
 
-    @dispatch(str)
+    def getter(self,pinName):
+        pin = self.getPin(pinName)
+        if not pin:
+            raise Exception()
+        else:
+            return pin        
+
     def __getitem__(self, pinName):
-        return self.getPin(pinName)
+        try:
+            return self.getter(pinName)
+        except Exception as x:
+            if "<str>" in str(x):
+                try:
+                    return self.getter(str(pinName))
+                except:
+                    raise Exception("Could not find pin with name:{0}".format(pinName))
+                    
+            else:
+                raise Exception("Could not find signature for __getitem__:{0}".format(type(pinName)))
 
     @property
     def pins(self):
