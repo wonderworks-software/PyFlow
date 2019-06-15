@@ -43,6 +43,16 @@ class WizardDialogueBase(QDialog):
 
         # add navigation buttons
         # ...
+        self.navigationLayout = QHBoxLayout()
+        self.navigationLayout.setObjectName("navigationLayout")
+        self.navigationLayout.setContentsMargins(5, 1, 5, 5)
+        self.goBackButton = QPushButton("Go back")
+        self.goForwardButton = QPushButton("Go forward")
+        self.navigationLayout.addWidget(self.goBackButton)
+        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Maximum)
+        self.navigationLayout.addItem(spacerItem)
+        self.navigationLayout.addWidget(self.goForwardButton)
+        self.mainLayout.addLayout(self.navigationLayout)
 
         self.setMessageRst("**Hello buddy!** lets create some new stuff!")
 
