@@ -77,7 +77,7 @@ class PyFlow(QMainWindow):
         self.canvasWidget = CanvasWidget(self.graphManager.get(), self)
         self.canvasWidget.setObjectName("canvasWidget")
         self.setCentralWidget(self.canvasWidget)
-
+        self.setTabPosition(QtCore.Qt.AllDockWidgetAreas, QTabWidget.North)
         self.menuBar = QMenuBar(self)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 863, 21))
         self.menuBar.setObjectName("menuBar")
