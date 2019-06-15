@@ -41,9 +41,9 @@ class charge(NodeBase):
 
     @staticmethod
     def description():
-        return 'Each time node called it accumulates the step value. \
-        When accumulated value reaches <b>"amount"</b> - completed pin called.\n\
-        Useful when you need to wait some time inside some tick function.'
+        return 'Each time node called it accumulates the step value.' +\
+               'When accumulated value reaches **amount** - **completed** pin called.' +\
+               'Useful when you need to wait some time inside some tick function.'
 
     def compute(self, *args, **kwargs):
         step = abs(self.step.getData())

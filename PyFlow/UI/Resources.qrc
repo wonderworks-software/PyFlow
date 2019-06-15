@@ -31,6 +31,7 @@
      <file alias="rename.svg">resources\rename.svg</file>
      <file alias="reroute.svg">resources\reroute.svg</file>
      <file alias="reset.png">resources\reset.png</file>
+     <file alias="resize_diagonal.png">resources\resize_diagonal.png</file>
      <file alias="save_as_icon.png">resources\save_as_icon.png</file>
      <file alias="save_icon.png">resources\save_icon.png</file>
      <file alias="script.png">resources\script.png</file>

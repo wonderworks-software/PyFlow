@@ -24,13 +24,12 @@ class NodeBoxLineEdit(QLineEdit):
         self.setParent(parent)
         self._events = events
         self.parent = parent
-        self.setLocale(QtCore.QLocale(QtCore.QLocale.English,
-                                      QtCore.QLocale.UnitedStates))
+        self.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.setObjectName("le_nodes")
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
-                " border-style: outset;"+\
-                " border-width: 1px;"
+                "border-style: outset;" +\
+                "border-width: 1px;"
         self.setStyleSheet(style)
         self.setPlaceholderText("enter node name..")
 
@@ -43,8 +42,8 @@ class NodeBoxTreeWidget(QTreeWidget):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
-                "border-style: outset;"+\
-                " border-width: 1px;"
+                "border-style: outset;" +\
+                "border-width: 1px;"
         self.setStyleSheet(style)
         self.setParent(parent)
         self.setFrameShape(QFrame.NoFrame)
@@ -259,12 +258,26 @@ class NodeBoxSizeGrip(QSizeGrip):
     def __init__(self, parent=None):
         super(NodeBoxSizeGrip, self).__init__(parent)
 
+    def sizeHint(self):
+        return QtCore.QSize(13, 13)
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter()
+        painter.begin(self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        rect = event.rect()
+        painter.setBrush(QtGui.QColor(80, 80, 80, 255))
+        painter.drawRoundedRect(rect, 3, 3)
+        painter.drawPixmap(rect, QtGui.QPixmap(":resize_diagonal.png"))
+        painter.end()
+
 
 class NodesBox(QFrame):
     """doc string for NodesBox"""
 
     def __init__(self, parent, bNodeInfoEnabled=True, bGripsEnabled=True):
         super(NodesBox, self).__init__(parent)
+        self.setContentsMargins(0, 0, 0, 0)
         self.setFrameStyle(QFrame.Panel | QFrame.Raised)
         self.bDragging = False
         self.lastCursorPos = QtCore.QPoint(0, 0)
@@ -275,10 +288,13 @@ class NodesBox(QFrame):
         self.mainLayout.setSpacing(1)
         self.mainLayout.setContentsMargins(1, 1, 1, 1)
         self.splitter = QSplitter()
+        self.splitter.setObjectName("nodeBoxSplitter")
         self.mainLayout.addWidget(self.splitter)
         if bGripsEnabled:
             self.sizeGrip = NodeBoxSizeGrip(self)
+            self.sizeGrip.setObjectName("nodeBoxSizeGrip")
             self.sizeGripLayout = QHBoxLayout()
+            self.sizeGripLayout.setObjectName("sizeGripLayout")
             self.sizeGripLayout.setSpacing(1)
             self.sizeGripLayout.setContentsMargins(1, 1, 1, 1)
             spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -288,26 +304,26 @@ class NodesBox(QFrame):
 
         self.nodeTreeWidget = QWidget()
         self.nodeTreeWidget.setObjectName("nodeTreeWidget")
+        self.nodeTreeWidget.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout = QVBoxLayout(self.nodeTreeWidget)
-        self.verticalLayout.setSpacing(1)
-        self.splitter.addWidget(self.nodeTreeWidget)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.verticalLayout.setSpacing(1)
         self.verticalLayout.setContentsMargins(1, 1, 1, 1)
+        self.splitter.addWidget(self.nodeTreeWidget)
         self.lineEdit = NodeBoxLineEdit(self)
         self.lineEdit.setObjectName("lineEdit")
         self.verticalLayout.addWidget(self.lineEdit)
         self.lineEdit.textChanged.connect(self.leTextChanged)
         self.nodeInfoWidget = QTextBrowser()
         self.nodeInfoWidget.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.nodeInfoWidget.setObjectName("NodeBoxInfoBrowser")
-        self.nodeInfoWidget.setStyleSheet("")
+        self.nodeInfoWidget.setObjectName("nodeBoxInfoBrowser")
         self.nodeInfoWidget.setOpenExternalLinks(True)
         self.splitter.addWidget(self.nodeInfoWidget)
         self.splitter.addWidget(self.nodeInfoWidget)
         self.nodeInfoWidget.setVisible(bNodeInfoEnabled)
 
         self.treeWidget = NodeBoxTreeWidget(self, bNodeInfoEnabled, False)
-        self.treeWidget.setObjectName("treeWidget")
+        self.treeWidget.setObjectName("nodeBoxTreeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)
         self.treeWidget.refresh()
