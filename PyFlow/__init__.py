@@ -5,6 +5,7 @@
 import importlib
 import pkgutil
 import collections
+from copy import copy
 from PyFlow.Packages import *
 
 
@@ -16,13 +17,14 @@ __all__ = [
     "getPinDefaultValueByType",
     "findPinClassByType",
     "getRawNodeInstance",
-    "getAllPinClasses"
+    "getAllPinClasses",
+    "getHashableDataTypes"
 ]
 
 
 __PACKAGES = {}
+__HASHABLE_TYPES = []
 
-_HASHABLES = []
 
 def GET_PACKAGES():
     return __PACKAGES
@@ -54,20 +56,23 @@ def getPinDefaultValueByType(dataType):
         return pin.pinDataTypeHint()[1]
     return None
 
+
 def getHashableDataTypes():
-    validKeyTypes = []
-    for pin in getAllPinClasses():
-        t = pin.internalDataStructure()
-        if t != type(None) and t != None:
-            if isinstance(pin.internalDataStructure()(),collections.Hashable):
-                validKeyTypes.append(pin.__name__)
-    return validKeyTypes
+    if len(__HASHABLE_TYPES) == 0:
+        for pin in getAllPinClasses():
+            t = pin.internalDataStructure()
+            if t is not None:
+                if isinstance(pin.internalDataStructure()(), collections.Hashable):
+                    __HASHABLE_TYPES.append(pin.__name__)
+    return copy(__HASHABLE_TYPES)
+
 
 def getPinFromData(data):
     for pin in [pin for pin in getAllPinClasses() if pin.IsValuePin()]:
         pType = pin.internalDataStructure()
         if data == pType:
             return pin
+
 
 def CreateRawPin(name, owningNode, dataType, direction, **kwds):
     pinClass = findPinClassByType(dataType)
@@ -126,4 +131,4 @@ def INITIALIZE():
 
         for toolClass in package.GetToolClasses().values():
             REGISTER_TOOL(packageName, toolClass)
-    _HASHABLES.extend(getHashableDataTypes())
+    getHashableDataTypes()

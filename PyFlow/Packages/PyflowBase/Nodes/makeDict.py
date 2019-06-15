@@ -1,4 +1,4 @@
-from PyFlow import _HASHABLES
+from PyFlow import getHashableDataTypes
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
@@ -7,7 +7,7 @@ from PyFlow.Core.Common import *
 class makeDict(NodeBase):
     def __init__(self, name):
         super(makeDict, self).__init__(name)
-        self.KeyType = self.createInputPin('KeyType', 'AnyPin',defaultValue=str(""), constraint="1",allowedPins=_HASHABLES)
+        self.KeyType = self.createInputPin('KeyType', 'AnyPin', defaultValue=str(""), constraint="1", allowedPins=getHashableDataTypes())
         self.KeyType.hidden = True
 
         self.arrayData = self.createInputPin('data', 'AnyPin', structure=PinStructure.Dict, constraint="2")
