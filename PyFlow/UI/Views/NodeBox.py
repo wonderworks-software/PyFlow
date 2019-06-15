@@ -290,7 +290,8 @@ class NodesBox(QFrame):
         self.splitter = QSplitter()
         self.splitter.setObjectName("nodeBoxSplitter")
         self.mainLayout.addWidget(self.splitter)
-        if bGripsEnabled:
+        self.bGripsEnabled = bGripsEnabled
+        if self.bGripsEnabled:
             self.sizeGrip = NodeBoxSizeGrip(self)
             self.sizeGrip.setObjectName("nodeBoxSizeGrip")
             self.sizeGripLayout = QHBoxLayout()
@@ -363,17 +364,19 @@ class NodesBox(QFrame):
 
     def mousePressEvent(self, event):
         super(NodesBox, self).mousePressEvent(event)
-        if event.pos().y() >= self.geometry().height() - 30:
-            self.bDragging = True
-            self.lastCursorPos = QtGui.QCursor.pos()
+        if self.bGripsEnabled:
+            if event.pos().y() >= self.geometry().height() - 30:
+                self.bDragging = True
+                self.lastCursorPos = QtGui.QCursor.pos()
 
     def mouseMoveEvent(self, event):
         super(NodesBox, self).mouseMoveEvent(event)
-        if self.bDragging:
-            delta = QtGui.QCursor.pos() - self.lastCursorPos
-            currentPos = self.pos()
-            self.move(currentPos + delta)
-            self.lastCursorPos = QtGui.QCursor.pos()
+        if self.bGripsEnabled:
+            if self.bDragging:
+                delta = QtGui.QCursor.pos() - self.lastCursorPos
+                currentPos = self.pos()
+                self.move(currentPos + delta)
+                self.lastCursorPos = QtGui.QCursor.pos()
 
     def mouseReleaseEvent(self, event):
         super(NodesBox, self).mouseReleaseEvent(event)
