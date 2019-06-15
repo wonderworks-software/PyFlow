@@ -1,0 +1,5 @@
+<RCC>
+  <qresource>
+     <file alias="wizard-cat.png">resources\wizard-cat.png</file>
+  </qresource>
+</RCC>
