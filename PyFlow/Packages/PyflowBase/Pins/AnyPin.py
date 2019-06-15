@@ -129,7 +129,7 @@ class AnyPin(PinBase):
 
     def pinConnected(self, other):
         super(AnyPin, self).pinConnected(other)
-        self.updateError([])
+        #self.updateError([])
         self.owningNode().checkForErrors()
 
     def aboutToConnect(self, other):
@@ -165,6 +165,13 @@ class AnyPin(PinBase):
                         if pin.optionEnabled(PinOptions.ChangeTypeOnConnection):
                             pin._supportedDataTypes = pin._defaultSupportedDataTypes
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes
+                if all([self.activeDataType == "AnyPin",
+                        self.canChangeTypeOnConection([], self.optionEnabled(PinOptions.ChangeTypeOnConnection), []) or not self.optionEnabled(PinOptions.AllowAny)]) :
+                    self.setError("AnyPin Not Initialized")
+                    self.super = None
+                else:
+                    self.clearError()
+                    self.super = AnyPin                            
 
 
     def checkFree(self, checked=[], selfChek=True):
@@ -237,7 +244,7 @@ class AnyPin(PinBase):
     def initType(self, dataType, initializing=False):
         if self.checkFree([]):
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, initializing))
-            self.updateError([])
+            #self.updateError([])
             self.owningNode().checkForErrors()
             self.dataBeenSet.send(self)
             return True
