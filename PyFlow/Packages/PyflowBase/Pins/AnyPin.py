@@ -99,7 +99,7 @@ class AnyPin(PinBase):
                     neighbor.super = AnyPin
                 traversed.append(neighbor)
                 neighbor.updateError(traversed)
-                neighbor.owningNode().checkForErrors()
+                #neighbor.owningNode().checkForErrors()
 
     def setData(self, data):
         PinBase.setData(self, data)

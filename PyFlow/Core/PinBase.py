@@ -549,7 +549,7 @@ class PinBase(IPin):
         return node
 
     def getDictNode(self,checked=[],node=None):
-        if self.owningNode().__class__.__name__ == "makeDict":
+        if self.owningNode().__class__.__name__ == "makeDict" :#and self.name == "data":
             return self.owningNode()
         con = []
         neis = []
