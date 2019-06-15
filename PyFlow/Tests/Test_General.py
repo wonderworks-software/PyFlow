@@ -13,6 +13,34 @@ class TestGeneral(unittest.TestCase):
     def tearDown(self):
         print('--------------------------------\n')
 
+    def test_connect_pins_by_indexes(self):
+        man = GraphManager()
+        packages = GET_PACKAGES()
+        mathLib = packages['PyflowBase'].GetFunctionLibraries()["MathAbstractLib"]
+        defaultLib = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"]
+        classNodes = packages['PyflowBase'].GetNodeClasses()
+        foos = mathLib.getFunctions()
+        defaultLibFoos = defaultLib.getFunctions()
+
+        makeIntNode = NodeBase.initializeFromFunction(defaultLibFoos["makeInt"])
+        addNode2 = NodeBase.initializeFromFunction(foos["add"])
+        printNode = classNodes["consoleOutput"]("print")
+
+        man.activeGraph().addNode(makeIntNode)
+        man.activeGraph().addNode(addNode2)
+        man.activeGraph().addNode(printNode)
+
+        makeIntNode.setData('i', 5)
+
+        connection = connectPinsByIndexes(makeIntNode, 0, addNode2, 0)
+        self.assertEqual(connection, True, "FAILED TO ADD EDGE")
+
+        connection = connectPinsByIndexes(addNode2, 0, printNode, 1)
+        self.assertEqual(connection, True, "FAILED TO ADD EDGE")
+        printNode[DEFAULT_IN_EXEC_NAME].call()
+
+        self.assertEqual(addNode2.getData('out'), 5, "NODES EVALUATION IS INCORRECT")
+
     def test_graph_location(self):
         packages = GET_PACKAGES()
         man = GraphManager()
@@ -26,6 +54,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(Counter(subgraphNodeInstance.rawGraph.location()), Counter(man.location()))
 
     def test_input_action(self):
+        # TODO: move this ui stuff out of here
         a1 = InputAction("a1", InputActionType.Keyboard, "g1", QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.NoButton, QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier)
         a2 = InputAction("a1", InputActionType.Keyboard, "g1", QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.NoButton, QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier)
         self.assertEqual(a1, a2)

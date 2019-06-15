@@ -62,6 +62,8 @@ class NodeBase(INode):
         self.graph = None
         self.name = name
         self.pinsCreationOrder = OrderedDict()
+        self.orderedInputs = {}
+        self.orderedOutputs = {}
         self._pins = set()
         self.x = 0.0
         self.y = 0.0

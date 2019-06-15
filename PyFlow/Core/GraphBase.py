@@ -118,9 +118,11 @@ class GraphBase(ISerializable):
         # restore connections
         for nodeJson in jsonData['nodes']:
             for nodeOutputJson in nodeJson['outputs']:
-                lhsPin = self.findPin(str(nodeOutputJson['fullName']))
-                for rhsPinFullName in nodeOutputJson['linkedTo']:
-                    rhsPin = self.findPin(str(rhsPinFullName))
+                for linkData in nodeOutputJson['linkedTo']:
+                    lhsNode = self.findNode(nodeJson["name"])
+                    lhsPin = lhsNode.orderedOutputs[linkData["outPinId"]]
+                    rhsNode = self.findNode(linkData["rhsNodeName"])
+                    rhsPin = rhsNode.orderedInputs[linkData["inPinId"]]
                     connected = connectPins(lhsPin, rhsPin)
                     assert(connected is True), "Failed to restore connection"
 
