@@ -62,7 +62,7 @@ def getHashableDataTypes():
     if len(__HASHABLE_TYPES) == 0:
         for pin in getAllPinClasses():
             t = pin.internalDataStructure()
-            if t is not None:
+            if t is not type(None) and t is not None:
                 if isinstance(pin.internalDataStructure()(), collections.Hashable):
                     __HASHABLE_TYPES.append(pin.__name__)
     return copy(__HASHABLE_TYPES)
