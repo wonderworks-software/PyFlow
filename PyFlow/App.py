@@ -29,6 +29,7 @@ from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.Tool import GET_TOOLS
+from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE
 from PyFlow.Input import InputAction, InputActionType
 from PyFlow.Input import InputManager
@@ -162,6 +163,10 @@ class PyFlow(QMainWindow):
         preferencesAction = editMenu.addAction("Preferences")
         preferencesAction.setIcon(QtGui.QIcon(":/options_icon.png"))
         preferencesAction.triggered.connect(self.showPreferencesWindow)
+
+        pluginsMenu = self.menuBar.addMenu("Plugins")
+        packagePlugin = pluginsMenu.addAction("Create package...")
+        packagePlugin.triggered.connect(PackageWizard.run)
 
         helpMenu = self.menuBar.addMenu("Help")
         shortcutsAction = helpMenu.addAction("Shortcuts")
