@@ -60,16 +60,16 @@ class makeDictElement(NodeBase):
     def outPinConnected(self,inp):
         dictNode = inp.getDictNode([])
         if dictNode:
+            dataType = dictNode.KeyType.dataType
+            if not self.key.checkFree([]):
+                dataType = self.key.dataType
+
             if dictNode.KeyType not in self.constraints[self.key.constraint]:
                 self.constraints[self.key.constraint].append(dictNode.KeyType)
             if self.key not in dictNode.constraints[self.key.constraint]:    
                 dictNode.constraints[self.key.constraint].append(self.key)
-            if self.key.checkFree([]):
-                for i in self.constraints[self.key.constraint]:
-                    i.setType(dictNode.KeyType.dataType)
-            else:
-                for i in dictNode.constraints[self.key.constraint]:
-                    i.setType(self.key.dataType)                
+            for i in dictNode.constraints[self.key.constraint]:
+                i.setType(dataType)            
 
     def compute(self, *args, **kwargs):
         self.outArray.setData(dictElement(self.key.getData(), self.value.getData()))
