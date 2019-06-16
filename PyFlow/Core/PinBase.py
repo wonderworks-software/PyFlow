@@ -364,8 +364,8 @@ class PinBase(IPin):
         except Exception as exc:
             self.setError(exc)
             self.setDirty()
+        self.owningNode().checkForErrors()
         
-        #self.owningNode().checkForErrors()
 
     ## Calling execution pin
     def call(self, *args, **kwargs):
