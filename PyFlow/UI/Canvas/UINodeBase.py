@@ -1189,6 +1189,6 @@ def getUINodeInstance(raw_instance):
     packageName = raw_instance.packageName
     instance = None
     if packageName in UI_NODES_FACTORIES:
-        instance = UI_NODES_FACTORIES[packageName](raw_instance)
-    assert(instance is not None)
-    return instance
+        return UI_NODES_FACTORIES[packageName](raw_instance)
+    else:
+        return UINodeBase(raw_instance)

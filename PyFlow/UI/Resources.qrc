@@ -42,5 +42,6 @@
      <file alias="tear_off_copy.png">resources\tear_off_copy.png</file>
      <file alias="unlocked.png">resources\unlocked.png</file>
      <file alias="variable.png">resources\variable.png</file>
+     <file alias="wizard-cat.png">resources\wizard-cat.png</file>
   </qresource>
 </RCC>

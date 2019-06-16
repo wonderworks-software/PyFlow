@@ -139,13 +139,16 @@ def INITIALIZE():
                 registeredInternalPinDataTypes.add(internalType)
 
         uiPinsFactory = package.UIPinsFactory()
-        REGISTER_UI_PIN_FACTORY(packageName, uiPinsFactory)
+        if uiPinsFactory is not None:
+            REGISTER_UI_PIN_FACTORY(packageName, uiPinsFactory)
 
         uiPinInputWidgetsFactory = package.PinsInputWidgetFactory()
-        REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, uiPinInputWidgetsFactory)
+        if uiPinInputWidgetsFactory is not None:
+            REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, uiPinInputWidgetsFactory)
 
         uiNodesFactory = package.UINodesFactory()
-        REGISTER_UI_NODE_FACTORY(packageName, uiNodesFactory)
+        if uiNodesFactory is not None:
+            REGISTER_UI_NODE_FACTORY(packageName, uiNodesFactory)
 
         for toolClass in package.GetToolClasses().values():
             REGISTER_TOOL(packageName, toolClass)

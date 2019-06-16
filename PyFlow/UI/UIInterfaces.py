@@ -72,12 +72,12 @@ class IPackage(object):
 
     @staticmethod
     def UIPinsFactory():
-        raise NotImplementedError('UIPinsFactory method of IPackage is not implemented')
+        return None
 
     @staticmethod
     def UINodesFactory():
-        raise NotImplementedError('UINodesFactory method of IPackage is not implemented')
+        return None
 
     @staticmethod
     def PinsInputWidgetFactory():
-        raise NotImplementedError('PinsInputWidgetFactory method of IPackage is not implemented')
+        return None
