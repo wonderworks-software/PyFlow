@@ -154,10 +154,10 @@ class PyFlow(QMainWindow):
                 fileFormatMenu.setToolTip(exporterClass.toolTip())
                 if exporterClass.createExporterMenu():
                     exportAction = fileFormatMenu.addAction("Export")
-                    exportAction.triggered.connect(lambda checked=False, app=self: exporterClass.doExport(app))
+                    exportAction.triggered.connect(lambda checked=False, app=self, exporter=exporterClass: exporter.doExport(app))
                 if exporterClass.createImporterMenu():
                     importAction = fileFormatMenu.addAction("Import")
-                    importAction.triggered.connect(lambda checked=False, app=self: exporterClass.doImport(app))
+                    importAction.triggered.connect(lambda checked=False, app=self, exporter=exporterClass: exporter.doImport(app))
 
         editMenu = self.menuBar.addMenu("Edit")
         preferencesAction = editMenu.addAction("Preferences")
@@ -341,6 +341,8 @@ class PyFlow(QMainWindow):
         # invokeDockToolByName Invokes dock tool by tool name and package name
         # If settings provided QMainWindow::restoreDockWidget will be called instead QMainWindow::addDockWidget
         toolClass = self.getToolClassByName(packageName, name, DockTool)
+        if toolClass is None:
+            return
         isSingleton = toolClass.isSingleton()
         if isSingleton:
             # check if already registered
@@ -503,7 +505,7 @@ class PyFlow(QMainWindow):
                         if dockToolGroupName in [t.uniqueName() for t in instance._tools]:
                             continue
                         toolName = dockToolGroupName.split("::")[0]
-                        ToolInstance = instance.invokeDockToolByName(packageName, toolName, settings)
+                        instance.invokeDockToolByName(packageName, toolName, settings)
                         settings.endGroup()
                     settings.endGroup()
 

@@ -47,6 +47,9 @@ class WizardDialogueBase(QDialog):
         # add user input section
         # ...
         self.messages = {}
+        self.pageValidationHooks = {}
+        self.errorMessages = {}
+        self.pageEnterCallbacks = {}
         self.addGreetPage()
         self.populate()
         self.addFinalPage()
@@ -69,6 +72,7 @@ class WizardDialogueBase(QDialog):
         self.mainLayout.addLayout(self.navigationLayout)
 
         self.updateNavigationVisibility()
+        self.updateMessage(0)
 
     def updateMessage(self, pageNum):
         widget = self.stackWidget.widget(pageNum)
@@ -76,16 +80,15 @@ class WizardDialogueBase(QDialog):
             self.setMessageRst(self.messages[widget])
             return
         if pageNum == 0:
-            self.setMessageRst("**Hello buddy!** lets create some new stuff!")
             return
         if pageNum == self.stackWidget.count() - 1:
-            self.setMessageRst("Have fun!")
+            return
 
     def addGreetPage(self):
-        self.stackWidget.addWidget(QWidget())
+        self.addPageWidget(QWidget(), "**Hello buddy!** lets create some new stuff!")
 
     def addFinalPage(self):
-        self.stackWidget.addWidget(QWidget())
+        self.addPageWidget(QWidget(), "Have fun!")
 
     def updateProgress(self):
         numStates = self.stackWidget.count() - 1
@@ -105,18 +108,31 @@ class WizardDialogueBase(QDialog):
     def onGoBack(self):
         futureIndex = self.stackWidget.currentIndex() - 1
         self.stackWidget.setCurrentIndex(futureIndex)
+        self.setMessageRst(self.messages[self.stackWidget.currentWidget()])
         self.updateNavigationVisibility()
+
+    def onDone(self):
+        self.accept()
 
     def onGoForward(self):
         futureIndex = self.stackWidget.currentIndex() + 1
-        self.stackWidget.setCurrentIndex(futureIndex)
-        self.updateNavigationVisibility()
-        if futureIndex == self.stackWidget.count():
-            self.accept()
+        isCurrentPageValid = self.pageValidationHooks[self.stackWidget.currentWidget()]()
+        if isCurrentPageValid:
+            self.stackWidget.setCurrentIndex(futureIndex)
+            self.updateNavigationVisibility()
+            self.pageValidationHooks[self.stackWidget.currentWidget()]()
+            self.pageEnterCallbacks[self.stackWidget.currentWidget()]()
+            if futureIndex == self.stackWidget.count():
+                self.onDone()
+        else:
+            self.setMessageRst(self.errorMessages[self.stackWidget.currentWidget()])
 
-    def addPageWidget(self, widget, messageRst):
+    def addPageWidget(self, widget, messageRst, errorMessageRst="Somethig is wrong!", validationHook=lambda: True, pageEnterCallback=lambda: None):
         self.stackWidget.addWidget(widget)
         self.messages[widget] = messageRst
+        self.pageValidationHooks[widget] = validationHook
+        self.errorMessages[widget] = errorMessageRst
+        self.pageEnterCallbacks[widget] = pageEnterCallback
 
     def populate(self):
         pass

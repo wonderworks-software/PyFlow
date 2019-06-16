@@ -6,6 +6,8 @@ from Qt import QtGui, QtCore
 
 class ToolBase(object):
     """docstring for ToolBase."""
+    packageName = ""
+
     def __init__(self):
         super(ToolBase, self).__init__()
         self.uid = uuid.uuid4()
