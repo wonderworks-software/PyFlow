@@ -164,11 +164,11 @@ def generatePackage(packageName,
         if dirName == "UI":
             removedUIClasses = 0
 
-            if not bIncludePin:
+            if not bIncludePin or not bIncludeUIPinFactory:
                 os.remove(os.path.join(path, "UIDemoPin.py"))
                 removedUIClasses += 1
 
-            if not bIncludeClassNode:
+            if not bIncludeClassNode or not bIncludeUINodeFactory:
                 os.remove(os.path.join(path, "UIDemoNode.py"))
                 removedUIClasses += 1
 
