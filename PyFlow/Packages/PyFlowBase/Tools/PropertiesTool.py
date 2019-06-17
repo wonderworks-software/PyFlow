@@ -28,7 +28,8 @@ class PropertiesTool(DockTool):
 
     def onTearOffCopy(self, *args, **kwargs):
         instance = self.pyFlowInstance.invokeDockToolByName("PyFlowBase", self.name())
-        instance.assignPropertiesWidget(self.fillDelegate)
+        if self.fillDelegate is not None:
+            instance.assignPropertiesWidget(self.fillDelegate)
         instance.setFloating(True)
         instance.resize(self.size())
 
