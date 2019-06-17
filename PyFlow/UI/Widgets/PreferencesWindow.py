@@ -129,7 +129,7 @@ class ThemePreferences(CategoryWidgetBase):
         self.layout.setContentsMargins(1, 1, 1, 1)
         self.layout.setSpacing(2)
         self.setWidget(self.content)
-
+        self.currTheme = None
     def onShow(self, settings):
         clearLayout(self.layout)
         editableStyleSheet().loadPresests(THEMES_PATH)
@@ -163,13 +163,16 @@ class ThemePreferences(CategoryWidgetBase):
         self.selector = QComboBox()
         for name in editableStyleSheet().presests.keys():
             self.selector.addItem(name)
-
-        if isinstance(settings, str):
-            if settings in editableStyleSheet().presests:
-                self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings))
-        elif settings and settings.value('Theme_Name'):
-            if settings.value('Theme_Name') in editableStyleSheet().presests:
-                self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings.value('Theme_Name')))
+        if self.currTheme is not None:
+            self.selector.setCurrentIndex(self.currTheme)
+        else:
+            if isinstance(settings, str):
+                if settings in editableStyleSheet().presests:
+                    self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings))
+            elif settings and settings.value('Theme_Name'):
+                if settings.value('Theme_Name') in editableStyleSheet().presests:
+                    self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings.value('Theme_Name')))
+            self.currTheme = self.selector.currentIndex()
 
         self.layout.addWidget(self.selector)
         self.selector.activated.connect(self.setPreset)
@@ -199,6 +202,7 @@ class ThemePreferences(CategoryWidgetBase):
     def setPreset(self, index):
         data = editableStyleSheet().presests[self.selector.currentText()]
         editableStyleSheet().loadFromData(data)
+        self.currTheme = self.selector.currentIndex()
         self.onShow(self.selector.currentText())
 
     def deleteTheme(self):
