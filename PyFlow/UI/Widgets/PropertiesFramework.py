@@ -193,7 +193,7 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.lockCheckBox.toggled.connect(self.changeLockIcon)
         self.searchBoxLayout.addWidget(self.lockCheckBox)
         self.tearOffCopy = QtWidgets.QToolButton()
-        self.tearOffCopy.setIcon(QtGui.QIcon(":/tear_off_copy.png"))
+        self.tearOffCopy.setIcon(QtGui.QIcon(":/tear_off_copy_bw.png"))
         self.tearOffCopy.clicked.connect(self.spawnDuplicate.emit)
         self.searchBoxLayout.addWidget(self.tearOffCopy)
         self.mainLayout.addWidget(self.searchBoxWidget)

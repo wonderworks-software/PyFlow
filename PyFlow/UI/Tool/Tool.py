@@ -138,8 +138,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.buttonSize = iconSize + QtCore.QSize(4, 4)
 
         self.dockButton = QtWidgets.QToolButton(self)
-        self.dockButton.setIcon(QtWidgets.QApplication.style().standardIcon(
-            QtWidgets.QStyle.SP_TitleBarNormalButton))
+        self.dockButton.setIcon(QtGui.QIcon(':/split_window.png'))
         self.dockButton.setMaximumSize(self.buttonSize)
         self.dockButton.setAutoRaise(True)
         self.dockButton.clicked.connect(self.toggleFloating)
@@ -147,8 +146,8 @@ class DockTitleBar(QtWidgets.QWidget):
         self.closeButton = QtWidgets.QToolButton(self)
         self.closeButton.setMaximumSize(self.buttonSize)
         self.closeButton.setAutoRaise(True)
-        self.closeButton.setIcon(QtWidgets.QApplication.style().standardIcon(
-            QtWidgets.QStyle.SP_DockWidgetCloseButton))
+        self.closeButton.setIcon(QtGui.QIcon(':/close_window.png'))#QtWidgets.QApplication.style().standardIcon(
+            #QtWidgets.QStyle.SP_DockWidgetCloseButton))
         self.closeButton.clicked.connect(self.closeParent)
 
         self.buttonsLay.addSpacing(2)
@@ -200,8 +199,11 @@ class DockTitleBar(QtWidgets.QWidget):
         else:
             self.box.setObjectName("UnDocked")
         self.box.setStyleSheet(editableStyleSheet().getStyleSheet())
-        self.update()  
-              
+        
+    def update(self,*args,**kwargs):
+        self.ChangeFloatingStyle(self.box.isChecked())
+        super(DockTitleBar, self).update(*args,**kwargs)
+
     def toggleFloating(self):
         self.parent().setFloating(not self.parent().isFloating())
 

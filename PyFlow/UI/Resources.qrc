@@ -2,6 +2,7 @@
   <qresource>
      <file alias="brick.png">resources\brick.png</file>
      <file alias="clear_icon.png">resources\clear_icon.png</file>
+     <file alias="close_window.png">resources\close_window.png</file>
      <file alias="collapse.svg">resources\collapse.svg</file>
      <file alias="colors_icon.png">resources\colors_icon.png</file>
      <file alias="comment_selected_icon.png">resources\comment_selected_icon.png</file>
@@ -39,7 +40,9 @@
      <file alias="shadow_icon.png">resources\shadow_icon.png</file>
      <file alias="shift-32.png">resources\shift-32.png</file>
      <file alias="shortcuts_icon.png">resources\shortcuts_icon.png</file>
+     <file alias="split_window.png">resources\split_window.png</file>
      <file alias="tear_off_copy.png">resources\tear_off_copy.png</file>
+     <file alias="tear_off_copy_bw.png">resources\tear_off_copy_bw.png</file>
      <file alias="unlocked.png">resources\unlocked.png</file>
      <file alias="variable.png">resources\variable.png</file>
      <file alias="wizard-cat.png">resources\wizard-cat.png</file>
