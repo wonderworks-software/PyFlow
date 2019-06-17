@@ -262,15 +262,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.actionRefresh = self._menu.addAction("Refresh")
         self.actionRefresh.triggered.connect(self._rawNode.checkForErrors)
 
-        self.test = self._menu.addAction("test")
-        self.test.triggered.connect(self.printPinLocations)
-
-    def printPinLocations(self):
-        for i in self._rawNode.inputs.values():
-            print(i.getName(), i.pinIndex)
-        for o in self._rawNode.outputs.values():
-            print(o.getName(), o.pinIndex)
-
     @property
     def groups(self):
         return self._groups

@@ -41,7 +41,6 @@ class UIPinGroup(QGraphicsWidget):
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.borderPen = QtGui.QPen(Colors.DarkGray, 0.5, QtCore.Qt.SolidLine)
-        self._scene = scene
         self.layout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
@@ -52,16 +51,18 @@ class UIPinGroup(QGraphicsWidget):
         headerBtn.setContentsMargins(0, 0, 0, 0)
         headerBtn.setMaximumHeight(10)
         headerBtn.clicked.connect(self.toggleCollapsed)
-        self.headerWidget = self._scene.addWidget(headerBtn)
+        self.headerWidget = scene.addWidget(headerBtn)
         self.layout.addItem(self.headerWidget)
         self._pins = set()
         self.bCollapsed = False
 
     def kill(self):
-        for pin in self._pins:
+        for pin in list(self._pins):
             pin._rawPin.kill()
         self._pins.clear()
-        self._scene.removeItem(self)
+        scene = self.scene()
+        if scene is not None:
+            scene.removeItem(self)
         del self
 
     def paint(self, painter, option, widget):
