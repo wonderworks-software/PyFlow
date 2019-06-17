@@ -3,6 +3,7 @@ import uuid
 from Qt import QtWidgets
 from Qt import QtGui, QtCore
 
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 class ToolBase(object):
     """docstring for ToolBase."""
@@ -71,6 +72,8 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         self.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea | QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea | QtCore.Qt.TopDockWidgetArea)
         self.setMinimumSize(QtCore.QSize(80, 80))
         self.setObjectName(self.uniqueName())
+        self.setTitleBarWidget(DockTitleBar(self))
+        self.setFloating(False)
 
     @staticmethod
     def defaultDockArea():
@@ -100,3 +103,129 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         self.onDestroy()
         self.parent().unregisterToolInstance(self)
         event.accept()
+
+    def addButton(self,button):
+        self.titleBarWidget().addButton(button)
+
+class DockTitleBar(QtWidgets.QWidget):
+    def __init__(self, dockWidget,renamable=False):
+        super(DockTitleBar, self).__init__(dockWidget)
+        self.renamable = renamable
+        self.setLayout(QtWidgets.QHBoxLayout())
+        self.layout().setContentsMargins(0,0,0,0)
+        self.buttonsLay = QtWidgets.QHBoxLayout()
+        self.buttonsLay.setSpacing(1)
+        self.buttonsLay.setMargin(1)
+        self.box = QtWidgets.QGroupBox("")
+        self.box.setLayout(self.buttonsLay)
+        self.box.setObjectName("Docked")
+        self.layout().addWidget(self.box)
+
+        self.box.mouseDoubleClickEvent = self.mouseDoubleClickEvent
+        self.box.mousePressEvent = self.mousePressEvent        
+        self.box.mouseMoveEvent = self.mouseMoveEvent 
+        self.box.mouseReleaseEvent = self.mouseReleaseEvent
+
+        self.titleLabel = QtWidgets.QLabel(self)
+        self.titleLabel.setStyleSheet("background:transparent")
+        self.titleEdit = QtWidgets.QLineEdit(self)
+        self.titleEdit.hide()
+        self.titleEdit.editingFinished.connect(self.finishEdit)
+
+        iconSize = QtWidgets.QApplication.style().standardIcon(
+            QtWidgets.QStyle.SP_TitleBarNormalButton).actualSize(
+                QtCore.QSize(100, 100))
+        self.buttonSize = iconSize + QtCore.QSize(4, 4)
+
+        self.dockButton = QtWidgets.QToolButton(self)
+        self.dockButton.setIcon(QtWidgets.QApplication.style().standardIcon(
+            QtWidgets.QStyle.SP_TitleBarNormalButton))
+        self.dockButton.setMaximumSize(self.buttonSize)
+        self.dockButton.setAutoRaise(True)
+        self.dockButton.clicked.connect(self.toggleFloating)
+
+        self.closeButton = QtWidgets.QToolButton(self)
+        self.closeButton.setMaximumSize(self.buttonSize)
+        self.closeButton.setAutoRaise(True)
+        self.closeButton.setIcon(QtWidgets.QApplication.style().standardIcon(
+            QtWidgets.QStyle.SP_DockWidgetCloseButton))
+        self.closeButton.clicked.connect(self.closeParent)
+
+        self.buttonsLay.addSpacing(2)
+        self.buttonsLay.addWidget(self.titleLabel)
+        self.buttonsLay.addWidget(self.titleEdit)
+        self.buttonsLay.addStretch()
+        self.buttonsLay.addSpacing(5)
+        self.buttonsLay.addWidget(self.dockButton)
+        self.buttonsLay.addWidget(self.closeButton)
+
+        dockWidget.featuresChanged.connect(self.onFeaturesChanged)
+
+        self.onFeaturesChanged(dockWidget.features())
+        self.setTitle(dockWidget.windowTitle())
+        dockWidget.installEventFilter(self)
+        dockWidget.topLevelChanged.connect(self.ChangeFloatingStyle)
+
+    def eventFilter(self, source, event):
+        if event.type() == QtCore.QEvent.WindowTitleChange:
+            self.setTitle(source.windowTitle())
+        return super(DockTitleBar, self).eventFilter(source, event)
+
+    def startEdit(self):
+        self.titleLabel.hide()
+        self.titleEdit.show()
+        self.titleEdit.setFocus()
+
+    def finishEdit(self):
+        self.titleEdit.hide()
+        self.titleLabel.show()
+        self.parent().setWindowTitle(self.titleEdit.text())
+
+    def onFeaturesChanged(self, features):
+        if not features & QtWidgets.QDockWidget.DockWidgetVerticalTitleBar:
+            self.closeButton.setVisible(
+                features & QtWidgets.QDockWidget.DockWidgetClosable)
+            self.dockButton.setVisible(
+                features & QtWidgets.QDockWidget.DockWidgetFloatable)
+        else:
+            raise ValueError('vertical title bar not supported')
+
+    def setTitle(self, title):
+        self.titleLabel.setText(title)
+        self.titleEdit.setText(title)
+
+    def ChangeFloatingStyle(self,state):
+        if not state:
+            self.box.setObjectName("Docked")
+        else:
+            self.box.setObjectName("UnDocked")
+        self.box.setStyleSheet(editableStyleSheet().getStyleSheet())
+        self.update()  
+              
+    def toggleFloating(self):
+        self.parent().setFloating(not self.parent().isFloating())
+
+    def closeParent(self):
+        self.parent().toggleViewAction().setChecked(False)
+        self.parent().close()
+
+    def mouseDoubleClickEvent(self, event):
+        if event.pos().x() <= self.titleLabel.width() and self.renamable:
+            self.startEdit()
+        else:
+            # this keeps the normal double-click behaviour
+            super(DockTitleBar, self).mouseDoubleClickEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        event.ignore()
+
+    def mousePressEvent(self, event):
+        event.ignore()
+
+    def mouseMoveEvent(self, event):
+        event.ignore()
+
+    def addButton(self,button):
+        button.setAutoRaise(True)
+        button.setMaximumSize(self.buttonSize)
+        self.buttonsLay.insertWidget(5,button)

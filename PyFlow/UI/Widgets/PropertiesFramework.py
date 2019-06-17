@@ -169,23 +169,6 @@ class CollapsibleFormWidget(CollapsibleWidget):
         return True
 
 
-lockUnlockCheckboxStyle = r"""
-QCheckBox {
-    spacing: 5px;
-}
-QCheckBox::indicator {
-    width: 20px;
-    height: 20px;
-}
-QCheckBox::indicator:unchecked {
-    image: url(':/unlocked.png');
-}
-QCheckBox::indicator:checked {
-    image: url(':/locked.png');
-}
-"""
-
-
 class PropertiesWidget(QtWidgets.QWidget):
     """docstring for PropertiesWidget."""
     spawnDuplicate = QtCore.Signal()
@@ -204,12 +187,12 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.searchBoxLayout = QtWidgets.QHBoxLayout(self.searchBoxWidget)
         self.searchBoxLayout.setContentsMargins(1, 1, 1, 1)
         self.searchBoxLayout.addWidget(self.searchBox)
-        self.lockCheckBox = QtWidgets.QCheckBox()
-        self.lockCheckBox.setStyleSheet(lockUnlockCheckboxStyle)
+        self.lockCheckBox = QtWidgets.QToolButton()
+        self.lockCheckBox.setCheckable(True)
+        self.lockCheckBox.setIcon(QtGui.QIcon(':/unlocked.png'))
+        self.lockCheckBox.toggled.connect(self.changeLockIcon)
         self.searchBoxLayout.addWidget(self.lockCheckBox)
-        self.tearOffCopy = QtWidgets.QPushButton()
-        self.tearOffCopy.setStyleSheet("")
-        self.tearOffCopy.setFlat(True)
+        self.tearOffCopy = QtWidgets.QToolButton()
         self.tearOffCopy.setIcon(QtGui.QIcon(":/tear_off_copy.png"))
         self.tearOffCopy.clicked.connect(self.spawnDuplicate.emit)
         self.searchBoxLayout.addWidget(self.tearOffCopy)
@@ -223,6 +206,11 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.mainLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
 
+    def changeLockIcon(self,checked):
+        if checked:
+            self.lockCheckBox.setIcon(QtGui.QIcon(':/locked.png'))
+        else:
+            self.lockCheckBox.setIcon(QtGui.QIcon(':/unlocked.png'))
     def setLockCheckBoxVisible(self, bVisible):
         self.lockCheckBox.setVisible(bVisible)
 
@@ -257,7 +245,7 @@ class PropertiesWidget(QtWidgets.QWidget):
                     w.setCollapsed(False)
 
     def isLocked(self):
-        return self.lockCheckBox.checkState() == QtCore.Qt.Checked
+        return self.lockCheckBox.isChecked() == True
 
     def clear(self):
         if not self.isLocked():
