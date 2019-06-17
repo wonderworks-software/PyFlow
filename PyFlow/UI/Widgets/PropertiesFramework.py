@@ -165,7 +165,7 @@ class CollapsibleFormWidget(CollapsibleWidget):
     def addWidget(self, label=None, widget=None,maxLabelWidth=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
             return False         
-        self.Layout.addWidget(PropertyEntry(str(label), widget, hideLabel=self.hideLabels,maxLabelWidth=maxSize))
+        self.Layout.addWidget(PropertyEntry(str(label), widget, hideLabel=self.hideLabels,maxLabelWidth=maxLabelWidth))
         return True
 
 
