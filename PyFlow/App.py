@@ -222,9 +222,45 @@ class PyFlow(QMainWindow):
         if currentInputAction in actionLoadVariants:
             self.load()
         if currentInputAction in actionSaveAsVariants:
-            self.save_as()
+            self.save(True)
+
+    @staticmethod
+    def fetchPackageNames(graphJson):
+        packages = set()
+
+        def worker(graphData):
+            for node in graphData["nodes"]:
+                packages.add(node["package"])
+
+                for inpJson in node["inputs"]:
+                    packages.add(inpJson['package'])
+
+                for outJson in node["inputs"]:
+                    packages.add(outJson['package'])
+
+                if "graphData" in node:
+                    worker(node["graphData"])
+        worker(graphJson)
+        return packages
 
     def loadFromData(self, data, fpath=""):
+
+        # check first if all packages we are trying to load are legal
+        existingPackages = GET_PACKAGES().keys()
+        graphPackages = PyFlow.fetchPackageNames(data)
+        missedPackages = set()
+        for pkg in graphPackages:
+            if pkg not in existingPackages:
+                missedPackages.add(pkg)
+        if len(missedPackages) > 0:
+            msg = "This graph can not be loaded. Following packages not found:\n\n"
+            index = 1
+            for missedPackageName in missedPackages:
+                msg += "{0}. {1}\n".format(index, missedPackageName)
+                index += 1
+            QMessageBox.critical(self, "Missing dependencies", msg)
+            return
+
         self.newFile(keepRoot=False)
         # load raw data
         self.graphManager.get().deserialize(data)

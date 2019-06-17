@@ -244,6 +244,7 @@ class PinBase(IPin):
 
         data = {
             'name': self.name,
+            'package': self.packageName,
             'fullName': self.getName(),
             'dataType': self.__class__.__name__,
             'direction': int(self.direction),
