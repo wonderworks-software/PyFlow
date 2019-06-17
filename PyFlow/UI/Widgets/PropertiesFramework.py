@@ -108,7 +108,7 @@ class CollapsibleWidget(QtWidgets.QWidget):
 
 class PropertyEntry(QtWidgets.QWidget):
     """docstring for PropertyEntry."""
-    def __init__(self, label, widget, parent=None, hideLabel=False):
+    def __init__(self, label, widget, parent=None, hideLabel=False,maxLabelWidth=None):
         super(PropertyEntry, self).__init__(parent)
         self.label = label
         self.layout = QtWidgets.QHBoxLayout(self)
@@ -116,7 +116,10 @@ class PropertyEntry(QtWidgets.QWidget):
         if not hideLabel:
             label = QtWidgets.QLabel(label + ":")
             label.setStyleSheet("font: bold")
-            label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred))
+            if not maxLabelWidth:
+                label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred))
+            else:
+                label.setMaximumWidth(maxLabelWidth)
             self.layout.addWidget(label)
         self.layout.addWidget(widget)
 
@@ -159,10 +162,10 @@ class CollapsibleFormWidget(CollapsibleWidget):
         self.Layout.insertWidget(index, PropertyEntry(str(label), widget))
         return True
 
-    def addWidget(self, label=None, widget=None):
+    def addWidget(self, label=None, widget=None,maxLabelWidth=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
-            return False
-        self.Layout.addWidget(PropertyEntry(str(label), widget, hideLabel=self.hideLabels))
+            return False         
+        self.Layout.addWidget(PropertyEntry(str(label), widget, hideLabel=self.hideLabels,maxLabelWidth=maxSize))
         return True
 
 

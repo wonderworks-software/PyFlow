@@ -77,7 +77,7 @@ class InputPreferences(CategoryWidgetBase):
             for inputActionVariant in variants:
                 actionWidget = InputActionWidget(inputActionRef=inputActionVariant)
                 actionWidget.setAction(inputActionVariant)
-                category.addWidget(label=inputActionVariant.getName(), widget=actionWidget)
+                category.addWidget(label=inputActionVariant.getName(), widget=actionWidget,maxLabelWidth=150)
             properties.addWidget(category)
             category.setCollapsed(True)
         self.layout.addWidget(properties)
