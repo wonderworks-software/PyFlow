@@ -3,7 +3,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt import QtWidgets
 
-from PyFlow.Packages.PyflowBase.Tools import RESOURCES_DIR
+from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget
 
@@ -22,7 +22,7 @@ class PropertiesTool(DockTool):
         self.propertiesWidget.spawnDuplicate.connect(self.onTearOffCopy)
 
     def onTearOffCopy(self, *args, **kwargs):
-        instance = self.canvas.getApp().invokeDockToolByName("PyflowBase", self.name())
+        instance = self.canvas.getApp().invokeDockToolByName("PyFlowBase", self.name())
         instance.assignPropertiesWidget(self.fillDelegate)
         instance.setFloating(True)
         instance.resize(self.size())

@@ -1,54 +1,54 @@
-PyFlow.Packages.PyflowBase.Pins package
+PyFlow.Packages.PyFlowBase.Pins package
 =======================================
 
 Submodules
 ----------
 
-PyFlow.Packages.PyflowBase.Pins.AnyPin module
+PyFlow.Packages.PyFlowBase.Pins.AnyPin module
 ---------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Pins.AnyPin
+.. automodule:: PyFlow.Packages.PyFlowBase.Pins.AnyPin
    :members:
 
-PyFlow.Packages.PyflowBase.Pins.BoolPin module
+PyFlow.Packages.PyFlowBase.Pins.BoolPin module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Pins.BoolPin
+.. automodule:: PyFlow.Packages.PyFlowBase.Pins.BoolPin
    :members:
 
-PyFlow.Packages.PyflowBase.Pins.ExecPin module
+PyFlow.Packages.PyFlowBase.Pins.ExecPin module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Pins.ExecPin
+.. automodule:: PyFlow.Packages.PyFlowBase.Pins.ExecPin
    :members:
 
-PyFlow.Packages.PyflowBase.Pins.FloatPin module
+PyFlow.Packages.PyFlowBase.Pins.FloatPin module
 -----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Pins.FloatPin
+.. automodule:: PyFlow.Packages.PyFlowBase.Pins.FloatPin
    :members:
 
-PyFlow.Packages.PyflowBase.Pins.IntPin module
+PyFlow.Packages.PyFlowBase.Pins.IntPin module
 ---------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Pins.IntPin
+.. automodule:: PyFlow.Packages.PyFlowBase.Pins.IntPin
    :members:
 
-PyFlow.Packages.PyflowBase.Pins.ListPin module
+PyFlow.Packages.PyFlowBase.Pins.ListPin module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Pins.ListPin
+.. automodule:: PyFlow.Packages.PyFlowBase.Pins.ListPin
    :members:
 
-PyFlow.Packages.PyflowBase.Pins.StringPin module
+PyFlow.Packages.PyFlowBase.Pins.StringPin module
 ------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Pins.StringPin
+.. automodule:: PyFlow.Packages.PyFlowBase.Pins.StringPin
    :members:
 
 
 Module contents
 ---------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Pins
+.. automodule:: PyFlow.Packages.PyFlowBase.Pins
    :members:

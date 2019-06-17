@@ -1,7 +1,7 @@
 from copy import copy
 import uuid
 
-from PyFlow.Packages.PyflowBase import PACKAGE_NAME
+from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Variable import Variable
 from PyFlow.Core.Common import *

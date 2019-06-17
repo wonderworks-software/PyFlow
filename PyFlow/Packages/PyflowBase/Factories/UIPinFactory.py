@@ -1,9 +1,9 @@
 from PyFlow.UI.Canvas.UIPinBase import UIPinBase
-from PyFlow.Packages.PyflowBase.Pins.AnyPin import AnyPin
-from PyFlow.Packages.PyflowBase.Pins.ExecPin import ExecPin
+from PyFlow.Packages.PyFlowBase.Pins.AnyPin import AnyPin
+from PyFlow.Packages.PyFlowBase.Pins.ExecPin import ExecPin
 
-from PyFlow.Packages.PyflowBase.UI.UIAnyPin import UIAnyPin
-from PyFlow.Packages.PyflowBase.UI.UIExecPin import UIExecPin
+from PyFlow.Packages.PyFlowBase.UI.UIAnyPin import UIAnyPin
+from PyFlow.Packages.PyFlowBase.UI.UIExecPin import UIExecPin
 
 
 def createUIPin(owningNode, raw_instance):

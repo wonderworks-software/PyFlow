@@ -1,6 +1,6 @@
 from copy import copy
 
-from PyFlow.Packages.PyflowBase import PACKAGE_NAME
+from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
 from PyFlow import CreateRawPin

@@ -1,186 +1,186 @@
-PyFlow.Packages.PyflowBase.Nodes package
+PyFlow.Packages.PyFlowBase.Nodes package
 ========================================
 
 Submodules
 ----------
 
-PyFlow.Packages.PyflowBase.Nodes.address module
+PyFlow.Packages.PyFlowBase.Nodes.address module
 -----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.address
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.address
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.branch module
+PyFlow.Packages.PyFlowBase.Nodes.branch module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.branch
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.branch
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.charge module
+PyFlow.Packages.PyFlowBase.Nodes.charge module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.charge
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.charge
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.commentNode module
+PyFlow.Packages.PyFlowBase.Nodes.commentNode module
 ---------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.commentNode
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.commentNode
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.compound module
+PyFlow.Packages.PyFlowBase.Nodes.compound module
 ------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.compound
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.compound
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.consoleOutput module
+PyFlow.Packages.PyFlowBase.Nodes.consoleOutput module
 -----------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.consoleOutput
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.consoleOutput
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.constant module
+PyFlow.Packages.PyFlowBase.Nodes.constant module
 ------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.constant
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.constant
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.delay module
+PyFlow.Packages.PyFlowBase.Nodes.delay module
 ---------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.delay
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.delay
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.deltaTime module
+PyFlow.Packages.PyFlowBase.Nodes.deltaTime module
 -------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.deltaTime
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.deltaTime
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.doN module
+PyFlow.Packages.PyFlowBase.Nodes.doN module
 -------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.doN
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.doN
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.doOnce module
+PyFlow.Packages.PyFlowBase.Nodes.doOnce module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.doOnce
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.doOnce
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.flipFlop module
+PyFlow.Packages.PyFlowBase.Nodes.flipFlop module
 ------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.flipFlop
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.flipFlop
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.forEachLoop module
+PyFlow.Packages.PyFlowBase.Nodes.forEachLoop module
 ---------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.forEachLoop
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.forEachLoop
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.forLoop module
+PyFlow.Packages.PyFlowBase.Nodes.forLoop module
 -----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.forLoop
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.forLoop
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.forLoopWithBreak module
+PyFlow.Packages.PyFlowBase.Nodes.forLoopWithBreak module
 --------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.forLoopWithBreak
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.forLoopWithBreak
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.getVar module
+PyFlow.Packages.PyFlowBase.Nodes.getVar module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.getVar
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.getVar
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.graphNodes module
+PyFlow.Packages.PyFlowBase.Nodes.graphNodes module
 --------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.graphNodes
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.graphNodes
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.makeArray module
+PyFlow.Packages.PyFlowBase.Nodes.makeArray module
 -------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.makeArray
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.makeArray
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.makeList module
+PyFlow.Packages.PyFlowBase.Nodes.makeList module
 ------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.makeList
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.makeList
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.pythonNode module
+PyFlow.Packages.PyFlowBase.Nodes.pythonNode module
 --------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.pythonNode
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.pythonNode
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.reroute module
+PyFlow.Packages.PyFlowBase.Nodes.reroute module
 -----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.reroute
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.reroute
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.rerouteExecs module
+PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs module
 ----------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.rerouteExecs
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.retriggerableDelay module
+PyFlow.Packages.PyFlowBase.Nodes.retriggerableDelay module
 ----------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.retriggerableDelay
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.retriggerableDelay
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.sequence module
+PyFlow.Packages.PyFlowBase.Nodes.sequence module
 ------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.sequence
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.sequence
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.setVar module
+PyFlow.Packages.PyFlowBase.Nodes.setVar module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.setVar
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.setVar
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.switchOnString module
+PyFlow.Packages.PyFlowBase.Nodes.switchOnString module
 ------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.switchOnString
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.switchOnString
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.tick module
+PyFlow.Packages.PyFlowBase.Nodes.tick module
 --------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.tick
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.tick
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.timer module
+PyFlow.Packages.PyFlowBase.Nodes.timer module
 ---------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.timer
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.timer
    :members:
 
-PyFlow.Packages.PyflowBase.Nodes.whileLoop module
+PyFlow.Packages.PyFlowBase.Nodes.whileLoop module
 -------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes.whileLoop
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.whileLoop
    :members:
 
 
 Module contents
 ---------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Nodes
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes
    :members:

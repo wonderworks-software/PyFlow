@@ -27,7 +27,7 @@ from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
-from PyFlow.Packages.PyflowBase.Tools.PropertiesTool import PropertiesTool
+from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE

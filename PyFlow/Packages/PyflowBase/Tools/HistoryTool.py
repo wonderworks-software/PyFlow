@@ -5,7 +5,7 @@ from Qt.QtWidgets import QUndoView
 from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QVBoxLayout
 
-from PyFlow.Packages.PyflowBase.Tools import RESOURCES_DIR
+from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
 
 

@@ -51,9 +51,9 @@ from PyFlow import (
 )
 from PyFlow.Core.Common import *
 
-from PyFlow.Packages.PyflowBase.Nodes.commentNode import commentNode
-from PyFlow.Packages.PyflowBase.UI.UIRerouteNode import UIRerouteNode
-from PyFlow.Packages.PyflowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
+from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
+from PyFlow.Packages.PyFlowBase.UI.UIRerouteNode import UIRerouteNode
+from PyFlow.Packages.PyFlowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
@@ -677,7 +677,7 @@ class Canvas(QGraphicsView):
                     rect.setBottom(rect.bottom() + 30)
 
                 nodeTemplate = NodeBase.jsonTemplate()
-                nodeTemplate['package'] = "PyflowBase"
+                nodeTemplate['package'] = "PyFlowBase"
                 nodeTemplate['type'] = commentNode.__name__
                 nodeTemplate['name'] = commentNode.__name__
                 if rect:
@@ -948,7 +948,7 @@ class Canvas(QGraphicsView):
         if connection and connection.drawSource._rawPin.isExec() and connection.drawDestination._rawPin.isExec():
             nodeClassName = "rerouteExecs"
         nodeTemplate = NodeBase.jsonTemplate()
-        nodeTemplate['package'] = "PyflowBase"
+        nodeTemplate['package'] = "PyFlowBase"
         nodeTemplate['lib'] = None
         nodeTemplate['type'] = nodeClassName
         nodeTemplate['name'] = "reroute"
@@ -962,7 +962,7 @@ class Canvas(QGraphicsView):
 
     def getInputNode(self):
         nodeTemplate = NodeBase.jsonTemplate()
-        nodeTemplate['package'] = "PyflowBase"
+        nodeTemplate['package'] = "PyFlowBase"
         nodeTemplate['lib'] = None
         nodeTemplate['type'] = "graphInputs"
         nodeTemplate['name'] = "graphInputs"
@@ -976,7 +976,7 @@ class Canvas(QGraphicsView):
 
     def getOutputNode(self):
         nodeTemplate = NodeBase.jsonTemplate()
-        nodeTemplate['package'] = "PyflowBase"
+        nodeTemplate['package'] = "PyFlowBase"
         nodeTemplate['lib'] = None
         nodeTemplate['type'] = "graphOutputs"
         nodeTemplate['name'] = "graphOutputs"

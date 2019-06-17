@@ -13,8 +13,8 @@ class TestBasePackage(unittest.TestCase):
     def test_branch_node(self):
         packages = GET_PACKAGES()
         man = GraphManager()
-        foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
-        nodes = packages['PyflowBase'].GetNodeClasses()
+        foos = packages['PyFlowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
+        nodes = packages['PyFlowBase'].GetNodeClasses()
         printNode1 = nodes["consoleOutput"]("print")
         man.activeGraph().addNode(printNode1)
         printNode1.setData(str('entity'), "first")

@@ -1,24 +1,24 @@
-PyFlow.Packages.PyflowBase.Exporters package
+PyFlow.Packages.PyFlowBase.Exporters package
 ============================================
 
 Submodules
 ----------
 
-PyFlow.Packages.PyflowBase.Exporters.CPPCompiler module
+PyFlow.Packages.PyFlowBase.Exporters.CPPCompiler module
 -------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Exporters.CPPCompiler
+.. automodule:: PyFlow.Packages.PyFlowBase.Exporters.CPPCompiler
    :members:
 
-PyFlow.Packages.PyflowBase.Exporters.PythonScriptExporter module
+PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter module
 ----------------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Exporters.PythonScriptExporter
+.. automodule:: PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter
    :members:
 
 
 Module contents
 ---------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Exporters
+.. automodule:: PyFlow.Packages.PyFlowBase.Exporters
    :members:

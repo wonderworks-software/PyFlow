@@ -1,90 +1,90 @@
-PyFlow.Packages.PyflowBase.UI package
+PyFlow.Packages.PyFlowBase.UI package
 =====================================
 
 Submodules
 ----------
 
-PyFlow.Packages.PyflowBase.UI.UIAnyPin module
+PyFlow.Packages.PyFlowBase.UI.UIAnyPin module
 ---------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UIAnyPin
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIAnyPin
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UICommentNode module
+PyFlow.Packages.PyFlowBase.UI.UICommentNode module
 --------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UICommentNode
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UICommentNode
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UICompoundNode module
+PyFlow.Packages.PyFlowBase.UI.UICompoundNode module
 ---------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UICompoundNode
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UICompoundNode
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UIConstantNode module
+PyFlow.Packages.PyFlowBase.UI.UIConstantNode module
 ---------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UIConstantNode
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIConstantNode
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UIExecPin module
+PyFlow.Packages.PyFlowBase.UI.UIExecPin module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UIExecPin
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIExecPin
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UIGetVarNode module
+PyFlow.Packages.PyFlowBase.UI.UIGetVarNode module
 -------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UIGetVarNode
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIGetVarNode
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UIGraphNodes module
+PyFlow.Packages.PyFlowBase.UI.UIGraphNodes module
 -------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UIGraphNodes
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIGraphNodes
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UIListPin module
+PyFlow.Packages.PyFlowBase.UI.UIListPin module
 ----------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UIListPin
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIListPin
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UIPythonNode module
+PyFlow.Packages.PyFlowBase.UI.UIPythonNode module
 -------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UIPythonNode
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIPythonNode
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UIRerouteNode module
+PyFlow.Packages.PyFlowBase.UI.UIRerouteNode module
 --------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UIRerouteNode
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIRerouteNode
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UISequenceNode module
+PyFlow.Packages.PyFlowBase.UI.UISequenceNode module
 ---------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UISequenceNode
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UISequenceNode
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UISetVarNode module
+PyFlow.Packages.PyFlowBase.UI.UISetVarNode module
 -------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UISetVarNode
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UISetVarNode
    :members:
 
-PyFlow.Packages.PyflowBase.UI.UISwitchOnStringNode module
+PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode module
 ---------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI.UISwitchOnStringNode
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode
    :members:
 
 
 Module contents
 ---------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.UI
+.. automodule:: PyFlow.Packages.PyFlowBase.UI
    :members:

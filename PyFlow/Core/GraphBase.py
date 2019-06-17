@@ -244,7 +244,7 @@ class GraphBase(ISerializable):
 
         pins on this node will be exposed on compound node as input pins
         """
-        node = getRawNodeInstance("graphInputs", "PyflowBase")
+        node = getRawNodeInstance("graphInputs", "PyFlowBase")
         self.addNode(node)
         return node
 
@@ -253,7 +253,7 @@ class GraphBase(ISerializable):
 
         pins on this node will be exposed on compound node as output pins
         """
-        node = getRawNodeInstance("graphOutputs", "PyflowBase")
+        node = getRawNodeInstance("graphOutputs", "PyFlowBase")
         self.addNode(node)
         return node
 

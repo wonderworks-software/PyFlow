@@ -14,9 +14,9 @@ class TestArrays(unittest.TestCase):
     def test_makeList_Node(self):
         packages = GET_PACKAGES()
         man = GraphManager()
-        nodes = packages['PyflowBase'].GetNodeClasses()
-        foos = packages['PyflowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
-        classNodes = packages['PyflowBase'].GetNodeClasses()
+        nodes = packages['PyFlowBase'].GetNodeClasses()
+        foos = packages['PyFlowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
+        classNodes = packages['PyFlowBase'].GetNodeClasses()
 
         makeListNode = nodes['makeArray']("mkList")
         man.activeGraph().addNode(makeListNode)

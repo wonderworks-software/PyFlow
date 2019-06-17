@@ -1,30 +1,30 @@
-PyFlow.Packages.PyflowBase.Factories package
+PyFlow.Packages.PyFlowBase.Factories package
 ============================================
 
 Submodules
 ----------
 
-PyFlow.Packages.PyflowBase.Factories.PinInputWidgetFactory module
+PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory module
 -----------------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Factories.PinInputWidgetFactory
+.. automodule:: PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory
    :members:
 
-PyFlow.Packages.PyflowBase.Factories.UINodeFactory module
+PyFlow.Packages.PyFlowBase.Factories.UINodeFactory module
 ---------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Factories.UINodeFactory
+.. automodule:: PyFlow.Packages.PyFlowBase.Factories.UINodeFactory
    :members:
 
-PyFlow.Packages.PyflowBase.Factories.UIPinFactory module
+PyFlow.Packages.PyFlowBase.Factories.UIPinFactory module
 --------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Factories.UIPinFactory
+.. automodule:: PyFlow.Packages.PyFlowBase.Factories.UIPinFactory
    :members:
 
 
 Module contents
 ---------------
 
-.. automodule:: PyFlow.Packages.PyflowBase.Factories
+.. automodule:: PyFlow.Packages.PyFlowBase.Factories
    :members:
