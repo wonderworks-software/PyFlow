@@ -27,7 +27,7 @@ QScrollBar::handle:vertical,QScrollBar::handle:horizontal
 }
 
 *::item::selected,
-QPushButton::pressed,QToolButton:pressed
+QPushButton::pressed,QToolButton:pressed,QProgressBar::chunk:horizontal
 {
     background:                %s;  /*Main Color */
 }
