@@ -143,7 +143,7 @@ class WizardDialogueBase(QDialog):
     @staticmethod
     def run():
         instance = WizardDialogueBase()
-        instance.exec()
+        instance.exec_()
 
 
 if __name__ == "__main__":
