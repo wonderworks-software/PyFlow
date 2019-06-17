@@ -28,7 +28,6 @@ from PyFlow.UI.Canvas.UINodeBase import NodeActionButtonBase
 from PyFlow.UI.Canvas.UIPinBase import UIPinBase
 from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.NodeBox import NodesBox
-from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.UI.Canvas.AutoPanController import AutoPanController
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
@@ -515,9 +514,6 @@ class Canvas(QGraphicsView):
                 if result:
                     self.pressed_item.parentItem().setName(name)
                     self.updatePropertyView(self.pressed_item.parentItem())
-        elif self.pressed_item and isinstance(self.pressed_item, EditableLabel):
-            if self.pressed_item._isEditable:
-                self.pressed_item.start_edit_name()
 
     def Tick(self, deltaTime):
         if self.autoPanController.isActive():
@@ -1054,9 +1050,6 @@ class Canvas(QGraphicsView):
         self.state = state
 
     def mousePressEvent(self, event):
-        if self.pressed_item and isinstance(self.pressed_item, EditableLabel):
-            if self.pressed_item != self.itemAt(event.pos()):
-                self.pressed_item.setOutFocus()
         self.pressed_item = self.itemAt(event.pos())
         node = self.nodeFromInstance(self.pressed_item)
         self.pressedPin = self.findPinNearPosition(event.pos())
@@ -1108,7 +1101,7 @@ class Canvas(QGraphicsView):
                     self._lastScenePos = self.mapToScene(event.pos())
                     self._lastOffsetFromSceneCenter = self._lastScenePos - self._lastSceneCenter
             self.node_box.hide()
-        elif not isinstance(self.pressed_item, EditableLabel) or (isinstance(self.pressed_item, EditableLabel) and not self.pressed_item._beingEdited):
+        else:
             if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
                 self.node_box.hide()
                 self.node_box.lineEdit.clear()
@@ -1182,8 +1175,6 @@ class Canvas(QGraphicsView):
                         selectedNodes = self.selectedNodes()
                         copiedNodes = self.copyNodes()
                         self.pasteNodes(move=False, data=copiedNodes)
-        else:
-            super(Canvas, self).mousePressEvent(event)
 
     def pan(self, delta):
         rect = self.sceneRect()

@@ -37,7 +37,6 @@ from PyFlow.UI.Canvas.UIPinBase import (
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
-from PyFlow.UI.Widgets.EditableLabel import EditableLabel
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.Canvas.NodeActionButton import NodeActionButtonBase
