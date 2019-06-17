@@ -103,8 +103,8 @@ class UIPythonNode(UINodeBase):
                 self.updateNodeShape()
                 self.updateNodeHeaderColor()
                 self.setHeaderHtml(self.getName())
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
     def shoutDown(self):
         if self.fileHandle is not None:

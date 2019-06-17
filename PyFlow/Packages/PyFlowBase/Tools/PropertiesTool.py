@@ -21,14 +21,15 @@ class PropertiesTool(DockTool):
         self.addButton(self.propertiesWidget.lockCheckBox)
         self.propertiesWidget.searchBoxLayout.removeWidget(self.propertiesWidget.tearOffCopy)
         self.addButton(self.propertiesWidget.tearOffCopy)
-                
+
         self.setWindowTitle(self.uniqueName())
         self.fillDelegate = None
         self.propertiesWidget.spawnDuplicate.connect(self.onTearOffCopy)
 
     def onTearOffCopy(self, *args, **kwargs):
-        instance = self.canvas.getApp().invokeDockToolByName("PyFlowBase", self.name())
-        instance.assignPropertiesWidget(self.fillDelegate)
+        instance = self.pyFlowInstance.invokeDockToolByName("PyFlowBase", self.name())
+        if self.fillDelegate is not None:
+            instance.assignPropertiesWidget(self.fillDelegate)
         instance.setFloating(True)
         instance.resize(self.size())
 
