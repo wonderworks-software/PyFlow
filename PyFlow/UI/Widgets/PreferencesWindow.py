@@ -95,8 +95,12 @@ class GeneralPreferences(CategoryWidgetBase):
         self.layout.setSpacing(2)
 
         commonCategory = CollapsibleFormWidget(headName="Common")
-        self.tempFilesDir = QLineEdit(os.path.expanduser('~/PyFlowTemp'))
+        defaultTempFolder = os.path.join(os.path.expanduser('~'), "PyFlowTemp")
+        defaultTempFolder = os.path.normpath(defaultTempFolder)
+        self.tempFilesDir = QLineEdit(defaultTempFolder)
         commonCategory.addWidget("TempFilesDir", self.tempFilesDir)
+        self.additionalPackagePaths = QLineEdit("")
+        commonCategory.addWidget("Additional package locations", self.additionalPackagePaths)
         self.layout.addWidget(commonCategory)
 
         pythonNodeCategory = CollapsibleFormWidget(headName="Python node")
@@ -114,10 +118,14 @@ class GeneralPreferences(CategoryWidgetBase):
     def serialize(self, settings):
         settings.setValue("EditorCmd", self.lePythonEditor.text())
         settings.setValue("TempFilesDir", self.tempFilesDir.text())
+        settings.setValue("ExtraPackageDirs", self.additionalPackagePaths.text())
 
     def onShow(self, settings):
         self.lePythonEditor.setText(settings.value("EditorCmd"))
-        self.tempFilesDir.setText(settings.value("TempFilesDir"))
+        path = settings.value("TempFilesDir")
+        path = os.path.normpath(path)
+        self.tempFilesDir.setText(path)
+        self.additionalPackagePaths.setText(settings.value("ExtraPackageDirs"))
 
 
 class ThemePreferences(CategoryWidgetBase):

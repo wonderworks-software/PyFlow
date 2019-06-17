@@ -433,8 +433,17 @@ class PyFlow(QMainWindow):
         if PyFlow.appInstance is not None:
             return PyFlow.appInstance
 
+        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
+        prefsSettings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
         try:
-            INITIALIZE()
+            extraPackagePaths = []
+            extraPathsString = prefsSettings.value("Preferences/General/ExtraPackageDirs")
+            extraPathsString = extraPathsString.rstrip(";")
+            extraPathsRaw = extraPathsString.split(";")
+            for rawPath in extraPathsRaw:
+                if os.path.exists(rawPath):
+                    extraPackagePaths.append(os.path.normpath(rawPath))
+            INITIALIZE(additionalPackageLocations=extraPackagePaths)
         except Exception as e:
             QMessageBox.critical(None, "Fatal error", str(e))
             return
@@ -446,7 +455,6 @@ class PyFlow(QMainWindow):
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
 
-        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
         geo = settings.value('Editor/geometry')
         if geo is not None:
             instance.restoreGeometry(geo)

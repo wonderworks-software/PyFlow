@@ -7,6 +7,7 @@ import pkgutil
 import collections
 from copy import copy
 import os
+
 from PyFlow.Packages import *
 
 
@@ -99,11 +100,12 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
         return nodes[nodeClassName](nodeClassName, **kwargs)
 
 
-def INITIALIZE():
+def INITIALIZE(additionalPackageLocations=[]):
     from PyFlow.UI.Tool import REGISTER_TOOL
     from PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
     from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
     from PyFlow.UI.Canvas.UIPinBase import REGISTER_UI_PIN_FACTORY
+    from PyFlow import ConfigManager
 
     packagePaths = Packages.__path__
 
@@ -116,6 +118,7 @@ def INITIALIZE():
         for packagesRoot in pathsString.split(delim):
             if os.path.exists(packagesRoot):
                 packagePaths.append(packagesRoot)
+    packagePaths.extend(additionalPackageLocations)
 
     for importer, modname, ispkg in pkgutil.iter_modules(packagePaths):
         if ispkg:
