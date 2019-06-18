@@ -42,9 +42,6 @@ class UICommentNode(UINodeBase):
         self.owningNodes = set()
         UICommentNode.layer += 1
         self.setZValue(UICommentNode.layer)
-        self.editMessageAction = self._menu.addAction("Edit message")
-        self.editMessageAction.setData(NodeActionButtonInfo(RESOURCES_DIR + "/rename.svg"))
-        self.editMessageAction.triggered.connect(self.onChangeMessage)
         self.partiallyIntersectedConnections = set()
         self.partiallyIntersectedConnectionsEndpointOverrides = {}
 
@@ -53,20 +50,6 @@ class UICommentNode(UINodeBase):
         original["owningNodes"] = list(set([n.name for n in self.owningNodes]))
         original["color"] = self.color.rgba()
         return original
-
-    def onChangeMessage(self):
-        dialog = TextEditDialog(self.nodeNameWidget.getFont(), self.labelTextColor)
-        dialog.move(QtGui.QCursor.pos())
-        dialog.setHtml(self.getHeaderHtml())
-        dialog.exec_()
-        try:
-            html, accepted = dialog.getResult()
-            if accepted:
-                self.nodeNameWidget.setHtml(html)
-                self.updateNodeShape()
-        except Exception as e:
-            print(e)
-        self.setFocus()
 
     def kill(self, *args, **kwargs):
         # Do not forget to remove collapsed nodes!

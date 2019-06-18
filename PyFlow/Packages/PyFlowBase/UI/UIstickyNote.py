@@ -18,9 +18,6 @@ class UIstickyNote(UINodeBase):
         self.color.setAlpha(255)
         self.labelTextColor = QtGui.QColor(0,0,0,255)
         self.resizable = True
-        self.editMessageAction = self._menu.addAction("Edit message")
-        self.editMessageAction.setData(NodeActionButtonInfo(RESOURCES_DIR + "/rename.svg"))
-        self.editMessageAction.triggered.connect(self.onChangeMessage)
 
         self.textInput = InputTextField(self,False,"Text Goes Here")
         self.textInput.setPos(QtCore.QPointF(5,self.nodeNameWidget.boundingRect().height()))
@@ -63,20 +60,6 @@ class UIstickyNote(UINodeBase):
             self.textInput.show()
         else:
             self.textInput.hide()
-
-    def onChangeMessage(self):
-        dialog = TextEditDialog(self.nodeNameWidget.getFont(), self.labelTextColor)
-        dialog.move(QtGui.QCursor.pos())
-        dialog.setHtml(self.getHeaderHtml())
-        dialog.exec_()
-        try:
-            html, accepted = dialog.getResult()
-            if accepted:
-                self.nodeNameWidget.setHtml(html)
-                self.updateNodeShape()
-        except Exception as e:
-            print(e)
-        self.setFocus()
 
     def paint(self, painter, option, widget):
         NodePainter.asCommentNode(self, painter, option, widget)
