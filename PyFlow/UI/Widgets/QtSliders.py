@@ -10,7 +10,7 @@ FLOAT_RANGE_MAX = maxint + 0.1
 INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
-sys.path.append(r"C:\Users\pedro\OneDrive\pcTools_v5\PyFlow_v2")
+sys.path.append(r"C:\Users\pedro\OneDrive\pcTools_v5\PyFlow")
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
@@ -268,6 +268,13 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
         self.lineEdit().installEventFilter(self)
         self.installEventFilter(self)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus )
+
+    def wheelEvent(self,event):
+        if not self.hasFocus():
+            event.ignore()
+        else:
+            super(valueBox, self).wheelEvent(event)
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
