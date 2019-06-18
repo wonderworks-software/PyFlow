@@ -65,8 +65,9 @@ class InputTextField(QGraphicsTextItem):
     def __init__(self,parent,singleLine=False,*args,**Kwargs):
         super(InputTextField, self).__init__(*args,**Kwargs)
         self.setParentItem(parent)
-        self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsMovable | QGraphicsWidget.ItemIsSelectable ) 
+        self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsSelectable ) 
         self.singleLine = singleLine
+        self.setObjectName("Nothing")
 
     def keyPressEvent(self,event):
         if self.singleLine:
@@ -92,11 +93,10 @@ class InputTextField(QGraphicsTextItem):
             self.parentItem().mouseReleaseEvent(event)
             self.clearFocus()
 
-
-    def mouseDoubleClickEvent(self, event):      
+    def mouseDoubleClickEvent(self, event):     
+        super(InputTextField, self).mouseDoubleClickEvent(event) 
         self.setFlag(QGraphicsWidget.ItemIsFocusable,True) 
         self.setFocus()
-        super(InputTextField, self).mouseDoubleClickEvent(event)
         
     def focusInEvent(self, event):
 
