@@ -76,9 +76,22 @@ class InputTextField(QGraphicsTextItem):
             else:
                 super(InputTextField, self).keyPressEvent(event)
         else:
-            super(InputTextField, self).keyPressEvent(event)                
-    def mousePressEvent(self, event):      
-        self.parentItem().setSelected(True)
+            super(InputTextField, self).keyPressEvent(event)
+
+    def mousePressEvent(self, event):   
+        if self.objectName() == "MouseLocked":
+            super(InputTextField, self).mousePressEvent(event)
+        else:
+            self.parentItem().mousePressEvent(event)
+            self.clearFocus()
+
+    def mouseReleaseEvent(self, event):   
+        if self.objectName() == "MouseLocked":
+            super(InputTextField, self).mouseReleaseEvent(event)
+        else:
+            self.parentItem().mouseReleaseEvent(event)
+            self.clearFocus()
+
 
     def mouseDoubleClickEvent(self, event):      
         self.setFlag(QGraphicsWidget.ItemIsFocusable,True) 
@@ -86,12 +99,7 @@ class InputTextField(QGraphicsTextItem):
         super(InputTextField, self).mouseDoubleClickEvent(event)
         
     def focusInEvent(self, event):
-        for node in self.parentItem().canvasRef().selectedNodes():
-            if node != self.parentItem():
-                node.setSelected(False)
-        for connection in self.parentItem().canvasRef().selectedConnections():
-            connection.setSelected(False)
-        self.parentItem().setSelected(True)
+
         self.parentItem().canvasRef().disableSortcuts()
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)            
         self.setObjectName("MouseLocked")
