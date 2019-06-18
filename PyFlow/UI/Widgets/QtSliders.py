@@ -147,6 +147,7 @@ class slider(QtWidgets.QSlider):
         self.deltaValue = 0
         self.startDragpos = QtCore.QPointF()
         self.realStartDragpos = QtCore.QPointF()
+        self.setFocusPolicy(QtCore.Qt.StrongFocus )
 
     def mousePressEvent(self, event):
         self.prevValue = self.value()
@@ -202,7 +203,12 @@ class slider(QtWidgets.QSlider):
             self.setValue(self.value() - self.deltaValue)
         else:
             super(slider, self).mouseMoveEvent(event)
-
+            
+    def wheelEvent(self,event):
+        if not self.hasFocus():
+            event.ignore()
+        else:
+            super(slider, self).wheelEvent(event)
     def keyPressEvent(self, event):
         p = self.mapFromGlobal(QtGui.QCursor.pos())
         self.startDragpos = p
