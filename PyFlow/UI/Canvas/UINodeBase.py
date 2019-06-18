@@ -61,17 +61,56 @@ class CollapseNodeActionButton(NodeActionButtonBase):
         else:
             self.svgIcon.setElementId("Collapse")
 
+class InputTextField(QGraphicsTextItem):
+    def __init__(self,parent,*args,**Kwargs):
+        super(InputTextField, self).__init__(*args,**Kwargs)
+        self.setParentItem(parent)
+        self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsMovable | QGraphicsWidget.ItemIsSelectable ) 
+
+    def mousePressEvent(self, event):      
+        self.parentItem().setSelected(True)
+
+    def mouseDoubleClickEvent(self, event):      
+        self.setFlag(QGraphicsWidget.ItemIsFocusable,True) 
+        self.setFocus()
+        super(InputTextField, self).mouseDoubleClickEvent(event)
+        
+    def focusInEvent(self, event):
+        for node in self.parentItem().canvasRef().selectedNodes():
+            if node != self.parentItem():
+                node.setSelected(False)
+        for connection in self.parentItem().canvasRef().selectedConnections():
+            connection.setSelected(False)
+        self.parentItem().setSelected(True)
+        self.parentItem().canvasRef().disableSortcuts()
+        self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)            
+        self.setObjectName("MouseLocked")
+        super(InputTextField, self).focusInEvent(event)
+
+    def focusOutEvent(self, event):      
+        self.parentItem().canvasRef().enableSortcuts()
+        cursor = self.textCursor()
+        cursor.clearSelection()
+        self.setTextCursor(cursor)
+        super(InputTextField, self).focusOutEvent(event)
+        self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction) 
+        self.setFlag(QGraphicsWidget.ItemIsFocusable,False)  
+        self.setObjectName("Nothing")
 
 class NodeName(QGraphicsWidget):
     """docstring for NodeName"""
+    displayNameChanged = QtCore.Signal()
+
     def __init__(self, parent=None):
         super(NodeName, self).__init__(parent)
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        self.labelItem = QGraphicsTextItem()
+        self.labelItem = InputTextField(parent)
         self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
         self.labelItem.setAcceptHoverEvents(True)
+        self.labelItem.document().contentsChanged.connect(self.displayNameChanged.emit)
+
         self.labelItem.hoverMoveEvent = self.hoverMoveEvent
         self._font = QtGui.QFont("Consolas")
         self._font.setPointSize(6)
@@ -184,6 +223,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.nodeLayout.addItem(self.headerLayout)
         self.nodeNameWidget = NodeName(self)
+        self.nodeNameWidget.displayNameChanged.connect(self.updateName)
         self.headerLayout.addItem(self.nodeNameWidget)
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         self.headerLayout.setSpacing(3)
@@ -438,6 +478,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     def isRenamable(self):
         return False
+
+    def updateName(self):
+        self.setName(self.nodeNameWidget.getPlainText())
 
     def setName(self, name):
         self._rawNode.setName(name)

@@ -5,38 +5,11 @@ from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Canvas.Painters import NodePainter
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase,InputTextField
 from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
 from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from Qt.QtWidgets import QGraphicsTextItem,QGraphicsWidget,QGraphicsItem
-
-class InputTextField(QGraphicsTextItem):
-    def __init__(self,parent,*args,**Kwargs):
-        super(InputTextField, self).__init__(*args,**Kwargs)
-        self.setParentItem(parent)
-        self.setObjectName("MouseLocked")
-        self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
-        self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsMovable |
-                                QGraphicsWidget.ItemIsFocusable | QGraphicsWidget.ItemIsSelectable )
-
-    def focusInEvent(self, event):
-        for node in self.parentItem().canvasRef().selectedNodes():
-            if node != self.parentItem():
-                node.setSelected(False)
-        for connection in self.parentItem().canvasRef().selectedConnections():
-            connection.setSelected(False)
-
-        self.parentItem().setSelected(True)
-        self.parentItem().canvasRef().disableSortcuts()
-        super(InputTextField, self).focusInEvent(event)
-
-    def focusOutEvent(self, event):
-        self.parentItem().canvasRef().enableSortcuts()
-        cursor = self.textCursor()
-        cursor.clearSelection()
-        self.setTextCursor(cursor)
-        super(InputTextField, self).focusOutEvent(event)
 
 class UIstickyNote(UINodeBase):
     def __init__(self, raw_node):
@@ -74,6 +47,7 @@ class UIstickyNote(UINodeBase):
             self.textInput.setHtml(jsonTemplate["wrapper"]["currentText"])
 
     def mouseDoubleClickEvent(self, event):
+        self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable,True)
         self.textInput.setFocus()
         super(UIstickyNote, self).mouseDoubleClickEvent(event)
 
@@ -81,6 +55,7 @@ class UIstickyNote(UINodeBase):
         if change == QGraphicsItem.ItemSelectedChange:
             if value == False:
                 self.textInput.clearFocus()
+                self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable,False)
         return super(UIstickyNote, self).itemChange(change, value)
 
     def aboutToCollapse(self, futureCollapseState):
