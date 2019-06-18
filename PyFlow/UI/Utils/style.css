@@ -46,7 +46,7 @@ QWidget
 }
 
 QScrollArea,QGraphicsView,QDockWidget,QListWidget,
-QLineEdit,QToolTip,QPushButton,QComboBox,
+QLineEdit,QToolTip,QPushButton,QComboBox,QUndoView,
 QTabWidget::pane,QTabBar::tab,
 QScrollBar:vertical,QScrollBar:horizontal,
 QScrollBar::add-line:vertical,QScrollBar::add-line:horizontal,
