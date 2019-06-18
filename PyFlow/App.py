@@ -474,11 +474,12 @@ class PyFlow(QMainWindow):
         try:
             extraPackagePaths = []
             extraPathsString = prefsSettings.value("Preferences/General/ExtraPackageDirs")
-            extraPathsString = extraPathsString.rstrip(";")
-            extraPathsRaw = extraPathsString.split(";")
-            for rawPath in extraPathsRaw:
-                if os.path.exists(rawPath):
-                    extraPackagePaths.append(os.path.normpath(rawPath))
+            if extraPathsString is not None:
+                extraPathsString = extraPathsString.rstrip(";")
+                extraPathsRaw = extraPathsString.split(";")
+                for rawPath in extraPathsRaw:
+                    if os.path.exists(rawPath):
+                        extraPackagePaths.append(os.path.normpath(rawPath))
             INITIALIZE(additionalPackageLocations=extraPackagePaths)
         except Exception as e:
             QMessageBox.critical(None, "Fatal error", str(e))
