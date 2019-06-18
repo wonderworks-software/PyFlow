@@ -73,6 +73,10 @@ class UIstickyNote(UINodeBase):
         if "currentText" in jsonTemplate["wrapper"]:
             self.textInput.setHtml(jsonTemplate["wrapper"]["currentText"])
 
+    def mouseDoubleClickEvent(self, event):
+        self.textInput.setFocus()
+        super(UIstickyNote, self).mouseDoubleClickEvent(event)
+
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSelectedChange:
             if value == False:
