@@ -88,6 +88,12 @@ PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode module
 .. automodule:: PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode
    :members:
 
+PyFlow.Packages.PyFlowBase.UI.UIstickyNote module
+-------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIstickyNote
+   :members:
+
 
 Module contents
 ---------------

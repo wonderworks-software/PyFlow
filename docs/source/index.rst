@@ -11,13 +11,13 @@ PyFlow - visual scripting framework for python!
 
 .. toctree::
    :caption: The Basics
-   :maxdepth: 1
+   :maxdepth: 2
 
    basics
 
 .. toctree::
    :caption: Advanced
-   :maxdepth: 1
+   :maxdepth: 2
 
    extending
 
@@ -27,7 +27,6 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
 
 .. toctree::
    :caption: Extra Information
