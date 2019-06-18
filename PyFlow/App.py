@@ -21,6 +21,7 @@ from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.Canvas import CanvasWidget
 from PyFlow.Core.Common import Direction
+from PyFlow.Core.version import currentVersion
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManagerSingleton
@@ -70,6 +71,7 @@ class PyFlow(QMainWindow):
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
+        self.setWindowTitle("PyFlow v{0}".format(currentVersion().__str__()))
         self.undoStack = QUndoStack(self)
         self.setContentsMargins(1, 1, 1, 1)
         self.graphManager = GraphManagerSingleton()

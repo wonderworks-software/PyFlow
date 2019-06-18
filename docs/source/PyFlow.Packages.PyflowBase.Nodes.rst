@@ -184,6 +184,12 @@ PyFlow.Packages.PyFlowBase.Nodes.setVar module
 .. automodule:: PyFlow.Packages.PyFlowBase.Nodes.setVar
    :members:
 
+PyFlow.Packages.PyFlowBase.Nodes.stickyNote module
+--------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.stickyNote
+   :members:
+
 PyFlow.Packages.PyFlowBase.Nodes.switchOnString module
 ------------------------------------------------------
 

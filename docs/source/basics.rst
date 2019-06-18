@@ -1,8 +1,5 @@
-The basics
-==========
+Adding node to canvas
+=====================
 
-How to create nodes
-
-How to connect pins
-
-How to process graph
+To add node to a canvas, you need either to spawn NodeBox tool
+or right click on canvas. Node box will appear. Type node name and drag it to the canvas.
