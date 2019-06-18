@@ -45,7 +45,7 @@ QWidget
     selection-background-color: %s; /*Main Color SemiTransparent*/
 }
 
-
+QScrollArea,QGraphicsView,QDockWidget,QListWidget,
 QLineEdit,QToolTip,QPushButton,QComboBox,
 QTabWidget::pane,QTabBar::tab,
 QScrollBar:vertical,QScrollBar:horizontal,

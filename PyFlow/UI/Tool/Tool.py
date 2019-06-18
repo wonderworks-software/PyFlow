@@ -62,7 +62,7 @@ class ShelfTool(ToolBase):
         print(self.name(), "called!", self.canvas)
 
 
-class DockTool(QtWidgets.QDockWidget, ToolBase):
+class DockTool(QtWidgets.QDockWidget,ToolBase):
     """docstring for DockTool."""
     def __init__(self):
         ToolBase.__init__(self)
@@ -112,7 +112,7 @@ class DockTitleBar(QtWidgets.QWidget):
         super(DockTitleBar, self).__init__(dockWidget)
         self.renamable = renamable
         self.setLayout(QtWidgets.QHBoxLayout())
-        self.layout().setContentsMargins(0,0,0,0)
+        self.layout().setContentsMargins(0,0,0,1)
         self.buttonsLay = QtWidgets.QHBoxLayout()
         self.buttonsLay.setSpacing(1)
         self.buttonsLay.setMargin(1)
@@ -132,10 +132,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.titleEdit.hide()
         self.titleEdit.editingFinished.connect(self.finishEdit)
 
-        iconSize = QtWidgets.QApplication.style().standardIcon(
-            QtWidgets.QStyle.SP_TitleBarNormalButton).actualSize(
-                QtCore.QSize(100, 100))
-        self.buttonSize = iconSize + QtCore.QSize(4, 4)
+        self.buttonSize = QtCore.QSize(14, 14)
 
         self.dockButton = QtWidgets.QToolButton(self)
         self.dockButton.setIcon(QtGui.QIcon(':/split_window.png'))
@@ -146,8 +143,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.closeButton = QtWidgets.QToolButton(self)
         self.closeButton.setMaximumSize(self.buttonSize)
         self.closeButton.setAutoRaise(True)
-        self.closeButton.setIcon(QtGui.QIcon(':/close_window.png'))#QtWidgets.QApplication.style().standardIcon(
-            #QtWidgets.QStyle.SP_DockWidgetCloseButton))
+        self.closeButton.setIcon(QtGui.QIcon(':/close_window.png'))
         self.closeButton.clicked.connect(self.closeParent)
 
         self.buttonsLay.addSpacing(2)
