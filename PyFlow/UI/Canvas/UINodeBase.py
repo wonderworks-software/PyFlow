@@ -62,11 +62,21 @@ class CollapseNodeActionButton(NodeActionButtonBase):
             self.svgIcon.setElementId("Collapse")
 
 class InputTextField(QGraphicsTextItem):
-    def __init__(self,parent,*args,**Kwargs):
+    def __init__(self,parent,singleLine=False,*args,**Kwargs):
         super(InputTextField, self).__init__(*args,**Kwargs)
         self.setParentItem(parent)
         self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsMovable | QGraphicsWidget.ItemIsSelectable ) 
+        self.singleLine = singleLine
 
+    def keyPressEvent(self,event):
+        if self.singleLine:
+            if event.key() == QtCore.Qt.Key_Return:
+                event.ignore()
+                self.clearFocus()
+            else:
+                super(InputTextField, self).keyPressEvent(event)
+        else:
+            super(InputTextField, self).keyPressEvent(event)                
     def mousePressEvent(self, event):      
         self.parentItem().setSelected(True)
 
@@ -106,7 +116,7 @@ class NodeName(QGraphicsWidget):
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        self.labelItem = InputTextField(parent)
+        self.labelItem = InputTextField(parent,singleLine=True)
         self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
         self.labelItem.setAcceptHoverEvents(True)
         self.labelItem.document().contentsChanged.connect(self.displayNameChanged.emit)

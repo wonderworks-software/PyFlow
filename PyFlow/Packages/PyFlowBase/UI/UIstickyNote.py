@@ -22,7 +22,7 @@ class UIstickyNote(UINodeBase):
         self.editMessageAction.setData(NodeActionButtonInfo(RESOURCES_DIR + "/rename.svg"))
         self.editMessageAction.triggered.connect(self.onChangeMessage)
 
-        self.textInput = InputTextField(self,"Text Goes Here")
+        self.textInput = InputTextField(self,False,"Text Goes Here")
         self.textInput.setPos(QtCore.QPointF(5,self.nodeNameWidget.boundingRect().height()))
         self.textInput.document().contentsChanged.connect(self.updateSize)
         self.textWidget = QGraphicsWidget()
