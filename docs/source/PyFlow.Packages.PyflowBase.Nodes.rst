@@ -46,6 +46,12 @@ PyFlow.Packages.PyFlowBase.Nodes.constant module
 .. automodule:: PyFlow.Packages.PyFlowBase.Nodes.constant
    :members:
 
+PyFlow.Packages.PyFlowBase.Nodes.convertTo module
+-------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.convertTo
+   :members:
+
 PyFlow.Packages.PyFlowBase.Nodes.delay module
 ---------------------------------------------
 
@@ -56,6 +62,12 @@ PyFlow.Packages.PyFlowBase.Nodes.deltaTime module
 -------------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Nodes.deltaTime
+   :members:
+
+PyFlow.Packages.PyFlowBase.Nodes.dictKeys module
+------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.dictKeys
    :members:
 
 PyFlow.Packages.PyFlowBase.Nodes.doN module
@@ -106,10 +118,28 @@ PyFlow.Packages.PyFlowBase.Nodes.graphNodes module
 .. automodule:: PyFlow.Packages.PyFlowBase.Nodes.graphNodes
    :members:
 
+PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict module
+---------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict
+   :members:
+
 PyFlow.Packages.PyFlowBase.Nodes.makeArray module
 -------------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Nodes.makeArray
+   :members:
+
+PyFlow.Packages.PyFlowBase.Nodes.makeDict module
+------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.makeDict
+   :members:
+
+PyFlow.Packages.PyFlowBase.Nodes.makeDictElement module
+-------------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.makeDictElement
    :members:
 
 PyFlow.Packages.PyFlowBase.Nodes.makeList module

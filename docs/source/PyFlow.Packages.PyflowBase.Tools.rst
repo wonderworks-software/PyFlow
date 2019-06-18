@@ -28,6 +28,12 @@ PyFlow.Packages.PyFlowBase.Tools.AlignTopTool module
 .. automodule:: PyFlow.Packages.PyFlowBase.Tools.AlignTopTool
    :members:
 
+PyFlow.Packages.PyFlowBase.Tools.CompileTool module
+---------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Tools.CompileTool
+   :members:
+
 PyFlow.Packages.PyFlowBase.Tools.HistoryTool module
 ---------------------------------------------------
 

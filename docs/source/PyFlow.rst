@@ -11,6 +11,7 @@ Subpackages
    PyFlow.Packages
    PyFlow.Tests
    PyFlow.UI
+   PyFlow.Wizards
 
 Submodules
 ----------
