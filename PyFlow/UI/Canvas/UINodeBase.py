@@ -68,6 +68,8 @@ class InputTextField(QGraphicsTextItem):
         self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsSelectable ) 
         self.singleLine = singleLine
         self.setObjectName("Nothing")
+        self.origMoveEvent = self.mouseMoveEvent
+        self.mouseMoveEvent = self.parentItem().mouseMoveEvent
 
     def keyPressEvent(self,event):
         if self.singleLine:
@@ -99,10 +101,10 @@ class InputTextField(QGraphicsTextItem):
         self.setFocus()
         
     def focusInEvent(self, event):
-
         self.parentItem().canvasRef().disableSortcuts()
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)            
         self.setObjectName("MouseLocked")
+        self.mouseMoveEvent = self.origMoveEvent
         super(InputTextField, self).focusInEvent(event)
 
     def focusOutEvent(self, event):      
@@ -114,6 +116,7 @@ class InputTextField(QGraphicsTextItem):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction) 
         self.setFlag(QGraphicsWidget.ItemIsFocusable,False)  
         self.setObjectName("Nothing")
+        self.mouseMoveEvent = self.parentItem().mouseMoveEvent
 
 class NodeName(QGraphicsWidget):
     """docstring for NodeName"""
