@@ -509,6 +509,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                     self.onVisibilityChanged(False)
                 else:
                     self.onVisibilityChanged(bool(value))
+        if change == QGraphicsItem.ItemSelectedChange:
+            if value == False:
+                self.nodeNameWidget.labelItem.clearFocus()                    
         return super(UINodeBase, self).itemChange(change, value)
 
     def graph(self):
@@ -681,7 +684,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             h = max(self._rect.height(), h)
 
         if self.collapsed:
-            h = max(self.minHeight, self.labelHeight)
+            h = min(self.minHeight, self.labelHeight+self.nodeLayout.spacing()*2)
 
         return h
 

@@ -4,6 +4,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
 from PyFlow.Packages.PyFlowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
+from PyFlow.Packages.PyFlowBase.Nodes.stickyNote import stickyNote
 from PyFlow.Packages.PyFlowBase.Nodes.reroute import reroute
 from PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs import rerouteExecs
 from PyFlow.Packages.PyFlowBase.Nodes.graphNodes import (
@@ -21,6 +22,7 @@ from PyFlow.Packages.PyFlowBase.UI.UIGetVarNode import UIGetVarNode
 from PyFlow.Packages.PyFlowBase.UI.UISetVarNode import UISetVarNode
 from PyFlow.Packages.PyFlowBase.UI.UISequenceNode import UISequenceNode
 from PyFlow.Packages.PyFlowBase.UI.UICommentNode import UICommentNode
+from PyFlow.Packages.PyFlowBase.UI.UIstickyNote import UIstickyNote
 from PyFlow.Packages.PyFlowBase.UI.UIRerouteNode import UIRerouteNode
 from PyFlow.Packages.PyFlowBase.UI.UIPythonNode import UIPythonNode
 from PyFlow.Packages.PyFlowBase.UI.UIGraphNodes import (
@@ -46,6 +48,8 @@ def createUINode(raw_instance):
         return UISequenceNode(raw_instance)
     if isinstance(raw_instance, commentNode):
         return UICommentNode(raw_instance)
+    if isinstance(raw_instance, stickyNote):
+        return UIstickyNote(raw_instance)        
     if isinstance(raw_instance, reroute) or isinstance(raw_instance, rerouteExecs):
         return UIRerouteNode(raw_instance)
     if isinstance(raw_instance, graphInputs):

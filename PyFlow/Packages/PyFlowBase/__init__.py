@@ -38,7 +38,6 @@ from PyFlow.Packages.PyFlowBase.Nodes.sequence import sequence
 from PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
 from PyFlow.Packages.PyFlowBase.Nodes.timer import timer
 from PyFlow.Packages.PyFlowBase.Nodes.whileLoop import whileLoop
-from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyFlowBase.Nodes.setVar import setVar
 from PyFlow.Packages.PyFlowBase.Nodes.reroute import reroute
@@ -57,6 +56,9 @@ from PyFlow.Packages.PyFlowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyFlowBase.Nodes.compound import compound
 from PyFlow.Packages.PyFlowBase.Nodes.constant import constant
 from PyFlow.Packages.PyFlowBase.Nodes.convertTo import convertTo
+
+from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
+from PyFlow.Packages.PyFlowBase.Nodes.stickyNote import stickyNote
 
 from PyFlow.Packages.PyFlowBase.Tools.ScreenshotTool import ScreenshotTool
 from PyFlow.Packages.PyFlowBase.Tools.NodeBoxTool import NodeBoxTool
@@ -107,6 +109,7 @@ _NODES = {
     timer.__name__: timer,
     whileLoop.__name__: whileLoop,
     commentNode.__name__: commentNode,
+    stickyNote.__name__ : stickyNote,
     getVar.__name__: getVar,
     setVar.__name__: setVar,
     reroute.__name__: reroute,

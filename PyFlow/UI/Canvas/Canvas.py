@@ -1060,7 +1060,7 @@ class Canvas(QGraphicsView):
         currentInputAction = InputAction("temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers)
         if any([not self.pressed_item,
                 isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
-                isinstance(self.pressed_item, UINodeBase) and node.isCommentNode,
+                isinstance(self.pressed_item, UINodeBase) and node.isCommentNode and not node.collapsed,
                 isinstance(self.pressed_item, QGraphicsWidget) and node.isCommentNode and self.pressed_item.objectName() == "pinLayoutSpacer",
                 isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
@@ -1170,6 +1170,8 @@ class Canvas(QGraphicsView):
                             node.setSelected(True)
                     if currentInputAction in InputManager()["Canvas.DragNodes"]:
                         self.manipulationMode = CanvasManipulationMode.MOVE
+                        if self.pressed_item.objectName() == "MouseLocked":
+                            super(Canvas, self).mousePressEvent(event)
                     if currentInputAction in InputManager()["Canvas.DragCopyNodes"]:
                         self.manipulationMode = CanvasManipulationMode.MOVE
                         selectedNodes = self.selectedNodes()
@@ -1331,14 +1333,16 @@ class Canvas(QGraphicsView):
                         wire.setSelected(False)
 
         elif self.manipulationMode == CanvasManipulationMode.MOVE:
-            newPos = self.mapToScene(event.pos())
-            scaledDelta = mouseDelta / self.currentViewScale()
+            if self.pressed_item.objectName() == "MouseLocked":
+                super(Canvas, self).mouseMoveEvent(event)
+            else:
+                newPos = self.mapToScene(event.pos())
+                scaledDelta = mouseDelta / self.currentViewScale()
 
-            selectedNodes = self.selectedNodes()
-
-            # Apply the delta to each selected node
-            for node in selectedNodes:
-                node.translate(scaledDelta.x(), scaledDelta.y())
+                selectedNodes = self.selectedNodes()
+                # Apply the delta to each selected node
+                for node in selectedNodes:
+                    node.translate(scaledDelta.x(), scaledDelta.y())
 
             if isinstance(node, UIRerouteNode) and modifiers == QtCore.Qt.AltModifier:
                 mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
