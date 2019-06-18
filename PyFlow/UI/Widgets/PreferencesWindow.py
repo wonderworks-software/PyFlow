@@ -138,6 +138,7 @@ class ThemePreferences(CategoryWidgetBase):
         self.layout.setSpacing(2)
         self.setWidget(self.content)
         self.currTheme = None
+
     def onShow(self, settings):
         clearLayout(self.layout)
         editableStyleSheet().loadPresests(THEMES_PATH)

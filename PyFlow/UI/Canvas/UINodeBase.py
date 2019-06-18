@@ -61,76 +61,123 @@ class CollapseNodeActionButton(NodeActionButtonBase):
         else:
             self.svgIcon.setElementId("Collapse")
 
+
+class NodeNameValidator(QtGui.QRegExpValidator):
+    """docstring for NodeNameValidator."""
+    def __init__(self, parent=None):
+        super(NodeNameValidator, self).__init__(QtCore.QRegExp('^[a-zA-Z][a-zA-Z0-9_]*$'), parent)
+
+
 class InputTextField(QGraphicsTextItem):
-    def __init__(self,parent,singleLine=False,*args,**Kwargs):
-        super(InputTextField, self).__init__(*args,**Kwargs)
+    editingFinished = QtCore.Signal(bool)
+
+    def __init__(self, text, parent=None, singleLine=False, validator=None):
+        super(InputTextField, self).__init__(text, parent)
         self.setParentItem(parent)
-        self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsSelectable ) 
+        self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsSelectable)
         self.singleLine = singleLine
         self.setObjectName("Nothing")
         self.origMoveEvent = self.mouseMoveEvent
         self.mouseMoveEvent = self.parentItem().mouseMoveEvent
+        self.validator = validator
+        self.textBeforeEditing = ""
 
-    def keyPressEvent(self,event):
+    def keyPressEvent(self, event):
+        currentKey = event.key()
+
+        if self.validator is not None:
+            keyButtonText = event.text()
+            doc = QtGui.QTextDocument(self.document().toPlainText())
+            selectedText = self.textCursor().selectedText()
+            cursor = doc.find(selectedText)
+            cursor.insertText(keyButtonText)
+            futureText = doc.toPlainText()
+            validatorState, chunk, pos = self.validator.validate(futureText, 0)
+            if currentKey not in (QtCore.Qt.Key_Backspace, QtCore.Qt.Key_Delete):
+                if validatorState == QtGui.QValidator.Invalid:
+                    return
+
+        if currentKey == QtCore.Qt.Key_Escape:
+            # user rejects action. Restore text before editing
+            self.setPlainText(self.textBeforeEditing)
+            self.editingFinished.emit(False)
+            self.clearFocus()
+            super(InputTextField, self).keyPressEvent(event)
+            return
+
         if self.singleLine:
-            if event.key() == QtCore.Qt.Key_Return:
-                event.ignore()
-                self.clearFocus()
+            if currentKey == QtCore.Qt.Key_Return:
+                if self.toPlainText() == "":
+                    self.setPlainText(self.textBeforeEditing)
+                    event.ignore()
+                    self.editingFinished.emit(False)
+                    self.clearFocus()
+                else:
+                    event.ignore()
+                    self.editingFinished.emit(True)
+                    self.clearFocus()
             else:
                 super(InputTextField, self).keyPressEvent(event)
         else:
             super(InputTextField, self).keyPressEvent(event)
 
-    def mousePressEvent(self, event):   
+    def mousePressEvent(self, event):
         if self.objectName() == "MouseLocked":
             super(InputTextField, self).mousePressEvent(event)
         else:
             self.parentItem().mousePressEvent(event)
             self.clearFocus()
 
-    def mouseReleaseEvent(self, event):   
+    def mouseReleaseEvent(self, event):
         if self.objectName() == "MouseLocked":
             super(InputTextField, self).mouseReleaseEvent(event)
         else:
             self.parentItem().mouseReleaseEvent(event)
             self.clearFocus()
 
-    def mouseDoubleClickEvent(self, event):     
-        super(InputTextField, self).mouseDoubleClickEvent(event) 
-        self.setFlag(QGraphicsWidget.ItemIsFocusable,True) 
+    def mouseDoubleClickEvent(self, event):
+        super(InputTextField, self).mouseDoubleClickEvent(event)
+        self.setFlag(QGraphicsWidget.ItemIsFocusable, True)
         self.setFocus()
-        
+
     def focusInEvent(self, event):
         self.parentItem().canvasRef().disableSortcuts()
-        self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)            
+        self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.setObjectName("MouseLocked")
-        self.mouseMoveEvent = self.origMoveEvent
+        self.textBeforeEditing = self.toPlainText()
         super(InputTextField, self).focusInEvent(event)
 
-    def focusOutEvent(self, event):      
+    def focusOutEvent(self, event):
         self.parentItem().canvasRef().enableSortcuts()
         cursor = self.textCursor()
         cursor.clearSelection()
         self.setTextCursor(cursor)
-        super(InputTextField, self).focusOutEvent(event)
-        self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction) 
-        self.setFlag(QGraphicsWidget.ItemIsFocusable,False)  
+        self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        self.setFlag(QGraphicsWidget.ItemIsFocusable, False)
         self.setObjectName("Nothing")
-        self.mouseMoveEvent = self.parentItem().mouseMoveEvent
+
+        if self.toPlainText() == "":
+            self.setPlainText(self.textBeforeEditing)
+            self.editingFinished.emit(False)
+        else:
+            self.editingFinished.emit(True)
+
+        super(InputTextField, self).focusOutEvent(event)
+
 
 class NodeName(QGraphicsWidget):
     """docstring for NodeName"""
-    displayNameChanged = QtCore.Signal()
 
     def __init__(self, parent=None):
         super(NodeName, self).__init__(parent)
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        self.labelItem = InputTextField(parent,singleLine=True)
+        self.labelItem = InputTextField(self.parentItem().getName(), parent, singleLine=True, validator=NodeNameValidator())
         self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
         self.labelItem.setAcceptHoverEvents(True)
-        self.labelItem.document().contentsChanged.connect(self.displayNameChanged.emit)
+        self.labelItem.document().contentsChanged.connect(self.parentItem().updateNodeShape)
+        self.labelItem.editingFinished.connect(self.parentItem().finalizeRename)
 
         self.labelItem.hoverMoveEvent = self.hoverMoveEvent
         self._font = QtGui.QFont("Consolas")
@@ -164,8 +211,8 @@ class NodeName(QGraphicsWidget):
     def mouseDoubleClickEvent(self, event):
         super(NodeName, self).mouseDoubleClickEvent(event)
 
-    def IsRenamable(self):
-        return False
+    def isRenamable(self):
+        return self.parentItem().isRenamable()
 
     def hoverEnterEvent(self, event):
         super(NodeName, self).hoverEnterEvent(event)
@@ -181,7 +228,9 @@ class NodeName(QGraphicsWidget):
         self.update()
 
     def sizeHint(self, which, constraint):
-        return self.labelItem.boundingRect().size()
+        w = QtGui.QFontMetrics(self.getFont()).width(self.getPlainText())
+        h = self.labelItem.boundingRect().height()
+        return QtCore.QSize(w, h)
 
 
 class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
@@ -223,7 +272,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
         self._w = 0
         self.h = 30
-        self.minWidth = 25
+        self.minWidth = 50
         self.minHeight = self.h
         self._labelTextColor = QtCore.Qt.white
 
@@ -244,7 +293,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.nodeLayout.addItem(self.headerLayout)
         self.nodeNameWidget = NodeName(self)
-        self.nodeNameWidget.displayNameChanged.connect(self.updateName)
         self.headerLayout.addItem(self.nodeNameWidget)
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         self.headerLayout.setSpacing(3)
@@ -498,10 +546,23 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         return self._rawNode.getName()
 
     def isRenamable(self):
-        return False
+        return True
 
-    def updateName(self):
-        self.setName(self.nodeNameWidget.getPlainText())
+    def finalizeRename(self, accepted=False):
+        """Called by NodeName
+
+        If user pressed Escape name before editing will be restored. If User pressed Enter or removed focus
+        rename action will be accepted and node will be renamed and name will be checked for uniqueness.
+
+        Keyword Arguments:
+            accepted {bool} -- Wheter user accepted editing or not
+        """
+        if accepted:
+            name = self.nodeNameWidget.getPlainText().replace(" ", "")
+            newName = self.canvasRef().graphManager.getUniqNodeName(name)
+            self.setName(newName)
+            self.setHeaderHtml(newName)
+            self.canvasRef().requestFillProperties.emit(self.createPropertiesWidget)
 
     def setName(self, name):
         self._rawNode.setName(name)
@@ -575,7 +636,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                     self.onVisibilityChanged(bool(value))
         if change == QGraphicsItem.ItemSelectedChange:
             if value == False:
-                self.nodeNameWidget.labelItem.clearFocus()                    
+                self.nodeNameWidget.labelItem.clearFocus()
         return super(UINodeBase, self).itemChange(change, value)
 
     def graph(self):
@@ -698,10 +759,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         headerWidth += numActions * 10
         headerWidth += numActions * self.headerLayout.spacing()
         spacerWidth = self.nameActionsSpacer.boundingRect().width()
-        if self.collapsed and not self.resizable:
-            headerWidth += spacerWidth
         headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
-        return headerWidth
+        return max(headerWidth, self.minWidth)
 
     def getNodeWidth(self):
         width = self.getPinsWidth() + self.pinsLayout.spacing() * 2
@@ -748,7 +807,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             h = max(self._rect.height(), h)
 
         if self.collapsed:
-            h = min(self.minHeight, self.labelHeight+self.nodeLayout.spacing()*2)
+            h = min(self.minHeight, self.labelHeight + self.nodeLayout.spacing() * 2)
 
         return h
 
@@ -898,10 +957,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)
         if self.drawLayoutsDebug:
+            painter.setPen(QtGui.QPen(QtCore.Qt.green, 0.75))
             painter.drawRect(self.headerLayout.geometry())
+            painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.75))
+            painter.drawRect(self.nodeNameWidget.geometry())
             painter.drawRect(self.nodeLayout.geometry())
             painter.drawRect(self.inputsLayout.geometry())
             painter.drawRect(self.outputsLayout.geometry())
+            painter.setPen(QtGui.QPen(QtCore.Qt.blue, 0.75))
+            painter.drawRect(self.nameActionsSpacer.geometry())
 
     def shouldResize(self, cursorPos):
         result = {"resize": False, "direction": self.resizeDirection}

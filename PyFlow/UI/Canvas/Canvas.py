@@ -508,12 +508,7 @@ class Canvas(QGraphicsView):
         event.accept()
 
     def OnDoubleClick(self, pos):
-        if self.pressed_item and isinstance(self.pressed_item, NodeName):
-            if self.pressed_item.IsRenamable():
-                name, result = QInputDialog.getText(self, "New name dialog", "Enter new name:")
-                if result:
-                    self.pressed_item.parentItem().setName(name)
-                    self.updatePropertyView(self.pressed_item.parentItem())
+        pass
 
     def Tick(self, deltaTime):
         if self.autoPanController.isActive():

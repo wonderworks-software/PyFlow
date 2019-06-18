@@ -9,22 +9,22 @@ from PyFlow.UI.Canvas.UINodeBase import UINodeBase,InputTextField
 from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
 from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-from Qt.QtWidgets import QGraphicsTextItem,QGraphicsWidget,QGraphicsItem
+from Qt.QtWidgets import QGraphicsTextItem, QGraphicsWidget, QGraphicsItem
 
 class UIstickyNote(UINodeBase):
     def __init__(self, raw_node):
         super(UIstickyNote, self).__init__(raw_node)
         self.color = QtGui.QColor(255, 255, 136)
         self.color.setAlpha(255)
-        self.labelTextColor = QtGui.QColor(0,0,0,255)
+        self.labelTextColor = QtGui.QColor(0, 0, 0, 255)
         self.resizable = True
 
-        self.textInput = InputTextField(self,False,"Text Goes Here")
-        self.textInput.setPos(QtCore.QPointF(5,self.nodeNameWidget.boundingRect().height()))
+        self.textInput = InputTextField("Text Goes Here", self, singleLine=False)
+        self.textInput.setPos(QtCore.QPointF(5, self.nodeNameWidget.boundingRect().height()))
         self.textInput.document().contentsChanged.connect(self.updateSize)
         self.textWidget = QGraphicsWidget()
         self.textWidget.setGraphicsItem(self.textInput)
-        self.nodeLayout.addItem(self.textWidget)        
+        self.nodeLayout.addItem(self.textWidget)
         self.updateSize()
 
     def serializationHook(self):

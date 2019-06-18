@@ -492,12 +492,13 @@ class SingletonDecorator:
             self.instance = self.cls(*args, **kwds)
         return self.instance
 
+
 class dictElement(tuple):
-    def __new__ (self, a=None, b=None):
+    def __new__(self, a=None, b=None):
         if a is None and b is None:
             new = ()
         elif b is None:
-            if isinstance(a,tuple) and len(a)<=2:
+            if isinstance(a, tuple) and len(a) <= 2:
                 new = a
             else:
                 raise Exception("non Valid Input")
