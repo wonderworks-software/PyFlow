@@ -10,12 +10,6 @@ PyFlow.UI.Widgets.CodeEditor\_ui module
 .. automodule:: PyFlow.UI.Widgets.CodeEditor_ui
    :members:
 
-PyFlow.UI.Widgets.EditableLabel module
---------------------------------------
-
-.. automodule:: PyFlow.UI.Widgets.EditableLabel
-   :members:
-
 PyFlow.UI.Widgets.EnumComboBox module
 -------------------------------------
 

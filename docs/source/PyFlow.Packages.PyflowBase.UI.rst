@@ -28,6 +28,12 @@ PyFlow.Packages.PyFlowBase.UI.UIConstantNode module
 .. automodule:: PyFlow.Packages.PyFlowBase.UI.UIConstantNode
    :members:
 
+PyFlow.Packages.PyFlowBase.UI.UIConvertToNode module
+----------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIConvertToNode
+   :members:
+
 PyFlow.Packages.PyFlowBase.UI.UIExecPin module
 ----------------------------------------------
 
@@ -46,10 +52,10 @@ PyFlow.Packages.PyFlowBase.UI.UIGraphNodes module
 .. automodule:: PyFlow.Packages.PyFlowBase.UI.UIGraphNodes
    :members:
 
-PyFlow.Packages.PyFlowBase.UI.UIListPin module
-----------------------------------------------
+PyFlow.Packages.PyFlowBase.UI.UIMakeDictNode module
+---------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIListPin
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIMakeDictNode
    :members:
 
 PyFlow.Packages.PyFlowBase.UI.UIPythonNode module

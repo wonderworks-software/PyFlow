@@ -1,5 +1,5 @@
-PyFlow - visual scripting tool for python!
-==========================================
+PyFlow - visual scripting framework for python!
+===============================================
 
 .. toctree::
    :maxdepth: 1
@@ -7,7 +7,7 @@ PyFlow - visual scripting tool for python!
 
    intro
    changelog
-
+   modules
 
 
 Indices and tables

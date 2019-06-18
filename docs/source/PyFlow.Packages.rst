@@ -7,7 +7,6 @@ Subpackages
 .. toctree::
 
    PyFlow.Packages.PyFlowBase
-   PyFlow.Packages.Pyrr
 
 Module contents
 ---------------

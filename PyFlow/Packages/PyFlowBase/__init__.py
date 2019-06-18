@@ -1,3 +1,5 @@
+"""Base package
+"""
 PACKAGE_NAME = 'PyFlowBase'
 from collections import OrderedDict
 
@@ -158,6 +160,8 @@ _EXPORTERS[CPPCompiler.__name__] = CPPCompiler
 
 
 class PyFlowBase(IPackage):
+    """Base pyflow package
+    """
     def __init__(self):
         super(PyFlowBase, self).__init__()
 

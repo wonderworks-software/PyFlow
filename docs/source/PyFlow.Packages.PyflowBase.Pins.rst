@@ -34,12 +34,6 @@ PyFlow.Packages.PyFlowBase.Pins.IntPin module
 .. automodule:: PyFlow.Packages.PyFlowBase.Pins.IntPin
    :members:
 
-PyFlow.Packages.PyFlowBase.Pins.ListPin module
-----------------------------------------------
-
-.. automodule:: PyFlow.Packages.PyFlowBase.Pins.ListPin
-   :members:
-
 PyFlow.Packages.PyFlowBase.Pins.StringPin module
 ------------------------------------------------
 
