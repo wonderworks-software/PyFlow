@@ -116,8 +116,6 @@ class UIstickyNote(UINodeBase):
                 self.updateNodeShape()
             except:
                 pass
-        else:
-            self.textInput.document().setPageSize(QtCore.QSizeF(self.boundingRect().width()-10,self._rect.height()))
         self.minHeight = newHeight
 
     def updateColor(self,color):
