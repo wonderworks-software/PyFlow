@@ -191,13 +191,18 @@ class DockTitleBar(QtWidgets.QWidget):
 
     def ChangeFloatingStyle(self,state):
         if not state:
-            self.box.setObjectName("Docked")
+            self.box.setStyleSheet(editableStyleSheet().getStyleSheet())
         else:
-            self.box.setObjectName("UnDocked")
-        self.box.setStyleSheet(editableStyleSheet().getStyleSheet())
+            self.box.setStyleSheet("""background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 %s,
+                                stop: 0.6 %s,
+                                stop: 1.0 %s);"""%("rgba%s" % str(editableStyleSheet().ButtonsColor.getRgb()),
+                                                    "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
+                                                    "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb())))
+        
         
     def update(self,*args,**kwargs):
-        self.ChangeFloatingStyle(self.box.isChecked())
+        self.ChangeFloatingStyle(self.parent().isFloating())
         super(DockTitleBar, self).update(*args,**kwargs)
 
     def toggleFloating(self):

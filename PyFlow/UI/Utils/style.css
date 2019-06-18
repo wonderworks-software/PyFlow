@@ -51,7 +51,7 @@ QTabWidget::pane,QTabBar::tab,
 QScrollBar:vertical,QScrollBar:horizontal,
 QScrollBar::add-line:vertical,QScrollBar::add-line:horizontal,
 QScrollBar::sub-line:vertical,QScrollBar::sub-line:horizontal,
-QWidget#Docked,QWidget#UnDocked
+QWidget#Docked
 {
     border: 1px solid %s;           /*Border Color*/
 }
@@ -73,7 +73,7 @@ QPlainTextEdit,QLineEdit,QSpinBox,QDoubleSpinBox
     selection-color: %s;            /*Input Text Selected color*/
 }
 
-QPushButton,QComboBox,QWidget#Docked,QWidget#UnDocked
+QPushButton,QComboBox,QWidget#Docked
 {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 %s,
