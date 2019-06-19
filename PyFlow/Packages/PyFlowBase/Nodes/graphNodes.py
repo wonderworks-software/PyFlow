@@ -15,10 +15,11 @@ class graphInputs(NodeBase):
         result = name
         if self.graph is not None:
             owningCompoundNode = self.graph().graphManager.findNode(self.graph().name)
+            conflictingPinNames = set([i.name for i in self.outputs.values()])
             if owningCompoundNode is not None:
-                result = owningCompoundNode.getUniqPinName(name)
-            else:
-                result = self.graph().graphManager.getUniqName(name)
+                for pin in owningCompoundNode.inputs.values():
+                    conflictingPinNames.add(pin.name)
+            result = getUniqNameFromList(conflictingPinNames, name)
         return result
 
     @staticmethod
