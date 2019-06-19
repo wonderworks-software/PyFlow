@@ -13,7 +13,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
-
+from PyFlow.Core.version import currentVersion
 # -- Project information -----------------------------------------------------
 
 project = 'PyFlow'
@@ -21,8 +21,7 @@ copyright = '2019, Ilgar Lunin, Pedro Cabrera'
 author = 'Ilgar Lunin, Pedro Cabrera'
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.0'
-
+release = currentVersion().__str__()
 
 # -- General configuration ---------------------------------------------------
 
@@ -31,7 +30,6 @@ release = '1.1.0'
 # ones.
 extensions = [
     'sphinx.ext.todo',
-    # 'sphinx.ext.viewcode',
     'sphinx.ext.autodoc'
 ]
 
