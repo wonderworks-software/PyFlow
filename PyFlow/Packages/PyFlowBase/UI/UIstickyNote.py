@@ -18,7 +18,7 @@ class UIstickyNote(UINodeBase):
         self.color.setAlpha(255)
         self.labelTextColor = QtGui.QColor(0, 0, 0, 255)
         self.resizable = True
-
+        self.roundness = 1
         self.textInput = InputTextField("Text Goes Here", self, singleLine=False)
         self.textInput.setPos(QtCore.QPointF(5, self.nodeNameWidget.boundingRect().height()))
         self.textInput.document().contentsChanged.connect(self.updateSize)
@@ -34,7 +34,7 @@ class UIstickyNote(UINodeBase):
         original = super(UIstickyNote, self).serializationHook()
         original["color"] = self.color.rgba()
         original["textColor"] = self.labelTextColor.rgba()
-        original["currentText"] = self.textInput.toHtml()
+        original["currentText"] = self.NonFormatedText
         return original
 
     def postCreate(self, jsonTemplate=None):
@@ -44,7 +44,8 @@ class UIstickyNote(UINodeBase):
         if "textColor" in jsonTemplate["wrapper"]:
             self.labelTextColor = QtGui.QColor.fromRgba(jsonTemplate["wrapper"]["textColor"])
         if "currentText" in jsonTemplate["wrapper"]:
-            self.textInput.setHtml(jsonTemplate["wrapper"]["currentText"])
+            self.NonFormatedText = jsonTemplate["wrapper"]["currentText"]
+            self.textInput.setHtml(self.NonFormatedText.replace("\\n","<br/>"))
 
     def mouseDoubleClickEvent(self, event):
         self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable,True)
@@ -73,7 +74,6 @@ class UIstickyNote(UINodeBase):
         self.updateSize()
 
     def startEditing(self):
-        print self.NonFormatedText
         self.textInput.setPlainText(self.NonFormatedText.decode('unicode-escape'))
 
     def editingFinished(self,succes):

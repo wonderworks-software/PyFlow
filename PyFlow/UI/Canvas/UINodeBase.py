@@ -343,7 +343,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.resizeStripsSize = 2
         self.resizeStrips = [0, 0, 0, 0,  # Left, Top, Right, Bottom
                              0, 0, 0, 0]  # BottomRight, BottomLeft, TopLeft, TopRight
-
+        self.roundness = NodeDefaults().CORNERS_ROUND_FACTOR
         self.lastMousePos = QtCore.QPointF()
         self.mousePressPos = QtCore.QPointF()
 

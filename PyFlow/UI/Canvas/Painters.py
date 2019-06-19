@@ -24,7 +24,7 @@ class NodePainter(object):
             pen = QtGui.QPen()
             height = node.geometry().height()
             width = node.geometry().width()
-            rf = NodeDefaults().CORNERS_ROUND_FACTOR
+            rf = node.roundness
             pen.setColor(InteractiveColor)
             pen.setStyle(node.optPenSelectedType)
             painter.setPen(pen)
@@ -74,7 +74,7 @@ class NodePainter(object):
             pen.setColor(InteractiveColor)
             pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)
-        painter.drawRoundedRect(frame, 3, 3)
+        painter.drawRoundedRect(frame, node.roundness, node.roundness)
 
         if option.state & QStyle.State_Selected:
             pen.setColor(InteractiveColor)
@@ -82,7 +82,7 @@ class NodePainter(object):
             pen.setWidth(pen.width() * 1.5)
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
-        painter.drawRoundedRect(frame, 3, 3)
+        painter.drawRoundedRect(frame, node.roundness, node.roundness)
         painter.drawLine(frame.left() + 5, node.labelHeight, frame.right() - 5, node.labelHeight)
         NodePainter.drawResizeHandles(node, painter, option, widget)
 
@@ -114,7 +114,7 @@ class NodePainter(object):
             r.setHeight(r.height() - pen.width())
             r.setX(pen.width())
             r.setY(r.y() + pen.width())
-            painter.drawRoundedRect(r, NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
+            painter.drawRoundedRect(r, node.roundness, node.roundness)
         else:
             painter.drawRect(r)
 
@@ -134,8 +134,8 @@ class NodePainter(object):
                 b.setColorAt(1, headColor.darker(50))
                 path = QtGui.QPainterPath()
                 path.setFillRule(QtCore.Qt.WindingFill)
-                path.addRoundedRect(lr, NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
-                lr.setY(lr.y() + NodeDefaults().CORNERS_ROUND_FACTOR)
+                path.addRoundedRect(lr, node.roundness, node.roundness)
+                lr.setY(lr.y() + node.roundness)
                 path.addRect(lr)
                 painter.fillPath(path, b)
             else:
@@ -154,7 +154,7 @@ class NodePainter(object):
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
         if lod < SWITCH_LOD:
-            painter.drawRoundedRect(r, NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
+            painter.drawRoundedRect(r, node.roundness, node.roundness)
         else:
             painter.drawRect(r)
 
@@ -179,7 +179,7 @@ class NodePainter(object):
             pen.setColor(InteractiveColor)
             pen.setStyle(node.optPenSelectedType)
         painter.setPen(pen)
-        painter.drawRoundedRect(node.boundingRect(), NodeDefaults().CORNERS_ROUND_FACTOR, NodeDefaults().CORNERS_ROUND_FACTOR)
+        painter.drawRoundedRect(node.boundingRect(), node.roundness, node.roundness)
         painter.setFont(node.nodeNameFont)
         painter.setPen(QtGui.QPen(QtCore.Qt.white, 0.5))
         textRect = node.boundingRect()

@@ -44,7 +44,8 @@ class UICommentNode(UINodeBase):
         self.setZValue(UICommentNode.layer)
         self.partiallyIntersectedConnections = set()
         self.partiallyIntersectedConnectionsEndpointOverrides = {}
-
+        self.roundness = 3
+        
     def serializationHook(self):
         original = super(UICommentNode, self).serializationHook()
         original["owningNodes"] = list(set([n.name for n in self.owningNodes]))
