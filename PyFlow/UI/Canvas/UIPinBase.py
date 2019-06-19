@@ -35,16 +35,18 @@ QPushButton {
 """
 
 class UIPinGroup(QGraphicsWidget):
-    def __init__(self, scene, name, owningNode=None):
+    def __init__(self, scene, name, direction, owningNode=None):
         super(UIPinGroup, self).__init__(owningNode)
         self.owningNode = weakref.ref(owningNode)
+        self.name = name
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.borderPen = QtGui.QPen(Colors.DarkGray, 0.5, QtCore.Qt.SolidLine)
-        self.layout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
-        self.setLayout(self.layout)
+        self.mainLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
+        self.mainLayout.setContentsMargins(0, 0, 0, 0)
+        self.mainLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
+        self.setLayout(self.mainLayout)
+        self.direction = direction
         headerBtn = QPushButton(name)
         headerBtn.setStyleSheet(headerBtnStyle)
         headerBtn.setFlat(True)
@@ -52,17 +54,31 @@ class UIPinGroup(QGraphicsWidget):
         headerBtn.setMaximumHeight(10)
         headerBtn.clicked.connect(self.toggleCollapsed)
         self.headerWidget = scene.addWidget(headerBtn)
-        self.layout.addItem(self.headerWidget)
+        self.mainLayout.addItem(self.headerWidget)
         self._pins = set()
         self.bCollapsed = False
+
+    def setGeometry(self, rect):
+        self.prepareGeometryChange()
+        self.setPos(rect.topLeft())
 
     def kill(self):
         for pin in list(self._pins):
             pin._rawPin.kill()
         self._pins.clear()
         scene = self.scene()
+        layout = self.layout()
+        layout.removeItem(self)
         if scene is not None:
             scene.removeItem(self)
+
+        if self.direction == PinDirection.Input:
+            self.owningNode().groups["input"].pop(self.name)
+
+        if self.direction == PinDirection.Output:
+            self.owningNode().groups["output"].pop(self.name)
+
+        self.owningNode().updateNodeShape()
         del self
 
     def paint(self, painter, option, widget):
@@ -84,6 +100,7 @@ class UIPinGroup(QGraphicsWidget):
         for pin in self._pins:
             pin.setVisible(not bCollapsed)
         self.bCollapsed = bCollapsed
+        self.owningNode().updateNodeShape()
 
     def toggleCollapsed(self):
         self.setCollapsed(not self.bCollapsed)
@@ -94,11 +111,11 @@ class UIPinGroup(QGraphicsWidget):
             self.kill()
 
     def addPin(self, pin):
-        self.layout.addItem(pin)
+        self.mainLayout.addItem(pin)
         if pin.direction == PinDirection.Input:
-            self.layout.setAlignment(pin, QtCore.Qt.AlignLeft)
+            self.mainLayout.setAlignment(pin, QtCore.Qt.AlignLeft)
         if pin.direction == PinDirection.Output:
-            self.layout.setAlignment(pin, QtCore.Qt.AlignRight)
+            self.mainLayout.setAlignment(pin, QtCore.Qt.AlignRight)
         self._pins.add(pin)
         pin.OnPinDeleted.connect(self.pinWasKilled)
 
@@ -368,17 +385,20 @@ class UIPinBase(QGraphicsWidget):
             return
 
         if self._rawPin.direction == PinDirection.Input:
-                self.owningNode().inputsLayout.removeItem(self)
+            self.owningNode().inputsLayout.removeItem(self)
         else:
             self.owningNode().outputsLayout.removeItem(self)
 
         self.OnPinDeleted.emit(self)
-        scene = self.scene()
-        if scene is None:
-            del self
-            return
-        scene.removeItem(self)
-        self.owningNode().updateNodeShape()
+        try:
+            scene = self.scene()
+            if scene is None:
+                del self
+                return
+            scene.removeItem(self)
+            self.owningNode().updateNodeShape()
+        except:
+            pass
 
     def assignRawPin(self, rawPin):
         if rawPin is not self._rawPin:

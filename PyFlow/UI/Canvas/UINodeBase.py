@@ -67,13 +67,14 @@ class NodeNameValidator(QtGui.QRegExpValidator):
     def __init__(self, parent=None):
         super(NodeNameValidator, self).__init__(QtCore.QRegExp('^[a-zA-Z][a-zA-Z0-9_]*$'), parent)
 
+
 class InputTextField(QGraphicsTextItem):
     editingFinished = QtCore.Signal(bool)
     startEditing = QtCore.Signal()
 
-    def __init__(self, text, node ,parent=None, singleLine=False, validator=None):
-        super(InputTextField, self).__init__(text,parent)
-        self.node = node 
+    def __init__(self, text, node, parent=None, singleLine=False, validator=None):
+        super(InputTextField, self).__init__(text, parent)
+        self.node = node
         self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsSelectable)
         self.singleLine = singleLine
         self.setObjectName("Nothing")
@@ -177,7 +178,7 @@ class NodeName(QGraphicsWidget):
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        self.labelItem = InputTextField(self.parentItem().getName(), parent,self, singleLine=True, validator=NodeNameValidator())
+        self.labelItem = InputTextField(self.parentItem().getName(), parent, self, singleLine=True, validator=NodeNameValidator())
         self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
         self.labelItem.setAcceptHoverEvents(True)
         self.labelItem.document().contentsChanged.connect(self.parentItem().updateNodeShape)
@@ -238,8 +239,9 @@ class NodeName(QGraphicsWidget):
     def setGeometry(self, rect):
         self.prepareGeometryChange()
         super(QGraphicsWidget, self).setGeometry(rect)
-        self.setPos(rect.topLeft())  
+        self.setPos(rect.topLeft())
         self.labelItem.setGeometry(rect)
+
 
 class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     """
@@ -289,9 +291,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         # Font Options
         self.nodeNameFont = QtGui.QFont("Consolas")
         self.nodeNameFont.setPointSize(6)
-        self.nodeTypeFont = QtGui.QFont("Consolas")
-        self.nodeTypeFont.setPointSize(4)
-        self.nodeTypeFont.setItalic(True)
 
         # GUI Layout
         self.drawLayoutsDebug = True
@@ -301,8 +300,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                                            NodeDefaults().CONTENT_MARGINS,
                                            NodeDefaults().CONTENT_MARGINS)
         self.nodeLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
-
-
 
         self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.nodeLayout.addItem(self.headerLayout)
@@ -334,7 +331,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.outputsLayout.setContentsMargins(0, 0, 0, 0)
         self.outputsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
         self.outputsLayout.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        
+
         self.pinsLayout.addItem(self.inputsLayout)
         self.pinsLayout.setAlignment(self.inputsLayout, QtCore.Qt.AlignLeft)
         self.pinsLayout.addItem(self.outputsLayout)
@@ -779,8 +776,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             headerWidth = 0
             numActions = len(self._actionButtons)
             headerWidth += numActions * 10
-            headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
-            return headerWidth    
+            headerWidth += self.headerLayout.spacing() * 2 + NodeDefaults().CONTENT_MARGINS * 2
+            return headerWidth
         except:
             return 0
 
@@ -992,14 +989,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def translate(self, x, y):
         super(UINodeBase, self).moveBy(x, y)
 
-    def paint(self, painter, option, widget):          
+    def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)
         if self.drawLayoutsDebug:
             painter.setPen(QtGui.QPen(QtCore.Qt.green, 0.75))
             painter.drawRect(self.headerLayout.geometry())
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.75))
             painter.drawRect(self.nodeNameWidget.geometry())
-            painter.drawRect(self.nodeLayout.geometry())
+            # painter.drawRect(self.nodeLayout.geometry())
             painter.setPen(QtGui.QPen(QtCore.Qt.red, 0.75))
             painter.drawRect(self.pinsLayout.geometry())
             painter.setPen(QtGui.QPen(QtCore.Qt.green, 0.75))
@@ -1007,6 +1004,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             painter.drawRect(self.outputsLayout.geometry())
             painter.setPen(QtGui.QPen(QtCore.Qt.blue, 0.75))
             painter.drawRect(self.customLayout.geometry())
+
     def shouldResize(self, cursorPos):
         result = {"resize": False, "direction": self.resizeDirection}
         if self.resizeStrips[0] == 1:   # left
@@ -1298,7 +1296,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         if rawPin.group != "":
             groupNames = list(self.groups["input"].keys()) + list(self.groups["output"].keys())
             if rawPin.group not in groupNames:
-                grpItem = UIPinGroup(self.scene(), rawPin.group, self)
+                grpItem = UIPinGroup(self.scene(), rawPin.group, rawPin.direction, self)
             else:
                 if rawPin.direction == PinDirection.Input:
                     grpItem = self.groups["input"][rawPin.group]
