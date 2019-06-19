@@ -70,6 +70,7 @@ class NodeNameValidator(QtGui.QRegExpValidator):
 
 class InputTextField(QGraphicsTextItem):
     editingFinished = QtCore.Signal(bool)
+    startEditing = QtCore.Signal()
 
     def __init__(self, text, parent=None, singleLine=False, validator=None):
         super(InputTextField, self).__init__(text, parent)
@@ -138,6 +139,7 @@ class InputTextField(QGraphicsTextItem):
     def mouseDoubleClickEvent(self, event):
         super(InputTextField, self).mouseDoubleClickEvent(event)
         self.setFlag(QGraphicsWidget.ItemIsFocusable, True)
+        self.startEditing.emit()
         self.setFocus()
 
     def focusInEvent(self, event):
@@ -157,7 +159,7 @@ class InputTextField(QGraphicsTextItem):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.setFlag(QGraphicsWidget.ItemIsFocusable, False)
         self.setObjectName("Nothing")
-        if self.toPlainText() == "":
+        if self.toPlainText() == "" and self.validator is not None:
             self.setPlainText(self.textBeforeEditing)
             self.editingFinished.emit(False)
         else:

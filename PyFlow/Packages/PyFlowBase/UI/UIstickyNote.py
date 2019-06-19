@@ -22,9 +22,12 @@ class UIstickyNote(UINodeBase):
         self.textInput = InputTextField("Text Goes Here", self, singleLine=False)
         self.textInput.setPos(QtCore.QPointF(5, self.nodeNameWidget.boundingRect().height()))
         self.textInput.document().contentsChanged.connect(self.updateSize)
+        self.textInput.editingFinished.connect(self.editingFinished)
+        self.textInput.startEditing.connect(self.startEditing)
         self.textWidget = QGraphicsWidget()
         self.textWidget.setGraphicsItem(self.textInput)
         self.nodeLayout.addItem(self.textWidget)
+        self.NonFormatedText = self.textInput.toPlainText()
         self.updateSize()
 
     def serializationHook(self):
@@ -68,6 +71,15 @@ class UIstickyNote(UINodeBase):
     def mouseMoveEvent(self, event):
         super(UIstickyNote, self).mouseMoveEvent(event)
         self.updateSize()
+
+    def startEditing(self):
+        print self.NonFormatedText
+        self.textInput.setPlainText(self.NonFormatedText.decode('unicode-escape'))
+
+    def editingFinished(self,succes):
+        if succes:
+            self.NonFormatedText = self.textInput.toPlainText().encode('unicode-escape')
+            self.textInput.setHtml(self.NonFormatedText.replace("\\n","<br/>"))
 
     def updateSize(self):
         self.textInput.setTextWidth(self.boundingRect().width()-10)
