@@ -145,6 +145,7 @@ class InputTextField(QGraphicsTextItem):
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.setObjectName("MouseLocked")
         self.textBeforeEditing = self.toPlainText()
+        self.mouseMoveEvent = self.origMoveEvent
         super(InputTextField, self).focusInEvent(event)
 
     def focusOutEvent(self, event):
@@ -152,17 +153,18 @@ class InputTextField(QGraphicsTextItem):
         cursor = self.textCursor()
         cursor.clearSelection()
         self.setTextCursor(cursor)
+        super(InputTextField, self).focusOutEvent(event)
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.setFlag(QGraphicsWidget.ItemIsFocusable, False)
         self.setObjectName("Nothing")
-
         if self.toPlainText() == "":
             self.setPlainText(self.textBeforeEditing)
             self.editingFinished.emit(False)
         else:
             self.editingFinished.emit(True)
+        self.mouseMoveEvent = self.parentItem().mouseMoveEvent
 
-        super(InputTextField, self).focusOutEvent(event)
+        
 
 
 class NodeName(QGraphicsWidget):
