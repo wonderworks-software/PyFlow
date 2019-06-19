@@ -411,9 +411,9 @@ class UIPinBase(QGraphicsWidget):
         width = self.pinSize * 2
         if not self.bLabelHidden:
             width += QtGui.QFontMetrics(self._font).width(self.displayName())
-        if not self.isVisible():
-            width = 0
-            height = 0
+        #if not self.isVisible():
+        #    width = 0
+        #    height = 0
         return QtCore.QSizeF(width, height)
 
     def shape(self):

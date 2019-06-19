@@ -67,25 +67,23 @@ class NodeNameValidator(QtGui.QRegExpValidator):
     def __init__(self, parent=None):
         super(NodeNameValidator, self).__init__(QtCore.QRegExp('^[a-zA-Z][a-zA-Z0-9_]*$'), parent)
 
-
 class InputTextField(QGraphicsTextItem):
     editingFinished = QtCore.Signal(bool)
     startEditing = QtCore.Signal()
 
-    def __init__(self, text, parent=None, singleLine=False, validator=None):
-        super(InputTextField, self).__init__(text, parent)
-        self.setParentItem(parent)
+    def __init__(self, text, node ,parent=None, singleLine=False, validator=None):
+        super(InputTextField, self).__init__(text,parent)
+        self.node = node 
         self.setFlags(QGraphicsWidget.ItemSendsGeometryChanges | QGraphicsWidget.ItemIsSelectable)
         self.singleLine = singleLine
         self.setObjectName("Nothing")
         self.origMoveEvent = self.mouseMoveEvent
-        self.mouseMoveEvent = self.parentItem().mouseMoveEvent
+        self.mouseMoveEvent = self.node.mouseMoveEvent
         self.validator = validator
         self.textBeforeEditing = ""
 
     def keyPressEvent(self, event):
         currentKey = event.key()
-
         if self.validator is not None:
             keyButtonText = event.text()
             doc = QtGui.QTextDocument(self.document().toPlainText())
@@ -126,14 +124,14 @@ class InputTextField(QGraphicsTextItem):
         if self.objectName() == "MouseLocked":
             super(InputTextField, self).mousePressEvent(event)
         else:
-            self.parentItem().mousePressEvent(event)
+            self.node.mousePressEvent(event)
             self.clearFocus()
 
     def mouseReleaseEvent(self, event):
         if self.objectName() == "MouseLocked":
             super(InputTextField, self).mouseReleaseEvent(event)
         else:
-            self.parentItem().mouseReleaseEvent(event)
+            self.node.mouseReleaseEvent(event)
             self.clearFocus()
 
     def mouseDoubleClickEvent(self, event):
@@ -143,7 +141,7 @@ class InputTextField(QGraphicsTextItem):
         self.setFocus()
 
     def focusInEvent(self, event):
-        self.parentItem().canvasRef().disableSortcuts()
+        self.node.canvasRef().disableSortcuts()
         self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.setObjectName("MouseLocked")
         self.textBeforeEditing = self.toPlainText()
@@ -151,7 +149,7 @@ class InputTextField(QGraphicsTextItem):
         super(InputTextField, self).focusInEvent(event)
 
     def focusOutEvent(self, event):
-        self.parentItem().canvasRef().enableSortcuts()
+        self.node.canvasRef().enableSortcuts()
         cursor = self.textCursor()
         cursor.clearSelection()
         self.setTextCursor(cursor)
@@ -164,9 +162,11 @@ class InputTextField(QGraphicsTextItem):
             self.editingFinished.emit(False)
         else:
             self.editingFinished.emit(True)
-        self.mouseMoveEvent = self.parentItem().mouseMoveEvent
+        self.mouseMoveEvent = self.node.mouseMoveEvent
 
-        
+    def setGeometry(self, rect):
+        self.prepareGeometryChange()
+        self.setPos(rect.topLeft())
 
 
 class NodeName(QGraphicsWidget):
@@ -177,7 +177,7 @@ class NodeName(QGraphicsWidget):
         self.setAcceptHoverEvents(True)
         self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        self.labelItem = InputTextField(self.parentItem().getName(), parent, singleLine=True, validator=NodeNameValidator())
+        self.labelItem = InputTextField(self.parentItem().getName(), parent,self, singleLine=True, validator=NodeNameValidator())
         self.labelItem.setDefaultTextColor(self.parentItem()._labelTextColor)
         self.labelItem.setAcceptHoverEvents(True)
         self.labelItem.document().contentsChanged.connect(self.parentItem().updateNodeShape)
@@ -187,7 +187,6 @@ class NodeName(QGraphicsWidget):
         self._font = QtGui.QFont("Consolas")
         self._font.setPointSize(6)
         self.labelItem.setFont(self._font)
-
         self.setGraphicsItem(self.labelItem)
         self.hovered = False
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
@@ -236,6 +235,11 @@ class NodeName(QGraphicsWidget):
         h = self.labelItem.boundingRect().height()
         return QtCore.QSize(w, h)
 
+    def setGeometry(self, rect):
+        self.prepareGeometryChange()
+        super(QGraphicsWidget, self).setGeometry(rect)
+        self.setPos(rect.topLeft())  
+        self.labelItem.setGeometry(rect)
 
 class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     """
@@ -254,6 +258,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setAcceptHoverEvents(True)
         self.setZValue(NodeDefaults().Z_LAYER)
+
+        # Raw Node Definition
         self._rawNode = raw_node
         self._rawNode.setWrapper(self)
         self._rawNode.killed.connect(self.kill)
@@ -263,7 +269,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         self.custom_widget_data = {}
 
-        # GUI Layout
+        # Color and Size Options
         self.opt_node_base_color = Colors.NodeBackgrounds
         self.opt_selected_pen_color = Colors.NodeSelectedPenColor
         self.optPenSelectedType = QtCore.Qt.SolidLine
@@ -280,52 +286,65 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.minHeight = self.h
         self._labelTextColor = QtCore.Qt.white
 
-        self.drawLayoutsDebug = False
+        # Font Options
+        self.nodeNameFont = QtGui.QFont("Consolas")
+        self.nodeNameFont.setPointSize(6)
+        self.nodeTypeFont = QtGui.QFont("Consolas")
+        self.nodeTypeFont.setPointSize(4)
+        self.nodeTypeFont.setItalic(True)
+
+        # GUI Layout
+        self.drawLayoutsDebug = True
         self.nodeLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.nodeLayout.setContentsMargins(NodeDefaults().CONTENT_MARGINS,
                                            NodeDefaults().CONTENT_MARGINS,
                                            NodeDefaults().CONTENT_MARGINS,
                                            NodeDefaults().CONTENT_MARGINS)
         self.nodeLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
-        self.nodeNameFont = QtGui.QFont("Consolas")
-        self.nodeNameFont.setPointSize(6)
 
-        self.nodeTypeFont = QtGui.QFont("Consolas")
-        self.nodeTypeFont.setPointSize(4)
-        self.nodeTypeFont.setItalic(True)
+
 
         self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.nodeLayout.addItem(self.headerLayout)
         self.nodeNameWidget = NodeName(self)
         self.headerLayout.addItem(self.nodeNameWidget)
+
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         self.headerLayout.setSpacing(3)
 
-        self.nameActionsSpacer = QGraphicsWidget()
-        self.nameActionsSpacer.setObjectName("nameActionsSpacer")
-        self.nameActionsSpacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.headerLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        self.headerLayout.addItem(self.nameActionsSpacer)
         self.headerLayout.setMaximumHeight(self.labelHeight)
+
+        self.customLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
+        self.customLayout.setContentsMargins(0, 0, 0, 0)
+        self.customLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
+        self.customLayout.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
 
         self.pinsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.pinsLayout.setContentsMargins(0, 0, 0, 0)
         self.pinsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
-        self.nodeLayout.addItem(self.pinsLayout)
-        self.nodeLayout.setStretchFactor(self.pinsLayout, 2)
+        self.pinsLayout.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+
         self.inputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.inputsLayout.setContentsMargins(0, 0, 0, 0)
         self.inputsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
+        self.inputsLayout.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+
         self.outputsLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.outputsLayout.setContentsMargins(0, 0, 0, 0)
         self.outputsLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
+        self.outputsLayout.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        
         self.pinsLayout.addItem(self.inputsLayout)
-        self.pinLayoutSpacer = QGraphicsWidget()
-        self.pinLayoutSpacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.pinLayoutSpacer.setObjectName("pinLayoutSpacer")
-        self.pinsLayout.addItem(self.pinLayoutSpacer)
+        self.pinsLayout.setAlignment(self.inputsLayout, QtCore.Qt.AlignLeft)
         self.pinsLayout.addItem(self.outputsLayout)
+        self.pinsLayout.setAlignment(self.outputsLayout, QtCore.Qt.AlignRight)
+        self.nodeLayout.addItem(self.customLayout)
+        self.nodeLayout.addItem(self.pinsLayout)
+        self.pinsLayout.setPreferredWidth(self.nodeLayout.preferredWidth())
+        #self.nodeLayout.addItem(self.headerLayout)
         self.setLayout(self.nodeLayout)
+
         self.svgIcon = QtSvg.QGraphicsSvgItem(self)
         self.svgIcon.setPos(-6, -6)
 
@@ -344,8 +363,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.resizeStrips = [0, 0, 0, 0,  # Left, Top, Right, Bottom
                              0, 0, 0, 0]  # BottomRight, BottomLeft, TopLeft, TopRight
         self.roundness = NodeDefaults().CORNERS_ROUND_FACTOR
-        self.lastMousePos = QtCore.QPointF()
-        self.mousePressPos = QtCore.QPointF()
 
         # Hiding/Moving By Group/collapse/By Pin
         self.pressedCommentNode = None
@@ -354,6 +371,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodesNamesToMove = []
         self.pinsToMove = {}
         self._rect = QtCore.QRectF(0, 0, self.minWidth, self.minHeight)
+        self.lastMousePos = QtCore.QPointF()
+        self.mousePressPos = QtCore.QPointF()        
 
         # Group pins
         self.inputGroupPins = {}
@@ -415,7 +434,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             for o in range(0, self.outputsLayout.count()):
                 out = self.outputsLayout.itemAt(o)
                 out.setVisible(not bCollapsed)
-            self.pinLayoutSpacer.setVisible(not bCollapsed)
+            for cust in range(0, self.customLayout.count()):
+                out = self.customLayout.itemAt(cust)
+                out.setVisible(not bCollapsed)                
             self.updateNodeShape()
 
     @property
@@ -724,7 +745,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 svgFilePath = actionData.filePath()
                 if actionButtonClass is None:
                     actionButtonClass = NodeActionButtonBase
-                self.headerLayout.addItem(actionButtonClass(svgFilePath, action, self))
+                butt = actionButtonClass(svgFilePath, action, self)
+                self.headerLayout.addItem(butt)
+                self.headerLayout.setAlignment(butt, QtCore.Qt.AlignRight)
                 action.setVisible(False)
 
     def isCallable(self):
@@ -750,6 +773,17 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             p = self.getPin(pinName, PinSelectionGroup.Outputs)
             p.setData(data)
 
+    def buttonsWidth(self):
+        # actions width. 10 is svg icon size, probably need to move this value to some preferences
+        try:
+            headerWidth = 0
+            numActions = len(self._actionButtons)
+            headerWidth += numActions * 10
+            headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
+            return headerWidth    
+        except:
+            return 0
+
     @property
     def labelHeight(self):
         return self.nodeNameWidget.sizeHint(None, None).height()
@@ -757,13 +791,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     @property
     def labelWidth(self):
         headerWidth = self.nodeNameWidget.sizeHint(None, None).width()
-
-        # actions width. 10 is svg icon size, probably need to move this value to some preferences
-        numActions = len(self._actionButtons)
-        headerWidth += numActions * 10
-        headerWidth += numActions * self.headerLayout.spacing()
-        spacerWidth = self.nameActionsSpacer.boundingRect().width()
-        headerWidth += self.headerLayout.spacing() + NodeDefaults().CONTENT_MARGINS * 2
+        headerWidth += self.buttonsWidth()
         return max(headerWidth, self.minWidth)
 
     def getNodeWidth(self):
@@ -839,6 +867,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.pinsLayout.invalidate()
         self.headerLayout.invalidate()
         self.nodeLayout.invalidate()
+        self.customLayout.invalidate()
 
     def updateNodeShape(self):
         self.prepareGeometryChange()
@@ -846,6 +875,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.updateGeometry()
         self.update()
         self.canvasRef().update()
+        self.nodeNameWidget.updateGeometry()
+        self.nodeNameWidget.update()
+        self.pinsLayout.setPreferredWidth(self.getNodeWidth())
+        self.headerLayout.setPreferredWidth(self.getNodeWidth())
+        self.customLayout.setPreferredWidth(self.getNodeWidth())
 
     def onChangeColor(self, label=False):
         res = QColorDialog.getColor(self.color, None, 'Node color setup')
@@ -958,7 +992,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def translate(self, x, y):
         super(UINodeBase, self).moveBy(x, y)
 
-    def paint(self, painter, option, widget):
+    def paint(self, painter, option, widget):          
         NodePainter.default(self, painter, option, widget)
         if self.drawLayoutsDebug:
             painter.setPen(QtGui.QPen(QtCore.Qt.green, 0.75))
@@ -966,11 +1000,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.75))
             painter.drawRect(self.nodeNameWidget.geometry())
             painter.drawRect(self.nodeLayout.geometry())
+            painter.setPen(QtGui.QPen(QtCore.Qt.red, 0.75))
+            painter.drawRect(self.pinsLayout.geometry())
+            painter.setPen(QtGui.QPen(QtCore.Qt.green, 0.75))
             painter.drawRect(self.inputsLayout.geometry())
             painter.drawRect(self.outputsLayout.geometry())
             painter.setPen(QtGui.QPen(QtCore.Qt.blue, 0.75))
-            painter.drawRect(self.nameActionsSpacer.geometry())
-
+            painter.drawRect(self.customLayout.geometry())
     def shouldResize(self, cursorPos):
         result = {"resize": False, "direction": self.resizeDirection}
         if self.resizeStrips[0] == 1:   # left
