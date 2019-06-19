@@ -106,7 +106,7 @@ class InputTextField(QGraphicsTextItem):
             return
 
         if self.singleLine:
-            if currentKey == QtCore.Qt.Key_Return:
+            if currentKey in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter):
                 if self.toPlainText() == "":
                     self.setPlainText(self.textBeforeEditing)
                     event.ignore()
@@ -293,7 +293,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeNameFont.setPointSize(6)
 
         # GUI Layout
-        self.drawLayoutsDebug = True
+        self.drawLayoutsDebug = False
         self.nodeLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.nodeLayout.setContentsMargins(NodeDefaults().CONTENT_MARGINS,
                                            NodeDefaults().CONTENT_MARGINS,
@@ -311,6 +311,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
         self.headerLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.headerLayout.setMaximumHeight(self.labelHeight)
+
+        self.exposedActionButtonsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
+        self.exposedActionButtonsLayout.setContentsMargins(0, 0, 0, 0)
+        self.exposedActionButtonsLayout.setSpacing(0)
+        self.exposedActionButtonsLayout.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        self.headerLayout.addItem(self.exposedActionButtonsLayout)
+        self.headerLayout.setAlignment(self.exposedActionButtonsLayout, QtCore.Qt.AlignRight)
 
         self.customLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.customLayout.setContentsMargins(0, 0, 0, 0)
@@ -339,7 +346,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeLayout.addItem(self.customLayout)
         self.nodeLayout.addItem(self.pinsLayout)
         self.pinsLayout.setPreferredWidth(self.nodeLayout.preferredWidth())
-        #self.nodeLayout.addItem(self.headerLayout)
         self.setLayout(self.nodeLayout)
 
         self.svgIcon = QtSvg.QGraphicsSvgItem(self)
@@ -743,8 +749,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 if actionButtonClass is None:
                     actionButtonClass = NodeActionButtonBase
                 butt = actionButtonClass(svgFilePath, action, self)
-                self.headerLayout.addItem(butt)
-                self.headerLayout.setAlignment(butt, QtCore.Qt.AlignRight)
+                self.exposedActionButtonsLayout.addItem(butt)
+                self.exposedActionButtonsLayout.setAlignment(butt, QtCore.Qt.AlignRight)
                 action.setVisible(False)
 
     def isCallable(self):
@@ -863,6 +869,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.outputsLayout.invalidate()
         self.pinsLayout.invalidate()
         self.headerLayout.invalidate()
+        self.exposedActionButtonsLayout.invalidate()
         self.nodeLayout.invalidate()
         self.customLayout.invalidate()
 
@@ -996,7 +1003,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             painter.drawRect(self.headerLayout.geometry())
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.75))
             painter.drawRect(self.nodeNameWidget.geometry())
-            # painter.drawRect(self.nodeLayout.geometry())
+            painter.drawRect(self.exposedActionButtonsLayout.geometry())
             painter.setPen(QtGui.QPen(QtCore.Qt.red, 0.75))
             painter.drawRect(self.pinsLayout.geometry())
             painter.setPen(QtGui.QPen(QtCore.Qt.green, 0.75))
@@ -1209,7 +1216,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
                     data = inp.currentData()
-                    if isinstance(inp.currentData(),dictElement):
+                    if isinstance(inp.currentData(), dictElement):
                         data = inp.currentData()[1]
                     w.setWidgetValue(data)
                     w.blockWidgetSignals(False)
