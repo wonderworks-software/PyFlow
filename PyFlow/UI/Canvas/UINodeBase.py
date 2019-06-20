@@ -379,7 +379,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.pinsToMove = {}
         self._rect = QtCore.QRectF(0, 0, self.minWidth, self.minHeight)
         self.lastMousePos = QtCore.QPointF()
-        self.mousePressPos = QtCore.QPointF()        
+        self.mousePressPos = QtCore.QPointF()
 
         # Group pins
         self.inputGroupPins = {}
@@ -1166,6 +1166,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
 
     def mouseReleaseEvent(self, event):
         self.bResize = False
+        self.resetResizeStrips()
         self.update()
         self.updateOwningCommentNode()
         if self.owningCommentNode != self.pressedCommentNode:
@@ -1268,9 +1269,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 break
         return result
 
-    def hoverLeaveEvent(self, event):
+    def resetResizeStrips(self):
         for i in range(len(self.resizeStrips)):
             self.resizeStrips[i] = 0
+
+    def hoverLeaveEvent(self, event):
+        self.resetResizeStrips()
         self.update()
 
     def hoverMoveEvent(self, event):
