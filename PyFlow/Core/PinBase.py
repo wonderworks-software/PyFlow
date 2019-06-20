@@ -365,7 +365,12 @@ class PinBase(IPin):
         except Exception as exc:
             self.setError(exc)
             self.setDirty()
-        self.owningNode().checkForErrors()
+        if self._lastError != None:
+            self.owningNode().setError(self._lastError)   
+            wrapper = self.owningNode().getWrapper()
+            if wrapper:
+                wrapper.update()                   
+        #self.owningNode().checkForErrors()
         
 
     ## Calling execution pin
