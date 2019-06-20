@@ -89,7 +89,7 @@ class NodePainter(object):
     @staticmethod
     def default(node, painter, option, widget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), node.geometry().size())
-        # use 3 levels of detail
+        # use 3 levels of detail       
         lod = node.canvasRef().getLodValueFromCurrentScale(3)
         SWITCH_LOD = 3
 

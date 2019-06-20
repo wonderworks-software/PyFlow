@@ -9,7 +9,7 @@ from PyFlow.UI.Canvas.UINodeBase import UINodeBase,InputTextField
 from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
 from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-from Qt.QtWidgets import QGraphicsTextItem, QGraphicsWidget, QGraphicsItem,QGraphicsProxyWidget,QLabel,QSizePolicy
+from Qt.QtWidgets import QGraphicsTextItem, QGraphicsWidget, QGraphicsItem,QGraphicsProxyWidget,QLabel,QSizePolicy,QPushButton
 
 
 class UIQimageDisplay(UINodeBase):
@@ -17,11 +17,9 @@ class UIQimageDisplay(UINodeBase):
         super(UIQimageDisplay, self).__init__(raw_node)
         self.resizable = True
         self.roundness = 1
-        self.Imagelabel = QLabel()
-        self.pixmap = QtGui.QPixmap(r"C:\Users\pedro\OneDrive\test_files\image_files\basic\chelsea.png")     
-        self.ProxyWidget = QGraphicsProxyWidget()
-        self.ProxyWidget.setWidget(self.Imagelabel)
-        self.customLayout.addItem(self.ProxyWidget) 
+        self.Imagelabel = QLabel("test3")
+        self.pixmap = QtGui.QPixmap(RESOURCES_DIR+"/wizard-cat.png") 
+        self.addWidget(self.Imagelabel)
         self.updateSize()
 
     def paint(self, painter, option, widget):
@@ -31,7 +29,4 @@ class UIQimageDisplay(UINodeBase):
     def updateSize(self):
         scaledPixmap = self.pixmap.scaledToWidth(self.customLayout.geometry().width())
         self.Imagelabel.setPixmap(scaledPixmap)
-        self.Imagelabel.setMaximumWidth(scaledPixmap.width())
-        self.Imagelabel.setMinimumWidth(scaledPixmap.width())
-        self.Imagelabel.setMaximumHeight(scaledPixmap.height())
-        self.Imagelabel.setMinimumHeight(scaledPixmap.height())
+

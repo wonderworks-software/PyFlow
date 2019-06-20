@@ -27,7 +27,7 @@ from Qt.QtWidgets import QLineEdit
 from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QColorDialog
 from Qt.QtWidgets import QMenu
-
+from Qt.QtWidgets import QGraphicsProxyWidget
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UIPinBase import (
     UIPinBase,
@@ -293,7 +293,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeNameFont.setPointSize(6)
 
         # GUI Layout
-        self.drawLayoutsDebug = False
+        self.drawLayoutsDebug = True
         self.nodeLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.nodeLayout.setContentsMargins(NodeDefaults().CONTENT_MARGINS,
                                            NodeDefaults().CONTENT_MARGINS,
@@ -302,7 +302,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
 
         self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
-        self.nodeLayout.addItem(self.headerLayout)
+        
         self.nodeNameWidget = NodeName(self)
         self.headerLayout.addItem(self.nodeNameWidget)
 
@@ -323,6 +323,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.customLayout.setContentsMargins(0, 0, 0, 0)
         self.customLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
         self.customLayout.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        self.hasCustomLayout = False
 
         self.pinsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.pinsLayout.setContentsMargins(0, 0, 0, 0)
@@ -340,12 +341,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.outputsLayout.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
 
         self.pinsLayout.addItem(self.inputsLayout)
-        self.pinsLayout.setAlignment(self.inputsLayout, QtCore.Qt.AlignLeft)
         self.pinsLayout.addItem(self.outputsLayout)
+        self.pinsLayout.setAlignment(self.inputsLayout, QtCore.Qt.AlignLeft)
         self.pinsLayout.setAlignment(self.outputsLayout, QtCore.Qt.AlignRight)
-        self.nodeLayout.addItem(self.customLayout)
-        self.nodeLayout.addItem(self.pinsLayout)
         self.pinsLayout.setPreferredWidth(self.nodeLayout.preferredWidth())
+
+        self.nodeLayout.addItem(self.headerLayout)
+        #self.nodeLayout.addItem(self.customLayout)
+        self.nodeLayout.addItem(self.pinsLayout)
+        
         self.setLayout(self.nodeLayout)
 
         self.svgIcon = QtSvg.QGraphicsSvgItem(self)
@@ -476,11 +480,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def __repr__(self):
         return self._rawNode.__repr__()
 
-    def sizeHint(self, which, constraint):
+    def sizeHint(self, which, constraint):      
         return QtCore.QSizeF(self.getNodeWidth(), self.getNodeHeight())
 
     def setGeometry(self, rect):
-        self.prepareGeometryChange()
+        self.prepareGeometryChange()      
         super(QGraphicsWidget, self).setGeometry(rect)
         self.setPos(rect.topLeft())
 
@@ -753,6 +757,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
                 self.exposedActionButtonsLayout.setAlignment(butt, QtCore.Qt.AlignRight)
                 action.setVisible(False)
 
+    def addWidget(self,widget):
+        if not self.hasCustomLayout:
+            self.nodeLayout.insertItem(1,self.customLayout)
+        ProxyWidget = QGraphicsProxyWidget()
+        ProxyWidget.setWidget(widget)
+        self.customLayout.addItem(ProxyWidget) 
+
     def isCallable(self):
         return self._rawNode.isCallable()
 
@@ -836,18 +847,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         except:
             pass
 
-        try:
-            for cust in range(0, self.customLayout.count()):
-                out = self.customLayout.itemAt(cust)
-                try:
-                    if out.widget():
-                        h += out.widget().height()
-                    else:
-                        h += out.geometry().height()
-                except:
-                    h += out.geometry().height()
-        except:
-            pass
+        for cust in range(0, self.customLayout.count()):
+            out = self.customLayout.itemAt(cust)
+            h += out.minimumHeight()
+        h += self.customLayout.spacing()*self.customLayout.count()  
 
         if h < self.minHeight:
             h = self.minHeight
@@ -895,9 +898,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.canvasRef().update()
         self.nodeNameWidget.updateGeometry()
         self.nodeNameWidget.update()
-        self.pinsLayout.setPreferredWidth(self.getNodeWidth())
-        self.headerLayout.setPreferredWidth(self.getNodeWidth())
-        self.customLayout.setPreferredWidth(self.getNodeWidth())
+        self.pinsLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
+        self.headerLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
+        self.customLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
 
     def onChangeColor(self, label=False):
         res = QColorDialog.getColor(self.color, None, 'Node color setup')
