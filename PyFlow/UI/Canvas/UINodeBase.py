@@ -760,6 +760,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def addWidget(self,widget):
         if not self.hasCustomLayout:
             self.nodeLayout.insertItem(1,self.customLayout)
+        if widget.minimumHeight() == 0:
+            widget.setMinimumHeight(widget.sizeHint().height())
         ProxyWidget = QGraphicsProxyWidget()
         ProxyWidget.setWidget(widget)
         self.customLayout.addItem(ProxyWidget) 
