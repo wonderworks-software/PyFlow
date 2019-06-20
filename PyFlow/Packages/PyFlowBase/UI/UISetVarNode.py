@@ -89,7 +89,7 @@ class UISetVarNode(UINodeBase):
         for pin in self.UIPins.values():
             pin.setMenuItemEnabled("InitAs", False)
 
-    def updateHeaderText(self):
+    def updateHeaderText(self, name=None):
         self.setHeaderHtml("Set {0}".format(self.var.name))
         self.updateNodeShape()
 

@@ -123,8 +123,9 @@ class GraphBase(ISerializable):
                     lhsPin = lhsNode.orderedOutputs[linkData["outPinId"]]
                     rhsNode = self.findNode(linkData["rhsNodeName"])
                     rhsPin = rhsNode.orderedInputs[linkData["inPinId"]]
-                    connected = connectPins(lhsPin, rhsPin)
-                    assert(connected is True), "Failed to restore connection"
+                    if not arePinsConnected(lhsPin, rhsPin):
+                        connected = connectPins(lhsPin, rhsPin)
+                        assert(connected is True), "Failed to restore connection"
 
     def remove(self):
         """Removes this graph as well as child graphs. Deepest graphs will be removed first

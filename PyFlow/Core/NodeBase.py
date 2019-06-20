@@ -323,7 +323,6 @@ class NodeBase(INode):
     def processNode(self, *args, **kwargs):
         if not self.isValid():
             return
-
         if self.bCacheEnabled:
             if not self.useCache():
                 try:
