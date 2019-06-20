@@ -293,7 +293,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeNameFont.setPointSize(6)
 
         # GUI Layout
-        self.drawLayoutsDebug = True
+        self.drawLayoutsDebug = False
         self.nodeLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
         self.nodeLayout.setContentsMargins(NodeDefaults().CONTENT_MARGINS,
                                            NodeDefaults().CONTENT_MARGINS,
@@ -302,7 +302,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
         self.nodeLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
 
         self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
-        
+
         self.nodeNameWidget = NodeName(self)
         self.headerLayout.addItem(self.nodeNameWidget)
 
