@@ -24,23 +24,23 @@ class NodePainter(object):
             pen = QtGui.QPen()
             height = node.geometry().height()
             width = node.geometry().width()
-            rf = node.roundness
+            rf = node.roundness*2
             pen.setColor(InteractiveColor)
             pen.setStyle(node.optPenSelectedType)
             painter.setPen(pen)
 
             # left strip
             if node.resizeStrips[0]:
-                painter.drawLine(0, rf, 0, height - rf)
+                painter.drawLine(0, rf/2, 0, height - rf/2)
             # top strip
             if node.resizeStrips[1]:
-                painter.drawLine(rf, 0, width - rf, 0)
+                painter.drawLine(rf/2, 0, width - rf/2, 0)
             # right strip
             if node.resizeStrips[2]:
-                painter.drawLine(width, rf, width, height - rf)
+                painter.drawLine(width, rf/2, width, height - rf/2)
             # bottom strip
             if node.resizeStrips[3]:
-                painter.drawLine(rf, height, width - rf, height)
+                painter.drawLine(rf/2, height, width - rf/2, height)
 
             # bottom right strip
             if node.resizeStrips[4]:
@@ -110,10 +110,10 @@ class NodePainter(object):
 
         r = frame
         if lod < SWITCH_LOD:
-            r.setWidth(r.width() - pen.width())
-            r.setHeight(r.height() - pen.width())
-            r.setX(pen.width())
-            r.setY(r.y() + pen.width())
+            r.setWidth(r.width() - pen.width()/2)
+            r.setHeight(r.height() - pen.width()/2)
+            r.setX(pen.width()/2)
+            r.setY(r.y() + pen.width()/2)
             painter.drawRoundedRect(r, node.roundness, node.roundness)
         else:
             painter.drawRect(r)

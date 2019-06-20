@@ -6,6 +6,7 @@ from PyFlow.UI.Canvas.UICommon import NodeActionButtonInfo
 class UISequenceNode(UINodeBase):
     def __init__(self, raw_node):
         super(UISequenceNode, self).__init__(raw_node)
+        self.resizable = True
         actionAddOut = self._menu.addAction("Add out pin")
         actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
         actionAddOut.setToolTip("Adds output execution pin")

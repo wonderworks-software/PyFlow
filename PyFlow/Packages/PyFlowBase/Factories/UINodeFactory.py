@@ -16,6 +16,8 @@ from PyFlow.Packages.PyFlowBase.Nodes.constant import constant
 from PyFlow.Packages.PyFlowBase.Nodes.convertTo import convertTo
 from PyFlow.Packages.PyFlowBase.Nodes.makeDict import makeDict
 
+from PyFlow.Packages.PyFlowBase.Nodes.QimageDisplay import QimageDisplay
+from PyFlow.Packages.PyFlowBase.UI.UIQimageDisplay import UIQimageDisplay
 
 from PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode import UISwitchOnString
 from PyFlow.Packages.PyFlowBase.UI.UIGetVarNode import UIGetVarNode
@@ -65,5 +67,7 @@ def createUINode(raw_instance):
     if isinstance(raw_instance,convertTo):
         return UIConvertToNode(raw_instance)
     if isinstance(raw_instance,makeDict):
-        return UIMakeDictNode(raw_instance)        
+        return UIMakeDictNode(raw_instance)   
+    if isinstance(raw_instance,QimageDisplay):
+        return UIQimageDisplay(raw_instance)              
     return UINodeBase(raw_instance)

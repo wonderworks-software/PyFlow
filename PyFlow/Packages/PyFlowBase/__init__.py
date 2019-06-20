@@ -51,6 +51,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.makeDictElement import makeDictElement
 from PyFlow.Packages.PyFlowBase.Nodes.dictKeys import dictKeys
 
 
+
 from PyFlow.Packages.PyFlowBase.Nodes.consoleOutput import consoleOutput
 from PyFlow.Packages.PyFlowBase.Nodes.address import address
 from PyFlow.Packages.PyFlowBase.Nodes.graphNodes import graphInputs, graphOutputs
@@ -81,6 +82,8 @@ from PyFlow.Packages.PyFlowBase.Exporters.CPPCompiler import CPPCompiler
 from PyFlow.Packages.PyFlowBase.Factories.UIPinFactory import createUIPin
 from PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory import getInputWidget
 from PyFlow.Packages.PyFlowBase.Factories.UINodeFactory import createUINode
+
+from PyFlow.Packages.PyFlowBase.Nodes.QimageDisplay import QimageDisplay
 
 
 _FOO_LIBS = {
@@ -130,7 +133,8 @@ _NODES = {
     constant.__name__: constant,
     tick.__name__: tick,
     convertTo.__name__: convertTo,
-    dictKeys.__name__: dictKeys
+    dictKeys.__name__: dictKeys,
+    QimageDisplay.__name__ : QimageDisplay
 }
 
 _PINS = {

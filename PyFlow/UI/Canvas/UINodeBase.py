@@ -832,6 +832,20 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             for grp in self.groups["output"].values():
                 ogrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
             h += max(igrhHeight, ogrhHeight)
+
+        except:
+            pass
+
+        try:
+            for cust in range(0, self.customLayout.count()):
+                out = self.customLayout.itemAt(cust)
+                try:
+                    if out.widget():
+                        h += out.widget().height()
+                    else:
+                        h += out.geometry().height()
+                except:
+                    h += out.geometry().height()
         except:
             pass
 
