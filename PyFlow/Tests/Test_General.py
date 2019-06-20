@@ -2,7 +2,7 @@ from PyFlow.Tests.TestsBase import *
 from PyFlow.Core.Common import *
 from collections import Counter
 from PyFlow.Input import *
-from Qt import QtCore
+import time
 
 
 class TestGeneral(unittest.TestCase):
@@ -494,6 +494,59 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(nameBefore, nameAfter, "names are incorrect {0} - {1}".format(nameBefore, nameAfter))
         depthsAfter = [g.depth() for g in man.getAllGraphs()]
         self.assertEqual(Counter(depthsBefore), Counter(depthsAfter), "failed to restore graphs depths")
+
+    def test_any_pin_speed(self):
+        packages = GET_PACKAGES()
+        man = GraphManager()
+
+        classNodes = packages['PyFlowBase'].GetNodeClasses()
+        defaultLib = packages['PyFlowBase'].GetFunctionLibraries()["DefaultLib"].getFunctions()
+        arrayLib = packages['PyFlowBase'].GetFunctionLibraries()["ArrayLib"].getFunctions()
+
+        makeArrayNode = classNodes['makeArray']("makeArray")
+        arraySlice = NodeBase.initializeFromFunction(arrayLib["arraySlice"])
+        arrayLen = NodeBase.initializeFromFunction(arrayLib["arrayElementCount"])
+        makeInt0 = NodeBase.initializeFromFunction(defaultLib["makeInt"])
+        makeInt1 = NodeBase.initializeFromFunction(defaultLib["makeInt"])
+        makeInt2 = NodeBase.initializeFromFunction(defaultLib["makeInt"])
+        makeInt3 = NodeBase.initializeFromFunction(defaultLib["makeInt"])
+        printNode = classNodes["consoleOutput"]("printer")
+        printNode1 = classNodes["consoleOutput"]("printer")
+        printNode2 = classNodes["consoleOutput"]("printer")
+
+        man.activeGraph().addNode(makeArrayNode)
+        man.activeGraph().addNode(arraySlice)
+        man.activeGraph().addNode(arrayLen)
+        man.activeGraph().addNode(makeInt0)
+        man.activeGraph().addNode(makeInt1)
+        man.activeGraph().addNode(makeInt2)
+        man.activeGraph().addNode(makeInt3)
+        man.activeGraph().addNode(printNode)
+        man.activeGraph().addNode(printNode1)
+        man.activeGraph().addNode(printNode2)
+
+        makeInt0["i"].setData(0)
+        makeInt1["i"].setData(1)
+        makeInt2["i"].setData(2)
+        makeInt3["i"].setData(3)
+
+        arraySlice["start"].setData(1)
+        arraySlice["end"].setData(3)
+
+        connectPinsByIndexes(makeInt0, 0, makeArrayNode, 0)
+        connectPinsByIndexes(makeInt1, 0, makeArrayNode, 0)
+        connectPinsByIndexes(makeInt2, 0, makeArrayNode, 0)
+        connectPinsByIndexes(makeInt3, 0, makeArrayNode, 0)
+        connectPinsByIndexes(makeArrayNode, 0, arraySlice, 0)
+        connectPinsByIndexes(arraySlice, 0, printNode, 1)
+        connectPinsByIndexes(arraySlice, 0, arrayLen, 0)
+        connectPinsByIndexes(arrayLen, 0, printNode1, 1)
+        connectPinsByIndexes(printNode, 0, printNode1, 0)
+        connectPinsByIndexes(printNode1, 0, printNode2, 0)
+
+        start = time.process_time()
+        printNode[DEFAULT_IN_EXEC_NAME].call()
+        print("DELTA:", time.process_time() - start)
 
 
 if __name__ == '__main__':
