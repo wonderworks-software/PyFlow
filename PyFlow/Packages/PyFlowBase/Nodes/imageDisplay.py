@@ -5,9 +5,9 @@ from blinker import Signal
 import os
 
 
-class QimageDisplay(NodeBase):
+class imageDisplay(NodeBase):
     def __init__(self, name):
-        super(QimageDisplay, self).__init__(name)
+        super(imageDisplay, self).__init__(name)
         self.loadImage = Signal(str)
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.entity = self.createInputPin('path', 'StringPin')

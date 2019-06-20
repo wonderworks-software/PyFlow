@@ -16,7 +16,6 @@ class UIQimageDisplay(UINodeBase):
     def __init__(self, raw_node):
         super(UIQimageDisplay, self).__init__(raw_node)
         self.resizable = True
-        self.roundness = 1
         self.Imagelabel = QLabel("test3")
         self.pixmap = QtGui.QPixmap(RESOURCES_DIR + "/wizard-cat.png")
         self.addWidget(self.Imagelabel)

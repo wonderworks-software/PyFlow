@@ -83,7 +83,7 @@ from PyFlow.Packages.PyFlowBase.Factories.UIPinFactory import createUIPin
 from PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory import getInputWidget
 from PyFlow.Packages.PyFlowBase.Factories.UINodeFactory import createUINode
 
-from PyFlow.Packages.PyFlowBase.Nodes.QimageDisplay import QimageDisplay
+from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
 
 
 _FOO_LIBS = {
@@ -134,7 +134,7 @@ _NODES = {
     tick.__name__: tick,
     convertTo.__name__: convertTo,
     dictKeys.__name__: dictKeys,
-    QimageDisplay.__name__ : QimageDisplay
+    imageDisplay.__name__ : imageDisplay
 }
 
 _PINS = {
