@@ -4,8 +4,6 @@ from PyFlow.Core.Common import *
 from blinker import Signal
 import os
 
-from Qt import QtGui
-
 
 class QimageDisplay(NodeBase):
     def __init__(self, name):
