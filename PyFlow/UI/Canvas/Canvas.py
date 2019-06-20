@@ -492,7 +492,6 @@ class Canvas(QGraphicsView):
             self.node_box.lineEdit.setFocus()
 
     def shoutDown(self, *args, **kwargs):
-        # TODO: ask user to save editor data
         for ed in self.codeEditors.values():
             ed.deleteLater()
         self.scene().clear()

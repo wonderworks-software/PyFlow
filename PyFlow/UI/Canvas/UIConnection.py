@@ -149,9 +149,6 @@ class UIConnection(QGraphicsPathItem):
     def contextMenuEvent(self, event):
         self._menu.exec_(event.screenPos())
 
-    def highlight(self):
-        self.fade = 1.0
-
     @property
     def uid(self):
         return self._uid

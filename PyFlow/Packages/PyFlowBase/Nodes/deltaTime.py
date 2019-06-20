@@ -33,5 +33,4 @@ class deltaTime(NodeBase):
 
     def compute(self, *args, **kwargs):
         self._out0.setData(self._deltaTime)
-        # TODO: cache previous value and push dirty only if value changed
         push(self._out0)

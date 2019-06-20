@@ -1,5 +1,14 @@
 
 
+class IUINode(object):
+    """docstring for IUINode."""
+    def __init__(self):
+        super(IUINode, self).__init__()
+
+    def serializationHook(self):
+        raise NotImplementedError("serializationHook of IUINode is not implemented")
+
+
 class IPropertiesViewSupport(object):
     """docstring for IPropertiesViewSupport."""
     def __init__(self):

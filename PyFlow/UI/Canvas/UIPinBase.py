@@ -362,19 +362,8 @@ class UIPinBase(QGraphicsWidget):
     def getData(self):
         return self._rawPin.getData()
 
-    def highlight(self):
-        # TODO: draw svg arrow instead
-        self.bAnimate = True
-        t = QtCore.QTimeLine(900, self)
-        t.setFrameRange(0, 100)
-        t.frameChanged[int].connect(self.animFrameChanged)
-        t.finished.connect(self.animationFinished)
-        t.start()
-
     def call(self):
         self._rawPin.call()
-        for e in self.connections:
-            e.highlight()
 
     def kill(self, *args, **kwargs):
         """this will be called after raw pin is deleted

@@ -360,13 +360,11 @@ class PinPainter(object):
         for row in range(3):
             x = pinCenter.x() - halfPinSize
             y = row * cellH + (halfPinSize / 2) + pin.pinCircleDrawOffset.y()
-            # TODO: use different colors for key and value
             painter.setBrush(QtGui.QBrush(pin.color()))
             painter.drawRect(x + cellW, y, cellW * 2, cellH)
             if keyPin:
                 painter.setBrush(QtGui.QBrush(QtGui.QColor(*keyPin.color())))
             painter.drawRect(x, y, cellW, cellH)
-            
 
         if lod < 3:
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())

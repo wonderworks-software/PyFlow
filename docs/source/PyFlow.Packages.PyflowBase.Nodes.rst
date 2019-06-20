@@ -118,6 +118,12 @@ PyFlow.Packages.PyFlowBase.Nodes.graphNodes module
 .. automodule:: PyFlow.Packages.PyFlowBase.Nodes.graphNodes
    :members:
 
+PyFlow.Packages.PyFlowBase.Nodes.imageDisplay module
+----------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.imageDisplay
+   :members:
+
 PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict module
 ---------------------------------------------------
 

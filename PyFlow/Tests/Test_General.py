@@ -53,21 +53,6 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(Counter(man.location()), Counter([man.findRootGraph().name, subgraphNodeInstance.name]))
         self.assertEqual(Counter(subgraphNodeInstance.rawGraph.location()), Counter(man.location()))
 
-    def test_input_action(self):
-        # TODO: move this ui stuff out of here
-        a1 = InputAction("a1", InputActionType.Keyboard, "g1", QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.NoButton, QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier)
-        a2 = InputAction("a1", InputActionType.Keyboard, "g1", QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.NoButton, QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier)
-        self.assertEqual(a1, a2)
-
-        a2.setModifiers(QtCore.Qt.ControlModifier)
-        self.assertNotEqual(a1, a2)
-
-        a1jsn = a1.toJson()
-        a1Restored = InputAction("a1Restored")
-        a1Restored.fromJson(a1jsn)
-
-        self.assertEqual(a1, a1Restored)
-
     def test_add_int_no_exec(self):
         man = GraphManager()
         packages = GET_PACKAGES()

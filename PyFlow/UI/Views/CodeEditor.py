@@ -249,11 +249,8 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         for o in list(node.outputs.values()):
             o.kill()
 
-        # TODO: Reset node size
-
     def applyData(self):
         # reset node
-        # TODO: do not remove pins if data is the same
         self.resetNode()
         node = self.graph.nodes[self.nodeUid]
 

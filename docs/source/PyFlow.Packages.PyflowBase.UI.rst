@@ -64,6 +64,12 @@ PyFlow.Packages.PyFlowBase.UI.UIPythonNode module
 .. automodule:: PyFlow.Packages.PyFlowBase.UI.UIPythonNode
    :members:
 
+PyFlow.Packages.PyFlowBase.UI.UIQimageDisplay module
+----------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIQimageDisplay
+   :members:
+
 PyFlow.Packages.PyFlowBase.UI.UIRerouteNode module
 --------------------------------------------------
 

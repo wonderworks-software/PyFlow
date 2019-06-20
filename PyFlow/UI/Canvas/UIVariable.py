@@ -121,7 +121,6 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         valueCategory = CollapsibleFormWidget(headName="Value")
 
         # current value
-        # TODO: Make widget for array structure?
         if self._rawVariable.structure == PinStructure.Single:
             if not type(self._rawVariable.value) in {list, set, dict, tuple}:
                 def valSetter(x):
@@ -240,7 +239,6 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         pinClass = findPinClassByType(data['dataType'])
 
         varUid = uuid.UUID(data['uuid'])
-        # TODO: this is probably bad. Too long call chain
         var = graph.getApp().variablesWidget.createVariable(
             dataType=data['dataType'], accessLevel=AccessLevel(data['accessLevel']), uid=varUid)
         var.setName(data['name'])

@@ -80,7 +80,6 @@ class VariablesWidget(QWidget, Ui_Form):
         variableGraph.killVariable(uiVariableWidget._rawVariable)
         self.actualize()
 
-        # TODO: rewrite properties system
         self.clearProperties()
 
     def createVariableWrapperAndAddToList(self, rawVariable):

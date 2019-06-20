@@ -39,6 +39,7 @@ from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
+from PyFlow.UI.UIInterfaces import IUINode
 from PyFlow.UI.Canvas.NodeActionButton import NodeActionButtonBase
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.Common import *
@@ -243,7 +244,7 @@ class NodeName(QGraphicsWidget):
         self.labelItem.setGeometry(rect)
 
 
-class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
+class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     """
     Default node description
     """
@@ -625,7 +626,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
     def isCompoundNode(self):
         return self._rawNode.isCompoundNode
 
-    # TODO: add this to ui node interface
     def serializationHook(self):
         # this will be called by raw node
         # to gather ui specific info
@@ -1228,7 +1228,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport):
             sortedInputs = sorted(self.UIinputs.values(), key=lambda x: x.name)
             for inp in sortedInputs:
                 if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
-                    # TODO: create list input widget
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData
                 w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue())
