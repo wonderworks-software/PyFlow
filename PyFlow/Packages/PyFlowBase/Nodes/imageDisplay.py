@@ -12,7 +12,7 @@ class imageDisplay(NodeBase):
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.entity = self.createInputPin('path', 'StringPin')
         self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin', None)
-        self.failed = self.createOutputPin("Failed", 'ExecPin', None)
+        self.failed = self.createOutputPin("failed", 'ExecPin', None)
 
     @staticmethod
     def pinTypeHints():
