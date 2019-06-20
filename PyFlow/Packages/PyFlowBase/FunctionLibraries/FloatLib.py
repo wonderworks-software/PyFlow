@@ -54,5 +54,3 @@ class FloatLib(FunctionLibraryBase):
         Round a number to a given precision in decimal digits.
         '''
         return round(Value, Digits)
-
-

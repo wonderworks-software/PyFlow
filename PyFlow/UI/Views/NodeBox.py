@@ -66,7 +66,8 @@ class NodeBoxTreeWidget(QTreeWidget):
         if current is not None:
             if self.bNodeInfoEnabled:
                 if not current.bCategory:
-                    self.showInfo.emit(current.toolTip(0))
+                    if current.docString is not None:
+                        self.showInfo.emit(current.docString)
                 else:
                     self.hideInfo.emit()
 
@@ -120,8 +121,9 @@ class NodeBoxTreeWidget(QTreeWidget):
         nodeItem.bCategory = False
         nodeItem.setText(0, name)
         nodeItem.libName = libName
-        if doc:
-            nodeItem.setToolTip(0, doc)
+        nodeItem.docString = doc
+        # if doc:
+        #     nodeItem.setToolTip(0, doc)
 
     def refresh(self, dataType=None, pattern='', pinDirection=None, pinStructure=PinStructure.Single):
         self.clear()

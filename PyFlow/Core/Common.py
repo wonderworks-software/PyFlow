@@ -73,17 +73,19 @@ def clamp(n, vmin, vmax):
 def roundup(x, to):
     return int(math.ceil(x / to)) * to
 
-## Clearing a list in python previous to 3.2 is not posible with list.clear()
+
+## Clearing a list in python previous to 3.2 is not possible with list.clear()
 # @param[in] list list to clear
 # @returns cleared List
-currVersion =  Version(sys.version_info.major,sys.version_info.minor,0)
-python32 =  Version(3,2,0)
-if currVersion <= python32:
+currentVersion = Version(sys.version_info.major, sys.version_info.minor, 0)
+python32 = Version(3, 2, 0)
+if currentVersion <= python32:
     def clearList(list):
         del list[:]
 else:
     def clearList(list):
         list.clear()
+
 
 def findGoodId(ids):
     """Finds good minimum unique int from iterable. Starting from 1
