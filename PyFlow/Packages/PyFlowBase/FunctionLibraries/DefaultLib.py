@@ -9,6 +9,7 @@ from PyFlow import getHashableDataTypes
 from PyFlow.Core.Common import *
 from nine import IS_PYTHON2
 
+
 class DefaultLib(FunctionLibraryBase):
     '''
     Default library builting stuff, variable types and conversions
@@ -18,7 +19,7 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny| PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}),
-                    meta={'Category': 'GenericTypes', 'Keywords': ['id'], "CacheEnabled": False})
+                    meta={'Category': 'Utils', 'Keywords': ['id'], "CacheEnabled": False})
     def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny| PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}), deepCopy=("BoolPin", False)):
         '''Shallow or deep copy of an object.'''
         copyFunction = deepcopy if deepCopy else copy
@@ -55,7 +56,7 @@ class DefaultLib(FunctionLibraryBase):
         return s
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'Math|Bool', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'GenericTypes', 'Keywords': []})
     def makeBool(b=('BoolPin', False)):
         '''Make boolean.'''
         return b
@@ -84,7 +85,7 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ""), meta={'Category': 'Utils', 'Keywords': []})
     def objectType(obj=("AnyPin", None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported})):
-        '''Returns <u>type(obj).__name__</u>'''
+        '''Returns ``type(obj).__name__``'''
         t = type(obj).__name__
         if t == "dictElement":
             t += ",key:{0},value:{1}".format(type(obj[1]).__name__, type(obj[0]).__name__)
@@ -93,7 +94,7 @@ class DefaultLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['in'], "CacheEnabled": False})
     def contains(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}), element=("AnyPin", None, {"constraint": "1"})):
-        """Python's <u>in</u> keyword. <u>element in obj</u> will be executed"""
+        """Python's **in** keyword. `element in obj` will be executed"""
         try:
             return element in obj
         except:
@@ -105,7 +106,7 @@ class DefaultLib(FunctionLibraryBase):
     def getItem(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
                 element=("AnyPin", None, {"supportedDataTypes": getHashableDataTypes() }),
                 result=("Reference", ("BoolPin", False))):
-        """Python's <u>[]</u> operator. <u>obj[element]</u> will be executed."""
+        """Python's ``[]`` operator. ``obj[element]`` will be executed."""
         try:
             result(True)
             return obj[element]
@@ -118,7 +119,7 @@ class DefaultLib(FunctionLibraryBase):
     def appendTo(obj=('AnyPin', None, {"constraint": "1", "structConstraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
                  element=("AnyPin", None, {"constraint": "1"}),
                  result=("Reference", ('BoolPin', False))):
-        """Calls <u>obj.append(element)</u>. And returns object. If failed - object is unchanged"""
+        """Calls ``obj.append(element)``. And returns object. If failed - object is unchanged"""
         try:
             obj.append(element)
             result(True)
@@ -132,7 +133,7 @@ class DefaultLib(FunctionLibraryBase):
     def addTo(obj=('AnyPin', None, {"constraint": "1", "structConstraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
               element=("AnyPin", None, {"constraint": "1"}),
               result=("Reference", ("AnyPin", None, {"constraint": "1", "structConstraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}))):
-        """Calls <u>obj.add(element)</u>. And returns object. If failed - object is unchanged"""
+        """Calls ``obj.add(element)``. And returns object. If failed - object is unchanged"""
         try:
             obj.add(element)
             result(obj)
