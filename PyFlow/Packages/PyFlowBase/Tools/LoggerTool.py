@@ -4,6 +4,7 @@ from Qt import QtGui
 from Qt import QtWidgets
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.Core.GraphManager import GraphManagerSingleton
 import sys
 import logging
@@ -70,6 +71,7 @@ class LoggerTool(DockTool):
         self.logView = QtWidgets.QTextBrowser()
         self.logView.setOpenLinks(False)
         self.logView.setReadOnly(True)
+        self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'"%"rgba%s"%str(editableStyleSheet().CanvasBgColor.getRgb()))
         self.logView.anchorClicked.connect(self.anchorClickedMethod)
         self.logView.setTextColor(QtGui.QColor('white'))
         self.setWidget(self.logView)

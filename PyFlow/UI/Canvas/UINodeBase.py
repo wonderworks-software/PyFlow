@@ -416,8 +416,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         # change node ui to invalid
         errorString = args[0]
         error = {"Node":self._rawNode.name,"Error":errorString}
-
-        logging.error('< a href = %s>%s</a>'%(self._rawNode.name,str(error)))
+        errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""%(self._rawNode.name,str(error))
+        logging.error(errorLink)#'< a href = %s>%s</a>'%(self._rawNode.name,str(error)))
         self.setToolTip(errorString)
         self.update()
 
