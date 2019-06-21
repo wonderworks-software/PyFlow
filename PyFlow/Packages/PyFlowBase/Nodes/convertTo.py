@@ -31,6 +31,16 @@ class convertTo(NodeBase):
     @staticmethod
     def category():
         return 'GenericTypes'
+        
+    def serialize(self):      
+        orig = super(convertTo, self).serialize()
+        orig["currDataType"] = self.output.dataType
+        return orig
+
+    def postCreate(self, jsonTemplate=None):
+        super(convertTo, self).postCreate(jsonTemplate)
+        if "currDataType" in jsonTemplate:
+            self.updateType(self.pinTypes.index(jsonTemplate["currDataType"]))
 
     def updateType(self, dataTypeIndex):
         self.output.enableOptions(PinOptions.ChangeTypeOnConnection)

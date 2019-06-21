@@ -11,9 +11,9 @@ class constant(NodeBase):
         super(constant, self).__init__(name)
         self.input = self.createInputPin("in", 'AnyPin', defaultValue=0.0, structure=PinStructure.Multi, constraint="1", structConstraint="1")
         self.output = self.createOutputPin("out", 'AnyPin', defaultValue=0.0, structure=PinStructure.Multi, constraint="1", structConstraint="1")
-        pinAffects(self.input, self.output)
         self.input.disableOptions(PinOptions.ChangeTypeOnConnection)
-        self.output.disableOptions(PinOptions.ChangeTypeOnConnection)
+        self.output.disableOptions(PinOptions.ChangeTypeOnConnection)         
+        pinAffects(self.input, self.output)
         self.input.call = self.output.call
         self.pinTypes = []
         for pinClass in getAllPinClasses():
@@ -38,10 +38,16 @@ class constant(NodeBase):
     def keywords():
         return ["Make"]
 
+
+    def serialize(self):      
+        orig = super(constant, self).serialize()
+        orig["currDataType"] = self.input.dataType
+        return orig
+
     def postCreate(self, jsonTemplate=None):
         super(constant, self).postCreate(jsonTemplate)
-        self.input.onPinConnected.connect(self.onPinConected)
-        self.output.onPinConnected.connect(self.onPinConected)
+        if "currDataType" in jsonTemplate:
+            self.updateType(self.pinTypes.index(jsonTemplate["currDataType"]))
 
     def onPinConected(self,other):
         self.changeType(other.dataType)
