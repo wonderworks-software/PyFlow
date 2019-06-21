@@ -1496,6 +1496,11 @@ class Canvas(QGraphicsView):
     def stepToCompound(self, compoundNode):
         self.graphManager.selectGraph(compoundNode)
 
+        def nodeShapeUpdater():
+            for node in self.nodes.values():
+                node.updateNodeShape()
+        QtCore.QTimer.singleShot(50, nodeShapeUpdater)
+
     def drawBackground(self, painter, rect):
         super(Canvas, self).drawBackground(painter, rect)
         lod = self.getLodValueFromCurrentScale(3)

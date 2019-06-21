@@ -16,9 +16,6 @@ class UICompoundNode(UINodeBase):
         self.image = RESOURCES_DIR + "/gear.svg"
         self.heartBeatDelay = 1.0
 
-    def heartBeat(self):
-        self.updateNodeShape()
-
     def getGraph(self):
         return self._rawNode.rawGraph
 
