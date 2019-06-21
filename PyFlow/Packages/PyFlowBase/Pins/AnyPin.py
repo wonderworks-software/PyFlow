@@ -158,7 +158,7 @@ class AnyPin(PinBase):
                 if not other:
                     return
                 else:
-                    if pin.dataType != "AnyPin" and pin.dataType in other.allowedDataTypes([], other._supportedDataTypes) and other.optionEnabled(PinOptions.ChangeTypeOnConnection):
+                    if pin.dataType != "AnyPin" and pin.dataType in other.allowedDataTypes([], other._supportedDataTypes) and other.canChangeTypeOnConection([], other.optionEnabled(PinOptions.ChangeTypeOnConnection), []):
                         dataType = pin.dataType
 
             if any([dataType in pin.allowedDataTypes([], pin._supportedDataTypes),
@@ -250,6 +250,7 @@ class AnyPin(PinBase):
             self.super = otherClass
         else:
             self.super = None
+
         if self.activeDataType == "AnyPin" and self._lastError2 == None:
             self.prevDataType = "AnyPin"
         else:
