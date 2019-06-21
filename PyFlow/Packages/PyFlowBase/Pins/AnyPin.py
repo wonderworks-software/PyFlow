@@ -27,7 +27,7 @@ class AnyPin(PinBase):
         self.canChange = True
         self.super = None
         self.prevDataType = None
-
+        self._lastError2 = None
     @PinBase.dataType.getter
     def dataType(self):
         return self.activeDataType
@@ -131,6 +131,7 @@ class AnyPin(PinBase):
 
     def pinConnected(self, other):
         super(AnyPin, self).pinConnected(other)
+        self._lastError2 = self._lastError
         self.updateError([],self.activeDataType == "AnyPin" or self.prevDataType == "AnyPin")
         self.owningNode().checkForErrors()
 
@@ -143,6 +144,11 @@ class AnyPin(PinBase):
     def pinDisconnected(self, other):
         super(AnyPin, self).pinDisconnected(other)
         self.updateError([],self.activeDataType == "AnyPin" or self.prevDataType == "AnyPin")
+        self._lastError2 = self._lastError
+        if self.activeDataType == "AnyPin" and self._lastError2 == None:
+            self.prevDataType = "AnyPin"
+        else:
+            self.prevDataType = None        
         self.owningNode().checkForErrors()
 
     def updateOnConnectionCallback(self, pin, dataType, init=False, other=None):
@@ -244,7 +250,7 @@ class AnyPin(PinBase):
             self.super = otherClass
         else:
             self.super = None
-        if self.activeDataType == "AnyPin" and self._lastError == None:
+        if self.activeDataType == "AnyPin" and self._lastError2 == None:
             self.prevDataType = "AnyPin"
         else:
             self.prevDataType = None
