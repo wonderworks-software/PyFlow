@@ -111,7 +111,6 @@ class LoggerTool(DockTool):
             1:'yellow',
             2:'red'
         }
-        self.logView.setTextColor(QtGui.QColor(colorchart[mode]))
         for l in text.split('\n'):
             if len(l)>0:
                 splited = l.split(",")
@@ -125,7 +124,7 @@ class LoggerTool(DockTool):
                             errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""%(str(file+"::%s"%line),l)
                             self.logView.append(errorLink)
                 else:
-                    self.logView.append('<span>%s<span>'%l) 
+                    self.logView.append('<span style=" color:%s;">%s<span>'%(colorchart[mode],l)) 
     def flushPython(self):
         self.logView.moveCursor( QtWidgets.QTextCursor.End, QtWidgets.QTextCursor.MoveAnchor );
         self.logView.moveCursor( QtWidgets.QTextCursor.Up, QtWidgets.QTextCursor.MoveAnchor );
