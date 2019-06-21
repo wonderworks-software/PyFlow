@@ -8,7 +8,7 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QMenu
 
-
+from PyFlow.UI.Canvas.UICommon import DEFAULT_WIDGET_VARIANT
 from PyFlow.Core.Common import *
 
 
@@ -18,6 +18,9 @@ UI_INPUT_WIDGET_PINS_FACTORIES = {}
 class IInputWidget(object):
     def __init__(self):
         super(IInputWidget, self).__init__()
+
+    def widgetVariant(self):
+        return "DefaultWidget"
 
     def getWidget(self):
         raise NotImplementedError(
@@ -105,10 +108,10 @@ def REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, factory):
         print("registering", packageName, "input widgets")
 
 
-def createInputWidget(dataType, dataSetter, defaultValue=None):
+def createInputWidget(dataType, dataSetter, defaultValue=None, widgetVariant=DEFAULT_WIDGET_VARIANT):
     pinInputWidget = None
     for packageName, factory in UI_INPUT_WIDGET_PINS_FACTORIES.items():
-        pinInputWidget = factory(dataType, dataSetter, defaultValue)
+        pinInputWidget = factory(dataType, dataSetter, defaultValue, widgetVariant)
         if pinInputWidget is not None:
             return pinInputWidget
     return pinInputWidget

@@ -15,7 +15,7 @@ from PyFlow.Core.Common import *
 from PyFlow.Core.EvaluationEngine import EvaluationEngine
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.Painters import PinPainter
-from PyFlow.UI.Canvas.UICommon import PinDefaults, NodeDefaults
+from PyFlow.UI.Canvas.UICommon import *
 
 
 UI_PINS_FACTORIES = {}
@@ -187,6 +187,10 @@ class UIPinBase(QGraphicsWidget):
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.pinCircleDrawOffset = QtCore.QPointF()
+
+    @property
+    def inputWidgetVariant(self):
+        return self._rawPin.inputWidgetVariant
 
     @property
     def labelColor(self):

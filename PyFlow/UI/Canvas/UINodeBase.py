@@ -1235,7 +1235,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData
-                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue())
+                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.inputWidgetVariant)
                 if w:
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)

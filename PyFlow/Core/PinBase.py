@@ -53,6 +53,8 @@ class PinBase(IPin):
 
         # gui class weak ref
         self._wrapper = None
+        self.inputWidgetVariant = "DefaultWidget"
+
         # Constraint ports
         self.constraint = None
         self.structConstraint = None

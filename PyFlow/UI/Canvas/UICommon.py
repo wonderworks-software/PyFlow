@@ -3,6 +3,9 @@ from PyFlow.UI.Utils.Settings import *
 from docutils import core
 
 
+DEFAULT_WIDGET_VARIANT = "DefaultWidget"
+
+
 def rst2html(rst):
     if rst is not None:
         return core.publish_string(rst, writer_name="html").decode("utf-8")

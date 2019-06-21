@@ -560,6 +560,7 @@ class NodeBase(INode):
         returnType = returnDefaultValue = None
         returnPinOptionsToEnable = None
         returnPinOptionsToDisable = None
+        returnWidgetVariant = "DefaultWidget"
         retStructConstraint = None
         if foo.__annotations__['return'] is not None:
             returnType = foo.__annotations__['return'][0]
@@ -575,6 +576,8 @@ class NodeBase(INode):
                     returnPinOptionsToEnable = foo.__annotations__['return'][2]["enabledOptions"]
                 if "disabledOptions" in foo.__annotations__['return'][2]:
                     returnPinOptionsToDisable = foo.__annotations__['return'][2]["disabledOptions"]
+                if "inputWidgetVariant" in foo.__annotations__['return'][2]:
+                    returnWidgetVariant = foo.__annotations__['return'][2]["inputWidgetVariant"]
 
         nodeType = foo.__annotations__['nodeType']
         _packageName = foo.__annotations__['packageName']
@@ -646,6 +649,7 @@ class NodeBase(INode):
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
             p.initAsArray(isinstance(returnDefaultValue, list))
+            p.inputWidgetVariant = returnWidgetVariant
             if returnPinOptionsToEnable is not None:
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
@@ -662,6 +666,7 @@ class NodeBase(INode):
             structConstraint = None
             pinOptionsToEnable = None
             pinOptionsToDisable = None
+            inputWidgetVariant = "DefaultWidget"
             # tuple means this is reference pin with default value eg - (dataType, defaultValue)
             if str("Reference") == pinDescriptionTuple[0]:
                 pinDataType = pinDescriptionTuple[1][0]
@@ -681,11 +686,14 @@ class NodeBase(INode):
                         pinOptionsToEnable = pinDict["enabledOptions"]
                     if "disabledOptions" in pinDict:
                         pinOptionsToDisable = pinDict["disabledOptions"]
+                    if "inputWidgetVariant" in pinDict:
+                        inputWidgetVariant = pinDict["inputWidgetVariant"]
 
                 outRef = raw_inst.createOutputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint, structConstraint=structConstraint)
                 outRef.initAsArray(isinstance(pinDefaultValue, list))
                 outRef.setDefaultValue(pinDefaultValue)
                 outRef.setData(pinDefaultValue)
+                outRef.inputWidgetVariant = inputWidgetVariant
                 if pinOptionsToEnable is not None:
                     outRef.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
@@ -711,11 +719,14 @@ class NodeBase(INode):
                         pinOptionsToEnable = pinDict["enabledOptions"]
                     if "disabledOptions" in pinDict:
                         pinOptionsToDisable = pinDict["disabledOptions"]
+                    if "inputWidgetVariant" in pinDict:
+                        inputWidgetVariant = pinDict["inputWidgetVariant"]
 
                 inp = raw_inst.createInputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint, structConstraint=structConstraint)
                 inp.initAsArray(isinstance(pinDefaultValue, list))
                 inp.setData(pinDefaultValue)
                 inp.setDefaultValue(pinDefaultValue)
+                inp.inputWidgetVariant = inputWidgetVariant
                 if pinOptionsToEnable is not None:
                     inp.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:

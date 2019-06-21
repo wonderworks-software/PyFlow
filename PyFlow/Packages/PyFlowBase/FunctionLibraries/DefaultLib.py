@@ -56,6 +56,12 @@ class DefaultLib(FunctionLibraryBase):
         return s
 
     @staticmethod
+    @IMPLEMENT_NODE(returns=('StringPin', ''), meta={'Category': 'GenericTypes', 'Keywords': []})
+    def makePath(path=('StringPin', '', {"inputWidgetVariant": "PathWidget"})):
+        '''Make path.'''
+        return path
+
+    @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'GenericTypes', 'Keywords': []})
     def makeBool(b=('BoolPin', False)):
         '''Make boolean.'''

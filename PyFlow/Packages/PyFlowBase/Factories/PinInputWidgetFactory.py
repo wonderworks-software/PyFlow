@@ -1,11 +1,9 @@
 # Input widgets for pins
 from Qt import QtCore
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QComboBox
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QCheckBox
+from Qt.QtWidgets import *
 
 from PyFlow.Core.Common import *
+from PyFlow.UI.Canvas.UICommon import DEFAULT_WIDGET_VARIANT
 from PyFlow.UI.Widgets.InputWidgets import *
 from PyFlow.UI.Widgets.QtSliders import pyf_Slider
 
@@ -100,6 +98,37 @@ class StringInputWidget(InputWidgetSingle):
         self.le.setText(str(val))
 
 
+class PathInputWidget(InputWidgetSingle):
+    """
+    Path input widget
+    """
+
+    def __init__(self, parent=None, **kwds):
+        super(PathInputWidget, self).__init__(parent=parent, **kwds)
+        self.content = QWidget()
+        self.content.setContentsMargins(0, 0, 0, 0)
+        self.pathLayout = QHBoxLayout(self.content)
+        self.pathLayout.setContentsMargins(0, 0, 0, 0)
+        self.le = QLineEdit()
+        self.le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+        self.pathLayout.addWidget(self.le)
+        self.pbGetPath = QPushButton("...")
+        self.pbGetPath.clicked.connect(self.getPath)
+        self.pathLayout.addWidget(self.pbGetPath)
+        self.setWidget(self.content)
+        self.le.textChanged.connect(lambda val: self.dataSetCallback(val))
+
+    def getPath(self):
+        directory = QFileDialog.getExistingDirectory(None, "Select dir", "")
+        self.le.setText(directory)
+
+    def blockWidgetSignals(self, bLocked):
+        self.le.blockSignals(bLocked)
+
+    def setWidgetValue(self, val):
+        self.le.setText(str(val))
+
+
 class BoolInputWidget(InputWidgetSingle):
     """Boolean data input widget"""
 
@@ -140,7 +169,7 @@ class NoneInputWidget(InputWidgetSingle):
         self.le.setText(str(val))
 
 
-def getInputWidget(dataType, dataSetter, defaultValue):
+def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WIDGET_VARIANT):
     '''
     factory method
     '''
@@ -149,7 +178,10 @@ def getInputWidget(dataType, dataSetter, defaultValue):
     if dataType == 'IntPin':
         return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'StringPin':
-        return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        if widgetVariant == DEFAULT_WIDGET_VARIANT:
+            return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        elif widgetVariant == "PathWidget":
+            return PathInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'BoolPin':
         return BoolInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'ExecPin':
