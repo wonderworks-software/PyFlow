@@ -6,9 +6,12 @@ from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.ConfigManager import ConfigManager
 import sys
 import logging
 import json
+import os
+import subprocess
 REDIRECT = True
 
 class SygnalHandler(QtCore.QObject):
@@ -64,6 +67,9 @@ logger = logging.getLogger(None)
 def my_excepthook(excType, excValue, traceback, logger=logger):
     logger.error( excValue,exc_info=(excType, excValue, traceback))
 
+
+settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
+
 class LoggerTool(DockTool):
     """docstring for NodeBox tool."""
     def __init__(self):
@@ -108,7 +114,18 @@ class LoggerTool(DockTool):
         self.logView.setTextColor(QtGui.QColor(colorchart[mode]))
         for l in text.split('\n'):
             if len(l)>0:
-                self.logView.append('<span>%s<span>'%l) 
+                splited = l.split(",")
+                if len(splited)>=3:
+                    if "File" in splited[0] and "line" in splited[1] and "in" in splited[2]:
+                        file = splited[0].split('"')[1]
+                        line = splited[1].split("line ")[1]
+                        #self.logView.append(int(line))
+                        if os.path.exists(file):
+                            file = file.replace("\\","//")
+                            errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""%(str(file+"::%s"%line),l)
+                            self.logView.append(errorLink)
+                else:
+                    self.logView.append('<span>%s<span>'%l) 
     def flushPython(self):
         self.logView.moveCursor( QtWidgets.QTextCursor.End, QtWidgets.QTextCursor.MoveAnchor );
         self.logView.moveCursor( QtWidgets.QTextCursor.Up, QtWidgets.QTextCursor.MoveAnchor );
@@ -119,12 +136,19 @@ class LoggerTool(DockTool):
         logger.setLevel(self.logerLevels[int])
 
     def anchorClickedMethod(self,url):
-        man = self.pyFlowInstance.graphManager
-        node = man.get().findNode(str(url.url()))
-        if node:
-            self.pyFlowInstance.getCanvas().clearSelection()
-            node.getWrapper().setSelected(True)
-            self.pyFlowInstance.getCanvas().frameSelectedNodes()
+        
+        if os.path.exists(url.url().split("::")[0]):
+            editCmd = settings.value("Preferences/General/EditorCmd")
+            editCmd = editCmd.replace("@FILE", url.url().replace("::",":"))
+            subprocess.Popen(editCmd)
+        else:    
+            man = self.pyFlowInstance.graphManager
+            node = man.get().findNode(str(url.url()))
+            if node:
+                self.pyFlowInstance.getCanvas().clearSelection()
+                node.getWrapper().setSelected(True)
+                self.pyFlowInstance.getCanvas().frameSelectedNodes()
+
 
     @staticmethod
     def getIcon():
