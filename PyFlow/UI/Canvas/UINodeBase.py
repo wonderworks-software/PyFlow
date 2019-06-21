@@ -417,7 +417,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         errorString = args[0]
         error = {"Node":self._rawNode.name,"Error":errorString}
 
-        logging.error('<a href = %s>%s</a>'%(self._rawNode.name,str(error)))
+        logging.error('< a href = %s>%s</a>'%(self._rawNode.name,str(error)))
         self.setToolTip(errorString)
         self.update()
 

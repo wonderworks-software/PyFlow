@@ -106,7 +106,7 @@ class LoggerTool(DockTool):
         self.logView.setTextColor(QtGui.QColor(colorchart[mode]))
         for l in text.split('\n'):
             if len(l)>0:
-                self.logView.append("<span>%s<span>"%l) 
+                self.logView.append('<span>%s<span>'%l) 
     def flushPython(self):
         self.logView.moveCursor( QtWidgets.QTextCursor.End, QtWidgets.QTextCursor.MoveAnchor );
         self.logView.moveCursor( QtWidgets.QTextCursor.Up, QtWidgets.QTextCursor.MoveAnchor );
@@ -119,9 +119,10 @@ class LoggerTool(DockTool):
     def anchorClickedMethod(self,url):
         man = self.pyFlowInstance.graphManager
         node = man.get().findNode(str(url.url()))
-        self.pyFlowInstance.getCanvas().clearSelection()
-        node.getWrapper().setSelected(True)
-        self.pyFlowInstance.getCanvas().frameSelectedNodes()
+        if node:
+            self.pyFlowInstance.getCanvas().clearSelection()
+            node.getWrapper().setSelected(True)
+            self.pyFlowInstance.getCanvas().frameSelectedNodes()
 
     @staticmethod
     def getIcon():
