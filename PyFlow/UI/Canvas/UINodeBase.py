@@ -540,7 +540,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         result = OrderedDict()
         for rawPin in self._rawNode.pins:
             if rawPin.direction == PinDirection.Input:
-                result[rawPin.uid] = rawPin.getWrapper()()
+                wrapper = rawPin.getWrapper()
+                if wrapper is not None:
+                    result[rawPin.uid] = wrapper()
         return result
 
     @property
@@ -548,7 +550,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         result = OrderedDict()
         for rawPin in self._rawNode.pins:
             if rawPin.direction == PinDirection.Output:
-                result[rawPin.uid] = rawPin.getWrapper()()
+                wrapper = rawPin.getWrapper()
+                if wrapper is not None:
+                    result[rawPin.uid] = wrapper()
         return result
 
     @property
@@ -556,7 +560,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         result = OrderedDict()
         for rawPin in self._rawNode.pins:
             if rawPin.direction == PinDirection.Output:
-                result[rawPin.name] = rawPin.getWrapper()()
+                wrapper = rawPin.getWrapper()
+                if wrapper is not None:
+                    result[rawPin.name] = wrapper()
         return result
 
     @property

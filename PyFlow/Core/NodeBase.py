@@ -10,6 +10,7 @@ except:
     from inspect import getargspec
 from types import MethodType
 from multipledispatch import dispatch
+import collections
 
 from PyFlow import getPinDefaultValueByType
 from PyFlow import getRawNodeInstance
@@ -293,14 +294,16 @@ class NodeBase(INode):
     def useCache(self):
         # if cached results exists - return them without calling compute
         args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
-        try:
-            # not hashable types will not be cached
-            if args in self.cache:
-                for outPin, data in self.cache[args].items():
-                    outPin.setData(data)
-                return True
-        except:
-            return False
+
+        # not hashable types will not be cached
+        for arg in args:
+            if not isinstance(arg, collections.Hashable):
+                return False
+
+        if args in self.cache:
+            for outPin, data in self.cache[args].items():
+                outPin.setData(data)
+            return True
 
     def afterCompute(self):
         if len(self.cache) >= self.cacheMaxSize:
@@ -308,12 +311,9 @@ class NodeBase(INode):
 
         # cache results
         args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
-        try:
-            # not hashable types will not be cached
-            if args in self.cache:
+        for arg in args:
+            if not isinstance(arg, collections.Hashable):
                 return
-        except:
-            return
 
         cache = {}
         for pin in self.outputs.values():
@@ -422,7 +422,7 @@ class NodeBase(INode):
         if structure == PinStructure.Array:
             p.initAsArray(True)
         elif structure == PinStructure.Dict:
-            p.initAsDict(True)               
+            p.initAsDict(True)
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
@@ -430,7 +430,7 @@ class NodeBase(INode):
             p.setDefaultValue(defaultValue)
             p.setData(defaultValue)
             if dataType == "AnyPin":
-                p.setTypeFromData(defaultValue)            
+                p.setTypeFromData(defaultValue)
         else:
             p.setDefaultValue(getPinDefaultValueByType(dataType))
 

@@ -74,7 +74,7 @@ class PinBase(IPin):
         self.hidden = False
 
         # DataTypes
-        self.super = self.__class__ 
+        self.super = self.__class__
         self.activeDataType = self.__class__.__name__
         self._keyType = None
 
@@ -332,9 +332,12 @@ class PinBase(IPin):
 
     ## Setting the data
     def setData(self, data):
+        if self.super is None:
+            return
+
         try:
             self.setClean()
-            if isinstance(data,dictElement) and not self.optionEnabled(PinOptions.DictElementSuported):
+            if isinstance(data, dictElement) and not self.optionEnabled(PinOptions.DictElementSuported):
                 data = data[1]
             if not self.isArray() and not self.isDict():
                 self._data = self.super.processData(data)
@@ -345,10 +348,10 @@ class PinBase(IPin):
                     self._data = [self.super.processData(data)]
             elif self.isDict():
                 if isinstance(data, pyf_dict):
-                    self._data = pyf_dict(data.keyType,data.valueType)
-                    for key,value in data.items():
+                    self._data = pyf_dict(data.keyType, data.valueType)
+                    for key, value in data.items():
                         self._data[key] = self.super.processData(value)
-                elif isinstance(data,dictElement):
+                elif isinstance(data, dictElement):
                     self._data.clear()
                     self._data[data[0]] = self.super.processData(data[1])
                 else:
@@ -365,13 +368,11 @@ class PinBase(IPin):
         except Exception as exc:
             self.setError(exc)
             self.setDirty()
-        if self._lastError != None:
-            self.owningNode().setError(self._lastError)   
+        if self._lastError is not None:
+            self.owningNode().setError(self._lastError)
             wrapper = self.owningNode().getWrapper()
             if wrapper:
-                wrapper.update()                   
-        #self.owningNode().checkForErrors()
-        
+                wrapper.update()
 
     ## Calling execution pin
     def call(self, *args, **kwargs):
