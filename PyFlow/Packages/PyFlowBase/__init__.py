@@ -22,6 +22,7 @@ from PyFlow.Packages.PyFlowBase.FunctionLibraries.IntLib import IntLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.MathLib import MathLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.MathAbstractLib import MathAbstractLib
 from PyFlow.Packages.PyFlowBase.FunctionLibraries.RandomLib import RandomLib
+from PyFlow.Packages.PyFlowBase.FunctionLibraries.PathLib import PathLib
 
 # Class based nodes
 from PyFlow.Packages.PyFlowBase.Nodes.branch import branch
@@ -95,6 +96,7 @@ _FOO_LIBS = {
     MathLib.__name__: MathLib(PACKAGE_NAME),
     MathAbstractLib.__name__: MathAbstractLib(PACKAGE_NAME),
     RandomLib.__name__: RandomLib(PACKAGE_NAME),
+    PathLib.__name__ : PathLib(PACKAGE_NAME),
 }
 
 
