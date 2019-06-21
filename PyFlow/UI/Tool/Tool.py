@@ -192,10 +192,11 @@ class DockTitleBar(QtWidgets.QWidget):
         if not state:
             self.box.setStyleSheet(editableStyleSheet().getStyleSheet())
         else:
-            self.box.setStyleSheet("""background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+            self.box.setStyleSheet("""QGroupBox{
+                                background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 %s,
                                 stop: 0.6 %s,
-                                stop: 1.0 %s);"""%("rgba%s" % str(editableStyleSheet().ButtonsColor.getRgb()),
+                                stop: 1.0 %s);}"""%("rgba%s" % str(editableStyleSheet().ButtonsColor.getRgb()),
                                                     "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
                                                     "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb())))
         
