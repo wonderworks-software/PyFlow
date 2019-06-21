@@ -7,7 +7,7 @@ def REGISTER_TOOL(packageName, toolClass):
     if toolClass.name() not in registeredToolNames:
         __REGISTERED_TOOLS[packageName].append(toolClass)
         toolClass.packageName = packageName
-        print("registering", packageName, "tools")
+        print("registering", packageName,  toolClass.name())
 
 
 def GET_TOOLS():

@@ -75,6 +75,7 @@ from PyFlow.Packages.PyFlowBase.Tools.HistoryTool import HistoryTool
 from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.Packages.PyFlowBase.Tools.VariablesTool import VariablesTool
 from PyFlow.Packages.PyFlowBase.Tools.CompileTool import CompileTool
+from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 from PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import PythonScriptExporter
 from PyFlow.Packages.PyFlowBase.Exporters.CPPCompiler import CPPCompiler
@@ -161,7 +162,7 @@ _TOOLS[PropertiesTool.__name__] = PropertiesTool
 _TOOLS[VariablesTool.__name__] = VariablesTool
 _TOOLS[NodeBoxTool.__name__] = NodeBoxTool
 _TOOLS[SearchResultsTool.__name__] = SearchResultsTool
-
+_TOOLS[LoggerTool.__name__] = LoggerTool
 
 _EXPORTERS = OrderedDict()
 _EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
