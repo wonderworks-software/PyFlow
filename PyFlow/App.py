@@ -387,6 +387,7 @@ class PyFlow(QMainWindow):
             if name in [t.name() for t in self._tools]:
                 for tool in self._tools:
                     if tool.name() == name:
+                        tool.show()
                         # Highlight window
                         print("highlight", tool.uniqueName())
                 return
