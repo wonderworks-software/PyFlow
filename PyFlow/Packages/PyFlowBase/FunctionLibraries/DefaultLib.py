@@ -26,7 +26,7 @@ class DefaultLib(FunctionLibraryBase):
         return copyFunction(obj)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'Common', 'Keywords': []})
     def clearConsole():
         '''Cross platform clears console.'''
         system = platform.system()
@@ -89,7 +89,7 @@ class DefaultLib(FunctionLibraryBase):
         return A if PickA else B
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('StringPin', ""), meta={'Category': 'Utils', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('StringPin', ""), meta={'Category': 'GenericTypes', 'Keywords': []})
     def objectType(obj=("AnyPin", None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported})):
         '''Returns ``type(obj).__name__``'''
         t = type(obj).__name__

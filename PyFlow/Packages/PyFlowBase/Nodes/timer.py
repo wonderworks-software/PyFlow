@@ -48,4 +48,4 @@ class timer(NodeBase):
 
     @staticmethod
     def category():
-        return 'Utils'
+        return 'FlowControl'

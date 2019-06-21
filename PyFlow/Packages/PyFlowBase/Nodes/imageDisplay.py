@@ -24,7 +24,7 @@ class imageDisplay(NodeBase):
 
     @staticmethod
     def category():
-        return 'DefaultLib'
+        return 'UI'
 
     @staticmethod
     def keywords():

@@ -34,7 +34,7 @@ class makeList(NodeBase):
 
     @staticmethod
     def category():
-        return 'List'
+        return 'GenericTypes'
 
     @staticmethod
     def keywords():

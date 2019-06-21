@@ -7,7 +7,7 @@ class commentNode(NodeBase):
 
     @staticmethod
     def category():
-        return 'Common'
+        return 'UI'
 
     @staticmethod
     def keywords():

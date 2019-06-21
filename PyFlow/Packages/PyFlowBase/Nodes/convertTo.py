@@ -30,7 +30,7 @@ class convertTo(NodeBase):
 
     @staticmethod
     def category():
-        return 'Common'
+        return 'GenericTypes'
 
     def updateType(self, dataTypeIndex):
         self.output.enableOptions(PinOptions.ChangeTypeOnConnection)

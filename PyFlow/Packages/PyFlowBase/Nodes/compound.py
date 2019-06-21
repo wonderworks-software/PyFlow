@@ -90,7 +90,7 @@ class compound(NodeBase):
 
     @staticmethod
     def category():
-        return 'Common'
+        return 'SubGraphs'
 
     @staticmethod
     def keywords():

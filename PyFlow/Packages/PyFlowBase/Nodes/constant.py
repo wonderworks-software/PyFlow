@@ -32,7 +32,11 @@ class constant(NodeBase):
 
     @staticmethod
     def category():
-        return 'Common'
+        return 'GenericTypes'
+        
+    @staticmethod
+    def keywords():
+        return ["Make"]
 
     def postCreate(self, jsonTemplate=None):
         super(constant, self).postCreate(jsonTemplate)

@@ -30,7 +30,7 @@ class makeDictElement(NodeBase):
 
     @staticmethod
     def category():
-        return 'Array'
+        return 'GenericTypes'
 
     @staticmethod
     def keywords():

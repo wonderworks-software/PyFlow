@@ -31,7 +31,7 @@ class makeArray(NodeBase):
 
     @staticmethod
     def category():
-        return 'Array'
+        return 'GenericTypes'
 
     @staticmethod
     def keywords():

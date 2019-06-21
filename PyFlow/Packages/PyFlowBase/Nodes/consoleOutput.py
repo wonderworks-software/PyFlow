@@ -24,7 +24,7 @@ class consoleOutput(NodeBase):
 
     @staticmethod
     def category():
-        return 'DefaultLib'
+        return 'Common'
 
     @staticmethod
     def keywords():

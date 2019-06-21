@@ -34,7 +34,7 @@ class dictKeys(NodeBase):
 
     @staticmethod
     def category():
-        return 'Common'
+        return 'Dictionary'
 
     @staticmethod
     def keywords():

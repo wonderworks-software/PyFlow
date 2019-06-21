@@ -24,7 +24,7 @@ class graphInputs(NodeBase):
 
     @staticmethod
     def category():
-        return 'Common'
+        return 'SubGraphs'
 
     @staticmethod
     def keywords():
@@ -78,7 +78,7 @@ class graphOutputs(NodeBase):
 
     @staticmethod
     def category():
-        return 'Common'
+        return 'SubGraphs'
 
     @staticmethod
     def keywords():
