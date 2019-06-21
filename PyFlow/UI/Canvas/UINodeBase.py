@@ -271,6 +271,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self._rawNode.errorCleared.connect(self.onNodeErrorCleared)
 
         self.custom_widget_data = {}
+        self.heartBeatDelay = 0.5
+        self.heartBeatTimeDelta = 0.0
 
         # Color and Size Options
         self.opt_node_base_color = Colors.NodeBackgrounds
@@ -1315,11 +1317,17 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
             self.update()
 
+    def heartBeat(self):
+        pass
+
     def Tick(self, delta, *args, **kwargs):
         # NOTE: Do not call wrapped raw node Tick method here!
         # this ui node tick called from underlined raw node's emitted signal
         # do here only UI stuff
-        pass
+        self.heartBeatTimeDelta += delta
+        if self.heartBeatTimeDelta >= self.heartBeatDelay:
+            self.heartBeat()
+            self.heartBeatTimeDelta = 0.0
 
     def _createUIPinWrapper(self, rawPin, index=-1, group=None, linkedPin=None):
         wrapper = rawPin.getWrapper()

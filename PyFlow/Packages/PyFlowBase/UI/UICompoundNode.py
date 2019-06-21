@@ -14,8 +14,9 @@ class UICompoundNode(UINodeBase):
         self.headColorOverride = Colors.Gray
         self.color = Colors.DarkGray
         self.image = RESOURCES_DIR + "/gear.svg"
+        self.heartBeatDelay = 1.0
 
-    def updateSize(self, name):
+    def heartBeat(self):
         self.updateNodeShape()
 
     def getGraph(self):
