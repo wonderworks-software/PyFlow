@@ -129,7 +129,7 @@ class AnyPin(PinBase):
 
     def pinConnected(self, other):
         super(AnyPin, self).pinConnected(other)
-        #self.updateError([])
+        self.updateError([])
         self.owningNode().checkForErrors()
 
     def aboutToConnect(self, other):

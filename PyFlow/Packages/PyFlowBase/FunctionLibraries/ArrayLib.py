@@ -81,7 +81,7 @@ class ArrayLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'Array', 'Keywords': ['in']})
     def arrayElementCount(ls=('AnyPin', [], {'constraint': '1', "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
-                          element=("AnyPin", None, {'constraint': '1'}),
+                          element=("AnyPin", None, {'constraint': '1',"enabledOptions": PinOptions.AllowAny}),
                           result=("Reference", ("BoolPin", False))):
         """Returns len of passed array."""
         if element in ls:
