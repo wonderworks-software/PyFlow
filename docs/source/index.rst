@@ -8,11 +8,11 @@ PyFlow - visual scripting framework for python!
    intro
    changelog
 
-
 .. toctree::
    :caption: The Basics
    :maxdepth: 2
 
+   appanatomy
    basics
 
 .. toctree::

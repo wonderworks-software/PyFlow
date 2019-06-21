@@ -46,6 +46,12 @@ PyFlow.Packages.PyFlowBase.FunctionLibraries.MathLib module
 .. automodule:: PyFlow.Packages.PyFlowBase.FunctionLibraries.MathLib
    :members:
 
+PyFlow.Packages.PyFlowBase.FunctionLibraries.PathLib module
+-----------------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.FunctionLibraries.PathLib
+   :members:
+
 PyFlow.Packages.PyFlowBase.FunctionLibraries.RandomLib module
 -------------------------------------------------------------
 
