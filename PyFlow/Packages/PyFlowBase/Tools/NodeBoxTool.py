@@ -13,7 +13,7 @@ class NodeBoxTool(DockTool):
 
     @staticmethod
     def getIcon():
-        return QtGui.QIcon(":node_box_icon.png")
+        return QtGui.QIcon(":nodeBox.png")
 
     def onShow(self):
         super(NodeBoxTool, self).onShow()

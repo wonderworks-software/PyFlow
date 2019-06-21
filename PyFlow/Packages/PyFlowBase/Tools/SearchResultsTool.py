@@ -50,7 +50,7 @@ class SearchResultsTool(DockTool):
 
     @staticmethod
     def getIcon():
-        return QtGui.QIcon(":searching-magnifying-glass.png")
+        return QtGui.QIcon(":binocular.png")
 
     def onShow(self):
         super(SearchResultsTool, self).onShow()

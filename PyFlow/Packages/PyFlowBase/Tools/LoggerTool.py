@@ -150,9 +150,10 @@ class LoggerTool(DockTool):
     def update(self):
         self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'"%"rgba%s"%str(editableStyleSheet().LoggerBgColor.getRgb()))
         super(LoggerTool, self).update()
+
     @staticmethod
     def getIcon():
-        return QtGui.QIcon(":node_box_icon.png")
+        return QtGui.QIcon(":logger.png")
 
     def onShow(self):
         super(LoggerTool, self).onShow()

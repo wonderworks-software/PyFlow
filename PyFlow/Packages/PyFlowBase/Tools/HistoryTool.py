@@ -27,7 +27,7 @@ class HistoryTool(DockTool):
 
     @staticmethod
     def getIcon():
-        return QtGui.QIcon(RESOURCES_DIR + "/history.png")
+        return QtGui.QIcon(":history.png")
 
     def onShow(self):
         super(HistoryTool, self).onShow()

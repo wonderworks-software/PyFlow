@@ -42,7 +42,7 @@ class PropertiesTool(DockTool):
 
     @staticmethod
     def getIcon():
-        return QtGui.QIcon(RESOURCES_DIR + "/property_icon.png")
+        return QtGui.QIcon(":property_icon.png")
 
     @staticmethod
     def isSingleton():
