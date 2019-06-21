@@ -126,15 +126,14 @@ class PinBase(IPin):
         # store connection from out pins only
         # from left hand side to right hand side
         result = list()
-        res = {"lhsNodeName": "", "outPinId": 0, "rhsNodeName": "", "inPinId": 0}
         if self.direction == PinDirection.Output:
-            for i in self.affects:
+            for i in getConnectedPins(self):
+                res = {"lhsNodeName": "", "outPinId": 0, "rhsNodeName": "", "inPinId": 0}
                 res["lhsNodeName"] = self.owningNode().getName()
                 res["outPinId"] = self.pinIndex
                 res["rhsNodeName"] = i.owningNode().getName()
                 res["inPinId"] = i.pinIndex
                 result.append(res)
-                # result.add(i.getName())
         return result
 
     def __repr__(self):
