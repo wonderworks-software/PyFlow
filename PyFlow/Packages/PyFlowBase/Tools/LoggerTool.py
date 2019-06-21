@@ -4,7 +4,6 @@ from Qt import QtGui
 from Qt import QtWidgets
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.NodeBox import NodesBox
-
 import sys
 import logging
 
@@ -57,26 +56,11 @@ class QtHandler(logging.Handler):
                 else:
                     self.messageHolder.messageWritten.emit('%s\n'%msj)
 
-
-logger = logging.getLogger("PyFlow")
-
 formater = logging.Formatter("[%(levelname)s %(asctime)s]:   %(message)s","%H:%M:%S")#"[%(levelname)s]: %(message)s")
-
-if REDIRECT:
-    handler = QtHandler()
-else:
-    handler = logging.StreamHandler(sys.stdout)
-
-handler.setFormatter(formater)
-logger.addHandler(handler)
-
-
-logger.setLevel(logging.DEBUG)
+logger = logging.getLogger(None)
 
 def my_excepthook(excType, excValue, traceback, logger=logger):
     logger.error( excValue,exc_info=(excType, excValue, traceback))
-
-sys.excepthook = my_excepthook
 
 class LoggerTool(DockTool):
     """docstring for NodeBox tool."""
@@ -89,6 +73,19 @@ class LoggerTool(DockTool):
         #####################################################
         # Sys Output Redirection
         ##################################################### 
+
+
+        if REDIRECT:
+            handler = QtHandler()
+        else:
+            handler = logging.StreamHandler(sys.stdout)
+
+        handler.setFormatter(formater)
+        logger.addHandler(handler)
+
+
+        logger.setLevel(logging.DEBUG)
+        sys.excepthook = my_excepthook        
         if handler and REDIRECT:
             handler.messageHolder.messageWritten.connect(lambda value:self.logPython(value,0))
             handler.messageHolder.warningWritten.connect(lambda value:self.logPython(value,1))

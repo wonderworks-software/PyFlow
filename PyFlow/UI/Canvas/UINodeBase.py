@@ -10,6 +10,7 @@ import weakref
 from multipledispatch import dispatch
 from nine import str
 from docutils import core
+import logging
 
 from Qt import QtCore
 from Qt import QtGui
@@ -414,7 +415,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def onNodeErrorOccured(self, *args, **kwargs):
         # change node ui to invalid
         errorString = args[0]
-        print(self._rawNode.name, "Node error:", errorString)
+        logging.error((self._rawNode.name, "Node error:", errorString))
         self.setToolTip(errorString)
         self.update()
 
