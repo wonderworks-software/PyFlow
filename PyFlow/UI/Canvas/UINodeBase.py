@@ -11,7 +11,7 @@ from multipledispatch import dispatch
 from nine import str
 from docutils import core
 import logging
-
+import json
 from Qt import QtCore
 from Qt import QtGui
 from Qt import QtSvg
@@ -415,7 +415,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def onNodeErrorOccured(self, *args, **kwargs):
         # change node ui to invalid
         errorString = args[0]
-        logging.error((self._rawNode.name, "Node error:", errorString))
+        error = {"Node":self._rawNode.name,"Error":errorString}
+
+        logging.error('<a href = %s>%s</a>'%(self._rawNode.name,str(error)))
         self.setToolTip(errorString)
         self.update()
 

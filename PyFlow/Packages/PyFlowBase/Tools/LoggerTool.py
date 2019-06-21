@@ -4,9 +4,10 @@ from Qt import QtGui
 from Qt import QtWidgets
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.NodeBox import NodesBox
+from PyFlow.Core.GraphManager import GraphManagerSingleton
 import sys
 import logging
-
+import json
 REDIRECT = True
 
 class SygnalHandler(QtCore.QObject):
@@ -67,7 +68,9 @@ class LoggerTool(DockTool):
     def __init__(self):
         super(LoggerTool, self).__init__()
         self.logView = QtWidgets.QTextBrowser()
+        self.logView.setOpenLinks(False)
         self.logView.setReadOnly(True)
+        self.logView.anchorClicked.connect(self.anchorClickedMethod)
         self.logView.setTextColor(QtGui.QColor('white'))
         self.setWidget(self.logView)
         #####################################################
@@ -103,7 +106,7 @@ class LoggerTool(DockTool):
         self.logView.setTextColor(QtGui.QColor(colorchart[mode]))
         for l in text.split('\n'):
             if len(l)>0:
-                self.logView.append(l) 
+                self.logView.append("<span>%s<span>"%l) 
     def flushPython(self):
         self.logView.moveCursor( QtWidgets.QTextCursor.End, QtWidgets.QTextCursor.MoveAnchor );
         self.logView.moveCursor( QtWidgets.QTextCursor.Up, QtWidgets.QTextCursor.MoveAnchor );
@@ -112,6 +115,13 @@ class LoggerTool(DockTool):
         self.logView.textCursor().removeSelectedText();   
     def loglevelChanged(self,int):
         logger.setLevel(self.logerLevels[int])
+
+    def anchorClickedMethod(self,url):
+        man = self.pyFlowInstance.graphManager
+        node = man.get().findNode(str(url.url()))
+        self.pyFlowInstance.getCanvas().clearSelection()
+        node.getWrapper().setSelected(True)
+        self.pyFlowInstance.getCanvas().frameSelectedNodes()
 
     @staticmethod
     def getIcon():
