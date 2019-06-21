@@ -148,8 +148,9 @@ class LoggerTool(DockTool):
                 self.pyFlowInstance.getCanvas().clearSelection()
                 node.getWrapper().setSelected(True)
                 self.pyFlowInstance.getCanvas().frameSelectedNodes()
-
-
+    def update(self):
+        self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'"%"rgba%s"%str(editableStyleSheet().CanvasBgColor.getRgb()))
+        super(LoggerTool, self).update()
     @staticmethod
     def getIcon():
         return QtGui.QIcon(":node_box_icon.png")
@@ -176,3 +177,4 @@ class LoggerTool(DockTool):
     @staticmethod
     def name():
         return str("Logger")
+    
