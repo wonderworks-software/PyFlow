@@ -1,17 +1,13 @@
 import sys
-import os
-from Qt.QtWidgets import QApplication, QStyleFactory
 from PyFlow.App import PyFlow
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-
-FILE_DIR = os.path.abspath(os.path.dirname(__file__))
-STYLE_PATH = os.path.join(FILE_DIR, "PyFlow", "style.css")
+from Qt.QtWidgets import QApplication
+from Qt.QtWidgets import QStyleFactory
 
 app = QApplication(sys.argv)
 app.setStyle(QStyleFactory.create("plastique"))
-
-
 app.setStyleSheet(editableStyleSheet().getStyleSheet())
+
 instance = PyFlow.instance()
 if instance is not None:
     app.setActiveWindow(instance)

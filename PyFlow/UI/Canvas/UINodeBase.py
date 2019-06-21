@@ -405,32 +405,89 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.actionRefresh = self._menu.addAction("Refresh")
         self.actionRefresh.triggered.connect(self._rawNode.checkForErrors)
 
+    def __repr__(self):
+        return self._rawNode.__repr__()
+
     @property
-    def groups(self):
-        return self._groups
+    def packageName(self):
+        return self._rawNode.packageName
+
+    @property
+    def uid(self):
+        return self._rawNode._uid
+
+    @uid.setter
+    def uid(self, value):
+        self._rawNode._uid = value
+
+    @property
+    def name(self):
+        return self._rawNode.name
+
+    @name.setter
+    def name(self, value):
+        self._rawNode.setName(value)
+
+    @property
+    def pins(self):
+        return self._rawNode.pins
+
+    @property
+    def orderedInputs(self):
+        return self._rawNode.orderedInputs
+
+    @property
+    def orderedOutputs(self):
+        return self._rawNode.orderedOutputs
+
+    @property
+    def isCompoundNode(self):
+        return self._rawNode.isCompoundNode
 
     def isValid(self):
         return self._rawNode.isValid()
 
-    def onNodeErrorOccured(self, *args, **kwargs):
-        # change node ui to invalid
-        errorString = args[0]
-        error = {"Node":self._rawNode.name,"Error":errorString}
-        errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""%(self._rawNode.name,str(error))
-        logging.error(errorLink)#'< a href = %s>%s</a>'%(self._rawNode.name,str(error)))
-        self.setToolTip(errorString)
-        self.update()
+    def setError(self, errorString):
+        self._rawNode.setError(errorString)
 
-    def onNodeErrorCleared(self, *args, **kwargs):
-        # restore node ui to clean
-        self.setToolTip(rst2html(self.description()))
+    def clearError(self):
+        self._rawNode.clearError()
 
-    def toggleCollapsed(self):
-        self.collapsed = not self.collapsed
+    def getName(self):
+        return self._rawNode.getName()
 
-    def aboutToCollapse(self, futureCollapseState):
-        """Called before collapsing or expanding."""
-        pass
+    def setName(self, name):
+        self._rawNode.setName(name)
+    def serialize(self):
+        return self._rawNode.serialize()
+
+    def location(self):
+        return self._rawNode.location()
+
+    def graph(self):
+        return self._rawNode.graph()
+
+    def isUnderActiveGraph(self):
+        return self._rawNode.isUnderActiveGraph()
+
+    def autoAffectPins(self):
+        self._rawNode.autoAffectPins()  
+
+    def isCallable(self):
+        return self._rawNode.isCallable()
+
+    def category(self):
+        return self._rawNode.category()
+
+    def description(self):
+        return self._rawNode.description()
+
+    def call(self, name):
+        self._rawNode.call(name)
+
+    @property
+    def groups(self):
+        return self._groups
 
     @property
     def collapsed(self):
@@ -464,16 +521,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.svgIcon.setElementId(elementName)
         # self.svgIcon.setPos(self.geometry().topRight())
 
-    def getImageDrawRect(self):
-        topRight = self.boundingRect().topRight()
-        topRight.setY(-12)
-        topRight.setX(self.boundingRect().width() - 12)
-        r = self.boundingRect()
-        r.setWidth(24)
-        r.setHeight(24)
-        r.translate(topRight)
-        return r
-
     @property
     def labelTextColor(self):
         return self._labelTextColor
@@ -482,54 +529,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def labelTextColor(self, value):
         self._labelTextColor = value
         self.nodeNameWidget.setTextColor(self._labelTextColor)
-
-    def __repr__(self):
-        return self._rawNode.__repr__()
-
-    def sizeHint(self, which, constraint):      
-        return QtCore.QSizeF(self.getNodeWidth(), self.getNodeHeight())
-
-    def setGeometry(self, rect):
-        self.prepareGeometryChange()      
-        super(QGraphicsWidget, self).setGeometry(rect)
-        self.setPos(rect.topLeft())
-
-    def setError(self, errorString):
-        self._rawNode.setError(errorString)
-
-    def clearError(self):
-        self._rawNode.clearError()
-
-    def shoutDown(self):
-        pass
-
-    @property
-    def uid(self):
-        return self._rawNode._uid
-
-    @uid.setter
-    def uid(self, value):
-        self._rawNode._uid = value
-
-    @property
-    def name(self):
-        return self._rawNode.name
-
-    @name.setter
-    def name(self, value):
-        self._rawNode.setName(value)
-
-    @property
-    def pins(self):
-        return self._rawNode.pins
-
-    @property
-    def orderedInputs(self):
-        return self._rawNode.orderedInputs
-
-    @property
-    def orderedOutputs(self):
-        return self._rawNode.orderedOutputs
 
     @property
     def UIPins(self):
@@ -586,8 +585,32 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def w(self, value):
         self._w = value
 
-    def getName(self):
-        return self._rawNode.getName()
+    @property
+    def labelHeight(self):
+        return self.nodeNameWidget.sizeHint(None, None).height()
+
+    @property
+    def labelWidth(self):
+        headerWidth = self.nodeNameWidget.sizeHint(None, None).width()
+        headerWidth += self.buttonsWidth()
+        return max(headerWidth, self.minWidth)
+
+    def getData(self, pinName):
+        if pinName in [p.name for p in self.inputs.values()]:
+            p = self.getPin(pinName, PinSelectionGroup.Inputs)
+            return p.getData()
+
+    def setData(self, pinName, data):
+        if pinName in [p.name for p in self.outputs.values()]:
+            p = self.getPin(pinName, PinSelectionGroup.Outputs)
+            p.setData(data)
+
+    def getPin(self, name, pinsGroup=PinSelectionGroup.BothSides):
+        pin = self._rawNode.getPin(str(name), pinsGroup)
+        if pin is not None:
+            if pin.getWrapper() is not None:
+                return pin.getWrapper()()
+        return None
 
     def isRenamable(self):
         return True
@@ -608,34 +631,34 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             self.setHeaderHtml(newName)
             self.canvasRef().requestFillProperties.emit(self.createPropertiesWidget)
 
-    def setName(self, name):
-        self._rawNode.setName(name)
+    def onNodeErrorOccured(self, *args, **kwargs):
+        # change node ui to invalid
+        errorString = args[0]
+        error = {"Node":self._rawNode.name,"Error":errorString}
+        errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""%(self._rawNode.name,str(error))
+        logging.error(errorLink)
+        self.setToolTip(errorString)
+        self.update()
 
-    def getPin(self, name, pinsGroup=PinSelectionGroup.BothSides):
-        pin = self._rawNode.getPin(str(name), pinsGroup)
-        if pin is not None:
-            if pin.getWrapper() is not None:
-                return pin.getWrapper()()
-        return None
+    def onNodeErrorCleared(self, *args, **kwargs):
+        # restore node ui to clean
+        self.setToolTip(rst2html(self.description()))
 
-    @staticmethod
-    def removePinByName(node, name):
-        pin = node.getPin(name)
-        if pin:
-            pin.kill()
+    def toggleCollapsed(self):
+        self.collapsed = not self.collapsed
 
-    @staticmethod
-    def recreate(node):
-        templ = node.serialize()
-        uid = node.uid
-        node.kill()
-        newNode = node.canvas.createNode(templ)
-        newNode.uid = uid
-        return newNode
+    def aboutToCollapse(self, futureCollapseState):
+        """Called before collapsing or expanding."""
+        pass
 
-    @property
-    def isCompoundNode(self):
-        return self._rawNode.isCompoundNode
+    def setHeaderHtml(self, html):
+        self.nodeNameWidget.setHtml(html)
+
+    def getHeaderText(self):
+        return self.nodeNameWidget.getPlainText()
+
+    def getHeaderHtml(self):
+        return self.nodeNameWidget.getHtml()
 
     def serializationHook(self):
         # this will be called by raw node
@@ -653,23 +676,94 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 template['groups']['output'][name] = grp.bCollapsed
         return template
 
-    def setHeaderHtml(self, html):
-        self.nodeNameWidget.setHtml(html)
+    def buttonsWidth(self):
+        # actions width. 10 is svg icon size, probably need to move this value to some preferences
+        try:
+            headerWidth = 0
+            numActions = len(self._actionButtons)
+            headerWidth += numActions * 10
+            headerWidth += self.headerLayout.spacing() * 2 + NodeDefaults().CONTENT_MARGINS * 2
+            return headerWidth
+        except:
+            return 0
 
-    def getHeaderText(self):
-        return self.nodeNameWidget.getPlainText()
+    def getNodeWidth(self):
+        width = self.getPinsWidth() + self.pinsLayout.spacing() * 2
+        if self.resizable:
+            width = max(self._rect.width(), width)
+        width = max(width, self.labelWidth)
+        return width
 
-    def getHeaderHtml(self):
-        return self.nodeNameWidget.getHtml()
+    def getNodeHeight(self):
+        h = self.nodeNameWidget.sizeHint(None, None).height()
+        h += self.nodeLayout.spacing()
+        try:
+            numInputs = len(self.UIinputs)
+            numOutputs = len(self.UIoutputs)
+            ipins = self.UIinputs.values()
+            opins = self.UIoutputs.values()
+            h += NodeDefaults().CONTENT_MARGINS * 2
 
-    def serialize(self):
-        return self._rawNode.serialize()
+            iPinsHeight = 0
+            for pin in ipins:
+                if pin.isVisible():
+                    iPinsHeight += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
+            oPinsHeight = 0
+            for pin in opins:
+                if pin.isVisible():
+                    oPinsHeight += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
 
-    def onVisibilityChanged(self, bVisible):
-        pass
+            h += max(iPinsHeight, oPinsHeight)
 
-    def location(self):
-        return self._rawNode.location()
+            igrhHeight = 0
+            ogrhHeight = 0
+            for grp in self.groups["input"].values():
+                igrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
+            for grp in self.groups["output"].values():
+                ogrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
+            h += max(igrhHeight, ogrhHeight)
+
+        except:
+            pass
+
+        for cust in range(0, self.customLayout.count()):
+            out = self.customLayout.itemAt(cust)
+            h += out.minimumHeight()
+        h += self.customLayout.spacing()*self.customLayout.count()  
+
+        if h < self.minHeight:
+            h = self.minHeight
+
+        if self.resizable:
+            h = max(self._rect.height(), h)
+
+        if self.collapsed:
+            h = min(self.minHeight, self.labelHeight + self.nodeLayout.spacing() * 2)
+
+        return h
+
+    def getPinsWidth(self):
+        iwidth = 0
+        owidth = 0
+        pinwidth = 0
+        pinwidth2 = 0
+        for i in self.UIPins.values():
+            if i.direction == PinDirection.Input:
+                iwidth = max(iwidth, i.sizeHint(None, None).width())
+            else:
+                owidth = max(owidth, i.sizeHint(None, None).width())
+        for igrp in self.groups["input"].values():
+            w = igrp.getWidth()
+            iwidth = max(iwidth, w)
+        for ogrp in self.groups["output"].values():
+            w = ogrp.getWidth()
+            owidth = max(owidth, w)
+        return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
+
+    def setGeometry(self, rect):
+        self.prepareGeometryChange()      
+        super(QGraphicsWidget, self).setGeometry(rect)
+        self.setPos(rect.topLeft())
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange:
@@ -685,14 +779,44 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 self.nodeNameWidget.labelItem.clearFocus()
         return super(UINodeBase, self).itemChange(change, value)
 
-    def graph(self):
-        return self._rawNode.graph()
+    def updateNodeShape(self):
+        self.prepareGeometryChange()
+        self.invalidateNodeLayouts()
+        self.updateGeometry()
+        self.update()
+        self.canvasRef().update()
+        self.nodeNameWidget.updateGeometry()
+        self.nodeNameWidget.update()
+        self.pinsLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
+        self.headerLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
+        self.customLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
 
-    def isUnderActiveGraph(self):
-        return self._rawNode.isUnderActiveGraph()
+    def onVisibilityChanged(self, bVisible):
+        pass      
 
-    def autoAffectPins(self):
-        self._rawNode.autoAffectPins()
+    def translate(self, x, y):
+        super(UINodeBase, self).moveBy(x, y)
+
+    def sizeHint(self, which, constraint):      
+        return QtCore.QSizeF(self.getNodeWidth(), self.getNodeHeight())
+
+    def getImageDrawRect(self):
+        topRight = self.boundingRect().topRight()
+        topRight.setY(-12)
+        topRight.setX(self.boundingRect().width() - 12)
+        r = self.boundingRect()
+        r.setWidth(24)
+        r.setHeight(24)
+        r.translate(topRight)
+        return r
+
+    def onChangeColor(self, label=False):
+        res = QColorDialog.getColor(self.color, None, 'Node color setup')
+        if res.isValid():
+            res.setAlpha(80)
+            self.color = res
+            if label:
+                self.update()
 
     def updateNodeHeaderColor(self):
         if self.headColorOverride is None:
@@ -779,123 +903,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         ProxyWidget.setWidget(widget)
         self.customLayout.addItem(ProxyWidget) 
 
-    def isCallable(self):
-        return self._rawNode.isCallable()
-
-    def category(self):
-        return self._rawNode.category()
-
-    def description(self):
-        return self._rawNode.description()
-
-    @property
-    def packageName(self):
-        return self._rawNode.packageName
-
-    def getData(self, pinName):
-        if pinName in [p.name for p in self.inputs.values()]:
-            p = self.getPin(pinName, PinSelectionGroup.Inputs)
-            return p.getData()
-
-    def setData(self, pinName, data):
-        if pinName in [p.name for p in self.outputs.values()]:
-            p = self.getPin(pinName, PinSelectionGroup.Outputs)
-            p.setData(data)
-
-    def buttonsWidth(self):
-        # actions width. 10 is svg icon size, probably need to move this value to some preferences
-        try:
-            headerWidth = 0
-            numActions = len(self._actionButtons)
-            headerWidth += numActions * 10
-            headerWidth += self.headerLayout.spacing() * 2 + NodeDefaults().CONTENT_MARGINS * 2
-            return headerWidth
-        except:
-            return 0
-
-    @property
-    def labelHeight(self):
-        return self.nodeNameWidget.sizeHint(None, None).height()
-
-    @property
-    def labelWidth(self):
-        headerWidth = self.nodeNameWidget.sizeHint(None, None).width()
-        headerWidth += self.buttonsWidth()
-        return max(headerWidth, self.minWidth)
-
-    def getNodeWidth(self):
-        width = self.getPinsWidth() + self.pinsLayout.spacing() * 2
-        if self.resizable:
-            width = max(self._rect.width(), width)
-        width = max(width, self.labelWidth)
-        return width
-
-    def getNodeHeight(self):
-        h = self.nodeNameWidget.sizeHint(None, None).height()
-        h += self.nodeLayout.spacing()
-        try:
-            numInputs = len(self.UIinputs)
-            numOutputs = len(self.UIoutputs)
-            ipins = self.UIinputs.values()
-            opins = self.UIoutputs.values()
-            h += NodeDefaults().CONTENT_MARGINS * 2
-
-            iPinsHeight = 0
-            for pin in ipins:
-                if pin.isVisible():
-                    iPinsHeight += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
-            oPinsHeight = 0
-            for pin in opins:
-                if pin.isVisible():
-                    oPinsHeight += pin.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
-
-            h += max(iPinsHeight, oPinsHeight)
-
-            igrhHeight = 0
-            ogrhHeight = 0
-            for grp in self.groups["input"].values():
-                igrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
-            for grp in self.groups["output"].values():
-                ogrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
-            h += max(igrhHeight, ogrhHeight)
-
-        except:
-            pass
-
-        for cust in range(0, self.customLayout.count()):
-            out = self.customLayout.itemAt(cust)
-            h += out.minimumHeight()
-        h += self.customLayout.spacing()*self.customLayout.count()  
-
-        if h < self.minHeight:
-            h = self.minHeight
-
-        if self.resizable:
-            h = max(self._rect.height(), h)
-
-        if self.collapsed:
-            h = min(self.minHeight, self.labelHeight + self.nodeLayout.spacing() * 2)
-
-        return h
-
-    def getPinsWidth(self):
-        iwidth = 0
-        owidth = 0
-        pinwidth = 0
-        pinwidth2 = 0
-        for i in self.UIPins.values():
-            if i.direction == PinDirection.Input:
-                iwidth = max(iwidth, i.sizeHint(None, None).width())
-            else:
-                owidth = max(owidth, i.sizeHint(None, None).width())
-        for igrp in self.groups["input"].values():
-            w = igrp.getWidth()
-            iwidth = max(iwidth, w)
-        for ogrp in self.groups["output"].values():
-            w = ogrp.getWidth()
-            owidth = max(owidth, w)
-        return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
-
     def invalidateNodeLayouts(self):
         self.inputsLayout.invalidate()
         self.outputsLayout.invalidate()
@@ -904,26 +911,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.exposedActionButtonsLayout.invalidate()
         self.nodeLayout.invalidate()
         self.customLayout.invalidate()
-
-    def updateNodeShape(self):
-        self.prepareGeometryChange()
-        self.invalidateNodeLayouts()
-        self.updateGeometry()
-        self.update()
-        self.canvasRef().update()
-        self.nodeNameWidget.updateGeometry()
-        self.nodeNameWidget.update()
-        self.pinsLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
-        self.headerLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
-        self.customLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
-
-    def onChangeColor(self, label=False):
-        res = QColorDialog.getColor(self.color, None, 'Node color setup')
-        if res.isValid():
-            res.setAlpha(80)
-            self.color = res
-            if label:
-                self.update()
 
     def isUnderCollapsedComment(self):
         if self.owningCommentNode is None:
@@ -1025,9 +1012,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     collidingNodes.add(node)
         return collidingNodes
 
-    def translate(self, x, y):
-        super(UINodeBase, self).moveBy(x, y)
-
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)
         if self.drawLayoutsDebug:
@@ -1071,9 +1055,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             result["resize"] = True
             result["direction"] = (1, -1)
         return result
-
-    def contextMenuEvent(self, event):
-        self._menu.exec_(event.screenPos())
 
     def mousePressEvent(self, event):
         self.update()
@@ -1190,6 +1171,42 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     self.pressedCommentNode.owningNodes.remove(self)
         super(UINodeBase, self).mouseReleaseEvent(event)
 
+    def hoverLeaveEvent(self, event):
+        self.resetResizeStrips()
+        self.update()
+
+    def hoverMoveEvent(self, event):
+        if self.resizable and not self.collapsed:
+            height = self.geometry().height()
+            width = self.geometry().width()
+            rf = NodeDefaults().CORNERS_ROUND_FACTOR
+
+            leftStrip = QtCore.QRectF(0, rf, self.resizeStripsSize, height - rf * 2)
+            topStrip = QtCore.QRectF(rf, 0, width - rf * 2, self.resizeStripsSize)
+            rightStrip = QtCore.QRectF(width - self.resizeStripsSize, rf, self.resizeStripsSize, height - rf * 2)
+            bottomStrip = QtCore.QRectF(rf, height - self.resizeStripsSize, width - rf * 2, self.resizeStripsSize)
+
+            bottomRightStrip = QtCore.QRectF(width - rf, height - rf, rf, rf)
+            bottomLeftStrip = QtCore.QRectF(0, height - rf, rf, rf)
+            topLeftStrip = QtCore.QRectF(0, 0, rf, rf)
+            topRightStrip = QtCore.QRectF(width - rf, 0, rf, rf)
+
+            # detect where on the node
+            self.resizeStrips[0] = 1 if leftStrip.contains(event.pos()) else 0
+            self.resizeStrips[1] = 1 if topStrip.contains(event.pos()) else 0
+            self.resizeStrips[2] = 1 if rightStrip.contains(event.pos()) else 0
+            self.resizeStrips[3] = 1 if bottomStrip.contains(event.pos()) else 0
+
+            self.resizeStrips[4] = 1 if bottomRightStrip.contains(event.pos()) else 0
+            self.resizeStrips[5] = 1 if bottomLeftStrip.contains(event.pos()) else 0
+            self.resizeStrips[6] = 1 if topLeftStrip.contains(event.pos()) else 0
+            self.resizeStrips[7] = 1 if topRightStrip.contains(event.pos()) else 0
+
+            self.update()
+
+    def contextMenuEvent(self, event):
+        self._menu.exec_(event.screenPos())
+
     def clone(self):
         templ = self.serialize()
         templ['name'] = self.name
@@ -1200,9 +1217,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             out['uuid'] = str(uuid.uuid4())
         new_node = self.canvasRef().createNode(templ)
         return new_node
-
-    def call(self, name):
-        self._rawNode.call(name)
 
     def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
@@ -1268,12 +1282,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 nodes += node.getChainedNodes()
         return nodes
 
-    def kill(self, *args, **kwargs):
-        scene = self.scene()
-        if scene is not None:
-            self.scene().removeItem(self)
-            del(self)
-
     def collidesWithCommentNode(self):
         nodes = self.getCollidedNodes()
         result = None
@@ -1287,38 +1295,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         for i in range(len(self.resizeStrips)):
             self.resizeStrips[i] = 0
 
-    def hoverLeaveEvent(self, event):
-        self.resetResizeStrips()
-        self.update()
+    def kill(self, *args, **kwargs):
+        scene = self.scene()
+        if scene is not None:
+            self.scene().removeItem(self)
+            del(self)
 
-    def hoverMoveEvent(self, event):
-        if self.resizable and not self.collapsed:
-            height = self.geometry().height()
-            width = self.geometry().width()
-            rf = NodeDefaults().CORNERS_ROUND_FACTOR
-
-            leftStrip = QtCore.QRectF(0, rf, self.resizeStripsSize, height - rf * 2)
-            topStrip = QtCore.QRectF(rf, 0, width - rf * 2, self.resizeStripsSize)
-            rightStrip = QtCore.QRectF(width - self.resizeStripsSize, rf, self.resizeStripsSize, height - rf * 2)
-            bottomStrip = QtCore.QRectF(rf, height - self.resizeStripsSize, width - rf * 2, self.resizeStripsSize)
-
-            bottomRightStrip = QtCore.QRectF(width - rf, height - rf, rf, rf)
-            bottomLeftStrip = QtCore.QRectF(0, height - rf, rf, rf)
-            topLeftStrip = QtCore.QRectF(0, 0, rf, rf)
-            topRightStrip = QtCore.QRectF(width - rf, 0, rf, rf)
-
-            # detect where on the node
-            self.resizeStrips[0] = 1 if leftStrip.contains(event.pos()) else 0
-            self.resizeStrips[1] = 1 if topStrip.contains(event.pos()) else 0
-            self.resizeStrips[2] = 1 if rightStrip.contains(event.pos()) else 0
-            self.resizeStrips[3] = 1 if bottomStrip.contains(event.pos()) else 0
-
-            self.resizeStrips[4] = 1 if bottomRightStrip.contains(event.pos()) else 0
-            self.resizeStrips[5] = 1 if bottomLeftStrip.contains(event.pos()) else 0
-            self.resizeStrips[6] = 1 if topLeftStrip.contains(event.pos()) else 0
-            self.resizeStrips[7] = 1 if topRightStrip.contains(event.pos()) else 0
-
-            self.update()
+    def shoutDown(self):
+        pass
 
     def heartBeat(self):
         pass
@@ -1385,6 +1369,20 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             p.hide()
         return p
 
+    @staticmethod
+    def removePinByName(node, name):
+        pin = node.getPin(name)
+        if pin:
+            pin.kill()
+
+    @staticmethod
+    def recreate(node):
+        templ = node.serialize()
+        uid = node.uid
+        node.kill()
+        newNode = node.canvas.createNode(templ)
+        newNode.uid = uid
+        return newNode
 
 def REGISTER_UI_NODE_FACTORY(packageName, factory):
     if packageName not in UI_NODES_FACTORIES:
