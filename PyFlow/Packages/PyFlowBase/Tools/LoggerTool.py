@@ -77,7 +77,7 @@ class LoggerTool(DockTool):
         self.logView = QtWidgets.QTextBrowser()
         self.logView.setOpenLinks(False)
         self.logView.setReadOnly(True)
-        self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'"%"rgba%s"%str(editableStyleSheet().CanvasBgColor.getRgb()))
+        self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'"%"rgba%s"%str(editableStyleSheet().LoggerBgColor.getRgb()))
         self.logView.anchorClicked.connect(self.anchorClickedMethod)
         self.logView.setTextColor(QtGui.QColor('white'))
         self.setWidget(self.logView)
@@ -149,7 +149,7 @@ class LoggerTool(DockTool):
                 node.getWrapper().setSelected(True)
                 self.pyFlowInstance.getCanvas().frameSelectedNodes()
     def update(self):
-        self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'"%"rgba%s"%str(editableStyleSheet().CanvasBgColor.getRgb()))
+        self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'"%"rgba%s"%str(editableStyleSheet().LoggerBgColor.getRgb()))
         super(LoggerTool, self).update()
     @staticmethod
     def getIcon():

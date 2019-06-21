@@ -155,7 +155,7 @@ class ThemePreferences(CategoryWidgetBase):
                 inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
                 if name in ["TextColor", "MainColor", "TextSelectedColor", "ButtonsColor"]:
                     general.addWidget(name, inp)
-                elif name in ["InputFieldColor", "BgColor", "BgColorDarker", "BgColorBright", "BorderColor"]:
+                elif name in ["InputFieldColor", "BgColor", "BgColorDarker", "BgColorBright", "BorderColor","LoggerBgColor"]:
                     bg.addWidget(name, inp)
                 elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
                     canvas.addWidget(name, inp)

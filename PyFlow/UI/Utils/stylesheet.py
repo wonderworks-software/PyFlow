@@ -29,6 +29,8 @@ class editableStyleSheet():
         self.BgColorBright = QtGui.QColor(82, 82, 82)
         self.BorderColor = QtGui.QColor(10, 10, 10)
 
+        self.LoggerBgColor = QtGui.QColor(35, 35, 35)
+
         self.InputFieldColor = QtGui.QColor(32, 32, 32)
         self.TextSelectedColor = QtGui.QColor(255, 255, 255)
 
