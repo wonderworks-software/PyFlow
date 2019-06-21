@@ -47,16 +47,25 @@ class UIPinGroup(QGraphicsWidget):
         self.mainLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
         self.setLayout(self.mainLayout)
         self.direction = direction
-        headerBtn = QPushButton(name)
-        headerBtn.setStyleSheet(headerBtnStyle)
-        headerBtn.setFlat(True)
-        headerBtn.setContentsMargins(0, 0, 0, 0)
-        headerBtn.setMaximumHeight(10)
-        headerBtn.clicked.connect(self.toggleCollapsed)
-        self.headerWidget = scene.addWidget(headerBtn)
+        self.headerBtn = QPushButton(name)
+        self.headerBtn.setStyleSheet(headerBtnStyle)
+        self.headerBtn.setFlat(True)
+        self.headerBtn.setContentsMargins(0, 0, 0, 0)
+        self.headerBtn.setMaximumHeight(10)
+        self.headerBtn.clicked.connect(self.toggleCollapsed)
+        self.headerWidget = scene.addWidget(self.headerBtn)
         self.mainLayout.addItem(self.headerWidget)
         self._pins = set()
         self.bCollapsed = False
+
+    def setHeaderText(self, text):
+        self.headerBtn.setText(text)
+        self.owningNode().updateNodeShape()
+        if self.direction == PinDirection.Input:
+            self.owningNode().groups["input"][text] = self.owningNode().groups["input"].pop(self.name)
+        if self.direction == PinDirection.Output:
+            self.owningNode().groups["output"][text] = self.owningNode().groups["output"].pop(self.name)
+        self.name = text
 
     def setGeometry(self, rect):
         self.prepareGeometryChange()

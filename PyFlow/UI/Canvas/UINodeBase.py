@@ -444,7 +444,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 out.setVisible(not bCollapsed)
             for cust in range(0, self.customLayout.count()):
                 out = self.customLayout.itemAt(cust)
-                out.setVisible(not bCollapsed)                
+                out.setVisible(not bCollapsed)
             self.updateNodeShape()
 
     @property
@@ -650,6 +650,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def setHeaderHtml(self, html):
         self.nodeNameWidget.setHtml(html)
+
+    def getHeaderText(self):
+        return self.nodeNameWidget.getPlainText()
 
     def getHeaderHtml(self):
         return self.nodeNameWidget.getHtml()

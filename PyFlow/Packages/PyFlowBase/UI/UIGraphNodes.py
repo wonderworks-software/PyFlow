@@ -21,11 +21,15 @@ class UIGraphInputs(UINodeBase):
         self.headColorOverride = Colors.Gray
         self.image = RESOURCES_DIR + "/gear.svg"
 
-    def rename(self):
-        name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
-        if confirmed and name != self.name and name != "":
-            self.update()
-        self.setFocus()
+    def setName(self, name):
+        oldName = self.getName()
+        super(UIGraphInputs, self).setName(name)
+        owningCompoundNode = self.canvasRef().graphManager.findNode(self._rawNode.graph().name)
+        if owningCompoundNode:
+            uiCompoundNode = owningCompoundNode.getWrapper()
+            if oldName in uiCompoundNode.groups["input"]:
+                grpItem = uiCompoundNode.groups["input"][oldName]
+                grpItem.setHeaderText(name)
 
     def createPinDialog(self):
         self.d = SelectPinDialog()
@@ -55,8 +59,6 @@ class UIGraphOutputs(UINodeBase):
 
     def __init__(self, raw_node):
         super(UIGraphOutputs, self).__init__(raw_node)
-        actionRename = self._menu.addAction("Rename")
-        actionRename.triggered.connect(self.rename)
         actionAddOut = self._menu.addAction("Add pin")
         actionAddOut.setData(NodeActionButtonInfo(RESOURCES_DIR + "/pin.svg"))
         actionAddOut.triggered.connect(self.createPinDialog)
@@ -65,10 +67,15 @@ class UIGraphOutputs(UINodeBase):
         self.headColorOverride = Colors.Gray
         self.image = RESOURCES_DIR + "/gear.svg"
 
-    def rename(self):
-        name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
-        if confirmed and name != self.name and name != "":
-            self.update()
+    def setName(self, name):
+        oldName = self.getName()
+        super(UIGraphOutputs, self).setName(name)
+        owningCompoundNode = self.canvasRef().graphManager.findNode(self._rawNode.graph().name)
+        if owningCompoundNode:
+            uiCompoundNode = owningCompoundNode.getWrapper()
+            if oldName in uiCompoundNode.groups["output"]:
+                grpItem = uiCompoundNode.groups["output"][oldName]
+                grpItem.setHeaderText(name)
 
     def createPinDialog(self):
         self.d = SelectPinDialog()
