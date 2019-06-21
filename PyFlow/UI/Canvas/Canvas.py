@@ -825,22 +825,22 @@ class Canvas(QGraphicsView):
                 n.setPos(n.scenePos() + diff)
 
         for nodeJson in nodesData:
-            for outPinJson in nodeJson['outputs']:
-                linkDatas = outPinJson['linkedTo']
+            for inpPinJson in nodeJson['inputs']:
+                linkDatas = inpPinJson['linkedTo']
                 for linkData in linkDatas:
                     try:
-                        lhsNode = self.findNode(nodeJson["name"])
+                        lhsNode = self.findNode(linkData["lhsNodeName"])
                         lhsNodePinId = linkData["outPinId"]
                         lhsPin = lhsNode.orderedOutputs[lhsNodePinId]
 
-                        rhsNode = self.findNode(linkData["rhsNodeName"])
+                        rhsNode = self.findNode(nodeJson["name"])
                         rhsNodePinId = linkData["inPinId"]
                         rhsPin = rhsNode.orderedInputs[rhsNodePinId]
                         connected = connectPins(lhsPin, rhsPin)
                         if connected:
                             self.createUIConnectionForConnectedPins(lhsPin.getWrapper()(), rhsPin.getWrapper()())
                     except Exception as e:
-                        print(outPinJson['fullName'], "not found")
+                        print(inpPinJson['fullName'], "not found")
                         continue
 
         # Hacks here!!
