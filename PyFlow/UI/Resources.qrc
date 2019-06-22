@@ -5,12 +5,14 @@
      <file alias="clear_icon.png">resources\clear_icon.png</file>
      <file alias="close_window.png">resources\close_window.png</file>
      <file alias="collapse.svg">resources\collapse.svg</file>
+     <file alias="CollapsedNode.png">resources\CollapsedNode.png</file>
      <file alias="colors_icon.png">resources\colors_icon.png</file>
      <file alias="comment_selected_icon.png">resources\comment_selected_icon.png</file>
      <file alias="console_icon.png">resources\console_icon.png</file>
      <file alias="debug_icon.png">resources\debug_icon.png</file>
      <file alias="delete_icon.png">resources\delete_icon.png</file>
      <file alias="doubleArrow.png">resources\doubleArrow.png</file>
+     <file alias="ExpandedNode.png">resources\ExpandedNode.png</file>
      <file alias="folder_open_icon.png">resources\folder_open_icon.png</file>
      <file alias="function.png">resources\function.png</file>
      <file alias="gear.svg">resources\gear.svg</file>
