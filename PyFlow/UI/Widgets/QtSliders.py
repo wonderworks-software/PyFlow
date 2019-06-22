@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+
 import sys
 import struct
 from Qt import QtGui, QtCore, QtWidgets
@@ -12,7 +12,7 @@ INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
 sys.path.append(r"C:\Users\pedro\OneDrive\pcTools_v5\PyFlow")
-
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 def clamp(n, vmin, vmax):
     return max(min(n, vmax), vmin)
@@ -893,6 +893,7 @@ class Tick(QtWidgets.QGraphicsWidget):
         self.setAcceptHoverEvents(True)
         self._width = 10
         self._height = 17
+        self.hovered = False
         self.setFlag(QtWidgets.QGraphicsWidget.ItemIsMovable)
         self.setFlag(QtWidgets.QGraphicsWidget.ItemIsFocusable)
         self.setFlag(QtWidgets.QGraphicsWidget.ItemIsSelectable, True)
@@ -909,6 +910,16 @@ class Tick(QtWidgets.QGraphicsWidget):
         self.update()
         self.scene().update()
 
+    def hoverEnterEvent(self, event):
+        super(Tick, self).hoverEnterEvent(event)
+        self.hovered = True
+        self.update()
+
+    def hoverLeaveEvent(self, event):
+        super(Tick, self).hoverLeaveEvent(event)
+        self.hovered = False
+        self.update()
+
     def boundingRect(self):
         return QtCore.QRectF(0, 0, self._width, self._height)
 
@@ -917,8 +928,12 @@ class Tick(QtWidgets.QGraphicsWidget):
         painter.setBrush(QtGui.QColor(255, 255, 255, 150))
         pen = QtGui.QPen(QtCore.Qt.black, 1.5)
         if self.isSelected():
-            pen.setColor(QtGui.QColor("yellow"))
-            pen.setWidth(pen.width() * 1.5)
+            pen.setColor(editableStyleSheet().MainColor)
+        elif self.hovered:
+            MainColor_Lighter = QtGui.QColor(editableStyleSheet().MainColor)
+            MainColor_Lighter.setAlpha(128)        
+            pen.setColor(MainColor_Lighter)            
+            pen.setWidth(2.25)
         painter.setPen(pen)
         painter.drawRoundedRect(bgRect, 2, 2)
 

@@ -224,10 +224,15 @@ class editableStyleSheet():
             background: qcolor(0,0,0,0);
          }
         QSlider::handle:horizontal {
-            background:  rgba(100,100,100,255);
-            width: 6px;
+            background:  rgba(255, 255, 255, 150);
+            width: 10px;
+            border-radius: 4px;
+            border: 1.5px solid black;
          }
-        """,
+         QSlider::handle:horizontal:hover {
+            border: 2.25px solid %s;
+         }
+        """% "rgba%s" % str(self.MainColor.getRgb()),
         "dragerstyleSheet": """
         QGroupBox{
             border: 0.5 solid darkgrey;
