@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 import sys
 import struct
 from Qt import QtGui, QtCore, QtWidgets
@@ -11,22 +12,23 @@ INT_RANGE_MIN = -maxint + 0
 INT_RANGE_MAX = maxint + 0
 
 sys.path.append(r"C:\Users\pedro\OneDrive\pcTools_v5\PyFlow")
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
 def clamp(n, vmin, vmax):
     return max(min(n, vmax), vmin)
 
+
 class inputDrager(QtWidgets.QWidget):
-    ## PopUp Draggers Houdini Style
+    # PopUp Draggers Houdini Style
     valueChanged = QtCore.Signal(float)
+
     def __init__(self, parent, factor, *args, **kargs):
         super(inputDrager, self).__init__(*args, **kargs)
         self.parent = parent
         self.setLayout(QtWidgets.QVBoxLayout())
         self.frame = QtWidgets.QGroupBox()
         self.frame.setLayout(QtWidgets.QVBoxLayout())
-        self.label = QtWidgets.QLabel("+"+str(factor))
+        self.label = QtWidgets.QLabel("+" + str(factor))
         self.valueLabel = QtWidgets.QLabel("0")
         self.frame.setContentsMargins(0, 0, 0, 0)
         self.frame.layout().setContentsMargins(0, 0, 0, 0)
@@ -42,7 +44,8 @@ class inputDrager(QtWidgets.QWidget):
         self.frame.layout().addWidget(self.label)
         self.frame.layout().addWidget(self.valueLabel)
         self.layout().addWidget(self.frame)
-        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheet"))
+        self.setStyleSheet(editableStyleSheet(
+        ).getSliderStyleSheet("dragerstyleSheet"))
         self.size = 35
         self.setMinimumHeight(self.size)
         self.setMinimumWidth(self.size)
@@ -52,7 +55,7 @@ class inputDrager(QtWidgets.QWidget):
         self._startValue = 0
         self._factor = factor
         self.startDragpos = QtCore.QPointF(QtGui.QCursor.pos())
-        self.setAttribute(QtCore.Qt.WA_Hover)        
+        self.setAttribute(QtCore.Qt.WA_Hover)
         self.installEventFilter(self)
         self.label.installEventFilter(self)
         self.valueLabel.installEventFilter(self)
@@ -62,27 +65,31 @@ class inputDrager(QtWidgets.QWidget):
             self._value = 0
             self.valueLabel.setText(str(self._value))
             self.startDragpos = event.pos()
-            self._startValue = self.parent._value            
+            self._startValue = self.parent._value
         if event.type() == QtCore.QEvent.HoverEnter:
             self._value = 0
             self.startDragpos = self.mapToGlobal(event.pos())
-            self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheetHover"))
+            self.setStyleSheet(editableStyleSheet(
+            ).getSliderStyleSheet("dragerstyleSheetHover"))
             self.parent.activeDrag = self
             for drag in self.parent.drags:
                 if drag != self:
-                    drag.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheet"))            
+                    drag.setStyleSheet(editableStyleSheet(
+                    ).getSliderStyleSheet("dragerstyleSheet"))
         if event.type() == QtCore.QEvent.HoverLeave:
             self._value = 0
             self.startDragpos = self.mapToGlobal(event.pos())
             if event.pos().y() > self.height() or event.pos().y() < 0:
-                self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheet"))
+                self.setStyleSheet(editableStyleSheet(
+                ).getSliderStyleSheet("dragerstyleSheet"))
 
         return False
 
+
 class draggers(QtWidgets.QWidget):
-    ## PopUp Draggers Houdini Style
-    def __init__(self, parent=None,isFloat=True,startValue=0.0):
-        super(draggers, self).__init__(parent)    
+    # PopUp Draggers Houdini Style
+    def __init__(self, parent=None, isFloat=True, startValue=0.0):
+        super(draggers, self).__init__(parent)
         if not isFloat:
             startValue = int(startValue)
         self.initValue = startValue
@@ -90,24 +97,24 @@ class draggers(QtWidgets.QWidget):
         self._startValue = 0
         self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().setSpacing(0)
-        self.layout().setContentsMargins(0,0,0,0)
+        self.layout().setContentsMargins(0, 0, 0, 0)
         self.setWindowFlags(QtCore.Qt.Popup)
         self.activeDrag = None
         self.drags = []
         self.dragsPos = []
-        lista = [100.0,10.0,1.0,0.1,0.01,0.001,0.0001]
+        lista = [100.0, 10.0, 1.0, 0.1, 0.01, 0.001, 0.0001]
         if not isFloat:
-            lista = [100,10,1]
+            lista = [100, 10, 1]
         for i in lista:
-            drag = inputDrager(self,i)
+            drag = inputDrager(self, i)
             drag.valueChanged.connect(self.setValue)
             self.drags.append(drag)
             self.layout().addWidget(drag)
         self.installEventFilter(self)
 
-    def setValue(self,value):
+    def setValue(self, value):
         self._value = value
-        self.parent().setValue(self._startValue+self._value)
+        self.parent().setValue(self._startValue + self._value)
         self.parent().editingFinished.emit()
 
     def show(self):
@@ -119,35 +126,43 @@ class draggers(QtWidgets.QWidget):
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseMove:
             if self.activeDrag:
-                self.activeDrag.setStyleSheet(editableStyleSheet().getSliderStyleSheet("dragerstyleSheetHover"))
-                deltaX = self.activeDrag.mapToGlobal(event.pos()).x() - self.activeDrag.startDragpos.x()
+                self.activeDrag.setStyleSheet(
+                    editableStyleSheet().getSliderStyleSheet("dragerstyleSheetHover"))
+                deltaX = self.activeDrag.mapToGlobal(
+                    event.pos()).x() - self.activeDrag.startDragpos.x()
                 if event.pos().x() > self.activeDrag.width() or event.pos().x() < 0:
-                    self.activeDrag._value = (deltaX / 8) * self.activeDrag._factor
-                    self.activeDrag.valueLabel.setText(str(self.initValue+self.activeDrag._value))
-                    self.activeDrag.valueChanged.emit(self.activeDrag._startValue + self.activeDrag._value)
+                    self.activeDrag._value = (
+                        deltaX / 8) * self.activeDrag._factor
+                    self.activeDrag.valueLabel.setText(
+                        str(self.initValue + self.activeDrag._value))
+                    self.activeDrag.valueChanged.emit(
+                        self.activeDrag._startValue + self.activeDrag._value)
                 else:
                     self.activeDrag._value = 0
-                    self.activeDrag.valueLabel.setText(str(self.initValue+self.activeDrag._value))
-                    self.activeDrag.startDragpos = self.activeDrag.mapToGlobal(event.pos())
+                    self.activeDrag.valueLabel.setText(
+                        str(self.initValue + self.activeDrag._value))
+                    self.activeDrag.startDragpos = self.activeDrag.mapToGlobal(
+                        event.pos())
                     self.activeDrag._startValue = self.activeDrag.parent._value
                     self.activeDrag.valueChanged.emit(0)
 
         if event.type() == QtCore.QEvent.MouseButtonRelease:
             self.hide()
-            self.parent().setValue(self._startValue+self._value)
+            self.parent().setValue(self._startValue + self._value)
             self.parent().editingFinished.emit()
             del(self)
         return False
 
+
 class slider(QtWidgets.QSlider):
-    ## Customized Int Slider
+    # Customized Int Slider
     def __init__(self, *args, **kargs):
         super(slider, self).__init__(*args, **kargs)
         self.setOrientation(QtCore.Qt.Horizontal)
         self.deltaValue = 0
         self.startDragpos = QtCore.QPointF()
         self.realStartDragpos = QtCore.QPointF()
-        self.setFocusPolicy(QtCore.Qt.StrongFocus )
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
     def mousePressEvent(self, event):
         self.prevValue = self.value()
@@ -203,12 +218,13 @@ class slider(QtWidgets.QSlider):
             self.setValue(self.value() - self.deltaValue)
         else:
             super(slider, self).mouseMoveEvent(event)
-            
-    def wheelEvent(self,event):
+
+    def wheelEvent(self, event):
         if not self.hasFocus():
             event.ignore()
         else:
             super(slider, self).wheelEvent(event)
+
     def keyPressEvent(self, event):
         p = self.mapFromGlobal(QtGui.QCursor.pos())
         self.startDragpos = p
@@ -216,8 +232,9 @@ class slider(QtWidgets.QSlider):
         self.deltaValue = 0
         super(slider, self).keyPressEvent(event)
 
+
 class doubleSlider(slider):
-    ## Customized Float Slider
+    # Customized Float Slider
     doubleValueChanged = QtCore.Signal(float)
 
     def __init__(self, decimals=4, *args, **kargs):
@@ -260,23 +277,25 @@ class doubleSlider(slider):
     def setValue(self, value):
         super(doubleSlider, self).setValue(int(value * self._multi))
 
+
 class valueBox(QtWidgets.QDoubleSpinBox):
-    ## Input Text Values with Draggers
-    def __init__(self,type="float",buttons=False,*args, **kargs):
+    # Input Text Values with Draggers
+    def __init__(self, type="float", buttons=False, *args, **kargs):
         super(valueBox, self).__init__(*args, **kargs)
-        self.isFloat = type=="float"
+        self.isFloat = type == "float"
         if not self.isFloat:
             self.setDecimals(0)
         else:
             self.setDecimals(4)
         if not buttons:
             self.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
-        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
+        self.setStyleSheet(editableStyleSheet(
+        ).getSliderStyleSheet("sliderStyleSheetA"))
         self.lineEdit().installEventFilter(self)
         self.installEventFilter(self)
-        self.setFocusPolicy(QtCore.Qt.StrongFocus )
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-    def wheelEvent(self,event):
+    def wheelEvent(self, event):
         if not self.hasFocus():
             event.ignore()
         else:
@@ -285,7 +304,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             if event.button() == QtCore.Qt.MiddleButton:
-                dragger = draggers(self,self.isFloat,startValue=self.value())
+                dragger = draggers(self, self.isFloat, startValue=self.value())
                 dragger.show()
                 if self.isFloat:
                     dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
@@ -294,9 +313,12 @@ class valueBox(QtWidgets.QDoubleSpinBox):
                     dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
                     ) - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))
         return False
+
     def update(self):
-        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
+        self.setStyleSheet(editableStyleSheet(
+        ).getSliderStyleSheet("sliderStyleSheetA"))
         super(valueBox, self).update()
+
 
 class pyf_Slider(QtWidgets.QWidget):
 
@@ -317,7 +339,7 @@ class pyf_Slider(QtWidgets.QWidget):
         self.layout().setContentsMargins(10, 0, 0, 0)
         self.input.setContentsMargins(0, 0, 0, 0)
         self.sld.setContentsMargins(0, 0, 0, 0)
-        self.label = None  
+        self.label = None
         if name:
             self.label = QtWidgets.QLabel(name + "  ")
             self.layout().addWidget(self.label)
@@ -335,9 +357,11 @@ class pyf_Slider(QtWidgets.QWidget):
         self.stypeSheetType = style
         if self.stypeSheetType == 0:
             self.layout().setSpacing(0)
-            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
+            self.sld.setStyleSheet(editableStyleSheet(
+            ).getSliderStyleSheet("sliderStyleSheetA"))
         elif self.stypeSheetType == 1:
-            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetB"))
+            self.sld.setStyleSheet(editableStyleSheet(
+            ).getSliderStyleSheet("sliderStyleSheetB"))
         if self.type == "int":
             self.sld.valueChanged.connect(
                 lambda: self.setValue(self.sld.value()))
@@ -354,12 +378,15 @@ class pyf_Slider(QtWidgets.QWidget):
         self.setDisplayMinimun(0)
         self.setDisplayMaximum(1)
         self.setValue(0.5)
+
     def update(self):
         if self.stypeSheetType == 0:
             self.layout().setSpacing(0)
-            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
+            self.sld.setStyleSheet(editableStyleSheet(
+            ).getSliderStyleSheet("sliderStyleSheetA"))
         elif self.stypeSheetType == 1:
-            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetB"))
+            self.sld.setStyleSheet(editableStyleSheet(
+            ).getSliderStyleSheet("sliderStyleSheetB"))
         super(pyf_Slider, self).update()
 
     @property
@@ -377,7 +404,7 @@ class pyf_Slider(QtWidgets.QWidget):
     def value(self):
         self._value = self.sld.value()
         if self.type == "int":
-            self._value = int(self._value)    
+            self._value = int(self._value)
         return self._value
 
     def setValue(self, value):
@@ -435,6 +462,7 @@ class pyf_Slider(QtWidgets.QWidget):
     def showSlider(self):
         self.sld.show()
 
+
 class pyf_HueSlider(doubleSlider):
 
     def __init__(self, parent, *args):
@@ -443,14 +471,16 @@ class pyf_HueSlider(doubleSlider):
         self.color = QtGui.QColor()
         self.color.setHslF(0, 1, 0.5, 1)
         self.defColor = self.color.name()
-        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetC"))
+        self.setStyleSheet(editableStyleSheet(
+        ).getSliderStyleSheet("sliderStyleSheetC"))
         self.light = 0.5
         self.setMinimum(0.0)
         self.setMaximum(1.0)
 
     def setColor(self, color):
-        if isinstance(color, list) and len(color)==3:
-            self.color = QtGui.QColor(color[0]*255.0,color[1]*255.0,color[2]*255.0)
+        if isinstance(color, list) and len(color) == 3:
+            self.color = QtGui.QColor(
+                color[0] * 255.0, color[1] * 255.0, color[2] * 255.0)
             self.defColor = self.color.name()
             self.update()
 
@@ -464,7 +494,7 @@ class pyf_HueSlider(doubleSlider):
         c = QtGui.QColor(self.defColor)
         h, s, l, a = c.getHslF()
         c.setHslF((h + hue) % 1, s, self.light, a)
-        rgb = c.getRgbF() 
+        rgb = c.getRgbF()
         return list(rgb)
 
     def paintEvent(self, event):
@@ -482,22 +512,25 @@ class pyf_HueSlider(doubleSlider):
         gradient = QtGui.QLinearGradient(0, 0, w, h)
         for i in range(11):
             hue = self.getHue(i * 0.1)
-            gradient.setColorAt(i * 0.1, QtGui.QColor(hue[0]*255,hue[1]*255,hue[2]*255))
+            gradient.setColorAt(
+                i * 0.1, QtGui.QColor(hue[0] * 255, hue[1] * 255, hue[2] * 255))
 
         qp.setBrush(QtGui.QBrush(gradient))
 
         qp.drawRect(0, 0, w, h)
 
+
 class pyf_GradientSlider(doubleSlider):
 
-    def __init__(self, parent,color1=[0,0,0],color2=[255,255,255], *args):
+    def __init__(self, parent, color1=[0, 0, 0], color2=[255, 255, 255], *args):
         super(pyf_GradientSlider, self).__init__(parent=parent, *args)
         self.parent = parent
-        self.color1 = QtGui.QColor(color1[0],color1[1],color1[2])
-        self.color2 = QtGui.QColor(color2[0],color2[1],color2[2])
+        self.color1 = QtGui.QColor(color1[0], color1[1], color1[2])
+        self.color2 = QtGui.QColor(color2[0], color2[1], color2[2])
         self.setMinimum(0.0)
         self.setMaximum(1.0)
-        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetC"))
+        self.setStyleSheet(editableStyleSheet(
+        ).getSliderStyleSheet("sliderStyleSheetC"))
 
     def getColor(self):
         r, g, b = self.color1.getRGB()
@@ -527,11 +560,12 @@ class pyf_GradientSlider(doubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
+
 class pyf_ColorSlider(QtWidgets.QWidget):
 
     valueChanged = QtCore.Signal(list)
 
-    def __init__(self, parent=None,startColor=[0,0,0], type="float",alpha=False,h = 50, *args):
+    def __init__(self, parent=None, startColor=[0, 0, 0], type="float", alpha=False, h=50, *args):
         super(pyf_ColorSlider, self).__init__(parent=parent, *args)
         self.parent = parent
         self.setLayout(QtWidgets.QHBoxLayout())
@@ -542,31 +576,39 @@ class pyf_ColorSlider(QtWidgets.QWidget):
         self.BBox = valueBox(type=self.type)
         self.ABox = valueBox(type=self.type)
 
-        for i in [self.RBox,self.GBox,self.BBox,self.ABox]:
+        for i in [self.RBox, self.GBox, self.BBox, self.ABox]:
             i.setMinimum(0)
             if type == "int":
                 i.setMaximum(255)
             else:
                 i.setMaximum(1.0)
-        
-        self.R = pyf_GradientSlider(self,color2=[255,0,0])
-        self.G = pyf_GradientSlider(self,color2=[0,255,0])
-        self.B = pyf_GradientSlider(self,color2=[0,0,255])
-        self.A = pyf_GradientSlider(self,color2=[255,255,255])
+
+        self.R = pyf_GradientSlider(self, color2=[255, 0, 0])
+        self.G = pyf_GradientSlider(self, color2=[0, 255, 0])
+        self.B = pyf_GradientSlider(self, color2=[0, 0, 255])
+        self.A = pyf_GradientSlider(self, color2=[255, 255, 255])
 
         self.div = 1.0
         if self.type == "int":
             self.div = 254.0
 
-        self.RBox.editingFinished.connect( lambda: self.R.setValue(float(self.RBox.value())/self.div))
-        self.R.doubleValueChanged.connect( lambda: self.RBox.setValue(self.R.value()*self.div))
-        self.GBox.editingFinished.connect( lambda: self.G.setValue(float(self.GBox.value())/self.div))
-        self.G.doubleValueChanged.connect( lambda: self.GBox.setValue(self.G.value()*self.div))
-        self.BBox.editingFinished.connect( lambda: self.B.setValue(float(self.BBox.value())/self.div))
-        self.B.doubleValueChanged.connect( lambda: self.BBox.setValue(self.B.value()*self.div))
-        self.ABox.editingFinished.connect( lambda: self.A.setValue(float(self.ABox.value())/self.div))
-        self.A.doubleValueChanged.connect( lambda: self.ABox.setValue(self.A.value()*self.div))
-                        
+        self.RBox.editingFinished.connect(
+            lambda: self.R.setValue(float(self.RBox.value()) / self.div))
+        self.R.doubleValueChanged.connect(
+            lambda: self.RBox.setValue(self.R.value() * self.div))
+        self.GBox.editingFinished.connect(
+            lambda: self.G.setValue(float(self.GBox.value()) / self.div))
+        self.G.doubleValueChanged.connect(
+            lambda: self.GBox.setValue(self.G.value() * self.div))
+        self.BBox.editingFinished.connect(
+            lambda: self.B.setValue(float(self.BBox.value()) / self.div))
+        self.B.doubleValueChanged.connect(
+            lambda: self.BBox.setValue(self.B.value() * self.div))
+        self.ABox.editingFinished.connect(
+            lambda: self.A.setValue(float(self.ABox.value()) / self.div))
+        self.A.doubleValueChanged.connect(
+            lambda: self.ABox.setValue(self.A.value() * self.div))
+
         rLay = QtWidgets.QHBoxLayout()
         rLay.addWidget(self.RBox)
         rLay.addWidget(self.R)
@@ -575,32 +617,32 @@ class pyf_ColorSlider(QtWidgets.QWidget):
         gLay.addWidget(self.G)
         bLay = QtWidgets.QHBoxLayout()
         bLay.addWidget(self.BBox)
-        bLay.addWidget(self.B)        
+        bLay.addWidget(self.B)
         aLay = QtWidgets.QHBoxLayout()
         aLay.addWidget(self.ABox)
         aLay.addWidget(self.A)
 
         self.A.setValue(1.0)
-        self.Color  = QtWidgets.QPushButton()
+        self.Color = QtWidgets.QPushButton()
         self.Color.clicked.connect(self.showColorDialog)
 
         self.Color.setMaximumWidth(h)
         self.Color.setMinimumWidth(h)
-        self.Color.setMaximumHeight(h-12)
-        self.Color.setMinimumHeight(h-12)        
+        self.Color.setMaximumHeight(h - 12)
+        self.Color.setMinimumHeight(h - 12)
         self.slidersLay = QtWidgets.QVBoxLayout()
-        inpList =  [rLay,gLay,bLay]
+        inpList = [rLay, gLay, bLay]
 
         if self.alpha:
             inpList.append(aLay)
         else:
             self.A.hide()
 
-        for i in [self.R,self.G,self.B,self.A,self.RBox,self.GBox,self.BBox,self.ABox]:
-            
-            i.setMaximumHeight(h/(len(inpList)+1))
-            i.setMinimumHeight(h/(len(inpList)+1))
-        for i in [self.R,self.G,self.B,self.A]:
+        for i in [self.R, self.G, self.B, self.A, self.RBox, self.GBox, self.BBox, self.ABox]:
+
+            i.setMaximumHeight(h / (len(inpList) + 1))
+            i.setMinimumHeight(h / (len(inpList) + 1))
+        for i in [self.R, self.G, self.B, self.A]:
             i.doubleValueChanged.connect(self.colorChanged)
 
         for i in inpList:
@@ -613,9 +655,10 @@ class pyf_ColorSlider(QtWidgets.QWidget):
         self.slidersLay.setSpacing(0)
         self.styleSheetString = "QPushButton{ background-color: rgba(%f,%f,%f,%f);border-color: black;border-radius: 2px;border-style: outset;border-width: 1px;}\nQPushButton:pressed{ border-style: inset;border-color: beige}"
         self.defaultColor = startColor
-        if isinstance(startColor,list) and len(startColor)>=3:
+        if isinstance(startColor, list) and len(startColor) >= 3:
             self.setColor(startColor)
-        self.Color.setStyleSheet(self.styleSheetString % (self.R.value()*255,self.G.value()*255,self.B.value()*255,self.A.value()*255))
+        self.Color.setStyleSheet(self.styleSheetString % (
+            self.R.value() * 255, self.G.value() * 255, self.B.value() * 255, self.A.value() * 255))
         self._menu = QtWidgets.QMenu()
         self.actionReset = self._menu.addAction("ResetValue")
         self.actionReset.triggered.connect(self.onResetValue)
@@ -624,25 +667,27 @@ class pyf_ColorSlider(QtWidgets.QWidget):
         if self.defaultColor:
             self.setColor(self.defaultColor)
 
-    def setColor(self,color):
-        self.R.setValue(color[0]/self.div)
-        self.G.setValue(color[1]/self.div)
-        self.B.setValue(color[2]/self.div)
-        if len(color)>3:
-            self.A.setValue(color[3]/self.div)
+    def setColor(self, color):
+        self.R.setValue(color[0] / self.div)
+        self.G.setValue(color[1] / self.div)
+        self.B.setValue(color[2] / self.div)
+        if len(color) > 3:
+            self.A.setValue(color[3] / self.div)
 
-    def colorChanged(self,value):
-        self.Color.setStyleSheet(self.styleSheetString % (self.R.value()*255,self.G.value()*255,self.B.value()*255,self.A.value()*255))
-        valueList = [self.R.value(),self.G.value(),self.B.value()]
+    def colorChanged(self, value):
+        self.Color.setStyleSheet(self.styleSheetString % (
+            self.R.value() * 255, self.G.value() * 255, self.B.value() * 255, self.A.value() * 255))
+        valueList = [self.R.value(), self.G.value(), self.B.value()]
         if self.alpha:
             valueList.append(self.A.value())
         if self.type == "int":
-            valueList = [clamp(int(i*255),0,255) for i in valueList]
-        self.valueChanged.emit(valueList)   
+            valueList = [clamp(int(i * 255), 0, 255) for i in valueList]
+        self.valueChanged.emit(valueList)
 
     def showColorDialog(self):
         if self.alpha:
-            color = QtWidgets.QColorDialog.getColor(options=QtWidgets.QColorDialog.ShowAlphaChannel)
+            color = QtWidgets.QColorDialog.getColor(
+                options=QtWidgets.QColorDialog.ShowAlphaChannel)
         else:
             color = QtWidgets.QColorDialog.getColor()
         if color.isValid():
@@ -653,126 +698,142 @@ class pyf_ColorSlider(QtWidgets.QWidget):
 
     def contextMenuEvent(self, event):
         self._menu.exec_(event.globalPos())
-        
+
+
 class pyf_timeline(QtWidgets.QSlider):
-    def __init__(self, parent,*args):
-        super(pyf_timeline, self).__init__(parent=parent,*args)
+    def __init__(self, parent, *args):
+        super(pyf_timeline, self).__init__(parent=parent, *args)
         self.parent = parent
         self.cachedFrmaes = []
-        self.missingFrames=[]
+        self.missingFrames = []
         self.hover = False
         self.hoverPos = None
         self.PressPos = None
         self.MovePos = None
-        self.setRange(0,30)
+        self.setRange(0, 30)
         self.origMax = self.maximum()
         self.oriMin = self.minimum()
         self.setOrientation(QtCore.Qt.Horizontal)
-        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("timeStyleSheet"))
+        self.setStyleSheet(editableStyleSheet(
+        ).getSliderStyleSheet("timeStyleSheet"))
         self.setMouseTracking(True)
         self.setPageStep(1)
         self.setMinimumSize(1, 40)
         self.installEventFilter(self)
+
     def update(self):
-        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("timeStyleSheet"))
-        super(pyf_timeline,self).update()
-    def setRange(self,min,max,setOrig=True):
+        self.setStyleSheet(editableStyleSheet(
+        ).getSliderStyleSheet("timeStyleSheet"))
+        super(pyf_timeline, self).update()
+
+    def setRange(self, min, max, setOrig=True):
         if setOrig:
             self.origMax = max
             self.oriMin = min
-        return super(pyf_timeline, self).setRange( min, max)
-    def setCached(self,cached):
+        return super(pyf_timeline, self).setRange(min, max)
+
+    def setCached(self, cached):
         self.cachedFrmaes = cached
-    def setMissing(self,missing):
-        self.missingFrames = missing        
+
+    def setMissing(self, missing):
+        self.missingFrames = missing
+
     def paintEvent(self, event):
 
         qp = QtGui.QPainter()
         qp.begin(self)
         self.drawWidget(qp)
-        qp.end()        
+        qp.end()
         super(pyf_timeline, self).paintEvent(event)
+
     def drawWidget(self, qp):
         font = QtGui.QFont('Serif', 7, QtGui.QFont.Light)
         qp.setFont(font)
 
         w = self.width()
         h = self.height()
-        nb =  (self.maximum()-self.minimum())
+        nb = (self.maximum() - self.minimum())
         fStep = float(w) / nb
-        step = max(1,int(round(fStep)))
-        
-        pen = QtGui.QPen(QtGui.QColor(200, 200, 200), 1, 
-            QtCore.Qt.SolidLine)
-            
+        step = max(1, int(round(fStep)))
+
+        pen = QtGui.QPen(QtGui.QColor(200, 200, 200), 1,
+                         QtCore.Qt.SolidLine)
+
         qp.setPen(pen)
         qp.setBrush(QtCore.Qt.NoBrush)
-        #qp.drawRect(0, 0, w-50, h-50)
-        
-        pxNb = int(round((nb+1)*step))
-        r = range(self.minimum(),self.maximum()+1,1)
+
+        pxNb = int(round((nb + 1) * step))
+        r = range(self.minimum(), self.maximum() + 1, 1)
         metrics = qp.fontMetrics()
-        fh = metrics.height()      
-        for e,i in enumerate(range(0,pxNb, step)):
-            pos = self.style().sliderPositionFromValue(self.minimum(),self.maximum(),r[e],self.width())
-            half = h/2
+        fh = metrics.height()
+        for e, i in enumerate(range(0, pxNb, step)):
+            pos = self.style().sliderPositionFromValue(
+                self.minimum(), self.maximum(), r[e], self.width())
+            half = h / 2
             if r[e] in self.cachedFrmaes:
                 qp.setPen(QtGui.QColor(0, 255, 0))
                 qp.setBrush(QtGui.QColor(0, 255, 0))
-                qp.drawRect(pos-(fStep/2),half+5, fStep, 1.5)  
+                qp.drawRect(pos - (fStep / 2), half + 5, fStep, 1.5)
                 qp.setPen(pen)
                 qp.setBrush(QtCore.Qt.NoBrush)
             elif r[e] in self.missingFrames:
                 qp.setPen(QtGui.QColor(255, 0, 0))
                 qp.setBrush(QtGui.QColor(255, 0, 0))
-                qp.drawRect(pos-(fStep/2),half+5, fStep, 1.5)  
+                qp.drawRect(pos - (fStep / 2), half + 5, fStep, 1.5)
                 qp.setPen(pen)
-                qp.setBrush(QtCore.Qt.NoBrush)                
-            if (r[e]%5) == 0:
+                qp.setBrush(QtCore.Qt.NoBrush)
+            if (r[e] % 5) == 0:
                 s = 4
                 text = r[e]
                 fw = metrics.width(str(text))
-                qp.drawText((pos)-fw/2, h-fh/3, str(text))
+                qp.drawText((pos) - fw / 2, h - fh / 3, str(text))
             else:
                 s = 1.5
-            qp.drawLine(pos,half+s, pos,half-s)
-        pos = self.style().sliderPositionFromValue(self.minimum(),self.maximum(),self.value(),self.width())
+            qp.drawLine(pos, half + s, pos, half - s)
+        pos = self.style().sliderPositionFromValue(
+            self.minimum(), self.maximum(), self.value(), self.width())
         fw = metrics.width("0")
         qp.setPen(editableStyleSheet().MainColor)
-        if self.value() > self.maximum()-(self.maximum()/2):
+        if self.value() > self.maximum() - (self.maximum() / 2):
             fw += metrics.width(str(self.value()))
             fw *= -1
-        qp.drawText((pos)+fw, 0+fh, str(self.value())) 
+        qp.drawText((pos) + fw, 0 + fh, str(self.value()))
         if self.hover:
-            val = self.style().sliderValueFromPosition(self.minimum(),self.maximum(),self.hoverPos.x(),self.width())
+            val = self.style().sliderValueFromPosition(
+                self.minimum(), self.maximum(), self.hoverPos.x(), self.width())
             if val != self.value():
-                    pos = self.style().sliderPositionFromValue(self.minimum(),self.maximum(),val,self.width())
-                    fw = metrics.width("0")
-                    if val > self.maximum()-(self.maximum()/2):
-                        fw += metrics.width(str(val))
-                        fw *= -1
-                    color2 = QtGui.QColor(editableStyleSheet().MainColor)
-                    color2.setAlpha(100)
-                    pen2 = QtGui.QPen(color2, 2, QtCore.Qt.SolidLine)
-                    qp.setPen(pen2)
-                    qp.drawLine(pos,0, pos,h)
-                    qp.drawText((pos)+fw, 0+fh, str(val)) 
-        qp.setPen(pen)       
-    def mousePressEvent(self,event):
+                pos = self.style().sliderPositionFromValue(
+                    self.minimum(), self.maximum(), val, self.width())
+                fw = metrics.width("0")
+                if val > self.maximum() - (self.maximum() / 2):
+                    fw += metrics.width(str(val))
+                    fw *= -1
+                color2 = QtGui.QColor(editableStyleSheet().MainColor)
+                color2.setAlpha(100)
+                pen2 = QtGui.QPen(color2, 2, QtCore.Qt.SolidLine)
+                qp.setPen(pen2)
+                qp.drawLine(pos, 0, pos, h)
+                qp.drawText((pos) + fw, 0 + fh, str(val))
+        qp.setPen(pen)
+
+    def mousePressEvent(self, event):
         if event.modifiers() == QtCore.Qt.AltModifier:
             self.PressPos = event.globalPos()
             self.MovePos = event.globalPos()
         if event.button() == QtCore.Qt.LeftButton and event.modifiers() != QtCore.Qt.AltModifier:
             butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
-            nevent = QtGui.QMouseEvent(event.type(),QtCore.QPointF(event.pos()),QtCore.QPointF(event.globalPos()),QtCore.Qt.MidButton,butts,event.modifiers())
+            nevent = QtGui.QMouseEvent(event.type(), QtCore.QPointF(event.pos()), QtCore.QPointF(
+                event.globalPos()), QtCore.Qt.MidButton, butts, event.modifiers())
             super(pyf_timeline, self).mousePressEvent(nevent)
         elif event.modifiers() != QtCore.Qt.AltModifier:
             super(pyf_timeline, self).mousePressEvent(event)
-    def wheelEvent(self,event):
-        newMin = self.minimum()+(round(120/event.delta()))
-        newMax = self.maximum()-(round(120/event.delta()))
-        self.setRange(newMin,newMax)
+
+    def wheelEvent(self, event):
+        newMin = self.minimum() + (round(120 / event.delta()))
+        newMax = self.maximum() - (round(120 / event.delta()))
+        self.setRange(newMin, newMax)
         self.repaint()
+
     def eventFilter(self, widget, event):
         if event.type() == QtCore.QEvent.MouseMove:
             self.hover = True
@@ -781,22 +842,23 @@ class pyf_timeline(QtWidgets.QSlider):
         elif event.type() == QtCore.QEvent.Leave:
             self.hover = False
             self.repaint()
-        return super(pyf_timeline, self).eventFilter( widget, event)
+        return super(pyf_timeline, self).eventFilter(widget, event)
 
     def mouseMoveEvent(self, event):
         if event.modifiers() == QtCore.Qt.AltModifier:
-            if event.buttons() in [QtCore.Qt.MidButton,QtCore.Qt.LeftButton] :
+            if event.buttons() in [QtCore.Qt.MidButton, QtCore.Qt.LeftButton]:
                 globalPos = event.globalPos()
                 diff = globalPos - self.MovePos
-                a = (self.width()/(self.maximum()-self.minimum()))
-                if abs(diff.x()) > a : 
+                a = (self.width() / (self.maximum() - self.minimum()))
+                if abs(diff.x()) > a:
                     self.MovePos = globalPos
-                    newMin = self.minimum()-(1*(diff.x()/abs(diff.x())))
-                    newMax = self.maximum()-(1*(diff.x()/abs(diff.x())))
-                    self.setRange(newMin,newMax)
+                    newMin = self.minimum() - (1 * (diff.x() / abs(diff.x())))
+                    newMax = self.maximum() - (1 * (diff.x() / abs(diff.x())))
+                    self.setRange(newMin, newMax)
                     self.repaint()
         else:
-            return super(pyf_timeline, self).mouseMoveEvent( event)
+            return super(pyf_timeline, self).mouseMoveEvent(event)
+
 
 class testWidg(QtWidgets.QWidget):
 
@@ -805,47 +867,45 @@ class testWidg(QtWidgets.QWidget):
 
         self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().addWidget(pyf_Slider(self, style=0))
-        self.layout().addWidget(pyf_Slider(self, type = "int",style=1))
+        self.layout().addWidget(pyf_Slider(self, type="int", style=1))
         self.layout().addWidget(pyf_HueSlider(self))
         self.layout().addWidget(pyf_GradientSlider(self))
         self.layout().addWidget(valueBox(type="int"))
-        self.layout().addWidget(valueBox(type="float",buttons=True))
+        self.layout().addWidget(valueBox(type="float", buttons=True))
 
         tim = pyf_timeline(self)
-        tim.setCached([0,1,2,3,4,15,20])        
+        tim.setCached([0, 1, 2, 3, 4, 15, 20])
         self.layout().addWidget(tim)
 
-        color = pyf_ColorSlider(self,type="int")
+        color = pyf_ColorSlider(self, type="int")
         ramp = pyf_RampColor(self)
         color.valueChanged.connect(ramp.setColor)
         ramp.colorClicked.connect(color.setColor)
-        ramp.addColor([10,50,90],0.1)
-        ramp.addColor([30,120,90],0.9)  
+        ramp.addColor([10, 50, 90], 0.1)
+        ramp.addColor([30, 120, 90], 0.9)
         self.layout().addWidget(ramp)
-        self.layout().addWidget(color)              
+        self.layout().addWidget(color)
 
-        
 
 class Tick(QtWidgets.QGraphicsWidget):
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         super(Tick, self).__init__(parent)
         self.setAcceptHoverEvents(True)
-        #self.name = name
         self._width = 10
         self._height = 17
         self.setFlag(QtWidgets.QGraphicsWidget.ItemIsMovable)
         self.setFlag(QtWidgets.QGraphicsWidget.ItemIsFocusable)
-        self.setFlag(QtWidgets.QGraphicsWidget.ItemIsSelectable,True)
+        self.setFlag(QtWidgets.QGraphicsWidget.ItemIsSelectable, True)
         self.setFlag(QtWidgets.QGraphicsWidget.ItemSendsGeometryChanges)
         self.color = QtGui.QColor("green")
         self._u = 0
 
-    def setU(self,u):
+    def setU(self, u):
         self._u = u
 
-    def setColor(self,color):
-        r,g,b=color
-        self.color = QtGui.QColor().fromRgb(r,g,b)
+    def setColor(self, color):
+        r, g, b = color
+        self.color = QtGui.QColor().fromRgb(r, g, b)
         self.update()
         self.scene().update()
 
@@ -854,13 +914,14 @@ class Tick(QtWidgets.QGraphicsWidget):
 
     def paint(self, painter, option, widget):
         bgRect = self.boundingRect()
-        painter.setBrush(QtGui.QColor(255,255,255,150))
+        painter.setBrush(QtGui.QColor(255, 255, 255, 150))
         pen = QtGui.QPen(QtCore.Qt.black, 1.5)
         if self.isSelected():
             pen.setColor(QtGui.QColor("yellow"))
             pen.setWidth(pen.width() * 1.5)
-        painter.setPen(pen)         
-        painter.drawRoundedRect(bgRect,2,2)
+        painter.setPen(pen)
+        painter.drawRoundedRect(bgRect, 2, 2)
+
 
 class pyf_RampColor(QtWidgets.QGraphicsView):
     tickClicked = QtCore.Signal(object)
@@ -892,51 +953,55 @@ class pyf_RampColor(QtWidgets.QGraphicsView):
         itms.sort(key=lambda x: x._u)
         return itms
 
-    def addColor(self,color,u):
+    def addColor(self, color, u):
         item = Tick()
-        r,g,b = color
-        item.color = QtGui.QColor.fromRgb(r,g,b)
+        r, g, b = color
+        item.color = QtGui.QColor.fromRgb(r, g, b)
         self._scene.addItem(item)
         item.setU(u)
-        item.setPos(item._u*(self.sceneRect().width()-10),1)        
-    def setColor(self,color,index=-1):
-        if index in range(0,len(self.items())-1):
+        item.setPos(item._u * (self.sceneRect().width() - 10), 1)
+
+    def setColor(self, color, index=-1):
+        if index in range(0, len(self.items()) - 1):
             self.sortedItems()[index].setColor(color)
-        elif len(self.items())>0:
+        elif len(self.items()) > 0:
             for item in self.items():
                 if item.isSelected():
                     item.setColor(color)
 
     def getColor(self, value):
-        itms = self.sortedItems()
-        if len(itms)>1:
-            interval = len(itms)-1
-            for i,x in enumerate(itms):
-                if value<=x._u:
-                    interval=i
+        items = self.sortedItems()
+        if len(items) > 1:
+            interval = len(items) - 1
+            for i, x in enumerate(items):
+                if value <= x._u:
+                    interval = i
                     break
-            u = max(0,min(1,(((value - itms[interval-1]._u) * (1.0 - 0.0)) / (itms[interval]._u - itms[interval-1]._u)) + 0.0))
+            u = max(0, min(1, (((value - items[interval - 1]._u) * (1.0 - 0.0)) / (
+                items[interval]._u - items[interval - 1]._u)) + 0.0))
 
-            color = self.interpolate(itms[interval].color,itms[interval-1].color,u)
+            color = self.interpolate(
+                items[interval].color, items[interval - 1].color, u)
             return color
-        elif len(itms)==1:
-            return itms[0].color
+        elif len(items) == 1:
+            return items[0].color
         else:
-            return QtGui.QColor(0,0,0)
+            return QtGui.QColor(0, 0, 0)
 
-    def interpolate(self, start,end,ratio):
+    def interpolate(self, start, end, ratio):
 
-        r =(ratio*start.red() + (1-ratio)*end.red())
-        g = (ratio*start.green() + (1-ratio)*end.green())
-        b = (ratio*start.blue() + (1-ratio)*end.blue())
-        return QtGui.QColor.fromRgb(r,g,b)
+        r = (ratio * start.red() + (1 - ratio) * end.red())
+        g = (ratio * start.green() + (1 - ratio) * end.green())
+        b = (ratio * start.blue() + (1 - ratio) * end.blue())
+        return QtGui.QColor.fromRgb(r, g, b)
 
-    def resizeEvent(self,event):
+    def resizeEvent(self, event):
         super(pyf_RampColor, self).resizeEvent(event)
-        self.scene().setSceneRect(0,0,self.frameSize().width(),self.frameSize().height())    
-        self.fitInView(0,0,self.scene().sceneRect().width(),15,QtCore.Qt.IgnoreAspectRatio)
+        self.scene().setSceneRect(0, 0, self.frameSize().width(), self.frameSize().height())
+        self.fitInView(0, 0, self.scene().sceneRect().width(),
+                       15, QtCore.Qt.IgnoreAspectRatio)
         for item in self.items():
-            item.setPos(item._u*(self.sceneRect().width()-10),1)
+            item.setPos(item._u * (self.sceneRect().width() - 10), 1)
             item.__height = self.frameSize().height()
             item.update()
 
@@ -954,21 +1019,24 @@ class pyf_RampColor(QtWidgets.QGraphicsView):
                 del self.pressed_item
                 self.pressed_item = None
         elif event.button() == QtCore.Qt.MidButton:
-            print self.getColor(self.mapToScene(event.pos()).x()/self.frameSize().width())
+            print(self.getColor(self.mapToScene(event.pos()).x() / self.frameSize().width()))
         else:
             if not self.pressed_item:
                 item = Tick()
-                item.color = self.getColor(self.mapToScene(event.pos()).x()/self.frameSize().width())
+                item.color = self.getColor(self.mapToScene(
+                    event.pos()).x() / self.frameSize().width())
                 self._scene.addItem(item)
-                item.setPos(self.mapToScene(event.pos()).x(),1)
-                item.setU(max(min(item.scenePos().x()/(self.frameSize().width()-10),1),0))
-                item.setPos(item._u*(self.sceneRect().width()-10),1)
+                item.setPos(self.mapToScene(event.pos()).x(), 1)
+                item.setU(
+                    max(min(item.scenePos().x() / (self.frameSize().width() - 10), 1), 0))
+                item.setPos(item._u * (self.sceneRect().width() - 10), 1)
                 self.pressed_item = item
         self.clearSelection()
         if self.pressed_item:
             self.pressed_item.setSelected(True)
             self.tickClicked.emit(self.pressed_item)
-            self.colorClicked.emit([x for x in self.pressed_item.color.getRgb()])
+            self.colorClicked.emit(
+                [x for x in self.pressed_item.color.getRgb()])
         self.scene().update()
 
     def mouseMoveEvent(self, event):
@@ -976,23 +1044,24 @@ class pyf_RampColor(QtWidgets.QGraphicsView):
         self.mousePos = event.pos()
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         if self.pressed_item:
-            self.pressed_item.moveBy(mouseDelta.x(),0)
-            self.pressed_item.setU(max(min(self.pressed_item.scenePos().x()/(self.frameSize().width()-10),1),0))
-            self.pressed_item.setPos(self.pressed_item._u*(self.sceneRect().width()-10),1)
+            self.pressed_item.moveBy(mouseDelta.x(), 0)
+            self.pressed_item.setU(
+                max(min(self.pressed_item.scenePos().x() / (self.frameSize().width() - 10), 1), 0))
+            self.pressed_item.setPos(
+                self.pressed_item._u * (self.sceneRect().width() - 10), 1)
         self._lastMousePos = event.pos()
         self.scene().update()
 
     def mouseReleaseEvent(self, event):
         super(pyf_RampColor, self).mouseReleaseEvent(event)
-        self.pressed_item = None            
+        self.pressed_item = None
         self.scene().update()
 
     def drawBackground(self, painter, rect):
-        super(pyf_RampColor, self).drawBackground(painter, rect)     
-        #painter.fillRect(rect, QtGui.QBrush(QtGui.QColor("blue")))
+        super(pyf_RampColor, self).drawBackground(painter, rect)
         if len(self.items()):
             b = QtGui.QLinearGradient(0, 0, rect.width(), 0)
-            for item in self.items(): 
+            for item in self.items():
                 b.setColorAt(item._u, item.color)
         else:
             b = editableStyleSheet().InputFieldColor
@@ -1007,9 +1076,10 @@ def main():
 
     app.setStyle(QtWidgets.QStyleFactory.create("plastique"))
     ex = testWidg(None)
-    app.setStyleSheet(editableStyleSheet().getStyleSheet())  
+    app.setStyleSheet(editableStyleSheet().getStyleSheet())
     ex.show()
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()
