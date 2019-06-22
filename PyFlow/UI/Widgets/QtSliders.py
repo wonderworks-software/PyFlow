@@ -1085,7 +1085,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         item._width = item._height = 6
         self._scene.addItem(item)
         item.setU(u)
-        item.setV(v)
+        item.setV(1-v)
         item.setPos(item._u * (self.sceneRect().width() - self.itemSize), item._v * (self.sceneRect().height() - self.itemSize))
         self.computeDisplayPoints()
 
@@ -1164,6 +1164,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                 self._scene.removeItem(self.pressed_item)
                 del self.pressed_item
                 self.pressed_item = None
+                self.computeDisplayPoints(self.bezier)
         elif event.button() == QtCore.Qt.MidButton:
             print(self.getV(self.mapToScene(event.pos()).x() / (self.frameSize().width() - self.itemSize)))
         else:
@@ -1226,7 +1227,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                 numSteps = 50
                 for k in range(numSteps):
                     t = float(k) / (numSteps - 1)
-                    x = points[0].x() + t * (points[-1].x()-points[0].x())
+                    x = int(self.interpolateBezier([p.x() for p in points], 0, len(items) - 1, t))
                     y = int(self.interpolateBezier([p.y() for p in points], 0, len(items) - 1, t))  
                     bezierPoints.append(QtCore.QPointF(x,y))
                 points = bezierPoints
@@ -1272,7 +1273,10 @@ class testWidg(QtWidgets.QWidget):
         ramp.addColor([30, 120, 90], 0.9)
         self.layout().addWidget(ramp)
         self.layout().addWidget(color)
-        self.layout().addWidget(pyf_RampSpline(self))
+        ramp2 = pyf_RampSpline(self)
+        ramp2.addItem(0.0,0.0)
+        ramp2.addItem(1.0,1.0)
+        self.layout().addWidget(ramp2)
 
 
 
