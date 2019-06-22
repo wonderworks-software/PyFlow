@@ -561,7 +561,7 @@ class Canvas(QGraphicsView):
         windowRect = self.mapToScene(self.rect()).boundingRect()
 
         # pan to center of window
-        delta = windowRect.topLeft() - nodesRect.topLeft()
+        delta = windowRect.center() - nodesRect.center()
         delta *= self.currentViewScale()
         self.pan(delta)
 
