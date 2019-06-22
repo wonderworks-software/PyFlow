@@ -1052,7 +1052,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
     tickClicked = QtCore.Signal(object)
     valueClicked = QtCore.Signal(float,float)
 
-    def __init__(self, parent,curveType="bezier"):
+    def __init__(self, parent,bezier=True):
         super(pyf_RampSpline, self).__init__(parent)
 
         self._scene = QtWidgets.QGraphicsScene(self)
@@ -1066,13 +1066,14 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setMaximumHeight(60)
         self.setMinimumHeight(60)
-        self.type = curveType
+        self.bezier = bezier
         self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(30, 30, 30)))
         self.mousePressPose = QtCore.QPointF(0, 0)
         self.mousePos = QtCore.QPointF(0, 0)
         self._lastMousePos = QtCore.QPointF(0, 0)
         self.pressed_item = None
         self.itemSize = 6
+        self.displayPoints = []
 
     def sortedItems(self):
         itms = list(self.items())
@@ -1086,6 +1087,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         item.setU(u)
         item.setV(v)
         item.setPos(item._u * (self.sceneRect().width() - self.itemSize), item._v * (self.sceneRect().height() - self.itemSize))
+        self.computeDisplayPoints()
 
     def setU(self, u, index=-1):
         if index in range(0, len(self.items()) - 1):
@@ -1094,6 +1096,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
             for item in self.items():
                 if item.isSelected():
                     item.setU(u)
+        self.computeDisplayPoints()
 
     def setV(self, v, index=-1):
         if index in range(0, len(self.items()) - 1):
@@ -1102,6 +1105,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
             for item in self.items():
                 if item.isSelected():
                     item.setV(v)
+        self.computeDisplayPoints()
 
     def getV(self, value):
         items = self.sortedItems()
@@ -1117,7 +1121,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                     break
             u = max(0, min(1, (((value - items[interval - 1]._u) * (1.0 - 0.0)) / (
                 items[interval]._u - items[interval - 1]._u)) + 0.0))
-            if self.type != "bezier":
+            if not self.bezier:
                 v = self.interpolateLinear(
                     items[interval]._v, items[interval - 1]._v, u)
             else:
@@ -1145,6 +1149,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
             item.setPos(item._u * (self.sceneRect().width() - self.itemSize), item._v * (self.sceneRect().height() - self.itemSize))
             item.__height = self.frameSize().height()
             item.update()
+        self.computeDisplayPoints(self.bezier)
 
     def clearSelection(self):
         for item in self.items():
@@ -1173,6 +1178,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                     max(min(item.scenePos().y() / (self.frameSize().height() - self.itemSize), 1), 0))                
                 item.setPos(item._u * (self.sceneRect().width() - self.itemSize), item._v * (self.sceneRect().height() - self.itemSize))
                 self.pressed_item = item
+                self.computeDisplayPoints(self.bezier)
         self.clearSelection()
         if self.pressed_item:
             self.pressed_item.setSelected(True)
@@ -1192,14 +1198,42 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                 max(min(self.pressed_item.scenePos().y() / (self.frameSize().height() - self.itemSize), 1), 0)) 
             self.pressed_item.setPos(
                 self.pressed_item._u * (self.sceneRect().width() - self.itemSize),self.pressed_item._v * (self.sceneRect().height() - self.itemSize))
+            self.computeDisplayPoints(self.bezier)
         self._lastMousePos = event.pos()
+        
         self.scene().update()
 
     def mouseReleaseEvent(self, event):
         super(pyf_RampSpline, self).mouseReleaseEvent(event)
         self.pressed_item = None
         self.scene().update()
+        
 
+    def computeDisplayPoints(self,bezier=False):
+        items = self.sortedItems()
+        val = self.mapToScene(QtCore.QPoint(-1.5,-1.5))
+        points = []
+        if len(items):
+            if not bezier:
+                points = [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
+                          QtCore.QPointF(self.itemSize/2,items[0].scenePos().y()-val.y())]
+            for item in items:
+                points.append(item.scenePos()-val)
+
+            if bezier:
+                bezierPoints = [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
+                          QtCore.QPointF(self.itemSize/2,items[0].scenePos().y()-val.y())]
+                numSteps = 50
+                for k in range(numSteps):
+                    t = float(k) / (numSteps - 1)
+                    x = int(self.interpolateBezier([p.x() for p in points], 0, len(items) - 1, t))
+                    y = int(self.interpolateBezier([p.y() for p in points], 0, len(items) - 1, t))  
+                    bezierPoints.append(QtCore.QPointF(x,y))
+                points = bezierPoints
+            points.append(QtCore.QPointF(self.frameSize().width()-self.itemSize/2,items[-1].scenePos().y()-val.y()))
+            points.append(QtCore.QPointF(self.frameSize().width()-self.itemSize/2,self.frameSize().height()-self.itemSize/2))            
+        self.displayPoints = points  
+              
     def drawBackground(self, painter, rect):
         painter.fillRect(rect.adjusted(self.itemSize/2,self.itemSize/2,-self.itemSize/2,-self.itemSize/2),editableStyleSheet().InputFieldColor)
         painter.setBrush(QtGui.QColor(0,0,0,0))
@@ -1208,28 +1242,8 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         items = self.sortedItems()
         val = self.mapToScene(QtCore.QPoint(-1.5,-1.5))
         if len(items):
-            points = []
-            if self.type != "bezier":
-                points = [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
-                          QtCore.QPointF(self.itemSize/2,items[0].scenePos().y()-val.y())]
-            for item in items:
-                points.append(item.scenePos()-val)
-
-            if self.type == "bezier":
-                bezierPoints = [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
-                          QtCore.QPointF(self.itemSize/2,items[0].scenePos().y()-val.y())]
-                numSteps = 100
-                for k in range(numSteps):
-                    t = float(k) / (numSteps - 1)
-                    x = int(self.interpolateBezier([p.x() for p in points], 0, len(items) - 1, t))
-                    y = int(self.interpolateBezier([p.y() for p in points], 0, len(items) - 1, t))  
-                    bezierPoints.append(QtCore.QPointF(x,y))
-                points = bezierPoints
-
-            points.append(QtCore.QPointF(self.frameSize().width()-self.itemSize/2,items[-1].scenePos().y()-val.y()))
-            points.append(QtCore.QPointF(self.frameSize().width()-self.itemSize/2,self.frameSize().height()-self.itemSize/2))
             painter.setBrush(QtGui.QColor(100,100,100))
-            painter.drawPolygon(points, QtCore.Qt.WindingFill);
+            painter.drawPolygon(self.displayPoints, QtCore.Qt.WindingFill);
         else:
             b = editableStyleSheet().InputFieldColor
 
