@@ -21,6 +21,11 @@ class getVar(NodeBase):
         self._var.dataTypeChanged.connect(self.onDataTypeChanged)
         self.bCacheEnabled = False
 
+    def checkForErrors(self):
+        super(getVar, self).checkForErrors()
+        if self._var is None:
+            self.setError("Undefined variable")
+
     def onDataTypeChanged(self, dataType):
         self.recreateOutput(dataType)
         self.checkForErrors()
@@ -54,14 +59,21 @@ class getVar(NodeBase):
 
     @var.setter
     def var(self, newVar):
-        self._var.dataTypeChanged.disconnect(self.onDataTypeChanged)
-        self._var.structureChanged.disconnect(self.onVarStructureChanged)
-        self._var.valueChanged.disconnect(self.onVarValueChanged)
+        if self._var is not None:
+            self._var.dataTypeChanged.disconnect(self.onDataTypeChanged)
+            self._var.structureChanged.disconnect(self.onVarStructureChanged)
+            self._var.valueChanged.disconnect(self.onVarValueChanged)
         self._var = newVar
-        self._var.valueChanged.connect(self.onVarValueChanged)
-        self._var.structureChanged.connect(self.onVarStructureChanged)
-        self._var.dataTypeChanged.connect(self.onDataTypeChanged)
-        self.recreateOutput(self._var.dataType)
+        if newVar is not None:
+            self._var.valueChanged.connect(self.onVarValueChanged)
+            self._var.structureChanged.connect(self.onVarStructureChanged)
+            self._var.dataTypeChanged.connect(self.onDataTypeChanged)
+            self.recreateOutput(self._var.dataType)
+        else:
+            # self.out.kill()
+            # del self.out
+            # self.out = None
+            pass
         self.checkForErrors()
         wrapper = self.getWrapper()
         if wrapper:

@@ -26,7 +26,8 @@ class UIGetVarNode(UINodeBase):
         self.color = Colors.DarkGray
 
     def onVariableWasChanged(self):
-        self._createUIPinWrapper(self._rawNode.out)
+        if self.var is not None:
+            self._createUIPinWrapper(self._rawNode.out)
 
     @property
     def var(self):
@@ -59,8 +60,11 @@ class UIGetVarNode(UINodeBase):
         return template
 
     def onVarSelected(self, varName):
-        if self.var.name == varName:
-            return
+        if self.var is not None:
+            if self.var.name == varName:
+                return
+        else:
+            self._rawNode.out.disconnectAll()
 
         var = self.canvasRef().graphManager.findVariable(varName)
         free = self._rawNode.out.checkFree([])
@@ -82,7 +86,10 @@ class UIGetVarNode(UINodeBase):
         inputsCategory = CollapsibleFormWidget(headName="Inputs")
         validVars = self.graph().getVarList()
         cbVars = EnumComboBox([v.name for v in validVars])
-        cbVars.setCurrentText(self.var.name)
+        if self.var is not None:
+            cbVars.setCurrentText(self.var.name)
+        else:
+            cbVars.setCurrentText("")
         cbVars.changeCallback.connect(self.onVarSelected)
         inputsCategory.addWidget("var", cbVars)
 

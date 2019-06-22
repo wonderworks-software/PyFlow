@@ -28,4 +28,5 @@ class CompileTool(ShelfTool):
         return str("CompileTool")
 
     def do(self):
-        QMessageBox.information(self.pyFlowInstance, "Info", "Smart code goes here")
+        for node in self.pyFlowInstance.graphManager.get().getAllNodes():
+            node.checkForErrors()

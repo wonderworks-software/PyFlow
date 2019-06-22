@@ -163,9 +163,8 @@ class UIVariable(QWidget, IPropertiesViewSupport):
                     for i in refs:
                         i.kill()
                 elif item == 'leave':
-                    # mark node as invalid
                     for i in refs:
-                        i.setError("Undefined variable")
+                        i.var = None
         else:
             self.variablesWidget.killVar(self)
 
