@@ -2,13 +2,17 @@ from types import MethodType
 import subprocess
 import os
 import uuid
+import logging
 
 from Qt.QtWidgets import QAction
+from Qt.QtWidgets import QFileDialog
 from Qt import QtGui, QtCore
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Views.CodeEditor import CodeEditor
 from PyFlow.ConfigManager import ConfigManager
+
+logger = logging.getLogger(None)
 
 
 INITIAL_CODE = """
@@ -44,6 +48,24 @@ class UIPythonNode(UINodeBase):
 
         self.fileHandle = None
         self.currentEditorProcess = None
+        self.actionExport = self._menu.addAction("Export")
+        self.actionExport.triggered.connect(self.onExport)
+        self.actionImport = self._menu.addAction("Import")
+        self.actionImport.triggered.connect(self.onImport)
+
+    def onExport(self):
+        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Python node data (*.py)")
+        if savePath != "":
+            with open(savePath, 'w') as f:
+                f.write(self.nodeData)
+            logger.info("{0} data successfully exported!".format(self.getName()))
+
+    def onImport(self):
+        openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Python node data (*.py)")
+        if openPath != "":
+            with open(openPath, 'r') as f:
+                dataString = f.read()
+                self.tryApplyNodeData(dataString)
 
     def mouseDoubleClickEvent(self, event):
         super(UIPythonNode, self).mouseDoubleClickEvent(event)
@@ -67,11 +89,11 @@ class UIPythonNode(UINodeBase):
 
     @nodeData.setter
     def nodeData(self, value):
-        for groupsSide, groups in self.groups.items():
-            for grp in list(groups.values()):
-                grp.kill()
-        self.groups['input'].clear()
-        self.groups['output'].clear()
+        # for groupsSide, groups in self.groups.items():
+        #     for grp in list(groups.values()):
+        #         grp.kill()
+        # self.groups['input'].clear()
+        # self.groups['output'].clear()
         self._rawNode.nodeData = value
 
     def onFileChanged(self, path):
@@ -94,17 +116,19 @@ class UIPythonNode(UINodeBase):
             self.fileHandle.seek(0)
             codeString = self.fileHandle.read()
 
-            nodeData = self.nodeData
-            try:
-                self.nodeData = codeString
-                # create wrappers
-                for pin in self._rawNode.getOrderedPins():
-                    self._createUIPinWrapper(pin)
-                self.updateNodeShape()
-                self.updateNodeHeaderColor()
-                self.setHeaderHtml(self.getName())
-            except Exception as e:
-                print(e)
+            self.tryApplyNodeData(codeString)
+
+    def tryApplyNodeData(self, dataString):
+        try:
+            self.nodeData = dataString
+            # create wrappers
+            for pin in self._rawNode.getOrderedPins():
+                self._createUIPinWrapper(pin)
+            self.updateNodeShape()
+            self.updateNodeHeaderColor()
+            self.setHeaderHtml(self.getName())
+        except Exception as e:
+            logger.warning(e)
 
     def shoutDown(self):
         if self.fileHandle is not None:

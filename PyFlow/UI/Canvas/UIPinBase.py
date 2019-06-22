@@ -34,6 +34,7 @@ QPushButton {
 }
 """
 
+
 class UIPinGroup(QGraphicsWidget):
     def __init__(self, scene, name, direction, owningNode=None):
         super(UIPinGroup, self).__init__(owningNode)
@@ -433,9 +434,6 @@ class UIPinBase(QGraphicsWidget):
         width = self.pinSize * 2
         if not self.bLabelHidden:
             width += QtGui.QFontMetrics(self._font).width(self.displayName())
-        #if not self.isVisible():
-        #    width = 0
-        #    height = 0
         return QtCore.QSizeF(width, height)
 
     def shape(self):

@@ -729,7 +729,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         for cust in range(0, self.customLayout.count()):
             out = self.customLayout.itemAt(cust)
             h += out.minimumHeight()
-        h += self.customLayout.spacing()*self.customLayout.count()  
+        h += self.customLayout.spacing() * self.customLayout.count()
 
         if h < self.minHeight:
             h = self.minHeight
