@@ -37,14 +37,6 @@ class NodeActionButtonBase(QGraphicsWidget):
             self.action.triggered.emit()
             self.clearFocus()
 
-    def paint(self, painter, option, widget):
-        super(NodeActionButtonBase, self).paint(painter, option, widget)
-        if self.hovered:
-            frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
-            painter.setPen(QtCore.Qt.NoPen)
-            painter.setBrush(QtGui.QColor(50, 50, 50, 50))
-            painter.drawRoundedRect(frame, 2, 2)
-
     def setGeometry(self, rect):
         self.prepareGeometryChange()
         super(QGraphicsWidget, self).setGeometry(rect)
