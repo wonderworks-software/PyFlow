@@ -19,6 +19,7 @@ REDIRECT = True
 logger = logging.getLogger(None)
 
 
+@SingletonDecorator
 class SignalHandler(QtCore.QObject):
     messageWritten = QtCore.Signal(str)
     errorWritten = QtCore.Signal(str)
@@ -30,7 +31,7 @@ class SignalHandler(QtCore.QObject):
     text = ""
 
     def __init__(self, parent):
-        super(SignalHandler, self).__init__(parent)
+        QtCore.QObject.__init__(self, parent)
         sys.stdout = self
 
     def write(self, msg):
