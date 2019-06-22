@@ -958,7 +958,7 @@ class pyf_RampColor(QtWidgets.QGraphicsView):
     def addItem(self, color, u):
         item = Tick()
         r, g, b = color
-        item.getColor() = QtGui.QColor.fromRgb(r, g, b)
+        item._color = QtGui.QColor.fromRgb(r, g, b)
         self._scene.addItem(item)
         item.setU(u)
         item.setPos(item.getU() * (self.sceneRect().width() - 10), 1)
@@ -1026,7 +1026,7 @@ class pyf_RampColor(QtWidgets.QGraphicsView):
         else:
             if not self.pressed_item:
                 item = Tick()
-                item.getColor() = self.evaluateAt(self.mapToScene(
+                item._color = self.evaluateAt(self.mapToScene(
                     event.pos()).x() / self.frameSize().width())
                 self._scene.addItem(item)
                 item.setPos(self.mapToScene(event.pos()).x(), 1)
