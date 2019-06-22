@@ -1,18 +1,22 @@
 from nine import str
 from Qt import QtCore
 from Qt import QtGui
-from Qt import QtWidgets
+from Qt.QtWidgets import QAction, QTextBrowser
 from PyFlow.UI.Tool.Tool import DockTool
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 import sys
 import logging
 import json
 import os
 import subprocess
+
+
 REDIRECT = True
+logger = logging.getLogger(None)
 
 
 class SignalHandler(QtCore.QObject):
@@ -25,28 +29,24 @@ class SignalHandler(QtCore.QObject):
     _stderr = None
     text = ""
 
+    def __init__(self, parent):
+        super(SignalHandler, self).__init__(parent)
+        sys.stdout = self
+
     def write(self, msg):
         if (not self.signalsBlocked()):
             if msg != '\n':
                 self.text = msg
                 logger.info(str(msg))
 
-    @staticmethod
-    def stdout():
-        if (not SignalHandler._stdout):
-            SignalHandler._stdout = SignalHandler()
-            sys.stdout = SignalHandler._stdout
-        return SignalHandler._stdout
-
     def flush(self):
         print('flusing from handler')
 
 
 class QtHandler(logging.Handler):
-    def __init__(self):
+    def __init__(self, parent):
         logging.Handler.__init__(self)
-        self.messageHolder = SignalHandler()
-        self.messageHolder.stdout()
+        self.messageHolder = SignalHandler(parent)
 
     def emit(self, record):
         if record:
@@ -66,57 +66,69 @@ class QtHandler(logging.Handler):
                     self.messageHolder.messageWritten.emit('%s\n' % msj)
 
 
-formater = logging.Formatter(
-    "[%(levelname)s %(asctime)s]:   %(message)s", "%H:%M:%S")
-logger = logging.getLogger(None)
-
-
-def my_excepthook(excType, excValue, traceback, logger=logger):
-    logger.error(excValue, exc_info=(excType, excValue, traceback))
-
-
-settings = QtCore.QSettings(
-    ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
-
-
 class LoggerTool(DockTool):
     """docstring for NodeBox tool."""
 
+    formater = logging.Formatter("[%(levelname)s %(asctime)s]:   %(message)s", "%H:%M:%S")
+    settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
+
     def __init__(self):
         super(LoggerTool, self).__init__()
-        self.logView = QtWidgets.QTextBrowser()
+        self.logView = QTextBrowser()
+        self.logView.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self.logView.setOpenLinks(False)
         self.logView.setReadOnly(True)
         self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'" %
                                    "rgba%s" % str(editableStyleSheet().LoggerBgColor.getRgb()))
+        self.clearAction = QAction("Clear")
+        self.clearAction.triggered.connect(self.clearView)
+        self.logView.addAction(self.clearAction)
         self.logView.anchorClicked.connect(self.anchorClickedMethod)
         self.logView.setTextColor(QtGui.QColor('white'))
         self.setWidget(self.logView)
         #####################################################
         # Sys Output Redirection
         #####################################################
-
+        self.handler = None
         if REDIRECT:
-            handler = QtHandler()
+            self.handler = QtHandler(self)
         else:
-            handler = logging.StreamHandler(sys.stdout)
+            self.handler = logging.StreamHandler(sys.stdout)
 
-        handler.setFormatter(formater)
-        logger.addHandler(handler)
+        self.handler.setFormatter(LoggerTool.formater)
+        logger.addHandler(self.handler)
 
         logger.setLevel(logging.DEBUG)
-        sys.excepthook = my_excepthook
-        if handler and REDIRECT:
-            handler.messageHolder.messageWritten.connect(
+        sys.excepthook = LoggerTool.exceptHook
+        if self.handler and REDIRECT:
+            self.handler.messageHolder.messageWritten.connect(
                 lambda value: self.logPython(value, 0))
-            handler.messageHolder.warningWritten.connect(
+            self.handler.messageHolder.warningWritten.connect(
                 lambda value: self.logPython(value, 1))
-            handler.messageHolder.errorWritten.connect(
+            self.handler.messageHolder.errorWritten.connect(
                 lambda value: self.logPython(value, 2))
-            handler.messageHolder.flushSig.connect(self.flushPython)
+            self.handler.messageHolder.flushSig.connect(self.flushPython)
     #####################################################
     # Logger
     #####################################################
+
+    @staticmethod
+    def exceptHook(excType, excValue, traceback, logger=logger):
+        logger.error(excValue, exc_info=(excType, excValue, traceback))
+
+    def clearView(self, *args):
+        self.logView.clear()
+
+    def onDestroy(self):
+        sys.stdout = sys.__stdout__
+        self.handler.messageHolder._stdout = None
+        self.handler.messageHolder._stderr = None
+        self.handler.messageHolder.messageWritten.disconnect()
+        self.handler.messageHolder.warningWritten.disconnect()
+        self.handler.messageHolder.errorWritten.disconnect()
+        self.handler.messageHolder.flushSig.disconnect()
+        del self.handler
+        self.handler = None
 
     def logPython(self, text, mode=0):
         colorchart = {
@@ -158,7 +170,7 @@ class LoggerTool(DockTool):
     def anchorClickedMethod(self, url):
 
         if os.path.exists(url.url().split("::")[0]):
-            editCmd = settings.value("Preferences/General/EditorCmd")
+            editCmd = LoggerTool.settings.value("Preferences/General/EditorCmd")
             editCmd = editCmd.replace("@FILE", url.url().replace("::", ":"))
             subprocess.Popen(editCmd)
         else:
@@ -183,7 +195,6 @@ class LoggerTool(DockTool):
 
     def closeEvent(self, event):
         self.hide()
-        pass
 
     @staticmethod
     def isSingleton():
@@ -191,7 +202,7 @@ class LoggerTool(DockTool):
 
     @staticmethod
     def defaultDockArea():
-        return QtCore.Qt.LeftDockWidgetArea
+        return QtCore.Qt.BottomDockWidgetArea
 
     @staticmethod
     def toolTip():
