@@ -1052,7 +1052,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
     tickClicked = QtCore.Signal(object)
     valueClicked = QtCore.Signal(float,float)
 
-    def __init__(self, parent):
+    def __init__(self, parent,curveType="bezier"):
         super(pyf_RampSpline, self).__init__(parent)
 
         self._scene = QtWidgets.QGraphicsScene(self)
@@ -1066,7 +1066,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setMaximumHeight(60)
         self.setMinimumHeight(60)
-
+        self.type = curveType
         self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(30, 30, 30)))
         self.mousePressPose = QtCore.QPointF(0, 0)
         self.mousePos = QtCore.QPointF(0, 0)
@@ -1106,6 +1106,10 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
     def getV(self, value):
         items = self.sortedItems()
         if len(items) > 1:
+            if value >= items[-1]._u:
+                return 1- items[-1]._v
+            elif value <= items[0]._u:
+                return 1-items[0]._v
             interval = len(items) - 1
             for i, x in enumerate(items):
                 if value <= x._u:
@@ -1113,15 +1117,23 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                     break
             u = max(0, min(1, (((value - items[interval - 1]._u) * (1.0 - 0.0)) / (
                 items[interval]._u - items[interval - 1]._u)) + 0.0))
-            v = self.interpolate(
-                items[interval]._v, items[interval - 1]._v, u)
+            if self.type != "bezier":
+                v = self.interpolateLinear(
+                    items[interval]._v, items[interval - 1]._v, u)
+            else:
+                v = 1 - self.interpolateBezier([p._v for p in items], 0, len(items) - 1, value)
             return v
         elif len(items) == 1:
-            return items[0]._v
+            return 1- items[0]._v
         else:
             return 0.0
 
-    def interpolate(self, start, end, ratio):
+    def interpolateBezier(self,coorArr, i, j, t):
+        if j == 0:
+            return coorArr[i]
+        return self.interpolateBezier(coorArr, i, j - 1, t) * (1 - t) + self.interpolateBezier(coorArr, i + 1, j - 1, t) * t
+
+    def interpolateLinear(self, start, end, ratio):
         v = (ratio * start + (1 - ratio) * end)
         return 1-v
 
@@ -1197,14 +1209,25 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         val = self.mapToScene(QtCore.QPoint(-1.5,-1.5))
         if len(items):
             points = []
-            points = [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
-                      QtCore.QPointF(self.itemSize/2,items[0].scenePos().y()-val.y())]
+            if self.type != "bezier":
+                points = [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
+                          QtCore.QPointF(self.itemSize/2,items[0].scenePos().y()-val.y())]
             for item in items:
                 points.append(item.scenePos()-val)
 
+            if self.type == "bezier":
+                bezierPoints = [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
+                          QtCore.QPointF(self.itemSize/2,items[0].scenePos().y()-val.y())]
+                numSteps = 100
+                for k in range(numSteps):
+                    t = float(k) / (numSteps - 1)
+                    x = int(self.interpolateBezier([p.x() for p in points], 0, len(items) - 1, t))
+                    y = int(self.interpolateBezier([p.y() for p in points], 0, len(items) - 1, t))  
+                    bezierPoints.append(QtCore.QPointF(x,y))
+                points = bezierPoints
+
             points.append(QtCore.QPointF(self.frameSize().width()-self.itemSize/2,items[-1].scenePos().y()-val.y()))
             points.append(QtCore.QPointF(self.frameSize().width()-self.itemSize/2,self.frameSize().height()-self.itemSize/2))
-
             painter.setBrush(QtGui.QColor(100,100,100))
             painter.drawPolygon(points, QtCore.Qt.WindingFill);
         else:
