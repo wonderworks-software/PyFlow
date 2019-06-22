@@ -1226,7 +1226,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                 numSteps = 50
                 for k in range(numSteps):
                     t = float(k) / (numSteps - 1)
-                    x = int(self.interpolateBezier([p.x() for p in points], 0, len(items) - 1, t))
+                    x = points[0].x() + t * (points[-1].x()-points[0].x())
                     y = int(self.interpolateBezier([p.y() for p in points], 0, len(items) - 1, t))  
                     bezierPoints.append(QtCore.QPointF(x,y))
                 points = bezierPoints
