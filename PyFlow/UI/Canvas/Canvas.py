@@ -318,13 +318,14 @@ class Canvas(QGraphicsView):
 
     def __init__(self, graphManager, pyFlowInstance=None):
         super(Canvas, self).__init__()
+        self.menu = QMenu()
+        self.populateMenu()
         self.state = CanvasState.DEFAULT
         self.graphManager = graphManager
         self.graphManager.graphChanged.connect(self.onGraphChanged)
         self.pyFlowInstance = pyFlowInstance
         # connect with App class signals
         self.pyFlowInstance.newFileExecuted.connect(self.onNewFile)
-        self.menu = QMenu()
         self.setScene(SceneClass(self))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pressed_item = None
@@ -434,6 +435,18 @@ class Canvas(QGraphicsView):
             self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
         elif value == CanvasManipulationMode.COPY:
             pass
+
+    def setSelectedNodesCollapsed(self, collapsed=True):
+        for node in self.selectedNodes():
+            node.collapsed = collapsed
+
+    def populateMenu(self):
+        self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
+        self.actionCollapseSelectedNodes.triggered.connect(lambda: self.setSelectedNodesCollapsed(True))
+        self.actionExpandSelectedNodes = self.menu.addAction("Expand selected nodes")
+        self.actionExpandSelectedNodes.triggered.connect(lambda: self.setSelectedNodesCollapsed(False))
+        self.menu.addAction(self.actionCollapseSelectedNodes)
+        self.menu.addAction(self.actionExpandSelectedNodes)
 
     def plot(self):
         self.graphManager.plot()
@@ -1429,13 +1442,15 @@ class Canvas(QGraphicsView):
             self._selectionRect.destroy()
             self._selectionRect = None
 
-        if event.button() == QtCore.Qt.RightButton:
+        if event.button() == QtCore.Qt.RightButton and modifiers == QtCore.Qt.NoModifier:
             # show nodebox only if drag is small and no items under cursor
             if self.pressed_item is None or (isinstance(self.pressed_item, UINodeBase) and self.nodeFromInstance(self.pressed_item).isCommentNode):
                 if modifiers == QtCore.Qt.NoModifier:
                     dragDiff = self.mapToScene(self.mousePressPose) - self.mapToScene(event.pos())
                     if all([abs(i) < 0.4 for i in [dragDiff.x(), dragDiff.y()]]):
                         self.showNodeBox()
+        elif event.button() == QtCore.Qt.RightButton and modifiers == QtCore.Qt.ControlModifier:
+            self.menu.exec_(QtGui.QCursor.pos())
         elif event.button() == QtCore.Qt.LeftButton and self.releasedPin is None:
             if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
                 # suggest nodes that can be connected to pressed pin
