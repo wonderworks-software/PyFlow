@@ -1,3 +1,5 @@
+from nine import *
+
 from Qt import QtCore
 from Qt import QtGui
 import Qt
@@ -5,11 +7,12 @@ from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Canvas.Painters import NodePainter
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase,InputTextField
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase, InputTextField
 from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
 from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from Qt.QtWidgets import QGraphicsTextItem, QGraphicsWidget, QGraphicsItem
+
 
 class UIstickyNote(UINodeBase):
     def __init__(self, raw_node):
@@ -45,10 +48,10 @@ class UIstickyNote(UINodeBase):
             self.labelTextColor = QtGui.QColor.fromRgba(jsonTemplate["wrapper"]["textColor"])
         if "currentText" in jsonTemplate["wrapper"]:
             self.NonFormatedText = jsonTemplate["wrapper"]["currentText"]
-            self.textInput.setHtml(self.NonFormatedText.replace("\\n","<br/>"))
+            self.textInput.setHtml(self.NonFormatedText.replace("\\n", "<br/>"))
 
     def mouseDoubleClickEvent(self, event):
-        self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable,True)
+        self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable, True)
         self.textInput.setFocus()
         super(UIstickyNote, self).mouseDoubleClickEvent(event)
 
@@ -56,7 +59,7 @@ class UIstickyNote(UINodeBase):
         if change == QGraphicsItem.ItemSelectedChange:
             if value == False:
                 self.textInput.clearFocus()
-                self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable,False)
+                self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable, False)
         return super(UIstickyNote, self).itemChange(change, value)
 
     def aboutToCollapse(self, futureCollapseState):
@@ -74,16 +77,24 @@ class UIstickyNote(UINodeBase):
         self.updateSize()
 
     def startEditing(self):
-        self.textInput.setPlainText(self.NonFormatedText.decode('unicode-escape'))
+        if IS_PYTHON2:
+            self.textInput.setPlainText(self.NonFormatedText.decode('unicode-escape'))
+        else:
+            self.textInput.setPlainText(bytes(self.NonFormatedText, "utf-8").decode('unicode-escape'))
 
-    def editingFinished(self,succes):
+    def editingFinished(self, succes):
         if succes:
-            self.NonFormatedText = self.textInput.toPlainText().encode('unicode-escape')
-            self.textInput.setHtml(self.NonFormatedText.replace("\\n","<br/>"))
+            if IS_PYTHON2:
+                self.NonFormatedText = self.textInput.toPlainText().encode('unicode-escape')
+                self.textInput.setHtml(self.NonFormatedText.replace("\\n", "<br/>"))
+            else:
+                self.NonFormatedText = self.textInput.toPlainText().encode('unicode-escape')
+                self.NonFormatedText = self.NonFormatedText.replace(b"\\n", b"<br/>").decode('unicode-escape')
+                self.textInput.setHtml(self.NonFormatedText)
 
     def updateSize(self):
-        self.textInput.setTextWidth(self.boundingRect().width()-10)
-        newHeight = self.textInput.boundingRect().height()+self.nodeNameWidget.boundingRect().height() + 5
+        self.textInput.setTextWidth(self.boundingRect().width() - 10)
+        newHeight = self.textInput.boundingRect().height() + self.nodeNameWidget.boundingRect().height() + 5
         if self._rect.height() < newHeight:
             self._rect.setHeight(newHeight)
             try:
@@ -92,26 +103,26 @@ class UIstickyNote(UINodeBase):
                 pass
         self.minHeight = newHeight
 
-    def updateColor(self,color):
-        res = QtGui.QColor(color[0],color[1],color[2],color[3])
+    def updateColor(self, color):
+        res = QtGui.QColor(color[0], color[1], color[2], color[3])
         if res.isValid():
             self.color = res
-            self.update() 
+            self.update()
 
-    def updateTextColor(self,color):
-        res = QtGui.QColor(color[0],color[1],color[2],color[3])
+    def updateTextColor(self, color):
+        res = QtGui.QColor(color[0], color[1], color[2], color[3])
         if res.isValid():
             self.labelTextColor = res
             self.textInput.setDefaultTextColor(res)
-            self.update() 
+            self.update()
 
-    def createInputWidgets ( self,propertiesWidget):
+    def createInputWidgets(self, propertiesWidget):
         inputsCategory = super(UIstickyNote, self).createInputWidgets(propertiesWidget)
         appearanceCategory = CollapsibleFormWidget(headName="Appearance")
-        pb = pyf_ColorSlider(type="int",alpha=True,startColor=list(self.color.getRgbF()))
+        pb = pyf_ColorSlider(type="int", alpha=True, startColor=list(self.color.getRgbF()))
         pb.valueChanged.connect(self.updateColor)
         appearanceCategory.addWidget("Color", pb)
-        pb = pyf_ColorSlider(type="int",alpha=True,startColor=list(self.labelTextColor.getRgbF()))
+        pb = pyf_ColorSlider(type="int", alpha=True, startColor=list(self.labelTextColor.getRgbF()))
         pb.valueChanged.connect(self.updateTextColor)
-        appearanceCategory.addWidget("TextColor", pb)        
+        appearanceCategory.addWidget("TextColor", pb)
         propertiesWidget.addWidget(appearanceCategory)
