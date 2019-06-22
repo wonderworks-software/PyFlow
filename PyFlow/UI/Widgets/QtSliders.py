@@ -957,6 +957,7 @@ class pyf_RampColor(QtWidgets.QGraphicsView):
                 if value <= x._u:
                     interval = i
                     break
+
             u = max(0, min(1, (((value - items[interval - 1]._u) * (1.0 - 0.0)) / (
                 items[interval]._u - items[interval - 1]._u)) + 0.0))
 
@@ -1049,7 +1050,7 @@ class pyf_RampColor(QtWidgets.QGraphicsView):
 
 class pyf_RampSpline(QtWidgets.QGraphicsView):
     tickClicked = QtCore.Signal(object)
-    colorClicked = QtCore.Signal(list)
+    valueClicked = QtCore.Signal(float,float)
 
     def __init__(self, parent):
         super(pyf_RampSpline, self).__init__(parent)
@@ -1072,28 +1073,37 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self._lastMousePos = QtCore.QPointF(0, 0)
         self.pressed_item = None
         self.itemSize = 6
+
     def sortedItems(self):
         itms = list(self.items())
         itms.sort(key=lambda x: x._u)
         return itms
 
-    def addColor(self, color, u):
+    def addItem(self,u,v):
         item = Tick()
-        r, g, b = color
-        item.color = QtGui.QColor.fromRgb(r, g, b)
+        item._width = item._height = 6
         self._scene.addItem(item)
         item.setU(u)
-        item.setPos(item._u * (self.sceneRect().width() - 10), 1)
+        item.setV(v)
+        item.setPos(item._u * (self.sceneRect().width() - self.itemSize), item._v * (self.sceneRect().height() - self.itemSize))
 
-    def setColor(self, color, index=-1):
+    def setU(self, u, index=-1):
         if index in range(0, len(self.items()) - 1):
-            self.sortedItems()[index].setColor(color)
+            self.sortedItems()[index].setU(u)
         elif len(self.items()) > 0:
             for item in self.items():
                 if item.isSelected():
-                    item.setColor(color)
+                    item.setU(u)
 
-    def getColor(self, value):
+    def setV(self, v, index=-1):
+        if index in range(0, len(self.items()) - 1):
+            self.sortedItems()[index].setV(v)
+        elif len(self.items()) > 0:
+            for item in self.items():
+                if item.isSelected():
+                    item.setV(v)
+
+    def getV(self, value):
         items = self.sortedItems()
         if len(items) > 1:
             interval = len(items) - 1
@@ -1103,21 +1113,17 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                     break
             u = max(0, min(1, (((value - items[interval - 1]._u) * (1.0 - 0.0)) / (
                 items[interval]._u - items[interval - 1]._u)) + 0.0))
-
-            color = self.interpolate(
-                items[interval].color, items[interval - 1].color, u)
-            return color
+            v = self.interpolate(
+                items[interval]._v, items[interval - 1]._v, u)
+            return v
         elif len(items) == 1:
-            return items[0].color
+            return items[0]._v
         else:
-            return QtGui.QColor(0, 0, 0)
+            return 0.0
 
     def interpolate(self, start, end, ratio):
-
-        r = (ratio * start.red() + (1 - ratio) * end.red())
-        g = (ratio * start.green() + (1 - ratio) * end.green())
-        b = (ratio * start.blue() + (1 - ratio) * end.blue())
-        return QtGui.QColor.fromRgb(r, g, b)
+        v = (ratio * start + (1 - ratio) * end)
+        return 1-v
 
     def resizeEvent(self, event):
         super(pyf_RampSpline, self).resizeEvent(event)
@@ -1142,13 +1148,11 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                 del self.pressed_item
                 self.pressed_item = None
         elif event.button() == QtCore.Qt.MidButton:
-            print(self.getColor(self.mapToScene(event.pos()).x() / self.frameSize().width()))
+            print(self.getV(self.mapToScene(event.pos()).x() / (self.frameSize().width() - self.itemSize)))
         else:
             if not self.pressed_item:
                 item = Tick()
                 item._width = item._height = 6
-                item.color = self.getColor(self.mapToScene(
-                    event.pos()).x() / self.frameSize().width())
                 self._scene.addItem(item)
                 item.setPos(self.mapToScene(event.pos()))
                 item.setU(
@@ -1161,8 +1165,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         if self.pressed_item:
             self.pressed_item.setSelected(True)
             self.tickClicked.emit(self.pressed_item)
-            self.colorClicked.emit(
-                [x for x in self.pressed_item.color.getRgb()])
+            self.valueClicked.emit(self.pressed_item._u,self.pressed_item._v)
         self.scene().update()
 
     def mouseMoveEvent(self, event):
@@ -1186,7 +1189,6 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self.scene().update()
 
     def drawBackground(self, painter, rect):
-        #super(pyf_RampSpline, self).drawBackground(painter, rect)
         painter.fillRect(rect.adjusted(self.itemSize/2,self.itemSize/2,-self.itemSize/2,-self.itemSize/2),editableStyleSheet().InputFieldColor)
         painter.setBrush(QtGui.QColor(0,0,0,0))
         painter.setPen(QtGui.QColor(0,0,0,255))
@@ -1207,7 +1209,6 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
             painter.drawPolygon(points, QtCore.Qt.WindingFill);
         else:
             b = editableStyleSheet().InputFieldColor
-        #
 
 class testWidg(QtWidgets.QWidget):
 
