@@ -53,6 +53,7 @@ class UIstickyNote(UINodeBase):
     def mouseDoubleClickEvent(self, event):
         self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable, True)
         self.textInput.setFocus()
+        self.startEditing()
         super(UIstickyNote, self).mouseDoubleClickEvent(event)
 
     def itemChange(self, change, value):
