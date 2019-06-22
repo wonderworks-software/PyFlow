@@ -318,7 +318,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
         self.exposedActionButtonsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
         self.exposedActionButtonsLayout.setContentsMargins(0, 0, 0, 0)
-        self.exposedActionButtonsLayout.setSpacing(0)
+        self.exposedActionButtonsLayout.setSpacing(2)
         self.exposedActionButtonsLayout.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.headerLayout.addItem(self.exposedActionButtonsLayout)
         self.headerLayout.setAlignment(self.exposedActionButtonsLayout, QtCore.Qt.AlignRight)
