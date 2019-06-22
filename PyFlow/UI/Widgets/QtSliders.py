@@ -917,7 +917,7 @@ class pyf_RampColor(QtWidgets.QGraphicsView):
 
     tickClicked = QtCore.Signal(object)
     colorClicked = QtCore.Signal(list)
-
+    """ Gradient Editor with evaluateAt support """
     def __init__(self, parent):
         super(pyf_RampColor, self).__init__(parent)
         self._scene = QtWidgets.QGraphicsScene(self)
@@ -1074,7 +1074,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
 
     tickClicked = QtCore.Signal(object)
     valueClicked = QtCore.Signal(float,float)
-
+    """ Ramp/Curve Editor with evaluateAt support , clamped to 0,1 in both x and y"""
     def __init__(self, parent,bezier=True):
         super(pyf_RampSpline, self).__init__(parent)
         self._scene = QtWidgets.QGraphicsScene(self)
