@@ -581,7 +581,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
 
         self.div = 1.0
         if self.type == "int":
-            self.div = 254.0
+            self.div = 255.0
 
         self.RBox.editingFinished.connect(
             lambda: self.R.setValue(float(self.RBox.value()) / self.div))
@@ -659,11 +659,11 @@ class pyf_ColorSlider(QtWidgets.QWidget):
             self.setColor(self.defaultColor)
 
     def setColor(self, color):
-        self.R.setValue(color[0] / self.div)
-        self.G.setValue(color[1] / self.div)
-        self.B.setValue(color[2] / self.div)
+        self.R.setValue(color[0])
+        self.G.setValue(color[1])
+        self.B.setValue(color[2])
         if len(color) > 3:
-            self.A.setValue(color[3] / self.div)
+            self.A.setValue(color[3])
 
     def colorChanged(self, value):
         self.Color.setStyleSheet(self.styleSheetString % (
@@ -1016,7 +1016,7 @@ class pyf_RampColor(QtWidgets.QGraphicsView):
             self.pressed_item.setSelected(True)
             self.tickClicked.emit(self.pressed_item)
             self.colorClicked.emit(
-                [x for x in self.pressed_item.color.getRgb()])
+                [(x+1.0)/255. for x in self.pressed_item.color.getRgb()])
         self.scene().update()
 
     def mouseMoveEvent(self, event):
