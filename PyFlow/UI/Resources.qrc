@@ -4,8 +4,6 @@
      <file alias="brick.png">resources\brick.png</file>
      <file alias="clear_icon.png">resources\clear_icon.png</file>
      <file alias="close_window.png">resources\close_window.png</file>
-     <file alias="collapse.svg">resources\collapse.svg</file>
-     <file alias="CollapsedNode.png">resources\CollapsedNode.png</file>
      <file alias="colors_icon.png">resources\colors_icon.png</file>
      <file alias="comment_selected_icon.png">resources\comment_selected_icon.png</file>
      <file alias="console_icon.png">resources\console_icon.png</file>

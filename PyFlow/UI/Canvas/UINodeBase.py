@@ -351,9 +351,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.pinsLayout.setPreferredWidth(self.nodeLayout.preferredWidth())
 
         self.nodeLayout.addItem(self.headerLayout)
-        #self.nodeLayout.addItem(self.customLayout)
+        # self.nodeLayout.addItem(self.customLayout)
         self.nodeLayout.addItem(self.pinsLayout)
-        
+
         self.setLayout(self.nodeLayout)
 
         self.svgIcon = QtSvg.QGraphicsSvgItem(self)
@@ -891,17 +891,17 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 if actionButtonClass is None:
                     actionButtonClass = NodeActionButtonBase
                 butt = actionButtonClass(svgFilePath, action, self)
-                self.exposedActionButtonsLayout.addItem(butt)
+                self.exposedActionButtonsLayout.insertItem(0, butt)
                 self.exposedActionButtonsLayout.setAlignment(butt, QtCore.Qt.AlignRight)
                 action.setVisible(False)
 
-    def addWidget(self,widget):
+    def addWidget(self, widget):
         if not self.hasCustomLayout:
-            self.nodeLayout.insertItem(1,self.customLayout)
+            self.nodeLayout.insertItem(1, self.customLayout)
             self.hasCustomLayout = True
         ProxyWidget = QGraphicsProxyWidget()
         ProxyWidget.setWidget(widget)
-        self.customLayout.addItem(ProxyWidget) 
+        self.customLayout.addItem(ProxyWidget)
 
     def invalidateNodeLayouts(self):
         self.inputsLayout.invalidate()
