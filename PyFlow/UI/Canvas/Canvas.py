@@ -1176,7 +1176,7 @@ class Canvas(QGraphicsView):
                     else:
                         if modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.AltModifier]:
                             super(Canvas, self).mousePressEvent(event)
-                        if modifiers == QtCore.Qt.ControlModifier:
+                        if modifiers == QtCore.Qt.ControlModifier and event.button() == QtCore.Qt.LeftButton:
                             node.setSelected(not node.isSelected())
                         if modifiers == QtCore.Qt.ShiftModifier:
                             node.setSelected(True)
