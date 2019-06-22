@@ -1055,7 +1055,6 @@ class Canvas(QGraphicsView):
         if any([not self.pressed_item,
                 isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
                 isinstance(self.pressed_item, UINodeBase) and node.isCommentNode and not node.collapsed,
-                isinstance(self.pressed_item, QGraphicsWidget) and node.isCommentNode and self.pressed_item.objectName() == "pinLayoutSpacer",
                 isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):

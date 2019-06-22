@@ -45,6 +45,10 @@ class UICommentNode(UINodeBase):
         self.partiallyIntersectedConnections = set()
         self.partiallyIntersectedConnectionsEndpointOverrides = {}
         self.roundness = 3
+
+    def updateNodeShape(self):
+        super(UICommentNode, self).updateNodeShape()
+        self.nodeNameWidget.labelItem.setTextWidth(self.boundingRect().width())
         
     def serializationHook(self):
         original = super(UICommentNode, self).serializationHook()
