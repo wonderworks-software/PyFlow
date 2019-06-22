@@ -45,7 +45,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="64"
      inkscape:cx="4.0818309"
-     inkscape:cy="5.0499669"
+     inkscape:cy="5.9069587"
      inkscape:document-units="px"
      showgrid="false"
      inkscape:window-width="1920"
@@ -77,6 +77,30 @@
     </rdf:RDF>
   </metadata>
   <g
+     id="Collapse"
+     inkscape:label="Collapse"
+     transform="matrix(1.2476907,0,0,1.1734245,-1.1417612,-0.84471883)">
+    <rect
+       inkscape:label="CollapseA"
+       y="0.85652888"
+       x="0.99715471"
+       height="2.395133"
+       width="7.854753"
+       id="CollapseA"
+       style="opacity:1;fill:#1a1a1a;fill-opacity:0.5;stroke:#383838;stroke-width:0.16005377;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       ry="1.2781802" />
+    <rect
+       inkscape:label="CollapseB"
+       ry="1.2782536"
+       rx="1.2038592"
+       y="3.8865907"
+       x="1.0109473"
+       height="2.3969474"
+       width="7.8546929"
+       id="CollapseB"
+       style="opacity:1;fill:#1a1a1a;fill-opacity:0.5;stroke:#383838;stroke-width:0.16011377;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+  </g>
+  <g
      id="Expand"
      inkscape:label="Expand"
      style="opacity:0.98000004"
@@ -100,30 +124,6 @@
        height="2.3965595"
        width="7.8537841"
        id="ExpandB"
-       style="opacity:1;fill:#1a1a1a;fill-opacity:0.5;stroke:#383838;stroke-width:0.16009156;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
-  </g>
-  <g
-     id="Collapse"
-     inkscape:label="Collapse"
-     transform="matrix(1.2476907,0,0,1.1734245,-1.1417612,-0.84471883)">
-    <rect
-       inkscape:label="CollapseA"
-       y="0.85652888"
-       x="0.99715471"
-       height="2.395133"
-       width="7.854753"
-       id="CollapseA"
-       style="opacity:1;fill:#1a1a1a;fill-opacity:0.5;stroke:#383838;stroke-width:0.16005377;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
-       ry="1.2781802" />
-    <rect
-       inkscape:label="CollapseB"
-       ry="1.2782536"
-       rx="1.2038592"
-       y="3.8865907"
-       x="1.0109473"
-       height="2.3969474"
-       width="7.8546929"
-       id="CollapseB"
-       style="opacity:1;fill:#1a1a1a;fill-opacity:0.30000001;stroke:#383838;stroke-width:0.16011377;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+       style="opacity:1;fill:#1a1a1a;fill-opacity:0.30000001;stroke:#383838;stroke-width:0.16009156;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
   </g>
 </svg>
