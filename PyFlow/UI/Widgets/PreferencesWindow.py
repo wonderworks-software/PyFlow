@@ -103,16 +103,14 @@ class GeneralPreferences(CategoryWidgetBase):
         commonCategory.addWidget("Additional package locations", self.additionalPackagePaths)
         self.layout.addWidget(commonCategory)
 
-        pythonNodeCategory = CollapsibleFormWidget(headName="Python node")
-        self.lePythonEditor = QLineEdit("notepad.exe @FILE")
-        pythonNodeCategory.addWidget("Editor cmd", self.lePythonEditor)
-        self.layout.addWidget(pythonNodeCategory)
+        self.lePythonEditor = QLineEdit("sublime_text.exe @FILE")
+        commonCategory.addWidget("External text editor", self.lePythonEditor)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
     def initDefaults(self, settings):
-        settings.setValue("EditorCmd", "notepad.exe @FILE")
+        settings.setValue("EditorCmd", "sublime_text.exe @FILE")
         settings.setValue("TempFilesDir", os.path.expanduser('~/PyFlowTemp'))
 
     def serialize(self, settings):
