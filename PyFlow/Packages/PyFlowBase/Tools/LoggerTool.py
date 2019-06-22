@@ -81,7 +81,7 @@ class LoggerTool(DockTool):
         self.logView.setReadOnly(True)
         self.logView.setStyleSheet("background-color: %s; Font: 10pt 'Consolas'" %
                                    "rgba%s" % str(editableStyleSheet().LoggerBgColor.getRgb()))
-        self.clearAction = QAction("Clear")
+        self.clearAction = QAction("Clear", None)
         self.clearAction.triggered.connect(self.clearView)
         self.logView.addAction(self.clearAction)
         self.logView.anchorClicked.connect(self.anchorClickedMethod)

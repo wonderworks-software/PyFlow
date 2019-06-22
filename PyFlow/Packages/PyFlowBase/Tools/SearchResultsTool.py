@@ -20,7 +20,7 @@ class SearchResultsTool(DockTool):
 
         self.content = PropertiesWidget()
         self.content.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self.actionClear = QAction("Clear")
+        self.actionClear = QAction("Clear", None)
         self.actionClear.triggered.connect(self.content.clear)
         self.content.addAction(self.actionClear)
 

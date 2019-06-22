@@ -15,7 +15,7 @@ class KeyCaptureWidget(QPushButton):
         self.setToolTip("<b>Left mouse button</b> to start capture.<br>Modifiers will not be accepted.")
 
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self.actionReset = QAction("Reset",None)
+        self.actionReset = QAction("Reset", None)
         self.actionReset.triggered.connect(self.resetToDefault)
         self.addAction(self.actionReset)
 
