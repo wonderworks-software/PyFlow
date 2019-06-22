@@ -723,6 +723,8 @@ class Canvas(QGraphicsView):
 
             if currentInputAction in InputManager()["Canvas.CopyNodes"]:
                 self.copyNodes()
+            if currentInputAction in InputManager()["Canvas.CutNodes"]:
+                self.cutNodes()
             if currentInputAction in InputManager()["Canvas.DuplicateNodes"]:
                 self.duplicateNodes()
             if currentInputAction in InputManager()["Canvas.PasteNodes"]:
@@ -769,6 +771,10 @@ class Canvas(QGraphicsView):
             if node['type'] == 'compound':
                 node['graphData']['nodes'] = self.makeSerializedNodesUnique(node['graphData']['nodes'], extra=existingNames)
         return copiedNodes
+
+    def cutNodes(self):
+        self.copyNodes()
+        self.killSelectedNodes()
 
     def copyNodes(self):
         nodes = []
