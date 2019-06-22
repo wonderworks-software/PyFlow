@@ -30,6 +30,11 @@ class setVar(NodeBase):
             self.out.setAsArray(True)
             self.inp.setAsArray(True)
 
+    def checkForErrors(self):
+        super(setVar, self).checkForErrors()
+        if self._var is None:
+            self.setError("Undefined variable")
+
     def onVarStructureChanged(self, newStructure):
         self.out.structureType = newStructure
         self.inp.structureType = newStructure
@@ -55,15 +60,17 @@ class setVar(NodeBase):
 
     @var.setter
     def var(self, newVar):
-        self._var.structureChanged.disconnect(self.onVarStructureChanged)
-        self._var.dataTypeChanged.disconnect(self.onVarDataTypeChanged)
+        if self._var is not None:
+            self._var.structureChanged.disconnect(self.onVarStructureChanged)
+            self._var.dataTypeChanged.disconnect(self.onVarDataTypeChanged)
         self._var = newVar
-        self._var.structureChanged.connect(self.onVarStructureChanged)
-        self._var.dataTypeChanged.connect(self.onVarDataTypeChanged)
-        self.recreateInput(newVar.dataType)
-        self.recreateOutput(newVar.dataType)
-        self.autoAffectPins()
-        self.updateStructure()
+        if self._var is not None:
+            self._var.structureChanged.connect(self.onVarStructureChanged)
+            self._var.dataTypeChanged.connect(self.onVarDataTypeChanged)
+            self.recreateInput(newVar.dataType)
+            self.recreateOutput(newVar.dataType)
+            self.autoAffectPins()
+            self.updateStructure()
         self.checkForErrors()
         wrapper = self.getWrapper()
         if wrapper:

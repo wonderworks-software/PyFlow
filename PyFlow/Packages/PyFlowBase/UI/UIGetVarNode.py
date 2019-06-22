@@ -64,6 +64,7 @@ class UIGetVarNode(UINodeBase):
             if self.var.name == varName:
                 return
         else:
+            self._rawNode.inp.disconnectAll()
             self._rawNode.out.disconnectAll()
 
         var = self.canvasRef().graphManager.findVariable(varName)
