@@ -15,25 +15,12 @@ import json
 from Qt import QtCore
 from Qt import QtGui
 from Qt import QtSvg
-from Qt.QtWidgets import QGraphicsTextItem
-from Qt.QtWidgets import QGraphicsPixmapItem
-from Qt.QtWidgets import QGraphicsItem
-from Qt.QtWidgets import QGraphicsObject
-from Qt.QtWidgets import QLabel
-from Qt.QtWidgets import QTextBrowser
-from Qt.QtWidgets import QGraphicsWidget
-from Qt.QtWidgets import QGraphicsLinearLayout
-from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QApplication
-from Qt.QtWidgets import QColorDialog
-from Qt.QtWidgets import QMenu
-from Qt.QtWidgets import QGraphicsProxyWidget
+from Qt.QtWidgets import *
 from PyFlow.UI.Utils.Settings import *
 from PyFlow.UI.Canvas.UIPinBase import (
     UIPinBase,
     getUIPinInstance,
-    UIPinGroup
+    PinGroup
 )
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
@@ -753,15 +740,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             else:
                 owidth = max(owidth, i.sizeHint(None, None).width())
         for igrp in self.groups["input"].values():
-            w = igrp.getWidth()
+            w = igrp.geometry().width()
             iwidth = max(iwidth, w)
         for ogrp in self.groups["output"].values():
-            w = ogrp.getWidth()
+            w = ogrp.geometry().width()
             owidth = max(owidth, w)
         return iwidth + owidth + pinwidth + pinwidth2 + Spacings.kPinOffset
 
     def setGeometry(self, rect):
-        self.prepareGeometryChange()      
+        self.prepareGeometryChange()
         super(QGraphicsWidget, self).setGeometry(rect)
         self.setPos(rect.topLeft())
 
@@ -1328,16 +1315,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         if rawPin.group != "":
             groupNames = list(self.groups["input"].keys()) + list(self.groups["output"].keys())
             if rawPin.group not in groupNames:
-                grpItem = UIPinGroup(self.scene(), rawPin.group, rawPin.direction, self)
+                grpItem = PinGroup(self)
             else:
                 if rawPin.direction == PinDirection.Input:
                     grpItem = self.groups["input"][rawPin.group]
                 if rawPin.direction == PinDirection.Output:
                     grpItem = self.groups["output"][rawPin.group]
-
-            grpItem.addPin(p)
-            self.inputsLayout.addItem(grpItem)
-            self.inputsLayout.setAlignment(grpItem, QtCore.Qt.AlignLeft)
 
         name = rawPin.name
         lblName = name
@@ -1346,18 +1329,18 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 self.groups["input"][rawPin.group] = grpItem
                 self.inputsLayout.addItem(grpItem)
                 self.inputsLayout.setAlignment(grpItem, QtCore.Qt.AlignLeft)
-            else:
-                self.inputsLayout.addItem(p)
-                self.inputsLayout.setAlignment(p, QtCore.Qt.AlignLeft)
+                grpItem.addPin(p)
+            self.inputsLayout.addItem(p)
+            self.inputsLayout.setAlignment(p, QtCore.Qt.AlignLeft)
 
         elif rawPin.direction == PinDirection.Output:
             if grpItem is not None:
                 self.groups["output"][rawPin.group] = grpItem
                 self.outputsLayout.addItem(grpItem)
                 self.outputsLayout.setAlignment(grpItem, QtCore.Qt.AlignRight)
-            else:
-                self.outputsLayout.addItem(p)
-                self.outputsLayout.setAlignment(p, QtCore.Qt.AlignRight)
+                grpItem.addPin(p)
+            self.outputsLayout.addItem(p)
+            self.outputsLayout.setAlignment(p, QtCore.Qt.AlignRight)
 
         p.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 

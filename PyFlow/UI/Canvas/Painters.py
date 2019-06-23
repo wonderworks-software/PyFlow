@@ -347,7 +347,7 @@ class PinPainter(object):
                 painter.drawRoundedRect(frame, 3, 3)
 
     @staticmethod
-    def asListPin(pin, painter, option, widget):
+    def asDictPin(pin, painter, option, widget):
         lod = pin.owningNode().canvasRef().getLodValueFromCurrentScale(3)
         cellW = pin.pinSize / 3
         cellH = pin.pinSize / 3

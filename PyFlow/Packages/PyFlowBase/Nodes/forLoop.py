@@ -13,7 +13,7 @@ class forLoop(NodeBase):
         self.step.setData(1)
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
-        self.index = self.createOutputPin('Index', 'IntPin')
+        self.index = self.createOutputPin('Index', 'IntPin', group="TEST")
         self.completed = self.createOutputPin('Completed', 'ExecPin')
 
     @staticmethod

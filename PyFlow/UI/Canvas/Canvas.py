@@ -25,7 +25,7 @@ from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import NodeName
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Canvas.UINodeBase import NodeActionButtonBase
-from PyFlow.UI.Canvas.UIPinBase import UIPinBase
+from PyFlow.UI.Canvas.UIPinBase import UIPinBase, PinGroup
 from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.AutoPanController import AutoPanController
@@ -1117,7 +1117,7 @@ class Canvas(QGraphicsView):
             if not isinstance(self.pressed_item, NodesBox) and self.node_box.isVisible():
                 self.node_box.hide()
                 self.node_box.lineEdit.clear()
-            if isinstance(self.pressed_item, UIPinBase):
+            if isinstance(self.pressed_item, UIPinBase) and not type(self.pressed_item) is PinGroup:
                 if event.button() == QtCore.Qt.LeftButton and modifiers == QtCore.Qt.NoModifier:
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsMovable, False)
                     self.pressed_item.topLevelItem().setFlag(QGraphicsItem.ItemIsSelectable, False)
@@ -1160,6 +1160,11 @@ class Canvas(QGraphicsView):
                     if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
                         if node.bResize:
                             return
+
+                    if type(self.pressed_item) is PinGroup:
+                        self.pressed_item.onClick()
+                        return
+
                     if currentInputAction in InputManager()["Canvas.DragChainedNodes"]:
                         if node.isCommentNode:
                             self.manipulationMode = CanvasManipulationMode.PAN
@@ -1453,8 +1458,9 @@ class Canvas(QGraphicsView):
             self.menu.exec_(QtGui.QCursor.pos())
         elif event.button() == QtCore.Qt.LeftButton and self.releasedPin is None:
             if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
-                # suggest nodes that can be connected to pressed pin
-                self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction, self.pressed_item.structureType)
+                if not type(self.pressed_item) is PinGroup:
+                    # suggest nodes that can be connected to pressed pin
+                    self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction, self.pressed_item.structureType)
         self.manipulationMode = CanvasManipulationMode.NONE
         if not self.resizing:
             p_itm = self.pressedPin

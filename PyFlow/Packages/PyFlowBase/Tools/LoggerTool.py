@@ -15,7 +15,7 @@ import os
 import subprocess
 
 
-REDIRECT = True
+REDIRECT = False
 logger = logging.getLogger(None)
 
 
@@ -121,15 +121,18 @@ class LoggerTool(DockTool):
         self.logView.clear()
 
     def onDestroy(self):
-        sys.stdout = sys.__stdout__
-        self.handler.messageHolder._stdout = None
-        self.handler.messageHolder._stderr = None
-        self.handler.messageHolder.messageWritten.disconnect()
-        self.handler.messageHolder.warningWritten.disconnect()
-        self.handler.messageHolder.errorWritten.disconnect()
-        self.handler.messageHolder.flushSig.disconnect()
-        del self.handler
-        self.handler = None
+        try:
+            sys.stdout = sys.__stdout__
+            self.handler.messageHolder._stdout = None
+            self.handler.messageHolder._stderr = None
+            self.handler.messageHolder.messageWritten.disconnect()
+            self.handler.messageHolder.warningWritten.disconnect()
+            self.handler.messageHolder.errorWritten.disconnect()
+            self.handler.messageHolder.flushSig.disconnect()
+            del self.handler
+            self.handler = None
+        except:
+            pass
 
     def logPython(self, text, mode=0):
         colorchart = {

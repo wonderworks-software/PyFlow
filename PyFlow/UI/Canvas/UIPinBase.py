@@ -34,102 +34,6 @@ QPushButton {
 }
 """
 
-
-class UIPinGroup(QGraphicsWidget):
-    def __init__(self, scene, name, direction, owningNode=None):
-        super(UIPinGroup, self).__init__(owningNode)
-        self.owningNode = weakref.ref(owningNode)
-        self.name = name
-        self.setAcceptHoverEvents(True)
-        self.setFlag(QGraphicsWidget.ItemSendsGeometryChanges)
-        self.borderPen = QtGui.QPen(Colors.DarkGray, 0.5, QtCore.Qt.SolidLine)
-        self.mainLayout = QGraphicsLinearLayout(QtCore.Qt.Vertical)
-        self.mainLayout.setContentsMargins(0, 0, 0, 0)
-        self.mainLayout.setSpacing(NodeDefaults().LAYOUTS_SPACING)
-        self.setLayout(self.mainLayout)
-        self.direction = direction
-        self.headerBtn = QPushButton(name)
-        self.headerBtn.setStyleSheet(headerBtnStyle)
-        self.headerBtn.setFlat(True)
-        self.headerBtn.setContentsMargins(0, 0, 0, 0)
-        self.headerBtn.setMaximumHeight(10)
-        self.headerBtn.clicked.connect(self.toggleCollapsed)
-        self.headerWidget = scene.addWidget(self.headerBtn)
-        self.mainLayout.addItem(self.headerWidget)
-        self._pins = set()
-        self.bCollapsed = False
-
-    def setHeaderText(self, text):
-        self.headerBtn.setText(text)
-        self.owningNode().updateNodeShape()
-        if self.direction == PinDirection.Input:
-            self.owningNode().groups["input"][text] = self.owningNode().groups["input"].pop(self.name)
-        if self.direction == PinDirection.Output:
-            self.owningNode().groups["output"][text] = self.owningNode().groups["output"].pop(self.name)
-        self.name = text
-
-    def setGeometry(self, rect):
-        self.prepareGeometryChange()
-        self.setPos(rect.topLeft())
-
-    def kill(self):
-        for pin in list(self._pins):
-            pin._rawPin.kill()
-        self._pins.clear()
-        scene = self.scene()
-        layout = self.layout()
-        layout.removeItem(self)
-        if scene is not None:
-            scene.removeItem(self)
-
-        if self.direction == PinDirection.Input:
-            self.owningNode().groups["input"].pop(self.name)
-
-        if self.direction == PinDirection.Output:
-            self.owningNode().groups["output"].pop(self.name)
-
-        self.owningNode().updateNodeShape()
-        del self
-
-    def paint(self, painter, option, widget):
-        super(UIPinGroup, self).paint(painter, option, widget)
-        if not self.bCollapsed:
-            painter.setPen(self.borderPen)
-            rect = self.boundingRect()
-            rect.setTop(self.getHeight())
-            painter.drawRect(rect)
-            painter.fillRect(rect, QtGui.QColor(255, 255, 255, 8))
-
-    def getWidth(self):
-        return self.headerWidget.boundingRect().width()
-
-    def getHeight(self):
-        return self.headerWidget.boundingRect().height()
-
-    def setCollapsed(self, bCollapsed):
-        for pin in self._pins:
-            pin.setVisible(not bCollapsed)
-        self.bCollapsed = bCollapsed
-        self.owningNode().updateNodeShape()
-
-    def toggleCollapsed(self):
-        self.setCollapsed(not self.bCollapsed)
-
-    def pinWasKilled(self, pin):
-        self._pins.remove(pin)
-        if len(self._pins) == 0:
-            self.kill()
-
-    def addPin(self, pin):
-        self.mainLayout.addItem(pin)
-        if pin.direction == PinDirection.Input:
-            self.mainLayout.setAlignment(pin, QtCore.Qt.AlignLeft)
-        if pin.direction == PinDirection.Output:
-            self.mainLayout.setAlignment(pin, QtCore.Qt.AlignRight)
-        self._pins.add(pin)
-        pin.OnPinDeleted.connect(self.pinWasKilled)
-
-
 class UIPinBase(QGraphicsWidget):
     """UI pin wrapper.
     """
@@ -164,23 +68,24 @@ class UIPinBase(QGraphicsWidget):
 
         self.UiNode = weakref.ref(owningNode)
         self._rawPin = raw_pin
-        self._rawPin.serializationHook.connect(self.serializationHook)
-        self._rawPin.containerTypeChanged.connect(self.onContainerTypeChanged)
-        self._displayName = self._rawPin.name
-        self._rawPin.setWrapper(self)
-        self._rawPin.killed.connect(self.kill)
-        self._rawPin.nameChanged.connect(self.setDisplayName)
+        if self._rawPin is not None:
+            self._rawPin.serializationHook.connect(self.serializationHook)
+            self._rawPin.containerTypeChanged.connect(self.onContainerTypeChanged)
+            self._displayName = self._rawPin.name
+            self._rawPin.setWrapper(self)
+            self._rawPin.killed.connect(self.kill)
+            self._rawPin.nameChanged.connect(self.setDisplayName)
 
-        # Context menu for pin
-        self.menu = QMenu()
-        self.menu.addAction("Rename").triggered.connect(self.onRename)
-        self.menu.addAction("Remove").triggered.connect(self._rawPin.kill)
-        self.actionDisconnect = self.menu.addAction('Disconnect all')
-        self.actionDisconnect.triggered.connect(self._rawPin.disconnectAll)
-        self.actionResetValue = self.menu.addAction("Reset value")
-        self.actionResetValue.triggered.connect(self.resetToDefault)
-        if self._rawPin._structure == PinStructure.Multi:
-            self.menu.addAction("changeStructure").triggered.connect(self.selectStructure)
+            # Context menu for pin
+            self.menu = QMenu()
+            self.menu.addAction("Rename").triggered.connect(self.onRename)
+            self.menu.addAction("Remove").triggered.connect(self._rawPin.kill)
+            self.actionDisconnect = self.menu.addAction('Disconnect all')
+            self.actionDisconnect.triggered.connect(self._rawPin.disconnectAll)
+            self.actionResetValue = self.menu.addAction("Reset value")
+            self.actionResetValue.triggered.connect(self.resetToDefault)
+            if self._rawPin._structure == PinStructure.Multi:
+                self.menu.addAction("changeStructure").triggered.connect(self.selectStructure)
 
         # GUI
         self._font = QtGui.QFont("Consolas")
@@ -188,7 +93,8 @@ class UIPinBase(QGraphicsWidget):
         self.pinSize = 6
         self.hovered = False
         self.bLabelHidden = False
-        self._pinColor = QtGui.QColor(*self._rawPin.color())
+        if self._rawPin is not None:
+            self._pinColor = QtGui.QColor(*self._rawPin.color())
         self._labelColor = QtCore.Qt.white
         self._execPen = QtGui.QPen(Colors.White, 0.5, QtCore.Qt.SolidLine)
         self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
@@ -451,7 +357,7 @@ class UIPinBase(QGraphicsWidget):
         if self.isArray():
             PinPainter.asArrayPin(self, painter, option, widget)
         elif self.isDict():
-            PinPainter.asListPin(self,painter,option,widget)
+            PinPainter.asDictPin(self, painter, option, widget)
         else:
             PinPainter.asValuePin(self, painter, option, widget)
 
@@ -490,6 +396,53 @@ class UIPinBase(QGraphicsWidget):
         item, ok = QInputDialog.getItem(None, "", "", ([i.name for i in list(PinStructure)]), 0, False)
         if ok and item:
             self._rawPin.changeStructure(PinStructure[item], True)
+
+
+class PinGroup(UIPinBase):
+    """docstring for PinGroup."""
+    def __init__(self, owningNode, raw_pin=None, name="groupName"):
+        self._name = name
+        super(PinGroup, self).__init__(owningNode, raw_pin)
+        self.expanded = True
+        self._pins = set()
+
+    def addPin(self, uiPin):
+        self._pins.add(uiPin)
+
+    def onClick(self):
+        self.expanded = not self.expanded
+        for pin in self._pins:
+            pin.setVisible(self.expanded)
+
+    def contextMenuEvent(self, event):
+        pass
+
+    @property
+    def name(self):
+        return self._name
+
+    def hoverEnterEvent(self, event):
+        super(QGraphicsWidget, self).hoverEnterEvent(event)
+        self.update()
+        event.accept()
+
+    def hoverLeaveEvent(self, event):
+        super(QGraphicsWidget, self).hoverLeaveEvent(event)
+        self.update()
+        event.accept()
+
+    def sizeHint(self, which, constraint):
+        height = QtGui.QFontMetrics(self._font).height()
+        width = QtGui.QFontMetrics(self._font).width(self.name)
+        return QtCore.QSizeF(width, height)
+
+    def paint(self, painter, option, widget):
+        frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
+        painter.drawRect(frame)
+        painter.setFont(self._font)
+        painter.setPen(QtGui.QPen(self.labelColor, 1.0))
+        painter.drawText(frame, self.name)
+        # PinPainter.asGroupPin(self, painter, option, widget)
 
 
 def REGISTER_UI_PIN_FACTORY(packageName, factory):
