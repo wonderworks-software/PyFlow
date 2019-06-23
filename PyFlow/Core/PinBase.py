@@ -441,7 +441,7 @@ class PinBase(IPin):
             self.owningNode().orderedInputs.pop(self.pinIndex)
         if self.pinIndex in self.owningNode().orderedOutputs:
             self.owningNode().orderedOutputs.pop(self.pinIndex)
-        self.killed.send()
+        self.killed.send(self)
         clearSignal(self.killed)
 
     def currentData(self):

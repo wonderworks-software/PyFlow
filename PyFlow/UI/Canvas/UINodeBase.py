@@ -658,9 +658,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         if len(self.groups) > 0:
             template['groups'] = {'input': {}, 'output': {}}
             for name, grp in self.groups['input'].items():
-                template['groups']['input'][name] = grp.bCollapsed
+                template['groups']['input'][name] = grp.expanded
             for name, grp in self.groups['output'].items():
-                template['groups']['output'][name] = grp.bCollapsed
+                template['groups']['output'][name] = grp.expanded
         return template
 
     def buttonsWidth(self):
@@ -705,12 +705,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             igrhHeight = 0
             ogrhHeight = 0
             for grp in self.groups["input"].values():
-                igrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
+                igrhHeight += grp.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
             for grp in self.groups["output"].values():
-                ogrhHeight += grp.getHeight() + NodeDefaults().LAYOUTS_SPACING
+                ogrhHeight += grp.sizeHint(None, None).height() + NodeDefaults().LAYOUTS_SPACING
             h += max(igrhHeight, ogrhHeight)
 
-        except:
+        except Exception as e:
+            print(e)
             pass
 
         for cust in range(0, self.customLayout.count()):
@@ -1315,7 +1316,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         if rawPin.group != "":
             groupNames = list(self.groups["input"].keys()) + list(self.groups["output"].keys())
             if rawPin.group not in groupNames:
-                grpItem = PinGroup(self)
+                grpItem = PinGroup(self, rawPin.direction)
             else:
                 if rawPin.direction == PinDirection.Input:
                     grpItem = self.groups["input"][rawPin.group]

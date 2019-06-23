@@ -400,14 +400,43 @@ class UIPinBase(QGraphicsWidget):
 
 class PinGroup(UIPinBase):
     """docstring for PinGroup."""
-    def __init__(self, owningNode, raw_pin=None, name="groupName"):
+    def __init__(self, owningNode, direction, raw_pin=None, name="groupName"):
         self._name = name
+        self.direction = direction
         super(PinGroup, self).__init__(owningNode, raw_pin)
         self.expanded = True
         self._pins = set()
 
+    def kill(self):
+        scene = self.scene()
+        if scene is None:
+            del self
+            return
+
+        if self.direction == PinDirection.Input:
+            self.owningNode().inputsLayout.removeItem(self)
+        else:
+            self.owningNode().outputsLayout.removeItem(self)
+
+        # self.OnPinDeleted.emit(self)
+        try:
+            scene = self.scene()
+            if scene is None:
+                del self
+                return
+            scene.removeItem(self)
+            self.owningNode().updateNodeShape()
+        except:
+            pass
+
+    def onChildKilled(self, uiPin):
+        self._pins.remove(uiPin)
+        if len(self._pins) == 0:
+            self.kill()
+
     def addPin(self, uiPin):
         self._pins.add(uiPin)
+        uiPin.OnPinDeleted.connect(self.onChildKilled)
 
     def onClick(self):
         self.expanded = not self.expanded
