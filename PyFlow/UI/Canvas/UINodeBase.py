@@ -775,17 +775,17 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.canvasRef().update()
         self.nodeNameWidget.updateGeometry()
         self.nodeNameWidget.update()
-        self.pinsLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
-        self.headerLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
-        self.customLayout.setPreferredWidth(self.getNodeWidth()-self.nodeLayout.spacing())
+        self.pinsLayout.setPreferredWidth(self.getNodeWidth() - self.nodeLayout.spacing())
+        self.headerLayout.setPreferredWidth(self.getNodeWidth() - self.nodeLayout.spacing())
+        self.customLayout.setPreferredWidth(self.getNodeWidth() - self.nodeLayout.spacing())
 
     def onVisibilityChanged(self, bVisible):
-        pass      
+        pass
 
     def translate(self, x, y):
         super(UINodeBase, self).moveBy(x, y)
 
-    def sizeHint(self, which, constraint):      
+    def sizeHint(self, which, constraint):
         return QtCore.QSizeF(self.getNodeWidth(), self.getNodeHeight())
 
     def getImageDrawRect(self):
@@ -846,10 +846,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 headerHtml = jsonTemplate["wrapper"]["headerHtml"]
             if "groups" in jsonTemplate["wrapper"]:
                 try:
-                    for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["input"].items():
-                        self.groups["input"][groupName].setCollapsed(collapsed)
-                    for groupName, collapsed in jsonTemplate["wrapper"]["groups"]["output"].items():
-                        self.groups["output"][groupName].setCollapsed(collapsed)
+                    for groupName, expanded in jsonTemplate["wrapper"]["groups"]["input"].items():
+                        self.groups["input"][groupName].setExpanded(expanded)
+                    for groupName, expanded in jsonTemplate["wrapper"]["groups"]["output"].items():
+                        self.groups["output"][groupName].setExpanded(expanded)
                 except:
                     pass
 
@@ -1314,34 +1314,42 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
         grpItem = None
         if rawPin.group != "":
-            groupNames = list(self.groups["input"].keys()) + list(self.groups["output"].keys())
-            if rawPin.group not in groupNames:
-                grpItem = PinGroup(self, rawPin.direction)
-            else:
-                if rawPin.direction == PinDirection.Input:
+            if rawPin.direction == PinDirection.Input:
+                if rawPin.group not in self.groups["input"]:
+                    grpItem = PinGroup(self, rawPin.direction, rawPin.group)
+                    self.inputsLayout.addItem(grpItem)
+                elif rawPin.group in self.groups["input"]:
                     grpItem = self.groups["input"][rawPin.group]
-                if rawPin.direction == PinDirection.Output:
+            if rawPin.direction == PinDirection.Output:
+                if rawPin.group not in self.groups["output"]:
+                    grpItem = PinGroup(self, rawPin.direction, rawPin.group)
+                    self.outputsLayout.addItem(grpItem)
+                elif rawPin.group in self.groups["output"]:
                     grpItem = self.groups["output"][rawPin.group]
 
         name = rawPin.name
         lblName = name
         if rawPin.direction == PinDirection.Input:
+            insertionIndex = -1
             if grpItem is not None:
                 self.groups["input"][rawPin.group] = grpItem
-                self.inputsLayout.addItem(grpItem)
+                insertionIndex = findItemIndex(self.inputsLayout, grpItem) + grpItem.numPins() + 1
                 self.inputsLayout.setAlignment(grpItem, QtCore.Qt.AlignLeft)
                 grpItem.addPin(p)
-            self.inputsLayout.addItem(p)
+            self.inputsLayout.insertItem(insertionIndex, p)
             self.inputsLayout.setAlignment(p, QtCore.Qt.AlignLeft)
+            self.inputsLayout.invalidate()
 
         elif rawPin.direction == PinDirection.Output:
+            insertionIndex = -1
             if grpItem is not None:
                 self.groups["output"][rawPin.group] = grpItem
-                self.outputsLayout.addItem(grpItem)
+                insertionIndex = findItemIndex(self.outputsLayout, grpItem) + grpItem.numPins() + 1
                 self.outputsLayout.setAlignment(grpItem, QtCore.Qt.AlignRight)
                 grpItem.addPin(p)
-            self.outputsLayout.addItem(p)
+            self.outputsLayout.insertItem(insertionIndex, p)
             self.outputsLayout.setAlignment(p, QtCore.Qt.AlignRight)
+            self.outputsLayout.invalidate()
 
         p.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 

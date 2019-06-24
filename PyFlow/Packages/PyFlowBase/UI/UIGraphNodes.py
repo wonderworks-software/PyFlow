@@ -29,7 +29,7 @@ class UIGraphInputs(UINodeBase):
             uiCompoundNode = owningCompoundNode.getWrapper()
             if oldName in uiCompoundNode.groups["input"]:
                 grpItem = uiCompoundNode.groups["input"][oldName]
-                grpItem.setHeaderText(name)
+                grpItem.name = name
 
     def createPinDialog(self):
         self.d = SelectPinDialog()
@@ -75,7 +75,7 @@ class UIGraphOutputs(UINodeBase):
             uiCompoundNode = owningCompoundNode.getWrapper()
             if oldName in uiCompoundNode.groups["output"]:
                 grpItem = uiCompoundNode.groups["output"][oldName]
-                grpItem.setHeaderText(name)
+                grpItem.name = name
 
     def createPinDialog(self):
         self.d = SelectPinDialog()

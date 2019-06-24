@@ -58,6 +58,13 @@ def clearLayout(layout):
             clearLayout(child.layout())
 
 
+def findItemIndex(graphicsLayout, item):
+    for i in range(graphicsLayout.count()):
+        if item == graphicsLayout.itemAt(i).graphicsItem():
+            return i
+    return -1
+
+
 @SingletonDecorator
 class PinDefaults(object):
     """docstring for PinDefaults."""

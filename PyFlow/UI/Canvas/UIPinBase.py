@@ -400,12 +400,15 @@ class UIPinBase(QGraphicsWidget):
 
 class PinGroup(UIPinBase):
     """docstring for PinGroup."""
-    def __init__(self, owningNode, direction, raw_pin=None, name="groupName"):
+    def __init__(self, owningNode, direction, name="groupName"):
         self._name = name
-        self.direction = direction
-        super(PinGroup, self).__init__(owningNode, raw_pin)
+        self._direction = direction
+        super(PinGroup, self).__init__(owningNode, None)
         self.expanded = True
         self._pins = set()
+
+    def numPins(self):
+        return len(self._pins)
 
     def kill(self):
         scene = self.scene()
@@ -413,10 +416,12 @@ class PinGroup(UIPinBase):
             del self
             return
 
-        if self.direction == PinDirection.Input:
+        if self._direction == PinDirection.Input:
             self.owningNode().inputsLayout.removeItem(self)
+            self.owningNode().groups["input"].pop(self.name)
         else:
             self.owningNode().outputsLayout.removeItem(self)
+            self.owningNode().groups["output"].pop(self.name)
 
         # self.OnPinDeleted.emit(self)
         try:
@@ -429,6 +434,11 @@ class PinGroup(UIPinBase):
         except:
             pass
 
+    def setExpanded(self, expanded):
+        self.expanded = expanded
+        for pin in self._pins:
+            pin.setVisible(self.expanded)
+
     def onChildKilled(self, uiPin):
         self._pins.remove(uiPin)
         if len(self._pins) == 0:
@@ -439,9 +449,7 @@ class PinGroup(UIPinBase):
         uiPin.OnPinDeleted.connect(self.onChildKilled)
 
     def onClick(self):
-        self.expanded = not self.expanded
-        for pin in self._pins:
-            pin.setVisible(self.expanded)
+        self.setExpanded(not self.expanded)
 
     def contextMenuEvent(self, event):
         pass
@@ -449,6 +457,14 @@ class PinGroup(UIPinBase):
     @property
     def name(self):
         return self._name
+
+    @name.setter
+    def name(self, newName):
+        if self._direction == PinDirection.Input:
+            self.owningNode().groups["input"][newName] = self.owningNode().groups["input"].pop(self._name)
+        else:
+            self.owningNode().groups["output"][newName] = self.owningNode().groups["output"].pop(self._name)
+        self._name = newName
 
     def hoverEnterEvent(self, event):
         super(QGraphicsWidget, self).hoverEnterEvent(event)
