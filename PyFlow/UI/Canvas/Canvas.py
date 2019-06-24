@@ -440,13 +440,36 @@ class Canvas(QGraphicsView):
         for node in self.selectedNodes():
             node.collapsed = collapsed
 
+    def collapseSelectedNodesToCompound(self):
+        selectedNodes = self.selectedNodes()
+        wires = list()
+        for node in selectedNodes:
+            for pin in node.UIPins.values():
+                wires.extend(pin.uiConnectionList)
+
+        inputPins = list()
+        outputPins = list()
+        for wire in wires:
+            if wire.source().owningNode().isSelected() and not wire.destination().owningNode().isSelected():
+                outputPins.append(wire.destination())
+            if not wire.source().owningNode().isSelected() and wire.destination().owningNode().isSelected():
+                inputPins.append(wire.source())
+
+        print([i.getName() for i in inputPins])
+        print([i.getName() for i in outputPins])
+
     def populateMenu(self):
         self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
         self.actionCollapseSelectedNodes.triggered.connect(lambda: self.setSelectedNodesCollapsed(True))
+        self.menu.addAction(self.actionCollapseSelectedNodes)
+
         self.actionExpandSelectedNodes = self.menu.addAction("Expand selected nodes")
         self.actionExpandSelectedNodes.triggered.connect(lambda: self.setSelectedNodesCollapsed(False))
-        self.menu.addAction(self.actionCollapseSelectedNodes)
         self.menu.addAction(self.actionExpandSelectedNodes)
+
+        self.actionCollapseSelectedNodesToCompound = self.menu.addAction("Collapse to compound")
+        self.actionCollapseSelectedNodesToCompound.triggered.connect(self.collapseSelectedNodesToCompound)
+        self.menu.addAction(self.actionCollapseSelectedNodesToCompound)
 
     def plot(self):
         self.graphManager.plot()
@@ -1400,7 +1423,7 @@ class Canvas(QGraphicsView):
         rect = QtCore.QRect(QtCore.QPoint(scenePos.x() - tolerance, scenePos.y() - tolerance),
                             QtCore.QPoint(scenePos.x() + tolerance, scenePos.y() + tolerance))
         items = self.items(rect)
-        pins = [i for i in items if type(i) is UIPinBase]
+        pins = [i for i in items if isinstance(i, UIPinBase) and type(i) is not PinGroup]
         if len(pins) > 0:
             return pins[0]
         return None
