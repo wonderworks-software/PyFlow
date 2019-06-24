@@ -864,16 +864,7 @@ class uiTick(QtWidgets.QGraphicsWidget):
         self.setFlag(QtWidgets.QGraphicsWidget.ItemSendsGeometryChanges)
         self._rawTick = raw_tick
         self._color = QtGui.QColor(0)
-        self._selected = False
 
-    @property   
-    def customSelected(self):
-        return self._selected
-
-    @customSelected.setter
-    def customSelected(self,isSelected):
-        self._selected = isSelected
-    
     def getU(self):
         return self._rawTick._u
 
@@ -900,6 +891,10 @@ class uiTick(QtWidgets.QGraphicsWidget):
         self.update()
         self.scene().update()
 
+    def setSelected(self,selected):
+        super(uiTick, self).setSelected(selected)
+        self._rawTick.setSelected(selected)
+
     def hoverEnterEvent(self, event):
         super(uiTick, self).hoverEnterEvent(event)
         self.hovered = True
@@ -917,7 +912,7 @@ class uiTick(QtWidgets.QGraphicsWidget):
         bgRect = self.boundingRect()
         painter.setBrush(QtGui.QColor(255, 255, 255, 150))
         pen = QtGui.QPen(QtCore.Qt.black, 1.5)
-        if self.customSelected:
+        if self.isSelected():
             pen.setColor(editableStyleSheet().MainColor)
         elif self.hovered:
             MainColor_Lighter = QtGui.QColor(editableStyleSheet().MainColor)
@@ -958,6 +953,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self.pressed_item = None
         self.itemSize = 6
         self.displayPoints = []
+
         for x in  self._rawRamp.sortedItems():
             self.addItem(raw_item=x)
         self.update()
@@ -998,6 +994,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         if raw_item is None:
             raw_item = self._rawRamp.addItem(u,v)
         item = uiTick(raw_item)
+        item.setSelected(raw_item.isSelected())
         item._width = item._height = 6
         self._scene.addItem(item)
         self.updateItemPos(item)
@@ -1011,7 +1008,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
             self.tickChanged.emit(item)
         elif len(self.items()) > 0:
             for item in self.items():
-                if item.customSelected:
+                if item.isSelected():
                     item.setU(u)
                     self.updateItemPos(item)
                     self.tickChanged.emit(item)
@@ -1025,7 +1022,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
             self.tickChanged.emit(item)
         elif len(self.items()) > 0:
             for item in self.items():
-                if item.customSelected:
+                if item.isSelected():
                     item.setV(v)
                     self.updateItemPos(item)
                     self.tickChanged.emit(item)
@@ -1054,7 +1051,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
 
     def clearSelection(self):
         for item in self.items():
-            item.customSelected = False
+            item.setSelected(False)
 
     def mousePressEvent(self, event):
         self.pressed_item = self.itemAt(event.pos())
@@ -1083,7 +1080,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                 self.tickAdded.emit(item)
         self.clearSelection()
         if self.pressed_item:
-            self.pressed_item.customSelected = True
+            self.pressed_item.setSelected(True)
             self.tickClicked.emit(self.pressed_item)
             self.valueClicked.emit(self.pressed_item.getU(),self.pressed_item.getV())
         self.scene().update()
@@ -1165,6 +1162,7 @@ class pyf_RampColor(pyf_RampSpline):
         if raw_item is None:
             raw_item = self._rawRamp.addItem(u,v)
         item = uiTick(raw_item)
+        item.setSelected(raw_item.isSelected())
         item._width = 10
         item._height = 17
         r, g, b = v
@@ -1177,7 +1175,7 @@ class pyf_RampColor(pyf_RampSpline):
             self.sortedItems()[index].setColor(color)
         elif len(self.items()) > 0:
             for item in self.items():
-                if item.customSelected:
+                if item.isSelected():
                     item.setColor(color)
                     self.tickChanged.emit(item)
 
@@ -1226,7 +1224,7 @@ class pyf_RampColor(pyf_RampSpline):
                 self.tickAdded.emit(item)
         self.clearSelection()
         if self.pressed_item:
-            self.pressed_item.customSelected = True
+            self.pressed_item.setSelected(True)
             self.tickClicked.emit(self.pressed_item)
             self.colorClicked.emit(
                 [(x+0.5)/255. for x in self.pressed_item.getColor().getRgb()])

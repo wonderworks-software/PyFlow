@@ -47,5 +47,5 @@ class UIFloatRamp(UINodeBase):
             selector.addItem(i)         
         selector.setCurrentIndex(self._rawNode._curveType)
         selector.activated.connect(self.changeCurveType)
-        inputsCategory.insertWidget(0,"DataType",selector)
+        inputsCategory.insertWidget(0,"CurveType",selector)
         inputsCategory.insertWidget(1,"Ramp",ramp)

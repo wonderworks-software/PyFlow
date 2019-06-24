@@ -3,6 +3,7 @@ class Tick(object):
     def __init__(self):
         self._u = 0
         self._v = 0
+        self._selected = False
 
     def getU(self):
         return self._u
@@ -16,6 +17,12 @@ class Tick(object):
     def setV(self, v):
         self._v = v
 
+    def setSelected(self,selected):
+        self._selected = selected
+
+    def isSelected(self):
+        return self._selected
+        
 class splineRamp(object):
 
     """ Ramp/Curve Editor with evaluateAt support , clamped to 0,1 in both x and y"""

@@ -340,6 +340,15 @@ class PinBase(IPin):
         self._lastError = str(err)
         self.errorOccured.send(self._lastError)
 
+    def validateArray(self,array,func):
+        valid = True
+        if isinstance(array,list):
+            for i in array:
+                self.validateArray(i,func)
+        else:
+            func(array)
+        return valid
+
     ## Setting the data
     def setData(self, data):
         if self.super is None:
@@ -353,7 +362,10 @@ class PinBase(IPin):
                 self._data = self.super.processData(data)
             elif self.isArray():
                 if isinstance(data, list):
-                    self._data = [self.super.processData(i) for i in data]
+                    if self.validateArray(data,self.super.processData):
+                        self._data = data
+                    else:
+                        raise Exception("Some Array Input is not valid Data")
                 else:
                     self._data = [self.super.processData(data)]
             elif self.isDict():
