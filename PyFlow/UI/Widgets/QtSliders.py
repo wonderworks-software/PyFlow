@@ -885,7 +885,7 @@ class uiTick(QtWidgets.QGraphicsWidget):
         try:
             r, g, b = color
         except:
-            r=g=b = 0
+            r,g,b = 0,0,0
         self.setV([r, g, b])
         self._color = QtGui.QColor().fromRgb(r, g, b)
         self.update()
@@ -1092,7 +1092,6 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         items = self.sortedItems()
         points = []
         if len(items):
-
             for item in items:
                 points.append(item.scenePos()-self.mapToScene(QtCore.QPoint(-1.5,-1.5)))
 
@@ -1130,7 +1129,7 @@ class pyf_RampColor(pyf_RampSpline):
         self.setMaximumHeight(20)
         self.setMinimumHeight(20)
         self.bezier=False
-
+        self.itemSize = 10
     @property
     def values(self):
         return [x.getColor().getRgbF() for x in self.sortedItems()]
@@ -1200,7 +1199,8 @@ class pyf_RampColor(pyf_RampSpline):
             self.pressed_item.setSelected(True)
             self.tickClicked.emit(self.pressed_item)
             self.colorClicked.emit(
-                [(x)/255. for x in self.pressed_item.getColor().getRgb()])
+                [(x+0.5)/255. for x in self.pressed_item.getColor().getRgb()])
+            self.valueClicked.emit(self.pressed_item.getU(),self.pressed_item.getV())
         self.scene().update()
 
     def mouseMoveEvent(self, event):
@@ -1218,8 +1218,19 @@ class pyf_RampColor(pyf_RampSpline):
         super(pyf_RampColor, self).drawBackground(painter, rect)
         if len(self.items()):
             b = QtGui.QLinearGradient(0, 0, rect.width(), 0)
-            for item in self.items():
-                b.setColorAt(item.getU(), item.getColor())
+            if not self.bezier:
+                for item in self.items():
+                    b.setColorAt(item.getU(), item.getColor())
+            else:
+                items = self.sortedItems()
+                numSteps = 50
+                for k in range(numSteps):
+                    t = float(k) / (numSteps - 1)
+                    color = []
+                    for i in range(len(items[0].getV())):
+                        color.append(self._rawRamp.interpolateBezier([p.getV()[i] for p in items], 0, len(items) - 1, t))
+
+                    b.setColorAt(t, QtGui.QColor().fromRgb(color[0],color[1],color[2]))                 
         else:
             b = editableStyleSheet().InputFieldColor
         painter.fillRect(rect, b)
@@ -1243,12 +1254,10 @@ class testWidg(QtWidgets.QWidget):
         raw_ramp = structs.splineRamp()
         raw_ramp.addItem(0.1,[10, 50, 90])
         raw_ramp.addItem(0.9,[30, 120, 90])  
-              
         ramp = pyf_RampColor(raw_ramp,self)
         color.valueChanged.connect(ramp.setColor)
         ramp.colorClicked.connect(color.setColor)
         self.layout().addWidget(ramp)
-
         self.layout().addWidget(color)
         raw_ramp = structs.splineRamp()
         raw_ramp.addItem(0.0,0.0)
