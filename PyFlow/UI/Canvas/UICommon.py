@@ -80,7 +80,7 @@ class PinDefaults(object):
 class NodeDefaults(object):
     """docstring for NodeDefaults."""
     def __init__(self):
-        self.__contentMargins = 3
+        self.__contentMargins = 5
         self.__layoutsSpacing = 5
         self.__cornersRoundFactor = 6
         self.__svgIconKey = "svgIcon"

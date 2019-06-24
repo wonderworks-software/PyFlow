@@ -375,7 +375,7 @@ class UIPinBase(QGraphicsWidget):
         self.update()
         self.hovered = True
         supportedTypes = self._rawPin.allowedDataTypes([], self._rawPin._supportedDataTypes)
-        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes)
+        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}\nStructure: {3}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes, str(self._rawPin.structureType))
         self.setToolTip(hoverMessage)
         event.accept()
 
@@ -405,7 +405,7 @@ class PinGroup(UIPinBase):
         self._direction = direction
         super(PinGroup, self).__init__(owningNode, None)
         self.expanded = True
-        self._pins = set()
+        self._pins = list()
 
     def numPins(self):
         return len(self._pins)
@@ -438,6 +438,8 @@ class PinGroup(UIPinBase):
         self.expanded = expanded
         for pin in self._pins:
             pin.setVisible(self.expanded)
+        self.update()
+        self.owningNode().update()
 
     def onChildKilled(self, uiPin):
         self._pins.remove(uiPin)
@@ -445,7 +447,7 @@ class PinGroup(UIPinBase):
             self.kill()
 
     def addPin(self, uiPin):
-        self._pins.add(uiPin)
+        self._pins.append(uiPin)
         uiPin.OnPinDeleted.connect(self.onChildKilled)
 
     def onClick(self):
@@ -468,26 +470,48 @@ class PinGroup(UIPinBase):
 
     def hoverEnterEvent(self, event):
         super(QGraphicsWidget, self).hoverEnterEvent(event)
+        self.hovered = True
         self.update()
+        self.owningNode().update()
         event.accept()
 
     def hoverLeaveEvent(self, event):
         super(QGraphicsWidget, self).hoverLeaveEvent(event)
+        self.hovered = False
         self.update()
+        self.owningNode().update()
         event.accept()
 
     def sizeHint(self, which, constraint):
         height = QtGui.QFontMetrics(self._font).height()
-        width = QtGui.QFontMetrics(self._font).width(self.name)
+        width = QtGui.QFontMetrics(self._font).width(self.name) + self.pinSize
         return QtCore.QSizeF(width, height)
 
     def paint(self, painter, option, widget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
-        painter.drawRect(frame)
+        frame = frame.translated(self.pinSize, 0)
+        # TODO: move group bg color to themes?
+        groupBGColor = self.owningNode().color.lighter(150)
+        bgRect = QtCore.QRectF(frame)
+        bgRect.setX(0)
+        painter.fillRect(bgRect, groupBGColor)
         painter.setFont(self._font)
         painter.setPen(QtGui.QPen(self.labelColor, 1.0))
         painter.drawText(frame, self.name)
-        # PinPainter.asGroupPin(self, painter, option, widget)
+
+        painter.setPen(PinPainter._groupPen)
+        painter.setBrush(QtGui.QBrush(Colors.White))
+
+        if not self.expanded:
+            arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
+                                    QtCore.QPointF(self.pinSize, self.pinSize / 2.0),
+                                    QtCore.QPointF(0, self.pinSize)])
+        else:
+            arrow = QtGui.QPolygonF([QtCore.QPointF(self.pinSize / 2, self.pinSize),
+                                    QtCore.QPointF(0, 0),
+                                    QtCore.QPointF(self.pinSize, 0)])
+        arrowX = 0
+        painter.drawPolygon(arrow.translated(arrowX, self.pinSize / 4))
 
 
 def REGISTER_UI_PIN_FACTORY(packageName, factory):

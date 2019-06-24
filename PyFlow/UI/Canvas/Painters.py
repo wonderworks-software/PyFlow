@@ -87,9 +87,32 @@ class NodePainter(object):
         NodePainter.drawResizeHandles(node, painter, option, widget)
 
     @staticmethod
+    def drawGroups(node, painter, option, widget):
+        inputsOffset = QtCore.QPointF(-2, 0)
+        outputsOffset = QtCore.QPointF(2, 0)
+        painter.setPen(QtGui.QPen(QtGui.QColor(255, 255, 255, 200), 0.5))
+        for grp in node.groups["input"].values():
+            if grp.hovered and grp.expanded:
+                if grp.numPins() > 0:
+                    grpPos = grp.geometry().bottomLeft()
+                    lastPinPos = grp._pins[grp.numPins() - 1].geometry().bottomLeft()
+                    painter.drawLine(grpPos, grpPos + inputsOffset)
+                    painter.drawLine(grpPos + inputsOffset, lastPinPos + inputsOffset)
+                    painter.drawLine(lastPinPos + inputsOffset, lastPinPos)
+
+        for grp in node.groups["output"].values():
+            if grp.hovered and grp.expanded:
+                if grp.numPins() > 0:
+                    grpPos = grp.geometry().bottomRight()
+                    lastPinPos = grp._pins[grp.numPins() - 1].geometry().bottomRight()
+                    painter.drawLine(grpPos, grpPos + outputsOffset)
+                    painter.drawLine(grpPos + outputsOffset, lastPinPos + outputsOffset)
+                    painter.drawLine(lastPinPos + outputsOffset, lastPinPos)
+
+    @staticmethod
     def default(node, painter, option, widget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), node.geometry().size())
-        # use 3 levels of detail       
+        # use 3 levels of detail
         lod = node.canvasRef().getLodValueFromCurrentScale(3)
         SWITCH_LOD = 3
 
@@ -110,10 +133,10 @@ class NodePainter(object):
 
         r = frame
         if lod < SWITCH_LOD:
-            r.setWidth(r.width() - pen.width()/2)
-            r.setHeight(r.height() - pen.width()/2)
-            r.setX(pen.width()/2)
-            r.setY(r.y() + pen.width()/2)
+            r.setWidth(r.width() - pen.width() / 2)
+            r.setHeight(r.height() - pen.width() / 2)
+            r.setX(pen.width() / 2)
+            r.setY(r.y() + pen.width() / 2)
             painter.drawRoundedRect(r, node.roundness, node.roundness)
         else:
             painter.drawRect(r)
@@ -159,6 +182,7 @@ class NodePainter(object):
             painter.drawRect(r)
 
         NodePainter.drawResizeHandles(node, painter, option, widget)
+        NodePainter.drawGroups(node, painter, option, widget)
 
     @staticmethod
     def asVariableGetter(node, painter, option, widget):
