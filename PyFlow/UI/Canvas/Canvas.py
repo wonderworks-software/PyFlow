@@ -956,6 +956,9 @@ class Canvas(QGraphicsView):
         nodeClassName = "reroute"
         if connection and connection.drawSource._rawPin.isExec() and connection.drawDestination._rawPin.isExec():
             nodeClassName = "rerouteExecs"
+        else:
+            if self.pressedPin.isExec():
+                nodeClassName = "rerouteExecs"
         nodeTemplate = NodeBase.jsonTemplate()
         nodeTemplate['package'] = "PyFlowBase"
         nodeTemplate['lib'] = None

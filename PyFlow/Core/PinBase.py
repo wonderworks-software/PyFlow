@@ -628,9 +628,9 @@ class PinBase(IPin):
             if port not in checked and can:
                 checked.append(port)
                 can = port.supportDictElement(checked, can, selfChek=True)
-        return can   
+        return can
 
-    def supportOnlyDictElement(self,checked=[],can=False,selfChek=True):
+    def supportOnlyDictElement(self, checked=[], can=False, selfChek=True):
         if self.isDict():
             return True
         con = []
@@ -648,30 +648,29 @@ class PinBase(IPin):
             if port not in checked and not can:
                 checked.append(port)
                 can = port.supportOnlyDictElement(checked, can, selfChek=True)
-        return can   
+        return can
 
-    def updateConectedDicts(self,checked=[],keyType=None):
+    def updateConectedDicts(self, checked=[], keyType=None):
         if not self.isDict():
             return
         con = []
         neis = []
-        if self.hasConnections() :
+        if self.hasConnections():
             for c in getConnectedPins(self):
                 if c not in checked:
                     con.append(c)
         if self.constraint:
-            neis = self.owningNode().constraints[self.constraint]                    
+            neis = self.owningNode().constraints[self.constraint]
         for port in con + neis:
             if port not in checked and port.isDict():
                 checked.append(port)
                 port._keyType = keyType
                 if port._data.keyType != keyType:
-                    port._data = pyf_dict(keyType,port.dataType)
+                    port._data = pyf_dict(keyType, port.dataType)
                 port.dictChanged.send(keyType)
                 if port.getWrapper():
-                    port.getWrapper()().update() 
-                port.updateConectedDicts(checked,keyType)
-
+                    port.getWrapper()().update()
+                port.updateConectedDicts(checked, keyType)
 
     def setClean(self):
         self.dirty = False
