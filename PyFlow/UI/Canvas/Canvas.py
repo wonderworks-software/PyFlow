@@ -1396,6 +1396,7 @@ class Canvas(QGraphicsView):
         self._lastMousePos = event.pos()
 
     def findPinNearPosition(self, scenePos, tolerance=3):
+        tolerance = tolerance * self.currentViewScale()
         rect = QtCore.QRect(QtCore.QPoint(scenePos.x() - tolerance, scenePos.y() - tolerance),
                             QtCore.QPoint(scenePos.x() + tolerance, scenePos.y() + tolerance))
         items = self.items(rect)
