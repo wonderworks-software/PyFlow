@@ -23,7 +23,7 @@ class splineRamp(object):
         self.items = []
 
     def __getitem__(self,index):
-        if index in range(0, len(self.items()) - 1):
+        if len(self.items) and index in range(0, len(self.items)):
             return self.sortedItems()[index]
         else:
             return None
@@ -112,13 +112,12 @@ class splineRamp(object):
         return self.interpolateBezier(coorArr, i, j - 1, t) * (1 - t) + self.interpolateBezier(coorArr, i + 1, j - 1, t) * t
 
     def interpolateLinear(self, start, end, ratio):
-        v = (ratio * start + (1 - ratio) * end)
-        return v
+        return (ratio * start + (1 - ratio) * end)
 
-ramp = splineRamp()
-ramp.addItem(0.0,[0.0,0.0,0.0])
-ramp.addItem(0.1,[0.0,5.0,0.0])
-ramp.addItem(1.0,[1.0,1.0,1.0])
+if __name__ == '__main__':
+    ramp = splineRamp()
+    ramp.addItem(0.1,[0.0,0.0,0.0])
+    ramp.addItem(1.0,[1.0,1.0,1.0])
 
-print ramp.evaluateAt(0.5,bezier=True)
-print ramp.evaluateAt(0.5,bezier=False)
+    print ramp.evaluateAt(0.5,bezier=True)
+    #print ramp.evaluateAt(0.5,bezier=False)

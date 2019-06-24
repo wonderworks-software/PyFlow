@@ -13,6 +13,7 @@ INT_RANGE_MAX = maxint + 0
 
 sys.path.append(r"C:\Users\pedro\OneDrive\pcTools_v5\PyFlow")
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.Core import structs
 
 def clamp(n, vmin, vmax):
     return max(min(n, vmax), vmin)
@@ -849,50 +850,54 @@ class pyf_timeline(QtWidgets.QSlider):
         else:
             return super(pyf_timeline, self).mouseMoveEvent(event)
 
-class Tick(QtWidgets.QGraphicsWidget):
+class uiTick(QtWidgets.QGraphicsWidget):
     """ Element Fro Ramp Widgets___Basic U,V,Color Attribute holder """
-    def __init__(self, parent=None):
-        super(Tick, self).__init__(parent)
+    def __init__(self, raw_tick,parent=None):
+        super(uiTick, self).__init__(parent)
         self.setAcceptHoverEvents(True)
-        self._width = 10
-        self._height = 17
+        self._width = 6
+        self._height = 6
         self.hovered = False
         self.setFlag(QtWidgets.QGraphicsWidget.ItemIsMovable)
         self.setFlag(QtWidgets.QGraphicsWidget.ItemIsFocusable)
         self.setFlag(QtWidgets.QGraphicsWidget.ItemIsSelectable, True)
         self.setFlag(QtWidgets.QGraphicsWidget.ItemSendsGeometryChanges)
-        self._color = QtGui.QColor()
-        self._u = 0
-        self._v = 0
+        self._rawTick = raw_tick
+        self._color = QtGui.QColor(0)
 
     def getU(self):
-        return self._u
+        return self._rawTick._u
 
     def getV(self):
-        return self._v
+        return self._rawTick._v
 
     def getColor(self):
-        return self._color
+        r,g,b = self._rawTick._v
+        return QtGui.QColor().fromRgb(r,g,b)
 
     def setU(self, u):
-        self._u = u
+        self._rawTick._u = u
 
     def setV(self, v):
-        self._v = v
+        self._rawTick._v = v
 
     def setColor(self, color):
-        r, g, b = color
+        try:
+            r, g, b = color
+        except:
+            r=g=b = 0
+        self.setV([r, g, b])
         self._color = QtGui.QColor().fromRgb(r, g, b)
         self.update()
         self.scene().update()
 
     def hoverEnterEvent(self, event):
-        super(Tick, self).hoverEnterEvent(event)
+        super(uiTick, self).hoverEnterEvent(event)
         self.hovered = True
         self.update()
 
     def hoverLeaveEvent(self, event):
-        super(Tick, self).hoverLeaveEvent(event)
+        super(uiTick, self).hoverLeaveEvent(event)
         self.hovered = False
         self.update()
 
@@ -913,170 +918,15 @@ class Tick(QtWidgets.QGraphicsWidget):
         painter.setPen(pen)
         painter.drawRoundedRect(bgRect, 2, 2)
 
-class pyf_RampColor(QtWidgets.QGraphicsView):
-
-    tickClicked = QtCore.Signal(object)
-    colorClicked = QtCore.Signal(list)
-    """ Gradient Editor with evaluateAt support """
-    def __init__(self, parent):
-        super(pyf_RampColor, self).__init__(parent)
-        self._scene = QtWidgets.QGraphicsScene(self)
-        self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
-        self.setScene(self._scene)
-        self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorViewCenter)
-        self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorViewCenter)
-        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.setMaximumHeight(20)
-        self.setMinimumHeight(20)
-        self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(30, 30, 30)))
-        self.mousePressPose = QtCore.QPointF(0, 0)
-        self.mousePos = QtCore.QPointF(0, 0)
-        self._lastMousePos = QtCore.QPointF(0, 0)
-        self.pressed_item = None
-
-    def __getitem__(self,index):
-        if len(self.items()) and index >=0 and index <= len(self.items())-1:
-            return self.sortedItems()[index].getColor().getRgbF()
-        else:
-            return None
-
-    @property
-    def positions(self):
-        return [x.getU() for x in self.sortedItems()]
-
-    @property
-    def values(self):
-        return [x.getColor().getRgbF() for x in self.sortedItems()]
-
-    def sortedItems(self):
-        itms = list(self.items())
-        itms.sort(key=lambda x: x.getU())
-        return itms
-
-    def addItem(self, color, u):
-        item = Tick()
-        r, g, b = color
-        item._color = QtGui.QColor.fromRgb(r, g, b)
-        self._scene.addItem(item)
-        item.setU(u)
-        item.setPos(item.getU() * (self.sceneRect().width() - 10), 1)
-
-    def setColor(self, color, index=-1):
-        if index in range(0, len(self.items()) - 1):
-            self.sortedItems()[index].setColor(color)
-        elif len(self.items()) > 0:
-            for item in self.items():
-                if item.isSelected():
-                    item.setColor(color)
-
-    def evaluateAt(self, value):
-        items = self.sortedItems()
-        if len(items) > 1:
-            interval = len(items) - 1
-            for i, x in enumerate(items):
-                if value <= x.getU():
-                    interval = i
-                    break
-
-            u = max(0, min(1, (((value - items[interval - 1].getU()) * (1.0 - 0.0)) / (
-                items[interval].getU() - items[interval - 1].getU())) + 0.0))
-
-            color = self.interpolate(
-                items[interval].getColor(), items[interval - 1].getColor(), u)
-            return color
-        elif len(items) == 1:
-            return items[0].getColor()
-        else:
-            return QtGui.QColor(0, 0, 0)
-
-    def interpolate(self, start, end, ratio):
-
-        r = (ratio * start.red() + (1 - ratio) * end.red())
-        g = (ratio * start.green() + (1 - ratio) * end.green())
-        b = (ratio * start.blue() + (1 - ratio) * end.blue())
-        return QtGui.QColor.fromRgb(r, g, b)
-
-    def resizeEvent(self, event):
-        super(pyf_RampColor, self).resizeEvent(event)
-        self.scene().setSceneRect(0, 0, self.frameSize().width(), self.frameSize().height())
-        self.fitInView(0, 0, self.scene().sceneRect().width(),
-                       15, QtCore.Qt.IgnoreAspectRatio)
-        for item in self.items():
-            item.setPos(item.getU() * (self.sceneRect().width() - 10), 1)
-            item.__height = self.frameSize().height()
-            item.update()
-
-    def clearSelection(self):
-        for item in self.items():
-            item.setSelected(False)
-
-    def mousePressEvent(self, event):
-        self.pressed_item = self.itemAt(event.pos())
-        self.mousePressPose = event.pos()
-        self._lastMousePos = event.pos()
-        if event.button() == QtCore.Qt.RightButton:
-            if self.pressed_item:
-                self._scene.removeItem(self.pressed_item)
-                del self.pressed_item
-                self.pressed_item = None
-        elif event.button() == QtCore.Qt.MidButton:
-            print(self.evaluateAt(self.mapToScene(event.pos()).x() / self.frameSize().width()))
-        else:
-            if not self.pressed_item:
-                item = Tick()
-                item._color = self.evaluateAt(self.mapToScene(
-                    event.pos()).x() / self.frameSize().width())
-                self._scene.addItem(item)
-                item.setPos(self.mapToScene(event.pos()).x(), 1)
-                item.setU(
-                    max(min(item.scenePos().x() / (self.frameSize().width() - 10), 1), 0))
-                item.setPos(item.getU() * (self.sceneRect().width() - 10), 1)
-                self.pressed_item = item
-        self.clearSelection()
-        if self.pressed_item:
-            self.pressed_item.setSelected(True)
-            self.tickClicked.emit(self.pressed_item)
-            self.colorClicked.emit(
-                [(x+1.0)/255. for x in self.pressed_item.getColor().getRgb()])
-        self.scene().update()
-
-    def mouseMoveEvent(self, event):
-        super(pyf_RampColor, self).mouseMoveEvent(event)
-        self.mousePos = event.pos()
-        mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
-        if self.pressed_item:
-            self.pressed_item.moveBy(mouseDelta.x(), 0)
-            self.pressed_item.setU(
-                max(min(self.pressed_item.scenePos().x() / (self.frameSize().width() - 10), 1), 0))
-            self.pressed_item.setPos(
-                self.pressed_item.getU() * (self.sceneRect().width() - 10), 1)
-        self._lastMousePos = event.pos()
-        self.scene().update()
-
-    def mouseReleaseEvent(self, event):
-        super(pyf_RampColor, self).mouseReleaseEvent(event)
-        self.pressed_item = None
-        self.scene().update()
-
-    def drawBackground(self, painter, rect):
-        super(pyf_RampColor, self).drawBackground(painter, rect)
-        if len(self.items()):
-            b = QtGui.QLinearGradient(0, 0, rect.width(), 0)
-            for item in self.items():
-                b.setColorAt(item.getU(), item.getColor())
-        else:
-            b = editableStyleSheet().InputFieldColor
-        painter.fillRect(rect, b)
-
 class pyf_RampSpline(QtWidgets.QGraphicsView):
 
     tickClicked = QtCore.Signal(object)
     valueClicked = QtCore.Signal(float,float)
     """ Ramp/Curve Editor with evaluateAt support , clamped to 0,1 in both x and y"""
-    def __init__(self, parent,bezier=True):
+    def __init__(self, raw_ramp,parent,bezier=True):
         super(pyf_RampSpline, self).__init__(parent)
+        self._rawRamp = raw_ramp
+        self.bezier = bezier
         self._scene = QtWidgets.QGraphicsScene(self)
         self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
         self.setScene(self._scene)
@@ -1087,7 +937,6 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setMaximumHeight(60)
         self.setMinimumHeight(60)
-        self.bezier = bezier
         self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(30, 30, 30)))
         self.mousePressPose = QtCore.QPointF(0, 0)
         self.mousePos = QtCore.QPointF(0, 0)
@@ -1096,95 +945,84 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self.itemSize = 6
         self.displayPoints = []
 
+        for x in  self._rawRamp.sortedItems():
+            self.addItem(raw_item=x)
+
     def __getitem__(self,index):
-        if len(self.items()) and index >=0 and index <= len(self.items())-1:
-            return self.sortedItems()[index]._v
+        if index in range(0, len(self.items())):
+            return self.sortedItems()[index]
         else:
             return None
 
     @property
-    def positions(self):
-        return [x.getU() for x in self.sortedItems()]
+    def uValues(self):
+        return self._rawRamp.uValues
 
     @property
-    def values(self):
-        return [x._v for x in self.sortedItems()]
+    def yValues(self):
+        return self._rawRamp.yValues
+
+    def setBezier(self,isBezier):
+        self.bezier = isBezier
 
     def sortedItems(self):
         itms = list(self.items())
         itms.sort(key=lambda x: x.getU())
         return itms
 
-    def addItem(self,u,v):
-        item = Tick()
+    def addItem(self,u=0,v=0,raw_item=None):
+        if raw_item is None:
+            raw_item = self._rawRamp.addItem(u,v)
+        item = uiTick(raw_item)
         item._width = item._height = 6
         self._scene.addItem(item)
-        item.setU(u)
-        item.setV(1-v)
-        item.setPos(item.getU() * (self.sceneRect().width() - self.itemSize), item._v * (self.sceneRect().height() - self.itemSize))
+        self.updateItemPos(item)
         self.computeDisplayPoints()
 
     def setU(self, u, index=-1):
         if index in range(0, len(self.items()) - 1):
-            self.sortedItems()[index].setU(u)
+            item = self.sortedItems()[index]
+            item.setU(u)
+            self.updateItemPos(item)
         elif len(self.items()) > 0:
             for item in self.items():
                 if item.isSelected():
                     item.setU(u)
+                    self.updateItemPos(item)
         self.computeDisplayPoints()
 
     def setV(self, v, index=-1):
         if index in range(0, len(self.items()) - 1):
-            self.sortedItems()[index].setV(v)
+            item = self.sortedItems()[index]
+            item.setV(v)
+            self.updateItemPos(item)
         elif len(self.items()) > 0:
             for item in self.items():
                 if item.isSelected():
                     item.setV(v)
+                    self.updateItemPos(item)
         self.computeDisplayPoints()
 
     def evaluateAt(self, value):
-        items = self.sortedItems()
-        if len(items) > 1:
-            if value >= items[-1].getU():
-                return 1- items[-1]._v
-            elif value <= items[0].getU():
-                return 1-items[0]._v
-            interval = len(items) - 1
-            for i, x in enumerate(items):
-                if value <= x.getU():
-                    interval = i
-                    break
-            u = max(0, min(1, (((value - items[interval - 1].getU()) * (1.0 - 0.0)) / (
-                items[interval].getU() - items[interval - 1].getU())) + 0.0))
-            if not self.bezier:
-                v = self.interpolateLinear(
-                    items[interval]._v, items[interval - 1]._v, u)
-            else:
-                v = 1 - self.interpolateBezier([p._v for p in items], 0, len(items) - 1, value)
-            return v
-        elif len(items) == 1:
-            return 1- items[0]._v
-        else:
-            return 0.0
+        return self._rawRamp.evaluateAt(value,self.bezier)
 
-    def interpolateBezier(self,coorArr, i, j, t):
-        if j == 0:
-            return coorArr[i]
-        return self.interpolateBezier(coorArr, i, j - 1, t) * (1 - t) + self.interpolateBezier(coorArr, i + 1, j - 1, t) * t
+    def computeItemU(self,item):
+        return max(min(item.scenePos().x() / (self.frameSize().width() - self.itemSize), 1), 0)
 
-    def interpolateLinear(self, start, end, ratio):
-        v = (ratio * start + (1 - ratio) * end)
-        return 1-v
+    def computeItemV(self,item):
+        return max(min(1-(item.scenePos().y() / (self.frameSize().height() - self.itemSize)), 1), 0)
+
+    def updateItemPos(self,item):
+        item.setPos(item.getU() * (self.sceneRect().width() - self.itemSize), (1-item.getV()) * (self.sceneRect().height() - self.itemSize))
 
     def resizeEvent(self, event):
         super(pyf_RampSpline, self).resizeEvent(event)
         self.scene().setSceneRect(0, 0, self.frameSize().width(), self.frameSize().height())
         self.fitInView(0, 0, self.scene().sceneRect().width(),60, QtCore.Qt.IgnoreAspectRatio)
         for item in self.items():
-            item.setPos(item.getU() * (self.sceneRect().width() - self.itemSize), item._v * (self.sceneRect().height() - self.itemSize))
-            item.__height = self.frameSize().height()
+            self.updateItemPos(item)
             item.update()
-        self.computeDisplayPoints(self.bezier)
+        self.computeDisplayPoints()
 
     def clearSelection(self):
         for item in self.items():
@@ -1197,29 +1035,30 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         if event.button() == QtCore.Qt.RightButton:
             if self.pressed_item:
                 self._scene.removeItem(self.pressed_item)
+                self._rawRamp.removeItem(self.pressed_item._rawTick)
+                del self.pressed_item._rawTick
                 del self.pressed_item
                 self.pressed_item = None
-                self.computeDisplayPoints(self.bezier)
+                self.computeDisplayPoints()
         elif event.button() == QtCore.Qt.MidButton:
             print(self.evaluateAt(self.mapToScene(event.pos()).x() / (self.frameSize().width() - self.itemSize)))
         else:
             if not self.pressed_item:
-                item = Tick()
+                raw_item = self._rawRamp.addItem(0,0)
+                item = uiTick(raw_item)
                 item._width = item._height = 6
                 self._scene.addItem(item)
                 item.setPos(self.mapToScene(event.pos()))
-                item.setU(
-                    max(min(item.scenePos().x() / (self.frameSize().width() - self.itemSize), 1), 0))
-                item.setV(
-                    max(min(item.scenePos().y() / (self.frameSize().height() - self.itemSize), 1), 0))                
-                item.setPos(item.getU() * (self.sceneRect().width() - self.itemSize), item._v * (self.sceneRect().height() - self.itemSize))
+                item.setU(self.computeItemU(item))
+                item.setV(self.computeItemV(item))           
+                self.updateItemPos(item)
                 self.pressed_item = item
-                self.computeDisplayPoints(self.bezier)
+                self.computeDisplayPoints()
         self.clearSelection()
         if self.pressed_item:
             self.pressed_item.setSelected(True)
             self.tickClicked.emit(self.pressed_item)
-            self.valueClicked.emit(self.pressed_item.getU(),self.pressed_item._v)
+            self.valueClicked.emit(self.pressed_item.getU(),self.pressed_item.getV())
         self.scene().update()
 
     def mouseMoveEvent(self, event):
@@ -1228,13 +1067,10 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         if self.pressed_item:
             self.pressed_item.moveBy(mouseDelta.x(), mouseDelta.y())
-            self.pressed_item.setU(
-                max(min(self.pressed_item.scenePos().x() / (self.frameSize().width() - self.itemSize), 1), 0))
-            self.pressed_item.setV(
-                max(min(self.pressed_item.scenePos().y() / (self.frameSize().height() - self.itemSize), 1), 0)) 
-            self.pressed_item.setPos(
-                self.pressed_item.getU() * (self.sceneRect().width() - self.itemSize),self.pressed_item._v * (self.sceneRect().height() - self.itemSize))
-            self.computeDisplayPoints(self.bezier)
+            self.pressed_item.setU(self.computeItemU(self.pressed_item))
+            self.pressed_item.setV(self.computeItemV(self.pressed_item))           
+            self.updateItemPos(self.pressed_item)
+            self.computeDisplayPoints()
         self._lastMousePos = event.pos()
         
         self.scene().update()
@@ -1243,30 +1079,33 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         super(pyf_RampSpline, self).mouseReleaseEvent(event)
         self.pressed_item = None
         self.scene().update()
-        
-    def computeDisplayPoints(self,bezier=False):
+
+    def getCornerPoints(self,corner=0):
+        if corner == 0:
+            return [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
+                    QtCore.QPointF(self.itemSize/2,self.sortedItems()[0].scenePos().y()-self.mapToScene(QtCore.QPoint(-1.5,-1.5)).y())]
+        else:
+            return [QtCore.QPointF(self.frameSize().width()-self.itemSize/2,self.sortedItems()[-1].scenePos().y()-self.mapToScene(QtCore.QPoint(-1.5,-1.5)).y()),
+                    QtCore.QPointF(self.frameSize().width()-self.itemSize/2,self.frameSize().height()-self.itemSize/2)]            
+
+    def computeDisplayPoints(self,nonLinearRes=50):
         items = self.sortedItems()
-        val = self.mapToScene(QtCore.QPoint(-1.5,-1.5))
         points = []
         if len(items):
-            if not bezier:
-                points = [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
-                          QtCore.QPointF(self.itemSize/2,items[0].scenePos().y()-val.y())]
-            for item in items:
-                points.append(item.scenePos()-val)
 
-            if bezier:
-                bezierPoints = [QtCore.QPointF(self.itemSize/2,self.frameSize().height()-self.itemSize/2),
-                          QtCore.QPointF(self.itemSize/2,items[0].scenePos().y()-val.y())]
-                numSteps = 50
+            for item in items:
+                points.append(item.scenePos()-self.mapToScene(QtCore.QPoint(-1.5,-1.5)))
+
+            if self.bezier:
+                bezierPoints = []
+                numSteps = nonLinearRes
                 for k in range(numSteps):
                     t = float(k) / (numSteps - 1)
-                    x = int(self.interpolateBezier([p.x() for p in points], 0, len(items) - 1, t))
-                    y = int(self.interpolateBezier([p.y() for p in points], 0, len(items) - 1, t))  
+                    x = int(self._rawRamp.interpolateBezier([p.x() for p in points], 0, len(items) - 1, t))
+                    y = int(self._rawRamp.interpolateBezier([p.y() for p in points], 0, len(items) - 1, t))  
                     bezierPoints.append(QtCore.QPointF(x,y))
                 points = bezierPoints
-            points.append(QtCore.QPointF(self.frameSize().width()-self.itemSize/2,items[-1].scenePos().y()-val.y()))
-            points.append(QtCore.QPointF(self.frameSize().width()-self.itemSize/2,self.frameSize().height()-self.itemSize/2))            
+            points = self.getCornerPoints(0)+points+self.getCornerPoints(1)
         self.displayPoints = points  
               
     def drawBackground(self, painter, rect):
@@ -1281,6 +1120,109 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
             painter.drawPolygon(self.displayPoints, QtCore.Qt.WindingFill);
         else:
             b = editableStyleSheet().InputFieldColor
+
+class pyf_RampColor(pyf_RampSpline):
+
+    colorClicked = QtCore.Signal(list)
+    """ Gradient Editor with evaluateAt support """
+    def __init__(self, raw_ramp,parent=None):
+        super(pyf_RampColor, self).__init__(raw_ramp,parent)
+        self.setMaximumHeight(20)
+        self.setMinimumHeight(20)
+        self.bezier=False
+
+    @property
+    def values(self):
+        return [x.getColor().getRgbF() for x in self.sortedItems()]
+
+    def addItem(self,u=0,v=[0,0,0],raw_item=None):
+        if raw_item is None:
+            raw_item = self._rawRamp.addItem(u,v)
+        item = uiTick(raw_item)
+        item._width = 10
+        item._height = 17
+        r, g, b = v
+        item._color = QtGui.QColor.fromRgb(r, g, b)
+        self._scene.addItem(item)
+        self.updateItemPos(item)
+
+    def setColor(self, color, index=-1):
+        if index in range(0, len(self.items()) - 1):
+            self.sortedItems()[index].setColor(color)
+        elif len(self.items()) > 0:
+            for item in self.items():
+                if item.isSelected():
+                    item.setColor(color)
+
+    def computeItemU(self,item):
+        return max(min(item.scenePos().x() / (self.frameSize().width() - 10), 1), 0)
+
+    def updateItemPos(self,item):
+        item.setPos(item.getU() * (self.sceneRect().width() - 10), 1)
+
+    def resizeEvent(self, event):
+        super(pyf_RampColor, self).resizeEvent(event)
+        self.scene().setSceneRect(0, 0, self.frameSize().width(), self.frameSize().height())
+        self.fitInView(0, 0, self.scene().sceneRect().width(), 15, QtCore.Qt.IgnoreAspectRatio)
+        for item in self.items():
+            self.updateItemPos(item)
+            item.update()
+
+    def mousePressEvent(self, event):
+        self.pressed_item = self.itemAt(event.pos())
+        self.mousePressPose = event.pos()
+        self._lastMousePos = event.pos()
+        if event.button() == QtCore.Qt.RightButton:
+            if self.pressed_item:
+                self._scene.removeItem(self.pressed_item)
+                self._rawRamp.removeItem(self.pressed_item._rawTick)
+                del self.pressed_item._rawTick
+                del self.pressed_item
+                self.pressed_item = None
+        elif event.button() == QtCore.Qt.MidButton:
+            print(self.evaluateAt(self.mapToScene(event.pos()).x() / self.frameSize().width()))
+        else:
+            if not self.pressed_item:
+                color = self.evaluateAt(self.mapToScene(
+                    event.pos()).x() / self.frameSize().width())
+                raw_item = self._rawRamp.addItem(0,color)
+                item = uiTick(raw_item)
+                item._width = 10
+                item._height = 17                
+                self._scene.addItem(item)
+                item.setColor(color)
+                item.setPos(self.mapToScene(event.pos()).x(), 1)
+                item.setU(self.computeItemU(item))
+                self.updateItemPos(item)
+                self.pressed_item = item
+        self.clearSelection()
+        if self.pressed_item:
+            self.pressed_item.setSelected(True)
+            self.tickClicked.emit(self.pressed_item)
+            self.colorClicked.emit(
+                [(x)/255. for x in self.pressed_item.getColor().getRgb()])
+        self.scene().update()
+
+    def mouseMoveEvent(self, event):
+        QtWidgets.QGraphicsView.mouseMoveEvent(self,event)
+        self.mousePos = event.pos()
+        mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
+        if self.pressed_item:
+            self.pressed_item.moveBy(mouseDelta.x(), 0)
+            self.pressed_item.setU(self.computeItemU(self.pressed_item))
+            self.updateItemPos(self.pressed_item)
+        self._lastMousePos = event.pos()
+        self.scene().update()
+
+    def drawBackground(self, painter, rect):
+        super(pyf_RampColor, self).drawBackground(painter, rect)
+        if len(self.items()):
+            b = QtGui.QLinearGradient(0, 0, rect.width(), 0)
+            for item in self.items():
+                b.setColorAt(item.getU(), item.getColor())
+        else:
+            b = editableStyleSheet().InputFieldColor
+        painter.fillRect(rect, b)
 
 class testWidg(QtWidgets.QWidget):
 
@@ -1298,16 +1240,21 @@ class testWidg(QtWidgets.QWidget):
         tim.setCached([0, 1, 2, 3, 4, 15, 20])
         self.layout().addWidget(tim)
         color = pyf_ColorSlider(self, type="int")
-        ramp = pyf_RampColor(self)
+        raw_ramp = structs.splineRamp()
+        raw_ramp.addItem(0.1,[10, 50, 90])
+        raw_ramp.addItem(0.9,[30, 120, 90])  
+              
+        ramp = pyf_RampColor(raw_ramp,self)
         color.valueChanged.connect(ramp.setColor)
         ramp.colorClicked.connect(color.setColor)
-        ramp.addItem([10, 50, 90], 0.1)
-        ramp.addItem([30, 120, 90], 0.9)
         self.layout().addWidget(ramp)
+
         self.layout().addWidget(color)
-        ramp2 = pyf_RampSpline(self)
-        ramp2.addItem(0.0,0.0)
-        ramp2.addItem(1.0,1.0)
+        raw_ramp = structs.splineRamp()
+        raw_ramp.addItem(0.0,0.0)
+        raw_ramp.addItem(1.0,1.0)        
+        ramp2 = pyf_RampSpline(raw_ramp,self)
+
         self.layout().addWidget(ramp2)
 
 
