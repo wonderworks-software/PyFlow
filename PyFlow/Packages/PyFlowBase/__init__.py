@@ -50,7 +50,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.makeList import makeList
 from PyFlow.Packages.PyFlowBase.Nodes.makeDict import makeDict
 from PyFlow.Packages.PyFlowBase.Nodes.makeDictElement import makeDictElement
 from PyFlow.Packages.PyFlowBase.Nodes.dictKeys import dictKeys
-
+from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
 
 
 from PyFlow.Packages.PyFlowBase.Nodes.consoleOutput import consoleOutput
@@ -137,6 +137,7 @@ _NODES = {
     tick.__name__: tick,
     convertTo.__name__: convertTo,
     dictKeys.__name__: dictKeys,
+    floatRamp.__name__: floatRamp,
     imageDisplay.__name__ : imageDisplay
 }
 

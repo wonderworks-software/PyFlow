@@ -921,9 +921,13 @@ class uiTick(QtWidgets.QGraphicsWidget):
 class pyf_RampSpline(QtWidgets.QGraphicsView):
 
     tickClicked = QtCore.Signal(object)
+    tickAdded = QtCore.Signal(object)
+    tickMoved = QtCore.Signal(object)
+    tickRemoved = QtCore.Signal()
+
     valueClicked = QtCore.Signal(float,float)
     """ Ramp/Curve Editor with evaluateAt support , clamped to 0,1 in both x and y"""
-    def __init__(self, raw_ramp,parent,bezier=True):
+    def __init__(self, raw_ramp,parent=None,bezier=False):
         super(pyf_RampSpline, self).__init__(parent)
         self._rawRamp = raw_ramp
         self.bezier = bezier
@@ -947,7 +951,16 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
 
         for x in  self._rawRamp.sortedItems():
             self.addItem(raw_item=x)
+        self.update()
 
+    def updateFromRaw(self):
+        for item in self.items():
+            self._scene.removeItem(item)
+            del item
+        for x in  self._rawRamp.sortedItems():
+            self.addItem(raw_item=x)
+        self.update()
+        
     def __getitem__(self,index):
         if index in range(0, len(self.items())):
             return self.sortedItems()[index]
@@ -964,6 +977,8 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
 
     def setBezier(self,isBezier):
         self.bezier = isBezier
+        self.computeDisplayPoints()
+        self.update()
 
     def sortedItems(self):
         itms = list(self.items())
@@ -1040,6 +1055,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                 del self.pressed_item
                 self.pressed_item = None
                 self.computeDisplayPoints()
+                self.tickRemoved.emit()
         elif event.button() == QtCore.Qt.MidButton:
             print(self.evaluateAt(self.mapToScene(event.pos()).x() / (self.frameSize().width() - self.itemSize)))
         else:
@@ -1054,6 +1070,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
                 self.updateItemPos(item)
                 self.pressed_item = item
                 self.computeDisplayPoints()
+                self.tickAdded.emit(item)
         self.clearSelection()
         if self.pressed_item:
             self.pressed_item.setSelected(True)
@@ -1072,7 +1089,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
             self.updateItemPos(self.pressed_item)
             self.computeDisplayPoints()
         self._lastMousePos = event.pos()
-        
+        self.tickMoved.emit(self.pressed_item)
         self.scene().update()
 
     def mouseReleaseEvent(self, event):

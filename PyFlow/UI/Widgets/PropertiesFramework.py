@@ -135,6 +135,7 @@ class CollapsibleFormWidget(CollapsibleWidget):
         self.Layout.setObjectName("CollapseWidgetFormLayout")
         self.Layout.setSpacing(2)
         self.Layout.setContentsMargins(0, 0, 0, 5)
+        self.propertyNames = {}
         self.updateIcon()
 
     def setSpacing(self, spacing=2):
@@ -156,18 +157,25 @@ class CollapsibleFormWidget(CollapsibleWidget):
             if widget:
                 widget.setVisible(pattern.lower() in widget.getLabel().lower())
 
-    def insertWidget(self, index=0, label=None, widget=None):
+    def insertWidget(self, index=0, label=None, widget=None,maxLabelWidth=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
             return False
-        self.Layout.insertWidget(index, PropertyEntry(str(label), widget))
+        self.Layout.insertWidget(index,PropertyEntry(str(label), widget, hideLabel=self.hideLabels,maxLabelWidth=maxLabelWidth))
+        self.propertyNames[label] = widget
         return True
 
     def addWidget(self, label=None, widget=None,maxLabelWidth=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
-            return False         
+            return False     
+        self.propertyNames[label] = widget 
         self.Layout.addWidget(PropertyEntry(str(label), widget, hideLabel=self.hideLabels,maxLabelWidth=maxLabelWidth))
         return True
 
+    def getWidgetByName(self,name):
+        if name in self.propertyNames:
+            return self.propertyNames[name]
+        else:
+            return None
 
 class PropertiesWidget(QtWidgets.QWidget):
     """docstring for PropertiesWidget."""
