@@ -1400,7 +1400,7 @@ class Canvas(QGraphicsView):
         rect = QtCore.QRect(QtCore.QPoint(scenePos.x() - tolerance, scenePos.y() - tolerance),
                             QtCore.QPoint(scenePos.x() + tolerance, scenePos.y() + tolerance))
         items = self.items(rect)
-        pins = [i for i in items if isinstance(i, UIPinBase)]
+        pins = [i for i in items if type(i) is UIPinBase]
         if len(pins) > 0:
             return pins[0]
         return None

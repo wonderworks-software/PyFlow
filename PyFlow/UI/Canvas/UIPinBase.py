@@ -438,6 +438,20 @@ class PinGroup(UIPinBase):
         self.expanded = expanded
         for pin in self._pins:
             pin.setVisible(self.expanded)
+            if pin.direction == PinDirection.Input:
+                for wire in pin.uiConnectionList:
+                    if expanded:
+                        wire.destinationPositionOverride = None
+                    else:
+                        wire.destinationPositionOverride = lambda: self.scenePos() + QtCore.QPointF(0, self.geometry().height())
+
+            if pin.direction == PinDirection.Output:
+                for wire in pin.uiConnectionList:
+                    if expanded:
+                        wire.sourcePositionOverride = None
+                    else:
+                        wire.sourcePositionOverride = lambda: self.scenePos() + QtCore.QPointF(self.geometry().width(), self.geometry().height())
+
         self.update()
         self.owningNode().update()
 
