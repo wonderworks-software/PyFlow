@@ -1124,11 +1124,11 @@ class pyf_RampColor(pyf_RampSpline):
 
     colorClicked = QtCore.Signal(list)
     """ Gradient Editor with evaluateAt support """
-    def __init__(self, raw_ramp,parent=None):
+    def __init__(self, raw_ramp,parent,bezier=True):
         super(pyf_RampColor, self).__init__(raw_ramp,parent)
         self.setMaximumHeight(20)
         self.setMinimumHeight(20)
-        self.bezier=False
+        self.bezier=bezier
         self.itemSize = 10
     @property
     def values(self):
