@@ -3,13 +3,13 @@ from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 from PyFlow.Core.structs import splineRamp
 
-class floatRamp(NodeBase):
+class colorRamp(NodeBase):
     def __init__(self, name):
-        super(floatRamp, self).__init__(name)
+        super(colorRamp, self).__init__(name)
         self.bCacheEnabled = False
-        self.input = self.createInputPin('input', 'FloatPin', structure=PinStructure.Multi, constraint="0", structConstraint="0")
+        self.input = self.createInputPin('input', 'FloatPin', structure=PinStructure.Multi, structConstraint="0")
         self.input.enableOptions(PinOptions.AlwaysPushDirty)
-        self.output = self.createOutputPin('result', 'FloatPin', structure=PinStructure.Multi, constraint="0", structConstraint="0")
+        self.output = self.createOutputPin('result', 'FloatPin', structure=PinStructure.Array, structConstraint="0")
         self.output.enableOptions(PinOptions.AlwaysPushDirty)
         self.ramp = splineRamp()
         self._curveTypes = ["linear","bezier"]
@@ -29,13 +29,13 @@ class floatRamp(NodeBase):
         return helper
 
     def serialize(self):      
-        orig = super(floatRamp, self).serialize()
+        orig = super(colorRamp, self).serialize()
         orig["ramp"] = [[x.getU(),x.getV()] for x in self.ramp.sortedItems()]
         orig["curveType"] = self._curveType
         return orig
 
     def postCreate(self, jsonTemplate=None):
-        super(floatRamp, self).postCreate(jsonTemplate)
+        super(colorRamp, self).postCreate(jsonTemplate)
         if "ramp" in jsonTemplate:
             for x in jsonTemplate["ramp"]:
                 self.ramp.addItem(x[0],x[1])

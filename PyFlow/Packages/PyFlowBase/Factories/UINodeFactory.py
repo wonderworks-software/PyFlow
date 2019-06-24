@@ -12,6 +12,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.graphNodes import (
     graphOutputs
 )
 from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
+from PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
 
 from PyFlow.Packages.PyFlowBase.Nodes.compound import compound
 from PyFlow.Packages.PyFlowBase.Nodes.constant import constant
@@ -34,6 +35,7 @@ from PyFlow.Packages.PyFlowBase.UI.UIGraphNodes import (
     UIGraphOutputs
 )
 from PyFlow.Packages.PyFlowBase.UI.UIFloatRamp import UIFloatRamp
+from PyFlow.Packages.PyFlowBase.UI.UIColorRamp import UIColorRamp
 
 from PyFlow.Packages.PyFlowBase.UI.UICompoundNode import UICompoundNode
 from PyFlow.Packages.PyFlowBase.UI.UIConstantNode import UIConstantNode
@@ -74,6 +76,8 @@ def createUINode(raw_instance):
         return UIMakeDictNode(raw_instance)  
     if isinstance(raw_instance,floatRamp):
         return UIFloatRamp(raw_instance)         
+    if isinstance(raw_instance,colorRamp):
+        return UIColorRamp(raw_instance)       
     if isinstance(raw_instance,imageDisplay):
         return UIQimageDisplay(raw_instance)              
     return UINodeBase(raw_instance)
