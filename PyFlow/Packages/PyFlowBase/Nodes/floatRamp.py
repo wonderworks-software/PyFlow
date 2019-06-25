@@ -12,7 +12,7 @@ class floatRamp(NodeBase):
         self.output = self.createOutputPin('result', 'FloatPin', structure=PinStructure.Multi, constraint="0", structConstraint="0")
         self.output.enableOptions(PinOptions.AlwaysPushDirty)
         self.ramp = splineRamp()
-        self._curveTypes = ["linear","bezier"]
+        self._curveTypes = ["linear", "bezier"]
         self._curveType = 0
 
     @staticmethod
