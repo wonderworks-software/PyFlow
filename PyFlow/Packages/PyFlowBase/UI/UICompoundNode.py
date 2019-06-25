@@ -19,8 +19,11 @@ class UICompoundNode(UINodeBase):
     def getGraph(self):
         return self._rawNode.rawGraph
 
-    def mouseDoubleClickEvent(self, event):
+    def stepIn(self):
         self._rawNode.graph().graphManager.selectGraph(self.name)
+
+    def mouseDoubleClickEvent(self, event):
+        self.stepIn()
         event.accept()
 
     def kill(self, *args, **kwargs):

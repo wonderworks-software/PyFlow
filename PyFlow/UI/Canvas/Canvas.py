@@ -410,6 +410,11 @@ class Canvas(QGraphicsView):
                     uiCommentNode.hideOwningNodes()
         self.validateConnections(newGraph)
 
+        def nodeShapeUpdater():
+            for node in self.nodes.values():
+                node.updateNodeShape()
+        QtCore.QTimer.singleShot(100, nodeShapeUpdater)
+
     def jumpToNode(self, uiNode):
         self.graphManager.selectGraph(uiNode.graph())
         self.clearSelection()
@@ -442,6 +447,7 @@ class Canvas(QGraphicsView):
 
     def collapseSelectedNodesToCompound(self):
         selectedNodes = self.selectedNodes()
+        selectedNodesRect = self.getNodesRect(True, True)
         wires = list()
         for node in selectedNodes:
             for pin in node.UIPins.values():
@@ -449,14 +455,77 @@ class Canvas(QGraphicsView):
 
         inputPins = list()
         outputPins = list()
+
         for wire in wires:
             if wire.source().owningNode().isSelected() and not wire.destination().owningNode().isSelected():
-                outputPins.append(wire.destination())
+                if wire.destination() not in outputPins:
+                    outputPins.append(wire.destination())
             if not wire.source().owningNode().isSelected() and wire.destination().owningNode().isSelected():
-                inputPins.append(wire.source())
+                if wire.source() not in inputPins:
+                    inputPins.append(wire.source())
 
-        print([i.getName() for i in inputPins])
-        print([i.getName() for i in outputPins])
+        self.copyNodes()
+        for node in selectedNodes:
+            node._rawNode.kill()
+
+        compoundTemplate = NodeBase.jsonTemplate()
+        compoundTemplate['package'] = 'PyFlowBase'
+        compoundTemplate['type'] = 'compound'
+        compoundTemplate['name'] = 'compound'
+        compoundTemplate['uuid'] = str(uuid.uuid4())
+        compoundTemplate['meta']['label'] = 'compound'
+        compoundTemplate['x'] = selectedNodesRect.center().x()
+        compoundTemplate['y'] = selectedNodesRect.center().y()
+        uiCompoundNode = self._createNode(compoundTemplate)
+        activeGraphName = self.graphManager.activeGraph().name
+
+        uiCompoundNode.stepIn()
+        self.pasteNodes(move=False, writeHistory=False)
+
+        if len(inputPins) > 0:
+            graphInputsTemplate = NodeBase.jsonTemplate()
+            graphInputsTemplate['package'] = 'PyFlowBase'
+            graphInputsTemplate['type'] = 'graphInputs'
+            graphInputsTemplate['name'] = 'graphInputs'
+            graphInputsTemplate['uuid'] = str(uuid.uuid4())
+            graphInputsTemplate['meta']['label'] = 'graphInputs'
+            graphInputsTemplate['x'] = selectedNodesRect.left() - 100
+            graphInputsTemplate['y'] = selectedNodesRect.center().y()
+            graphInputs = self._createNode(graphInputsTemplate)
+
+            for o in inputPins:
+                newPinName = self.graphManager.getUniqName(o.name)
+                graphInputs.onAddOutPin(o.name, o.dataType)
+
+        if len(outputPins) > 0:
+            graphOutputsTemplate = NodeBase.jsonTemplate()
+            graphOutputsTemplate['package'] = 'PyFlowBase'
+            graphOutputsTemplate['type'] = 'graphOutputs'
+            graphOutputsTemplate['name'] = 'graphOutputs'
+            graphOutputsTemplate['uuid'] = str(uuid.uuid4())
+            graphOutputsTemplate['meta']['label'] = 'graphOutputs'
+            graphOutputsTemplate['x'] = selectedNodesRect.right() + 100
+            graphOutputsTemplate['y'] = selectedNodesRect.center().y()
+            graphOutputs = self._createNode(graphOutputsTemplate)
+
+            for i in outputPins:
+                newPinName = self.graphManager.getUniqName(i.name)
+                graphOutputs.onAddInPin(newPinName, i.dataType)
+
+        def connectPins(compoundNode, inputs, outputs):
+            for o in inputs:
+                exposedPin = compoundNode.getPin(o.name)
+                if exposedPin:
+                    self.connectPinsInternal(exposedPin, o)
+
+            for i in outputs:
+                exposedPin = compoundNode.getPin(i.name)
+                if exposedPin:
+                    self.connectPinsInternal(i, exposedPin)
+
+        # QtCore.QTimer.singleShot(50, lambda: connectPins(uiCompoundNode, inputPins, outputPins))
+
+        self.graphManager.selectGraph(activeGraphName)
 
     def populateMenu(self):
         self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
@@ -833,7 +902,7 @@ class Canvas(QGraphicsView):
             QApplication.clipboard().setText(copyJsonStr)
             return copyJsonStr
 
-    def pasteNodes(self, move=True, data=None):
+    def pasteNodes(self, move=True, data=None, writeHistory=True):
         if not data:
             nodes = None
             try:
@@ -854,7 +923,11 @@ class Canvas(QGraphicsView):
         createdNodes = {}
         for node in nodesData:
 
-            n = self.createNode(node)
+            if writeHistory:
+                n = self.createNode(node)
+            else:
+                n = self._createNode(node)
+
             if n is None:
                 continue
             createdNodes[n] = node
@@ -1548,11 +1621,6 @@ class Canvas(QGraphicsView):
 
     def stepToCompound(self, compoundNode):
         self.graphManager.selectGraph(compoundNode)
-
-        def nodeShapeUpdater():
-            for node in self.nodes.values():
-                node.updateNodeShape()
-        QtCore.QTimer.singleShot(50, nodeShapeUpdater)
 
     def drawBackground(self, painter, rect):
         super(Canvas, self).drawBackground(painter, rect)

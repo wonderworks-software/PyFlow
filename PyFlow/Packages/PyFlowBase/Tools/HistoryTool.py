@@ -4,6 +4,7 @@ from Qt import QtGui
 from Qt.QtWidgets import QUndoView
 from Qt.QtWidgets import QWidget
 from Qt.QtWidgets import QVBoxLayout
+from Qt.QtWidgets import QPushButton
 
 from PyFlow.Packages.PyFlowBase.Tools import RESOURCES_DIR
 from PyFlow.UI.Tool.Tool import DockTool
@@ -23,6 +24,8 @@ class HistoryTool(DockTool):
         self.undoStackView = QUndoView(self)
         self.undoStackView.setObjectName("undoStackView")
         self.verticalLayout.addWidget(self.undoStackView)
+        self.pbClearHistory = QPushButton("Clear history")
+        self.verticalLayout.addWidget(self.pbClearHistory)
         self.setWidget(self.content)
 
     @staticmethod
@@ -32,6 +35,7 @@ class HistoryTool(DockTool):
     def onShow(self):
         super(HistoryTool, self).onShow()
         self.undoStackView.setStack(self.pyFlowInstance.undoStack)
+        self.pbClearHistory.clicked.connect(self.pyFlowInstance.undoStack.clear)
 
     @staticmethod
     def defaultDockArea():
