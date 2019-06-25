@@ -1,0 +1,96 @@
+from Qt import QtCore
+from Qt import QtGui
+from Qt.QtWidgets import QGraphicsItem,QGraphicsWidget,QSizePolicy
+
+from PyFlow.Core.Common import getConnectedPins
+from PyFlow.UI import RESOURCES_DIR
+from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Canvas.Painters import NodePainter
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+
+
+class UIRerouteNode(UINodeBase):
+    def __init__(self, raw_node):
+        self.drawlabel = False
+        super(UIRerouteNode, self).__init__(raw_node)
+        self.hover = False
+        self.headColorOverride = Colors.Gray
+        self.color = Colors.DarkGray
+        self._size = 10
+        self.nodeLayout.removeItem(self.headerLayout)
+        self.headerLayout.removeItem(self.nodeNameWidget)
+        self.nodeNameWidget.hide()
+        #self.setLayout(None)
+        #self.image = RESOURCES_DIR + "/reroute.svg"
+        self.setAcceptHoverEvents(True)
+        self.drawRect = QtCore.QRectF(0,0,10,10)
+
+    def createActionButtons(self):
+        pass
+
+    def sizeHint(self, which, constraint):
+        return QtCore.QSizeF(self.boundingRect().width(), self.boundingRect().height())
+
+    def boundingRect(self):
+        self._rect.setWidth(self._size*2)
+        self._rect.setHeight(self._size)
+        #self._rect.moveLeft(self._size/4)
+        return self._rect
+
+    def showPins(self):
+        self.input.show()
+        self.output.show()
+        self.input.setPos(-self.input.pinSize,1.5)
+        self.output.setPos(self._size+self.input.pinSize/1.5,1.5)
+
+    def hidePins(self):
+        self.input.hide()
+        self.output.hide() 
+        self.input.setPos(0,6)
+        self.output.setPos(0,6)
+
+    def mousePressEvent(self,event):
+        super(UIRerouteNode, self).mousePressEvent(event)
+        self.hidePins()
+
+    def hoverEnterEvent(self, event):
+        super(UIRerouteNode, self).hoverEnterEvent(event)
+        self.showPins()
+
+    def hoverLeaveEvent(self, event):
+        super(UIRerouteNode, self).hoverLeaveEvent(event)
+        self.hidePins()
+
+    def kill(self, *args, **kwargs):
+        inp = list(self.UIinputs.values())[0]
+        out = list(self.UIoutputs.values())[0]
+        newOuts = []
+        for i in self.UIoutputs.values():
+            for connection in i.connections:
+                newOuts.append([connection.destination(), connection.drawDestination])
+        if inp.connections:
+            source = inp.connections[0].source()
+            for out in newOuts:
+                drawSource = inp.connections[0].drawSource
+                self.canvasRef().connectPins(source, out[0])
+        super(UIRerouteNode, self).kill()
+
+    def postCreate(self, jsonTemplate=None):
+        super(UIRerouteNode, self).postCreate(jsonTemplate)
+        self.input = self.getPin("in")
+        self.output = self.getPin("out")
+        self.input.bLabelHidden = True
+        self.output.bLabelHidden = True
+        self.inputsLayout.removeItem(self.input)
+        self.outputsLayout.removeItem(self.output)
+        self.input.setDisplayName("")
+        self.output.setDisplayName("")
+        self.input.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+        self.output.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+        self.input.setPos(-self.input.pinSize,1.5)
+        self.output.setPos(self._size+self.input.pinSize/1.5,1.5)        
+        self.updateNodeShape()
+
+    def paint(self, painter, option, widget):
+        NodePainter.asRerouteNode(self, painter, option, widget)      
+       
