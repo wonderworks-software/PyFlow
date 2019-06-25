@@ -168,11 +168,19 @@ class NodeBoxTreeWidget(QTreeWidget):
                             self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                         else:
                             if pinDirection == PinDirection.Output:
-                                if dataType in fooInpTypes and pinStructure in fooInpStructs:
-                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                if pinStructure != PinStructure.Multi:
+                                    if dataType in fooInpTypes and pinStructure in fooInpStructs:
+                                        self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                else:
+                                    if dataType in fooInpTypes:
+                                        self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                             else:
-                                if dataType in fooOutTypes and pinStructure in fooOutStructs:
-                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                if pinStructure != PinStructure.Multi:
+                                    if dataType in fooOutTypes and pinStructure in fooOutStructs:
+                                        self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                else:
+                                    if dataType in fooOutTypes:
+                                        self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
 
             # class based nodes
             for node_class in package.GetNodeClasses().values():

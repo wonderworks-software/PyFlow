@@ -465,6 +465,19 @@ class PinBase(IPin):
         self.changeStructure(other._currStructure)
         self.onPinConnected.send(other)
 
+    def getCurrentStructure(self):
+        if self.structureType == PinStructure.Multi:
+            if self._alwaysSingle:
+                return PinStructure.Single
+            elif self._alwaysList:
+                return PinStructure.Array
+            elif self._alwaysDict:
+                return PinStructure.Dict
+            else:
+                return self.structureType
+        else:
+            return self.structureType
+
     def changeStructure(self, newStruct, init=False):
         free = self.canChangeStructure(newStruct, [], init=init)
         if free:

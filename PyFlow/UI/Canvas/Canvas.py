@@ -1487,7 +1487,7 @@ class Canvas(QGraphicsView):
             if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
                 if not type(self.pressed_item) is PinGroup:
                     # suggest nodes that can be connected to pressed pin
-                    self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction, self.pressed_item.structureType)
+                    self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction, self.pressed_item._rawPin.getCurrentStructure())
         self.manipulationMode = CanvasManipulationMode.NONE
         if not self.resizing:
             p_itm = self.pressedPin
