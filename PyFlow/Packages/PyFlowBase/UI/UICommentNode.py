@@ -45,6 +45,8 @@ class UICommentNode(UINodeBase):
         self.partiallyIntersectedConnections = set()
         self.partiallyIntersectedConnectionsEndpointOverrides = {}
         self.roundness = 3
+        self.headerLayout.removeItem(self.nodeNameWidget)
+        self.nodeNameWidget.setPos(0,0)
 
     def updateNodeShape(self):
         super(UICommentNode, self).updateNodeShape()
@@ -91,7 +93,6 @@ class UICommentNode(UINodeBase):
 
     def updateOwningCommentNode(self):
         super(UICommentNode, self).updateOwningCommentNode()
-
         if self.owningCommentNode is not None:
             self.setZValue(self.owningCommentNode.zValue() + 1)
 
@@ -101,7 +102,6 @@ class UICommentNode(UINodeBase):
     def mousePressEvent(self, event):
         self.mousePressPos = event.pos()
         super(UICommentNode, self).mousePressEvent(event)
-
         zValue = self.zValue()
         partiallyCollidedComments = set()
         for node in self.getCollidedNodes(False):

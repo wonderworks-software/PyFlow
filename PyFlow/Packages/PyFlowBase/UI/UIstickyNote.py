@@ -31,6 +31,8 @@ class UIstickyNote(UINodeBase):
         self.textWidget.setGraphicsItem(self.textInput)
         self.nodeLayout.addItem(self.textWidget)
         self.NonFormatedText = self.textInput.toPlainText()
+        self.headerLayout.removeItem(self.nodeNameWidget)
+        self.nodeNameWidget.setPos(0,0)        
         self.updateSize()
 
     def serializationHook(self):
