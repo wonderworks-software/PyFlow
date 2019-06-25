@@ -48,6 +48,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.rerouteExecs import rerouteExecs
 from PyFlow.Packages.PyFlowBase.Nodes.makeArray import makeArray
 from PyFlow.Packages.PyFlowBase.Nodes.makeList import makeList
 from PyFlow.Packages.PyFlowBase.Nodes.makeDict import makeDict
+from PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict import makeAnyDict
 from PyFlow.Packages.PyFlowBase.Nodes.makeDictElement import makeDictElement
 from PyFlow.Packages.PyFlowBase.Nodes.dictKeys import dictKeys
 from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
@@ -129,6 +130,7 @@ _NODES = {
     makeArray.__name__: makeArray,
     makeList.__name__: makeList,
     makeDict.__name__: makeDict,
+    makeAnyDict.__name__: makeAnyDict,
     makeDictElement.__name__: makeDictElement,
     consoleOutput.__name__: consoleOutput,
     forEachLoop.__name__: forEachLoop,

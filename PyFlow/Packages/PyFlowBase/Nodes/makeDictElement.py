@@ -54,7 +54,6 @@ class makeDictElement(NodeBase):
                 self.constraints[self.key.constraint].remove(dictNode.KeyType)
             if self.key in dictNode.constraints[self.key.constraint]:    
                 dictNode.constraints[self.key.constraint].remove(self.key)
-
         self.outPinConnected(self.outArray)
 
     def outPinConnected(self,inp):
@@ -63,7 +62,6 @@ class makeDictElement(NodeBase):
             dataType = dictNode.KeyType.dataType
             if not self.key.checkFree([]):
                 dataType = self.key.dataType
-
             if dictNode.KeyType not in self.constraints[self.key.constraint]:
                 self.constraints[self.key.constraint].append(dictNode.KeyType)
             if self.key not in dictNode.constraints[self.key.constraint]:    
