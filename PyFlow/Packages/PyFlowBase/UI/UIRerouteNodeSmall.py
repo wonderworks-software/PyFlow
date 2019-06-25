@@ -46,8 +46,8 @@ class UIRerouteNode(UINodeBase):
     def hidePins(self):
         self.input.hide()
         self.output.hide() 
-        self.input.setPos(0,6)
-        self.output.setPos(0,6)
+        self.input.setPos(0,1.5)
+        self.output.setPos(0,1.5)
 
     def mousePressEvent(self,event):
         super(UIRerouteNode, self).mousePressEvent(event)
