@@ -121,10 +121,11 @@ class UIPinBase(QGraphicsWidget):
 
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
         halfPinSize = self.pinSize / 2
-        pinX = 0 + halfPinSize + self.pinSize - halfPinSize
+        pinX = self.pinSize
         pinY = (frame.height() / 2)
-        if self.direction == PinDirection.Output:
-            pinX = frame.width() - self.pinSize + halfPinSize
+        if not self.bLabelHidden:
+            if self.direction == PinDirection.Output:
+                pinX = frame.width() - self.pinSize + halfPinSize
         result = QtCore.QPointF(pinX, pinY)
         if self.owningNode().collapsed:
             labelHeight = self.owningNode().labelHeight
