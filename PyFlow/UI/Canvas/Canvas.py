@@ -378,7 +378,7 @@ class Canvas(QGraphicsView):
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
 
-        self.node_box = NodesBox(None)
+        self.node_box = NodesBox(self)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
         self._UIConnections = {}
