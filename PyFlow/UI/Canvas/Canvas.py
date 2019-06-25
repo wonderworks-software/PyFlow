@@ -142,7 +142,7 @@ class SceneClass(QGraphicsScene):
             if self.tempnode:
                 self.tempnode.setPos(
                     (self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
-                mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x() - 1, event.scenePos().y() - 1),
+                mouseRect = QtCore.QRectF(QtCore.QPoint(event.scenePos().x() - 1, event.scenePos().y() - 1),
                                          QtCore.QPoint(event.scenePos().x() + 1, event.scenePos().y() + 1))
                 hoverItems = self.items(mouseRect)
                 for item in hoverItems:
