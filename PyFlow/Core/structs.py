@@ -1,3 +1,5 @@
+
+
 class Tick(object):
     """ Element Fro Ramp Widgets___Basic U,V Attribute holder """
     def __init__(self):
@@ -17,19 +19,20 @@ class Tick(object):
     def setV(self, v):
         self._v = v
 
-    def setSelected(self,selected):
+    def setSelected(self, selected):
         self._selected = selected
 
     def isSelected(self):
         return self._selected
-        
+
+
 class splineRamp(object):
 
     """ Ramp/Curve Editor with evaluateAt support , clamped to 0,1 in both x and y"""
     def __init__(self):
         self.items = []
 
-    def __getitem__(self,index):
+    def __getitem__(self, index):
         if len(self.items) and index in range(0, len(self.items)):
             return self.sortedItems()[index]
         else:
@@ -51,18 +54,18 @@ class splineRamp(object):
     def clear(self):
         self.items = []
 
-    def addItem(self,u,v):
+    def addItem(self, u, v):
         item = Tick()
         item.setU(u)
         item.setV(v)
         self.items.append(item)
         return(item)
 
-    def removeItem(self,item=None,index=-1):
+    def removeItem(self, item=None, index=-1):
         if item:
             if item in self.items:
                 self.items.remove(item)
-        elif index in range(0, len(self.items)- 1):
+        elif index in range(0, len(self.items) - 1):
             self.items.remove(self.items[index])
 
     def setU(self, u, index=-1):
@@ -73,7 +76,7 @@ class splineRamp(object):
         if index in range(0, len(self.items) - 1):
             self.sortedItems()[index].setV(v)
 
-    def evaluateAt(self, value,bezier = False):
+    def evaluateAt(self, value, bezier=False):
         items = self.sortedItems()
         if len(items) > 1:
             if value >= items[-1].getU():
@@ -82,11 +85,11 @@ class splineRamp(object):
                 return items[0].getV()
 
             if bezier:
-                if isinstance(items[0].getV(),list):
+                if isinstance(items[0].getV(), list):
                     v = []
                     for i in range(len(items[0].getV())):
-                        v.append(self.interpolateBezier([p.getV()[i] for p in items], 0, len(items) - 1, value))         
-                else:       
+                        v.append(self.interpolateBezier([p.getV()[i] for p in items], 0, len(items) - 1, value))
+                else:
                     v = self.interpolateBezier([p.getV() for p in items], 0, len(items) - 1, value)
             else:
                 interval = len(items) - 1
@@ -99,12 +102,12 @@ class splineRamp(object):
                     items[interval].getU() - items[interval - 1].getU())) + 0.0))
 
                 start = items[interval].getV()
-                end = items[interval - 1].getV()                
-                if isinstance(start,list) and isinstance(end,list) and len(start) == len(end):
+                end = items[interval - 1].getV()
+                if isinstance(start, list) and isinstance(end, list) and len(start) == len(end):
                     v = []
-                    for i,element in enumerate(start):
+                    for i, element in enumerate(start):
                         v.append(self.interpolateLinear(start[i], end[i], u))
-                elif not isinstance(start,list) or not isinstance(end,list):
+                elif not isinstance(start, list) or not isinstance(end, list):
                     v = self.interpolateLinear(start, end, u)
 
             return v
@@ -113,7 +116,7 @@ class splineRamp(object):
         else:
             return 0.0
 
-    def interpolateBezier(self,coorArr, i, j, t):
+    def interpolateBezier(self, coorArr, i, j, t):
         if j == 0:
             return coorArr[i]
         return self.interpolateBezier(coorArr, i, j - 1, t) * (1 - t) + self.interpolateBezier(coorArr, i + 1, j - 1, t) * t
@@ -123,8 +126,7 @@ class splineRamp(object):
 
 if __name__ == '__main__':
     ramp = splineRamp()
-    ramp.addItem(0.1,[0.0,0.0,0.0])
-    ramp.addItem(1.0,[1.0,1.0,1.0])
+    ramp.addItem(0.1, [0.0, 0.0, 0.0])
+    ramp.addItem(1.0, [1.0, 1.0, 1.0])
 
-    print ramp.evaluateAt(0.5,bezier=True)
-    #print ramp.evaluateAt(0.5,bezier=False)
+    print(ramp.evaluateAt(0.5, bezier=True))
