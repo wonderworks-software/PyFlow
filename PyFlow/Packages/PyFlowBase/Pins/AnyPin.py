@@ -99,7 +99,7 @@ class AnyPin(PinBase):
                     neighbor.clearError()
                     neighbor.super = AnyPin
                 traversed.append(neighbor)
-                neighbor.updateError(traversed,neighbor.activeDataType == "AnyPin" or neighbor.prevDataType == "AnyPin")
+                neighbor.updateError(traversed,updateNeis)
                 if updateNeis:
                     neighbor.owningNode().checkForErrors()
 

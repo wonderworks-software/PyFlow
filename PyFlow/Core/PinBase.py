@@ -376,8 +376,8 @@ class PinBase(IPin):
                 elif isinstance(data, dictElement):
                     self._data.clear()
                     self._data[data[0]] = self.super.processData(data[1])
-                else:
-                    raise Exception("Non Valid Dict Input")
+                #else:
+                #    raise Exception("Non Valid Dict Input")
 
             if self.direction == PinDirection.Output:
                 for i in self.affects:
