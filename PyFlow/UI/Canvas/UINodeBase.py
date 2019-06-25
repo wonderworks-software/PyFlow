@@ -295,12 +295,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
 
         self.nodeNameWidget = NodeName(self)
-        self.headerLayout.addItem(self.nodeNameWidget)
+        #self.headerLayout.addItem(self.nodeNameWidget)
+        self.nodeNameWidget.setPos(0,1)
 
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         self.headerLayout.setSpacing(3)
 
-        self.headerLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+        self.headerLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.headerLayout.setMaximumHeight(self.labelHeight)
 
         self.exposedActionButtonsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)

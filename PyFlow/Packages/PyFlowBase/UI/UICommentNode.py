@@ -45,8 +45,6 @@ class UICommentNode(UINodeBase):
         self.partiallyIntersectedConnections = set()
         self.partiallyIntersectedConnectionsEndpointOverrides = {}
         self.roundness = 3
-        self.headerLayout.removeItem(self.nodeNameWidget)
-        self.nodeNameWidget.setPos(0,0)
 
     def updateNodeShape(self):
         super(UICommentNode, self).updateNodeShape()
