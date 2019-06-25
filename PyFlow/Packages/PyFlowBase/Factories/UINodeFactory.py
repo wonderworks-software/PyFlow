@@ -29,7 +29,7 @@ from PyFlow.Packages.PyFlowBase.UI.UISetVarNode import UISetVarNode
 from PyFlow.Packages.PyFlowBase.UI.UISequenceNode import UISequenceNode
 from PyFlow.Packages.PyFlowBase.UI.UICommentNode import UICommentNode
 from PyFlow.Packages.PyFlowBase.UI.UIstickyNote import UIstickyNote
-from PyFlow.Packages.PyFlowBase.UI.UIRerouteNode import UIRerouteNode
+from PyFlow.Packages.PyFlowBase.UI.UIRerouteNodeSmall import UIRerouteNode
 from PyFlow.Packages.PyFlowBase.UI.UIPythonNode import UIPythonNode
 from PyFlow.Packages.PyFlowBase.UI.UIGraphNodes import (
     UIGraphInputs,
