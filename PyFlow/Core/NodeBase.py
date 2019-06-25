@@ -656,6 +656,8 @@ class NodeBase(INode):
                 p.disableOptions(returnPinOptionsToDisable)
             if not p.isArray() and p.optionEnabled(PinOptions.ArraySupported):
                 p.structureType = PinStructure.Multi
+            elif p.isArray():
+                p.structureType = PinStructure.Array
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
@@ -700,6 +702,8 @@ class NodeBase(INode):
                     outRef.disableOptions(pinOptionsToDisable)
                 if not outRef.isArray() and outRef.optionEnabled(PinOptions.ArraySupported):
                     outRef.structureType = PinStructure.Multi
+                elif outRef.isArray():
+                    outRef.structureType = PinStructure.Array
                 refs.append(outRef)
             else:
                 pinDataType = pinDescriptionTuple[0]
@@ -733,6 +737,7 @@ class NodeBase(INode):
                     inp.disableOptions(pinOptionsToDisable)
                 if not inp.isArray() and inp.optionEnabled(PinOptions.ArraySupported):
                     inp.structureType = PinStructure.Multi
-
+                elif inp.isArray():
+                    inp.structureType = PinStructure.Array
         raw_inst.autoAffectPins()
         return raw_inst
