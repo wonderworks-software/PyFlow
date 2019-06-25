@@ -469,7 +469,7 @@ class PinBase(IPin):
         free = self.canChangeStructure(newStruct, [], init=init)
         if free:
             self.updateConstrainedPins(set(), newStruct, init, connecting=True)
-            self.structureType = newStruct
+            #self.structureType = newStruct
 
     def canChangeStructure(self, newStruct, checked=[], selfChek=True, init=False):
         if not init and (self._alwaysList or self._alwaysSingle or self._alwaysDict):
