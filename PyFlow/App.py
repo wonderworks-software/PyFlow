@@ -356,8 +356,11 @@ class PyFlow(QMainWindow):
     def createPopupMenu(self):
         pass
 
-    def getToolClassByName(self, packageName, toolName, toolClass=DockTool):
+    def getToolClassByName(self, z, toolName, packageName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
+
+        print(self,z, toolName, packageName, toolClass)
+
         for ToolClass in registeredTools[packageName]:
             if issubclass(ToolClass, toolClass):
                 if ToolClass.name() == toolName:
@@ -375,10 +378,10 @@ class PyFlow(QMainWindow):
     def getRegisteredTools(self):
         return self._tools
 
-    def invokeDockToolByName(self, packageName, name, settings=None):
+    def invokeDockToolByName(self, z, name, packageName, settings=None):
         # invokeDockToolByName Invokes dock tool by tool name and package name
         # If settings provided QMainWindow::restoreDockWidget will be called instead QMainWindow::addDockWidget
-        toolClass = self.getToolClassByName(packageName, name, DockTool)
+        toolClass = self.getToolClassByName(1234, name, packageName,DockTool)
         if toolClass is None:
             return
         isSingleton = toolClass.isSingleton()
@@ -391,6 +394,7 @@ class PyFlow(QMainWindow):
                         # Highlight window
                         print("highlight", tool.uniqueName())
                 return
+
         ToolInstance = self.createToolInstanceByClass(packageName, name, DockTool)
         if ToolInstance:
             self.registerToolInstance(ToolInstance)
@@ -404,6 +408,7 @@ class PyFlow(QMainWindow):
             ToolInstance.setAppInstance(self)
             ToolInstance.onShow()
         return ToolInstance
+
 
     def closeEvent(self, event):
         self.tick_timer.stop()
@@ -543,7 +548,11 @@ class PyFlow(QMainWindow):
                     icon = ToolClass.getIcon()
                     if icon:
                         showToolAction.setIcon(icon)
-                    showToolAction.triggered.connect(lambda pkgName=packageName, toolName=ToolClass.name(): instance.invokeDockToolByName(pkgName, toolName))
+
+
+                    showToolAction.triggered.connect(lambda z=4321, toolName=ToolClass.name(), pkgname=packageName: instance.invokeDockToolByName(z, toolName, pkgname))
+
+
 
                     settings.beginGroup("DockTools")
                     childGroups = settings.childGroups()
@@ -553,7 +562,7 @@ class PyFlow(QMainWindow):
                         if dockToolGroupName in [t.uniqueName() for t in instance._tools]:
                             continue
                         toolName = dockToolGroupName.split("::")[0]
-                        instance.invokeDockToolByName(packageName, toolName, settings)
+                        instance.invokeDockToolByName(4321, toolName, packageName, settings)
                         settings.endGroup()
                     settings.endGroup()
 
