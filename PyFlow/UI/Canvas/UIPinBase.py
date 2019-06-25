@@ -375,7 +375,7 @@ class UIPinBase(QGraphicsWidget):
         self.update()
         self.hovered = True
         supportedTypes = self._rawPin.allowedDataTypes([], self._rawPin._supportedDataTypes)
-        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}\nStructure: {3}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes, str(self._rawPin.structureType))
+        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}\nStructure: {3}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes, str(self._rawPin.getCurrentStructure()))
         self.setToolTip(hoverMessage)
         event.accept()
 
