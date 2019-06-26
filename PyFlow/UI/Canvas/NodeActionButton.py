@@ -34,7 +34,7 @@ class NodeActionButtonBase(QGraphicsWidget):
             self.parentItem().setSelected(False)
 
         if self.action is not None and self.hasFocus():
-            self.action.triggered.emit()
+            self.action.triggered.emit(True)
             self.clearFocus()
 
     def setGeometry(self, rect):
