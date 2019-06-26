@@ -142,7 +142,6 @@ class NodeBase(INode):
                     return self.getter(str(pinName))
                 except:
                     raise Exception("Could not find pin with name:{0}".format(pinName))
-                    
             else:
                 raise Exception("Could not find signature for __getitem__:{0}".format(type(pinName)))
 
