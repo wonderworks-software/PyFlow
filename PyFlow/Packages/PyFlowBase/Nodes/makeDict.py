@@ -43,6 +43,10 @@ class makeDict(NodeBase):
     def description():
         return 'Creates a list from connected pins'
 
+    def postCreate(self,jsonData):
+        super(makeDict,self).postCreate(jsonData)
+        self.updateDicts(self.KeyType.dataType)
+        
     def updateDicts(self,dataType):
         self.arrayData.updateConectedDicts([],self.KeyType.dataType)
 
