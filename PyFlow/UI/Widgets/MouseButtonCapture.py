@@ -8,8 +8,9 @@ class MouseButtonCaptureWidget(QPushButton):
 
     def __init__(self, parent=None):
         super(MouseButtonCaptureWidget, self).__init__(parent)
-        self._currentButton = QtCore.Qt.MouseButton.NoButton
-        self.setText(self._currentButton.name.decode('utf-8'))
+        self._currentButton = QtCore.Qt.NoButton
+        # noButton has not a name
+        #self.setText(self._currentButton.name.decode('utf-8'))
         self.bCapturing = False
         self.setCheckable(True)
         self.setToolTip("<b>Esc</b> will set button to <u>NoButton</u> clear.<br><b>Left mouse button</b> will initiate capturing")
@@ -29,7 +30,7 @@ class MouseButtonCaptureWidget(QPushButton):
     def keyPressEvent(self, event):
         super(MouseButtonCaptureWidget, self).keyPressEvent(event)
         if event.key() == QtCore.Qt.Key_Escape:
-            self.currentButton = QtCore.Qt.MouseButton.NoButton
+            self.currentButton = QtCore.Qt.NoButton
 
     def mousePressEvent(self, event):
         button = event.button()

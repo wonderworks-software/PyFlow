@@ -236,6 +236,7 @@ class ThemePreferences(CategoryWidgetBase):
         settings.setValue("Theme_Name", self.selector.currentText())
 
 
+
 class PreferencesWindow(QMainWindow):
     """docstring for PreferencesWindow."""
     def __init__(self, parent=None):
@@ -331,10 +332,13 @@ class PreferencesWindow(QMainWindow):
         settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
         settings.beginGroup("Preferences")
         for name, indexWidget in self._indexes.items():
-            index, widget = indexWidget
-            settings.beginGroup(name)
-            widget.serialize(settings)
-            settings.endGroup()
+            try:
+                index, widget = indexWidget
+                settings.beginGroup(name)
+                widget.serialize(settings)
+                settings.endGroup()
+            except Exception as e:
+                QMessageBox.critical(None, "Fatal error", str(e))
         settings.endGroup()
         settings.sync()
 

@@ -24,7 +24,7 @@ class KeyboardModifiersCaptureWidget(QPushButton):
 
     @staticmethod
     def modifiersToString(modifiers):
-        if modifiers == QtCore.Qt.KeyboardModifier.NoModifier:
+        if modifiers == QtCore.Qt.NoModifier:
             return "NoModifier"
         return QtGui.QKeySequence(modifiers).toString()[:-1]
 
