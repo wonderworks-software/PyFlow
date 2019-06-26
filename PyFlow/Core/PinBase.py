@@ -510,18 +510,18 @@ class PinBase(IPin):
                             free = True
                         else:
                             free = False
-                            break  
-                    return free                  
+                            break
+                    return free
                 if self._currStructure == PinStructure.Single and newStruct == PinStructure.Array and not self.optionEnabled(PinOptions.ArraySupported) and self.hasConnections():
                     free = testfree()
                 elif self._currStructure == PinStructure.Single and newStruct == PinStructure.Dict and not self.optionEnabled(PinOptions.DictSupported) and self.hasConnections():
-                    free = testfree()                      
+                    free = testfree()
                 elif self._currStructure == PinStructure.Array and newStruct == PinStructure.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections():
                     free = testfree()
                 elif self._currStructure == PinStructure.Array and newStruct == PinStructure.Dict and self.hasConnections():
-                    free = testfree()                    
+                    free = testfree()
                 elif self._currStructure == PinStructure.Dict and newStruct == PinStructure.Array and self.hasConnections():
-                    free = testfree()    
+                    free = testfree()
                 elif self._currStructure == PinStructure.Dict and newStruct == PinStructure.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections():
                     free = testfree()
             if free:

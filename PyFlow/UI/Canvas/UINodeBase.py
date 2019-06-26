@@ -448,6 +448,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def setName(self, name):
         self._rawNode.setName(name)
+
     def serialize(self):
         return self._rawNode.serialize()
 
