@@ -533,21 +533,19 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     @property
     def UIinputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.pins:
-            if rawPin.direction == PinDirection.Input:
-                wrapper = rawPin.getWrapper()
-                if wrapper is not None:
-                    result[rawPin.uid] = wrapper()
+        for rawPin in self._rawNode.orderedInputs.values():
+            wrapper = rawPin.getWrapper()
+            if wrapper is not None:
+                result[rawPin.uid] = wrapper()
         return result
 
     @property
     def UIoutputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.pins:
-            if rawPin.direction == PinDirection.Output:
-                wrapper = rawPin.getWrapper()
-                if wrapper is not None:
-                    result[rawPin.uid] = wrapper()
+        for rawPin in self._rawNode.orderedOutputs.values():
+            wrapper = rawPin.getWrapper()
+            if wrapper is not None:
+                result[rawPin.uid] = wrapper()
         return result
 
     @property

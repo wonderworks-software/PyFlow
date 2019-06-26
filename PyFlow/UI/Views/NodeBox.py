@@ -38,7 +38,7 @@ class NodeBoxTreeWidget(QTreeWidget):
     showInfo = QtCore.Signal(object)
     hideInfo = QtCore.Signal()
 
-    def __init__(self, parent,canvas, bNodeInfoEnabled=True, useDragAndDrop=True):
+    def __init__(self, parent, canvas, bNodeInfoEnabled=True, useDragAndDrop=True):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
@@ -257,8 +257,19 @@ class NodeBoxTreeWidget(QTreeWidget):
             a = self.canvas.mapToScene(self.canvas.mouseReleasePos)
             jsonTemplate["x"] = a.x()
             jsonTemplate["y"] = a.y()
-            self.canvas.createNode(jsonTemplate)
-            self.parent().parent().parent().hide()
+            node = self.canvas.createNode(jsonTemplate)
+            self.canvas.hideNodeBox()
+            pressedPin = self.canvas.pressedPin
+            if pressedPin.direction == PinDirection.Input:
+                for pin in node.UIoutputs.values():
+                    wire = self.canvas.connectPinsInternal(pressedPin, pin)
+                    if wire is not None:
+                        break
+            if pressedPin.direction == PinDirection.Output:
+                for pin in node.UIinputs.values():
+                    wire = self.canvas.connectPinsInternal(pin, pressedPin)
+                    if wire is not None:
+                        break
         else:
             drag = QtGui.QDrag(self)
             mime_data = QtCore.QMimeData()

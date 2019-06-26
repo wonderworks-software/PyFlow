@@ -126,12 +126,12 @@ class NodeBase(INode):
     def getOrderedPins(self):
         return self.pinsCreationOrder.values()
 
-    def getter(self,pinName):
+    def getter(self, pinName):
         pin = self.getPin(pinName)
         if not pin:
             raise Exception()
         else:
-            return pin        
+            return pin
 
     def __getitem__(self, pinName):
         try:

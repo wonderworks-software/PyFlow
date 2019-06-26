@@ -618,13 +618,16 @@ class Canvas(QGraphicsView):
         if dataType is None:
             self.node_box.lineEdit.setFocus()
 
+    def hideNodeBox(self):
+        self.node_box.hide()
+        self.node_box.lineEdit.clear()
+
     def shoutDown(self, *args, **kwargs):
         for ed in self.codeEditors.values():
             ed.deleteLater()
         self.scene().clear()
         self._UIConnections.clear()
-        self.node_box.hide()
-        self.node_box.lineEdit.clear()
+        self.hideNodeBox()
         for node in self.nodes.values():
             node.shoutDown()
 
