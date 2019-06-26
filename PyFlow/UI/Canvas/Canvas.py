@@ -52,6 +52,7 @@ from PyFlow.Core.Common import *
 
 from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyFlowBase.UI.UIRerouteNode import UIRerouteNode
+from PyFlow.Packages.PyFlowBase.UI.UIRerouteNodeSmall import UIRerouteNodeSmall
 from PyFlow.Packages.PyFlowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
@@ -333,6 +334,7 @@ class Canvas(QGraphicsView):
         self.released_item = None
         self.resizing = False
         self.hoverItems = []
+        self.hoveredRerutes = []
         self.bPanMode = False
         self._isPanning = False
         self._mousePressed = False
@@ -1303,6 +1305,23 @@ class Canvas(QGraphicsView):
         self.setSceneRect(rect)
         self.update()
 
+    def updateRerutes(self,event,showPins=False):
+        tolerance = 9 * self.currentViewScale()
+        mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - tolerance, event.pos().y() - tolerance),
+                                 QtCore.QPoint(event.pos().x() + tolerance, event.pos().y() + tolerance))
+        hoverItems = self.items(mouseRect)
+        self.hoveredRerutes += [node for node in hoverItems if isinstance(node, UIRerouteNodeSmall)]
+        for node in self.hoveredRerutes:
+            if showPins:
+                if node in hoverItems:
+                    node.showPins()
+                else:
+                    node.hidePins()
+                    self.hoveredRerutes.remove(node)
+            else:
+                node.hidePins()
+                self.hoveredRerutes.remove(node)
+
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
@@ -1328,12 +1347,14 @@ class Canvas(QGraphicsView):
             if self.realTimeLine not in self.scene().items():
                 self.scene().addItem(self.realTimeLine)
 
-            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 5, event.pos().y() - 4),
-                                     QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
-            hoverItems = self.items(mouseRect)
+            self.updateRerutes(event,True)
 
             p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
             p2 = self.mapToScene(self.mousePos)
+
+            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 5, event.pos().y() - 4),
+                                     QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
+            hoverItems = self.items(mouseRect)
 
             hoveredPins = [pin for pin in hoverItems if isinstance(pin, UIPinBase)]
             if len(hoveredPins) > 0:
@@ -1460,7 +1481,7 @@ class Canvas(QGraphicsView):
                 for node in selectedNodes:
                     node.translate(scaledDelta.x(), scaledDelta.y())
 
-            if isinstance(node, UIRerouteNode) and modifiers == QtCore.Qt.AltModifier:
+            if (isinstance(node, UIRerouteNode) or isinstance(node, UIRerouteNodeSmall)) and modifiers == QtCore.Qt.AltModifier:
                 mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
                                          QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
                 hoverItems = self.items(mouseRect)
@@ -1600,7 +1621,7 @@ class Canvas(QGraphicsView):
         elif event.button() == QtCore.Qt.LeftButton:
             self.requestClearProperties.emit()
         self.resizing = False
-
+        self.updateRerutes(event,False)
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), False)
 
     def removeItemByName(self, name):
