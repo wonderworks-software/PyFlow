@@ -20,15 +20,13 @@ class colorRamp(NodeBase):
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('FloatPin')
         helper.addOutputDataType('FloatPin')
-        # helper.addInputStruct(PinStructure.Single)
         helper.addInputStruct(PinStructure.Multi)
-        # helper.addInputStruct(PinStructure.Array)
         helper.addOutputStruct(PinStructure.Array)
         return helper
 
     def serialize(self):
         orig = super(colorRamp, self).serialize()
-        orig["ramp"] = [[x.getU(),x.getV()] for x in self.ramp.sortedItems()]
+        orig["ramp"] = [[x.getU(), x.getV()] for x in self.ramp.sortedItems()]
         orig["curveType"] = self._curveType
         return orig
 
