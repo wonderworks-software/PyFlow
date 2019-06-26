@@ -456,15 +456,23 @@ class Canvas(QGraphicsView):
                 wires.extend(pin.uiConnectionList)
 
         inputPins = list()
+        inputConectionList = dict()
         outputPins = list()
-
+        outputConectionList = dict()
         for wire in wires:
             if wire.source().owningNode().isSelected() and not wire.destination().owningNode().isSelected():
                 if wire.destination() not in outputPins:
                     outputPins.append(wire.destination())
+                    outputConectionList[wire.destination()] = [[wire.source().owningNode().name,wire.source().name]]
+                else:
+                    outputConectionList[wire.destination()].append([wire.source().owningNode().name,wire.source().name])
+
             if not wire.source().owningNode().isSelected() and wire.destination().owningNode().isSelected():
                 if wire.source() not in inputPins:
                     inputPins.append(wire.source())
+                    inputConectionList[wire.source()] = [[wire.destination().owningNode().name,wire.destination().name]]
+                else:
+                    inputConectionList[wire.source()].append([wire.destination().owningNode().name,wire.destination().name])
 
         self.copyNodes()
         for node in selectedNodes:
@@ -484,6 +492,9 @@ class Canvas(QGraphicsView):
         uiCompoundNode.stepIn()
         self.pasteNodes(move=False, writeHistory=False)
 
+        newInputPins = dict()
+        newOutputPins = dict()
+
         if len(inputPins) > 0:
             graphInputsTemplate = NodeBase.jsonTemplate()
             graphInputsTemplate['package'] = 'PyFlowBase'
@@ -496,8 +507,12 @@ class Canvas(QGraphicsView):
             graphInputs = self._createNode(graphInputsTemplate)
 
             for o in inputPins:
-                newPinName = self.graphManager.getUniqName(o.name)
-                graphInputs.onAddOutPin(o.name, o.dataType)
+                newPinName = self.graphManager.getUniqName(o.owningNode().name)
+                newPin = graphInputs.onAddOutPin(newPinName, o.dataType)
+                newInputPins[o] = newPin
+                for n in inputConectionList[o]:
+                    node = self.findNode(n[0])
+                    self.connectPins(newPin,node.getPin(n[1]))
 
         if len(outputPins) > 0:
             graphOutputsTemplate = NodeBase.jsonTemplate()
@@ -511,23 +526,28 @@ class Canvas(QGraphicsView):
             graphOutputs = self._createNode(graphOutputsTemplate)
 
             for i in outputPins:
-                newPinName = self.graphManager.getUniqName(i.name)
-                graphOutputs.onAddInPin(newPinName, i.dataType)
+                newPinName = self.graphManager.getUniqName(i.owningNode().name)
+                newPin = graphOutputs.onAddInPin(newPinName, i.dataType)
+                newOutputPins[i] = newPin
+                for n in outputConectionList[i]:
+                    node = self.findNode(n[0])
+                    self.connectPins(newPin,node.getPin(n[1]))
 
         def connectPins(compoundNode, inputs, outputs):
             for o in inputs:
-                exposedPin = compoundNode.getPin(o.name)
+                exposedPin = compoundNode.getPin(newInputPins[o].name)
                 if exposedPin:
                     self.connectPinsInternal(exposedPin, o)
 
             for i in outputs:
-                exposedPin = compoundNode.getPin(i.name)
+                exposedPin = compoundNode.getPin(newOutputPins[i].name)
                 if exposedPin:
                     self.connectPinsInternal(i, exposedPin)
 
-        # QtCore.QTimer.singleShot(50, lambda: connectPins(uiCompoundNode, inputPins, outputPins))
-
+        
+        QtCore.QTimer.singleShot(1, lambda: connectPins(uiCompoundNode, inputPins, outputPins))
         self.graphManager.selectGraph(activeGraphName)
+
 
     def populateMenu(self):
         self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
