@@ -1182,7 +1182,7 @@ class Canvas(QGraphicsView):
                 self.resizing = node.bResize
                 node.setSelected(False)
             if not self.resizing:
-                if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.NoModifier:
+                if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.NoModifier and event.button() == QtCore.Qt.LeftButton:
                     closestPin = self.findPinNearPosition(event.pos(), 20)
                     if closestPin is not None:
                         if closestPin.direction == PinDirection.Input:
