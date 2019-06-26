@@ -542,9 +542,14 @@ class PyFlow(QMainWindow):
                     pluginsMenuAction = [m for m in menus if m.title() == "Plugins"][0].menuAction()
                     toolsMenu = getOrCreateMenu(instance.menuBar, "Tools")
                     instance.menuBar.insertMenu(pluginsMenuAction, toolsMenu)
-                    packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
-                    toolsMenu.addMenu(packageSubMenu)
-                    showToolAction = packageSubMenu.addAction(ToolClass.name())
+
+                    if packageName == "PyFlowBase":
+                        showToolAction = toolsMenu.addAction(ToolClass.name())
+                    else:
+                        packageSubMenu = getOrCreateMenu(toolsMenu, packageName)
+                        toolsMenu.addMenu(packageSubMenu)
+                        showToolAction = packageSubMenu.addAction(ToolClass.name())
+
                     icon = ToolClass.getIcon()
                     if icon:
                         showToolAction.setIcon(icon)
