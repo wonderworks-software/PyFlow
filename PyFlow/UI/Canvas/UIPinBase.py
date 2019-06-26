@@ -189,7 +189,7 @@ class UIPinBase(QGraphicsWidget):
     def onRename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
-            uniqueName = self._rawPin.owningNode().graph().graphManager.getUniqName(name)
+            uniqueName = self._rawPin.owningNode().getUniqPinName(name)
             self.setName(uniqueName)
             self.setDisplayName(uniqueName)
             self.owningNode().invalidateNodeLayouts()

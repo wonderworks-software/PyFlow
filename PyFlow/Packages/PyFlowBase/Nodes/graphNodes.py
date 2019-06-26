@@ -72,8 +72,6 @@ class graphOutputs(NodeBase):
             owningCompoundNode = self.graph().graphManager.findNode(self.graph().name)
             if owningCompoundNode is not None:
                 result = owningCompoundNode.getUniqPinName(name)
-            else:
-                result = self.graph().graphManager.getUniqName(name)
         return result
 
     @staticmethod
