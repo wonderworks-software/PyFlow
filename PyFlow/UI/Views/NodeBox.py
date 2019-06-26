@@ -38,13 +38,14 @@ class NodeBoxTreeWidget(QTreeWidget):
     showInfo = QtCore.Signal(object)
     hideInfo = QtCore.Signal()
 
-    def __init__(self, parent, bNodeInfoEnabled=True, useDragAndDrop=True):
+    def __init__(self, parent,canvas, bNodeInfoEnabled=True, useDragAndDrop=True):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
                 "border-style: outset;" +\
                 "border-width: 1px;"
         self.setStyleSheet(style)
+        self.canvas = canvas
         self.setParent(parent)
         self.setFrameShape(QFrame.NoFrame)
         self.setFrameShadow(QFrame.Sunken)
@@ -61,6 +62,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         self.categoryPaths = {}
         self.bNodeInfoEnabled = bNodeInfoEnabled
         self.currentItemChanged.connect(self.onCurrentItemChanged)
+        self.suggestionsEnabled = False
 
     def onCurrentItemChanged(self, current, previous):
         if current is not None:
@@ -165,8 +167,10 @@ class NodeBoxTreeWidget(QTreeWidget):
                     if pattern.lower() in checkString.lower():
                         # create all nodes items if clicked on canvas
                         if dataType is None:
+                            self.suggestionsEnabled = False
                             self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                         else:
+                            self.suggestionsEnabled = True
                             if pinDirection == PinDirection.Output:
                                 if pinStructure != PinStructure.Multi:
                                     if dataType in fooInpTypes and pinStructure in fooInpStructs:
@@ -249,13 +253,20 @@ class NodeBoxTreeWidget(QTreeWidget):
         jsonTemplate['uuid'] = str(uuid.uuid4())
         jsonTemplate['meta']['label'] = pressed_text
 
-        drag = QtGui.QDrag(self)
-        mime_data = QtCore.QMimeData()
+        if self.suggestionsEnabled:
+            a = self.canvas.mapToScene(self.canvas.mouseReleasePos)
+            jsonTemplate["x"] = a.x()
+            jsonTemplate["y"] = a.y()
+            self.canvas.createNode(jsonTemplate)
+            self.parent().parent().parent().hide()
+        else:
+            drag = QtGui.QDrag(self)
+            mime_data = QtCore.QMimeData()
 
-        pressed_text = json.dumps(jsonTemplate)
-        mime_data.setText(pressed_text)
-        drag.setMimeData(mime_data)
-        drag.exec_()
+            pressed_text = json.dumps(jsonTemplate)
+            mime_data.setText(pressed_text)
+            drag.setMimeData(mime_data)
+            drag.exec_()
 
     def update(self):
         for category in self.categoryPaths.values():
@@ -338,7 +349,7 @@ class NodesBox(QFrame):
         self.splitter.addWidget(self.nodeInfoWidget)
         self.nodeInfoWidget.setVisible(bNodeInfoEnabled)
 
-        self.treeWidget = NodeBoxTreeWidget(self, bNodeInfoEnabled, False)
+        self.treeWidget = NodeBoxTreeWidget(self,parent, bNodeInfoEnabled, False)
         self.treeWidget.setObjectName("nodeBoxTreeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)

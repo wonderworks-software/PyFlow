@@ -238,7 +238,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     """
     # Event called when node name changes
     displayNameChanged = QtCore.Signal(str)
-
+    drawlabel = None
     def __init__(self, raw_node, w=80, color=Colors.NodeBackgrounds, headColorOverride=None):
         super(UINodeBase, self).__init__()
         self.setFlag(QGraphicsWidget.ItemIsMovable)
@@ -270,7 +270,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self._collapsed = False
         self._left_stretch = 0
         self.color = color
-        self.drawlabel = True
+        if self.drawlabel is None:
+            self.drawlabel = True
         self.headColorOverride = headColorOverride
         self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
         self._w = 0
@@ -295,12 +296,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.headerLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)
 
         self.nodeNameWidget = NodeName(self)
-        self.headerLayout.addItem(self.nodeNameWidget)
+        if self.drawlabel:
+            self.headerLayout.addItem(self.nodeNameWidget)
+        self.nodeNameWidget.setPos(0, 1)
 
         self.headerLayout.setContentsMargins(0, 0, 0, 0)
         self.headerLayout.setSpacing(3)
 
-        self.headerLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+        self.headerLayout.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.headerLayout.setMaximumHeight(self.labelHeight)
 
         self.exposedActionButtonsLayout = QGraphicsLinearLayout(QtCore.Qt.Horizontal)

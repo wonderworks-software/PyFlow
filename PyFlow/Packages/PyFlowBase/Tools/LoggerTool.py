@@ -15,7 +15,7 @@ import os
 import subprocess
 
 
-REDIRECT = False
+REDIRECT = True
 logger = logging.getLogger(None)
 
 

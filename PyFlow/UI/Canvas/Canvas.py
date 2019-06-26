@@ -52,6 +52,7 @@ from PyFlow.Core.Common import *
 
 from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyFlowBase.UI.UIRerouteNode import UIRerouteNode
+from PyFlow.Packages.PyFlowBase.UI.UIRerouteNodeSmall import UIRerouteNodeSmall
 from PyFlow.Packages.PyFlowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
@@ -333,6 +334,7 @@ class Canvas(QGraphicsView):
         self.released_item = None
         self.resizing = False
         self.hoverItems = []
+        self.hoveredRerutes = []
         self.bPanMode = False
         self._isPanning = False
         self._mousePressed = False
@@ -378,7 +380,7 @@ class Canvas(QGraphicsView):
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
 
-        self.node_box = NodesBox(None)
+        self.node_box = NodesBox(self)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
         self._UIConnections = {}
@@ -409,6 +411,11 @@ class Canvas(QGraphicsView):
                 if uiCommentNode.collapsed:
                     uiCommentNode.hideOwningNodes()
         self.validateConnections(newGraph)
+
+        def nodeShapeUpdater():
+            for node in self.nodes.values():
+                node.updateNodeShape()
+        QtCore.QTimer.singleShot(100, nodeShapeUpdater)
 
     def jumpToNode(self, uiNode):
         self.graphManager.selectGraph(uiNode.graph())
@@ -442,6 +449,7 @@ class Canvas(QGraphicsView):
 
     def collapseSelectedNodesToCompound(self):
         selectedNodes = self.selectedNodes()
+        selectedNodesRect = self.getNodesRect(True, True)
         wires = list()
         for node in selectedNodes:
             for pin in node.UIPins.values():
@@ -449,14 +457,77 @@ class Canvas(QGraphicsView):
 
         inputPins = list()
         outputPins = list()
+
         for wire in wires:
             if wire.source().owningNode().isSelected() and not wire.destination().owningNode().isSelected():
-                outputPins.append(wire.destination())
+                if wire.destination() not in outputPins:
+                    outputPins.append(wire.destination())
             if not wire.source().owningNode().isSelected() and wire.destination().owningNode().isSelected():
-                inputPins.append(wire.source())
+                if wire.source() not in inputPins:
+                    inputPins.append(wire.source())
 
-        print([i.getName() for i in inputPins])
-        print([i.getName() for i in outputPins])
+        self.copyNodes()
+        for node in selectedNodes:
+            node._rawNode.kill()
+
+        compoundTemplate = NodeBase.jsonTemplate()
+        compoundTemplate['package'] = 'PyFlowBase'
+        compoundTemplate['type'] = 'compound'
+        compoundTemplate['name'] = 'compound'
+        compoundTemplate['uuid'] = str(uuid.uuid4())
+        compoundTemplate['meta']['label'] = 'compound'
+        compoundTemplate['x'] = selectedNodesRect.center().x()
+        compoundTemplate['y'] = selectedNodesRect.center().y()
+        uiCompoundNode = self._createNode(compoundTemplate)
+        activeGraphName = self.graphManager.activeGraph().name
+
+        uiCompoundNode.stepIn()
+        self.pasteNodes(move=False, writeHistory=False)
+
+        if len(inputPins) > 0:
+            graphInputsTemplate = NodeBase.jsonTemplate()
+            graphInputsTemplate['package'] = 'PyFlowBase'
+            graphInputsTemplate['type'] = 'graphInputs'
+            graphInputsTemplate['name'] = 'graphInputs'
+            graphInputsTemplate['uuid'] = str(uuid.uuid4())
+            graphInputsTemplate['meta']['label'] = 'graphInputs'
+            graphInputsTemplate['x'] = selectedNodesRect.left() - 100
+            graphInputsTemplate['y'] = selectedNodesRect.center().y()
+            graphInputs = self._createNode(graphInputsTemplate)
+
+            for o in inputPins:
+                newPinName = self.graphManager.getUniqName(o.name)
+                graphInputs.onAddOutPin(o.name, o.dataType)
+
+        if len(outputPins) > 0:
+            graphOutputsTemplate = NodeBase.jsonTemplate()
+            graphOutputsTemplate['package'] = 'PyFlowBase'
+            graphOutputsTemplate['type'] = 'graphOutputs'
+            graphOutputsTemplate['name'] = 'graphOutputs'
+            graphOutputsTemplate['uuid'] = str(uuid.uuid4())
+            graphOutputsTemplate['meta']['label'] = 'graphOutputs'
+            graphOutputsTemplate['x'] = selectedNodesRect.right() + 100
+            graphOutputsTemplate['y'] = selectedNodesRect.center().y()
+            graphOutputs = self._createNode(graphOutputsTemplate)
+
+            for i in outputPins:
+                newPinName = self.graphManager.getUniqName(i.name)
+                graphOutputs.onAddInPin(newPinName, i.dataType)
+
+        def connectPins(compoundNode, inputs, outputs):
+            for o in inputs:
+                exposedPin = compoundNode.getPin(o.name)
+                if exposedPin:
+                    self.connectPinsInternal(exposedPin, o)
+
+            for i in outputs:
+                exposedPin = compoundNode.getPin(i.name)
+                if exposedPin:
+                    self.connectPinsInternal(i, exposedPin)
+
+        # QtCore.QTimer.singleShot(50, lambda: connectPins(uiCompoundNode, inputPins, outputPins))
+
+        self.graphManager.selectGraph(activeGraphName)
 
     def populateMenu(self):
         self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
@@ -833,7 +904,7 @@ class Canvas(QGraphicsView):
             QApplication.clipboard().setText(copyJsonStr)
             return copyJsonStr
 
-    def pasteNodes(self, move=True, data=None):
+    def pasteNodes(self, move=True, data=None, writeHistory=True):
         if not data:
             nodes = None
             try:
@@ -854,7 +925,11 @@ class Canvas(QGraphicsView):
         createdNodes = {}
         for node in nodesData:
 
-            n = self.createNode(node)
+            if writeHistory:
+                n = self.createNode(node)
+            else:
+                n = self._createNode(node)
+
             if n is None:
                 continue
             createdNodes[n] = node
@@ -980,7 +1055,7 @@ class Canvas(QGraphicsView):
         if connection and connection.drawSource._rawPin.isExec() and connection.drawDestination._rawPin.isExec():
             nodeClassName = "rerouteExecs"
         else:
-            if self.pressedPin.isExec():
+            if self.pressedPin and self.pressedPin.isExec():
                 nodeClassName = "rerouteExecs"
         nodeTemplate = NodeBase.jsonTemplate()
         nodeTemplate['package'] = "PyFlowBase"
@@ -1230,6 +1305,23 @@ class Canvas(QGraphicsView):
         self.setSceneRect(rect)
         self.update()
 
+    def updateRerutes(self,event,showPins=False):
+        tolerance = 9 * self.currentViewScale()
+        mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - tolerance, event.pos().y() - tolerance),
+                                 QtCore.QPoint(event.pos().x() + tolerance, event.pos().y() + tolerance))
+        hoverItems = self.items(mouseRect)
+        self.hoveredRerutes += [node for node in hoverItems if isinstance(node, UIRerouteNodeSmall)]
+        for node in self.hoveredRerutes:
+            if showPins:
+                if node in hoverItems:
+                    node.showPins()
+                else:
+                    node.hidePins()
+                    self.hoveredRerutes.remove(node)
+            else:
+                node.hidePins()
+                self.hoveredRerutes.remove(node)
+
     def mouseMoveEvent(self, event):
         self.mousePos = event.pos()
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
@@ -1255,12 +1347,14 @@ class Canvas(QGraphicsView):
             if self.realTimeLine not in self.scene().items():
                 self.scene().addItem(self.realTimeLine)
 
-            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 5, event.pos().y() - 4),
-                                     QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
-            hoverItems = self.items(mouseRect)
+            self.updateRerutes(event,True)
 
             p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
             p2 = self.mapToScene(self.mousePos)
+
+            mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 5, event.pos().y() - 4),
+                                     QtCore.QPoint(event.pos().x() + 5, event.pos().y() + 4))
+            hoverItems = self.items(mouseRect)
 
             hoveredPins = [pin for pin in hoverItems if isinstance(pin, UIPinBase)]
             if len(hoveredPins) > 0:
@@ -1387,7 +1481,7 @@ class Canvas(QGraphicsView):
                 for node in selectedNodes:
                     node.translate(scaledDelta.x(), scaledDelta.y())
 
-            if isinstance(node, UIRerouteNode) and modifiers == QtCore.Qt.AltModifier:
+            if (isinstance(node, UIRerouteNode) or isinstance(node, UIRerouteNodeSmall)) and modifiers == QtCore.Qt.AltModifier:
                 mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
                                          QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
                 hoverItems = self.items(mouseRect)
@@ -1527,7 +1621,7 @@ class Canvas(QGraphicsView):
         elif event.button() == QtCore.Qt.LeftButton:
             self.requestClearProperties.emit()
         self.resizing = False
-
+        self.updateRerutes(event,False)
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), False)
 
     def removeItemByName(self, name):
@@ -1548,11 +1642,6 @@ class Canvas(QGraphicsView):
 
     def stepToCompound(self, compoundNode):
         self.graphManager.selectGraph(compoundNode)
-
-        def nodeShapeUpdater():
-            for node in self.nodes.values():
-                node.updateNodeShape()
-        QtCore.QTimer.singleShot(50, nodeShapeUpdater)
 
     def drawBackground(self, painter, rect):
         super(Canvas, self).drawBackground(painter, rect)

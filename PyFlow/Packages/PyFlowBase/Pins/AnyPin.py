@@ -22,12 +22,14 @@ class AnyPin(PinBase):
         self._isAny = True
         # if True, setType and setDefault will work only once
         self.singleInit = False
+        self.checkForErrors = True
         self.enableOptions(PinOptions.ChangeTypeOnConnection)
         self._defaultSupportedDataTypes = self._supportedDataTypes = tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
         self.canChange = True
         self.super = None
         self.prevDataType = None
         self._lastError2 = None
+        
     @PinBase.dataType.getter
     def dataType(self):
         return self.activeDataType
@@ -83,6 +85,8 @@ class AnyPin(PinBase):
                 break
 
     def updateError(self, traversed=[],updateNeis=False):
+        if not self.checkForErrors:
+            return
         nodePins = set([self])
         if self.constraint:
             nodePins = set(self.owningNode().constraints[self.constraint])

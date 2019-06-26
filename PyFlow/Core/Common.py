@@ -218,7 +218,7 @@ def canConnectPins(src, dst):
     if not src.isDict() and dst.isDict():
         if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
             return False
-        elif not src.supportDictElement([],src.optionEnabled(PinOptions.DictElementSuported)):#:
+        elif not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSuported)):
             return False
         else:
             dictElement = src.getDictElementNode([])
@@ -252,6 +252,9 @@ def canConnectPins(src, dst):
             return False
 
     if src.owningNode().graph() is None or dst.owningNode().graph() is None:
+        return False
+
+    if src.owningNode().graph() is not dst.owningNode().graph():
         return False
 
     if src.isAny() and dst.isExec():

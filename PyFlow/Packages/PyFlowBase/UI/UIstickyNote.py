@@ -30,7 +30,7 @@ class UIstickyNote(UINodeBase):
         self.textWidget = QGraphicsWidget()
         self.textWidget.setGraphicsItem(self.textInput)
         self.nodeLayout.addItem(self.textWidget)
-        self.NonFormatedText = self.textInput.toPlainText()
+        self.NonFormatedText = self.textInput.toPlainText()       
         self.updateSize()
 
     def serializationHook(self):

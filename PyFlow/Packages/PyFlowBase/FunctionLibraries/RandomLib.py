@@ -23,7 +23,7 @@ class RandomLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=None, meta={'Category': 'Math|random', 'Keywords': []})
     # Shuffle the sequence x in place
-    def shuffle(seq=('AnyPin', []), Result=("Reference", ('AnyPin', []))):
+    def shuffle(seq=('AnyPin', [],{"constraint": "1"}), Result=("Reference", ('AnyPin', [],{"constraint": "1"}))):
         """Shuffle the sequence x in place."""
         random.shuffle(seq)
         Result(seq)

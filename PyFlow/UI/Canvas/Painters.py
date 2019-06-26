@@ -233,8 +233,7 @@ class NodePainter(object):
             pen.setStyle(node.optPenSelectedType)
             pen.setWidth(width * 1.5)
         painter.setPen(pen)
-        painter.drawEllipse(node.boundingRect().center(), node.boundingRect(
-        ).width() / 2, node.boundingRect().width() / 2)
+        painter.drawEllipse(node.boundingRect().center(), node.drawRect.width() / 2, node.drawRect.width() / 2)
 
 
 # Determines how to paint a pin
@@ -352,7 +351,7 @@ class PinPainter(object):
                 y = column * cellH + pinCenter.y() - halfPinSize
                 painter.drawRect(x, y, cellW, cellH)
 
-        if lod < 3:
+        if lod < 3 and not pin.bLabelHidden:
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
@@ -390,7 +389,7 @@ class PinPainter(object):
                 painter.setBrush(QtGui.QBrush(QtGui.QColor(*keyPin.color())))
             painter.drawRect(x, y, cellW, cellH)
 
-        if lod < 3:
+        if lod < 3 and not pin.bLabelHidden:
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
