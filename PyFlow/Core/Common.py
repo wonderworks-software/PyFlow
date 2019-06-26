@@ -382,6 +382,7 @@ def traverseConstrainedPins(startFrom, callback):
     """Iterates over all constrained chained pins of type `Any` and passes pin into callback function. Callback will be executed once for every pin
     """
     if not startFrom.isAny():
+
         return
     traversed = set()
 
@@ -390,8 +391,10 @@ def traverseConstrainedPins(startFrom, callback):
         callback(pin)
 
         if pin.constraint is None:
-            return
-        nodePins = set(pin.owningNode().constraints[pin.constraint])
+            nodePins = set()
+        else:
+            nodePins = set(pin.owningNode().constraints[pin.constraint])
+
         for connectedPin in getConnectedPins(pin):
             if connectedPin.isAny():
                 nodePins.add(connectedPin)

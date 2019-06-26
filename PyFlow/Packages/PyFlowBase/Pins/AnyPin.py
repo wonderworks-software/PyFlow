@@ -231,11 +231,12 @@ class AnyPin(PinBase):
         return dataTypes
 
     def initType(self, dataType, initializing=False):
-        if self.checkFree([]):
+        #print getConnectedPins(self)
+        if self.canChangeTypeOnConection([], self.optionEnabled(PinOptions.ChangeTypeOnConnection), []):
             traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, initializing))
-            #self.updateError([])
+            self._lastError2 = self._lastError
+            self.updateError([],self.activeDataType == "AnyPin" or self.prevDataType == "AnyPin")
             self.owningNode().checkForErrors()
-            self.dataBeenSet.send(self)
             return True
         return False
 
