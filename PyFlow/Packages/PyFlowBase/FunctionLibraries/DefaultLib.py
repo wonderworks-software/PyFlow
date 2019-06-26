@@ -77,9 +77,9 @@ class DefaultLib(FunctionLibraryBase):
             return time.process_time()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "3"}), meta={'Category': 'DefaultLib', 'Keywords': []})
-    def select(A=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
-               B=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}), meta={'Category': 'DefaultLib', 'Keywords': []})
+    def select(A=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
+               B=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
                PickA=('BoolPin', False),
                aPicked=("Reference", ("BoolPin", False))):
         '''
