@@ -101,7 +101,8 @@ class AnyPin(PinBase):
                     neighbor.super = None
                 else:
                     neighbor.clearError()
-                    neighbor.super = AnyPin
+                    if neighbor.activeDataType == "AnyPin":
+                        neighbor.super = AnyPin
                 traversed.append(neighbor)
                 neighbor.updateError(traversed,updateNeis)
                 if updateNeis:
