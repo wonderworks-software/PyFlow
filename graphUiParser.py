@@ -30,14 +30,17 @@ if __name__ == '__main__':
         prop = PropertiesWidget()
 
         man.deserialize(data)
-        inputs =  man.findNode(str("cmdInputs"))
-        if inputs is not None:
-            uiNode = getUINodeInstance(inputs)
-            uiNodeJsonTemplate = inputs.serialize()
-            uiNodeJsonTemplate["wrapper"] = inputs.wrapperJsonData        
-            uiNode.postCreate(uiNodeJsonTemplate)
-            uiNode.createOutputWidgets(prop,"input Parameters")
-            prop.show()
+        grph = man.findRootGraph()
+        inputs = grph.getNodesByClassName("graphInputs")
+        #inputs =  man.findNode(str("cmdInputs"))
+        if len(inputs)>0:
+            for inp in inputs:
+                uiNode = getUINodeInstance(inp)
+                uiNodeJsonTemplate = inp.serialize()
+                uiNodeJsonTemplate["wrapper"] = inp.wrapperJsonData        
+                uiNode.postCreate(uiNodeJsonTemplate)
+                uiNode.createOutputWidgets(prop,inp.name)
+                prop.show()
         else:
             sys.exit()
     else:
