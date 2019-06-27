@@ -41,8 +41,5 @@ class stringToArray(NodeBase):
             self.result.setData(False)
         else:
             splited = ast.literal_eval(stringData)
-            for i in splited:
-                processedData = self.outArray.super.processData(i)
-                outArray.append(processedData)
-            self.outArray.setData(outArray)
+            self.outArray.setData(splited)
             self.result.setData(True)
