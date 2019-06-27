@@ -111,7 +111,7 @@ class editableStyleSheet():
                     self.updateApp()
 
     def updateApp(self):
-        if self.SetAppStyleSheet[0] == 1:
+        if self.SetAppStyleSheet[0] > 0:
             app = QtWidgets.QApplication.instance()
             print app
             if app:
