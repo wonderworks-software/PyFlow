@@ -413,15 +413,15 @@ class TestGeneral(unittest.TestCase):
 
         makeInt.setData('i', 5)
 
-        connected = connectPins(makeInt[str('out')], addNode2[str('a')])
+        connected = connectPinsByIndexes(makeInt, 0, addNode2, 0)
         self.assertEqual(connected, True)
 
-        connected = connectPins(addNode2[str('out')], printNode[str('entity')])
+        connected = connectPinsByIndexes(addNode2, 0, printNode, 1)
         self.assertEqual(connected, True)
 
         printNode[DEFAULT_IN_EXEC_NAME].call()
 
-        self.assertEqual(addNode2.getData(str('out')), 5, "Incorrect calc")
+        self.assertEqual(addNode2.orderedOutputs[0].currentData(), 5, "Incorrect calc")
 
         # save and clear
         dataJson = man.serialize()
@@ -431,6 +431,8 @@ class TestGeneral(unittest.TestCase):
         man.deserialize(dataJson)
 
         restoredAddNode2 = man.activeGraph().findNode(str('makeInt'))
+        printNode = man.activeGraph().findNode(str('printer'))
+        printNode[DEFAULT_IN_EXEC_NAME].call()
         self.assertEqual(restoredAddNode2.getData('out'), 5, "Incorrect calc")
 
     def test_graph_depth(self):
@@ -479,7 +481,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(inPin.optionEnabled(PinOptions.RenamingEnabled), True)
 
         # change inner pin name and check it is reflected outside
-        inPin.setName("first")
+        inPin.setName("second")
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name, "name is not synchronized")
 
         depthsBefore = [g.depth() for g in man.getAllGraphs()]

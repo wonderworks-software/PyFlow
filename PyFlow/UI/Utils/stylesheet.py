@@ -2,8 +2,6 @@ from Qt import QtGui, QtWidgets, QtCore
 import inspect
 import json
 import os
-from PyFlow.UI.Utils.Settings import Colors
-from PyFlow.Core.Common import clamp
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 
@@ -14,11 +12,12 @@ FILE_DIR = os.path.dirname(__file__)
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 
-       
 
 @SingletonDecorator
 class editableStyleSheet():
     def __init__(self):
+
+        self.SetAppStyleSheet = True
 
         self.TextColor = QtGui.QColor(228, 228, 228)
 
@@ -46,7 +45,8 @@ class editableStyleSheet():
         self.storeDeffaults()
         self.presests = {}
         self.loadPresests(THEMES_PATH)
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(
+            ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
         settings.beginGroup("Preferences")
         settings.beginGroup("Theme")
         try:
@@ -86,7 +86,7 @@ class editableStyleSheet():
         if list(data.keys())[0] == "PyFLowStyleSheet":
             data = data["PyFLowStyleSheet"]
             for name in data.keys():
-                if isinstance(data[name],list):
+                if isinstance(data[name], list):
                     self.setColor(name, data[name][0])
             self.updateApp()
 
@@ -102,19 +102,20 @@ class editableStyleSheet():
             if objname == name:
                 if isinstance(obj, QtGui.QColor):
                     obj.setRgba(color.rgba())
-                elif isinstance(obj,list):
-                    if isinstance(value,list):
+                elif isinstance(obj, list):
+                    if isinstance(value, list):
                         value = value[0]
                     obj[0] = value
                 if update:
                     self.updateApp()
 
     def updateApp(self):
-        app = QtWidgets.QApplication.instance()
-        if app:
-            app.setStyleSheet(self.getStyleSheet())
-            for widget in app.allWidgets():
-                widget.update()
+        if self.SetAppStyleSheet:
+            app = QtWidgets.QApplication.instance()
+            if app:
+                app.setStyleSheet(self.getStyleSheet())
+                for widget in app.allWidgets():
+                    widget.update()
 
     def getStyleSheet(self):
         MainColor_Lighter = QtGui.QColor(self.MainColor)
@@ -132,14 +133,17 @@ class editableStyleSheet():
                                   "rgba%s" % str(MainColor_Lighter.getRgb()),
                                   "rgba%s" % str(MainColor_Lighter.getRgb()),
                                   "rgba%s" % str(self.BorderColor.getRgb()),
-                                  "rgba%s" % str(self.InputFieldColor.getRgb()),
+                                  "rgba%s" % str(
+                                      self.InputFieldColor.getRgb()),
                                   "rgba%s" % str(InputFieldHover.getRgb()),
                                   "rgba%s" % str(MainColor_Lighter.getRgb()),
-                                  "rgba%s" % str(self.TextSelectedColor.getRgb()),
+                                  "rgba%s" % str(
+                                      self.TextSelectedColor.getRgb()),
                                   "rgba%s" % str(ButtonG1.getRgb()),
                                   "rgba%s" % str(self.ButtonsColor.getRgb()),
                                   "rgba%s" % str(ButtonG3.getRgb()),
-                                  "rgba%s" % str(QtGui.QColor(0, 0, 0, 100).getRgb())
+                                  "rgba%s" % str(QtGui.QColor(
+                                      0, 0, 0, 100).getRgb())
                                   )
 
     def getSliderStyleSheet(self, name):
@@ -164,7 +168,7 @@ class editableStyleSheet():
             width: 1px;
          }
         """ % "rgba%s" % str(self.MainColor.getRgb()),
-        "sliderStyleSheetB": """
+            "sliderStyleSheetB": """
         QSlider::groove:horizontal {
             border: 1px solid #bbb;
             background: white;
@@ -215,7 +219,7 @@ class editableStyleSheet():
             height : 10;
         }
         """ % "rgba%s" % str(self.MainColor.getRgb()),
-        "sliderStyleSheetC": """
+            "sliderStyleSheetC": """
         QSlider,QSlider:disabled,QSlider:focus{
                                   background: qcolor(0,0,0,0);   }
 
@@ -232,8 +236,8 @@ class editableStyleSheet():
          QSlider::handle:horizontal:hover {
             border: 2.25px solid %s;
          }
-        """% "rgba%s" % str(self.MainColor.getRgb()),
-        "dragerstyleSheet": """
+        """ % "rgba%s" % str(self.MainColor.getRgb()),
+            "dragerstyleSheet": """
         QGroupBox{
             border: 0.5 solid darkgrey;
             background : black;
@@ -245,7 +249,7 @@ class editableStyleSheet():
             color: white;
         }
         """,
-        "dragerstyleSheetHover": """
+            "dragerstyleSheetHover": """
         QGroupBox{
             border: 0.5 solid darkgrey;
             background : %s;
@@ -257,7 +261,7 @@ class editableStyleSheet():
             color: white;
         }
         """ % "rgba%s" % str(self.MainColor.getRgb()),
-        "timeStyleSheet": """
+            "timeStyleSheet": """
         QSlider,QSlider:disabled,QSlider:focus{  
                                   background: qcolor(0,0,0,0);   }
          QSlider::groove:horizontal {
@@ -271,5 +275,3 @@ class editableStyleSheet():
         """ % "rgba%s" % str(self.MainColor.getRgb())
         }
         return Styles[name]
-
-style = editableStyleSheet()

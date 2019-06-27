@@ -123,7 +123,7 @@ class PinBase(IPin):
 
     @property
     def linkedTo(self):
-        # store connection from out pins only
+        # store connection from pins
         # from left hand side to right hand side
         result = list()
         if self.direction == PinDirection.Output:
@@ -262,6 +262,7 @@ class PinBase(IPin):
             'uuid': str(self.uid),
             'bDirty': self.dirty,
             'linkedTo': list(self.linkedTo),
+            'pinIndex': self.pinIndex,
             'options': [i.value for i in PinOptions if self.optionEnabled(i)],
             'structure': int(self._currStructure),
             'alwaysList': self._alwaysList,
