@@ -162,11 +162,15 @@ class ThemePreferences(CategoryWidgetBase):
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
                     inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
-                elif name in ["DrawNumbers"]:
+                elif name in ["DrawNumbers","SetAppStyleSheet"]:
                     inp = QCheckBox()
                     inp.setChecked(obj[0])
                     inp.stateChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
-                canvas.addWidget(name, inp)
+                if name != "SetAppStyleSheet":
+                    canvas.addWidget(name, inp)
+                else:
+                    general.insertWidget(0,name,inp)
+
         self.selector = QComboBox()
         for name in editableStyleSheet().presests.keys():
             self.selector.addItem(name)

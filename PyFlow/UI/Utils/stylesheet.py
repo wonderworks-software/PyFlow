@@ -17,7 +17,7 @@ THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 class editableStyleSheet():
     def __init__(self):
 
-        self.SetAppStyleSheet = True
+        
 
         self.TextColor = QtGui.QColor(228, 228, 228)
 
@@ -41,6 +41,7 @@ class editableStyleSheet():
         self.GridSizeFine = [10]
         self.GridSizeHuge = [100]
         self.DrawNumbers = [0]
+        self.SetAppStyleSheet = [0]
 
         self.storeDeffaults()
         self.presests = {}
@@ -110,7 +111,7 @@ class editableStyleSheet():
                     self.updateApp()
 
     def updateApp(self):
-        if self.SetAppStyleSheet:
+        if self.SetAppStyleSheet[0]:
             app = QtWidgets.QApplication.instance()
             if app:
                 app.setStyleSheet(self.getStyleSheet())
