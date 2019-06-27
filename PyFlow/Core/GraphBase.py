@@ -115,7 +115,7 @@ class GraphBase(ISerializable):
             node = getRawNodeInstance(nodeJson['type'], packageName=nodeJson['package'], libName=nodeJson['lib'], *nodeArgs, **nodeKwargs)
             self.addNode(node, nodeJson)
 
-        # restore connections
+        # restore connection
         for nodeJson in jsonData['nodes']:
             for nodeOutputJson in nodeJson['outputs']:
                 for linkData in nodeOutputJson['linkedTo']:

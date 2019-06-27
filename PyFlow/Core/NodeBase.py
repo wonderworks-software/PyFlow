@@ -154,9 +154,8 @@ class NodeBase(INode):
         """Returns all input pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
-        for pin in self.pins:
-            if pin.direction == PinDirection.Input:
-                result[pin.uid] = pin
+        for pin in self.orderedInputs.values():
+            result[pin.uid] = pin
         return result
 
     @property
@@ -164,9 +163,8 @@ class NodeBase(INode):
         """Returns all input pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
-        for pin in self.pins:
-            if pin.direction == PinDirection.Input:
-                result[pin.name] = pin
+        for pin in self.orderedInputs.values():
+            result[pin.name] = pin
         return result
 
     @property
@@ -174,9 +172,8 @@ class NodeBase(INode):
         """Returns all output pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
-        for pin in self.pins:
-            if pin.direction == PinDirection.Output:
-                result[pin.uid] = pin
+        for pin in self.orderedOutputs.values():
+            result[pin.uid] = pin
         return result
 
     @property
@@ -184,9 +181,8 @@ class NodeBase(INode):
         """Returns all output pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
-        for pin in self.pins:
-            if pin.direction == PinDirection.Output:
-                result[pin.name] = pin
+        for pin in self.orderedOutputs.values():
+            result[pin.name] = pin
         return result
 
     # IItemBase interface
@@ -517,7 +513,8 @@ class NodeBase(INode):
             self.y = jsonTemplate['y']
 
             # set pins data
-            for inpJson in jsonTemplate['inputs']:
+            sortedInputs = sorted(jsonTemplate['inputs'], key=lambda pinDict: pinDict["pinIndex"])
+            for inpJson in sortedInputs:
                 dynamicEnabled = PinOptions.Dynamic.value in inpJson["options"]
                 if dynamicEnabled or inpJson['name'] not in self.namePinInputsMap:
                     # create custom dynamically created pins in derived classes
@@ -526,7 +523,8 @@ class NodeBase(INode):
                 pin = self.getPin(str(inpJson['name']), PinSelectionGroup.Inputs)
                 pin.deserialize(inpJson)
 
-            for outJson in jsonTemplate['outputs']:
+            sortedOutputs = sorted(jsonTemplate['outputs'], key=lambda pinDict: pinDict["pinIndex"])
+            for outJson in sortedOutputs:
                 dynamicEnabled = PinOptions.Dynamic.value in outJson["options"]
                 if dynamicEnabled or outJson['name'] not in self.namePinOutputsMap:
                     # create custom dynamically created pins in derived classes

@@ -262,6 +262,7 @@ class PinBase(IPin):
             'uuid': str(self.uid),
             'bDirty': self.dirty,
             'linkedTo': list(self.linkedTo),
+            'pinIndex': self.pinIndex,
             'options': [i.value for i in PinOptions if self.optionEnabled(i)],
             'structure': int(self._currStructure),
             'alwaysList': self._alwaysList,
