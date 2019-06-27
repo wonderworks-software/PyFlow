@@ -88,10 +88,8 @@ class PinBase(IPin):
         self.pinIndex = 0
         if direction == PinDirection.Input:
             self.pinIndex = len(self.owningNode().orderedInputs)
-            self.owningNode().orderedInputs[self.pinIndex] = self
         if direction == PinDirection.Output:
             self.pinIndex = len(self.owningNode().orderedOutputs)
-            self.owningNode().orderedOutputs[self.pinIndex] = self
 
     @property
     def group(self):

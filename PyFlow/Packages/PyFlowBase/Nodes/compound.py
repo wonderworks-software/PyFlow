@@ -49,7 +49,7 @@ class compound(NodeBase):
         graphInputsNodes = self.rawGraph.getNodes(classNameFilters=['graphInputs'])
         graphInputPins = {}
         for graphInputNode in graphInputsNodes:
-            for outPin in graphInputNode.outputs.values():
+            for outPin in graphInputNode.orderedOutputs.values():
                 graphInputPins[outPin.name] = outPin
                 # create companion pin if needed
                 if outPin.name not in nodeInputPins:
@@ -58,7 +58,7 @@ class compound(NodeBase):
         graphOutputNodes = self.rawGraph.getNodes(classNameFilters=['graphOutputs'])
         graphOutputPins = {}
         for graphOutputNode in graphOutputNodes:
-            for inPin in graphOutputNode.inputs.values():
+            for inPin in graphOutputNode.orderedInputs.values():
                 graphOutputPins[inPin.name] = inPin
                 # create companion pin if needed
                 if inPin.name not in nodeOutputPins:

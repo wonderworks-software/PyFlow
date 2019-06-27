@@ -533,7 +533,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     @property
     def UIinputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.orderedInputs.values():
+        for rawPin in self._rawNode.inputs.values():
             wrapper = rawPin.getWrapper()
             if wrapper is not None:
                 result[rawPin.uid] = wrapper()
@@ -542,7 +542,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     @property
     def UIoutputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.orderedOutputs.values():
+        for rawPin in self._rawNode.outputs.values():
             wrapper = rawPin.getWrapper()
             if wrapper is not None:
                 result[rawPin.uid] = wrapper()
