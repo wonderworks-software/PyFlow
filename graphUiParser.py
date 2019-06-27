@@ -11,13 +11,14 @@ from PyFlow.Core.GraphManager import GraphManager
 from Qt.QtWidgets import *
 from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 if __name__ == '__main__':
     INITIALIZE()
     man = GraphManager()
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("plastique"))
-
+    app.setStyleSheet(editableStyleSheet().getStyleSheet())
     name_filter = "Graph files (*.json)"
     savepath = QFileDialog.getOpenFileName(filter=name_filter)
     if type(savepath) in [tuple, list]:
