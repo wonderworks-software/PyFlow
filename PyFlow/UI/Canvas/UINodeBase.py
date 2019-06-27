@@ -774,7 +774,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.invalidateNodeLayouts()
         self.updateGeometry()
         self.update()
-        self.canvasRef().update()
+        if self.canvasRef is not None:
+            self.canvasRef().update()
         self.nodeNameWidget.updateGeometry()
         self.nodeNameWidget.update()
         self.pinsLayout.setPreferredWidth(self.getNodeWidth() - self.nodeLayout.spacing())
@@ -827,13 +828,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.updateNodeShape()
         self.setPos(self._rawNode.x, self._rawNode.y)
 
-        assert(self.canvasRef() is not None), "CANVAS IS NONE"
-        assert(self.canvasRef().graphManager.activeGraph() is not None), "ACTIVEGRAPH IS NONE"
+        #assert(self.canvasRef() is not None), "CANVAS IS NONE"
+        #assert(self.canvasRef().graphManager.activeGraph() is not None), "ACTIVEGRAPH IS NONE"
         if self._rawNode.graph is None:
             print(self._rawNode.getName())
         assert(self._rawNode.graph() is not None), "NODE GRAPH IS NONE"
-        if self.canvasRef().graphManager.activeGraph() != self._rawNode.graph():
-            self.hide()
+        if self.canvasRef is not None:
+            if self.canvasRef().graphManager.activeGraph() != self._rawNode.graph():
+                self.hide()
 
         if not self.drawlabel:
             self.nodeNameWidget.hide()
@@ -1262,6 +1264,29 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                         w.setEnabled(False)
             propertiesWidget.addWidget(inputsCategory)
             return inputsCategory
+
+    def createOutputWidgets(self,propertiesWidget,headName="Outputs"):
+        inputsCategory = CollapsibleFormWidget(headName=headName)
+        sortedInputs = sorted(self.UIPins.values(), key=lambda x: x.name)
+        for inp in sortedInputs:
+            if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
+                continue
+            dataSetter = inp.call if inp.isExec() else inp.setData
+            w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.inputWidgetVariant)
+            if w:
+                inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
+                w.blockWidgetSignals(True)
+                data = inp.currentData()
+                if isinstance(inp.currentData(), dictElement):
+                    data = inp.currentData()[1]
+                w.setWidgetValue(data)
+                w.blockWidgetSignals(False)
+                w.setObjectName(inp.getName())
+                inputsCategory.addWidget(inp.name, w)
+                #if inp.hasConnections():
+                #    w.setEnabled(False)                
+        propertiesWidget.addWidget(inputsCategory)
+        return inputsCategory
 
     def getChainedNodes(self):
         nodes = []
