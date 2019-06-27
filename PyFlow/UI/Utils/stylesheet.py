@@ -41,7 +41,7 @@ class editableStyleSheet():
         self.GridSizeFine = [10]
         self.GridSizeHuge = [100]
         self.DrawNumbers = [0]
-        self.SetAppStyleSheet = [0]
+        self.SetAppStyleSheet = [1]
 
         self.storeDeffaults()
         self.presests = {}
@@ -111,8 +111,9 @@ class editableStyleSheet():
                     self.updateApp()
 
     def updateApp(self):
-        if self.SetAppStyleSheet[0]:
+        if self.SetAppStyleSheet[0] == 1:
             app = QtWidgets.QApplication.instance()
+            print app
             if app:
                 app.setStyleSheet(self.getStyleSheet())
                 for widget in app.allWidgets():
