@@ -1,7 +1,8 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
-
+from nine import *
+import logging
 
 class consoleOutput(NodeBase):
     def __init__(self, name):
@@ -35,5 +36,17 @@ class consoleOutput(NodeBase):
         return "Python's 'print' function wrapper"
 
     def compute(self, *args, **kwargs):
-        print(self.entity.getData())
+        if self.getWrapper() is not None:
+            data = str(self.entity.getData())
+            if self.entity.dataType != "StringPin":
+                data = data.encode('unicode-escape')
+            if IS_PYTHON2:
+                data = data.replace("\\n","<br/>")
+            else:
+                data = data.replace(b"\\n", b"<br/>").decode('unicode-escape')
+
+            errorLink = """<a href=%s><span style=" text-decoration: underline; color:green;">%s</span></a></p>"""%(self.name,"<br/>%s"%data)
+            logging.getLogger(None).consoleoutput(errorLink)
+        else:         
+            print("%s: %s"%(self.name,self.entity.getData()))
         self.outExec.call()
