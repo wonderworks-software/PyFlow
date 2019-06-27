@@ -441,7 +441,7 @@ class Canvas(QGraphicsView):
         elif value == CanvasManipulationMode.ZOOM:
             self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
         elif value == CanvasManipulationMode.COPY:
-            pass
+            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
     def setSelectedNodesCollapsed(self, collapsed=True):
         for node in self.selectedNodes():
@@ -1323,10 +1323,8 @@ class Canvas(QGraphicsView):
                         if self.pressed_item.objectName() == "MouseLocked":
                             super(Canvas, self).mousePressEvent(event)
                     if currentInputAction in InputManager()["Canvas.DragCopyNodes"]:
-                        self.manipulationMode = CanvasManipulationMode.MOVE
-                        selectedNodes = self.selectedNodes()
-                        copiedNodes = self.copyNodes(toClipBoard=False)
-                        self.pasteNodes(move=False, data=copiedNodes)
+                        self.manipulationMode = CanvasManipulationMode.COPY
+
 
     def pan(self, delta):
         rect = self.sceneRect()
@@ -1500,7 +1498,6 @@ class Canvas(QGraphicsView):
                         wire.setSelected(True)
                     elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
                         wire.setSelected(False)
-
         elif self.manipulationMode == CanvasManipulationMode.MOVE:
             if self.pressed_item.objectName() == "MouseLocked":
                 super(Canvas, self).mouseMoveEvent(event)
@@ -1539,6 +1536,16 @@ class Canvas(QGraphicsView):
             else:
                 zoomFactor = 1.0 / (1.0 + abs(mouseDelta.x()) / 100.0)
             self.zoom(zoomFactor)
+        elif self.manipulationMode == CanvasManipulationMode.COPY:
+            delta = self.mousePos - self.mousePressPose 
+            if delta.manhattanLength() > 15:
+                self.manipulationMode = CanvasManipulationMode.MOVE
+                selectedNodes = self.selectedNodes()
+                copiedNodes = self.copyNodes(toClipBoard=False)
+                self.pasteNodes(move=False, data=copiedNodes)
+                scaledDelta = delta / self.currentViewScale()
+                for node in self.selectedNodes():
+                    node.translate(scaledDelta.x(), scaledDelta.y())                
         else:
             super(Canvas, self).mouseMoveEvent(event)
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
