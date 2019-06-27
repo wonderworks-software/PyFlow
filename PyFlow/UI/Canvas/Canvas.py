@@ -474,7 +474,7 @@ class Canvas(QGraphicsView):
                 else:
                     inputConectionList[wire.source()].append([wire.destination().owningNode().name,wire.destination().name])
 
-        self.copyNodes()
+        nodes = self.copyNodes(toClipBoard=False)
         for node in selectedNodes:
             node._rawNode.kill()
 
@@ -490,7 +490,7 @@ class Canvas(QGraphicsView):
         activeGraphName = self.graphManager.activeGraph().name
 
         uiCompoundNode.stepIn()
-        self.pasteNodes(move=False, writeHistory=False)
+        self.pasteNodes(data=nodes,move=False, writeHistory=False)
 
         newInputPins = dict()
         newOutputPins = dict()
@@ -906,7 +906,7 @@ class Canvas(QGraphicsView):
         self.copyNodes()
         self.killSelectedNodes()
 
-    def copyNodes(self):
+    def copyNodes(self,toClipBoard=True):
         nodes = []
         selectedNodes = [i for i in self.nodes.values() if i.isSelected()]
 
@@ -923,8 +923,9 @@ class Canvas(QGraphicsView):
 
         if len(nodes) > 0:
             copyJsonStr = json.dumps(nodes)
-            QApplication.clipboard().clear()
-            QApplication.clipboard().setText(copyJsonStr)
+            if toClipBoard:
+                QApplication.clipboard().clear()
+                QApplication.clipboard().setText(copyJsonStr)
             return copyJsonStr
 
     def pasteNodes(self, move=True, data=None, writeHistory=True):
@@ -1316,7 +1317,7 @@ class Canvas(QGraphicsView):
                     if currentInputAction in InputManager()["Canvas.DragCopyNodes"]:
                         self.manipulationMode = CanvasManipulationMode.MOVE
                         selectedNodes = self.selectedNodes()
-                        copiedNodes = self.copyNodes()
+                        copiedNodes = self.copyNodes(toClipBoard=False)
                         self.pasteNodes(move=False, data=copiedNodes)
 
     def pan(self, delta):

@@ -94,7 +94,7 @@ class StringInputWidget(InputWidgetSingle):
         self.le = QLineEdit(self)
         self.le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.setWidget(self.le)
-        self.le.textChanged.connect(lambda val: self.dataSetCallback(val))
+        self.le.editingFinished.connect(lambda : self.dataSetCallback(self.le.text()))
 
     def blockWidgetSignals(self, bLocked):
         self.le.blockSignals(bLocked)
