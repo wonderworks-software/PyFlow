@@ -271,32 +271,22 @@ class PyFlow(QMainWindow):
         self.fileBeenLoaded.emit()
         self.graphManager.get().selectRootGraph()
 
-    def load(self):
-        name_filter = "Graph files (*.json)"
-        savepath = QFileDialog.getOpenFileName(filter=name_filter)
-        if type(savepath) in [tuple, list]:
-            fpath = savepath[0]
-        else:
-            fpath = savepath
+    def load(self,fpath=None):
+        if fpath == None:
+            name_filter = "Graph files (*.json)"
+            savepath = QFileDialog.getOpenFileName(filter=name_filter)
+            if type(savepath) in [tuple, list]:
+                fpath = savepath[0]
+            else:
+                fpath = savepath
         if not fpath == '':
             with open(fpath, 'r') as f:
                 data = json.load(f)
                 self.loadFromData(data, fpath)
 
-    def save(self, save_as=False):
-        if save_as:
-            name_filter = "Graph files (*.json)"
-            savepath = QFileDialog.getSaveFileName(filter=name_filter)
-            if type(savepath) in [tuple, list]:
-                pth = savepath[0]
-            else:
-                pth = savepath
-            if not pth == '':
-                self._current_file_name = pth
-            else:
-                self._current_file_name = "Untitled"
-        else:
-            if not os.path.isfile(self._current_file_name):
+    def save(self, save_as=False, fpath=None):
+        if fpath == None:
+            if save_as:
                 name_filter = "Graph files (*.json)"
                 savepath = QFileDialog.getSaveFileName(filter=name_filter)
                 if type(savepath) in [tuple, list]:
@@ -307,6 +297,20 @@ class PyFlow(QMainWindow):
                     self._current_file_name = pth
                 else:
                     self._current_file_name = "Untitled"
+            else:
+                if not os.path.isfile(self._current_file_name):
+                    name_filter = "Graph files (*.json)"
+                    savepath = QFileDialog.getSaveFileName(filter=name_filter)
+                    if type(savepath) in [tuple, list]:
+                        pth = savepath[0]
+                    else:
+                        pth = savepath
+                    if not pth == '':
+                        self._current_file_name = pth
+                    else:
+                        self._current_file_name = "Untitled"
+        else:
+            self._current_file_name = fpath
 
         if self._current_file_name in ["", "Untitled"]:
             return
