@@ -16,6 +16,18 @@ from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.Core import structs
 
 def clamp(n, vmin, vmax):
+    """Clamp A value betwen min and max
+    
+    [description]
+    :param n: [description]
+    :type n: [type]
+    :param vmin: [description]
+    :type vmin: [type]
+    :param vmax: [description]
+    :type vmax: [type]
+    :returns: [description]
+    :rtype: {[type]}
+    """
     return max(min(n, vmax), vmin)
 
 class inputDrager(QtWidgets.QWidget):

@@ -6,11 +6,11 @@ Subpackages
 
 .. toctree::
 
-   PyFlow.UI.Canvas
-   PyFlow.UI.Tool
-   PyFlow.UI.Utils
-   PyFlow.UI.Views
-   PyFlow.UI.Widgets
+    PyFlow.UI.Canvas
+    PyFlow.UI.Tool
+    PyFlow.UI.Utils
+    PyFlow.UI.Views
+    PyFlow.UI.Widgets
 
 Submodules
 ----------
@@ -19,41 +19,35 @@ PyFlow.UI.CompileUiQt module
 ----------------------------
 
 .. automodule:: PyFlow.UI.CompileUiQt
-   :members:
+    :members:
 
 PyFlow.UI.ContextMenuDataBuilder module
 ---------------------------------------
 
 .. automodule:: PyFlow.UI.ContextMenuDataBuilder
-   :members:
+    :members:
 
 PyFlow.UI.ContextMenuGenerator module
 -------------------------------------
 
 .. automodule:: PyFlow.UI.ContextMenuGenerator
-   :members:
+    :members:
 
 PyFlow.UI.EncodeResources module
 --------------------------------
 
 .. automodule:: PyFlow.UI.EncodeResources
-   :members:
+    :members:
 
 PyFlow.UI.UIInterfaces module
 -----------------------------
 
 .. automodule:: PyFlow.UI.UIInterfaces
-   :members:
-
-PyFlow.UI.resources module
---------------------------
-
-.. automodule:: PyFlow.UI.resources
-   :members:
+    :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.UI
-   :members:
+    :members:
