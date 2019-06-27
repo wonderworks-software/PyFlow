@@ -35,9 +35,9 @@ if __name__ == '__main__':
         msg.setWindowIcon(QtGui.QIcon(":/LogoBpApp.png"))
         msg.setIcon(QMessageBox.Critical)
         # Initalize Packages
-        INITIALIZE()
-        man = GraphManager()
         try:
+            INITIALIZE()
+            man = GraphManager()
             man.deserialize(data)
             grph = man.findRootGraph()
             inputs = grph.getNodesByClassName("graphInputs")
