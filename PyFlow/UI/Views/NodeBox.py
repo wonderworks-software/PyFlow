@@ -38,7 +38,7 @@ class NodeBoxTreeWidget(QTreeWidget):
     showInfo = QtCore.Signal(object)
     hideInfo = QtCore.Signal()
 
-    def __init__(self, parent,canvas, bNodeInfoEnabled=True, useDragAndDrop=True):
+    def __init__(self, parent, canvas, bNodeInfoEnabled=True, useDragAndDrop=True):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
@@ -173,16 +173,18 @@ class NodeBoxTreeWidget(QTreeWidget):
                             self.suggestionsEnabled = True
                             if pinDirection == PinDirection.Output:
                                 if pinStructure != PinStructure.Multi:
-                                    if dataType in fooInpTypes and pinStructure in fooInpStructs:
+                                    hasMultiPins = PinStructure.Multi in fooInpStructs
+                                    if dataType in fooInpTypes and (pinStructure in fooInpStructs or hasMultiPins):
                                         self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                                 elif dataType in fooInpTypes:
-                                        self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                             else:
                                 if pinStructure != PinStructure.Multi:
-                                    if dataType in fooOutTypes and pinStructure in fooOutStructs:
+                                    hasMultiPins = PinStructure.Multi in fooOutStructs
+                                    if dataType in fooOutTypes and (pinStructure in fooOutStructs or hasMultiPins):
                                         self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                                 elif dataType in fooOutTypes:
-                                        self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
+                                    self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
 
             # class based nodes
             for node_class in package.GetNodeClasses().values():
@@ -200,20 +202,19 @@ class NodeBoxTreeWidget(QTreeWidget):
                     # if pressed pin is output pin
                     # filter by nodes input types
                     hints = node_class.pinTypeHints()
-                    if isinstance(hints, dict):
-                        print(node_class)
                     if pinDirection == PinDirection.Output:
                         if pinStructure != PinStructure.Multi:
-                            if dataType in hints.inputTypes and pinStructure in hints.inputStructs:
+                            hasMultiPins = PinStructure.Multi in hints.inputStructs
+                            if dataType in hints.inputTypes and (pinStructure in hints.inputStructs or hasMultiPins):
                                 self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
-                            elif dataType in hints.inputTypes:
-                                self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
-
+                        elif dataType in hints.inputTypes:
+                            self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
                     else:
                         # if pressed pin is input pin
                         # filter by nodes output types
                         if pinStructure != PinStructure.Multi:
-                            if dataType in hints.outputTypes and pinStructure in hints.outputStructs:
+                            hasMultiPins = PinStructure.Multi in hints.outputStructs
+                            if dataType in hints.outputTypes and (pinStructure in hints.outputStructs or hasMultiPins):
                                 self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
                         elif dataType in hints.outputTypes:
                             self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
@@ -257,8 +258,19 @@ class NodeBoxTreeWidget(QTreeWidget):
             a = self.canvas.mapToScene(self.canvas.mouseReleasePos)
             jsonTemplate["x"] = a.x()
             jsonTemplate["y"] = a.y()
-            self.canvas.createNode(jsonTemplate)
-            self.parent().parent().parent().hide()
+            node = self.canvas.createNode(jsonTemplate)
+            self.canvas.hideNodeBox()
+            pressedPin = self.canvas.pressedPin
+            if pressedPin.direction == PinDirection.Input:
+                for pin in node.UIoutputs.values():
+                    wire = self.canvas.connectPinsInternal(pressedPin, pin)
+                    if wire is not None:
+                        break
+            if pressedPin.direction == PinDirection.Output:
+                for pin in node.UIinputs.values():
+                    wire = self.canvas.connectPinsInternal(pin, pressedPin)
+                    if wire is not None:
+                        break
         else:
             drag = QtGui.QDrag(self)
             mime_data = QtCore.QMimeData()

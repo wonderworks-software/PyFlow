@@ -216,9 +216,10 @@ def canConnectPins(src, dst):
             return False
 
     if not src.isDict() and dst.isDict():
-        if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
-            return False
-        elif not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSuported)):
+        if dst.optionEnabled(PinOptions.SupportsOnlyArrays):
+            if not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
+                return False
+        elif not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSuported)) and dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not dst.canChangeStructure(src._currStructure, [], selfChek=False):
             return False
         else:
             dictElement = src.getDictElementNode([])
@@ -269,10 +270,12 @@ def canConnectPins(src, dst):
 
     if src.IsValuePin() and dst.IsValuePin():
         if src.dataType in dst.allowedDataTypes([], dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
-            if all([src.dataType == "AnyPin" and not src.canChangeTypeOnConection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), []),
-                    (dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny) or not dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []))]):
+            a = src.dataType == "AnyPin" and not src.canChangeTypeOnConection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), [])
+            b = dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
+            c = not dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
+            if all([a,b or c]):
                 return False
-            if not src.isDict() and dst.supportOnlyDictElement([],dst.isDict()):
+            if not src.isDict() and dst.supportOnlyDictElement([],dst.isDict()) and not (dst.checkFree([],selfChek=False) and dst.canChangeStructure(src._currStructure, [], selfChek=False)):
                 if not src.supportDictElement([],src.optionEnabled(PinOptions.DictElementSuported)) and dst.supportOnlyDictElement([],dst.isDict()):
                     return False 
             return True
@@ -379,6 +382,7 @@ def traverseConstrainedPins(startFrom, callback):
     """Iterates over all constrained chained pins of type `Any` and passes pin into callback function. Callback will be executed once for every pin
     """
     if not startFrom.isAny():
+
         return
     traversed = set()
 
@@ -387,8 +391,10 @@ def traverseConstrainedPins(startFrom, callback):
         callback(pin)
 
         if pin.constraint is None:
-            return
-        nodePins = set(pin.owningNode().constraints[pin.constraint])
+            nodePins = set()
+        else:
+            nodePins = set(pin.owningNode().constraints[pin.constraint])
+
         for connectedPin in getConnectedPins(pin):
             if connectedPin.isAny():
                 nodePins.add(connectedPin)

@@ -1244,7 +1244,7 @@ class pyf_RampColor(pyf_RampSpline):
         self.tickMoved.emit(self.pressed_item)
 
     def drawBackground(self, painter, rect):
-        super(pyf_RampColor, self).drawBackground(painter, rect)
+        super(pyf_RampColor, self).drawBackground(painter, rect)     
         if len(self.items()):
             b = QtGui.QLinearGradient(0, 0, rect.width(), 0)
             if not self.bezier:
@@ -1258,8 +1258,8 @@ class pyf_RampColor(pyf_RampSpline):
                     color = []
                     for i in range(len(items[0].getV())):
                         color.append(self._rawRamp.interpolateBezier([p.getV()[i] for p in items], 0, len(items) - 1, t))
-
-                    b.setColorAt(t, QtGui.QColor().fromRgb(color[0],color[1],color[2]))                 
+                    x = self._rawRamp.interpolateBezier([p.getU() for p in items], 0, len(items) - 1, t)   
+                    b.setColorAt(x, QtGui.QColor().fromRgb(color[0],color[1],color[2]))                 
         else:
             b = editableStyleSheet().InputFieldColor
         painter.fillRect(rect, b)

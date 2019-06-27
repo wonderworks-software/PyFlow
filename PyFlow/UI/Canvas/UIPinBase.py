@@ -189,7 +189,7 @@ class UIPinBase(QGraphicsWidget):
     def onRename(self):
         name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
-            uniqueName = self._rawPin.owningNode().graph().graphManager.getUniqName(name)
+            uniqueName = self._rawPin.owningNode().getUniqPinName(name)
             self.setName(uniqueName)
             self.setDisplayName(uniqueName)
             self.owningNode().invalidateNodeLayouts()
@@ -504,46 +504,32 @@ class PinGroup(UIPinBase):
 
     def paint(self, painter, option, widget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
-        frame = frame.translated(self.pinSize*1.1, 0)
+        frame = frame.translated(self.pinSize * 1.1, 0)
         # TODO: move group bg color to themes?
         groupBGColor = self.owningNode().color.lighter(150)
         bgRect = QtCore.QRectF(frame)
         bgRect.setX(0)
-        #painter.fillRect(bgRect, groupBGColor)
         painter.setFont(self._font)
         painter.setPen(QtGui.QPen(self.labelColor, 1.0))
         painter.drawText(frame, self.name)
 
         painter.setPen(QtGui.QPen(self.labelColor, 0.1))
-        square = QtCore.QRectF(QtCore.QPointF(0,0),QtCore.QSizeF(self.pinSize/1.1,self.pinSize/1.1))
-        square2 = square.translated(0,(self.pinSize/1.1)/3)
+        square = QtCore.QRectF(QtCore.QPointF(0, 0), QtCore.QSizeF(self.pinSize / 1.1, self.pinSize / 1.1))
+        square2 = square.translated(0, (self.pinSize / 1.1) / 3)
         painter.drawRect(square2)
-        
+
         font = QtGui.QFont(self._font)
         font.setPixelSize(7)
         painter.setFont(font)
         if not self.expanded:
             x = QtGui.QFontMetrics(font).width("+")
-            square = square.translated(x/3,0.5)
-            painter.drawText(square,"+")
+            square = square.translated(x / 3, 0.5)
+            painter.drawText(square, "+")
         else:
             x = QtGui.QFontMetrics(font).width("-")
-            square = square.translated(x/3,0.5)
-            painter.drawText(square,"-")            
+            square = square.translated(x / 3, 0.5)
+            painter.drawText(square, "-")
 
-
-        """
-        if not self.expanded:
-            arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
-                                    QtCore.QPointF(self.pinSize, self.pinSize / 2.0),
-                                    QtCore.QPointF(0, self.pinSize)])
-        else:
-            arrow = QtGui.QPolygonF([QtCore.QPointF(self.pinSize / 2, self.pinSize),
-                                    QtCore.QPointF(0, 0),
-                                    QtCore.QPointF(self.pinSize, 0)])
-        arrowX = 0
-        painter.drawPolygon(arrow.translated(arrowX, self.pinSize / 4))
-        """
 
 def REGISTER_UI_PIN_FACTORY(packageName, factory):
     if packageName not in UI_PINS_FACTORIES:

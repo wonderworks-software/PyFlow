@@ -53,6 +53,8 @@ from PyFlow.Packages.PyFlowBase.Nodes.makeDictElement import makeDictElement
 from PyFlow.Packages.PyFlowBase.Nodes.dictKeys import dictKeys
 from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
 from PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
+from PyFlow.Packages.PyFlowBase.Nodes.stringToArray import stringToArray
+
 
 from PyFlow.Packages.PyFlowBase.Nodes.consoleOutput import consoleOutput
 from PyFlow.Packages.PyFlowBase.Nodes.address import address
@@ -141,6 +143,7 @@ _NODES = {
     dictKeys.__name__: dictKeys,
     floatRamp.__name__: floatRamp,
     colorRamp.__name__: colorRamp,
+    stringToArray.__name__:stringToArray,
     imageDisplay.__name__ : imageDisplay
 }
 

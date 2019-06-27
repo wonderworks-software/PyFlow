@@ -29,6 +29,10 @@ class HistoryTool(DockTool):
         self.setWidget(self.content)
 
     @staticmethod
+    def isSingleton():
+        return True
+
+    @staticmethod
     def getIcon():
         return QtGui.QIcon(":history.png")
 

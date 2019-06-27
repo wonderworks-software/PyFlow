@@ -6,10 +6,10 @@ from PyFlow.Core.Common import *
 class doN(NodeBase):
     def __init__(self, name):
         super(doN, self).__init__(name)
-        self.enter = self.createInputPin('Enter', 'ExecPin', self.compute)
+        self.enter = self.createInputPin('Enter', 'ExecPin', None, self.compute)
         self._N = self.createInputPin('N', 'IntPin')
         self._N.setData(10)
-        self.reset = self.createInputPin('Reset', 'ExecPin', self.OnReset)
+        self.reset = self.createInputPin('Reset', 'ExecPin', None, self.OnReset)
 
         self.completed = self.createOutputPin('Exit', 'ExecPin')
         self.counter = self.createOutputPin('Counter', 'IntPin')
