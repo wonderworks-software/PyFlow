@@ -123,7 +123,7 @@ class PinBase(IPin):
 
     @property
     def linkedTo(self):
-        # store connection from out pins only
+        # store connection from pins
         # from left hand side to right hand side
         result = list()
         if self.direction == PinDirection.Output:

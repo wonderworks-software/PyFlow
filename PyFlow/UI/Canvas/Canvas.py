@@ -896,6 +896,14 @@ class Canvas(QGraphicsView):
                         linkedToData["lhsNodeName"] = renameData[lhsNodeName]
                     if rhsNodeName in renameData:
                         linkedToData["rhsNodeName"] = renameData[rhsNodeName]
+            for inp in node['inputs']:
+                for linkedToData in inp['linkedTo']:
+                    lhsNodeName = linkedToData["lhsNodeName"]
+                    rhsNodeName = linkedToData["rhsNodeName"]
+                    if lhsNodeName in renameData:
+                        linkedToData["lhsNodeName"] = renameData[lhsNodeName]
+                    if rhsNodeName in renameData:
+                        linkedToData["rhsNodeName"] = renameData[rhsNodeName]
 
         for node in copiedNodes:
             if node['type'] == 'compound':

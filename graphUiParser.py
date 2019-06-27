@@ -2,7 +2,7 @@ import sys
 import json
 from Qt.QtWidgets import *
 from Qt import QtGui
-
+from Qt import QtCore
 from PyFlow import INITIALIZE
 from PyFlow.Core.Common import *
 from PyFlow.Core.GraphManager import GraphManager
@@ -48,7 +48,7 @@ if __name__ == '__main__':
                     uiNodeJsonTemplate = inp.serialize()
                     uiNodeJsonTemplate["wrapper"] = inp.wrapperJsonData
                     uiNode.postCreate(uiNodeJsonTemplate)
-                    uiNode.createOutputWidgets(prop.layout(), inp.name)
+                    cat = uiNode.createOutputWidgets(prop.layout(), inp.name)
                     prop.show()
             else:
                 msg.setInformativeText(fpath)
