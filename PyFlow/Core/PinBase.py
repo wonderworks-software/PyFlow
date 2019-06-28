@@ -12,6 +12,32 @@ from PyFlow import getPinDefaultValueByType
 
 
 class PinBase(IPin):
+    """
+    **Base Class for Pins**
+    
+    This is the Base Class that stores the data in the graph.
+    This Class is intended to be subclassed for each New registered DataType you want to create.
+
+    :param _packageName: This holds the package where the subClassed Pin is registered.
+                         Is not intended to be writed by developer, PyFlow autamatically fills this property at
+                         registration Point
+    :type _packageName: str
+
+    Signals:
+        * **serializationHook** : Fired when Serialize Pin called, so Ui wrapers can append data to the serialization
+        * **onPinConnected** : Fired when a new connection is made to this Pin, sends other Pin
+        * **onPinDisconnected** : Fired when some disconnection is made to this Pin, sends other Pin
+        * **nameChanged** : Fired when pin.setName() called, sends New Name
+        * **killed** : Fired when Pin gets deleted
+        * **onExecute** : Fired when Pin execution gets called
+        * **containerTypeChanged** : Fired when Pin Structure Changes
+        * **dataBeenSet** : Fired when data changes, sends New Data
+        * **dictChanged** : Fired when current structure changes to :py:const:`PyFlow.Core.Common.PinStructure.Dict`, sends Dict key DataType
+        * **errorOccured** : Fired when some Error fired, like incorrect dataType seted, sends ocurred Error
+        * **errorCleared** : Fired when error cleared
+
+    
+    """
     _packageName = ""
 
     def __init__(self, name, owningNode, direction):

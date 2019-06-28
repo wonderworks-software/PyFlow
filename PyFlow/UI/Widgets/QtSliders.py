@@ -12,6 +12,7 @@ from PyFlow.Core import structs
 
 class inputDrager(QtWidgets.QWidget):
     """Custom Widget to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
+    
     Signals:
         :valueChanged: Signal Emited when value has change (float)
     """
@@ -370,8 +371,7 @@ class pyf_Slider(QtWidgets.QWidget):
     valueChanged = QtCore.Signal(object)
 
     def __init__(self, parent, type="float", style=0, name=None, *args):
-        """        
-        [description]
+        """
         :param parent: Parent Widget
         :type parent: QtWidgets.QWidget
         :param type: Choose if create a float or int Slider, defaults to "float"
@@ -547,6 +547,7 @@ class pyf_Slider(QtWidgets.QWidget):
 
 class pyf_HueSlider(doubleSlider):
     """Custom Slider to select a color by a hue selector
+
     Extends:
         :obj: `doubleSlider`
     """
