@@ -1,13 +1,8 @@
-from copy import copy
-
 from Qt import QtCore, QtGui
 from Qt.QtWidgets import QDialog
 from Qt.QtWidgets import QVBoxLayout
-from Qt.QtWidgets import QVBoxLayout
 from Qt.QtWidgets import QDialogButtonBox
 from Qt.QtWidgets import QTextEdit
-
-from PyFlow.UI.Utils.Settings import *
 
 
 class TextEditingField(QTextEdit):
@@ -35,7 +30,8 @@ class TextEditDialog(QDialog):
         self._font = QtGui.QFont(font)
         self.te.setTextColor(textColor)
         self.layout.addWidget(self.te)
-        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+        self.buttons = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
         self.buttons.accepted.connect(self.onAccept)
         self.buttons.rejected.connect(self.onReject)
         self.layout.addWidget(self.buttons)

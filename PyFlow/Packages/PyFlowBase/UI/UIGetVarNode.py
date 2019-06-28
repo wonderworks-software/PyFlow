@@ -2,14 +2,9 @@
 
 Builtin node to access variable value.
 """
-from copy import copy
-
-from Qt import QtCore
-from Qt import QtGui
-
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UICommon import *

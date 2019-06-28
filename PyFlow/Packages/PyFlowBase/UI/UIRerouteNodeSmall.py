@@ -1,10 +1,7 @@
 from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QGraphicsItem,QGraphicsWidget,QSizePolicy
+from Qt.QtWidgets import QSizePolicy
 
-from PyFlow.Core.Common import getConnectedPins
-from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
@@ -21,7 +18,7 @@ class UIRerouteNodeSmall(UINodeBase):
         self.headerLayout.removeItem(self.nodeNameWidget)
         self.nodeNameWidget.hide()
         self.setAcceptHoverEvents(True)
-        self.drawRect = QtCore.QRectF(0,0,10,10)
+        self.drawRect = QtCore.QRectF(0, 0, 10, 10)
         self.hiddenPins = True
 
     def createActionButtons(self):
@@ -35,8 +32,8 @@ class UIRerouteNodeSmall(UINodeBase):
             self._rect.setWidth(self._size)
             self._rect.moveLeft(0)
         else:
-            self._rect.setWidth(self._size*2)
-            self._rect.moveLeft(-self._size/2)
+            self._rect.setWidth(self._size * 2)
+            self._rect.moveLeft(-self._size / 2)
         self._rect.setHeight(self._size)
         return self._rect
 
@@ -44,17 +41,18 @@ class UIRerouteNodeSmall(UINodeBase):
         self.hiddenPins = False
         self.input.show()
         self.output.show()
-        self.input.setPos(self.boundingRect().left()-self.input.pinSize,1.5)
-        self.output.setPos(self.boundingRect().right()-self.input.pinSize,1.5)
-        
+        self.input.setPos(self.boundingRect().left() - self.input.pinSize, 1.5)
+        self.output.setPos(self.boundingRect().right() -
+                           self.input.pinSize, 1.5)
+
     def hidePins(self):
         self.hiddenPins = True
         self.input.hide()
-        self.output.hide() 
-        self.input.setPos(0,1.5)
-        self.output.setPos(0,1.5)
-        
-    def mousePressEvent(self,event):
+        self.output.hide()
+        self.input.setPos(0, 1.5)
+        self.output.setPos(0, 1.5)
+
+    def mousePressEvent(self, event):
         super(UIRerouteNodeSmall, self).mousePressEvent(event)
         self.hidePins()
 
@@ -72,7 +70,8 @@ class UIRerouteNodeSmall(UINodeBase):
         newOuts = []
         for i in self.UIoutputs.values():
             for connection in i.connections:
-                newOuts.append([connection.destination(), connection.drawDestination])
+                newOuts.append([connection.destination(),
+                                connection.drawDestination])
         if inp.connections:
             source = inp.connections[0].source()
             for out in newOuts:
@@ -92,13 +91,12 @@ class UIRerouteNodeSmall(UINodeBase):
         self.output.setDisplayName("")
         self.input.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
         self.output.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
-        self.input.setPos(-self.input.pinSize,1.5)
-        self.output.setPos(self._size+self.input.pinSize/1.5,1.5)        
+        self.input.setPos(-self.input.pinSize, 1.5)
+        self.output.setPos(self._size + self.input.pinSize / 1.5, 1.5)
         self.hidePins()
         self.updateNodeShape()
 
     def paint(self, painter, option, widget):
         #painter.setPen(QtGui.QPen(QtCore.Qt.green, 0.75))
-        #painter.drawRect(self.boundingRect())         
-        NodePainter.asRerouteNode(self, painter, option, widget)      
-      
+        # painter.drawRect(self.boundingRect())
+        NodePainter.asRerouteNode(self, painter, option, widget)

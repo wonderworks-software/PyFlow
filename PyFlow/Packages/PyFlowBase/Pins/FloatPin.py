@@ -1,6 +1,4 @@
 from PyFlow.Core import PinBase
-from PyFlow.Core.Common import *
-from PyFlow.UI.Utils.Settings import Colors
 
 
 class FloatPin(PinBase):
@@ -30,8 +28,7 @@ class FloatPin(PinBase):
     @staticmethod
     def internalDataStructure():
         return float
-        
+
     @staticmethod
     def processData(data):
         return FloatPin.internalDataStructure()(data)
-

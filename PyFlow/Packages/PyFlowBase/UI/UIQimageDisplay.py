@@ -1,15 +1,7 @@
-from Qt import QtCore
 from Qt import QtGui
-import Qt
 from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Utils.Settings import *
-from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.Canvas.Painters import NodePainter
-from PyFlow.UI.Canvas.UINodeBase import UINodeBase,InputTextField
-from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
-from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
-from Qt.QtWidgets import QGraphicsTextItem, QGraphicsWidget, QGraphicsItem,QGraphicsProxyWidget,QLabel,QSizePolicy,QPushButton
+from PyFlow.UI.Canvas.UINodeBase import UINodeBase
+from Qt.QtWidgets import QLabel
 
 
 class UIQimageDisplay(UINodeBase):
@@ -28,8 +20,9 @@ class UIQimageDisplay(UINodeBase):
 
     def paint(self, painter, option, widget):
         self.updateSize()
-        super(UIQimageDisplay, self).paint( painter, option, widget)
+        super(UIQimageDisplay, self).paint(painter, option, widget)
 
     def updateSize(self):
-        scaledPixmap = self.pixmap.scaledToWidth(self.customLayout.geometry().width())
+        scaledPixmap = self.pixmap.scaledToWidth(
+            self.customLayout.geometry().width())
         self.Imagelabel.setPixmap(scaledPixmap)

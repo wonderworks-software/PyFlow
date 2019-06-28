@@ -6,17 +6,13 @@ Also, it implements [initializeFromFunction](@ref PyFlow.Core.Node.initializeFro
 @sa FunctionLibrary.py
 """
 
-import weakref
-from multipledispatch import dispatch
 from nine import str
-from docutils import core
 import logging
-import json
 from Qt import QtCore
 from Qt import QtGui
 from Qt import QtSvg
 from Qt.QtWidgets import *
-from PyFlow.UI.Utils.Settings import *
+from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.UIPinBase import (
     UIPinBase,
     getUIPinInstance,
@@ -25,12 +21,11 @@ from PyFlow.UI.Canvas.UIPinBase import (
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.UIInterfaces import IUINode
 from PyFlow.UI.Canvas.NodeActionButton import NodeActionButtonBase
-from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.Core.Common import *
+from PyFlow.UI.Utils.stylesheet import Colors
 
 from collections import OrderedDict
 

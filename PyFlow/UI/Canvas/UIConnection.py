@@ -7,7 +7,7 @@ from Qt.QtWidgets import QGraphicsPathItem
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QStyle
 
-from PyFlow.UI.Utils.Settings import Colors
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.UICommon import NodeDefaults
 from PyFlow.Core.Common import *
 

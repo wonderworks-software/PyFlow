@@ -1,10 +1,5 @@
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QGraphicsItem
-
-from PyFlow.Core.Common import getConnectedPins
 from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
@@ -23,7 +18,8 @@ class UIRerouteNode(UINodeBase):
         newOuts = []
         for i in self.UIoutputs.values():
             for connection in i.connections:
-                newOuts.append([connection.destination(), connection.drawDestination])
+                newOuts.append([connection.destination(),
+                                connection.drawDestination])
         if inp.connections:
             source = inp.connections[0].source()
             for out in newOuts:

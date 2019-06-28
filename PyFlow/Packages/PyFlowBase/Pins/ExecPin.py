@@ -1,9 +1,9 @@
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
-from PyFlow.UI.Utils.Settings import Colors
-
 
 # Execution pin
+
+
 class ExecPin(PinBase):
     def __init__(self, name, parent, direction, **kwargs):
         super(ExecPin, self).__init__(name, parent, direction, **kwargs)

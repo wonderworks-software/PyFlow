@@ -5,11 +5,12 @@ from Qt import QtGui
 from Qt.QtWidgets import QStyle
 
 from PyFlow import getPinFromData
-from PyFlow.UI.Utils.Settings import *
+
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.Core.Common import *
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.UI.Utils.stylesheet import Colors
 
 InteractiveColor = editableStyleSheet().MainColor
 InvalidNodePenColor = Colors.Red

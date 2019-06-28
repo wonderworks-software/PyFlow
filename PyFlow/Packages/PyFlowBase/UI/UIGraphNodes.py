@@ -1,10 +1,8 @@
 from Qt import QtCore
-from Qt.QtWidgets import QInputDialog
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
-from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UICommon import *
 
@@ -24,7 +22,8 @@ class UIGraphInputs(UINodeBase):
     def setName(self, name):
         oldName = self.getName()
         super(UIGraphInputs, self).setName(name)
-        owningCompoundNode = self.canvasRef().graphManager.findNode(self._rawNode.graph().name)
+        owningCompoundNode = self.canvasRef().graphManager.findNode(
+            self._rawNode.graph().name)
         if owningCompoundNode:
             uiCompoundNode = owningCompoundNode.getWrapper()
             if oldName in uiCompoundNode.groups["input"]:
@@ -70,7 +69,8 @@ class UIGraphOutputs(UINodeBase):
     def setName(self, name):
         oldName = self.getName()
         super(UIGraphOutputs, self).setName(name)
-        owningCompoundNode = self.canvasRef().graphManager.findNode(self._rawNode.graph().name)
+        owningCompoundNode = self.canvasRef().graphManager.findNode(
+            self._rawNode.graph().name)
         if owningCompoundNode:
             uiCompoundNode = owningCompoundNode.getWrapper()
             if oldName in uiCompoundNode.groups["output"]:
