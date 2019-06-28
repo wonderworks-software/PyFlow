@@ -1,6 +1,6 @@
-from PyFlow.Core.Common import *
-from PyFlow.UI.Utils.Settings import *
 from docutils import core
+from PyFlow.Core.Common import *
+from PyFlow.UI.Utils.stylesheet import Colors
 
 
 DEFAULT_WIDGET_VARIANT = "DefaultWidget"
@@ -32,22 +32,31 @@ class CanvasManipulationMode(IntEnum):
     COPY = 5
 
 
+class Spacings:
+    kPinSpacing = 4
+    kPinOffset = 12
+    kSplitterHandleWidth = 5
+
+
 def lineRectIntersection(l, r):
-    it_left, impactLeft = l.intersect(QtCore.QLineF(r.topLeft(), r.bottomLeft()))
+    it_left, impactLeft = l.intersect(
+        QtCore.QLineF(r.topLeft(), r.bottomLeft()))
     if it_left == QtCore.QLineF.BoundedIntersection:
         return impactLeft
     it_top, impactTop = l.intersect(QtCore.QLineF(r.topLeft(), r.topRight()))
     if it_top == QtCore.QLineF.BoundedIntersection:
         return impactTop
-    it_bottom, impactBottom = l.intersect(QtCore.QLineF(r.bottomLeft(), r.bottomRight()))
+    it_bottom, impactBottom = l.intersect(
+        QtCore.QLineF(r.bottomLeft(), r.bottomRight()))
     if it_bottom == QtCore.QLineF.BoundedIntersection:
         return impactBottom
-    it_right, impactRight = l.intersect(QtCore.QLineF(r.topRight(), r.bottomRight()))
+    it_right, impactRight = l.intersect(
+        QtCore.QLineF(r.topRight(), r.bottomRight()))
     if it_right == QtCore.QLineF.BoundedIntersection:
         return impactRight
 
 
-## This function clears property view's layout.
+# This function clears property view's layout.
 # @param[in] layout QLayout class
 def clearLayout(layout):
     while layout.count():
@@ -68,6 +77,7 @@ def findItemIndex(graphicsLayout, item):
 @SingletonDecorator
 class PinDefaults(object):
     """docstring for PinDefaults."""
+
     def __init__(self):
         self.__pinSize = 6
 
@@ -79,6 +89,7 @@ class PinDefaults(object):
 @SingletonDecorator
 class NodeDefaults(object):
     """docstring for NodeDefaults."""
+
     def __init__(self):
         self.__contentMargins = 5
         self.__layoutsSpacing = 5
@@ -120,6 +131,7 @@ class NodeActionButtonInfo(object):
 
     See UINodeBase constructor and postCrate method.
     """
+
     def __init__(self, defaultSvgIcon, actionButtonClass=None):
         super(NodeActionButtonInfo, self).__init__()
         self._defaultSvgIcon = defaultSvgIcon

@@ -1,14 +1,14 @@
 from Qt import QtCore
 from Qt import QtGui
-from Qt.QtWidgets import QComboBox,QCheckBox
+from Qt.QtWidgets import QComboBox, QCheckBox
 
-from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow import findPinClassByType
 
 
 from PyFlow.Core.Common import *
+
 
 class UIConstantNode(UINodeBase):
     def __init__(self, raw_node):
@@ -16,7 +16,8 @@ class UIConstantNode(UINodeBase):
         self.hover = False
         self.headColorOverride = Colors.Gray
         self.color = Colors.DarkGray
-        self.headColor = self.headColorOverride = QtGui.QColor(*findPinClassByType("AnyPin").color())
+        self.headColor = self.headColorOverride = QtGui.QColor(
+            *findPinClassByType("AnyPin").color())
         if self.headColor.lightnessF() > 0.75:
             self.labelTextColor = QtCore.Qt.black
         else:
@@ -29,7 +30,8 @@ class UIConstantNode(UINodeBase):
         newOuts = []
         for i in self.UIoutputs.values():
             for connection in i.connections:
-                newOuts.append([connection.destination(), connection.drawDestination])
+                newOuts.append([connection.destination(),
+                                connection.drawDestination])
         if inp.connections:
             source = inp.connections[0].source()
             for out in newOuts:
@@ -46,13 +48,14 @@ class UIConstantNode(UINodeBase):
         self.changeType(self.input.dataType)
         self.updateNodeShape()
 
-    def changeOnConection(self,other):
+    def changeOnConection(self, other):
         if other.dataType != self.prevDataType:
             self.prevDataType = other.dataType
             self.changeType(other.dataType)
 
-    def changeType(self,dataType):
-        self.headColor = self.headColorOverride = QtGui.QColor(*findPinClassByType(dataType).color())
+    def changeType(self, dataType):
+        self.headColor = self.headColorOverride = QtGui.QColor(
+            *findPinClassByType(dataType).color())
         if self.headColor.lightnessF() > 0.75:
             self.labelTextColor = QtCore.Qt.black
         else:
@@ -60,34 +63,35 @@ class UIConstantNode(UINodeBase):
         self.update()
         self.canvasRef().tryFillPropertiesView(self)
 
-    def selectStructure(self,name):
+    def selectStructure(self, name):
         self.canvasRef().tryFillPropertiesView(self)
 
-    def createInputWidgets ( self,propertiesWidget):
-        inputsCategory = super(UIConstantNode, self).createInputWidgets(propertiesWidget)
+    def createInputWidgets(self, propertiesWidget):
+        inputsCategory = super(
+            UIConstantNode, self).createInputWidgets(propertiesWidget)
         selector = QComboBox()
         overrideType = QCheckBox()
-        
-        for i in self._rawNode.pinTypes:
-            selector.addItem(i)         
-        if self.input.dataType in self._rawNode.pinTypes:
-            selector.setCurrentIndex(self._rawNode.pinTypes.index(self.input.dataType))
 
-        structSelector =  QComboBox()
+        for i in self._rawNode.pinTypes:
+            selector.addItem(i)
+        if self.input.dataType in self._rawNode.pinTypes:
+            selector.setCurrentIndex(
+                self._rawNode.pinTypes.index(self.input.dataType))
+
+        structSelector = QComboBox()
         for i in [i.name for i in list(PinStructure)]:
             structSelector.addItem(i)
 
-        #overrideType.setChecked(self.input._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection))
+        # overrideType.setChecked(self.input._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection))
         structSelector.setCurrentIndex(self.input._rawPin._currStructure)
-        #selector.setEnabled(self.input._rawPin.checkFree([self.output._rawPin],False))
+        # selector.setEnabled(self.input._rawPin.checkFree([self.output._rawPin],False))
 
-        #overrideType.stateChanged.connect(selector.setEnabled)
-        #overrideType.stateChanged.connect(self._rawNode.overrideTypeChanged)
+        # overrideType.stateChanged.connect(selector.setEnabled)
+        # overrideType.stateChanged.connect(self._rawNode.overrideTypeChanged)
         selector.activated.connect(self._rawNode.updateType)
         structSelector.activated.connect(self._rawNode.selectStructure)
         structSelector.activated.connect(self.selectStructure)
 
-        inputsCategory.insertWidget(0,"DataType",selector)
+        inputsCategory.insertWidget(0, "DataType", selector)
         #inputsCategory.insertWidget(1,"Change Type On Connection",overrideType)
-        inputsCategory.insertWidget(1,"Structure",structSelector)
-        
+        inputsCategory.insertWidget(1, "Structure", structSelector)

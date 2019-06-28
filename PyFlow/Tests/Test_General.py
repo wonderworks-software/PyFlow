@@ -32,10 +32,10 @@ class TestGeneral(unittest.TestCase):
 
         makeIntNode.setData('i', 5)
 
-        connection = connectPinsByIndexes(makeIntNode, 0, addNode2, 0)
+        connection = connectPinsByIndexes(makeIntNode, 1, addNode2, 1)
         self.assertEqual(connection, True, "FAILED TO ADD EDGE")
 
-        connection = connectPinsByIndexes(addNode2, 0, printNode, 1)
+        connection = connectPinsByIndexes(addNode2, 1, printNode, 2)
         self.assertEqual(connection, True, "FAILED TO ADD EDGE")
         printNode[DEFAULT_IN_EXEC_NAME].call()
 
@@ -413,15 +413,15 @@ class TestGeneral(unittest.TestCase):
 
         makeInt.setData('i', 5)
 
-        connected = connectPinsByIndexes(makeInt, 0, addNode2, 0)
+        connected = connectPinsByIndexes(makeInt, 1, addNode2, 1)
         self.assertEqual(connected, True)
 
-        connected = connectPinsByIndexes(addNode2, 0, printNode, 1)
+        connected = connectPinsByIndexes(addNode2, 1, printNode, 2)
         self.assertEqual(connected, True)
 
         printNode[DEFAULT_IN_EXEC_NAME].call()
 
-        self.assertEqual(addNode2.orderedOutputs[0].currentData(), 5, "Incorrect calc")
+        self.assertEqual(addNode2.orderedOutputs[1].currentData(), 5, "Incorrect calc")
 
         # save and clear
         dataJson = man.serialize()

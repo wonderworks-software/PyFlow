@@ -1,17 +1,6 @@
-import weakref
-import uuid
 from types import MethodType
-from collections import OrderedDict
 
-from Qt import QtGui
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QGraphicsProxyWidget
-from Qt.QtWidgets import QMenu
-
-from PyFlow.Core.Common import *
-from PyFlow.UI.Utils.Settings import *
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
 
 

@@ -13,11 +13,24 @@ STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 
 
+class Colors:
+    AbsoluteBlack = QtGui.QColor(0, 0, 0, 255)
+    DarkGray = QtGui.QColor(60, 60, 60)
+    DirtyPen = QtGui.QColor(250, 250, 250, 200)
+    Gray = QtGui.QColor(110, 110, 110)
+    Green = QtGui.QColor(96, 169, 23, 255)
+    NodeBackgrounds = QtGui.QColor(40, 40, 40, 200)
+    NodeNameRectBlue = QtGui.QColor(28, 74, 149, 200)
+    NodeNameRectGreen = QtGui.QColor(74, 124, 39, 200)
+    NodeSelectedPenColor = QtGui.QColor(200, 200, 200, 150)
+    Red = QtGui.QColor(255, 0, 0, 255)
+    White = QtGui.QColor(255, 255, 255, 200)
+    Yellow = QtGui.QColor(255, 211, 25)
+
+
 @SingletonDecorator
 class editableStyleSheet():
     def __init__(self):
-
-        self.SetAppStyleSheet = True
 
         self.TextColor = QtGui.QColor(228, 228, 228)
 
@@ -41,6 +54,7 @@ class editableStyleSheet():
         self.GridSizeFine = [10]
         self.GridSizeHuge = [100]
         self.DrawNumbers = [0]
+        self.SetAppStyleSheet = [1]
 
         self.storeDeffaults()
         self.presests = {}
@@ -110,8 +124,11 @@ class editableStyleSheet():
                     self.updateApp()
 
     def updateApp(self):
-        if self.SetAppStyleSheet:
+        """calls update method all widgets in the app and calls app.setStyleSheet
+        """
+        if self.SetAppStyleSheet[0] > 0:
             app = QtWidgets.QApplication.instance()
+            print app
             if app:
                 app.setStyleSheet(self.getStyleSheet())
                 for widget in app.allWidgets():

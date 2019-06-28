@@ -70,3 +70,5 @@ autodoc_default_options = {
     'special-members': '__init__',
     'exclude-members': '__weakref__'
 }
+
+master_doc = 'index'

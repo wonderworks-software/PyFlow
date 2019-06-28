@@ -63,8 +63,6 @@ class NodeBase(INode):
         self.graph = None
         self.name = name
         self.pinsCreationOrder = OrderedDict()
-        self.orderedInputs = {}
-        self.orderedOutputs = {}
         self._pins = set()
         self.x = 0.0
         self.y = 0.0
@@ -154,17 +152,28 @@ class NodeBase(INode):
         """Returns all input pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
-        for pin in self.orderedInputs.values():
-            result[pin.uid] = pin
+        for pin in self.pins:
+            if pin.direction == PinDirection.Input:
+                result[pin.uid] = pin
         return result
+
+    @property
+    def orderedInputs(self):
+        result = {}
+        sortedInputs = sorted(self.inputs.values(), key=lambda x: x.pinIndex)
+        for inp in sortedInputs:
+            result[inp.pinIndex] = inp
+        return result
+
 
     @property
     def namePinInputsMap(self):
         """Returns all input pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
-        for pin in self.orderedInputs.values():
-            result[pin.name] = pin
+        for pin in self.pins:
+            if pin.direction == PinDirection.Input:
+                result[pin.name] = pin
         return result
 
     @property
@@ -172,8 +181,17 @@ class NodeBase(INode):
         """Returns all output pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
-        for pin in self.orderedOutputs.values():
-            result[pin.uid] = pin
+        for pin in self.pins:
+            if pin.direction == PinDirection.Output:
+                result[pin.uid] = pin
+        return result
+
+    @property
+    def orderedOutputs(self):
+        result = {}
+        sortedOutputs = sorted(self.outputs.values(), key=lambda x: x.pinIndex)
+        for out in sortedOutputs:
+            result[out.pinIndex] = out
         return result
 
     @property
@@ -181,8 +199,9 @@ class NodeBase(INode):
         """Returns all output pins. Dictionary generated every time property called, so cache it when possible.
         """
         result = OrderedDict()
-        for pin in self.orderedOutputs.values():
-            result[pin.name] = pin
+        for pin in self.pins:
+            if pin.direction == PinDirection.Output:
+                result[pin.name] = pin
         return result
 
     # IItemBase interface

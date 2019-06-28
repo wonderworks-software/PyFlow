@@ -16,13 +16,34 @@ from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.Core import structs
 
 def clamp(n, vmin, vmax):
+    """Clamp A value betwen min and max
+    
+    :param n: Value To clamp
+    :type n: float,int
+    :param vmin: Minimum Value
+    :type vmin: float,int
+    :param vmax: Maximum Value
+    :type vmax: float,int
+    :returns:  max(min(n, vmax), vmin)
+    :rtype: float,int
+    """
     return max(min(n, vmax), vmin)
 
 class inputDrager(QtWidgets.QWidget):
-    # PopUp Draggers Houdini Style
+    """Custom Widget to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
+
+    :param valueChanged: Signal Emited when value has change
+    :type valueChanged: float
+    """
     valueChanged = QtCore.Signal(float)
 
     def __init__(self, parent, factor, *args, **kargs):
+        """
+        :param parent: parent Widget
+        :type parent: QtWidget
+        :param factor: amount to increment the value
+        :type factor: float/int
+        """
         super(inputDrager, self).__init__(*args, **kargs)
         self.parent = parent
         self.setLayout(QtWidgets.QVBoxLayout())
@@ -86,7 +107,10 @@ class inputDrager(QtWidgets.QWidget):
         return False
 
 class draggers(QtWidgets.QWidget):
-    # PopUp Draggers Houdini Style
+    """PopUp Draggers Houdini Style
+    
+    Holds a bunch of :py:class: PyFlow.UI.Widgets.QtSliders.inputDrager
+    """
     def __init__(self, parent=None, isFloat=True, startValue=0.0):
         super(draggers, self).__init__(parent)
         if not isFloat:

@@ -2,27 +2,19 @@
 
 Builtin node to set variable value.
 """
-from copy import copy
-
-from Qt.QtWidgets import QStyle
-from Qt.QtWidgets import QGraphicsItem
-from Qt.QtWidgets import QLineEdit
-from Qt import QtCore
-from Qt import QtGui
-
-from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.Core.Common import *
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.Commands.RemoveNodes import RemoveNodes
-from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 
-
 # Variable setter node
+
+
 class UISetVarNode(UINodeBase):
     """docstring for UISetVarNode"""
+
     def __init__(self, raw_node):
         super(UISetVarNode, self).__init__(raw_node)
         self.image = RESOURCES_DIR + "/gear.svg"
@@ -65,10 +57,12 @@ class UISetVarNode(UINodeBase):
             self.var = var
             self._rawNode.updateStructure()
             for i in outLinkedTo:
-                self.canvasRef().connectPinsInternal(self._rawNode.out.getWrapper()(), i.getWrapper()())
+                self.canvasRef().connectPinsInternal(
+                    self._rawNode.out.getWrapper()(), i.getWrapper()())
 
             for o in inLinkedTo:
-                self.canvasRef().connectPinsInternal(o.getWrapper()(), self._rawNode.inp.getWrapper()())
+                self.canvasRef().connectPinsInternal(
+                    o.getWrapper()(), self._rawNode.inp.getWrapper()())
 
             self.updateHeaderText()
 

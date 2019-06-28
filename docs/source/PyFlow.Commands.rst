@@ -8,35 +8,35 @@ PyFlow.Commands.ConnectPin module
 ---------------------------------
 
 .. automodule:: PyFlow.Commands.ConnectPin
-   :members:
+    :members:
 
 PyFlow.Commands.CreateNode module
 ---------------------------------
 
 .. automodule:: PyFlow.Commands.CreateNode
-   :members:
+    :members:
 
 PyFlow.Commands.Move module
 ---------------------------
 
 .. automodule:: PyFlow.Commands.Move
-   :members:
+    :members:
 
 PyFlow.Commands.RemoveEdges module
 ----------------------------------
 
 .. automodule:: PyFlow.Commands.RemoveEdges
-   :members:
+    :members:
 
 PyFlow.Commands.RemoveNodes module
 ----------------------------------
 
 .. automodule:: PyFlow.Commands.RemoveNodes
-   :members:
+    :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.Commands
-   :members:
+    :members:

@@ -1,14 +1,6 @@
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QComboBox,QCheckBox
-
-from PyFlow.UI import RESOURCES_DIR
-from PyFlow.UI.Utils.Settings import *
+from Qt.QtWidgets import QComboBox
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow import findPinClassByType
 
-
-from PyFlow.Core.Common import *
 
 class UIMakeDictNode(UINodeBase):
     def __init__(self, raw_node):
@@ -19,22 +11,22 @@ class UIMakeDictNode(UINodeBase):
         super(UIMakeDictNode, self).postCreate(jsonTemplate)
         self.input = self.getPin("KeyType")
 
-    def changeType(self,dataType):
-        #self.input._rawPin.enableOptions(PinOptions.ChangeTypeOnConnection)
-        self.input._rawPin.initType(self.input._rawPin._defaultSupportedDataTypes[dataType],True)
-        #self.input._rawPin.disableOptions(PinOptions.ChangeTypeOnConnection)
+    def changeType(self, dataType):
+        self.input._rawPin.initType(
+            self.input._rawPin._defaultSupportedDataTypes[dataType], True)
 
-    def selectStructure(self,name):
+    def selectStructure(self, name):
         self.canvasRef().tryFillPropertiesView(self)
 
-    def createInputWidgets ( self,propertiesWidget):
-        inputsCategory = super(UIMakeDictNode, self).createInputWidgets(propertiesWidget)
+    def createInputWidgets(self, propertiesWidget):
+        inputsCategory = super(
+            UIMakeDictNode, self).createInputWidgets(propertiesWidget)
         selector = QComboBox()
         for i in self.input._rawPin._defaultSupportedDataTypes:
-            selector.addItem(i)         
+            selector.addItem(i)
 
-        selector.setCurrentIndex(self.input._rawPin._defaultSupportedDataTypes.index(self.input._rawPin.dataType))
+        selector.setCurrentIndex(self.input._rawPin._defaultSupportedDataTypes.index(
+            self.input._rawPin.dataType))
 
         selector.activated.connect(self.changeType)
-        inputsCategory.insertWidget(0,"DataType",selector)
-        
+        inputsCategory.insertWidget(0, "DataType", selector)

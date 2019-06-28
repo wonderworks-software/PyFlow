@@ -2,7 +2,7 @@ from Qt import QtWidgets
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
-from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.Core.Common import *
 

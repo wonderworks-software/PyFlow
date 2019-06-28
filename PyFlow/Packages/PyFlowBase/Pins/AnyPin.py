@@ -74,7 +74,7 @@ class AnyPin(PinBase):
             self.super = AnyPin        
         self.updateError([])
 
-    def setTypeFromData(self,data):
+    def setTypeFromData(self, data):
         for pin in [pin for pin in getAllPinClasses() if pin.IsValuePin()]:
             pType = pin.internalDataStructure()
             if type(data) == pType:
@@ -84,7 +84,7 @@ class AnyPin(PinBase):
                         self.owningNode().checkForErrors()
                 break
 
-    def updateError(self, traversed=[],updateNeis=False):
+    def updateError(self, traversed=[], updateNeis=False):
         if not self.checkForErrors:
             return
         nodePins = set([self])
@@ -104,7 +104,8 @@ class AnyPin(PinBase):
                     if neighbor.activeDataType == "AnyPin":
                         neighbor.super = AnyPin
                 traversed.append(neighbor)
-                neighbor.updateError(traversed,updateNeis)
+                if neighbor.isAny():
+                    neighbor.updateError(traversed, updateNeis)
                 if updateNeis:
                     neighbor.owningNode().checkForErrors()
 

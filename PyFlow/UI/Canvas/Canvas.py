@@ -1,6 +1,5 @@
 from nine import str
 import random
-from os import listdir, path
 from copy import deepcopy
 import json
 import uuid
@@ -17,16 +16,14 @@ from Qt import QtGui
 from Qt import QtWidgets
 from Qt.QtWidgets import *
 
-from PyFlow.UI.Utils.Settings import Colors
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Canvas.SelectionRect import SelectionRect
 from PyFlow.UI.Canvas.UIConnection import UIConnection
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Canvas.UINodeBase import NodeName
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Canvas.UINodeBase import NodeActionButtonBase
 from PyFlow.UI.Canvas.UIPinBase import UIPinBase, PinGroup
-from PyFlow.UI.Canvas.UIVariable import UIVariable
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.AutoPanController import AutoPanController
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
@@ -34,20 +31,15 @@ from PyFlow.Commands.CreateNode import CreateNode as cmdCreateNode
 from PyFlow.Commands.RemoveNodes import RemoveNodes as cmdRemoveNodes
 from PyFlow.Commands.ConnectPin import ConnectPin as cmdConnectPin
 from PyFlow.Commands.RemoveEdges import RemoveEdges as cmdRemoveEdges
-from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.PinBase import PinBase
 from PyFlow.Core.NodeBase import NodeBase
-from PyFlow.Core.GraphManager import GraphManager
 from PyFlow.Input import InputManager, InputAction, InputActionType
 from PyFlow.UI.Views.VariablesWidget import (
     VARIABLE_TAG,
     VARIABLE_DATA_TAG
 )
 
-from PyFlow import (
-    getRawNodeInstance,
-    GET_PACKAGES
-)
+from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
 
 from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode

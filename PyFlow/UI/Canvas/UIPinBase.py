@@ -4,16 +4,11 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QMenu
-from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QSizePolicy
-from Qt.QtWidgets import QComboBox
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QGraphicsLinearLayout
 
 from PyFlow.Core.Common import *
-from PyFlow.Core.EvaluationEngine import EvaluationEngine
-from PyFlow.UI.Utils.Settings import *
+from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.Painters import PinPainter
 from PyFlow.UI.Canvas.UICommon import *
 
@@ -33,6 +28,7 @@ QPushButton {
     color: white;
 }
 """
+
 
 class UIPinBase(QGraphicsWidget):
     """UI pin wrapper.
@@ -70,7 +66,8 @@ class UIPinBase(QGraphicsWidget):
         self._rawPin = raw_pin
         if self._rawPin is not None:
             self._rawPin.serializationHook.connect(self.serializationHook)
-            self._rawPin.containerTypeChanged.connect(self.onContainerTypeChanged)
+            self._rawPin.containerTypeChanged.connect(
+                self.onContainerTypeChanged)
             self._displayName = self._rawPin.name
             self._rawPin.setWrapper(self)
             self._rawPin.killed.connect(self.kill)
@@ -85,7 +82,8 @@ class UIPinBase(QGraphicsWidget):
             self.actionResetValue = self.menu.addAction("Reset value")
             self.actionResetValue.triggered.connect(self.resetToDefault)
             if self._rawPin._structure == PinStructure.Multi:
-                self.menu.addAction("changeStructure").triggered.connect(self.selectStructure)
+                self.menu.addAction("changeStructure").triggered.connect(
+                    self.selectStructure)
 
         # GUI
         self._font = QtGui.QFont("Consolas")
@@ -97,7 +95,8 @@ class UIPinBase(QGraphicsWidget):
             self._pinColor = QtGui.QColor(*self._rawPin.color())
         self._labelColor = QtCore.Qt.white
         self._execPen = QtGui.QPen(Colors.White, 0.5, QtCore.Qt.SolidLine)
-        self._dirty_pen = QtGui.QPen(Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
+        self._dirty_pen = QtGui.QPen(
+            Colors.DirtyPen, 0.5, QtCore.Qt.DashLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
         self.uiConnectionList = []
 
@@ -131,9 +130,11 @@ class UIPinBase(QGraphicsWidget):
             labelHeight = self.owningNode().labelHeight
             #labelHeight += self.owningNode().nodeLayout.spacing()
             if self.direction == PinDirection.Input:
-                result = self.mapFromItem(self.owningNode(), QtCore.QPointF(0, labelHeight))
+                result = self.mapFromItem(
+                    self.owningNode(), QtCore.QPointF(0, labelHeight))
             if self.direction == PinDirection.Output:
-                result = self.mapFromItem(self.owningNode(), QtCore.QPointF(self.owningNode().sizeHint(None, None).width(), labelHeight))
+                result = self.mapFromItem(self.owningNode(), QtCore.QPointF(
+                    self.owningNode().sizeHint(None, None).width(), labelHeight))
         return result
 
     def onContainerTypeChanged(self, *args, **kwargs):
@@ -182,12 +183,14 @@ class UIPinBase(QGraphicsWidget):
                     action.setVisible(bEnabled)
 
     def syncRenamable(self):
-        renamingEnabled = self._rawPin.optionEnabled(PinOptions.RenamingEnabled)
+        renamingEnabled = self._rawPin.optionEnabled(
+            PinOptions.RenamingEnabled)
         # self._label()._isEditable = renamingEnabled
         self.setMenuItemEnabled("Rename", renamingEnabled)
 
     def onRename(self):
-        name, confirmed = QInputDialog.getText(None, "Rename", "Enter new pin name")
+        name, confirmed = QInputDialog.getText(
+            None, "Rename", "Enter new pin name")
         if confirmed and name != self.name and name != "":
             uniqueName = self._rawPin.owningNode().getUniqPinName(name)
             self.setName(uniqueName)
@@ -196,7 +199,8 @@ class UIPinBase(QGraphicsWidget):
             self.owningNode().updateNodeShape()
 
     def syncDynamic(self):
-        self.setMenuItemEnabled("Remove", self._rawPin.optionEnabled(PinOptions.Dynamic))
+        self.setMenuItemEnabled(
+            "Remove", self._rawPin.optionEnabled(PinOptions.Dynamic))
 
     @property
     def structureType(self):
@@ -375,8 +379,10 @@ class UIPinBase(QGraphicsWidget):
         super(UIPinBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        supportedTypes = self._rawPin.allowedDataTypes([], self._rawPin._supportedDataTypes)
-        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}\nStructure: {3}".format(str(self._rawPin.currentData()), self._rawPin.dirty, supportedTypes, str(self._rawPin.getCurrentStructure()))
+        supportedTypes = self._rawPin.allowedDataTypes(
+            [], self._rawPin._supportedDataTypes)
+        hoverMessage = "Data: {0}\r\nDirty: {1}\r\nAllowed Types: {2}\nStructure: {3}".format(str(
+            self._rawPin.currentData()), self._rawPin.dirty, supportedTypes, str(self._rawPin.getCurrentStructure()))
         self.setToolTip(hoverMessage)
         event.accept()
 
@@ -394,13 +400,15 @@ class UIPinBase(QGraphicsWidget):
         self.update()
 
     def selectStructure(self):
-        item, ok = QInputDialog.getItem(None, "", "", ([i.name for i in list(PinStructure)]), 0, False)
+        item, ok = QInputDialog.getItem(
+            None, "", "", ([i.name for i in list(PinStructure)]), 0, False)
         if ok and item:
             self._rawPin.changeStructure(PinStructure[item], True)
 
 
 class PinGroup(UIPinBase):
     """docstring for PinGroup."""
+
     def __init__(self, owningNode, direction, name="groupName"):
         self._name = name
         self._direction = direction
@@ -444,14 +452,16 @@ class PinGroup(UIPinBase):
                     if expanded:
                         wire.destinationPositionOverride = None
                     else:
-                        wire.destinationPositionOverride = lambda: self.scenePos() + QtCore.QPointF(0, self.geometry().height())
+                        wire.destinationPositionOverride = lambda: self.scenePos() + QtCore.QPointF(0,
+                                                                                                    self.geometry().height())
 
             if pin.direction == PinDirection.Output:
                 for wire in pin.uiConnectionList:
                     if expanded:
                         wire.sourcePositionOverride = None
                     else:
-                        wire.sourcePositionOverride = lambda: self.scenePos() + QtCore.QPointF(self.geometry().width(), self.geometry().height())
+                        wire.sourcePositionOverride = lambda: self.scenePos(
+                        ) + QtCore.QPointF(self.geometry().width(), self.geometry().height())
 
         self.update()
         self.owningNode().update()
@@ -478,9 +488,11 @@ class PinGroup(UIPinBase):
     @name.setter
     def name(self, newName):
         if self._direction == PinDirection.Input:
-            self.owningNode().groups["input"][newName] = self.owningNode().groups["input"].pop(self._name)
+            self.owningNode().groups["input"][newName] = self.owningNode(
+            ).groups["input"].pop(self._name)
         else:
-            self.owningNode().groups["output"][newName] = self.owningNode().groups["output"].pop(self._name)
+            self.owningNode().groups["output"][newName] = self.owningNode(
+            ).groups["output"].pop(self._name)
         self._name = newName
 
     def hoverEnterEvent(self, event):
@@ -514,7 +526,8 @@ class PinGroup(UIPinBase):
         painter.drawText(frame, self.name)
 
         painter.setPen(QtGui.QPen(self.labelColor, 0.1))
-        square = QtCore.QRectF(QtCore.QPointF(0, 0), QtCore.QSizeF(self.pinSize / 1.1, self.pinSize / 1.1))
+        square = QtCore.QRectF(QtCore.QPointF(0, 0), QtCore.QSizeF(
+            self.pinSize / 1.1, self.pinSize / 1.1))
         square2 = square.translated(0, (self.pinSize / 1.1) / 3)
         painter.drawRect(square2)
 

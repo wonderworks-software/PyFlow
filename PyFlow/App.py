@@ -30,6 +30,7 @@ from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.Tool import GET_TOOLS
+from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE
 from PyFlow.Input import InputAction, InputActionType
@@ -37,6 +38,8 @@ from PyFlow.Input import InputManager
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
+
+from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 import PyFlow.UI.resources
 
@@ -485,6 +488,16 @@ class PyFlow(QMainWindow):
 
         settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
         prefsSettings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
+
+        instance = PyFlow(parent)
+        REGISTER_TOOL("PyFlowBase", LoggerTool)
+        a = GET_TOOLS()["PyFlowBase"][0]()
+        a.setAppInstance(instance)
+        instance.registerToolInstance(a)
+        instance.addDockWidget(a.defaultDockArea(), a)
+        a.setAppInstance(instance)
+        a.onShow()
+              
         try:
             extraPackagePaths = []
             extraPathsString = prefsSettings.value("Preferences/General/ExtraPackageDirs")
@@ -499,7 +512,7 @@ class PyFlow(QMainWindow):
             QMessageBox.critical(None, "Fatal error", str(e))
             return
 
-        instance = PyFlow(parent)
+
         instance.startMainLoop()
 
         # populate tools
