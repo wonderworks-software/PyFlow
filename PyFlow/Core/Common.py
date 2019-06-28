@@ -43,6 +43,7 @@ def lerp(start, end, alpha):
     """Performs a linear interpolation
 
     start + alpha * (end - start)
+    
     :param start: start the value to interpolate from
     :param end: end the value to interpolate to
     :param alpha: alpha how far to interpolate
@@ -124,8 +125,6 @@ def findGoodId(ids):
     :returns: Unique Id
     :rtype: {int}
     """
-
-
     if len(ids) == 0:
         return 1
 
@@ -707,6 +706,7 @@ def findStructFromValue(value):
 
 class PinSelectionGroup(IntEnum):
     """Used in :py:func:`PyFlow.AbstractGraph.NodeBase.getPin` for optimization purposes
+
     :Inputs: Input Pins
     :Outputs: Outputs Pins
     :BothSides: BothSides Pins
@@ -717,6 +717,7 @@ class PinSelectionGroup(IntEnum):
 
 class AccessLevel(IntEnum):
     """Can be used for code generation
+
     :public:  
     :private:
     :protected:
@@ -727,6 +728,7 @@ class AccessLevel(IntEnum):
 
 class PinDirection(IntEnum):
     """Determines whether it is input pin or output.
+
     :Input: Inputs, left side Pins
     :Output: Outpus,right side Pins
     """
@@ -735,6 +737,7 @@ class PinDirection(IntEnum):
 
 class NodeTypes(IntEnum):
     """Determines whether it is callable node or pure.
+
     :Callable:  Callable node is a node with Exec pins.
     :Pure:  Normal Nodes.
     """
@@ -743,6 +746,7 @@ class NodeTypes(IntEnum):
 
 class Direction(IntEnum):
     """ Direction identifiers. Used in :py:func:`PyFlow.Core.Widget.GraphWidget.alignSelectedNodes`
+
     :Left:
     :Right:
     :Up:
