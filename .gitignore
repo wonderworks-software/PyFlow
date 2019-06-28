@@ -8,3 +8,4 @@ nodes.log
 PyFlow/Configs/
 docs/build/
 docs/source/_build/
+docs/activateEnv.bat

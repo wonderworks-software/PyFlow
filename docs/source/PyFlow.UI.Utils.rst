@@ -10,12 +10,6 @@ PyFlow.UI.Utils.PythonSyntax module
 .. automodule:: PyFlow.UI.Utils.PythonSyntax
     :members:
 
-PyFlow.UI.Utils.Settings module
--------------------------------
-
-.. automodule:: PyFlow.UI.Utils.Settings
-    :members:
-
 PyFlow.UI.Utils.stylesheet module
 ---------------------------------
 
