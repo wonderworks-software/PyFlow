@@ -647,21 +647,21 @@ class PinOptions(Flag):
     used to determine how Pin behaves.
     This is intended to be defined not in Pin Class , but per each defined node.
 
-    :param ArraySupported: Pin can hold Array Data Structure.
-    :param DictSupported: Pin can hold Dict Data Structure.
-    :param SupportsOnlyArrays: Pin will only support oher Pins with Array Data Structure.
-    :param AllowMultipleConnections: This enable Pin to allow more that one input Connection. 
+    :ArraySupported: Pin can hold Array Data Structure.
+    :DictSupported: Pin can hold Dict Data Structure.
+    :SupportsOnlyArrays: Pin will only support oher Pins with Array Data Structure.
+    :AllowMultipleConnections: This enable Pin to allow more that one input Connection. 
                                      By default Pins allows only one input conection and infinite outputs for value Pins,
                                      and infinite inputs and only one  output connection for Execution Pins.
-    :param ChangeTypeOnConnection: Used by :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` to determine if it can change its dataType on new Connection.
-    :param RenamingEnabled: Determines if Pin can be renamed inEditor.
-    :param Dynamic: Especifies if Pin was created dynamically inEditor, Used by Nodes wthat allow user to create Pins in the node.
-    :param AlwaysPushDirty: Pin will always be seen as Dirty (computation needed)
-    :param Storable: Determines if Pin data can be stored when graph saved.
-    :param AllowAny: Special Flag that allow a Pin to be :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, wich means nonTyped without been marked as error.
+    :ChangeTypeOnConnection: Used by :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` to determine if it can change its dataType on new Connection.
+    :RenamingEnabled: Determines if Pin can be renamed inEditor.
+    :Dynamic: Especifies if Pin was created dynamically inEditor, Used by Nodes wthat allow user to create Pins in the node.
+    :AlwaysPushDirty: Pin will always be seen as Dirty (computation needed)
+    :Storable: Determines if Pin data can be stored when graph saved.
+    :AllowAny: Special Flag that allow a Pin to be :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, wich means nonTyped without been marked as error.
                     By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` Pin need to be initialized with some DataType, other defined Pin.
                     This flag overrides that. Used in Lists and nonTyped Nodes
-    :param DictElementSuported: Dicts are constructed inEditor with :py:class:`dictElement` objects. So Dict Pins will only allow other Dicts until this flag enabled,
+    :DictElementSuported: Dicts are constructed inEditor with :py:class:`dictElement` objects. So Dict Pins will only allow other Dicts until this flag enabled,
                                 Used in makeDict node.
     """
     ArraySupported = auto()
@@ -682,10 +682,10 @@ class PinStructure(IntEnum):
     Used for determine Pin Structure Type
     This represents the data structures a pin can hold.
 
-    :param Single: Single data structure
-    :param Array: Python List structure, In editor represented as Arrays -> Typed and Lists -> nonTyped
-    :param Dict: :py:class:`pyf_dict` structure, is basically a KeyTyped Python Dict
-    :param Multi: This means it can became any of the previous Ones on conection/user action
+    :Single: Single data structure
+    :Array: Python List structure, In editor represented as Arrays -> Typed and Lists -> nonTyped
+    :Dict: :py:class:`pyf_dict` structure, is basically a KeyTyped Python Dict
+    :Multi: This means it can became any of the previous Ones on conection/user action
     """
     Single = 0
     Array = 1
@@ -707,6 +707,9 @@ def findStructFromValue(value):
 
 class PinSelectionGroup(IntEnum):
     """Used in :py:func:`PyFlow.AbstractGraph.NodeBase.getPin` for optimization purposes
+    :Inputs: Input Pins
+    :Outputs: Outputs Pins
+    :BothSides: BothSides Pins
     """
     Inputs = 0
     Outputs = 1
@@ -714,24 +717,36 @@ class PinSelectionGroup(IntEnum):
 
 class AccessLevel(IntEnum):
     """Can be used for code generation
+    :public:  
+    :private:
+    :protected:
     """
     public = 0
     private = 1
     protected = 2
 
 class PinDirection(IntEnum):
-    """Determines whether it is input pin or output."""
+    """Determines whether it is input pin or output.
+    :Input: Inputs, left side Pins
+    :Output: Outpus,right side Pins
+    """
     Input = 0
     Output = 1
 
 class NodeTypes(IntEnum):
-    """Determines whether it is callable node or pure. Callable node is a node with Exec pins
+    """Determines whether it is callable node or pure.
+    :Callable:  Callable node is a node with Exec pins.
+    :Pure:  Normal Nodes.
     """
     Callable = 0
     Pure = 1
 
 class Direction(IntEnum):
     """ Direction identifiers. Used in :py:func:`PyFlow.Core.Widget.GraphWidget.alignSelectedNodes`
+    :Left:
+    :Right:
+    :Up:
+    :Down:
     """
     Left = 0
     Right = 1

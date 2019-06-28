@@ -6,6 +6,13 @@ from Qt import QtGui
 
 class UIAnyPin(UIPinBase):
     def __init__(self, owningNode, raw_pin):
+        """UI wrapper for :class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin`
+
+        :param owningNode: Owning node
+        :type owningNode: :class:`PyFlow.UI.Canvas.NodeBase`
+        :param raw_pin: PinBase reference
+        :type raw_pin: :class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin`
+        """
         super(UIAnyPin, self).__init__(owningNode, raw_pin)
         self._defaultColor = self._pinColor
         self._rawPin.typeChanged.connect(self.setType)
