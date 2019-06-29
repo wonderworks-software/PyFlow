@@ -1,3 +1,4 @@
+from inspect import stack
 from blinker import Signal
 import weakref
 import uuid
@@ -314,10 +315,13 @@ class NodeBase(INode):
             if not isinstance(arg, collections.Hashable):
                 return False
 
-        if args in self.cache:
-            for outPin, data in self.cache[args].items():
-                outPin.setData(data)
-            return True
+        try:
+            if args in self.cache:
+                for outPin, data in self.cache[args].items():
+                    outPin.setData(data)
+                return True
+        except:
+            print(stack()[0][1:4],"cannot use Cache for",args)
 
     def afterCompute(self):
         if len(self.cache) >= self.cacheMaxSize:
@@ -328,7 +332,6 @@ class NodeBase(INode):
         for arg in args:
             if not isinstance(arg, collections.Hashable):
                 return
-
         cache = {}
         for pin in self.outputs.values():
             cache[pin] = pin.currentData()
@@ -345,7 +348,10 @@ class NodeBase(INode):
                     self.checkForErrors()
                 except Exception as e:
                     self.setError(e)
-            self.afterCompute()
+            try:
+                self.afterCompute()
+            except:
+                print(stack()[0][1:4],"afterCompute failed")
         else:
             try:
                 self.compute()
