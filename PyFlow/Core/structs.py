@@ -1,7 +1,5 @@
-
-
 class Tick(object):
-    """ Element Fro Ramp Widgets___Basic U,V Attribute holder """
+    """ Element For Ramp Widget Basic U and V Attribute holder """
     def __init__(self):
         self._u = 0
         self._v = 0
@@ -27,8 +25,7 @@ class Tick(object):
 
 
 class splineRamp(object):
-
-    """ Ramp/Curve Editor with evaluateAt support , clamped to 0,1 in both x and y"""
+    """ Ramp/Curve Editor with evaluateAt support , clamped to 0-1 in both x and y"""
     def __init__(self):
         self.items = []
 

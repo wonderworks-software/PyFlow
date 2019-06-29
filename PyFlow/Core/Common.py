@@ -39,64 +39,92 @@ DEFAULT_IN_EXEC_NAME = str('inExec')
 DEFAULT_OUT_EXEC_NAME = str('outExec')
 
 
-## Performs a linear interpolation
-# @param[in] start the value to interpolate from
-# @param[in] end the value to interpolate to
-# @param[in] alpha how far to interpolate
-# @returns The result of the linear interpolation (float)
 def lerp(start, end, alpha):
+    """Performs a linear interpolation
+
+    start + alpha * (end - start)
+    
+    :param start: start the value to interpolate from
+    :param end: end the value to interpolate to
+    :param alpha: alpha how far to interpolate
+    :returns: The result of the linear interpolation 
+    """
     return (start + alpha * (end - start))
 
 
-## Calculates the percentage along a line from MinValue to MaxValue that Value is.
+## 
 def GetRangePct(MinValue, MaxValue, Value):
+    """Calculates the percentage along a line from MinValue to MaxValue that Value is.
+    
+    :param MinValue: Minimum Value
+    :param MaxValue: Maximum Value
+    :param Value: [description]
+    :returns: The percentage betwen the two values where input value is
+    """
     return (Value - MinValue) / (MaxValue - MinValue)
 
 
 def sign(x):
+    """    
+    x and (1, -1)[x < 0]
+    """
     return x and (1, -1)[x < 0]
 
 
-## Computes the value of the first specified argument clamped to a range defined by the second and third specified arguments
-# @param[in] n
-# @param[in] vmin
-# @param[in] vmax
-# @returns The clamped value of n
 def clamp(n, vmin, vmax):
+    """Computes the value of the first specified argument clamped to a range defined by the second and third specified arguments
+
+    :param n: input Value
+    :param vmin: MiniMum Value
+    :param vmax: Maximum Value
+    :returns: The clamped value of n
+    """
     return max(min(n, vmax), vmin)
 
 
-## Rounding up to sertain value. Used in grid snapping
-# @param[in] x value to round
-# @param[in] to value x will be rounded to
-# @returns rounded value of x
 def roundup(x, to):
+    """Rounding up to sertain value. Used in grid snapping
+    
+    int(math.ceil(x / to)) * to
+    :param x: value to round
+    :param to: value x will be rounded to
+    :returns: rounded value of x
+    :rtype: {int}
+    """
     return int(math.ceil(x / to)) * to
 
 
-## Clearing a list in python previous to 3.2 is not possible with list.clear()
-# @param[in] list list to clear
-# @returns cleared List
 currentVersion = Version(sys.version_info.major, sys.version_info.minor, 0)
 python32 = Version(3, 2, 0)
 if currentVersion <= python32:
     def clearList(list):
+        """Clearing a list in python previous to 3.2 is not possible with list.clear()
+        
+        :param list:  list to clear
+        :type list: list
+        :returns: cleared List
+        :rtype: list
+        """
         del list[:]
 else:
     def clearList(list):
+        """Clearing a list in python previous to 3.2 is not possible with list.clear()
+        
+        :param list:  list to clear
+        :type list: list
+        :returns: cleared List
+        :rtype: list
+        """        
         list.clear()
 
-
 def findGoodId(ids):
-    """Finds good minimum unique int from iterable. Starting from 1
-
-    Arguments:
-        ids {list|set|tuple} -- a collection of occupied ids
-
-    Returns:
-        [int]
+    """    
+    Finds good minimum unique int from iterable. Starting from 1
+    :param ids: a collection of occupied ids
+    :type ids: {list|set|tuple}
+    :returns: Unique Id
+    :rtype: {int}
     """
-
     if len(ids) == 0:
         return 1
 
@@ -118,11 +146,10 @@ def findGoodId(ids):
 
 def wrapStringToFunctionDef(functionName, scriptString, kwargs=None):
     """wrapStringToFunctionDef Generates function string
-
-    example: wrapStringToFunctionDef('test', 'print(a)', {'a': 5})
-
-    def test(a=5):
-        print(a)
+    Example::
+        wrapStringToFunctionDef('test', 'print(a)', {'a': 5})
+        def test(a=5):
+            print(a)
     """
     kwargsString = ""
     if kwargs is not None:
@@ -140,11 +167,17 @@ def wrapStringToFunctionDef(functionName, scriptString, kwargs=None):
     return result
 
 
-## Check for cycle connected nodes
-# @param[in] left hand side pin
-# @param[in] right hand side pin
-# @returns bool
 def cycle_check(src, dst):
+    """[summary]
+    
+    Check for cycle connected nodes
+    :param src: hand side pin
+    :type src: :py:class:`PyFlow.Core.PiBase`
+    :param dst: hand side pin
+    :type dst: :py:class:`PyFlow.Core.PiBase`
+    :returns: True if is cycle
+    :rtype: {bool}
+    """
     if src.direction == PinDirection.Input:
         src, dst = dst, src
     start = src
@@ -155,13 +188,15 @@ def cycle_check(src, dst):
             return True
     return False
 
-
 def arePinsConnected(src, dst):
-    """Checks if two pins are connected
-
-    Arguments:
-        src PinBase -- left hand side pin
-        dst PinBase -- right hand side pin
+    """    
+    Checks if two pins are connected
+    :param src: left hand side pin
+    :type src: :py:class:`PyFlow.Core.PiBase`
+    :param dst: right hand side pin
+    :type dst: :py:class:`PyFlow.Core.PiBase`
+    :returns: True if Pins are connected
+    :rtype: {bool}
     """
     if src.direction == dst.direction:
         return False
@@ -175,6 +210,13 @@ def arePinsConnected(src, dst):
 
 
 def getConnectedPins(pin):
+    """Find all connected Pins to input Pin
+
+    :param pin: Pin to search Connected Pins
+    :type pin: :py:class:`PyFlow.Core.PinBase.PinBase`
+    :returns: List of connected Pins
+    :rtype: {set(:py:class:`PyFlow.Core.PinBase.PinBase`)}
+    """
     result = set()
     if pin.direction == PinDirection.Input:
         for lhsPin in pin.affected_by:
@@ -185,14 +227,29 @@ def getConnectedPins(pin):
     return result
 
 
-## This function for establish dependencies bitween pins
 def pinAffects(lhs, rhs):
+    """ This function for establish dependencies bitween pins
+    
+    :param lhs: First Pin to connect
+    :type lhs: :py:class:`PyFlow.Core.PinBase.PinBase`
+    :param rhs: Second Pin to connect
+    :type rhs: :py:class:`PyFlow.Core.PinBase.PinBase`
+    """
     assert(lhs is not rhs), "pin can not affect itself"
     lhs.affects.add(rhs)
     rhs.affected_by.add(lhs)
 
 
 def canConnectPins(src, dst):
+    """** Base function called each time a new connection is tryied **
+    
+    :param src: Source Pin To connect
+    :type src: :py:class:`PyFlow.Core.PinBase.PinBase`
+    :param dst: Destination Pin to connect
+    :type dst: :py:class:`PyFlow.Core.PinBase.PinBase`
+    :returns: True if connection can be made, and False if connection is not possible
+    :rtype: {bool}
+    """
     if src is None or dst is None:
         return False
 
@@ -293,13 +350,19 @@ def canConnectPins(src, dst):
 
     return True
 
-
 def connectPins(src, dst):
-    """Connects two pins
-
-    Arguments:
-        src PinBase -- left hand side pin
-        dst PinBase -- right hand side pin
+    """**Connects two pins**
+    
+    Input value pins can have one output connection if `AllowMultipleConnections` flag is disabled
+    Output value pins can have any number of connections
+    Input execs can have any number of connections
+    Output execs can have only one connection
+    :param src: left hand side pin
+    :type src: :py:class:`PyFlow.Core.PinBase.PinBase`
+    :param dst: right hand side pin
+    :type dst: :py:class:`PyFlow.Core.PinBase.PinBase`
+    :returns: True if connected Succesfully
+    :rtype: {bool}
     """
     if src.direction == PinDirection.Input:
         src, dst = dst, src
@@ -356,30 +419,14 @@ def connectPinsByIndexes(lhsNode=None, lhsOutPinIndex=0, rhsNode=None, rhsInPinI
 
     return connectPins(lhsPin, rhsPin)
 
-
-def traverseNeighborPins(startFrom, callback):
-    """Iterates over all neighbor pins and passes pin into callback function. Callback will be executed once for every pin
-    """
-
-    traversed = set()
-
-    def worker(pin):
-        if pin not in traversed:
-            traversed.add(pin)
-            callback(pin)
-            nodePins = pin.owningNode().pins.copy()
-            for connectedPin in getConnectedPins(pin):
-                if connectedPin in traversed:
-                    continue
-                nodePins.add(connectedPin)
-            for neighbor in list(nodePins):
-                if neighbor not in traversed:
-                    worker(neighbor)
-    worker(startFrom)
-
-
 def traverseConstrainedPins(startFrom, callback):
-    """Iterates over all constrained chained pins of type `Any` and passes pin into callback function. Callback will be executed once for every pin
+    """**Iterate Over Constrained And Conected Pins**
+    
+    Iterates over all constrained chained pins of type `Any` and passes pin into callback function. Callback will be executed once for every pin
+    :param startFrom: First Pin to start Iteration
+    :type startFrom: :py:class:`PyFlow.Core.PinBase.PinBase`
+    :param callback: Function to Execute in each iterated Pin
+    :type callback: function
     """
     if not startFrom.isAny():
 
@@ -404,33 +451,16 @@ def traverseConstrainedPins(startFrom, callback):
 
     worker(startFrom)
 
-
-def traverseStructConstrainedPins(startFrom, callback):
-    """Iterates over all constrained chained pins passes pin into callback function. Callback will be executed once for every pin
-    """
-    traversed = set()
-
-    def worker(pin):
-        traversed.add(pin)
-        callback(pin)
-        nodePins = set()
-        if pin.structConstraint is not None:
-            nodePins = set(pin.owningNode().structConstraints[pin.structConstraint])
-        for connectedPin in getConnectedPins(pin):
-            nodePins.add(connectedPin)
-        for neighbor in nodePins:
-            if neighbor not in traversed:
-                worker(neighbor)
-
-    worker(startFrom)
-
-
 def disconnectPins(src, dst):
-    """Disconnects two pins
-
-    Arguments:
-        src PinBase -- left hand side pin
-        dst PinBase -- right hand side pin
+    """**Disconnects two pins**
+    
+    [description]
+    :param src: left hand side pin
+    :type src: :py:class:`PyFlow.Core.PinBase.PinBase`
+    :param dst: right hand side pin
+    :type dst: :py:class:`PyFlow.Core.PinBase.PinBase`
+    :returns: True if disconnection succes
+    :rtype: {bool}
     """
     if arePinsConnected(src, dst):
         if src.direction == PinDirection.Input:
@@ -446,10 +476,13 @@ def disconnectPins(src, dst):
     return False
 
 
-## marks dirty all ports from start to the right
-# this part of graph will be recomputed every tick
-# @param[in] start_from pin from which recursion begins
 def push(start_from):
+    """marks dirty all ports from start to the right
+    
+    this part of graph will be recomputed every tick
+    :param start_from: pin from which recursion begins
+    :type start_from: :py:class:`PyFlow.Core.PinBase.PinBase`
+    """
     if not len(start_from.affects) == 0:
         start_from.setDirty()
         for i in start_from.affects:
@@ -458,16 +491,40 @@ def push(start_from):
 
 
 def extractDigitsFromEndOfString(string):
+    """Get Digist at end of a String
+    
+    :param string: Input Numbered String
+    :type string: string
+    :returns: Numbers in the final of the string
+    :rtype: {int}
+    """
     result = re.search('(\d+)$', string)
     if result is not None:
         return int(result.group(0))
 
 
 def removeDigitsFromEndOfString(string):
+    """Delte the numbers at the end of a String
+    
+    :param string: Input Numbered String
+    :type string: string
+    :returns: Cleared String
+    :rtype: {string}
+    """
     return re.sub(r'\d+$', '', string)
 
 
 def getUniqNameFromList(existingNames, name):
+    """**Create Unique Name**
+    
+    Iterates over existingNames and extracts the end digists to find a new unique id
+    :param existingNames: List of String where to search for existing indexes
+    :type existingNames: list
+    :param name: Name to obtain a unique version from
+    :type name: string
+    :returns: New name non overlapin with any in existingNames
+    :rtype: {string}
+    """
     if name not in existingNames:
         return name
     ids = set()
@@ -481,10 +538,11 @@ def getUniqNameFromList(existingNames, name):
 
 
 def clearSignal(signal):
-    """Disconnects all receivers
-
-    Arguments:
-        signal {Signal} -- blinker Signal class
+    """**Disconnects all receivers**
+    
+    [description]
+    :param signal: blinker Signal class
+    :type signal: Signal
     """
     for receiver in list(signal.receivers.values()):
         if isinstance(receiver, weakref.ref):
@@ -494,6 +552,8 @@ def clearSignal(signal):
 
 
 class SingletonDecorator:
+    """**Decorator to make Class unique, so each time called same Object returned**
+    """
     def __init__(self, cls):
         self.cls = cls
         self.instance = None
@@ -505,6 +565,10 @@ class SingletonDecorator:
 
 
 class dictElement(tuple):
+    """**PyFlow Dict Element Class**
+    
+    This SubClass of Python tuple is to represent DictElements inEditor to construct Typed Dicts
+    """
     def __new__(self, a=None, b=None):
         if a is None and b is None:
             new = ()
@@ -519,19 +583,52 @@ class dictElement(tuple):
 
 
 class pyf_dict(dict):
+    """**PyFlow Dict Class**
+    
+    This SubClass of Python dict implements a key Typed dictionary.
+    Only defined Datatypes can be used as keys, and only Hashable ones as determined by isinstance(dataType, collections.Hashable)
+
+    To make a Class Hashable some methods should be implemented:
+    Example::
+        class C:
+            def __init__(self, x):
+                self.x = x
+            def __repr__(self):
+                return f"C({self.x})"
+            def __hash__(self):
+                return hash(self.x)
+            def __eq__(self, other):
+                return (self.__class__ == other.__class__ and self.x == other.x )        
+    """
     def __init__(self, keyType, valueType=None, inpt={}):
+        """        
+        :param keyType: Key dataType
+        :param valueType: value dataType, defaults to None
+        :type valueType: optional
+        :param inpt: Construct from another dict, defaults to {}
+        :type inpt: dict, optional
+        """
         super(pyf_dict, self).__init__(inpt)
         self.keyType = keyType
         self.valueType = valueType
 
     def __setitem__(self, key, item):
-        if type(key) == self.getClassFromType(self.keyType): # and type(item) == self.getClassFromType(self.valueType):
+        """Reimplements Python Dict __setitem__ to only allow Typed Keys.
+
+        Will throw an Exception if non Valid KeyType
+        """
+        if type(key) == self.getClassFromType(self.keyType):
             super(pyf_dict, self).__setitem__(key, item)
         else:
             raise Exception(
                 "Valid key should be a {0}".format(self.getClassFromType(self.keyType)))
 
     def getClassFromType(self, pinType):
+        """        
+        Gets the internalDataStructure for a defined pinType
+        :param pinType: pinType Name
+        :type pinType: string
+        """
         pin = findPinClassByType(pinType)
         if pin:
             pinClass = pin.internalDataStructure()
@@ -544,6 +641,28 @@ class PinReconnectionPolicy(IntEnum):
 
 
 class PinOptions(Flag):
+    """**Pin Settings**
+    
+    used to determine how Pin behaves.
+    This is intended to be defined not in Pin Class , but per each defined node.
+
+    :ArraySupported: Pin can hold Array Data Structure.
+    :DictSupported: Pin can hold Dict Data Structure.
+    :SupportsOnlyArrays: Pin will only support oher Pins with Array Data Structure.
+    :AllowMultipleConnections: This enable Pin to allow more that one input Connection. 
+                                     By default Pins allows only one input conection and infinite outputs for value Pins,
+                                     and infinite inputs and only one  output connection for Execution Pins.
+    :ChangeTypeOnConnection: Used by :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` to determine if it can change its dataType on new Connection.
+    :RenamingEnabled: Determines if Pin can be renamed inEditor.
+    :Dynamic: Especifies if Pin was created dynamically inEditor, Used by Nodes wthat allow user to create Pins in the node.
+    :AlwaysPushDirty: Pin will always be seen as Dirty (computation needed)
+    :Storable: Determines if Pin data can be stored when graph saved.
+    :AllowAny: Special Flag that allow a Pin to be :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, wich means nonTyped without been marked as error.
+                    By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` Pin need to be initialized with some DataType, other defined Pin.
+                    This flag overrides that. Used in Lists and nonTyped Nodes
+    :DictElementSuported: Dicts are constructed inEditor with :py:class:`dictElement` objects. So Dict Pins will only allow other Dicts until this flag enabled,
+                                Used in makeDict node.
+    """
     ArraySupported = auto()
     DictSupported = auto()
     SupportsOnlyArrays = auto()
@@ -556,51 +675,83 @@ class PinOptions(Flag):
     AllowAny = auto()
     DictElementSuported = auto()
 
-# Used for determine Pin Structure Type
 class PinStructure(IntEnum):
+    """**Structure of Pins**
+    
+    Used for determine Pin Structure Type
+    This represents the data structures a pin can hold.
+
+    :Single: Single data structure
+    :Array: Python List structure, In editor represented as Arrays -> Typed and Lists -> nonTyped
+    :Dict: :py:class:`pyf_dict` structure, is basically a KeyTyped Python Dict
+    :Multi: This means it can became any of the previous Ones on conection/user action
+    """
     Single = 0
     Array = 1
     Dict = 2
     Multi = 3
 
-
 def findStructFromValue(value):
+    """**Finds PinStructure from value**
+
+    :param value: input value to find structure.
+    :returns: Structure Type for input value
+    :rtype: {py:class:`PinStructure`}
+    """
     if isinstance(value, list):
         return PinStructure.Array
     if isinstance(value, dict):
         return PinStructure.Dict
     return PinStructure.Single
 
-
-# Used in PyFlow.AbstractGraph.NodeBase.getPin for optimization purposes
 class PinSelectionGroup(IntEnum):
+    """Used in :py:func:`PyFlow.AbstractGraph.NodeBase.getPin` for optimization purposes
+
+    :Inputs: Input Pins
+    :Outputs: Outputs Pins
+    :BothSides: BothSides Pins
+    """
     Inputs = 0
     Outputs = 1
     BothSides = 2
 
-
-## Can be used for code generation
 class AccessLevel(IntEnum):
+    """Can be used for code generation
+
+    :public:  
+    :private:
+    :protected:
+    """
     public = 0
     private = 1
     protected = 2
 
-
-## Determines whether it is input pin or output.
 class PinDirection(IntEnum):
+    """Determines whether it is input pin or output.
+
+    :Input: Inputs, left side Pins
+    :Output: Outpus,right side Pins
+    """
     Input = 0
     Output = 1
 
-
-## Determines whether it is callable node or pure.
-# Callable node is a node with Exec pins
 class NodeTypes(IntEnum):
+    """Determines whether it is callable node or pure.
+
+    :Callable:  Callable node is a node with Exec pins.
+    :Pure:  Normal Nodes.
+    """
     Callable = 0
     Pure = 1
 
-
-## Direction identifiers. Used in [alignSelectedNodes](@ref PyFlow.Core.Widget.GraphWidget.alignSelectedNodes)
 class Direction(IntEnum):
+    """ Direction identifiers. Used in :py:func:`PyFlow.Core.Widget.GraphWidget.alignSelectedNodes`
+
+    :Left:
+    :Right:
+    :Up:
+    :Down:
+    """
     Left = 0
     Right = 1
     Up = 2

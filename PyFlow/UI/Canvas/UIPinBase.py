@@ -49,7 +49,7 @@ class UIPinBase(QGraphicsWidget):
         """UI wrapper for :class:`PyFlow.Core.PinBase`
 
         :param owningNode: Owning node
-        :type owningNode: :class:`PyFlow.Core.NodeBase`
+        :type owningNode: :class:`PyFlow.UI.Canvas.NodeBase`
         :param raw_pin: PinBase reference
         :type raw_pin: :class:`PyFlow.Core.PinBase`
         """
