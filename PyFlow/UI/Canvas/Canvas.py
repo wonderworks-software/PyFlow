@@ -1,3 +1,4 @@
+from inspect import stack
 from nine import str
 import random
 from copy import deepcopy
@@ -1366,8 +1367,11 @@ class Canvas(QGraphicsView):
             if isinstance(self.pressed_item, PinBase):
                 if self.pressed_item.parentItem().isSelected():
                     self.pressed_item.parentItem().setSelected(False)
-            if self.realTimeLine not in self.scene().items():
-                self.scene().addItem(self.realTimeLine)
+            try:
+                if self.realTimeLine not in self.scene().items():
+                    self.scene().addItem(self.realTimeLine)
+            except:
+                pass
 
             self.updateRerutes(event,True)
 
@@ -1383,11 +1387,17 @@ class Canvas(QGraphicsView):
                 item = hoveredPins[0]
                 if isinstance(item, UIPinBase) and isinstance(self.pressed_item, UIPinBase):
                     canBeConnected = canConnectPins(self.pressed_item._rawPin, item._rawPin)
-                    self.realTimeLine.setPen(self.realTimeLineValidPen if canBeConnected else self.realTimeLineInvalidPen)
+                    try:
+                        self.realTimeLine.setPen(self.realTimeLineValidPen if canBeConnected else self.realTimeLineInvalidPen)
+                    except:
+                        pass
                     if canBeConnected:
                         p2 = item.scenePos() + item.pinCenter()
             else:
-                self.realTimeLine.setPen(self.realTimeLineNormalPen)
+                try:
+                    self.realTimeLine.setPen(self.realTimeLineNormalPen)
+                except:
+                    pass
 
             distance = p2.x() - p1.x()
             multiply = 3
@@ -1395,7 +1405,11 @@ class Canvas(QGraphicsView):
             path.moveTo(p1)
             path.cubicTo(QtCore.QPoint(p1.x() + distance / multiply, p1.y()),
                          QtCore.QPoint(p2.x() - distance / 2, p2.y()), p2)
-            self.realTimeLine.setPath(path)
+            try:
+                self.realTimeLine.setPath(path)
+            except:
+                pass
+
             if modifiers == QtCore.Qt.AltModifier:
                 self._drawRealtimeLine = False
                 if self.realTimeLine in self.scene().items():
