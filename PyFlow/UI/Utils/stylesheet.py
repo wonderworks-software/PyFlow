@@ -128,7 +128,6 @@ class editableStyleSheet():
         """
         if self.SetAppStyleSheet[0] > 0:
             app = QtWidgets.QApplication.instance()
-            print app
             if app:
                 app.setStyleSheet(self.getStyleSheet())
                 for widget in app.allWidgets():
