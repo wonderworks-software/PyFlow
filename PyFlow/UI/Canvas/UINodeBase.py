@@ -823,8 +823,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.updateNodeShape()
         self.setPos(self._rawNode.x, self._rawNode.y)
 
-        #assert(self.canvasRef() is not None), "CANVAS IS NONE"
-        #assert(self.canvasRef().graphManager.activeGraph() is not None), "ACTIVEGRAPH IS NONE"
         if self._rawNode.graph is None:
             print(self._rawNode.getName())
         assert(self._rawNode.graph() is not None), "NODE GRAPH IS NONE"

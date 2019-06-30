@@ -118,6 +118,7 @@ class SceneClass(QGraphicsScene):
                 self.tempnode = None
             except Exception as e:
                 pass
+            EditorHistory().beginTransaction("Create node")
             self.tempnode = self.parent().createNode(nodeTemplate)
             if self.tempnode:
                 self.tempnode.isTemp = True
@@ -254,8 +255,10 @@ class SceneClass(QGraphicsScene):
                             elif isinstance(it, UIConnection):
                                 dropItem = it
                                 break
+                        # create transaction
                     else:
                         node = self.parent().createNode(nodeTemplate)
+                    EditorHistory().endTransaction()
 
                     nodeInputs = node.namePinInputsMap
                     nodeOutputs = node.namePinOutputsMap
@@ -437,91 +440,91 @@ class Canvas(QGraphicsView):
             node.collapsed = collapsed
 
     def collapseSelectedNodesToCompound(self):
-        with Transaction("Collapse to compound") as tr:
-            selectedNodes = self.selectedNodes()
-            selectedNodesRect = self.getNodesRect(True, True)
-            wires = list()
-            for node in selectedNodes:
-                for pin in node.UIPins.values():
-                    wires.extend(pin.uiConnectionList)
+        EditorHistory().beginTransaction("Collapse to compound")
+        selectedNodes = self.selectedNodes()
+        selectedNodesRect = self.getNodesRect(True, True)
+        wires = list()
+        for node in selectedNodes:
+            for pin in node.UIPins.values():
+                wires.extend(pin.uiConnectionList)
 
-            inputPins = list()
-            inputConectionList = dict()
-            outputPins = list()
-            outputConectionList = dict()
-            for wire in wires:
-                if wire.source().owningNode().isSelected() and not wire.destination().owningNode().isSelected():
-                    if wire.destination() not in outputPins:
-                        outputPins.append(wire.destination())
-                        outputConectionList[wire.destination()] = [[wire.source().owningNode().name,wire.source().name]]
-                    else:
-                        outputConectionList[wire.destination()].append([wire.source().owningNode().name,wire.source().name])
+        inputPins = list()
+        inputConectionList = dict()
+        outputPins = list()
+        outputConectionList = dict()
+        for wire in wires:
+            if wire.source().owningNode().isSelected() and not wire.destination().owningNode().isSelected():
+                if wire.destination() not in outputPins:
+                    outputPins.append(wire.destination())
+                    outputConectionList[wire.destination()] = [[wire.source().owningNode().name, wire.source().name]]
+                else:
+                    outputConectionList[wire.destination()].append([wire.source().owningNode().name, wire.source().name])
 
-                if not wire.source().owningNode().isSelected() and wire.destination().owningNode().isSelected():
-                    if wire.source() not in inputPins:
-                        inputPins.append(wire.source())
-                        inputConectionList[wire.source()] = [[wire.destination().owningNode().name,wire.destination().name]]
-                    else:
-                        inputConectionList[wire.source()].append([wire.destination().owningNode().name,wire.destination().name])
+            if not wire.source().owningNode().isSelected() and wire.destination().owningNode().isSelected():
+                if wire.source() not in inputPins:
+                    inputPins.append(wire.source())
+                    inputConectionList[wire.source()] = [[wire.destination().owningNode().name, wire.destination().name]]
+                else:
+                    inputConectionList[wire.source()].append([wire.destination().owningNode().name, wire.destination().name])
 
-            nodes = self.copyNodes(toClipBoard=False)
-            for node in selectedNodes:
-                node._rawNode.kill()
+        nodes = self.copyNodes(toClipBoard=False)
+        for node in selectedNodes:
+            node._rawNode.kill()
 
-            compoundTemplate = NodeBase.jsonTemplate()
-            compoundTemplate['package'] = 'PyFlowBase'
-            compoundTemplate['type'] = 'compound'
-            compoundTemplate['name'] = 'compound'
-            compoundTemplate['uuid'] = str(uuid.uuid4())
-            compoundTemplate['meta']['label'] = 'compound'
-            compoundTemplate['x'] = selectedNodesRect.center().x()
-            compoundTemplate['y'] = selectedNodesRect.center().y()
-            uiCompoundNode = self._createNode(compoundTemplate)
-            activeGraphName = self.graphManager.activeGraph().name
+        compoundTemplate = NodeBase.jsonTemplate()
+        compoundTemplate['package'] = 'PyFlowBase'
+        compoundTemplate['type'] = 'compound'
+        compoundTemplate['name'] = 'compound'
+        compoundTemplate['uuid'] = str(uuid.uuid4())
+        compoundTemplate['meta']['label'] = 'compound'
+        compoundTemplate['x'] = selectedNodesRect.center().x()
+        compoundTemplate['y'] = selectedNodesRect.center().y()
+        uiCompoundNode = self._createNode(compoundTemplate)
+        activeGraphName = self.graphManager.activeGraph().name
 
-            uiCompoundNode.stepIn()
-            self.pasteNodes(data=nodes,move=False, writeHistory=False)
+        uiCompoundNode.stepIn()
+        self.pasteNodes(data=nodes, move=False)
 
-            newInputPins = dict()
-            newOutputPins = dict()
+        newInputPins = dict()
+        newOutputPins = dict()
 
-            if len(inputPins) > 0:
-                graphInputsTemplate = NodeBase.jsonTemplate()
-                graphInputsTemplate['package'] = 'PyFlowBase'
-                graphInputsTemplate['type'] = 'graphInputs'
-                graphInputsTemplate['name'] = 'graphInputs'
-                graphInputsTemplate['uuid'] = str(uuid.uuid4())
-                graphInputsTemplate['meta']['label'] = 'graphInputs'
-                graphInputsTemplate['x'] = selectedNodesRect.left() - 100
-                graphInputsTemplate['y'] = selectedNodesRect.center().y()
-                graphInputs = self._createNode(graphInputsTemplate)
+        if len(inputPins) > 0:
+            graphInputsTemplate = NodeBase.jsonTemplate()
+            graphInputsTemplate['package'] = 'PyFlowBase'
+            graphInputsTemplate['type'] = 'graphInputs'
+            graphInputsTemplate['name'] = 'graphInputs'
+            graphInputsTemplate['uuid'] = str(uuid.uuid4())
+            graphInputsTemplate['meta']['label'] = 'graphInputs'
+            graphInputsTemplate['x'] = selectedNodesRect.left() - 100
+            graphInputsTemplate['y'] = selectedNodesRect.center().y()
+            graphInputs = self._createNode(graphInputsTemplate)
 
-                for o in inputPins:
-                    newPinName = self.graphManager.getUniqName(o.owningNode().name)
-                    newPin = graphInputs.onAddOutPin(newPinName, o.dataType)
-                    newInputPins[o] = newPin
-                    for n in inputConectionList[o]:
-                        node = self.findNode(n[0])
-                        self.connectPins(newPin,node.getPin(n[1]))
+            for o in inputPins:
+                newPinName = self.graphManager.getUniqName(o.owningNode().name)
+                newPin = graphInputs.onAddOutPin(newPinName, o.dataType)
+                newInputPins[o] = newPin
+                for n in inputConectionList[o]:
+                    node = self.findNode(n[0])
+                    self.connectPinsInternal(newPin, node.getPin(n[1]))
 
-            if len(outputPins) > 0:
-                graphOutputsTemplate = NodeBase.jsonTemplate()
-                graphOutputsTemplate['package'] = 'PyFlowBase'
-                graphOutputsTemplate['type'] = 'graphOutputs'
-                graphOutputsTemplate['name'] = 'graphOutputs'
-                graphOutputsTemplate['uuid'] = str(uuid.uuid4())
-                graphOutputsTemplate['meta']['label'] = 'graphOutputs'
-                graphOutputsTemplate['x'] = selectedNodesRect.right() + 100
-                graphOutputsTemplate['y'] = selectedNodesRect.center().y()
-                graphOutputs = self._createNode(graphOutputsTemplate)
+        if len(outputPins) > 0:
+            graphOutputsTemplate = NodeBase.jsonTemplate()
+            graphOutputsTemplate['package'] = 'PyFlowBase'
+            graphOutputsTemplate['type'] = 'graphOutputs'
+            graphOutputsTemplate['name'] = 'graphOutputs'
+            graphOutputsTemplate['uuid'] = str(uuid.uuid4())
+            graphOutputsTemplate['meta']['label'] = 'graphOutputs'
+            graphOutputsTemplate['x'] = selectedNodesRect.right() + 100
+            graphOutputsTemplate['y'] = selectedNodesRect.center().y()
+            graphOutputs = self._createNode(graphOutputsTemplate)
 
-                for i in outputPins:
-                    newPinName = self.graphManager.getUniqName(i.owningNode().name)
-                    newPin = graphOutputs.onAddInPin(newPinName, i.dataType)
-                    newOutputPins[i] = newPin
-                    for n in outputConectionList[i]:
-                        node = self.findNode(n[0])
-                        self.connectPins(newPin,node.getPin(n[1]))
+            for i in outputPins:
+                newPinName = self.graphManager.getUniqName(i.owningNode().name)
+                newPin = graphOutputs.onAddInPin(newPinName, i.dataType)
+                newOutputPins[i] = newPin
+                for n in outputConectionList[i]:
+                    node = self.findNode(n[0])
+                    self.connectPinsInternal(newPin, node.getPin(n[1]))
 
         def connectPins(compoundNode, inputs, outputs):
             for o in inputs:
@@ -533,11 +536,10 @@ class Canvas(QGraphicsView):
                 exposedPin = compoundNode.getPin(newOutputPins[i].name)
                 if exposedPin:
                     self.connectPinsInternal(i, exposedPin)
+            EditorHistory().endTransaction()
 
-        
         QtCore.QTimer.singleShot(1, lambda: connectPins(uiCompoundNode, inputPins, outputPins))
         self.graphManager.selectGraph(activeGraphName)
-
 
     def populateMenu(self):
         self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
@@ -926,7 +928,7 @@ class Canvas(QGraphicsView):
                 QApplication.clipboard().setText(copyJsonStr)
             return copyJsonStr
 
-    def pasteNodes(self, move=True, data=None, writeHistory=True):
+    def pasteNodes(self, move=True, data=None):
         if not data:
             nodes = None
             try:
@@ -947,10 +949,7 @@ class Canvas(QGraphicsView):
         createdNodes = {}
         for node in nodesData:
 
-            if writeHistory:
-                n = self.createNode(node)
-            else:
-                n = self._createNode(node)
+            n = self._createNode(node)
 
             if n is None:
                 continue
@@ -1006,46 +1005,47 @@ class Canvas(QGraphicsView):
         return None
 
     def alignSelectedNodes(self, direction):
-        ls = [n for n in self.getAllNodes() if n.isSelected()]
+        with ScopedEditorTransaction("Align nodes") as tr:
+            ls = [n for n in self.getAllNodes() if n.isSelected()]
 
-        x_positions = [p.scenePos().x() for p in ls]
-        y_positions = [p.scenePos().y() for p in ls]
+            x_positions = [p.scenePos().x() for p in ls]
+            y_positions = [p.scenePos().y() for p in ls]
 
-        if direction == Direction.Left:
-            if len(x_positions) == 0:
-                return
-            x = min(x_positions)
-            for n in ls:
-                p = n.scenePos()
-                p.setX(x)
-                n.setPos(p)
+            if direction == Direction.Left:
+                if len(x_positions) == 0:
+                    return
+                x = min(x_positions)
+                for n in ls:
+                    p = n.scenePos()
+                    p.setX(x)
+                    n.setPos(p)
 
-        if direction == Direction.Right:
-            if len(x_positions) == 0:
-                return
-            x = max(x_positions)
-            for n in ls:
-                p = n.scenePos()
-                p.setX(x)
-                n.setPos(p)
+            if direction == Direction.Right:
+                if len(x_positions) == 0:
+                    return
+                x = max(x_positions)
+                for n in ls:
+                    p = n.scenePos()
+                    p.setX(x)
+                    n.setPos(p)
 
-        if direction == Direction.Up:
-            if len(y_positions) == 0:
-                return
-            y = min(y_positions)
-            for n in ls:
-                p = n.scenePos()
-                p.setY(y)
-                n.setPos(p)
+            if direction == Direction.Up:
+                if len(y_positions) == 0:
+                    return
+                y = min(y_positions)
+                for n in ls:
+                    p = n.scenePos()
+                    p.setY(y)
+                    n.setPos(p)
 
-        if direction == Direction.Down:
-            if len(y_positions) == 0:
-                return
-            y = max(y_positions)
-            for n in ls:
-                p = n.scenePos()
-                p.setY(y)
-                n.setPos(p)
+            if direction == Direction.Down:
+                if len(y_positions) == 0:
+                    return
+                y = max(y_positions)
+                for n in ls:
+                    p = n.scenePos()
+                    p.setY(y)
+                    n.setPos(p)
 
     def findGoodPlaceForNewNode(self):
         polygon = self.mapToScene(self.viewport().rect())
@@ -1367,7 +1367,7 @@ class Canvas(QGraphicsView):
             if self.realTimeLine not in self.scene().items():
                 self.scene().addItem(self.realTimeLine)
 
-            self.updateRerutes(event,True)
+            self.updateRerutes(event, True)
 
             p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
             p2 = self.mapToScene(self.mousePos)
@@ -1531,11 +1531,12 @@ class Canvas(QGraphicsView):
             if delta.manhattanLength() > 15:
                 self.manipulationMode = CanvasManipulationMode.MOVE
                 selectedNodes = self.selectedNodes()
+                EditorHistory().beginTransaction("PasteNodes")
                 copiedNodes = self.copyNodes(toClipBoard=False)
                 self.pasteNodes(move=False, data=copiedNodes)
                 scaledDelta = delta / self.currentViewScale()
                 for node in self.selectedNodes():
-                    node.translate(scaledDelta.x(), scaledDelta.y())                
+                    node.translate(scaledDelta.x(), scaledDelta.y())
         else:
             super(Canvas, self).mouseMoveEvent(event)
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
@@ -1553,6 +1554,8 @@ class Canvas(QGraphicsView):
 
     def mouseReleaseEvent(self, event):
         super(Canvas, self).mouseReleaseEvent(event)
+
+        EditorHistory().endTransaction()
 
         modifiers = event.modifiers()
 
@@ -1793,9 +1796,8 @@ class Canvas(QGraphicsView):
         return nodeInstance
 
     def createNode(self, jsonTemplate, **kwargs):
-        tr = Transaction("Create node").begin()
-        nodeInstance = self._createNode(jsonTemplate)
-        tr.end()
+        with ScopedEditorTransaction("Create node") as tr:
+            nodeInstance = self._createNode(jsonTemplate)
         return nodeInstance
 
     def createWrappersForGraph(self, rawGraph):
@@ -1878,9 +1880,10 @@ class Canvas(QGraphicsView):
 
     def connectPins(self, src, dst):
         # Highest level connect pins function
-        if src and dst:
-            if canConnectPins(src._rawPin, dst._rawPin):
-                wire = self.connectPinsInternal(src, dst)
+        with ScopedEditorTransaction("Connect pins") as tr:
+            if src and dst:
+                if canConnectPins(src._rawPin, dst._rawPin):
+                    wire = self.connectPinsInternal(src, dst)
 
     def removeEdgeCmd(self, connections):
         for wire in list(connections):
