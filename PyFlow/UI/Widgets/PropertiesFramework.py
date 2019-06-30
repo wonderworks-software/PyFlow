@@ -108,7 +108,7 @@ class CollapsibleWidget(QtWidgets.QWidget):
 
 class PropertyEntry(QtWidgets.QWidget):
     """docstring for PropertyEntry."""
-    def __init__(self, label, widget, parent=None, hideLabel=False,maxLabelWidth=None):
+    def __init__(self, label, widget, parent=None, hideLabel=False, maxLabelWidth=None):
         super(PropertyEntry, self).__init__(parent)
         self.label = label
         self.layout = QtWidgets.QHBoxLayout(self)
@@ -157,25 +157,26 @@ class CollapsibleFormWidget(CollapsibleWidget):
             if widget:
                 widget.setVisible(pattern.lower() in widget.getLabel().lower())
 
-    def insertWidget(self, index=0, label=None, widget=None,maxLabelWidth=None):
+    def insertWidget(self, index=0, label=None, widget=None, maxLabelWidth=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
             return False
-        self.Layout.insertWidget(index,PropertyEntry(str(label), widget, hideLabel=self.hideLabels,maxLabelWidth=maxLabelWidth))
+        self.Layout.insertWidget(index, PropertyEntry(str(label), widget, hideLabel=self.hideLabels, maxLabelWidth=maxLabelWidth))
         self.propertyNames[label] = widget
         return True
 
-    def addWidget(self, label=None, widget=None,maxLabelWidth=None):
+    def addWidget(self, label=None, widget=None, maxLabelWidth=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
-            return False     
-        self.propertyNames[label] = widget 
-        self.Layout.addWidget(PropertyEntry(str(label), widget, hideLabel=self.hideLabels,maxLabelWidth=maxLabelWidth))
+            return False
+        self.propertyNames[label] = widget
+        self.Layout.addWidget(PropertyEntry(str(label), widget, hideLabel=self.hideLabels, maxLabelWidth=maxLabelWidth))
         return True
 
-    def getWidgetByName(self,name):
+    def getWidgetByName(self, name):
         if name in self.propertyNames:
             return self.propertyNames[name]
         else:
             return None
+
 
 class PropertiesWidget(QtWidgets.QWidget):
     """docstring for PropertiesWidget."""

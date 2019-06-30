@@ -66,9 +66,9 @@ class UIConstantNode(UINodeBase):
     def selectStructure(self, name):
         self.canvasRef().tryFillPropertiesView(self)
 
-    def createInputWidgets(self, propertiesWidget):
+    def createInputWidgets(self, propertiesWidget, categoryName=None):
         inputsCategory = super(
-            UIConstantNode, self).createInputWidgets(propertiesWidget)
+            UIConstantNode, self).createInputWidgets(propertiesWidget, categoryName)
         selector = QComboBox()
         overrideType = QCheckBox()
 
