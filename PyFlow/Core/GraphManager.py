@@ -60,8 +60,6 @@ class GraphManager(object):
     def deserialize(self, data):
         if "fileVersion" in data:
             fileVersion = version.Version.fromString(data["fileVersion"])
-            print("App version:", str(version.currentVersion()))
-            print("File version:", str(fileVersion))
         else:
             # handle older version
             pass
