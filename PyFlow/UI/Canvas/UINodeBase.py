@@ -392,7 +392,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.actionToggleExposeWidgetsToCompound.triggered.connect(self.onToggleExposeProperties)
 
     def onToggleExposeProperties(self):
-        self.bExposeInputsToCompound = not self.bExposeInputsToCompound
+        self.setExposePropertiesToCompound(not self.bExposeInputsToCompound)
+
+    def setExposePropertiesToCompound(self, bExpose):
+        self.bExposeInputsToCompound = bExpose
         self.update()
 
     def __repr__(self):
@@ -660,6 +663,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             template['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
         template['collapsed'] = self.collapsed
         template['headerHtml'] = self.nodeNameWidget.getHtml()
+        template['exposeInputsToCompound'] = self.bExposeInputsToCompound
         if len(self.groups) > 0:
             template['groups'] = {'input': {}, 'output': {}}
             for name, grp in self.groups['input'].items():
@@ -845,6 +849,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
         headerHtml = self.name
         if jsonTemplate is not None and jsonTemplate["wrapper"] is not None:
+            if "exposeInputsToCompound" in jsonTemplate["wrapper"]:
+                self.setExposePropertiesToCompound(jsonTemplate["wrapper"]["exposeInputsToCompound"])
             if "collapsed" in jsonTemplate["wrapper"]:
                 self.collapsed = jsonTemplate["wrapper"]["collapsed"]
             if "headerHtml" in jsonTemplate["wrapper"]:
