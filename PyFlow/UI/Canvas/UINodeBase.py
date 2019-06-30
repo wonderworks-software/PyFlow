@@ -1197,8 +1197,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             self.update()
 
     def contextMenuEvent(self, event):
-        if self._rawNode.graph().isRoot():
-            self.actionToggleExposeWidgetsToCompound.hide()
         self._menu.exec_(event.screenPos())
 
     def clone(self):
