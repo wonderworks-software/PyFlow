@@ -831,7 +831,10 @@ class PinBase(IPin):
         :param val: defaultValue
         :type val: object
         """
-        self._defaultValue = deepcopy(val)
+        try:
+            self._defaultValue = deepcopy(val)
+        except:
+            self._defaultValue = val
 
     def updateConstraint(self, constraint):
         self.constraint = constraint
