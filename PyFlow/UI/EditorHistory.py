@@ -99,7 +99,7 @@ class EditorHistory(object):
 
         self.app.loadFromData(state)
         self.currentIndex = index
-        print("select:", self.currentIndex)
+        print("select:", self.currentIndex, self.stack[self.currentIndex].text)
 
     def stepBack(self):
         self.select(self.currentIndex - 1)

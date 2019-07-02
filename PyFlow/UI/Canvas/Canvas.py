@@ -848,12 +848,14 @@ class Canvas(QGraphicsView):
                 self.duplicateNodes()
             if currentInputAction in InputManager()["Canvas.PasteNodes"]:
                 self.pasteNodes()
+                EditorState("Paste nodes")
 
         QGraphicsView.keyPressEvent(self, event)
 
     def duplicateNodes(self):
         copiedJson = self.copyNodes()
         self.pasteNodes(data=copiedJson)
+        EditorState("Duplicate nodes")
 
     def makeSerializedNodesUnique(self, nodes, extra=[]):
         copiedNodes = deepcopy(nodes)
@@ -993,7 +995,6 @@ class Canvas(QGraphicsView):
         for newNode, data in createdNodes.items():
             if newNode.isCommentNode:
                 newNode.collapsed = data["wrapper"]["collapsed"]
-        EditorState("Paste nodes")
 
     @dispatch(str)
     def findNode(self, name):
@@ -1560,6 +1561,9 @@ class Canvas(QGraphicsView):
         self.releasedPin = self.findPinNearPosition(event.pos())
         self._resize_group_mode = False
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+
+        if self.manipulationMode == CanvasManipulationMode.MOVE and len(self.selectedNodes()) > 0:
+            EditorState("Move nodes")
 
         if len(self.reconnectingWires) > 0:
             if self.releasedPin is not None:
