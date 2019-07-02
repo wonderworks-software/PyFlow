@@ -13,7 +13,6 @@ class _EditorState(object):
         super(_EditorState, self).__init__()
         self.text = text
         self.editorState = GraphManagerSingleton().get().serialize()
-        EditorHistory().push(self)
 
     def __repr__(self):
         return self.text
@@ -103,7 +102,7 @@ class EditorHistory(object):
         print("select:", self.currentIndex, self.stack[self.currentIndex].text)
 
     def saveState(self, text):
-        _EditorState(text)
+        self.push(_EditorState(text))
 
     def undo(self):
         self.select(self.currentIndex - 1)

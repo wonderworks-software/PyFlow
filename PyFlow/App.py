@@ -227,6 +227,7 @@ class PyFlow(QMainWindow):
         if currentInputAction in actionNewFileVariants:
             EditorHistory().clear()
             self.newFile()
+            EditorHistory().saveState("New file")
         if currentInputAction in actionSaveVariants:
             self.save()
         if currentInputAction in actionLoadVariants:
