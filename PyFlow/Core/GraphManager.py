@@ -34,6 +34,7 @@ class GraphManager(object):
         rootGraph = self.findRootGraph()
         saved = rootGraph.serialize()
         saved["fileVersion"] = str(version.currentVersion())
+        saved["activeGraph"] = self.activeGraph().name
         return saved
 
     @dispatch(str)

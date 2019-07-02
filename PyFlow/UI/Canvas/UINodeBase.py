@@ -18,6 +18,7 @@ from PyFlow.UI.Canvas.UIPinBase import (
     getUIPinInstance,
     PinGroup
 )
+from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Canvas.Painters import NodePainter
@@ -393,6 +394,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def onToggleExposeProperties(self):
         self.setExposePropertiesToCompound(not self.bExposeInputsToCompound)
+        EditorHistory().saveState("{} exposing widgets".format("Start" if self.bExposeInputsToCompound else "Stop"))
 
     def setExposePropertiesToCompound(self, bExpose):
         self.bExposeInputsToCompound = bExpose
