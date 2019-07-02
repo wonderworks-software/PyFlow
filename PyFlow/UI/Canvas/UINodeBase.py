@@ -234,6 +234,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     # Event called when node name changes
     displayNameChanged = QtCore.Signal(str)
     drawlabel = None
+
     def __init__(self, raw_node, w=80, color=Colors.NodeBackgrounds, headColorOverride=None):
         super(UINodeBase, self).__init__()
         self.setFlag(QGraphicsWidget.ItemIsMovable)
@@ -363,11 +364,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         # Hiding/Moving By Group/collapse/By Pin
         self.pressedCommentNode = None
         self.owningCommentNode = None
-        self.edgesToHide = []
-        self.nodesNamesToMove = []
-        self.pinsToMove = {}
         self._rect = QtCore.QRectF(0, 0, self.minWidth, self.minHeight)
-        self.lastMousePos = QtCore.QPointF()
         self.mousePressPos = QtCore.QPointF()
 
         # Group pins
@@ -381,6 +378,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.isTemp = False
         self.isCommentNode = False
 
+        self.bExposeInputsToCompound = False
+
         # collapse action
         self._groups = {"input": {}, "output": {}}
         self.actionToggleCollapse = self._menu.addAction("ToggleCollapse")
@@ -389,9 +388,21 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
         self.actionRefresh = self._menu.addAction("Refresh")
         self.actionRefresh.triggered.connect(self._rawNode.checkForErrors)
+        self.actionToggleExposeWidgetsToCompound = self._menu.addAction("Expose properties")
+        self.actionToggleExposeWidgetsToCompound.triggered.connect(self.onToggleExposeProperties)
+
+    def onToggleExposeProperties(self):
+        self.setExposePropertiesToCompound(not self.bExposeInputsToCompound)
+
+    def setExposePropertiesToCompound(self, bExpose):
+        self.bExposeInputsToCompound = bExpose
+        self.update()
 
     def __repr__(self):
         return self._rawNode.__repr__()
+
+    def __str__(self):
+        return self._rawNode.__str__()
 
     @property
     def packageName(self):
@@ -652,6 +663,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             template['resize'] = {'w': self._rect.right(), 'h': self._rect.bottom()}
         template['collapsed'] = self.collapsed
         template['headerHtml'] = self.nodeNameWidget.getHtml()
+        template['exposeInputsToCompound'] = self.bExposeInputsToCompound
         if len(self.groups) > 0:
             template['groups'] = {'input': {}, 'output': {}}
             for name, grp in self.groups['input'].items():
@@ -837,6 +849,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
         headerHtml = self.name
         if jsonTemplate is not None and jsonTemplate["wrapper"] is not None:
+            if "exposeInputsToCompound" in jsonTemplate["wrapper"]:
+                self.setExposePropertiesToCompound(jsonTemplate["wrapper"]["exposeInputsToCompound"])
             if "collapsed" in jsonTemplate["wrapper"]:
                 self.collapsed = jsonTemplate["wrapper"]["collapsed"]
             if "headerHtml" in jsonTemplate["wrapper"]:
@@ -1143,7 +1157,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     self.w = newWidth
                 self.updateNodeShape()
             self.update()
-        self.lastMousePos = event.pos()
 
     def mouseReleaseEvent(self, event):
         self.bResize = False
@@ -1233,10 +1246,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         Info.addWidget(widget=doc)
         propertiesWidget.addWidget(Info)
 
-    def createInputWidgets(self, propertiesWidget):
+    def createInputWidgets(self, propertiesWidget, categoryName=None):
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
-            inputsCategory = CollapsibleFormWidget(headName="Inputs")
+            headerName = "Inputs" if categoryName is None else categoryName
+            inputsCategory = CollapsibleFormWidget(headName=headerName)
             sortedInputs = sorted(self.UIinputs.values(), key=lambda x: x.name)
             for inp in sortedInputs:
                 if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
@@ -1258,7 +1272,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             propertiesWidget.addWidget(inputsCategory)
             return inputsCategory
 
-    def createOutputWidgets(self,propertiesWidget,headName="Outputs"):
+    def createOutputWidgets(self, propertiesWidget, headName="Outputs"):
         inputsCategory = CollapsibleFormWidget(headName=headName)
         sortedInputs = sorted(self.UIPins.values(), key=lambda x: x.name)
         for inp in sortedInputs:

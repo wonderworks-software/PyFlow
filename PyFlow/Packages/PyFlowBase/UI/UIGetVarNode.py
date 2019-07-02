@@ -78,7 +78,7 @@ class UIGetVarNode(UINodeBase):
         self._rawNode.checkForErrors()
         self.update()
 
-    def createInputWidgets(self, propertiesWidget):
+    def createInputWidgets(self, propertiesWidget, categoryName=None):
         inputsCategory = CollapsibleFormWidget(headName="Inputs")
         validVars = self.graph().getVarList()
         cbVars = EnumComboBox([v.name for v in validVars])

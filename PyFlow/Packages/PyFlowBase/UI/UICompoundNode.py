@@ -4,6 +4,7 @@ from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI import RESOURCES_DIR
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.Core.Common import *
 
 
@@ -37,3 +38,13 @@ class UICompoundNode(UINodeBase):
         super(UICompoundNode, self).postCreate(jsonTemplate)
         self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
         self._rawNode.rawGraph.nameChanged.connect(self.onGraphNameChanged)
+
+    def createInputWidgets(self, propertiesWidget, categoryName=None):
+        inputsCategory = super(UICompoundNode, self).createInputWidgets(propertiesWidget, categoryName)
+        nodes = self._rawNode.rawGraph.getNodes()
+        if len(nodes) > 0:
+            for node in nodes:
+                wrapper = node.getWrapper()
+                if wrapper is not None:
+                    if wrapper.bExposeInputsToCompound:
+                        wrapper.createInputWidgets(propertiesWidget, categoryName="{} inputs".format(node.name))

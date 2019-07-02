@@ -42,9 +42,9 @@ class UIConvertToNode(UINodeBase):
         self.update()
         self.canvasRef().tryFillPropertiesView(self)
 
-    def createInputWidgets(self, propertiesWidget):
+    def createInputWidgets(self, propertiesWidget, categoryName=None):
         inputsCategory = super(
-            UIConvertToNode, self).createInputWidgets(propertiesWidget)
+            UIConvertToNode, self).createInputWidgets(propertiesWidget, categoryName)
         selector = QComboBox()
         overrideType = QCheckBox()
 

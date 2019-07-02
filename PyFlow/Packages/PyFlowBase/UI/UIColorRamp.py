@@ -41,8 +41,8 @@ class UIColorRamp(UINodeBase):
             if ramp() is not None:
                 ramp().setColor(color)
 
-    def createInputWidgets(self, propertiesWidget):
-        inputsCategory = super(UIColorRamp, self).createInputWidgets(propertiesWidget)
+    def createInputWidgets(self, propertiesWidget, categoryName=None):
+        inputsCategory = super(UIColorRamp, self).createInputWidgets(propertiesWidget, categoryName)
         inputVal = inputsCategory.getWidgetByName("input")
         if not self._rawNode.input.isArray():
             inputVal.setMinimum(0.0)
