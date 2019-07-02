@@ -905,7 +905,7 @@ class Canvas(QGraphicsView):
         self.copyNodes()
         self.killSelectedNodes()
 
-    def copyNodes(self,toClipBoard=True):
+    def copyNodes(self, toClipBoard=True):
         nodes = []
         selectedNodes = [i for i in self.nodes.values() if i.isSelected()]
 
@@ -1535,6 +1535,7 @@ class Canvas(QGraphicsView):
                 scaledDelta = delta / self.currentViewScale()
                 for node in self.selectedNodes():
                     node.translate(scaledDelta.x(), scaledDelta.y())
+                EditorState("Drag copy nodes")
         else:
             super(Canvas, self).mouseMoveEvent(event)
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
