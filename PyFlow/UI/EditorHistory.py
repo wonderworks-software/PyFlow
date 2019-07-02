@@ -7,10 +7,10 @@ from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.Core.GraphManager import GraphManagerSingleton
 
 
-class EditorState(object):
-    """docstring for EditorState."""
+class _EditorState(object):
+    """docstring for _EditorState."""
     def __init__(self, text):
-        super(EditorState, self).__init__()
+        super(_EditorState, self).__init__()
         self.text = text
         self.editorState = GraphManagerSingleton().get().serialize()
         EditorHistory().push(self)
@@ -21,6 +21,7 @@ class EditorState(object):
 
 @SingletonDecorator
 class EditorHistory(object):
+
     """docstring for EditorHistory."""
     def __init__(self, app):
 
@@ -101,7 +102,10 @@ class EditorHistory(object):
         self.currentIndex = index
         print("select:", self.currentIndex, self.stack[self.currentIndex].text)
 
-    def stepBack(self):
+    def saveState(self, text):
+        _EditorState(text)
+
+    def undo(self):
         self.select(self.currentIndex - 1)
 
     def isAtLastIndex(self):
@@ -110,5 +114,5 @@ class EditorHistory(object):
     def isAtFirstIndex(self):
         return self.currentIndex == self.minIndex()
 
-    def stepForward(self):
+    def redo(self):
         self.select(self.currentIndex + 1)

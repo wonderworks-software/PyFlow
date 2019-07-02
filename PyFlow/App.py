@@ -29,7 +29,7 @@ from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
-from PyFlow.UI.EditorHistory import *
+from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.Wizards.PackageWizard import PackageWizard
@@ -574,5 +574,5 @@ class PyFlow(QMainWindow):
                     settings.endGroup()
 
         PyFlow.appInstance = instance
-        EditorState("New file")
+        EditorHistory().saveState("New file")
         return instance
