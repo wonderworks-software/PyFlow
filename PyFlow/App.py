@@ -29,7 +29,7 @@ from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
-from PyFlow.UI.Transaction import *
+from PyFlow.UI.EditorHistory import *
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.Wizards.PackageWizard import PackageWizard
@@ -225,13 +225,13 @@ class PyFlow(QMainWindow):
         actionSaveAsVariants = InputManager()["App.SaveAs"]
 
         if currentInputAction in actionNewFileVariants:
-            self.newFile()
             EditorHistory().clear()
+            self.newFile()
         if currentInputAction in actionSaveVariants:
             self.save()
         if currentInputAction in actionLoadVariants:
-            self.load()
             EditorHistory().clear()
+            self.load()
         if currentInputAction in actionSaveAsVariants:
             self.save(True)
 
@@ -492,7 +492,7 @@ class PyFlow(QMainWindow):
         instance.addDockWidget(a.defaultDockArea(), a)
         a.setAppInstance(instance)
         a.onShow()
-              
+
         try:
             extraPackagePaths = []
             extraPathsString = prefsSettings.value("Preferences/General/ExtraPackageDirs")
@@ -506,7 +506,6 @@ class PyFlow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(None, "Fatal error", str(e))
             return
-
 
         instance.startMainLoop()
 
@@ -575,4 +574,5 @@ class PyFlow(QMainWindow):
                     settings.endGroup()
 
         PyFlow.appInstance = instance
+        EditorState("New file")
         return instance

@@ -16,7 +16,7 @@ from Qt import QtGui
 from Qt import QtWidgets
 from Qt.QtWidgets import *
 
-from PyFlow.UI.Transaction import *
+from PyFlow.UI.EditorHistory import *
 from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Canvas.SelectionRect import SelectionRect
@@ -118,8 +118,7 @@ class SceneClass(QGraphicsScene):
                 self.tempnode = None
             except Exception as e:
                 pass
-            EditorHistory().beginTransaction("Create node")
-            self.tempnode = self.parent().createNode(nodeTemplate)
+            self.tempnode = self.parent()._createNode(nodeTemplate)
             if self.tempnode:
                 self.tempnode.isTemp = True
             self.hoverItems = []
@@ -255,10 +254,9 @@ class SceneClass(QGraphicsScene):
                             elif isinstance(it, UIConnection):
                                 dropItem = it
                                 break
-                        # create transaction
+                        EditorState("Create node {}".format(node.name))
                     else:
                         node = self.parent().createNode(nodeTemplate)
-                    EditorHistory().endTransaction()
 
                     nodeInputs = node.namePinInputsMap
                     nodeOutputs = node.namePinOutputsMap
@@ -440,7 +438,6 @@ class Canvas(QGraphicsView):
             node.collapsed = collapsed
 
     def collapseSelectedNodesToCompound(self):
-        EditorHistory().beginTransaction("Collapse to compound")
         selectedNodes = self.selectedNodes()
         selectedNodesRect = self.getNodesRect(True, True)
         wires = list()
@@ -536,7 +533,7 @@ class Canvas(QGraphicsView):
                 exposedPin = compoundNode.getPin(newOutputPins[i].name)
                 if exposedPin:
                     self.connectPinsInternal(i, exposedPin)
-            EditorHistory().endTransaction()
+            EditorState("Collapse to compound")
 
         QtCore.QTimer.singleShot(1, lambda: connectPins(uiCompoundNode, inputPins, outputPins))
         self.graphManager.selectGraph(activeGraphName)
@@ -996,6 +993,7 @@ class Canvas(QGraphicsView):
         for newNode, data in createdNodes.items():
             if newNode.isCommentNode:
                 newNode.collapsed = data["wrapper"]["collapsed"]
+        EditorState("Paste nodes")
 
     @dispatch(str)
     def findNode(self, name):
@@ -1005,47 +1003,47 @@ class Canvas(QGraphicsView):
         return None
 
     def alignSelectedNodes(self, direction):
-        with ScopedEditorTransaction("Align nodes") as tr:
-            ls = [n for n in self.getAllNodes() if n.isSelected()]
+        ls = [n for n in self.getAllNodes() if n.isSelected()]
 
-            x_positions = [p.scenePos().x() for p in ls]
-            y_positions = [p.scenePos().y() for p in ls]
+        x_positions = [p.scenePos().x() for p in ls]
+        y_positions = [p.scenePos().y() for p in ls]
 
-            if direction == Direction.Left:
-                if len(x_positions) == 0:
-                    return
-                x = min(x_positions)
-                for n in ls:
-                    p = n.scenePos()
-                    p.setX(x)
-                    n.setPos(p)
+        if direction == Direction.Left:
+            if len(x_positions) == 0:
+                return
+            x = min(x_positions)
+            for n in ls:
+                p = n.scenePos()
+                p.setX(x)
+                n.setPos(p)
 
-            if direction == Direction.Right:
-                if len(x_positions) == 0:
-                    return
-                x = max(x_positions)
-                for n in ls:
-                    p = n.scenePos()
-                    p.setX(x)
-                    n.setPos(p)
+        if direction == Direction.Right:
+            if len(x_positions) == 0:
+                return
+            x = max(x_positions)
+            for n in ls:
+                p = n.scenePos()
+                p.setX(x)
+                n.setPos(p)
 
-            if direction == Direction.Up:
-                if len(y_positions) == 0:
-                    return
-                y = min(y_positions)
-                for n in ls:
-                    p = n.scenePos()
-                    p.setY(y)
-                    n.setPos(p)
+        if direction == Direction.Up:
+            if len(y_positions) == 0:
+                return
+            y = min(y_positions)
+            for n in ls:
+                p = n.scenePos()
+                p.setY(y)
+                n.setPos(p)
 
-            if direction == Direction.Down:
-                if len(y_positions) == 0:
-                    return
-                y = max(y_positions)
-                for n in ls:
-                    p = n.scenePos()
-                    p.setY(y)
-                    n.setPos(p)
+        if direction == Direction.Down:
+            if len(y_positions) == 0:
+                return
+            y = max(y_positions)
+            for n in ls:
+                p = n.scenePos()
+                p.setY(y)
+                n.setPos(p)
+        EditorState("Align nodes")
 
     def findGoodPlaceForNewNode(self):
         polygon = self.mapToScene(self.viewport().rect())
@@ -1531,7 +1529,6 @@ class Canvas(QGraphicsView):
             if delta.manhattanLength() > 15:
                 self.manipulationMode = CanvasManipulationMode.MOVE
                 selectedNodes = self.selectedNodes()
-                EditorHistory().beginTransaction("PasteNodes")
                 copiedNodes = self.copyNodes(toClipBoard=False)
                 self.pasteNodes(move=False, data=copiedNodes)
                 scaledDelta = delta / self.currentViewScale()
@@ -1554,8 +1551,6 @@ class Canvas(QGraphicsView):
 
     def mouseReleaseEvent(self, event):
         super(Canvas, self).mouseReleaseEvent(event)
-
-        EditorHistory().endTransaction()
 
         modifiers = event.modifiers()
 
@@ -1796,8 +1791,8 @@ class Canvas(QGraphicsView):
         return nodeInstance
 
     def createNode(self, jsonTemplate, **kwargs):
-        with ScopedEditorTransaction("Create node") as tr:
-            nodeInstance = self._createNode(jsonTemplate)
+        nodeInstance = self._createNode(jsonTemplate)
+        EditorState("Create node {}".format(nodeInstance.name))
         return nodeInstance
 
     def createWrappersForGraph(self, rawGraph):
@@ -1880,10 +1875,10 @@ class Canvas(QGraphicsView):
 
     def connectPins(self, src, dst):
         # Highest level connect pins function
-        with ScopedEditorTransaction("Connect pins") as tr:
-            if src and dst:
-                if canConnectPins(src._rawPin, dst._rawPin):
-                    wire = self.connectPinsInternal(src, dst)
+        if src and dst:
+            if canConnectPins(src._rawPin, dst._rawPin):
+                wire = self.connectPinsInternal(src, dst)
+        EditorState("Connect pins")
 
     def removeEdgeCmd(self, connections):
         for wire in list(connections):

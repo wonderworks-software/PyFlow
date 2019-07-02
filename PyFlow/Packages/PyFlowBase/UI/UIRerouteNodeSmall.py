@@ -76,7 +76,7 @@ class UIRerouteNodeSmall(UINodeBase):
             source = inp.connections[0].source()
             for out in newOuts:
                 drawSource = inp.connections[0].drawSource
-                self.canvasRef().connectPins(source, out[0])
+                self.canvasRef().connectPinsInternal(source, out[0])
         super(UIRerouteNodeSmall, self).kill()
 
     def postCreate(self, jsonTemplate=None):
