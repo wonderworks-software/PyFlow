@@ -379,6 +379,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.isCommentNode = False
 
         self.bExposeInputsToCompound = False
+        self.originalPropertyIndexes = {}
+        self.editedPropertyIndexes = {}
 
         # collapse action
         self._groups = {"input": {}, "output": {}}
@@ -1237,7 +1239,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
         propertiesWidget.addWidget(baseCategory)
 
-        self.createInputWidgets(propertiesWidget)
+        inputsCategory = CollapsibleFormWidget(headName="Inputs")
+        self.createInputWidgets(inputsCategory)
+        if inputsCategory.Layout.count() > 0:
+            propertiesWidget.addWidget(inputsCategory)
 
         Info = CollapsibleFormWidget(headName="Info", collapsed=True, hideLabels=True)
         doc = QTextBrowser()
@@ -1246,11 +1251,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         Info.addWidget(widget=doc)
         propertiesWidget.addWidget(Info)
 
-    def createInputWidgets(self, propertiesWidget, categoryName=None):
+    def createInputWidgets(self, inputsCategory,inGroup=None, pins=True):
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
-            headerName = "Inputs" if categoryName is None else categoryName
-            inputsCategory = CollapsibleFormWidget(headName=headerName)
             sortedInputs = sorted(self.UIinputs.values(), key=lambda x: x.name)
             for inp in sortedInputs:
                 if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
@@ -1266,10 +1269,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     w.setWidgetValue(data)
                     w.blockWidgetSignals(False)
                     w.setObjectName(inp.getName())
-                    inputsCategory.addWidget(inp.name, w)
+                    group = inGroup
+                    if inGroup == None:
+                        group = inp._rawPin.group
+                    inputsCategory.addWidget(inp.name, w, group=group)
                     if inp.hasConnections():
                         w.setEnabled(False)
-            propertiesWidget.addWidget(inputsCategory)
             return inputsCategory
 
     def createOutputWidgets(self, propertiesWidget, headName="Outputs"):

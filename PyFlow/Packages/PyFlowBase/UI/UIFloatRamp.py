@@ -27,12 +27,14 @@ class UIFloatRamp(UINodeBase):
             if ramp() is not None:
                 ramp().updateFromRaw()
 
-    def createInputWidgets(self, propertiesWidget, categoryName=None):
-        inputsCategory = super(UIFloatRamp, self).createInputWidgets(propertiesWidget, categoryName)
-        inputVal = inputsCategory.getWidgetByName("input")
-        if not self._rawNode.input.isArray():
-            inputVal.setMinimum(0.0)
-            inputVal.setMaximum(1.0)
+    def createInputWidgets(self, inputsCategory, group=None, pins=True):
+        preIndex = inputsCategory.Layout.count()
+        if pins:
+            super(UIFloatRamp, self).createInputWidgets(inputsCategory, group)
+            inputVal = inputsCategory.getWidgetByName("input")
+            if not self._rawNode.input.isArray():
+                inputVal.setMinimum(0.0)
+                inputVal.setMaximum(1.0)
         ramp = pyf_RampSpline(self._rawNode.ramp, bezier=self._rawNode._curveTypes[self._rawNode._curveType] == "bezier")
         ramp.tickClicked.connect(self.rampChanged)
         ramp.tickAdded.connect(self.rampChanged)
@@ -47,5 +49,5 @@ class UIFloatRamp(UINodeBase):
             selector.addItem(i)
         selector.setCurrentIndex(self._rawNode._curveType)
         selector.activated.connect(self.changeCurveType)
-        inputsCategory.insertWidget(0, "CurveType", selector)
-        inputsCategory.insertWidget(1, "Ramp", ramp)
+        inputsCategory.insertWidget(preIndex, "CurveType", selector,group=group)
+        inputsCategory.insertWidget(preIndex+1, "Ramp", ramp,group=group)

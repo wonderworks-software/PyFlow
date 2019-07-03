@@ -61,16 +61,30 @@ class UIConstantNode(UINodeBase):
         else:
             self.labelTextColor = QtCore.Qt.white
         self.update()
-        self.canvasRef().tryFillPropertiesView(self)
 
-    def selectStructure(self, name):
-        self.canvasRef().tryFillPropertiesView(self)
+    def updateType(self, valToUpdate,inputsCategory,group):
+        
+        if valToUpdate is not None:
+            par = valToUpdate.parent().parent()
+            print par
+            del par
+            super(UIConstantNode, self).createInputWidgets(inputsCategory, group)
 
-    def createInputWidgets(self, propertiesWidget, categoryName=None):
-        inputsCategory = super(
-            UIConstantNode, self).createInputWidgets(propertiesWidget, categoryName)
+    def selectStructure(self, valToUpdate,inputsCategory,group):
+        if valToUpdate is not None:
+            del valToUpdate
+            super(UIConstantNode, self).createInputWidgets(inputsCategory, group)
+
+
+    def createInputWidgets(self, inputsCategory, group=None, pins=True):
+        inputVal = None
+        preIndex = inputsCategory.Layout.count()
+        if pins:
+            super(UIConstantNode, self).createInputWidgets(inputsCategory, group)
+            inputVal = inputsCategory.getWidgetByName("in")
+
+
         selector = QComboBox()
-        overrideType = QCheckBox()
 
         for i in self._rawNode.pinTypes:
             selector.addItem(i)
@@ -81,17 +95,13 @@ class UIConstantNode(UINodeBase):
         structSelector = QComboBox()
         for i in [i.name for i in list(PinStructure)]:
             structSelector.addItem(i)
+        structSelector.inputsCategory = inputsCategory
 
-        # overrideType.setChecked(self.input._rawPin.optionEnabled(PinOptions.ChangeTypeOnConnection))
         structSelector.setCurrentIndex(self.input._rawPin._currStructure)
-        # selector.setEnabled(self.input._rawPin.checkFree([self.output._rawPin],False))
-
-        # overrideType.stateChanged.connect(selector.setEnabled)
-        # overrideType.stateChanged.connect(self._rawNode.overrideTypeChanged)
         selector.activated.connect(self._rawNode.updateType)
+        selector.activated.connect(lambda: self.updateType(inputVal,inputsCategory,group))
         structSelector.activated.connect(self._rawNode.selectStructure)
-        structSelector.activated.connect(self.selectStructure)
-
-        inputsCategory.insertWidget(0, "DataType", selector)
-        #inputsCategory.insertWidget(1,"Change Type On Connection",overrideType)
-        inputsCategory.insertWidget(1, "Structure", structSelector)
+        structSelector.activated.connect(lambda: self.selectStructure(inputVal,inputsCategory,group))
+        
+        inputsCategory.insertWidget(preIndex, "DataType", selector,group=group)
+        inputsCategory.insertWidget(preIndex+1, "Structure", structSelector,group=group)

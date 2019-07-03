@@ -15,7 +15,7 @@ import os
 import subprocess
 
 
-REDIRECT = True
+REDIRECT = False
 logger = logging.getLogger(None)
 
 def addLoggingLevel(levelName, levelNum, methodName=None):
