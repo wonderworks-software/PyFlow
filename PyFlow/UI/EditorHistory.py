@@ -25,6 +25,8 @@ class EditorHistory(object):
     def __init__(self, app):
 
         self.statePushed = Signal(object)
+        self.stateRemoved = Signal(object)
+        self.stateSelected = Signal(object)
 
         self.app = app
         self._currentIndex = 0
@@ -32,8 +34,8 @@ class EditorHistory(object):
         self._shiftDirection = True
         self._lastShiftDirection = self._shiftDirection
         self.stack = OrderedDict()
-        self._capacity = 50
-        self.activeStateUid = None
+        self._capacity = 10
+        self.activeState = None
 
     @property
     def capacity(self):
@@ -69,25 +71,45 @@ class EditorHistory(object):
     def push(self, edState):
         if len(self.stack) > 0:
             self.currentIndex += 1
-        self.stack[self.currentIndex] = edState
-        print("pushed to:", self.currentIndex, edState.text)
-
-        if len(self.stack) >= self.capacity:
-            print("remove:", list(self.stack.keys())[0])
-            self.stack.popitem(last=False)
 
         # future history is incompatible. Remove it
-        if self.currentIndex < self.maxIndex():
-            for i in range(self.currentIndex, self.maxIndex()):
-                self.stack.popitem()
+        maIndex = self.maxIndex()
+        if self.currentIndex < maIndex:
+            nextState = None
+            while True:
+                index = list(self.stack.keys())[-1]
+                nextState = self.stack[index]
+                if nextState == self.activeState:
+                    break
+                _index, state = self.stack.popitem()
+                self.stateRemoved.send(state)
+
+        self.stack[self.currentIndex] = edState
+
+        if len(self.stack) >= self.capacity:
+            index, poppedState = self.stack.popitem(last=False)
+            self.stateRemoved.send(poppedState)
 
         self.statePushed.send(edState)
 
     def maxIndex(self):
+        if len(self.stack) == 0:
+            return 0
         return max(self.stack.keys())
 
     def minIndex(self):
+        if len(self.stack) == 0:
+            return 0
         return min(self.stack.keys())
+
+    def selectState(self, state):
+        for index, st in self.stack.items():
+            if state == st:
+                self.app.loadFromData(st.editorState)
+                self.currentIndex = index
+                self.activeState = st
+                self.stateSelected.send(st)
+                break
 
     def select(self, index):
         index = clamp(index, self.minIndex(), self.maxIndex())
@@ -99,7 +121,9 @@ class EditorHistory(object):
 
         self.app.loadFromData(state)
         self.currentIndex = index
-        print("select:", self.currentIndex, self.stack[self.currentIndex].text)
+        state = self.stack[self.currentIndex]
+        self.activeState = state
+        self.stateSelected.send(state)
 
     def saveState(self, text):
         self.push(_EditorState(text))
