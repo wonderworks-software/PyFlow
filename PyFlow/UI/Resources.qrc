@@ -42,6 +42,7 @@
      <file alias="save_icon.png">resources\save_icon.png</file>
      <file alias="script.png">resources\script.png</file>
      <file alias="searching-magnifying-glass.png">resources\searching-magnifying-glass.png</file>
+     <file alias="settings.png">resources\settings.png</file>
      <file alias="shadow_icon.png">resources\shadow_icon.png</file>
      <file alias="shift-32.png">resources\shift-32.png</file>
      <file alias="shortcuts_icon.png">resources\shortcuts_icon.png</file>

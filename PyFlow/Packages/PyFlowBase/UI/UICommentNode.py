@@ -232,12 +232,12 @@ class UICommentNode(UINodeBase):
             self.color = res
             self.update()     
 
-    def createInputWidgets ( self,propertiesWidget):
-        inputsCategory = super(UICommentNode, self).createInputWidgets(propertiesWidget)
+    def createPropertiesWidget( self, propertiesWidget):
+        super(UICommentNode, self).createPropertiesWidget(propertiesWidget)
         appearanceCategory = CollapsibleFormWidget(headName="Appearance")
         pb = pyf_ColorSlider(type="int",alpha=True,startColor=list(self.color.getRgbF()))
         pb.valueChanged.connect(self.updateColor)
         appearanceCategory.addWidget("Color", pb)
-        propertiesWidget.addWidget(appearanceCategory)
+        propertiesWidget.insertWidget(appearanceCategory,1)
 
 

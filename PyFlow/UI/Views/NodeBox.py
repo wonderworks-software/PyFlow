@@ -13,6 +13,7 @@ from PyFlow import GET_PACKAGES
 
 from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.Core.NodeBase import NodeBase
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
@@ -265,11 +266,13 @@ class NodeBoxTreeWidget(QTreeWidget):
                 for pin in node.UIoutputs.values():
                     wire = self.canvas.connectPinsInternal(pressedPin, pin)
                     if wire is not None:
+                        EditorHistory().saveState("Connect pins")
                         break
             if pressedPin.direction == PinDirection.Output:
                 for pin in node.UIinputs.values():
                     wire = self.canvas.connectPinsInternal(pin, pressedPin)
                     if wire is not None:
+                        EditorHistory().saveState("Connect pins")
                         break
         else:
             drag = QtGui.QDrag(self)

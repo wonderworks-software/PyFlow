@@ -5,7 +5,6 @@ import sys
 import struct
 from Qt import QtGui, QtCore, QtWidgets
 
-sys.path.append(r"C:\Users\pedro\OneDrive\pcTools_v5\PyFlow")
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.Core.Common import ( clamp, INT_RANGE_MIN, INT_RANGE_MAX )
 from PyFlow.Core import structs
@@ -1161,12 +1160,15 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
     def updateFromRaw(self):
         """Updates Ui representation of the internal :obj:`PyFlow.Core.structs.splineRamp`
         """
-        for item in self.items():
-            self._scene.removeItem(item)
-            del item
-        for x in  self._rawRamp.sortedItems():
-            self.addItem(raw_item=x)
-        self.update()
+        try:
+            for item in self.items():
+                self._scene.removeItem(item)
+                del item
+            for x in  self._rawRamp.sortedItems():
+                self.addItem(raw_item=x)
+            self.update()
+        except:
+            pass
 
     def __getitem__(self,index):
         """

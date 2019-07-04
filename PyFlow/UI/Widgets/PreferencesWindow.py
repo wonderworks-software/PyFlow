@@ -8,6 +8,8 @@ from nine import str
 
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Input import InputAction, InputManager
+from PyFlow.Core.Common import SingletonDecorator
+from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
 from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
 from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
@@ -84,46 +86,6 @@ class InputPreferences(CategoryWidgetBase):
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
-
-
-class GeneralPreferences(CategoryWidgetBase):
-    """docstring for GeneralPreferences."""
-    def __init__(self, parent=None):
-        super(GeneralPreferences, self).__init__(parent)
-        self.layout = QVBoxLayout(self)
-        self.layout.setContentsMargins(1, 1, 1, 1)
-        self.layout.setSpacing(2)
-
-        commonCategory = CollapsibleFormWidget(headName="Common")
-        defaultTempFolder = os.path.join(os.path.expanduser('~'), "PyFlowTemp")
-        defaultTempFolder = os.path.normpath(defaultTempFolder)
-        self.tempFilesDir = QLineEdit(defaultTempFolder)
-        commonCategory.addWidget("TempFilesDir", self.tempFilesDir)
-        self.additionalPackagePaths = QLineEdit("")
-        commonCategory.addWidget("Additional package locations", self.additionalPackagePaths)
-        self.layout.addWidget(commonCategory)
-
-        self.lePythonEditor = QLineEdit("sublime_text.exe @FILE")
-        commonCategory.addWidget("External text editor", self.lePythonEditor)
-
-        spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self.layout.addItem(spacerItem)
-
-    def initDefaults(self, settings):
-        settings.setValue("EditorCmd", "sublime_text.exe @FILE")
-        settings.setValue("TempFilesDir", os.path.expanduser('~/PyFlowTemp'))
-
-    def serialize(self, settings):
-        settings.setValue("EditorCmd", self.lePythonEditor.text())
-        settings.setValue("TempFilesDir", self.tempFilesDir.text())
-        settings.setValue("ExtraPackageDirs", self.additionalPackagePaths.text())
-
-    def onShow(self, settings):
-        self.lePythonEditor.setText(settings.value("EditorCmd"))
-        path = settings.value("TempFilesDir")
-        path = os.path.normpath(path)
-        self.tempFilesDir.setText(path)
-        self.additionalPackagePaths.setText(settings.value("ExtraPackageDirs"))
 
 
 class ThemePreferences(CategoryWidgetBase):
@@ -239,11 +201,11 @@ class ThemePreferences(CategoryWidgetBase):
     def serialize(self, settings):
         settings.setValue("Theme_Name", self.selector.currentText())
 
-
+@SingletonDecorator
 class PreferencesWindow(QMainWindow):
     """docstring for PreferencesWindow."""
     def __init__(self, parent=None):
-        super(PreferencesWindow, self).__init__(parent)
+        QMainWindow.__init__(self, parent)
         self.resize(600, 400)
         self.setWindowTitle("Preferences")
         self.centralWidget = QWidget(self)
@@ -284,13 +246,13 @@ class PreferencesWindow(QMainWindow):
         pbSavePrefs = QPushButton("SaveAsDefault")
         pbSavePrefs.clicked.connect(self.savePreferences)
         pbSaveAndClosePrefs = QPushButton("SaveAndClose")
-        pbSaveAndClosePrefs.clicked.connect(self.saveAndClosePrefs)        
+        pbSaveAndClosePrefs.clicked.connect(self.saveAndClosePrefs)
         self.buttonsLay.addWidget(pbSavePrefs)
         self.buttonsLay.addWidget(pbSaveAndClosePrefs)
         self.categoriesVerticalLayout.addLayout(self.buttonsLay)
 
         self.addCategory("Input", InputPreferences())
-        self.addCategory("General", GeneralPreferences())
+        # self.addCategory("General", GeneralPreferences())
         self.addCategory("Theme", ThemePreferences())
         self.selectByName("General")
         self.categoryButtons[1].toggle()
@@ -301,8 +263,7 @@ class PreferencesWindow(QMainWindow):
             self.stackedWidget.setCurrentIndex(self._indexes[name][0])
 
     def tryCreateDefaults(self):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        settings.beginGroup("Preferences")
+        settings = ConfigManager().getSettings("PREFS")
         groups = settings.childGroups()
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
@@ -313,33 +274,28 @@ class PreferencesWindow(QMainWindow):
             if bInitDefaults:
                 widget.initDefaults(settings)
             settings.endGroup()
-        settings.endGroup()
         settings.sync()
 
     def showEvent(self, event):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        settings.beginGroup("Preferences")
+        settings = ConfigManager().getSettings("PREFS")
         groups = settings.childGroups()
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
             settings.beginGroup(name)
             widget.onShow(settings)
             settings.endGroup()
-        settings.endGroup()
 
     def saveAndClosePrefs(self):
         self.savePreferences()
         self.close()
 
     def savePreferences(self):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        settings.beginGroup("Preferences")
+        settings = ConfigManager().getSettings("PREFS")
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
             settings.beginGroup(name)
             widget.serialize(settings)
             settings.endGroup()
-        settings.endGroup()
         settings.sync()
 
     def addCategory(self, name, widget):
