@@ -44,9 +44,8 @@ class ConfigManager(object):
             return settings
 
     def getPrefsValue(self, configAlias, valueKey):
-        if configAlias in self.CONFIGS_STORAGE:
-            configFilePath = self.CONFIGS_STORAGE[configAlias]
-            settings = QtCore.QSettings(configFilePath, QtCore.QSettings.IniFormat)
+        settings = self.getSettings(configAlias)
+        if settings:
             if settings.contains(valueKey):
                 return settings.value(valueKey)
 
