@@ -90,3 +90,7 @@ class IPackage(object):
     @staticmethod
     def PinsInputWidgetFactory():
         return None
+
+    @staticmethod
+    def PrefsWidgets():
+        return None

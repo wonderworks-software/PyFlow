@@ -20,7 +20,7 @@ __all__ = [
     "findPinClassByType",
     "getRawNodeInstance",
     "getAllPinClasses",
-    "getHashableDataTypes"
+    "getHashableDataTypes",
 ]
 
 
@@ -105,6 +105,7 @@ def INITIALIZE(additionalPackageLocations=[]):
     from PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
     from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
     from PyFlow.UI.Canvas.UIPinBase import REGISTER_UI_PIN_FACTORY
+    from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
     from PyFlow import ConfigManager
 
     packagePaths = Packages.__path__
@@ -152,6 +153,11 @@ def INITIALIZE(additionalPackageLocations=[]):
         uiNodesFactory = package.UINodesFactory()
         if uiNodesFactory is not None:
             REGISTER_UI_NODE_FACTORY(packageName, uiNodesFactory)
+
+        prefsWidgets = package.PrefsWidgets()
+        if prefsWidgets is not None:
+            for categoryName, widgetClass in prefsWidgets.items():
+                PreferencesWindow().addCategory(categoryName, widgetClass())
 
         for toolClass in package.GetToolClasses().values():
             REGISTER_TOOL(packageName, toolClass)
