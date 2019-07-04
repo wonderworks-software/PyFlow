@@ -9,7 +9,8 @@ from PyFlow.Input import InputAction, InputManager, InputActionType
 
 @SingletonDecorator
 class ConfigManager(object):
-    """Responsible for creating default configs creation and config's file paths."""
+    """Responsible for registering configuration files, reading/writing values to registered config files by aliases, providing QSettings from registered aliases."""
+
     CONFIGS_STORAGE = {}
 
     CONFIGS_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "Configs")
