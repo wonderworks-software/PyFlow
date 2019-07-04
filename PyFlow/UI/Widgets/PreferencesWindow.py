@@ -8,6 +8,7 @@ from nine import str
 
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Input import InputAction, InputManager
+from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
 from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
 from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
@@ -106,6 +107,14 @@ class GeneralPreferences(CategoryWidgetBase):
         self.lePythonEditor = QLineEdit("sublime_text.exe @FILE")
         commonCategory.addWidget("External text editor", self.lePythonEditor)
 
+        self.historyDepth = QSpinBox()
+        self.historyDepth.setRange(10, 100)
+
+        def setHistoryCapacity():
+            EditorHistory().capacity = self.historyDepth.value()
+        self.historyDepth.editingFinished.connect(setHistoryCapacity)
+        commonCategory.addWidget("History depth", self.historyDepth)
+
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
@@ -117,6 +126,7 @@ class GeneralPreferences(CategoryWidgetBase):
         settings.setValue("EditorCmd", self.lePythonEditor.text())
         settings.setValue("TempFilesDir", self.tempFilesDir.text())
         settings.setValue("ExtraPackageDirs", self.additionalPackagePaths.text())
+        settings.setValue("HistoryDepth", self.historyDepth.value())
 
     def onShow(self, settings):
         self.lePythonEditor.setText(settings.value("EditorCmd"))
@@ -124,6 +134,10 @@ class GeneralPreferences(CategoryWidgetBase):
         path = os.path.normpath(path)
         self.tempFilesDir.setText(path)
         self.additionalPackagePaths.setText(settings.value("ExtraPackageDirs"))
+        try:
+            self.historyDepth.setValue(int(settings.value("HistoryDepth")))
+        except:
+            pass
 
 
 class ThemePreferences(CategoryWidgetBase):
@@ -284,7 +298,7 @@ class PreferencesWindow(QMainWindow):
         pbSavePrefs = QPushButton("SaveAsDefault")
         pbSavePrefs.clicked.connect(self.savePreferences)
         pbSaveAndClosePrefs = QPushButton("SaveAndClose")
-        pbSaveAndClosePrefs.clicked.connect(self.saveAndClosePrefs)        
+        pbSaveAndClosePrefs.clicked.connect(self.saveAndClosePrefs)
         self.buttonsLay.addWidget(pbSavePrefs)
         self.buttonsLay.addWidget(pbSaveAndClosePrefs)
         self.categoriesVerticalLayout.addLayout(self.buttonsLay)
@@ -301,8 +315,7 @@ class PreferencesWindow(QMainWindow):
             self.stackedWidget.setCurrentIndex(self._indexes[name][0])
 
     def tryCreateDefaults(self):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        settings.beginGroup("Preferences")
+        settings = ConfigManager().getSettings("PREFS")
         groups = settings.childGroups()
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
@@ -313,33 +326,28 @@ class PreferencesWindow(QMainWindow):
             if bInitDefaults:
                 widget.initDefaults(settings)
             settings.endGroup()
-        settings.endGroup()
         settings.sync()
 
     def showEvent(self, event):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        settings.beginGroup("Preferences")
+        settings = ConfigManager().getSettings("PREFS")
         groups = settings.childGroups()
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
             settings.beginGroup(name)
             widget.onShow(settings)
             settings.endGroup()
-        settings.endGroup()
 
     def saveAndClosePrefs(self):
         self.savePreferences()
         self.close()
 
     def savePreferences(self):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        settings.beginGroup("Preferences")
+        settings = ConfigManager().getSettings("PREFS")
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
             settings.beginGroup(name)
             widget.serialize(settings)
             settings.endGroup()
-        settings.endGroup()
         settings.sync()
 
     def addCategory(self, name, widget):

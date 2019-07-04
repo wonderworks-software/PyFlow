@@ -5,6 +5,7 @@ from collections import OrderedDict
 from PyFlow.Core.Common import clamp
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.ConfigManager import ConfigManager
 
 
 class _EditorState(object):
@@ -29,13 +30,19 @@ class EditorHistory(object):
         self.stateSelected = Signal(object)
 
         self.app = app
-        self._currentIndex = 0
-        self.lastIndex = self._currentIndex
-        self._shiftDirection = True
-        self._lastShiftDirection = self._shiftDirection
-        self.stack = OrderedDict()
-        self._capacity = 10
+        self.stack = list()
+        try:
+            self._capacity = int(ConfigManager().getPrefsValue("PREFS", "General/HistoryDepth"))
+        except:
+            self._capacity = 10
+
         self.activeState = None
+
+    def getStack(self):
+        return self.stack
+
+    def count(self):
+        return len(self.stack)
 
     @property
     def capacity(self):
@@ -44,84 +51,66 @@ class EditorHistory(object):
     @capacity.setter
     def capacity(self, value):
         self._capacity = value
-        # TODO: cut states that beyond capacity value
+        if value < len(self.stack):
+            for i in range(len(self.stack) - value):
+                state = self.stack.pop()
+                self.stateRemoved.send(state)
 
     def clear(self):
         self.stack.clear()
-        self.currentIndex = 0
 
-    @property
-    def shiftDirection(self):
-        return self._shiftDirection
-
-    @shiftDirection.setter
-    def shiftDirection(self, value):
-        self._lastShiftDirection = self._shiftDirection
-        self._shiftDirection = value
+    def stateIndex(self, state):
+        if state in self.stack:
+            return self.stack.index(state)
+        return -1
 
     @property
     def currentIndex(self):
-        return self._currentIndex
-
-    @currentIndex.setter
-    def currentIndex(self, value):
-        self.lastIndex = self._currentIndex
-        self._currentIndex = value
+        if self.activeState is not None:
+            return self.stateIndex(self.activeState)
+        return -1
 
     def push(self, edState):
-        if len(self.stack) > 0:
-            self.currentIndex += 1
 
-        # future history is incompatible. Remove it
-        maIndex = self.maxIndex()
-        if self.currentIndex < maIndex:
+        if self.currentIndex < self.count() - 1:
             nextState = None
             while True:
-                index = list(self.stack.keys())[-1]
+                index = self.count() - 1
                 nextState = self.stack[index]
                 if nextState == self.activeState:
                     break
-                _index, state = self.stack.popitem()
+                state = self.stack.pop()
                 self.stateRemoved.send(state)
 
-        self.stack[self.currentIndex] = edState
+        self.stack.append(edState)
 
         if len(self.stack) >= self.capacity:
-            index, poppedState = self.stack.popitem(last=False)
+            poppedState = self.stack.pop(0)
             self.stateRemoved.send(poppedState)
 
         self.statePushed.send(edState)
-
-    def maxIndex(self):
-        if len(self.stack) == 0:
-            return 0
-        return max(self.stack.keys())
-
-    def minIndex(self):
-        if len(self.stack) == 0:
-            return 0
-        return min(self.stack.keys())
+        self.activeState = edState
+        self.stateSelected.send(edState)
 
     def selectState(self, state):
-        for index, st in self.stack.items():
+        for st in self.stack:
             if state == st:
                 self.app.loadFromData(st.editorState)
-                self.currentIndex = index
                 self.activeState = st
                 self.stateSelected.send(st)
                 break
 
     def select(self, index):
-        index = clamp(index, self.minIndex(), self.maxIndex())
+        index = clamp(index, 0, self.count() - 1)
 
         if index == self.currentIndex:
             return
 
-        state = self.stack[index].editorState
+        stateData = self.stack[index].editorState
 
-        self.app.loadFromData(state)
-        self.currentIndex = index
-        state = self.stack[self.currentIndex]
+        self.app.loadFromData(stateData)
+
+        state = self.stack[index]
         self.activeState = state
         self.stateSelected.send(state)
 
@@ -130,12 +119,6 @@ class EditorHistory(object):
 
     def undo(self):
         self.select(self.currentIndex - 1)
-
-    def isAtLastIndex(self):
-        return self.currentIndex == self.maxIndex()
-
-    def isAtFirstIndex(self):
-        return self.currentIndex == self.minIndex()
 
     def redo(self):
         self.select(self.currentIndex + 1)

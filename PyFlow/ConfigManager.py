@@ -10,12 +10,15 @@ from PyFlow.Input import InputAction, InputManager, InputActionType
 @SingletonDecorator
 class ConfigManager(object):
     """Responsible for creating default configs creation and config's file paths."""
+    CONFIGS_STORAGE = {}
+
     CONFIGS_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "Configs")
-    APP_SETTINGS_PATH = os.path.join(CONFIGS_DIR, "config.ini")
     INPUT_CONFIG_PATH = os.path.join(CONFIGS_DIR, "input.json")
-    PREFERENCES_CONFIG_PATH = os.path.join(CONFIGS_DIR, "prefs.ini")
 
     def __init__(self, *args, **kwargs):
+        self.registerConfigFile("PREFS", os.path.join(self.CONFIGS_DIR, "prefs.ini"))
+        self.registerConfigFile("APP_STATE", os.path.join(self.CONFIGS_DIR, "config.ini"))
+
         if not os.path.exists(self.INPUT_CONFIG_PATH):
             self.createDefaultInput()
             data = InputManager().serialize()
@@ -27,6 +30,24 @@ class ConfigManager(object):
             with open(self.INPUT_CONFIG_PATH, "r") as f:
                 data = json.load(f)
                 InputManager().loadFromData(data)
+
+    def registerConfigFile(self, alias, absPath):
+        if alias not in self.CONFIGS_STORAGE:
+            self.CONFIGS_STORAGE[alias] = absPath
+            return True
+        return False
+
+    def getSettings(self, alias):
+        if alias in self.CONFIGS_STORAGE:
+            settings = QtCore.QSettings(self.CONFIGS_STORAGE[alias], QtCore.QSettings.IniFormat)
+            return settings
+
+    def getPrefsValue(self, configAlias, valueKey):
+        if configAlias in self.CONFIGS_STORAGE:
+            configFilePath = self.CONFIGS_STORAGE[configAlias]
+            settings = QtCore.QSettings(configFilePath, QtCore.QSettings.IniFormat)
+            if settings.contains(valueKey):
+                return settings.value(valueKey)
 
     def createDefaultInput(self):
         InputManager().registerAction(InputAction(name="Canvas.Pan", actionType=InputActionType.Mouse, group="Navigation", mouse=QtCore.Qt.MouseButton.MiddleButton))

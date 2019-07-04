@@ -59,13 +59,10 @@ class editableStyleSheet():
         self.storeDeffaults()
         self.presests = {}
         self.loadPresests(THEMES_PATH)
-        settings = QtCore.QSettings(
-            ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
-        settings.beginGroup("Preferences")
-        settings.beginGroup("Theme")
         try:
-            if settings.value('Theme_Name'):
-                self.loadFromData(self.presests[settings.value('Theme_Name')])
+            themeName = ConfigManager().getPrefsValue("PREFS", "Theme/Theme_Name")
+            if themeName:
+                self.loadFromData(self.presests[themeName])
         except:
             pass
 

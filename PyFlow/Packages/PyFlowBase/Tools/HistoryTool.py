@@ -86,6 +86,14 @@ class HistoryTool(DockTool):
         self.verticalLayout.addWidget(self.pbClearHistory)
         self.setWidget(self.content)
 
+    def onShow(self):
+        super(HistoryTool, self).onShow()
+        if self.undoStackWidget.count() != EditorHistory().count():
+            stack = EditorHistory().getStack()
+            for state in stack:
+                self.undoStackWidget.addEntry(state)
+            self.undoStackWidget.selectEntry(EditorHistory().activeState)
+
     def onClear(self):
         EditorHistory().clear()
         self.undoStackWidget.clear()
@@ -97,9 +105,6 @@ class HistoryTool(DockTool):
     @staticmethod
     def getIcon():
         return QtGui.QIcon(":history.png")
-
-    def onShow(self):
-        super(HistoryTool, self).onShow()
 
     @staticmethod
     def defaultDockArea():

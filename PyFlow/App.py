@@ -116,8 +116,7 @@ class PyFlow(QMainWindow):
         if self.currentTempDir == "":
             # create app folder in documents
             # random string used for cases when multiple instances of app are running in the same time
-            prefs = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
-            tempDirPath = prefs.value("Preferences/General/TempFilesDir")
+            tempDirPath = ConfigManager().getPrefsValue("PREFS", "General/TempFilesDir")
             if tempDirPath[-1:] in ('/', '\\'):
                 tempDirPath = tempDirPath[:-1]
             self.currentTempDir = "{0}_{1}".format(tempDirPath, generateRandomString())
@@ -418,7 +417,8 @@ class PyFlow(QMainWindow):
         self.tick_timer.timeout.disconnect()
         self.canvasWidget.shoutDown()
         # save editor config
-        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
+        settings = ConfigManager().getSettings("APP_STATE")
+
         # clear file each time to capture opened dock tools
         settings.clear()
         settings.sync()
@@ -482,8 +482,7 @@ class PyFlow(QMainWindow):
         if PyFlow.appInstance is not None:
             return PyFlow.appInstance
 
-        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
-        prefsSettings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
+        settings = ConfigManager().getSettings("APP_STATE")
 
         instance = PyFlow(parent)
         REGISTER_TOOL("PyFlowBase", LoggerTool)
@@ -496,7 +495,7 @@ class PyFlow(QMainWindow):
 
         try:
             extraPackagePaths = []
-            extraPathsString = prefsSettings.value("Preferences/General/ExtraPackageDirs")
+            extraPathsString = ConfigManager().getPrefsValue("PREFS", "General/ExtraPackageDirs")
             if extraPathsString is not None:
                 extraPathsString = extraPathsString.rstrip(";")
                 extraPathsRaw = extraPathsString.split(";")
