@@ -158,6 +158,7 @@ def INITIALIZE(additionalPackageLocations=[]):
         if prefsWidgets is not None:
             for categoryName, widgetClass in prefsWidgets.items():
                 PreferencesWindow().addCategory(categoryName, widgetClass())
+            PreferencesWindow().selectByName("General")
 
         for toolClass in package.GetToolClasses().values():
             REGISTER_TOOL(packageName, toolClass)

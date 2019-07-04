@@ -91,6 +91,8 @@ from PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory import getInputW
 from PyFlow.Packages.PyFlowBase.Factories.UINodeFactory import createUINode
 
 from PyFlow.Packages.PyFlowBase.PrefsWidgets.General import GeneralPreferences
+from PyFlow.Packages.PyFlowBase.PrefsWidgets.InputPrefs import InputPreferences
+from PyFlow.Packages.PyFlowBase.PrefsWidgets.ThemePrefs import ThemePreferences
 
 
 _FOO_LIBS = {
@@ -180,6 +182,8 @@ _EXPORTERS[CPPCompiler.__name__] = CPPCompiler
 
 _PREFS_WIDGETS = OrderedDict()
 _PREFS_WIDGETS["General"] = GeneralPreferences
+_PREFS_WIDGETS["Input"] = InputPreferences
+_PREFS_WIDGETS["Theme"] = ThemePreferences
 
 
 class PyFlowBase(IPackage):
