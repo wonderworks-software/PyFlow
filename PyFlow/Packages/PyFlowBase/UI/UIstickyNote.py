@@ -123,8 +123,8 @@ class UIstickyNote(UINodeBase):
             self.textInput.setDefaultTextColor(res)
             self.update()
 
-    def createInputWidgets(self, propertiesWidget, categoryName=None):
-        inputsCategory = super(UIstickyNote, self).createInputWidgets(propertiesWidget, categoryName)
+    def createPropertiesWidget(self, propertiesWidget):
+        super(UIstickyNote, self).createPropertiesWidget(propertiesWidget)
         appearanceCategory = CollapsibleFormWidget(headName="Appearance")
         pb = pyf_ColorSlider(type="int", alpha=True,
                              startColor=list(self.color.getRgbF()))
@@ -134,4 +134,4 @@ class UIstickyNote(UINodeBase):
                              startColor=list(self.labelTextColor.getRgbF()))
         pb.valueChanged.connect(self.updateTextColor)
         appearanceCategory.addWidget("TextColor", pb)
-        propertiesWidget.addWidget(appearanceCategory)
+        propertiesWidget.insertWidget(appearanceCategory,1)

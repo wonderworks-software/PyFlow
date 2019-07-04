@@ -78,8 +78,7 @@ class UIGetVarNode(UINodeBase):
         self._rawNode.checkForErrors()
         self.update()
 
-    def createInputWidgets(self, propertiesWidget, categoryName=None):
-        inputsCategory = CollapsibleFormWidget(headName="Inputs")
+    def createInputWidgets(self, inputsCategory, group=None, pins=True):
         validVars = self.graph().getVarList()
         cbVars = EnumComboBox([v.name for v in validVars])
         if self.var is not None:
@@ -87,9 +86,7 @@ class UIGetVarNode(UINodeBase):
         else:
             cbVars.setCurrentText("")
         cbVars.changeCallback.connect(self.onVarSelected)
-        inputsCategory.addWidget("var", cbVars)
-
-        propertiesWidget.addWidget(inputsCategory)
+        inputsCategory.addWidget("var", cbVars,group=group)
 
     def updateHeaderText(self):
         self.setHeaderHtml("Get {0}".format(self.var.name))

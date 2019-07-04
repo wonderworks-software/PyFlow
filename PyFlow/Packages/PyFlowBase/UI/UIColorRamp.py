@@ -41,12 +41,14 @@ class UIColorRamp(UINodeBase):
             if ramp() is not None:
                 ramp().setColor(color)
 
-    def createInputWidgets(self, propertiesWidget, categoryName=None):
-        inputsCategory = super(UIColorRamp, self).createInputWidgets(propertiesWidget, categoryName)
-        inputVal = inputsCategory.getWidgetByName("input")
-        if not self._rawNode.input.isArray():
-            inputVal.setMinimum(0.0)
-            inputVal.setMaximum(1.0)
+    def createInputWidgets(self, inputsCategory, group=None, pins=True):
+        preIndex = inputsCategory.Layout.count()
+        if pins:
+            super(UIColorRamp,self).createInputWidgets(inputsCategory,group)
+            inputVal = inputsCategory.getWidgetByName("input")
+            if not self._rawNode.input.isArray():
+                inputVal.setMinimum(0.0)
+                inputVal.setMaximum(1.0)
         ramp = pyf_RampColor(self._rawNode.ramp, bezier=self._rawNode._curveTypes[self._rawNode._curveType] == "bezier")
         ramp.tickClicked.connect(self.rampChanged)
         ramp.tickAdded.connect(self.rampChanged)
@@ -67,6 +69,6 @@ class UIColorRamp(UINodeBase):
 
         selector.setCurrentIndex(self._rawNode._curveType)
         selector.activated.connect(self.changeCurveType)
-        inputsCategory.insertWidget(0, "CurveType", selector)
-        inputsCategory.insertWidget(1, "Ramp", ramp)
-        inputsCategory.insertWidget(1, "Selected Color", colorChanger)
+        inputsCategory.insertWidget(preIndex, "CurveType", selector,group=group)
+        inputsCategory.insertWidget(preIndex+1, "Ramp", ramp,group=group)
+        inputsCategory.insertWidget(preIndex+1, "Selected Color", colorChanger,group=group)

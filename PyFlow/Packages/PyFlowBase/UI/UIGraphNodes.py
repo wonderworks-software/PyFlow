@@ -29,6 +29,10 @@ class UIGraphInputs(UINodeBase):
             if oldName in uiCompoundNode.groups["input"]:
                 grpItem = uiCompoundNode.groups["input"][oldName]
                 grpItem.name = name
+            if oldName in owningCompoundNode.groups["input"]:
+                for inp in owningCompoundNode.groups["input"][oldName]:
+                    inp.grop = name
+                owningCompoundNode.groups["input"][name] = owningCompoundNode.groups["input"].pop(oldName)
 
     def createPinDialog(self):
         self.d = SelectPinDialog()
