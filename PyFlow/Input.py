@@ -10,6 +10,7 @@ class InputActionType(Enum):
     Mouse = 1
     Keyboard = 2
 
+
 class InputAction(object):
     def __init__(self, name="defaultName", actionType=InputActionType.Keyboard, group="default", mouse=QtCore.Qt.NoButton, key=None, modifiers=QtCore.Qt.NoModifier):
         self.__actionType = actionType
@@ -128,6 +129,7 @@ class InputAction(object):
             return self
         except:
             return None
+
 
 @SingletonDecorator
 class InputManager(object):
