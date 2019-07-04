@@ -29,8 +29,7 @@ class EditPropertiesTreeWidget(QtWidgets.QTreeWidget):
             self.addTopLevelItem(item)
         return item
 
-
-    def fill_dict_from_model(self,parent_index, d, model):
+    def fill_dict_from_model(self, parent_index, d, model):
         v = collections.OrderedDict()
         for i in range(model.rowCount(parent_index)):
             ix = model.index(i, 0, parent_index)
@@ -44,7 +43,7 @@ class EditPropertiesTreeWidget(QtWidgets.QTreeWidget):
         d = collections.OrderedDict()
         for i in range(model.rowCount()):
             ix = model.index(i, 0)
-            self.fill_dict_from_model(ix, d,model)
+            self.fill_dict_from_model(ix, d, model)
         return d
 
 
@@ -58,4 +57,3 @@ if __name__ == '__main__':
     form.show()
 
     app.exec_()
-    print form.model_to_dict()

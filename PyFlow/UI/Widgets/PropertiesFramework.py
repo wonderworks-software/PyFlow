@@ -401,7 +401,7 @@ class PropertiesWidget(QtWidgets.QWidget):
         d.layout().addWidget(tree)
         d.exec_()
         newOrder = tree.model_to_dict()
-        print newOrder
+
 
 if __name__ == "__main__":
     import sys

@@ -62,19 +62,17 @@ class UIConstantNode(UINodeBase):
             self.labelTextColor = QtCore.Qt.white
         self.update()
 
-    def updateType(self, valToUpdate,inputsCategory,group):
-        
+    def updateType(self, valToUpdate, inputsCategory, group):
         if valToUpdate is not None:
             par = valToUpdate.parent().parent()
-            print par
             del par
             super(UIConstantNode, self).createInputWidgets(inputsCategory, group)
 
-    def selectStructure(self, valToUpdate,inputsCategory,group):
+    def selectStructure(self, valToUpdate, inputsCategory, group):
         if valToUpdate is not None:
             del valToUpdate
-            super(UIConstantNode, self).createInputWidgets(inputsCategory, group)
-
+            super(UIConstantNode, self).createInputWidgets(
+                inputsCategory, group)
 
     def createInputWidgets(self, inputsCategory, group=None, pins=True):
         inputVal = None
@@ -82,7 +80,6 @@ class UIConstantNode(UINodeBase):
         if pins:
             super(UIConstantNode, self).createInputWidgets(inputsCategory, group)
             inputVal = inputsCategory.getWidgetByName("in")
-
 
         selector = QComboBox()
 
@@ -99,9 +96,12 @@ class UIConstantNode(UINodeBase):
 
         structSelector.setCurrentIndex(self.input._rawPin._currStructure)
         selector.activated.connect(self._rawNode.updateType)
-        selector.activated.connect(lambda: self.updateType(inputVal,inputsCategory,group))
+        selector.activated.connect(
+            lambda: self.updateType(inputVal, inputsCategory, group))
         structSelector.activated.connect(self._rawNode.selectStructure)
-        structSelector.activated.connect(lambda: self.selectStructure(inputVal,inputsCategory,group))
-        
-        inputsCategory.insertWidget(preIndex, "DataType", selector,group=group)
-        inputsCategory.insertWidget(preIndex+1, "Structure", structSelector,group=group)
+        structSelector.activated.connect(
+            lambda: self.selectStructure(inputVal, inputsCategory, group))
+
+        inputsCategory.insertWidget(
+            preIndex, "DataType", selector, group=group)
+        inputsCategory.insertWidget(preIndex + 1, "Structure", structSelector, group=group)
