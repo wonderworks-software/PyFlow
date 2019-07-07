@@ -1,5 +1,7 @@
 import os
 import shutil
+from string import ascii_uppercase
+from random import choice
 
 from PyFlow import Wizards
 
@@ -117,6 +119,7 @@ def generatePackage(packageName,
             with open(txtFilePath, "r") as f:
                 txtContent = f.read()
                 pyContent = txtContent.replace("@PACKAGE_NAME", packageName)
+                pyContent = pyContent.replace("@RAND", "".join([choice(ascii_uppercase) for i in range(5)]))
                 with open(pyFilePath, "w") as pf:
                     pf.write(pyContent)
             os.remove(txtFilePath)

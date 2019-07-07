@@ -1,6 +1,12 @@
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 
+class FakeType@RAND(object):
+    """docstring for FakeType@RAND"""
+    def __init__(self, value=None):
+        super(FakeType@RAND, self).__init__()
+        self.value = value
+
 
 class DemoPin(PinBase):
     """doc string for DemoPin"""
@@ -26,8 +32,8 @@ class DemoPin(PinBase):
 
     @staticmethod
     def internalDataStructure():
-        return bool
-        
+        return FakeType@RAND
+
     @staticmethod
     def processData(data):
         return DemoPin.internalDataStructure()(data)
