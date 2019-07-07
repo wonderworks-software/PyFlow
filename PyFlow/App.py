@@ -575,4 +575,12 @@ class PyFlow(QMainWindow):
 
         PyFlow.appInstance = instance
         EditorHistory().saveState("New file")
+
+        for name, package in GET_PACKAGES().items():
+            prefsWidgets = package.PrefsWidgets()
+            if prefsWidgets is not None:
+                for categoryName, widgetClass in prefsWidgets.items():
+                    PreferencesWindow().addCategory(categoryName, widgetClass())
+                PreferencesWindow().selectByName("General")
+
         return instance
