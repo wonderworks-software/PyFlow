@@ -148,7 +148,7 @@ class PinBase(IPin):
     @property
     def linkedTo(self):
         """store connection from pins
-        
+
         from left hand side to right hand side
         :returns: Serialized Conections
         :rtype: {list}

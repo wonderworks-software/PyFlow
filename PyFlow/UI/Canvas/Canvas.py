@@ -839,6 +839,7 @@ class Canvas(QGraphicsView):
             if currentInputAction in InputManager()["Canvas.KillSelected"]:
                 self.killSelectedNodes()
                 self.killSelectedConnections()
+                EditorHistory().saveState("Kill selected")
 
             if currentInputAction in InputManager()["Canvas.CopyNodes"]:
                 self.copyNodes()
@@ -919,6 +920,17 @@ class Canvas(QGraphicsView):
         for n in selectedNodes:
             nodeJson = n.serialize()
             nodes.append(nodeJson)
+
+        serializedNodeNames = [i["name"] for i in nodes]
+
+        for nodeJson in nodes:
+            for outJson in nodeJson["outputs"]:
+                outJson["linkedTo"] = []
+            for inpJson in nodeJson["inputs"]:
+                for link in (inpJson["linkedTo"]):
+                    if inpJson["dataType"] == "ExecPin":
+                        if link["lhsNodeName"] not in serializedNodeNames:
+                            inpJson["linkedTo"].remove(link)
 
         if len(nodes) > 0:
             copyJsonStr = json.dumps(nodes)
