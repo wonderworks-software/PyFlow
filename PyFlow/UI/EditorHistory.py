@@ -106,6 +106,9 @@ class EditorHistory(object):
         if index == self.currentIndex:
             return
 
+        if len(self.stack) == 0:
+            return
+
         stateData = self.stack[index].editorState
 
         self.app.loadFromData(stateData)
@@ -118,7 +121,8 @@ class EditorHistory(object):
         self.push(_EditorState(text))
 
     def undo(self):
-        self.select(self.currentIndex - 1)
+        if self.currentIndex > 0:
+            self.select(self.currentIndex - 1)
 
     def redo(self):
         self.select(self.currentIndex + 1)

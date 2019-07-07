@@ -1573,13 +1573,16 @@ class Canvas(QGraphicsView):
                         lhsPin = wire.source()
                         self.removeConnection(wire)
                         self.connectPinsInternal(lhsPin, self.releasedPin)
+                        EditorHistory().saveState("reconnectPins")
                     elif wire.sourcePositionOverride is not None:
                         rhsPin = wire.destination()
                         self.removeConnection(wire)
                         self.connectPinsInternal(self.releasedPin, rhsPin)
+                        EditorHistory().saveState("reconnectPins")
             else:
                 for wire in self.reconnectingWires:
                     self.removeConnection(wire)
+                EditorHistory().saveState("Tear off connection")
 
             for wire in self.reconnectingWires:
                 wire.sourcePositionOverride = None
