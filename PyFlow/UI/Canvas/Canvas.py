@@ -1643,7 +1643,7 @@ class Canvas(QGraphicsView):
                     break
             if p_itm and r_itm:
                 if p_itm.__class__.__name__ == UIPinBase.__name__ and r_itm.__class__.__name__ == UIPinBase.__name__:
-                    if cycle_check(p_itm, r_itm):
+                    if cycleCheck(p_itm, r_itm):
                         # print('cycles are not allowed')
                         do_connect = False
 

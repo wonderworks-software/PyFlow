@@ -126,11 +126,27 @@ class PinBase(IPin):
         self._group = str(value)
 
     def enableOptions(self, *options):
+        """Enables flags on pin instance
+
+        Example:
+
+        >>> self.pinInstance.enableOptions(PinOptions.RenamingEnabled)
+
+        You can also pass array/set of flags
+
+        >>> self.pinInstance.enableOptions({PinOptions.RenamingEnabled, PinOptions.Dynamic})
+
+        This is equiwalent of
+
+        >>> self.pinInstance.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
+        """
         for option in options:
             self._flags = self._flags | option
         self._origFlags = self._flags
 
     def disableOptions(self, *options):
+        """Same as :meth:`~PyFlow.Core.PinBase.PinBase.enableOptions` but inverse
+        """
         for option in options:
             self._flags = self._flags & ~option
         self._origFlags = self._flags
