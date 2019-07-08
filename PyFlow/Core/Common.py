@@ -1,9 +1,10 @@
-"""@file Common.py
-
-**Common.py** is a common definitions file
-
-this file is imported in almost all others files of the program
 """
+.. sidebar:: **Common.py**
+
+    Common.py is a common definitions file. This file is imported in almost all others files of the program
+
+"""
+
 import re
 import math
 import time
@@ -145,9 +146,16 @@ def findGoodId(ids):
 
 
 def wrapStringToFunctionDef(functionName, scriptString, kwargs=None):
-    """wrapStringToFunctionDef Generates function string
-    Example::
+    """Generates function string which then can be compiled and executed
+
+    Example:
+    ::
+
         wrapStringToFunctionDef('test', 'print(a)', {'a': 5})
+
+    Will produce following function:
+    ::
+
         def test(a=5):
             print(a)
     """
@@ -584,21 +592,21 @@ class dictElement(tuple):
 
 class pyf_dict(dict):
     """**PyFlow Dict Class**
-    
+
     This SubClass of Python dict implements a key Typed dictionary.
     Only defined Datatypes can be used as keys, and only Hashable ones as determined by isinstance(dataType, collections.Hashable)
 
     To make a Class Hashable some methods should be implemented:
-    Example::
-        class C:
-            def __init__(self, x):
-                self.x = x
-            def __repr__(self):
-                return f"C({self.x})"
-            def __hash__(self):
-                return hash(self.x)
-            def __eq__(self, other):
-                return (self.__class__ == other.__class__ and self.x == other.x )        
+    # Example::
+    #     class C:
+    #         def __init__(self, x):
+    #             self.x = x
+    #         def __repr__(self):
+    #             return f"C({self.x})"
+    #         def __hash__(self):
+    #             return hash(self.x)
+    #         def __eq__(self, other):
+    #             return (self.__class__ == other.__class__ and self.x == other.x )
     """
     def __init__(self, keyType, valueType=None, inpt={}):
         """        

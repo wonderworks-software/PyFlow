@@ -632,8 +632,9 @@ class pyf_HueSlider(doubleSlider):
 
 class pyf_GradientSlider(doubleSlider):
     """Custom Slider to select a color by Non Editable gradient
-    Extends:
-        :obj: `doubleSlider`    
+
+    # Extends:
+    #     :obj: `doubleSlider`
     """
     def __init__(self, parent, color1=[0, 0, 0], color2=[255, 255, 255], *args):
         """

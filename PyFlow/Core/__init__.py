@@ -1,4 +1,7 @@
+
 """Core functionality of the PyFlow.
+
+This module will be eventually moved to own repo.
 """
 
 from PyFlow.Core.PinBase import PinBase
