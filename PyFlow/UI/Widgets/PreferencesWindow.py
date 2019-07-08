@@ -110,6 +110,8 @@ class PreferencesWindow(QMainWindow):
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
             settings.beginGroup(name)
+            if name not in groups:
+                widget.initDefaults(settings)
             widget.onShow(settings)
             settings.endGroup()
 
