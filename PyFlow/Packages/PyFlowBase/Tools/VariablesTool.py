@@ -14,6 +14,7 @@ class VariablesTool(DockTool):
     def __init__(self):
         super(VariablesTool, self).__init__()
         self.setMinimumSize(QtCore.QSize(200, 50))
+        self.varsWidget = None
         self.content = QWidget()
         self.content.setObjectName("VariablesToolContent")
         self.verticalLayout = QVBoxLayout(self.content)
@@ -32,9 +33,15 @@ class VariablesTool(DockTool):
 
     def onShow(self):
         super(VariablesTool, self).onShow()
-        varsWidget = VariablesWidget(self.pyFlowInstance)
-        self.pyFlowInstance.fileBeenLoaded.connect(varsWidget.actualize)
-        self.verticalLayout.addWidget(varsWidget)
+        self.varsWidget = VariablesWidget(self.pyFlowInstance)
+        self.pyFlowInstance.fileBeenLoaded.connect(self.varsWidget.actualize)
+        self.verticalLayout.addWidget(self.varsWidget)
+        self.varsWidget.actualize()
+
+    def showEvent(self, event):
+        super(VariablesTool, self).showEvent(event)
+        if self.varsWidget is not None:
+            self.varsWidget.actualize()
 
     @staticmethod
     def toolTip():
