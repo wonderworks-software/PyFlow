@@ -8,41 +8,41 @@ PyFlow.Packages.PyFlowBase.Pins.AnyPin module
 ---------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Pins.AnyPin
-    :members:
+   :members:
 
 PyFlow.Packages.PyFlowBase.Pins.BoolPin module
 ----------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Pins.BoolPin
-    :members:
+   :members:
 
 PyFlow.Packages.PyFlowBase.Pins.ExecPin module
 ----------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Pins.ExecPin
-    :members:
+   :members:
 
 PyFlow.Packages.PyFlowBase.Pins.FloatPin module
 -----------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Pins.FloatPin
-    :members:
+   :members:
 
 PyFlow.Packages.PyFlowBase.Pins.IntPin module
 ---------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Pins.IntPin
-    :members:
+   :members:
 
 PyFlow.Packages.PyFlowBase.Pins.StringPin module
 ------------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Pins.StringPin
-    :members:
+   :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Pins
-    :members:
+   :members:

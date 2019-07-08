@@ -10,6 +10,7 @@ class InputActionType(Enum):
     Mouse = 1
     Keyboard = 2
 
+
 class InputAction(object):
     def __init__(self, name="defaultName", actionType=InputActionType.Keyboard, group="default", mouse=QtCore.Qt.NoButton, key=None, modifiers=QtCore.Qt.NoModifier):
         self.__actionType = actionType
@@ -129,6 +130,7 @@ class InputAction(object):
         except:
             return None
 
+
 @SingletonDecorator
 class InputManager(object):
     """Holds all registered input actions."""
@@ -151,7 +153,6 @@ class InputManager(object):
     def registerAction(self, action):
         if action not in self.__actions[action.getName()]:
             self.__actions[action.getName()].append(action)
-        # TODO: Assert if already registered
 
     def loadFromData(self, data):
         for actionName, actionVariants in data.items():

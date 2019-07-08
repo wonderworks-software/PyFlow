@@ -8,23 +8,23 @@ PyFlow.Wizards.PackageWizard module
 -----------------------------------
 
 .. automodule:: PyFlow.Wizards.PackageWizard
-    :members:
+   :members:
 
 PyFlow.Wizards.PkgGen module
 ----------------------------
 
 .. automodule:: PyFlow.Wizards.PkgGen
-    :members:
+   :members:
 
 PyFlow.Wizards.WizardDialogueBase module
 ----------------------------------------
 
 .. automodule:: PyFlow.Wizards.WizardDialogueBase
-    :members:
+   :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.Wizards
-    :members:
+   :members:

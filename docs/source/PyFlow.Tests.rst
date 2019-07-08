@@ -8,29 +8,29 @@ PyFlow.Tests.Test\_Arrays module
 --------------------------------
 
 .. automodule:: PyFlow.Tests.Test_Arrays
-    :members:
+   :members:
 
 PyFlow.Tests.Test\_BasePackage module
 -------------------------------------
 
 .. automodule:: PyFlow.Tests.Test_BasePackage
-    :members:
+   :members:
 
 PyFlow.Tests.Test\_General module
 ---------------------------------
 
 .. automodule:: PyFlow.Tests.Test_General
-    :members:
+   :members:
 
 PyFlow.Tests.TestsBase module
 -----------------------------
 
 .. automodule:: PyFlow.Tests.TestsBase
-    :members:
+   :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.Tests
-    :members:
+   :members:

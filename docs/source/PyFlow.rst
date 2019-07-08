@@ -6,12 +6,11 @@ Subpackages
 
 .. toctree::
 
-    PyFlow.Commands
-    PyFlow.Core
-    PyFlow.Packages
-    PyFlow.Tests
-    PyFlow.UI
-    PyFlow.Wizards
+   PyFlow.Core
+   PyFlow.Packages
+   PyFlow.Tests
+   PyFlow.UI
+   PyFlow.Wizards
 
 Submodules
 ----------
@@ -20,23 +19,23 @@ PyFlow.App module
 -----------------
 
 .. automodule:: PyFlow.App
-    :members:
+   :members:
 
 PyFlow.ConfigManager module
 ---------------------------
 
 .. automodule:: PyFlow.ConfigManager
-    :members:
+   :members:
 
 PyFlow.Input module
 -------------------
 
 .. automodule:: PyFlow.Input
-    :members:
+   :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow
-    :members:
+   :members:

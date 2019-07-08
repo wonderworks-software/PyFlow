@@ -8,83 +8,89 @@ PyFlow.UI.Widgets.CodeEditor\_ui module
 ---------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.CodeEditor_ui
-    :members:
+   :members:
+
+PyFlow.UI.Widgets.EditPropertiesWidget module
+---------------------------------------------
+
+.. automodule:: PyFlow.UI.Widgets.EditPropertiesWidget
+   :members:
 
 PyFlow.UI.Widgets.EnumComboBox module
 -------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.EnumComboBox
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.GraphEditor\_ui module
 ----------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.GraphEditor_ui
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.InputActionWidget module
 ------------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.InputActionWidget
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.InputWidgets module
 -------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.InputWidgets
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.KeyCapture module
 -----------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.KeyCapture
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.KeyboardModifiersCapture module
 -------------------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.KeyboardModifiersCapture
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.MouseButtonCapture module
 -------------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.MouseButtonCapture
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.PreferencesWindow module
 ------------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.PreferencesWindow
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.PropertiesFramework module
 --------------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.PropertiesFramework
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.QtSliders module
 ----------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.QtSliders
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.SelectPinDialog module
 ----------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.SelectPinDialog
-    :members:
+   :members:
 
 PyFlow.UI.Widgets.TextEditDialog module
 ---------------------------------------
 
 .. automodule:: PyFlow.UI.Widgets.TextEditDialog
-    :members:
+   :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.UI.Widgets
-    :members:
+   :members:

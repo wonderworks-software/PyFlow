@@ -1,24 +1,10 @@
-import json
-from collections import defaultdict
-import inspect
-import os
-from Qt.QtWidgets import *
-from Qt import QtCore, QtGui
 from nine import str
 
-from PyFlow.ConfigManager import ConfigManager
-from PyFlow.Input import InputAction, InputManager
-from PyFlow.UI.Widgets.MouseButtonCapture import MouseButtonCaptureWidget
-from PyFlow.UI.Widgets.KeyboardModifiersCapture import KeyboardModifiersCaptureWidget
-from PyFlow.UI.Widgets.KeyCapture import KeyCaptureWidget
-from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
-from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
-from PyFlow.UI.Canvas.UICommon import clearLayout
-from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider, pyf_Slider
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from Qt.QtWidgets import *
+from Qt import QtCore, QtGui
 
-FILE_DIR = os.path.dirname(__file__)
-THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
+from PyFlow.ConfigManager import ConfigManager
+from PyFlow.Core.Common import SingletonDecorator
 
 
 class CategoryButton(QPushButton):
@@ -44,6 +30,7 @@ class CategoryWidgetBase(QScrollArea):
 
     def onShow(self, settings):
         pass
+
 
 
 class InputPreferences(CategoryWidgetBase):
@@ -244,7 +231,7 @@ class ThemePreferences(CategoryWidgetBase):
 class PreferencesWindow(QMainWindow):
     """docstring for PreferencesWindow."""
     def __init__(self, parent=None):
-        super(PreferencesWindow, self).__init__(parent)
+        QMainWindow.__init__(self, parent)
         self.resize(600, 400)
         self.setWindowTitle("Preferences")
         self.centralWidget = QWidget(self)
@@ -285,25 +272,21 @@ class PreferencesWindow(QMainWindow):
         pbSavePrefs = QPushButton("SaveAsDefault")
         pbSavePrefs.clicked.connect(self.savePreferences)
         pbSaveAndClosePrefs = QPushButton("SaveAndClose")
-        pbSaveAndClosePrefs.clicked.connect(self.saveAndClosePrefs)        
+        pbSaveAndClosePrefs.clicked.connect(self.saveAndClosePrefs)
         self.buttonsLay.addWidget(pbSavePrefs)
         self.buttonsLay.addWidget(pbSaveAndClosePrefs)
         self.categoriesVerticalLayout.addLayout(self.buttonsLay)
 
-        self.addCategory("Input", InputPreferences())
-        self.addCategory("General", GeneralPreferences())
-        self.addCategory("Theme", ThemePreferences())
-        self.selectByName("General")
-        self.categoryButtons[1].toggle()
         self.tryCreateDefaults()
 
     def selectByName(self, name):
         if name in self._indexes:
-            self.stackedWidget.setCurrentIndex(self._indexes[name][0])
+            index = self._indexes[name][0]
+            self.stackedWidget.setCurrentIndex(index)
+            self.categoryButtons[index].setChecked(True)
 
     def tryCreateDefaults(self):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        settings.beginGroup("Preferences")
+        settings = ConfigManager().getSettings("PREFS")
         groups = settings.childGroups()
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
@@ -314,27 +297,23 @@ class PreferencesWindow(QMainWindow):
             if bInitDefaults:
                 widget.initDefaults(settings)
             settings.endGroup()
-        settings.endGroup()
         settings.sync()
 
     def showEvent(self, event):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        settings.beginGroup("Preferences")
+        settings = ConfigManager().getSettings("PREFS")
         groups = settings.childGroups()
         for name, indexWidget in self._indexes.items():
             index, widget = indexWidget
             settings.beginGroup(name)
             widget.onShow(settings)
             settings.endGroup()
-        settings.endGroup()
 
     def saveAndClosePrefs(self):
         self.savePreferences()
         self.close()
 
     def savePreferences(self):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat, self)
-        settings.beginGroup("Preferences")
+        settings = ConfigManager().getSettings("PREFS")
         for name, indexWidget in self._indexes.items():
             try:
                 index, widget = indexWidget
@@ -348,7 +327,7 @@ class PreferencesWindow(QMainWindow):
 
     def addCategory(self, name, widget):
         categoryButton = CategoryButton(text=name)
-        self.categoriesVerticalLayout.insertWidget(0, categoryButton)
+        self.categoriesVerticalLayout.insertWidget(self.categoriesVerticalLayout.count() - 2, categoryButton)
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         index = self.stackedWidget.addWidget(widget)
         self._indexes[name] = (index, widget)

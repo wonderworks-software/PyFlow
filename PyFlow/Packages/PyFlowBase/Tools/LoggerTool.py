@@ -15,7 +15,7 @@ import os
 import subprocess
 
 
-REDIRECT = True
+REDIRECT = False
 logger = logging.getLogger(None)
 
 def addLoggingLevel(levelName, levelNum, methodName=None):
@@ -121,7 +121,6 @@ class LoggerTool(DockTool):
     """docstring for NodeBox tool."""
 
     formater = logging.Formatter("[%(levelname)s %(asctime)s]:   %(message)s", "%H:%M:%S")
-    settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
 
     def __init__(self):
         super(LoggerTool, self).__init__()
@@ -226,7 +225,7 @@ class LoggerTool(DockTool):
     def anchorClickedMethod(self, url):
 
         if os.path.exists(url.url().split("::")[0]):
-            editCmd = LoggerTool.settings.value("Preferences/General/EditorCmd")
+            editCmd = ConfigManager().getPrefsValue("PREFS", "General/EditorCmd")
             editCmd = editCmd.replace("@FILE", url.url().replace("::", ":"))
             subprocess.Popen(editCmd)
         else:

@@ -8,65 +8,65 @@ PyFlow.UI.Canvas.AutoPanController module
 -----------------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.AutoPanController
-    :members:
+   :members:
 
 PyFlow.UI.Canvas.Canvas module
 ------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.Canvas
-    :members:
+   :members:
 
 PyFlow.UI.Canvas.NodeActionButton module
 ----------------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.NodeActionButton
-    :members:
+   :members:
 
 PyFlow.UI.Canvas.Painters module
 --------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.Painters
-    :members:
+   :members:
 
 PyFlow.UI.Canvas.SelectionRect module
 -------------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.SelectionRect
-    :members:
+   :members:
 
 PyFlow.UI.Canvas.UICommon module
 --------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.UICommon
-    :members:
+   :members:
 
 PyFlow.UI.Canvas.UIConnection module
 ------------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.UIConnection
-    :members:
+   :members:
 
 PyFlow.UI.Canvas.UINodeBase module
 ----------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.UINodeBase
-    :members:
+   :members:
 
 PyFlow.UI.Canvas.UIPinBase module
 ---------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.UIPinBase
-    :members:
+   :members:
 
 PyFlow.UI.Canvas.UIVariable module
 ----------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.UIVariable
-    :members:
+   :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.UI.Canvas
-    :members:
+   :members:

@@ -89,11 +89,6 @@ class UIPythonNode(UINodeBase):
 
     @nodeData.setter
     def nodeData(self, value):
-        # for groupsSide, groups in self.groups.items():
-        #     for grp in list(groups.values()):
-        #         grp.kill()
-        # self.groups['input'].clear()
-        # self.groups['output'].clear()
         self._rawNode.nodeData = value
 
     def onFileChanged(self, path):
@@ -144,8 +139,7 @@ class UIPythonNode(UINodeBase):
         super(UIPythonNode, self).kill()
 
     def onEdit(self):
-        settings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
-        editCmd = settings.value("Preferences/General/EditorCmd")
+        editCmd = ConfigManager().getPrefsValue("PREFS", "General/EditorCmd")
         tempFilesDir = self.canvasRef().getApp().getTempDirectory()
 
         if self._filePath == "":

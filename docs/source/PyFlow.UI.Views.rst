@@ -8,41 +8,41 @@ PyFlow.UI.Views.CodeEditor module
 ---------------------------------
 
 .. automodule:: PyFlow.UI.Views.CodeEditor
-    :members:
+   :members:
 
 PyFlow.UI.Views.NodeBox module
 ------------------------------
 
 .. automodule:: PyFlow.UI.Views.NodeBox
-    :members:
+   :members:
 
 PyFlow.UI.Views.PinWidget\_ui module
 ------------------------------------
 
 .. automodule:: PyFlow.UI.Views.PinWidget_ui
-    :members:
+   :members:
 
 PyFlow.UI.Views.VariableForm\_ui module
 ---------------------------------------
 
 .. automodule:: PyFlow.UI.Views.VariableForm_ui
-    :members:
+   :members:
 
 PyFlow.UI.Views.VariablesWidget module
 --------------------------------------
 
 .. automodule:: PyFlow.UI.Views.VariablesWidget
-    :members:
+   :members:
 
 PyFlow.UI.Views.VariablesWidget\_ui module
 ------------------------------------------
 
 .. automodule:: PyFlow.UI.Views.VariablesWidget_ui
-    :members:
+   :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.UI.Views
-    :members:
+   :members:

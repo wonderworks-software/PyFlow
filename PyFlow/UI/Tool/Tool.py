@@ -62,7 +62,7 @@ class ShelfTool(ToolBase):
         print(self.name(), "called!", self.canvas)
 
 
-class DockTool(QtWidgets.QDockWidget,ToolBase):
+class DockTool(QtWidgets.QDockWidget, ToolBase):
     """docstring for DockTool."""
     def __init__(self):
         ToolBase.__init__(self)

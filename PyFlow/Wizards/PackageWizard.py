@@ -10,6 +10,7 @@ from PyFlow.Wizards.WizardDialogueBase import WizardDialogueBase
 from PyFlow.Wizards.PkgGen import *
 from PyFlow import Packages
 
+# TODO: Add template for prefs window
 
 class PackageWizard(WizardDialogueBase):
     """docstring for PackageWizard."""

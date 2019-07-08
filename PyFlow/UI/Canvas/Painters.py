@@ -14,6 +14,7 @@ from PyFlow.UI.Utils.stylesheet import Colors
 
 InteractiveColor = editableStyleSheet().MainColor
 InvalidNodePenColor = Colors.Red
+ExposedPropertiesColor = Colors.NodeNameRectBlue
 
 
 # Determines how to paint the node
@@ -169,11 +170,15 @@ class NodePainter(object):
             pen.setColor(InvalidNodePenColor)
             pen.setStyle(node.optPenErrorType)
             pen.setWidth(pen.width() * 1.5)
-        else:
+        elif not node.bExposeInputsToCompound:
             if option.state & QStyle.State_Selected:
                 pen.setColor(InteractiveColor)
                 pen.setStyle(node.optPenSelectedType)
                 pen.setWidth(pen.width() * 1.5)
+        else:
+            pen.setColor(ExposedPropertiesColor)
+            pen.setStyle(node.optPenSelectedType)
+            pen.setWidth(pen.width() * 1.5)
 
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))

@@ -29,6 +29,7 @@ from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
 from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
+from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.Wizards.PackageWizard import PackageWizard
@@ -74,6 +75,7 @@ class PyFlow(QMainWindow):
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
+        self.edHistory = EditorHistory(self)
         self.setWindowTitle("PyFlow v{0}".format(currentVersion().__str__()))
         self.undoStack = QUndoStack(self)
         self.setContentsMargins(1, 1, 1, 1)
@@ -114,8 +116,7 @@ class PyFlow(QMainWindow):
         if self.currentTempDir == "":
             # create app folder in documents
             # random string used for cases when multiple instances of app are running in the same time
-            prefs = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
-            tempDirPath = prefs.value("Preferences/General/TempFilesDir")
+            tempDirPath = ConfigManager().getPrefsValue("PREFS", "General/TempFilesDir")
             if tempDirPath[-1:] in ('/', '\\'):
                 tempDirPath = tempDirPath[:-1]
             self.currentTempDir = "{0}_{1}".format(tempDirPath, generateRandomString())
@@ -223,10 +224,13 @@ class PyFlow(QMainWindow):
         actionSaveAsVariants = InputManager()["App.SaveAs"]
 
         if currentInputAction in actionNewFileVariants:
+            EditorHistory().clear()
             self.newFile()
+            EditorHistory().saveState("New file")
         if currentInputAction in actionSaveVariants:
             self.save()
         if currentInputAction in actionLoadVariants:
+            EditorHistory().clear()
             self.load()
         if currentInputAction in actionSaveAsVariants:
             self.save(True)
@@ -272,7 +276,7 @@ class PyFlow(QMainWindow):
         # load raw data
         self.graphManager.get().deserialize(data)
         self.fileBeenLoaded.emit()
-        self.graphManager.get().selectRootGraph()
+        self.graphManager.get().selectGraph(data["activeGraph"])
 
     def load(self,fpath=None):
         if fpath == None:
@@ -422,7 +426,8 @@ class PyFlow(QMainWindow):
         self.tick_timer.timeout.disconnect()
         self.canvasWidget.shoutDown()
         # save editor config
-        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat, self)
+        settings = ConfigManager().getSettings("APP_STATE")
+
         # clear file each time to capture opened dock tools
         settings.clear()
         settings.sync()
@@ -486,8 +491,7 @@ class PyFlow(QMainWindow):
         if PyFlow.appInstance is not None:
             return PyFlow.appInstance
 
-        settings = QtCore.QSettings(ConfigManager().APP_SETTINGS_PATH, QtCore.QSettings.IniFormat)
-        prefsSettings = QtCore.QSettings(ConfigManager().PREFERENCES_CONFIG_PATH, QtCore.QSettings.IniFormat)
+        settings = ConfigManager().getSettings("APP_STATE")
 
         instance = PyFlow(parent)
         REGISTER_TOOL("PyFlowBase", LoggerTool)
@@ -497,10 +501,10 @@ class PyFlow(QMainWindow):
         instance.addDockWidget(a.defaultDockArea(), a)
         a.setAppInstance(instance)
         a.onShow()
-              
+
         try:
             extraPackagePaths = []
-            extraPathsString = prefsSettings.value("Preferences/General/ExtraPackageDirs")
+            extraPathsString = ConfigManager().getPrefsValue("PREFS", "General/ExtraPackageDirs")
             if extraPathsString is not None:
                 extraPathsString = extraPathsString.rstrip(";")
                 extraPathsRaw = extraPathsString.split(";")
@@ -511,7 +515,6 @@ class PyFlow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(None, "Fatal error", str(e))
             return
-
 
         instance.startMainLoop()
 
@@ -589,4 +592,13 @@ class PyFlow(QMainWindow):
                     settings.endGroup()
 
         PyFlow.appInstance = instance
+        EditorHistory().saveState("New file")
+
+        for name, package in GET_PACKAGES().items():
+            prefsWidgets = package.PrefsWidgets()
+            if prefsWidgets is not None:
+                for categoryName, widgetClass in prefsWidgets.items():
+                    PreferencesWindow().addCategory(categoryName, widgetClass())
+                PreferencesWindow().selectByName("General")
+
         return instance

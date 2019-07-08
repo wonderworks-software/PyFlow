@@ -63,6 +63,8 @@ from PyFlow.Packages.PyFlowBase.Nodes.pythonNode import pythonNode
 from PyFlow.Packages.PyFlowBase.Nodes.compound import compound
 from PyFlow.Packages.PyFlowBase.Nodes.constant import constant
 from PyFlow.Packages.PyFlowBase.Nodes.convertTo import convertTo
+from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
+
 
 from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
 from PyFlow.Packages.PyFlowBase.Nodes.stickyNote import stickyNote
@@ -88,7 +90,9 @@ from PyFlow.Packages.PyFlowBase.Factories.UIPinFactory import createUIPin
 from PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory import getInputWidget
 from PyFlow.Packages.PyFlowBase.Factories.UINodeFactory import createUINode
 
-from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
+from PyFlow.Packages.PyFlowBase.PrefsWidgets.General import GeneralPreferences
+from PyFlow.Packages.PyFlowBase.PrefsWidgets.InputPrefs import InputPreferences
+from PyFlow.Packages.PyFlowBase.PrefsWidgets.ThemePrefs import ThemePreferences
 
 
 _FOO_LIBS = {
@@ -176,6 +180,12 @@ _EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
 _EXPORTERS[CPPCompiler.__name__] = CPPCompiler
 
 
+_PREFS_WIDGETS = OrderedDict()
+_PREFS_WIDGETS["General"] = GeneralPreferences
+_PREFS_WIDGETS["Input"] = InputPreferences
+_PREFS_WIDGETS["Theme"] = ThemePreferences
+
+
 class PyFlowBase(IPackage):
     """Base pyflow package
     """
@@ -213,3 +223,7 @@ class PyFlowBase(IPackage):
     @staticmethod
     def PinsInputWidgetFactory():
         return getInputWidget
+
+    @staticmethod
+    def PrefsWidgets():
+        return _PREFS_WIDGETS

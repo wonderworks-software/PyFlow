@@ -17,6 +17,7 @@ from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QInputDialog
 
 from PyFlow.Core.Common import *
+from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
 from PyFlow.UI.Widgets.InputWidgets import createInputWidget
 from PyFlow.UI.Widgets.PropertiesFramework import PropertiesWidget, CollapsibleFormWidget
@@ -91,9 +92,11 @@ class UIVariable(QWidget, IPropertiesViewSupport):
     def onStructureChanged(self, name):
         self._rawVariable.structure = PinStructure[name]
         self.variablesWidget.pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
+        EditorHistory().saveState("Change variable struct")
 
     def setDataType(self, dataType):
         self.dataType = dataType
+        EditorHistory().saveState("Change variable data type")
 
     def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
@@ -139,6 +142,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
 
         def accessLevelChanged(x):
             self._rawVariable.accessLevel = AccessLevel[x]
+            EditorHistory().saveState("Change variable access level")
         cb.currentTextChanged.connect(accessLevelChanged)
         cb.setCurrentIndex(self._rawVariable.accessLevel)
         valueCategory.addWidget('Access level', cb)

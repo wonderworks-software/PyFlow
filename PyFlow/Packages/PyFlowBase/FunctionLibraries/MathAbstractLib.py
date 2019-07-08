@@ -85,11 +85,11 @@ class MathAbstractLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Basic', 'Keywords': []})
-    def mapRangeClamped(Value=("FloatPin", None),
-                        InRangeA=("FloatPin", None),
-                        InRangeB=("FloatPin", None),
-                        OutRangeA=("FloatPin", None),
-                        OutRangeB=("FloatPin", None)):
+    def mapRangeClamped(Value=("FloatPin", 0.0),
+                        InRangeA=("FloatPin", 0.0),
+                        InRangeB=("FloatPin", 0.0),
+                        OutRangeA=("FloatPin", 0.0),
+                        OutRangeB=("FloatPin", 0.0)):
         """Returns Value mapped from one range into another where the Value is clamped to the Input Range.\
              (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)"""
         ClampedPct = clamp(GetRangePct(InRangeA, InRangeB, Value), 0.0, 1.0)
@@ -97,11 +97,11 @@ class MathAbstractLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'Math|Basic', 'Keywords': []})
-    def mapRangeUnclamped(Value=("FloatPin", None),
-                          InRangeA=("FloatPin", None),
-                          InRangeB=("FloatPin", None),
-                          OutRangeA=("FloatPin", None),
-                          OutRangeB=("FloatPin", None)):
+    def mapRangeUnclamped(Value=("FloatPin", 0.0),
+                          InRangeA=("FloatPin", 0.0),
+                          InRangeB=("FloatPin", 0.0),
+                          OutRangeA=("FloatPin", 0.0),
+                          OutRangeB=("FloatPin", 0.0)):
         """Returns Value mapped from one range into another where the Value is clamped to the Input Range.\
              (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)"""
         return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))
@@ -109,7 +109,7 @@ class MathAbstractLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=("FloatPin", None), meta={'Category': 'Math|Basic', 'Keywords': ['clamp']})
     def clamp(i=("FloatPin", None),
-              imin=("FloatPin", None),
+              imin=("FloatPin", 0.0),
               imax=("FloatPin", 0)):
         """Clamp."""
         return clamp(i, imin, imax)

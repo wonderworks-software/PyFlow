@@ -20,7 +20,7 @@ __all__ = [
     "findPinClassByType",
     "getRawNodeInstance",
     "getAllPinClasses",
-    "getHashableDataTypes"
+    "getHashableDataTypes",
 ]
 
 

@@ -17,10 +17,12 @@ class PropertiesTool(DockTool):
         self.setWidget(self.scrollArea)
         self.propertiesWidget = PropertiesWidget()
         self.scrollArea.setWidget(self.propertiesWidget)
+
         self.propertiesWidget.searchBoxLayout.removeWidget(self.propertiesWidget.lockCheckBox)
         self.addButton(self.propertiesWidget.lockCheckBox)
         self.propertiesWidget.searchBoxLayout.removeWidget(self.propertiesWidget.tearOffCopy)
         self.addButton(self.propertiesWidget.tearOffCopy)
+        self.addButton(self.propertiesWidget.settingsButton)
 
         self.setWindowTitle(self.uniqueName())
         self.fillDelegate = None

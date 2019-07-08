@@ -8,23 +8,23 @@ PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory module
 -----------------------------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory
-    :members:
+   :members:
 
 PyFlow.Packages.PyFlowBase.Factories.UINodeFactory module
 ---------------------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Factories.UINodeFactory
-    :members:
+   :members:
 
 PyFlow.Packages.PyFlowBase.Factories.UIPinFactory module
 --------------------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Factories.UIPinFactory
-    :members:
+   :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Factories
-    :members:
+   :members:

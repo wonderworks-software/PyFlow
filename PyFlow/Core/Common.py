@@ -1,9 +1,10 @@
-"""@file Common.py
-
-**Common.py** is a common definitions file
-
-this file is imported in almost all others files of the program
 """
+.. sidebar:: **Common.py**
+
+    Common.py is a common definitions file. This file is imported in almost all others files of the program
+
+"""
+
 import re
 import math
 import time
@@ -65,7 +66,7 @@ def GetRangePct(MinValue, MaxValue, Value):
 
 
 def sign(x):
-    """    
+    """
     x and (1, -1)[x < 0]
     """
     return x and (1, -1)[x < 0]
@@ -84,7 +85,7 @@ def clamp(n, vmin, vmax):
 
 def roundup(x, to):
     """Rounding up to sertain value. Used in grid snapping
-    
+
     int(math.ceil(x / to)) * to
     :param x: value to round
     :param to: value x will be rounded to
@@ -99,7 +100,7 @@ python32 = Version(3, 2, 0)
 if currentVersion <= python32:
     def clearList(list):
         """Clearing a list in python previous to 3.2 is not possible with list.clear()
-        
+
         :param list:  list to clear
         :type list: list
         :returns: cleared List
@@ -109,7 +110,7 @@ if currentVersion <= python32:
 else:
     def clearList(list):
         """Clearing a list in python previous to 3.2 is not possible with list.clear()
-        
+
         :param list:  list to clear
         :type list: list
         :returns: cleared List
@@ -118,7 +119,7 @@ else:
         list.clear()
 
 def findGoodId(ids):
-    """    
+    """
     Finds good minimum unique int from iterable. Starting from 1
     :param ids: a collection of occupied ids
     :type ids: {list|set|tuple}
@@ -145,9 +146,16 @@ def findGoodId(ids):
 
 
 def wrapStringToFunctionDef(functionName, scriptString, kwargs=None):
-    """wrapStringToFunctionDef Generates function string
-    Example::
+    """Generates function string which then can be compiled and executed
+
+    Example:
+    ::
+
         wrapStringToFunctionDef('test', 'print(a)', {'a': 5})
+
+    Will produce following function:
+    ::
+
         def test(a=5):
             print(a)
     """
@@ -169,7 +177,7 @@ def wrapStringToFunctionDef(functionName, scriptString, kwargs=None):
 
 def cycle_check(src, dst):
     """[summary]
-    
+
     Check for cycle connected nodes
     :param src: hand side pin
     :type src: :py:class:`PyFlow.Core.PiBase`
@@ -189,7 +197,7 @@ def cycle_check(src, dst):
     return False
 
 def arePinsConnected(src, dst):
-    """    
+    """
     Checks if two pins are connected
     :param src: left hand side pin
     :type src: :py:class:`PyFlow.Core.PiBase`
@@ -229,7 +237,7 @@ def getConnectedPins(pin):
 
 def pinAffects(lhs, rhs):
     """ This function for establish dependencies bitween pins
-    
+
     :param lhs: First Pin to connect
     :type lhs: :py:class:`PyFlow.Core.PinBase.PinBase`
     :param rhs: Second Pin to connect
@@ -242,7 +250,7 @@ def pinAffects(lhs, rhs):
 
 def canConnectPins(src, dst):
     """** Base function called each time a new connection is tryied **
-    
+
     :param src: Source Pin To connect
     :type src: :py:class:`PyFlow.Core.PinBase.PinBase`
     :param dst: Destination Pin to connect
@@ -352,7 +360,7 @@ def canConnectPins(src, dst):
 
 def connectPins(src, dst):
     """**Connects two pins**
-    
+
     Input value pins can have one output connection if `AllowMultipleConnections` flag is disabled
     Output value pins can have any number of connections
     Input execs can have any number of connections
@@ -421,7 +429,7 @@ def connectPinsByIndexes(lhsNode=None, lhsOutPinIndex=0, rhsNode=None, rhsInPinI
 
 def traverseConstrainedPins(startFrom, callback):
     """**Iterate Over Constrained And Conected Pins**
-    
+
     Iterates over all constrained chained pins of type `Any` and passes pin into callback function. Callback will be executed once for every pin
     :param startFrom: First Pin to start Iteration
     :type startFrom: :py:class:`PyFlow.Core.PinBase.PinBase`
@@ -453,7 +461,7 @@ def traverseConstrainedPins(startFrom, callback):
 
 def disconnectPins(src, dst):
     """**Disconnects two pins**
-    
+
     [description]
     :param src: left hand side pin
     :type src: :py:class:`PyFlow.Core.PinBase.PinBase`
@@ -478,7 +486,7 @@ def disconnectPins(src, dst):
 
 def push(start_from):
     """marks dirty all ports from start to the right
-    
+
     this part of graph will be recomputed every tick
     :param start_from: pin from which recursion begins
     :type start_from: :py:class:`PyFlow.Core.PinBase.PinBase`
@@ -492,7 +500,7 @@ def push(start_from):
 
 def extractDigitsFromEndOfString(string):
     """Get Digist at end of a String
-    
+
     :param string: Input Numbered String
     :type string: string
     :returns: Numbers in the final of the string
@@ -505,7 +513,7 @@ def extractDigitsFromEndOfString(string):
 
 def removeDigitsFromEndOfString(string):
     """Delte the numbers at the end of a String
-    
+
     :param string: Input Numbered String
     :type string: string
     :returns: Cleared String
@@ -516,7 +524,7 @@ def removeDigitsFromEndOfString(string):
 
 def getUniqNameFromList(existingNames, name):
     """**Create Unique Name**
-    
+
     Iterates over existingNames and extracts the end digists to find a new unique id
     :param existingNames: List of String where to search for existing indexes
     :type existingNames: list
@@ -539,7 +547,7 @@ def getUniqNameFromList(existingNames, name):
 
 def clearSignal(signal):
     """**Disconnects all receivers**
-    
+
     [description]
     :param signal: blinker Signal class
     :type signal: Signal
@@ -584,21 +592,21 @@ class dictElement(tuple):
 
 class pyf_dict(dict):
     """**PyFlow Dict Class**
-    
+
     This SubClass of Python dict implements a key Typed dictionary.
     Only defined Datatypes can be used as keys, and only Hashable ones as determined by isinstance(dataType, collections.Hashable)
 
     To make a Class Hashable some methods should be implemented:
-    Example::
-        class C:
-            def __init__(self, x):
-                self.x = x
-            def __repr__(self):
-                return f"C({self.x})"
-            def __hash__(self):
-                return hash(self.x)
-            def __eq__(self, other):
-                return (self.__class__ == other.__class__ and self.x == other.x )        
+    # Example::
+    #     class C:
+    #         def __init__(self, x):
+    #             self.x = x
+    #         def __repr__(self):
+    #             return f"C({self.x})"
+    #         def __hash__(self):
+    #             return hash(self.x)
+    #         def __eq__(self, other):
+    #             return (self.__class__ == other.__class__ and self.x == other.x )
     """
     def __init__(self, keyType, valueType=None, inpt={}):
         """        

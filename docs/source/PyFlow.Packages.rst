@@ -6,10 +6,10 @@ Subpackages
 
 .. toctree::
 
-    PyFlow.Packages.PyFlowBase
+   PyFlow.Packages.PyFlowBase
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.Packages
-    :members:
+   :members:

@@ -14,8 +14,7 @@ Features
 - Json serializable
 - Easy node creation from annotated functions
 - Categories tree
-- Undo stack
+- Photoshop-like history
 - Properties view
-- Dirty propagation for optimal graph computation
 - Runtime nodes creation
 - Variables

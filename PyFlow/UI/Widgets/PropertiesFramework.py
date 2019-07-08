@@ -1,6 +1,6 @@
 from nine import str
 from PyFlow.UI.Canvas.UICommon import clearLayout
-
+from PyFlow.UI.Widgets.EditPropertiesWidget import EditPropertiesTreeWidget
 from Qt import QtWidgets
 from Qt import QtCore, QtGui
 
@@ -108,7 +108,7 @@ class CollapsibleWidget(QtWidgets.QWidget):
 
 class PropertyEntry(QtWidgets.QWidget):
     """docstring for PropertyEntry."""
-    def __init__(self, label, widget, parent=None, hideLabel=False,maxLabelWidth=None):
+    def __init__(self, label, widget, parent=None, hideLabel=False, maxLabelWidth=None):
         super(PropertyEntry, self).__init__(parent)
         self.label = label
         self.layout = QtWidgets.QHBoxLayout(self)
@@ -122,6 +122,7 @@ class PropertyEntry(QtWidgets.QWidget):
                 label.setMaximumWidth(maxLabelWidth)
             self.layout.addWidget(label)
         self.layout.addWidget(widget)
+        self.index = -1
 
     def getLabel(self):
         return self.label
@@ -136,7 +137,9 @@ class CollapsibleFormWidget(CollapsibleWidget):
         self.Layout.setSpacing(2)
         self.Layout.setContentsMargins(0, 0, 0, 5)
         self.propertyNames = {}
+        self.entryNames = {}
         self.updateIcon()
+        self.groups = {}
 
     def setSpacing(self, spacing=2):
         self.Layout.setSpacing(spacing)
@@ -152,30 +155,115 @@ class CollapsibleFormWidget(CollapsibleWidget):
 
     def filterContent(self, pattern):
         count = self.Layout.count()
-        for i in range(count):
-            widget = self.Layout.itemAt(i).widget()
-            if widget:
-                widget.setVisible(pattern.lower() in widget.getLabel().lower())
+        for key,value in self.entryNames.items():
+            if isinstance(value,PropertyEntry):
+                value.setVisible(pattern.lower() in value.getLabel().lower())
+        for key,value in self.groups.items():
+            if isinstance(value,CollapSibleGoupBox):
+                if value.isAllWidgetsHidden():
+                    value.hide()
+                else:
+                    value.show()
+                    value.setCollapsed(False)                    
 
-    def insertWidget(self, index=0, label=None, widget=None,maxLabelWidth=None):
+    def insertWidget(self, index=0, label=None, widget=None, maxLabelWidth=None, group=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
             return False
-        self.Layout.insertWidget(index,PropertyEntry(str(label), widget, hideLabel=self.hideLabels,maxLabelWidth=maxLabelWidth))
+        if group is not None and group != "":
+            if group in self.groups:
+                groupW = self.groups[group]
+            else:
+                groupW = CollapSibleGoupBox(group)
+                self.groups[group] = groupW
+        entry = PropertyEntry(str(label), widget, hideLabel=self.hideLabels, maxLabelWidth=maxLabelWidth)
         self.propertyNames[label] = widget
+        self.entryNames[label] = entry
+        if group is None or group == "":
+            self.Layout.insertWidget(index, entry)
+        else:
+            groupW.insertWidget(index,entry)
+            self.Layout.addWidget(groupW)             
         return True
 
-    def addWidget(self, label=None, widget=None,maxLabelWidth=None):
+    def addWidget(self, label=None, widget=None, maxLabelWidth=None,group=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
-            return False     
-        self.propertyNames[label] = widget 
-        self.Layout.addWidget(PropertyEntry(str(label), widget, hideLabel=self.hideLabels,maxLabelWidth=maxLabelWidth))
+            return False
+        if group is not None and group != "":
+            if group in self.groups:
+                groupW = self.groups[group]
+            else:
+                groupW = CollapSibleGoupBox(group)
+                self.groups[group] = groupW
+        self.propertyNames[label] = widget
+        entry = PropertyEntry(str(label), widget, hideLabel=self.hideLabels, maxLabelWidth=maxLabelWidth)
+        self.entryNames[label] = entry
+        if group is None or group == "":
+            self.Layout.addWidget(entry)
+        else:
+            groupW.addWidget(entry)
+            self.Layout.addWidget(groupW)
         return True
 
-    def getWidgetByName(self,name):
+    def getWidgetByName(self, name):
         if name in self.propertyNames:
             return self.propertyNames[name]
         else:
             return None
+
+class CollapSibleGoupBox(QtWidgets.QWidget):
+
+    def __init__(self,name):
+        super(CollapSibleGoupBox, self).__init__()
+
+        # widgets
+        self.controlGroup = QtWidgets.QGroupBox()
+        self.controlGroup.setTitle(name)
+        self.controlGroup.setCheckable(True)
+        self.controlGroup.setChecked(True)
+
+        # groupbox layout
+        self.groupLayout = QtWidgets.QVBoxLayout(self.controlGroup)
+
+        self.controlGroup.setFixedHeight(self.controlGroup.sizeHint().height())
+
+        # signals
+        self.controlGroup.toggled.connect(
+            lambda: self.toggleCollapsed())
+
+        # layout
+        self.mainLayout = QtWidgets.QGridLayout(self)
+        self.mainLayout.addWidget(self.controlGroup)
+
+    def isAllWidgetsHidden(self):
+        count = self.groupLayout.count()
+        hidden = 0
+        for i in range(count):
+            widget = self.groupLayout.itemAt(i).widget()
+            if widget.isHidden():
+                hidden += 1
+        return count == hidden
+
+    def insertWidget(self,index,widget):
+        self.groupLayout.insertWidget(index,widget)
+        self.controlGroup.setFixedHeight(self.controlGroup.sizeHint().height())
+
+    def addWidget(self,widget):
+        self.groupLayout.addWidget(widget)
+        self.controlGroup.setFixedHeight(self.controlGroup.sizeHint().height())
+
+    def toggleCollapsed(self):
+        state = self.controlGroup.isChecked()
+        if state:
+            self.controlGroup.setFixedHeight(self.controlGroup.sizeHint().height())
+        else:
+            self.controlGroup.setFixedHeight(30)
+
+    def setCollapsed(self, bCollapsed=False):
+        self.controlGroup.setChecked(not bCollapsed)
+        if not bCollapsed:
+            self.controlGroup.setFixedHeight(self.controlGroup.sizeHint().height())
+        else:
+            self.controlGroup.setFixedHeight(30)
 
 class PropertiesWidget(QtWidgets.QWidget):
     """docstring for PropertiesWidget."""
@@ -195,6 +283,17 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.searchBoxLayout = QtWidgets.QHBoxLayout(self.searchBoxWidget)
         self.searchBoxLayout.setContentsMargins(1, 1, 1, 1)
         self.searchBoxLayout.addWidget(self.searchBox)
+
+        self.settingsButton = QtWidgets.QToolButton()
+        self.settingsButton.setIcon(QtGui.QIcon(":/settings.png"))
+        self.settingsMenu = QtWidgets.QMenu()
+        self.editPropertiesAction = QtWidgets.QAction("Edit Parameter Interface",None)
+        self.settingsMenu.addAction(self.editPropertiesAction)
+        self.settingsButton.setMenu(self.settingsMenu)
+        self.editPropertiesAction.triggered.connect(self.showPropertyEditor)
+        #self.settingsButton.clicked.connect(self.spawnDuplicate.emit)
+        self.settingsButton.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+
         self.lockCheckBox = QtWidgets.QToolButton()
         self.lockCheckBox.setCheckable(True)
         self.lockCheckBox.setIcon(QtGui.QIcon(':/unlocked.png'))
@@ -219,6 +318,7 @@ class PropertiesWidget(QtWidgets.QWidget):
             self.lockCheckBox.setIcon(QtGui.QIcon(':/locked.png'))
         else:
             self.lockCheckBox.setIcon(QtGui.QIcon(':/unlocked.png'))
+
     def setLockCheckBoxVisible(self, bVisible):
         self.lockCheckBox.setVisible(bVisible)
 
@@ -261,12 +361,46 @@ class PropertiesWidget(QtWidgets.QWidget):
             self.searchBoxWidget.hide()
             self.lockCheckBox.setChecked(False)
 
+    def insertWidget(self, collapsibleWidget,index):
+        if not self.isLocked():
+            if isinstance(collapsibleWidget, CollapsibleFormWidget):
+                self.searchBoxWidget.show()
+                self.contentLayout.insertWidget(index, collapsibleWidget)
+                return True
+
     def addWidget(self, collapsibleWidget):
         if not self.isLocked():
             if isinstance(collapsibleWidget, CollapsibleFormWidget):
                 self.searchBoxWidget.show()
                 self.contentLayout.insertWidget(-1, collapsibleWidget)
                 return True
+
+    def showPropertyEditor(self):
+        tree = EditPropertiesTreeWidget()
+        count = self.contentLayout.count()
+        folders = {}
+        for i in range(count):
+            item = self.contentLayout.itemAt(i)
+            w = item.widget()        
+            if w:
+                if w.title() in  ["Inputs"]:
+                    for key,group in w.groups.items():
+                        if key not in folders:
+                            folders[key] = {}
+                        #for e in range(group.groupLayout.count()):
+                        #    w = group.groupLayout.itemAt(e).widget()
+                        #    folders[key][w.getLabel()] = group.groupLayout.itemAt(e).widget()
+
+        for fold in folders:
+            folder = tree.addFolder(fold)
+            #for widg in folders[fold]:
+            #    child = tree.addNormal(widg,folder)
+
+        d = QtWidgets.QDialog()
+        d.setLayout(QtWidgets.QHBoxLayout())
+        d.layout().addWidget(tree)
+        d.exec_()
+        newOrder = tree.model_to_dict()
 
 
 if __name__ == "__main__":

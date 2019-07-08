@@ -8,77 +8,77 @@ PyFlow.Core.Common module
 -------------------------
 
 .. automodule:: PyFlow.Core.Common
-    :members:
+   :members:
 
 PyFlow.Core.EvaluationEngine module
 -----------------------------------
 
 .. automodule:: PyFlow.Core.EvaluationEngine
-    :members:
+   :members:
 
 PyFlow.Core.FunctionLibrary module
 ----------------------------------
 
 .. automodule:: PyFlow.Core.FunctionLibrary
-    :members:
+   :members:
 
 PyFlow.Core.GraphBase module
 ----------------------------
 
 .. automodule:: PyFlow.Core.GraphBase
-    :members:
+   :members:
 
 PyFlow.Core.GraphManager module
 -------------------------------
 
 .. automodule:: PyFlow.Core.GraphManager
-    :members:
+   :members:
 
 PyFlow.Core.Interfaces module
 -----------------------------
 
 .. automodule:: PyFlow.Core.Interfaces
-    :members:
+   :members:
 
 PyFlow.Core.NodeBase module
 ---------------------------
 
 .. automodule:: PyFlow.Core.NodeBase
-    :members:
+   :members:
 
 PyFlow.Core.PinBase module
 --------------------------
 
 .. automodule:: PyFlow.Core.PinBase
-    :members:
+   :members:
 
 PyFlow.Core.PyCodeCompiler module
 ---------------------------------
 
 .. automodule:: PyFlow.Core.PyCodeCompiler
-    :members:
+   :members:
 
 PyFlow.Core.Variable module
 ---------------------------
 
 .. automodule:: PyFlow.Core.Variable
-    :members:
+   :members:
 
 PyFlow.Core.structs module
 --------------------------
 
 .. automodule:: PyFlow.Core.structs
-    :members:
+   :members:
 
 PyFlow.Core.version module
 --------------------------
 
 .. automodule:: PyFlow.Core.version
-    :members:
+   :members:
 
 
 Module contents
 ---------------
 
 .. automodule:: PyFlow.Core
-    :members:
+   :members:
