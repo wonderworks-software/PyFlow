@@ -615,13 +615,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         return True
 
     def finalizeRename(self, accepted=False):
-        """Called by NodeName
+        """Called by :class:`~PyFlow.UI.Canvas.UINodeBase.NodeName`
 
-        If user pressed Escape name before editing will be restored. If User pressed Enter or removed focus
+        If user pressed :kbd:`escape` name before editing will be restored. If User pressed :kbd:`enter` or removed focus
         rename action will be accepted and node will be renamed and name will be checked for uniqueness.
 
-        Keyword Arguments:
-            accepted {bool} -- Wheter user accepted editing or not
+        :param accepted: Wheter user accepted editing or not
+        :type accepted: :class:`bool`
         """
         if accepted:
             name = self.nodeNameWidget.getPlainText().replace(" ", "")

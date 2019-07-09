@@ -177,14 +177,14 @@ class TestGeneral(unittest.TestCase):
     def test_create_var(self):
         man = GraphManager()
         v1 = man.activeGraph().createVariable()
-        self.assertEqual(v1.uid in man.activeGraph().vars, True)
+        self.assertEqual(v1.uid in man.activeGraph().getVars(), True)
 
     def test_variable_scope(self):
         man = GraphManager()
         # add variable to root graph
         rootVariable = man.activeGraph().createVariable(name="v0")
         rootVariable.value = 0
-        self.assertEqual(rootVariable.uid in man.activeGraph().vars, True)
+        self.assertEqual(rootVariable.uid in man.activeGraph().getVars(), True)
 
         vars = man.activeGraph().getVarList()
         self.assertEqual(len(vars), 1, "failed to gather variables")
@@ -311,7 +311,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(connected, True, "var getter is not connected")
 
         man.activeGraph().killVariable(v1)
-        self.assertEqual(v1 not in man.activeGraph().vars, True, "variable not killed")
+        self.assertEqual(v1 not in man.activeGraph().getVars(), True, "variable not killed")
 
     def test_set_bool_var(self):
         import pyrr

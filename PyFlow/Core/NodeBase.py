@@ -224,7 +224,7 @@ class NodeBase(INode):
     @uid.setter
     def uid(self, value):
         if self.graph is not None:
-            self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
+            self.graph().getNodes()[value] = self.graph().getNodes().pop(self._uid)
         self._uid = value
 
     @staticmethod
@@ -270,7 +270,7 @@ class NodeBase(INode):
         return self.graph() == self.graph().graphManager.activeGraph()
 
     def kill(self, *args, **kwargs):
-        if self.uid not in self.graph().nodes:
+        if self.uid not in self.graph().getNodes():
             return
 
         self.killed.send()
@@ -279,7 +279,7 @@ class NodeBase(INode):
             pin.kill()
         for pin in self.outputs.values():
             pin.kill()
-        self.graph().nodes.pop(self.uid)
+        self.graph().getNodes().pop(self.uid)
 
     def Tick(self, delta):
         self.tick.send(delta)

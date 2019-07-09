@@ -46,7 +46,7 @@ class compound(NodeBase):
         nodeInputPins = self.namePinInputsMap
         nodeOutputPins = self.namePinOutputsMap
 
-        graphInputsNodes = self.rawGraph.getNodes(classNameFilters=['graphInputs'])
+        graphInputsNodes = self.rawGraph.getNodesList(classNameFilters=['graphInputs'])
         graphInputPins = {}
         for graphInputNode in graphInputsNodes:
             for outPin in graphInputNode.orderedOutputs.values():
@@ -55,7 +55,7 @@ class compound(NodeBase):
                 if outPin.name not in nodeInputPins:
                     self.onGraphInputPinCreated(outPin)
 
-        graphOutputNodes = self.rawGraph.getNodes(classNameFilters=['graphOutputs'])
+        graphOutputNodes = self.rawGraph.getNodesList(classNameFilters=['graphOutputs'])
         graphOutputPins = {}
         for graphOutputNode in graphOutputNodes:
             for inPin in graphOutputNode.orderedInputs.values():
@@ -108,9 +108,8 @@ class compound(NodeBase):
     def onGraphInputPinCreated(self, outPin):
         """Reaction when pin added to graphInputs node
 
-        Arguments:
-
-            outPin {PinBase} -- output pin on graphInputs node
+        :param outPin: output pin on graphInputs node
+        :type outPin: :class:`~PyFlow.Core.PinBase.PinBase`
         """
 
         # add companion pin for graphInputs node's output pin
@@ -146,8 +145,8 @@ class compound(NodeBase):
     def onGraphOutputPinCreated(self, inPin):
         """Reaction when pin added to graphOutputs node
 
-        Arguments:
-            inPin {PinBase} -- input pin on graphOutputs node
+        :param inPin: input pin on graphOutputs node
+        :type inPin: :class:`~PyFlow.Core.PinBase.PinBase`
         """
 
         # add companion pin for graphOutputs node's input pin

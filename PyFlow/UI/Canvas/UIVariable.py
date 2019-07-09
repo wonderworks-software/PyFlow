@@ -202,9 +202,9 @@ class UIVariable(QWidget, IPropertiesViewSupport):
     @uid.setter
     def uid(self, value):
         self._rawVariable.uid = value
-        if self._rawVariable.uid in self.graph.vars:
-            self.graph.vars.pop(self._rawVariable.uid)
-            self.graph.vars[self._rawVariable.uid] = self._rawVariable
+        if self._rawVariable.uid in self.graph.getVars():
+            self.graph.getVars().pop(self._rawVariable.uid)
+            self.graph.getVars()[self._rawVariable.uid] = self._rawVariable
 
     @staticmethod
     def jsonTemplate():

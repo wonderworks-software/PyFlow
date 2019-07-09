@@ -12,12 +12,12 @@ class Py3FunctionCompiler(ICodeCompiler):
         self._fooName = fooName
 
     def compile(self, code):
-        """wraps code to function def
+        """Wraps code to function def
 
-        Arguments:
-            code [str] -- code to wrap
-        Returns:
-            function object
+        :param code: Code to wrap
+        :type code: :class:`str`
+        :returns: Function object
+        :rtype: :class:`function`
         """
         foo = "def {}(self):".format(self._fooName)
         lines = [i for i in code.split('\n') if len(i) > 0]
@@ -32,7 +32,7 @@ class Py3FunctionCompiler(ICodeCompiler):
 
 
 class Py3CodeCompiler(ICodeCompiler):
-    """docstring for Py3CodeCompiler."""
+    """Generic python code compiler"""
     def __init__(self):
         super(Py3CodeCompiler, self).__init__()
 

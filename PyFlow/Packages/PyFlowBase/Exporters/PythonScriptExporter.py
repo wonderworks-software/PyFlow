@@ -95,20 +95,20 @@ class PythonScriptExporter(IDataExporter):
 
         rootGraph = pyFlowInstance.graphManager.get().findRootGraph()
 
-        if len(rootGraph.getNodes()) == 0:
+        if len(rootGraph.getNodesList()) == 0:
             QMessageBox.warning(pyFlowInstance, "Warning", "Nothing to export!")
             return
 
         try:
             # create root level nodes
             graphScript = ""
-            for node in rootGraph.getNodes():
+            for node in rootGraph.getNodesList():
                 graphScript += nodeToScript(node, supportedDataTypes, supportedStructures)
 
             graphScript += "\n# connect pins\n"
 
             # create connections
-            # for node in rootGraph.getNodes():
+            # for node in rootGraph.getNodesList():
             #     for outPin in node.outputs.values():
             #         for inPinName in outPin.linkedTo:
             #             inPin = pyFlowInstance.graphManager.get().findPinByName(inPinName)

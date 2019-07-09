@@ -186,9 +186,9 @@ def cycleCheck(src, dst):
     """Check for cycle connected nodes
 
     :param src: hand side pin
-    :type src: :py:class:`PyFlow.Core.PinBase`
+    :type src: :class:`PyFlow.Core.PinBase`
     :param dst: hand side pin
-    :type dst: :py:class:`PyFlow.Core.PinBase`
+    :type dst: :class:`PyFlow.Core.PinBase`
     :returns: True if cycle deteted
     :rtype: bool
     """

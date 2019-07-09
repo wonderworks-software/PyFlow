@@ -44,37 +44,14 @@ class IItemBase(ISerializable):
 
     @property
     def uid(self):
-        '''
-        uid getter.
-
-        used by graph and by nodes for fast members access
-        pins inside node and nodes inside graph.
-
-        Returns:
-            universally unique identifier UUID class.
-        '''
         raise NotImplementedError('uid property of IItemBase can not be deleted')
 
     @uid.setter
     def uid(self, value):
-        '''
-        uid setter.
-
-        Args:
-            value:  uuid4 universally unique identifier
-        '''
         raise NotImplementedError('uid property of IItemBase can not be deleted')
 
     @uid.deleter
     def uid(self):
-        '''
-        uid deleter.
-
-        uid is a fundamental element. Do not allow to accidentally delete it.
-
-        Raises:
-            NotImplementedError.
-        '''
         raise NotImplementedError('uid property of IItemBase can not be deleted')
 
     def getName(self):
@@ -100,8 +77,7 @@ class IItemBase(ISerializable):
 
 
 class IPin(IItemBase):
-    """
-    Pin interface.
+    """Pin interface.
     """
 
     def __init__(self):

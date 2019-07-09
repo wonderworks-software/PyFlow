@@ -124,8 +124,8 @@ class GraphManager(object):
         """Finds a node across all graphs
         """
         for graph in self.getAllGraphs():
-            if uid in graph.nodes:
-                return graph.nodes[uid]
+            if uid in graph.getNodes():
+                return graph.getNodes()[uid]
         return None
 
     @dispatch(uuid.UUID)
@@ -134,8 +134,8 @@ class GraphManager(object):
         """
         result = None
         for graph in self._graphs.values():
-            if uuid in graph.vars:
-                result = graph.vars[uuid]
+            if uuid in graph.getVars():
+                result = graph.getVars()[uuid]
                 break
         return result
 
@@ -144,7 +144,7 @@ class GraphManager(object):
         """Finds a variable across all graphs
         """
         for graph in self._graphs.values():
-            for var in graph.vars.values():
+            for var in graph.getVars().values():
                 if var.name == name:
                     return var
         return None
@@ -198,20 +198,20 @@ class GraphManager(object):
         allNodes = []
         for graph in self.getAllGraphs():
             if len(classNameFilters) == 0:
-                allNodes.extend(list(graph.nodes.values()))
+                allNodes.extend(list(graph.getNodes().values()))
             else:
-                allNodes.extend([node for node in graph.nodes.values() if node.__class__.__name__ in classNameFilters])
+                allNodes.extend([node for node in graph.getNodes().values() if node.__class__.__name__ in classNameFilters])
         return allNodes
 
     def getAllVariables(self):
         result = []
         for graph in self.getAllGraphs():
-            result.extend(list(graph.vars.values()))
+            result.extend(list(graph.getVars().values()))
         return result
 
     def getUniqGraphPinName(self, graph, name):
         existingNames = []
-        for node in graph.getNodes(classNameFilters=['graphInputs', 'graphOutputs']):
+        for node in graph.getNodesList(classNameFilters=['graphInputs', 'graphOutputs']):
             existingNames.extend([pin.name for pin in node.pins])
         return getUniqNameFromList(existingNames, name)
 

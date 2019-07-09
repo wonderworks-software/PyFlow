@@ -395,7 +395,7 @@ class Canvas(QGraphicsView):
                         connection.setVisible(bVisible)
 
         self.validateCommentNodesOwnership(newGraph)
-        for commentNode in newGraph.getNodes():
+        for commentNode in newGraph.getNodesList():
             uiCommentNode = commentNode.getWrapper()
             if uiCommentNode.isCommentNode:
                 if uiCommentNode.collapsed:
@@ -1135,7 +1135,7 @@ class Canvas(QGraphicsView):
         """Hides show if needed. Changes endpoints positions if needed
         """
         checked = set()
-        for node in graph.getNodes():
+        for node in graph.getNodesList():
             uiNode = node.getWrapper()
             for pin in uiNode.UIPins.values():
                 for connection in pin.uiConnectionList:
@@ -1171,7 +1171,7 @@ class Canvas(QGraphicsView):
         comments = {}
         defaultNodes = set()
         # expand all comment nodes and reset owning nodes info
-        for node in graph.getNodes():
+        for node in graph.getNodesList():
             uiNode = node.getWrapper()
             if uiNode.isUnderActiveGraph():
                 if uiNode.isCommentNode:
@@ -1818,7 +1818,7 @@ class Canvas(QGraphicsView):
     def createWrappersForGraph(self, rawGraph):
         # when raw graph was created, we need to create all ui wrappers for it
         uiNodesJsonData = {}
-        for node in rawGraph.getNodes():
+        for node in rawGraph.getNodesList():
             if node.getWrapper() is not None:
                 continue
             uiNode = getUINodeInstance(node)
@@ -1829,7 +1829,7 @@ class Canvas(QGraphicsView):
             uiNodesJsonData[uiNode] = uiNodeJsonTemplate
 
         # restore ui connections
-        for rawNode in rawGraph.getNodes():
+        for rawNode in rawGraph.getNodesList():
             uiNode = rawNode.getWrapper()
             for outUiPin in uiNode.UIoutputs.values():
                 for inputRawPin in getConnectedPins(outUiPin._rawPin):
@@ -1857,8 +1857,8 @@ class Canvas(QGraphicsView):
     def addNode(self, uiNode, jsonTemplate, parentGraph=None):
         """Adds node to a graph
 
-        Arguments:
-            node UINodeBase -- raw node wrapper
+        :param uiNode: Raw node wrapper
+        :type uiNode: :class:`~PyFlow.UI.Canvas.UINodeBase.UINodeBase`
         """
 
         uiNode.canvasRef = weakref.ref(self)
