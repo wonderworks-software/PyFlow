@@ -502,7 +502,7 @@ class Canvas(QGraphicsView):
                 newInputPins[o] = newPin
                 for n in inputConectionList[o]:
                     node = self.findNode(n[0])
-                    self.connectPinsInternal(newPin, node.getPin(n[1]))
+                    self.connectPinsInternal(newPin, node.getPinByName(n[1]))
 
         if len(outputPins) > 0:
             graphOutputsTemplate = NodeBase.jsonTemplate()
@@ -521,16 +521,16 @@ class Canvas(QGraphicsView):
                 newOutputPins[i] = newPin
                 for n in outputConectionList[i]:
                     node = self.findNode(n[0])
-                    self.connectPinsInternal(newPin, node.getPin(n[1]))
+                    self.connectPinsInternal(newPin, node.getPinByName(n[1]))
 
         def connectPins(compoundNode, inputs, outputs):
             for o in inputs:
-                exposedPin = compoundNode.getPin(newInputPins[o].name)
+                exposedPin = compoundNode.getPinByName(newInputPins[o].name)
                 if exposedPin:
                     self.connectPinsInternal(exposedPin, o)
 
             for i in outputs:
-                exposedPin = compoundNode.getPin(newOutputPins[i].name)
+                exposedPin = compoundNode.getPinByName(newOutputPins[i].name)
                 if exposedPin:
                     self.connectPinsInternal(i, exposedPin)
             EditorHistory().saveState("Collapse to compound")
@@ -670,7 +670,7 @@ class Canvas(QGraphicsView):
         pinName = full_name.split('.')[1]
         node = self.findNode(node_name)
         if node:
-            Pin = node.getPin(pinName)
+            Pin = node.getPinByName(pinName)
             if Pin:
                 return Pin
 
@@ -1783,7 +1783,7 @@ class Canvas(QGraphicsView):
 
         # set pins data
         for inpJson in jsonTemplate['inputs']:
-            pin = nodeInstance.getPin(inpJson['name'], PinSelectionGroup.Inputs)
+            pin = nodeInstance.getPinSG(inpJson['name'], PinSelectionGroup.Inputs)
             if pin:
                 pin.uid = uuid.UUID(inpJson['uuid'])
                 try:
@@ -1796,7 +1796,7 @@ class Canvas(QGraphicsView):
                     pin.setClean()
 
         for outJson in jsonTemplate['outputs']:
-            pin = nodeInstance.getPin(outJson['name'], PinSelectionGroup.Outputs)
+            pin = nodeInstance.getPinSG(outJson['name'], PinSelectionGroup.Outputs)
             if pin:
                 pin.uid = uuid.UUID(outJson['uuid'])
                 try:

@@ -596,16 +596,16 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def getData(self, pinName):
         if pinName in [p.name for p in self.inputs.values()]:
-            p = self.getPin(pinName, PinSelectionGroup.Inputs)
+            p = self.getPinSG(pinName, PinSelectionGroup.Inputs)
             return p.getData()
 
     def setData(self, pinName, data):
         if pinName in [p.name for p in self.outputs.values()]:
-            p = self.getPin(pinName, PinSelectionGroup.Outputs)
+            p = self.getPinSG(pinName, PinSelectionGroup.Outputs)
             p.setData(data)
 
-    def getPin(self, name, pinsGroup=PinSelectionGroup.BothSides):
-        pin = self._rawNode.getPin(str(name), pinsGroup)
+    def getPinSG(self, name, pinsGroup=PinSelectionGroup.BothSides):
+        pin = self._rawNode.getPinSG(str(name), pinsGroup)
         if pin is not None:
             if pin.getWrapper() is not None:
                 return pin.getWrapper()()
@@ -1266,7 +1266,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
                     data = inp.currentData()
-                    if isinstance(inp.currentData(), dictElement):
+                    if isinstance(inp.currentData(), DictElement):
                         data = inp.currentData()[1]
                     w.setWidgetValue(data)
                     w.blockWidgetSignals(False)
@@ -1291,7 +1291,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                 w.blockWidgetSignals(True)
                 data = inp.currentData()
-                if isinstance(inp.currentData(), dictElement):
+                if isinstance(inp.currentData(), DictElement):
                     data = inp.currentData()[1]
                 w.setWidgetValue(data)
                 w.blockWidgetSignals(False)
@@ -1404,7 +1404,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     @staticmethod
     def removePinByName(node, name):
-        pin = node.getPin(name)
+        pin = node.getPinByName(name)
         if pin:
             pin.kill()
 

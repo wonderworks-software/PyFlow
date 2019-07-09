@@ -3,7 +3,9 @@ from PyFlow.Core.Interfaces import IEvaluationEngine
 
 
 class DefaultEvaluationEngine_Impl(IEvaluationEngine):
-    """docstring for DefaultEvaluationEngine_Impl."""
+    """Default eveluation engine implementation
+    """
+
     def __init__(self):
         super(DefaultEvaluationEngine_Impl, self).__init__()
 
@@ -90,7 +92,6 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
 
 @SingletonDecorator
 class EvaluationEngine(object):
-    """docstring for EvaluationEngine."""
     def __init__(self):
         self._impl = DefaultEvaluationEngine_Impl()
 

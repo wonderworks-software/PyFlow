@@ -298,14 +298,14 @@ def canConnectPins(src, dst):
         elif not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSuported)) and dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not dst.canChangeStructure(src._currStructure, [], selfChek=False):
             return False
         else:
-            dictElement = src.getDictElementNode([])
+            DictElement = src.getDictElementNode([])
             dictNode = dst.getDictNode([])
             nodeFree = False
             if dictNode:
                 nodeFree = dictNode.KeyType.checkFree([])
-            if dictElement:
-                if not dictElement.key.checkFree([]) and not nodeFree:
-                    if dst._data.keyType != dictElement.key.dataType:
+            if DictElement:
+                if not DictElement.key.checkFree([]) and not nodeFree:
+                    if dst._data.keyType != DictElement.key.dataType:
                         return False
 
     if src.isArray() and not dst.isArray():
@@ -487,6 +487,7 @@ def traverseConstrainedPins(startFrom, callback):
 
     worker(startFrom)
 
+
 def disconnectPins(src, dst):
     """Disconnects two pins
 
@@ -529,6 +530,12 @@ def push(start_from):
 def extractDigitsFromEndOfString(string):
     """Get digist at end of a string
 
+    Example:
+
+    >>> nums = extractDigitsFromEndOfString("h3ello154")
+    >>> print(nums, type(nums))
+    >>> 154 <class 'int'>
+
     :param string: Input numbered string
     :type string: str
     :returns: Numbers in the final of the string
@@ -539,28 +546,30 @@ def extractDigitsFromEndOfString(string):
         return int(result.group(0))
 
 
-# TODO: continue checking docs here
 def removeDigitsFromEndOfString(string):
-    """Delte the numbers at the end of a String
+    """Delte the numbers at the end of a string
 
-    :param string: Input Numbered String
+    Similar to :func:`~PyFlow.Core.Common.extractDigitsFromEndOfString`, but removes digits in the end.
+
+    :param string: Input string
     :type string: string
-    :returns: Cleared String
-    :rtype: {string}
+    :returns: Modified string
+    :rtype: string
     """
     return re.sub(r'\d+$', '', string)
 
 
 def getUniqNameFromList(existingNames, name):
-    """**Create Unique Name**
+    """Create unique name
 
-    Iterates over existingNames and extracts the end digists to find a new unique id
-    :param existingNames: List of String where to search for existing indexes
+    Iterates over **existingNames** and extracts the end digists to find a new unique id
+
+    :param existingNames: List of strings where to search for existing indexes
     :type existingNames: list
     :param name: Name to obtain a unique version from
-    :type name: string
+    :type name: str
     :returns: New name non overlapin with any in existingNames
-    :rtype: {string}
+    :rtype: str
     """
     if name not in existingNames:
         return name
@@ -575,11 +584,10 @@ def getUniqNameFromList(existingNames, name):
 
 
 def clearSignal(signal):
-    """**Disconnects all receivers**
+    """Disconnects all receivers
 
-    [description]
-    :param signal: blinker Signal class
-    :type signal: Signal
+    :param signal: emitter
+    :type signal: :class:`~blinker.base.Signal`
     """
     for receiver in list(signal.receivers.values()):
         if isinstance(receiver, weakref.ref):
@@ -589,8 +597,9 @@ def clearSignal(signal):
 
 
 class SingletonDecorator:
-    """**Decorator to make Class unique, so each time called same Object returned**
+    """Decorator to make class unique, so each time called same object returned
     """
+
     def __init__(self, cls):
         self.cls = cls
         self.instance = None
@@ -601,10 +610,10 @@ class SingletonDecorator:
         return self.instance
 
 
-class dictElement(tuple):
-    """**PyFlow Dict Element Class**
+class DictElement(tuple):
+    """PyFlow dict element class
 
-    This SubClass of Python tuple is to represent DictElements inEditor to construct Typed Dicts
+    This subclass of python's :class:`tuple` is to represent dict elements to construct typed dicts
     """
     def __new__(self, a=None, b=None):
         if a is None and b is None:
@@ -616,36 +625,41 @@ class dictElement(tuple):
                 raise Exception("non Valid Input")
         else:
             new = (a, b)
-        return super(dictElement, self).__new__(self, new)
+        return super(DictElement, self).__new__(self, new)
 
 
-class pyf_dict(dict):
-    """**PyFlow Dict Class**
+class PFDict(dict):
+    """This subclass of python's :class:`dict` implements a key typed dictionary.
 
-    This SubClass of Python dict implements a key Typed dictionary.
-    Only defined Datatypes can be used as keys, and only Hashable ones as determined by isinstance(dataType, collections.Hashable)
+    Only defined data types can be used as keys, and only hashable ones as determined by
+
+    >>> isinstance(dataType, collections.Hashable)
 
     To make a Class Hashable some methods should be implemented:
-    # Example::
-    #     class C:
-    #         def __init__(self, x):
-    #             self.x = x
-    #         def __repr__(self):
-    #             return f"C({self.x})"
-    #         def __hash__(self):
-    #             return hash(self.x)
-    #         def __eq__(self, other):
-    #             return (self.__class__ == other.__class__ and self.x == other.x )
+
+    Example:
+    ::
+
+        class C:
+            def __init__(self, x):
+                self.x = x
+            def __repr__(self):
+                return "C({})".format(self.x)
+            def __hash__(self):
+                return hash(self.x)
+            def __eq__(self, other):
+                return (self.__class__ == other.__class__ and self.x == other.x)
     """
+
     def __init__(self, keyType, valueType=None, inpt={}):
-        """        
+        """
         :param keyType: Key dataType
         :param valueType: value dataType, defaults to None
         :type valueType: optional
         :param inpt: Construct from another dict, defaults to {}
         :type inpt: dict, optional
         """
-        super(pyf_dict, self).__init__(inpt)
+        super(PFDict, self).__init__(inpt)
         self.keyType = keyType
         self.valueType = valueType
 
@@ -655,17 +669,17 @@ class pyf_dict(dict):
         Will throw an Exception if non Valid KeyType
         """
         if type(key) == self.getClassFromType(self.keyType):
-            super(pyf_dict, self).__setitem__(key, item)
+            super(PFDict, self).__setitem__(key, item)
         else:
             raise Exception(
                 "Valid key should be a {0}".format(self.getClassFromType(self.keyType)))
 
     def getClassFromType(self, pinType):
         """
-        Gets the internalDataStructure for a defined pinType
+        Gets the internal data structure for a defined pin type
 
         :param pinType: pinType Name
-        :type pinType: string
+        :type pinType: class or None
         """
         pin = findPinClassByType(pinType)
         if pin:
@@ -673,9 +687,13 @@ class pyf_dict(dict):
             return pinClass
         return None
 
+
 class PinReconnectionPolicy(IntEnum):
-    DisconnectIfHasConnections = 0
-    ForbidConnection = 1
+    """How to behave if pin has connections and another connection about to be performed.
+    """
+
+    DisconnectIfHasConnections = 0  #: Current connection will be broken
+    ForbidConnection = 1  #: New connection will be cancelled
 
 
 class PinOptions(Flag):
@@ -685,98 +703,89 @@ class PinOptions(Flag):
 
     .. seealso:: :meth:`~PyFlow.Core.PinBase.PinBase.enableOptions` :meth:`~PyFlow.Core.PinBase.PinBase.disableOptions`
     """
-    ArraySupported = auto()  #: Pin can hold Array Data Structure.
-    DictSupported = auto()  #: Pin can hold Dict Data Structure.
-    SupportsOnlyArrays = auto()  #: Pin will only support oher Pins with Array Data Structure.
 
-    AllowMultipleConnections = auto()  #: This enable Pin to allow more that one input Connection. By default Pins allows only one input conection and infinite outputs for value Pins, and infinite inputs and only one  output connection for Execution Pins
+    ArraySupported = auto()  #: Pin can hold array data structure
+    DictSupported = auto()  #: Pin can hold dict data structure
+    SupportsOnlyArrays = auto()  #: Pin will only support other pins with array data structure
 
-    ChangeTypeOnConnection = auto()  #: Used by :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` to determine if it can change its dataType on new Connection.
-    RenamingEnabled = auto()  #: Determines if Pin can be renamed
+    AllowMultipleConnections = auto()  #: This enables pin to allow more that one input connection. See :func:`~PyFlow.Core.Common.connectPins`
+
+    ChangeTypeOnConnection = auto()  #: Used by :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` to determine if it can change its data type on new connection.
+    RenamingEnabled = auto()  #: Determines if pin can be renamed
     Dynamic = auto()  #: Specifies if pin was created dynamically (during program runtime)
     AlwaysPushDirty = auto()  #: Pin will always be seen as dirty (computation needed)
     Storable = auto()  #: Determines if pin data can be stored when pin serialized
-    AllowAny = auto()  #: Special Flag that allow a pin to be :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, wich means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
-    DictElementSuported = auto()  #: Dicts are constructed with :py:class:`dictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in makeDict node.
+    AllowAny = auto()  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, wich means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
+    DictElementSuported = auto()  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
+
 
 class PinStructure(IntEnum):
-    """**Structure of Pins**
+    """Structure of Pins
 
     Used for determine Pin Structure Type
     This represents the data structures a pin can hold.
-
-    :Single: Single data structure
-    :Array: Python List structure, In editor represented as Arrays -> Typed and Lists -> nonTyped
-    :Dict: :py:class:`pyf_dict` structure, is basically a KeyTyped Python Dict
-    :Multi: This means it can became any of the previous Ones on conection/user action
     """
-    Single = 0
-    Array = 1
-    Dict = 2
-    Multi = 3
+
+    Single = 0  #: Single data structure
+    Array = 1  #: Python list structure, represented as arrays -> typed and lists -> non typed
+    Dict = 2  #: :py:class:`PFDict` structure, is basically a rey typed python dict
+    Multi = 3  #: This means it can became any of the previous ones on conection/user action
+
 
 def findStructFromValue(value):
-    """**Finds PinStructure from value**
+    """Finds :class:`~PyFlow.Core.Common.PinStructure` from value
 
     :param value: input value to find structure.
     :returns: Structure Type for input value
-    :rtype: {py:class:`PinStructure`}
+    :rtype: :class:`~PyFlow.Core.Common.PinStructure`
     """
+
     if isinstance(value, list):
         return PinStructure.Array
     if isinstance(value, dict):
         return PinStructure.Dict
     return PinStructure.Single
 
-class PinSelectionGroup(IntEnum):
-    """Used in :py:func:`PyFlow.AbstractGraph.NodeBase.getPin` for optimization purposes
 
-    :Inputs: Input Pins
-    :Outputs: Outputs Pins
-    :BothSides: BothSides Pins
+class PinSelectionGroup(IntEnum):
+    """Used in :meth:`~PyFlow.Core.NodeBase.NodeBase.getPinSG` for optimization purposes
     """
-    Inputs = 0
-    Outputs = 1
-    BothSides = 2
+
+    Inputs = 0  #: Input pins
+    Outputs = 1  #: Outputs pins
+    BothSides = 2  #: Both sides pins
+
 
 class AccessLevel(IntEnum):
     """Can be used for code generation
-
-    :public:  
-    :private:
-    :protected:
     """
-    public = 0
-    private = 1
-    protected = 2
+
+    public = 0  #: public
+    private = 1  #: private
+    protected = 2  #: protected
+
 
 class PinDirection(IntEnum):
-    """Determines whether it is input pin or output.
-
-    :Input: Inputs, left side Pins
-    :Output: Outpus,right side Pins
+    """Determines whether it is input pin or output
     """
-    Input = 0
-    Output = 1
+
+    Input = 0  #: Left side pins
+    Output = 1  #: Right side pins
+
 
 class NodeTypes(IntEnum):
-    """Determines whether it is callable node or pure.
-
-    :Callable:  Callable node is a node with Exec pins.
-    :Pure:  Normal Nodes.
+    """Determines whether it is callable node or pure
     """
-    Callable = 0
-    Pure = 1
+
+    Callable = 0  #: Callable node is a node with exec pins
+    Pure = 1  #: Normal nodes
+
 
 class Direction(IntEnum):
-    """ Direction identifiers. Used in :py:func:`PyFlow.Core.Widget.GraphWidget.alignSelectedNodes`
-
-    :Left:
-    :Right:
-    :Up:
-    :Down:
+    """ Direction identifiers
     """
-    Left = 0
-    Right = 1
-    Up = 2
-    Down = 3
+
+    Left = 0  #: Left
+    Right = 1  #: Right
+    Up = 2  #: Up
+    Down = 3  #: Down

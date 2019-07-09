@@ -41,8 +41,8 @@ class UIConstantNode(UINodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(UIConstantNode, self).postCreate(jsonTemplate)
-        self.input = self.getPin("in")
-        self.output = self.getPin("out")
+        self.input = self.getPinByName("in")
+        self.output = self.getPinByName("out")
         self.input.OnPinChanged.connect(self.changeOnConection)
         self.output.OnPinChanged.connect(self.changeOnConection)
         self.changeType(self.input.dataType)

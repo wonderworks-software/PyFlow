@@ -9,7 +9,7 @@ class UIMakeDictNode(UINodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(UIMakeDictNode, self).postCreate(jsonTemplate)
-        self.input = self.getPin("KeyType")
+        self.input = self.getPinByName("KeyType")
 
     def changeType(self, dataType):
         self.input._rawPin.initType(

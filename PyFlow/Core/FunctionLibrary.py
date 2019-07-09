@@ -1,11 +1,14 @@
-"""@file FunctionLibrary.py
-
-This file contains decorator for implementing node from function.
-
-The main idea is to describe argument types and default values.
-
-Using this information it becomes possible to create pins according to arguments types.
 """
+.. sidebar:: **FunctionLibrary.py**
+
+    This file contains decorator for implementing a node from python function.
+    The main idea is to describe argument types and default values.
+
+.. py:function:: IMPLEMENT_NODE(func=None, returns={}, meta={}, nodeType=NodeTypes.Pure) -> function
+
+
+"""
+
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -16,12 +19,6 @@ from PyFlow.Core.Common import *
 empty = {}
 
 
-# Turns function into a node
-# @param[in] func decorated function
-# @param[in] returns it can be tuple with [data type identifier](@ref PyFlow.Core.Common.DataTypes) + default value, or None
-# @param[in] meta dictionary with category path, keywords and any additional info
-# @param[in] nodeType determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created
-# @sa [NodeTypes](@ref PyFlow.Core.Common.NodeTypes) FunctionLibraries
 def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     def wrapper(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
@@ -47,9 +44,10 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
     return wrapper
 
 
-# Base class for all function libraries
-# some common utilities can be moved here in future
 class FunctionLibraryBase(object):
+    """Base class fo function libraries
+    """
+
     def __init__(self, packageName):
         super(FunctionLibraryBase, self).__init__()
         self.__foos = {}

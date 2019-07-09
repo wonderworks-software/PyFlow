@@ -81,8 +81,8 @@ class UIRerouteNodeSmall(UINodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(UIRerouteNodeSmall, self).postCreate(jsonTemplate)
-        self.input = self.getPin("in")
-        self.output = self.getPin("out")
+        self.input = self.getPinByName("in")
+        self.output = self.getPinByName("out")
         self.input.bLabelHidden = True
         self.output.bLabelHidden = True
         self.inputsLayout.removeItem(self.input)

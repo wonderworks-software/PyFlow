@@ -11,7 +11,7 @@ class makeDictElement(NodeBase):
         self.key = self.createInputPin('key', 'AnyPin', structure=PinStructure.Single, constraint="1", allowedPins=getHashableDataTypes())
         self.value = self.createInputPin('value', 'AnyPin', structure=PinStructure.Multi, constraint="2")
         self.value.enableOptions(PinOptions.AllowAny)
-        self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=dictElement(), structure=PinStructure.Single, constraint="2")
+        self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=DictElement(), structure=PinStructure.Single, constraint="2")
         self.outArray.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
         self.outArray.onPinConnected.connect(self.outPinConnected)
         self.outArray.onPinDisconnected.connect(self.outPinDisConnected)
@@ -42,7 +42,7 @@ class makeDictElement(NodeBase):
 
     def dataBeenSet(self,pin=None):
         try:
-            self.outArray._data = dictElement(self.key.getData(), self.value.getData())
+            self.outArray._data = DictElement(self.key.getData(), self.value.getData())
             self.checkForErrors()
         except:
             pass
@@ -70,4 +70,4 @@ class makeDictElement(NodeBase):
                 i.setType(dataType)            
 
     def compute(self, *args, **kwargs):
-        self.outArray.setData(dictElement(self.key.getData(), self.value.getData()))
+        self.outArray.setData(DictElement(self.key.getData(), self.value.getData()))

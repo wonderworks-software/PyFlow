@@ -93,7 +93,7 @@ class DefaultLib(FunctionLibraryBase):
     def objectType(obj=("AnyPin", None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported})):
         '''Returns ``type(obj).__name__``'''
         t = type(obj).__name__
-        if t == "dictElement":
+        if t == "DictElement":
             t += ",key:{0},value:{1}".format(type(obj[1]).__name__, type(obj[0]).__name__)
         return t
 
