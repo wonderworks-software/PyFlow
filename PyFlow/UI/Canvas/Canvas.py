@@ -502,7 +502,7 @@ class Canvas(QGraphicsView):
                 newInputPins[o] = newPin
                 for n in inputConectionList[o]:
                     node = self.findNode(n[0])
-                    self.connectPinsInternal(newPin, node.getPinByName(n[1]))
+                    self.connectPinsInternal(newPin, node.getPinSG(n[1]))
 
         if len(outputPins) > 0:
             graphOutputsTemplate = NodeBase.jsonTemplate()
@@ -521,16 +521,16 @@ class Canvas(QGraphicsView):
                 newOutputPins[i] = newPin
                 for n in outputConectionList[i]:
                     node = self.findNode(n[0])
-                    self.connectPinsInternal(newPin, node.getPinByName(n[1]))
+                    self.connectPinsInternal(newPin, node.getPinSG(n[1]))
 
         def connectPins(compoundNode, inputs, outputs):
             for o in inputs:
-                exposedPin = compoundNode.getPinByName(newInputPins[o].name)
+                exposedPin = compoundNode.getPinSG(newInputPins[o].name)
                 if exposedPin:
                     self.connectPinsInternal(exposedPin, o)
 
             for i in outputs:
-                exposedPin = compoundNode.getPinByName(newOutputPins[i].name)
+                exposedPin = compoundNode.getPinSG(newOutputPins[i].name)
                 if exposedPin:
                     self.connectPinsInternal(i, exposedPin)
             EditorHistory().saveState("Collapse to compound")
@@ -670,7 +670,7 @@ class Canvas(QGraphicsView):
         pinName = full_name.split('.')[1]
         node = self.findNode(node_name)
         if node:
-            Pin = node.getPinByName(pinName)
+            Pin = node.getPinSG(pinName)
             if Pin:
                 return Pin
 
@@ -1326,7 +1326,6 @@ class Canvas(QGraphicsView):
                     if currentInputAction in InputManager()["Canvas.DragCopyNodes"]:
                         self.manipulationMode = CanvasManipulationMode.COPY
 
-
     def pan(self, delta):
         rect = self.sceneRect()
         scale = self.currentViewScale()
@@ -1336,7 +1335,7 @@ class Canvas(QGraphicsView):
         self.setSceneRect(rect)
         self.update()
 
-    def updateRerutes(self,event,showPins=False):
+    def updateRerutes(self, event, showPins=False):
         tolerance = 9 * self.currentViewScale()
         mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - tolerance, event.pos().y() - tolerance),
                                  QtCore.QPoint(event.pos().x() + tolerance, event.pos().y() + tolerance))
@@ -1585,12 +1584,12 @@ class Canvas(QGraphicsView):
                         lhsPin = wire.source()
                         self.removeConnection(wire)
                         self.connectPinsInternal(lhsPin, self.releasedPin)
-                        EditorHistory().saveState("reconnectPins")
+                        EditorHistory().saveState("Reconnect pins")
                     elif wire.sourcePositionOverride is not None:
                         rhsPin = wire.destination()
                         self.removeConnection(wire)
                         self.connectPinsInternal(self.releasedPin, rhsPin)
-                        EditorHistory().saveState("reconnectPins")
+                        EditorHistory().saveState("Reconnect pins")
             else:
                 for wire in self.reconnectingWires:
                     self.removeConnection(wire)
@@ -1898,7 +1897,8 @@ class Canvas(QGraphicsView):
         if src and dst:
             if canConnectPins(src._rawPin, dst._rawPin):
                 wire = self.connectPinsInternal(src, dst)
-        EditorHistory().saveState("Connect pins")
+                if wire is not None:
+                    EditorHistory().saveState("Connect pins")
 
     def removeEdgeCmd(self, connections):
         for wire in list(connections):

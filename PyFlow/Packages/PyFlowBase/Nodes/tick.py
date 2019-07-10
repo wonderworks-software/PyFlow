@@ -1,6 +1,7 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class tick(NodeBase):
@@ -9,6 +10,7 @@ class tick(NodeBase):
         self.enabled = self.createInputPin("enabled", 'BoolPin')
         self.out = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
         self.delta = self.createOutputPin("delta", 'FloatPin')
+        self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod
     def pinTypeHints():

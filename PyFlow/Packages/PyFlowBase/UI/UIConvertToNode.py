@@ -22,7 +22,7 @@ class UIConvertToNode(UINodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(UIConvertToNode, self).postCreate(jsonTemplate)
-        self.output = self.getPinByName("result")
+        self.output = self.getPinSG("result")
         self.output.OnPinChanged.connect(self.changeOnConection)
         self.changeType(self.output.dataType)
         self.updateNodeShape()

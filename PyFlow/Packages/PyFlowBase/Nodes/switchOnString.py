@@ -2,6 +2,7 @@ from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class switchOnString(NodeBase):
@@ -10,6 +11,7 @@ class switchOnString(NodeBase):
         self.inExecPin = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.inString = self.createInputPin('string', 'StringPin')
         self.defaultPin = self.createOutputPin('default', 'ExecPin')
+        self.headerColor = FLOW_CONTROL_COLOR
 
     def addOutPin(self):
         name = self.getUniqPinName("option")

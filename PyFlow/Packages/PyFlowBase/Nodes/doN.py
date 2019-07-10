@@ -1,6 +1,7 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class doN(NodeBase):
@@ -15,6 +16,7 @@ class doN(NodeBase):
         self.counter = self.createOutputPin('Counter', 'IntPin')
         self.bClosed = False
         self._numCalls = 0
+        self.headerColor = FLOW_CONTROL_COLOR
 
     def OnReset(self):
         self.bClosed = False

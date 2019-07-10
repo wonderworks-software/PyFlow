@@ -2,12 +2,14 @@ from PyFlow import CreateRawPin
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class sequence(NodeBase):
     def __init__(self, name):
         super(sequence, self).__init__(name)
         self.inExecPin = self.createInputPin('inExec', 'ExecPin', None, self.compute)
+        self.headerColor = FLOW_CONTROL_COLOR
 
     def createOutputPin(self, *args, **kwargs):
         pinName = str(len(self.outputs) + 1)

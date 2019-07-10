@@ -1,6 +1,7 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class flipFlop(NodeBase):
@@ -11,6 +12,7 @@ class flipFlop(NodeBase):
         self.outA = self.createOutputPin('A', 'ExecPin')
         self.outB = self.createOutputPin('B', 'ExecPin')
         self.bIsA = self.createOutputPin('IsA', 'BoolPin')
+        self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod
     def pinTypeHints():

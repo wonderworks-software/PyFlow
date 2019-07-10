@@ -1,6 +1,7 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 ## Timer node
@@ -15,6 +16,7 @@ class timer(NodeBase):
         self.interval.setDefaultValue(0.2)
         self.accum = 0.0
         self.bWorking = False
+        self.headerColor = FLOW_CONTROL_COLOR
 
     def Tick(self, delta):
         super(timer, self).Tick(delta)

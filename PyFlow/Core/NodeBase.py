@@ -75,6 +75,7 @@ class NodeBase(INode):
         self.isCompoundNode = False
         self._lastError = None
         self.__wrapperJsonData = None
+        self.headerColor = None
 
     @property
     def wrapperJsonData(self):

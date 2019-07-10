@@ -29,8 +29,8 @@ class UIRerouteNode(UINodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(UIRerouteNode, self).postCreate(jsonTemplate)
-        self.input = self.getPinByName("in")
-        self.output = self.getPinByName("out")
+        self.input = self.getPinSG("in")
+        self.output = self.getPinSG("out")
         self.updateNodeShape()
 
     def paint(self, painter, option, widget):

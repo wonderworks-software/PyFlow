@@ -1,6 +1,7 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class forLoop(NodeBase):
@@ -15,6 +16,7 @@ class forLoop(NodeBase):
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
         self.index = self.createOutputPin('Index', 'IntPin')
         self.completed = self.createOutputPin('Completed', 'ExecPin')
+        self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod
     def pinTypeHints():

@@ -218,7 +218,7 @@ class NodeName(QGraphicsWidget):
 
     def sizeHint(self, which, constraint):
         w = QtGui.QFontMetrics(self.getFont()).width(self.getPlainText())
-        h = self.labelItem.boundingRect().height()
+        h = self.labelItem.boundingRect().height() + 5
         return QtCore.QSize(w, h)
 
     def setGeometry(self, rect):
@@ -271,6 +271,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             self.drawlabel = True
         self.headColorOverride = headColorOverride
         self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
+        if raw_node.headerColor is not None:
+            self.headColorOverride = QtGui.QColor.fromRgb(*raw_node.headerColor)
         self._w = 0
         self.h = 30
         self.minWidth = 50
@@ -1402,7 +1404,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     @staticmethod
     def removePinByName(node, name):
-        pin = node.getPinByName(name)
+        pin = node.getPinSG(name)
         if pin:
             pin.kill()
 
