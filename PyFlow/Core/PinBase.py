@@ -11,6 +11,7 @@ from PyFlow.Core.EvaluationEngine import EvaluationEngine
 from PyFlow import getPinDefaultValueByType
 
 
+
 class PinBase(IPin):
     """
     **Base Class for Pins**
@@ -430,6 +431,12 @@ class PinBase(IPin):
             wrapper = self.owningNode().getWrapper()
             if wrapper:
                 wrapper.update()
+
+
+        try:
+            self.owningNode().compute()
+        except:
+            pass
 
     ## Calling execution pin
     def call(self, *args, **kwargs):
