@@ -12,7 +12,7 @@ class timer(NodeBase):
         self.beginPin = self.createInputPin("Begin", 'ExecPin', None, self.start)
         self.stopPin = self.createInputPin("Stop", 'ExecPin', None, self.stop)
         self.resetPin = self.createInputPin("Reset", 'ExecPin', None, self.reset)
-        self.interval = self.createInputPin("Delta(ms)", 'FloatPin')
+        self.interval = self.createInputPin("Delta(s)", 'FloatPin')
         self.interval.setDefaultValue(0.2)
         self.accum = 0.0
         self.bWorking = False
