@@ -371,7 +371,7 @@ class PyFlow(QMainWindow):
     def getToolClassByName(self, z, toolName, packageName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
 
-        print(self,z, toolName, packageName, toolClass)
+        #print(self,z, toolName, packageName, toolClass)
 
         for ToolClass in registeredTools[packageName]:
             if issubclass(ToolClass, toolClass):
