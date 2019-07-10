@@ -519,6 +519,14 @@ class NodeBase(INode):
             if p.name == name:
                 return p
 
+    # getPin call by name does not work
+    def getPinN(self, name):
+        inputs = self.inputs
+        outputs = self.outputs
+        for p in list(inputs.values()) + list(outputs.values()):
+            if p.name == name:
+                return p
+
     @dispatch(uuid.UUID)
     def getPin(self, uid):
         inputs = self.inputs
