@@ -434,8 +434,8 @@ class PinBase(IPin):
 
 
         try:
-			if self.recomputeNode:
-				self.owningNode().compute()
+            if self.recomputeNode:
+                self.owningNode().compute()
         except:
             pass
 
