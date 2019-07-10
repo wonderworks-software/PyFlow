@@ -276,7 +276,8 @@ class PyFlow(QMainWindow):
         # load raw data
         self.graphManager.get().deserialize(data)
         self.fileBeenLoaded.emit()
-        self.graphManager.get().selectGraph(data["activeGraph"])
+        #deactiveted because I get here an error
+        #self.graphManager.get().selectGraph(data["activeGraph"])
 
     def load(self,fpath=None):
         if fpath == None:
