@@ -166,7 +166,6 @@ class NodeBase(INode):
             result[inp.pinIndex] = inp
         return result
 
-
     @property
     def namePinInputsMap(self):
         """Returns all input pins. Dictionary generated every time property called, so cache it when possible.

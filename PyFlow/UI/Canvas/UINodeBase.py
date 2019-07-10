@@ -543,7 +543,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     @property
     def UIinputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.inputs.values():
+        for rawPin in self._rawNode.orderedInputs.values():
             wrapper = rawPin.getWrapper()
             if wrapper is not None:
                 result[rawPin.uid] = wrapper()
@@ -552,7 +552,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     @property
     def UIoutputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.outputs.values():
+        for rawPin in self._rawNode.orderedOutputs.values():
             wrapper = rawPin.getWrapper()
             if wrapper is not None:
                 result[rawPin.uid] = wrapper()
@@ -1253,10 +1253,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         Info.addWidget(widget=doc)
         propertiesWidget.addWidget(Info)
 
-    def createInputWidgets(self, inputsCategory,inGroup=None, pins=True):
+    def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
-            sortedInputs = sorted(self.UIinputs.values(), key=lambda x: x.name)
+            sortedInputs = self.UIinputs.values()
             for inp in sortedInputs:
                 if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
                     continue
@@ -1272,7 +1272,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     w.blockWidgetSignals(False)
                     w.setObjectName(inp.getName())
                     group = inGroup
-                    if inGroup == None:
+                    if inGroup is None:
                         group = inp._rawPin.group
                     inputsCategory.addWidget(inp.name, w, group=group)
                     if inp.hasConnections():
@@ -1297,8 +1297,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 w.blockWidgetSignals(False)
                 w.setObjectName(inp.getName())
                 inputsCategory.addWidget(inp.name, w)
-                #if inp.hasConnections():
-                #    w.setEnabled(False)                
         propertiesWidget.addWidget(inputsCategory)
         return inputsCategory
 

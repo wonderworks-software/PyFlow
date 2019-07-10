@@ -29,4 +29,4 @@ class UIMakeDictNode(UINodeBase):
             self.input._rawPin.dataType))
 
         selector.activated.connect(self.changeType)
-        inputsCategory.insertWidget(0, "DataType", selector,group=group)
+        inputsCategory.insertWidget(0, "DataType", selector, group=group)

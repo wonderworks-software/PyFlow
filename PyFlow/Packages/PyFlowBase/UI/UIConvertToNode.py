@@ -54,4 +54,4 @@ class UIConvertToNode(UINodeBase):
                 self._rawNode.pinTypes.index(self.output.dataType))
 
         selector.activated.connect(self._rawNode.updateType)
-        inputsCategory.insertWidget(preIndex, "DataType", selector,group=group)
+        inputsCategory.insertWidget(preIndex, "DataType", selector, group=group)

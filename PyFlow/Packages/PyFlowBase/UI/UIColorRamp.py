@@ -44,7 +44,7 @@ class UIColorRamp(UINodeBase):
     def createInputWidgets(self, inputsCategory, group=None, pins=True):
         preIndex = inputsCategory.Layout.count()
         if pins:
-            super(UIColorRamp,self).createInputWidgets(inputsCategory,group)
+            super(UIColorRamp, self).createInputWidgets(inputsCategory, group)
             inputVal = inputsCategory.getWidgetByName("input")
             if not self._rawNode.input.isArray():
                 inputVal.setMinimum(0.0)
