@@ -1333,10 +1333,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             self.resizeStrips[i] = 0
 
     def kill(self, *args, **kwargs):
-        scene = self.scene()
-        if scene is not None:
-            self.scene().removeItem(self)
-            del(self)
+        try:
+            scene = self.scene()
+            if scene is not None:
+                self.scene().removeItem(self)
+                del(self)
+        except:
+            pass
 
     def shoutDown(self):
         pass

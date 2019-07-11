@@ -331,7 +331,10 @@ class PyFlow(QMainWindow):
 
     def newFile(self, keepRoot=True):
         self.tick_timer.stop()
-        self.tick_timer.timeout.disconnect()
+        try:
+            self.tick_timer.timeout.disconnect()
+        except:
+            pass
 
         # broadcast
         self.graphManager.get().clear(keepRoot=keepRoot)

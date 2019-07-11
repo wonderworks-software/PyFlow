@@ -293,7 +293,11 @@ class UIPinBase(QGraphicsWidget):
     def kill(self, *args, **kwargs):
         """this will be called after raw pin is deleted
         """
-        scene = self.scene()
+        try:
+            scene = self.scene()
+        except:
+            return
+
         if scene is None:
             del self
             return

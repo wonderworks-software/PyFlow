@@ -93,7 +93,10 @@ class NodeBase(INode):
 
     def clearError(self):
         self._lastError = None
-        self.errorCleared.send()
+        try:
+            self.errorCleared.send()
+        except:
+            pass
 
     def setError(self, err):
         self._lastError = str(err)
@@ -110,7 +113,10 @@ class NodeBase(INode):
             self.clearError()
         wrapper = self.getWrapper()
         if wrapper:
-            wrapper.update()
+            try:
+                wrapper.update()
+            except:
+                pass
 
     @property
     def packageName(self):
