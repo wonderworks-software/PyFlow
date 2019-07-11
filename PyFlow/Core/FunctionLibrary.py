@@ -1,11 +1,79 @@
-"""@file FunctionLibrary.py
-
-This file contains decorator for implementing node from function.
-
-The main idea is to describe argument types and default values.
-
-Using this information it becomes possible to create pins according to arguments types.
 """
+.. sidebar:: **FunctionLibrary.py**
+
+    This file contains a decorator to turn pyton function into a node.
+    And base class for funciton library.
+    The main idea is to use function arguments as input and output pins.
+
+
+.. py:function:: IMPLEMENT_NODE(func=None, returns={}, meta={}, nodeType=NodeTypes.Pure)
+
+Detailed description
+====================
+
+We use this function as decorator in 100% cases.
+See :class:`PyFlow.Packages.FunctionLibraries` content for plenty of examples
+
+Arguments
+---------
+
+**func**
+
+    Function to be annotated
+
+**returns**
+
+    Value  of this argument is tuple with 2 or 3 elements or None.
+    First element is pin data type.
+    Second - default value.
+    Third element is :term:`pin specifires`
+
+**meta**
+
+    Value of this argument is :term:`node meta`
+
+**nodeType**
+
+    Value of this argument is :class:`~PyFlow.Core.Common.NodeTypes`. If :attr:`~PyFlow.Core.Common.NodeTypes.Callable` specified
+    input and output exec pins will be created.
+
+Examples:
+::
+
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'GenericTypes', 'Keywords': []})
+    def makeInt(i=('IntPin', 0)):
+        return i
+
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {"enabledOptions": PinOptions.AlwaysPushDirty}))
+    def clock():
+        return time.clock()
+
+
+.. glossary::
+
+    pin specifires
+        dict that describes different pin options and attributes to be considered on generation
+
+        Following key-value pairs allowed:
+
+        >>> ("supportedDataTypes" : list)
+        >>> ("constraint": None)
+        >>> ("structConstraint": None)
+        >>> ("enabledOptions": None)
+        >>> ("disabledOptions": None)
+        >>> ("inputWidgetVariant": "DefaultWidget")
+
+    node meta
+        dict that describes different node options and attributes to be considered on generation
+
+        Following key-value pairs allowed:
+
+        >>> ("Category" : str)
+        >>> ("Keywords" : [str])
+        >>> ("CacheEnabled" : bool)
+
+"""
+
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -16,12 +84,6 @@ from PyFlow.Core.Common import *
 empty = {}
 
 
-# Turns function into a node
-# @param[in] func decorated function
-# @param[in] returns it can be tuple with [data type identifier](@ref PyFlow.Core.Common.DataTypes) + default value, or None
-# @param[in] meta dictionary with category path, keywords and any additional info
-# @param[in] nodeType determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created
-# @sa [NodeTypes](@ref PyFlow.Core.Common.NodeTypes) FunctionLibraries
 def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     def wrapper(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
@@ -47,9 +109,10 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
     return wrapper
 
 
-# Base class for all function libraries
-# some common utilities can be moved here in future
 class FunctionLibraryBase(object):
+    """Base class fo function libraries
+    """
+
     def __init__(self, packageName):
         super(FunctionLibraryBase, self).__init__()
         self.__foos = {}

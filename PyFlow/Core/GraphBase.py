@@ -14,11 +14,59 @@ from PyFlow.Core.Interfaces import ISerializable
 
 
 class GraphBase(ISerializable):
+    """Data structure representing a nodes graph
+
+    :var graphManager: reference to graph manager
+    :vartype graphManager: :class:`~PyFlow.Core.GraphManager.GraphManager`
+
+    :var nameChanged: signal emitted after graph name was changed
+    :vartype nameChanged: :class:`~blinker.base.Signal`
+
+    :var categoryChanged: signal emitted after graph category was changed
+    :vartype categoryChanged: :class:`~blinker.base.Signal`
+
+    :var childGraphs: a set of child graphs
+    :vartype childGraphs: :class:`set`
+
+    :var nodes: nodes storage. Dictionary with :class:`uuid.UUID` as key and :class:`~PyFlow.Core.NodeBase.NodeBase` as value
+    :vartype nodes: :class:`dict`
+
+    :var uid: Unique identifier
+    :vartype uid: :class:`uuid.UUID`
+
+    .. py:method:: parentGraph
+        :property:
+
+        :getter: Returns a reference to parent graph or None if this graph is root
+
+        :setter: Sets new graph as new parent for this graph
+
+    .. py:method:: name
+        :property:
+
+        :getter: Returns graph name
+
+        :setter: Sets new graph name and fires signal
+
+    .. py:method:: category
+        :property:
+
+        :getter: Returns graph category
+
+        :setter: Sets new graph category and fires signal
+
+    .. py:method:: pins
+        :property:
+
+        :getter: Returns dictionary with :class:`uuid.UUID` as key and :class:`~PyFlow.Core.PinBase.PinBase` as value
+        :rtype: dict
+
+    """
     def __init__(self, name, manager, parentGraph=None, category='', uid=None, *args, **kwargs):
         super(GraphBase, self).__init__(*args, **kwargs)
         self.graphManager = manager
         self._isRoot = False
-        # signals
+
         self.nameChanged = Signal(str)
         self.categoryChanged = Signal(str)
 
@@ -30,17 +78,36 @@ class GraphBase(ISerializable):
 
         self.parentGraph = parentGraph
 
-        self.nodes = {}
-        self.vars = {}
+        self._nodes = {}
+        self._vars = {}
         self.uid = uuid.uuid4() if uid is None else uid
 
         manager.add(self)
 
     def setIsRoot(self, bIsRoot):
+        """Sets this graph as root
+
+        .. warning:: Used internally
+
+        :param bIsRoot: -- Root or not
+        :type bIsRoot: :class:`bool`
+        """
         self._isRoot = bIsRoot
 
     def isRoot(self):
+        """Whether this graph is root or not
+
+        :rtype: :class:`bool`
+        """
         return self._isRoot
+
+    def getVars(self):
+        """Returns this graph's variables storage
+
+        :returns: :class:`uuid.UUID` - :class:`~PyFlow.Core.NodeBase.NodeBase` dict
+        :rtype: :class:`dict`
+        """
+        return self._vars
 
     @property
     def parentGraph(self):
@@ -62,7 +129,12 @@ class GraphBase(ISerializable):
             # update parent
             self._parentGraph = newParentGraph
 
+    # TODO: continue docs here
     def depth(self):
+        """Returns depth level of this graph
+
+        :rtype: int
+        """
         result = 1
         parent = self._parentGraph
         while parent is not None:
@@ -72,20 +144,26 @@ class GraphBase(ISerializable):
 
     def getVarList(self):
         """return list of variables from active graph
+
+        :rtype: list(:class:`~PyFlow.Core.Variable.Variable`)
         """
-        result = list(self.vars.values())
+        result = list(self._vars.values())
         parent = self._parentGraph
         while parent is not None:
-            result += list(parent.vars.values())
+            result += list(parent._vars.values())
             parent = parent.parentGraph
         return result
 
-    def serialize(self, *args, **Kwargs):
+    def serialize(self, *args, **kwargs):
+        """Returns serialized representation of this graph
+
+        :rtype: dict
+        """
         result = {
             'name': self.name,
             'category': self.category,
-            'vars': [v.serialize() for v in self.vars.values()],
-            'nodes': [n.serialize() for n in self.nodes.values()],
+            'vars': [v.serialize() for v in self._vars.values()],
+            'nodes': [n.serialize() for n in self._nodes.values()],
             'depth': self.depth(),
             'isRoot': self.isRoot(),
             'parentGraphName': str(self._parentGraph.name) if self._parentGraph is not None else str(None)
@@ -93,6 +171,11 @@ class GraphBase(ISerializable):
         return result
 
     def populateFromJson(self, jsonData):
+        """Populates itself from serialized data
+
+        :param jsonData: serialized graph
+        :type jsonData: dict
+        """
         self.clear()
         parentGraphName = jsonData['parentGraphName']
         parentGraph = self.graphManager.findGraph(parentGraphName)
@@ -103,14 +186,14 @@ class GraphBase(ISerializable):
         # restore vars
         for varJson in jsonData['vars']:
             var = Variable.deserialize(self, varJson)
-            self.vars[var.uid] = var
+            self._vars[var.uid] = var
         # restore nodes
         for nodeJson in jsonData['nodes']:
             # check if variable getter or setter and pass variable
             nodeArgs = ()
             nodeKwargs = {}
             if nodeJson['type'] in ('getVar', 'setVar'):
-                nodeKwargs['var'] = self.vars[uuid.UUID(nodeJson['varUid'])]
+                nodeKwargs['var'] = self._vars[uuid.UUID(nodeJson['varUid'])]
             nodeJson['owningGraphName'] = self.name
             node = getRawNodeInstance(nodeJson['type'], packageName=nodeJson['package'], libName=nodeJson['lib'], *nodeArgs, **nodeKwargs)
             self.addNode(node, nodeJson)
@@ -144,13 +227,13 @@ class GraphBase(ISerializable):
             childGraph.clear()
 
         # clear itself
-        for node in list(self.nodes.values()):
+        for node in list(self._nodes.values()):
             node.kill()
-        self.nodes.clear()
+        self._nodes.clear()
 
-        for var in list(self.vars.values()):
+        for var in list(self._vars.values()):
             self.killVariable(var)
-        self.vars.clear()
+        self._vars.clear()
 
     @property
     def name(self):
@@ -173,66 +256,110 @@ class GraphBase(ISerializable):
         self.categoryChanged.send(self.__category)
 
     def Tick(self, deltaTime):
-        for node in self.nodes.values():
+        """Executed periodically
+
+        :param deltaTime: Elapsed time since last tick
+        :type deltaTime: float
+        """
+        for node in self._nodes.values():
             node.Tick(deltaTime)
 
     @property
     def pins(self):
         result = {}
-        for n in self.getNodes():
+        for n in self.getNodesList():
             for pin in tuple(n.inputs.values()) + tuple(n.outputs.values()):
                 result[pin.uid] = pin
         return result
 
     def createVariable(self, dataType=str('AnyPin'), accessLevel=AccessLevel.public, uid=None, name=str("var")):
+        """Creates variable inside this graph scope
+
+        :param dataType: Variable data type
+        :type dataType: str
+        :param accessLevel: Variable access level
+        :type accessLevel: :class:`~PyFlow.Core.Common.AccessLevel`
+        :param uid: Variable unique identifier
+        :type uid: :class:`uuid.UUID`
+        :param name: Variable name
+        :type name: str
+        """
         name = self.graphManager.getUniqVariableName(name)
         var = Variable(self, getPinDefaultValueByType(dataType), name, dataType, accessLevel=accessLevel, uid=uid)
-        self.vars[var.uid] = var
+        self._vars[var.uid] = var
         return var
 
+    # TODO: add arguments to deal with references of this var
+    # disconnect pins or mark nodes invalid
     def killVariable(self, var):
+        """Removes variable from this graph
+
+        :param var: Variable to remove
+        :type var: :class:`~PyFlow.Core.Variable.Variable`
+        """
         assert(isinstance(var, Variable))
-        if var.uid in self.vars:
-            popped = self.vars.pop(var.uid)
+        if var.uid in self._vars:
+            popped = self._vars.pop(var.uid)
             popped.killed.send()
 
-    def getNodes(self, classNameFilters=[]):
-        """return all nodes without compound's nodes
+    def getNodes(self):
+        """Returns this graph's nodes storage
+
+        :rtype: dict(:class:`~PyFlow.Core.NodeBase.NodeBase`)
+        """
+        return self._nodes
+
+    def getNodesList(self, classNameFilters=[]):
+        """Returns this graph's nodes list
+        :rtype: list(:class:`~PyFlow.Core.NodeBase.NodeBase`)
         """
         if len(classNameFilters) > 0:
-            return [n for n in self.nodes.values() if n.__class__.__name__ in classNameFilters]
+            return [n for n in self._nodes.values() if n.__class__.__name__ in classNameFilters]
         else:
-            return [n for n in self.nodes.values()]
+            return [n for n in self._nodes.values()]
 
-    @dispatch(str)
     def findNode(self, name):
-        for i in self.nodes.values():
+        """Tries to find node by name
+
+        :param name: Node name
+        :type name: str or None
+        """
+        for i in self._nodes.values():
             if i.name == name:
                 return i
         return None
 
-    @dispatch(uuid.UUID)
-    def findNode(self, uid):
-        if uid in self.nodes:
-            return self.nodes[uid]
-        return None
-
     def getNodesByClassName(self, className):
+        """Returns a list of nodes filtered by class name
+        :param className: Class name of target nodes
+        :type className: str
+        :rtype: list(:class:`~PyFlow.Core.NodeBase.NodeBase`)
+        """
         nodes = []
-        for i in self.getNodes():
+        for i in self.getNodesList():
             if i.__class__.__name__ == className:
                 nodes.append(i)
         return nodes
 
-    @dispatch(uuid.UUID)
-    def findPin(self, uid):
+    def findPinByUid(self, uid):
+        """Tries to find pin by uuid
+
+        :param uid: Unique identifier
+        :type uid: :class:`~uuid.UUID`
+        :rtype: :class:`~PyFlow.Core.PinBase.PinBase` or None
+        """
         pin = None
         if uid in self.pins:
             pin = self.pins[uid]
         return pin
 
-    @dispatch(str)
     def findPin(self, pinName):
+        """Tries to find pin by name
+
+        :param pinName: String to search by
+        :type pinName: str
+        :rtype: :class:`~PyFlow.Core.PinBase.PinBase` or None
+        """
         result = None
         for pin in self.pins.values():
             if pinName == pin.getName():
@@ -241,26 +368,36 @@ class GraphBase(ISerializable):
         return result
 
     def getInputNode(self):
-        """Creates and adds to graph 'graphInputs' node
+        """Creates and adds to graph :class:`~PyFlow.Packages.PyFlowBase.Nodes.graphNodes.graphInputs` node
 
         pins on this node will be exposed on compound node as input pins
+        :rtype: :class:`~PyFlow.Core.NodeBase.NodeBase`
         """
         node = getRawNodeInstance("graphInputs", "PyFlowBase")
         self.addNode(node)
         return node
 
     def getOutputNode(self):
-        """Creates and adds to graph 'graphOutputs' node.
+        """Creates and adds to graph :class:`~PyFlow.Packages.PyFlowBase.Nodes.graphNodes.graphOutputs` node.
 
         pins on this node will be exposed on compound node as output pins
+        :rtype: :class:`~PyFlow.Core.NodeBase.NodeBase`
         """
         node = getRawNodeInstance("graphOutputs", "PyFlowBase")
         self.addNode(node)
         return node
 
     def addNode(self, node, jsonTemplate=None):
+        """Adds node to storage
+
+        :param node: Node to add
+        :type node: NodeBase
+        :param jsonTemplate: serialized representation of node. This used when graph deserialized to do custom stuff after node will be added.
+        :type jsonTemplate: dict
+        :rtype: bool
+        """
         assert(node is not None), "failed to add node, None is passed"
-        if node.uid in self.nodes:
+        if node.uid in self._nodes:
             return False
 
         # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
@@ -280,11 +417,25 @@ class GraphBase(ISerializable):
         else:
             node.setName(self.graphManager.getUniqName(node.name))
 
-        self.nodes[node.uid] = node
+        self._nodes[node.uid] = node
         node.postCreate(jsonTemplate)
         return True
 
     def location(self):
+        """Returns path to current location in graph tree
+
+        Example:
+
+        >>> ["root", "compound1", "compound2"]
+
+        means:
+
+        >>> # root
+        >>> # |- compound
+        >>> #    |- compound2
+
+        :rtype: list(str)
+        """
         result = [self.name]
         parent = self._parentGraph
         while parent is not None:
@@ -293,15 +444,19 @@ class GraphBase(ISerializable):
         return result
 
     def count(self):
-        return self.nodes.__len__()
+        """Returns number of nodes
+
+        :rtype: int
+        """
+        return self._nodes.__len__()
 
     def plot(self):
+        """Prints graph to console. May be useful for debugging
+        """
         depth = self.depth()
         prefix = "".join(['-'] * depth) if depth > 1 else ''
         parentGraphString = str(None) if self.parentGraph is None else self.parentGraph.name
         print(prefix + "GRAPH:" + self.name + ", parent:{0}".format(parentGraphString))
-        # for n in self.getNodes():
-        #     print(prefix + "-Node:{}".format(n.name))
 
         assert(self not in self.childGraphs)
 

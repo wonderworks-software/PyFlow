@@ -44,7 +44,7 @@ class CPPCompiler(IDataExporter):
         script += "{\n"
 
         rootGraph = pyFlowInstance.graphManager.get().findRootGraph()
-        if len(rootGraph.getNodes()) == 0:
+        if len(rootGraph.getNodesList()) == 0:
             QMessageBox.warning(pyFlowInstance, "Warning", "Nothing to export!")
             return
 

@@ -1,6 +1,7 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class whileLoop(NodeBase):
@@ -12,6 +13,7 @@ class whileLoop(NodeBase):
         self.completed = self.createOutputPin('Completed', 'ExecPin')
         self.bProcess = False
         self._dirty = False
+        self.headerColor = FLOW_CONTROL_COLOR
 
     def begin(self, *args, **kwargs):
         self.bProcess = True

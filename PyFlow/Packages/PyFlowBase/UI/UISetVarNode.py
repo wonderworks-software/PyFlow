@@ -75,7 +75,7 @@ class UISetVarNode(UINodeBase):
         else:
             cbVars.setCurrentText("")
         cbVars.changeCallback.connect(self.onVarSelected)
-        inputsCategory.addWidget("var", cbVars,group=group)
+        inputsCategory.addWidget("var", cbVars, group=group)
         if pins:
             super(UISetVarNode, self).createInputWidgets(inputsCategory, group)
 

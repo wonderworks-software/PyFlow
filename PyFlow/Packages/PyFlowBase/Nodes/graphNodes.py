@@ -13,7 +13,7 @@ class graphInputs(NodeBase):
 
     def getUniqPinName(self, name):
         result = name
-        graphNodes = self.graph().getNodes(classNameFilters=['graphInputs', 'graphOutputs'])
+        graphNodes = self.graph().getNodesList(classNameFilters=['graphInputs', 'graphOutputs'])
         conflictingPinNames = set()
         for node in graphNodes:
             for pin in node.pins:
@@ -68,7 +68,7 @@ class graphOutputs(NodeBase):
 
     def getUniqPinName(self, name):
         result = name
-        graphNodes = self.graph().getNodes(classNameFilters=['graphInputs', 'graphOutputs'])
+        graphNodes = self.graph().getNodesList(classNameFilters=['graphInputs', 'graphOutputs'])
         conflictingPinNames = set()
         for node in graphNodes:
             for pin in node.pins:

@@ -127,11 +127,27 @@ class PinBase(IPin):
         self._group = str(value)
 
     def enableOptions(self, *options):
+        """Enables flags on pin instance
+
+        Example:
+
+        >>> self.pinInstance.enableOptions(PinOptions.RenamingEnabled)
+
+        You can also pass array/set of flags
+
+        >>> self.pinInstance.enableOptions({PinOptions.RenamingEnabled, PinOptions.Dynamic})
+
+        This is equiwalent of
+
+        >>> self.pinInstance.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
+        """
         for option in options:
             self._flags = self._flags | option
         self._origFlags = self._flags
 
     def disableOptions(self, *options):
+        """Same as :meth:`~PyFlow.Core.PinBase.PinBase.enableOptions` but inverse
+        """
         for option in options:
             self._flags = self._flags & ~option
         self._origFlags = self._flags
@@ -361,7 +377,7 @@ class PinBase(IPin):
         if self.isArray():
             return []
         elif self.isDict():
-            return pyf_dict("StringPin","AnyPin")
+            return PFDict("StringPin","AnyPin")
         else:
             return self._defaultValue
 
@@ -392,7 +408,7 @@ class PinBase(IPin):
             return
         try:
             self.setClean()
-            if isinstance(data, dictElement) and not self.optionEnabled(PinOptions.DictElementSuported):
+            if isinstance(data, DictElement) and not self.optionEnabled(PinOptions.DictElementSuported):
                 data = data[1]
             if not self.isArray() and not self.isDict():
                 self._data = self.super.processData(data)
@@ -405,11 +421,11 @@ class PinBase(IPin):
                 else:
                     self._data = [self.super.processData(data)]
             elif self.isDict():
-                if isinstance(data, pyf_dict):
-                    self._data = pyf_dict(data.keyType, data.valueType)
+                if isinstance(data, PFDict):
+                    self._data = PFDict(data.keyType, data.valueType)
                     for key, value in data.items():
                         self._data[key] = self.super.processData(value)
-                elif isinstance(data, dictElement) and len(data)==2:
+                elif isinstance(data, DictElement) and len(data)==2:
                     self._data.clear()
                     self._data[data[0]] = self.super.processData(data[1])
                 #else:
@@ -802,7 +818,7 @@ class PinBase(IPin):
                 checked.append(port)
                 port._keyType = keyType
                 if port._data.keyType != keyType:
-                    port._data = pyf_dict(keyType, port.dataType)
+                    port._data = PFDict(keyType, port.dataType)
                 port.dictChanged.send(keyType)
                 if port.getWrapper():
                     port.getWrapper()().update()

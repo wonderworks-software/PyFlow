@@ -9,6 +9,8 @@ from PyFlow.Core.Interfaces import IItemBase
 
 
 class Variable(IItemBase):
+    """Variable representation
+    """
     def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, structure=PinStructure.Single, uid=None):
         super(Variable, self).__init__()
         # signals
@@ -137,7 +139,7 @@ class Variable(IItemBase):
     @uid.setter
     def uid(self, value):
         assert(isinstance(value, uuid.UUID))
-        graph.vars[value] = graph.vars.pop(self._uid)
+        self.graph.getVars()[value] = self.graph.getVars().pop(self._uid)
         self._uid = value
 
     def serialize(self):

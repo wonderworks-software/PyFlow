@@ -42,7 +42,7 @@ class UICompoundNode(UINodeBase):
     def createInputWidgets(self, inputsCategory, group=None, pins=True):
         if pins:
             super(UICompoundNode, self).createInputWidgets(inputsCategory, group)
-        nodes = self._rawNode.rawGraph.getNodes()
+        nodes = self._rawNode.rawGraph.getNodesList()
         if len(nodes) > 0:
             for node in nodes:
                 wrapper = node.getWrapper()

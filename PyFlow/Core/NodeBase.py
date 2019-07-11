@@ -1,6 +1,7 @@
 from inspect import stack
 from blinker import Signal
 import weakref
+import functools
 import uuid
 import keyword
 import json
@@ -75,6 +76,7 @@ class NodeBase(INode):
         self.isCompoundNode = False
         self._lastError = None
         self.__wrapperJsonData = None
+        self.headerColor = None
 
     @property
     def wrapperJsonData(self):
@@ -126,7 +128,7 @@ class NodeBase(INode):
         return self.pinsCreationOrder.values()
 
     def getter(self, pinName):
-        pin = self.getPin(pinName)
+        pin = self.getPinByName(pinName)
         if not pin:
             raise Exception()
         else:
@@ -165,7 +167,6 @@ class NodeBase(INode):
         for inp in sortedInputs:
             result[inp.pinIndex] = inp
         return result
-
 
     @property
     def namePinInputsMap(self):
@@ -224,7 +225,7 @@ class NodeBase(INode):
     @uid.setter
     def uid(self, value):
         if self.graph is not None:
-            self.graph().nodes[value] = self.graph().nodes.pop(self._uid)
+            self.graph().getNodes()[value] = self.graph().getNodes().pop(self._uid)
         self._uid = value
 
     @staticmethod
@@ -270,7 +271,7 @@ class NodeBase(INode):
         return self.graph() == self.graph().graphManager.activeGraph()
 
     def kill(self, *args, **kwargs):
-        if self.uid not in self.graph().nodes:
+        if self.uid not in self.graph().getNodes():
             return
 
         self.killed.send()
@@ -279,7 +280,7 @@ class NodeBase(INode):
             pin.kill()
         for pin in self.outputs.values():
             pin.kill()
-        self.graph().nodes.pop(self.uid)
+        self.graph().getNodes().pop(self.uid)
 
     def Tick(self, delta):
         self.tick.send(delta)
@@ -465,12 +466,12 @@ class NodeBase(INode):
         return p
 
     def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):
-        p = self.getPin(str(pinName), pinSelectionGroup)
+        p = self.getPinSG(str(pinName), pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
         p.setData(data)
 
     def getData(self, pinName, pinSelectionGroup=PinSelectionGroup.BothSides):
-        p = self.getPin(str(pinName), pinSelectionGroup)
+        p = self.getPinSG(str(pinName), pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
         return p.currentData()
 
@@ -494,8 +495,14 @@ class NodeBase(INode):
             if p.isExec():
                 p.call(*args, **kwargs)
 
-    @dispatch(str, PinSelectionGroup)
-    def getPin(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
+    def getPinSG(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
+        """Tries to find pin by name and selection ogroup.
+
+        :param name: Pin name to search
+        :type name: str
+        :param pinsSelectionGroup: Side to search
+        :type pinsSelectionGroup: :class:`~PyFlow.Core.Common.PinSelectionGroup`
+        """
         inputs = self.inputs
         outputs = self.outputs
         if pinsSelectionGroup == PinSelectionGroup.BothSides:
@@ -511,8 +518,12 @@ class NodeBase(INode):
                 if p.name == name:
                     return p
 
-    @dispatch(str)
-    def getPin(self, name):
+    def getPinByName(self, name):
+        """Tries to find pin by name
+
+        :param name: pin name
+        :type name: str
+        """
         inputs = self.inputs
         outputs = self.outputs
         for p in list(inputs.values()) + list(outputs.values()):
@@ -553,7 +564,7 @@ class NodeBase(INode):
                     # create custom dynamically created pins in derived classes
                     continue
 
-                pin = self.getPin(str(inpJson['name']), PinSelectionGroup.Inputs)
+                pin = self.getPinSG(str(inpJson['name']), PinSelectionGroup.Inputs)
                 pin.deserialize(inpJson)
 
             sortedOutputs = sorted(jsonTemplate['outputs'], key=lambda pinDict: pinDict["pinIndex"])
@@ -563,7 +574,7 @@ class NodeBase(INode):
                     # create custom dynamically created pins in derived classes
                     continue
 
-                pin = self.getPin(str(outJson['name']), PinSelectionGroup.Outputs)
+                pin = self.getPinSG(str(outJson['name']), PinSelectionGroup.Outputs)
                 pin.deserialize(outJson)
 
             # store data for wrapper

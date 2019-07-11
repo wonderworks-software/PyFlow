@@ -218,8 +218,8 @@ class NodeName(QGraphicsWidget):
 
     def sizeHint(self, which, constraint):
         w = QtGui.QFontMetrics(self.getFont()).width(self.getPlainText())
-        h = self.labelItem.boundingRect().height()
-        return QtCore.QSizeF(w, h)
+        h = self.labelItem.boundingRect().height() + 5
+        return QtCore.QSize(w, h)
 
     def setGeometry(self, rect):
         self.prepareGeometryChange()
@@ -271,6 +271,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             self.drawlabel = True
         self.headColorOverride = headColorOverride
         self.headColor = NodeDefaults().PURE_NODE_HEAD_COLOR
+        if raw_node.headerColor is not None:
+            self.headColorOverride = QtGui.QColor.fromRgb(*raw_node.headerColor)
         self._w = 0
         self.h = 30
         self.minWidth = 50
@@ -543,7 +545,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     @property
     def UIinputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.inputs.values():
+        for rawPin in self._rawNode.orderedInputs.values():
             wrapper = rawPin.getWrapper()
             if wrapper is not None:
                 result[rawPin.uid] = wrapper()
@@ -552,7 +554,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     @property
     def UIoutputs(self):
         result = OrderedDict()
-        for rawPin in self._rawNode.outputs.values():
+        for rawPin in self._rawNode.orderedOutputs.values():
             wrapper = rawPin.getWrapper()
             if wrapper is not None:
                 result[rawPin.uid] = wrapper()
@@ -596,16 +598,16 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def getData(self, pinName):
         if pinName in [p.name for p in self.inputs.values()]:
-            p = self.getPin(pinName, PinSelectionGroup.Inputs)
+            p = self.getPinSG(pinName, PinSelectionGroup.Inputs)
             return p.getData()
 
     def setData(self, pinName, data):
         if pinName in [p.name for p in self.outputs.values()]:
-            p = self.getPin(pinName, PinSelectionGroup.Outputs)
+            p = self.getPinSG(pinName, PinSelectionGroup.Outputs)
             p.setData(data)
 
-    def getPin(self, name, pinsGroup=PinSelectionGroup.BothSides):
-        pin = self._rawNode.getPin(str(name), pinsGroup)
+    def getPinSG(self, name, pinsGroup=PinSelectionGroup.BothSides):
+        pin = self._rawNode.getPinSG(str(name), pinsGroup)
         if pin is not None:
             if pin.getWrapper() is not None:
                 return pin.getWrapper()()
@@ -615,13 +617,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         return True
 
     def finalizeRename(self, accepted=False):
-        """Called by NodeName
+        """Called by :class:`~PyFlow.UI.Canvas.UINodeBase.NodeName`
 
-        If user pressed Escape name before editing will be restored. If User pressed Enter or removed focus
+        If user pressed :kbd:`escape` name before editing will be restored. If User pressed :kbd:`enter` or removed focus
         rename action will be accepted and node will be renamed and name will be checked for uniqueness.
 
-        Keyword Arguments:
-            accepted {bool} -- Wheter user accepted editing or not
+        :param accepted: Wheter user accepted editing or not
+        :type accepted: :class:`bool`
         """
         if accepted:
             name = self.nodeNameWidget.getPlainText().replace(" ", "")
@@ -1253,10 +1255,10 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         Info.addWidget(widget=doc)
         propertiesWidget.addWidget(Info)
 
-    def createInputWidgets(self, inputsCategory,inGroup=None, pins=True):
+    def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
         # inputs
         if len([i for i in self.UIinputs.values()]) != 0:
-            sortedInputs = sorted(self.UIinputs.values(), key=lambda x: x.name)
+            sortedInputs = self.UIinputs.values()
             for inp in sortedInputs:
                 if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
                     continue
@@ -1274,13 +1276,13 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
                     data = inp.currentData()
-                    if isinstance(inp.currentData(), dictElement):
+                    if isinstance(inp.currentData(), DictElement):
                         data = inp.currentData()[1]
                     w.setWidgetValue(data)
                     w.blockWidgetSignals(False)
                     w.setObjectName(inp.getName())
                     group = inGroup
-                    if inGroup == None:
+                    if inGroup is None:
                         group = inp._rawPin.group
                     inputsCategory.addWidget(inp.name, w, group=group)
                     if inp.hasConnections():
@@ -1299,14 +1301,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                 w.blockWidgetSignals(True)
                 data = inp.currentData()
-                if isinstance(inp.currentData(), dictElement):
+                if isinstance(inp.currentData(), DictElement):
                     data = inp.currentData()[1]
                 w.setWidgetValue(data)
                 w.blockWidgetSignals(False)
                 w.setObjectName(inp.getName())
                 inputsCategory.addWidget(inp.name, w)
-                #if inp.hasConnections():
-                #    w.setEnabled(False)                
         propertiesWidget.addWidget(inputsCategory)
         return inputsCategory
 
@@ -1412,7 +1412,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     @staticmethod
     def removePinByName(node, name):
-        pin = node.getPin(name)
+        pin = node.getPinSG(name)
         if pin:
             pin.kill()
 

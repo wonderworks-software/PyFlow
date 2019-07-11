@@ -75,13 +75,13 @@ class makeDict(NodeBase):
                 self.constraints[inp.key.constraint].remove(inp.key)
 
     def compute(self, *args, **kwargs):
-        outArray = pyf_dict(self.KeyType.dataType)
+        outArray = PFDict(self.KeyType.dataType)
         ySortedPins = sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y)
 
         for i in ySortedPins:
-            if isinstance(i.getData(), dictElement):
+            if isinstance(i.getData(), DictElement):
                 outArray[i.getData()[0]] = i.getData()[1]
-            elif isinstance(i.getData(), pyf_dict):
+            elif isinstance(i.getData(), PFDict):
                 for key,value in i.getData().items():
                     outArray[key] = value
 

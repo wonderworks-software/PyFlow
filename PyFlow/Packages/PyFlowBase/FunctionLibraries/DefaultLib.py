@@ -11,16 +11,16 @@ from nine import IS_PYTHON2
 
 
 class DefaultLib(FunctionLibraryBase):
-    '''
-    Default library builting stuff, variable types and conversions
-    '''
+    """Default library builting stuff, variable types and conversions
+    """
+
     def __init__(self, packageName):
         super(DefaultLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny| PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}),
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}),
                     meta={'Category': 'Utils', 'Keywords': ['id'], "CacheEnabled": False})
-    def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny| PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}), deepCopy=("BoolPin", False)):
+    def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}), deepCopy=("BoolPin", False)):
         '''Shallow or deep copy of an object.'''
         copyFunction = deepcopy if deepCopy else copy
         return copyFunction(obj)
@@ -93,7 +93,7 @@ class DefaultLib(FunctionLibraryBase):
     def objectType(obj=("AnyPin", None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported})):
         '''Returns ``type(obj).__name__``'''
         t = type(obj).__name__
-        if t == "dictElement":
+        if t == "DictElement":
             t += ",key:{0},value:{1}".format(type(obj[1]).__name__, type(obj[0]).__name__)
         return t
 

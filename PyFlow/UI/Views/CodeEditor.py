@@ -224,7 +224,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
 
     # populte editor ui from node data
     def populate(self):
-        node = self.graph.nodes[self.nodeUid]
+        node = self.graph.getNodes()[self.nodeUid]
         for i in node.inputs.values():
             pw = WPinWidget.construct(i.name, i.getLabel()().isVisible(), i.__class__.__name__, self)
             self.appendInput(pw)
@@ -243,7 +243,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
         self.lwOutputs.clear()
 
     def resetNode(self):
-        node = self.graph.nodes[self.nodeUid]
+        node = self.graph.getNodes()[self.nodeUid]
         for i in list(node.inputs.values()):
             i.kill()
         for o in list(node.outputs.values()):
@@ -252,7 +252,7 @@ class CodeEditor(QWidget, CodeEditor_ui.Ui_CodeEditorWidget):
     def applyData(self):
         # reset node
         self.resetNode()
-        node = self.graph.nodes[self.nodeUid]
+        node = self.graph.getNodes()[self.nodeUid]
 
         # label
         lbText = self.leLabel.text()

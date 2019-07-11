@@ -86,7 +86,7 @@ class UIGetVarNode(UINodeBase):
         else:
             cbVars.setCurrentText("")
         cbVars.changeCallback.connect(self.onVarSelected)
-        inputsCategory.addWidget("var", cbVars,group=group)
+        inputsCategory.addWidget("var", cbVars, group=group)
 
     def updateHeaderText(self):
         self.setHeaderHtml("Get {0}".format(self.var.name))

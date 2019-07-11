@@ -1,6 +1,7 @@
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
 class doOnce(NodeBase):
@@ -11,6 +12,7 @@ class doOnce(NodeBase):
         self.bStartClosed = self.createInputPin('Start closed', 'BoolPin')
         self.completed = self.createOutputPin('Completed', 'ExecPin')
         self.bClosed = False
+        self.headerColor = FLOW_CONTROL_COLOR
 
     def OnReset(self):
         self.bClosed = False

@@ -63,11 +63,11 @@ class pythonNode(NodeBase):
             self.nodeData = jsonTemplate['nodeData']
 
         for inpJson in jsonTemplate['inputs']:
-            pin = self.getPin(inpJson["name"])
+            pin = self.getPinByName(inpJson["name"])
             pin.deserialize(inpJson)
 
         for outJson in jsonTemplate['outputs']:
-            pin = self.getPin(outJson["name"])
+            pin = self.getPinByName(outJson["name"])
             pin.deserialize(outJson)
 
         self.autoAffectPins()

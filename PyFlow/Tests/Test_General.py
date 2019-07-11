@@ -126,8 +126,8 @@ class TestGeneral(unittest.TestCase):
         man.activeGraph().addNode(n2)
         man.activeGraph().addNode(n3)
 
-        n1Out = n1.getPin(str('out'), PinSelectionGroup.Outputs)
-        n3b = n3.getPin(str('b'), PinSelectionGroup.Inputs)
+        n1Out = n1.getPinSG(str('out'), PinSelectionGroup.Outputs)
+        n3b = n3.getPinSG(str('b'), PinSelectionGroup.Inputs)
         # connect n1.out and n3.b
         c1 = connectPins(n1Out, n3b)
         # check connection was created
@@ -137,7 +137,7 @@ class TestGeneral(unittest.TestCase):
         # check n3.b affected by n1.out
         self.assertEqual(n1Out in n3b.affected_by, True)
 
-        n2Out = n2.getPin(str('out'), PinSelectionGroup.Outputs)
+        n2Out = n2.getPinSG(str('out'), PinSelectionGroup.Outputs)
         # connect n2.out to n3.b
         # n3.b is connected with n1.out
         # we expect n3.b breaks all connections before connecting with n2.out
@@ -164,8 +164,8 @@ class TestGeneral(unittest.TestCase):
         man.activeGraph().addNode(addNode1)
         man.activeGraph().addNode(addNode2)
 
-        pinOut = addNode1.getPin(str('out'), PinSelectionGroup.Outputs)
-        pinInp = addNode2.getPin(str('a'), PinSelectionGroup.Inputs)
+        pinOut = addNode1.getPinSG(str('out'), PinSelectionGroup.Outputs)
+        pinInp = addNode2.getPinSG(str('a'), PinSelectionGroup.Inputs)
         bConnected = connectPins(pinOut, pinInp)
         self.assertEqual(bConnected, True, "FAILED TO ADD EDGE")
         self.assertEqual(arePinsConnected(pinOut, pinInp), True)
@@ -177,14 +177,14 @@ class TestGeneral(unittest.TestCase):
     def test_create_var(self):
         man = GraphManager()
         v1 = man.activeGraph().createVariable()
-        self.assertEqual(v1.uid in man.activeGraph().vars, True)
+        self.assertEqual(v1.uid in man.activeGraph().getVars(), True)
 
     def test_variable_scope(self):
         man = GraphManager()
         # add variable to root graph
         rootVariable = man.activeGraph().createVariable(name="v0")
         rootVariable.value = 0
-        self.assertEqual(rootVariable.uid in man.activeGraph().vars, True)
+        self.assertEqual(rootVariable.uid in man.activeGraph().getVars(), True)
 
         vars = man.activeGraph().getVarList()
         self.assertEqual(len(vars), 1, "failed to gather variables")
@@ -266,9 +266,9 @@ class TestGeneral(unittest.TestCase):
         man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
-        varOutPin = varGetterInstance.getPin(str('out'), PinSelectionGroup.Outputs)
-        printInPin = printerInstance.getPin(str('entity'), PinSelectionGroup.Inputs)
-        printInExecPin = printerInstance.getPin(str('inExec'), PinSelectionGroup.Inputs)
+        varOutPin = varGetterInstance.getPinSG(str('out'), PinSelectionGroup.Outputs)
+        printInPin = printerInstance.getPinSG(str('entity'), PinSelectionGroup.Inputs)
+        printInExecPin = printerInstance.getPinSG(str('inExec'), PinSelectionGroup.Inputs)
         connected = connectPins(varOutPin, printInPin)
         self.assertEqual(connected, True, "var getter is not connected")
 
@@ -304,14 +304,14 @@ class TestGeneral(unittest.TestCase):
         man.activeGraph().addNode(printerInstance)
 
         # connect to print node input
-        varOutPin = varGetterInstance.getPin(str('out'), PinSelectionGroup.Outputs)
-        printInPin = printerInstance.getPin(str('entity'), PinSelectionGroup.Inputs)
-        printInExecPin = printerInstance.getPin(str('inExec'), PinSelectionGroup.Inputs)
+        varOutPin = varGetterInstance.getPinSG(str('out'), PinSelectionGroup.Outputs)
+        printInPin = printerInstance.getPinSG(str('entity'), PinSelectionGroup.Inputs)
+        printInExecPin = printerInstance.getPinSG(str('inExec'), PinSelectionGroup.Inputs)
         connected = connectPins(varOutPin, printInPin)
         self.assertEqual(connected, True, "var getter is not connected")
 
         man.activeGraph().killVariable(v1)
-        self.assertEqual(v1 not in man.activeGraph().vars, True, "variable not killed")
+        self.assertEqual(v1 not in man.activeGraph().getVars(), True, "variable not killed")
 
     def test_set_bool_var(self):
         import pyrr
@@ -331,9 +331,9 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(setterAdded, True)
 
         # set new value to setter node input pin
-        inExecPin = varSetterInstance.getPin(DEFAULT_IN_EXEC_NAME, PinSelectionGroup.Inputs)
-        inPin = varSetterInstance.getPin(str('inp'), PinSelectionGroup.Inputs)
-        outPin = varSetterInstance.getPin(str('out'), PinSelectionGroup.Outputs)
+        inExecPin = varSetterInstance.getPinSG(DEFAULT_IN_EXEC_NAME, PinSelectionGroup.Inputs)
+        inPin = varSetterInstance.getPinSG(str('inp'), PinSelectionGroup.Inputs)
+        outPin = varSetterInstance.getPinSG(str('out'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(inExecPin)
         self.assertIsNotNone(inPin)
         self.assertIsNotNone(outPin)
@@ -382,9 +382,9 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(list(subgraphNodeInstance.outputs.values())[0].name, inPin.name)
         inPin.setName('outAnyExec')
 
-        subgraphInAnyExec = subgraphNodeInstance.getPin(str('inAnyExec'), PinSelectionGroup.Inputs)
+        subgraphInAnyExec = subgraphNodeInstance.getPinSG(str('inAnyExec'), PinSelectionGroup.Inputs)
         self.assertIsNotNone(subgraphInAnyExec, "failed to find compound input exec pin")
-        subgraphOutAnyExec = subgraphNodeInstance.getPin(str('outAnyExec'), PinSelectionGroup.Outputs)
+        subgraphOutAnyExec = subgraphNodeInstance.getPinSG(str('outAnyExec'), PinSelectionGroup.Outputs)
         self.assertIsNotNone(subgraphOutAnyExec, "failed to find compound out exec pin")
 
         # add print node inside

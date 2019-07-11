@@ -27,7 +27,7 @@ class BoolPin(PinBase):
     @staticmethod
     def internalDataStructure():
         return bool
-        
+
     @staticmethod
     def processData(data):
         return BoolPin.internalDataStructure()(data)

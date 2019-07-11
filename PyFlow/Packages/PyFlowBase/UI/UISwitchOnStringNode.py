@@ -14,7 +14,7 @@ class UISwitchOnString(UINodeBase):
 
     def postCreate(self, jsonTemplate=None):
         super(UISwitchOnString, self).postCreate(jsonTemplate=jsonTemplate)
-        inExecPin = self.getPin(DEFAULT_IN_EXEC_NAME)
+        inExecPin = self.getPinSG(DEFAULT_IN_EXEC_NAME)
         inExecPin.bLabelHidden = True
 
     def onAddOutPin(self):

@@ -396,7 +396,7 @@ class Canvas(QGraphicsView):
                         connection.setVisible(bVisible)
 
         self.validateCommentNodesOwnership(newGraph)
-        for commentNode in newGraph.getNodes():
+        for commentNode in newGraph.getNodesList():
             uiCommentNode = commentNode.getWrapper()
             if uiCommentNode.isCommentNode:
                 if uiCommentNode.collapsed:
@@ -503,7 +503,7 @@ class Canvas(QGraphicsView):
                 newInputPins[o] = newPin
                 for n in inputConectionList[o]:
                     node = self.findNode(n[0])
-                    self.connectPinsInternal(newPin, node.getPin(n[1]))
+                    self.connectPinsInternal(newPin, node.getPinSG(n[1]))
 
         if len(outputPins) > 0:
             graphOutputsTemplate = NodeBase.jsonTemplate()
@@ -522,16 +522,16 @@ class Canvas(QGraphicsView):
                 newOutputPins[i] = newPin
                 for n in outputConectionList[i]:
                     node = self.findNode(n[0])
-                    self.connectPinsInternal(newPin, node.getPin(n[1]))
+                    self.connectPinsInternal(newPin, node.getPinSG(n[1]))
 
         def connectPins(compoundNode, inputs, outputs):
             for o in inputs:
-                exposedPin = compoundNode.getPin(newInputPins[o].name)
+                exposedPin = compoundNode.getPinSG(newInputPins[o].name)
                 if exposedPin:
                     self.connectPinsInternal(exposedPin, o)
 
             for i in outputs:
-                exposedPin = compoundNode.getPin(newOutputPins[i].name)
+                exposedPin = compoundNode.getPinSG(newOutputPins[i].name)
                 if exposedPin:
                     self.connectPinsInternal(i, exposedPin)
             EditorHistory().saveState("Collapse to compound")
@@ -671,7 +671,7 @@ class Canvas(QGraphicsView):
         pinName = full_name.split('.')[1]
         node = self.findNode(node_name)
         if node:
-            Pin = node.getPin(pinName)
+            Pin = node.getPinSG(pinName)
             if Pin:
                 return Pin
 
@@ -1136,7 +1136,7 @@ class Canvas(QGraphicsView):
         """Hides show if needed. Changes endpoints positions if needed
         """
         checked = set()
-        for node in graph.getNodes():
+        for node in graph.getNodesList():
             uiNode = node.getWrapper()
             for pin in uiNode.UIPins.values():
                 for connection in pin.uiConnectionList:
@@ -1172,7 +1172,7 @@ class Canvas(QGraphicsView):
         comments = {}
         defaultNodes = set()
         # expand all comment nodes and reset owning nodes info
-        for node in graph.getNodes():
+        for node in graph.getNodesList():
             uiNode = node.getWrapper()
             if uiNode.isUnderActiveGraph():
                 if uiNode.isCommentNode:
@@ -1327,7 +1327,6 @@ class Canvas(QGraphicsView):
                     if currentInputAction in InputManager()["Canvas.DragCopyNodes"]:
                         self.manipulationMode = CanvasManipulationMode.COPY
 
-
     def pan(self, delta):
         rect = self.sceneRect()
         scale = self.currentViewScale()
@@ -1337,7 +1336,7 @@ class Canvas(QGraphicsView):
         self.setSceneRect(rect)
         self.update()
 
-    def updateRerutes(self,event,showPins=False):
+    def updateRerutes(self, event, showPins=False):
         tolerance = 9 * self.currentViewScale()
         mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - tolerance, event.pos().y() - tolerance),
                                  QtCore.QPoint(event.pos().x() + tolerance, event.pos().y() + tolerance))
@@ -1599,12 +1598,12 @@ class Canvas(QGraphicsView):
                         lhsPin = wire.source()
                         self.removeConnection(wire)
                         self.connectPinsInternal(lhsPin, self.releasedPin)
-                        EditorHistory().saveState("reconnectPins")
+                        EditorHistory().saveState("Reconnect pins")
                     elif wire.sourcePositionOverride is not None:
                         rhsPin = wire.destination()
                         self.removeConnection(wire)
                         self.connectPinsInternal(self.releasedPin, rhsPin)
-                        EditorHistory().saveState("reconnectPins")
+                        EditorHistory().saveState("Reconnect pins")
             else:
                 for wire in self.reconnectingWires:
                     self.removeConnection(wire)
@@ -1657,7 +1656,7 @@ class Canvas(QGraphicsView):
                     break
             if p_itm and r_itm:
                 if p_itm.__class__.__name__ == UIPinBase.__name__ and r_itm.__class__.__name__ == UIPinBase.__name__:
-                    if cycle_check(p_itm, r_itm):
+                    if cycleCheck(p_itm, r_itm):
                         # print('cycles are not allowed')
                         do_connect = False
 
@@ -1797,7 +1796,7 @@ class Canvas(QGraphicsView):
 
         # set pins data
         for inpJson in jsonTemplate['inputs']:
-            pin = nodeInstance.getPin(inpJson['name'], PinSelectionGroup.Inputs)
+            pin = nodeInstance.getPinSG(inpJson['name'], PinSelectionGroup.Inputs)
             if pin:
                 pin.uid = uuid.UUID(inpJson['uuid'])
                 try:
@@ -1810,7 +1809,7 @@ class Canvas(QGraphicsView):
                     pin.setClean()
 
         for outJson in jsonTemplate['outputs']:
-            pin = nodeInstance.getPin(outJson['name'], PinSelectionGroup.Outputs)
+            pin = nodeInstance.getPinSG(outJson['name'], PinSelectionGroup.Outputs)
             if pin:
                 pin.uid = uuid.UUID(outJson['uuid'])
                 try:
@@ -1832,7 +1831,7 @@ class Canvas(QGraphicsView):
     def createWrappersForGraph(self, rawGraph):
         # when raw graph was created, we need to create all ui wrappers for it
         uiNodesJsonData = {}
-        for node in rawGraph.getNodes():
+        for node in rawGraph.getNodesList():
             if node.getWrapper() is not None:
                 continue
             uiNode = getUINodeInstance(node)
@@ -1843,7 +1842,7 @@ class Canvas(QGraphicsView):
             uiNodesJsonData[uiNode] = uiNodeJsonTemplate
 
         # restore ui connections
-        for rawNode in rawGraph.getNodes():
+        for rawNode in rawGraph.getNodesList():
             uiNode = rawNode.getWrapper()
             for outUiPin in uiNode.UIoutputs.values():
                 for inputRawPin in getConnectedPins(outUiPin._rawPin):
@@ -1871,8 +1870,8 @@ class Canvas(QGraphicsView):
     def addNode(self, uiNode, jsonTemplate, parentGraph=None):
         """Adds node to a graph
 
-        Arguments:
-            node UINodeBase -- raw node wrapper
+        :param uiNode: Raw node wrapper
+        :type uiNode: :class:`~PyFlow.UI.Canvas.UINodeBase.UINodeBase`
         """
 
         uiNode.canvasRef = weakref.ref(self)
@@ -1912,7 +1911,8 @@ class Canvas(QGraphicsView):
         if src and dst:
             if canConnectPins(src._rawPin, dst._rawPin):
                 wire = self.connectPinsInternal(src, dst)
-        EditorHistory().saveState("Connect pins")
+                if wire is not None:
+                    EditorHistory().saveState("Connect pins")
 
     def removeEdgeCmd(self, connections):
         for wire in list(connections):
