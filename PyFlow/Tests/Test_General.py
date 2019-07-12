@@ -49,7 +49,7 @@ class TestGeneral(unittest.TestCase):
         man.activeGraph().addNode(subgraphNodeInstance)
 
         # step inside compound
-        man.selectGraph(subgraphNodeInstance.name)
+        man.selectGraphByName(subgraphNodeInstance.name)
         self.assertEqual(Counter(man.location()), Counter([man.findRootGraph().name, subgraphNodeInstance.name]))
         self.assertEqual(Counter(subgraphNodeInstance.rawGraph.location()), Counter(man.location()))
 
@@ -201,7 +201,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(man.activeGraph().addNode(subgraphNodeInstance2), True)
 
         # goto subgraph1 and create variable
-        man.selectGraph(subgraphNodeInstance1.name)
+        man.selectGraphByName(subgraphNodeInstance1.name)
         sg1Var = man.activeGraph().createVariable(name="v1")
         sg1Var.value = 1
         v1Getter = varGetterClass("v1Get", sg1Var)
@@ -215,7 +215,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(man.activeGraph().addNode(v1Setter), False, "Variable access error! Variables in child graphs should not be visible to parent ones!")
 
         # goto subgraph2 and create variable there
-        man.selectGraph(subgraphNodeInstance2.name)
+        man.selectGraphByName(subgraphNodeInstance2.name)
         sg2Var = man.activeGraph().createVariable(name="v2")
         sg2Var.value = 2
         man.selectRootGraph()
@@ -227,7 +227,7 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(vars[0].value, 0, "invalid variable")
 
         # go to subgraph1 and ask variables there
-        man.selectGraph(subgraphNodeInstance1.name)
+        man.selectGraphByName(subgraphNodeInstance1.name)
         vars = man.activeGraph().getVarList()
         # two variables. One from subgraph1 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
@@ -236,7 +236,7 @@ class TestGeneral(unittest.TestCase):
         man.selectRootGraph()
 
         # goto subgraph2 and ask variables there
-        man.selectGraph(subgraphNodeInstance2.name)
+        man.selectGraphByName(subgraphNodeInstance2.name)
         vars = man.activeGraph().getVarList()
         # two variables. One from subgraph2 + one from root
         self.assertEqual(len(vars), 2, "failed to gather variables")
@@ -357,7 +357,7 @@ class TestGeneral(unittest.TestCase):
         man.activeGraph().addNode(subgraphNodeInstance)
 
         # step inside compound
-        man.selectGraph(subgraphNodeInstance.name)
+        man.selectGraphByName(subgraphNodeInstance.name)
         # self.assertEqual(graph.name, subgraphNodeInstance.name, "failed to enter compound")
 
         # add input output nodes to expose pins to outer compound node

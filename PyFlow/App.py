@@ -276,7 +276,7 @@ class PyFlow(QMainWindow):
         # load raw data
         self.graphManager.get().deserialize(data)
         self.fileBeenLoaded.emit()
-        self.graphManager.get().selectGraph(data["activeGraph"])
+        self.graphManager.get().selectGraphByName(data["activeGraph"])
 
     def load(self):
         name_filter = "Graph files (*.json)"

@@ -49,7 +49,7 @@ class UISetVarNode(UINodeBase):
         else:
             self._rawNode.out.disconnectAll()
 
-        var = self.canvasRef().graphManager.findVariable(varName)
+        var = self.canvasRef().graphManager.findVariableByName(varName)
 
         if var:
             inLinkedTo = getConnectedPins(self._rawNode.inp)

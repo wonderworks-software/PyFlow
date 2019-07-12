@@ -62,7 +62,7 @@ class UIGetVarNode(UINodeBase):
             self._rawNode.inp.disconnectAll()
             self._rawNode.out.disconnectAll()
 
-        var = self.canvasRef().graphManager.findVariable(varName)
+        var = self.canvasRef().graphManager.findVariableByName(varName)
         free = self._rawNode.out.checkFree([])
 
         if var:

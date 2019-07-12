@@ -59,7 +59,7 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
 
     # if get var or set var, construct additional keyword arguments
     if jsonTemplate['type'] in ('getVar', 'setVar'):
-        kwargs['var'] = canvas.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
+        kwargs['var'] = canvas.graphManager.findVariableByUid(uuid.UUID(jsonTemplate['varUid']))
 
     raw_instance = getRawNodeInstance(nodeClassName, packageName=packageName, libName=libName, **kwargs)
     assert(raw_instance.packageName == packageName)
@@ -536,7 +536,7 @@ class Canvas(QGraphicsView):
             EditorHistory().saveState("Collapse to compound")
 
         QtCore.QTimer.singleShot(1, lambda: connectPins(uiCompoundNode, inputPins, outputPins))
-        self.graphManager.selectGraph(activeGraphName)
+        self.graphManager.selectGraphByName(activeGraphName)
 
     def populateMenu(self):
         self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
@@ -1767,9 +1767,9 @@ class Canvas(QGraphicsView):
         # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
         # Stop any attempt to disrupt variable scope. Even if we accidentally forgot this check, GraphBase.addNode will fail
         if jsonTemplate['type'] in ['getVar', 'setVar']:
-            var = self.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
+            var = self.graphManager.findVariableByUid(uuid.UUID(jsonTemplate['varUid']))
             variableLocation = var.location()
-            graphLocation = self.graphManager.activeGraph().location()
+            graphLocation = self.graphManager.location()
             if len(variableLocation) > len(graphLocation):
                 return None
             if len(variableLocation) == len(graphLocation):

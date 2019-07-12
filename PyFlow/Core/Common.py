@@ -562,7 +562,7 @@ def removeDigitsFromEndOfString(string):
 def getUniqNameFromList(existingNames, name):
     """Create unique name
 
-    Iterates over **existingNames** and extracts the end digists to find a new unique id
+    Iterates over **existingNames** and extracts the end digits to find a new unique id
 
     :param existingNames: List of strings where to search for existing indexes
     :type existingNames: list

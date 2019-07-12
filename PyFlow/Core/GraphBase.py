@@ -129,7 +129,6 @@ class GraphBase(ISerializable):
             # update parent
             self._parentGraph = newParentGraph
 
-    # TODO: continue docs here
     def depth(self):
         """Returns depth level of this graph
 
@@ -403,7 +402,7 @@ class GraphBase(ISerializable):
         # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
         # Do not disrupt variable scope
         if node.__class__.__name__ in ['getVar', 'setVar']:
-            var = self.graphManager.findVariable(node.variableUid())
+            var = self.graphManager.findVariableByUid(node.variableUid())
             variableLocation = var.location()
             if len(variableLocation) > len(self.location()):
                 return False
