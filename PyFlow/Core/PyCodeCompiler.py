@@ -1,6 +1,6 @@
 from PyFlow.Core.Interfaces import ICodeCompiler
 
-
+# TODO: docs checkpoint
 class Py3FunctionCompiler(ICodeCompiler):
     '''
         Compiles string to function object

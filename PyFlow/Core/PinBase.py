@@ -124,7 +124,6 @@ class PinBase(IPin):
         if direction == PinDirection.Output:
             self.pinIndex = len(self.owningNode().orderedOutputs)
 
-    # TODO: continue docs here
     @property
     def group(self):
         """Pin group
