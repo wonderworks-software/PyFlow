@@ -227,8 +227,8 @@ class UIPinBase(QGraphicsWidget):
     def name(self):
         return self._rawPin.name
 
-    def getName(self):
-        return self._rawPin.getName()
+    def getFullName(self):
+        return self._rawPin.getFullName()
 
     def hasConnections(self):
         return self._rawPin.hasConnections()

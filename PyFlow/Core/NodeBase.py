@@ -473,7 +473,7 @@ class NodeBase(INode):
         if constraint is not None:
             p.updateConstraint(constraint)
         if structConstraint is not None:
-            p.updatestructConstraint(structConstraint)
+            p.updateStructConstraint(structConstraint)
         return p
 
     def createOutputPin(self, pinName, dataType, defaultValue=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
@@ -523,7 +523,7 @@ class NodeBase(INode):
         if constraint is not None:
             p.updateConstraint(constraint)
         if structConstraint is not None:
-            p.updatestructConstraint(structConstraint)
+            p.updateStructConstraint(structConstraint)
         return p
 
     def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):

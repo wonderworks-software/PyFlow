@@ -127,6 +127,12 @@ class PinBase(IPin):
     # TODO: continue docs here
     @property
     def group(self):
+        """Pin group
+
+        This is just a tag which can be used in ui level
+
+        :rtype: str
+        """
         return self._group
 
     @group.setter
@@ -160,13 +166,27 @@ class PinBase(IPin):
         self._origFlags = self._flags
 
     def optionEnabled(self, option):
+        """Is option enabled or not
+
+        :param option: Option to check
+        :type option: :class:`~PyFlow.Core.Common.PinOptions`
+        :rtype: bool
+        """
         return bool(self._flags & option)
 
     def isAny(self):
+        """Wheter this pin of type Any or not
+
+        :rtype: bool
+        """
         return self._isAny
 
     @property
     def packageName(self):
+        """Returns name of package this pin belongs to
+
+        :rtype: bool
+        """
         return self._packageName
 
     @property
@@ -208,15 +228,19 @@ class PinBase(IPin):
         return result
 
     def __repr__(self):
-        return "[{0}:{1}:{2}:{3}]".format(self.dataType, self.getName(), self.dirty, self.currentData())
+        return "[{0}:{1}:{2}:{3}]".format(self.dataType, self.getFullName(), self.dirty, self.currentData())
 
     def isExec(self):
+        """Returns whether this is exec pin or not
+
+        :rtype: bool
+        """
         return False
 
     def initAsArray(self, bIsArray):
         """Sets this pins to be a list always
 
-        :param bIsArray: Define as Array
+        :param bIsArray: Define as array
         :type bIsArray: bool
         """
         self._alwaysList = bool(bIsArray)
@@ -279,23 +303,38 @@ class PinBase(IPin):
         self.containerTypeChanged.send()
 
     def isArray(self):
-        """Returns True if Pin Structure is Array
+        """Returns whether this pin is array or not
+
+        :rtype: bool
         """
         return self._isArray
 
     def isDict(self):
-        """Returns True if Pin Structure is Dict
+        """Returns whether this pin is dict or not
+
+        :rtype: bool
         """
         return self._isDict
 
     def setWrapper(self, wrapper):
+        """Sets ui wrapper instance
+
+        :param wrapper: Whatever ui class that represents this pin
+        """
         if self._wrapper is None:
             self._wrapper = weakref.ref(wrapper)
 
     def getWrapper(self):
+        """Returns ui wrapper instance
+        """
         return self._wrapper
 
     def deserialize(self, jsonData):
+        """Restores itself from supplied serialized data
+
+        :param jsonData: Json representation of pin
+        :type jsonData: dict
+        """
         self.setName(jsonData["name"])
         self.uid = uuid.UUID(jsonData['uuid'])
 
@@ -320,9 +359,11 @@ class PinBase(IPin):
         else:
             self.setClean()
 
-    # ISerializable interface
     def serialize(self):
+        """Serializes itself to json
 
+        :rtype: dict
+        """
         storable = self.optionEnabled(PinOptions.Storable)
 
         serializedData = None
@@ -335,7 +376,7 @@ class PinBase(IPin):
         data = {
             'name': self.name,
             'package': self.packageName,
-            'fullName': self.getName(),
+            'fullName': self.getFullName(),
             'dataType': self.__class__.__name__,
             'direction': int(self.direction),
             'value': serializedData,
@@ -360,10 +401,12 @@ class PinBase(IPin):
                 data['wrapper'] = wrapperData[0][1]
         return data
 
-    # IItemBase interface
-
     @property
     def uid(self):
+        """Returns unique identifier
+
+        :rtype: :class:`uuid.UUID`
+        """
         return self._uid
 
     @uid.setter
@@ -372,6 +415,15 @@ class PinBase(IPin):
             self._uid = value
 
     def setName(self, name, force=False):
+        """Sets pin name and fires events
+
+        :param name: New pin name
+        :type name: str
+        :param force: If True - name will be changed even if option :attr:`~PyFlow.Core.Common.PinOptions.RenamingEnabled` is turned off
+        :type force: bool
+        :returns: Whether renaming performed or not
+        :rtype: bool
+        """
         if not force:
             if not self.optionEnabled(PinOptions.RenamingEnabled):
                 return False
@@ -381,7 +433,11 @@ class PinBase(IPin):
         self.nameChanged.send(self.name)
         return True
 
-    def getName(self):
+    def getFullName(self):
+        """Returns full pin name, including node name
+
+        :rtype: str
+        """
         return self.owningNode().name + '_' + self.name
 
     def allowedDataTypes(self, checked=[], dataTypes=[], selfCheck=True, defaults=False):
@@ -391,6 +447,8 @@ class PinBase(IPin):
         return False
 
     def defaultValue(self):
+        """Returns default value of this pin
+        """
         if self.isArray():
             return []
         elif self.isDict():
@@ -399,13 +457,27 @@ class PinBase(IPin):
             return self._defaultValue
 
     def getData(self):
+        """Returns pin value
+
+        If something is connected to this pin, graph will be evaluated
+
+        .. seealso:: :class:`~PyFlow.Core.EvaluationEngine.DefaultEvaluationEngine_Impl`
+        """
         return EvaluationEngine().getPinData(self)
 
     def clearError(self):
-        self._lastError = None
-        self.errorCleared.send()
+        """Clears any last error on this pin and fires event
+        """
+        if self._lastError is not None:
+            self._lastError = None
+            self.errorCleared.send()
 
     def setError(self, err):
+        """Marks this pin as invalid by setting error message to it. Also fires event
+
+        :param err: Error message
+        :type err: str
+        """
         self._lastError = str(err)
         self.errorOccured.send(self._lastError)
 
@@ -418,8 +490,12 @@ class PinBase(IPin):
             func(array)
         return valid
 
-    ## Setting the data
     def setData(self, data):
+        """Sets value to pin
+
+        :param data: Data to be set
+        :type data: object
+        """
         if self.super is None:
             return
         try:
@@ -462,45 +538,36 @@ class PinBase(IPin):
             if wrapper:
                 wrapper.update()
 
-    ## Calling execution pin
     def call(self, *args, **kwargs):
         if self.owningNode().isValid():
             self.onExecute.send(*args, **kwargs)
 
     def disconnectAll(self):
-        # if input pin
-        # 1) loop connected output pins of left connected node
-        # 2) call events
-        # 3) remove self from other's affection list
-        # clear affected_by list
         if self.direction == PinDirection.Input:
             for o in list(self.affected_by):
                 disconnectPins(self, o)
             self.affected_by.clear()
 
-        # if output pin
-        # 1) loop connected input pins of right connected node
-        # 2) call events
-        # 3) remove self from other's affection list
-        # clear affects list
         if self.direction == PinDirection.Output:
             for i in list(self.affects):
                 disconnectPins(self, i)
             self.affects.clear()
 
-    ## Describes, what data type is this pin.
     @property
     def dataType(self):
+        """Returns data type of this pin
+
+        :rtype: str
+        """
         return self.__class__.__name__
 
-    ## Describes, what structure of data is this pin.
     @property
     def structureType(self):
-        return self._structure
+        """Returns current structure of this pin
 
-    @property
-    def currentStructure(self):
-        return self._currStructure
+        :rtype: :class:`~PyFlow.Core.Common.PinStructure`
+        """
+        return self._structure
 
     @structureType.setter
     def structureType(self, structure):
@@ -510,7 +577,7 @@ class PinBase(IPin):
     # PinBase methods
 
     def kill(self, *args, **kwargs):
-        """Delete Current Pin
+        """Deletes this pin
         """
         self.disconnectAll()
         if self in self.owningNode().pins:
@@ -525,15 +592,28 @@ class PinBase(IPin):
         clearSignal(self.killed)
 
     def currentData(self):
+        """Returns current value of this pin, without any graph evaluation
+
+        :rtype: object
+        """
         if self._data is None:
             return self._defaultValue
         return self._data
 
     def aboutToConnect(self, other):
+        """This method called right before two pins connected
+
+        :param other: Pin which this pin is going to be connected with
+        :type other: :class:`~PyFlow.Core.PinBase.PinBase`
+        """
         self.changeStructure(other._currStructure)
         self.onPinConnected.send(other)
 
     def getCurrentStructure(self):
+        """Returns this pin structure type
+
+        :rtype: :class:`~PyFlow.Core.Common.PinStructure`
+        """
         if self.structureType == PinStructure.Multi:
             if self._alwaysSingle:
                 return PinStructure.Single
@@ -547,12 +627,19 @@ class PinBase(IPin):
             return self.structureType
 
     def changeStructure(self, newStruct, init=False):
+        """Changes this pin structure type
+
+        :param newStruct: Target structure
+        :type newStruct: :class:`~PyFlow.Core.Common.PinStructure`
+        :param init: **docs goes here**
+        :type init: bool
+        """
         free = self.canChangeStructure(newStruct, [], init=init)
         if free:
             self.updateConstrainedPins(set(), newStruct, init, connecting=True)
 
     def canChangeStructure(self, newStruct, checked=[], selfCheck=True, init=False):
-        """Recursive Function to determine if pin can change its structure
+        """Recursive function to determine if pin can change its structure
 
         :param newStruct: New structure we want to apply
         :type newStruct: string
@@ -650,25 +737,25 @@ class PinBase(IPin):
     def pinConnected(self, other):
         push(self)
         if self.isDict():
-            self.updateConectedDicts([],self._data.keyType)   
+            self.updateConnectedDicts([], self._data.keyType)
 
     def pinDisconnected(self, other):
         self.onPinDisconnected.send(other)
         push(other)
 
-    def canChangeTypeOnConection(self, checked=[], can=True, extraPins=[], selfCheck=True):
-        """Recursive Funtion to determine if Pin can change its dataType
-        
-        :param checked: Already visited Pins, defaults to []
+    def canChangeTypeOnConnection(self, checked=[], can=True, extraPins=[], selfCheck=True):
+        """Recursive function to determine if pin can change its dataType
+
+        :param checked: Already visited pins, defaults to []
         :type checked: list, optional
         :param can: Variable Updated during iteration, defaults to True
         :type can: bool, optional
-        :param extraPins: extra Pins, non Constrained or Connected to this pin but that want to check also, defaults to []
+        :param extraPins: extra pins, non constrained or connected to this pin but that want to check also, defaults to []
         :type extraPins: list, optional
-        :param selfCheck: Define if check Pin itself for connected pins, defaults to True
+        :param selfCheck: Define if check pin itself for connected pins, defaults to True
         :type selfCheck: bool, optional
-        :returns: True if Pin can becabe other dataType
-        :rtype: {bool}
+        :returns: True if pin can becabe other dataType
+        :rtype: bool
         """
         if not self.optionEnabled(PinOptions.ChangeTypeOnConnection):
             return False
@@ -686,17 +773,17 @@ class PinBase(IPin):
         for port in neis + con + extraPins:
             if port not in checked and can:
                 checked.append(port)
-                can = port.canChangeTypeOnConection(checked, can, selfCheck=True)
+                can = port.canChangeTypeOnConnection(checked, can, selfCheck=True)
         return can
 
-    def getDictElementNode(self,checked=[],node=None):
-        """Get the conected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDictElement.makeDictElement` to this Pin recursivelly
-        
-        :param checked: Currently Visited Pins, defaults to []
+    def getDictElementNode(self, checked=[], node=None):
+        """Get the connected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDictElement.makeDictElement` to this pin recursively
+
+        :param checked: Currently visited pins, defaults to []
         :type checked: list, optional
-        :param node: founded Node, defaults to None
-        :returns: founded Node or None if not found
-        """        
+        :param node: founded node, defaults to None
+        :rtype: :class:`~PyFlow.Core.NodeBase.NodeBase` or None
+        """
         if self.owningNode().__class__.__name__ == "makeDictElement":
             return self.owningNode()
         con = []
@@ -706,23 +793,23 @@ class PinBase(IPin):
                 if c not in checked:
                     con.append(c)
         if self.constraint:
-            neis = self.owningNode().constraints[self.constraint]                    
+            neis = self.owningNode().constraints[self.constraint]
         for port in con + neis:
             if port not in checked and node == None:
                 checked.append(port)
-                node = port.getDictElementNode(checked,node)
+                node = port.getDictElementNode(checked, node)
         return node
 
-    def getDictNode(self,checked=[],node=None):
-        """Get the conected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDict.makeDict` or :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict.makeAnyDict`
-        to this Pin recursivelly
-        
-        :param checked: Currently Visited Pins, defaults to []
+    def getDictNode(self, checked=[], node=None):
+        """Get the connected :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeDict.makeDict` or
+        :py:class:`PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict.makeAnyDict` to this pin recursively
+
+        :param checked: Currently visited pins, defaults to []
         :type checked: list, optional
-        :param node: founded Node, defaults to None
-        :returns: founded Node or None if not found
+        :param node: founded node, defaults to None
+        :returns: founded node or None if not found
         """
-        if self.owningNode().__class__.__name__ in ["makeDict","makeAnyDict"] :#and self.name == "data":
+        if self.owningNode().__class__.__name__ in ["makeDict", "makeAnyDict"]:
             return self.owningNode()
         con = []
         neis = []
@@ -731,25 +818,25 @@ class PinBase(IPin):
                 if c not in checked:
                     con.append(c)
         if self.constraint:
-            neis = self.owningNode().constraints[self.constraint]                    
+            neis = self.owningNode().constraints[self.constraint]
         for port in con + neis:
             if port not in checked and node == None:
                 checked.append(port)
-                node = port.getDictNode(checked,node)
+                node = port.getDictNode(checked, node)
         return node
 
-    def supportDictElement(self,checked=[],can=True,selfCheck=True):
-        """Itrerative Functions that search in all conected Pins to see if they support DictElement Nodes.
-        
-        :param checked: Already Visited Pins, defaults to []
+    def supportDictElement(self, checked=[], can=True, selfCheck=True):
+        """Iterative functions that search in all connected pins to see if they support DictElement nodes.
+
+        :param checked: Already visited pins, defaults to []
         :type checked: list, optional
         :param can: this is the variable that will be actualized during the recursive function, defaults to False
         :type can: bool, optional
         :param selfCheck: Define if look itself or no, defaults to True
         :type selfCheck: bool, optional
-        :returns: True if can connect DictElement nodes to this Pin
-        :rtype: {bool}
-        """        
+        :returns: True if can connect DictElement nodes to this pin
+        :rtype: bool
+        """
         if not self.optionEnabled(PinOptions.DictElementSupported):
             return False
         con = []
@@ -770,17 +857,17 @@ class PinBase(IPin):
         return can
 
     def supportOnlyDictElement(self, checked=[], can=False, selfCheck=True):
-        """Itrerative Functions that search in all conected Pins to see if they support Only DictElement Nodes, this
-        is donde for nodes like MakeDict and similars.
-        
+        """Iterative Functions that search in all connected pins to see if they support only DictElement nodes, this
+        is done for nodes like makeDict and simmilars.
+
         :param checked: Already Visited Pins, defaults to []
         :type checked: list, optional
         :param can: this is the variable that will be actualized during the recursive function, defaults to False
         :type can: bool, optional
-        :param selfCheck: Define if look itself or no, defaults to True
+        :param selfCheck: Defines if look itself or no, defaults to True
         :type selfCheck: bool, optional
         :returns: True if can connect only DictElement and Dicts nodes to this Pin
-        :rtype: {bool}
+        :rtype: bool
         """
         if self.isDict():
             return True
@@ -801,10 +888,10 @@ class PinBase(IPin):
                 can = port.supportOnlyDictElement(checked, can, selfCheck=True)
         return can
 
-    def updateConectedDicts(self, checked=[], keyType=None):
-        """Iterate over conected Dicts Pins and DictElements pins updating Key DataType
-        
-        :param checked: Already Visited Pins, defaults to []
+    def updateConnectedDicts(self, checked=[], keyType=None):
+        """Iterate over connected dicts pins and DictElements pins updating key data type
+
+        :param checked: Already visited pins, defaults to []
         :type checked: list, optional
         :param keyType: KeyDataType to set, defaults to None
         :type keyType: string, optional
@@ -828,15 +915,19 @@ class PinBase(IPin):
                 port.dictChanged.send(keyType)
                 if port.getWrapper():
                     port.getWrapper()().update()
-                port.updateConectedDicts(checked, keyType)
+                port.updateConnectedDicts(checked, keyType)
 
     def setClean(self):
+        """Sets dirty flag to True
+        """
         self.dirty = False
         if self.direction == PinDirection.Output:
             for i in self.affects:
                 i.dirty = False
 
     def setDirty(self):
+        """Sets dirty flag to True
+        """
         if self.isExec():
             return
         self.dirty = True
@@ -844,7 +935,9 @@ class PinBase(IPin):
             i.dirty = True
 
     def hasConnections(self):
-        """Return the number of conections this pin has
+        """Return the number of connections this pin has
+
+        :rtype: int
         """
         numConnections = 0
         if self.direction == PinDirection.Input:
@@ -870,7 +963,7 @@ class PinBase(IPin):
         else:
             self.owningNode().constraints[constraint] = [self]
 
-    def updatestructConstraint(self, constraint):
+    def updateStructConstraint(self, constraint):
         self.structConstraint = constraint
         if constraint in self.owningNode().structConstraints:
             self.owningNode().structConstraints[constraint].append(self)
@@ -879,11 +972,15 @@ class PinBase(IPin):
 
     @staticmethod
     def IsValuePin():
+        """Returns whether this pin is value pin or not
+
+        :rtype: bool
+        """
         return True
 
     @staticmethod
     def pinDataTypeHint():
-        """Static hint of what data type is this pin, as well as default value for this data type.
+        """Hint of what data type is this pin, as well as default value for this data type.
 
         Used to easily find pin classes by type id.
 

@@ -656,7 +656,7 @@ class Canvas(QGraphicsView):
     def findPin(self, pinName):
         uiPin = None
         for pin in self.pins.values():
-            if pinName == pin.getName():
+            if pinName == pin.getFullName():
                 uiPin = pin
                 break
         return uiPin

@@ -168,9 +168,9 @@ class IPin(IItemBase):
 
     @staticmethod
     def supportedDataTypes():
-        """An array of supported data types
+        """List of supported data types
 
-        Array of data types that can be casted to this type. For example - int can support float, or vector3 can support vector4 etc.
+        List of data types that can be casted to this type. For example - int can support float, or vector3 can support vector4 etc.
 
         :rtype: list(object)
         :raises NotImplementedError: If not implemented
@@ -188,9 +188,6 @@ class IPin(IItemBase):
     def getData(self):
         """How to return data for this pin
 
-        If something is connected to this pin, graph will be evaluated
-
-        .. seealso:: :class:`~PyFlow.Core.EvaluationEngine.DefaultEvaluationEngine_Impl`
         :raises NotImplementedError: If not implemented
         """
         raise NotImplementedError('getData method of IPin is not implemented')

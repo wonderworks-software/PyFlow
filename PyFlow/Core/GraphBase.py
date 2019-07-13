@@ -361,7 +361,7 @@ class GraphBase(ISerializable):
         """
         result = None
         for pin in self.pins.values():
-            if pinName == pin.getName():
+            if pinName == pin.getFullName():
                 result = pin
                 break
         return result

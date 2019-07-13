@@ -1272,7 +1272,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                         data = inp.currentData()[1]
                     w.setWidgetValue(data)
                     w.blockWidgetSignals(False)
-                    w.setObjectName(inp.getName())
+                    w.setObjectName(inp.getFullName())
                     group = inGroup
                     if inGroup is None:
                         group = inp._rawPin.group
@@ -1297,7 +1297,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     data = inp.currentData()[1]
                 w.setWidgetValue(data)
                 w.blockWidgetSignals(False)
-                w.setObjectName(inp.getName())
+                w.setObjectName(inp.getFullName())
                 inputsCategory.addWidget(inp.name, w)
         propertiesWidget.addWidget(inputsCategory)
         return inputsCategory

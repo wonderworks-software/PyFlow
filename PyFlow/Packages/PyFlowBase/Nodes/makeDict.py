@@ -48,7 +48,7 @@ class makeDict(NodeBase):
         self.updateDicts(self.KeyType.dataType)
         
     def updateDicts(self,dataType):
-        self.arrayData.updateConectedDicts([],self.KeyType.dataType)
+        self.arrayData.updateConnectedDicts([],self.KeyType.dataType)
 
     def inPinConnected(self,inputpin):
         inp = inputpin.getDictElementNode([])

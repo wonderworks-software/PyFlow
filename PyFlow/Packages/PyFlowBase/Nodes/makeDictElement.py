@@ -40,14 +40,14 @@ class makeDictElement(NodeBase):
     def description():
         return 'Creates a Dict Element'
 
-    def dataBeenSet(self,pin=None):
+    def dataBeenSet(self, pin=None):
         try:
             self.outArray._data = DictElement(self.key.getData(), self.value.getData())
             self.checkForErrors()
         except:
             pass
 
-    def outPinDisConnected(self,inp):
+    def outPinDisConnected(self, inp):
         dictNode = inp.getDictNode([])
         if dictNode:
             if dictNode.KeyType in self.constraints[self.key.constraint]:
@@ -56,7 +56,7 @@ class makeDictElement(NodeBase):
                 dictNode.constraints[self.key.constraint].remove(self.key)
         self.outPinConnected(self.outArray)
 
-    def outPinConnected(self,inp):
+    def outPinConnected(self, inp):
         dictNode = inp.getDictNode([])
         if dictNode:
             dataType = dictNode.KeyType.dataType
@@ -64,10 +64,10 @@ class makeDictElement(NodeBase):
                 dataType = self.key.dataType
             if dictNode.KeyType not in self.constraints[self.key.constraint]:
                 self.constraints[self.key.constraint].append(dictNode.KeyType)
-            if self.key not in dictNode.constraints[self.key.constraint]:    
+            if self.key not in dictNode.constraints[self.key.constraint]:
                 dictNode.constraints[self.key.constraint].append(self.key)
             for i in dictNode.constraints[self.key.constraint]:
-                i.setType(dataType)            
+                i.setType(dataType)
 
     def compute(self, *args, **kwargs):
         self.outArray.setData(DictElement(self.key.getData(), self.value.getData()))

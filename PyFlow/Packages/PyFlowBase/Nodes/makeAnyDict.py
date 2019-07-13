@@ -45,7 +45,7 @@ class makeAnyDict(NodeBase):
         return 'Creates a list from connected pins'
 
     def updateDicts(self,dataType):
-        self.arrayData.updateConectedDicts([],self.KeyType.dataType)
+        self.arrayData.updateConnectedDicts([],self.KeyType.dataType)
 
     def inPinConnected(self,inputpin):
         inp = inputpin.getDictElementNode([])

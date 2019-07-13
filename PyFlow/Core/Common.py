@@ -346,9 +346,9 @@ def canConnectPins(src, dst):
 
     if src.IsValuePin() and dst.IsValuePin():
         if src.dataType in dst.allowedDataTypes([], dst._supportedDataTypes) or dst.dataType in src.allowedDataTypes([], src._supportedDataTypes):
-            a = src.dataType == "AnyPin" and not src.canChangeTypeOnConection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), [])
-            b = dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
-            c = not dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
+            a = src.dataType == "AnyPin" and not src.canChangeTypeOnConnection([], src.optionEnabled(PinOptions.ChangeTypeOnConnection), [])
+            b = dst.canChangeTypeOnConnection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
+            c = not dst.canChangeTypeOnConnection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
             if all([a, b or c]):
                 return False
             if not src.isDict() and dst.supportOnlyDictElement([], dst.isDict()) and not (dst.checkFree([], selfCheck=False) and dst.canChangeStructure(src._currStructure, [], selfCheck=False)):
@@ -455,7 +455,7 @@ def connectPinsByIndexes(lhsNode=None, lhsOutPinIndex=0, rhsNode=None, rhsInPinI
     return connectPins(lhsPin, rhsPin)
 
 def traverseConstrainedPins(startFrom, callback):
-    """Iterate over constrained and conected pins
+    """Iterate over constrained and connected pins
 
     Iterates over all constrained chained pins of type :class:`Any <PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin>` and passes pin into callback function. Callback will be executed once for every pin
 
