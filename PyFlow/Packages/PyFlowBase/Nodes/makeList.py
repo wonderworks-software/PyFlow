@@ -7,7 +7,7 @@ class makeList(NodeBase):
     def __init__(self, name):
         super(makeList, self).__init__(name)
         self.listData = self.createInputPin('data', 'AnyPin', structure=PinStructure.Array)
-        self.listData.enableOptions(PinOptions.AllowMultipleConnections | PinOptions.DictElementSuported | PinOptions.AllowAny)
+        self.listData.enableOptions(PinOptions.AllowMultipleConnections | PinOptions.DictElementSupported | PinOptions.AllowAny)
         self.listData.disableOptions(PinOptions.ChangeTypeOnConnection | PinOptions.SupportsOnlyArrays)
 
         self.sorted = self.createInputPin('sorted', 'BoolPin')

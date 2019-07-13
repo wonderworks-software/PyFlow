@@ -12,7 +12,7 @@ Detailed description
 ====================
 
 We use this function as decorator in 100% cases.
-See :class:`PyFlow.Packages.FunctionLibraries` content for plenty of examples
+See :file:`PyFlow/Packages/PyFlowBase/FunctionLibraries` content for plenty of examples
 
 Arguments
 ---------
@@ -27,6 +27,10 @@ Arguments
     First element is pin data type.
     Second - default value.
     Third element is :term:`pin specifires`
+
+.. seealso:: :meth:`~PyFlow.Core.NodeBase.NodeBase.createInputPin`
+             :meth:`~PyFlow.Core.NodeBase.NodeBase.createOutputPin`
+             :class:`~PyFlow.Core.PinBase.PinBase`
 
 **meta**
 

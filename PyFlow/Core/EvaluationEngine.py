@@ -3,7 +3,7 @@ from PyFlow.Core.Interfaces import IEvaluationEngine
 
 
 class DefaultEvaluationEngine_Impl(IEvaluationEngine):
-    """Default eveluation engine implementation
+    """Default evaluation engine implementation
     """
 
     def __init__(self):

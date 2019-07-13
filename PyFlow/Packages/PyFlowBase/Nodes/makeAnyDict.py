@@ -7,11 +7,11 @@ from PyFlow.Core.Common import *
 class makeAnyDict(NodeBase):
     def __init__(self, name):
         super(makeAnyDict, self).__init__(name)
-        self.KeyType = self.createInputPin('KeyType', 'AnyPin', defaultValue=str(""), constraint="1", allowedPins=getHashableDataTypes())
+        self.KeyType = self.createInputPin('KeyType', 'AnyPin', defaultValue=str(""), constraint="1", supportedPinDataTypes=getHashableDataTypes())
         self.KeyType.hidden = True
 
         self.arrayData = self.createInputPin('data', 'AnyPin', structure=PinStructure.Dict)
-        self.arrayData.enableOptions(PinOptions.AllowMultipleConnections | PinOptions.AllowAny | PinOptions.DictElementSuported)
+        self.arrayData.enableOptions(PinOptions.AllowMultipleConnections | PinOptions.AllowAny | PinOptions.DictElementSupported)
         self.arrayData.disableOptions(PinOptions.ChangeTypeOnConnection | PinOptions.SupportsOnlyArrays)
         self.outArray = self.createOutputPin('out', 'AnyPin', structure=PinStructure.Dict)
         self.outArray.enableOptions(PinOptions.AllowAny)

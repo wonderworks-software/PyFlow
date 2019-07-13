@@ -28,8 +28,8 @@ class UIAnyPin(UIPinBase):
         self.prevDataType = None
         self.setDefault(self._rawPin.defColor())
 
-    def checkFree(self, checked=[], selfChek=True):
-        return self._rawPin.checkFree(checked, selfChek)
+    def checkFree(self, checked=[], selfCheck=True):
+        return self._rawPin.checkFree(checked, selfCheck)
 
     def disconnect(self, other):
         self.prevColor = None

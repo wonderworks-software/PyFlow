@@ -25,7 +25,7 @@ class floatRamp(NodeBase):
         helper.addInputStruct(PinStructure.Multi)
         helper.addOutputStruct(PinStructure.Multi)
         helper.addInputStruct(PinStructure.Array)
-        helper.addOutputStruct(PinStructure.Array)        
+        helper.addOutputStruct(PinStructure.Array)
         return helper
 
     def serialize(self):      
@@ -48,7 +48,7 @@ class floatRamp(NodeBase):
 
     @staticmethod
     def keywords():
-        return ["fcurve","ramp","curve"]
+        return ["fcurve", "ramp", "curve"]
 
     @staticmethod
     def description():

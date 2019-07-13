@@ -10,8 +10,8 @@ class reroute(NodeBase):
         self.output = self.createOutputPin("out", 'AnyPin', structure=PinStructure.Multi, constraint="1", structConstraint="1")
         self.input.checkForErrors = False
         self.output.checkForErrors = False
-        self.input.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
-        self.output.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
+        self.input.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSupported)
+        self.output.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSupported)
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
 

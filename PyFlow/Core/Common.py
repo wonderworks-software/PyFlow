@@ -288,14 +288,14 @@ def canConnectPins(src, dst):
         return True
 
     if not src.isArray() and dst.isArray():
-        if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
+        if dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfCheck=False)):
             return False
 
     if not src.isDict() and dst.isDict():
         if dst.optionEnabled(PinOptions.SupportsOnlyArrays):
-            if not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfChek=False)):
+            if not (src.canChangeStructure(dst._currStructure, []) or dst.canChangeStructure(src._currStructure, [], selfCheck=False)):
                 return False
-        elif not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSuported)) and dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not dst.canChangeStructure(src._currStructure, [], selfChek=False):
+        elif not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSupported)) and dst.optionEnabled(PinOptions.SupportsOnlyArrays) and not dst.canChangeStructure(src._currStructure, [], selfCheck=False):
             return False
         else:
             DictElement = src.getDictElementNode([])
@@ -310,13 +310,13 @@ def canConnectPins(src, dst):
 
     if src.isArray() and not dst.isArray():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
-        dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfChek=False)
+        dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
         if not dst.optionEnabled(PinOptions.ArraySupported) and not (srcCanChangeStruct or dstCanCnahgeStruct):
             return False
 
     if src.isDict() and not dst.isDict():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
-        dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfChek=False)
+        dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
         if not dst.optionEnabled(PinOptions.DictSupported) and not (srcCanChangeStruct or dstCanCnahgeStruct):
             return False
 
@@ -351,13 +351,13 @@ def canConnectPins(src, dst):
             c = not dst.canChangeTypeOnConection([], dst.optionEnabled(PinOptions.ChangeTypeOnConnection), []) and not dst.optionEnabled(PinOptions.AllowAny)
             if all([a, b or c]):
                 return False
-            if not src.isDict() and dst.supportOnlyDictElement([], dst.isDict()) and not (dst.checkFree([], selfChek=False) and dst.canChangeStructure(src._currStructure, [], selfChek=False)):
-                if not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSuported)) and dst.supportOnlyDictElement([], dst.isDict()):
+            if not src.isDict() and dst.supportOnlyDictElement([], dst.isDict()) and not (dst.checkFree([], selfCheck=False) and dst.canChangeStructure(src._currStructure, [], selfCheck=False)):
+                if not src.supportDictElement([], src.optionEnabled(PinOptions.DictElementSupported)) and dst.supportOnlyDictElement([], dst.isDict()):
                     return False
             return True
         else:
-            if all([src.dataType in list(dst.allowedDataTypes([], dst._defaultSupportedDataTypes, selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections), defaults=True)) + ["AnyPin"],
-                   dst.checkFree([], selfChek=dst.optionEnabled(PinOptions.AllowMultipleConnections))]):
+            if all([src.dataType in list(dst.allowedDataTypes([], dst._defaultSupportedDataTypes, selfCheck=dst.optionEnabled(PinOptions.AllowMultipleConnections), defaults=True)) + ["AnyPin"],
+                   dst.checkFree([], selfCheck=dst.optionEnabled(PinOptions.AllowMultipleConnections))]):
                 return True
             if all([dst.dataType in list(src.allowedDataTypes([], src._defaultSupportedDataTypes, defaults=True)) + ["AnyPin"],
                    src.checkFree([])]):
@@ -716,7 +716,7 @@ class PinOptions(Flag):
     AlwaysPushDirty = auto()  #: Pin will always be seen as dirty (computation needed)
     Storable = auto()  #: Determines if pin data can be stored when pin serialized
     AllowAny = auto()  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, wich means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
-    DictElementSuported = auto()  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
+    DictElementSupported = auto()  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
 
 
 class PinStructure(IntEnum):

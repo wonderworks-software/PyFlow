@@ -268,15 +268,15 @@ class AnyPin(PinBase):
                             pin._supportedDataTypes = pin._defaultSupportedDataTypes
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes                          
 
-    def checkFree(self, checked=[], selfChek=True):
+    def checkFree(self, checked=[], selfCheck=True):
         """Recursive Function to find if all connected Pins are of type :py:class:`AnyPin` and canChange On conection,
         so basically it checks if a Pin is free to change its dataType to another one
 
         :param checked: Already visited Pins, defaults to []
         :type checked: list, optional
-        :param selfChek: Define if check Pin itself or no, this is useful when trying to override a conection that is in fact
+        :param selfCheck: Define if check Pin itself or no, this is useful when trying to override a conection that is in fact
                         the only conection that make hole graphed nodes not be able to change Type, defaults to True
-        :type selfChek: bool, optional
+        :type selfCheck: bool, optional
         :returns: True if Pin can change current dataType
         :rtype: {bool}
         """
@@ -284,7 +284,7 @@ class AnyPin(PinBase):
             return True
         else:
             con = []
-            if selfChek:
+            if selfCheck:
                 free = not self.hasConnections()
                 if not free:
                     for c in getConnectedPins(self):
@@ -304,16 +304,16 @@ class AnyPin(PinBase):
                         free = port.checkFree(checked)
             return free
 
-    def allowedDataTypes(self, checked=[], dataTypes=[], selfChek=True, defaults=False):
+    def allowedDataTypes(self, checked=[], dataTypes=[], selfCheck=True, defaults=False):
         """Recursive Function to intersect allowedDatatypes of all conected pins.
 
         :param checked: Already visited Pins, defaults to []
         :type checked: list, optional
         :param dataTypes: Intersected dataTypes, defaults to []
         :type dataTypes: list, optional
-        :param selfChek: Define if check Pin itself or no, this is useful when trying to override a conection that is in fact
+        :param selfCheck: Define if check Pin itself or no, this is useful when trying to override a conection that is in fact
                         the only conection that make hole graphed nodes not be able to change Type, defaults to True
-        :type selfChek: bool, optional
+        :type selfCheck: bool, optional
         :param defaults: Define if we are intersecting current allowedDataTypes, or default (as in definition of node) allowedDataTypes, defaults to False
         :type defaults: bool, optional
         :returns: List contatining all the intersected dataTypes
@@ -323,7 +323,7 @@ class AnyPin(PinBase):
             return self._defaultSupportedDataTypes
         con = []
         neis = []
-        if selfChek:
+        if selfCheck:
             if self.hasConnections():
                 for c in getConnectedPins(self):
                     if c not in checked:
@@ -339,7 +339,7 @@ class AnyPin(PinBase):
                     dataTypes = list(set(dataTypes) & set(port._supportedDataTypes))
                 else:
                     dataTypes = list(set(dataTypes) & set(port._defaultSupportedDataTypes))
-                dataTypes = port.allowedDataTypes(checked, dataTypes, selfChek=True, defaults=defaults)
+                dataTypes = port.allowedDataTypes(checked, dataTypes, selfCheck=True, defaults=defaults)
         return dataTypes
 
     def initType(self, dataType, initializing=False):

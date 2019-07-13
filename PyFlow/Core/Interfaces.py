@@ -1,83 +1,101 @@
+from PyFlow.Core.Common import *
 
-# TODO: continue docs here
+
 class ISerializable(object):
     """
-    Interface for serialization and deserialization.
+    Interface for serialization and deserialization
     """
     def __init__(self):
         super(ISerializable, self).__init__()
 
     def serialize(self, *args, **Kwargs):
-        '''
-        Implements how item should be serialized.
+        """Implements how item will be serialized
 
-        Raises:
-            NotImplementedError.
-        '''
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('serialize method of ISerializable is not implemented')
 
     def deserialize(self, jsonData):
-        '''
-        Implements how item should be deserialized.
+        """Implements how item will be deserialized
 
-        Raises:
-            NotImplementedError.
-        '''
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('deserialize method of ISerializable is not implemented')
 
 
 class IItemBase(ISerializable):
-    '''
-    Item interface.
+    """Base class for pins and nodes
 
-    Base for pins and nodes.
-    '''
+    .. py:method:: uid
+        :property:
+
+        :getter: Unique identifier accessor
+
+                :raises: :class:`NotImplementedError`
+
+        :setter: Unique identifier setter
+
+                :raises: :class:`NotImplementedError`
+    """
 
     def __init__(self):
         super(IItemBase, self).__init__()
 
     def getWrapper(self):
+        """Returns reference to gui wrapper if it exists
+
+        :rtype: gui class instance or None
+        """
         return None
 
     def setWrapper(self, wrapper):
+        """Sets gui wrapper
+
+        :param wrapper: gui class
+        :type wrapper: Whatever gui class
+        """
         pass
 
     @property
     def uid(self):
-        raise NotImplementedError('uid property of IItemBase can not be deleted')
+        raise NotImplementedError('uid property of IItemBase should be implemented')
 
     @uid.setter
     def uid(self, value):
-        raise NotImplementedError('uid property of IItemBase can not be deleted')
+        raise NotImplementedError('uid setter of IItemBase should be implemented')
 
     @uid.deleter
     def uid(self):
         raise NotImplementedError('uid property of IItemBase can not be deleted')
 
     def getName(self):
-        '''
-        returns item's name as string.
+        """Returns item's name
 
-        Returns:
-            string name of item.
-        '''
+        :rtype: str
+
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('getName method of IItemBase is not implemented')
 
     def setName(self, name):
-        '''
-        sets item's name.
+        """Sets item name
 
-        Args:
-            name: string to be used as name.
-        '''
+        :param name: Target name
+        :type name: str
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('setName method of IItemBase is not implemented')
 
     def kill(self):
+        """Removes item
+
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('kill method of IItemBase is not implemented')
 
 
 class IPin(IItemBase):
-    """Pin interface.
+    """Pin interface
     """
 
     def __init__(self):
@@ -85,96 +103,121 @@ class IPin(IItemBase):
 
     @staticmethod
     def IsValuePin():
-        '''
-        Defines is this pin is holding some data or not
+        """Defines is this pin is holding some data or not
 
         For example, ExecPin is not a value pin
 
-        Returns:
-            bool
-        '''
+        :rtype: bool
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('IsValuePin method of IPin is not implemented')
 
     @staticmethod
     def color():
+        """Defines pin color
+
+        Can be used by gui wrapper class.
+
+        :returns: Rgba tuple
+        :rtype: typle(0, 0, 0, 255)
+        """
         return (255, 0, 0, 255)
 
     def isExec(self):
-        '''
-        is this pin executable or not
-        '''
+        """Is this pin executable or not
+
+        :rtype: bool
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('isExec method of IPin is not implemented')
 
     def isArray(self):
-        '''
-        is this pin holds an list of values or not
-        '''
+        """Is this pin holds an list of values or not
+
+        :rtype: bool
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('isArray method of IPin is not implemented')
 
     def isAny(self):
-        '''
-        is this pin of type Any or not
-        '''
+        """Is this pin of type Any or not
+
+        :rtype: bool
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('isAny method of IPin is not implemented')
 
     @staticmethod
-    def pinDataTypeHint():
-        """
-        Static hint of what data type is this pin, as well as default value for this data type.
-
-        Used to easily find pin classes by type id.
-        """
-        raise NotImplementedError('pinDataTypeHint method of IPin is not implemented')
-
-    @staticmethod
     def internalDataStructure():
-        """
-        Static hint of what realPyton type is this pin
+        """Static hint of what real python type is this pin
 
+        :rtype: object
+        :raises NotImplementedError: If not implemented
         """
-
         raise NotImplementedError('internalDataStructure method of IPin is not implemented')
 
     @staticmethod
     def processData(data):
-        '''
-        Defines how data is processed.
+        """Defines how data is processed
 
-        Returns:
-            procesed data
-        '''
+        :returns: Processed data
+        :rtype: object
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('processData method of IPin is not implemented')
 
     @staticmethod
     def supportedDataTypes():
-        '''
-        An array of supported data types.
+        """An array of supported data types
 
         Array of data types that can be casted to this type. For example - int can support float, or vector3 can support vector4 etc.
-        '''
+
+        :rtype: list(object)
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('supportedDataTypes method of IPin is not implemented')
 
     def defaultValue(self):
-        '''
-        Default value for this particular pin.
+        """Default value for this pin
 
-        This can be set whenever you need.
-
-        @sa PyFlow.Pins
-        '''
+        :rtype: object
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('defaultValue method of IPin is not implemented')
 
     def getData(self):
+        """How to return data for this pin
+
+        If something is connected to this pin, graph will be evaluated
+
+        .. seealso:: :class:`~PyFlow.Core.EvaluationEngine.DefaultEvaluationEngine_Impl`
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('getData method of IPin is not implemented')
 
     def setData(self, value):
+        """How to set data to pin
+
+        :param value: Value to set
+        :type value: object
+        :raises NotImplementedError: If not implemented
+        """
         raise NotImplementedError('setData method of IPin is not implemented')
 
     def call(self, *args, **kwargs):
-        raise NotImplementedError('call method of IPin is not implemented')
+        """How to execute. What this should do is execute `call` on another pin,
+        by using this we can evaluate nodes from left to right and define control flow
+        """
+        pass
 
     @property
     def dataType(self):
+        """How to return this pin data type
+
+        :rtype: str
+
+        :setter: How to set this pin data type
+        """
         raise NotImplementedError('dataType getter method of IPin is not implemented')
 
     @dataType.setter
@@ -205,15 +248,14 @@ class INode(IItemBase):
         raise NotImplementedError('isCallable method of INode is not implemented')
 
     def call(self, outPinName, *args, **kwargs):
-        """
-            call out exec pin by name
+        """call out exec pin by name
         """
         raise NotImplementedError('call method of INode is not implemented')
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, constraint=None, structConstraint=None, allowedPins=[]):
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
         raise NotImplementedError('createInputPin method of INode is not implemented')
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, constraint=None, structConstraint=None, allowedPins=[]):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
         raise NotImplementedError('createOutputPin method of INode is not implemented')
 
     def getUniqPinName(self, name):
