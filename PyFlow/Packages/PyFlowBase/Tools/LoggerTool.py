@@ -31,7 +31,7 @@ def addLoggingLevel(levelName, levelNum, methodName=None):
 
     To avoid accidental clobberings of existing attributes, this method will
     raise an `AttributeError` if the level name is already an attribute of the
-    `logging` module or if the method name is already present 
+    `logging` module or if the method name is already present
 
     Example
     -------
@@ -203,10 +203,10 @@ class LoggerTool(DockTool):
                             self.logView.append(errorLink)
                     else:
                         self.logView.append(
-                            '<span style=" color:%s;">%s<span>' % (colorchart[mode], l))             
+                            '<span style=" color:%s;">%s<span>' % (colorchart[mode], l))
                 else:
                     self.logView.append(
-                        '<span style=" color:%s;">%s<span>' % (colorchart[mode], l)) 
+                        '<span style=" color:%s;">%s<span>' % (colorchart[mode], l))
 
     def flushPython(self):
         self.logView.moveCursor(QtWidgets.QTextCursor.End,

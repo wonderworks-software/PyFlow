@@ -441,6 +441,9 @@ class Canvas(QGraphicsView):
 
     def collapseSelectedNodesToCompound(self):
         selectedNodes = self.selectedNodes()
+        if len(selectedNodes) == 0:
+            return
+
         selectedNodesRect = self.getNodesRect(True, True)
         wires = list()
         for node in selectedNodes:
