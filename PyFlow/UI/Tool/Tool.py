@@ -6,8 +6,15 @@ from Qt import QtGui, QtCore
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 class ToolBase(object):
-    """docstring for ToolBase."""
-    packageName = ""
+    """Base class for all editor tools
+
+    .. py:method:: name()
+        :staticmethod:
+
+        Returns name of this tool
+    """
+
+    packageName = ""  #: Package name this tool belongs to
 
     def __init__(self):
         super(ToolBase, self).__init__()
@@ -15,15 +22,54 @@ class ToolBase(object):
         self.pyFlowInstance = None
 
     def onShow(self):
+        """Called when tool pops up
+        """
         print(self.name(), "invoked")
 
     def onDestroy(self):
+        """Called when tool destroyed
+        """
         print(self.name(), "destroyed")
 
     def saveState(self, settings):
+        """Called on tool save
+
+        When this method is called, corerct group is already selected.
+        So you just need to call **setValue** here
+
+        .. code-block:: python
+            :linenos:
+
+            def saveState(self, settings):
+                super(ScreenshotTool, self).saveState(settings)
+                settings.setValue("format", self.format)
+
+        :param settings: Settings class instance
+        :type settings: :class:`QSettings`
+        """
         settings.setValue("uid", str(self.uid))
 
     def restoreState(self, settings):
+        """Called when application loaded
+
+        Restore any saved state here.
+        Same as **saveState**, settings group already selected, so jsut call **value** method
+        to access data
+
+        .. code-block::
+            :linenos:
+
+            def restoreState(self, settings):
+                super(ScreenshotTool, self).restoreState(settings)
+                formatValue = settings.value("format")
+                if formatValue is not None:
+                    self.format = formatValue
+                else:
+                    self.format = "PNG"
+
+        :param settings: Settings class instance
+        :type settings: :class:`QSettings`
+        """
         uidStr = settings.value("uid")
         if uidStr is not None:
             self.uid = uuid.UUID(uidStr)
@@ -36,9 +82,21 @@ class ToolBase(object):
 
     @staticmethod
     def toolTip():
+        """Tool tip message
+
+        :rtype: str
+        """
         return "Default tooltip"
 
     def uniqueName(self):
+        """Tool unique name
+
+        In case if tool is not a singleton like PropertiesTool, wee need to
+        store separate data for each instance. We use unique identifiers (:class:`~uuid.UUID`)
+        postfixes for this
+
+        :rtype: str
+        """
         return "{0}::{1}".format(self.name(), str(self.uid))
 
     @staticmethod
@@ -47,7 +105,8 @@ class ToolBase(object):
 
 
 class ShelfTool(ToolBase):
-    """docstring for ShelfTool."""
+    """Base class for shelf tools
+    """
     def __init__(self):
         super(ShelfTool, self).__init__()
 
@@ -63,7 +122,8 @@ class ShelfTool(ToolBase):
 
 
 class DockTool(QtWidgets.QDockWidget, ToolBase):
-    """docstring for DockTool."""
+    """Base class for dock tools
+    """
     def __init__(self):
         ToolBase.__init__(self)
         QtWidgets.QDockWidget.__init__(self)
@@ -103,15 +163,16 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         self.parent().unregisterToolInstance(self)
         event.accept()
 
-    def addButton(self,button):
+    def addButton(self, button):
         self.titleBarWidget().addButton(button)
 
+
 class DockTitleBar(QtWidgets.QWidget):
-    def __init__(self, dockWidget,renamable=False):
+    def __init__(self, dockWidget, renamable=False):
         super(DockTitleBar, self).__init__(dockWidget)
         self.renamable = renamable
         self.setLayout(QtWidgets.QHBoxLayout())
-        self.layout().setContentsMargins(0,0,0,1)
+        self.layout().setContentsMargins(0, 0, 0, 1)
         self.buttonsLay = QtWidgets.QHBoxLayout()
         self.buttonsLay.setSpacing(1)
         self.buttonsLay.setMargin(1)
@@ -121,8 +182,8 @@ class DockTitleBar(QtWidgets.QWidget):
         self.layout().addWidget(self.box)
 
         self.box.mouseDoubleClickEvent = self.mouseDoubleClickEvent
-        self.box.mousePressEvent = self.mousePressEvent        
-        self.box.mouseMoveEvent = self.mouseMoveEvent 
+        self.box.mousePressEvent = self.mousePressEvent
+        self.box.mouseMoveEvent = self.mouseMoveEvent
         self.box.mouseReleaseEvent = self.mouseReleaseEvent
 
         self.titleLabel = QtWidgets.QLabel(self)
@@ -188,7 +249,7 @@ class DockTitleBar(QtWidgets.QWidget):
         self.titleLabel.setText(title)
         self.titleEdit.setText(title)
 
-    def ChangeFloatingStyle(self,state):
+    def ChangeFloatingStyle(self, state):
         if not state:
             self.box.setStyleSheet(editableStyleSheet().getStyleSheet())
         else:
@@ -196,14 +257,13 @@ class DockTitleBar(QtWidgets.QWidget):
                                 background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 %s,
                                 stop: 0.6 %s,
-                                stop: 1.0 %s);}"""%("rgba%s" % str(editableStyleSheet().ButtonsColor.getRgb()),
-                                                    "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
-                                                    "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb())))
-        
-        
-    def update(self,*args,**kwargs):
+                                stop: 1.0 %s);}""" % ("rgba%s" % str(editableStyleSheet().ButtonsColor.getRgb()),
+                                                      "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb()),
+                                                      "rgba%s" % str(editableStyleSheet().BgColorBright.getRgb())))
+
+    def update(self, *args, **kwargs):
         self.ChangeFloatingStyle(self.parent().isFloating())
-        super(DockTitleBar, self).update(*args,**kwargs)
+        super(DockTitleBar, self).update(*args, **kwargs)
 
     def toggleFloating(self):
         self.parent().setFloating(not self.parent().isFloating())
@@ -228,7 +288,7 @@ class DockTitleBar(QtWidgets.QWidget):
     def mouseMoveEvent(self, event):
         event.ignore()
 
-    def addButton(self,button):
+    def addButton(self, button):
         button.setAutoRaise(True)
         button.setMaximumSize(self.buttonSize)
-        self.buttonsLay.insertWidget(5,button)
+        self.buttonsLay.insertWidget(5, button)

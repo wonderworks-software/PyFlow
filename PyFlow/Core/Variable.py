@@ -10,17 +10,46 @@ from PyFlow.Core.Interfaces import IItemBase
 
 class Variable(IItemBase):
     """Variable representation
+
+    :var nameChanged: Fired when variable name was changed
+    :vartype nameChanged: :class:`~blinker.base.Signal`
+    :var valueChanged: Fired when variable value was changed
+    :vartype valueChanged: :class:`~blinker.base.Signal`
+    :var dataTypeChanged: Fired when variable data type was changed
+    :vartype dataTypeChanged: :class:`~blinker.base.Signal`
+    :var structureChanged: Fired when variable structure was changed
+    :vartype structureChanged: :class:`~blinker.base.Signal`
+    :var accessLevelChanged: Fired when variable access level was changed
+    :vartype accessLevelChanged: :class:`~blinker.base.Signal`
+    :var killed: Fired when variable was killed
+    :vartype killed: :class:`~blinker.base.Signal`
+    :var graph: Reference to owning graph
+    :vartype graph: :class:`~PyFlow.Core.GraphBase.GraphBase`
     """
     def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, structure=PinStructure.Single, uid=None):
+        """Constructor
+
+        :param graph: Owning graph
+        :type graph: :class:`~PyFlow.Core.GraphBase.GraphBase`
+        :param value: Variable value
+        :type value: object
+        :param name: Variable name
+        :type name: str
+        :param dataType: Variable data type
+        :type dataType: str
+        :param accessLevel: Variable access level
+        :type accessLevel: :class:`~PyFlow.Core.Common.AccessLevel`
+        :param structure: Variable structure
+        :type structure: :attr:`~PyFlow.Core.Common.PinStructure.Single`
+        :param uid: Variable unique identifier
+        :type uid: :class:`~uuid.UUID`
+        """
         super(Variable, self).__init__()
-        # signals
         self.nameChanged = Signal(str)
         self.valueChanged = Signal(str)
         self.dataTypeChanged = Signal(str)
         self.structureChanged = Signal(str)
         self.accessLevelChanged = Signal(str)
-        self.packageNameChanged = Signal(str)
-        self.uuidChanged = Signal(object)
         self.killed = Signal()
 
         self.graph = graph
@@ -46,10 +75,14 @@ class Variable(IItemBase):
             self._uiWrapper = weakref.ref(wrapper)
 
     def location(self):
+        """Returns location of variable
+
+        .. seealso:: :meth:`~PyFlow.Core.GraphBase.GraphBase.location`
+        """
         return self.graph.location()
 
     def findRefs(self):
-        """returns all getVar and setVar instances for this node
+        """Returns all getVar and setVar instances for variable
         """
         return self.graph.graphManager.findVariableRefs(self)
 
@@ -58,6 +91,10 @@ class Variable(IItemBase):
 
     @property
     def packageName(self):
+        """Variable type package name
+
+        :rtype: str
+        """
         return self._packageName
 
     @packageName.setter
@@ -68,6 +105,10 @@ class Variable(IItemBase):
 
     @property
     def accessLevel(self):
+        """Variable access level
+
+        :rtype: :class:`~PyFlow.Core.Common.AccessLevel`
+        """
         return self._accessLevel
 
     @accessLevel.setter
@@ -88,11 +129,15 @@ class Variable(IItemBase):
 
     @property
     def value(self):
+        """Variable value
+
+        :rtype: object
+        """
         return self._value
 
     @value.setter
     def value(self, value):
-        # type checking if this variable is not of any type
+        # type checking if variable is not of any type
         if not self.dataType == 'AnyPin':
             supportedDataTypes = findPinClassByType(self.dataType).supportedDataTypes()
             if self.dataType not in supportedDataTypes:
@@ -108,6 +153,10 @@ class Variable(IItemBase):
 
     @property
     def dataType(self):
+        """Variable data type
+
+        :rtype: str
+        """
         return self._dataType
 
     @dataType.setter
@@ -121,6 +170,10 @@ class Variable(IItemBase):
 
     @property
     def structure(self):
+        """Variable structure
+
+        :rtype: :class:`~PyFlow.Core.Common.PinStructure`
+        """
         return self._structure
 
     @structure.setter
@@ -180,6 +233,10 @@ class Variable(IItemBase):
 
     @staticmethod
     def jsonTemplate():
+        """Returns dictionary with minimum required fields for serialization
+
+        :rtype: dict
+        """
         template = {
             'name': None,
             'value': None,

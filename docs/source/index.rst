@@ -14,12 +14,13 @@ PyFlow - visual scripting framework for python!
 
    appanatomy
    basics
-   datalayout
 
 .. toctree::
    :caption: Advanced
    :maxdepth: 2
 
+   datalayout
+   nodeanatomy
    extending
 
 

@@ -1,11 +1,8 @@
 from PyFlow.Core.Interfaces import ICodeCompiler
 
-# TODO: docs checkpoint
 class Py3FunctionCompiler(ICodeCompiler):
-    '''
-        Compiles string to function object
-    '''
-
+    """Compiles string to python function
+    """
     def __init__(self, fooName=None, *args, **kwargs):
         super(Py3FunctionCompiler, self).__init__(*args, **kwargs)
         assert(isinstance(fooName, str))
@@ -25,7 +22,7 @@ class Py3FunctionCompiler(ICodeCompiler):
             foo += '\n\t{}'.format(line)
         if len(lines) == 0:
             foo += "\n\tpass"
-        codeObject = compile(foo, "fake", "exec")
+        codeObject = compile(foo, "PyFlowCodeCompiler", "exec")
         mem = {}
         exec(codeObject, mem)
         return mem[self._fooName]
@@ -36,7 +33,18 @@ class Py3CodeCompiler(ICodeCompiler):
     def __init__(self):
         super(Py3CodeCompiler, self).__init__()
 
-    def compile(self, code, moduleName="fake", scope={}):
+    def compile(self, code, moduleName="PyFlowCodeCompiler", scope={}):
+        """Evaluates supplied string
+
+        Used by python node
+
+        :param code: Whatever python code
+        :type code: str
+        :param moduleName: Used for runtime error messages
+        :type moduleName: str
+        :param scope: Storage where symbols will be placed
+        :type scope: dict
+        """
         codeObject = compile(code, moduleName, "exec")
         exec(codeObject, scope)
         return scope

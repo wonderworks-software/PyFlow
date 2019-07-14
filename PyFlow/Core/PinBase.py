@@ -402,10 +402,6 @@ class PinBase(IPin):
 
     @property
     def uid(self):
-        """Returns unique identifier
-
-        :rtype: :class:`uuid.UUID`
-        """
         return self._uid
 
     @uid.setter

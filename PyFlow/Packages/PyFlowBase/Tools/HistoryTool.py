@@ -9,7 +9,6 @@ from PyFlow.UI.EditorHistory import EditorHistory
 
 
 class HistoryEntry(QListWidgetItem):
-    """docstring for HistoryEntry"""
     enabledBrush = QtGui.QColor(80, 80, 80, 255)
     disabledBrush = enabledBrush.darker(150)
 
@@ -29,7 +28,6 @@ class HistoryEntry(QListWidgetItem):
 
 
 class HistoryWidget(QListWidget):
-    """docstring for HistoryWidget"""
     def __init__(self, parent=None):
         super(HistoryWidget, self).__init__(parent)
         self.currentRowChanged.connect(self.onRowChanged)
@@ -68,7 +66,6 @@ class HistoryWidget(QListWidget):
 
 
 class HistoryTool(DockTool):
-    """docstring for History tool."""
     def __init__(self):
         super(HistoryTool, self).__init__()
         self.setMinimumSize(QtCore.QSize(200, 50))

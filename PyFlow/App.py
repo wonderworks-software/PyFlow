@@ -106,7 +106,6 @@ class PyFlow(QMainWindow):
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self._current_file_name = 'Untitled'
-        self.populateMenu()
 
     def getTempDirectory(self):
         """Returns unique temp directory for application instance.
@@ -395,6 +394,7 @@ class PyFlow(QMainWindow):
                 for tool in self._tools:
                     if tool.name() == name:
                         tool.show()
+                        tool.onShow()
                         # Highlight window
                         print("highlight", tool.uniqueName())
                 return
@@ -512,6 +512,9 @@ class PyFlow(QMainWindow):
         # populate tools
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
+
+        # populate menus
+        instance.populateMenu()
 
         geo = settings.value('Editor/geometry')
         if geo is not None:

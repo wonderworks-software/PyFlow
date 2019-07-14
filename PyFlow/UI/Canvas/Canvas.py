@@ -291,6 +291,8 @@ class SceneClass(QGraphicsScene):
 
 
 class Canvas(QGraphicsView):
+    """UI canvas class
+    """
     _manipulationMode = CanvasManipulationMode.NONE
 
     _realTimeLineInvalidPen = Colors.Red
