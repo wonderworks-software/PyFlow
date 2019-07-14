@@ -21,6 +21,8 @@ class KeyboardModifiersCaptureWidget(QPushButton):
 
     def resetToDefault(self):
         self.currentModifiers = QtCore.Qt.NoModifier
+        self.bCapturing = False
+        self.setChecked(False)
 
     @staticmethod
     def modifiersToString(modifiers):
@@ -30,9 +32,10 @@ class KeyboardModifiersCaptureWidget(QPushButton):
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
-            self.bCapturing = True
-            super(KeyboardModifiersCaptureWidget, self).mousePressEvent(event)
-            self.setText("capturing...")
+            if not self.bCapturing:
+                self.bCapturing = True
+                super(KeyboardModifiersCaptureWidget, self).mousePressEvent(event)
+                self.setText("capturing...")
 
     @property
     def currentModifiers(self):
@@ -49,11 +52,14 @@ class KeyboardModifiersCaptureWidget(QPushButton):
         key = event.key()
         if key == QtCore.Qt.Key_Escape:
             self.resetToDefault()
+            self.bCapturing = False
+            self.setChecked(False)
             return
 
         if key == QtCore.Qt.Key_Return and self.bCapturing:
             self.bCapturing = False
             self.setChecked(False)
+            self.update()
 
         if self.bCapturing:
             self.currentModifiers = event.modifiers()

@@ -20,6 +20,8 @@ class KeyCaptureWidget(QPushButton):
         self.addAction(self.actionReset)
 
     def resetToDefault(self):
+        self.setChecked(False)
+        self.bCapturing = False
         self.currentKey = None
 
     @property
@@ -42,8 +44,9 @@ class KeyCaptureWidget(QPushButton):
     def mousePressEvent(self, event):
         super(KeyCaptureWidget, self).mousePressEvent(event)
         if event.button() == QtCore.Qt.MouseButton.LeftButton and not self.bCapturing:
-            self.bCapturing = True
-            self.setText("capturing...")
+            if not self.bCapturing:
+                self.bCapturing = True
+                self.setText("capturing...")
 
     def keyPressEvent(self, event):
         super(KeyCaptureWidget, self).keyPressEvent(event)
