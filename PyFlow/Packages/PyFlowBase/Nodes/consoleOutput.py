@@ -40,13 +40,10 @@ class consoleOutput(NodeBase):
             data = str(self.entity.getData())
             if self.entity.dataType != "StringPin":
                 data = data.encode('unicode-escape')
-            if IS_PYTHON2:
-                data = data.replace("\\n","<br/>")
-            else:
-                data = data.replace(b"\\n", b"<br/>").decode('unicode-escape')
+            data = data.replace("\\n", "<br/>")
 
-            errorLink = """<a href=%s><span style=" text-decoration: underline; color:green;">%s</span></a></p>"""%(self.name,"<br/>%s"%data)
+            errorLink = """<a href=%s><span style=" text-decoration: underline; color:green;">%s</span></a></p>""" % (self.name, "<br/>%s" % data)
             logging.getLogger(None).consoleoutput(errorLink)
-        else:         
-            print("%s: %s"%(self.name,self.entity.getData()))
+        else:
+            print("{0}: {1}".format(self.name, self.entity.getData()))
         self.outExec.call()

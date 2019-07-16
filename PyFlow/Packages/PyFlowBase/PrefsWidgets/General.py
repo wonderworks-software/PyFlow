@@ -1,5 +1,6 @@
 import os
 
+from Qt import QtCore
 from Qt.QtWidgets import *
 
 from PyFlow.UI.EditorHistory import EditorHistory
@@ -35,18 +36,24 @@ class GeneralPreferences(CategoryWidgetBase):
         self.historyDepth.editingFinished.connect(setHistoryCapacity)
         commonCategory.addWidget("History depth", self.historyDepth)
 
+        self.redirectOutput = QCheckBox(self)
+        commonCategory.addWidget("Redirect output", self.redirectOutput)
+
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
     def initDefaults(self, settings):
         settings.setValue("EditorCmd", "sublime_text.exe @FILE")
         settings.setValue("TempFilesDir", os.path.expanduser('~/PyFlowTemp'))
+        settings.setValue("HistoryDepth", 50)
+        settings.setValue("RedirectOutput", True)
 
     def serialize(self, settings):
         settings.setValue("EditorCmd", self.lePythonEditor.text())
         settings.setValue("TempFilesDir", self.tempFilesDir.text())
         settings.setValue("ExtraPackageDirs", self.additionalPackagePaths.text())
         settings.setValue("HistoryDepth", self.historyDepth.value())
+        settings.setValue("RedirectOutput", self.redirectOutput.checkState() == QtCore.Qt.Checked)
 
     def onShow(self, settings):
         self.lePythonEditor.setText(settings.value("EditorCmd"))
@@ -54,7 +61,13 @@ class GeneralPreferences(CategoryWidgetBase):
         path = os.path.normpath(path)
         self.tempFilesDir.setText(path)
         self.additionalPackagePaths.setText(settings.value("ExtraPackageDirs"))
+
         try:
             self.historyDepth.setValue(int(settings.value("HistoryDepth")))
+        except:
+            pass
+
+        try:
+            self.redirectOutput.setChecked(settings.value("RedirectOutput") == "true")
         except:
             pass
