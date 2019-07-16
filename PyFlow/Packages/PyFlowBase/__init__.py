@@ -83,7 +83,6 @@ from PyFlow.Packages.PyFlowBase.Tools.CompileTool import CompileTool
 from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 from PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import PythonScriptExporter
-from PyFlow.Packages.PyFlowBase.Exporters.CPPCompiler import CPPCompiler
 
 # Factories
 from PyFlow.Packages.PyFlowBase.Factories.UIPinFactory import createUIPin
@@ -178,7 +177,6 @@ _TOOLS[LoggerTool.__name__] = LoggerTool
 
 _EXPORTERS = OrderedDict()
 _EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
-_EXPORTERS[CPPCompiler.__name__] = CPPCompiler
 
 
 _PREFS_WIDGETS = OrderedDict()

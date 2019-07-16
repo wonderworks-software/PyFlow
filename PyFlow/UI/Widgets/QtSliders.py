@@ -1,17 +1,30 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
 
 import sys
 import struct
 from Qt import QtGui, QtCore, QtWidgets
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.Core.Common import ( clamp, INT_RANGE_MIN, INT_RANGE_MAX )
+from PyFlow.Core.Common import clamp, INT_RANGE_MIN, INT_RANGE_MAX
 from PyFlow.Core import structs
+
 
 class inputDrager(QtWidgets.QWidget):
     """Custom Widget to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
-    
+
     Signals:
         :valueChanged: Signal Emited when value has change (float)
     """
