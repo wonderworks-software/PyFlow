@@ -14,7 +14,8 @@ def generatePackageInit(packageName,
                         bIncludeUIPinFactory=True,
                         bIncludeTool=True,
                         bIncludeExporter=True,
-                        bIncludePinInputWidgetFactory=True):
+                        bIncludePinInputWidgetFactory=True,
+                        bIncludePrefsWindget=False):
     result = "PACKAGE_NAME = '{0}'\n\n".format(packageName)
     result += "from collections import OrderedDict\n"
     result += "from PyFlow.UI.UIInterfaces import IPackage\n\n"
@@ -49,12 +50,19 @@ def generatePackageInit(packageName,
 
     if bIncludePinInputWidgetFactory:
         result += "from PyFlow.Packages.{0}.Factories.PinInputWidgetFactory import getInputWidget\n".format(packageName)
+
+    if bIncludePrefsWindget:
+        result += "# Prefs widgets\n"
+        result += "from PyFlow.Packages.{0}.PrefsWidgets.DemoPrefs import DemoPrefs\n".format(packageName)
+
     result += "\n"
 
+    # TODO: Optimize this. Do not declare containers if feature not enabled
     result += "_FOO_LIBS = {}\n"
     result += "_NODES = {}\n"
     result += "_PINS = {}\n"
     result += "_TOOLS = OrderedDict()\n"
+    result += "_PREFS_WIDGETS = OrderedDict()\n"
     result += "_EXPORTERS = OrderedDict()\n\n"
 
     if bIncludeFooLib:
@@ -73,6 +81,9 @@ def generatePackageInit(packageName,
     if bIncludeExporter:
         result += """_EXPORTERS[DemoExporter.__name__] = DemoExporter\n\n"""
 
+    if bIncludePrefsWindget:
+        result += """_PREFS_WIDGETS["Demo"] = DemoPrefs\n\n"""
+
     result += "\nclass {0}(IPackage):\n\tdef __init__(self):\n\t\tsuper({0}, self).__init__()\n\n".format(packageName)
     result += """\t@staticmethod\n\tdef GetExporters():\n\t\treturn _EXPORTERS\n\n"""
     result += """\t@staticmethod\n\tdef GetFunctionLibraries():\n\t\treturn _FOO_LIBS\n\n"""
@@ -89,6 +100,9 @@ def generatePackageInit(packageName,
     if bIncludePinInputWidgetFactory:
         result += """\t@staticmethod\n\tdef PinsInputWidgetFactory():\n\t\treturn getInputWidget\n\n"""
 
+    if bIncludePrefsWindget:
+        result += """\t@staticmethod\n\tdef PrefsWidgets():\n\t\treturn _PREFS_WIDGETS\n\n"""
+
     return result
 
 
@@ -101,7 +115,8 @@ def generatePackage(packageName,
                     bIncludeUIPinFactory=True,
                     bIncludeTool=True,
                     bIncludeExporter=True,
-                    bIncludePinInputWidgetFactory=True):
+                    bIncludePinInputWidgetFactory=True,
+                    bIncludePrefsWindget=False):
     wizardsRoot = Wizards.__path__[0]
     templatesRoot = os.path.join(wizardsRoot, "Templates")
     packageTemplateDirPath = os.path.join(templatesRoot, "PackageTemplate")
@@ -133,7 +148,8 @@ def generatePackage(packageName,
                                     bIncludeUIPinFactory=bIncludeUIPinFactory,
                                     bIncludeTool=bIncludeTool,
                                     bIncludeExporter=bIncludeExporter,
-                                    bIncludePinInputWidgetFactory=bIncludePinInputWidgetFactory))
+                                    bIncludePinInputWidgetFactory=bIncludePinInputWidgetFactory,
+                                    bIncludePrefsWindget=bIncludePrefsWindget))
 
     # remove unneeded directories
     for path, dirs, files in os.walk(newPackagePath):

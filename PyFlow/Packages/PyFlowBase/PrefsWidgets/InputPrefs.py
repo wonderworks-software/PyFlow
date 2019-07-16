@@ -5,7 +5,6 @@ from Qt.QtWidgets import *
 
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Input import InputAction, InputManager
-from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.Widgets.PreferencesWindow import CategoryWidgetBase
 from PyFlow.UI.Widgets.InputActionWidget import InputActionWidget
