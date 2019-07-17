@@ -1,5 +1,6 @@
 Node anatomy
 ============
 
-Description of node elements, layouts, action views,
-context menu capabilities, etc..
+Generic node anatomy.
+
+.. image:: resources/nodeAnatomy.png

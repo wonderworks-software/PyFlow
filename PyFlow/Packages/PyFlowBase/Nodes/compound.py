@@ -26,7 +26,7 @@ from PyFlow.Core.Common import *
 
 
 class compound(NodeBase):
-    """this node encapsulates a graph, like compound in xsi
+    """This node encapsulates a graph, like compound in xsi
 
     pins can be edited only from inside the compound
     """
