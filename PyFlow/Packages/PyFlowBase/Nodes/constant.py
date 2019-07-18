@@ -19,7 +19,6 @@ from PyFlow.Core.Common import *
 from PyFlow import findPinClassByType, getAllPinClasses
 from PyFlow import CreateRawPin
 from copy import copy
-from multipledispatch import dispatch
 
 class constant(NodeBase):
     def __init__(self, name):
@@ -27,7 +26,7 @@ class constant(NodeBase):
         self.input = self.createInputPin("in", 'AnyPin', defaultValue=0.0, structure=PinStructure.Multi, constraint="1", structConstraint="1")
         self.output = self.createOutputPin("out", 'AnyPin', defaultValue=0.0, structure=PinStructure.Multi, constraint="1", structConstraint="1")
         self.input.disableOptions(PinOptions.ChangeTypeOnConnection)
-        self.output.disableOptions(PinOptions.ChangeTypeOnConnection)         
+        self.output.disableOptions(PinOptions.ChangeTypeOnConnection)
         pinAffects(self.input, self.output)
         self.input.call = self.output.call
         self.pinTypes = []

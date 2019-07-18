@@ -24,7 +24,6 @@ try:
     from inspect import getfullargspec as getargspec
 except:
     from inspect import getargspec
-from multipledispatch import dispatch
 
 from Qt import QtCore
 from Qt import QtGui
@@ -665,22 +664,6 @@ class Canvas(QGraphicsView):
     def enableSortcuts(self):
         self._sortcuts_enabled = True
 
-    @dispatch(uuid.UUID)
-    def findPin(self, uid):
-        uiPin = None
-        if uid in self.pins:
-            return self.pins[uid]
-        return uiPin
-
-    @dispatch(str)
-    def findPin(self, pinName):
-        uiPin = None
-        for pin in self.pins.values():
-            if pinName == pin.getFullName():
-                uiPin = pin
-                break
-        return uiPin
-
     def onNewFile(self, keepRoot=True):
         self.getApp().undoStack.clear()
         self.shoutDown()
@@ -1028,7 +1011,6 @@ class Canvas(QGraphicsView):
             if newNode.isCommentNode:
                 newNode.collapsed = data["wrapper"]["collapsed"]
 
-    @dispatch(str)
     def findNode(self, name):
         for node in self.nodes.values():
             if name == node.name:

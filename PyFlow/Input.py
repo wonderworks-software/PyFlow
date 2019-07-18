@@ -15,7 +15,7 @@
 
 from collections import Counter
 from collections import defaultdict
-from enum import Enum
+
 from Qt import QtCore, QtGui
 
 from PyFlow.Core.Common import *

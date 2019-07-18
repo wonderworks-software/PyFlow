@@ -20,10 +20,8 @@ from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QStyleFactory
 
 app = QApplication(sys.argv)
-app.setStyle(QStyleFactory.create("plastique"))
-app.setStyleSheet(editableStyleSheet().getStyleSheet())
 
-instance = PyFlow.instance()
+instance = PyFlow.instance(software="standalone")
 if instance is not None:
     app.setActiveWindow(instance)
     instance.show()

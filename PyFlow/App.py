@@ -47,6 +47,7 @@ from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow.UI.Tool import REGISTER_TOOL
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE
 from PyFlow.Input import InputAction, InputActionType
@@ -90,6 +91,7 @@ class PyFlow(QMainWindow):
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
+        self.currentSoftware = ""
         self.edHistory = EditorHistory(self)
         self.setWindowTitle("PyFlow v{0}".format(currentVersion().__str__()))
         self.undoStack = QUndoStack(self)
@@ -430,6 +432,8 @@ class PyFlow(QMainWindow):
     def closeEvent(self, event):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
+        EditorHistory().shutdown()
+
         self.canvasWidget.shoutDown()
         # save editor config
         settings = ConfigManager().getSettings("APP_STATE")
@@ -466,6 +470,12 @@ class PyFlow(QMainWindow):
         if os.path.exists(self.currentTempDir):
             shutil.rmtree(self.currentTempDir)
 
+        # TODO: Use "Borg" pattern
+        EditorHistory.destroy()
+        GraphManagerSingleton.destroy()
+        ConfigManager.destroy()
+        PreferencesWindow.destroy()
+
         QMainWindow.closeEvent(self, event)
 
     def shortcuts_info(self):
@@ -493,13 +503,15 @@ class PyFlow(QMainWindow):
         QMessageBox.information(self, "Shortcuts", data)
 
     @staticmethod
-    def instance(parent=None):
-        if PyFlow.appInstance is not None:
-            return PyFlow.appInstance
-
+    def instance(parent=None, software=""):
         settings = ConfigManager().getSettings("APP_STATE")
 
         instance = PyFlow(parent)
+        instance.currentSoftware = software
+
+        if software == "standalone":
+            editableStyleSheet(instance)
+
         REGISTER_TOOL("PyFlowBase", LoggerTool)
         a = GET_TOOLS()["PyFlowBase"][0]()
         a.setAppInstance(instance)

@@ -15,10 +15,10 @@
 
 import os
 import json
-from enum import Enum
+
 from Qt import QtCore, QtGui
 
-from PyFlow.Core.Common import SingletonDecorator
+from PyFlow.Core.Common import *
 from PyFlow.Input import InputAction, InputManager, InputActionType
 
 

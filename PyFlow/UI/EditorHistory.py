@@ -17,7 +17,7 @@ import uuid
 from blinker import Signal
 from collections import OrderedDict
 
-from PyFlow.Core.Common import clamp
+from PyFlow.Core.Common import *
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.ConfigManager import ConfigManager
@@ -53,6 +53,12 @@ class EditorHistory(object):
 
         self.activeState = None
 
+    def shutdown(self):
+        clearSignal(self.statePushed)
+        clearSignal(self.stateRemoved)
+        clearSignal(self.stateSelected)
+        clearList(self.stack)
+
     def getStack(self):
         return self.stack
 
@@ -72,7 +78,7 @@ class EditorHistory(object):
                 self.stateRemoved.send(state)
 
     def clear(self):
-        self.stack.clear()
+        clearList(self.stack)
 
     def stateIndex(self, state):
         if state in self.stack:

@@ -19,7 +19,6 @@ from PyFlow.Core.Common import *
 from PyFlow import findPinClassByType, getAllPinClasses
 from PyFlow import CreateRawPin
 from copy import copy
-from multipledispatch import dispatch
 
 
 class convertTo(NodeBase):

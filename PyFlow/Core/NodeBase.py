@@ -25,7 +25,6 @@ try:
 except:
     from inspect import getargspec
 from types import MethodType
-from multipledispatch import dispatch
 import collections
 
 from PyFlow import getPinDefaultValueByType

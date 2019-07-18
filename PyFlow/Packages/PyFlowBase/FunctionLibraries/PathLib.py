@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
 
 # Licensed under the Apache License, Version 2.0 (the "License");

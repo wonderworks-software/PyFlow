@@ -15,7 +15,6 @@
 
 import weakref
 from blinker import Signal
-from multipledispatch import dispatch
 from collections import Counter
 
 from PyFlow.Core.Common import *

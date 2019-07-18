@@ -14,7 +14,6 @@
 
 
 from nine import str
-from multipledispatch import dispatch
 from blinker import Signal
 
 from PyFlow.Core.GraphBase import GraphBase

@@ -17,12 +17,14 @@ from Qt import QtGui, QtWidgets, QtCore
 import inspect
 import json
 import os
+
+
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 
+
 from collections import defaultdict
-# def clamp(val,min_value,max_value):
-#     return max(min(val, max_value), min_value)
+
 FILE_DIR = os.path.dirname(__file__)
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
@@ -45,7 +47,9 @@ class Colors:
 
 @SingletonDecorator
 class editableStyleSheet():
-    def __init__(self):
+    def __init__(self, appInstance=None):
+
+        self.appInstance = appInstance
 
         self.TextColor = QtGui.QColor(228, 228, 228)
 
@@ -139,10 +143,9 @@ class editableStyleSheet():
         """calls update method all widgets in the app and calls app.setStyleSheet
         """
         if self.SetAppStyleSheet[0] > 0:
-            app = QtWidgets.QApplication.instance()
-            if app:
-                app.setStyleSheet(self.getStyleSheet())
-                for widget in app.allWidgets():
+            if self.appInstance:
+                self.appInstance.setStyleSheet(self.getStyleSheet())
+                for widget in self.appInstance.allWidgets():
                     widget.update()
 
     def getStyleSheet(self):

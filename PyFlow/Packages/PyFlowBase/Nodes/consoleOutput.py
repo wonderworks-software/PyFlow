@@ -13,11 +13,14 @@
 ## limitations under the License.
 
 
-from PyFlow.Core import NodeBase
-from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
-from PyFlow.Core.Common import *
 from nine import *
 import logging
+
+from PyFlow.Core import NodeBase
+from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.ConfigManager import ConfigManager
+from PyFlow.Core.Common import *
+
 
 class consoleOutput(NodeBase):
     def __init__(self, name):
@@ -51,7 +54,8 @@ class consoleOutput(NodeBase):
         return "Python's 'print' function wrapper"
 
     def compute(self, *args, **kwargs):
-        if self.getWrapper() is not None:
+        redirectionEnabled = ConfigManager().getPrefsValue("PREFS", "General/RedirectOutput") == "true"
+        if self.getWrapper() is not None and redirectionEnabled:
             data = str(self.entity.getData())
             if self.entity.dataType != "StringPin":
                 data = data.encode('unicode-escape')
@@ -60,5 +64,5 @@ class consoleOutput(NodeBase):
             errorLink = """<a href=%s><span style=" text-decoration: underline; color:green;">%s</span></a></p>""" % (self.name, "<br/>%s" % data)
             logging.getLogger(None).consoleoutput(errorLink)
         else:
-            print("{0}: {1}".format(self.name, self.entity.getData()))
+            print(self.entity.getData())
         self.outExec.call()

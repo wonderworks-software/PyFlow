@@ -1,2 +1,2 @@
-pip install -r requirements.txt
+pip install -r requirements/requirements-standalone.txt
 start pythonw.exe %cd%/launcher.pyw

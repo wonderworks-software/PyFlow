@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-
 from nine import str
 import json
 from types import MethodType

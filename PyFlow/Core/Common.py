@@ -35,9 +35,9 @@ import sys
 
 from nine import IS_PYTHON2, str
 if IS_PYTHON2:
-    from aenum import IntEnum, Flag, auto
+    from aenum import IntEnum, Flag, auto, Enum
 else:
-    from enum import IntEnum, Flag, auto
+    from enum import IntEnum, Flag, auto, Enum
 
 from PyFlow import findPinClassByType
 from PyFlow.Core.version import Version
@@ -617,6 +617,10 @@ class SingletonDecorator:
 
     def __init__(self, cls):
         self.cls = cls
+        self.instance = None
+
+    def destroy(self):
+        del self.instance
         self.instance = None
 
     def __call__(self, *args, **kwds):
