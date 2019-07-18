@@ -1,10 +1,8 @@
 @echo off
 
-rem CHANGE MAYA_ROOT variable to your maya installation
-set MAYA_ROOT=c:\Program Files\Autodesk\Maya2019
-
-set MAYA_BIN=%MAYA_ROOT%\bin
-set MAYAPY=%MAYA_BIN%\mayapy.exe
+rem CHANGE MAX_ROOT variable to your 3ds max installation
+set MAX_ROOT=c:\Program Files\Autodesk\3ds Max 2020
+set MAXPY=%MAX_ROOT%\3dsmaxpy.exe
 
 rem remove pip installer if it exists
 del get-pip.py
@@ -13,14 +11,14 @@ rem download get-pip.py
 powershell -Command "Invoke-WebRequest https://bootstrap.pypa.io/get-pip.py -OutFile get-pip.py"
 
 rem install pip to maya interpreter
-"%MAYAPY%" get-pip.py --user
+"%MAXPY%" get-pip.py --user
 
 rem install requirements
 cd ..\..\
-"%MAYAPY%" -m pip install -r "%cd%\requirements\requirements-maya.txt" --user
+"%MAXPY%" -m pip install -r "%cd%\requirements\requirements-3dsmax.txt" --user
 
 rem cleanup
-del integrations\maya\get-pip.py
+del integrations\3dsmax\get-pip.py
 
 echo ""
 echo "=============================================================="

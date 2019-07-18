@@ -106,7 +106,8 @@ class getVar(NodeBase):
 
     def serialize(self):
         default = NodeBase.serialize(self)
-        default['varUid'] = str(self.var.uid)
+        if self.var is not None:
+            default['varUid'] = str(self.var.uid)
         return default
 
     @staticmethod

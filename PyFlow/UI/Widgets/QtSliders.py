@@ -99,9 +99,10 @@ class inputDrager(QtWidgets.QWidget):
 
         return False
 
+
 class draggers(QtWidgets.QWidget):
     """PopUp Draggers Houdini Style
-    
+
     Custom Widget that holds a bunch of :obj:`inputDrager` to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
     """
     def __init__(self, parent=None, isFloat=True, startValue=0.0):
@@ -169,9 +170,10 @@ class draggers(QtWidgets.QWidget):
             del(self)
         return False
 
+
 class slider(QtWidgets.QSlider):
     """Customized Int QSlider
-    
+
     Reimplements QSlider adding a few enhacements
 
     Modifiers:
@@ -179,17 +181,19 @@ class slider(QtWidgets.QSlider):
         :Ctrl:  and drag to move handle half velocity
         :Shift:  and drag to move handle quarter velocity
         :Ctrl+Shift:  and drag to move handle eighth velocity
-    
+
     Extends:
         QtWidgets.QSlider
     """
     def __init__(self, *args, **kargs):
         super(slider, self).__init__(*args, **kargs)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setOrientation(QtCore.Qt.Horizontal)
         self.deltaValue = 0
+        self._min_value = 0
+        self._max_value = 0
         self.startDragpos = QtCore.QPointF()
         self.realStartDragpos = QtCore.QPointF()
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
     def mousePressEvent(self, event):
         self.prevValue = self.value()
@@ -205,10 +209,9 @@ class slider(QtWidgets.QSlider):
             st_slider = QtWidgets.QStyleOptionSlider()
             st_slider.initFrom(self)
             st_slider.orientation = self.orientation()
-            available = self.style().pixelMetric(
-                QtWidgets.QStyle.PM_SliderSpaceAvailable, st_slider, self)
-            xloc = QtWidgets.QStyle.sliderPositionFromValue(self._min_value,
-                                                            self._max_value, super(slider, self).value(), available)
+            available = self.style().pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, st_slider, self)
+            # FIXME: self._min_value and self._max_value undefined
+            xloc = QtWidgets.QStyle.sliderPositionFromValue(self._min_value, self._max_value, super(slider, self).value(), available)
             butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
             newPos = QtCore.QPointF()
             newPos.setX(xloc)
@@ -259,27 +262,26 @@ class slider(QtWidgets.QSlider):
         self.deltaValue = 0
         super(slider, self).keyPressEvent(event)
 
+
 class doubleSlider(slider):
     """Customized Float QSlider
-    
+
     Float Qslider implementation
-       
+
     Signals:
         :doubleValueChanged: Emited when value has change (float)
     Extends:
-        :obj:`slider`        
+        :obj:`slider`
     """
     doubleValueChanged = QtCore.Signal(float)
 
     def __init__(self, decimals=4, *args, **kargs):
-        """        
+        """
         :param decimals: Number of decimal zeros, defaults to 4
         :type decimals: int, optional
         """
         super(doubleSlider, self).__init__(*args, **kargs)
         self._multi = 10 ** decimals
-        self._min_value = 0
-        self._max_value = 0
         self.valueChanged.connect(self.emitDoubleValueChanged)
 
     def setDecimals(self, decimals):
@@ -315,16 +317,17 @@ class doubleSlider(slider):
     def setValue(self, value):
         super(doubleSlider, self).setValue(int(value * self._multi))
 
+
 class valueBox(QtWidgets.QDoubleSpinBox):
     """Custom QDoubleSpinBox
-    
+
     Custom SpinBox with Houdini Style draggers, :obj:`draggers`. Middle Click to dislplay a bunch of draggers to change value by adding different delta values
 
     Extends:
-        QtWidgets.QDoubleSpinBox    
+        QtWidgets.QDoubleSpinBox
     """
     def __init__(self, type="float", buttons=False, decimals=4, *args, **kargs):
-        """        
+        """
         :param type: Choose if create a float or int spinBox, defaults to "float"
         :type type: str, optional
         :param buttons: Show or hidde right up/Down Buttons, defaults to False
@@ -334,7 +337,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         :param *args: [description]
         :type *args: [type]
         :param **kargs: [description]
-        :type **kargs: [type]        
+        :type **kargs: [type]
         """
         super(valueBox, self).__init__(*args, **kargs)
         self.isFloat = type == "float"
@@ -373,6 +376,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         self.setStyleSheet(editableStyleSheet(
         ).getSliderStyleSheet("sliderStyleSheetA"))
         super(valueBox, self).update()
+
 
 class pyf_Slider(QtWidgets.QWidget):
     """Custom Slider that encapsulates a :obj:`slider` or a :obj:`doubleSlider` and a :obj:`valueBox` linked together
@@ -926,8 +930,7 @@ class pyf_timeline(QtWidgets.QSlider):
         metrics = qp.fontMetrics()
         fh = metrics.height()
         for e, i in enumerate(range(0, pxNb, step)):
-            pos = self.style().sliderPositionFromValue(
-                self.minimum(), self.maximum(), r[e], self.width())
+            pos = self.style().sliderPositionFromValue(self.minimum(), self.maximum(), r[e], self.width())
             half = h / 2
             if r[e] in self.cachedFrmaes:
                 qp.setPen(QtGui.QColor(0, 255, 0))
@@ -949,8 +952,7 @@ class pyf_timeline(QtWidgets.QSlider):
             else:
                 s = 1.5
             qp.drawLine(pos, half + s, pos, half - s)
-        pos = self.style().sliderPositionFromValue(
-            self.minimum(), self.maximum(), self.value(), self.width())
+        pos = self.style().sliderPositionFromValue(self.minimum(), self.maximum(), self.value(), self.width())
         fw = metrics.width("0")
         qp.setPen(editableStyleSheet().MainColor)
         if self.value() > self.maximum() - (self.maximum() / 2):
@@ -961,8 +963,7 @@ class pyf_timeline(QtWidgets.QSlider):
             val = self.style().sliderValueFromPosition(
                 self.minimum(), self.maximum(), self.hoverPos.x(), self.width())
             if val != self.value():
-                pos = self.style().sliderPositionFromValue(
-                    self.minimum(), self.maximum(), val, self.width())
+                pos = self.style().sliderPositionFromValue(self.minimum(), self.maximum(), val, self.width())
                 fw = metrics.width("0")
                 if val > self.maximum() - (self.maximum() / 2):
                     fw += metrics.width(str(val))

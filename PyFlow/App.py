@@ -91,6 +91,7 @@ class PyFlow(QMainWindow):
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.currentSoftware = ""
         self.edHistory = EditorHistory(self)
         self.setWindowTitle("PyFlow v{0}".format(currentVersion().__str__()))

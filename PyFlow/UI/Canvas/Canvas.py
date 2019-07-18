@@ -325,6 +325,7 @@ class Canvas(QGraphicsView):
 
     def __init__(self, graphManager, pyFlowInstance=None):
         super(Canvas, self).__init__()
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.menu = QMenu()
         self.populateMenu()
         self.state = CanvasState.DEFAULT
@@ -1688,8 +1689,8 @@ class Canvas(QGraphicsView):
 
         self.zoom(zoomFactor)
 
-    def stepToCompound(self, compoundNode):
-        self.graphManager.selectGraph(compoundNode)
+    def stepToCompound(self, compoundNodeName):
+        self.graphManager.selectGraphByName(compoundNodeName)
 
     def drawBackground(self, painter, rect):
         super(Canvas, self).drawBackground(painter, rect)

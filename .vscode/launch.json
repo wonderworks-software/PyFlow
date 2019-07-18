@@ -9,7 +9,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: Attach Maya",
+            "name": "Python: PyFlow Debug attach",
             "type": "python",
             "request": "attach",
             "port": 3000,
