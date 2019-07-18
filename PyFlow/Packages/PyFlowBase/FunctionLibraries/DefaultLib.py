@@ -54,13 +54,13 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'GenericTypes', 'Keywords': []})
-    def makeInt(i=('IntPin', 0)):
+    def makeInt(i=('IntPin', 0, {"inputWidgetVariant": "IntInputWidgetSimple"})):
         '''Make integer.'''
         return i
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={'Category': 'GenericTypes', 'Keywords': []})
-    def makeFloat(f=('FloatPin', 0.0)):
+    def makeFloat(f=('FloatPin', 0.0, {"inputWidgetVariant": "FloatInputWidgetSimple"})):
         '''Make floating point number.'''
         return f
 

@@ -20,7 +20,7 @@ from Qt.QtWidgets import *
 from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.UICommon import DEFAULT_WIDGET_VARIANT
 from PyFlow.UI.Widgets.InputWidgets import *
-from PyFlow.UI.Widgets.QtSliders import pyf_Slider
+from PyFlow.UI.Widgets.QtSliders import pyf_Slider, valueBox
 
 FLOAT_SINGLE_STEP = 0.01
 FLOAT_DECIMALS = 5
@@ -53,6 +53,24 @@ class ExecInputWidget(InputWidgetSingle):
         pass
 
 
+class FloatInputWidgetSimple(InputWidgetSingle):
+    """
+    Floating point data input widget without enhancements
+    """
+
+    def __init__(self, parent=None, **kwds):
+        super(FloatInputWidgetSimple, self).__init__(parent=parent, **kwds)
+        self.sb = valueBox("float", True)
+        self.setWidget(self.sb)
+        self.sb.valueChanged.connect(self.dataSetCallback)
+
+    def blockWidgetSignals(self, bLocked):
+        self.sb.blockSignals(bLocked)
+
+    def setWidgetValue(self, val):
+        self.sb.setValue(int(val))
+
+
 class FloatInputWidget(InputWidgetSingle):
     """
     Floating point data input widget
@@ -74,11 +92,31 @@ class FloatInputWidget(InputWidgetSingle):
     def setWidgetValue(self, val):
         self.sb.setValue(float(val))
 
-    def setMaximum(self,max):
+    def setMaximum(self, max):
         self.sb.setMaximum(max)
 
-    def setMinimum(self,min):
+    def setMinimum(self, min):
         self.sb.setMinimum(min)
+
+
+class IntInputWidgetSimple(InputWidgetSingle):
+    """
+    Decimal number input widget without enhancements
+    """
+
+    def __init__(self, parent=None, **kwds):
+        super(IntInputWidgetSimple, self).__init__(parent=parent, **kwds)
+        self.sb = valueBox("int", True)
+        self.sb.setRange(INT_RANGE_MIN, INT_RANGE_MAX)
+        self.setWidget(self.sb)
+        self.sb.valueChanged.connect(self.dataSetCallback)
+
+    def blockWidgetSignals(self, bLocked):
+        self.sb.blockSignals(bLocked)
+
+    def setWidgetValue(self, val):
+        self.sb.setValue(int(val))
+
 
 class IntInputWidget(InputWidgetSingle):
     """
@@ -194,9 +232,15 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
     factory method
     '''
     if dataType == 'FloatPin':
-        return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        if widgetVariant == DEFAULT_WIDGET_VARIANT:
+            return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        elif widgetVariant == "FloatInputWidgetSimple":
+            return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'IntPin':
-        return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        if widgetVariant == DEFAULT_WIDGET_VARIANT:
+            return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        elif widgetVariant == "IntInputWidgetSimple":
+            return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'StringPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
             return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)

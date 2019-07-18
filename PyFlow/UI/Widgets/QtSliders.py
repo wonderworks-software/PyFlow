@@ -397,7 +397,7 @@ class pyf_Slider(QtWidgets.QWidget):
         :param name: Name to display in a label, if None no label created, defaults to None
         :type name: [type], optional
         :param *args: [description]
-        :type *args: [type]        
+        :type *args: [type]
         """
         super(pyf_Slider, self).__init__(parent=parent, *args)
         self.parent = parent
@@ -518,7 +518,7 @@ class pyf_Slider(QtWidgets.QWidget):
 
         :param value: New Display MinValue
         :type value: float/int
-        """        
+        """
         self._dispMin = value
         self.sld.setMinimum(value)
 
@@ -527,7 +527,7 @@ class pyf_Slider(QtWidgets.QWidget):
 
         :param value: New Display MaxValue
         :type value: float/int
-        """           
+        """
         self._dispMax = value
         self.sld.setMaximum(value)
 
@@ -560,6 +560,7 @@ class pyf_Slider(QtWidgets.QWidget):
         """Show Slider
         """              
         self.sld.show()
+
 
 class pyf_HueSlider(doubleSlider):
     """Custom Slider to select a color by a hue selector
@@ -647,6 +648,7 @@ class pyf_HueSlider(doubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
+
 class pyf_GradientSlider(doubleSlider):
     """Custom Slider to select a color by Non Editable gradient
 
@@ -704,6 +706,7 @@ class pyf_GradientSlider(doubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
+
 class pyf_ColorSlider(QtWidgets.QWidget):
     """Custom Slider to choose a color by components. It encapsulates abunch of :obj:`valueBox` and :obj:`pyf_GradientSlider`
     
@@ -713,7 +716,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
     valueChanged = QtCore.Signal(list)
 
     def __init__(self, parent=None, startColor=[0, 0, 0], type="float", alpha=False, h=50, *args):
-        """        
+        """
         :param parent: Parent Widget
         :type parent: QtWidgets.QWidget
         :param startColor: Initialization color, defaults to [0, 0, 0]
@@ -828,7 +831,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
 
     def setColor(self, color):
         """Sets the current color
-    
+
         :param color: Input color to use
         :type color: list(int/float)
         """
@@ -862,6 +865,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
 
     def contextMenuEvent(self, event):
         self._menu.exec_(event.globalPos())
+
 
 class pyf_timeline(QtWidgets.QSlider):
     def __init__(self, parent, *args):
@@ -1019,6 +1023,7 @@ class pyf_timeline(QtWidgets.QSlider):
         else:
             return super(pyf_timeline, self).mouseMoveEvent(event)
 
+
 class uiTick(QtWidgets.QGraphicsWidget):
     """ UiElement For Ramp Widgets.
 
@@ -1119,6 +1124,7 @@ class uiTick(QtWidgets.QGraphicsWidget):
             pen.setWidth(2.25)
         painter.setPen(pen)
         painter.drawRoundedRect(bgRect, 2, 2)
+
 
 class pyf_RampSpline(QtWidgets.QGraphicsView):
     """Ui Ramp/Curve Editor that encapsulates a :obj:`PyFlow.Core.structs.splineRamp` to edit it
@@ -1419,6 +1425,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         else:
             b = editableStyleSheet().InputFieldColor
 
+
 class pyf_RampColor(pyf_RampSpline):
     """Similar to the :obj:`pyf_RampSpline` to create editable gradients with interpolation support
 
@@ -1571,6 +1578,7 @@ class pyf_RampColor(pyf_RampSpline):
             b = editableStyleSheet().InputFieldColor
         painter.fillRect(rect, b)
 
+
 class testWidg(QtWidgets.QWidget):
 
     def __init__(self, parent):
@@ -1597,7 +1605,7 @@ class testWidg(QtWidgets.QWidget):
         self.layout().addWidget(color)
         raw_ramp = structs.splineRamp()
         raw_ramp.addItem(0.0,0.0)
-        raw_ramp.addItem(1.0,1.0)        
+        raw_ramp.addItem(1.0,1.0)
         ramp2 = pyf_RampSpline(raw_ramp,self)
 
         self.layout().addWidget(ramp2)
