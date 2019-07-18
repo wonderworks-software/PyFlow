@@ -476,6 +476,8 @@ class PyFlow(QMainWindow):
         ConfigManager.destroy()
         PreferencesWindow.destroy()
 
+        PyFlow.appInstance = None
+
         QMainWindow.closeEvent(self, event)
 
     def shortcuts_info(self):
@@ -504,9 +506,6 @@ class PyFlow(QMainWindow):
 
     @staticmethod
     def instance(parent=None, software=""):
-        if PyFlow.appInstance is not None:
-            return PyFlow.appInstance
-
         settings = ConfigManager().getSettings("APP_STATE")
 
         instance = PyFlow(parent)

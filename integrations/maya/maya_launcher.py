@@ -1,4 +1,5 @@
 from PyFlow.App import PyFlow
 
-instance = PyFlow.instance()
-instance.show()
+if PyFlow.appInstance is None:
+    instance = PyFlow.instance()
+    instance.show()
