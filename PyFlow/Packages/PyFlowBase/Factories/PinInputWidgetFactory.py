@@ -54,7 +54,10 @@ class FloatInputWidget(InputWidgetSingle):
         self.sb.valueChanged.connect(lambda val: self.dataSetCallback(val))
 
     def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+        try:
+            self.sb.blockSignals(bLocked)
+        except:
+            pass
 
     def setWidgetValue(self, val):
         self.sb.setValue(float(val))

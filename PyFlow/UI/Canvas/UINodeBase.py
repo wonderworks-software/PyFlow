@@ -474,7 +474,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         return self._rawNode.isUnderActiveGraph()
 
     def autoAffectPins(self):
-        self._rawNode.autoAffectPins()  
+        self._rawNode.autoAffectPins()
 
     def isCallable(self):
         return self._rawNode.isCallable()

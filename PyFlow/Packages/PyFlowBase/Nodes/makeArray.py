@@ -12,6 +12,7 @@ class makeArray(NodeBase):
 
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
+        self.preserve = self.createInputPin('preserveLists', 'BoolPin')
         self.outArray = self.createOutputPin('out', 'AnyPin', structure=PinStructure.Array, constraint="1")
 
         self.result = self.createOutputPin('result', 'BoolPin')
@@ -45,12 +46,18 @@ class makeArray(NodeBase):
         outArray = []
         ySortedPins = sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y)
 
-        for i in ySortedPins:
-            if isinstance(i.getData(), list):
-                for e in i.getData():
-                    outArray.append(e)
-            else:
+        if self.preserve.getData():
+            for i in ySortedPins:
                 outArray.append(i.getData())
+        else:
+            for i in ySortedPins:
+                if isinstance(i.getData(), list):
+                    for e in i.getData():
+                        outArray.append(e)
+                else:
+                    outArray.append(i.getData())
+        
+
 
         isSorted = self.sorted.getData()
         isReversed = self.reversed.getData()

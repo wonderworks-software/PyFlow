@@ -138,8 +138,8 @@ class AnyPin(PinBase):
             if connectedPin.isAny():
                 nodePins.add(connectedPin)
         for neighbor in nodePins:
-            if neighbor not in traversed:
-                if all([neighbor.activeDataType == "AnyPin",
+            if neighbor not in traversed: # hack deactivated wegen outpin poles  
+                if 0 and all([neighbor.activeDataType == "AnyPin",
                         neighbor.canChangeTypeOnConection([], neighbor.optionEnabled(PinOptions.ChangeTypeOnConnection), []) or not neighbor.optionEnabled(PinOptions.AllowAny)]) :
                     neighbor.setError("AnyPin Not Initialized")
                     neighbor.super = None

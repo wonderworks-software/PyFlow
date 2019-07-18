@@ -106,6 +106,7 @@ class NodeBase(INode):
         failedPins = {}
         for pin in self._pins:
             if pin._lastError is not None:
+                print ("PIN ERROR",pin,pin._lastError)
                 failedPins[pin.name] = pin._lastError
         if len(failedPins):
             self._lastError = "Error on Pins:%s" % str(failedPins)
