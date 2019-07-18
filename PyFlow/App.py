@@ -504,6 +504,9 @@ class PyFlow(QMainWindow):
 
     @staticmethod
     def instance(parent=None, software=""):
+        if PyFlow.appInstance is not None:
+            return PyFlow.appInstance
+
         settings = ConfigManager().getSettings("APP_STATE")
 
         instance = PyFlow(parent)
