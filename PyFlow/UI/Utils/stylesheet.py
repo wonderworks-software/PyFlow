@@ -142,10 +142,15 @@ class editableStyleSheet():
     def updateApp(self):
         """calls update method all widgets in the app and calls app.setStyleSheet
         """
+        topWindow = self.appInstance
+
+        if self.appInstance.currentSoftware == "standalone":
+            topWindow = QtWidgets.QApplication.instance()
+
         if self.SetAppStyleSheet[0] > 0:
-            if self.appInstance:
-                self.appInstance.setStyleSheet(self.getStyleSheet())
-                for widget in self.appInstance.allWidgets():
+            if topWindow:
+                topWindow.setStyleSheet(self.getStyleSheet())
+                for widget in topWindow.allWidgets():
                     widget.update()
 
     def getStyleSheet(self):

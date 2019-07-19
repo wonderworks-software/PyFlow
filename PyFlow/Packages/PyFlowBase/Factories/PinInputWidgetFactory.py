@@ -233,14 +233,14 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
     '''
     if dataType == 'FloatPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-        elif widgetVariant == "FloatInputWidgetSimple":
             return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        elif widgetVariant == "FloatInputWidgetSimple":
+            return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'IntPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
-        elif widgetVariant == "IntInputWidgetSimple":
             return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        elif widgetVariant == "IntInputWidgetSimple":
+            return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
     if dataType == 'StringPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
             return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
