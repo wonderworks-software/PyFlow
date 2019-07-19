@@ -60,7 +60,7 @@ from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 import PyFlow.UI.resources
 
-EDITOR_TARGET_FPS = 120
+EDITOR_TARGET_FPS = 60
 
 
 def generateRandomString(numSymbolds=5):
