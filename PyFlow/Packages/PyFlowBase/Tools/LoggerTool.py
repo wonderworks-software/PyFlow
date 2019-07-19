@@ -30,7 +30,7 @@ import os
 import subprocess
 
 
-REDIRECT = ConfigManager().getPrefsValue("PREFS", "General/RedirectOutput") == "true"
+REDIRECT = ConfigManager().shouldRedirectOutput()
 logger = logging.getLogger(None)
 
 def addLoggingLevel(levelName, levelNum, methodName=None):

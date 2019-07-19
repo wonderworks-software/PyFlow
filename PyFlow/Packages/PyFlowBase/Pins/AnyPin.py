@@ -229,8 +229,7 @@ class AnyPin(PinBase):
         """
         if self.canChangeTypeOnConnection([], self.optionEnabled(PinOptions.ChangeTypeOnConnection), []):
             dataType = other.dataType
-            traverseConstrainedPins(
-                self, lambda pin: self.updateOnConnectionCallback(pin, dataType, False, other))
+            traverseConstrainedPins(self, lambda pin: self.updateOnConnectionCallback(pin, dataType, False, other))
         super(AnyPin, self).aboutToConnect(other)
 
     def pinDisconnected(self, other):

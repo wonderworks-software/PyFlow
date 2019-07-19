@@ -54,7 +54,7 @@ class consoleOutput(NodeBase):
         return "Python's 'print' function wrapper"
 
     def compute(self, *args, **kwargs):
-        redirectionEnabled = ConfigManager().getPrefsValue("PREFS", "General/RedirectOutput") == "true"
+        redirectionEnabled = ConfigManager().shouldRedirectOutput()
         if self.getWrapper() is not None and redirectionEnabled:
             data = str(self.entity.getData())
             if self.entity.dataType != "StringPin":

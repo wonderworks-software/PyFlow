@@ -61,6 +61,7 @@ class FloatInputWidgetSimple(InputWidgetSingle):
     def __init__(self, parent=None, **kwds):
         super(FloatInputWidgetSimple, self).__init__(parent=parent, **kwds)
         self.sb = valueBox("float", True)
+        self.sb.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 

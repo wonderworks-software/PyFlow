@@ -47,6 +47,10 @@ class ConfigManager(object):
                 data = json.load(f)
                 InputManager().loadFromData(data)
 
+    @staticmethod
+    def shouldRedirectOutput():
+        return ConfigManager().getPrefsValue("PREFS", "General/RedirectOutput") == "true"
+
     def registerConfigFile(self, alias, absPath):
         if alias not in self.CONFIGS_STORAGE:
             self.CONFIGS_STORAGE[alias] = absPath

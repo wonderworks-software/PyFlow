@@ -15,7 +15,7 @@
 
 from blinker import Signal
 import uuid
-from copy import deepcopy
+from copy import copy
 import weakref
 import json
 from nine import str
@@ -616,8 +616,9 @@ class PinBase(IPin):
         :param other: Pin which this pin is going to be connected with
         :type other: :class:`~PyFlow.Core.PinBase.PinBase`
         """
-        self.changeStructure(other._currStructure)
-        self.onPinConnected.send(other)
+        if other.structureType != self.structureType:
+            self.changeStructure(other._currStructure)
+            self.onPinConnected.send(other)
 
     def getCurrentStructure(self):
         """Returns this pin structure type
@@ -964,7 +965,7 @@ class PinBase(IPin):
         :param val: defaultValue
         :type val: object
         """
-        self._defaultValue = deepcopy(val)
+        self._defaultValue = copy(val)
 
     def updateConstraint(self, constraint):
         self.constraint = constraint

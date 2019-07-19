@@ -19,6 +19,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt import QtSvg
 from Qt.QtWidgets import *
+from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.UIPinBase import (
     UIPinBase,
@@ -642,9 +643,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def onNodeErrorOccured(self, *args, **kwargs):
         # change node ui to invalid
         errorString = args[0]
-        error = {"Node":self._rawNode.name,"Error":errorString}
-        errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""%(self._rawNode.name,str(error))
-        logging.error(errorLink)
+        error = {"Node": self._rawNode.name, "Error": errorString}
+        if ConfigManager().shouldRedirectOutput():
+            errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>""" % (self._rawNode.name, str(error))
+            logging.error(errorLink)
+        else:
+            logging.error(errorString)
         self.setToolTip(errorString)
         self.update()
 
