@@ -170,10 +170,6 @@ class DockTool(QtWidgets.QDockWidget, ToolBase):
         super(DockTool, self).restoreState(settings)
         self.setObjectName(self.uniqueName())
 
-    @staticmethod
-    def showOnStartup():
-        return False
-
     def closeEvent(self, event):
         self.onDestroy()
         self.parent().unregisterToolInstance(self)

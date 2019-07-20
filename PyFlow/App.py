@@ -242,6 +242,9 @@ class PyFlow(QMainWindow):
 
         if currentInputAction in actionNewFileVariants:
             EditorHistory().clear()
+            historyTools = self.getRegisteredTools(classNameFilters=["HistoryTool"])
+            for historyTools in historyTools:
+                historyTools.onClear()
             self.newFile()
             EditorHistory().saveState("New file")
         if currentInputAction in actionSaveVariants:
@@ -372,8 +375,15 @@ class PyFlow(QMainWindow):
                     return ToolClass()
         return None
 
-    def getRegisteredTools(self):
-        return self._tools
+    def getRegisteredTools(self, classNameFilters=[]):
+        if len(classNameFilters) == 0:
+            return self._tools
+        else:
+            result = []
+            for tool in self._tools:
+                if tool.__class__.__name__ in classNameFilters:
+                    result.append(tool)
+            return result
 
     def invokeDockToolByName(self, packageName, name, settings=None):
         # invokeDockToolByName Invokes dock tool by tool name and package name

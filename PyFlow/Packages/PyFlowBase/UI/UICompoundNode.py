@@ -72,7 +72,7 @@ class UICompoundNode(UINodeBase):
         return self._rawNode.rawGraph
 
     def stepIn(self):
-        self._rawNode.graph().graphManager.selectGraphByName(self.name)
+        self._rawNode.graph().graphManager.selectGraph(self._rawNode.rawGraph)
 
     def mouseDoubleClickEvent(self, event):
         self.stepIn()
