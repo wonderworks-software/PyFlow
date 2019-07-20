@@ -13,7 +13,10 @@
 ## limitations under the License.
 
 
-from Qt import QtWidgets
+import json
+import logging
+
+from Qt.QtWidgets import QFileDialog
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
@@ -21,6 +24,9 @@ from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.Core.Common import *
+
+
+logger = logging.getLogger(None)
 
 
 class UICompoundNode(UINodeBase):
@@ -31,6 +37,27 @@ class UICompoundNode(UINodeBase):
         self.color = Colors.DarkGray
         self.image = RESOURCES_DIR + "/gear.svg"
         self.heartBeatDelay = 1.0
+
+        self.actionExport = self._menu.addAction("Export")
+        self.actionExport.triggered.connect(self.onExport)
+        self.actionImport = self._menu.addAction("Import")
+        self.actionImport.triggered.connect(self.onImport)
+
+    def onExport(self):
+        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Subgraph data (*.json)")
+        if savePath != "":
+            with open(savePath, 'w') as f:
+                json.dump(self._rawNode.rawGraph.serialize(), f)
+            logger.info("{0} data successfully exported!".format(self.getName()))
+
+    def onImport(self):
+        openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Subgraph data (*.json)")
+        if openPath != "":
+            with open(openPath, 'r') as f:
+                data = json.load(f)
+                data["nodes"] = self.canvasRef().makeSerializedNodesUnique(data["nodes"])
+                self._rawNode.rawGraph.populateFromJson(data)
+                self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
 
     def getGraph(self):
         return self._rawNode.rawGraph

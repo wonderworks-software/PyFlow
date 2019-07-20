@@ -193,7 +193,7 @@ class GraphBase(ISerializable):
         parentGraphName = jsonData['parentGraphName']
         parentGraph = self.graphManager.findGraph(parentGraphName)
         self.parentGraph = parentGraph
-        self.name = jsonData['name']
+        self.name = self.graphManager.getUniqGraphName(jsonData['name'])
         self.category = jsonData['category']
         self.setIsRoot(jsonData['isRoot'])
         # restore vars
