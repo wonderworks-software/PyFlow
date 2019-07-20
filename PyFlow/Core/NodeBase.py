@@ -565,7 +565,7 @@ class NodeBase(INode):
         """
         p = self.getPinSG(str(pinName), pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
-        return p.currentData()
+        return p.getData()
 
     def getUniqPinName(self, name):
         """Returns unique name for pin
