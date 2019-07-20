@@ -241,10 +241,9 @@ class AnyPin(PinBase):
         :type other: :py:class:`PyFlow.Core.PinBase.PinBase`
         """
         super(AnyPin, self).pinDisconnected(other)
-        self.updateError([], self.activeDataType ==
-                         "AnyPin" or self.prevDataType == "AnyPin")
+        self.updateError([], self.activeDataType == "AnyPin" or self.prevDataType == "AnyPin")
         self._lastError2 = self._lastError
-        if self.activeDataType == "AnyPin" and self._lastError2 == None:
+        if self.activeDataType == "AnyPin" and self._lastError2 is None:
             self.prevDataType = "AnyPin"
         else:
             self.prevDataType = None
@@ -410,7 +409,7 @@ class AnyPin(PinBase):
         else:
             self.super = None
 
-        if self.activeDataType == "AnyPin" and self._lastError2 == None:
+        if self.activeDataType == "AnyPin" and self._lastError2 is None:
             self.prevDataType = "AnyPin"
         else:
             self.prevDataType = None
