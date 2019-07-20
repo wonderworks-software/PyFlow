@@ -337,7 +337,7 @@ class AnyPin(PinBase):
         :param defaults: Define if we are intersecting current allowedDataTypes, or default (as in definition of node) allowedDataTypes, defaults to False
         :type defaults: bool, optional
         :returns: List contatining all the intersected dataTypes
-        :rtype: {list}
+        :rtype: list
         """
         if not self.optionEnabled(PinOptions.ChangeTypeOnConnection) and self.activeDataType == "AnyPin":
             return self._defaultSupportedDataTypes

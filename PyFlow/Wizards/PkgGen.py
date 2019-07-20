@@ -179,6 +179,8 @@ def generatePackage(packageName,
             shutil.rmtree(path)
         if dirName == "Exporters" and not bIncludeExporter:
             shutil.rmtree(path)
+        if dirName == "PrefsWidgets" and not bIncludePrefsWindget:
+            shutil.rmtree(path)
         if dirName == "Factories":
             removedFactoresCount = 0
 

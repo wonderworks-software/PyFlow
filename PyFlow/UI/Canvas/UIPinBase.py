@@ -532,7 +532,6 @@ class PinGroup(UIPinBase):
     def paint(self, painter, option, widget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
         frame = frame.translated(self.pinSize * 1.1, 0)
-        # TODO: move group bg color to themes?
         groupBGColor = self.owningNode().color.lighter(150)
         bgRect = QtCore.QRectF(frame)
         bgRect.setX(0)

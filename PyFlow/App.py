@@ -457,7 +457,7 @@ class PyFlow(QMainWindow):
         if os.path.exists(self.currentTempDir):
             shutil.rmtree(self.currentTempDir)
 
-        # TODO: Use "Borg" pattern
+        # TODO: Use "Borg" pattern to destroy all singletons at once
         EditorHistory.destroy()
         GraphManagerSingleton.destroy()
         ConfigManager.destroy()
