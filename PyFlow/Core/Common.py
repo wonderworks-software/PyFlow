@@ -116,9 +116,9 @@ def roundup(x, to):
     return int(math.ceil(x / to)) * to
 
 
-currentVersion = Version(sys.version_info.major, sys.version_info.minor, 0)
+_currentVersion = Version(sys.version_info.major, sys.version_info.minor, 0)
 python32 = Version(3, 2, 0)
-if currentVersion <= python32:
+if _currentVersion <= python32:
     def clearList(list):
         """Clears python list
 

@@ -34,10 +34,12 @@ class pythonNode(NodeBase):
 
     @nodeData.setter
     def nodeData(self, codeString):
+        if codeString == '':
+            return
         try:
             self._nodeData = codeString
             # compile and get symbols
-            mem = Py3CodeCompiler().compile(codeString, self.getName())
+            mem = Py3CodeCompiler().compile(codeString, self.getName(), {})
 
             # clear node pins
             for i in list(self.pins):

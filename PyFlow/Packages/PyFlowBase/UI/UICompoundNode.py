@@ -18,12 +18,14 @@ import logging
 
 from Qt.QtWidgets import QFileDialog
 
+from PyFlow.UI.Canvas.UICommon import validateGraphDataPackages
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.Core.Common import *
+from PyFlow.UI.EditorHistory import EditorHistory
 
 
 logger = logging.getLogger(None)
@@ -55,9 +57,16 @@ class UICompoundNode(UINodeBase):
         if openPath != "":
             with open(openPath, 'r') as f:
                 data = json.load(f)
-                data["nodes"] = self.canvasRef().makeSerializedNodesUnique(data["nodes"])
-                self._rawNode.rawGraph.populateFromJson(data)
-                self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
+                data["isRoot"] = False
+                data["parentGraphName"] = self._rawNode.rawGraph.parentGraph.name
+                missedPackages = set()
+                if validateGraphDataPackages(data, missedPackages):
+                    data["nodes"] = self.canvasRef().makeSerializedNodesUnique(data["nodes"])
+                    self._rawNode.rawGraph.populateFromJson(data)
+                    self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
+                    EditorHistory().saveState("Import compound")
+                else:
+                    logger.error("Missing dependencies! {0}".format(",".join(missedPackages)))
 
     def getGraph(self):
         return self._rawNode.rawGraph

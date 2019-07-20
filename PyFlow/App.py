@@ -33,28 +33,28 @@ from Qt.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
 from PyFlow.Core.Common import SingletonDecorator
-from PyFlow.ConfigManager import ConfigManager
-from PyFlow.UI.Canvas.Canvas import CanvasWidget
 from PyFlow.Core.Common import Direction
-from PyFlow.Core.version import currentVersion
-from PyFlow.UI.Canvas.UICommon import clearLayout
+from PyFlow.Core.version import *
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.ConfigManager import ConfigManager
+from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.UI.Canvas.Canvas import CanvasWidget
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
-from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
+from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
+from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE
 from PyFlow.Input import InputAction, InputActionType
 from PyFlow.Input import InputManager
 from PyFlow.ConfigManager import ConfigManager
-from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
-from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
 
 from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
@@ -252,35 +252,11 @@ class PyFlow(QMainWindow):
         if currentInputAction in actionSaveAsVariants:
             self.save(True)
 
-    @staticmethod
-    def fetchPackageNames(graphJson):
-        packages = set()
-
-        def worker(graphData):
-            for node in graphData["nodes"]:
-                packages.add(node["package"])
-
-                for inpJson in node["inputs"]:
-                    packages.add(inpJson['package'])
-
-                for outJson in node["inputs"]:
-                    packages.add(outJson['package'])
-
-                if "graphData" in node:
-                    worker(node["graphData"])
-        worker(graphJson)
-        return packages
-
     def loadFromData(self, data, fpath=""):
 
         # check first if all packages we are trying to load are legal
-        existingPackages = GET_PACKAGES().keys()
-        graphPackages = PyFlow.fetchPackageNames(data)
         missedPackages = set()
-        for pkg in graphPackages:
-            if pkg not in existingPackages:
-                missedPackages.add(pkg)
-        if len(missedPackages) > 0:
+        if not validateGraphDataPackages(data, missedPackages):
             msg = "This graph can not be loaded. Following packages not found:\n\n"
             index = 1
             for missedPackageName in missedPackages:
@@ -514,14 +490,6 @@ class PyFlow(QMainWindow):
 
         if software == "standalone":
             editableStyleSheet(instance)
-
-        REGISTER_TOOL("PyFlowBase", LoggerTool)
-        a = GET_TOOLS()["PyFlowBase"][0]()
-        a.setAppInstance(instance)
-        instance.registerToolInstance(a)
-        instance.addDockWidget(a.defaultDockArea(), a)
-        a.setAppInstance(instance)
-        a.onShow()
 
         try:
             extraPackagePaths = []

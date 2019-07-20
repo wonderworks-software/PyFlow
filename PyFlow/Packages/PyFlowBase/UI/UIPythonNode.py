@@ -25,6 +25,7 @@ from Qt import QtGui, QtCore
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Views.CodeEditor import CodeEditor
+from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.ConfigManager import ConfigManager
 
 logger = logging.getLogger(None)
@@ -81,6 +82,7 @@ class UIPythonNode(UINodeBase):
             with open(openPath, 'r') as f:
                 dataString = f.read()
                 self.tryApplyNodeData(dataString)
+            EditorHistory().saveState("Import python node data")
 
     def mouseDoubleClickEvent(self, event):
         super(UIPythonNode, self).mouseDoubleClickEvent(event)
