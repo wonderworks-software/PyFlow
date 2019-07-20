@@ -49,7 +49,7 @@ class UICompoundNode(UINodeBase):
         savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Subgraph data (*.json)")
         if savePath != "":
             with open(savePath, 'w') as f:
-                json.dump(self._rawNode.rawGraph.serialize(), f)
+                json.dump(self._rawNode.rawGraph.serialize(), f, indent=4)
             logger.info("{0} data successfully exported!".format(self.getName()))
 
     def onImport(self):
