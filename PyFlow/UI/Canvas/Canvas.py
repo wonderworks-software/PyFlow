@@ -395,6 +395,7 @@ class Canvas(QGraphicsView):
         if self.USETAB:
             self.installEventFilter(self)
         self.reconnectingWires = set()
+        self.currentPressedKey = None
 
     def getApp(self):
         return self.pyFlowInstance
@@ -617,15 +618,14 @@ class Canvas(QGraphicsView):
         """
         return list(self.nodes.values())
 
-    def showNodeBox(self, dataType=None, pinDirection=None, pinStructure=PinStructure.Single):
+    def showNodeBox(self, pinDirection=None, pinStructure=PinStructure.Single):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
-        self.node_box.treeWidget.refresh(dataType, '', pinDirection, pinStructure)
+        self.node_box.treeWidget.refresh('', pinDirection, pinStructure)
         self.node_box.lineEdit.blockSignals(True)
         self.node_box.lineEdit.setText("")
         self.node_box.lineEdit.blockSignals(False)
-        if dataType is None:
-            self.node_box.lineEdit.setFocus()
+        self.node_box.lineEdit.setFocus()
 
     def hideNodeBox(self):
         self.node_box.hide()
@@ -777,6 +777,7 @@ class Canvas(QGraphicsView):
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
         currentInputAction = InputAction("temp", InputActionType.Keyboard, "temp", key=event.key(), modifiers=modifiers)
+        self.currentPressedKey = event.key()
 
         if self.isShortcutsEnabled():
             if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
@@ -1074,6 +1075,7 @@ class Canvas(QGraphicsView):
 
     def keyReleaseEvent(self, event):
         QGraphicsView.keyReleaseEvent(self, event)
+        self.currentPressedKey = None
 
     def nodeFromInstance(self, instance):
         if isinstance(instance, UINodeBase):
@@ -1213,6 +1215,13 @@ class Canvas(QGraphicsView):
                 isinstance(self.pressed_item, UINodeBase) and node.isCommentNode and not node.collapsed,
                 isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
+
+            # Create branch on B + LMB
+            if self.currentPressedKey is not None and event.button() == QtCore.Qt.LeftButton:
+                if self.currentPressedKey == QtCore.Qt.Key_B:
+                    spawnPos = self.mapToScene(self.mousePressPose)
+                    self.spawnNode("branch", spawnPos.x(), spawnPos.y())
+
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(Canvas, self).mousePressEvent(event)
                 self.resizing = node.bResize
@@ -1630,7 +1639,7 @@ class Canvas(QGraphicsView):
             if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
                 if not type(self.pressed_item) is PinGroup:
                     # suggest nodes that can be connected to pressed pin
-                    self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction, self.pressed_item._rawPin.getCurrentStructure())
+                    self.showNodeBox(self.pressed_item.direction, self.pressed_item._rawPin.getCurrentStructure())
         self.manipulationMode = CanvasManipulationMode.NONE
         if not self.resizing:
             p_itm = self.pressedPin
@@ -1816,6 +1825,22 @@ class Canvas(QGraphicsView):
         nodeInstance = self._createNode(jsonTemplate)
         EditorHistory().saveState("Create node {}".format(nodeInstance.name))
         return nodeInstance
+
+    def spawnNode(self, nodeClass, x, y):
+        packageName = None
+        for pkgName, pkg in GET_PACKAGES().items():
+            if nodeClass in pkg.GetNodeClasses():
+                packageName = pkgName
+                break
+        if packageName is not None:
+            jsonTemplate = NodeBase.jsonTemplate()
+            jsonTemplate["type"] = nodeClass
+            jsonTemplate["name"] = nodeClass
+            jsonTemplate["package"] = packageName
+            jsonTemplate["uuid"] = str(uuid.uuid4())
+            jsonTemplate["x"] = x
+            jsonTemplate["y"] = y
+            self.createNode(jsonTemplate)
 
     def createWrappersForGraph(self, rawGraph):
         # when raw graph was created, we need to create all ui wrappers for it

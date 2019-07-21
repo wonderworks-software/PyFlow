@@ -789,7 +789,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 else:
                     self.onVisibilityChanged(bool(value))
         if change == QGraphicsItem.ItemSelectedChange:
-            if value == False:
+            if not value:
                 self.nodeNameWidget.labelItem.clearFocus()
         return super(UINodeBase, self).itemChange(change, value)
 

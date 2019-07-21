@@ -140,12 +140,14 @@ class NodeBoxTreeWidget(QTreeWidget):
         nodeItem.setText(0, name)
         nodeItem.libName = libName
         nodeItem.docString = doc
-        # if doc:
-        #     nodeItem.setToolTip(0, doc)
 
-    def refresh(self, dataType=None, pattern='', pinDirection=None, pinStructure=PinStructure.Single):
+    def refresh(self, pattern='', pinDirection=None, pinStructure=PinStructure.Single):
         self.clear()
         self.categoryPaths = {}
+
+        dataType = None
+        if self.canvas.pressedPin is not None:
+            dataType = self.canvas.pressedPin.dataType
 
         for package_name, package in GET_PACKAGES().items():
             # annotated functions
@@ -270,7 +272,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         jsonTemplate['uuid'] = str(uuid.uuid4())
         jsonTemplate['meta']['label'] = pressed_text
 
-        if self.suggestionsEnabled:
+        if self.canvas.pressedPin is not None:
             a = self.canvas.mapToScene(self.canvas.mouseReleasePos)
             jsonTemplate["x"] = a.x()
             jsonTemplate["y"] = a.y()
@@ -379,7 +381,7 @@ class NodesBox(QFrame):
         self.splitter.addWidget(self.nodeInfoWidget)
         self.nodeInfoWidget.setVisible(bNodeInfoEnabled)
 
-        self.treeWidget = NodeBoxTreeWidget(self,parent, bNodeInfoEnabled, False)
+        self.treeWidget = NodeBoxTreeWidget(self, parent, bNodeInfoEnabled, False)
         self.treeWidget.setObjectName("nodeBoxTreeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)
@@ -415,7 +417,7 @@ class NodesBox(QFrame):
             self.lineEdit.setPlaceholderText("enter node name..")
             self.treeWidget.refresh()
             return
-        self.treeWidget.refresh(None, self.lineEdit.text())
+        self.treeWidget.refresh(self.lineEdit.text())
         self.expandCategory()
 
     def mousePressEvent(self, event):

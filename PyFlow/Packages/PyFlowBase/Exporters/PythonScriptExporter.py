@@ -56,7 +56,7 @@ def nodeToScript(node, supportedDataTypes, supportedStructures):
 class PythonScriptExporter(IDataExporter):
     """docstring for PythonScriptExporter."""
 
-    name_filter = "Pyflow program scripts (*.py)"
+    name_filter = "PyFlow program scripts (*.py)"
 
     def __init__(self):
         super(PythonScriptExporter, self).__init__()
