@@ -13,7 +13,6 @@
 ## limitations under the License.
 
 
-
 import json
 
 from Qt import QtCore
@@ -108,6 +107,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
 
     def setDataType(self, dataType):
         self.dataType = dataType
+        self._rawVariable.dataType = dataType
         EditorHistory().saveState("Change variable data type")
 
     def createPropertiesWidget(self, propertiesWidget):

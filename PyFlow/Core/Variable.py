@@ -159,7 +159,7 @@ class Variable(IItemBase):
                 return
 
         try:
-            if self._value != value:
+            if self._value != value or type(self._value) != type(value):
                 self._value = value
                 self.valueChanged.send(value)
         except:
@@ -180,7 +180,7 @@ class Variable(IItemBase):
         if value != self._dataType:
             self._dataType = value
             self.updatePackageName()
-            self.value = getPinDefaultValueByType(self._dataType)
+            self.value = getPinDefaultValueByType(value)
             self.dataTypeChanged.send(value)
 
     @property
