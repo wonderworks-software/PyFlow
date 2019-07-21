@@ -329,7 +329,6 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(v1 not in man.activeGraph().getVars(), True, "variable not killed")
 
     def test_set_bool_var(self):
-        import pyrr
         packages = GET_PACKAGES()
 
         man = GraphManager()

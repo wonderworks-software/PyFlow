@@ -16,8 +16,8 @@
 """
 .. sidebar:: **FunctionLibrary.py**
 
-    This file contains a decorator to turn pyton function into a node.
-    And base class for funciton library.
+    This file contains a decorator to turn python function into a node.
+    And base class for function library.
     The main idea is to use function arguments as input and output pins.
 
 
