@@ -1273,6 +1273,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     pass
 
                 if w:
+
+                    w.pin=inp
+
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
                     data = inp.currentData()

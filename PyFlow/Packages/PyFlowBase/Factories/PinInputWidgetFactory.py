@@ -81,7 +81,10 @@ class IntInputWidget(InputWidgetSingle):
         self.sb.valueChanged.connect(self.dataSetCallback)
 
     def blockWidgetSignals(self, bLocked):
-        self.sb.blockSignals(bLocked)
+        try:
+            self.sb.blockSignals(bLocked)
+        except:
+            pass
 
     def setWidgetValue(self, val):
         self.sb.setValue(int(val))

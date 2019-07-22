@@ -329,7 +329,9 @@ class NodeBase(INode):
                     outPin.setData(data)
                 return True
         except:
-            print(stack()[0][1:4],"cannot use Cache for",args)
+            pass
+            # debug fehlerursache
+            # print(stack()[0][1:4],"cannot use Cache for",args)
 
     def afterCompute(self):
         if len(self.cache) >= self.cacheMaxSize:
