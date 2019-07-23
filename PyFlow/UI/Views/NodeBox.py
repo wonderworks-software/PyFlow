@@ -333,7 +333,7 @@ class NodeBoxSizeGrip(QSizeGrip):
 class NodesBox(QFrame):
     """doc string for NodesBox"""
 
-    def __init__(self, parent, bNodeInfoEnabled=True, bGripsEnabled=True):
+    def __init__(self, parent, canvas, bNodeInfoEnabled=True, bGripsEnabled=True):
         super(NodesBox, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
         self.setFrameStyle(QFrame.Panel | QFrame.Raised)
@@ -381,7 +381,7 @@ class NodesBox(QFrame):
         self.splitter.addWidget(self.nodeInfoWidget)
         self.nodeInfoWidget.setVisible(bNodeInfoEnabled)
 
-        self.treeWidget = NodeBoxTreeWidget(self, parent, bNodeInfoEnabled, False)
+        self.treeWidget = NodeBoxTreeWidget(self, canvas, bNodeInfoEnabled, False)
         self.treeWidget.setObjectName("nodeBoxTreeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)
