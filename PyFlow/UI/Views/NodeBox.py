@@ -54,13 +54,14 @@ class NodeBoxTreeWidget(QTreeWidget):
     showInfo = QtCore.Signal(object)
     hideInfo = QtCore.Signal()
 
-    def __init__(self, parent, canvas, bNodeInfoEnabled=True, useDragAndDrop=True):
+    def __init__(self, parent, canvas, bNodeInfoEnabled=True, useDragAndDrop=True, bGripsEnabled=True):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
                 "border-style: outset;" +\
                 "border-width: 1px;"
         self.setStyleSheet(style)
+        self.bGripsEnabled = bGripsEnabled
         self.canvas = canvas
         self.setParent(parent)
         self.setFrameShape(QFrame.NoFrame)
@@ -272,7 +273,9 @@ class NodeBoxTreeWidget(QTreeWidget):
         jsonTemplate['uuid'] = str(uuid.uuid4())
         jsonTemplate['meta']['label'] = pressed_text
 
-        if self.canvas.pressedPin is not None:
+        # TODO: Rewrite self.bGripsEnabled. Node box can be floating window or a tool.
+        # If node box is a tool it onbly can create nodes by dragging and dropping
+        if self.canvas.pressedPin is not None and self.bGripsEnabled:
             a = self.canvas.mapToScene(self.canvas.mouseReleasePos)
             jsonTemplate["x"] = a.x()
             jsonTemplate["y"] = a.y()
@@ -333,7 +336,7 @@ class NodeBoxSizeGrip(QSizeGrip):
 class NodesBox(QFrame):
     """doc string for NodesBox"""
 
-    def __init__(self, parent, canvas, bNodeInfoEnabled=True, bGripsEnabled=True):
+    def __init__(self, parent, canvas, bNodeInfoEnabled=True, bGripsEnabled=True, bUseDragAndDrop=False):
         super(NodesBox, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
         self.setFrameStyle(QFrame.Panel | QFrame.Raised)
@@ -381,7 +384,7 @@ class NodesBox(QFrame):
         self.splitter.addWidget(self.nodeInfoWidget)
         self.nodeInfoWidget.setVisible(bNodeInfoEnabled)
 
-        self.treeWidget = NodeBoxTreeWidget(self, canvas, bNodeInfoEnabled, False)
+        self.treeWidget = NodeBoxTreeWidget(self, canvas, bNodeInfoEnabled, bUseDragAndDrop, bGripsEnabled)
         self.treeWidget.setObjectName("nodeBoxTreeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)

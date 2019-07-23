@@ -387,7 +387,7 @@ class Canvas(QGraphicsView):
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
 
-        self.node_box = NodesBox(self.getApp(), self)
+        self.node_box = NodesBox(self.getApp(), self, bUseDragAndDrop=True)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
         self._UIConnections = {}
@@ -1679,7 +1679,7 @@ class Canvas(QGraphicsView):
         elif event.button() == QtCore.Qt.LeftButton:
             self.requestClearProperties.emit()
         self.resizing = False
-        self.updateRerutes(event,False)
+        self.updateRerutes(event, False)
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), False)
 
     def removeItemByName(self, name):
