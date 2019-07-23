@@ -56,7 +56,7 @@ from PyFlow.Input import InputAction, InputActionType
 from PyFlow.Input import InputManager
 from PyFlow.ConfigManager import ConfigManager
 
-from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
+# from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 import PyFlow.UI.resources
 
@@ -513,6 +513,10 @@ class PyFlow(QMainWindow):
 
     @staticmethod
     def instance(parent=None, software=""):
+        # hack me
+        software="standalone"
+        print ("software",software)
+        #end hack
         assert(software != ""), "Invalid arguments. Please pass you software name as second argument!"
         settings = ConfigManager().getSettings("APP_STATE")
 

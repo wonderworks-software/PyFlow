@@ -672,8 +672,8 @@ class NodeBase(INode):
         for p in list(inputs.values()) + list(outputs.values()):
             if p.name == name:
                 return p
-
-    @dispatch(uuid.UUID)
+# hack me deaktiviert
+#    @dispatch(uuid.UUID)
     def getPin(self, uid):
         inputs = self.inputs
         outputs = self.outputs

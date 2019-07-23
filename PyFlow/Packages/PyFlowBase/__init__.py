@@ -173,7 +173,7 @@ _TOOLS[PropertiesTool.__name__] = PropertiesTool
 _TOOLS[VariablesTool.__name__] = VariablesTool
 _TOOLS[NodeBoxTool.__name__] = NodeBoxTool
 _TOOLS[SearchResultsTool.__name__] = SearchResultsTool
-_TOOLS[LoggerTool.__name__] = LoggerTool
+# _TOOLS[LoggerTool.__name__] = LoggerTool
 
 _EXPORTERS = OrderedDict()
 _EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
