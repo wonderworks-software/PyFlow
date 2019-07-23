@@ -31,6 +31,7 @@ import subprocess
 
 
 REDIRECT = ConfigManager().shouldRedirectOutput()
+
 logger = logging.getLogger(None)
 
 def addLoggingLevel(levelName, levelNum, methodName=None):
@@ -161,12 +162,11 @@ class LoggerTool(DockTool):
         else:
             self.handler = logging.StreamHandler(sys.stdout)
 
-        self.handler.setFormatter(LoggerTool.formater)
-        logger.addHandler(self.handler)
-
         logger.setLevel(logging.DEBUG)
         sys.excepthook = LoggerTool.exceptHook
         if self.handler and REDIRECT:
+            self.handler.setFormatter(LoggerTool.formater)
+            logger.addHandler(self.handler)
             self.handler.messageHolder.messageWritten.connect(
                 lambda value: self.logPython(value, 0))
             self.handler.messageHolder.warningWritten.connect(
@@ -185,19 +185,24 @@ class LoggerTool(DockTool):
     def clearView(self, *args):
         self.logView.clear()
 
+    @staticmethod
+    def supportedSoftwares():
+        return ["standalone"]
+
     def onDestroy(self):
-        try:
-            sys.stdout = sys.__stdout__
-            self.handler.messageHolder._stdout = None
-            self.handler.messageHolder._stderr = None
-            self.handler.messageHolder.messageWritten.disconnect()
-            self.handler.messageHolder.warningWritten.disconnect()
-            self.handler.messageHolder.errorWritten.disconnect()
-            self.handler.messageHolder.flushSig.disconnect()
-            del self.handler
-            self.handler = None
-        except:
-            pass
+        if REDIRECT:
+            try:
+                sys.stdout = sys.__stdout__
+                self.handler.messageHolder._stdout = None
+                self.handler.messageHolder._stderr = None
+                self.handler.messageHolder.messageWritten.disconnect()
+                self.handler.messageHolder.warningWritten.disconnect()
+                self.handler.messageHolder.errorWritten.disconnect()
+                self.handler.messageHolder.flushSig.disconnect()
+                del self.handler
+                self.handler = None
+            except:
+                pass
 
     def logPython(self, text, mode=0):
         colorchart = {

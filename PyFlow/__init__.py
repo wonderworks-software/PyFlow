@@ -115,7 +115,7 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
         return nodes[nodeClassName](nodeClassName, **kwargs)
 
 
-def INITIALIZE(additionalPackageLocations=[]):
+def INITIALIZE(additionalPackageLocations=[], software=""):
     from PyFlow.UI.Tool import REGISTER_TOOL
     from PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
     from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
@@ -169,5 +169,9 @@ def INITIALIZE(additionalPackageLocations=[]):
             REGISTER_UI_NODE_FACTORY(packageName, uiNodesFactory)
 
         for toolClass in package.GetToolClasses().values():
+            supportedSoftwares = toolClass.supportedSoftwares()
+            if "any" not in supportedSoftwares:
+                if software not in supportedSoftwares:
+                    continue
             REGISTER_TOOL(packageName, toolClass)
     getHashableDataTypes()

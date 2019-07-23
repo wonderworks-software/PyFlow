@@ -370,6 +370,11 @@ class PyFlow(QMainWindow):
     def createToolInstanceByClass(self, packageName, toolName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
         for ToolClass in registeredTools[packageName]:
+            supportedSoftwares = ToolClass.supportedSoftwares()
+            if "any" not in supportedSoftwares:
+                if self.currentSoftware not in supportedSoftwares:
+                    continue
+
             if issubclass(ToolClass, toolClass):
                 if ToolClass.name() == toolName:
                     return ToolClass()
@@ -493,6 +498,7 @@ class PyFlow(QMainWindow):
 
     @staticmethod
     def instance(parent=None, software=""):
+        assert(software != ""), "Invalid arguments. Please pass you software name as second argument!"
         settings = ConfigManager().getSettings("APP_STATE")
 
         instance = PyFlow(parent)
@@ -510,7 +516,7 @@ class PyFlow(QMainWindow):
                 for rawPath in extraPathsRaw:
                     if os.path.exists(rawPath):
                         extraPackagePaths.append(os.path.normpath(rawPath))
-            INITIALIZE(additionalPackageLocations=extraPackagePaths)
+            INITIALIZE(additionalPackageLocations=extraPackagePaths, software=software)
         except Exception as e:
             QMessageBox.critical(None, "Fatal error", str(e))
             return

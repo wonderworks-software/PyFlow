@@ -37,6 +37,12 @@ class ToolBase(object):
         self.uid = uuid.uuid4()
         self.pyFlowInstance = None
 
+    @staticmethod
+    def supportedSoftwares():
+        """Under what software to work
+        """
+        return ["any"]
+
     def onShow(self):
         """Called when tool pops up
         """
