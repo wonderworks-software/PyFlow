@@ -1,4 +1,18 @@
-from inspect import stack
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 from nine import str
 import random
 from copy import deepcopy
@@ -10,7 +24,6 @@ try:
     from inspect import getfullargspec as getargspec
 except:
     from inspect import getargspec
-from multipledispatch import dispatch
 
 from Qt import QtCore
 from Qt import QtGui
@@ -60,7 +73,7 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
 
     # if get var or set var, construct additional keyword arguments
     if jsonTemplate['type'] in ('getVar', 'setVar'):
-        kwargs['var'] = canvas.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
+        kwargs['var'] = canvas.graphManager.findVariableByUid(uuid.UUID(jsonTemplate['varUid']))
 
     raw_instance = getRawNodeInstance(nodeClassName, packageName=packageName, libName=libName, **kwargs)
     assert(raw_instance.packageName == packageName)
@@ -292,6 +305,8 @@ class SceneClass(QGraphicsScene):
 
 
 class Canvas(QGraphicsView):
+    """UI canvas class
+    """
     _manipulationMode = CanvasManipulationMode.NONE
 
     _realTimeLineInvalidPen = Colors.Red
@@ -310,6 +325,7 @@ class Canvas(QGraphicsView):
 
     def __init__(self, graphManager, pyFlowInstance=None):
         super(Canvas, self).__init__()
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.menu = QMenu()
         self.populateMenu()
         self.state = CanvasState.DEFAULT
@@ -371,7 +387,7 @@ class Canvas(QGraphicsView):
         self.autoPanController = AutoPanController()
         self._bRightBeforeShoutDown = False
 
-        self.node_box = NodesBox(self)
+        self.node_box = NodesBox(self.getApp(), self, bUseDragAndDrop=True)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.codeEditors = {}
         self._UIConnections = {}
@@ -379,6 +395,7 @@ class Canvas(QGraphicsView):
         if self.USETAB:
             self.installEventFilter(self)
         self.reconnectingWires = set()
+        self.currentPressedKey = None
 
     def getApp(self):
         return self.pyFlowInstance
@@ -440,6 +457,9 @@ class Canvas(QGraphicsView):
 
     def collapseSelectedNodesToCompound(self):
         selectedNodes = self.selectedNodes()
+        if len(selectedNodes) == 0:
+            return
+
         selectedNodesRect = self.getNodesRect(True, True)
         wires = list()
         for node in selectedNodes:
@@ -537,7 +557,7 @@ class Canvas(QGraphicsView):
             EditorHistory().saveState("Collapse to compound")
 
         QtCore.QTimer.singleShot(1, lambda: connectPins(uiCompoundNode, inputPins, outputPins))
-        self.graphManager.selectGraph(activeGraphName)
+        self.graphManager.selectGraphByName(activeGraphName)
 
     def populateMenu(self):
         self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
@@ -598,15 +618,14 @@ class Canvas(QGraphicsView):
         """
         return list(self.nodes.values())
 
-    def showNodeBox(self, dataType=None, pinDirection=None, pinStructure=PinStructure.Single):
+    def showNodeBox(self, pinDirection=None, pinStructure=PinStructure.Single):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
-        self.node_box.treeWidget.refresh(dataType, '', pinDirection, pinStructure)
+        self.node_box.treeWidget.refresh('', pinDirection, pinStructure)
         self.node_box.lineEdit.blockSignals(True)
         self.node_box.lineEdit.setText("")
         self.node_box.lineEdit.blockSignals(False)
-        if dataType is None:
-            self.node_box.lineEdit.setFocus()
+        self.node_box.lineEdit.setFocus()
 
     def hideNodeBox(self):
         self.node_box.hide()
@@ -645,22 +664,6 @@ class Canvas(QGraphicsView):
 
     def enableSortcuts(self):
         self._sortcuts_enabled = True
-
-    @dispatch(uuid.UUID)
-    def findPin(self, uid):
-        uiPin = None
-        if uid in self.pins:
-            return self.pins[uid]
-        return uiPin
-
-    @dispatch(str)
-    def findPin(self, pinName):
-        uiPin = None
-        for pin in self.pins.values():
-            if pinName == pin.getName():
-                uiPin = pin
-                break
-        return uiPin
 
     def onNewFile(self, keepRoot=True):
         self.getApp().undoStack.clear()
@@ -774,6 +777,7 @@ class Canvas(QGraphicsView):
     def keyPressEvent(self, event):
         modifiers = event.modifiers()
         currentInputAction = InputAction("temp", InputActionType.Keyboard, "temp", key=event.key(), modifiers=modifiers)
+        self.currentPressedKey = event.key()
 
         if self.isShortcutsEnabled():
             if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
@@ -1009,7 +1013,6 @@ class Canvas(QGraphicsView):
             if newNode.isCommentNode:
                 newNode.collapsed = data["wrapper"]["collapsed"]
 
-    @dispatch(str)
     def findNode(self, name):
         for node in self.nodes.values():
             if name == node.name:
@@ -1072,6 +1075,7 @@ class Canvas(QGraphicsView):
 
     def keyReleaseEvent(self, event):
         QGraphicsView.keyReleaseEvent(self, event)
+        self.currentPressedKey = None
 
     def nodeFromInstance(self, instance):
         if isinstance(instance, UINodeBase):
@@ -1211,6 +1215,13 @@ class Canvas(QGraphicsView):
                 isinstance(self.pressed_item, UINodeBase) and node.isCommentNode and not node.collapsed,
                 isinstance(node, UINodeBase) and (node.resizable and node.shouldResize(self.mapToScene(event.pos()))["resize"])]):
             self.resizing = False
+
+            # Create branch on B + LMB
+            if self.currentPressedKey is not None and event.button() == QtCore.Qt.LeftButton:
+                if self.currentPressedKey == QtCore.Qt.Key_B:
+                    spawnPos = self.mapToScene(self.mousePressPose)
+                    self.spawnNode("branch", spawnPos.x(), spawnPos.y())
+
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(Canvas, self).mousePressEvent(event)
                 self.resizing = node.bResize
@@ -1641,7 +1652,7 @@ class Canvas(QGraphicsView):
             if isinstance(self.pressed_item, UIPinBase) and not self.resizing and modifiers == QtCore.Qt.NoModifier:
                 if not type(self.pressed_item) is PinGroup:
                     # suggest nodes that can be connected to pressed pin
-                    self.showNodeBox(self.pressed_item.dataType, self.pressed_item.direction, self.pressed_item._rawPin.getCurrentStructure())
+                    self.showNodeBox(self.pressed_item.direction, self.pressed_item._rawPin.getCurrentStructure())
         self.manipulationMode = CanvasManipulationMode.NONE
         if not self.resizing:
             p_itm = self.pressedPin
@@ -1681,7 +1692,7 @@ class Canvas(QGraphicsView):
         elif event.button() == QtCore.Qt.LeftButton:
             self.requestClearProperties.emit()
         self.resizing = False
-        self.updateRerutes(event,False)
+        self.updateRerutes(event, False)
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), False)
 
     def removeItemByName(self, name):
@@ -1700,8 +1711,8 @@ class Canvas(QGraphicsView):
 
         self.zoom(zoomFactor)
 
-    def stepToCompound(self, compoundNode):
-        self.graphManager.selectGraph(compoundNode)
+    def stepToCompound(self, compoundNodeName):
+        self.graphManager.selectGraphByName(compoundNodeName)
 
     def drawBackground(self, painter, rect):
         super(Canvas, self).drawBackground(painter, rect)
@@ -1781,9 +1792,9 @@ class Canvas(QGraphicsView):
         # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
         # Stop any attempt to disrupt variable scope. Even if we accidentally forgot this check, GraphBase.addNode will fail
         if jsonTemplate['type'] in ['getVar', 'setVar']:
-            var = self.graphManager.findVariable(uuid.UUID(jsonTemplate['varUid']))
+            var = self.graphManager.findVariableByUid(uuid.UUID(jsonTemplate['varUid']))
             variableLocation = var.location()
-            graphLocation = self.graphManager.activeGraph().location()
+            graphLocation = self.graphManager.location()
             if len(variableLocation) > len(graphLocation):
                 return None
             if len(variableLocation) == len(graphLocation):
@@ -1827,6 +1838,22 @@ class Canvas(QGraphicsView):
         nodeInstance = self._createNode(jsonTemplate)
         EditorHistory().saveState("Create node {}".format(nodeInstance.name))
         return nodeInstance
+
+    def spawnNode(self, nodeClass, x, y):
+        packageName = None
+        for pkgName, pkg in GET_PACKAGES().items():
+            if nodeClass in pkg.GetNodeClasses():
+                packageName = pkgName
+                break
+        if packageName is not None:
+            jsonTemplate = NodeBase.jsonTemplate()
+            jsonTemplate["type"] = nodeClass
+            jsonTemplate["name"] = nodeClass
+            jsonTemplate["package"] = packageName
+            jsonTemplate["uuid"] = str(uuid.uuid4())
+            jsonTemplate["x"] = x
+            jsonTemplate["y"] = y
+            self.createNode(jsonTemplate)
 
     def createWrappersForGraph(self, rawGraph):
         # when raw graph was created, we need to create all ui wrappers for it

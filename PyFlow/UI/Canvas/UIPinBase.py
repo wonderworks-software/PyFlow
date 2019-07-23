@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 import weakref
 
 from Qt import QtCore
@@ -103,9 +118,8 @@ class UIPinBase(QGraphicsWidget):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.pinCircleDrawOffset = QtCore.QPointF()
 
-    @property
-    def inputWidgetVariant(self):
-        return self._rawPin.inputWidgetVariant
+    def getInputWidgetVariant(self):
+        return self._rawPin.getInputWidgetVariant()
 
     @property
     def labelColor(self):
@@ -227,8 +241,8 @@ class UIPinBase(QGraphicsWidget):
     def name(self):
         return self._rawPin.name
 
-    def getName(self):
-        return self._rawPin.getName()
+    def getFullName(self):
+        return self._rawPin.getFullName()
 
     def hasConnections(self):
         return self._rawPin.hasConnections()
@@ -521,7 +535,6 @@ class PinGroup(UIPinBase):
     def paint(self, painter, option, widget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), self.geometry().size())
         frame = frame.translated(self.pinSize * 1.1, 0)
-        # TODO: move group bg color to themes?
         groupBGColor = self.owningNode().color.lighter(150)
         bgRect = QtCore.QRectF(frame)
         bgRect.setX(0)

@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 """Common utils working with packags.
 """
 
@@ -100,7 +115,7 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
         return nodes[nodeClassName](nodeClassName, **kwargs)
 
 
-def INITIALIZE(additionalPackageLocations=[]):
+def INITIALIZE(additionalPackageLocations=[], software=""):
     from PyFlow.UI.Tool import REGISTER_TOOL
     from PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
     from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
@@ -157,5 +172,9 @@ def INITIALIZE(additionalPackageLocations=[]):
             REGISTER_UI_NODE_FACTORY(packageName, uiNodesFactory)
 
         for toolClass in package.GetToolClasses().values():
+            supportedSoftwares = toolClass.supportedSoftwares()
+            if "any" not in supportedSoftwares:
+                if software not in supportedSoftwares:
+                    continue
             REGISTER_TOOL(packageName, toolClass)
     getHashableDataTypes()

@@ -1,17 +1,30 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
 
 import sys
 import struct
 from Qt import QtGui, QtCore, QtWidgets
 
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
-from PyFlow.Core.Common import ( clamp, INT_RANGE_MIN, INT_RANGE_MAX )
+from PyFlow.Core.Common import clamp, INT_RANGE_MIN, INT_RANGE_MAX
 from PyFlow.Core import structs
+
 
 class inputDrager(QtWidgets.QWidget):
     """Custom Widget to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
-    
+
     Signals:
         :valueChanged: Signal Emited when value has change (float)
     """
@@ -86,9 +99,10 @@ class inputDrager(QtWidgets.QWidget):
 
         return False
 
+
 class draggers(QtWidgets.QWidget):
     """PopUp Draggers Houdini Style
-    
+
     Custom Widget that holds a bunch of :obj:`inputDrager` to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
     """
     def __init__(self, parent=None, isFloat=True, startValue=0.0):
@@ -156,9 +170,10 @@ class draggers(QtWidgets.QWidget):
             del(self)
         return False
 
+
 class slider(QtWidgets.QSlider):
     """Customized Int QSlider
-    
+
     Reimplements QSlider adding a few enhacements
 
     Modifiers:
@@ -166,17 +181,19 @@ class slider(QtWidgets.QSlider):
         :Ctrl:  and drag to move handle half velocity
         :Shift:  and drag to move handle quarter velocity
         :Ctrl+Shift:  and drag to move handle eighth velocity
-    
+
     Extends:
         QtWidgets.QSlider
     """
     def __init__(self, *args, **kargs):
         super(slider, self).__init__(*args, **kargs)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setOrientation(QtCore.Qt.Horizontal)
         self.deltaValue = 0
+        self._min_value = 0
+        self._max_value = 0
         self.startDragpos = QtCore.QPointF()
         self.realStartDragpos = QtCore.QPointF()
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
     def mousePressEvent(self, event):
         self.prevValue = self.value()
@@ -192,10 +209,9 @@ class slider(QtWidgets.QSlider):
             st_slider = QtWidgets.QStyleOptionSlider()
             st_slider.initFrom(self)
             st_slider.orientation = self.orientation()
-            available = self.style().pixelMetric(
-                QtWidgets.QStyle.PM_SliderSpaceAvailable, st_slider, self)
-            xloc = QtWidgets.QStyle.sliderPositionFromValue(self._min_value,
-                                                            self._max_value, super(slider, self).value(), available)
+            available = self.style().pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, st_slider, self)
+            # FIXME: self._min_value and self._max_value undefined
+            xloc = QtWidgets.QStyle.sliderPositionFromValue(self._min_value, self._max_value, super(slider, self).value(), available)
             butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
             newPos = QtCore.QPointF()
             newPos.setX(xloc)
@@ -246,27 +262,26 @@ class slider(QtWidgets.QSlider):
         self.deltaValue = 0
         super(slider, self).keyPressEvent(event)
 
+
 class doubleSlider(slider):
     """Customized Float QSlider
-    
+
     Float Qslider implementation
-       
+
     Signals:
         :doubleValueChanged: Emited when value has change (float)
     Extends:
-        :obj:`slider`        
+        :obj:`slider`
     """
     doubleValueChanged = QtCore.Signal(float)
 
     def __init__(self, decimals=4, *args, **kargs):
-        """        
+        """
         :param decimals: Number of decimal zeros, defaults to 4
         :type decimals: int, optional
         """
         super(doubleSlider, self).__init__(*args, **kargs)
         self._multi = 10 ** decimals
-        self._min_value = 0
-        self._max_value = 0
         self.valueChanged.connect(self.emitDoubleValueChanged)
 
     def setDecimals(self, decimals):
@@ -302,16 +317,17 @@ class doubleSlider(slider):
     def setValue(self, value):
         super(doubleSlider, self).setValue(int(value * self._multi))
 
+
 class valueBox(QtWidgets.QDoubleSpinBox):
     """Custom QDoubleSpinBox
-    
+
     Custom SpinBox with Houdini Style draggers, :obj:`draggers`. Middle Click to dislplay a bunch of draggers to change value by adding different delta values
 
     Extends:
-        QtWidgets.QDoubleSpinBox    
+        QtWidgets.QDoubleSpinBox
     """
     def __init__(self, type="float", buttons=False, decimals=4, *args, **kargs):
-        """        
+        """
         :param type: Choose if create a float or int spinBox, defaults to "float"
         :type type: str, optional
         :param buttons: Show or hidde right up/Down Buttons, defaults to False
@@ -321,7 +337,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         :param *args: [description]
         :type *args: [type]
         :param **kargs: [description]
-        :type **kargs: [type]        
+        :type **kargs: [type]
         """
         super(valueBox, self).__init__(*args, **kargs)
         self.isFloat = type == "float"
@@ -361,6 +377,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         ).getSliderStyleSheet("sliderStyleSheetA"))
         super(valueBox, self).update()
 
+
 class pyf_Slider(QtWidgets.QWidget):
     """Custom Slider that encapsulates a :obj:`slider` or a :obj:`doubleSlider` and a :obj:`valueBox` linked together
 
@@ -380,7 +397,7 @@ class pyf_Slider(QtWidgets.QWidget):
         :param name: Name to display in a label, if None no label created, defaults to None
         :type name: [type], optional
         :param *args: [description]
-        :type *args: [type]        
+        :type *args: [type]
         """
         super(pyf_Slider, self).__init__(parent=parent, *args)
         self.parent = parent
@@ -507,7 +524,7 @@ class pyf_Slider(QtWidgets.QWidget):
 
         :param value: New Display MinValue
         :type value: float/int
-        """        
+        """
         self._dispMin = value
         self.sld.setMinimum(value)
 
@@ -516,7 +533,7 @@ class pyf_Slider(QtWidgets.QWidget):
 
         :param value: New Display MaxValue
         :type value: float/int
-        """           
+        """
         self._dispMax = value
         self.sld.setMaximum(value)
 
@@ -549,6 +566,7 @@ class pyf_Slider(QtWidgets.QWidget):
         """Show Slider
         """              
         self.sld.show()
+
 
 class pyf_HueSlider(doubleSlider):
     """Custom Slider to select a color by a hue selector
@@ -636,6 +654,7 @@ class pyf_HueSlider(doubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
+
 class pyf_GradientSlider(doubleSlider):
     """Custom Slider to select a color by Non Editable gradient
 
@@ -693,6 +712,7 @@ class pyf_GradientSlider(doubleSlider):
 
         qp.drawRect(0, 0, w, h)
 
+
 class pyf_ColorSlider(QtWidgets.QWidget):
     """Custom Slider to choose a color by components. It encapsulates abunch of :obj:`valueBox` and :obj:`pyf_GradientSlider`
     
@@ -702,7 +722,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
     valueChanged = QtCore.Signal(list)
 
     def __init__(self, parent=None, startColor=[0, 0, 0], type="float", alpha=False, h=50, *args):
-        """        
+        """
         :param parent: Parent Widget
         :type parent: QtWidgets.QWidget
         :param startColor: Initialization color, defaults to [0, 0, 0]
@@ -817,7 +837,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
 
     def setColor(self, color):
         """Sets the current color
-    
+
         :param color: Input color to use
         :type color: list(int/float)
         """
@@ -851,6 +871,7 @@ class pyf_ColorSlider(QtWidgets.QWidget):
 
     def contextMenuEvent(self, event):
         self._menu.exec_(event.globalPos())
+
 
 class pyf_timeline(QtWidgets.QSlider):
     def __init__(self, parent, *args):
@@ -919,8 +940,7 @@ class pyf_timeline(QtWidgets.QSlider):
         metrics = qp.fontMetrics()
         fh = metrics.height()
         for e, i in enumerate(range(0, pxNb, step)):
-            pos = self.style().sliderPositionFromValue(
-                self.minimum(), self.maximum(), r[e], self.width())
+            pos = self.style().sliderPositionFromValue(self.minimum(), self.maximum(), r[e], self.width())
             half = h / 2
             if r[e] in self.cachedFrmaes:
                 qp.setPen(QtGui.QColor(0, 255, 0))
@@ -942,8 +962,7 @@ class pyf_timeline(QtWidgets.QSlider):
             else:
                 s = 1.5
             qp.drawLine(pos, half + s, pos, half - s)
-        pos = self.style().sliderPositionFromValue(
-            self.minimum(), self.maximum(), self.value(), self.width())
+        pos = self.style().sliderPositionFromValue(self.minimum(), self.maximum(), self.value(), self.width())
         fw = metrics.width("0")
         qp.setPen(editableStyleSheet().MainColor)
         if self.value() > self.maximum() - (self.maximum() / 2):
@@ -954,8 +973,7 @@ class pyf_timeline(QtWidgets.QSlider):
             val = self.style().sliderValueFromPosition(
                 self.minimum(), self.maximum(), self.hoverPos.x(), self.width())
             if val != self.value():
-                pos = self.style().sliderPositionFromValue(
-                    self.minimum(), self.maximum(), val, self.width())
+                pos = self.style().sliderPositionFromValue(self.minimum(), self.maximum(), val, self.width())
                 fw = metrics.width("0")
                 if val > self.maximum() - (self.maximum() / 2):
                     fw += metrics.width(str(val))
@@ -1010,6 +1028,7 @@ class pyf_timeline(QtWidgets.QSlider):
                     self.repaint()
         else:
             return super(pyf_timeline, self).mouseMoveEvent(event)
+
 
 class uiTick(QtWidgets.QGraphicsWidget):
     """ UiElement For Ramp Widgets.
@@ -1111,6 +1130,7 @@ class uiTick(QtWidgets.QGraphicsWidget):
             pen.setWidth(2.25)
         painter.setPen(pen)
         painter.drawRoundedRect(bgRect, 2, 2)
+
 
 class pyf_RampSpline(QtWidgets.QGraphicsView):
     """Ui Ramp/Curve Editor that encapsulates a :obj:`PyFlow.Core.structs.splineRamp` to edit it
@@ -1411,6 +1431,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         else:
             b = editableStyleSheet().InputFieldColor
 
+
 class pyf_RampColor(pyf_RampSpline):
     """Similar to the :obj:`pyf_RampSpline` to create editable gradients with interpolation support
 
@@ -1563,6 +1584,7 @@ class pyf_RampColor(pyf_RampSpline):
             b = editableStyleSheet().InputFieldColor
         painter.fillRect(rect, b)
 
+
 class testWidg(QtWidgets.QWidget):
 
     def __init__(self, parent):
@@ -1589,7 +1611,7 @@ class testWidg(QtWidgets.QWidget):
         self.layout().addWidget(color)
         raw_ramp = structs.splineRamp()
         raw_ramp.addItem(0.0,0.0)
-        raw_ramp.addItem(1.0,1.0)        
+        raw_ramp.addItem(1.0,1.0)
         ramp2 = pyf_RampSpline(raw_ramp,self)
 
         self.layout().addWidget(ramp2)

@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 from PyFlow.Packages.PyFlowBase.Nodes.switchOnString import switchOnString
 from PyFlow.Packages.PyFlowBase.Nodes.getVar import getVar
 from PyFlow.Packages.PyFlowBase.Nodes.setVar import setVar
@@ -59,7 +74,7 @@ def createUINode(raw_instance):
     if isinstance(raw_instance, commentNode):
         return UICommentNode(raw_instance)
     if isinstance(raw_instance, stickyNote):
-        return UIstickyNote(raw_instance)        
+        return UIstickyNote(raw_instance)
     if isinstance(raw_instance, reroute) or isinstance(raw_instance, rerouteExecs):
         return UIRerouteNodeSmall(raw_instance)
     if isinstance(raw_instance, graphInputs):
@@ -70,18 +85,18 @@ def createUINode(raw_instance):
         return UICompoundNode(raw_instance)
     if isinstance(raw_instance, pythonNode):
         return UIPythonNode(raw_instance)
-    if isinstance(raw_instance,constant):
+    if isinstance(raw_instance, constant):
         return UIConstantNode(raw_instance)
-    if isinstance(raw_instance,convertTo):
+    if isinstance(raw_instance, convertTo):
         return UIConvertToNode(raw_instance)
-    if isinstance(raw_instance,makeDict):
+    if isinstance(raw_instance, makeDict):
         return UIMakeDictNode(raw_instance)
-    if isinstance(raw_instance,makeAnyDict):
+    if isinstance(raw_instance, makeAnyDict):
         return UIMakeDictNode(raw_instance)
-    if isinstance(raw_instance,floatRamp):
-        return UIFloatRamp(raw_instance)         
-    if isinstance(raw_instance,colorRamp):
-        return UIColorRamp(raw_instance)       
-    if isinstance(raw_instance,imageDisplay):
-        return UIQimageDisplay(raw_instance)              
+    if isinstance(raw_instance, floatRamp):
+        return UIFloatRamp(raw_instance)
+    if isinstance(raw_instance, colorRamp):
+        return UIColorRamp(raw_instance)
+    if isinstance(raw_instance, imageDisplay):
+        return UIQimageDisplay(raw_instance)
     return UINodeBase(raw_instance)

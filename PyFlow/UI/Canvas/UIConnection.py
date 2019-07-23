@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 import weakref
 from uuid import UUID, uuid4
 
@@ -81,7 +96,7 @@ class UIConnection(QGraphicsPathItem):
         return self.canvasRef().graphManager.activeGraph() == self.source()._rawPin.owningNode().graph()
 
     def __repr__(self):
-        return "{0} -> {1}".format(self.source().getName(), self.destination().getName())
+        return "{0} -> {1}".format(self.source().getFullName(), self.destination().getFullName())
 
     def setColor(self, color):
         self.pen.setColor(color)
@@ -175,14 +190,14 @@ class UIConnection(QGraphicsPathItem):
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
-                  'sourceName': self.source()._rawPin.getName(),
-                  'destinationName': self.destination()._rawPin.getName(),
+                  'sourceName': self.source()._rawPin.getFullName(),
+                  'destinationName': self.destination()._rawPin.getFullName(),
                   'uuid': str(self.uid)
                   }
         return script
 
     def __str__(self):
-        return '{0} >>> {1}'.format(self.source()._rawPin.getName(), self.destination()._rawPin.getName())
+        return '{0} >>> {1}'.format(self.source()._rawPin.getFullName(), self.destination()._rawPin.getFullName())
 
     def drawThick(self):
         self.pen.setWidthF(self.thickness + (self.thickness / 1.5))
@@ -229,7 +244,7 @@ class UIConnection(QGraphicsPathItem):
         self.update()
 
     def source_port_name(self):
-        return self.source().getName()
+        return self.source().getFullName()
 
     def shape(self):
         qp = QtGui.QPainterPathStroker()

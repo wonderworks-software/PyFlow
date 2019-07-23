@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 from nine import str
 from Qt import QtCore
 from Qt import QtGui
@@ -15,7 +30,8 @@ import os
 import subprocess
 
 
-REDIRECT = False
+REDIRECT = ConfigManager().shouldRedirectOutput()
+
 logger = logging.getLogger(None)
 
 def addLoggingLevel(levelName, levelNum, methodName=None):
@@ -31,7 +47,7 @@ def addLoggingLevel(levelName, levelNum, methodName=None):
 
     To avoid accidental clobberings of existing attributes, this method will
     raise an `AttributeError` if the level name is already an attribute of the
-    `logging` module or if the method name is already present 
+    `logging` module or if the method name is already present
 
     Example
     -------
@@ -47,11 +63,11 @@ def addLoggingLevel(levelName, levelNum, methodName=None):
         methodName = levelName.lower()
 
     if hasattr(logging, levelName):
-       raise AttributeError('{} already defined in logging module'.format(levelName))
+        raise AttributeError('{} already defined in logging module'.format(levelName))
     if hasattr(logging, methodName):
-       raise AttributeError('{} already defined in logging module'.format(methodName))
+        raise AttributeError('{} already defined in logging module'.format(methodName))
     if hasattr(logging.getLoggerClass(), methodName):
-       raise AttributeError('{} already defined in logger class'.format(methodName))
+        raise AttributeError('{} already defined in logger class'.format(methodName))
 
     # This method was inspired by the answers to Stack Overflow post
     # http://stackoverflow.com/q/2183233/2988730, especially
@@ -59,6 +75,7 @@ def addLoggingLevel(levelName, levelNum, methodName=None):
     def logForLevel(self, message, *args, **kwargs):
         if self.isEnabledFor(levelNum):
             self._log(levelNum, message, args, **kwargs)
+
     def logToRoot(message, *args, **kwargs):
         logging.log(levelNum, message, *args, **kwargs)
 
@@ -145,12 +162,11 @@ class LoggerTool(DockTool):
         else:
             self.handler = logging.StreamHandler(sys.stdout)
 
-        self.handler.setFormatter(LoggerTool.formater)
-        logger.addHandler(self.handler)
-
         logger.setLevel(logging.DEBUG)
         sys.excepthook = LoggerTool.exceptHook
         if self.handler and REDIRECT:
+            self.handler.setFormatter(LoggerTool.formater)
+            logger.addHandler(self.handler)
             self.handler.messageHolder.messageWritten.connect(
                 lambda value: self.logPython(value, 0))
             self.handler.messageHolder.warningWritten.connect(
@@ -169,19 +185,24 @@ class LoggerTool(DockTool):
     def clearView(self, *args):
         self.logView.clear()
 
+    @staticmethod
+    def supportedSoftwares():
+        return ["standalone"]
+
     def onDestroy(self):
-        try:
-            sys.stdout = sys.__stdout__
-            self.handler.messageHolder._stdout = None
-            self.handler.messageHolder._stderr = None
-            self.handler.messageHolder.messageWritten.disconnect()
-            self.handler.messageHolder.warningWritten.disconnect()
-            self.handler.messageHolder.errorWritten.disconnect()
-            self.handler.messageHolder.flushSig.disconnect()
-            del self.handler
-            self.handler = None
-        except:
-            pass
+        if REDIRECT:
+            try:
+                sys.stdout = sys.__stdout__
+                self.handler.messageHolder._stdout = None
+                self.handler.messageHolder._stderr = None
+                self.handler.messageHolder.messageWritten.disconnect()
+                self.handler.messageHolder.warningWritten.disconnect()
+                self.handler.messageHolder.errorWritten.disconnect()
+                self.handler.messageHolder.flushSig.disconnect()
+                del self.handler
+                self.handler = None
+            except:
+                pass
 
     def logPython(self, text, mode=0):
         colorchart = {
@@ -203,10 +224,10 @@ class LoggerTool(DockTool):
                             self.logView.append(errorLink)
                     else:
                         self.logView.append(
-                            '<span style=" color:%s;">%s<span>' % (colorchart[mode], l))             
+                            '<span style=" color:%s;">%s<span>' % (colorchart[mode], l))
                 else:
                     self.logView.append(
-                        '<span style=" color:%s;">%s<span>' % (colorchart[mode], l)) 
+                        '<span style=" color:%s;">%s<span>' % (colorchart[mode], l))
 
     def flushPython(self):
         self.logView.moveCursor(QtWidgets.QTextCursor.End,

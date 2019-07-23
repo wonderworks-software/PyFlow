@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QWidget
@@ -8,7 +23,6 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QMenu
 
-from PyFlow.UI.Canvas.UICommon import DEFAULT_WIDGET_VARIANT
 from PyFlow.Core.Common import *
 
 
@@ -41,9 +55,9 @@ class InputWidgetRaw(QWidget, IInputWidget):
     """
 
     def __init__(self, parent=None, dataSetCallback=None, defaultValue=None, **kwds):
-        super(InputWidgetRaw, self).__init__(parent=parent, **kwds)
+        super(InputWidgetRaw, self).__init__(parent=parent)
         self._defaultValue = defaultValue
-        # fuction with signature void(object)
+        # function with signature void(object)
         # this will set data to pin
         self.dataSetCallback = dataSetCallback
         self._widget = None
@@ -108,10 +122,10 @@ def REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, factory):
         print("registering", packageName, "input widgets")
 
 
-def createInputWidget(dataType, dataSetter, defaultValue=None, widgetVariant=DEFAULT_WIDGET_VARIANT):
+def createInputWidget(dataType, dataSetter, defaultValue=None, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds):
     pinInputWidget = None
     for packageName, factory in UI_INPUT_WIDGET_PINS_FACTORIES.items():
-        pinInputWidget = factory(dataType, dataSetter, defaultValue, widgetVariant)
+        pinInputWidget = factory(dataType, dataSetter, defaultValue, widgetVariant, **kwds)
         if pinInputWidget is not None:
             return pinInputWidget
     return pinInputWidget

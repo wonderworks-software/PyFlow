@@ -1,8 +1,23 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 """
 .. sidebar:: **FunctionLibrary.py**
 
-    This file contains a decorator to turn pyton function into a node.
-    And base class for funciton library.
+    This file contains a decorator to turn python function into a node.
+    And base class for function library.
     The main idea is to use function arguments as input and output pins.
 
 
@@ -12,7 +27,7 @@ Detailed description
 ====================
 
 We use this function as decorator in 100% cases.
-See :class:`PyFlow.Packages.FunctionLibraries` content for plenty of examples
+See :file:`PyFlow/Packages/PyFlowBase/FunctionLibraries` content for plenty of examples
 
 Arguments
 ---------
@@ -27,6 +42,10 @@ Arguments
     First element is pin data type.
     Second - default value.
     Third element is :term:`pin specifires`
+
+.. seealso:: :meth:`~PyFlow.Core.NodeBase.NodeBase.createInputPin`
+             :meth:`~PyFlow.Core.NodeBase.NodeBase.createOutputPin`
+             :class:`~PyFlow.Core.PinBase.PinBase`
 
 **meta**
 
@@ -62,6 +81,9 @@ Examples:
         >>> ("enabledOptions": None)
         >>> ("disabledOptions": None)
         >>> ("inputWidgetVariant": "DefaultWidget")
+        >>> ("ValueList": [str])
+
+        "Value list is specific for string pins. If Specified - enum input widget will be created for this pin."
 
     node meta
         dict that describes different node options and attributes to be considered on generation

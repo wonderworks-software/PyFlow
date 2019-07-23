@@ -1,10 +1,17 @@
-"""@file Node.py
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
 
-Node is a base class for all ui nodes. This is actually a QGraphicsItem with all common stuff for nodes.
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
 
-Also, it implements [initializeFromFunction](@ref PyFlow.Core.Node.initializeFromFunction) method which constructs node from given annotated function.
-@sa FunctionLibrary.py
-"""
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
 
 from nine import str
 import logging
@@ -12,6 +19,7 @@ from Qt import QtCore
 from Qt import QtGui
 from Qt import QtSvg
 from Qt.QtWidgets import *
+from PyFlow.ConfigManager import ConfigManager
 from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.UIPinBase import (
     UIPinBase,
@@ -635,9 +643,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def onNodeErrorOccured(self, *args, **kwargs):
         # change node ui to invalid
         errorString = args[0]
-        error = {"Node":self._rawNode.name,"Error":errorString}
-        errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>"""%(self._rawNode.name,str(error))
-        logging.error(errorLink)
+        error = {"Node": self._rawNode.name, "Error": errorString}
+        if ConfigManager().shouldRedirectOutput():
+            errorLink = """<a href=%s><span style=" text-decoration: underline; color:red;">%s</span></a></p>""" % (self._rawNode.name, str(error))
+            logging.error(errorLink)
+        else:
+            logging.error(errorString)
         self.setToolTip(errorString)
         self.update()
 
@@ -778,7 +789,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 else:
                     self.onVisibilityChanged(bool(value))
         if change == QGraphicsItem.ItemSelectedChange:
-            if value == False:
+            if not value:
                 self.nodeNameWidget.labelItem.clearFocus()
         return super(UINodeBase, self).itemChange(change, value)
 
@@ -885,6 +896,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             self.updateNodeShape()
 
         self.setHeaderHtml(headerHtml)
+
+    def getMetaData(self):
+        return self._rawNode.getMetaData()
 
     def createActionButtons(self):
         # NOTE: actions with action button class specified will be added next to node name
@@ -1263,18 +1277,20 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData
-                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.inputWidgetVariant)
-
-                # add backref to pin ui object and call initializer
-                try:
-                    w.pin=inp
-                    w.runpin()
-                except:
-                    pass
+                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getInputWidgetVariant(), pinAnnotations=inp._rawPin.annotationDescriptionDict)
 
                 if w:
 
                     w.pin=inp
+
+                    #hack me
+                    # add backref to pin ui object and call initializer
+                    try:
+                        w.runpin()
+                    except:
+                        pass
+                    #hack end
+
 
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
@@ -1283,7 +1299,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                         data = inp.currentData()[1]
                     w.setWidgetValue(data)
                     w.blockWidgetSignals(False)
-                    w.setObjectName(inp.getName())
+                    w.setObjectName(inp.getFullName())
                     group = inGroup
                     if inGroup is None:
                         group = inp._rawPin.group
@@ -1299,7 +1315,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
                 continue
             dataSetter = inp.call if inp.isExec() else inp.setData
-            w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.inputWidgetVariant)
+            w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getInputWidgetVariant(), pinAnnotations=inp._rawPin.annotationDescriptionDict)
             if w:
                 inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                 w.blockWidgetSignals(True)
@@ -1308,7 +1324,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     data = inp.currentData()[1]
                 w.setWidgetValue(data)
                 w.blockWidgetSignals(False)
-                w.setObjectName(inp.getName())
+                w.setObjectName(inp.getFullName())
                 inputsCategory.addWidget(inp.name, w)
         propertiesWidget.addWidget(inputsCategory)
         return inputsCategory

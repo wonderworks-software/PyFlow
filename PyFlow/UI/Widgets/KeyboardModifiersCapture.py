@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 from Qt.QtWidgets import *
 from Qt import QtCore, QtGui
 
@@ -21,6 +36,8 @@ class KeyboardModifiersCaptureWidget(QPushButton):
 
     def resetToDefault(self):
         self.currentModifiers = QtCore.Qt.NoModifier
+        self.bCapturing = False
+        self.setChecked(False)
 
     @staticmethod
     def modifiersToString(modifiers):
@@ -30,9 +47,10 @@ class KeyboardModifiersCaptureWidget(QPushButton):
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
-            self.bCapturing = True
-            super(KeyboardModifiersCaptureWidget, self).mousePressEvent(event)
-            self.setText("capturing...")
+            if not self.bCapturing:
+                self.bCapturing = True
+                super(KeyboardModifiersCaptureWidget, self).mousePressEvent(event)
+                self.setText("capturing...")
 
     @property
     def currentModifiers(self):
@@ -49,11 +67,14 @@ class KeyboardModifiersCaptureWidget(QPushButton):
         key = event.key()
         if key == QtCore.Qt.Key_Escape:
             self.resetToDefault()
+            self.bCapturing = False
+            self.setChecked(False)
             return
 
         if key == QtCore.Qt.Key_Return and self.bCapturing:
             self.bCapturing = False
             self.setChecked(False)
+            self.update()
 
         if self.bCapturing:
             self.currentModifiers = event.modifiers()

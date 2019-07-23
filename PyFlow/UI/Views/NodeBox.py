@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 import json
 import weakref
 try:
@@ -39,13 +54,14 @@ class NodeBoxTreeWidget(QTreeWidget):
     showInfo = QtCore.Signal(object)
     hideInfo = QtCore.Signal()
 
-    def __init__(self, parent, canvas, bNodeInfoEnabled=True, useDragAndDrop=True):
+    def __init__(self, parent, canvas, bNodeInfoEnabled=True, useDragAndDrop=True, bGripsEnabled=True):
         super(NodeBoxTreeWidget, self).__init__(parent)
         style = "border-radius: 2px;" +\
                 "font-size: 14px;" +\
                 "border-style: outset;" +\
                 "border-width: 1px;"
         self.setStyleSheet(style)
+        self.bGripsEnabled = bGripsEnabled
         self.canvas = canvas
         self.setParent(parent)
         self.setFrameShape(QFrame.NoFrame)
@@ -125,12 +141,14 @@ class NodeBoxTreeWidget(QTreeWidget):
         nodeItem.setText(0, name)
         nodeItem.libName = libName
         nodeItem.docString = doc
-        # if doc:
-        #     nodeItem.setToolTip(0, doc)
 
-    def refresh(self, dataType=None, pattern='', pinDirection=None, pinStructure=PinStructure.Single):
+    def refresh(self, pattern='', pinDirection=None, pinStructure=PinStructure.Single):
         self.clear()
         self.categoryPaths = {}
+
+        dataType = None
+        if self.canvas.pressedPin is not None:
+            dataType = self.canvas.pressedPin.dataType
 
         for package_name, package in GET_PACKAGES().items():
             # annotated functions
@@ -255,7 +273,9 @@ class NodeBoxTreeWidget(QTreeWidget):
         jsonTemplate['uuid'] = str(uuid.uuid4())
         jsonTemplate['meta']['label'] = pressed_text
 
-        if self.suggestionsEnabled:
+        # TODO: Rewrite self.bGripsEnabled. Node box can be floating window or a tool.
+        # If node box is a tool it onbly can create nodes by dragging and dropping
+        if self.canvas.pressedPin is not None and self.bGripsEnabled:
             a = self.canvas.mapToScene(self.canvas.mouseReleasePos)
             jsonTemplate["x"] = a.x()
             jsonTemplate["y"] = a.y()
@@ -316,7 +336,7 @@ class NodeBoxSizeGrip(QSizeGrip):
 class NodesBox(QFrame):
     """doc string for NodesBox"""
 
-    def __init__(self, parent, bNodeInfoEnabled=True, bGripsEnabled=True):
+    def __init__(self, parent, canvas, bNodeInfoEnabled=True, bGripsEnabled=True, bUseDragAndDrop=False):
         super(NodesBox, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
         self.setFrameStyle(QFrame.Panel | QFrame.Raised)
@@ -364,7 +384,7 @@ class NodesBox(QFrame):
         self.splitter.addWidget(self.nodeInfoWidget)
         self.nodeInfoWidget.setVisible(bNodeInfoEnabled)
 
-        self.treeWidget = NodeBoxTreeWidget(self,parent, bNodeInfoEnabled, False)
+        self.treeWidget = NodeBoxTreeWidget(self, canvas, bNodeInfoEnabled, bUseDragAndDrop, bGripsEnabled)
         self.treeWidget.setObjectName("nodeBoxTreeWidget")
         self.treeWidget.headerItem().setText(0, "1")
         self.verticalLayout.addWidget(self.treeWidget)
@@ -400,7 +420,7 @@ class NodesBox(QFrame):
             self.lineEdit.setPlaceholderText("enter node name..")
             self.treeWidget.refresh()
             return
-        self.treeWidget.refresh(None, self.lineEdit.text())
+        self.treeWidget.refresh(self.lineEdit.text())
         self.expandCategory()
 
     def mousePressEvent(self, event):

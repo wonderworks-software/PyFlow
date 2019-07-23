@@ -1,5 +1,18 @@
-"""@file NodePainter.py
-"""
+# Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QStyle
@@ -12,7 +25,6 @@ from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.Utils.stylesheet import Colors
 
-InteractiveColor = editableStyleSheet().MainColor
 InvalidNodePenColor = Colors.Red
 ExposedPropertiesColor = Colors.NodeNameRectBlue
 
@@ -26,23 +38,23 @@ class NodePainter(object):
             pen = QtGui.QPen()
             height = node.geometry().height()
             width = node.geometry().width()
-            rf = node.roundness*2
-            pen.setColor(InteractiveColor)
+            rf = node.roundness * 2
+            pen.setColor(editableStyleSheet().MainColor)
             pen.setStyle(node.optPenSelectedType)
             painter.setPen(pen)
 
             # left strip
             if node.resizeStrips[0]:
-                painter.drawLine(0, rf/2, 0, height - rf/2)
+                painter.drawLine(0, rf / 2, 0, height - rf / 2)
             # top strip
             if node.resizeStrips[1]:
-                painter.drawLine(rf/2, 0, width - rf/2, 0)
+                painter.drawLine(rf / 2, 0, width - rf / 2, 0)
             # right strip
             if node.resizeStrips[2]:
-                painter.drawLine(width, rf/2, width, height - rf/2)
+                painter.drawLine(width, rf / 2, width, height - rf / 2)
             # bottom strip
             if node.resizeStrips[3]:
-                painter.drawLine(rf/2, height, width - rf/2, height)
+                painter.drawLine(rf / 2, height, width - rf / 2, height)
 
             # bottom right strip
             if node.resizeStrips[4]:
@@ -73,19 +85,20 @@ class NodePainter(object):
         painter.setBrush(node.color)
         pen = QtGui.QPen(QtCore.Qt.black, 0.75)
         if option.state & QStyle.State_Selected:
-            pen.setColor(InteractiveColor)
+            pen.setColor(editableStyleSheet().MainColor)
             pen.setStyle(QtCore.Qt.SolidLine)
         painter.setPen(pen)
         painter.drawRoundedRect(frame, node.roundness, node.roundness)
 
         if option.state & QStyle.State_Selected:
-            pen.setColor(InteractiveColor)
+            pen.setColor(editableStyleSheet().MainColor)
             pen.setStyle(node.optPenSelectedType)
             pen.setWidth(pen.width() * 1.5)
         painter.setPen(pen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 0))
         painter.drawRoundedRect(frame, node.roundness, node.roundness)
-        painter.drawLine(frame.left() + 5, node.labelHeight, frame.right() - 5, node.labelHeight)
+        painter.drawLine(frame.left() + 5, node.labelHeight,
+                         frame.right() - 5, node.labelHeight)
         NodePainter.drawResizeHandles(node, painter, option, widget)
 
     @staticmethod
@@ -97,18 +110,22 @@ class NodePainter(object):
             if grp.hovered and grp.expanded:
                 if grp.numPins() > 0:
                     grpPos = grp.geometry().bottomLeft()
-                    lastPinPos = grp._pins[grp.numPins() - 1].geometry().bottomLeft()
+                    lastPinPos = grp._pins[grp.numPins(
+                    ) - 1].geometry().bottomLeft()
                     painter.drawLine(grpPos, grpPos + inputsOffset)
-                    painter.drawLine(grpPos + inputsOffset, lastPinPos + inputsOffset)
+                    painter.drawLine(grpPos + inputsOffset,
+                                     lastPinPos + inputsOffset)
                     painter.drawLine(lastPinPos + inputsOffset, lastPinPos)
 
         for grp in node.groups["output"].values():
             if grp.hovered and grp.expanded:
                 if grp.numPins() > 0:
                     grpPos = grp.geometry().bottomRight()
-                    lastPinPos = grp._pins[grp.numPins() - 1].geometry().bottomRight()
+                    lastPinPos = grp._pins[grp.numPins(
+                    ) - 1].geometry().bottomRight()
                     painter.drawLine(grpPos, grpPos + outputsOffset)
-                    painter.drawLine(grpPos + outputsOffset, lastPinPos + outputsOffset)
+                    painter.drawLine(grpPos + outputsOffset,
+                                     lastPinPos + outputsOffset)
                     painter.drawLine(lastPinPos + outputsOffset, lastPinPos)
 
     @staticmethod
@@ -172,7 +189,7 @@ class NodePainter(object):
             pen.setWidth(pen.width() * 1.5)
         elif not node.bExposeInputsToCompound:
             if option.state & QStyle.State_Selected:
-                pen.setColor(InteractiveColor)
+                pen.setColor(editableStyleSheet().MainColor)
                 pen.setStyle(node.optPenSelectedType)
                 pen.setWidth(pen.width() * 1.5)
         else:
@@ -206,15 +223,17 @@ class NodePainter(object):
         painter.setBrush(br)
         pen = QtGui.QPen(QtCore.Qt.black, 0.5)
         if option.state & QStyle.State_Selected:
-            pen.setColor(InteractiveColor)
+            pen.setColor(editableStyleSheet().MainColor)
             pen.setStyle(node.optPenSelectedType)
         painter.setPen(pen)
-        painter.drawRoundedRect(node.boundingRect(), node.roundness, node.roundness)
+        painter.drawRoundedRect(node.boundingRect(),
+                                node.roundness, node.roundness)
         painter.setFont(node.nodeNameFont)
         painter.setPen(QtGui.QPen(QtCore.Qt.white, 0.5))
         textRect = node.boundingRect()
         textRect.setWidth(textRect.width() - 10)
-        painter.drawText(textRect, QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter, node.var.name)
+        painter.drawText(textRect, QtCore.Qt.AlignCenter |
+                         QtCore.Qt.AlignVCenter, node.var.name)
 
     @staticmethod
     def asRerouteNode(node, painter, option, widget):
@@ -235,11 +254,12 @@ class NodePainter(object):
         width = pen.width()
         if option.state & QStyle.State_Selected:
             # pen.setColor(Colors.Yellow)
-            pen.setColor(InteractiveColor)
+            pen.setColor(editableStyleSheet().MainColor)
             pen.setStyle(node.optPenSelectedType)
             pen.setWidth(width * 1.5)
         painter.setPen(pen)
-        painter.drawEllipse(node.boundingRect().center(), node.drawRect.width() / 2, node.drawRect.width() / 2)
+        painter.drawEllipse(node.boundingRect().center(
+        ), node.drawRect.width() / 2, node.drawRect.width() / 2)
 
 
 # Determines how to paint a pin
@@ -260,17 +280,20 @@ class PinPainter(object):
 
         if lod < 3 and not pin.bLabelHidden:
             painter.setFont(pin._font)
-            textWidth = QtGui.QFontMetrics(painter.font()).width(pin.displayName())
+            textWidth = QtGui.QFontMetrics(
+                painter.font()).width(pin.displayName())
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
                 x = frame.width() - textWidth - pin.pinSize - 1
             yCenter = textHeight - textHeight / 3
-            painter.setPen(QtGui.QPen(pin.labelColor, 0.5, QtCore.Qt.SolidLine))
+            painter.setPen(QtGui.QPen(
+                pin.labelColor, 0.5, QtCore.Qt.SolidLine))
             painter.drawText(x, yCenter, pin.displayName())
 
         pinCenter = pin.pinCenter()
-        radialGrad = QtGui.QRadialGradient(pinCenter.x(), pinCenter.y() - 0.3, halfPinSize * 0.8)
+        radialGrad = QtGui.QRadialGradient(
+            pinCenter.x(), pinCenter.y() - 0.3, halfPinSize * 0.8)
         if not pin._rawPin.hasConnections():
             radialGrad.setColorAt(0, pin.color().darker(280))
             radialGrad.setColorAt(0.5, pin.color().darker(280))
@@ -286,7 +309,8 @@ class PinPainter(object):
             painter.setBrush(QtGui.QColor(128, 128, 128, 30))
             painter.drawRoundedRect(frame, 3, 3)
         painter.setBrush(radialGrad)
-        painter.drawEllipse(pinCenter.x() - halfPinSize, pinCenter.y() - halfPinSize, pin.pinSize, pin.pinSize)
+        painter.drawEllipse(pinCenter.x() - halfPinSize,
+                            pinCenter.y() - halfPinSize, pin.pinSize, pin.pinSize)
 
     @staticmethod
     def asExecPin(pin, painter, option, widget):
@@ -299,13 +323,15 @@ class PinPainter(object):
         painter.setPen(PinPainter._execPen)
 
         if lod < 3 and not pin.bLabelHidden:
-            textWidth = QtGui.QFontMetrics(painter.font()).width(pin.displayName())
+            textWidth = QtGui.QFontMetrics(
+                painter.font()).width(pin.displayName())
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
                 x = frame.width() - textWidth - pin.pinSize - 1
             yCenter = textHeight - textHeight / 3
-            painter.setPen(QtGui.QPen(pin.labelColor, 0.5, QtCore.Qt.SolidLine))
+            painter.setPen(QtGui.QPen(
+                pin.labelColor, 0.5, QtCore.Qt.SolidLine))
             painter.drawText(x, yCenter, pin.displayName())
 
         if pin._rawPin.hasConnections():
@@ -313,11 +339,15 @@ class PinPainter(object):
         else:
             painter.setBrush(QtCore.Qt.NoBrush)
         pinCenter = pin.pinCenter()
-        xOffset = pinCenter.x() - pin.pinSize if pin.direction == PinDirection.Input else pinCenter.x() - pin.pinSize * 0.8
+        xOffset = pinCenter.x() - \
+            pin.pinSize if pin.direction == PinDirection.Input else pinCenter.x() - \
+            pin.pinSize * 0.8
         arrow = QtGui.QPolygonF([QtCore.QPointF(2, 0.0),
                                  QtCore.QPointF(2 + pin.pinSize / 2.0, 0.0),
-                                 QtCore.QPointF(2 + pin.pinSize, pin.pinSize / 2.0),
-                                 QtCore.QPointF(2 + pin.pinSize / 2.0, pin.pinSize),
+                                 QtCore.QPointF(2 + pin.pinSize,
+                                                pin.pinSize / 2.0),
+                                 QtCore.QPointF(
+                                     2 + pin.pinSize / 2.0, pin.pinSize),
                                  QtCore.QPointF(2, pin.pinSize)]).translated(xOffset, 1)
         painter.drawPolygon(arrow)
         if pin.hovered:
@@ -332,7 +362,8 @@ class PinPainter(object):
         # painter.setBrush(QtCore.Qt.NoBrush)
         if not pin.expanded:
             arrow = QtGui.QPolygonF([QtCore.QPointF(0.0, 0.0),
-                                     QtCore.QPointF(pin.pinSize, pin.pinSize / 2.0),
+                                     QtCore.QPointF(
+                                         pin.pinSize, pin.pinSize / 2.0),
                                      QtCore.QPointF(0, pin.pinSize)])
         else:
             arrow = QtGui.QPolygonF([QtCore.QPointF(pin.pinSize / 2, pin.pinSize),
@@ -361,7 +392,8 @@ class PinPainter(object):
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
-            textWidth = QtGui.QFontMetrics(painter.font()).width(pin.displayName())
+            textWidth = QtGui.QFontMetrics(
+                painter.font()).width(pin.displayName())
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
@@ -399,7 +431,8 @@ class PinPainter(object):
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
-            textWidth = QtGui.QFontMetrics(painter.font()).width(pin.displayName())
+            textWidth = QtGui.QFontMetrics(
+                painter.font()).width(pin.displayName())
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:

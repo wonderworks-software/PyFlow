@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 from PyFlow import getHashableDataTypes
 from PyFlow.Core import NodeBase
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
@@ -8,11 +23,11 @@ class makeDictElement(NodeBase):
     def __init__(self, name):
         super(makeDictElement, self).__init__(name)
         self.bCacheEnabled = False
-        self.key = self.createInputPin('key', 'AnyPin', structure=PinStructure.Single, constraint="1", allowedPins=getHashableDataTypes())
+        self.key = self.createInputPin('key', 'AnyPin', structure=PinStructure.Single, constraint="1", supportedPinDataTypes=getHashableDataTypes())
         self.value = self.createInputPin('value', 'AnyPin', structure=PinStructure.Multi, constraint="2")
         self.value.enableOptions(PinOptions.AllowAny)
         self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=DictElement(), structure=PinStructure.Single, constraint="2")
-        self.outArray.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSuported)
+        self.outArray.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSupported)
         self.outArray.onPinConnected.connect(self.outPinConnected)
         self.outArray.onPinDisconnected.connect(self.outPinDisConnected)
         self.key.dataBeenSet.connect(self.dataBeenSet)
@@ -40,14 +55,14 @@ class makeDictElement(NodeBase):
     def description():
         return 'Creates a Dict Element'
 
-    def dataBeenSet(self,pin=None):
+    def dataBeenSet(self, pin=None):
         try:
             self.outArray._data = DictElement(self.key.getData(), self.value.getData())
             self.checkForErrors()
         except:
             pass
 
-    def outPinDisConnected(self,inp):
+    def outPinDisConnected(self, inp):
         dictNode = inp.getDictNode([])
         if dictNode:
             if dictNode.KeyType in self.constraints[self.key.constraint]:
@@ -56,7 +71,7 @@ class makeDictElement(NodeBase):
                 dictNode.constraints[self.key.constraint].remove(self.key)
         self.outPinConnected(self.outArray)
 
-    def outPinConnected(self,inp):
+    def outPinConnected(self, inp):
         dictNode = inp.getDictNode([])
         if dictNode:
             dataType = dictNode.KeyType.dataType
@@ -64,10 +79,10 @@ class makeDictElement(NodeBase):
                 dataType = self.key.dataType
             if dictNode.KeyType not in self.constraints[self.key.constraint]:
                 self.constraints[self.key.constraint].append(dictNode.KeyType)
-            if self.key not in dictNode.constraints[self.key.constraint]:    
+            if self.key not in dictNode.constraints[self.key.constraint]:
                 dictNode.constraints[self.key.constraint].append(self.key)
             for i in dictNode.constraints[self.key.constraint]:
-                i.setType(dataType)            
+                i.setType(dataType)
 
     def compute(self, *args, **kwargs):
         self.outArray.setData(DictElement(self.key.getData(), self.value.getData()))

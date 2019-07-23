@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 """Application class here
 """
 
@@ -18,33 +33,34 @@ from Qt.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
 from PyFlow.Core.Common import SingletonDecorator
-from PyFlow.ConfigManager import ConfigManager
-from PyFlow.UI.Canvas.Canvas import CanvasWidget
 from PyFlow.Core.Common import Direction
-from PyFlow.Core.version import currentVersion
-from PyFlow.UI.Canvas.UICommon import clearLayout
+from PyFlow.Core.version import *
 from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManagerSingleton
+from PyFlow.ConfigManager import ConfigManager
+from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.UI.Canvas.Canvas import CanvasWidget
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
-from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Tool import GET_TOOLS
 from PyFlow.UI.Tool import REGISTER_TOOL
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
+from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
+from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
 from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE
 from PyFlow.Input import InputAction, InputActionType
 from PyFlow.Input import InputManager
 from PyFlow.ConfigManager import ConfigManager
-from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
-from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
 
 from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 import PyFlow.UI.resources
 
-EDITOR_TARGET_FPS = 120
+EDITOR_TARGET_FPS = 60
 
 
 def generateRandomString(numSymbolds=5):
@@ -75,6 +91,8 @@ class PyFlow(QMainWindow):
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.currentSoftware = ""
         self.edHistory = EditorHistory(self)
         self.setWindowTitle("PyFlow v{0}".format(currentVersion().__str__()))
         self.undoStack = QUndoStack(self)
@@ -106,7 +124,6 @@ class PyFlow(QMainWindow):
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self._current_file_name = 'Untitled'
-        self.populateMenu()
 
     def getTempDirectory(self):
         """Returns unique temp directory for application instance.
@@ -225,6 +242,9 @@ class PyFlow(QMainWindow):
 
         if currentInputAction in actionNewFileVariants:
             EditorHistory().clear()
+            historyTools = self.getRegisteredTools(classNameFilters=["HistoryTool"])
+            for historyTools in historyTools:
+                historyTools.onClear()
             self.newFile()
             EditorHistory().saveState("New file")
         if currentInputAction in actionSaveVariants:
@@ -235,35 +255,11 @@ class PyFlow(QMainWindow):
         if currentInputAction in actionSaveAsVariants:
             self.save(True)
 
-    @staticmethod
-    def fetchPackageNames(graphJson):
-        packages = set()
-
-        def worker(graphData):
-            for node in graphData["nodes"]:
-                packages.add(node["package"])
-
-                for inpJson in node["inputs"]:
-                    packages.add(inpJson['package'])
-
-                for outJson in node["inputs"]:
-                    packages.add(outJson['package'])
-
-                if "graphData" in node:
-                    worker(node["graphData"])
-        worker(graphJson)
-        return packages
-
     def loadFromData(self, data, fpath=""):
 
         # check first if all packages we are trying to load are legal
-        existingPackages = GET_PACKAGES().keys()
-        graphPackages = PyFlow.fetchPackageNames(data)
         missedPackages = set()
-        for pkg in graphPackages:
-            if pkg not in existingPackages:
-                missedPackages.add(pkg)
-        if len(missedPackages) > 0:
+        if not validateGraphDataPackages(data, missedPackages):
             msg = "This graph can not be loaded. Following packages not found:\n\n"
             index = 1
             for missedPackageName in missedPackages:
@@ -276,8 +272,10 @@ class PyFlow(QMainWindow):
         # load raw data
         self.graphManager.get().deserialize(data)
         self.fileBeenLoaded.emit()
+        #hack me
         #deactiveted because I get here an error
         #self.graphManager.get().selectGraph(data["activeGraph"])
+        #hack end
 
     def load(self,fpath=None):
         if fpath == None:
@@ -385,13 +383,25 @@ class PyFlow(QMainWindow):
     def createToolInstanceByClass(self, packageName, toolName, toolClass=DockTool):
         registeredTools = GET_TOOLS()
         for ToolClass in registeredTools[packageName]:
+            supportedSoftwares = ToolClass.supportedSoftwares()
+            if "any" not in supportedSoftwares:
+                if self.currentSoftware not in supportedSoftwares:
+                    continue
+
             if issubclass(ToolClass, toolClass):
                 if ToolClass.name() == toolName:
                     return ToolClass()
         return None
 
-    def getRegisteredTools(self):
-        return self._tools
+    def getRegisteredTools(self, classNameFilters=[]):
+        if len(classNameFilters) == 0:
+            return self._tools
+        else:
+            result = []
+            for tool in self._tools:
+                if tool.__class__.__name__ in classNameFilters:
+                    result.append(tool)
+            return result
 
     def invokeDockToolByName(self, z, name, packageName, settings=None):
         # invokeDockToolByName Invokes dock tool by tool name and package name
@@ -406,6 +416,7 @@ class PyFlow(QMainWindow):
                 for tool in self._tools:
                     if tool.name() == name:
                         tool.show()
+                        tool.onShow()
                         # Highlight window
                         print("highlight", tool.uniqueName())
                 return
@@ -428,6 +439,8 @@ class PyFlow(QMainWindow):
     def closeEvent(self, event):
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
+        EditorHistory().shutdown()
+
         self.canvasWidget.shoutDown()
         # save editor config
         settings = ConfigManager().getSettings("APP_STATE")
@@ -464,6 +477,14 @@ class PyFlow(QMainWindow):
         if os.path.exists(self.currentTempDir):
             shutil.rmtree(self.currentTempDir)
 
+        # TODO: Use "Borg" pattern to destroy all singletons at once
+        EditorHistory.destroy()
+        GraphManagerSingleton.destroy()
+        ConfigManager.destroy()
+        PreferencesWindow.destroy()
+
+        PyFlow.appInstance = None
+
         QMainWindow.closeEvent(self, event)
 
     def shortcuts_info(self):
@@ -491,20 +512,15 @@ class PyFlow(QMainWindow):
         QMessageBox.information(self, "Shortcuts", data)
 
     @staticmethod
-    def instance(parent=None):
-        if PyFlow.appInstance is not None:
-            return PyFlow.appInstance
-
+    def instance(parent=None, software=""):
+        assert(software != ""), "Invalid arguments. Please pass you software name as second argument!"
         settings = ConfigManager().getSettings("APP_STATE")
 
         instance = PyFlow(parent)
-        REGISTER_TOOL("PyFlowBase", LoggerTool)
-        a = GET_TOOLS()["PyFlowBase"][0]()
-        a.setAppInstance(instance)
-        instance.registerToolInstance(a)
-        instance.addDockWidget(a.defaultDockArea(), a)
-        a.setAppInstance(instance)
-        a.onShow()
+        instance.currentSoftware = software
+
+        if software == "standalone":
+            editableStyleSheet(instance)
 
         try:
             extraPackagePaths = []
@@ -515,7 +531,7 @@ class PyFlow(QMainWindow):
                 for rawPath in extraPathsRaw:
                     if os.path.exists(rawPath):
                         extraPackagePaths.append(os.path.normpath(rawPath))
-            INITIALIZE(additionalPackageLocations=extraPackagePaths)
+            INITIALIZE(additionalPackageLocations=extraPackagePaths, software=software)
         except Exception as e:
             QMessageBox.critical(None, "Fatal error", str(e))
             return
@@ -525,6 +541,9 @@ class PyFlow(QMainWindow):
         # populate tools
         canvas = instance.getCanvas()
         toolbar = instance.getToolbar()
+
+        # populate menus
+        instance.populateMenu()
 
         geo = settings.value('Editor/geometry')
         if geo is not None:

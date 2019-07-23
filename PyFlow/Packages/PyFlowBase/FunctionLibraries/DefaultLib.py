@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 import os
 import platform
 from copy import copy, deepcopy
@@ -18,9 +33,9 @@ class DefaultLib(FunctionLibraryBase):
         super(DefaultLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}),
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported, "constraint": "1", "structConstraint": "1"}),
                     meta={'Category': 'Utils', 'Keywords': ['id'], "CacheEnabled": False})
-    def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported, "constraint": "1", "structConstraint": "1"}), deepCopy=("BoolPin", False)):
+    def copyObject(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported, "constraint": "1", "structConstraint": "1"}), deepCopy=("BoolPin", False)):
         '''Shallow or deep copy of an object.'''
         copyFunction = deepcopy if deepCopy else copy
         return copyFunction(obj)
@@ -77,9 +92,9 @@ class DefaultLib(FunctionLibraryBase):
             return time.process_time()
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}), meta={'Category': 'DefaultLib', 'Keywords': []})
-    def select(A=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
-               B=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}),
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported}), meta={'Category': 'DefaultLib', 'Keywords': []})
+    def select(A=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported}),
+               B=('AnyPin', None, {"constraint": "1","enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported}),
                PickA=('BoolPin', False),
                aPicked=("Reference", ("BoolPin", False))):
         '''
@@ -90,7 +105,7 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ""), meta={'Category': 'GenericTypes', 'Keywords': []})
-    def objectType(obj=("AnyPin", None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported})):
+    def objectType(obj=("AnyPin", None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported})):
         '''Returns ``type(obj).__name__``'''
         t = type(obj).__name__
         if t == "DictElement":
@@ -99,7 +114,7 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('BoolPin', False), meta={'Category': 'DefaultLib', 'Keywords': ['in'], "CacheEnabled": False})
-    def contains(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSuported}), element=("AnyPin", None, {"constraint": "1"})):
+    def contains(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported}), element=("AnyPin", None, {"constraint": "1"})):
         """Python's **in** keyword. `element in obj` will be executed"""
         try:
             return element in obj

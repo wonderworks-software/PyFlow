@@ -83,13 +83,13 @@ from PyFlow.Packages.PyFlowBase.Tools.CompileTool import CompileTool
 from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 from PyFlow.Packages.PyFlowBase.Exporters.PythonScriptExporter import PythonScriptExporter
-from PyFlow.Packages.PyFlowBase.Exporters.CPPCompiler import CPPCompiler
 
 # Factories
 from PyFlow.Packages.PyFlowBase.Factories.UIPinFactory import createUIPin
 from PyFlow.Packages.PyFlowBase.Factories.PinInputWidgetFactory import getInputWidget
 from PyFlow.Packages.PyFlowBase.Factories.UINodeFactory import createUINode
 
+# Prefs widgets
 from PyFlow.Packages.PyFlowBase.PrefsWidgets.General import GeneralPreferences
 from PyFlow.Packages.PyFlowBase.PrefsWidgets.InputPrefs import InputPreferences
 from PyFlow.Packages.PyFlowBase.PrefsWidgets.ThemePrefs import ThemePreferences
@@ -104,7 +104,7 @@ _FOO_LIBS = {
     MathLib.__name__: MathLib(PACKAGE_NAME),
     MathAbstractLib.__name__: MathAbstractLib(PACKAGE_NAME),
     RandomLib.__name__: RandomLib(PACKAGE_NAME),
-    PathLib.__name__ : PathLib(PACKAGE_NAME),
+    PathLib.__name__: PathLib(PACKAGE_NAME),
 }
 
 
@@ -124,7 +124,7 @@ _NODES = {
     timer.__name__: timer,
     whileLoop.__name__: whileLoop,
     commentNode.__name__: commentNode,
-    stickyNote.__name__ : stickyNote,
+    stickyNote.__name__: stickyNote,
     getVar.__name__: getVar,
     setVar.__name__: setVar,
     reroute.__name__: reroute,
@@ -147,8 +147,8 @@ _NODES = {
     dictKeys.__name__: dictKeys,
     floatRamp.__name__: floatRamp,
     colorRamp.__name__: colorRamp,
-    stringToArray.__name__:stringToArray,
-    imageDisplay.__name__ : imageDisplay
+    stringToArray.__name__: stringToArray,
+    imageDisplay.__name__: imageDisplay
 }
 
 _PINS = {
@@ -177,7 +177,6 @@ _TOOLS[LoggerTool.__name__] = LoggerTool
 
 _EXPORTERS = OrderedDict()
 _EXPORTERS[PythonScriptExporter.__name__] = PythonScriptExporter
-_EXPORTERS[CPPCompiler.__name__] = CPPCompiler
 
 
 _PREFS_WIDGETS = OrderedDict()

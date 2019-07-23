@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 import os
 import shutil
 
@@ -10,7 +25,6 @@ from PyFlow.Wizards.WizardDialogueBase import WizardDialogueBase
 from PyFlow.Wizards.PkgGen import *
 from PyFlow import Packages
 
-# TODO: Add template for prefs window
 
 class PackageWizard(WizardDialogueBase):
     """docstring for PackageWizard."""
@@ -28,6 +42,7 @@ class PackageWizard(WizardDialogueBase):
         includeUINodeFactory = self.cbIncludeUINodeFactory.checkState() == QtCore.Qt.Checked and self.cbIncludeUINodeFactory.isEnabled()
         IncludeUIPinFactory = self.cbUIPinFactory.checkState() == QtCore.Qt.Checked and self.cbUIPinFactory.isEnabled()
         IncludePinInputWidgetFactory = self.cbPinInputWidgetFactory.checkState() == QtCore.Qt.Checked and self.cbPinInputWidgetFactory.isEnabled()
+        IncludePrefsWidget = self.cbPrefsWidget.checkState() == QtCore.Qt.Checked
         generatePackage(packageName,
                         self.pbOutPathSelect.text(),
                         bIncludeClassNode=self.cbIncludeClassNode.checkState() == QtCore.Qt.Checked,
@@ -37,7 +52,8 @@ class PackageWizard(WizardDialogueBase):
                         bIncludeUIPinFactory=IncludeUIPinFactory,
                         bIncludeTool=self.cbIncludeTool.checkState() == QtCore.Qt.Checked,
                         bIncludeExporter=self.cbIncludeExporter.checkState() == QtCore.Qt.Checked,
-                        bIncludePinInputWidgetFactory=IncludePinInputWidgetFactory)
+                        bIncludePinInputWidgetFactory=IncludePinInputWidgetFactory,
+                        bIncludePrefsWindget=IncludePrefsWidget)
         self.accept()
 
     def populate(self):
@@ -100,7 +116,11 @@ class PackageWizard(WizardDialogueBase):
         self.toolLayout.addWidget(self.cbPinInputWidgetFactory)
         self.p2Layout.addLayout(self.toolLayout)
 
+        self.cbPrefsWidget = QCheckBox("Prefs widget")
+
         self.p2Layout.addWidget(self.cbIncludeExporter)
+        self.p2Layout.addWidget(self.cbPrefsWidget)
+
         self.addPageWidget(self.p2, "What components should be included?",
                            "Please select at least one component to include to package!",
                            self.isPackaeModuleSelected)

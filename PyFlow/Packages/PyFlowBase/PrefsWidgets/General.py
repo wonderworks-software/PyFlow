@@ -1,5 +1,21 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 import os
 
+from Qt import QtCore
 from Qt.QtWidgets import *
 
 from PyFlow.UI.EditorHistory import EditorHistory
@@ -35,18 +51,24 @@ class GeneralPreferences(CategoryWidgetBase):
         self.historyDepth.editingFinished.connect(setHistoryCapacity)
         commonCategory.addWidget("History depth", self.historyDepth)
 
+        self.redirectOutput = QCheckBox(self)
+        commonCategory.addWidget("Redirect output", self.redirectOutput)
+
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
     def initDefaults(self, settings):
         settings.setValue("EditorCmd", "sublime_text.exe @FILE")
         settings.setValue("TempFilesDir", os.path.expanduser('~/PyFlowTemp'))
+        settings.setValue("HistoryDepth", 50)
+        settings.setValue("RedirectOutput", True)
 
     def serialize(self, settings):
         settings.setValue("EditorCmd", self.lePythonEditor.text())
         settings.setValue("TempFilesDir", self.tempFilesDir.text())
         settings.setValue("ExtraPackageDirs", self.additionalPackagePaths.text())
         settings.setValue("HistoryDepth", self.historyDepth.value())
+        settings.setValue("RedirectOutput", self.redirectOutput.checkState() == QtCore.Qt.Checked)
 
     def onShow(self, settings):
         self.lePythonEditor.setText(settings.value("EditorCmd"))
@@ -54,7 +76,13 @@ class GeneralPreferences(CategoryWidgetBase):
         path = os.path.normpath(path)
         self.tempFilesDir.setText(path)
         self.additionalPackagePaths.setText(settings.value("ExtraPackageDirs"))
+
         try:
             self.historyDepth.setValue(int(settings.value("HistoryDepth")))
+        except:
+            pass
+
+        try:
+            self.redirectOutput.setChecked(settings.value("RedirectOutput") == "true")
         except:
             pass

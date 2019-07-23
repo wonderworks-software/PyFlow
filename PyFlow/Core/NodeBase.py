@@ -1,4 +1,20 @@
-from inspect import stack
+
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
+
 from blinker import Signal
 import weakref
 import functools
@@ -6,12 +22,12 @@ import uuid
 import keyword
 import json
 from collections import OrderedDict
+from copy import copy
 try:
     from inspect import getfullargspec as getargspec
 except:
     from inspect import getargspec
 from types import MethodType
-from multipledispatch import dispatch
 import collections
 
 from PyFlow import getPinDefaultValueByType
@@ -52,7 +68,7 @@ class NodeBase(INode):
 
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
-        self.bCacheEnabled = True
+        self.bCacheEnabled = False
         self.cacheMaxSize = 1000
         self.cache = {}
 
@@ -76,7 +92,19 @@ class NodeBase(INode):
         self.isCompoundNode = False
         self._lastError = None
         self.__wrapperJsonData = None
+        self._nodeMetaData = None
         self.headerColor = None
+
+    def getMetaData(self):
+        """Returns node metadata dict.
+
+        This will return dict only for function based nodes. For class based nodes it will return None
+
+        .. seelaso:: :mod:`~PyFlow.Core.FunctionLibrary`
+
+        :rtype: dict or None
+        """
+        return self._nodeMetaData
 
     @property
     def wrapperJsonData(self):
@@ -330,6 +358,7 @@ class NodeBase(INode):
                 return True
         except:
             pass
+            # from inspect import stack
             # debug fehlerursache
             # print(stack()[0][1:4],"cannot use Cache for",args)
 
@@ -373,25 +402,53 @@ class NodeBase(INode):
     # INode interface
 
     def compute(self, *args, **kwargs):
-        '''
-        node calculations here
-        '''
-        # getting data from inputs
+        """This is node's brains. Main logic goes here
 
-        # do stuff
+        Here are basic steps:
 
-        # write data to outputs
-        return
+        1. Get data from input pins
+        2. Do stuff
+        3. Set data to output pins
+        4. Call execs if needed
+
+        Here is compute method of charge node
+
+        .. code-block:: python
+            :linenos:
+
+            def compute(self, *args, **kwargs):
+                step = abs(self.step.getData())
+                if (self._currentAmount + step) < abs(self.amount.getData()):
+                    self._currentAmount += step
+                    return
+                self.completed.call(*args, **kwargs)
+                self._currentAmount = 0.0
+
+        .. note:: See :mod:`PyFlow.Packages.PyFlowBase.Nodes` source code module for more examples
+
+        """
+        pass
 
     # INode interface end
 
     def isCallable(self):
+        """Whether this node is callable or not
+        """
         for p in list(self.inputs.values()) + list(self.outputs.values()):
             if p.isExec():
                 return True
         return False
 
     def setPosition(self, x, y):
+        """Sets node coordinate on canvas
+
+        Used to correctly restore gui wrapper class
+
+        :param x: X coordinate
+        :type x: float
+        :param y: Y coordinate
+        :type y: float
+        """
         self.x = x
         self.y = y
 
@@ -407,8 +464,28 @@ class NodeBase(INode):
                     continue
                 pinAffects(i, o)
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group=""):
-        # check unique name
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
+        """Creates input pin
+
+        :param pinName: Pin name
+        :type pinName: str
+        :param dataType: Pin data type
+        :type dataType: str
+        :param defaultValue: Pin default value
+        :type defaultValue: object
+        :param foo: Pin callback. used for exec pins
+        :type foo: function
+        :param structure: Pin structure
+        :type structure: :class:`~PyFlow.Core.Common.PinStructure.Single`
+        :param constraint: Pin constraint. Should be any hashable type. We use str
+        :type constraint: object
+        :param structConstraint: Pin struct constraint. Also should be hashable type
+        :type structConstraint: object
+        :param supportedPinDataTypes: List of allowed pin data types to be connected. Used by AnyPin
+        :type supportedPinDataTypes: list(str)
+        :param group: Pin group. Used only by ui wrapper
+        :type group: str
+        """
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Input)
         p.structureType = structure
@@ -417,7 +494,7 @@ class NodeBase(INode):
         if structure == PinStructure.Array:
             p.initAsArray(True)
         elif structure == PinStructure.Dict:
-            p.initAsDict(True)         
+            p.initAsDict(True)
         elif structure == PinStructure.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
@@ -432,18 +509,37 @@ class NodeBase(INode):
         else:
             p.setDefaultValue(getPinDefaultValueByType(dataType))
 
-        if dataType == "AnyPin" and allowedPins:
+        if dataType == "AnyPin" and supportedPinDataTypes:
             def supportedDataTypes():
-                return allowedPins
-            p._supportedDataTypes = p._defaultSupportedDataTypes = tuple(allowedPins)
+                return supportedPinDataTypes
+            p._supportedDataTypes = p._defaultSupportedDataTypes = tuple(supportedPinDataTypes)
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
         if structConstraint is not None:
-            p.updatestructConstraint(structConstraint)
+            p.updateStructConstraint(structConstraint)
         return p
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group=""):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
+        """Creates output pin
+
+        :param pinName: Pin name
+        :type pinName: str
+        :param dataType: Pin data type
+        :type dataType: str
+        :param defaultValue: Pin default value
+        :type defaultValue: object
+        :param structure: Pin structure
+        :type structure: :class:`~PyFlow.Core.Common.PinStructure.Single`
+        :param constraint: Pin constraint. Should be any hashable type. We use str
+        :type constraint: object
+        :param structConstraint: Pin struct constraint. Also should be hashable type
+        :type structConstraint: object
+        :param supportedPinDataTypes: List of allowed pin data types to be connected. Used by AnyPin
+        :type supportedPinDataTypes: list(str)
+        :param group: Pin group. Used only by ui wrapper
+        :type group: str
+        """
         pinName = self.getUniqPinName(pinName)
         p = CreateRawPin(pinName, self, dataType, PinDirection.Output)
         p.structureType = structure
@@ -464,27 +560,50 @@ class NodeBase(INode):
         else:
             p.setDefaultValue(getPinDefaultValueByType(dataType))
 
-        if dataType == "AnyPin" and allowedPins:
+        if dataType == "AnyPin" and supportedPinDataTypes:
             def supportedDataTypes():
-                return allowedPins
+                return supportedPinDataTypes
             p.supportedDataTypes = supportedDataTypes
         if constraint is not None:
             p.updateConstraint(constraint)
         if structConstraint is not None:
-            p.updatestructConstraint(structConstraint)
+            p.updateStructConstraint(structConstraint)
         return p
 
     def setData(self, pinName, data, pinSelectionGroup=PinSelectionGroup.BothSides):
+        """Sets data to pin by pin name
+
+        :param pinName: Target pin name
+        :type pinName: str
+        :param data: Pin data to be set
+        :type data: object
+        :param pinSelectionGroup: Which side to search
+        :type pinSelectionGroup: :class:`~PyFlow.Core.Common.PinSelectionGroup`
+        """
         p = self.getPinSG(str(pinName), pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
         p.setData(data)
 
     def getData(self, pinName, pinSelectionGroup=PinSelectionGroup.BothSides):
+        """Get data from pin by name
+
+        :param pinName: Target pin name
+        :type pinName: str
+        :param pinSelectionGroup: Which side to search
+        :type pinSelectionGroup: :class:`~PyFlow.Core.Common.PinSelectionGroup`
+        :rtype: object
+        """
         p = self.getPinSG(str(pinName), pinSelectionGroup)
         assert(p is not None), "Failed to find pin by name: {}".format(pinName)
-        return p.currentData()
+        return p.getData()
 
     def getUniqPinName(self, name):
+        """Returns unique name for pin
+
+        :param name: Target pin name
+        :type name: str
+        :rtype: str
+        """
         pinNames = [i.name for i in list(list(self.inputs.values())) + list(list(self.outputs.values()))]
         return getUniqNameFromList(pinNames, name)
 
@@ -493,6 +612,11 @@ class NodeBase(INode):
         return "<class[{0}]; name[{1}]; graph[{2}]>".format(self.__class__.__name__, self.getName(), graphName)
 
     def call(self, name, *args, **kwargs):
+        """Call exec pin by name
+
+        :param name: Target pin name
+        :type name: str
+        """
         namePinOutputsMap = self.namePinOutputsMap
         namePinInputsMap = self.namePinInputsMap
         if name in namePinOutputsMap:
@@ -505,12 +629,13 @@ class NodeBase(INode):
                 p.call(*args, **kwargs)
 
     def getPinSG(self, name, pinsSelectionGroup=PinSelectionGroup.BothSides):
-        """Tries to find pin by name and selection ogroup.
+        """Tries to find pin by name and selection group
 
         :param name: Pin name to search
         :type name: str
         :param pinsSelectionGroup: Side to search
         :type pinsSelectionGroup: :class:`~PyFlow.Core.Common.PinSelectionGroup`
+        :rtype: :class:`~PyFlow.Core.PinBase.PinBase` or None
         """
         inputs = self.inputs
         outputs = self.outputs
@@ -532,6 +657,7 @@ class NodeBase(INode):
 
         :param name: pin name
         :type name: str
+        :rtype: :class:`~PyFlow.Core.PinBase.PinBase` or None
         """
         inputs = self.inputs
         outputs = self.outputs
@@ -559,6 +685,11 @@ class NodeBase(INode):
         return None
 
     def postCreate(self, jsonTemplate=None):
+        """Called after node was added to graph
+
+        :param jsonTemplate: Serialized data of spawned node
+        :type jsonTemplate: dict or None
+        """
         if jsonTemplate is not None:
             self.uid = uuid.UUID(jsonTemplate['uuid'])
             self.setName(jsonTemplate['name'])
@@ -601,8 +732,15 @@ class NodeBase(INode):
         self.checkForErrors()
 
     @staticmethod
-    # Constructs a node from given annotated function
     def initializeFromFunction(foo):
+        """Constructs node from annotated function
+
+        .. seealso :: :mod:`PyFlow.Core.FunctionLibrary`
+
+        :param foo: Annotated function
+        :type foo: function
+        :rtype: :class:`~PyFlow.Core.NodeBase.NodeBase`
+        """
         retAnyOpts = None
         retConstraint = None
         foo = foo
@@ -684,6 +822,7 @@ class NodeBase(INode):
 
         raw_inst.compute = MethodType(compute, raw_inst)
 
+        raw_inst._nodeMetaData = meta
         if 'CacheEnabled' in meta:
             raw_inst.bCacheEnabled = meta['CacheEnabled']
 
@@ -695,11 +834,11 @@ class NodeBase(INode):
             raw_inst.bCacheEnabled = False
 
         if returnType is not None:
-            p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, allowedPins=retAnyOpts, constraint=retConstraint, structConstraint=retStructConstraint)
+            p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, supportedPinDataTypes=retAnyOpts, constraint=retConstraint, structConstraint=retStructConstraint)
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
             p.initAsArray(isinstance(returnDefaultValue, list))
-            p.inputWidgetVariant = returnWidgetVariant
+            p.setInputWidgetVariant(returnWidgetVariant)
             if returnPinOptionsToEnable is not None:
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
@@ -741,11 +880,12 @@ class NodeBase(INode):
                     if "inputWidgetVariant" in pinDict:
                         inputWidgetVariant = pinDict["inputWidgetVariant"]
 
-                outRef = raw_inst.createOutputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint, structConstraint=structConstraint)
+                outRef = raw_inst.createOutputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
+                outRef.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
                 outRef.initAsArray(isinstance(pinDefaultValue, list))
                 outRef.setDefaultValue(pinDefaultValue)
                 outRef.setData(pinDefaultValue)
-                outRef.inputWidgetVariant = inputWidgetVariant
+                outRef.setInputWidgetVariant(inputWidgetVariant)
                 if pinOptionsToEnable is not None:
                     outRef.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
@@ -776,11 +916,12 @@ class NodeBase(INode):
                     if "inputWidgetVariant" in pinDict:
                         inputWidgetVariant = pinDict["inputWidgetVariant"]
 
-                inp = raw_inst.createInputPin(argName, pinDataType, allowedPins=anyOpts, constraint=constraint, structConstraint=structConstraint)
+                inp = raw_inst.createInputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
+                inp.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
                 inp.initAsArray(isinstance(pinDefaultValue, list))
                 inp.setData(pinDefaultValue)
                 inp.setDefaultValue(pinDefaultValue)
-                inp.inputWidgetVariant = inputWidgetVariant
+                inp.setInputWidgetVariant(inputWidgetVariant)
                 if pinOptionsToEnable is not None:
                     inp.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:

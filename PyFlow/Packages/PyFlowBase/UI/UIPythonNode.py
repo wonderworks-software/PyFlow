@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 from types import MethodType
 import subprocess
 import os
@@ -10,6 +25,7 @@ from Qt import QtGui, QtCore
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Views.CodeEditor import CodeEditor
+from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.ConfigManager import ConfigManager
 
 logger = logging.getLogger(None)
@@ -22,9 +38,9 @@ from PyFlow.Core.Common import *
 def prepareNode(node):
     node.createInputPin(pinName="inExec", dataType="ExecPin", foo=node.processNode)
     node.createOutputPin(pinName="outExec", dataType="ExecPin")
-    node.createInputPin(pinName="a", dataType="IntPin", defaultValue=0, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group="")
-    node.createInputPin(pinName="b", dataType="IntPin", defaultValue=0, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group="")
-    node.createOutputPin(pinName="c", dataType="IntPin", defaultValue=0, structure=PinStructure.Single, constraint=None, structConstraint=None, allowedPins=[], group="")
+    node.createInputPin(pinName="a", dataType="IntPin", defaultValue=0, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
+    node.createInputPin(pinName="b", dataType="IntPin", defaultValue=0, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
+    node.createOutputPin(pinName="c", dataType="IntPin", defaultValue=0, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
 
 
 def compute(node):
@@ -66,6 +82,7 @@ class UIPythonNode(UINodeBase):
             with open(openPath, 'r') as f:
                 dataString = f.read()
                 self.tryApplyNodeData(dataString)
+            EditorHistory().saveState("Import python node data")
 
     def mouseDoubleClickEvent(self, event):
         super(UIPythonNode, self).mouseDoubleClickEvent(event)

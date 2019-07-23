@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 from datetime import datetime
 from Qt.QtWidgets import QFileDialog
 from Qt.QtWidgets import QMessageBox
@@ -20,18 +35,18 @@ def nodeToScript(node, supportedDataTypes, supportedStructures):
 
     for inPin in node.inputs.values():
         if inPin.dataType not in supportedDataTypes:
-            raise Exception("Data type {0} of pin {1} is not supported!".format(inPin.dataType, inPin.getName()))
-        if inPin.currentStructure not in supportedStructures:
-            raise Exception("Structure {0} of pin {1} is not supported!".format(str(inPin.currentStructure), inPin.getName()))
+            raise Exception("Data type {0} of pin {1} is not supported!".format(inPin.dataType, inPin.getFullName()))
+        if inPin.structureType not in supportedStructures:
+            raise Exception("Structure {0} of pin {1} is not supported!".format(str(inPin.structureType), inPin.getFullName()))
 
         data = "'{}'".format(inPin.currentData()) if isinstance(inPin.currentData(), str) else inPin.currentData()
         script += "{0}['{1}'].setData({2})\n".format(node.name, inPin.name, data)
 
     for outPin in node.outputs.values():
         if outPin.dataType not in supportedDataTypes:
-            raise Exception("Data type {0} of pin {1} is not supported!".format(outPin.dataType, outPin.getName()))
-        if outPin.currentStructure not in supportedStructures:
-            raise Exception("Structure {0} of pin {1} is not supported!".format(str(outPin.currentStructure), outPin.getName()))
+            raise Exception("Data type {0} of pin {1} is not supported!".format(outPin.dataType, outPin.getFullName()))
+        if outPin.structureType not in supportedStructures:
+            raise Exception("Structure {0} of pin {1} is not supported!".format(str(outPin.structureType), outPin.getFullName()))
 
         data = "'{}'".format(outPin.currentData()) if isinstance(outPin.currentData(), str) else outPin.currentData()
         script += "{0}['{1}'].setData({2})\n".format(node.name, outPin.name, data)
@@ -41,7 +56,7 @@ def nodeToScript(node, supportedDataTypes, supportedStructures):
 class PythonScriptExporter(IDataExporter):
     """docstring for PythonScriptExporter."""
 
-    name_filter = "Pyflow program scripts (*.py)"
+    name_filter = "PyFlow program scripts (*.py)"
 
     def __init__(self):
         super(PythonScriptExporter, self).__init__()
@@ -112,9 +127,9 @@ class PythonScriptExporter(IDataExporter):
             #     for outPin in node.outputs.values():
             #         for inPinName in outPin.linkedTo:
             #             inPin = pyFlowInstance.graphManager.get().findPinByName(inPinName)
-            #             graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(outPin.getName(), outPin.getName())
-            #             graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(inPin.getName(), inPin.getName())
-            #             graphScript += "connectPins({0}, {1})\n".format(outPin.getName(), inPin.getName())
+            #             graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(outPin.getFullName(), outPin.getFullName())
+            #             graphScript += "{0} = ROOT_GRAPH.graphManager.findPinByName('{1}')\n".format(inPin.getFullName(), inPin.getFullName())
+            #             graphScript += "connectPins({0}, {1})\n".format(outPin.getFullName(), inPin.getFullName())
 
             wrappedGraphScript = wrapStringToFunctionDef("createScene", graphScript, {"ROOT_GRAPH": None})
 

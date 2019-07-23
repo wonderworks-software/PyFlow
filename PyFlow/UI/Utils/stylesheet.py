@@ -1,13 +1,30 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 from Qt import QtGui, QtWidgets, QtCore
 import inspect
 import json
 import os
+
+
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 
+
 from collections import defaultdict
-# def clamp(val,min_value,max_value):
-#     return max(min(val, max_value), min_value)
+
 FILE_DIR = os.path.dirname(__file__)
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
@@ -30,7 +47,9 @@ class Colors:
 
 @SingletonDecorator
 class editableStyleSheet():
-    def __init__(self):
+    def __init__(self, appInstance=None):
+
+        self.appInstance = appInstance
 
         self.TextColor = QtGui.QColor(228, 228, 228)
 
@@ -123,11 +142,15 @@ class editableStyleSheet():
     def updateApp(self):
         """calls update method all widgets in the app and calls app.setStyleSheet
         """
+        topWindow = self.appInstance
+
+        if self.appInstance.currentSoftware == "standalone":
+            topWindow = QtWidgets.QApplication.instance()
+
         if self.SetAppStyleSheet[0] > 0:
-            app = QtWidgets.QApplication.instance()
-            if app:
-                app.setStyleSheet(self.getStyleSheet())
-                for widget in app.allWidgets():
+            if topWindow:
+                topWindow.setStyleSheet(self.getStyleSheet())
+                for widget in topWindow.allWidgets():
                     widget.update()
 
     def getStyleSheet(self):

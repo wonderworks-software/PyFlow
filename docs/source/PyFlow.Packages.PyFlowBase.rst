@@ -20,3 +20,4 @@ Module contents
 
 .. automodule:: PyFlow.Packages.PyFlowBase
    :members:
+   :show-inheritance:

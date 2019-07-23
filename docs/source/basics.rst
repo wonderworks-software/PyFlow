@@ -32,3 +32,22 @@ click on it near the pin and drag on top of new destination. To reconnect multip
 :kbd:`Ctrl+LMB` on pin, then drag on top of new destination.
 
 .. image:: resources/pins_reconnection.gif
+
+Preferences window
+==================
+
+Some important settings can be tweaked in editor preferences
+
+.. image:: resources/prefswindow.png
+
+General
+-------
+
+  * **TempFilesDir**. Folder on your file system where temporary files will be placed this
+    folder will be removed on editor shutdown
+
+  * **Additional package locations**. This is comma separated string with directories where to search packages.
+    For example if you are running the editor inside studio, you can load packages from network location
+
+  * **External etxt editor**. Text editor used for text editing. For now we use it only with python node
+  * **History depth**. Defines how many undo steps will be available.

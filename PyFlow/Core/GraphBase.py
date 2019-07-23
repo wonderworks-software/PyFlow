@@ -1,6 +1,20 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 import weakref
 from blinker import Signal
-from multipledispatch import dispatch
 from collections import Counter
 
 from PyFlow.Core.Common import *
@@ -129,7 +143,6 @@ class GraphBase(ISerializable):
             # update parent
             self._parentGraph = newParentGraph
 
-    # TODO: continue docs here
     def depth(self):
         """Returns depth level of this graph
 
@@ -180,7 +193,7 @@ class GraphBase(ISerializable):
         parentGraphName = jsonData['parentGraphName']
         parentGraph = self.graphManager.findGraph(parentGraphName)
         self.parentGraph = parentGraph
-        self.name = jsonData['name']
+        self.name = self.graphManager.getUniqGraphName(jsonData['name'])
         self.category = jsonData['category']
         self.setIsRoot(jsonData['isRoot'])
         # restore vars
@@ -362,7 +375,7 @@ class GraphBase(ISerializable):
         """
         result = None
         for pin in self.pins.values():
-            if pinName == pin.getName():
+            if pinName == pin.getFullName():
                 result = pin
                 break
         return result
@@ -403,7 +416,7 @@ class GraphBase(ISerializable):
         # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
         # Do not disrupt variable scope
         if node.__class__.__name__ in ['getVar', 'setVar']:
-            var = self.graphManager.findVariable(node.variableUid())
+            var = self.graphManager.findVariableByUid(node.variableUid())
             variableLocation = var.location()
             if len(variableLocation) > len(self.location()):
                 return False

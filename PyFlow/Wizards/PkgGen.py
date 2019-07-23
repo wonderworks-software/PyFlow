@@ -1,3 +1,18 @@
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 import os
 import shutil
 from string import ascii_uppercase
@@ -14,7 +29,8 @@ def generatePackageInit(packageName,
                         bIncludeUIPinFactory=True,
                         bIncludeTool=True,
                         bIncludeExporter=True,
-                        bIncludePinInputWidgetFactory=True):
+                        bIncludePinInputWidgetFactory=True,
+                        bIncludePrefsWindget=False):
     result = "PACKAGE_NAME = '{0}'\n\n".format(packageName)
     result += "from collections import OrderedDict\n"
     result += "from PyFlow.UI.UIInterfaces import IPackage\n\n"
@@ -49,12 +65,19 @@ def generatePackageInit(packageName,
 
     if bIncludePinInputWidgetFactory:
         result += "from PyFlow.Packages.{0}.Factories.PinInputWidgetFactory import getInputWidget\n".format(packageName)
+
+    if bIncludePrefsWindget:
+        result += "# Prefs widgets\n"
+        result += "from PyFlow.Packages.{0}.PrefsWidgets.DemoPrefs import DemoPrefs\n".format(packageName)
+
     result += "\n"
 
+    # TODO: Optimize this. Do not declare containers if feature not enabled
     result += "_FOO_LIBS = {}\n"
     result += "_NODES = {}\n"
     result += "_PINS = {}\n"
     result += "_TOOLS = OrderedDict()\n"
+    result += "_PREFS_WIDGETS = OrderedDict()\n"
     result += "_EXPORTERS = OrderedDict()\n\n"
 
     if bIncludeFooLib:
@@ -73,6 +96,9 @@ def generatePackageInit(packageName,
     if bIncludeExporter:
         result += """_EXPORTERS[DemoExporter.__name__] = DemoExporter\n\n"""
 
+    if bIncludePrefsWindget:
+        result += """_PREFS_WIDGETS["Demo"] = DemoPrefs\n\n"""
+
     result += "\nclass {0}(IPackage):\n\tdef __init__(self):\n\t\tsuper({0}, self).__init__()\n\n".format(packageName)
     result += """\t@staticmethod\n\tdef GetExporters():\n\t\treturn _EXPORTERS\n\n"""
     result += """\t@staticmethod\n\tdef GetFunctionLibraries():\n\t\treturn _FOO_LIBS\n\n"""
@@ -89,6 +115,9 @@ def generatePackageInit(packageName,
     if bIncludePinInputWidgetFactory:
         result += """\t@staticmethod\n\tdef PinsInputWidgetFactory():\n\t\treturn getInputWidget\n\n"""
 
+    if bIncludePrefsWindget:
+        result += """\t@staticmethod\n\tdef PrefsWidgets():\n\t\treturn _PREFS_WIDGETS\n\n"""
+
     return result
 
 
@@ -101,7 +130,8 @@ def generatePackage(packageName,
                     bIncludeUIPinFactory=True,
                     bIncludeTool=True,
                     bIncludeExporter=True,
-                    bIncludePinInputWidgetFactory=True):
+                    bIncludePinInputWidgetFactory=True,
+                    bIncludePrefsWindget=False):
     wizardsRoot = Wizards.__path__[0]
     templatesRoot = os.path.join(wizardsRoot, "Templates")
     packageTemplateDirPath = os.path.join(templatesRoot, "PackageTemplate")
@@ -133,7 +163,8 @@ def generatePackage(packageName,
                                     bIncludeUIPinFactory=bIncludeUIPinFactory,
                                     bIncludeTool=bIncludeTool,
                                     bIncludeExporter=bIncludeExporter,
-                                    bIncludePinInputWidgetFactory=bIncludePinInputWidgetFactory))
+                                    bIncludePinInputWidgetFactory=bIncludePinInputWidgetFactory,
+                                    bIncludePrefsWindget=bIncludePrefsWindget))
 
     # remove unneeded directories
     for path, dirs, files in os.walk(newPackagePath):
@@ -147,6 +178,8 @@ def generatePackage(packageName,
         if dirName == "Tools" and not bIncludeTool:
             shutil.rmtree(path)
         if dirName == "Exporters" and not bIncludeExporter:
+            shutil.rmtree(path)
+        if dirName == "PrefsWidgets" and not bIncludePrefsWindget:
             shutil.rmtree(path)
         if dirName == "Factories":
             removedFactoresCount = 0
