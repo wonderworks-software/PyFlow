@@ -897,6 +897,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
         self.setHeaderHtml(headerHtml)
 
+    def getMetaData(self):
+        return self._rawNode.getMetaData()
+
     def createActionButtons(self):
         # NOTE: actions with action button class specified will be added next to node name
         for action in self._menu.actions():

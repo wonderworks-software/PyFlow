@@ -90,7 +90,19 @@ class NodeBase(INode):
         self.isCompoundNode = False
         self._lastError = None
         self.__wrapperJsonData = None
+        self._nodeMetaData = None
         self.headerColor = None
+
+    def getMetaData(self):
+        """Returns node metadata dict.
+
+        This will return dict only for function based nodes. For class based nodes it will return None
+
+        .. seelaso:: :mod:`~PyFlow.Core.FunctionLibrary`
+
+        :rtype: dict or None
+        """
+        return self._nodeMetaData
 
     @property
     def wrapperJsonData(self):
@@ -780,6 +792,7 @@ class NodeBase(INode):
 
         raw_inst.compute = MethodType(compute, raw_inst)
 
+        raw_inst._nodeMetaData = meta
         if 'CacheEnabled' in meta:
             raw_inst.bCacheEnabled = meta['CacheEnabled']
 
