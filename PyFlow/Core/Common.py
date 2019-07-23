@@ -53,6 +53,7 @@ INT_RANGE_MAX = maxint + 0
 
 DEFAULT_IN_EXEC_NAME = str('inExec')
 DEFAULT_OUT_EXEC_NAME = str('outExec')
+DEFAULT_WIDGET_VARIANT = str('DefaultWidget')
 
 
 def lerp(start, end, alpha):

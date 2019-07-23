@@ -81,6 +81,9 @@ Examples:
         >>> ("enabledOptions": None)
         >>> ("disabledOptions": None)
         >>> ("inputWidgetVariant": "DefaultWidget")
+        >>> ("ValueList": [str])
+
+        "Value list is specific for string pins. If Specified - enum input widget will be created for this pin."
 
     node meta
         dict that describes different node options and attributes to be considered on generation

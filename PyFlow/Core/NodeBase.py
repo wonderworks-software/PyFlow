@@ -20,6 +20,7 @@ import uuid
 import keyword
 import json
 from collections import OrderedDict
+from copy import copy
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -794,7 +795,7 @@ class NodeBase(INode):
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
             p.initAsArray(isinstance(returnDefaultValue, list))
-            p.inputWidgetVariant = returnWidgetVariant
+            p.setInputWidgetVariant(returnWidgetVariant)
             if returnPinOptionsToEnable is not None:
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
@@ -837,10 +838,11 @@ class NodeBase(INode):
                         inputWidgetVariant = pinDict["inputWidgetVariant"]
 
                 outRef = raw_inst.createOutputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
+                outRef.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
                 outRef.initAsArray(isinstance(pinDefaultValue, list))
                 outRef.setDefaultValue(pinDefaultValue)
                 outRef.setData(pinDefaultValue)
-                outRef.inputWidgetVariant = inputWidgetVariant
+                outRef.setInputWidgetVariant(inputWidgetVariant)
                 if pinOptionsToEnable is not None:
                     outRef.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:
@@ -872,10 +874,11 @@ class NodeBase(INode):
                         inputWidgetVariant = pinDict["inputWidgetVariant"]
 
                 inp = raw_inst.createInputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
+                inp.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
                 inp.initAsArray(isinstance(pinDefaultValue, list))
                 inp.setData(pinDefaultValue)
                 inp.setDefaultValue(pinDefaultValue)
-                inp.inputWidgetVariant = inputWidgetVariant
+                inp.setInputWidgetVariant(inputWidgetVariant)
                 if pinOptionsToEnable is not None:
                     inp.enableOptions(pinOptionsToEnable)
                 if pinOptionsToDisable is not None:

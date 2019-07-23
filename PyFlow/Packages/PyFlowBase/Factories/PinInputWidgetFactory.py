@@ -18,7 +18,7 @@ from Qt import QtCore
 from Qt.QtWidgets import *
 
 from PyFlow.Core.Common import *
-from PyFlow.UI.Canvas.UICommon import DEFAULT_WIDGET_VARIANT
+from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow.UI.Widgets.InputWidgets import *
 from PyFlow.UI.Widgets.QtSliders import pyf_Slider, valueBox
 
@@ -150,13 +150,31 @@ class StringInputWidget(InputWidgetSingle):
         self.le = QLineEdit(self)
         self.le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.setWidget(self.le)
-        self.le.editingFinished.connect(lambda : self.dataSetCallback(self.le.text()))
+        self.le.editingFinished.connect(lambda: self.dataSetCallback(self.le.text()))
 
     def blockWidgetSignals(self, bLocked):
         self.le.blockSignals(bLocked)
 
     def setWidgetValue(self, val):
         self.le.setText(str(val))
+
+
+class EnumInputWIdget(InputWidgetSingle):
+    """docstring for EnumInputWIdget."""
+    def __init__(self, parent=None, **kwds):
+        super(EnumInputWIdget, self).__init__(parent=parent, **kwds)
+        self.enumBox = EnumComboBox(kwds["pinAnnotations"]["ValueList"])
+        self.enumBox.setEditable(False)
+        self.setWidget(self.enumBox)
+        self.enumBox.changeCallback.connect(self.dataSetCallback)
+
+    def blockWidgetSignals(self, bLock=False):
+        self.enumBox.blockSignals(bLock)
+
+    def setWidgetValue(self, value):
+        index = self.enumBox.findText(value)
+        if index > 0:
+            self.enumBox.setCurrentIndex(index)
 
 
 class PathInputWidget(InputWidgetSingle):
@@ -230,28 +248,30 @@ class NoneInputWidget(InputWidgetSingle):
         self.le.setText(str(val))
 
 
-def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WIDGET_VARIANT):
+def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds):
     '''
     factory method
     '''
     if dataType == 'FloatPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue)
+            return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "FloatInputWidgetSimple":
-            return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+            return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'IntPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue)
+            return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "IntInputWidgetSimple":
-            return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+            return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'StringPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+            return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "PathWidget":
-            return PathInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+            return PathInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+        elif widgetVariant == "EnumWidget":
+            return EnumInputWIdget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'BoolPin':
-        return BoolInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        return BoolInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'ExecPin':
-        return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None)
+        return ExecInputWidget(dataSetCallback=dataSetter, defaultValue=None, **kwds)
     if dataType == 'AnyPin':
-        return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None)
+        return NoneInputWidget(dataSetCallback=dataSetter, defaultValue=None, **kwds)

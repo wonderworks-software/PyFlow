@@ -101,7 +101,8 @@ class PinBase(IPin):
 
         # gui class weak ref
         self._wrapper = None
-        self.inputWidgetVariant = "DefaultWidget"
+        self.annotationDescriptionDict = None
+        self._inputWidgetVariant = "DefaultWidget"
 
         # Constraint ports
         self.constraint = None
@@ -138,6 +139,12 @@ class PinBase(IPin):
             self.pinIndex = len(self.owningNode().orderedInputs)
         if direction == PinDirection.Output:
             self.pinIndex = len(self.owningNode().orderedOutputs)
+
+    def getInputWidgetVariant(self):
+        return self._inputWidgetVariant
+
+    def setInputWidgetVariant(self, value):
+        self._inputWidgetVariant = value
 
     @property
     def group(self):

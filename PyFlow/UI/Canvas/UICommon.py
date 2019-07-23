@@ -19,7 +19,7 @@ from PyFlow.Core.Common import *
 from PyFlow.UI.Utils.stylesheet import Colors
 
 
-DEFAULT_WIDGET_VARIANT = "DefaultWidget"
+# DEFAULT_WIDGET_VARIANT = "DefaultWidget"
 
 
 def rst2html(rst):

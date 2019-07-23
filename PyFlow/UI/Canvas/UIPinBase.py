@@ -118,9 +118,8 @@ class UIPinBase(QGraphicsWidget):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.pinCircleDrawOffset = QtCore.QPointF()
 
-    @property
-    def inputWidgetVariant(self):
-        return self._rawPin.inputWidgetVariant
+    def getInputWidgetVariant(self):
+        return self._rawPin.getInputWidgetVariant()
 
     @property
     def labelColor(self):

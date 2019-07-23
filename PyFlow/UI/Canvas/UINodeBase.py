@@ -1274,7 +1274,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData
-                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.inputWidgetVariant)
+                w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getInputWidgetVariant(), pinAnnotations=inp._rawPin.annotationDescriptionDict)
                 if w:
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
@@ -1299,7 +1299,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
                 continue
             dataSetter = inp.call if inp.isExec() else inp.setData
-            w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.inputWidgetVariant)
+            w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getInputWidgetVariant(), pinAnnotations=inp._rawPin.annotationDescriptionDict)
             if w:
                 inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                 w.blockWidgetSignals(True)

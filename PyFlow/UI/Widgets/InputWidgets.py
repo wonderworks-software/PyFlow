@@ -23,7 +23,6 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QMenu
 
-from PyFlow.UI.Canvas.UICommon import DEFAULT_WIDGET_VARIANT
 from PyFlow.Core.Common import *
 
 
@@ -56,7 +55,7 @@ class InputWidgetRaw(QWidget, IInputWidget):
     """
 
     def __init__(self, parent=None, dataSetCallback=None, defaultValue=None, **kwds):
-        super(InputWidgetRaw, self).__init__(parent=parent, **kwds)
+        super(InputWidgetRaw, self).__init__(parent=parent)
         self._defaultValue = defaultValue
         # function with signature void(object)
         # this will set data to pin
@@ -123,10 +122,10 @@ def REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, factory):
         print("registering", packageName, "input widgets")
 
 
-def createInputWidget(dataType, dataSetter, defaultValue=None, widgetVariant=DEFAULT_WIDGET_VARIANT):
+def createInputWidget(dataType, dataSetter, defaultValue=None, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds):
     pinInputWidget = None
     for packageName, factory in UI_INPUT_WIDGET_PINS_FACTORIES.items():
-        pinInputWidget = factory(dataType, dataSetter, defaultValue, widgetVariant)
+        pinInputWidget = factory(dataType, dataSetter, defaultValue, widgetVariant, **kwds)
         if pinInputWidget is not None:
             return pinInputWidget
     return pinInputWidget
