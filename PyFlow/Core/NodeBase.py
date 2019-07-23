@@ -66,7 +66,7 @@ class NodeBase(INode):
 
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
-        self.bCacheEnabled = True
+        self.bCacheEnabled = False
         self.cacheMaxSize = 1000
         self.cache = {}
 
