@@ -2,7 +2,7 @@ from Qt import QtGui
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from Qt.QtWidgets import QLabel
-import FreeCAD
+#import FreeCAD
 
 
 class UIQimageDisplay(UINodeBase):
@@ -20,7 +20,7 @@ class UIQimageDisplay(UINodeBase):
         self.w=QLabel("testzz")
         scaledPixmap = self.pixmap.scaledToWidth(400)
         self.w.setPixmap(scaledPixmap)
-        FreeCAD.w=self.w
+#        FreeCAD.w=self.w
         self.w.show()
         self.updateSize()
 

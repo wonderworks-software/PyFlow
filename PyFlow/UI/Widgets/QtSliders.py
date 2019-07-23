@@ -452,11 +452,17 @@ class pyf_Slider(QtWidgets.QWidget):
 
     @property
     def minimum(self):
-        return self.input.minimum()
+        try:
+            return self.input.minimum()
+        except:
+            pass
 
     @property
     def maximum(self):
-        return self.input.maximum()
+        try:
+            return self.input.maximum()
+        except:
+            pass
 
     def value(self):
         self._value = self.sld.value()

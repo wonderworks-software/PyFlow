@@ -121,10 +121,13 @@ def INITIALIZE(additionalPackageLocations=[]):
     packagePaths.extend(additionalPackageLocations)
 
     for importer, modname, ispkg in pkgutil.iter_modules(packagePaths):
-        if ispkg:
-            mod = importer.find_module(modname).load_module(modname)
-            package = getattr(mod, modname)()
-            __PACKAGES[modname] = package
+        try:
+            if ispkg:
+                mod = importer.find_module(modname).load_module(modname)
+                package = getattr(mod, modname)()
+                __PACKAGES[modname] = package
+        except:
+            print ("problem with package",modname,"ignore it")
 
     registeredInternalPinDataTypes = set()
 
