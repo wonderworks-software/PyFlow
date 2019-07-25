@@ -1761,7 +1761,7 @@ class Canvas(QGraphicsView):
             f.setFamily("Consolas")
             painter.setFont(f)
             y = float(top)
-            
+
             while y < float(rect.bottom()):
                 y += editableStyleSheet().GridSizeFine[0]
                 if abs(y) % 100 == 0 and y > rect.top() + 30:
@@ -1840,7 +1840,7 @@ class Canvas(QGraphicsView):
             jsonTemplate["uuid"] = str(uuid.uuid4())
             jsonTemplate["x"] = x
             jsonTemplate["y"] = y
-            self.createNode(jsonTemplate)
+            return self.createNode(jsonTemplate)
 
     def createWrappersForGraph(self, rawGraph):
         # when raw graph was created, we need to create all ui wrappers for it
