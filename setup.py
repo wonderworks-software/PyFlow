@@ -7,14 +7,14 @@ setup(
     packages=find_packages(),
     scripts=['pyflow'],
     include_package_data=True,
-    author="TODO",
+    author="Ilgar Lunin, Pedro Cabrera",
     author_email="TODO@example.com",
     description="A general purpose runtime extendable python qt node editor.",
     keywords="visual programming nodeeditor",
-    url="http://TODO.com",   # project home page, if any
+    url="https://github.com/IlgarLunin/PyFlow/",   # project home page
     project_urls={
         "Bug Tracker": "https://github.com/IlgarLunin/PyFlow/issues",
-        "Documentation": "https://github.com/IlgarLunin/PyFlow/",  #TODO
+        "Documentation": "https://pyflow.readthedocs.io",
         "Source Code": "https://github.com/IlgarLunin/PyFlow/",
     },
     classifiers=[
