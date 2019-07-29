@@ -15,9 +15,7 @@
 
 import sys
 from PyFlow.App import PyFlow
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from Qt.QtWidgets import QApplication
-from Qt.QtWidgets import QStyleFactory
 
 app = QApplication(sys.argv)
 

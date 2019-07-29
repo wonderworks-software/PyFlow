@@ -1,55 +1,66 @@
 # Overview
-<p align="center">
-  <img src="PyFlow/UI/resources/PyFlow.jpg">
-</p>
 
-**PyFlow** is a general purpose runtime extendable python qt node editor.
+**PyFlow** is a general purpose visual scripting framework for python.
 
-Watch [video](https://youtu.be/chnRrr1Qfj8)
+<p align="center"><img src="PyFlow/UI/resources/PyFlow.jpg"></p>
 
-# Table of contents
-- [Features](#features)
-- [Installation](#installation)
-- [Pip dependencies](#dependencies)
-- [Usage](#usage)
-- [Licensing](#licensing)
+## Installation
 
-# Features
-- Json serializable
-- Easy node creation from annotated functions
-- Categories tree
-- Undo stack
-- Properties view
-- Dirty propagation for optimal graph computation
-- Runtime nodes creation
-- Variables
+1. Clone or download repository.
 
-# Installation
-1. Download repository.
-2. Install [conda](https://conda.io/miniconda.html) with pyside2 and python 2.7 environment. [Instruction](https://fredrikaverpil.github.io/2017/08/28/pyside2-easy-install/) here
-3. Go to **PyFlow/** folder and install dependencies
-	```bash
-	pip install -r requirements.txt
-	```
-4. Execute **starter.bat**
+2. Install requirements for you use case.
 
+    requirement lists can be found under `PyFlow/requirements`
 
-# Dependencies
-- [Qt.py](https://github.com/mottosso/Qt.py)
-- PySide or PySide2 or PyQt5 or PyQt4
-- [pyrr](https://github.com/adamlwgriffiths/Pyrr) for builtin math. (optional)
+3. To run the program in standalone mode, run `launcher.py`. It can be found in the root folder of repository.
 
-# Usage
-App's entry point is **App.py** file under PyFlow folder. There are also several handy bat scripts for debugging and profiling.
-Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
-Connect and execute pins from property view or using timer node.
+## Features overview
 
-# Extending
-See source code. **FunctionLibraries** folder for annotated nodes, **Nodes** folder for
-class based nodes. **Pins**, for data types and **Commands** for editor commands.
+* Modular
+* Easy integration
+* Subgraphs
+* Subgraphs import/export
+* Python node
+* Python node import/export
+* Fast node generation from functions
+* Graph commenting
+  * Comment node
+  * Sticky node
+* Custom input system
+* Drop on edge
+* Photoshop-like history
+* Property view
+* Variables
+* Editable shareable themes
+* Data importers/exporters
+* Convenient wires interaction
+  * Tear off
+  * Reconnect
+* Widgets library
+  * Sliders
+  * Properties framework
+  * Input framework
+* Plugin wizards framework
+* Easy configuration files framework
 
-# Discussion
+## Getting Started
+
+We have [documentation](https://pyflow.readthedocs.io/en/latest/)
+
+## Contributing
+
+See `CONTRIBUTING.md`
+
+## Versioning
+
+We use a [semantic versioning](http://semver.org/) policy.
+
+## Authors
+
+* **Ilgar Lunin** - [Ilgar Lunin](https://github.com/IlgarLunin)
+* **Pedro Cabrera** - [Pedro Cabrera](https://github.com/pedroCabrera)
+
+See also the list of [contributors](https://github.com/wonderworks-software/PyFlow/contributors) who participated in this project.
+
+## Discussion
 [Discord channel](https://discord.gg/SwmkqMj)
-
-# Donate
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ILunin)
