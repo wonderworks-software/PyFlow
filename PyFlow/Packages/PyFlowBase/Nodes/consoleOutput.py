@@ -59,7 +59,10 @@ class consoleOutput(NodeBase):
             data = str(self.entity.getData())
             if self.entity.dataType != "StringPin":
                 data = data.encode('unicode-escape')
-            data = data.replace("\\n", "<br/>")
+            if IS_PYTHON2:
+                data = data.replace("\\n", "<br/>")
+            else:
+                data = str(data).encode("utf-8").replace(b"\\n", b"<br/>").decode('unicode-escape')
 
             errorLink = """<a href=%s><span style=" text-decoration: underline; color:green;">%s</span></a></p>""" % (self.name, "<br/>%s" % data)
             logging.getLogger(None).consoleoutput(errorLink)

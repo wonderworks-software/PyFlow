@@ -2,7 +2,7 @@
 
 **PyFlow** is a general purpose visual scripting framework for python.
 
-<p align="center"><img src="PyFlow/UI/resources/PyFlow.jpg"></p>
+<p align="center"><img src="PyFlow/UI/resources/PyFlow.png"></p>
 
 ## Installation
 
