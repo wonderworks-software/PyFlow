@@ -123,7 +123,7 @@ class CollapsibleWidget(QtWidgets.QWidget):
 
 class PropertyEntry(QtWidgets.QWidget):
     """docstring for PropertyEntry."""
-    def __init__(self, label, widget, parent=None, hideLabel=False, maxLabelWidth=None):
+    def __init__(self, label, widget, parent=None, hideLabel=False, maxLabelWidth=None, toolTip=""):
         super(PropertyEntry, self).__init__(parent)
         self.label = label
         self.layout = QtWidgets.QHBoxLayout(self)
@@ -131,6 +131,7 @@ class PropertyEntry(QtWidgets.QWidget):
         if not hideLabel:
             label = QtWidgets.QLabel(label + ":")
             label.setStyleSheet("font: bold")
+            label.setToolTip(toolTip)
             if not maxLabelWidth:
                 label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred))
             else:
@@ -170,16 +171,16 @@ class CollapsibleFormWidget(CollapsibleWidget):
 
     def filterContent(self, pattern):
         count = self.Layout.count()
-        for key,value in self.entryNames.items():
-            if isinstance(value,PropertyEntry):
+        for key, value in self.entryNames.items():
+            if isinstance(value, PropertyEntry):
                 value.setVisible(pattern.lower() in value.getLabel().lower())
-        for key,value in self.groups.items():
-            if isinstance(value,CollapSibleGoupBox):
+        for key, value in self.groups.items():
+            if isinstance(value, CollapSibleGoupBox):
                 if value.isAllWidgetsHidden():
                     value.hide()
                 else:
                     value.show()
-                    value.setCollapsed(False)                    
+                    value.setCollapsed(False)
 
     def insertWidget(self, index=0, label=None, widget=None, maxLabelWidth=None, group=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
@@ -196,11 +197,11 @@ class CollapsibleFormWidget(CollapsibleWidget):
         if group is None or group == "":
             self.Layout.insertWidget(index, entry)
         else:
-            groupW.insertWidget(index,entry)
-            self.Layout.addWidget(groupW)             
+            groupW.insertWidget(index, entry)
+            self.Layout.addWidget(groupW)
         return True
 
-    def addWidget(self, label=None, widget=None, maxLabelWidth=None,group=None):
+    def addWidget(self, label=None, widget=None, maxLabelWidth=None, group=None):
         if widget is None or isinstance(widget, CollapsibleWidget):
             return False
         if group is not None and group != "":
@@ -210,7 +211,7 @@ class CollapsibleFormWidget(CollapsibleWidget):
                 groupW = CollapSibleGoupBox(group)
                 self.groups[group] = groupW
         self.propertyNames[label] = widget
-        entry = PropertyEntry(str(label), widget, hideLabel=self.hideLabels, maxLabelWidth=maxLabelWidth)
+        entry = PropertyEntry(str(label), widget, hideLabel=self.hideLabels, maxLabelWidth=maxLabelWidth, toolTip=widget.toolTip())
         self.entryNames[label] = entry
         if group is None or group == "":
             self.Layout.addWidget(entry)

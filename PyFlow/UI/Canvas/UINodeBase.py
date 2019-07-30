@@ -1288,6 +1288,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     continue
                 dataSetter = inp.call if inp.isExec() else inp.setData
                 w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getInputWidgetVariant(), pinAnnotations=inp._rawPin.annotationDescriptionDict)
+                w.setToolTip(inp.description)
                 if w:
                     inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
@@ -1313,6 +1314,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 continue
             dataSetter = inp.call if inp.isExec() else inp.setData
             w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getInputWidgetVariant(), pinAnnotations=inp._rawPin.annotationDescriptionDict)
+            w.setToolTip(inp.description)
             if w:
                 inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
                 w.blockWidgetSignals(True)
