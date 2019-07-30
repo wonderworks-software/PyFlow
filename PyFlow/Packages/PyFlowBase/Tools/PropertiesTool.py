@@ -37,7 +37,7 @@ class PropertiesTool(DockTool):
         self.addButton(self.propertiesWidget.lockCheckBox)
         self.propertiesWidget.searchBoxLayout.removeWidget(self.propertiesWidget.tearOffCopy)
         self.addButton(self.propertiesWidget.tearOffCopy)
-        self.addButton(self.propertiesWidget.settingsButton)
+        # self.addButton(self.propertiesWidget.settingsButton)
 
         self.setWindowTitle(self.uniqueName())
         self.fillDelegate = None
