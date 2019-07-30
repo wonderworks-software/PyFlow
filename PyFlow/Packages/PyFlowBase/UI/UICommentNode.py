@@ -58,11 +58,13 @@ class UICommentNode(UINodeBase):
         self.partiallyIntersectedConnections = set()
         self.partiallyIntersectedConnectionsEndpointOverrides = {}
         self.roundness = 3
+        self.setNameValidationEnabled(False)
+        self.setSingleLineName(False)
 
     def updateNodeShape(self):
         super(UICommentNode, self).updateNodeShape()
         self.nodeNameWidget.labelItem.setTextWidth(self.boundingRect().width())
-        
+
     def serializationHook(self):
         original = super(UICommentNode, self).serializationHook()
         original["owningNodes"] = list(set([n.name for n in self.owningNodes]))
@@ -238,19 +240,17 @@ class UICommentNode(UINodeBase):
 
     def paint(self, painter, option, widget):
         NodePainter.asCommentNode(self, painter, option, widget)
-        
-    def updateColor(self,color):
-        res = QtGui.QColor(color[0],color[1],color[2],color[3])
+
+    def updateColor(self, color):
+        res = QtGui.QColor(color[0], color[1], color[2], color[3])
         if res.isValid():
             self.color = res
-            self.update()     
+            self.update()
 
-    def createPropertiesWidget( self, propertiesWidget):
+    def createPropertiesWidget(self, propertiesWidget):
         super(UICommentNode, self).createPropertiesWidget(propertiesWidget)
         appearanceCategory = CollapsibleFormWidget(headName="Appearance")
-        pb = pyf_ColorSlider(type="int",alpha=True,startColor=list(self.color.getRgbF()))
+        pb = pyf_ColorSlider(type="int", alpha=True, startColor=list(self.color.getRgbF()))
         pb.valueChanged.connect(self.updateColor)
         appearanceCategory.addWidget("Color", pb)
-        propertiesWidget.insertWidget(appearanceCategory,1)
-
-
+        propertiesWidget.insertWidget(appearanceCategory, 1)

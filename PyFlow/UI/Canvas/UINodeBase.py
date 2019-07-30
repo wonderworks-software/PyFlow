@@ -404,6 +404,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.actionToggleExposeWidgetsToCompound = self._menu.addAction("Expose properties")
         self.actionToggleExposeWidgetsToCompound.triggered.connect(self.onToggleExposeProperties)
 
+    def setSingleLineName(self, bSingleLine=True):
+        self.nodeNameWidget.labelItem.singleLine = bSingleLine
+
+    def setNameValidationEnabled(self, bEnabled=True):
+        self.nodeNameWidget.labelItem.validator = None if not bEnabled else NodeNameValidator()
+
+    def isNameValidatoinEnabled(self):
+        return self.nodeNameWidget.labelItem.validator is not None
+
     def onToggleExposeProperties(self):
         self.setExposePropertiesToCompound(not self.bExposeInputsToCompound)
         EditorHistory().saveState("{} exposing widgets".format("Start" if self.bExposeInputsToCompound else "Stop"))
@@ -634,7 +643,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         :type accepted: :class:`bool`
         """
         if accepted:
-            name = self.nodeNameWidget.getPlainText().replace(" ", "")
+            if self.isNameValidatoinEnabled():
+                name = self.nodeNameWidget.getPlainText().replace(" ", "")
             newName = self.canvasRef().graphManager.getUniqNodeName(name)
             self.setName(newName)
             self.setHeaderHtml(newName)
