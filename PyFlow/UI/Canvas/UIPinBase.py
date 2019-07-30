@@ -397,6 +397,7 @@ class UIPinBase(QGraphicsWidget):
     @description.setter
     def description(self, value):
         self._rawPin.description = value
+        self.setToolTip(self._rawPin.description)
 
     def hoverEnterEvent(self, event):
         super(UIPinBase, self).hoverEnterEvent(event)
