@@ -36,6 +36,4 @@ class UIExecPin(UIPinBase):
         super(UIPinBase, self).hoverEnterEvent(event)
         self.update()
         self.hovered = True
-        hoverMessage = "Data: {0}\r\nDirty: {1}".format(str(self._rawPin.currentData()), self._rawPin.dirty)
-        self.setToolTip(hoverMessage)
         event.accept()

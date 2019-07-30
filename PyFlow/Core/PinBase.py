@@ -140,6 +140,8 @@ class PinBase(IPin):
         if direction == PinDirection.Output:
             self.pinIndex = len(self.owningNode().orderedOutputs)
 
+        self.description = "{} instance".format(self.dataType)
+
     def getInputWidgetVariant(self):
         return self._inputWidgetVariant
 
@@ -534,7 +536,7 @@ class PinBase(IPin):
                     self._data = PFDict(data.keyType, data.valueType)
                     for key, value in data.items():
                         self._data[key] = self.super.processData(value)
-                elif isinstance(data, DictElement) and len(data)==2:
+                elif isinstance(data, DictElement) and len(data) == 2:
                     self._data.clear()
                     self._data[data[0]] = self.super.processData(data[1])
 

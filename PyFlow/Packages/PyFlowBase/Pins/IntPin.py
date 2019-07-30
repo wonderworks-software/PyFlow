@@ -46,4 +46,3 @@ class IntPin(PinBase):
     @staticmethod
     def processData(data):
         return IntPin.internalDataStructure()(data)
-
