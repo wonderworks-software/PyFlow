@@ -62,7 +62,9 @@ class consoleOutput(NodeBase):
             if IS_PYTHON2:
                 data = data.replace("\\n", "<br/>")
             else:
-                data = str(data).encode("utf-8").replace(b"\\n", b"<br/>").decode('unicode-escape')
+                if isinstance(data, bytes):
+                    data = data.decode("utf-8")
+                data = str(data).replace("\\n", "<br/>")
 
             errorLink = """<a href=%s><span style=" text-decoration: underline; color:green;">%s</span></a></p>""" % (self.name, "<br/>%s" % data)
             logging.getLogger(None).consoleoutput(errorLink)
