@@ -64,6 +64,7 @@ class PinBase(IPin):
     :ivar super: **description here**
     :ivar activeDataType: Current data type of this pin. Used by AnyPin
     :ivar pinIndex: Position of this pin on node
+    :ivar description: Text description of this pin
     """
     _packageName = ""
 
