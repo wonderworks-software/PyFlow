@@ -109,7 +109,7 @@
 
 * **Editable shareable themes**
 
-    *Create and share themes woth others*
+    *Create and share themes with others*
 
     ![historyApi](images/themes.gif)
 
