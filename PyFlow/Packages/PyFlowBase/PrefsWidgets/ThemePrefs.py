@@ -45,7 +45,7 @@ class ThemePreferences(CategoryWidgetBase):
 
     def onShow(self, settings):
         clearLayout(self.layout)
-        editableStyleSheet().loadPresests(THEMES_PATH)
+        editableStyleSheet().loadPresets(THEMES_PATH)
         properties = PropertiesWidget()
         properties.setLockCheckBoxVisible(False)
         properties.setTearOffCopyVisible(False)
@@ -78,17 +78,17 @@ class ThemePreferences(CategoryWidgetBase):
                     general.insertWidget(0,name,inp)
 
         self.selector = QComboBox()
-        for name in editableStyleSheet().presests.keys():
+        for name in editableStyleSheet().presets.keys():
             self.selector.addItem(name)
         if self.currTheme is not None:
             self.selector.setCurrentIndex(self.currTheme)
         else:
             if isinstance(settings, str):
-                if settings in editableStyleSheet().presests:
-                    self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings))
+                if settings in editableStyleSheet().presets:
+                    self.selector.setCurrentIndex(list(editableStyleSheet().presets.keys()).index(settings))
             elif settings and settings.value('Theme_Name'):
-                if settings.value('Theme_Name') in editableStyleSheet().presests:
-                    self.selector.setCurrentIndex(list(editableStyleSheet().presests.keys()).index(settings.value('Theme_Name')))
+                if settings.value('Theme_Name') in editableStyleSheet().presets:
+                    self.selector.setCurrentIndex(list(editableStyleSheet().presets.keys()).index(settings.value('Theme_Name')))
             self.currTheme = self.selector.currentIndex()
 
         self.layout.addWidget(self.selector)
@@ -117,7 +117,7 @@ class ThemePreferences(CategoryWidgetBase):
         self.layout.addLayout(lay)
 
     def setPreset(self, index):
-        data = editableStyleSheet().presests[self.selector.currentText()]
+        data = editableStyleSheet().presets[self.selector.currentText()]
         editableStyleSheet().loadFromData(data)
         self.currTheme = self.selector.currentIndex()
         self.onShow(self.selector.currentText())

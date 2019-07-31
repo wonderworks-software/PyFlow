@@ -1,0 +1,2 @@
+recursive-include PyFlow/UI *.*
+recursive-include PyFlow/Packages/PyFlowBase/Tools *.*
