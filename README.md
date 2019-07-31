@@ -6,13 +6,26 @@
 
 ## Installation
 
+### Manual
+
 1. Clone or download repository.
 
 2. Install requirements for your use case.
 
     requirement lists can be found under `PyFlow/requirements`
 
-3. To run the program in standalone mode, run `launcher.py`. It can be found in the root folder of repository.
+3. To run the program in standalone mode, run `pyflow.py`. It can be found in the root folder of repository.
+
+### Or using pip
+
+Latest development version. Contain latest features
+
+```bash
+pip install git+https://github.com/wonderworks-software/PyFlow.git@master
+```
+
+After package is installed, you can invoke `pyflow.exe` on windows or `pyflow` on unix OS.
+Program is located inside `PATH/TO/PYTHON/Scripts`.
 
 ## Features overview
 
