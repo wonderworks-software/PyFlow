@@ -18,7 +18,7 @@
 
 ### Or using pip
 
-Latest development version. Contain latest features
+Latest development version. Contains latest features
 
 ```bash
 pip install git+https://github.com/wonderworks-software/PyFlow.git@master
