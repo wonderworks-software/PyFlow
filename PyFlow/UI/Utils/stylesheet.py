@@ -76,12 +76,15 @@ class editableStyleSheet():
         self.SetAppStyleSheet = [1]
 
         self.storeDeffaults()
-        self.presests = {}
-        self.loadPresests(THEMES_PATH)
+        self.presets = {}
+        self.loadPresets(THEMES_PATH)
         try:
             themeName = ConfigManager().getPrefsValue("PREFS", "Theme/Theme_Name")
             if themeName:
-                self.loadFromData(self.presests[themeName])
+                self.loadFromData(self.presets[themeName])
+            else:
+                if len(self.presets) > 0:
+                    self.loadFromData(self.presets[list(self.presets.keys())[0]])
         except:
             pass
 
@@ -100,15 +103,15 @@ class editableStyleSheet():
 
         return {"PyFLowStyleSheet": result}
 
-    def loadPresests(self, folder):
-        self.presests = {}
+    def loadPresets(self, folder):
+        self.presets = {}
         for file in os.listdir(folder):
             name, _type = os.path.splitext(file)
             if _type == ".json":
                 with open(os.path.join(folder, file), "r") as f:
                     try:
                         data = json.load(f)
-                        self.presests[name] = data
+                        self.presets[name] = data
                     except:
                         pass
 

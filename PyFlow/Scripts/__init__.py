@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 ## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
 
 ## Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +17,16 @@ import sys
 from PyFlow.App import PyFlow
 from Qt.QtWidgets import QApplication
 
-app = QApplication(sys.argv)
 
-instance = PyFlow.instance(software="standalone")
-if instance is not None:
-    app.setActiveWindow(instance)
-    instance.show()
+def main():
+    app = QApplication(sys.argv)
 
-    try:
-        sys.exit(app.exec_())
-    except Exception as e:
-        print(e)
+    instance = PyFlow.instance(software="standalone")
+    if instance is not None:
+        app.setActiveWindow(instance)
+        instance.show()
+
+        try:
+            sys.exit(app.exec_())
+        except Exception as e:
+            print(e)

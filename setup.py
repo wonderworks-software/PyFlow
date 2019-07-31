@@ -1,29 +1,27 @@
 from setuptools import setup, find_packages
-import sys, os
+import sys
+import os
 
-# does not work, needs dependencies which are not installed at this point
-#from PyFlow.Core.version import currentVersion
-
-# so workaround is needed:
-sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                            "PyFlow", "Core"))
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), "PyFlow", "Core"))
 from version import currentVersion
 
 setup(
     name="PyFlow",
     version=str(currentVersion()),
     packages=find_packages(),
-    scripts=['pyflow'],
+    entry_points={
+        'console_scripts': ['pyflow = PyFlow.Scripts:main']
+    },
     include_package_data=True,
     author="Ilgar Lunin, Pedro Cabrera",
-    author_email="TODO@example.com",
+    author_email="wonderworks.software@gmail.com",
     description="A general purpose runtime extendable python qt node editor.",
-    keywords="visual programming nodeeditor",
-    url="https://github.com/IlgarLunin/PyFlow/",   # project home page
+    keywords="visual programming framework",
+    url="https://wonderworks-software.github.io/PyFlow",   # project home page
     project_urls={
-        "Bug Tracker": "https://github.com/IlgarLunin/PyFlow/issues",
+        "Bug Tracker": "https://github.com/wonderworks-software/PyFlow/issues",
         "Documentation": "https://pyflow.readthedocs.io",
-        "Source Code": "https://github.com/IlgarLunin/PyFlow/",
+        "Source Code": "https://github.com/wonderworks-software/PyFlow",
     },
     classifiers=[
         'License :: Appache-2.0'
