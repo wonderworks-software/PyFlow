@@ -73,6 +73,12 @@ class FloatInputWidgetSimple(InputWidgetSingle):
     def setWidgetValue(self, val):
         self.sb.setValue(float(val))
 
+    def setMaximum(self, max):
+        self.sb.setMaximum(max)
+
+    def setMinimum(self, min):
+        self.sb.setMinimum(min)
+
 
 class FloatInputWidget(InputWidgetSingle):
     """
