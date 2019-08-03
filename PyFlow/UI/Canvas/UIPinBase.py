@@ -117,7 +117,8 @@ class UIPinBase(QGraphicsWidget):
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.pinCircleDrawOffset = QtCore.QPointF()
-        self.setToolTip(self._rawPin.description)
+        if self._rawPin is not None:
+            self.setToolTip(self._rawPin.description)
 
     def getInputWidgetVariant(self):
         return self._rawPin.getInputWidgetVariant()
@@ -434,6 +435,10 @@ class PinGroup(UIPinBase):
         super(PinGroup, self).__init__(owningNode, None)
         self.expanded = True
         self._pins = list()
+
+    @property
+    def description(self):
+        return "Pin group desc"
 
     def numPins(self):
         return len(self._pins)
