@@ -117,6 +117,7 @@ class UIPinBase(QGraphicsWidget):
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.pinCircleDrawOffset = QtCore.QPointF()
+        # TODO: This is check is for PinGroup. Improve it
         if self._rawPin is not None:
             self.setToolTip(self._rawPin.description)
 
