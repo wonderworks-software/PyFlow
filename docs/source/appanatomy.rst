@@ -32,3 +32,10 @@ On the top of canvas there is a :meth:`current location <PyFlow.Core.GraphBase.G
 on compound node. To step up - click on any parent button.
 
 .. image:: resources/subgraph_navigation.gif
+
+Exporter
+********
+
+Under `file->Custom IO` you can find all registered exporters and importers
+
+.. image:: resources/exporter.png

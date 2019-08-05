@@ -63,10 +63,6 @@ class SearchResultsTool(DockTool):
     def defaultDockArea():
         return QtCore.Qt.BottomDockWidgetArea
 
-    @staticmethod
-    def getIcon():
-        return QtGui.QIcon(":binocular.png")
-
     def onShow(self):
         super(SearchResultsTool, self).onShow()
         self.pyFlowInstance.getCanvas().requestShowSearchResults.connect(self.onShowNodesResults)

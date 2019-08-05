@@ -98,7 +98,7 @@ class NodeBase(INode):
 
         This will return dict only for function based nodes. For class based nodes it will return None
 
-        .. seelaso:: :mod:`~PyFlow.Core.FunctionLibrary`
+        .. seealso:: :mod:`~PyFlow.Core.FunctionLibrary`
 
         :rtype: dict or None
         """

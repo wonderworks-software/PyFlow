@@ -32,6 +32,10 @@ class IPropertiesViewSupport(object):
 
 
 class IDataExporter(object):
+    """Data exporter/importer
+
+    Editor data can be exported/imported to/from arbitrary formats
+    """
     def __init__(self):
         super(IDataExporter, self).__init__()
 
@@ -69,41 +73,81 @@ class IDataExporter(object):
 
 
 class IPackage(object):
+    """Class that describes a set of modules that can be plugged into the editor.
+
+    Will be instantiated and used to create registered entities.
+    """
     def __init__(self):
         super(IPackage, self).__init__()
 
     @staticmethod
     def GetExporters():
+        """Registered editor data exporters
+
+        :rtype: dict(str, class)
+        """
         raise NotImplementedError('GetExporters method of IPackage is not implemented')
 
     @staticmethod
     def GetFunctionLibraries():
+        """Registered function library instances
+
+        :rtype: dict(str, object)
+        """
         raise NotImplementedError('GetFunctionLibraries method of IPackage is not implemented')
 
     @staticmethod
     def GetNodeClasses():
+        """Registered node classes
+
+        :rtype: dict(str, class)
+        """
         raise NotImplementedError('GetNodeClasses method of IPackage is not implemented')
 
     @staticmethod
     def GetPinClasses():
+        """Registered pin classes
+
+        :rtype: dict(str, class)
+        """
         raise NotImplementedError('GetPinClasses method of IPackage is not implemented')
 
     @staticmethod
     def GetToolClasses():
+        """Registered tool classes
+
+        :rtype: dict(str, class)
+        """
         raise NotImplementedError('GetToolClasses method of IPackage is not implemented')
 
     @staticmethod
     def UIPinsFactory():
+        """Registered ui pin wrappers
+
+        :rtype: function
+        """
         return None
 
     @staticmethod
     def UINodesFactory():
+        """Registered ui nodes
+
+        :rtype: function
+        """
         return None
 
     @staticmethod
     def PinsInputWidgetFactory():
+        """Registered pin input widgets
+
+        :rtype: function
+        """
         return None
 
     @staticmethod
     def PrefsWidgets():
+        """Registered preferences widgets
+
+        :rtype: dict(str, class)
+        """
         return None

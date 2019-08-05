@@ -23,6 +23,6 @@ class DemoInputWidget(InputWidgetSingle):
             self.cb.setCheckState(QtCore.Qt.Unchecked)
 
 
-def getInputWidget(dataType, dataSetter, defaultValue):
+def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds):
     if dataType == 'DemoPin':
-        return DemoInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue)
+        return DemoInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)

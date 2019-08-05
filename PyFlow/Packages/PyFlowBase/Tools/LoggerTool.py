@@ -262,10 +262,6 @@ class LoggerTool(DockTool):
                                    "rgba%s" % str(editableStyleSheet().LoggerBgColor.getRgb()))
         super(LoggerTool, self).update()
 
-    @staticmethod
-    def getIcon():
-        return QtGui.QIcon(":logger.png")
-
     def onShow(self):
         super(LoggerTool, self).onShow()
 

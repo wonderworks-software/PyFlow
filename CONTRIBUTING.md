@@ -14,6 +14,6 @@ To contribute to PyFlow, just use pull requests.
 
 First check for duplicates if possible.
 Then try to describe problem as wide as possible,
-attaching maximum info possible.
+attaching maximum possible info.
 
 Thanks! :heart: :heart: :heart:

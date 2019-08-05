@@ -8,6 +8,7 @@ Subpackages
 
    PyFlow.Core
    PyFlow.Packages
+   PyFlow.Scripts
    PyFlow.Tests
    PyFlow.UI
    PyFlow.Wizards

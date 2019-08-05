@@ -173,7 +173,7 @@ class AnyPin(PinBase):
 
         Appends current value and currentDataType to default :py:func:`PyFlow.Core.PinBase.PinBase.serialize` method
         :returns: json data
-        :rtype: {dict}
+        :rtype: dict
         """
         dt = super(AnyPin, self).serialize()
         constrainedType = self.activeDataType
@@ -252,7 +252,7 @@ class AnyPin(PinBase):
     def updateOnConnectionCallback(self, pin, dataType, init=False, other=None):
         """Method Called in traverse function :py:func:`PyFlow.Core.Common.traverseConstrainedPins`
 
-        This Function is called for all the connected Pins to the initial Pin calling it. 
+        This Function is called for all the connected Pins to the initial Pin calling it.
         Here we traverse all pins and call :py:func:`AnyPin.setType` for all of them.
         We also intersect all the connected pins allowedDataTypes.
         :param pin: Pin to perform operations on
@@ -297,7 +297,7 @@ class AnyPin(PinBase):
                         the only conection that make hole graphed nodes not be able to change Type, defaults to True
         :type selfCheck: bool, optional
         :returns: True if Pin can change current dataType
-        :rtype: {bool}
+        :rtype: bool
         """
         if self.constraint is None or self.dataType == self.__class__.__name__:
             return True
@@ -373,7 +373,7 @@ class AnyPin(PinBase):
         :param initializing:  If initializing AnyPin can have same strenght as other types, if not, "AnyPin" Pin will always be weaker than other dataType, if, defaults to False
         :type initializing: bool, optional
         :returns: True if it can change to the asked dataType
-        :rtype: {bool}
+        :rtype: bool
         """
         if self.canChangeTypeOnConnection([], self.optionEnabled(PinOptions.ChangeTypeOnConnection), []):
             traverseConstrainedPins(
@@ -391,7 +391,7 @@ class AnyPin(PinBase):
         :param dataType: New DataType
         :type dataType: string
         :returns: True if succes setting dataType
-        :rtype: {bool}
+        :rtype: bool
         """
         if self.activeDataType == dataType:
             return True

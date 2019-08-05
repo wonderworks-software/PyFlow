@@ -58,10 +58,6 @@ class PropertiesTool(DockTool):
         propertiesFillDelegate(self.propertiesWidget)
 
     @staticmethod
-    def getIcon():
-        return QtGui.QIcon(":property_icon.png")
-
-    @staticmethod
     def isSingleton():
         return False
 

@@ -115,10 +115,6 @@ class HistoryTool(DockTool):
         return True
 
     @staticmethod
-    def getIcon():
-        return QtGui.QIcon(":history.png")
-
-    @staticmethod
     def defaultDockArea():
         return QtCore.Qt.LeftDockWidgetArea
 

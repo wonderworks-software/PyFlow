@@ -38,7 +38,7 @@ Program is located inside `PATH/TO/PYTHON/Scripts`.
     *PyFlow is a normal python program. It can run under any python environment*
 
 * **Python3 and 2 support**
-* **Logic and UI is separated**
+* **Logic and UI are separated**
 
     *Main logic elements (Node and Pin) has non gui representation, so programs can be evaluated without GUI*
 

@@ -26,10 +26,6 @@ class NodeBoxTool(DockTool):
     def __init__(self):
         super(NodeBoxTool, self).__init__()
 
-    @staticmethod
-    def getIcon():
-        return QtGui.QIcon(":nodeBox.png")
-
     def onShow(self):
         super(NodeBoxTool, self).onShow()
         self.setMinimumSize(QtCore.QSize(200, 50))

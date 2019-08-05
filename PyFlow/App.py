@@ -192,9 +192,8 @@ class PyFlow(QMainWindow):
         packagePlugin.triggered.connect(PackageWizard.run)
 
         helpMenu = self.menuBar.addMenu("Help")
-        shortcutsAction = helpMenu.addAction("Shortcuts")
-        shortcutsAction.setIcon(QtGui.QIcon(":/shortcuts_icon.png"))
-        shortcutsAction.triggered.connect(self.shortcuts_info)
+        helpMenu.addAction("Homepage").triggered.connect(lambda _=False, url="https://wonderworks-software.github.io/PyFlow/": QtGui.QDesktopServices.openUrl(url))
+        helpMenu.addAction("Docs").triggered.connect(lambda _=False, url="https://pyflow.readthedocs.io/en/latest/": QtGui.QDesktopServices.openUrl(url))
 
     def showPreferencesWindow(self):
         self.preferencesWindow.show()
@@ -474,30 +473,6 @@ class PyFlow(QMainWindow):
         PyFlow.appInstance = None
 
         QMainWindow.closeEvent(self, event)
-
-    def shortcuts_info(self):
-
-        data = "Tab - togle node box\n"
-        data += "Ctrl+N - new file\n"
-        data += "Ctrl+S - save\n"
-        data += "Ctrl+Shift+S - save as\n"
-        data += "Ctrl+O - open file\n"
-        data += "F - frame selected\n"
-        data += "H - frame all\n"
-        data += "C - comment selected nodes\n"
-        data += "Delete - kill selected nodes\n"
-        data += "Ctrl+C - Copy\n"
-        data += "Ctrl+V - Paste\n"
-        data += "Alt+Drag - Duplicate\n"
-        data += "Ctrl+Z - Undo\n"
-        data += "Ctrl+Y - Redo\n"
-        data += "Alt+Click - Disconnect Pin\n"
-        data += "Ctrl+Shift+ArrowLeft - Align left\n"
-        data += "Ctrl+Shift+ArrowUp - Align Up\n"
-        data += "Ctrl+Shift+ArrowRight - Align right\n"
-        data += "Ctrl+Shift+ArrowBottom - Align Bottom\n"
-
-        QMessageBox.information(self, "Shortcuts", data)
 
     @staticmethod
     def instance(parent=None, software=""):

@@ -39,10 +39,6 @@ class VariablesTool(DockTool):
         self.setWidget(self.content)
 
     @staticmethod
-    def getIcon():
-        return QtGui.QIcon(":variable.png")
-
-    @staticmethod
     def isSingleton():
         return True
 
