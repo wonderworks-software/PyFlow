@@ -314,6 +314,9 @@ class PyFlow(QMainWindow):
         if self._current_file_name in ["", "Untitled"]:
             return
 
+        if not self._current_file_name.endswith(".json"):
+            self._current_file_name += ".json"
+
         if not self._current_file_name == '':
             with open(self._current_file_name, 'w') as f:
                 saveData = self.graphManager.get().serialize()
