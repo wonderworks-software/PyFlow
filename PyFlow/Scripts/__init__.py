@@ -15,6 +15,7 @@
 
 import argparse
 import sys
+import os
 import json
 from PyFlow.App import PyFlow
 from PyFlow import graphUiParser
@@ -40,9 +41,10 @@ def main():
         if instance is not None:
             app.setActiveWindow(instance)
             instance.show()
-            with open(filePath, 'r') as f:
-                data = json.load(f)
-                instance.loadFromData(data)
+            if os.path.exists(filePath):
+                with open(filePath, 'r') as f:
+                    data = json.load(f)
+                    instance.loadFromData(data)
 
             try:
                 sys.exit(app.exec_())
