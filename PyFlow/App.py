@@ -283,7 +283,7 @@ class PyFlow(QMainWindow):
         if not fpath == '':
             with open(fpath, 'r') as f:
                 data = json.load(f)
-                self.loadFromData(data, fpath)
+                self.loadFromData(data)
 
     def save(self, save_as=False):
         if save_as:

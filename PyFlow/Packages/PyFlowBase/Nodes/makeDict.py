@@ -58,14 +58,14 @@ class makeDict(NodeBase):
     def description():
         return 'Creates a list from connected pins'
 
-    def postCreate(self,jsonData):
-        super(makeDict,self).postCreate(jsonData)
+    def postCreate(self, jsonData):
+        super(makeDict, self).postCreate(jsonData)
         self.updateDicts(self.KeyType.dataType)
-        
-    def updateDicts(self,dataType):
-        self.arrayData.updateConnectedDicts([],self.KeyType.dataType)
 
-    def inPinConnected(self,inputpin):
+    def updateDicts(self, dataType):
+        self.arrayData.updateConnectedDicts([], self.KeyType.dataType)
+
+    def inPinConnected(self, inputpin):
         inp = inputpin.getDictElementNode([])
         if inp and inputpin.owningNode() != inp:
             dataType = self.KeyType.dataType
@@ -74,19 +74,18 @@ class makeDict(NodeBase):
 
             if self.KeyType not in inp.constraints[inp.key.constraint]:
                 inp.constraints[inp.key.constraint].append(self.KeyType)
-            if inp.key not in self.constraints[inp.key.constraint]:    
+            if inp.key not in self.constraints[inp.key.constraint]:
                 self.constraints[inp.key.constraint].append(inp.key)
             for i in self.constraints[inp.key.constraint]:
-                i.setType(dataType)  
+                i.setType(dataType)
 
-
-    def inPinDisconnected(self,inp):
+    def inPinDisconnected(self, inp):
         inp = inp.getDictElementNode([])
         elements = [i.getDictElementNode([]) for i in self.arrayData.affected_by]
-        if inp is not None :
+        if inp is not None:
             if self.KeyType in inp.constraints[inp.key.constraint]:
                 inp.constraints[inp.key.constraint].remove(self.KeyType)
-            if inp.key in self.constraints[inp.key.constraint]:    
+            if inp.key in self.constraints[inp.key.constraint]:
                 self.constraints[inp.key.constraint].remove(inp.key)
 
     def compute(self, *args, **kwargs):
@@ -97,7 +96,7 @@ class makeDict(NodeBase):
             if isinstance(i.getData(), DictElement):
                 outArray[i.getData()[0]] = i.getData()[1]
             elif isinstance(i.getData(), PFDict):
-                for key,value in i.getData().items():
+                for key, value in i.getData().items():
                     outArray[key] = value
 
         self.outArray.setData(outArray)

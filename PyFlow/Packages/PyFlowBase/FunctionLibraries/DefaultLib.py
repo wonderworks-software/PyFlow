@@ -122,10 +122,19 @@ class DefaultLib(FunctionLibraryBase):
             return False
 
     @staticmethod
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'DefaultLib', 'Keywords': ['len']})
+    def len(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported})):
+        """Python's **len** function."""
+        try:
+            return len(obj)
+        except:
+            return -1
+
+    @staticmethod
     @IMPLEMENT_NODE(returns=("AnyPin", None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
                     meta={'Category': 'DefaultLib', 'Keywords': ['get'], "CacheEnabled": False})
     def getItem(obj=('AnyPin', None, {"constraint": "1", "enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny}),
-                element=("AnyPin", None, {"supportedDataTypes": getHashableDataTypes() }),
+                element=("AnyPin", None, {"supportedDataTypes": getHashableDataTypes()}),
                 result=("Reference", ("BoolPin", False))):
         """Python's ``[]`` operator. ``obj[element]`` will be executed."""
         try:
