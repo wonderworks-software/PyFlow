@@ -254,7 +254,7 @@ class PyFlow(QMainWindow):
         if currentInputAction in actionSaveAsVariants:
             self.save(True)
 
-    def loadFromData(self, data, fpath=""):
+    def loadFromData(self, data):
 
         # check first if all packages we are trying to load are legal
         missedPackages = set()

@@ -15,6 +15,7 @@
 
 import argparse
 import sys
+import json
 from PyFlow.App import PyFlow
 from PyFlow import graphUiParser
 from Qt.QtWidgets import QApplication
@@ -39,6 +40,9 @@ def main():
         if instance is not None:
             app.setActiveWindow(instance)
             instance.show()
+            with open(filePath, 'r') as f:
+                data = json.load(f)
+                instance.loadFromData(data)
 
             try:
                 sys.exit(app.exec_())
