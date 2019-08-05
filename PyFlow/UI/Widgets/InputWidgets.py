@@ -119,7 +119,6 @@ class InputWidgetSingle(InputWidgetRaw):
 def REGISTER_UI_INPUT_WIDGET_PIN_FACTORY(packageName, factory):
     if packageName not in UI_INPUT_WIDGET_PINS_FACTORIES:
         UI_INPUT_WIDGET_PINS_FACTORIES[packageName] = factory
-        print("registering", packageName, "input widgets")
 
 
 def createInputWidget(dataType, dataSetter, defaultValue=None, widgetVariant=DEFAULT_WIDGET_VARIANT, **kwds):

@@ -1446,7 +1446,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 def REGISTER_UI_NODE_FACTORY(packageName, factory):
     if packageName not in UI_NODES_FACTORIES:
         UI_NODES_FACTORIES[packageName] = factory
-        print("registering", packageName, "ui nodes")
 
 
 def getUINodeInstance(raw_instance):

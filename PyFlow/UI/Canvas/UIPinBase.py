@@ -571,7 +571,6 @@ class PinGroup(UIPinBase):
 def REGISTER_UI_PIN_FACTORY(packageName, factory):
     if packageName not in UI_PINS_FACTORIES:
         UI_PINS_FACTORIES[packageName] = factory
-        print("registering", packageName, "ui pins")
 
 
 def getUIPinInstance(owningNode, raw_instance):

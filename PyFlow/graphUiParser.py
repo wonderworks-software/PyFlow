@@ -12,7 +12,7 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
-
+import os
 import sys
 import json
 from Qt.QtWidgets import *
@@ -26,37 +26,34 @@ from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 import PyFlow.UI.resources
 
 
-if __name__ == '__main__':
-    # New Qt App
+def run(filePath):
+    print(filePath)
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("plastique"))
     app.setStyleSheet(editableStyleSheet().getStyleSheet())
-    # Load Graph File
-    name_filter = "Graph files (*.json)"
-    savepath = QFileDialog.getOpenFileName(filter=name_filter)
-    if type(savepath) in [tuple, list]:
-        fpath = savepath[0]
-    else:
-        fpath = savepath
 
-    if not fpath == '':
-        with open(fpath, 'r') as f:
+    msg = QMessageBox()
+    msg.setWindowIcon(QtGui.QIcon(":/LogoBpApp.png"))
+    msg.setIcon(QMessageBox.Critical)
+
+    if os.path.exists(filePath):
+        with open(filePath, 'r') as f:
             data = json.load(f)
-        # Window to display Inputs
+
+        # Window to display inputs
         prop = QDialog()
         prop.setLayout(QVBoxLayout())
-        prop.setWindowTitle(fpath)
+        prop.setWindowTitle(filePath)
         prop.setWindowIcon(QtGui.QIcon(":/LogoBpApp.png"))
-        msg = QMessageBox()
-        msg.setWindowIcon(QtGui.QIcon(":/LogoBpApp.png"))
-        msg.setIcon(QMessageBox.Critical)
-        # Initalize Packages
+
+        # Initalize packages
         try:
             INITIALIZE()
             man = GraphManager()
             man.deserialize(data)
             grph = man.findRootGraph()
             inputs = grph.getNodesByClassName("graphInputs")
+
             # If no GraphInput Nodes Exit propgram
             if len(inputs) > 0:
                 for inp in inputs:
@@ -67,25 +64,29 @@ if __name__ == '__main__':
                     cat = uiNode.createOutputWidgets(prop.layout(), inp.name)
                     prop.show()
             else:
-                msg.setInformativeText(fpath)
+
+                msg.setInformativeText(filePath)
                 msg.setDetailedText(
                     "The file doesn't containt graphInputs nodes")
                 msg.setWindowTitle("PyFlow Ui Graph Parser")
                 msg.setStandardButtons(QMessageBox.Ok)
                 msg.show()
+
         except Exception as e:
             msg.setText("Error reading Graph")
-            msg.setInformativeText(fpath)
+            msg.setInformativeText(filePath)
             msg.setDetailedText(str(e))
             msg.setWindowTitle("PyFlow Ui Graph Parser")
             msg.setStandardButtons(QMessageBox.Ok)
             msg.show()
+
     else:
         msg.setText("File Not Found")
-        msg.setInformativeText(fpath)
+        msg.setInformativeText(filePath)
         msg.setWindowTitle("PyFlow Ui Graph Parser")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.show()
+
     try:
         sys.exit(app.exec_())
     except Exception as e:

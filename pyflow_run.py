@@ -13,16 +13,8 @@
 ## limitations under the License.
 
 
-from collections import defaultdict
-__REGISTERED_TOOLS = defaultdict(list)
+import sys
+from PyFlow import graphUiParser
 
-
-def REGISTER_TOOL(packageName, toolClass):
-    registeredToolNames = [tool.name() for tool in __REGISTERED_TOOLS[packageName]]
-    if toolClass.name() not in registeredToolNames:
-        __REGISTERED_TOOLS[packageName].append(toolClass)
-        toolClass.packageName = packageName
-
-
-def GET_TOOLS():
-    return __REGISTERED_TOOLS
+if __name__ == '__main__':
+    graphUiParser.run(sys.argv[1])
