@@ -53,7 +53,8 @@ def compute(node):
 
 
 class UIPythonNode(UINodeBase):
-    watcher = QtCore.QFileSystemWatcher()
+    # watcher = QtCore.QFileSystemWatcher()
+    watcher = None
 
     def __init__(self, raw_node):
         super(UIPythonNode, self).__init__(raw_node)
@@ -176,7 +177,9 @@ class UIPythonNode(UINodeBase):
         editCmd = editCmd.replace("@FILE", filePathString)
 
         # create file watcher
-        if self._filePath not in self.watcher.files():
+        if UIPythonNode.watcher is None:
+            UIPythonNode.watcher = QtCore.QFileSystemWatcher()
+        if self._filePath not in UIPythonNode.watcher.files():
             UIPythonNode.watcher.addPath(self._filePath)
 
         try:

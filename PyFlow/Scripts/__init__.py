@@ -22,6 +22,7 @@ from PyFlow import graphUiParser
 from Qt.QtWidgets import QApplication
 from PyFlow import INITIALIZE
 from PyFlow.Core.Common import *
+from PyFlow.Core.version import currentVersion
 from PyFlow.Core.GraphManager import GraphManager
 
 
@@ -56,6 +57,7 @@ def main():
     parser = argparse.ArgumentParser(description="PyFlow CLI")
     parser.add_argument("-m", "--mode", type=str, default="edit", choices=["edit", "run", "runui"])
     parser.add_argument("-f", "--filePath", type=str, default="untitled.json")
+    parser.add_argument("--version", action="version", version=str(currentVersion()))
     parsedArguments, unknown = parser.parse_known_args(sys.argv[1:])
 
     filePath = parsedArguments.filePath
