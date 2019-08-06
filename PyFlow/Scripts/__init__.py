@@ -26,7 +26,13 @@ from PyFlow.Core.GraphManager import GraphManager
 
 
 def getGraphArguments(data, parser):
+    """Adds arguments to parser using graph input nodes
 
+    :param data: Serialized graph
+    :type data: json
+    :param parser: ArgumentParser class instance
+    :type parser: ArgumentParser
+    """
     typeMapping = {
         "BoolPin": bool,
         "StringPin": str,
