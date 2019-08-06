@@ -18,6 +18,7 @@ import sys
 import os
 import json
 from PyFlow.App import PyFlow
+from PyFlow import graphUiParser
 from Qt.QtWidgets import QApplication
 from PyFlow import INITIALIZE
 from PyFlow.Core.Common import *
@@ -47,7 +48,7 @@ def getGraphArguments(data, parser):
 
 def main():
     parser = argparse.ArgumentParser(description="PyFlow CLI")
-    parser.add_argument("-m", "--mode", type=str, default="edit", choices=["edit", "run"])
+    parser.add_argument("-m", "--mode", type=str, default="edit", choices=["edit", "run", "runui"])
     parser.add_argument("-f", "--filePath", type=str, default="untitled.json")
     parsedArguments, unknown = parser.parse_known_args(sys.argv[1:])
 
@@ -101,3 +102,6 @@ def main():
 
         for foo in evalFunctions:
             foo()
+
+    if parsedArguments.mode == "runui":
+        graphUiParser.run(filePath)
