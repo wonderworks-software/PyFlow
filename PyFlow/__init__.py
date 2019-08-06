@@ -126,6 +126,15 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
 
     packagePaths = Packages.__path__
 
+    def ensurePackagePath(inPath):
+        for subFolder in os.listdir(inPath):
+            subFolderPath = os.path.join(inPath, subFolder)
+            if "PyFlow" in os.listdir(subFolderPath):
+                subFolderPath = os.path.join(subFolderPath, "PyFlow", "Packages")
+                if os.path.exists(subFolderPath):
+                    return subFolderPath
+        return inPath
+
     # check for additional package locations
     if "PYFLOW_PACKAGES_PATHS" in os.environ:
         delim = ';'
@@ -134,7 +143,14 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
         pathsString = pathsString.rstrip(delim)
         for packagesRoot in pathsString.split(delim):
             if os.path.exists(packagesRoot):
+                packagesRoot = ensurePackagePath(packagesRoot)
                 packagePaths.append(packagesRoot)
+
+    for packagePathId in range(len(additionalPackageLocations)):
+        packagePath = additionalPackageLocations[packagePathId]
+        packagePath = ensurePackagePath(packagePath)
+        additionalPackageLocations[packagePathId] = packagePath
+
     packagePaths.extend(additionalPackageLocations)
 
     for importer, modname, ispkg in pkgutil.iter_modules(packagePaths):
