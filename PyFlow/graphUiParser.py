@@ -27,7 +27,6 @@ import PyFlow.UI.resources
 
 
 def run(filePath):
-    print(filePath)
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("plastique"))
     app.setStyleSheet(editableStyleSheet().getStyleSheet())
