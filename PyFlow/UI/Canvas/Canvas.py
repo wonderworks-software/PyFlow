@@ -362,7 +362,6 @@ class Canvas(QGraphicsView):
         self.scene().setSceneRect(QtCore.QRectF(0, 0, 10, 10))
         self.factor = 1
 
-        self._current_file_name = 'Untitled'
         self.realTimeLine = QGraphicsPathItem(None, self.scene())
         self.realTimeLine.name = 'RealTimeLine'
         self.realTimeLineInvalidPen = QtGui.QPen(self._realTimeLineInvalidPen, 2.0, QtCore.Qt.SolidLine)

@@ -81,6 +81,10 @@ def getOrCreateMenu(menuBar, title):
     return menu
 
 
+def winTitle():
+    return "PyFlow v{0}".format(currentVersion().__str__())
+
+
 ## App itself
 class PyFlow(QMainWindow):
 
@@ -94,7 +98,7 @@ class PyFlow(QMainWindow):
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.currentSoftware = ""
         self.edHistory = EditorHistory(self)
-        self.setWindowTitle("PyFlow v{0}".format(currentVersion().__str__()))
+        self.setWindowTitle(winTitle())
         self.undoStack = QUndoStack(self)
         self.setContentsMargins(1, 1, 1, 1)
         self.graphManager = GraphManagerSingleton()
@@ -123,7 +127,8 @@ class PyFlow(QMainWindow):
         self._lastClock = 0.0
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
-        self._current_file_name = 'Untitled'
+        self._currentFileName = ''
+        self.currentFileName = 'Untitled'
 
     def getTempDirectory(self):
         """Returns unique temp directory for application instance.
@@ -273,6 +278,15 @@ class PyFlow(QMainWindow):
         self.fileBeenLoaded.emit()
         self.graphManager.get().selectGraphByName(data["activeGraph"])
 
+    @property
+    def currentFileName(self):
+        return self._currentFileName
+
+    @currentFileName.setter
+    def currentFileName(self, value):
+        self._currentFileName = value
+        self.setWindowTitle("{0} - {1}".format(winTitle(), value))
+
     def load(self):
         name_filter = "Graph files (*.json)"
         savepath = QFileDialog.getOpenFileName(filter=name_filter)
@@ -284,6 +298,7 @@ class PyFlow(QMainWindow):
             with open(fpath, 'r') as f:
                 data = json.load(f)
                 self.loadFromData(data)
+                self.currentFileName = fpath
 
     def save(self, save_as=False):
         if save_as:
@@ -294,11 +309,11 @@ class PyFlow(QMainWindow):
             else:
                 pth = savepath
             if not pth == '':
-                self._current_file_name = pth
+                self.currentFileName = pth
             else:
-                self._current_file_name = "Untitled"
+                self.currentFileName = "Untitled"
         else:
-            if not os.path.isfile(self._current_file_name):
+            if not os.path.isfile(self.currentFileName):
                 name_filter = "Graph files (*.json)"
                 savepath = QFileDialog.getSaveFileName(filter=name_filter)
                 if type(savepath) in [tuple, list]:
@@ -306,21 +321,21 @@ class PyFlow(QMainWindow):
                 else:
                     pth = savepath
                 if not pth == '':
-                    self._current_file_name = pth
+                    self.currentFileName = pth
                 else:
-                    self._current_file_name = "Untitled"
+                    self.currentFileName = "Untitled"
 
-        if self._current_file_name in ["", "Untitled"]:
+        if self.currentFileName in ["", "Untitled"]:
             return
 
-        if not self._current_file_name.endswith(".json"):
-            self._current_file_name += ".json"
+        if not self.currentFileName.endswith(".json"):
+            self.currentFileName += ".json"
 
-        if not self._current_file_name == '':
-            with open(self._current_file_name, 'w') as f:
+        if not self.currentFileName == '':
+            with open(self.currentFileName, 'w') as f:
                 saveData = self.graphManager.get().serialize()
                 json.dump(saveData, f, indent=4)
-            print(str("// saved: '{0}'".format(self._current_file_name)))
+            print(str("// saved: '{0}'".format(self.currentFileName)))
 
     def newFile(self, keepRoot=True):
         self.tick_timer.stop()
@@ -329,7 +344,7 @@ class PyFlow(QMainWindow):
         # broadcast
         self.graphManager.get().clear(keepRoot=keepRoot)
         self.newFileExecuted.emit(keepRoot)
-        self._current_file_name = 'Untitled'
+        self.currentFileName = 'Untitled'
         self.onRequestClearProperties()
 
         self.startMainLoop()
@@ -424,6 +439,22 @@ class PyFlow(QMainWindow):
         return ToolInstance
 
     def closeEvent(self, event):
+
+        msgBox = QMessageBox(self)
+        msgBox.setWindowTitle("Confirm?")
+        msgBox.setText("Are you sure you want to quit?\nUnsaved data will be lost.")
+        pbYes = msgBox.addButton(str("Yes"), QMessageBox.NoRole)
+        pbNo = msgBox.addButton(str("No"), QMessageBox.NoRole)
+        pbSaveAndClose = msgBox.addButton(str("Save and close"), QMessageBox.NoRole)
+        msgBox.exec()
+        if msgBox.clickedButton() == pbNo:
+            event.ignore()
+            return
+        elif msgBox.clickedButton() == pbSaveAndClose:
+            self.save()
+        else:
+            pass
+
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()
         EditorHistory().shutdown()
@@ -577,5 +608,4 @@ class PyFlow(QMainWindow):
                 for categoryName, widgetClass in prefsWidgets.items():
                     PreferencesWindow().addCategory(categoryName, widgetClass())
                 PreferencesWindow().selectByName("General")
-
         return instance

@@ -46,12 +46,12 @@ class ToolBase(object):
     def onShow(self):
         """Called when tool pops up
         """
-        print(self.name(), "invoked")
+        pass
 
     def onDestroy(self):
         """Called when tool destroyed
         """
-        print(self.name(), "destroyed")
+        pass
 
     def saveState(self, settings):
         """Called on tool save
