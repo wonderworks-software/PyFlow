@@ -12,6 +12,7 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
+import threading
 
 from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
@@ -26,10 +27,8 @@ class delay(NodeBase):
         self.delay = self.createInputPin('Delay(s)', 'FloatPin')
         self.delay.setDefaultValue(0.2)
         self.out0 = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
-        self.process = False
-        self._total = 0.0
-        self._currentDelay = 0.0
         self.headerColor = FLOW_CONTROL_COLOR
+        self._currentTimer = None
 
     @staticmethod
     def pinTypeHints():
@@ -55,16 +54,13 @@ class delay(NodeBase):
 
     def callAndReset(self):
         self.out0.call()
-        self.process = False
-        self._total = 0.0
-
-    def Tick(self, delta):
-        if self.process:
-            self._total += delta
-            if self._total >= self._currentDelay:
-                self.callAndReset()
+        self._currentTimer.cancel()
+        del self._currentTimer
+        self._currentTimer = None
 
     def compute(self, *args, **kwargs):
+        if self._currentTimer is not None:
+            return
         self._currentDelay = self.delay.getData()
-        if not self.process:
-            self.process = True
+        self._currentTimer = threading.Timer(self._currentDelay, self.callAndReset)
+        self._currentTimer.start()
