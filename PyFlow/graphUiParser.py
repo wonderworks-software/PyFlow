@@ -15,6 +15,9 @@
 import os
 import sys
 import json
+import threading
+import time
+
 from Qt.QtWidgets import *
 from Qt import QtGui
 from Qt import QtCore
@@ -62,6 +65,19 @@ def run(filePath):
                     uiNode.postCreate(uiNodeJsonTemplate)
                     cat = uiNode.createOutputWidgets(prop.layout(), inp.name)
                     prop.show()
+
+                # fake main loop
+                stopEvent = threading.Event()
+                def programLoop(stopEvent):
+                    while not stopEvent.is_set():
+                        man.Tick(deltaTime=0.02)
+                        time.sleep(0.02)
+                t = threading.Thread(target=programLoop, args=(stopEvent,))
+                t.start()
+                def quitEvent():
+                    stopEvent.set()
+                    t.join()
+                app.aboutToQuit.connect(quitEvent)
             else:
 
                 msg.setInformativeText(filePath)
