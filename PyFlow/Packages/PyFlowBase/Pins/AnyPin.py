@@ -69,9 +69,17 @@ class AnyPin(PinBase):
         self.enableOptions(PinOptions.ChangeTypeOnConnection)
         self._defaultSupportedDataTypes = self._supportedDataTypes = tuple([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin()])
         self.canChange = True
-        self.super = None
+        self._super = None
         self.prevDataType = None
         self._lastError2 = None
+
+    @property
+    def super(self):
+        return self._super
+
+    @super.setter
+    def super(self, value):
+        self._super = value
 
     @PinBase.dataType.getter
     def dataType(self):

@@ -1360,7 +1360,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         pass
 
     def heartBeat(self):
-        pass
+        for pin in self.UIPins.values():
+            pin.heartBeat()
 
     def Tick(self, delta, *args, **kwargs):
         # NOTE: Do not call wrapped raw node Tick method here!

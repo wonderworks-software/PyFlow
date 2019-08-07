@@ -21,28 +21,16 @@ from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QInputDialog
 from Qt.QtWidgets import QSizePolicy
+from Qt.QtWidgets import QPlainTextEdit
 
 from PyFlow.Core.Common import *
-from PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.UI.Utils.stylesheet import Colors, editableStyleSheet
 from PyFlow.UI.Canvas.Painters import PinPainter
+from PyFlow.UI.Canvas.WatchPinValueItem import WatchItem
 from PyFlow.UI.Canvas.UICommon import *
 
 
 UI_PINS_FACTORIES = {}
-
-headerBtnStyle = """
-QPushButton {
-    background-color: rgb(55, 55, 55);
-    border-style: outset;
-    border-radius: 1px;
-    border-width: 1px;
-    padding: 0px;
-    margin: 0px;
-    font-size: 8px;
-    font-family: "Consolas";
-    color: white;
-}
-"""
 
 
 class UIPinBase(QGraphicsWidget):
@@ -79,6 +67,7 @@ class UIPinBase(QGraphicsWidget):
 
         self.UiNode = weakref.ref(owningNode)
         self._rawPin = raw_pin
+        self.watchWidget = None
         if self._rawPin is not None:
             self._rawPin.serializationHook.connect(self.serializationHook)
             self._rawPin.containerTypeChanged.connect(
@@ -99,6 +88,9 @@ class UIPinBase(QGraphicsWidget):
             if self._rawPin._structure == PinStructure.Multi:
                 self.menu.addAction("changeStructure").triggered.connect(
                     self.selectStructure)
+            self.actionWatchValue = self.menu.addAction("Watch")
+            self.actionWatchValue.triggered.connect(self.toggleWatchValue)
+            self._rawPin.dataBeenSet.connect(self.updateWatchWidgetValue)
 
         # GUI
         self._font = QtGui.QFont("Consolas")
@@ -120,6 +112,35 @@ class UIPinBase(QGraphicsWidget):
         # TODO: This is check is for PinGroup. Improve it
         if self._rawPin is not None:
             self.setToolTip(self._rawPin.description)
+
+    def toggleWatchValue(self):
+        if self.watchWidget is not None:
+            self.scene().removeItem(self.watchWidget)
+            self.watchWidget = None
+        else:
+            scene = self.owningNode().canvasRef().scene()
+            self.watchWidget = WatchItem()
+            scene.addItem(self.watchWidget)
+            self.watchWidget.setZValue(NodeDefaults().Z_LAYER + 1)
+            self.updateWatchWidgetPosition()
+            self.updateWatchWidgetValue(self.currentData())
+
+    def updateWatchWidgetPosition(self):
+        if self.watchWidget is not None:
+            scenePos = self.sceneBoundingRect().bottomLeft() if self.direction == PinDirection.Input else self.sceneBoundingRect().bottomRight()
+            self.watchWidget.setPos(scenePos)
+
+    def updateWatchWidgetValue(self, *args, **kwargs):
+        if self.watchWidget is not None:
+            content = "Value: {0}".format(str(self.currentData()))
+            if self.isAny:
+                content += "\nActive data type: {0}".format(self._rawPin.activeDataType)
+                content += "\nSuper: {0}".format(self._rawPin.super)
+            self.watchWidget.setPlainText(content)
+            self.updateWatchWidgetPosition()
+
+    def heartBeat(self):
+        self.updateWatchWidgetPosition()
 
     def getInputWidgetVariant(self):
         return self._rawPin.getInputWidgetVariant()

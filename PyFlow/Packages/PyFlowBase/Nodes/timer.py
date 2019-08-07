@@ -26,7 +26,6 @@ class timer(NodeBase):
         self.out = self.createOutputPin("OUT", 'ExecPin')
         self.beginPin = self.createInputPin("Begin", 'ExecPin', None, self.start)
         self.stopPin = self.createInputPin("Stop", 'ExecPin', None, self.stop)
-        self.resetPin = self.createInputPin("Reset", 'ExecPin', None, self.reset)
         self.interval = self.createInputPin("Delta(s)", 'FloatPin')
         self.interval.setDefaultValue(0.2)
         self.accum = 0.0
@@ -37,6 +36,8 @@ class timer(NodeBase):
         super(timer, self).Tick(delta)
         if self.bWorking:
             interval = self.interval.getData()
+            if interval < 0.02:
+                interval = 0.02
             self.accum += delta
             if self.accum >= interval:
                 self.out.call()
@@ -51,9 +52,6 @@ class timer(NodeBase):
         helper.addInputStruct(PinStructure.Single)
         helper.addOutputStruct(PinStructure.Single)
         return helper
-
-    def reset(self, *args, **kwargs):
-        print("reset")
 
     def stop(self, *args, **kwargs):
         self.bWorking = False
