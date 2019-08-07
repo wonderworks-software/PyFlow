@@ -162,7 +162,7 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
         additionalPackageLocations[packagePathId] = packagePath
 
     packagePaths.extend(additionalPackageLocations)
-    
+
     for importer, modname, ispkg in pkgutil.iter_modules(packagePaths):
         try:
             if ispkg:

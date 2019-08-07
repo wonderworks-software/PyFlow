@@ -713,7 +713,6 @@ class NodeBase(INode):
         """
         retAnyOpts = None
         retConstraint = None
-        foo = foo
         meta = foo.__annotations__['meta']
         returnType = returnDefaultValue = None
         returnPinOptionsToEnable = None

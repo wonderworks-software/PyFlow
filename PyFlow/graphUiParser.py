@@ -68,21 +68,21 @@ def run(filePath):
 
                 # fake main loop
                 stopEvent = threading.Event()
+
                 def programLoop(stopEvent):
                     while not stopEvent.is_set():
                         man.Tick(deltaTime=0.02)
                         time.sleep(0.02)
                 t = threading.Thread(target=programLoop, args=(stopEvent,))
                 t.start()
+
                 def quitEvent():
                     stopEvent.set()
                     t.join()
                 app.aboutToQuit.connect(quitEvent)
             else:
-
                 msg.setInformativeText(filePath)
-                msg.setDetailedText(
-                    "The file doesn't containt graphInputs nodes")
+                msg.setDetailedText("The file doesn't containt graphInputs nodes")
                 msg.setWindowTitle("PyFlow Ui Graph Parser")
                 msg.setStandardButtons(QMessageBox.Ok)
                 msg.show()

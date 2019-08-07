@@ -54,6 +54,7 @@ from PyFlow.Packages.PyFlowBase.Nodes.dictKeys import dictKeys
 from PyFlow.Packages.PyFlowBase.Nodes.floatRamp import floatRamp
 from PyFlow.Packages.PyFlowBase.Nodes.colorRamp import colorRamp
 from PyFlow.Packages.PyFlowBase.Nodes.stringToArray import stringToArray
+from PyFlow.Packages.PyFlowBase.Nodes.cliexit import cliexit
 
 
 from PyFlow.Packages.PyFlowBase.Nodes.consoleOutput import consoleOutput
@@ -148,7 +149,8 @@ _NODES = {
     floatRamp.__name__: floatRamp,
     colorRamp.__name__: colorRamp,
     stringToArray.__name__: stringToArray,
-    imageDisplay.__name__: imageDisplay
+    imageDisplay.__name__: imageDisplay,
+    cliexit.__name__: cliexit
 }
 
 _PINS = {

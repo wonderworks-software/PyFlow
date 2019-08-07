@@ -17,13 +17,16 @@ import argparse
 import sys
 import os
 import json
+import threading
+import time
+
 from PyFlow.App import PyFlow
 from PyFlow import graphUiParser
 from Qt.QtWidgets import QApplication
 from PyFlow import INITIALIZE
 from PyFlow.Core.Common import *
 from PyFlow.Core.version import currentVersion
-from PyFlow.Core.GraphManager import GraphManager
+from PyFlow.Core.GraphManager import GraphManagerSingleton
 
 
 def getGraphArguments(data, parser):
@@ -76,6 +79,7 @@ def main():
                 with open(filePath, 'r') as f:
                     data = json.load(f)
                     instance.loadFromData(data)
+                    instance.currentFileName = filePath
 
             try:
                 sys.exit(app.exec_())
@@ -91,8 +95,16 @@ def main():
 
         # load updated data
         INITIALIZE()
-        GM = GraphManager()
+        GM = GraphManagerSingleton().get()
         GM.deserialize(data)
+
+        # fake main loop
+        def programLoop():
+            while True:
+                GM.Tick(deltaTime=0.02)
+                time.sleep(0.02)
+                if GM.terminationRequested:
+                    break
 
         # call graph inputs nodes
         root = GM.findRootGraph()
@@ -110,6 +122,10 @@ def main():
 
         for foo in evalFunctions:
             foo()
+
+        loopThread = threading.Thread(target=programLoop)
+        loopThread.start()
+        loopThread.join()
 
     if parsedArguments.mode == "runui":
         graphUiParser.run(filePath)

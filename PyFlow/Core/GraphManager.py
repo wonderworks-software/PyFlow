@@ -32,6 +32,7 @@ class GraphManager(object):
     """
     def __init__(self):
         super(GraphManager, self).__init__()
+        self.terminationRequested = False  #: used by cli only
         self.graphChanged = Signal(object)
         self._graphs = {}
         self._activeGraph = None
