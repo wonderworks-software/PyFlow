@@ -122,8 +122,8 @@ class DefaultLib(FunctionLibraryBase):
             return False
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'DefaultLib', 'Keywords': ['len']})
-    def len(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported})):
+    @IMPLEMENT_NODE(returns=('IntPin', 0, {"Description": "Number of elements of iterable"}), meta={'Category': 'DefaultLib', 'Keywords': ['len']})
+    def len(obj=('AnyPin', None, {"enabledOptions": PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported, "Description": "Iterable object"})):
         """Python's **len** function."""
         try:
             return len(obj)

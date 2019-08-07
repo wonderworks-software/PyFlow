@@ -446,7 +446,7 @@ class PyFlow(QMainWindow):
         pbYes = msgBox.addButton(str("Yes"), QMessageBox.NoRole)
         pbNo = msgBox.addButton(str("No"), QMessageBox.NoRole)
         pbSaveAndClose = msgBox.addButton(str("Save and close"), QMessageBox.NoRole)
-        msgBox.exec()
+        msgBox.exec_()
         if msgBox.clickedButton() == pbNo:
             event.ignore()
             return
@@ -495,11 +495,7 @@ class PyFlow(QMainWindow):
         if os.path.exists(self.currentTempDir):
             shutil.rmtree(self.currentTempDir)
 
-        # TODO: Use "Borg" pattern to destroy all singletons at once
-        EditorHistory.destroy()
-        GraphManagerSingleton.destroy()
-        ConfigManager.destroy()
-        PreferencesWindow.destroy()
+        SingletonDecorator.destroyAll()
 
         PyFlow.appInstance = None
 

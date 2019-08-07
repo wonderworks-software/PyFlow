@@ -720,22 +720,25 @@ class NodeBase(INode):
         returnPinOptionsToDisable = None
         returnWidgetVariant = "DefaultWidget"
         retStructConstraint = None
+        returnAnnotationDict = None
         if foo.__annotations__['return'] is not None:
             returnType = foo.__annotations__['return'][0]
             returnDefaultValue = foo.__annotations__['return'][1]
             if len(foo.__annotations__['return']) == 3:
-                if "supportedDataTypes" in foo.__annotations__['return'][2]:
-                    retAnyOpts = foo.__annotations__['return'][2]["supportedDataTypes"]
-                if "constraint" in foo.__annotations__['return'][2]:
-                    retConstraint = foo.__annotations__['return'][2]["constraint"]
-                if "structConstraint" in foo.__annotations__['return'][2]:
-                    retStructConstraint = foo.__annotations__['return'][2]["structConstraint"]
-                if "enabledOptions" in foo.__annotations__['return'][2]:
-                    returnPinOptionsToEnable = foo.__annotations__['return'][2]["enabledOptions"]
-                if "disabledOptions" in foo.__annotations__['return'][2]:
-                    returnPinOptionsToDisable = foo.__annotations__['return'][2]["disabledOptions"]
-                if "inputWidgetVariant" in foo.__annotations__['return'][2]:
-                    returnWidgetVariant = foo.__annotations__['return'][2]["inputWidgetVariant"]
+                returnAnnotationDict = foo.__annotations__['return'][2]
+
+                if "supportedDataTypes" in returnAnnotationDict:
+                    retAnyOpts = returnAnnotationDict["supportedDataTypes"]
+                if "constraint" in returnAnnotationDict:
+                    retConstraint = returnAnnotationDict["constraint"]
+                if "structConstraint" in returnAnnotationDict:
+                    retStructConstraint = returnAnnotationDict["structConstraint"]
+                if "enabledOptions" in returnAnnotationDict:
+                    returnPinOptionsToEnable = returnAnnotationDict["enabledOptions"]
+                if "disabledOptions" in returnAnnotationDict:
+                    returnPinOptionsToDisable = returnAnnotationDict["disabledOptions"]
+                if "inputWidgetVariant" in returnAnnotationDict:
+                    returnWidgetVariant = returnAnnotationDict["inputWidgetVariant"]
 
         nodeType = foo.__annotations__['nodeType']
         _packageName = foo.__annotations__['packageName']
@@ -809,6 +812,9 @@ class NodeBase(INode):
             p.setDefaultValue(returnDefaultValue)
             p.initAsArray(isinstance(returnDefaultValue, list))
             p.setInputWidgetVariant(returnWidgetVariant)
+            p.annotationDescriptionDict = copy(returnAnnotationDict) if returnAnnotationDict is not None else None
+            if p.annotationDescriptionDict is not None and "Description" in p.annotationDescriptionDict:
+                p.description = p.annotationDescriptionDict["Description"]
             if returnPinOptionsToEnable is not None:
                 p.enableOptions(returnPinOptionsToEnable)
             if returnPinOptionsToDisable is not None:
@@ -852,6 +858,8 @@ class NodeBase(INode):
 
                 outRef = raw_inst.createOutputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
                 outRef.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
+                if outRef.annotationDescriptionDict is not None and "Description" in outRef.annotationDescriptionDict:
+                    outRef.description = outRef.annotationDescriptionDict["Description"]
                 outRef.initAsArray(isinstance(pinDefaultValue, list))
                 outRef.setDefaultValue(pinDefaultValue)
                 outRef.setData(pinDefaultValue)
@@ -888,6 +896,8 @@ class NodeBase(INode):
 
                 inp = raw_inst.createInputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
                 inp.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
+                if inp.annotationDescriptionDict is not None and "Description" in inp.annotationDescriptionDict:
+                    inp.description = inp.annotationDescriptionDict["Description"]
                 inp.initAsArray(isinstance(pinDefaultValue, list))
                 inp.setData(pinDefaultValue)
                 inp.setDefaultValue(pinDefaultValue)

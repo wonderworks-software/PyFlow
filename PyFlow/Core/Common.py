@@ -618,10 +618,17 @@ def clearSignal(signal):
 class SingletonDecorator:
     """Decorator to make class unique, so each time called same object returned
     """
+    allInstances = []
+
+    @staticmethod
+    def destroyAll():
+        for instance in SingletonDecorator.allInstances:
+            instance.destroy()
 
     def __init__(self, cls):
         self.cls = cls
         self.instance = None
+        self.allInstances.append(self)
 
     def destroy(self):
         del self.instance
@@ -630,6 +637,7 @@ class SingletonDecorator:
     def __call__(self, *args, **kwds):
         if self.instance is None:
             self.instance = self.cls(*args, **kwds)
+
         return self.instance
 
 
