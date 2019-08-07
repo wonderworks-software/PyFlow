@@ -523,7 +523,10 @@ class PinBase(IPin):
             if isinstance(data, DictElement) and not self.optionEnabled(PinOptions.DictElementSupported):
                 data = data[1]
             if not self.isArray() and not self.isDict():
-                self._data = self.super.processData(data)
+                if isinstance(data, DictElement):
+                   self._data = DictElement(data[0],self.super.processData(data[1]))
+                else:
+                    self._data = self.super.processData(data)
             elif self.isArray():
                 if isinstance(data, list):
                     if self.validateArray(data, self.super.processData):
