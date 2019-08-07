@@ -87,7 +87,7 @@ class FloatInputWidget(InputWidgetSingle):
 
     def __init__(self, parent=None, **kwds):
         super(FloatInputWidget, self).__init__(parent=parent, **kwds)
-        self.sb = pyf_Slider(self, "float", style=1)
+        self.sb = pyf_Slider(self, "float", style=0)
         _configDoubleSpinBox(self.sb)
         self.sb.setDisplayMinimun(0)
         self.sb.setDisplayMaximum(10)
@@ -260,7 +260,7 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
     '''
     if dataType == 'FloatPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "FloatInputWidgetSimple":
             return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'IntPin':

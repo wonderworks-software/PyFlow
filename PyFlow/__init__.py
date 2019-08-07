@@ -116,7 +116,7 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
     if nodeClassName in nodes:
         return nodes[nodeClassName](nodeClassName, **kwargs)
 
-
+from Qt.QtWidgets import QMessageBox
 def INITIALIZE(additionalPackageLocations=[], software=""):
     from PyFlow.UI.Tool import REGISTER_TOOL
     from PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
@@ -135,6 +135,16 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
                     return subFolderPath
         return inPath
 
+    def recursePackagePaths(inPath):
+        paths = []
+        for subFolder in os.listdir(inPath):
+            subFolderPath = os.path.join(inPath, subFolder)
+            if "PyFlow" in os.listdir(subFolderPath):
+                subFolderPath = os.path.join(subFolderPath, "PyFlow", "Packages")
+                if os.path.exists(subFolderPath):
+                    paths.append(subFolderPath)
+        return paths
+
     # check for additional package locations
     if "PYFLOW_PACKAGES_PATHS" in os.environ:
         delim = ';'
@@ -143,8 +153,8 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
         pathsString = pathsString.rstrip(delim)
         for packagesRoot in pathsString.split(delim):
             if os.path.exists(packagesRoot):
-                packagesRoot = ensurePackagePath(packagesRoot)
-                packagePaths.append(packagesRoot)
+                paths = recursePackagePaths(packagesRoot)
+                packagePaths.extend(paths)
 
     for packagePathId in range(len(additionalPackageLocations)):
         packagePath = additionalPackageLocations[packagePathId]
@@ -152,12 +162,17 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
         additionalPackageLocations[packagePathId] = packagePath
 
     packagePaths.extend(additionalPackageLocations)
-
+    
     for importer, modname, ispkg in pkgutil.iter_modules(packagePaths):
-        if ispkg:
-            mod = importer.find_module(modname).load_module(modname)
-            package = getattr(mod, modname)()
-            __PACKAGES[modname] = package
+        try:
+            if ispkg:
+                mod = importer.find_module(modname).load_module(modname)
+                package = getattr(mod, modname)()
+                __PACKAGES[modname] = package
+        except Exception as e:
+            QMessageBox.critical(None, str("Fatal error"), "Error On Module %s :\n%s"%(modname,str(e)))
+            continue
+
 
     registeredInternalPinDataTypes = set()
 

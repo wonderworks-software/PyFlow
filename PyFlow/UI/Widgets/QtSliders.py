@@ -195,14 +195,19 @@ class slider(QtWidgets.QSlider):
         self._max_value = 0
         self.startDragpos = QtCore.QPointF()
         self.realStartDragpos = QtCore.QPointF()
+        self.LeftButton = QtCore.Qt.LeftButton
+        self.MidButton = QtCore.Qt.MidButton
+        if SessionDescriptor().software == "maya":
+            self.LeftButton = QtCore.Qt.MidButton
+            self.MidButton = QtCore.Qt.LeftButton
 
     def mousePressEvent(self, event):
         self.prevValue = self.value()
         self.startDragpos = event.pos()
-        if event.button() == QtCore.Qt.LeftButton and event.modifiers() not in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
-            butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
+        if event.button() == self.LeftButton and event.modifiers() not in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
+            butts = QtCore.Qt.MouseButtons(self.MidButton)
             nevent = QtGui.QMouseEvent(event.type(), event.pos(),
-                                       QtCore.Qt.MidButton, butts,
+                                       self.MidButton, butts,
                                        event.modifiers())
             super(slider, self).mousePressEvent(nevent)
 
@@ -213,11 +218,11 @@ class slider(QtWidgets.QSlider):
             available = self.style().pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, st_slider, self)
             # FIXME: self._min_value and self._max_value undefined
             xloc = QtWidgets.QStyle.sliderPositionFromValue(self._min_value, self._max_value, super(slider, self).value(), available)
-            butts = QtCore.Qt.MouseButtons(QtCore.Qt.MidButton)
+            butts = QtCore.Qt.MouseButtons(self.MidButton)
             newPos = QtCore.QPointF()
             newPos.setX(xloc)
             nevent = QtGui.QMouseEvent(event.type(), newPos,
-                                       QtCore.Qt.MidButton, butts,
+                                       self.MidButton, butts,
                                        event.modifiers())
             self.startDragpos = newPos
             self.realStartDragpos = event.pos()
