@@ -202,3 +202,9 @@ class NodeActionButtonInfo(object):
 
     def filePath(self):
         return self._defaultSvgIcon
+
+
+@SingletonDecorator
+class SessionDescriptor(object):
+    def __init__(self):
+        self.software = ""

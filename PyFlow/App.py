@@ -508,6 +508,7 @@ class PyFlow(QMainWindow):
 
         instance = PyFlow(parent)
         instance.currentSoftware = software
+        SessionDescriptor().software = instance.currentSoftware
 
         if software == "standalone":
             editableStyleSheet(instance)

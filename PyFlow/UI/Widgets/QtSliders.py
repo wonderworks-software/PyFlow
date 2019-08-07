@@ -17,6 +17,7 @@ import sys
 import struct
 from Qt import QtGui, QtCore, QtWidgets
 
+from PyFlow.UI.Canvas.UICommon import SessionDescriptor
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.Core.Common import clamp, INT_RANGE_MIN, INT_RANGE_MAX
 from PyFlow.Core import structs
