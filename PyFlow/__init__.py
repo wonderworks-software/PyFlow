@@ -116,13 +116,14 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
     if nodeClassName in nodes:
         return nodes[nodeClassName](nodeClassName, **kwargs)
 
-from Qt.QtWidgets import QMessageBox
+
 def INITIALIZE(additionalPackageLocations=[], software=""):
     from PyFlow.UI.Tool import REGISTER_TOOL
     from PyFlow.UI.Widgets.InputWidgets import REGISTER_UI_INPUT_WIDGET_PIN_FACTORY
     from PyFlow.UI.Canvas.UINodeBase import REGISTER_UI_NODE_FACTORY
     from PyFlow.UI.Canvas.UIPinBase import REGISTER_UI_PIN_FACTORY
     from PyFlow import ConfigManager
+    from Qt.QtWidgets import QMessageBox
 
     packagePaths = Packages.__path__
 
