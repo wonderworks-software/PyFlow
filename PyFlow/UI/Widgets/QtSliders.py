@@ -132,7 +132,10 @@ class draggers(QtWidgets.QWidget):
 
     def setValue(self, value):
         self._value = value
-        self.parent().setValue(self._startValue + self._value)
+        if isinstance(self.parent(),slider) and self.parent().parent() != None:
+            self.parent().parent().setValue(self._startValue + self._value)
+        else:
+            self.parent().setValue(self._startValue + self._value)        
         self.parent().editingFinished.emit()
 
     def show(self):
@@ -166,7 +169,10 @@ class draggers(QtWidgets.QWidget):
 
         if event.type() == QtCore.QEvent.MouseButtonRelease:
             self.hide()
-            self.parent().setValue(self._startValue + self._value)
+            if isinstance(self.parent(),slider) and self.parent().parent() != None:
+                self.parent().parent().setValue(self._startValue + self._value)
+            else:
+                self.parent().setValue(self._startValue + self._value)
             self.parent().editingFinished.emit()
             del(self)
         return False
@@ -186,10 +192,13 @@ class slider(QtWidgets.QSlider):
     Extends:
         QtWidgets.QSlider
     """
-    def __init__(self, *args, **kargs):
-        super(slider, self).__init__(*args, **kargs)
+    editingFinished = QtCore.Signal()
+
+    def __init__(self, parent=None,*args, **kargs):
+        super(slider, self).__init__(parent,**kargs)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setOrientation(QtCore.Qt.Horizontal)
+        self.isFloat = False
         self.deltaValue = 0
         self._min_value = 0
         self._max_value = 0
@@ -204,7 +213,17 @@ class slider(QtWidgets.QSlider):
     def mousePressEvent(self, event):
         self.prevValue = self.value()
         self.startDragpos = event.pos()
-        if event.button() == self.LeftButton and event.modifiers() not in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
+        if event.button() == QtCore.Qt.MidButton:
+            dragger = draggers(self, self.isFloat, startValue=self.value())
+            dragger.show()
+            if self.isFloat:
+                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
+                ) - dragger.width() / 2, event.pos().y() - dragger.height() / 2)))
+            else:
+                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
+                ) - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))            
+
+        elif event.button() == self.LeftButton and event.modifiers() not in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
             butts = QtCore.Qt.MouseButtons(self.MidButton)
             nevent = QtGui.QMouseEvent(event.type(), event.pos(),
                                        self.MidButton, butts,
@@ -281,13 +300,14 @@ class doubleSlider(slider):
     """
     doubleValueChanged = QtCore.Signal(float)
 
-    def __init__(self, decimals=4, *args, **kargs):
+    def __init__(self,parent=None, decimals=4, *args, **kargs):
         """
         :param decimals: Number of decimal zeros, defaults to 4
         :type decimals: int, optional
         """
         super(doubleSlider, self).__init__(*args, **kargs)
         self._multi = 10 ** decimals
+        self.isFloat = True
         self.valueChanged.connect(self.emitDoubleValueChanged)
 
     def setDecimals(self, decimals):
@@ -412,9 +432,9 @@ class pyf_Slider(QtWidgets.QWidget):
         self.input.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         self.type = type
         if self.type == "int":
-            self.sld = slider()
+            self.sld = slider(self)
         else:
-            self.sld = doubleSlider()
+            self.sld = doubleSlider(self)
 
         self.layout().setContentsMargins(10, 0, 0, 0)
         self.input.setContentsMargins(0, 0, 0, 0)
