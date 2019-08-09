@@ -46,14 +46,14 @@ class UICompoundNode(UINodeBase):
         self.actionImport.triggered.connect(self.onImport)
 
     def onExport(self):
-        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Subgraph data (*.json)")
+        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Subgraph data (*.compound)")
         if savePath != "":
             with open(savePath, 'w') as f:
                 json.dump(self._rawNode.rawGraph.serialize(), f, indent=4)
             logger.info("{0} data successfully exported!".format(self.getName()))
 
     def onImport(self):
-        openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Subgraph data (*.json)")
+        openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Subgraph data (*.compound)")
         if openPath != "":
             with open(openPath, 'r') as f:
                 data = json.load(f)

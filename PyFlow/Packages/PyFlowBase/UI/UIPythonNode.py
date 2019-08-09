@@ -71,14 +71,14 @@ class UIPythonNode(UINodeBase):
         self.actionImport.triggered.connect(self.onImport)
 
     def onExport(self):
-        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Python node data (*.py)")
+        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Python node data (*.pynode)")
         if savePath != "":
             with open(savePath, 'w') as f:
                 f.write(self.nodeData)
             logger.info("{0} data successfully exported!".format(self.getName()))
 
     def onImport(self):
-        openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Python node data (*.py)")
+        openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Python node data (*.pynode)")
         if openPath != "":
             with open(openPath, 'r') as f:
                 dataString = f.read()
