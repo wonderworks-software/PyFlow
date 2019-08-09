@@ -286,13 +286,13 @@ class NodeBoxTreeWidget(QTreeWidget):
                 for pin in node.UIoutputs.values():
                     wire = self.canvas.connectPinsInternal(pressedPin, pin)
                     if wire is not None:
-                        EditorHistory().saveState("Connect pins")
+                        EditorHistory().saveState("Connect pins", modify=True)
                         break
             if pressedPin.direction == PinDirection.Output:
                 for pin in node.UIinputs.values():
                     wire = self.canvas.connectPinsInternal(pin, pressedPin)
                     if wire is not None:
-                        EditorHistory().saveState("Connect pins")
+                        EditorHistory().saveState("Connect pins", modify=True)
                         break
         else:
             drag = QtGui.QDrag(self)

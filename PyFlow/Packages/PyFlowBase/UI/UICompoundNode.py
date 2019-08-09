@@ -64,7 +64,7 @@ class UICompoundNode(UINodeBase):
                     data["nodes"] = self.canvasRef().makeSerializedNodesUnique(data["nodes"])
                     self._rawNode.rawGraph.populateFromJson(data)
                     self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
-                    EditorHistory().saveState("Import compound")
+                    EditorHistory().saveState("Import compound", modify=True)
                 else:
                     logger.error("Missing dependencies! {0}".format(",".join(missedPackages)))
 

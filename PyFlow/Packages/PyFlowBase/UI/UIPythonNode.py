@@ -83,7 +83,7 @@ class UIPythonNode(UINodeBase):
             with open(openPath, 'r') as f:
                 dataString = f.read()
                 self.tryApplyNodeData(dataString)
-            EditorHistory().saveState("Import python node data")
+            EditorHistory().saveState("Import python node data", modify=True)
 
     def mouseDoubleClickEvent(self, event):
         super(UIPythonNode, self).mouseDoubleClickEvent(event)

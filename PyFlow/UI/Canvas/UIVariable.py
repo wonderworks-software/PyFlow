@@ -103,15 +103,15 @@ class UIVariable(QWidget, IPropertiesViewSupport):
     def onStructureChanged(self, name):
         self._rawVariable.structure = PinStructure[name]
         self.variablesWidget.pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
-        EditorHistory().saveState("Change variable struct")
+        EditorHistory().saveState("Change variable struct", modify=True)
 
     def setDataType(self, dataType):
         self.dataType = dataType
         self._rawVariable.dataType = dataType
-        EditorHistory().saveState("Change variable data type")
+        EditorHistory().saveState("Change variable data type", modify=True)
 
     def createPropertiesWidget(self, propertiesWidget):
-        baseCategory = CollapsibleFormWidget(headName="Base")
+        baseCategory = CollapsibleFormWidget(headName="Base", modify=True)
         # name
         le_name = QLineEdit(self._rawVariable.name)
         le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
@@ -154,7 +154,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
 
         def accessLevelChanged(x):
             self._rawVariable.accessLevel = AccessLevel[x]
-            EditorHistory().saveState("Change variable access level")
+            EditorHistory().saveState("Change variable access level", modify=True)
         cb.currentTextChanged.connect(accessLevelChanged)
         cb.setCurrentIndex(self._rawVariable.accessLevel)
         valueCategory.addWidget('Access level', cb)

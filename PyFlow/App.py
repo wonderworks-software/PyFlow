@@ -95,9 +95,11 @@ class PyFlow(QMainWindow):
 
     def __init__(self, parent=None):
         super(PyFlow, self).__init__(parent=parent)
+        self._modified = False
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.currentSoftware = ""
         self.edHistory = EditorHistory(self)
+        self.edHistory.statePushed.connect(self.historyStatePushed)
         self.setWindowTitle(winTitle())
         self.undoStack = QUndoStack(self)
         self.setContentsMargins(1, 1, 1, 1)
@@ -128,7 +130,31 @@ class PyFlow(QMainWindow):
         self.fps = EDITOR_TARGET_FPS
         self.tick_timer = QtCore.QTimer()
         self._currentFileName = ''
-        self.currentFileName = 'Untitled'
+        self.currentFileName = None
+
+    def historyStatePushed(self, state):
+        if state.modifiesData():
+            self.modified = True
+            self.updateLabel()
+        # print(state, state.modifiesData())
+
+    @property
+    def modified(self):
+        return self._modified
+
+    @modified.setter
+    def modified(self, value):
+        self._modified = value
+        self.updateLabel()
+
+    def updateLabel(self):
+        label = "Untitled"
+        if self.currentFileName is not None:
+            if os.path.isfile(self.currentFileName):
+                label = os.path.basename(self.currentFileName)
+        if self.modified:
+            label += "*"
+        self.setWindowTitle("{0} - {1}".format(winTitle(), label))
 
     def getTempDirectory(self):
         """Returns unique temp directory for application instance.
@@ -245,16 +271,22 @@ class PyFlow(QMainWindow):
         actionSaveAsVariants = InputManager()["App.SaveAs"]
 
         if currentInputAction in actionNewFileVariants:
+            if self.shouldSave():
+                self.save()
             EditorHistory().clear()
             historyTools = self.getRegisteredTools(classNameFilters=["HistoryTool"])
             for historyTools in historyTools:
                 historyTools.onClear()
             self.newFile()
             EditorHistory().saveState("New file")
+            self.currentFileName = None
+            self.modified = False
+            self.updateLabel()
         if currentInputAction in actionSaveVariants:
             self.save()
         if currentInputAction in actionLoadVariants:
-            EditorHistory().clear()
+            if self.shouldSave():
+                self.save()
             self.load()
         if currentInputAction in actionSaveAsVariants:
             self.save(True)
@@ -277,6 +309,7 @@ class PyFlow(QMainWindow):
         self.graphManager.get().deserialize(data)
         self.fileBeenLoaded.emit()
         self.graphManager.get().selectGraphByName(data["activeGraph"])
+        self.updateLabel()
 
     @property
     def currentFileName(self):
@@ -285,7 +318,7 @@ class PyFlow(QMainWindow):
     @currentFileName.setter
     def currentFileName(self, value):
         self._currentFileName = value
-        self.setWindowTitle("{0} - {1}".format(winTitle(), value))
+        self.updateLabel()
 
     def load(self):
         name_filter = "Graph files (*.json)"
@@ -300,6 +333,12 @@ class PyFlow(QMainWindow):
                 self.loadFromData(data)
                 self.currentFileName = fpath
 
+                EditorHistory().clear()
+                historyTools = self.getRegisteredTools(classNameFilters=["HistoryTool"])
+                for historyTools in historyTools:
+                    historyTools.onClear()
+                EditorHistory().saveState("Open {}".format(os.path.basename(self.currentFileName)))
+
     def save(self, save_as=False):
         if save_as:
             name_filter = "Graph files (*.json)"
@@ -311,9 +350,9 @@ class PyFlow(QMainWindow):
             if not pth == '':
                 self.currentFileName = pth
             else:
-                self.currentFileName = "Untitled"
+                self.currentFileName = None
         else:
-            if not os.path.isfile(self.currentFileName):
+            if self.currentFileName is None:
                 name_filter = "Graph files (*.json)"
                 savepath = QFileDialog.getSaveFileName(filter=name_filter)
                 if type(savepath) in [tuple, list]:
@@ -323,9 +362,9 @@ class PyFlow(QMainWindow):
                 if not pth == '':
                     self.currentFileName = pth
                 else:
-                    self.currentFileName = "Untitled"
+                    self.currentFileName = None
 
-        if self.currentFileName in ["", "Untitled"]:
+        if not self.currentFileName:
             return
 
         if not self.currentFileName.endswith(".json"):
@@ -336,6 +375,8 @@ class PyFlow(QMainWindow):
                 saveData = self.graphManager.get().serialize()
                 json.dump(saveData, f, indent=4)
             print(str("// saved: '{0}'".format(self.currentFileName)))
+            self.modified = False
+            self.updateLabel()
 
     def newFile(self, keepRoot=True):
         self.tick_timer.stop()
@@ -344,7 +385,6 @@ class PyFlow(QMainWindow):
         # broadcast
         self.graphManager.get().clear(keepRoot=keepRoot)
         self.newFileExecuted.emit(keepRoot)
-        self.currentFileName = 'Untitled'
         self.onRequestClearProperties()
 
         self.startMainLoop()
@@ -438,22 +478,24 @@ class PyFlow(QMainWindow):
             ToolInstance.onShow()
         return ToolInstance
 
+    def shouldSave(self):
+        if self.modified:
+            msgBox = QMessageBox(self)
+            msgBox.setWindowTitle("Confirm?")
+            msgBox.setText("Unsaved data will be lost. Save?")
+            pbYes = msgBox.addButton(str("Yes"), QMessageBox.NoRole)
+            pbNo = msgBox.addButton(str("No"), QMessageBox.NoRole)
+            msgBox.exec_()
+            if msgBox.clickedButton() == pbYes:
+                return True
+            else:
+                return False
+        return False
+
     def closeEvent(self, event):
 
-        msgBox = QMessageBox(self)
-        msgBox.setWindowTitle("Confirm?")
-        msgBox.setText("Are you sure you want to quit?\nUnsaved data will be lost.")
-        pbYes = msgBox.addButton(str("Yes"), QMessageBox.NoRole)
-        pbNo = msgBox.addButton(str("No"), QMessageBox.NoRole)
-        pbSaveAndClose = msgBox.addButton(str("Save and close"), QMessageBox.NoRole)
-        msgBox.exec_()
-        if msgBox.clickedButton() == pbNo:
-            event.ignore()
-            return
-        elif msgBox.clickedButton() == pbSaveAndClose:
+        if self.shouldSave():
             self.save()
-        else:
-            pass
 
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()

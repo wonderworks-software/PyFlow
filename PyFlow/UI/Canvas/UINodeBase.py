@@ -415,7 +415,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def onToggleExposeProperties(self):
         self.setExposePropertiesToCompound(not self.bExposeInputsToCompound)
-        EditorHistory().saveState("{} exposing widgets".format("Start" if self.bExposeInputsToCompound else "Stop"))
+        EditorHistory().saveState("{} exposing widgets".format("Start" if self.bExposeInputsToCompound else "Stop"), modify=True)
 
     def setExposePropertiesToCompound(self, bExpose):
         self.bExposeInputsToCompound = bExpose

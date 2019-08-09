@@ -130,20 +130,22 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
     def ensurePackagePath(inPath):
         for subFolder in os.listdir(inPath):
             subFolderPath = os.path.join(inPath, subFolder)
-            if "PyFlow" in os.listdir(subFolderPath):
-                subFolderPath = os.path.join(subFolderPath, "PyFlow", "Packages")
-                if os.path.exists(subFolderPath):
-                    return subFolderPath
+            if os.path.isdir(subFolderPath):
+                if "PyFlow" in os.listdir(subFolderPath):
+                    subFolderPath = os.path.join(subFolderPath, "PyFlow", "Packages")
+                    if os.path.exists(subFolderPath):
+                        return subFolderPath
         return inPath
 
     def recursePackagePaths(inPath):
         paths = []
         for subFolder in os.listdir(inPath):
             subFolderPath = os.path.join(inPath, subFolder)
-            if "PyFlow" in os.listdir(subFolderPath):
-                subFolderPath = os.path.join(subFolderPath, "PyFlow", "Packages")
-                if os.path.exists(subFolderPath):
-                    paths.append(subFolderPath)
+            if os.path.isdir(subFolderPath):
+                if "PyFlow" in os.listdir(subFolderPath):
+                    subFolderPath = os.path.join(subFolderPath, "PyFlow", "Packages")
+                    if os.path.exists(subFolderPath):
+                        paths.append(subFolderPath)
         return paths
 
     # check for additional package locations
@@ -171,9 +173,8 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
                 package = getattr(mod, modname)()
                 __PACKAGES[modname] = package
         except Exception as e:
-            QMessageBox.critical(None, str("Fatal error"), "Error On Module %s :\n%s"%(modname,str(e)))
+            QMessageBox.critical(None, str("Fatal error"), "Error On Module %s :\n%s" % (modname, str(e)))
             continue
-
 
     registeredInternalPinDataTypes = set()
 
@@ -187,7 +188,7 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
             if pin.IsValuePin():
                 internalType = pin.internalDataStructure()
                 if internalType in registeredInternalPinDataTypes:
-                    raise Exception("Pin with {0} internal data type alredy been registered".format(internalType))
+                    raise Exception("Pin with {0} internal data type already been registered".format(internalType))
                 registeredInternalPinDataTypes.add(internalType)
 
         uiPinsFactory = package.UIPinsFactory()

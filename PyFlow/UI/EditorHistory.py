@@ -25,10 +25,14 @@ from PyFlow.ConfigManager import ConfigManager
 
 class _EditorState(object):
     """docstring for _EditorState."""
-    def __init__(self, text):
+    def __init__(self, text, modify):
         super(_EditorState, self).__init__()
         self.text = text
         self.editorState = GraphManagerSingleton().get().serialize()
+        self._modify = modify
+
+    def modifiesData(self):
+        return self._modify
 
     def __repr__(self):
         return self.text
@@ -138,8 +142,8 @@ class EditorHistory(object):
         self.activeState = state
         self.stateSelected.send(state)
 
-    def saveState(self, text):
-        self.push(_EditorState(text))
+    def saveState(self, text, modify=False):
+        self.push(_EditorState(text, modify))
 
     def undo(self):
         if self.currentIndex > 0:
