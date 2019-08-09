@@ -271,8 +271,12 @@ class PyFlow(QMainWindow):
         actionSaveAsVariants = InputManager()["App.SaveAs"]
 
         if currentInputAction in actionNewFileVariants:
-            if self.shouldSave():
+            shouldSave = self.shouldSave()
+            if shouldSave == QMessageBox.Yes:
                 self.save()
+            elif shouldSave == QMessageBox.Discard:
+                return
+
             EditorHistory().clear()
             historyTools = self.getRegisteredTools(classNameFilters=["HistoryTool"])
             for historyTools in historyTools:
@@ -285,13 +289,24 @@ class PyFlow(QMainWindow):
         if currentInputAction in actionSaveVariants:
             self.save()
         if currentInputAction in actionLoadVariants:
-            if self.shouldSave():
+            shouldSave = self.shouldSave()
+            if shouldSave == QMessageBox.Yes:
                 self.save()
+            elif shouldSave == QMessageBox.Discard:
+                return
             self.load()
         if currentInputAction in actionSaveAsVariants:
             self.save(True)
 
-    def loadFromData(self, data):
+    def loadFromFileChecked(self, filePath):
+        shouldSave = self.shouldSave()
+        if shouldSave == QMessageBox.Yes:
+            self.save()
+        elif shouldSave == QMessageBox.Discard:
+            return
+        self.loadFromFile(filePath)
+
+    def loadFromData(self, data, clearHistory=False):
 
         # check first if all packages we are trying to load are legal
         missedPackages = set()
@@ -303,6 +318,12 @@ class PyFlow(QMainWindow):
                 index += 1
             QMessageBox.critical(self, "Missing dependencies", msg)
             return
+
+        if clearHistory:
+            EditorHistory().clear()
+            historyTools = self.getRegisteredTools(classNameFilters=["HistoryTool"])
+            for historyTools in historyTools:
+                historyTools.onClear()
 
         self.newFile(keepRoot=False)
         # load raw data
@@ -320,6 +341,13 @@ class PyFlow(QMainWindow):
         self._currentFileName = value
         self.updateLabel()
 
+    def loadFromFile(self, filePath):
+        with open(filePath, 'r') as f:
+            data = json.load(f)
+            self.loadFromData(data, clearHistory=True)
+            self.currentFileName = filePath
+            EditorHistory().saveState("Open {}".format(os.path.basename(self.currentFileName)))
+
     def load(self):
         name_filter = "Graph files (*.json)"
         savepath = QFileDialog.getOpenFileName(filter=name_filter)
@@ -328,16 +356,7 @@ class PyFlow(QMainWindow):
         else:
             fpath = savepath
         if not fpath == '':
-            with open(fpath, 'r') as f:
-                data = json.load(f)
-                self.loadFromData(data)
-                self.currentFileName = fpath
-
-                EditorHistory().clear()
-                historyTools = self.getRegisteredTools(classNameFilters=["HistoryTool"])
-                for historyTools in historyTools:
-                    historyTools.onClear()
-                EditorHistory().saveState("Open {}".format(os.path.basename(self.currentFileName)))
+            self.loadFromFile(fpath)
 
     def save(self, save_as=False):
         if save_as:
@@ -480,22 +499,21 @@ class PyFlow(QMainWindow):
 
     def shouldSave(self):
         if self.modified:
-            msgBox = QMessageBox(self)
-            msgBox.setWindowTitle("Confirm?")
-            msgBox.setText("Unsaved data will be lost. Save?")
-            pbYes = msgBox.addButton(str("Yes"), QMessageBox.NoRole)
-            pbNo = msgBox.addButton(str("No"), QMessageBox.NoRole)
-            msgBox.exec_()
-            if msgBox.clickedButton() == pbYes:
-                return True
+            btn = QMessageBox.warning(self, "Confirm?", "Unsaved data will be lost. Save?", QMessageBox.Yes | QMessageBox.No | QMessageBox.Discard)
+            if btn == QMessageBox.No:
+                return QMessageBox.No
             else:
-                return False
-        return False
+                return btn
+        return QMessageBox.No
 
     def closeEvent(self, event):
 
-        if self.shouldSave():
+        shouldSave = self.shouldSave()
+        if shouldSave == QMessageBox.Yes:
             self.save()
+        elif shouldSave == QMessageBox.Discard:
+            event.ignore()
+            return
 
         self.tick_timer.stop()
         self.tick_timer.timeout.disconnect()

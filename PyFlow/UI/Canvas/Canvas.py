@@ -20,6 +20,7 @@ import json
 import uuid
 import weakref
 from collections import Counter
+from functools import partial
 try:
     from inspect import getfullargspec as getargspec
 except:
@@ -395,6 +396,7 @@ class Canvas(QGraphicsView):
             self.installEventFilter(self)
         self.reconnectingWires = set()
         self.currentPressedKey = None
+        self.dropCallback = None
 
     def getApp(self):
         return self.pyFlowInstance
@@ -1699,6 +1701,36 @@ class Canvas(QGraphicsView):
 
     def stepToCompound(self, compoundNodeName):
         self.graphManager.selectGraphByName(compoundNodeName)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            urls = event.mimeData().urls()
+            if len(urls) == 1:
+                url = urls[0]
+                if url.isLocalFile():
+                    filePath = url.toLocalFile()
+                    if filePath.endswith(".json"):
+                        with open(filePath, 'r') as f:
+                            data = json.load(f)
+                            if "fileVersion" in data:
+                                event.accept()
+                                self.dropCallback = partial(self.getApp().loadFromFileChecked, filePath)
+                                return
+        super(Canvas, self).dragEnterEvent(event)
+
+    def dragMoveEvent(self, event):
+        if self.dropCallback is not None:
+            event.accept()
+        else:
+            super(Canvas, self).dragMoveEvent(event)
+
+    def dragLeaveEvent(self, event):
+        self.dropCallback = None
+
+    def dropEvent(self, event):
+        if self.dropCallback is not None:
+            self.dropCallback()
+        super(Canvas, self).dropEvent(event)
 
     def drawBackground(self, painter, rect):
         super(Canvas, self).drawBackground(painter, rect)
