@@ -28,7 +28,7 @@ class DemoPin(PinBase):
 
     @staticmethod
     def color():
-        return (255, 0, 0, 255)
+        return (200, 200, 50, 255)
 
     @staticmethod
     def internalDataStructure():
