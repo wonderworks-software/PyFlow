@@ -1709,7 +1709,7 @@ class Canvas(QGraphicsView):
                 url = urls[0]
                 if url.isLocalFile():
                     filePath = url.toLocalFile()
-                    if filePath.endswith(".json"):
+                    if filePath.endswith(".pygraph"):
                         with open(filePath, 'r') as f:
                             data = json.load(f)
                             if "fileVersion" in data:

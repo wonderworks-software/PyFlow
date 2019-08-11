@@ -349,7 +349,7 @@ class PyFlow(QMainWindow):
             EditorHistory().saveState("Open {}".format(os.path.basename(self.currentFileName)))
 
     def load(self):
-        name_filter = "Graph files (*.json)"
+        name_filter = "Graph files (*.pygraph)"
         savepath = QFileDialog.getOpenFileName(filter=name_filter)
         if type(savepath) in [tuple, list]:
             fpath = savepath[0]
@@ -360,7 +360,7 @@ class PyFlow(QMainWindow):
 
     def save(self, save_as=False):
         if save_as:
-            name_filter = "Graph files (*.json)"
+            name_filter = "Graph files (*.pygraph)"
             savepath = QFileDialog.getSaveFileName(filter=name_filter)
             if type(savepath) in [tuple, list]:
                 pth = savepath[0]
@@ -372,7 +372,7 @@ class PyFlow(QMainWindow):
                 self.currentFileName = None
         else:
             if self.currentFileName is None:
-                name_filter = "Graph files (*.json)"
+                name_filter = "Graph files (*.pygraph)"
                 savepath = QFileDialog.getSaveFileName(filter=name_filter)
                 if type(savepath) in [tuple, list]:
                     pth = savepath[0]
@@ -386,8 +386,8 @@ class PyFlow(QMainWindow):
         if not self.currentFileName:
             return
 
-        if not self.currentFileName.endswith(".json"):
-            self.currentFileName += ".json"
+        if not self.currentFileName.endswith(".pygraph"):
+            self.currentFileName += ".pygraph"
 
         if not self.currentFileName == '':
             with open(self.currentFileName, 'w') as f:
