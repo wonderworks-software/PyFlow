@@ -57,16 +57,19 @@ class UICompoundNode(UINodeBase):
         if openPath != "":
             with open(openPath, 'r') as f:
                 data = json.load(f)
-                data["isRoot"] = False
-                data["parentGraphName"] = self._rawNode.rawGraph.parentGraph.name
-                missedPackages = set()
-                if validateGraphDataPackages(data, missedPackages):
-                    data["nodes"] = self.canvasRef().makeSerializedNodesUnique(data["nodes"])
-                    self._rawNode.rawGraph.populateFromJson(data)
-                    self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
-                    EditorHistory().saveState("Import compound", modify=True)
-                else:
-                    logger.error("Missing dependencies! {0}".format(",".join(missedPackages)))
+                self.assignData(data)
+
+    def assignData(self, data):
+        data["isRoot"] = False
+        data["parentGraphName"] = self._rawNode.rawGraph.parentGraph.name
+        missedPackages = set()
+        if validateGraphDataPackages(data, missedPackages):
+            data["nodes"] = self.canvasRef().makeSerializedNodesUnique(data["nodes"])
+            self._rawNode.rawGraph.populateFromJson(data)
+            self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
+            EditorHistory().saveState("Import compound", modify=True)
+        else:
+            logger.error("Missing dependencies! {0}".format(",".join(missedPackages)))
 
     def getGraph(self):
         return self._rawNode.rawGraph
