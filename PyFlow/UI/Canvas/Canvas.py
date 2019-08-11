@@ -1716,9 +1716,32 @@ class Canvas(QGraphicsView):
                                 event.accept()
                                 self.dropCallback = partial(self.getApp().loadFromFileChecked, filePath)
                                 return
+                    elif filePath.endswith(".compound"):
+                        with open(filePath, 'r') as f:
+                            data = json.load(f)
+
+                            def spawnCompoundFromData(data):
+                                mousePos = self.mapToScene(self.mousePos)
+                                compound = self.spawnNode("compound", mousePos.x(), mousePos.y())
+                                compound.assignData(data)
+                            event.accept()
+                            self.dropCallback = partial(spawnCompoundFromData, data)
+                            return
+                    elif filePath.endswith(".pynode"):
+                        with open(filePath, 'r') as f:
+                            data = f.read()
+
+                            def spawnPyNodeFromData(data):
+                                mousePos = self.mapToScene(self.mousePos)
+                                compound = self.spawnNode("pythonNode", mousePos.x(), mousePos.y())
+                                compound.tryApplyNodeData(data)
+                            event.accept()
+                            self.dropCallback = partial(spawnPyNodeFromData, data)
+                            return
         super(Canvas, self).dragEnterEvent(event)
 
     def dragMoveEvent(self, event):
+        self.mousePos = event.pos()
         if self.dropCallback is not None:
             event.accept()
         else:

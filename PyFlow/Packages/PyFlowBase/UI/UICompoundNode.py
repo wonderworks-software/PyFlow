@@ -46,27 +46,30 @@ class UICompoundNode(UINodeBase):
         self.actionImport.triggered.connect(self.onImport)
 
     def onExport(self):
-        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Subgraph data (*.json)")
+        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Subgraph data (*.compound)")
         if savePath != "":
             with open(savePath, 'w') as f:
                 json.dump(self._rawNode.rawGraph.serialize(), f, indent=4)
             logger.info("{0} data successfully exported!".format(self.getName()))
 
     def onImport(self):
-        openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Subgraph data (*.json)")
+        openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Subgraph data (*.compound)")
         if openPath != "":
             with open(openPath, 'r') as f:
                 data = json.load(f)
-                data["isRoot"] = False
-                data["parentGraphName"] = self._rawNode.rawGraph.parentGraph.name
-                missedPackages = set()
-                if validateGraphDataPackages(data, missedPackages):
-                    data["nodes"] = self.canvasRef().makeSerializedNodesUnique(data["nodes"])
-                    self._rawNode.rawGraph.populateFromJson(data)
-                    self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
-                    EditorHistory().saveState("Import compound", modify=True)
-                else:
-                    logger.error("Missing dependencies! {0}".format(",".join(missedPackages)))
+                self.assignData(data)
+
+    def assignData(self, data):
+        data["isRoot"] = False
+        data["parentGraphName"] = self._rawNode.rawGraph.parentGraph.name
+        missedPackages = set()
+        if validateGraphDataPackages(data, missedPackages):
+            data["nodes"] = self.canvasRef().makeSerializedNodesUnique(data["nodes"])
+            self._rawNode.rawGraph.populateFromJson(data)
+            self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
+            EditorHistory().saveState("Import compound", modify=True)
+        else:
+            logger.error("Missing dependencies! {0}".format(",".join(missedPackages)))
 
     def getGraph(self):
         return self._rawNode.rawGraph
