@@ -305,6 +305,8 @@ class PyFlow(QMainWindow):
         elif shouldSave == QMessageBox.Discard:
             return
         self.loadFromFile(filePath)
+        self.modified = False
+        self.updateLabel()
 
     def loadFromData(self, data, clearHistory=False):
 

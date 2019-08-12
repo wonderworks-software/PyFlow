@@ -110,7 +110,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                         sepCatNames.pop()
         return False
 
-    def insertNode(self, nodeCategoryPath, name, doc=None, libName=None):
+    def insertNode(self, nodeCategoryPath, name, doc=None, libName=None, bPyNode=False):
         nodePath = nodeCategoryPath.split('|')
         categoryPath = ''
         # walk from tree top to bottom, creating folders if needed
@@ -138,11 +138,14 @@ class NodeBoxTreeWidget(QTreeWidget):
                     childCategoryItem.setBackground(0, editableStyleSheet().BgColorBright.lighter(150))
                     self.categoryPaths[categoryPath] = childCategoryItem
         # create node under constructed folder
+        # TODO: Subclass QTreeWidgetItem to not create dynamic attributes. Below code is ugly
         nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
         nodeItem.bCategory = False
+        nodeItem.bPyNode = bPyNode
         nodeItem.setText(0, name)
         nodeItem.libName = libName
         nodeItem.docString = doc
+        return nodeItem
 
     def refresh(self, pattern='', pinDirection=None, pinStructure=PinStructure.Single):
         self.clear()
@@ -253,7 +256,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                             index = folders.index("PyNodes")
                             categorySuffix = '|'.join(folders[index:])
                             category = "{0}|{1}".format(package_name, categorySuffix)
-                            self.insertNode(category, pyNodeName)
+                            self.insertNode(category, pyNodeName, bPyNode=True)
 
             # expand all categories
             if dataType is not None:
@@ -273,8 +276,13 @@ class NodeBoxTreeWidget(QTreeWidget):
             return
         # find top level parent
         rootItem = item_clicked
+        bPyNode = False
+        if not item_clicked.bCategory:
+            bPyNode = rootItem.bPyNode
         while not rootItem.parent() is None:
             rootItem = rootItem.parent()
+            if not rootItem.bCategory:
+                bPyNode = rootItem.bPyNode
         packageName = rootItem.text(0)
         pressed_text = item_clicked.text(0)
         libName = item_clicked.libName
@@ -290,14 +298,15 @@ class NodeBoxTreeWidget(QTreeWidget):
         jsonTemplate['name'] = pressed_text
         jsonTemplate['uuid'] = str(uuid.uuid4())
         jsonTemplate['meta']['label'] = pressed_text
+        jsonTemplate['bPyNode'] = bPyNode
 
-        # TODO: Rewrite self.bGripsEnabled. Node box can be floating window or a tool.
-        # If node box is a tool it onbly can create nodes by dragging and dropping
         if self.canvas.pressedPin is not None and self.bGripsEnabled:
             a = self.canvas.mapToScene(self.canvas.mouseReleasePos)
             jsonTemplate["x"] = a.x()
             jsonTemplate["y"] = a.y()
             node = self.canvas.createNode(jsonTemplate)
+            if bPyNode:
+                node.rebuild()
             self.canvas.hideNodeBox()
             pressedPin = self.canvas.pressedPin
             if pressedPin.direction == PinDirection.Input:

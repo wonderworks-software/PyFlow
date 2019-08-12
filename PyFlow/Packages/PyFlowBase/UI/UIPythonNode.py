@@ -124,9 +124,12 @@ class UIPythonNode(UINodeBase):
     def nodeData(self):
         return self._rawNode.nodeData
 
-    def eventDropOnCanvas(self):
+    def rebuild(self):
         if len(self._rawNode._nodeData) > 0:
             self.tryApplyNodeData(self._rawNode._nodeData)
+
+    def eventDropOnCanvas(self):
+        self.rebuild()
 
     def postCreate(self, jsonTemplate=None):
         super(UIPythonNode, self).postCreate(jsonTemplate)

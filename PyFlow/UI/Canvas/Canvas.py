@@ -134,6 +134,8 @@ class SceneClass(QGraphicsScene):
             except Exception as e:
                 pass
             self.tempnode = self.parent()._createNode(nodeTemplate)
+            if jsonData["bPyNode"]:
+                self.tempnode.rebuild()
             if self.tempnode:
                 self.tempnode.isTemp = True
             self.hoverItems = []
@@ -1749,6 +1751,7 @@ class Canvas(QGraphicsView):
             super(Canvas, self).dragMoveEvent(event)
 
     def dragLeaveEvent(self, event):
+        super(Canvas, self).dragLeaveEvent(event)
         self.dropCallback = None
 
     def dropEvent(self, event):
