@@ -59,14 +59,14 @@ def getGraphArguments(data, parser):
 def main():
     parser = argparse.ArgumentParser(description="PyFlow CLI")
     parser.add_argument("-m", "--mode", type=str, default="edit", choices=["edit", "run", "runui"])
-    parser.add_argument("-f", "--filePath", type=str, default="untitled.json")
+    parser.add_argument("-f", "--filePath", type=str, default="untitled.pygraph")
     parser.add_argument("--version", action="version", version=str(currentVersion()))
     parsedArguments, unknown = parser.parse_known_args(sys.argv[1:])
 
     filePath = parsedArguments.filePath
 
-    if not filePath.endswith(".json"):
-        filePath += ".json"
+    if not filePath.endswith(".pygraph"):
+        filePath += ".pygraph"
 
     if parsedArguments.mode == "edit":
         app = QApplication(sys.argv)
@@ -88,6 +88,9 @@ def main():
 
     if parsedArguments.mode == "run":
         data = None
+        if not os.path.exists(filePath):
+            print("No such file. {}".format(filePath))
+            return
         with open(filePath, 'r') as f:
             data = json.load(f)
         getGraphArguments(data, parser)
