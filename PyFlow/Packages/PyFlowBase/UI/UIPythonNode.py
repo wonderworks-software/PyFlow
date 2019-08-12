@@ -21,8 +21,11 @@ import logging
 
 from Qt.QtWidgets import QAction
 from Qt.QtWidgets import QFileDialog
+from Qt.QtWidgets import QInputDialog
 from Qt import QtGui, QtCore
 
+from PyFlow import GET_PACKAGES
+from PyFlow import GET_PACKAGE_PATH
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Views.CodeEditor import CodeEditor
 from PyFlow.UI.EditorHistory import EditorHistory
@@ -67,11 +70,31 @@ class UIPythonNode(UINodeBase):
         self.currentEditorProcess = None
         self.actionExport = self._menu.addAction("Export")
         self.actionExport.triggered.connect(self.onExport)
+        self.actionExport = self._menu.addAction("Export to package")
+        self.actionExport.triggered.connect(self.onExportToPackage)
         self.actionImport = self._menu.addAction("Import")
         self.actionImport.triggered.connect(self.onImport)
 
-    def onExport(self):
-        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Python node data (*.pynode)")
+    def onExportToPackage(self):
+        packageNames = list(GET_PACKAGES().keys())
+        selectedPackageName, accepted = QInputDialog.getItem(None, "Select", "Select package", packageNames, editable=False)
+        if accepted:
+            packagePath = GET_PACKAGE_PATH(selectedPackageName)
+            pyNodesDir = os.path.join(packagePath, "PyNodes")
+            if not os.path.isdir(pyNodesDir):
+                os.mkdir(pyNodesDir)
+            self.onExport(root=pyNodesDir)
+            # refresh node boxes
+            app = self.canvasRef().getApp()
+            nodeBoxes = app.getRegisteredTools(classNameFilters=["NodeBoxTool"])
+            for nodeBox in nodeBoxes:
+                nodeBox.refresh()
+
+    def onExport(self, root=None):
+        try:
+            savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Python node data (*.pynode)", dir=root)
+        except:
+            savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Python node data (*.pynode)")
         if savePath != "":
             with open(savePath, 'w') as f:
                 f.write(self.nodeData)

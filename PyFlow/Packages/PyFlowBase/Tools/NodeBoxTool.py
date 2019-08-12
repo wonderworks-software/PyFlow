@@ -33,6 +33,9 @@ class NodeBoxTool(DockTool):
         self.content.setObjectName("NodeBoxToolContent")
         self.setWidget(self.content)
 
+    def refresh(self):
+        self.content.treeWidget.refresh()
+
     @staticmethod
     def isSingleton():
         return True

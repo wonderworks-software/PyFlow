@@ -49,9 +49,11 @@ __HASHABLE_TYPES = []
 def GET_PACKAGES():
     return __PACKAGES
 
+
 def GET_PACKAGE_PATH(packageName):
     if packageName in __PACKAGE_PATHS:
         return __PACKAGE_PATHS[packageName]
+
 
 def GET_PACKAGE_CHECKED(package_name):
     assert package_name in __PACKAGES

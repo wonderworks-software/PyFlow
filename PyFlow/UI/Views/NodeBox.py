@@ -250,7 +250,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                         if extension == ".pynode":
                             p = os.path.normpath(path)
                             folders = p.split(os.sep)
-                            index = folders.index("PyNodes") + 1
+                            index = folders.index("PyNodes")
                             categorySuffix = '|'.join(folders[index:])
                             category = "{0}|{1}".format(package_name, categorySuffix)
                             self.insertNode(category, pyNodeName)
