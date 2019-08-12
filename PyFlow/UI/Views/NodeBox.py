@@ -14,6 +14,7 @@
 
 
 import json
+import os
 import weakref
 try:
     from inspect import getfullargspec as getargspec
@@ -25,6 +26,7 @@ from Qt import QtGui
 from Qt.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
+from PyFlow import GET_PACKAGE_PATH
 
 from PyFlow.Core.Common import *
 from PyFlow.UI.Canvas.UICommon import *
@@ -237,6 +239,22 @@ class NodeBoxTreeWidget(QTreeWidget):
                                 self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
                         elif dataType in hints.outputTypes:
                             self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
+
+            # Populate py nodes
+            packagePath = GET_PACKAGE_PATH(package_name)
+            pyNodesRoot = os.path.join(packagePath, "PyNodes")
+            if os.path.exists(pyNodesRoot):
+                for path, dirs, files in os.walk(pyNodesRoot):
+                    for f in files:
+                        pyNodeName, extension = os.path.splitext(f)
+                        if extension == ".pynode":
+                            p = os.path.normpath(path)
+                            folders = p.split(os.sep)
+                            index = folders.index("PyNodes") + 1
+                            categorySuffix = '|'.join(folders[index:])
+                            category = "{0}|{1}".format(package_name, categorySuffix)
+                            self.insertNode(category, pyNodeName)
+
             # expand all categories
             if dataType is not None:
                 for categoryItem in self.categoryPaths.values():

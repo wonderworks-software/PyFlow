@@ -404,6 +404,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.actionToggleExposeWidgetsToCompound = self._menu.addAction("Expose properties")
         self.actionToggleExposeWidgetsToCompound.triggered.connect(self.onToggleExposeProperties)
 
+    def eventDropOnCanvas(self):
+        pass
+
     def setSingleLineName(self, bSingleLine=True):
         self.nodeNameWidget.labelItem.singleLine = bSingleLine
 

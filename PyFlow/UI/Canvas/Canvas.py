@@ -269,6 +269,7 @@ class SceneClass(QGraphicsScene):
                             elif isinstance(it, UIConnection):
                                 dropItem = it
                                 break
+                        node.eventDropOnCanvas()
                         EditorHistory().saveState("Create node {}".format(node.name), modify=True)
                     else:
                         node = self.parent().createNode(nodeTemplate)

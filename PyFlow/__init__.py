@@ -42,12 +42,16 @@ __all__ = [
 
 
 __PACKAGES = {}
+__PACKAGE_PATHS = {}
 __HASHABLE_TYPES = []
 
 
 def GET_PACKAGES():
     return __PACKAGES
 
+def GET_PACKAGE_PATH(packageName):
+    if packageName in __PACKAGE_PATHS:
+        return __PACKAGE_PATHS[packageName]
 
 def GET_PACKAGE_CHECKED(package_name):
     assert package_name in __PACKAGES
@@ -116,6 +120,20 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
     if nodeClassName in nodes:
         return nodes[nodeClassName](nodeClassName, **kwargs)
 
+    # try find exported py nodes
+    packagePath = GET_PACKAGE_PATH(packageName)
+    pyNodesPath = os.path.join(packagePath, "PyNodes")
+    if os.path.exists(pyNodesPath):
+        for path, dirs, files in os.walk(pyNodesPath):
+            for pyNodeFileName in files:
+                pyNodeName, _ = os.path.splitext(pyNodeFileName)
+                if nodeClassName == pyNodeName:
+                    pythonNode = getRawNodeInstance("pythonNode", packageName)
+                    pyNodeFullPath = os.path.join(path, pyNodeFileName)
+                    with open(pyNodeFullPath, "r") as f:
+                        pythonNode._nodeData = f.read()
+                    return pythonNode
+
 
 def INITIALIZE(additionalPackageLocations=[], software=""):
     from PyFlow.UI.Tool import REGISTER_TOOL
@@ -172,6 +190,7 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
                 mod = importer.find_module(modname).load_module(modname)
                 package = getattr(mod, modname)()
                 __PACKAGES[modname] = package
+                __PACKAGE_PATHS[modname] = os.path.normpath(mod.__path__[0])
         except Exception as e:
             QMessageBox.critical(None, str("Fatal error"), "Error On Module %s :\n%s" % (modname, str(e)))
             continue

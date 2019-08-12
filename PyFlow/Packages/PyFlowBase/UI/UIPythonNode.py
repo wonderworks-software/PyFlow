@@ -101,6 +101,10 @@ class UIPythonNode(UINodeBase):
     def nodeData(self):
         return self._rawNode.nodeData
 
+    def eventDropOnCanvas(self):
+        if len(self._rawNode._nodeData) > 0:
+            self.tryApplyNodeData(self._rawNode._nodeData)
+
     def postCreate(self, jsonTemplate=None):
         super(UIPythonNode, self).postCreate(jsonTemplate)
         self.setHeaderHtml(self.getName())
