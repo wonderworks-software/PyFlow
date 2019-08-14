@@ -100,10 +100,9 @@ class NodePainter(object):
         painter.drawLine(frame.left() + 5, node.labelHeight,
                          frame.right() - 5, node.labelHeight)
         NodePainter.drawResizeHandles(node, painter, option, widget)
-        
+
         """CONVEX HULL TEST 
         if node.poly:
-            print node.poly
             path = QtGui.QPainterPath()
             path.addPolygon(node.poly)
             path.setFillRule(QtCore.Qt.WindingFill)
