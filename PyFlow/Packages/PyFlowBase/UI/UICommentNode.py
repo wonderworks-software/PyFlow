@@ -40,6 +40,9 @@ from PyFlow.UI.Canvas.UIConnection import UIConnection
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
 from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
+
+from PyFlow.UI.Utils.ConvexHull import convexHull
+
 import weakref
 
 
@@ -239,6 +242,23 @@ class UICommentNode(UINodeBase):
         super(UICommentNode, self).translate(x, y)
 
     def paint(self, painter, option, widget):
+        """CONVEX HULL TEST 
+        path = []
+        self.poly = None
+        for i in self.owningNodes:
+            relPos = self.mapFromScene(i.scenePos())
+            relSize = QtCore.QPointF(i.getNodeWidth(),i.geometry().height())
+            path.append((relPos.x(),relPos.y()))
+            path.append((relPos.x()+relSize.x(),relPos.y()))
+            path.append((relPos.x()+relSize.x(),relPos.y()+relSize.y()))
+            path.append((relPos.x(),relPos.y()+relSize.y()))
+
+        if len(path) >= 3:
+            c = convexHull(path)
+            self.poly = QtGui.QPolygonF()
+            for i in c:
+                self.poly.append(QtCore.QPointF(i[0], i[1]))
+        """
         NodePainter.asCommentNode(self, painter, option, widget)
 
     def updateColor(self, color):

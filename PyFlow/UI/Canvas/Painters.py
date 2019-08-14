@@ -100,7 +100,15 @@ class NodePainter(object):
         painter.drawLine(frame.left() + 5, node.labelHeight,
                          frame.right() - 5, node.labelHeight)
         NodePainter.drawResizeHandles(node, painter, option, widget)
-
+        
+        """CONVEX HULL TEST 
+        if node.poly:
+            print node.poly
+            path = QtGui.QPainterPath()
+            path.addPolygon(node.poly)
+            path.setFillRule(QtCore.Qt.WindingFill)
+            painter.fillPath(path, QtCore.Qt.red)
+        """
     @staticmethod
     def drawGroups(node, painter, option, widget):
         inputsOffset = QtCore.QPointF(-2, 0)
