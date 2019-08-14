@@ -23,7 +23,7 @@ from Qt import QtGui
 from Qt import QtCore
 from PyFlow import INITIALIZE
 from PyFlow.Core.Common import *
-from PyFlow.Core.GraphManager import GraphManager
+from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 import PyFlow.UI.resources
@@ -51,7 +51,7 @@ def run(filePath):
         # Initalize packages
         try:
             INITIALIZE()
-            man = GraphManager()
+            man = GraphManagerSingleton().get()
             man.deserialize(data)
             grph = man.findRootGraph()
             inputs = grph.getNodesByClassName("graphInputs")
