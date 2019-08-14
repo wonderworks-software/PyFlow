@@ -111,7 +111,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         EditorHistory().saveState("Change variable data type", modify=True)
 
     def createPropertiesWidget(self, propertiesWidget):
-        baseCategory = CollapsibleFormWidget(headName="Base", modify=True)
+        baseCategory = CollapsibleFormWidget(headName="Base")
         # name
         le_name = QLineEdit(self._rawVariable.name)
         le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
