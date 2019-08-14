@@ -50,7 +50,12 @@ class forLoopEnd(NodeBase):
 
     def compute(self, *args, **kwargs):
         node = PathsRegistry().getEntity(self.loopBeginNode.getData())
-        if node is not None:
-            node.onNext()
+        if node.graph() == self.graph():
+            if node is not None:
+                node.onNext()
+            else:
+                print(self.loopBeginNode.getData(), "not found")
         else:
-            print(self.loopBeginNode.getData(), "not found")
+            err = "block ends in different graphs"
+            node.setError(err)
+            self.setError(err)
