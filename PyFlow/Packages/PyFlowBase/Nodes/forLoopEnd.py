@@ -13,32 +13,27 @@
 ## limitations under the License.
 
 
-from PyFlow.Core import NodeBase
 from PyFlow.Core.Common import *
+from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.Core import NodeBase
 from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
-class delay(NodeBase):
+class forLoopEnd(NodeBase):
     def __init__(self, name):
-        super(delay, self).__init__(name)
-        self.inp0 = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.delay = self.createInputPin('Delay(s)', 'FloatPin')
-        self.delay.setDefaultValue(0.2)
-        self.out0 = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
-        self.process = False
-        self._total = 0.0
-        self._currentDelay = 0.0
+        super(forLoopEnd, self).__init__(name)
+        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
+        self.loopBeginNode = self.createInputPin('Paired block', 'StringPin')
+        self.loopBeginNode.setInputWidgetVariant("ObjectPathWIdget")
         self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('ExecPin')
-        helper.addInputDataType('FloatPin')
-        helper.addOutputDataType('ExecPin')
+        helper.addInputDataType('StringPin')
         helper.addInputStruct(PinStructure.Single)
-        helper.addOutputStruct(PinStructure.Single)
         return helper
 
     @staticmethod
@@ -47,24 +42,15 @@ class delay(NodeBase):
 
     @staticmethod
     def keywords():
-        return []
+        return ['iter', 'end']
 
     @staticmethod
     def description():
-        return 'Delayed call'
-
-    def callAndReset(self):
-        self.process = False
-        self._total = 0.0
-        self.out0.call()
-
-    def Tick(self, delta):
-        if self.process:
-            self._total += delta
-            if self._total >= self._currentDelay:
-                self.callAndReset()
+        return 'For loop end block'
 
     def compute(self, *args, **kwargs):
-        self._currentDelay = self.delay.getData()
-        if not self.process:
-            self.process = True
+        node = PathsRegistry().getEntity(self.loopBeginNode.getData())
+        if node is not None:
+            node.onNext()
+        else:
+            print(self.loopBeginNode.getData(), "not found")

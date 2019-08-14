@@ -403,6 +403,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.actionRefresh.triggered.connect(self._rawNode.checkForErrors)
         self.actionToggleExposeWidgetsToCompound = self._menu.addAction("Expose properties")
         self.actionToggleExposeWidgetsToCompound.triggered.connect(self.onToggleExposeProperties)
+        self.actionCopyPath = self._menu.addAction("Copy path")
+        self.actionCopyPath.triggered.connect(self.onCopyPathToClipboard)
+
+    def onCopyPathToClipboard(self):
+        QApplication.clipboard().clear()
+        QApplication.clipboard().setText(self.path())
 
     def eventDropOnCanvas(self):
         pass
@@ -486,6 +492,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def location(self):
         return self._rawNode.location()
+
+    def path(self):
+        return self._rawNode.path()
 
     def graph(self):
         return self._rawNode.graph()

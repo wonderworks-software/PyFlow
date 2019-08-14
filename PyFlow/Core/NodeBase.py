@@ -244,6 +244,10 @@ class NodeBase(INode):
     def location(self):
         return self.graph().location()
 
+    def path(self):
+        location = "/".join(self.location())
+        return "{}/{}".format(location, self.getName())
+
     @property
     def uid(self):
         return self._uid
@@ -297,6 +301,8 @@ class NodeBase(INode):
         return self.graph() == self.graph().graphManager.activeGraph()
 
     def kill(self, *args, **kwargs):
+        from PyFlow.Core.PathsRegistry import PathsRegistry
+
         if self.uid not in self.graph().getNodes():
             return
 
@@ -307,6 +313,8 @@ class NodeBase(INode):
         for pin in self.outputs.values():
             pin.kill()
         self.graph().getNodes().pop(self.uid)
+
+        PathsRegistry().rebuild()
 
     def Tick(self, delta):
         self.tick.send(delta)

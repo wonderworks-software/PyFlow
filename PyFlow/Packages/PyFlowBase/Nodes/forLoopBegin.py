@@ -14,29 +14,32 @@
 
 
 from PyFlow.Core import NodeBase
-from PyFlow.Core.Common import *
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
+from PyFlow.Core.Common import *
 from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 
 
-class delay(NodeBase):
+class forLoopBegin(NodeBase):
     def __init__(self, name):
-        super(delay, self).__init__(name)
-        self.inp0 = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.delay = self.createInputPin('Delay(s)', 'FloatPin')
-        self.delay.setDefaultValue(0.2)
-        self.out0 = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
-        self.process = False
-        self._total = 0.0
-        self._currentDelay = 0.0
+        super(forLoopBegin, self).__init__(name)
+        self._working = False
+        self.currentIndex = 0
+        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
+        self.firstIndex = self.createInputPin('Start', 'IntPin')
+        self.lastIndex = self.createInputPin('Stop', 'IntPin')
+
+        self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
+        self.index = self.createOutputPin('Index', 'IntPin')
+        self.completed = self.createOutputPin('Completed', 'ExecPin')
         self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('ExecPin')
-        helper.addInputDataType('FloatPin')
+        helper.addInputDataType('IntPin')
         helper.addOutputDataType('ExecPin')
+        helper.addOutputDataType('IntPin')
         helper.addInputStruct(PinStructure.Single)
         helper.addOutputStruct(PinStructure.Single)
         return helper
@@ -47,24 +50,26 @@ class delay(NodeBase):
 
     @staticmethod
     def keywords():
-        return []
+        return ['iter']
 
     @staticmethod
     def description():
-        return 'Delayed call'
+        return 'For loop begin block'
 
-    def callAndReset(self):
-        self.process = False
-        self._total = 0.0
-        self.out0.call()
+    def isDone(self):
+        indexTo = self.lastIndex.getData()
+        if self.currentIndex >= indexTo:
+            self.currentIndex = 0
+            self.completed.call()
+            self._working = False
+            return True
+        return False
 
-    def Tick(self, delta):
-        if self.process:
-            self._total += delta
-            if self._total >= self._currentDelay:
-                self.callAndReset()
+    def onNext(self, *args, **kwargs):
+        if not self.isDone():
+            self.index.setData(self.currentIndex)
+            self.currentIndex += 1
+            self.loopBody.call(*args, **kwargs)
 
     def compute(self, *args, **kwargs):
-        self._currentDelay = self.delay.getData()
-        if not self.process:
-            self.process = True
+        self.onNext(*args, **kwargs)

@@ -22,6 +22,7 @@ from nine import str
 
 from PyFlow.Core.Interfaces import IPin
 from PyFlow.Core.Common import *
+from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.EvaluationEngine import EvaluationEngine
 from PyFlow import getPinDefaultValueByType
 
@@ -148,6 +149,10 @@ class PinBase(IPin):
 
     def setInputWidgetVariant(self, value):
         self._inputWidgetVariant = value
+
+    def path(self):
+        owningNodePath = self.owningNode().path()
+        return "{}.{}".format(owningNodePath, self.getName())
 
     @property
     def group(self):
@@ -453,6 +458,9 @@ class PinBase(IPin):
         self.nameChanged.send(self.name)
         return True
 
+    def getName(self):
+        return self.name
+
     def getFullName(self):
         """Returns full pin name, including node name
 
@@ -524,7 +532,7 @@ class PinBase(IPin):
                 data = data[1]
             if not self.isArray() and not self.isDict():
                 if isinstance(data, DictElement):
-                   self._data = DictElement(data[0],self.super.processData(data[1]))
+                   self._data = DictElement(data[0], self.super.processData(data[1]))
                 else:
                     self._data = self.super.processData(data)
             elif self.isArray():

@@ -196,6 +196,8 @@ class GraphBase(ISerializable):
         self.name = self.graphManager.getUniqGraphName(jsonData['name'])
         self.category = jsonData['category']
         self.setIsRoot(jsonData['isRoot'])
+        if self.isRoot():
+            self.name = "root"
         # restore vars
         for varJson in jsonData['vars']:
             var = Variable.deserialize(self, varJson)
@@ -409,6 +411,8 @@ class GraphBase(ISerializable):
         :type jsonTemplate: dict
         :rtype: bool
         """
+        from PyFlow.Core.PathsRegistry import PathsRegistry
+
         assert(node is not None), "failed to add node, None is passed"
         if node.uid in self._nodes:
             return False
@@ -432,6 +436,7 @@ class GraphBase(ISerializable):
 
         self._nodes[node.uid] = node
         node.postCreate(jsonTemplate)
+        PathsRegistry().rebuild()
         return True
 
     def location(self):

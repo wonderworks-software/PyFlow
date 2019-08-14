@@ -108,6 +108,12 @@ class IItemBase(ISerializable):
         """
         raise NotImplementedError('kill method of IItemBase is not implemented')
 
+    def path(self):
+        """Returns path to item
+
+        :raises NotImplementedError: If not implemented
+        """
+        raise NotImplementedError('path method of IItemBase is not implemented')
 
 class IPin(IItemBase):
     """Pin interface

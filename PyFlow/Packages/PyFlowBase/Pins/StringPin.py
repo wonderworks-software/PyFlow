@@ -32,7 +32,9 @@ class StringPin(PinBase):
         if self.annotationDescriptionDict is not None:
             if "ValueList" in self.annotationDescriptionDict:
                 return "EnumWidget"
-        return DEFAULT_WIDGET_VARIANT
+            if "inputWidgetVariant" in self.annotationDescriptionDict:
+                return self.annotationDescriptionDict["inputWidgetVariant"]
+        return self._inputWidgetVariant
 
     @staticmethod
     def supportedDataTypes():

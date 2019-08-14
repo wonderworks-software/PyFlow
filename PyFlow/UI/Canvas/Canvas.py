@@ -566,15 +566,12 @@ class Canvas(QGraphicsView):
     def populateMenu(self):
         self.actionCollapseSelectedNodes = self.menu.addAction("Collapse selected nodes")
         self.actionCollapseSelectedNodes.triggered.connect(lambda: self.setSelectedNodesCollapsed(True))
-        self.menu.addAction(self.actionCollapseSelectedNodes)
 
         self.actionExpandSelectedNodes = self.menu.addAction("Expand selected nodes")
         self.actionExpandSelectedNodes.triggered.connect(lambda: self.setSelectedNodesCollapsed(False))
-        self.menu.addAction(self.actionExpandSelectedNodes)
 
         self.actionCollapseSelectedNodesToCompound = self.menu.addAction("Collapse to compound")
         self.actionCollapseSelectedNodesToCompound.triggered.connect(self.collapseSelectedNodesToCompound)
-        self.menu.addAction(self.actionCollapseSelectedNodesToCompound)
 
     def plot(self):
         self.graphManager.plot()
