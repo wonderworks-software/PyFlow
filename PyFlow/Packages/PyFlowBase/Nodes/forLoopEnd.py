@@ -23,9 +23,10 @@ from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
 class forLoopEnd(NodeBase):
     def __init__(self, name):
         super(forLoopEnd, self).__init__(name)
-        self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
+        self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.loopBeginNode = self.createInputPin('Paired block', 'StringPin')
         self.loopBeginNode.setInputWidgetVariant("ObjectPathWIdget")
+        self.completed = self.createOutputPin('Completed', 'ExecPin')
         self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod

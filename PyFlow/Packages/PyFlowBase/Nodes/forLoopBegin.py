@@ -14,6 +14,7 @@
 
 
 from PyFlow.Core import NodeBase
+from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
@@ -32,7 +33,6 @@ class forLoopBegin(NodeBase):
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
         self.index = self.createOutputPin('Index', 'IntPin')
-        self.completed = self.createOutputPin('Completed', 'ExecPin')
         self.headerColor = FLOW_CONTROL_COLOR
 
     @staticmethod
@@ -58,12 +58,16 @@ class forLoopBegin(NodeBase):
     def description():
         return 'For loop begin block'
 
+    def reset(self):
+        self.currentIndex = 0
+        self._working = False
+
     def isDone(self):
         indexTo = self.lastIndex.getData()
         if self.currentIndex >= indexTo:
-            self.currentIndex = 0
-            self.completed.call()
-            self._working = False
+            self.reset()
+            loopEndNode = PathsRegistry().getEntity(self.loopEndNode.getData())
+            loopEndNode.completed.call()
             return True
         return False
 
@@ -74,4 +78,19 @@ class forLoopBegin(NodeBase):
             self.loopBody.call(*args, **kwargs)
 
     def compute(self, *args, **kwargs):
+        self.reset()
+        endNodePath = self.loopEndNode.getData()
+        loopEndNode = PathsRegistry().getEntity(endNodePath)
+        if loopEndNode is not None:
+            if loopEndNode.loopBeginNode.getData() != self.path():
+                self.setError("Invalid pair")
+                return
+            if self.graph() is not loopEndNode.graph():
+                err = "block ends in different graphs"
+                self.setError(err)
+                loopEndNode.setError(err)
+                return
+        else:
+            self.setError("{} not found".format(endNodePath))
+
         self.onNext(*args, **kwargs)
