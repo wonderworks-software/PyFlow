@@ -43,6 +43,7 @@ class Colors:
     Red = QtGui.QColor(255, 0, 0, 255)
     White = QtGui.QColor(255, 255, 255, 200)
     Yellow = QtGui.QColor(255, 211, 25)
+    Orange = QtGui.QColor(209,84,0)
 
 
 @SingletonDecorator

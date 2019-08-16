@@ -1349,6 +1349,20 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 nodes += node.getChainedNodes()
         return nodes
 
+    def getBetwenLoopNodes(self,orig):
+        nodes = []
+        for pin in self.UIoutputs.values():
+            for connection in pin.connections:
+                node = connection.destination().topLevelItem()  # topLevelItem
+                if node._rawNode.__class__.__name__ != "forLoopEnd":
+                    nodes.append(node)                   
+                    nodes += node.getBetwenLoopNodes(orig)
+                else:
+                    if node._rawNode.loopBeginNode.getData() != orig.path():
+                        nodes.append(node)
+                        nodes += node.getBetwenLoopNodes(orig)
+        return nodes
+
     def collidesWithCommentNode(self):
         nodes = self.getCollidedNodes()
         result = None
