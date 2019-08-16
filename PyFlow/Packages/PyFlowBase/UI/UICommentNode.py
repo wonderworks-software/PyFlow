@@ -41,7 +41,7 @@ from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from PyFlow.UI.Widgets.TextEditDialog import TextEditDialog
 from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider
 
-from PyFlow.UI.Utils.ConvexHull import convexHull
+from PyFlow.UI.Utils.ConvexHull import convex_hull
 
 import weakref
 
@@ -254,7 +254,7 @@ class UICommentNode(UINodeBase):
             path.append((relPos.x(),relPos.y()+relSize.y()))
 
         if len(path) >= 3:
-            c = convexHull(path)
+            c = convex_hull(path)
             self.poly = QtGui.QPolygonF()
             for i in c:
                 self.poly.append(QtCore.QPointF(i[0], i[1]))

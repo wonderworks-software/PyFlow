@@ -1,74 +1,40 @@
-""" convexhull.py
+def convex_hull(points):
+    """Computes the convex hull of a set of 2D points.
 
-Calculate the convex hull of a set of n 2D points in O(n log n) time.
-Taken from Berg et al., Computational Geometry, Springer-Verlag, 1997.
-Emits output as EPS file.
-
-When run from the command line, it generates a random set of points
-inside a square of given length and finds the convex hull for those,
-emitting the result as an EPS file.
-Usage:
-    convexhull.py <numPoints> <squareLength> <outFile>
-
-Dinu C. Gherman
-"""
-# helpers
-
-
-def _myDet(p, q, r):
-    """ Calculate determinant of a special matrix with three 2D points.
-
-    The sign, - or +, determines the side (right or left, respectively) on which
-    the point r lies when measured against a directed vector from p to q.
+    Input: an iterable sequence of (x, y) pairs representing the points.
+    Output: a list of vertices of the convex hull in counter-clockwise order,
+      starting from the vertex with the lexicographically smallest coordinates.
+    Implements Andrew's monotone chain algorithm. O(n log n) complexity.
     """
-    # We use Sarrus' Rule to calculate the determinant
-    # (could also use the Numeric package...)
-    sum1 = q[0] * r[1] + p[0] * q[1] + r[0] * p[1]
-    sum2 = q[0] * p[1] + r[0] * q[1] + p[0] * r[1]
-    return sum1 - sum2
 
+    # Sort the points lexicographically (tuples are compared lexicographically).
+    # Remove duplicates to detect the case we have just one unique point.
+    points = sorted(set(points))
 
-def _isRightTurn((p, q, r)):
-    "Do the vectors pq:qr form a right turn, or not?"
-    assert p != q and q != r and p != r
-    return _myDet(p, q, r) < 0
+    # Boring case: no points or a single point, possibly repeated multiple times.
+    if len(points) <= 1:
+        return points
 
+    # 2D cross product of OA and OB vectors, i.e. z-component of their 3D cross product.
+    # Returns a positive value, if OAB makes a counter-clockwise turn,
+    # negative for clockwise turn, and zero if the points are collinear.
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
 
-def _isPointInPolygon(r, P):
-    "Is point r inside a given polygon P?"
-    # We assume that the polygon is a list of points, listed clockwise
-    for i in xrange(len(P) - 1):
-        p, q = P[i], P[i + 1]
-        if not _isRightTurn((p, q, r)):
-            return 0  # Out!
-    return 1  # It's within!
-
-
-def convexHull(P):
-    "Calculate the convex hull of a set of points."
-
-    # Get a local list copy of the points and sort them lexically
-    points = map(None, P)
-    points.sort()
-
-    # Build upper half of the hull
-    upper = [points[0], points[1]]
-    for p in points[2:]:
-        upper.append(p)
-        while len(upper) > 2 and not _isRightTurn(upper[-3:]):
-            del upper[-2]
-
-    # Build lower half of the hull
-    points.reverse()
-    lower = [points[0], points[1]]
-    for p in points[2:]:
+    # Build lower hull 
+    lower = []
+    for p in points:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
         lower.append(p)
-        while len(lower) > 2 and not _isRightTurn(lower[-3:]):
-            del lower[-2]
 
-    # Remove duplicates
-    del lower[0]
-    del lower[-1]
+    # Build upper hull
+    upper = []
+    for p in reversed(points):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
 
-    # Concatenate both halves and return
-    return tuple(upper + lower)
+    # Concatenation of the lower and upper hulls gives the convex hull.
+    # Last point of each list is omitted because it is repeated at the beginning of the other list. 
+    return lower[:-1] + upper[:-1]
