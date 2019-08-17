@@ -82,6 +82,9 @@ class UIForLoopBeginNode(UINodeBase):
 
     def computeHull(self):
         loopEndNode = PathsRegistry().getEntity(self.getPinSG("Paired block").getData())
+        if loopEndNode is None:
+            self.poly = QtGui.QPolygonF()
+            return
         p = [self]
         if loopEndNode.__class__.__name__ == "forLoopEnd" and loopEndNode.getWrapper() is not None:
             p.append(loopEndNode.getWrapper())
