@@ -122,10 +122,10 @@ class MathAbstractLib(FunctionLibraryBase):
         return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=("FloatPin", None), meta={'Category': 'Math|Basic', 'Keywords': ['clamp']})
-    def clamp(i=("FloatPin", None),
+    @IMPLEMENT_NODE(returns=("FloatPin", 0.0), meta={'Category': 'Math|Basic', 'Keywords': ['clamp']})
+    def clamp(i=("FloatPin", 0.0),
               imin=("FloatPin", 0.0),
-              imax=("FloatPin", 0)):
+              imax=("FloatPin", 0.0)):
         """Clamp."""
         return clamp(i, imin, imax)
 

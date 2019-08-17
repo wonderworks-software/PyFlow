@@ -38,7 +38,7 @@ class EnumComboBox(QComboBox):
 
         self.setCompleter(self.completer)
 
-        self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)
+        self.lineEdit().textEdited[str].connect(self.onTextEdited)
         self.lineEdit().returnPressed.connect(self.onReturnPressed)
         self.completer.activated.connect(self.setTextIfCompleterIsClicked)
 
@@ -49,6 +49,11 @@ class EnumComboBox(QComboBox):
         self.setModel(self.model)
         self.setModelColumn(0)
         self.currentIndexChanged.connect(self.onIndexChanged)
+        self.activated.connect(self.onIndexChanged)
+
+    def onTextEdited(self, text):
+        self.pFilterModel.setFilterFixedString(text)
+        self.changeCallback.emit(text)
 
     def onReturnPressed(self):
         self.changeCallback.emit(self.currentText())

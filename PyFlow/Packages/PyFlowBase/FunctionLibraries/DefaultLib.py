@@ -22,6 +22,7 @@ from PyFlow.Core import(
 )
 from PyFlow import getHashableDataTypes
 from PyFlow.Core.Common import *
+from PyFlow.Core.PathsRegistry import PathsRegistry
 from nine import IS_PYTHON2
 
 
@@ -120,6 +121,16 @@ class DefaultLib(FunctionLibraryBase):
             return element in obj
         except:
             return False
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={'Category': 'DefaultLib', 'Keywords': ['in'], "CacheEnabled": False})
+    def refTest(ref=('StringPin', "", {"inputWidgetVariant": "ObjectPathWIdget"})):
+        """Path test"""
+        entity = PathsRegistry().getEntity(ref)
+        try:
+            entity.call()
+        except:
+            pass
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('IntPin', 0, {"Description": "Number of elements of iterable"}), meta={'Category': 'DefaultLib', 'Keywords': ['len']})

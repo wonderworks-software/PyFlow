@@ -18,6 +18,7 @@ from Qt import QtCore
 from Qt.QtWidgets import *
 
 from PyFlow.Core.Common import *
+from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow.UI.Widgets.InputWidgets import *
 from PyFlow.UI.Widgets.QtSliders import pyf_Slider, valueBox
@@ -169,8 +170,13 @@ class EnumInputWIdget(InputWidgetSingle):
     """docstring for EnumInputWIdget."""
     def __init__(self, parent=None, **kwds):
         super(EnumInputWIdget, self).__init__(parent=parent, **kwds)
-        self.enumBox = EnumComboBox(kwds["pinAnnotations"]["ValueList"])
+        values = []
+        if "ValueList" in kwds["pinAnnotations"]:
+            values = kwds["pinAnnotations"]["ValueList"]
+        self.enumBox = EnumComboBox(values)
         self.enumBox.setEditable(False)
+        if "editable" in kwds["pinAnnotations"]:
+            self.enumBox.setEditable(kwds["pinAnnotations"]["editable"])
         self.setWidget(self.enumBox)
         self.enumBox.changeCallback.connect(self.dataSetCallback)
 
@@ -181,6 +187,22 @@ class EnumInputWIdget(InputWidgetSingle):
         index = self.enumBox.findText(value)
         if index > 0:
             self.enumBox.setCurrentIndex(index)
+
+
+class ObjectPathWIdget(InputWidgetSingle):
+    """docstring for ObjectPathWIdget."""
+    def __init__(self, parent=None, **kwds):
+        super(ObjectPathWIdget, self).__init__(parent=parent, **kwds)
+        values = []
+        self.enumBox = EnumComboBox(PathsRegistry().getAllPaths())
+        self.setWidget(self.enumBox)
+        self.enumBox.changeCallback.connect(self.dataSetCallback)
+
+    def blockWidgetSignals(self, bLock=False):
+        self.enumBox.blockSignals(bLock)
+
+    def setWidgetValue(self, value):
+        self.enumBox.setCurrentText(value)
 
 
 class PathInputWidget(InputWidgetSingle):
@@ -275,6 +297,8 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
             return PathInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "EnumWidget":
             return EnumInputWIdget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+        elif widgetVariant == "ObjectPathWIdget":
+            return ObjectPathWIdget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'BoolPin':
         return BoolInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'ExecPin':

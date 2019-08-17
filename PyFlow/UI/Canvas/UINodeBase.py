@@ -403,6 +403,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.actionRefresh.triggered.connect(self._rawNode.checkForErrors)
         self.actionToggleExposeWidgetsToCompound = self._menu.addAction("Expose properties")
         self.actionToggleExposeWidgetsToCompound.triggered.connect(self.onToggleExposeProperties)
+        self.actionCopyPath = self._menu.addAction("Copy path")
+        self.actionCopyPath.triggered.connect(self.onCopyPathToClipboard)
+
+    def onCopyPathToClipboard(self):
+        QApplication.clipboard().clear()
+        QApplication.clipboard().setText(self.path())
 
     def eventDropOnCanvas(self):
         pass
@@ -486,6 +492,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def location(self):
         return self._rawNode.location()
+
+    def path(self):
+        return self._rawNode.path()
 
     def graph(self):
         return self._rawNode.graph()
@@ -1338,6 +1347,20 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 node = connection.source().topLevelItem()  # topLevelItem
                 nodes.append(node)
                 nodes += node.getChainedNodes()
+        return nodes
+
+    def getBetwenLoopNodes(self, orig):
+        nodes = []
+        for pin in self.UIoutputs.values():
+            for connection in pin.connections:
+                node = connection.destination().topLevelItem()  # topLevelItem
+                if node._rawNode.__class__.__name__ != "forLoopEnd":
+                    nodes.append(node)
+                    nodes += node.getBetwenLoopNodes(orig)
+                else:
+                    if node._rawNode.loopBeginNode.getData() != orig.path():
+                        nodes.append(node)
+                        nodes += node.getBetwenLoopNodes(orig)
         return nodes
 
     def collidesWithCommentNode(self):

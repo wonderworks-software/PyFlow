@@ -376,8 +376,6 @@ class GraphManager(object):
         :rtype: str
         """
         existingNames = [n.name for n in self.getAllNodes()]
-        if name in existingNames:
-            existingNames.remove(name)
         return getUniqNameFromList(existingNames, name)
 
     def getUniqVariableName(self, name):

@@ -35,6 +35,8 @@ from PyFlow.Packages.PyFlowBase.Nodes.convertTo import convertTo
 from PyFlow.Packages.PyFlowBase.Nodes.makeDict import makeDict
 from PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict import makeAnyDict
 
+from PyFlow.Packages.PyFlowBase.Nodes.forLoopBegin import forLoopBegin
+
 from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
 from PyFlow.Packages.PyFlowBase.UI.UIQimageDisplay import UIQimageDisplay
 
@@ -58,6 +60,7 @@ from PyFlow.Packages.PyFlowBase.UI.UICompoundNode import UICompoundNode
 from PyFlow.Packages.PyFlowBase.UI.UIConstantNode import UIConstantNode
 from PyFlow.Packages.PyFlowBase.UI.UIConvertToNode import UIConvertToNode
 from PyFlow.Packages.PyFlowBase.UI.UIMakeDictNode import UIMakeDictNode
+from PyFlow.Packages.PyFlowBase.UI.UIForLoopBeginNode import UIForLoopBeginNode
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
@@ -99,4 +102,6 @@ def createUINode(raw_instance):
         return UIColorRamp(raw_instance)
     if isinstance(raw_instance, imageDisplay):
         return UIQimageDisplay(raw_instance)
+    if isinstance(raw_instance,forLoopBegin):
+        return UIForLoopBeginNode(raw_instance)
     return UINodeBase(raw_instance)

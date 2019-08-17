@@ -32,8 +32,8 @@ class AnyPin(PinBase):
     This Pin Type is an abstraction of Pins, it is a Pin that will act as any other defined Pin.
     This type of Pin allow to create abstract Nodes that can operate in more than one dataType.
 
-    By default AnyPin non Initialized will be marked as error, as Pyflow can't know what is inside.
-    This Error can be avoided by enabling :py:attr:`PyFlow.Core.Common.PinOptions.AllowAny`. Thas how NonTyped Lists are made.
+    By default AnyPin non Initialized will be marked as error, as PyFlow can't know what is inside.
+    This Error can be avoided by enabling :py:attr:`PyFlow.Core.Common.PinOptions.AllowAny`. Thats how NonTyped Lists are made.
 
     By default :py:attr:`PyFlow.Core.Common.PinOptions.ChangeTypeOnConnection` is enabled, and that means that it will change
     its internal dataType to the new dataType provided by connection or user Initialization. If disabled, pin will not allow changes.
@@ -267,7 +267,7 @@ class AnyPin(PinBase):
         :type pin: :py:class:`AnyPin`
         :param dataType: New DataType to apply
         :type dataType: string
-        :param init: If initializing AnyPin can have same strenght as other types, if not, "AnyPin" Pin will always be weaker than other dataType, if, defaults to False
+        :param init: If initializing AnyPin can have same strength as other types, if not, "AnyPin" Pin will always be weaker than other dataType, if, defaults to False
         :type init: bool, optional
         :param other: other Pin to heredate stuff from him, defaults to None
         :type other: :py:class:`PyFlow.Core.PinBase.PinBase`, optional

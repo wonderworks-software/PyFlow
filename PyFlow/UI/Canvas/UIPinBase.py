@@ -17,6 +17,7 @@ import weakref
 
 from Qt import QtCore
 from Qt import QtGui
+from Qt.QtWidgets import QApplication
 from Qt.QtWidgets import QGraphicsWidget
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QInputDialog
@@ -91,6 +92,8 @@ class UIPinBase(QGraphicsWidget):
             self.actionWatchValue = self.menu.addAction("Watch")
             self.actionWatchValue.triggered.connect(self.toggleWatchValue)
             self._rawPin.dataBeenSet.connect(self.updateWatchWidgetValue)
+            self.actionCopyPath = self.menu.addAction("Copy path")
+            self.actionCopyPath.triggered.connect(self.onCopyPathToClipboard)
 
         # GUI
         self._font = QtGui.QFont("Consolas")
@@ -113,6 +116,10 @@ class UIPinBase(QGraphicsWidget):
         if self._rawPin is not None:
             self.setToolTip(self._rawPin.description)
 
+    def onCopyPathToClipboard(self):
+        QApplication.clipboard().clear()
+        QApplication.clipboard().setText(self.path())
+
     def toggleWatchValue(self):
         if self.watchWidget is not None:
             self.scene().removeItem(self.watchWidget)
@@ -124,6 +131,9 @@ class UIPinBase(QGraphicsWidget):
             self.watchWidget.setZValue(NodeDefaults().Z_LAYER + 1)
             self.updateWatchWidgetPosition()
             self.updateWatchWidgetValue(self.currentData())
+
+    def path(self):
+        return self._rawPin.path()
 
     def updateWatchWidgetPosition(self):
         if self.watchWidget is not None:
