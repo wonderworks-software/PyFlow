@@ -54,6 +54,7 @@ INT_RANGE_MAX = maxint + 0
 DEFAULT_IN_EXEC_NAME = str('inExec')
 DEFAULT_OUT_EXEC_NAME = str('outExec')
 DEFAULT_WIDGET_VARIANT = str('DefaultWidget')
+REF = str('Reference')
 
 
 def lerp(start, end, alpha):
@@ -820,3 +821,18 @@ class Direction(IntEnum):
     Right = 1  #: Right
     Up = 2  #: Up
     Down = 3  #: Down
+
+
+class PinSpecifires:
+    SUPPORTED_DATA_TYPES = "supportedDataTypes"
+    CONSTRAINT = "constraint"
+    STRUCT_CONSTRAINT = "structConstraint"
+    ENABLED_OPTIONS = "enabledOptions"
+    DISABLED_OPTIONS = "disabledOptions"
+    INPUT_WIDGET_VARIANT = "inputWidgetVariant"
+
+
+class NodeMeta:
+    CATEGORY = "Category"
+    KEYWORDS = "Keywords"
+    CACHE_ENABLED = "CacheEnabled"
