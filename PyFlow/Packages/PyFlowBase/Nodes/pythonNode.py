@@ -15,6 +15,7 @@
 
 from types import MethodType
 
+from PyFlow.Core.Common import getUniqNameFromList
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
 
@@ -30,7 +31,11 @@ class pythonNode(NodeBase):
         return self._nodeData
 
     def ensureNameUnique(self):
-        self.setName(self.graph().graphManager.getUniqNodeName(self.name))
+        existingNames = [n.name for n in self.graph().graphManager.getAllNodes()]
+        nodeName = self.getName()
+        if nodeName in existingNames:
+            existingNames.remove(nodeName)
+        self.setName(getUniqNameFromList(existingNames, nodeName))
 
     @nodeData.setter
     def nodeData(self, codeString):
