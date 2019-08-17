@@ -35,7 +35,8 @@ from PyFlow.Packages.PyFlowBase.Nodes.doOnce import doOnce
 from PyFlow.Packages.PyFlowBase.Nodes.flipFlop import flipFlop
 from PyFlow.Packages.PyFlowBase.Nodes.forLoop import forLoop
 from PyFlow.Packages.PyFlowBase.Nodes.forLoopBegin import forLoopBegin
-from PyFlow.Packages.PyFlowBase.Nodes.forLoopEnd import forLoopEnd
+from PyFlow.Packages.PyFlowBase.Nodes.loopEnd import loopEnd
+from PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin import whileLoopBegin
 from PyFlow.Packages.PyFlowBase.Nodes.forEachLoop import forEachLoop
 from PyFlow.Packages.PyFlowBase.Nodes.forLoopWithBreak import forLoopWithBreak
 from PyFlow.Packages.PyFlowBase.Nodes.retriggerableDelay import retriggerableDelay
@@ -121,13 +122,14 @@ _NODES = {
     flipFlop.__name__: flipFlop,
     forLoop.__name__: forLoop,
     forLoopBegin.__name__: forLoopBegin,
-    forLoopEnd.__name__: forLoopEnd,
+    loopEnd.__name__: loopEnd,
     forLoopWithBreak.__name__: forLoopWithBreak,
     retriggerableDelay.__name__: retriggerableDelay,
     sequence.__name__: sequence,
     switchOnString.__name__: switchOnString,
     timer.__name__: timer,
     whileLoop.__name__: whileLoop,
+    whileLoopBegin.__name__: whileLoopBegin,
     commentNode.__name__: commentNode,
     stickyNote.__name__: stickyNote,
     getVar.__name__: getVar,

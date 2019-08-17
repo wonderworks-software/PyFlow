@@ -16,22 +16,23 @@ import uuid
 from Qt import QtGui
 from Qt import QtCore
 from Qt.QtWidgets import *
-from PyFlow.Core.Common import *
-from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.IConvexHullBackDrop import IConvexHullBackDrop
+from PyFlow.Core.Common import *
+from PyFlow.Core.NodeBase import NodeBase
 
 
-class UIForLoopBeginNode(UINodeBase, IConvexHullBackDrop):
+class UIWhileLoopBeginNode(UINodeBase, IConvexHullBackDrop):
     def __init__(self, raw_node):
-        super(UIForLoopBeginNode, self).__init__(raw_node)
+        super(UIWhileLoopBeginNode, self).__init__(raw_node)
         IConvexHullBackDrop.__init__(self)
         self.headColorOverride = Colors.Orange
+        self.poly = None
 
     def postCreate(self, jsonTemplate=None):
-        super(UIForLoopBeginNode, self).postCreate(jsonTemplate)
+        super(UIWhileLoopBeginNode, self).postCreate(jsonTemplate)
         self.scene().addItem(self.backDrop)
         self.computeHull()
         self.backDrop.update()

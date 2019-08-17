@@ -1354,7 +1354,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         for pin in self.UIoutputs.values():
             for connection in pin.connections:
                 node = connection.destination().topLevelItem()  # topLevelItem
-                if node._rawNode.__class__.__name__ != "forLoopEnd":
+                if node._rawNode.__class__.__name__ != "loopEnd":
                     nodes.append(node)
                     nodes += node.getBetwenLoopNodes(orig)
                 else:

@@ -242,23 +242,6 @@ class UICommentNode(UINodeBase):
         super(UICommentNode, self).translate(x, y)
 
     def paint(self, painter, option, widget):
-        """CONVEX HULL TEST 
-        path = []
-        self.poly = None
-        for i in self.owningNodes:
-            relPos = self.mapFromScene(i.scenePos())
-            relSize = QtCore.QPointF(i.getNodeWidth(),i.geometry().height())
-            path.append((relPos.x(),relPos.y()))
-            path.append((relPos.x()+relSize.x(),relPos.y()))
-            path.append((relPos.x()+relSize.x(),relPos.y()+relSize.y()))
-            path.append((relPos.x(),relPos.y()+relSize.y()))
-
-        if len(path) >= 3:
-            c = convex_hull(path)
-            self.poly = QtGui.QPolygonF()
-            for i in c:
-                self.poly.append(QtCore.QPointF(i[0], i[1]))
-        """
         NodePainter.asCommentNode(self, painter, option, widget)
 
     def updateColor(self, color):

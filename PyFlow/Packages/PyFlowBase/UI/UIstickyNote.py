@@ -25,9 +25,9 @@ from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 from Qt.QtWidgets import (QGraphicsWidget, QGraphicsItem)
 
 
-class UIstickyNote(UINodeBase):
+class UIStickyNote(UINodeBase):
     def __init__(self, raw_node):
-        super(UIstickyNote, self).__init__(raw_node)
+        super(UIStickyNote, self).__init__(raw_node)
         self.color = QtGui.QColor(255, 255, 136)
         self.color.setAlpha(255)
         self.labelTextColor = QtGui.QColor(0, 0, 0, 255)
@@ -47,14 +47,14 @@ class UIstickyNote(UINodeBase):
         self.updateSize()
 
     def serializationHook(self):
-        original = super(UIstickyNote, self).serializationHook()
+        original = super(UIStickyNote, self).serializationHook()
         original["color"] = self.color.rgba()
         original["textColor"] = self.labelTextColor.rgba()
         original["currentText"] = self.NonFormatedText
         return original
 
     def postCreate(self, jsonTemplate=None):
-        super(UIstickyNote, self).postCreate(jsonTemplate=jsonTemplate)
+        super(UIStickyNote, self).postCreate(jsonTemplate=jsonTemplate)
         if "color" in jsonTemplate["wrapper"]:
             self.color = QtGui.QColor.fromRgba(
                 jsonTemplate["wrapper"]["color"])
@@ -70,14 +70,14 @@ class UIstickyNote(UINodeBase):
         self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable, True)
         self.textInput.setFocus()
         self.startEditing()
-        super(UIstickyNote, self).mouseDoubleClickEvent(event)
+        super(UIStickyNote, self).mouseDoubleClickEvent(event)
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSelectedChange:
             if value == False:
                 self.textInput.clearFocus()
                 self.textInput.setFlag(QGraphicsWidget.ItemIsFocusable, False)
-        return super(UIstickyNote, self).itemChange(change, value)
+        return super(UIStickyNote, self).itemChange(change, value)
 
     def aboutToCollapse(self, futureCollapseState):
         if not futureCollapseState:
@@ -90,7 +90,7 @@ class UIstickyNote(UINodeBase):
         self.updateSize()
 
     def mouseMoveEvent(self, event):
-        super(UIstickyNote, self).mouseMoveEvent(event)
+        super(UIStickyNote, self).mouseMoveEvent(event)
         self.updateSize()
 
     def startEditing(self):
@@ -139,7 +139,7 @@ class UIstickyNote(UINodeBase):
             self.update()
 
     def createPropertiesWidget(self, propertiesWidget):
-        super(UIstickyNote, self).createPropertiesWidget(propertiesWidget)
+        super(UIStickyNote, self).createPropertiesWidget(propertiesWidget)
         appearanceCategory = CollapsibleFormWidget(headName="Appearance")
         pb = pyf_ColorSlider(type="int", alpha=True,
                              startColor=list(self.color.getRgbF()))

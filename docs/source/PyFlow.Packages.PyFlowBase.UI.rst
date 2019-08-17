@@ -88,10 +88,10 @@ PyFlow.Packages.PyFlowBase.UI.UIPythonNode module
    :members:
    :show-inheritance:
 
-PyFlow.Packages.PyFlowBase.UI.UIQimageDisplay module
+PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode module
 ----------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIQimageDisplay
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode
    :members:
    :show-inheritance:
 
@@ -130,10 +130,10 @@ PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode module
    :members:
    :show-inheritance:
 
-PyFlow.Packages.PyFlowBase.UI.UIstickyNote module
+PyFlow.Packages.PyFlowBase.UI.UIStickyNote module
 -------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIstickyNote
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIStickyNote
    :members:
    :show-inheritance:
 

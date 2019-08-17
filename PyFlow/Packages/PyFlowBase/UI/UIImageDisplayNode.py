@@ -19,9 +19,9 @@ from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from Qt.QtWidgets import QLabel
 
 
-class UIQimageDisplay(UINodeBase):
+class UIImageDisplayNode(UINodeBase):
     def __init__(self, raw_node):
-        super(UIQimageDisplay, self).__init__(raw_node)
+        super(UIImageDisplayNode, self).__init__(raw_node)
         self.resizable = True
         self.Imagelabel = QLabel("test3")
         self.pixmap = QtGui.QPixmap(RESOURCES_DIR + "/wizard-cat.png")
@@ -35,7 +35,7 @@ class UIQimageDisplay(UINodeBase):
 
     def paint(self, painter, option, widget):
         self.updateSize()
-        super(UIQimageDisplay, self).paint(painter, option, widget)
+        super(UIImageDisplayNode, self).paint(painter, option, widget)
 
     def updateSize(self):
         scaledPixmap = self.pixmap.scaledToWidth(

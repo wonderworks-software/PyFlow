@@ -36,16 +36,17 @@ from PyFlow.Packages.PyFlowBase.Nodes.makeDict import makeDict
 from PyFlow.Packages.PyFlowBase.Nodes.makeAnyDict import makeAnyDict
 
 from PyFlow.Packages.PyFlowBase.Nodes.forLoopBegin import forLoopBegin
+from PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin import whileLoopBegin
 
 from PyFlow.Packages.PyFlowBase.Nodes.imageDisplay import imageDisplay
-from PyFlow.Packages.PyFlowBase.UI.UIQimageDisplay import UIQimageDisplay
+from PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode import UIImageDisplayNode
 
 from PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode import UISwitchOnString
 from PyFlow.Packages.PyFlowBase.UI.UIGetVarNode import UIGetVarNode
 from PyFlow.Packages.PyFlowBase.UI.UISetVarNode import UISetVarNode
 from PyFlow.Packages.PyFlowBase.UI.UISequenceNode import UISequenceNode
 from PyFlow.Packages.PyFlowBase.UI.UICommentNode import UICommentNode
-from PyFlow.Packages.PyFlowBase.UI.UIstickyNote import UIstickyNote
+from PyFlow.Packages.PyFlowBase.UI.UIStickyNote import UIStickyNote
 from PyFlow.Packages.PyFlowBase.UI.UIRerouteNode import UIRerouteNode
 from PyFlow.Packages.PyFlowBase.UI.UIRerouteNodeSmall import UIRerouteNodeSmall
 from PyFlow.Packages.PyFlowBase.UI.UIPythonNode import UIPythonNode
@@ -61,6 +62,7 @@ from PyFlow.Packages.PyFlowBase.UI.UIConstantNode import UIConstantNode
 from PyFlow.Packages.PyFlowBase.UI.UIConvertToNode import UIConvertToNode
 from PyFlow.Packages.PyFlowBase.UI.UIMakeDictNode import UIMakeDictNode
 from PyFlow.Packages.PyFlowBase.UI.UIForLoopBeginNode import UIForLoopBeginNode
+from PyFlow.Packages.PyFlowBase.UI.UIWhileLoopBeginNode import UIWhileLoopBeginNode
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 
@@ -77,7 +79,7 @@ def createUINode(raw_instance):
     if isinstance(raw_instance, commentNode):
         return UICommentNode(raw_instance)
     if isinstance(raw_instance, stickyNote):
-        return UIstickyNote(raw_instance)
+        return UIStickyNote(raw_instance)
     if isinstance(raw_instance, reroute) or isinstance(raw_instance, rerouteExecs):
         return UIRerouteNodeSmall(raw_instance)
     if isinstance(raw_instance, graphInputs):
@@ -101,7 +103,9 @@ def createUINode(raw_instance):
     if isinstance(raw_instance, colorRamp):
         return UIColorRamp(raw_instance)
     if isinstance(raw_instance, imageDisplay):
-        return UIQimageDisplay(raw_instance)
+        return UIImageDisplayNode(raw_instance)
     if isinstance(raw_instance,forLoopBegin):
         return UIForLoopBeginNode(raw_instance)
+    if isinstance(raw_instance,whileLoopBegin):
+        return UIWhileLoopBeginNode(raw_instance)
     return UINodeBase(raw_instance)
