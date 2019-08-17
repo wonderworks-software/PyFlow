@@ -1754,6 +1754,7 @@ class Canvas(QGraphicsView):
     def dropEvent(self, event):
         if self.dropCallback is not None:
             self.dropCallback()
+            self.dropCallback = None
         super(Canvas, self).dropEvent(event)
 
     def drawBackground(self, painter, rect):
