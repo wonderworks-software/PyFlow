@@ -33,6 +33,18 @@ ExposedPropertiesColor = Colors.NodeNameRectBlue
 class NodePainter(object):
 
     @staticmethod
+    def drawDeprecated(node, painter, option, widget):
+        if node.isDeprecated():
+            font = painter.font()
+            font.setPointSize(6)
+            painter.setFont(font)
+            textRect = node.boundingRect()
+            textRect.setTop(textRect.height() - 10)
+            painter.fillRect(textRect, Colors.Red.darker(130))
+            painter.drawText(textRect, QtCore.Qt.AlignCenter |
+                            QtCore.Qt.AlignVCenter, "Deprecated")
+
+    @staticmethod
     def drawResizeHandles(node, painter, option, widget):
         if node.resizable and not node.collapsed:
             pen = QtGui.QPen()
@@ -206,6 +218,7 @@ class NodePainter(object):
 
         NodePainter.drawResizeHandles(node, painter, option, widget)
         NodePainter.drawGroups(node, painter, option, widget)
+        NodePainter.drawDeprecated(node, painter, option, widget)
 
     @staticmethod
     def asVariableGetter(node, painter, option, widget):

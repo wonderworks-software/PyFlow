@@ -92,6 +92,18 @@ class NodeBase(INode):
         self.__wrapperJsonData = None
         self._nodeMetaData = None
         self.headerColor = None
+        self._deprecated = False
+        self._deprecationMessage = "This node is deprecated"
+
+    def setDeprecated(self, message):
+        self._deprecated = True
+        self._deprecationMessage = "This node will be removed in later releases! {}".format(message)
+
+    def isDeprecated(self):
+        return self._deprecated
+
+    def deprecationMessage(self):
+        return self._deprecationMessage
 
     def getMetaData(self):
         """Returns node metadata dict.

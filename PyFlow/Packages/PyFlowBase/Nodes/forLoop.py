@@ -32,6 +32,7 @@ class forLoop(NodeBase):
         self.index = self.createOutputPin('Index', 'IntPin')
         self.completed = self.createOutputPin('Completed', 'ExecPin')
         self.headerColor = FLOW_CONTROL_COLOR
+        self.setDeprecated("Use for loop begin instead")
 
     @staticmethod
     def pinTypeHints():

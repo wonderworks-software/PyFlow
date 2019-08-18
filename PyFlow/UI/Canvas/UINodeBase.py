@@ -904,6 +904,8 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                     pass
 
         description = self.description()
+        if self.isDeprecated():
+            description = self.deprecationMessage()
         if description:
             self.setToolTip(rst2html(description))
         if self.resizable:
@@ -998,6 +1000,12 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 last = comment
 
         return topMostComment
+
+    def isDeprecated(self):
+        return self._rawNode.isDeprecated()
+
+    def deprecationMessage(self):
+        return self._rawNode.deprecationMessage()
 
     def updateOwningCommentNode(self):
 
