@@ -13,17 +13,16 @@
 ## limitations under the License.
 
 
-from Qt import QtGui, QtWidgets, QtCore
+from collections import defaultdict
 import inspect
 import json
 import os
 
+from Qt import QtGui, QtWidgets, QtCore
 
 from PyFlow.Core.Common import SingletonDecorator
 from PyFlow.ConfigManager import ConfigManager
 
-
-from collections import defaultdict
 
 FILE_DIR = os.path.dirname(__file__)
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
@@ -43,7 +42,7 @@ class Colors:
     Red = QtGui.QColor(255, 0, 0, 255)
     White = QtGui.QColor(255, 255, 255, 200)
     Yellow = QtGui.QColor(255, 211, 25)
-    Orange = QtGui.QColor(209,84,0)
+    Orange = QtGui.QColor(209, 84, 0)
 
 
 @SingletonDecorator

@@ -17,7 +17,7 @@ from PyFlow.Core import NodeBase
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
-from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_ORANGE
 
 
 class forLoopBegin(NodeBase):
@@ -33,7 +33,7 @@ class forLoopBegin(NodeBase):
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
         self.index = self.createOutputPin('Index', 'IntPin')
-        self.headerColor = FLOW_CONTROL_COLOR
+        self.headerColor = FLOW_CONTROL_ORANGE
 
     @staticmethod
     def pinTypeHints():

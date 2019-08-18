@@ -28,7 +28,6 @@ class UIForLoopBeginNode(UINodeBase, IConvexHullBackDrop):
     def __init__(self, raw_node):
         super(UIForLoopBeginNode, self).__init__(raw_node)
         IConvexHullBackDrop.__init__(self)
-        self.headColorOverride = Colors.Orange
 
     def postCreate(self, jsonTemplate=None):
         super(UIForLoopBeginNode, self).postCreate(jsonTemplate)

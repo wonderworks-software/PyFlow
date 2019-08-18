@@ -28,8 +28,6 @@ class UIWhileLoopBeginNode(UINodeBase, IConvexHullBackDrop):
     def __init__(self, raw_node):
         super(UIWhileLoopBeginNode, self).__init__(raw_node)
         IConvexHullBackDrop.__init__(self)
-        self.headColorOverride = Colors.Orange
-        self.poly = None
 
     def postCreate(self, jsonTemplate=None):
         super(UIWhileLoopBeginNode, self).postCreate(jsonTemplate)

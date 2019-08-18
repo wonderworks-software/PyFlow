@@ -17,7 +17,7 @@ from PyFlow.Core import NodeBase
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
-from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_COLOR
+from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_ORANGE
 
 
 class whileLoopBegin(NodeBase):
@@ -30,7 +30,7 @@ class whileLoopBegin(NodeBase):
         self.loopEndNode.setInputWidgetVariant("ObjectPathWIdget")
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
-        self.headerColor = FLOW_CONTROL_COLOR
+        self.headerColor = FLOW_CONTROL_ORANGE
 
     @staticmethod
     def pinTypeHints():
