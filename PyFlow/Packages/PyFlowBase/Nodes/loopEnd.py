@@ -56,11 +56,13 @@ class loopEnd(NodeBase):
                 if node.loopEndNode.getData() != self.path():
                     self.setError("Invalid pair")
                     return
-                node.prevIndex = node.currentIndex
-                node.currentIndex += 1
-                if node.currentIndex >= node.lastIndex.getData():
-                    self.completed.call()
-                #node.onNext()
+                if node.__class__.__name__ == "forLoopBegin":
+                    node.prevIndex = node.currentIndex
+                    node.currentIndex += 1
+                    if node.currentIndex >= node.lastIndex.getData():
+                        self.completed.call()
+                else:
+                    node.onNext()
             else:
                 err = "block ends in different graphs"
                 node.setError(err)
