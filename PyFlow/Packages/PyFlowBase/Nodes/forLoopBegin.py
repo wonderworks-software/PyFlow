@@ -19,12 +19,14 @@ from PyFlow.Core.NodeBase import NodePinsSuggestionsHelper
 from PyFlow.Core.Common import *
 from PyFlow.Packages.PyFlowBase.Nodes import FLOW_CONTROL_ORANGE
 
+import threading
 
 class forLoopBegin(NodeBase):
     def __init__(self, name):
         super(forLoopBegin, self).__init__(name)
         self._working = False
         self.currentIndex = 0
+        self.prevIndex = -1
         self.inExec = self.createInputPin('inExec', 'ExecPin', None, self.compute)
         self.firstIndex = self.createInputPin('Start', 'IntPin')
         self.lastIndex = self.createInputPin('Stop', 'IntPin')
@@ -60,6 +62,7 @@ class forLoopBegin(NodeBase):
 
     def reset(self):
         self.currentIndex = 0
+        self.prevIndex = -1
         self._working = False
 
     def isDone(self):
@@ -72,10 +75,11 @@ class forLoopBegin(NodeBase):
         return False
 
     def onNext(self, *args, **kwargs):
-        if not self.isDone():
-            self.index.setData(self.currentIndex)
-            self.currentIndex += 1
-            self.loopBody.call(*args, **kwargs)
+        while not self.isDone():
+            if self.currentIndex > self.prevIndex:
+                self.index.setData(self.currentIndex)
+                self.prevIndex = self.currentIndex 
+                self.loopBody.call()
 
     def compute(self, *args, **kwargs):
         self.reset()
@@ -90,7 +94,9 @@ class forLoopBegin(NodeBase):
                 self.setError(err)
                 loopEndNode.setError(err)
                 return
+            loopEndNode.onNext.connect(self.onNext)
         else:
             self.setError("{} not found".format(endNodePath))
-
-        self.onNext(*args, **kwargs)
+        self.thread = threading.Thread(target=self.onNext,args=(self, args, kwargs))
+        self.thread.start() 
+        #self.onNext(*args, **kwargs)
