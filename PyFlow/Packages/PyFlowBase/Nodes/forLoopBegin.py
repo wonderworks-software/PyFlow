@@ -63,7 +63,7 @@ class forLoopBegin(NodeBase):
     def reset(self):
         self.currentIndex = 0
         self.prevIndex = -1
-        self._working = False
+        #self._working = False
 
     def isDone(self):
         indexTo = self.lastIndex.getData()
@@ -71,6 +71,7 @@ class forLoopBegin(NodeBase):
             self.reset()
             loopEndNode = PathsRegistry().getEntity(self.loopEndNode.getData())
             loopEndNode.completed.call()
+            self._working = False
             return True
         return False
 
@@ -96,6 +97,8 @@ class forLoopBegin(NodeBase):
                 return
         else:
             self.setError("{} not found".format(endNodePath))
-        self.thread = threading.Thread(target=self.onNext,args=(self, args, kwargs))
-        self.thread.start() 
+        if not self._working:
+            self.thread = threading.Thread(target=self.onNext,args=(self, args, kwargs))
+            self.thread.start() 
+            self._working = True
         #self.onNext(*args, **kwargs)
