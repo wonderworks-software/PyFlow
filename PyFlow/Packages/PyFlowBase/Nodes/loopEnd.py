@@ -58,6 +58,8 @@ class loopEnd(NodeBase):
                     return
                 node.prevIndex = node.currentIndex
                 node.currentIndex += 1
+                if node.currentIndex >= node.lastIndex.getData():
+                    self.completed.call()
                 #node.onNext()
             else:
                 err = "block ends in different graphs"

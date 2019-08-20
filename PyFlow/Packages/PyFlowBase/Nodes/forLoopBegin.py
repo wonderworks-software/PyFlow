@@ -69,8 +69,8 @@ class forLoopBegin(NodeBase):
         indexTo = self.lastIndex.getData()
         if self.currentIndex >= indexTo:
             self.reset()
-            loopEndNode = PathsRegistry().getEntity(self.loopEndNode.getData())
-            loopEndNode.completed.call()
+            #loopEndNode = PathsRegistry().getEntity(self.loopEndNode.getData())
+            #loopEndNode.completed.call()
             self._working = False
             return True
         return False
