@@ -94,7 +94,6 @@ class forLoopBegin(NodeBase):
                 self.setError(err)
                 loopEndNode.setError(err)
                 return
-            loopEndNode.onNext.connect(self.onNext)
         else:
             self.setError("{} not found".format(endNodePath))
         self.thread = threading.Thread(target=self.onNext,args=(self, args, kwargs))
