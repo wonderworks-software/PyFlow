@@ -134,7 +134,7 @@ class SceneClass(QGraphicsScene):
             except Exception as e:
                 pass
             self.tempnode = self.parent()._createNode(nodeTemplate)
-            if jsonData["bPyNode"]:
+            if jsonData["bPyNode"] or jsonData["bCompoundNode"]:
                 self.tempnode.rebuild()
             if self.tempnode:
                 self.tempnode.isTemp = True
