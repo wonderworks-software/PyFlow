@@ -2094,7 +2094,7 @@ class CanvasWidget(QWidget):
         self.leCompoundName.setValidator(nameValidator)
         self.leCompoundName.returnPressed.connect(self.onActiveCompoundNameAccepted)
 
-        rxLetters = QtCore.QRegExp('^[a-zA-Z]*$')
+        rxLetters = QtCore.QRegExp('[a-zA-Z]+(\|[a-zA-Z]+)*')
         categoryValidator = QtGui.QRegExpValidator(rxLetters, self.leCompoundCategory)
         self.leCompoundCategory.setValidator(categoryValidator)
         self.leCompoundCategory.returnPressed.connect(self.onActiveCompoundCategoryAccepted)
