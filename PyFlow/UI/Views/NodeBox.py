@@ -264,13 +264,14 @@ class NodeBoxTreeWidget(QTreeWidget):
             if os.path.exists(compoundNodesRoot):
                 for path, dirs, files in os.walk(compoundNodesRoot):
                     for f in files:
-                        compoundNodeName, extension = os.path.splitext(f)
+                        _, extension = os.path.splitext(f)
                         if extension == ".compound":
                             compoundsRoot = os.path.normpath(path)
                             fullCompoundPath = os.path.join(compoundsRoot, f)
                             with open(fullCompoundPath, 'r') as compoundFile:
                                 data = json.load(compoundFile)
                                 compoundCategoryName = data["category"]
+                                compoundNodeName = data["name"]
                                 category = "{0}|{1}|{2}".format(package_name, "Compounds", compoundCategoryName)
                                 self.insertNode(category, compoundNodeName, bCompoundNode=True)
 

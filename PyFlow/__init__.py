@@ -143,13 +143,16 @@ def getRawNodeInstance(nodeClassName, packageName=None, libName=None, **kwargs):
         for path, dirs, files in os.walk(compoundNodesPath):
             for compoundNodeFileName in files:
                 compoundNodeName, _ = os.path.splitext(compoundNodeFileName)
-                if nodeClassName == compoundNodeName:
-                    compoundNode = getRawNodeInstance("compound", packageName)
-                    compoundNodeFullPath = os.path.join(path, compoundNodeFileName)
-                    with open(compoundNodeFullPath, "r") as f:
-                        jsonString = f.read()
-                        compoundNode._rawGraphJson = json.loads(jsonString)
-                    return compoundNode
+                compoundNodeFullPath = os.path.join(path, compoundNodeFileName)
+                with open(compoundNodeFullPath, 'r') as f:
+                    compoundData = json.load(f)
+                    if compoundData["name"] == nodeClassName:
+                        compoundNode = getRawNodeInstance("compound", packageName)
+                        compoundNodeFullPath = os.path.join(path, compoundNodeFileName)
+                        with open(compoundNodeFullPath, "r") as f:
+                            jsonString = f.read()
+                            compoundNode._rawGraphJson = json.loads(jsonString)
+                        return compoundNode
 
 
 def INITIALIZE(additionalPackageLocations=[], software=""):
