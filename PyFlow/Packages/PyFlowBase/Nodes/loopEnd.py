@@ -28,6 +28,7 @@ class loopEnd(NodeBase):
         self.loopBeginNode.setInputWidgetVariant("ObjectPathWIdget")
         self.completed = self.createOutputPin('Completed', 'ExecPin')
         self.headerColor = FLOW_CONTROL_ORANGE
+        self.setExperimental()
 
     @staticmethod
     def pinTypeHints():

@@ -1004,6 +1004,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def isDeprecated(self):
         return self._rawNode.isDeprecated()
 
+    def isExperimental(self):
+        return self._rawNode.isExperimental()
+
     def deprecationMessage(self):
         return self._rawNode.deprecationMessage()
 
@@ -1357,13 +1360,17 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 nodes += node.getChainedNodes()
         return nodes
 
-    def getBetwenLoopNodes(self, orig):
+    def getBetwenLoopNodes(self, orig, bVisibleOnly=True):
         nodes = []
         for pin in self.UIoutputs.values():
             for connection in pin.connections:
                 node = connection.destination().topLevelItem()  # topLevelItem
                 if node._rawNode.__class__.__name__ != "loopEnd":
-                    nodes.append(node)
+                    if bVisibleOnly:
+                        if node.isVisible():
+                            nodes.append(node)
+                    else:
+                        nodes.append(node)
                     nodes += node.getBetwenLoopNodes(orig)
                 else:
                     if node._rawNode.loopBeginNode.getData() != orig.path():

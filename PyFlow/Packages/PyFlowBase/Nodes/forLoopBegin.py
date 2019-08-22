@@ -36,6 +36,7 @@ class forLoopBegin(NodeBase):
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
         self.index = self.createOutputPin('Index', 'IntPin')
         self.headerColor = FLOW_CONTROL_ORANGE
+        self.setExperimental()
 
     @staticmethod
     def pinTypeHints():
