@@ -615,10 +615,24 @@ class PinBase(IPin):
             self.owningNode().pins.remove(self)
         if self.uid in self.owningNode().pinsCreationOrder:
             self.owningNode().pinsCreationOrder.pop(self.uid)
-        if self.pinIndex in self.owningNode().orderedInputs:
-            self.owningNode().orderedInputs.pop(self.pinIndex)
-        if self.pinIndex in self.owningNode().orderedOutputs:
-            self.owningNode().orderedOutputs.pop(self.pinIndex)
+
+        # Fix pin indexes on owning node
+        if self.optionEnabled(PinOptions.Dynamic):
+            # sort owning node pins indexes
+            index = 1
+            if self.direction == PinDirection.Input:
+                for inputPin in self.owningNode().orderedInputs.values():
+                    if inputPin == self:
+                        continue
+                    inputPin.pinIndex = index
+                    index += 1
+            index = 1
+            if self.direction == PinDirection.Output:
+                for outputPin in self.owningNode().orderedOutputs.values():
+                    if outputPin == self:
+                        continue
+                    outputPin.pinIndex = index
+                    index += 1
         self.killed.send(self)
         clearSignal(self.killed)
 
