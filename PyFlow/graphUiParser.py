@@ -61,7 +61,9 @@ def run(filePath):
                     uiNodeJsonTemplate = inp.serialize()
                     uiNodeJsonTemplate["wrapper"] = inp.wrapperJsonData
                     uiNode.postCreate(uiNodeJsonTemplate)
-                    cat = uiNode.createOutputWidgets(prop.layout(), inp.name)
+                    cat = CollapsibleFormWidget(headName=inp.name)
+                    prop.layout().addWidget(cat) 
+                    cat = uiNode.createOutputWidgets(cat)
 
                 nodes = grph.getNodesList()
                 if len(nodes) > 0:

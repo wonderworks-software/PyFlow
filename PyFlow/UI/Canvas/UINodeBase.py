@@ -1329,8 +1329,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                         w.setEnabled(False)
             return inputsCategory
 
-    def createOutputWidgets(self, propertiesWidget, headName="Outputs"):
-        inputsCategory = CollapsibleFormWidget(headName=headName)
+    def createOutputWidgets(self, inputsCategory, headName="Outputs"):
         sortedInputs = sorted(self.UIPins.values(), key=lambda x: x.name)
         for inp in sortedInputs:
             if inp.isArray() or inp.isDict() or inp._rawPin.hidden:
@@ -1348,7 +1347,6 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 w.blockWidgetSignals(False)
                 w.setObjectName(inp.getFullName())
                 inputsCategory.addWidget(inp.name, w)
-        propertiesWidget.addWidget(inputsCategory)
         return inputsCategory
 
     def getChainedNodes(self):

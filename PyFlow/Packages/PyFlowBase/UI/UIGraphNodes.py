@@ -17,6 +17,7 @@ from Qt import QtCore
 
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Widgets.SelectPinDialog import SelectPinDialog
+from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.UI.Utils.stylesheet import Colors
 from PyFlow.UI import RESOURCES_DIR
 from PyFlow.UI.Canvas.UICommon import *
@@ -71,6 +72,9 @@ class UIGraphInputs(UINodeBase):
         for uiPin in self.UIPins.values():
             uiPin.labelColor = Colors.AbsoluteBlack
 
+    def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
+        if self.graph() == GraphManagerSingleton().get().findRootGraph():
+            self.createOutputWidgets(inputsCategory, inGroup)
 
 class UIGraphOutputs(UINodeBase):
     pinCreated = QtCore.Signal(object)
