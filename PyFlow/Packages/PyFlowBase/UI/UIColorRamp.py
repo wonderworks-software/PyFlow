@@ -56,10 +56,10 @@ class UIColorRamp(UINodeBase):
             if ramp() is not None:
                 ramp().setColor(color)
 
-    def createInputWidgets(self, inputsCategory, group=None, pins=True):
+    def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
         preIndex = inputsCategory.Layout.count()
         if pins:
-            super(UIColorRamp, self).createInputWidgets(inputsCategory, group)
+            super(UIColorRamp, self).createInputWidgets(inputsCategory, inGroup)
             inputVal = inputsCategory.getWidgetByName("input")
             if not self._rawNode.input.isArray():
                 inputVal.setMinimum(0.0)
@@ -84,6 +84,6 @@ class UIColorRamp(UINodeBase):
 
         selector.setCurrentIndex(self._rawNode._curveType)
         selector.activated.connect(self.changeCurveType)
-        inputsCategory.insertWidget(preIndex, "CurveType", selector,group=group)
-        inputsCategory.insertWidget(preIndex+1, "Ramp", ramp,group=group)
-        inputsCategory.insertWidget(preIndex+1, "Selected Color", colorChanger,group=group)
+        inputsCategory.insertWidget(preIndex, "CurveType", selector,group=inGroup)
+        inputsCategory.insertWidget(preIndex+1, "Ramp", ramp,group=inGroup)
+        inputsCategory.insertWidget(preIndex+1, "Selected Color", colorChanger,group=inGroup)

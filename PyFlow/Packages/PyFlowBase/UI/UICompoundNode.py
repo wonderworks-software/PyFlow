@@ -93,13 +93,13 @@ class UICompoundNode(UINodeBase):
         self.canvasRef().createWrappersForGraph(self._rawNode.rawGraph)
         self._rawNode.rawGraph.nameChanged.connect(self.onGraphNameChanged)
 
-    def createInputWidgets(self, inputsCategory, group=None, pins=True):
+    def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
         if pins:
-            super(UICompoundNode, self).createInputWidgets(inputsCategory, group)
+            super(UICompoundNode, self).createInputWidgets(inputsCategory, inGroup)
         nodes = self._rawNode.rawGraph.getNodesList()
         if len(nodes) > 0:
             for node in nodes:
                 wrapper = node.getWrapper()
                 if wrapper is not None:
                     if wrapper.bExposeInputsToCompound:
-                        wrapper.createInputWidgets(inputsCategory, group="{} inputs".format(node.name),pins=False)
+                        wrapper.createInputWidgets(inputsCategory, inGroup="{} inputs".format(node.name),pins=False)

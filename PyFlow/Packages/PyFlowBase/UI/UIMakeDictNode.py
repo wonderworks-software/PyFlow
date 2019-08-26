@@ -33,9 +33,9 @@ class UIMakeDictNode(UINodeBase):
     def selectStructure(self, name):
         self.canvasRef().tryFillPropertiesView(self)
 
-    def createInputWidgets(self, inputsCategory, group=None, pins=True):
+    def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
         if pins:
-            super(UIMakeDictNode, self).createInputWidgets(inputsCategory, group)
+            super(UIMakeDictNode, self).createInputWidgets(inputsCategory, inGroup)
         selector = QComboBox()
         for i in self.input._rawPin._defaultSupportedDataTypes:
             selector.addItem(i)
@@ -44,4 +44,4 @@ class UIMakeDictNode(UINodeBase):
             self.input._rawPin.dataType))
 
         selector.activated.connect(self.changeType)
-        inputsCategory.insertWidget(0, "DataType", selector, group=group)
+        inputsCategory.insertWidget(0, "DataType", selector, group=inGroup)

@@ -78,7 +78,7 @@ class UISetVarNode(UINodeBase):
 
             self.updateHeaderText()
 
-    def createInputWidgets(self, inputsCategory, group=None, pins=True):
+    def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
         inputsCategory.setButtonName("Variable")
         validVars = self.graph().getVarList()
         cbVars = EnumComboBox([v.name for v in validVars])
@@ -87,9 +87,9 @@ class UISetVarNode(UINodeBase):
         else:
             cbVars.setCurrentText("")
         cbVars.changeCallback.connect(self.onVarSelected)
-        inputsCategory.addWidget("var", cbVars, group=group)
+        inputsCategory.addWidget("var", cbVars, group=inGroup)
         if pins:
-            super(UISetVarNode, self).createInputWidgets(inputsCategory, group)
+            super(UISetVarNode, self).createInputWidgets(inputsCategory, inGroup)
 
     def postCreate(self, template):
         super(UISetVarNode, self).postCreate(template)

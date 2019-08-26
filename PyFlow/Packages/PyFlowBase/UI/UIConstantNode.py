@@ -89,11 +89,11 @@ class UIConstantNode(UINodeBase):
             super(UIConstantNode, self).createInputWidgets(
                 inputsCategory, group)
 
-    def createInputWidgets(self, inputsCategory, group=None, pins=True):
+    def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
         inputVal = None
         preIndex = inputsCategory.Layout.count()
         if pins:
-            super(UIConstantNode, self).createInputWidgets(inputsCategory, group)
+            super(UIConstantNode, self).createInputWidgets(inputsCategory, inGroup)
             inputVal = inputsCategory.getWidgetByName("in")
 
         selector = QComboBox()
@@ -112,11 +112,11 @@ class UIConstantNode(UINodeBase):
         structSelector.setCurrentIndex(self.input._rawPin._currStructure)
         selector.activated.connect(self._rawNode.updateType)
         selector.activated.connect(
-            lambda: self.updateType(inputVal, inputsCategory, group))
+            lambda: self.updateType(inputVal, inputsCategory, inGroup))
         structSelector.activated.connect(self._rawNode.selectStructure)
         structSelector.activated.connect(
-            lambda: self.selectStructure(inputVal, inputsCategory, group))
+            lambda: self.selectStructure(inputVal, inputsCategory, inGroup))
 
         inputsCategory.insertWidget(
-            preIndex, "DataType", selector, group=group)
-        inputsCategory.insertWidget(preIndex + 1, "Structure", structSelector, group=group)
+            preIndex, "DataType", selector, group=inGroup)
+        inputsCategory.insertWidget(preIndex + 1, "Structure", structSelector, group=inGroup)
