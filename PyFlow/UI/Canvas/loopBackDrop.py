@@ -37,6 +37,9 @@ class backDrop(QGraphicsWidget):
             return QtCore.QRectF(0, 0, 0, 0)
 
     def paint(self, painter, option, widget):
+        if not self.parent.isUnderActiveGraph():
+            return
+
         roundRectPath = QtGui.QPainterPath()
         self.parent.computeHull()
         if self.parent.poly:

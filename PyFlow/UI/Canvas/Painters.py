@@ -42,7 +42,19 @@ class NodePainter(object):
             textRect.setTop(textRect.height() - 10)
             painter.fillRect(textRect, Colors.Red.darker(130))
             painter.drawText(textRect, QtCore.Qt.AlignCenter |
-                            QtCore.Qt.AlignVCenter, "Deprecated")
+                             QtCore.Qt.AlignVCenter, "Deprecated")
+
+    @staticmethod
+    def drawExperimental(node, painter, option, widget):
+        if node.isExperimental():
+            font = painter.font()
+            font.setPointSize(6)
+            painter.setFont(font)
+            textRect = node.boundingRect()
+            textRect.setTop(textRect.height() - 10)
+            painter.fillRect(textRect, Colors.Yellow.darker(180))
+            painter.drawText(textRect, QtCore.Qt.AlignCenter |
+                             QtCore.Qt.AlignVCenter, "Experimental")
 
     @staticmethod
     def drawResizeHandles(node, painter, option, widget):
@@ -219,6 +231,7 @@ class NodePainter(object):
         NodePainter.drawResizeHandles(node, painter, option, widget)
         NodePainter.drawGroups(node, painter, option, widget)
         NodePainter.drawDeprecated(node, painter, option, widget)
+        NodePainter.drawExperimental(node, painter, option, widget)
 
     @staticmethod
     def asVariableGetter(node, painter, option, widget):

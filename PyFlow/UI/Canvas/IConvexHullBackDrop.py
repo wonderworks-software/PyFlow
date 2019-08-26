@@ -41,9 +41,18 @@ class IConvexHullBackDrop(object):
         if loopEndNode is None:
             self.poly = QtGui.QPolygonF()
             return
-        p = [self]
+        if self.isUnderCollapsedComment():
+            p = [self.getTopMostOwningCollapsedComment()]
+        else:
+            p = [self]
         if loopEndNode.__class__.__name__ == "loopEnd" and loopEndNode.getWrapper() is not None:
-            p.append(loopEndNode.getWrapper())
+            uiLoopEnd = loopEndNode.getWrapper()
+            if loopEndNode.isUnderActiveGraph():
+                if uiLoopEnd.isUnderCollapsedComment():
+                    p.append(uiLoopEnd.getTopMostOwningCollapsedComment())
+                else:
+                    p.append(uiLoopEnd)
+
         else:
             self.poly = QtGui.QPolygonF()
             return

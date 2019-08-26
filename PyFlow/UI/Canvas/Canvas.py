@@ -134,7 +134,7 @@ class SceneClass(QGraphicsScene):
             except Exception as e:
                 pass
             self.tempnode = self.parent()._createNode(nodeTemplate)
-            if jsonData["bPyNode"]:
+            if jsonData["bPyNode"] or jsonData["bCompoundNode"]:
                 self.tempnode.rebuild()
             if self.tempnode:
                 self.tempnode.isTemp = True
@@ -2094,7 +2094,7 @@ class CanvasWidget(QWidget):
         self.leCompoundName.setValidator(nameValidator)
         self.leCompoundName.returnPressed.connect(self.onActiveCompoundNameAccepted)
 
-        rxLetters = QtCore.QRegExp('^[a-zA-Z]*$')
+        rxLetters = QtCore.QRegExp('[a-zA-Z]+(\|[a-zA-Z]+)*')
         categoryValidator = QtGui.QRegExpValidator(rxLetters, self.leCompoundCategory)
         self.leCompoundCategory.setValidator(categoryValidator)
         self.leCompoundCategory.returnPressed.connect(self.onActiveCompoundCategoryAccepted)

@@ -31,6 +31,7 @@ class whileLoopBegin(NodeBase):
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
         self.headerColor = FLOW_CONTROL_ORANGE
+        self.setExperimental()
 
     @staticmethod
     def pinTypeHints():

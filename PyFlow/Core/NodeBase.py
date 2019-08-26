@@ -94,6 +94,7 @@ class NodeBase(INode):
         self.headerColor = None
         self._deprecated = False
         self._deprecationMessage = "This node is deprecated"
+        self._experimental = False
 
     def setDeprecated(self, message):
         self._deprecated = True
@@ -101,6 +102,12 @@ class NodeBase(INode):
 
     def isDeprecated(self):
         return self._deprecated
+
+    def isExperimental(self):
+        return self._experimental
+
+    def setExperimental(self):
+        self._experimental = True
 
     def deprecationMessage(self):
         return self._deprecationMessage

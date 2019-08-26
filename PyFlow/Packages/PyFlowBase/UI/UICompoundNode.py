@@ -15,9 +15,13 @@
 
 import json
 import logging
+import os
 
 from Qt.QtWidgets import QFileDialog
+from Qt.QtWidgets import QInputDialog
+from Qt.QtWidgets import QMessageBox
 
+from PyFlow import GET_PACKAGE_PATH, GET_PACKAGES
 from PyFlow.UI.Canvas.UICommon import validateGraphDataPackages
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
@@ -42,15 +46,44 @@ class UICompoundNode(UINodeBase):
 
         self.actionExport = self._menu.addAction("Export")
         self.actionExport.triggered.connect(self.onExport)
+        self.actionExport = self._menu.addAction("Export to package")
+        self.actionExport.triggered.connect(self.onExportToPackage)
         self.actionImport = self._menu.addAction("Import")
         self.actionImport.triggered.connect(self.onImport)
 
-    def onExport(self):
-        savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Subgraph data (*.compound)")
+    def rebuild(self):
+        if self._rawNode._rawGraphJson is not None:
+            self.assignData(self._rawNode._rawGraphJson)
+
+    def onExport(self, root=None):
+        try:
+            savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Subgraph data (*.compound)", dir=root)
+        except:
+            savePath, selectedFilter = QFileDialog.getSaveFileName(filter="Subgraph data (*.compound)")
         if savePath != "":
             with open(savePath, 'w') as f:
                 json.dump(self._rawNode.rawGraph.serialize(), f, indent=4)
             logger.info("{0} data successfully exported!".format(self.getName()))
+
+    def onExportToPackage(self):
+        # check if category is not empty
+        if self._rawNode._rawGraph.category == '':
+            QMessageBox.information(None, "Warning", "Category is not set! Please step into compound and type category name.")
+            return
+
+        packageNames = list(GET_PACKAGES().keys())
+        selectedPackageName, accepted = QInputDialog.getItem(None, "Select", "Select package", packageNames, editable=False)
+        if accepted:
+            packagePath = GET_PACKAGE_PATH(selectedPackageName)
+            compoundsDir = os.path.join(packagePath, "Compounds")
+            if not os.path.isdir(compoundsDir):
+                os.mkdir(compoundsDir)
+            self.onExport(root=compoundsDir)
+            # refresh node box
+            app = self.canvasRef().getApp()
+            nodeBoxes = app.getRegisteredTools(classNameFilters=["NodeBoxTool"])
+            for nodeBox in nodeBoxes:
+                nodeBox.refresh()
 
     def onImport(self):
         openPath, selectedFilter = QFileDialog.getOpenFileName(filter="Subgraph data (*.compound)")
@@ -102,4 +135,4 @@ class UICompoundNode(UINodeBase):
                 wrapper = node.getWrapper()
                 if wrapper is not None:
                     if wrapper.bExposeInputsToCompound:
-                        wrapper.createInputWidgets(inputsCategory, inGroup="{} inputs".format(node.name),pins=False)
+                        wrapper.createInputWidgets(inputsCategory, inGroup="{} inputs".format(node.name), pins=False)

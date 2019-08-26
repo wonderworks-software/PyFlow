@@ -110,7 +110,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                         sepCatNames.pop()
         return False
 
-    def insertNode(self, nodeCategoryPath, name, doc=None, libName=None, bPyNode=False):
+    def insertNode(self, nodeCategoryPath, name, doc=None, libName=None, bPyNode=False, bCompoundNode=False):
         nodePath = nodeCategoryPath.split('|')
         categoryPath = ''
         # walk from tree top to bottom, creating folders if needed
@@ -142,6 +142,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         nodeItem = QTreeWidgetItem(self.categoryPaths[categoryPath])
         nodeItem.bCategory = False
         nodeItem.bPyNode = bPyNode
+        nodeItem.bCompoundNode = bCompoundNode
         nodeItem.setText(0, name)
         nodeItem.libName = libName
         nodeItem.docString = doc
@@ -243,7 +244,7 @@ class NodeBoxTreeWidget(QTreeWidget):
                         elif dataType in hints.outputTypes:
                             self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
 
-            # Populate py nodes
+            # populate exported py nodes
             packagePath = GET_PACKAGE_PATH(package_name)
             pyNodesRoot = os.path.join(packagePath, "PyNodes")
             if os.path.exists(pyNodesRoot):
@@ -257,6 +258,22 @@ class NodeBoxTreeWidget(QTreeWidget):
                             categorySuffix = '|'.join(folders[index:])
                             category = "{0}|{1}".format(package_name, categorySuffix)
                             self.insertNode(category, pyNodeName, bPyNode=True)
+
+            # populate exported compounds
+            compoundNodesRoot = os.path.join(packagePath, "Compounds")
+            if os.path.exists(compoundNodesRoot):
+                for path, dirs, files in os.walk(compoundNodesRoot):
+                    for f in files:
+                        _, extension = os.path.splitext(f)
+                        if extension == ".compound":
+                            compoundsRoot = os.path.normpath(path)
+                            fullCompoundPath = os.path.join(compoundsRoot, f)
+                            with open(fullCompoundPath, 'r') as compoundFile:
+                                data = json.load(compoundFile)
+                                compoundCategoryName = data["category"]
+                                compoundNodeName = data["name"]
+                                category = "{0}|{1}|{2}".format(package_name, "Compounds", compoundCategoryName)
+                                self.insertNode(category, compoundNodeName, bCompoundNode=True)
 
             # expand all categories
             if dataType is not None:
@@ -277,12 +294,15 @@ class NodeBoxTreeWidget(QTreeWidget):
         # find top level parent
         rootItem = item_clicked
         bPyNode = False
+        bCompoundNode = False
         if not item_clicked.bCategory:
             bPyNode = rootItem.bPyNode
+            bCompoundNode = rootItem.bCompoundNode
         while not rootItem.parent() is None:
             rootItem = rootItem.parent()
             if not rootItem.bCategory:
                 bPyNode = rootItem.bPyNode
+                bCompoundNode = rootItem.bCompoundNode
         packageName = rootItem.text(0)
         pressed_text = item_clicked.text(0)
         libName = item_clicked.libName
@@ -299,13 +319,14 @@ class NodeBoxTreeWidget(QTreeWidget):
         jsonTemplate['uuid'] = str(uuid.uuid4())
         jsonTemplate['meta']['label'] = pressed_text
         jsonTemplate['bPyNode'] = bPyNode
+        jsonTemplate['bCompoundNode'] = bCompoundNode
 
         if self.canvas.pressedPin is not None and self.bGripsEnabled:
             a = self.canvas.mapToScene(self.canvas.mouseReleasePos)
             jsonTemplate["x"] = a.x()
             jsonTemplate["y"] = a.y()
             node = self.canvas.createNode(jsonTemplate)
-            if bPyNode:
+            if bPyNode or bCompoundNode:
                 node.rebuild()
             self.canvas.hideNodeBox()
             pressedPin = self.canvas.pressedPin

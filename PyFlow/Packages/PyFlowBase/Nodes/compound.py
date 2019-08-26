@@ -35,6 +35,7 @@ class compound(NodeBase):
         self.isCompoundNode = True
         self.pinExposed = Signal(object)
         self._rawGraph = None
+        self._rawGraphJson = None
         self.__inputsMap = {}
         self.__outputsMap = {}
         self.bCacheEnabled = False
