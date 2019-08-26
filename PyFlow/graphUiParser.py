@@ -26,6 +26,7 @@ from PyFlow.Core.Common import *
 from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget
 import PyFlow.UI.resources
 
 
@@ -47,7 +48,6 @@ def run(filePath):
         prop.setLayout(QVBoxLayout())
         prop.setWindowTitle(filePath)
         prop.setWindowIcon(QtGui.QIcon(":/LogoBpApp.png"))
-
         # Initalize packages
         try:
             INITIALIZE()
@@ -55,8 +55,6 @@ def run(filePath):
             man.deserialize(data)
             grph = man.findRootGraph()
             inputs = grph.getNodesByClassName("graphInputs")
-
-            # If no GraphInput Nodes Exit propgram
             if len(inputs) > 0:
                 for inp in inputs:
                     uiNode = getUINodeInstance(inp)
@@ -64,8 +62,19 @@ def run(filePath):
                     uiNodeJsonTemplate["wrapper"] = inp.wrapperJsonData
                     uiNode.postCreate(uiNodeJsonTemplate)
                     cat = uiNode.createOutputWidgets(prop.layout(), inp.name)
-                    prop.show()
 
+                nodes = grph.getNodesList()
+                if len(nodes) > 0:
+                    for node in nodes:
+                        uiNode = getUINodeInstance(node)
+                        uiNodeJsonTemplate = node.serialize()
+                        uiNodeJsonTemplate["wrapper"] = node.wrapperJsonData
+                        uiNode.postCreate(uiNodeJsonTemplate)
+                        if uiNode.bExposeInputsToCompound:
+                            cat = CollapsibleFormWidget(headName="{} inputs".format(node.name))
+                            prop.layout().addWidget(cat)                        
+                            uiNode.createInputWidgets(cat, pins=False)
+                prop.show()
                 def programLoop():
                     while True:
                         man.Tick(deltaTime=0.02)
@@ -79,6 +88,7 @@ def run(filePath):
                     man.terminationRequested = True
                     t.join()
                 app.aboutToQuit.connect(quitEvent)
+            # If no GraphInput Nodes Exit propgram   
             else:
                 msg.setInformativeText(filePath)
                 msg.setDetailedText("The file doesn't containt graphInputs nodes")
