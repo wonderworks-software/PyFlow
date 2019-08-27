@@ -270,6 +270,41 @@ class UIConnection(QGraphicsPathItem):
     def kill(self):
         self.canvasRef().removeConnection(self)
 
+    def getQuadSpline(self,p1,p2):
+        offset = 20
+        roundnes = yRoundnes = 5
+
+        xDistance = (p2.x()-offset+roundnes) - (p1.x()+offset-roundnes)
+        yDistance = p1.y() - p2.y()
+        midPointY = p2.y()+((p1.y()-p2.y())/2)
+        if yDistance < -roundnes:
+            yRoundnes *= -1
+
+        self.mPath = QtGui.QPainterPath()
+        self.mPath.moveTo(p1)
+
+        if xDistance > 0:
+            if abs(yDistance) > roundnes*2:
+                self.mPath.lineTo(QtCore.QPoint(p2.x()-offset-roundnes,p1.y()))
+                self.mPath.quadTo(QtCore.QPoint(p2.x()-offset,p1.y()),QtCore.QPoint(p2.x()-offset,p1.y()-yRoundnes))
+                self.mPath.lineTo(QtCore.QPoint(p2.x()-offset,p2.y()+yRoundnes))
+                self.mPath.quadTo(QtCore.QPoint(p2.x()-offset,p2.y()),QtCore.QPoint(p2.x()-offset+roundnes,p2.y()))
+                self.mPath.lineTo(p2)
+            else:
+                self.mPath.lineTo(p2)
+        else:        
+            self.mPath.lineTo(QtCore.QPoint(p1.x()+offset-roundnes,p1.y()))
+            self.mPath.quadTo(QtCore.QPoint(p1.x()+offset,p1.y()),QtCore.QPoint(p1.x()+offset,p1.y()-yRoundnes))
+            self.mPath.lineTo(QtCore.QPoint(p1.x()+offset,(midPointY)+yRoundnes))
+            self.mPath.quadTo(QtCore.QPoint(p1.x()+offset,midPointY),QtCore.QPoint(p1.x()+offset-roundnes,midPointY))
+            self.mPath.lineTo(QtCore.QPoint(p2.x()-offset+roundnes,midPointY))
+            self.mPath.quadTo(QtCore.QPoint(p2.x()-offset,midPointY),QtCore.QPoint(p2.x()-offset,(midPointY-yRoundnes)))
+            self.mPath.lineTo(QtCore.QPoint(p2.x()-offset,p2.y()+yRoundnes))
+            self.mPath.quadTo(QtCore.QPoint(p2.x()-offset,p2.y()),QtCore.QPoint(p2.x()-offset+roundnes,p2.y()))
+            self.mPath.lineTo(p2)              
+
+        self.setPath(self.mPath)
+
     def paint(self, painter, option, widget):
 
         option.state &= ~QStyle.State_Selected
@@ -278,7 +313,7 @@ class UIConnection(QGraphicsPathItem):
 
         self.setPen(self.pen)
         p1, p2 = self.getEndPoints()
-
+        """
         if lod >= 5:
             self.mPath = QtGui.QPainterPath()
             self.mPath.moveTo(p1)
@@ -304,4 +339,7 @@ class UIConnection(QGraphicsPathItem):
             self.mPath.cubicTo(self.cp1, self.cp2, p2)
 
         self.setPath(self.mPath)
+        """
+        self.getQuadSpline(p1,p2)
+        
         super(UIConnection, self).paint(painter, option, widget)
