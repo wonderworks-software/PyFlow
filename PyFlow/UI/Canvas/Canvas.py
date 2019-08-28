@@ -843,8 +843,8 @@ class Canvas(QGraphicsView):
                 self.reset_scale()
 
             if currentInputAction in InputManager()["Canvas.KillSelected"]:
-                self.killSelectedNodes()
                 self.killSelectedConnections()
+                self.killSelectedNodes()
                 EditorHistory().saveState("Kill selected", modify=True)
 
             if currentInputAction in InputManager()["Canvas.CopyNodes"]:
