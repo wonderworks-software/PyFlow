@@ -16,9 +16,8 @@
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 
+
 # Execution pin
-
-
 class ExecPin(PinBase):
     def __init__(self, name, parent, direction, **kwargs):
         super(ExecPin, self).__init__(name, parent, direction, **kwargs)
@@ -26,6 +25,7 @@ class ExecPin(PinBase):
         self._isArray = False
         if self.direction == PinDirection.Input:
             self.enableOptions(PinOptions.AllowMultipleConnections)
+        self._lastCallTime = 0.0
 
     def isExec(self):
         return True
@@ -59,3 +59,11 @@ class ExecPin(PinBase):
 
     def setData(self, data):
         pass
+
+    def getLastExecutionTime(self):
+        return self._lastCallTime
+
+    def call(self, *args, **kwargs):
+        if self.owningNode().isValid():
+            self._lastCallTime = currentProcessorTime()
+        super(ExecPin, self).call(*args, **kwargs)

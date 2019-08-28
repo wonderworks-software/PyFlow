@@ -19,6 +19,7 @@ from uuid import UUID, uuid4
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QGraphicsPathItem
+from Qt.QtWidgets import QGraphicsEllipseItem
 from Qt.QtWidgets import QMenu
 from Qt.QtWidgets import QStyle
 
@@ -27,9 +28,10 @@ from PyFlow.UI.Canvas.UICommon import NodeDefaults
 from PyFlow.Core.Common import *
 
 
+
 # UIConnection between pins
 class UIConnection(QGraphicsPathItem):
-    """UIConnection is a cubic spline curve. It represents connecton between two pins.
+    """UIConnection is a cubic spline curve. It represents connection between two pins.
     """
     def __init__(self, source, destination, canvas):
         QGraphicsPathItem.__init__(self)
@@ -62,6 +64,7 @@ class UIConnection(QGraphicsPathItem):
         self.selectedColor = self.color.lighter(150)
 
         self.thickness = 1
+        self.thicknessMultiplier = 1
         if source.isExec():
             self.thickness = 2
 
@@ -79,6 +82,38 @@ class UIConnection(QGraphicsPathItem):
         self.destination().uiConnectionList.append(self)
         self.source().pinConnected(self.destination())
         self.destination().pinConnected(self.source())
+
+        if self.source().isExec():
+            self.bubble = QGraphicsEllipseItem(-2.5, -2.5, 5, 5, self)
+            self.bubble.setBrush(self.color)
+            self.bubble.setPen(self.pen)
+
+            point = self.mPath.pointAtPercent(0.0)
+            self.bubble.setPos(point)
+
+            self.bubble.hide()
+            self.source()._rawPin.onExecute.connect(self.performEvaluationFeedback)
+            self.shouldAnimate = False
+            self.timeline = QtCore.QTimeLine(2000)
+            self.timeline.setFrameRange(0, 100)
+            self.timeline.frameChanged.connect(self.timelineFrameChanged)
+            self.timeline.setLoopCount(0)
+
+    def performEvaluationFeedback(self, *args, **kwargs):
+        if self.timeline.state() == QtCore.QTimeLine.State.NotRunning:
+            self.shouldAnimate = True
+            # spawn bubble
+            self.bubble.show()
+            self.timeline.start()
+
+    def timelineFrameChanged(self, frameNum):
+        percentage = currentProcessorTime() - self.source()._rawPin.getLastExecutionTime()
+        self.shouldAnimate = percentage < 0.5
+        point = self.mPath.pointAtPercent(frameNum / self.timeline.endFrame())
+        self.bubble.setPos(point)
+        if not self.shouldAnimate:
+            self.timeline.stop()
+            self.bubble.hide()
 
     def setSelected(self, value):
         super(UIConnection, self).setSelected(value)
@@ -149,11 +184,10 @@ class UIConnection(QGraphicsPathItem):
         if not arePinsConnected(self.source()._rawPin, self.destination()._rawPin):
             self.canvasRef().removeConnection(self)
 
-        if self.drawSource._rawPin.isExec() or self.drawDestination._rawPin.isExec():
+        if self.drawSource.isExec() or self.drawDestination.isExec():
             if self.thickness != 2:
                 self.thickness = 2
                 self.pen.setWidthF(self.thickness)
-                self.update()
 
         if self.isSelected():
             self.pen.setColor(self.selectedColor)
@@ -285,36 +319,36 @@ class UIConnection(QGraphicsPathItem):
         if yDistance < -roundnes:
             yRoundnes *= -1
 
-        self.mPath = QtGui.QPainterPath()
-        self.mPath.moveTo(p1)
+        mPath = QtGui.QPainterPath()
+        mPath.moveTo(p1)
 
         if xDistance > 0 or sameSide == -1:
             if abs(yDistance) > roundnes*2:
                 if sameSide == -1:
                     roundnes*=-1
-                self.mPath.lineTo(QtCore.QPoint(p2.x()+offset2-roundnes,p1.y()))
-                self.mPath.quadTo(QtCore.QPoint(p2.x()+offset2,p1.y()),QtCore.QPoint(p2.x()+offset2,p1.y()-yRoundnes))
-                self.mPath.lineTo(QtCore.QPoint(p2.x()+offset2,p2.y()+yRoundnes))
+                mPath.lineTo(QtCore.QPoint(p2.x()+offset2-roundnes,p1.y()))
+                mPath.quadTo(QtCore.QPoint(p2.x()+offset2,p1.y()),QtCore.QPoint(p2.x()+offset2,p1.y()-yRoundnes))
+                mPath.lineTo(QtCore.QPoint(p2.x()+offset2,p2.y()+yRoundnes))
                 if sameSide != 0:
                     roundnes*=-1
 
-                self.mPath.quadTo(QtCore.QPoint(p2.x()+offset2,p2.y()),QtCore.QPoint(p2.x()+offset2+roundnes,p2.y()))
-                self.mPath.lineTo(p2)
+                mPath.quadTo(QtCore.QPoint(p2.x()+offset2,p2.y()),QtCore.QPoint(p2.x()+offset2+roundnes,p2.y()))
+                mPath.lineTo(p2)
             else:
-                self.mPath.lineTo(p2)
+                mPath.lineTo(p2)
         else:        
-            self.mPath.lineTo(QtCore.QPoint(p1.x()+offset1-roundnes,p1.y()))
-            self.mPath.quadTo(QtCore.QPoint(p1.x()+offset1,p1.y()),QtCore.QPoint(p1.x()+offset1,p1.y()-yRoundnes))
-            self.mPath.lineTo(QtCore.QPoint(p1.x()+offset1,(midPointY)+yRoundnes))
-            self.mPath.quadTo(QtCore.QPoint(p1.x()+offset1,midPointY),QtCore.QPoint(p1.x()+offset1-roundnes,midPointY))
+            mPath.lineTo(QtCore.QPoint(p1.x()+offset1-roundnes,p1.y()))
+            mPath.quadTo(QtCore.QPoint(p1.x()+offset1,p1.y()),QtCore.QPoint(p1.x()+offset1,p1.y()-yRoundnes))
+            mPath.lineTo(QtCore.QPoint(p1.x()+offset1,(midPointY)+yRoundnes))
+            mPath.quadTo(QtCore.QPoint(p1.x()+offset1,midPointY),QtCore.QPoint(p1.x()+offset1-roundnes,midPointY))
 
-            self.mPath.lineTo(QtCore.QPoint(p2.x()+offset2+roundnes,midPointY))
-            self.mPath.quadTo(QtCore.QPoint(p2.x()+offset2,midPointY),QtCore.QPoint(p2.x()+offset2,(midPointY-yRoundnes)))
-            self.mPath.lineTo(QtCore.QPoint(p2.x()+offset2,p2.y()+yRoundnes))
-            self.mPath.quadTo(QtCore.QPoint(p2.x()+offset2,p2.y()),QtCore.QPoint(p2.x()+offset2+roundnes,p2.y()))
-            self.mPath.lineTo(p2)              
+            mPath.lineTo(QtCore.QPoint(p2.x()+offset2+roundnes,midPointY))
+            mPath.quadTo(QtCore.QPoint(p2.x()+offset2,midPointY),QtCore.QPoint(p2.x()+offset2,(midPointY-yRoundnes)))
+            mPath.lineTo(QtCore.QPoint(p2.x()+offset2,p2.y()+yRoundnes))
+            mPath.quadTo(QtCore.QPoint(p2.x()+offset2,p2.y()),QtCore.QPoint(p2.x()+offset2+roundnes,p2.y()))
+            mPath.lineTo(p2)
 
-        self.setPath(self.mPath)
+        return mPath
 
     def paint(self, painter, option, widget):
 
@@ -327,46 +361,47 @@ class UIConnection(QGraphicsPathItem):
         sameSide = 0
         offset = 20
         roundnes = 5
-        if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute","rerouteExecs"]:
+        if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
             xDistance = p2.x() - p1.x()
             if xDistance < 0:
                 p2, p1 = self.getEndPoints()
                 sameSide = 1
-        if self.source().owningNode()._rawNode.__class__.__name__ in ["reroute","rerouteExecs"]:
+        if self.source().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
             p11, p22 = self.getEndPoints()
             xDistance = p22.x() - p11.x()
             if xDistance < 0:
                 sameSide = -1
                 p1, p2 = self.getEndPoints()
 
-        self.getQuadSpline(p1,p2,offset,roundnes,sameSide)
-
-        """
-        if lod >= 5:
-            self.mPath = QtGui.QPainterPath()
-            self.mPath.moveTo(p1)
-            self.mPath.lineTo(p2)
-        else:
-            xDistance = p2.x() - p1.x()
-            vDistance = p2.y() - p1.y()
-            offset = abs(xDistance) * 0.5
-            defOffset = 150
-            if abs(xDistance) < defOffset:
-                offset = defOffset / 2
-            if abs(vDistance) < 20:
-                offset = abs(xDistance) * 0.3
-            multiply = 2
-            self.mPath = QtGui.QPainterPath()
-            self.mPath.moveTo(p1)
-            if xDistance < 0:
-                self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
-                self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
-            else:
-                self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
-                self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
-            self.mPath.cubicTo(self.cp1, self.cp2, p2)
-
+        self.mPath = self.getQuadSpline(p1, p2, offset, roundnes, sameSide)
         self.setPath(self.mPath)
-        """
+
         
+        # if lod >= 5:
+        #     self.mPath = QtGui.QPainterPath()
+        #     self.mPath.moveTo(p1)
+        #     self.mPath.lineTo(p2)
+        # else:
+        #     xDistance = p2.x() - p1.x()
+        #     vDistance = p2.y() - p1.y()
+        #     offset = abs(xDistance) * 0.5
+        #     defOffset = 150
+        #     if abs(xDistance) < defOffset:
+        #         offset = defOffset / 2
+        #     if abs(vDistance) < 20:
+        #         offset = abs(xDistance) * 0.3
+        #     multiply = 2
+        #     self.mPath = QtGui.QPainterPath()
+        #     self.mPath.moveTo(p1)
+        #     if xDistance < 0:
+        #         self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
+        #         self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+        #     else:
+        #         self.cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+        #         self.cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
+        #     self.mPath.cubicTo(self.cp1, self.cp2, p2)
+
+        # self.setPath(self.mPath)
+        
+
         super(UIConnection, self).paint(painter, option, widget)

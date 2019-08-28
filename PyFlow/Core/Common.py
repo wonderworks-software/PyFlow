@@ -89,6 +89,13 @@ def sign(x):
     return x and (1, -1)[x < 0]
 
 
+def currentProcessorTime():
+    if IS_PYTHON2:
+        return time.clock()
+    else:
+        return time.process_time()
+
+
 def clamp(n, vmin, vmax):
     """Computes the value of the first specified argument clamped to a range defined by the second and third specified arguments
 
