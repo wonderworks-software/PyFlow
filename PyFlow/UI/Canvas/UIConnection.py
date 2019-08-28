@@ -327,12 +327,12 @@ class UIConnection(QGraphicsPathItem):
         sameSide = 0
         offset = 20
         roundnes = 5
-        if self.destination().owningNode()._rawNode.__class__.__name__ == "reroute":
+        if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute","rerouteExecs"]:
             xDistance = p2.x() - p1.x()
             if xDistance < 0:
                 p2, p1 = self.getEndPoints()
                 sameSide = 1
-        if self.source().owningNode()._rawNode.__class__.__name__ == "reroute":
+        if self.source().owningNode()._rawNode.__class__.__name__ in ["reroute","rerouteExecs"]:
             p11, p22 = self.getEndPoints()
             xDistance = p22.x() - p11.x()
             if xDistance < 0:
