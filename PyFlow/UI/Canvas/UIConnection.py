@@ -270,11 +270,16 @@ class UIConnection(QGraphicsPathItem):
     def kill(self):
         self.canvasRef().removeConnection(self)
 
-    def getQuadSpline(self,p1,p2):
-        offset = 20
-        roundnes = yRoundnes = 5
+    def getQuadSpline(self,p1,p2, offset=20, roundnes=5, sameSide=0):
+        yRoundnes = roundnes
+        offset1 = offset
+        offset2 = -offset
+        if sameSide == 1:
+            offset2 = offset
+        elif sameSide == -1:
+            offset1 = -offset
 
-        xDistance = (p2.x()-offset+roundnes) - (p1.x()+offset-roundnes)
+        xDistance = (p2.x()+offset2+roundnes) - (p1.x()+offset1-roundnes)
         yDistance = p1.y() - p2.y()
         midPointY = p2.y()+((p1.y()-p2.y())/2)
         if yDistance < -roundnes:
@@ -283,24 +288,30 @@ class UIConnection(QGraphicsPathItem):
         self.mPath = QtGui.QPainterPath()
         self.mPath.moveTo(p1)
 
-        if xDistance > 0:
+        if xDistance > 0 or sameSide == -1:
             if abs(yDistance) > roundnes*2:
-                self.mPath.lineTo(QtCore.QPoint(p2.x()-offset-roundnes,p1.y()))
-                self.mPath.quadTo(QtCore.QPoint(p2.x()-offset,p1.y()),QtCore.QPoint(p2.x()-offset,p1.y()-yRoundnes))
-                self.mPath.lineTo(QtCore.QPoint(p2.x()-offset,p2.y()+yRoundnes))
-                self.mPath.quadTo(QtCore.QPoint(p2.x()-offset,p2.y()),QtCore.QPoint(p2.x()-offset+roundnes,p2.y()))
+                if sameSide == -1:
+                    roundnes*=-1
+                self.mPath.lineTo(QtCore.QPoint(p2.x()+offset2-roundnes,p1.y()))
+                self.mPath.quadTo(QtCore.QPoint(p2.x()+offset2,p1.y()),QtCore.QPoint(p2.x()+offset2,p1.y()-yRoundnes))
+                self.mPath.lineTo(QtCore.QPoint(p2.x()+offset2,p2.y()+yRoundnes))
+                if sameSide != 0:
+                    roundnes*=-1
+
+                self.mPath.quadTo(QtCore.QPoint(p2.x()+offset2,p2.y()),QtCore.QPoint(p2.x()+offset2+roundnes,p2.y()))
                 self.mPath.lineTo(p2)
             else:
                 self.mPath.lineTo(p2)
         else:        
-            self.mPath.lineTo(QtCore.QPoint(p1.x()+offset-roundnes,p1.y()))
-            self.mPath.quadTo(QtCore.QPoint(p1.x()+offset,p1.y()),QtCore.QPoint(p1.x()+offset,p1.y()-yRoundnes))
-            self.mPath.lineTo(QtCore.QPoint(p1.x()+offset,(midPointY)+yRoundnes))
-            self.mPath.quadTo(QtCore.QPoint(p1.x()+offset,midPointY),QtCore.QPoint(p1.x()+offset-roundnes,midPointY))
-            self.mPath.lineTo(QtCore.QPoint(p2.x()-offset+roundnes,midPointY))
-            self.mPath.quadTo(QtCore.QPoint(p2.x()-offset,midPointY),QtCore.QPoint(p2.x()-offset,(midPointY-yRoundnes)))
-            self.mPath.lineTo(QtCore.QPoint(p2.x()-offset,p2.y()+yRoundnes))
-            self.mPath.quadTo(QtCore.QPoint(p2.x()-offset,p2.y()),QtCore.QPoint(p2.x()-offset+roundnes,p2.y()))
+            self.mPath.lineTo(QtCore.QPoint(p1.x()+offset1-roundnes,p1.y()))
+            self.mPath.quadTo(QtCore.QPoint(p1.x()+offset1,p1.y()),QtCore.QPoint(p1.x()+offset1,p1.y()-yRoundnes))
+            self.mPath.lineTo(QtCore.QPoint(p1.x()+offset1,(midPointY)+yRoundnes))
+            self.mPath.quadTo(QtCore.QPoint(p1.x()+offset1,midPointY),QtCore.QPoint(p1.x()+offset1-roundnes,midPointY))
+
+            self.mPath.lineTo(QtCore.QPoint(p2.x()+offset2+roundnes,midPointY))
+            self.mPath.quadTo(QtCore.QPoint(p2.x()+offset2,midPointY),QtCore.QPoint(p2.x()+offset2,(midPointY-yRoundnes)))
+            self.mPath.lineTo(QtCore.QPoint(p2.x()+offset2,p2.y()+yRoundnes))
+            self.mPath.quadTo(QtCore.QPoint(p2.x()+offset2,p2.y()),QtCore.QPoint(p2.x()+offset2+roundnes,p2.y()))
             self.mPath.lineTo(p2)              
 
         self.setPath(self.mPath)
@@ -313,6 +324,23 @@ class UIConnection(QGraphicsPathItem):
 
         self.setPen(self.pen)
         p1, p2 = self.getEndPoints()
+        sameSide = 0
+        offset = 20
+        roundnes = 5
+        if self.destination().owningNode()._rawNode.__class__.__name__ == "reroute":
+            xDistance = p2.x() - p1.x()
+            if xDistance < 0:
+                p2, p1 = self.getEndPoints()
+                sameSide = 1
+        if self.source().owningNode()._rawNode.__class__.__name__ == "reroute":
+            p11, p22 = self.getEndPoints()
+            xDistance = p22.x() - p11.x()
+            if xDistance < 0:
+                sameSide = -1
+                p1, p2 = self.getEndPoints()
+
+        self.getQuadSpline(p1,p2,offset,roundnes,sameSide)
+
         """
         if lod >= 5:
             self.mPath = QtGui.QPainterPath()
@@ -340,6 +368,5 @@ class UIConnection(QGraphicsPathItem):
 
         self.setPath(self.mPath)
         """
-        self.getQuadSpline(p1,p2)
         
         super(UIConnection, self).paint(painter, option, widget)
