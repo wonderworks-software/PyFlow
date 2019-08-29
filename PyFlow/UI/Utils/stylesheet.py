@@ -18,6 +18,12 @@ import inspect
 import json
 import os
 
+from nine import IS_PYTHON2
+if IS_PYTHON2:
+    from aenum import IntEnum
+else:
+    from enum import IntEnum
+
 from Qt import QtGui, QtWidgets, QtCore
 
 from PyFlow.Core.Common import SingletonDecorator
@@ -28,6 +34,9 @@ FILE_DIR = os.path.dirname(__file__)
 STYLE_PATH = os.path.join(FILE_DIR, "style.css")
 THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 
+class ConnectionTypes(IntEnum):
+    Cubic = 0
+    Circuit = 1
 
 class Colors:
     AbsoluteBlack = QtGui.QColor(0, 0, 0, 255)
@@ -43,7 +52,6 @@ class Colors:
     White = QtGui.QColor(255, 255, 255, 200)
     Yellow = QtGui.QColor(255, 211, 25)
     Orange = QtGui.QColor(209, 84, 0)
-
 
 @SingletonDecorator
 class editableStyleSheet():
@@ -74,6 +82,9 @@ class editableStyleSheet():
         self.GridSizeHuge = [100]
         self.DrawNumbers = [0]
         self.SetAppStyleSheet = [1]
+
+        self.ConnectionMode = [ConnectionTypes.Circuit]
+        self.ConnectionRoundness = [5]
 
         self.storeDeffaults()
         self.presets = {}

@@ -471,3 +471,111 @@ class PinPainter(object):
                 painter.setPen(QtCore.Qt.NoPen)
                 painter.setBrush(QtGui.QColor(128, 128, 128, 30))
                 painter.drawRoundedRect(frame, 3, 3)
+
+# Determines how to paint a conection:
+class ConnectionPainter(object):
+
+
+    @staticmethod
+    def linearPath(path,closed=False):
+        mPath = QtGui.QPainterPath()
+        mPath.moveTo(path[0])
+        for point in path[1:]:
+            mPath.lineTo(point)
+        return mPath
+
+
+    @staticmethod
+    def roundCornersPath(path,roundnes,closed=False):
+        mPath = QtGui.QPainterPath()
+        
+        for i,point in enumerate(path):
+            prevPoint = nextPoint = QtGui.QVector2D(point)
+            currPoint = QtGui.QVector2D(point)
+            if i != len(path)-1:  
+                nextPoint = QtGui.QVector2D(path[i+1])
+            elif closed:
+                nextPoint = QtGui.QVector2D(path[0])
+            if i != 0:
+                prevPoint = QtGui.QVector2D(path[i-1])
+            elif closed:
+                prevPoint = QtGui.QVector2D(path[-1])
+
+            fDist = nextPoint-currPoint
+            bDist = currPoint-prevPoint
+
+            n = currPoint + fDist.normalized()*roundnes
+            p = currPoint - bDist.normalized()*roundnes
+            if i == 0 and not closed:
+                mPath.moveTo(point)
+            elif i == 0 and closed:
+                mPath.moveTo(QtCore.QPoint(n.x(),n.y()))
+            elif i != len(path)-1 or closed:
+                mPath.lineTo(QtCore.QPoint(p.x(),p.y()))
+                mPath.quadTo(point,QtCore.QPoint(n.x(),n.y()))
+            elif i == len(path)-1 and not closed:
+                mPath.lineTo(point)
+
+        return mPath
+
+    @staticmethod
+    def BasicCircuit(p1,p2, offset=20, roundnes=5, sameSide=0,lod=0,opt=0):
+        offset1 = offset
+        offset2 = -offset
+        if sameSide == 1:
+            offset2 = offset
+        elif sameSide == -1:
+            offset1 = -offset
+
+        xDistance = (p2.x()+offset2+roundnes) - (p1.x()+offset1-roundnes)
+        yDistance = p1.y() - p2.y()
+        midPointY = p2.y()+((p1.y()-p2.y())/2)
+
+        path = []
+        path.append(p1)
+        if xDistance > 0 or sameSide == -1:
+            if abs(yDistance) > roundnes*2:
+                path.append(QtCore.QPoint(p2.x()+offset2,p1.y()))
+                path.append(QtCore.QPoint(p2.x()+offset2,p2.y()))
+                path.append(p2)
+            else:
+                path.append(p2)
+        else:        
+            path.append(QtCore.QPoint(p1.x()+offset1,p1.y()))
+            path.append(QtCore.QPoint(p1.x()+offset1,midPointY))
+            path.append(QtCore.QPoint(p2.x()+offset2,midPointY))
+            path.append(QtCore.QPoint(p2.x()+offset2,p2.y()))
+            path.append(p2)
+
+        if lod>=5:
+            mPath = ConnectionPainter.linearPath(path)
+        else:
+            mPath = ConnectionPainter.roundCornersPath(path,roundnes)
+        return mPath
+
+    @staticmethod
+    def Cubic(p1,p2, defOffset=150, lod=0):   
+        mPath = QtGui.QPainterPath() 
+
+        xDistance = p2.x() - p1.x()
+        vDistance = p2.y() - p1.y()
+        offset = abs(xDistance) * 0.5
+        if abs(xDistance) < defOffset:
+            offset = defOffset / 2
+        if abs(vDistance) < 20:
+            offset = abs(xDistance) * 0.3
+        mPath.moveTo(p1)
+        if lod >= 5:
+            offset = 20
+        if xDistance < 0:
+            cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
+            cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+        else:
+            cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+            cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
+        if lod >= 5:
+            mPath = ConnectionPainter.linearPath([p1,cp1,cp2,p2]) 
+        else:         
+            mPath.cubicTo(cp1, cp2, p2)   
+
+        return mPath     

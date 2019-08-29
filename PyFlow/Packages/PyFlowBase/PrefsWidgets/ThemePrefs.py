@@ -24,7 +24,7 @@ from Qt import QtGui
 from PyFlow.UI.Widgets.PropertiesFramework import CollapsibleFormWidget, PropertiesWidget
 from PyFlow.UI.Canvas.UICommon import clearLayout
 from PyFlow.UI.Widgets.QtSliders import pyf_ColorSlider, pyf_Slider
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet, ConnectionTypes
 from PyFlow.UI.Widgets.PreferencesWindow import *
 import PyFlow.UI as UIModule
 
@@ -52,6 +52,7 @@ class ThemePreferences(CategoryWidgetBase):
         general = CollapsibleFormWidget(headName="General")
         bg = CollapsibleFormWidget(headName="BackGround")
         canvas = CollapsibleFormWidget(headName="Canvas")
+        connections = CollapsibleFormWidget(headName="Connections")
         options = inspect.getmembers(editableStyleSheet())
         for name, obj in options:
             if isinstance(obj, QtGui.QColor):
@@ -64,7 +65,7 @@ class ThemePreferences(CategoryWidgetBase):
                 elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
                     canvas.addWidget(name, inp)
             elif isinstance(obj, list):
-                if name in ["GridSizeFine", "GridSizeHuge"]:
+                if name in ["GridSizeFine", "GridSizeHuge","ConnectionRoundness"]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
                     inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
@@ -72,10 +73,18 @@ class ThemePreferences(CategoryWidgetBase):
                     inp = QCheckBox()
                     inp.setChecked(obj[0])
                     inp.stateChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
-                if name != "SetAppStyleSheet":
-                    canvas.addWidget(name, inp)
-                else:
+                elif name == "ConnectionMode":
+                    inp = QComboBox()
+                    for i in ConnectionTypes:
+                        inp.addItem(i.name)
+                    inp.setCurrentIndex(obj[0])
+                    inp.currentIndexChanged.connect(lambda value, name=name, update=True: editableStyleSheet().setColor(name, value,update) )     
+                if name in ["ConnectionMode","ConnectionRoundness"]:
+                    connections.addWidget(name,inp)  
+                elif name == "SetAppStyleSheet":
                     general.insertWidget(0,name,inp)
+                else:
+                    canvas.addWidget(name, inp)
 
         self.selector = QComboBox()
         for name in editableStyleSheet().presets.keys():
@@ -93,12 +102,14 @@ class ThemePreferences(CategoryWidgetBase):
 
         self.layout.addWidget(self.selector)
         self.selector.activated.connect(self.setPreset)
+
         general.setCollapsed(True)
         bg.setCollapsed(True)
         canvas.setCollapsed(True)
         properties.addWidget(general)
         properties.addWidget(bg)
         properties.addWidget(canvas)
+        properties.addWidget(connections)
         self.layout.addWidget(properties)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
