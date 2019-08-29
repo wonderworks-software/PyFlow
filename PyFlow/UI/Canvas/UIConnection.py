@@ -109,7 +109,7 @@ class UIConnection(QGraphicsPathItem):
     def timelineFrameChanged(self, frameNum):
         percentage = currentProcessorTime() - self.source()._rawPin.getLastExecutionTime()
         self.shouldAnimate = percentage < 0.5
-        point = self.mPath.pointAtPercent(frameNum / self.timeline.endFrame())
+        point = self.mPath.pointAtPercent(float(frameNum) / float(self.timeline.endFrame()))
         self.bubble.setPos(point)
         if not self.shouldAnimate:
             self.timeline.stop()
