@@ -512,12 +512,16 @@ class ConnectionPainter(object):
             if i == 0 and not closed:
                 mPath.moveTo(point)
             elif i == 0 and closed:
-                mPath.moveTo(QtCore.QPoint(n.x(), n.y()))
+                mPath.moveTo(QtCore.QPoint(p.x(), p.y()))
+                mPath.quadTo(point, QtCore.QPoint(n.x(), n.y()))
             elif i != len(path) - 1 or closed:
                 mPath.lineTo(QtCore.QPoint(p.x(), p.y()))
                 mPath.quadTo(point, QtCore.QPoint(n.x(), n.y()))
             elif i == len(path) - 1 and not closed:
                 mPath.lineTo(point)
+            if i == len(path) - 1 and closed:
+                n = nextPoint - fDist.normalized() * roundnes
+                mPath.lineTo(QtCore.QPoint(n.x(), n.y()))
 
         return mPath
 
