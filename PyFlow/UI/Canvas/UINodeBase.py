@@ -655,8 +655,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         :type accepted: :class:`bool`
         """
         if accepted:
+            name = self.nodeNameWidget.getPlainText()
             if self.isNameValidatoinEnabled():
-                name = self.nodeNameWidget.getPlainText().replace(" ", "")
+                name = name.replace(" ", "")
             newName = self.canvasRef().graphManager.getUniqNodeName(name)
             self.setName(newName)
             self.setHeaderHtml(newName)
