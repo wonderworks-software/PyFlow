@@ -42,6 +42,8 @@ class ThemePreferences(CategoryWidgetBase):
         self.layout.setSpacing(2)
         self.setWidget(self.content)
         self.currTheme = None
+        self.cbDrawGrid = QCheckBox()
+        self.cbDrawGrid.stateChanged.connect(lambda state: editableStyleSheet().setDrawGrid(bool(state)))
 
     def onShow(self, settings):
         clearLayout(self.layout)
@@ -60,31 +62,34 @@ class ThemePreferences(CategoryWidgetBase):
                 inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
                 if name in ["TextColor", "MainColor", "TextSelectedColor", "ButtonsColor"]:
                     general.addWidget(name, inp)
-                elif name in ["InputFieldColor", "BgColor", "BgColorDarker", "BgColorBright", "BorderColor","LoggerBgColor"]:
+                elif name in ["InputFieldColor", "BgColor", "BgColorDarker", "BgColorBright", "BorderColor", "LoggerBgColor"]:
                     bg.addWidget(name, inp)
                 elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
                     canvas.addWidget(name, inp)
             elif isinstance(obj, list):
-                if name in ["GridSizeFine", "GridSizeHuge","ConnectionRoundness"]:
+                if name in ["GridSizeFine", "GridSizeHuge", "ConnectionRoundness"]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
-                    inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
-                elif name in ["DrawNumbers","SetAppStyleSheet"]:
+                    inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
+                elif name in ["DrawNumbers", "SetAppStyleSheet"]:
                     inp = QCheckBox()
                     inp.setChecked(obj[0])
-                    inp.stateChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color,update) )
+                    inp.stateChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
                 elif name == "ConnectionMode":
                     inp = QComboBox()
                     for i in ConnectionTypes:
                         inp.addItem(i.name)
                     inp.setCurrentIndex(obj[0])
-                    inp.currentIndexChanged.connect(lambda value, name=name, update=True: editableStyleSheet().setColor(name, value,update) )     
-                if name in ["ConnectionMode","ConnectionRoundness"]:
-                    connections.addWidget(name,inp)  
+                    inp.currentIndexChanged.connect(lambda value, name=name, update=True: editableStyleSheet().setColor(name, value, update))
+                if name in ["ConnectionMode", "ConnectionRoundness"]:
+                    connections.addWidget(name, inp)
                 elif name == "SetAppStyleSheet":
-                    general.insertWidget(0,name,inp)
+                    general.insertWidget(0, name, inp)
                 else:
                     canvas.addWidget(name, inp)
+
+        canvas.addWidget("DrawGrid", self.cbDrawGrid)
+        self.cbDrawGrid.setChecked(QtCore.Qt.Checked if editableStyleSheet().bDrawGrid else QtCore.Qt.Uncecked)
 
         self.selector = QComboBox()
         for name in editableStyleSheet().presets.keys():

@@ -1766,49 +1766,52 @@ class Canvas(QGraphicsView):
 
         painter.fillRect(rect, QtGui.QBrush(editableStyleSheet().CanvasBgColor))
 
-        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
-        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
+        if editableStyleSheet().bDrawGrid:
 
-        if lod < 3:
-            # Draw horizontal fine lines
-            gridLines = []
-            y = float(top)
-            while y < float(rect.bottom()):
-                gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
-                y += editableStyleSheet().GridSizeFine[0]
-            painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
-            painter.drawLines(gridLines)
+            left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
+            top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
 
-            # Draw vertical fine lines
+            if lod < 2:
+                # Draw horizontal fine lines
+                gridLines = []
+                y = float(top)
+                while y < float(rect.bottom()):
+                    gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
+                    y += editableStyleSheet().GridSizeFine[0]
+                painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
+                painter.drawLines(gridLines)
+
+                # Draw vertical fine lines
+                gridLines = []
+                x = float(left)
+                while x < float(rect.right()):
+                    gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
+                    x += editableStyleSheet().GridSizeFine[0]
+                painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
+                painter.drawLines(gridLines)
+
+            # Draw thick grid
+            left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeHuge[0])
+            top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeHuge[0])
+
+            # Draw vertical thick lines
             gridLines = []
-            x = float(left)
-            while x < float(rect.right()):
+            painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker, 1.5))
+            x = left
+            while x < rect.right():
                 gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
-                x += editableStyleSheet().GridSizeFine[0]
-            painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
+                x += editableStyleSheet().GridSizeHuge[0]
             painter.drawLines(gridLines)
 
-        # Draw thick grid
-        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeHuge[0])
-        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeHuge[0])
+            # Draw horizontal thick lines
+            gridLines = []
+            painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker, 1.5))
+            y = top
+            while y < rect.bottom():
+                gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
+                y += editableStyleSheet().GridSizeHuge[0]
+            painter.drawLines(gridLines)
 
-        # Draw vertical thick lines
-        gridLines = []
-        painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker, 1.5))
-        x = left
-        while x < rect.right():
-            gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
-            x += editableStyleSheet().GridSizeHuge[0]
-        painter.drawLines(gridLines)
-
-        # Draw horizontal thick lines
-        gridLines = []
-        painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker, 1.5))
-        y = top
-        while y < rect.bottom():
-            gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
-            y += editableStyleSheet().GridSizeHuge[0]
-        painter.drawLines(gridLines)
         if editableStyleSheet().DrawNumbers[0] >= 1:
             # draw numbers
             scale = self.currentViewScale()
