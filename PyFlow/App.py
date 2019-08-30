@@ -388,7 +388,7 @@ class PyFlow(QMainWindow):
                     self.currentFileName = None
 
         if not self.currentFileName:
-            return
+            return False
 
         if not self.currentFileName.endswith(".pygraph"):
             self.currentFileName += ".pygraph"
@@ -400,6 +400,7 @@ class PyFlow(QMainWindow):
             print(str("// saved: '{0}'".format(self.currentFileName)))
             self.modified = False
             self.updateLabel()
+            return True
 
     def newFile(self, keepRoot=True):
         self.tick_timer.stop()
@@ -514,7 +515,9 @@ class PyFlow(QMainWindow):
 
         shouldSave = self.shouldSave()
         if shouldSave == QMessageBox.Yes:
-            self.save()
+            if not self.save():
+                event.ignore()
+                return
         elif shouldSave == QMessageBox.Discard:
             event.ignore()
             return
