@@ -84,6 +84,12 @@ class editableStyleSheet():
         self.DrawNumbers = [0]
         self.SetAppStyleSheet = [1]
 
+        self.LOD_Number = [10]
+        self.NodeSwitch = [3]
+        self.ConnectionSwitch = [5]
+        self.PinSwitch = [5]
+        self.CanvasSwitch = [5]
+
         self.ConnectionMode = [ConnectionTypes.Circuit]
         self.ConnectionRoundness = [5]
 

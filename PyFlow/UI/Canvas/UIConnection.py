@@ -309,7 +309,7 @@ class UIConnection(QGraphicsPathItem):
 
         option.state &= ~QStyle.State_Selected
 
-        lod = self.canvasRef().getLodValueFromCurrentScale(5)
+        lod = self.canvasRef().getCanvasLodValueFromCurrentScale()
 
         self.setPen(self.pen)
         p1, p2 = self.getEndPoints()
