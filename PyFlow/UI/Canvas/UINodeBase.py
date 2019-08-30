@@ -107,7 +107,7 @@ class InputTextField(QGraphicsTextItem):
                     self.clearFocus()
                 else:
                     event.ignore()
-                    self.editingFinished.emit(True)
+                    # self.editingFinished.emit(True)
                     self.clearFocus()
             else:
                 super(InputTextField, self).keyPressEvent(event)
