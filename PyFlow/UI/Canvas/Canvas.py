@@ -1759,7 +1759,7 @@ class Canvas(QGraphicsView):
 
     def drawBackground(self, painter, rect):
         super(Canvas, self).drawBackground(painter, rect)
-        lod = self.getLodValueFromCurrentScale(3)
+        lod = self.getCanvasLodValueFromCurrentScale()
         self.boundingRect = rect
 
         polygon = self.mapToScene(self.viewport().rect())
@@ -1771,7 +1771,7 @@ class Canvas(QGraphicsView):
             left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
             top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
 
-            if lod < 2:
+            if lod < editableStyleSheet().CanvasSwitch[0]:
                 # Draw horizontal fine lines
                 gridLines = []
                 y = float(top)
@@ -2031,6 +2031,9 @@ class Canvas(QGraphicsView):
 
     def getLodValueFromCurrentScale(self, numLods=5):
         return self.getLodValueFromScale(numLods, self.currentViewScale())
+
+    def getCanvasLodValueFromCurrentScale(self):
+        return self.getLodValueFromScale(editableStyleSheet().LOD_Number[0], self.currentViewScale())
 
     def zoom(self, scale_factor):
         self.factor = self.transform().m22()

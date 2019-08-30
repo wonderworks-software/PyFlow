@@ -37,6 +37,7 @@ THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 class ConnectionTypes(IntEnum):
     Cubic = 0
     Circuit = 1
+    ComplexCircuit = 2
 
 class Colors:
     AbsoluteBlack = QtGui.QColor(0, 0, 0, 255)
@@ -83,6 +84,12 @@ class editableStyleSheet():
         self.GridSizeHuge = [100]
         self.DrawNumbers = [0]
         self.SetAppStyleSheet = [1]
+
+        self.LOD_Number = [10]
+        self.NodeSwitch = [3]
+        self.ConnectionSwitch = [5]
+        self.PinSwitch = [5]
+        self.CanvasSwitch = [5]
 
         self.ConnectionMode = [ConnectionTypes.Circuit]
         self.ConnectionRoundness = [5]

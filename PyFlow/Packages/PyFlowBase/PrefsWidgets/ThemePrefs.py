@@ -55,6 +55,9 @@ class ThemePreferences(CategoryWidgetBase):
         bg = CollapsibleFormWidget(headName="BackGround")
         canvas = CollapsibleFormWidget(headName="Canvas")
         connections = CollapsibleFormWidget(headName="Connections")
+        lods = CollapsibleFormWidget(headName="LODS")
+        lodMax = None
+        lodWidgets=[]
         options = inspect.getmembers(editableStyleSheet())
         for name, obj in options:
             if isinstance(obj, QtGui.QColor):
@@ -70,7 +73,7 @@ class ThemePreferences(CategoryWidgetBase):
                 if name in ["GridSizeFine", "GridSizeHuge", "ConnectionRoundness"]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
-                    inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
+                    inp.valueChanged.connect(lambda color, name=name, update=False: editableStyleSheet().setColor(name, color, update))
                 elif name in ["DrawNumbers", "SetAppStyleSheet"]:
                     inp = QCheckBox()
                     inp.setChecked(obj[0])
@@ -80,13 +83,32 @@ class ThemePreferences(CategoryWidgetBase):
                     for i in ConnectionTypes:
                         inp.addItem(i.name)
                     inp.setCurrentIndex(obj[0])
-                    inp.currentIndexChanged.connect(lambda value, name=name, update=True: editableStyleSheet().setColor(name, value, update))
+                    inp.currentIndexChanged.connect(lambda value, name=name, update=False: editableStyleSheet().setColor(name, value, update))
+                elif name in ["LOD_Number","NodeSwitch","ConnectionSwitch","PinSwitch","CanvasSwitch"]:
+                    inp = pyf_Slider(self,type="int")
+                    inp.setValue(obj[0])
+                    if name != "LOD_Number":
+                        inp.setMinimum(0)
+                        inp.setMaximum(editableStyleSheet().LOD_Number[0])
+                        lodWidgets.append(inp)
+                    else:
+                        lodMax = inp
+                        inp.setMinimum(0)
+                    inp.valueChanged.connect(lambda color, name=name, update=False: editableStyleSheet().setColor(name, color, update))
+
                 if name in ["ConnectionMode", "ConnectionRoundness"]:
                     connections.addWidget(name, inp)
                 elif name == "SetAppStyleSheet":
                     general.insertWidget(0, name, inp)
+                elif name in ["NodeSwitch","ConnectionSwitch","PinSwitch","CanvasSwitch"]:
+                    lods.addWidget(name,inp)
+                elif name == "LOD_Number":
+                    lods.insertWidget(0,name,inp)
                 else:
                     canvas.addWidget(name, inp)
+
+        for lod in lodWidgets:
+            lodMax.valueChanged.connect(lod.setMaximum)
 
         canvas.addWidget("DrawGrid", self.cbDrawGrid)
         self.cbDrawGrid.setChecked(QtCore.Qt.Checked if editableStyleSheet().bDrawGrid else QtCore.Qt.Uncecked)
@@ -111,10 +133,13 @@ class ThemePreferences(CategoryWidgetBase):
         general.setCollapsed(True)
         bg.setCollapsed(True)
         canvas.setCollapsed(True)
+        connections.setCollapsed(True)
+        lods.setCollapsed(True)
         properties.addWidget(general)
         properties.addWidget(bg)
         properties.addWidget(canvas)
         properties.addWidget(connections)
+        properties.addWidget(lods)
         self.layout.addWidget(properties)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
