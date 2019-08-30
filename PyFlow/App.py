@@ -33,7 +33,6 @@ from Qt.QtWidgets import *
 
 from PyFlow import GET_PACKAGES
 from PyFlow.Core.Common import SingletonDecorator
-from PyFlow.Core.Common import Direction
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.Core.version import *
 from PyFlow.Core.GraphBase import GraphBase
