@@ -73,7 +73,7 @@ class ThemePreferences(CategoryWidgetBase):
                 if name in ["GridSizeFine", "GridSizeHuge", "ConnectionRoundness"]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
-                    inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
+                    inp.valueChanged.connect(lambda color, name=name, update=False: editableStyleSheet().setColor(name, color, update))
                 elif name in ["DrawNumbers", "SetAppStyleSheet"]:
                     inp = QCheckBox()
                     inp.setChecked(obj[0])
@@ -83,7 +83,7 @@ class ThemePreferences(CategoryWidgetBase):
                     for i in ConnectionTypes:
                         inp.addItem(i.name)
                     inp.setCurrentIndex(obj[0])
-                    inp.currentIndexChanged.connect(lambda value, name=name, update=True: editableStyleSheet().setColor(name, value, update))
+                    inp.currentIndexChanged.connect(lambda value, name=name, update=False: editableStyleSheet().setColor(name, value, update))
                 elif name in ["LOD_Number","NodeSwitch","ConnectionSwitch","PinSwitch","CanvasSwitch"]:
                     inp = pyf_Slider(self,type="int")
                     inp.setValue(obj[0])
@@ -94,7 +94,7 @@ class ThemePreferences(CategoryWidgetBase):
                     else:
                         lodMax = inp
                         inp.setMinimum(0)
-                    inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
+                    inp.valueChanged.connect(lambda color, name=name, update=False: editableStyleSheet().setColor(name, color, update))
 
                 if name in ["ConnectionMode", "ConnectionRoundness"]:
                     connections.addWidget(name, inp)
