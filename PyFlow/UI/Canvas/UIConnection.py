@@ -315,7 +315,7 @@ class UIConnection(QGraphicsPathItem):
         p1, p2 = self.getEndPoints()
         if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit,ConnectionTypes.ComplexCircuit]:
             sameSide = 0
-            offset = 20
+            offset = 15
             roundnes = editableStyleSheet().ConnectionRoundness[0]
             if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
                 xDistance = p2.x() - p1.x()

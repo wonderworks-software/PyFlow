@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from math import atan2, degrees
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QStyle
@@ -489,7 +489,7 @@ class ConnectionPainter(object):
         return mPath
 
     @staticmethod
-    def chanferPath(path, roundnes, closed=False):
+    def chanferPath(path, offset, closed=False):
         mPath = []
         for i, point in enumerate(path):
             prevPoint = nextPoint = QtGui.QVector2D(point)
@@ -505,23 +505,34 @@ class ConnectionPainter(object):
 
             fDist = nextPoint - currPoint
             bDist = currPoint - prevPoint
-            maxLen = max(0,min(fDist.length(),bDist.length()) - roundnes)
 
-            n = currPoint + fDist.normalized() * maxLen
-            p = currPoint - bDist.normalized() * maxLen
-            if i == 0 and not closed:
+            if not closed and i == len(path)-2:
+                maxLen = max(0,min(fDist.length(),bDist.length()- offset) )
+            else:
+                maxLen = max(0,min(fDist.length(),bDist.length())- offset )
+
+            dot = fDist.x()*bDist.x() + fDist.y()*bDist.y()      # dot product
+            det = fDist.x()*bDist.y() - fDist.y()*bDist.x()      # determinant
+            angle = degrees(atan2(det, dot))  # atan2(y, x) or atan2(sin, cos)
+
+            if abs(angle) > 45:
+                n = currPoint + fDist.normalized() * maxLen
+                p = currPoint - bDist.normalized() * maxLen
+                if i == 0 and not closed:
+                    mPath.append(point)
+                elif i == 0 and closed:
+                    mPath.append(QtCore.QPoint(p.x(), p.y()))
+                    mPath.append(QtCore.QPoint(n.x(), n.y()))
+                elif i != len(path) - 1 or closed:
+                    mPath.append(QtCore.QPoint(p.x(), p.y()))
+                    mPath.append(QtCore.QPoint(n.x(), n.y()))
+                elif i == len(path) - 1 and not closed:
+                    mPath.append(point)
+                if i == len(path) - 1 and closed:
+                    n = nextPoint - fDist.normalized() * maxLen
+                    mPath.append(QtCore.QPoint(n.x(), n.y()))
+            else:
                 mPath.append(point)
-            elif i == 0 and closed:
-                mPath.append(QtCore.QPoint(p.x(), p.y()))
-                mPath.append(QtCore.QPoint(n.x(), n.y()))
-            elif i != len(path) - 1 or closed:
-                mPath.append(QtCore.QPoint(p.x(), p.y()))
-                mPath.append(QtCore.QPoint(n.x(), n.y()))
-            elif i == len(path) - 1 and not closed:
-                mPath.append(point)
-            if i == len(path) - 1 and closed:
-                n = nextPoint - fDist.normalized() * maxLen
-                mPath.append(QtCore.QPoint(n.x(), n.y()))
 
         return mPath
 
@@ -584,6 +595,11 @@ class ConnectionPainter(object):
                 path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
                 path.append(p2)
             else:
+                x = max(p1.x()+offset1 ,p2.x() + offset2*1.5)
+                if sameSide == 1:
+                    x = min(p1.x()+offset1 ,p2.x() + offset2*1.5)
+                path.append(QtCore.QPoint(x, p1.y()))
+                path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
                 path.append(p2)
         else:
             path.append(QtCore.QPoint(p1.x() + offset1, p1.y()))
@@ -593,7 +609,13 @@ class ConnectionPainter(object):
             path.append(p2)
 
         if complexLine:
-            path = ConnectionPainter.chanferPath(path,offset)
+            if xDistance > 0:
+                path = ConnectionPainter.chanferPath(path[:-1],offset)
+                path.append(p2)
+            else:
+                path.reverse()
+                path = ConnectionPainter.chanferPath(path[:-1],offset)
+                path.append(p1)
 
         if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath(path)
