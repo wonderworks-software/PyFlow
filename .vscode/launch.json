@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: PyFlow",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/pyflow.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: PyFlow Debug attach",
+            "type": "python",
+            "request": "attach",
+            "port": 3000,
+            "host": "0.0.0.0"
+        },
+        {
+            "name": "Python: Current File (Integrated Terminal)",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Current File (External Terminal)",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "externalTerminal"
+        }
+    ]
+}

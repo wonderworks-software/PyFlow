@@ -1,0 +1,4 @@
+theme: jekyll-theme-slate
+title: "Welcome to PyFlow homepage!"
+description: Visual scripting framework for python
+markdown: GFM

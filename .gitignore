@@ -1,7 +1,12 @@
+.vscode/.ropeproject/objectdb
+.vscode/settings.json
 *.pyc
 *.iml
 *.name
 *.xml
-.vscode/
-PyFlow/Python27/
-PyFlow/appConfig.ini
+nodes.log
+PyFlow/Configs/
+docs/build/
+docs/source/_build/
+docs/build_docs_env.bat
+__pycache__/

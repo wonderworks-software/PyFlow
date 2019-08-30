@@ -1,121 +1,204 @@
-"""@file Variable.py
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
 
-Variable related classes.
-"""
-from Qt import QtCore
-from Qt import QtGui
-from Qt.QtWidgets import QWidget
-from Qt.QtWidgets import QLineEdit
-from Qt.QtWidgets import QComboBox
-from Qt.QtWidgets import QHBoxLayout
-from Qt.QtWidgets import QLabel
-from Qt.QtWidgets import QPushButton
-from Qt.QtWidgets import QApplication
-from Qt.QtWidgets import QSpacerItem
-from Qt.QtWidgets import QSizePolicy
-from uuid import uuid4
-import inspect
-from AbstractGraph import *
-import InputWidgets
-from .. import Pins
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+
+##     http://www.apache.org/licenses/LICENSE-2.0
+
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
 
 
-## Colored rounded rect
-# color corresponds to pin data type color
-class TypeWidget(QWidget):
-    def __init__(self, color, parent=None):
-        super(TypeWidget, self).__init__()
-        self.color = color
-        self.setMinimumWidth(24)
+from nine import str
+from blinker import Signal
+import json
 
-    def paintEvent(self, event):
-        painter = QtGui.QPainter()
-        painter.begin(self)
-
-        painter.setBrush(QtGui.QColor(self.color))
-        rect = event.rect()
-        rect.setHeight(10)
-        rect.setWidth(20)
-        rect.moveTop(12)
-        painter.drawRoundedRect(rect, 5, 5)
-
-        painter.end()
+from PyFlow import findPinClassByType
+from PyFlow import getPinDefaultValueByType
+from PyFlow.Core.Common import *
+from PyFlow.Core.Interfaces import IItemBase
 
 
-## Changes type of variable
-class VarTypeComboBox(QComboBox):
-    def __init__(self, var, parent=None):
-        super(VarTypeComboBox, self).__init__(parent)
-        self._bJustSpawned = True
-        self.var = var
-        for i in self.var.types:
-            self.addItem(i, DataTypes[i].value)
-        self.currentIndexChanged.connect(self.onCurrentIndexChanged)
-        self.setCurrentIndex(self.findData(var.dataType))
-        self._bJustSpawned = False
+class Variable(IItemBase):
+    """Variable representation
 
-    def onCurrentIndexChanged(self, index):
-        if self._bJustSpawned:
-            val = self.var.value
+    :var nameChanged: Fired when variable name was changed
+    :vartype nameChanged: :class:`~blinker.base.Signal`
+    :var valueChanged: Fired when variable value was changed
+    :vartype valueChanged: :class:`~blinker.base.Signal`
+    :var dataTypeChanged: Fired when variable data type was changed
+    :vartype dataTypeChanged: :class:`~blinker.base.Signal`
+    :var structureChanged: Fired when variable structure was changed
+    :vartype structureChanged: :class:`~blinker.base.Signal`
+    :var accessLevelChanged: Fired when variable access level was changed
+    :vartype accessLevelChanged: :class:`~blinker.base.Signal`
+    :var killed: Fired when variable was killed
+    :vartype killed: :class:`~blinker.base.Signal`
+    :var graph: Reference to owning graph
+    :vartype graph: :class:`~PyFlow.Core.GraphBase.GraphBase`
+    """
+    def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, structure=PinStructure.Single, uid=None):
+        """Constructor
 
-        self.var.setDataType(self.itemData(index), self._bJustSpawned)
+        :param graph: Owning graph
+        :type graph: :class:`~PyFlow.Core.GraphBase.GraphBase`
+        :param value: Variable value
+        :type value: object
+        :param name: Variable name
+        :type name: str
+        :param dataType: Variable data type
+        :type dataType: str
+        :param accessLevel: Variable access level
+        :type accessLevel: :class:`~PyFlow.Core.Common.AccessLevel`
+        :param structure: Variable structure
+        :type structure: :attr:`~PyFlow.Core.Common.PinStructure.Single`
+        :param uid: Variable unique identifier
+        :type uid: :class:`~uuid.UUID`
+        """
+        super(Variable, self).__init__()
+        self.nameChanged = Signal(str)
+        self.valueChanged = Signal(str)
+        self.dataTypeChanged = Signal(str)
+        self.structureChanged = Signal(str)
+        self.accessLevelChanged = Signal(str)
+        self.killed = Signal()
 
-        if self._bJustSpawned:
-            self.var.value = val
-
-
-## Variable class
-class VariableBase(QWidget):
-    ## executed when value been set
-    valueChanged = QtCore.Signal()
-    ## executed when name been changed
-    nameChanged = QtCore.Signal(str)
-    ## executed when variable been killed
-    killed = QtCore.Signal()
-    ## executed when variable data type been changed
-    dataTypeChanged = QtCore.Signal(int)
-    ## executed when variable access level been changed
-    accessLevelChanged = QtCore.Signal(int)
-
-    def __init__(self, name, value, graph, varsListWidget, dataType=DataTypes.Bool, uid=None):
-        super(VariableBase, self).__init__()
-        self._accessLevel = AccessLevel.public
-        # ui
-        self.horizontalLayout = QHBoxLayout(self)
-        self.horizontalLayout.setSpacing(1)
-        self.horizontalLayout.setContentsMargins(1, 1, 1, 1)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.widget = TypeWidget(Colors.Bool, self)
-        self.widget.setObjectName("widget")
-        self.horizontalLayout.addWidget(self.widget)
-        self.labelName = QLabel(self)
-        self.labelName.setObjectName("labelName")
-        self.horizontalLayout.addWidget(self.labelName)
-        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
-
-        QtCore.QMetaObject.connectSlotsByName(self)
-        # body
-        self.varsListWidget = varsListWidget
-        self.name = None
-        self._value = value
-        self.dataType = dataType
-        self._uid = uid
-        if self._uid is None:
-            self._uid = uuid4()
         self.graph = graph
-        self.setName(name)
-        self.types = [v.name for v in list(DataTypes) if v not in [DataTypes.Reference, DataTypes.Exec, DataTypes.Enum]]
-        self.graph.vars[self.uid] = self
+
+        self._name = name
+        self._value = value
+        self._dataType = dataType
+        self._structure = structure
+        self._accessLevel = accessLevel
+        self._packageName = None
+        self._uid = uuid.uuid4() if uid is None else uid
+        assert(isinstance(self._uid, uuid.UUID))
+        self.updatePackageName()
+        self._uiWrapper = None
+
+    def getWrapper(self):
+        if self._uiWrapper is not None:
+            return self._uiWrapper()
+        return None
+
+    def setWrapper(self, wrapper):
+        if self._uiWrapper is None:
+            self._uiWrapper = weakref.ref(wrapper)
+
+    def location(self):
+        """Returns location of variable
+
+        .. seealso:: :meth:`~PyFlow.Core.GraphBase.GraphBase.location`
+        """
+        return self.graph.location()
+
+    def findRefs(self):
+        """Returns all getVar and setVar instances for variable
+        """
+        return self.graph.graphManager.findVariableRefs(self)
+
+    def updatePackageName(self):
+        self._packageName = findPinClassByType(self._dataType)._packageName
+
+    @property
+    def packageName(self):
+        """Variable type package name
+
+        :rtype: str
+        """
+        return self._packageName
+
+    @packageName.setter
+    def packageName(self, value):
+        assert(isinstance(value, str))
+        self._packageName = value
+        self.packageNameChanged.send(value)
 
     @property
     def accessLevel(self):
+        """Variable access level
+
+        :rtype: :class:`~PyFlow.Core.Common.AccessLevel`
+        """
         return self._accessLevel
 
     @accessLevel.setter
     def accessLevel(self, value):
+        assert(isinstance(value, AccessLevel))
         self._accessLevel = value
-        self.accessLevelChanged.emit(value)
+        self.accessLevelChanged.send(value)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        assert(isinstance(value, str))
+        self._name = value
+        self.nameChanged.send(value)
+
+    @property
+    def value(self):
+        """Variable value
+
+        :rtype: object
+        """
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        # type checking if variable is not of any type
+        if not self.dataType == 'AnyPin':
+            supportedDataTypes = findPinClassByType(self.dataType).supportedDataTypes()
+            if self.dataType not in supportedDataTypes:
+                return
+
+        try:
+            if self._value != value or type(self._value) != type(value):
+                self._value = value
+                self.valueChanged.send(value)
+        except:
+            self._value = value
+            self.valueChanged.send(value)
+
+    @property
+    def dataType(self):
+        """Variable data type
+
+        :rtype: str
+        """
+        return self._dataType
+
+    @dataType.setter
+    def dataType(self, value):
+        assert(isinstance(value, str))
+        if value != self._dataType:
+            self._dataType = value
+            self.updatePackageName()
+            self.value = getPinDefaultValueByType(value)
+            self.dataTypeChanged.send(value)
+
+    @property
+    def structure(self):
+        """Variable structure
+
+        :rtype: :class:`~PyFlow.Core.Common.PinStructure`
+        """
+        return self._structure
+
+    @structure.setter
+    def structure(self, value):
+        assert(isinstance(value, PinStructure))
+        if value != self._structure:
+            self._structure = value
+            if self._structure == PinStructure.Array:
+                self.value = list()
+            self.structureChanged.send(self._structure)
 
     @property
     def uid(self):
@@ -123,96 +206,58 @@ class VariableBase(QWidget):
 
     @uid.setter
     def uid(self, value):
+        assert(isinstance(value, uuid.UUID))
+        self.graph.getVars()[value] = self.graph.getVars().pop(self._uid)
         self._uid = value
-        if self._uid in self.graph.vars:
-            self.graph.vars.pop(self._uid)
-            self.graph.vars[self._uid] = self
+
+    def serialize(self):
+        pinClass = findPinClassByType(self.dataType)
+
+        template = Variable.jsonTemplate()
+
+        uidString = str(self.uid)
+
+        template['name'] = self.name
+        if self.dataType == 'AnyPin':
+            template['value'] = None
+        else:
+            template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass())
+        template['dataType'] = self.dataType
+        template['structure'] = self.structure.name
+        template['accessLevel'] = self.accessLevel.name
+        template['package'] = self._packageName
+        template['uuid'] = uidString
+
+        return template
+
+    @staticmethod
+    def deserialize(graph, jsonData, *args, **kwargs):
+        name = jsonData['name']
+        dataType = jsonData['dataType']
+
+        if dataType != "AnyPin":
+            pinClass = findPinClassByType(dataType)
+            value = json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass())
+        else:
+            value = getPinDefaultValueByType("AnyPin")
+
+        accessLevel = AccessLevel[jsonData['accessLevel']]
+        structure = PinStructure[jsonData['structure']]
+        uid = uuid.UUID(jsonData['uuid'])
+        return Variable(graph, value, name, dataType, accessLevel, structure, uid)
 
     @staticmethod
     def jsonTemplate():
+        """Returns dictionary with minimum required fields for serialization
+
+        :rtype: dict
+        """
         template = {
             'name': None,
-            'uuid': None,
             'value': None,
-            'type': None
+            'dataType': None,
+            'accessLevel': None,
+            'package': None,
+            'uuid': None
         }
         return template
-
-    def serialize(self):
-        template = VariableBase.jsonTemplate()
-        template['name'] = self.name
-        template['uuid'] = str(self.uid)
-        template['value'] = self.value
-        template['type'] = self.dataType
-        template['accessLevel'] = self.accessLevel
-        return template
-
-    @staticmethod
-    def deserialize(data, graph):
-        var = graph.parent.variablesWidget.createVariable(uuid.UUID(data['uuid']))
-        var.setName(data['name'])
-        var.setDataType(data['type'])
-        var.value = data['value']
-        var.accessLevel = data['accessLevel']
-        return var
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, data):
-        self._value = data
-        self.valueChanged.emit()
-
-    ## Changes variable data type and updates [TypeWidget](@ref PyFlow.Core.Variable.TypeWidget) color
-    # @bug in the end of this method we clear undo stack, but we should not. We do this because undo redo goes crazy
-    def setDataType(self, dataType, _bJustSpawned=False):
-        self.dataType = dataType
-        self.widget.color = Pins.findPinClassByType(self.dataType).color()
-        self.value = Pins.findPinClassByType(self.dataType).pinDataTypeHint()[1]
-        self.widget.update()
-        if _bJustSpawned:
-            return
-        self.dataTypeChanged.emit(self.dataType)
-        self.graph.undoStack.clear()
-        self.graph.tryFillPropertiesView(self)
-
-    def mousePressEvent(self, event):
-        QWidget.mousePressEvent(self, event)
-        self.graph.tryFillPropertiesView(self)
-
-    def setName(self, name):
-        self.labelName.setText(name)
-        self.name = name
-        self.nameChanged.emit(str(name))
-
-    def onUpdatePropertyView(self, formLayout):
-        # name
-        le_name = QLineEdit(self.name)
-        le_name.returnPressed.connect(lambda: self.setName(le_name.text()))
-        formLayout.addRow("Name", le_name)
-
-        # data type
-        cbTypes = VarTypeComboBox(self)
-        formLayout.addRow("Type", cbTypes)
-
-        # current value
-        def valSetter(x):
-            self.value = x
-        w = InputWidgets.getInputWidget(self.dataType, valSetter, Pins.getPinDefaultValueByType(self.dataType), None)
-        if w:
-            w.setWidgetValue(self.value)
-            w.setObjectName(self.name)
-            formLayout.addRow(self.name, w)
-        # access level
-        cb = QComboBox()
-        cb.addItem('public', 0)
-        cb.addItem('private', 1)
-        cb.addItem('protected', 2)
-
-        def accessLevelChanged(x):
-            self.accessLevel = x
-        cb.currentIndexChanged[int].connect(accessLevelChanged)
-        cb.setCurrentIndex(self.accessLevel)
-        formLayout.addRow('Access level', cb)

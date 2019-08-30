@@ -1,75 +1,183 @@
 # Overview
-<p align="center">
-  <img src="PyFlow/resources/PyFlow.jpg">
-</p>
 
-**PyFlow** is a general purpose runtime extendable python qt node editor.
+**PyFlow** is a general purpose visual scripting framework for python.
 
-Watch [video](https://youtu.be/chnRrr1Qfj8)
+<p align="center"><img src="PyFlow/UI/resources/PyFlow.png"></p>
 
-# Table of contents
-- [Features](#features)
-- [Installation](#installation)
-- [Pip dependencies](#dependencies)
-- [Usage](#usage)
-- [Licensing](#licensing)
+## Installation
 
-# Features
-- Json serializable
-- Easy node creation from annotated functions
-- Categories tree
-- Undo stack
-- Properties view
-- Dirty propagation for optimal graph computation
-- Runtime nodes creation
-- Variables
+### Manual
 
-# Installation
-1. Download repository.
-2. Install [conda](https://conda.io/miniconda.html) with pyside2 and python 2.7 environment. [Instruction](https://fredrikaverpil.github.io/2017/08/28/pyside2-easy-install/) here
-3. Go to **Scripts/** folder and install dependencies
-	```bash
-	pip install Qt.py pyrr enum34
-	```
-4. Execute **starter.bat**
+1. Clone or download repository.
 
+2. Install requirements for your use case.
 
-# Dependencies
-- [Qt.py](https://github.com/mottosso/Qt.py)
-- PySide or PySide2 or PyQt5 or PyQt4
-- [pyrr](https://github.com/adamlwgriffiths/Pyrr) for builtin math. (optional)
+    requirement lists can be found under `PyFlow/requirements`
 
-# Usage
-App's entry point is **App.py** file under PyFlow folder. There are also several handy bat scripts for debugging and profiling.
-Right click on empty space to show node box then drag and drop on to canvas. Or press enter with node name selected.
-Connect and execute pins from property view or using timer node.
+3. To run the program in standalone mode, run `pyflow.py`. It can be found in the root folder of repository.
 
-# Extending
-See source code. **FunctionLibraries** folder for annotated nodes, **Nodes** folder for
-class based nodes. **Pins**, for data types and **Commands** for editor commands.
+### Or using pip
 
-# Donate
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ILunin)
+Latest development version. Contains latest features
 
-# Licensing
-The MIT License (MIT)
+```bash
+pip install git+https://github.com/wonderworks-software/PyFlow.git@master
+```
 
-Copyright (c) 2015-2018 The PyFlow Authors
+After package is installed, you can invoke `pyflow.exe` on windows or `pyflow` on unix OS.
+Program is located inside `PATH/TO/PYTHON/Scripts`.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+## Features overview
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+* **Modular**
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+    *Add own node sets, pins, shelf tools, dock tools, preferences widgets, data exporters/importers*
+
+* **Easy integration**
+
+    *PyFlow is a normal python program. It can run under any python environment*
+
+* **Python3 and 2 support**
+* **Logic and UI are separated**
+
+    *Main logic elements (Node and Pin) has non gui representation, so programs can be evaluated without GUI*
+
+* **Subgraphs**
+
+    *Collapse parts of graphs into subgraphs*
+
+    ![collapseToCompound](images/collapseToCompound.gif)
+
+* **Subgraphs import/export**
+
+    *Share subgraphs with others*
+
+    ![compoundIO](images/compoundIO.gif)
+
+* **Python node**
+
+    *Write whatever code directly into a node*
+
+    ![pythonNode](images/pythonNode.gif)
+
+* **Python node import/export**
+
+    *Share python nodes with others*
+
+    ![pythonNode](images/pythonNodeIO.gif)
+
+* **Fast node generation from functions**
+
+    *Single decorator to expose node from function*
+
+    ![pythonNode](images/listDirCode.png)
+    ![pythonNode](images/listDirNode.png)
+
+* **Package loading from arbitrary locations**
+
+    *Packages can be loaded from provided list of directories. It can be your development folder or folder in network drive inside your studio*
+
+* **Graph commenting**
+  * Comment node
+
+    ![commentNode](images/commentNode.gif)
+
+  * Sticky node
+
+    ![stickyNode](images/stickyNode.gif)
+
+* **Custom input system**
+
+    *If you got used to specific keymap of your software of choice, you can easily remap PyFlow input actions*
+
+    ![input](images/input.gif)
+
+* **Drop on wire**
+
+    *Automatically сonnect the node by dragging it onto the wire*
+
+    ![input](images/dragOnEdge.gif)
+
+* **Photoshop-like history**
+
+    *Easy to use powerful undo system*
+
+    ![history](images/history.gif)
+
+    *By a single line call*
+
+    ![historyApi](images/historyApi.png)
+
+* **Property view**
+
+    *Modify node and pins attributes using property panels*
+
+    ![historyApi](images/properties.gif)
+
+* **Variables**
+
+    *Save arbitrary data into a variables*
+
+    ![historyApi](images/variables.gif)
+
+* **Editable shareable themes**
+
+    *Create and share themes with others*
+
+    ![historyApi](images/themes.gif)
+
+* **Data importers/exporters**
+
+    *Editor data can be exported/imported to/from arbitrary format*
+
+* **Convenient wires interaction**
+
+  ![wiresConnect](images/wiresConnection.gif)
+
+* **Widgets library**
+  * Sliders
+
+    *Custom Houdini style sliders, value draggers, ramp widgets*
+
+    ![historyApi](images/sliders.png)
+
+  * Properties framework
+
+    *Custom widgets for property panels. Collapsible categegories, search field*
+
+  * Input framework
+
+    *Custom widgets for mouse, keyboard capture*
+
+* **Plugin wizards framework**
+
+    *Generate package template to start development. Or create own wizard for your module*
+
+* **Easy configuration files framework**
+
+    *While adding own modules you probably want to have some configuration data. We provide easy to use api for this*
+
+And more..
+
+## Getting Started
+
+We have [documentation](https://pyflow.readthedocs.io/en/latest/)
+
+## Contributing
+
+See `CONTRIBUTING.md`
+
+## Versioning
+
+We use a [semantic versioning](http://semver.org/) policy.
+
+## Authors
+
+* **Ilgar Lunin** - [Ilgar Lunin](https://github.com/IlgarLunin)
+* **Pedro Cabrera** - [Pedro Cabrera](https://github.com/pedroCabrera)
+
+See also the list of [contributors](https://github.com/wonderworks-software/PyFlow/contributors) who participated in this project.
+
+## Discussion
+
+Join us to our [discord channel](https://discord.gg/SwmkqMj) and ask anything related to project!

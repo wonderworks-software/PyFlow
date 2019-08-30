@@ -1,0 +1,57 @@
+<RCC>
+  <qresource>
+     <file alias="binocular.png">resources\binocular.png</file>
+     <file alias="brick.png">resources\brick.png</file>
+     <file alias="clear_icon.png">resources\clear_icon.png</file>
+     <file alias="close_window.png">resources\close_window.png</file>
+     <file alias="colors_icon.png">resources\colors_icon.png</file>
+     <file alias="comment_selected_icon.png">resources\comment_selected_icon.png</file>
+     <file alias="console_icon.png">resources\console_icon.png</file>
+     <file alias="debug_icon.png">resources\debug_icon.png</file>
+     <file alias="delete_icon.png">resources\delete_icon.png</file>
+     <file alias="doubleArrow.png">resources\doubleArrow.png</file>
+     <file alias="ExpandedNode.png">resources\ExpandedNode.png</file>
+     <file alias="folder_open_icon.png">resources\folder_open_icon.png</file>
+     <file alias="function.png">resources\function.png</file>
+     <file alias="gear.svg">resources\gear.svg</file>
+     <file alias="history.png">resources\history.png</file>
+     <file alias="keyboard-32.png">resources\keyboard-32.png</file>
+     <file alias="locked.png">resources\locked.png</file>
+     <file alias="logger.png">resources\logger.png</file>
+     <file alias="logoBp.png">resources\logoBp.png</file>
+     <file alias="LogoBpApp.png">resources\LogoBpApp.png</file>
+     <file alias="mouse-32.png">resources\mouse-32.png</file>
+     <file alias="multithreaded_icon.png">resources\multithreaded_icon.png</file>
+     <file alias="new_file_icon.png">resources\new_file_icon.png</file>
+     <file alias="nodeBox.png">resources\nodeBox.png</file>
+     <file alias="nodeCollapse.svg">resources\nodeCollapse.svg</file>
+     <file alias="node_box_icon.png">resources\node_box_icon.png</file>
+     <file alias="options_icon.png">resources\options_icon.png</file>
+     <file alias="pin.png">resources\pin.png</file>
+     <file alias="pin.svg">resources\pin.svg</file>
+     <file alias="plot_icon.png">resources\plot_icon.png</file>
+     <file alias="property_icon.png">resources\property_icon.png</file>
+     <file alias="py.png">resources\py.png</file>
+     <file alias="PyFlow.jpg">resources\PyFlow.jpg</file>
+     <file alias="rename.png">resources\rename.png</file>
+     <file alias="rename.svg">resources\rename.svg</file>
+     <file alias="reroute.svg">resources\reroute.svg</file>
+     <file alias="reset.png">resources\reset.png</file>
+     <file alias="resize_diagonal.png">resources\resize_diagonal.png</file>
+     <file alias="save_as_icon.png">resources\save_as_icon.png</file>
+     <file alias="save_icon.png">resources\save_icon.png</file>
+     <file alias="script.png">resources\script.png</file>
+     <file alias="searching-magnifying-glass.png">resources\searching-magnifying-glass.png</file>
+     <file alias="settings.png">resources\settings.png</file>
+     <file alias="shadow_icon.png">resources\shadow_icon.png</file>
+     <file alias="shift-32.png">resources\shift-32.png</file>
+     <file alias="shortcuts_icon.png">resources\shortcuts_icon.png</file>
+     <file alias="split_window.png">resources\split_window.png</file>
+     <file alias="tear_off_copy.png">resources\tear_off_copy.png</file>
+     <file alias="tear_off_copy_bw.png">resources\tear_off_copy_bw.png</file>
+     <file alias="unlocked.png">resources\unlocked.png</file>
+     <file alias="variable.png">resources\variable.png</file>
+     <file alias="variablex.png">resources\variablex.png</file>
+     <file alias="wizard-cat.png">resources\wizard-cat.png</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="10"
+   height="10"
+   viewBox="0 0 10 10"
+   version="1.1"
+   id="nodeCollapse"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="nodeCollapse.svg">
+  <defs
+     id="defs815">
+    <linearGradient
+       id="linearGradient2288"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#383838;stop-opacity:1;"
+         offset="0"
+         id="stop2286" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2835"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop2833" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="64"
+     inkscape:cx="4.0818309"
+     inkscape:cy="5.9069587"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:grid-bbox="true"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-midpoints="true"
+     inkscape:current-layer="nodeCollapse" />
+  <metadata
+     id="metadata818">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="Collapse"
+     inkscape:label="Collapse"
+     transform="matrix(1.2476907,0,0,1.1734245,-1.1417612,-0.84471883)">
+    <rect
+       inkscape:label="CollapseA"
+       y="0.85652888"
+       x="0.99715471"
+       height="2.395133"
+       width="7.854753"
+       id="CollapseA"
+       style="opacity:1;fill:#1a1a1a;fill-opacity:0.5;stroke:#383838;stroke-width:0.16005377;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+       ry="1.2781802" />
+    <rect
+       inkscape:label="CollapseB"
+       ry="1.2782536"
+       rx="1.2038592"
+       y="3.8865907"
+       x="1.0109473"
+       height="2.3969474"
+       width="7.8546929"
+       id="CollapseB"
+       style="opacity:1;fill:#1a1a1a;fill-opacity:0.5;stroke:#383838;stroke-width:0.16011377;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+  </g>
+  <g
+     id="Expand"
+     inkscape:label="Expand"
+     style="opacity:0.98000004"
+     transform="matrix(1.2478357,0,0,1.1734101,-1.1424754,-0.84512969)">
+    <rect
+       inkscape:label="ExpandA"
+       ry="1.2782103"
+       rx="1.2054397"
+       y="0.85687619"
+       x="0.99626577"
+       height="2.3965592"
+       width="7.8537841"
+       id="ExpandA"
+       style="opacity:0.98999999;fill:#1a1a1a;fill-opacity:0.5;stroke:#383838;stroke-width:0.16009156;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+    <rect
+       inkscape:label="ExpandB"
+       ry="1.2780466"
+       rx="1.2102368"
+       y="3.8871975"
+       x="1.0327287"
+       height="2.3965595"
+       width="7.8537841"
+       id="ExpandB"
+       style="opacity:1;fill:#1a1a1a;fill-opacity:0.30000001;stroke:#383838;stroke-width:0.16009156;stroke-linejoin:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers" />
+  </g>
+</svg>

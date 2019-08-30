@@ -1,23 +1,111 @@
-"""@file FunctionLibrary.py
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
 
-This file contains decorator for implementing node from function.
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
 
-The main idea is to describe argument types and default values.
+##     http://www.apache.org/licenses/LICENSE-2.0
 
-Using this information it becomes possible to create pins according to arguments types.
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+
+
 """
-from inspect import getargspec
-from AGraphCommon import *
+.. sidebar:: **FunctionLibrary.py**
+
+    This file contains a decorator to turn python function into a node.
+    And base class for function library.
+    The main idea is to use function arguments as input and output pins.
+
+
+.. py:function:: IMPLEMENT_NODE(func=None, returns={}, meta={}, nodeType=NodeTypes.Pure)
+
+Detailed description
+====================
+
+We use this function as decorator in 100% cases.
+See :file:`PyFlow/Packages/PyFlowBase/FunctionLibraries` content for plenty of examples
+
+Arguments
+---------
+
+**func**
+
+    Function to be annotated
+
+**returns**
+
+    Value  of this argument is tuple with 2 or 3 elements or None.
+    First element is pin data type.
+    Second - default value.
+    Third element is :term:`pin specifires`
+
+.. seealso:: :meth:`~PyFlow.Core.NodeBase.NodeBase.createInputPin`
+             :meth:`~PyFlow.Core.NodeBase.NodeBase.createOutputPin`
+             :class:`~PyFlow.Core.PinBase.PinBase`
+
+**meta**
+
+    Value of this argument is :term:`node meta`
+
+**nodeType**
+
+    Value of this argument is :class:`~PyFlow.Core.Common.NodeTypes`. If :attr:`~PyFlow.Core.Common.NodeTypes.Callable` specified
+    input and output exec pins will be created.
+
+Examples:
+::
+
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'GenericTypes', 'Keywords': []})
+    def makeInt(i=('IntPin', 0)):
+        return i
+
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {"enabledOptions": PinOptions.AlwaysPushDirty}))
+    def clock():
+        return time.clock()
+
+
+.. glossary::
+
+    pin specifires
+        dict that describes different pin options and attributes to be considered on generation
+
+        Following key-value pairs allowed:
+
+        >>> ("supportedDataTypes" : list)
+        >>> ("constraint": None)
+        >>> ("structConstraint": None)
+        >>> ("enabledOptions": None)
+        >>> ("disabledOptions": None)
+        >>> ("inputWidgetVariant": "DefaultWidget")
+        >>> ("ValueList": [str])
+
+        "Value list is specific for string pins. If Specified - enum input widget will be created for this pin."
+
+    node meta
+        dict that describes different node options and attributes to be considered on generation
+
+        Following key-value pairs allowed:
+
+        >>> ("Category" : str)
+        >>> ("Keywords" : [str])
+        >>> ("CacheEnabled" : bool)
+
+"""
+
+try:
+    from inspect import getfullargspec as getargspec
+except:
+    from inspect import getargspec
+
+from PyFlow.Core.Common import *
 
 empty = {}
 
 
-## Turns function into a node
-# @param[in] func decorated function
-# @param[in] returns it can be tuple with [data type identifier](@ref PyFlow.Core.AGraphCommon.DataTypes) + default value, or None
-# @param[in] meta dictionary with category path, keywords and any additional info
-# @param[in] nodeType determines wheter it is a Pure node or Callable. If Callable - input and output execution pins will be created
-# @sa [NodeTypes](@ref PyFlow.Core.AGraphCommon.NodeTypes) FunctionLibraries
 def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
     def wrapper(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
@@ -32,26 +120,10 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
         defaults = func.__defaults__
         if defaults:
             spec = getargspec(func)
-
-            nanno = len(defaults)
-            for (i, name) in enumerate(spec.args[-nanno:]):
+            for (i, name) in enumerate(spec.args[-len(defaults):]):
                 if len(defaults[i]) < 1 or defaults[i][0] is empty:
                     continue
-                if defaults[i][0] == DataTypes.Reference:
-                    func.__annotations__[name] = defaults[i][1]
-                else:
-                    func.__annotations__[name] = defaults[i][0]
-
-            # defaults = tuple((d[1] for d in func.__defaults__ if len(d) > 1))
-            customDefaults = []
-            for d in func.__defaults__:
-                if len(d) > 1:
-                    if isinstance(d[1], tuple):
-                        customDefaults.append(d[1][1])
-                    else:
-                        customDefaults.append(d[1])
-            # func.__defaults__ = defaults or None
-            func.__defaults__ = tuple(customDefaults) or None
+                func.__annotations__[name] = defaults[i]
         return func
 
     if returns == empty:
@@ -59,12 +131,17 @@ def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywo
     return wrapper
 
 
-## Base class for all function libraries
-# some common utilities can be moved here in future
 class FunctionLibraryBase(object):
-    def __init__(self):
+    """Base class fo function libraries
+    """
+
+    def __init__(self, packageName):
         super(FunctionLibraryBase, self).__init__()
-        self.__foos = inspect.getmembers(self, inspect.isfunction)
+        self.__foos = {}
+        for name, function in inspect.getmembers(self, inspect.isfunction):
+            function.__annotations__["packageName"] = packageName
+            function.__annotations__["lib"] = self.__class__.__name__
+            self.__foos[name] = function
 
     def getFunctions(self):
         return self.__foos
