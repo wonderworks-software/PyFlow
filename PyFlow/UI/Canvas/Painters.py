@@ -489,6 +489,43 @@ class ConnectionPainter(object):
         return mPath
 
     @staticmethod
+    def chanferPath(path, roundnes, closed=False):
+        mPath = []
+        for i, point in enumerate(path):
+            prevPoint = nextPoint = QtGui.QVector2D(point)
+            currPoint = QtGui.QVector2D(point)
+            if i != len(path) - 1:
+                nextPoint = QtGui.QVector2D(path[i + 1])
+            elif closed:
+                nextPoint = QtGui.QVector2D(path[0])
+            if i != 0:
+                prevPoint = QtGui.QVector2D(path[i - 1])
+            elif closed:
+                prevPoint = QtGui.QVector2D(path[-1])
+
+            fDist = nextPoint - currPoint
+            bDist = currPoint - prevPoint
+            maxLen = max(0,min(fDist.length(),bDist.length()) - roundnes)
+
+            n = currPoint + fDist.normalized() * maxLen
+            p = currPoint - bDist.normalized() * maxLen
+            if i == 0 and not closed:
+                mPath.append(point)
+            elif i == 0 and closed:
+                mPath.append(QtCore.QPoint(p.x(), p.y()))
+                mPath.append(QtCore.QPoint(n.x(), n.y()))
+            elif i != len(path) - 1 or closed:
+                mPath.append(QtCore.QPoint(p.x(), p.y()))
+                mPath.append(QtCore.QPoint(n.x(), n.y()))
+            elif i == len(path) - 1 and not closed:
+                mPath.append(point)
+            if i == len(path) - 1 and closed:
+                n = nextPoint - fDist.normalized() * maxLen
+                mPath.append(QtCore.QPoint(n.x(), n.y()))
+
+        return mPath
+
+    @staticmethod
     def roundCornersPath(path, roundnes, closed=False):
         mPath = QtGui.QPainterPath()
 
@@ -526,7 +563,7 @@ class ConnectionPainter(object):
         return mPath
 
     @staticmethod
-    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, opt=0):
+    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         offset1 = offset
         offset2 = -offset
@@ -555,11 +592,15 @@ class ConnectionPainter(object):
             path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
             path.append(p2)
 
+        if complexLine:
+            path = ConnectionPainter.chanferPath(path,offset)
+
         if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath(path)
         else:
             mPath = ConnectionPainter.roundCornersPath(path, roundnes)
         return mPath
+
 
     @staticmethod
     def Cubic(p1, p2, defOffset=150, lod=0):
@@ -574,7 +615,7 @@ class ConnectionPainter(object):
         if abs(vDistance) < 20:
             offset = abs(xDistance) * 0.3
         mPath.moveTo(p1)
-        if lod >= 5:
+        if lod >= SWITCH_LOD:
             offset = 20
         if xDistance < 0:
             cp1 = QtCore.QPoint(p1.x() + offset, p1.y())

@@ -37,6 +37,7 @@ THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 class ConnectionTypes(IntEnum):
     Cubic = 0
     Circuit = 1
+    ComplexCircuit = 2
 
 class Colors:
     AbsoluteBlack = QtGui.QColor(0, 0, 0, 255)
