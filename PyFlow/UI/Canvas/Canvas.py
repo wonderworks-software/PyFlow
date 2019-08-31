@@ -307,7 +307,10 @@ class SceneClass(QGraphicsScene):
         else:
             super(SceneClass, self).dropEvent(event)
 
-
+# TODO: remove scene class. Move scene creation to method
+# TODO: clear obsolete and unused members
+# TODO: move canvas interactin code to QGraphicsView subclass and inherit it
+# TODO: Rename this class to BlueprintCanvas
 class Canvas(QGraphicsView):
     """UI canvas class
     """
