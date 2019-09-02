@@ -39,7 +39,7 @@ from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.Canvas.Canvas import BlueprintCanvasWidget
+from PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool

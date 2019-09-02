@@ -33,6 +33,7 @@ from Qt.QtWidgets import *
 
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.Utils.stylesheet import Colors
+from PyFlow.UI.Canvas.CanvasBase import CanvasBase
 from PyFlow.UI.Canvas.UICommon import *
 from PyFlow.UI.Canvas.SelectionRect import SelectionRect
 from PyFlow.UI.Canvas.UIConnection import UIConnection
@@ -82,8 +83,7 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
 
 
 # TODO: move canvas interaction code to QGraphicsView subclass and inherit it
-# TODO: Rename this class to BlueprintCanvas
-class BlueprintCanvas(QGraphicsView):
+class BlueprintCanvas(CanvasBase):
     """UI canvas class
     """
     _manipulationMode = CanvasManipulationMode.NONE
