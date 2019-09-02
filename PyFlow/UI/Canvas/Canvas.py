@@ -54,10 +54,6 @@ from PyFlow.UI.Views.VariablesWidget import (
 from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
 
-from PyFlow.Packages.PyFlowBase.Nodes.commentNode import commentNode
-from PyFlow.Packages.PyFlowBase.UI.UIRerouteNode import UIRerouteNode
-from PyFlow.Packages.PyFlowBase.UI.UIRerouteNodeSmall import UIRerouteNodeSmall
-from PyFlow.Packages.PyFlowBase import PACKAGE_NAME as PYFLOW_BASE_PACKAGE_NAME
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
@@ -559,26 +555,26 @@ class Canvas(QGraphicsView):
                     rect.setRight(rect.right() + 100)
                     rect.setBottom(rect.bottom() + 30)
 
-                nodeTemplate = NodeBase.jsonTemplate()
-                nodeTemplate['package'] = "PyFlowBase"
-                nodeTemplate['type'] = commentNode.__name__
-                nodeTemplate['name'] = commentNode.__name__
+                x = 0
+                y = 0
                 if rect:
-                    nodeTemplate['x'] = rect.topLeft().x()
-                    nodeTemplate['y'] = rect.topLeft().y()
+                    x = rect.topLeft().x()
+                    y = rect.topLeft().y()
                 else:
-                    nodeTemplate['x'] = self.mapToScene(self.mousePos).x()
-                    nodeTemplate['y'] = self.mapToScene(self.mousePos).y()
-                nodeTemplate['meta']['label'] = commentNode.__name__
-                nodeTemplate['uuid'] = str(uuid.uuid4())
+                    x = self.mapToScene(self.mousePos).x()
+                    y = self.mapToScene(self.mousePos).y()
 
-                instance = self.createNode(nodeTemplate)
-                if rect:
-                    instance._rect.setRight(rect.width())
-                    instance._rect.setBottom(rect.height())
-                instance.updateNodeShape()
-                for node in self.selectedNodes():
-                    node.updateOwningCommentNode()
+                instance = self.spawnNode("commentNode", x, y)
+
+                if instance:
+                    if rect:
+                        instance._rect.setRight(rect.width())
+                        instance._rect.setBottom(rect.height())
+
+                    instance.updateNodeShape()
+
+                    for node in self.selectedNodes():
+                        node.updateOwningCommentNode()
 
             if currentInputAction in InputManager()["Canvas.AlignLeft"]:
                 self.alignSelectedNodes(Direction.Left)
@@ -864,16 +860,7 @@ class Canvas(QGraphicsView):
         else:
             if self.pressedPin and self.pressedPin.isExec():
                 nodeClassName = "rerouteExecs"
-        nodeTemplate = NodeBase.jsonTemplate()
-        nodeTemplate['package'] = "PyFlowBase"
-        nodeTemplate['lib'] = None
-        nodeTemplate['type'] = nodeClassName
-        nodeTemplate['name'] = "reroute"
-        nodeTemplate['x'] = self.mapToScene(pos).x()
-        nodeTemplate['y'] = self.mapToScene(pos).y()
-        nodeTemplate['uuid'] = str(uuid.uuid4())
-        nodeTemplate['meta']['label'] = "reroute"
-        reruteNode = self.createNode(nodeTemplate)
+        reruteNode = self.spawnNode(nodeClassName, self.mapToScene(pos).x(), self.mapToScene(pos).y())
         reruteNode.translate(-reruteNode.boundingRect().center().x(), -5)
         return reruteNode
 
@@ -1121,7 +1108,7 @@ class Canvas(QGraphicsView):
         mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - tolerance, event.pos().y() - tolerance),
                                  QtCore.QPoint(event.pos().x() + tolerance, event.pos().y() + tolerance))
         hoverItems = self.items(mouseRect)
-        self.hoveredRerutes += [node for node in hoverItems if isinstance(node, UIRerouteNodeSmall)]
+        self.hoveredRerutes += [node for node in hoverItems if isinstance(node, UINodeBase) and node.isReroute()]
         for node in self.hoveredRerutes:
             if showPins:
                 if node in hoverItems:
@@ -1291,7 +1278,7 @@ class Canvas(QGraphicsView):
                 for node in selectedNodes:
                     node.translate(scaledDelta.x(), scaledDelta.y())
 
-            if (isinstance(node, UIRerouteNode) or isinstance(node, UIRerouteNodeSmall)) and modifiers == QtCore.Qt.AltModifier:
+            if node.isReroute() and modifiers == QtCore.Qt.AltModifier:
                 mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - 1),
                                          QtCore.QPoint(event.pos().x() + 1, event.pos().y() + 1))
                 hoverItems = self.items(mouseRect)
@@ -1599,48 +1586,31 @@ class Canvas(QGraphicsView):
             # if no keyboard modifires create context menu with two actions
             # for creating getter or setter
             # if control - create getter, if alt - create setter
-            if VARIABLE_TAG in jsonData:
-                modifiers = event.modifiers()
-                varData = jsonData[VARIABLE_DATA_TAG]
-                nodeTemplate = NodeBase.jsonTemplate()
-                nodeTemplate['name'] = varData['name']
-                nodeTemplate['x'] = x
-                nodeTemplate['y'] = y
-                nodeTemplate['package'] = PYFLOW_BASE_PACKAGE_NAME
-                if modifiers == QtCore.Qt.NoModifier:
-                    nodeTemplate['type'] = 'getVar'
-                    nodeTemplate['meta']['label'] = varData['name']
-                    # node uid should be unique, different from var
-                    nodeTemplate['uuid'] = str(uuid.uuid4())
 
-                    nodeTemplate['varUid'] = varData['uuid']
+            if VARIABLE_TAG in jsonData:
+                modifiers = event.keyboardModifiers()
+                varData = jsonData[VARIABLE_DATA_TAG]
+
+                def varGetterCreator():
+                    n = self.spawnNode("getVar", x, y, payload={"varUid": varData["uuid"]})
+                    n.updateNodeShape()
+
+                def varSetterCreator():
+                    n = self.spawnNode("setVar", x, y, payload={"varUid": varData["uuid"]})
+                    n.updateNodeShape()
+
+                if modifiers == QtCore.Qt.NoModifier:
                     m = QMenu()
                     getterAction = m.addAction('Get')
-
-                    def varGetterCreator():
-                        n = self.createNode(nodeTemplate)
-                        n.updateNodeShape()
-                    getterAction.triggered.connect(varGetterCreator)
-
-                    setNodeTemplate = dict(nodeTemplate)
                     setterAction = m.addAction('Set')
-                    setNodeTemplate['type'] = 'setVar'
-                    setterAction.triggered.connect(lambda: self.createNode(setNodeTemplate))
+                    getterAction.triggered.connect(varGetterCreator)
+                    setterAction.triggered.connect(varSetterCreator)
                     m.exec_(QtGui.QCursor.pos(), None)
                 if modifiers == QtCore.Qt.ControlModifier:
-                    nodeTemplate['type'] = 'getVar'
-                    # node uid should be unique, different from var
-                    nodeTemplate['uuid'] = str(uuid.uuid4())
-                    nodeTemplate['varUid'] = varData['uuid']
-                    nodeTemplate['meta']['label'] = varData['name']
-                    self.createNode(nodeTemplate)
+                    varGetterCreator()
                     return
                 if modifiers == QtCore.Qt.AltModifier:
-                    nodeTemplate['type'] = 'setVar'
-                    nodeTemplate['uuid'] = str(uuid.uuid4())
-                    nodeTemplate['varUid'] = varData['uuid']
-                    nodeTemplate['meta']['label'] = varData['name']
-                    self.createNode(nodeTemplate)
+                    varSetterCreator()
                     return
             else:
                 packageName = jsonData["package"]
@@ -1834,7 +1804,7 @@ class Canvas(QGraphicsView):
         EditorHistory().saveState("Create node {}".format(nodeInstance.name), modify=True)
         return nodeInstance
 
-    def spawnNode(self, nodeClass, x, y):
+    def spawnNode(self, nodeClass, x, y, payload={}):
         packageName = None
         for pkgName, pkg in GET_PACKAGES().items():
             if nodeClass in pkg.GetNodeClasses():
@@ -1848,6 +1818,9 @@ class Canvas(QGraphicsView):
             jsonTemplate["uuid"] = str(uuid.uuid4())
             jsonTemplate["x"] = x
             jsonTemplate["y"] = y
+            for k, v in payload.items():
+                if k not in jsonTemplate:
+                    jsonTemplate[k] = v
             return self.createNode(jsonTemplate)
 
     def createWrappersForGraph(self, rawGraph):

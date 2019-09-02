@@ -36,6 +36,9 @@ class UIRerouteNodeSmall(UINodeBase):
         self.drawRect = QtCore.QRectF(0, 0, 10, 10)
         self.hiddenPins = True
 
+    def isReroute(self):
+        return True
+
     def createActionButtons(self):
         pass
 

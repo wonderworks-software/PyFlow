@@ -49,14 +49,15 @@ from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
-from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
+try:
+    from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
+except:
+    pass
 from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE
 from PyFlow.Input import InputAction, InputActionType
 from PyFlow.Input import InputManager
 from PyFlow.ConfigManager import ConfigManager
-
-from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 import PyFlow.UI.resources
 

@@ -18,6 +18,9 @@ class IUINode(object):
     def __init__(self):
         super(IUINode, self).__init__()
 
+    def isReroute(self):
+        return False
+
     def serializationHook(self):
         raise NotImplementedError("serializationHook of IUINode is not implemented")
 
