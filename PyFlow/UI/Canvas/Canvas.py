@@ -85,7 +85,6 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     return instance
 
 
-# TODO: clear obsolete and unused members
 # TODO: move canvas interactin code to QGraphicsView subclass and inherit it
 # TODO: Rename this class to BlueprintCanvas
 class Canvas(QGraphicsView):
@@ -105,8 +104,6 @@ class Canvas(QGraphicsView):
     # argument is a list of ui nodes
     requestShowSearchResults = QtCore.Signal(object)
 
-    USETAB = True
-
     def __init__(self, graphManager, pyFlowInstance=None):
         super(Canvas, self).__init__()
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -121,16 +118,13 @@ class Canvas(QGraphicsView):
         self.setScene(self.createScene())
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pressed_item = None
-        self.pressedPin = None
         self.released_item = None
+        self.pressedPin = None
+        self.releasedPin = None
         self.resizing = False
         self.hoverItems = []
         self.hoveredRerutes = []
-        self.bPanMode = False
         self._isPanning = False
-        self._mousePressed = False
-        self._shadows = False
-        self._panSpeed = 1.0
         self._minimum_scale = 0.2
         self._maximum_scale = 3.0
 
@@ -155,28 +149,16 @@ class Canvas(QGraphicsView):
         self.mousePressPose = QtCore.QPointF(0, 0)
         self.mousePos = QtCore.QPointF(0, 0)
         self._lastMousePos = QtCore.QPointF(0, 0)
-        self._right_button = False
         self._drawRealtimeLine = False
-        self._update_items = False
-        self._resize_group_mode = False
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.centerOn(QtCore.QPointF(self.sceneRect().width() /
-                                     2, self.sceneRect().height() / 2))
-        self.initialScrollBarsPos = QtGui.QVector2D(
-            self.horizontalScrollBar().value(), self.verticalScrollBar().value())
+        self.centerOn(QtCore.QPointF(self.sceneRect().width() / 2, self.sceneRect().height() / 2))
         self._sortcuts_enabled = True
-        self.current_rounded_pos = QtCore.QPointF(0.0, 0.0)
         self.autoPanController = AutoPanController()
-        self._bRightBeforeShoutDown = False
 
         self.node_box = NodesBox(self.getApp(), self, bUseDragAndDrop=True)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
-        self.codeEditors = {}
         self._UIConnections = {}
         self.boundingRect = self.rect()
-        if self.USETAB:
-            self.installEventFilter(self)
+        self.installEventFilter(self)
         self.reconnectingWires = set()
         self.currentPressedKey = None
         self.dropCallback = None
@@ -421,8 +403,6 @@ class Canvas(QGraphicsView):
         self.node_box.lineEdit.clear()
 
     def shoutDown(self, *args, **kwargs):
-        for ed in self.codeEditors.values():
-            ed.deleteLater()
         self.scene().clear()
         self._UIConnections.clear()
         self.hideNodeBox()
@@ -1372,7 +1352,6 @@ class Canvas(QGraphicsView):
         self.mouseReleasePos = event.pos()
         self.released_item = self.itemAt(event.pos())
         self.releasedPin = self.findPinNearPosition(event.pos())
-        self._resize_group_mode = False
         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
         if self.manipulationMode == CanvasManipulationMode.MOVE and len(self.selectedNodes()) > 0:

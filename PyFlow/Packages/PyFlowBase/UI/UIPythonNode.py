@@ -27,7 +27,6 @@ from Qt import QtCore
 from PyFlow import GET_PACKAGES
 from PyFlow import GET_PACKAGE_PATH
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Views.CodeEditor import CodeEditor
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.ConfigManager import ConfigManager
 
