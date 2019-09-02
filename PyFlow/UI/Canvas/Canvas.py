@@ -83,7 +83,7 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
 
 # TODO: move canvas interaction code to QGraphicsView subclass and inherit it
 # TODO: Rename this class to BlueprintCanvas
-class Canvas(QGraphicsView):
+class BlueprintCanvas(QGraphicsView):
     """UI canvas class
     """
     _manipulationMode = CanvasManipulationMode.NONE
@@ -101,7 +101,7 @@ class Canvas(QGraphicsView):
     requestShowSearchResults = QtCore.Signal(object)
 
     def __init__(self, graphManager, pyFlowInstance=None):
-        super(Canvas, self).__init__()
+        super(BlueprintCanvas, self).__init__()
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.menu = QMenu()
         self.populateMenu()
@@ -970,7 +970,7 @@ class Canvas(QGraphicsView):
                     self.spawnNode("branch", spawnPos.x(), spawnPos.y())
 
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
-                super(Canvas, self).mousePressEvent(event)
+                super(BlueprintCanvas, self).mousePressEvent(event)
                 self.resizing = node.bResize
                 node.setSelected(False)
             if not self.resizing:
@@ -1073,7 +1073,7 @@ class Canvas(QGraphicsView):
                                 snode.setSelected(True)
                     else:
                         if modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.AltModifier]:
-                            super(Canvas, self).mousePressEvent(event)
+                            super(BlueprintCanvas, self).mousePressEvent(event)
                         if modifiers == QtCore.Qt.ControlModifier and event.button() == QtCore.Qt.LeftButton:
                             node.setSelected(not node.isSelected())
                         if modifiers == QtCore.Qt.ShiftModifier:
@@ -1081,7 +1081,7 @@ class Canvas(QGraphicsView):
                     if currentInputAction in InputManager()["Canvas.DragNodes"]:
                         self.manipulationMode = CanvasManipulationMode.MOVE
                         if self.pressed_item.objectName() == "MouseLocked":
-                            super(Canvas, self).mousePressEvent(event)
+                            super(BlueprintCanvas, self).mousePressEvent(event)
                     if currentInputAction in InputManager()["Canvas.DragCopyNodes"]:
                         self.manipulationMode = CanvasManipulationMode.COPY
 
@@ -1261,7 +1261,7 @@ class Canvas(QGraphicsView):
                         wire.setSelected(False)
         elif self.manipulationMode == CanvasManipulationMode.MOVE:
             if self.pressed_item.objectName() == "MouseLocked":
-                super(Canvas, self).mouseMoveEvent(event)
+                super(BlueprintCanvas, self).mouseMoveEvent(event)
             else:
                 newPos = self.mapToScene(event.pos())
                 scaledDelta = mouseDelta / self.currentViewScale()
@@ -1309,7 +1309,7 @@ class Canvas(QGraphicsView):
                     node.translate(scaledDelta.x(), scaledDelta.y())
                 EditorHistory().saveState("Drag copy nodes", modify=True)
         else:
-            super(Canvas, self).mouseMoveEvent(event)
+            super(BlueprintCanvas, self).mouseMoveEvent(event)
         self.autoPanController.Tick(self.viewport().rect(), event.pos())
         self._lastMousePos = event.pos()
 
@@ -1324,7 +1324,7 @@ class Canvas(QGraphicsView):
         return None
 
     def mouseReleaseEvent(self, event):
-        super(Canvas, self).mouseReleaseEvent(event)
+        super(BlueprintCanvas, self).mouseReleaseEvent(event)
 
         modifiers = event.modifiers()
 
@@ -1519,7 +1519,7 @@ class Canvas(QGraphicsView):
             if self.tempnode:
                 self.tempnode.isTemp = True
             self.hoverItems = []
-        super(Canvas, self).dragEnterEvent(event)
+        super(BlueprintCanvas, self).dragEnterEvent(event)
 
     def dragMoveEvent(self, event):
         self.mousePos = event.pos()
@@ -1555,10 +1555,10 @@ class Canvas(QGraphicsView):
                         if isinstance(item, UIConnection):
                             item.drawThick()
         else:
-            super(Canvas, self).dragMoveEvent(event)
+            super(BlueprintCanvas, self).dragMoveEvent(event)
 
     def dragLeaveEvent(self, event):
-        super(Canvas, self).dragLeaveEvent(event)
+        super(BlueprintCanvas, self).dragLeaveEvent(event)
         self.dropCallback = None
         if self.tempnode:
             self.tempnode._rawNode.kill()
@@ -1668,11 +1668,11 @@ class Canvas(QGraphicsView):
                             if canConnectPins(out._rawPin, dropItem.destination()._rawPin):
                                 self.connectPins(out, dropItem.destination())
                                 break
-        super(Canvas, self).dropEvent(event)
+        super(BlueprintCanvas, self).dropEvent(event)
 
     def drawBackground(self, painter, rect):
         # TODO: Move to base class
-        super(Canvas, self).drawBackground(painter, rect)
+        super(BlueprintCanvas, self).drawBackground(painter, rect)
         lod = self.getCanvasLodValueFromCurrentScale()
         self.boundingRect = rect
 
@@ -1976,10 +1976,10 @@ class Canvas(QGraphicsView):
         return False
 
 
-class CanvasWidget(QWidget):
-    """docstring for CanvasWidget."""
+class BlueprintCanvasWidget(QWidget):
+    """docstring for BlueprintCanvasWidget."""
     def __init__(self, graphManager, pyFlowInstance, parent=None):
-        super(CanvasWidget, self).__init__(parent)
+        super(BlueprintCanvasWidget, self).__init__(parent)
         self.manager = graphManager
         self.pyFlowInstance = pyFlowInstance
 
@@ -2013,7 +2013,7 @@ class CanvasWidget(QWidget):
         self.compoundPropertiesLayout.addWidget(compoundCategoryLabel)
         self.compoundPropertiesLayout.addWidget(self.leCompoundCategory)
 
-        self.canvas = Canvas(graphManager, pyFlowInstance)
+        self.canvas = BlueprintCanvas(graphManager, pyFlowInstance)
         self.mainLayout.addWidget(self.canvas)
 
         self.manager.graphChanged.connect(self.updateGraphTreeLocation)
