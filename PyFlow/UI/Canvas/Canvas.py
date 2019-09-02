@@ -81,7 +81,7 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     return instance
 
 
-# TODO: move canvas interactin code to QGraphicsView subclass and inherit it
+# TODO: move canvas interaction code to QGraphicsView subclass and inherit it
 # TODO: Rename this class to BlueprintCanvas
 class Canvas(QGraphicsView):
     """UI canvas class
@@ -196,6 +196,7 @@ class Canvas(QGraphicsView):
         QtCore.QTimer.singleShot(100, nodeShapeUpdater)
 
     def jumpToNode(self, uiNode):
+        # TODO: Move to base class and rename to `JumpToItem`
         self.graphManager.selectGraph(uiNode.graph())
         self.clearSelection()
         uiNode.setSelected(True)
@@ -203,10 +204,12 @@ class Canvas(QGraphicsView):
 
     @property
     def manipulationMode(self):
+        # TODO: Move to base class
         return self._manipulationMode
 
     @manipulationMode.setter
     def manipulationMode(self, value):
+        # TODO: Move to base class
         self._manipulationMode = value
         if value == CanvasManipulationMode.NONE:
             pass
@@ -345,10 +348,6 @@ class Canvas(QGraphicsView):
     def location(self):
         return self.graphManager.location()
 
-    def __del__(self):
-        # self.tick_timer.stop()
-        pass
-
     def createVariable(self, dataType='AnyPin', accessLevel=AccessLevel.public, uid=None):
         return self.graphManager.activeGraph().createVariable(dataType=dataType, accessLevel=accessLevel, uid=uid)
 
@@ -444,6 +443,7 @@ class Canvas(QGraphicsView):
                 return Pin
 
     def frameRect(self, nodesRect):
+        # TODO: Move to base class
         if nodesRect is None:
             return
         windowRect = self.mapToScene(self.rect()).boundingRect()
@@ -485,6 +485,7 @@ class Canvas(QGraphicsView):
                 self.frameRect(self.getNodesRect())
 
     def getNodesRect(self, selected=False, activeGraphOnly=True):
+        # TODO: Move to base class and rename to `GetItemsRect(class, bSelected)`
         rectangles = []
         if selected:
             for n in [n for n in self.getAllNodes() if n.isSelected()]:
@@ -590,9 +591,9 @@ class Canvas(QGraphicsView):
                 return
 
             if currentInputAction in InputManager()["Canvas.Undo"]:
-                    self.getApp().edHistory.undo()
+                self.getApp().edHistory.undo()
             if currentInputAction in InputManager()["Canvas.Redo"]:
-                    self.getApp().edHistory.redo()
+                self.getApp().edHistory.redo()
 
             if currentInputAction in InputManager()["Canvas.FrameSelected"]:
                 self.frameSelectedNodes()
@@ -604,7 +605,7 @@ class Canvas(QGraphicsView):
             if currentInputAction in InputManager()["Canvas.ZoomOut"]:
                 self.zoomDelta(False)
             if currentInputAction in InputManager()["Canvas.ResetScale"]:
-                self.reset_scale()
+                self.resetScale()
 
             if currentInputAction in InputManager()["Canvas.KillSelected"]:
                 self.killSelectedConnections()
@@ -827,17 +828,6 @@ class Canvas(QGraphicsView):
                 n.setPos(p)
         EditorHistory().saveState("Align nodes", modify=True)
 
-    def findGoodPlaceForNewNode(self):
-        polygon = self.mapToScene(self.viewport().rect())
-        ls = polygon.toList()
-        point = QtCore.QPointF(
-            (ls[1].x() - ls[0].x()) / 2, (ls[3].y() - ls[2].y()) / 2)
-        point += ls[0]
-        point.setY(point.y() + polygon.boundingRect().height() / 3)
-        point += QtCore.QPointF(float(random.randint(50, 200)),
-                                float(random.randint(50, 200)))
-        return point
-
     def keyReleaseEvent(self, event):
         QGraphicsView.keyReleaseEvent(self, event)
         self.currentPressedKey = None
@@ -958,6 +948,7 @@ class Canvas(QGraphicsView):
         self.state = state
 
     def mousePressEvent(self, event):
+        # TODO: Move navigation part to base class
         self.pressed_item = self.itemAt(event.pos())
         node = self.nodeFromInstance(self.pressed_item)
         self.pressedPin = self.findPinNearPosition(event.pos())
@@ -1095,6 +1086,7 @@ class Canvas(QGraphicsView):
                         self.manipulationMode = CanvasManipulationMode.COPY
 
     def pan(self, delta):
+        # TODO: Move to base class
         rect = self.sceneRect()
         scale = self.currentViewScale()
         x = -delta.x() / scale
@@ -1121,6 +1113,7 @@ class Canvas(QGraphicsView):
                 self.hoveredRerutes.remove(node)
 
     def mouseMoveEvent(self, event):
+        # TODO: Move navigation part to base class
         self.mousePos = event.pos()
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         modifiers = event.modifiers()
@@ -1305,7 +1298,7 @@ class Canvas(QGraphicsView):
                 zoomFactor = 1.0 / (1.0 + abs(mouseDelta.x()) / 100.0)
             self.zoom(zoomFactor)
         elif self.manipulationMode == CanvasManipulationMode.COPY:
-            delta = self.mousePos - self.mousePressPose 
+            delta = self.mousePos - self.mousePressPose
             if delta.manhattanLength() > 15:
                 self.manipulationMode = CanvasManipulationMode.MOVE
                 selectedNodes = self.selectedNodes()
@@ -1445,6 +1438,7 @@ class Canvas(QGraphicsView):
             self.requestFillProperties.emit(obj.createPropertiesWidget)
 
     def wheelEvent(self, event):
+        # TODO: Move to base class
         (xfo, invRes) = self.transform().inverted()
         topLeft = xfo.map(self.rect().topLeft())
         bottomRight = xfo.map(self.rect().bottomRight())
@@ -1677,6 +1671,7 @@ class Canvas(QGraphicsView):
         super(Canvas, self).dropEvent(event)
 
     def drawBackground(self, painter, rect):
+        # TODO: Move to base class
         super(Canvas, self).drawBackground(painter, rect)
         lod = self.getCanvasLodValueFromCurrentScale()
         self.boundingRect = rect
@@ -1930,34 +1925,43 @@ class Canvas(QGraphicsView):
         self.scene().removeItem(connection)
 
     def zoomDelta(self, direction):
+        # TODO: Move to base class
         if direction:
             self.zoom(1 + 0.1)
         else:
             self.zoom(1 - 0.1)
 
-    def reset_scale(self):
+    def resetScale(self):
+        # TODO: Move to base class
         self.resetMatrix()
 
     def viewMinimumScale(self):
+        # TODO: Move to base class
         return self._minimum_scale
 
     def viewMaximumScale(self):
+        # TODO: Move to base class
         return self._maximum_scale
 
     def currentViewScale(self):
+        # TODO: Move to base class
         return self.transform().m22()
 
     def getLodValueFromScale(self, numLods=5, scale=1.0):
+        # TODO: Move to base class
         lod = lerp(numLods, 1, GetRangePct(self.viewMinimumScale(), self.viewMaximumScale(), scale))
         return int(round(lod))
 
     def getLodValueFromCurrentScale(self, numLods=5):
+        # TODO: Move to base class
         return self.getLodValueFromScale(numLods, self.currentViewScale())
 
     def getCanvasLodValueFromCurrentScale(self):
+        # TODO: Move to base class
         return self.getLodValueFromScale(editableStyleSheet().LOD_Number[0], self.currentViewScale())
 
     def zoom(self, scale_factor):
+        # TODO: Move to base class
         self.factor = self.transform().m22()
         futureScale = self.factor * scale_factor
         if futureScale <= self._minimum_scale:
