@@ -93,7 +93,6 @@ class InputTextField(QGraphicsTextItem):
         if currentKey == QtCore.Qt.Key_Escape:
             # user rejects action. Restore text before editing
             self.setPlainText(self.textBeforeEditing)
-            self.editingFinished.emit(False)
             self.clearFocus()
             super(InputTextField, self).keyPressEvent(event)
             return
