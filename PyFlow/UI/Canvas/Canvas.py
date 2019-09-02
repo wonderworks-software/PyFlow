@@ -85,229 +85,6 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
     return instance
 
 
-class SceneClass(QGraphicsScene):
-    def __init__(self, parent):
-        super(SceneClass, self).__init__(parent)
-        self.setItemIndexMethod(self.NoIndex)
-        # self.pressed_port = None
-        self.selectionChanged.connect(self.OnSelectionChanged)
-        self.tempnode = None
-        self.hoverItems = []
-
-    def shoutDown(self):
-        self.selectionChanged.disconnect()
-
-    def mousePressEvent(self, event):
-        # do not clear selection when panning
-        modifiers = event.modifiers()
-        # or modifiers == QtCore.Qt.ShiftModifier:
-        if event.button() == QtCore.Qt.RightButton:
-            event.accept()
-            return
-        QGraphicsScene.mousePressEvent(self, event)
-
-    def dragEnterEvent(self, event):
-        if event.mimeData().hasFormat('text/plain'):
-            event.accept()
-            mime = str(event.mimeData().text())
-            jsonData = json.loads(mime)
-
-            if VARIABLE_TAG in jsonData:
-                return
-            packageName = jsonData["package"]
-            nodeType = jsonData["type"]
-            libName = jsonData["lib"]
-            name = nodeType
-
-            nodeTemplate = NodeBase.jsonTemplate()
-            nodeTemplate['package'] = packageName
-            nodeTemplate['lib'] = libName
-            nodeTemplate['type'] = nodeType
-            nodeTemplate['name'] = name
-            nodeTemplate['x'] = event.scenePos().x()
-            nodeTemplate['y'] = event.scenePos().y()
-            nodeTemplate['meta']['label'] = nodeType
-            nodeTemplate['uuid'] = str(uuid.uuid4())
-            try:
-                self.tempnode.isTemp = False
-                self.tempnode = None
-            except Exception as e:
-                pass
-            self.tempnode = self.parent()._createNode(nodeTemplate)
-            if jsonData["bPyNode"] or jsonData["bCompoundNode"]:
-                self.tempnode.rebuild()
-            if self.tempnode:
-                self.tempnode.isTemp = True
-            self.hoverItems = []
-        else:
-            event.ignore()
-
-    def dragMoveEvent(self, event):
-        if event.mimeData().hasFormat('text/plain'):
-            event.setDropAction(QtCore.Qt.MoveAction)
-            event.accept()
-            if self.tempnode:
-                self.tempnode.setPos(
-                    (self.tempnode.w / -2) + event.scenePos().x(), event.scenePos().y())
-                mouseRect = QtCore.QRect(QtCore.QPoint(event.scenePos().x() - 1, event.scenePos().y() - 1),
-                                         QtCore.QPoint(event.scenePos().x() + 1, event.scenePos().y() + 1))
-                hoverItems = self.items(mouseRect)
-                for item in hoverItems:
-                    if isinstance(item, UIConnection):
-                        valid = False
-                        for inp in self.tempnode.UIinputs.values():
-                            if canConnectPins(item.source()._rawPin, inp._rawPin):
-                                valid = True
-                        for out in self.tempnode.UIoutputs.values():
-                            if canConnectPins(out._rawPin, item.destination()._rawPin):
-                                valid = True
-                        if valid:
-                            self.hoverItems.append(item)
-                            item.drawThick()
-                for item in self.hoverItems:
-                    if item not in hoverItems:
-                        self.hoverItems.remove(item)
-                        if isinstance(item, UIConnection):
-                            item.restoreThick()
-                    else:
-                        if isinstance(item, UIConnection):
-                            item.drawThick()
-        else:
-            event.ignore()
-
-    def dragLeaveEvent(self, event):
-        if self.tempnode:
-            self.tempnode._rawNode.kill()
-            self.tempnode = None
-        event.accept()
-
-    def OnSelectionChanged(self):
-        pass
-
-    def createVariableGetter(self):
-        pass
-
-    def dropEvent(self, event):
-        x = event.scenePos().x()
-        y = event.scenePos().y()
-
-        if event.mimeData().hasFormat('text/plain'):
-            jsonData = json.loads(event.mimeData().text())
-
-            # try load mime data text as json
-            # in case if it is a variable
-            # if no keyboard modifires create context menu with two actions
-            # for creating getter or setter
-            # if control - create getter, if alt - create setter
-            if VARIABLE_TAG in jsonData:
-                modifiers = event.modifiers()
-                varData = jsonData[VARIABLE_DATA_TAG]
-                nodeTemplate = NodeBase.jsonTemplate()
-                nodeTemplate['name'] = varData['name']
-                nodeTemplate['x'] = x
-                nodeTemplate['y'] = y
-                nodeTemplate['package'] = PYFLOW_BASE_PACKAGE_NAME
-                if modifiers == QtCore.Qt.NoModifier:
-                    nodeTemplate['type'] = 'getVar'
-                    nodeTemplate['meta']['label'] = varData['name']
-                    # node uid should be unique, different from var
-                    nodeTemplate['uuid'] = str(uuid.uuid4())
-
-                    nodeTemplate['varUid'] = varData['uuid']
-                    m = QMenu()
-                    getterAction = m.addAction('Get')
-
-                    def varGetterCreator():
-                        n = self.parent().createNode(nodeTemplate)
-                        n.updateNodeShape()
-                    getterAction.triggered.connect(varGetterCreator)
-
-                    setNodeTemplate = dict(nodeTemplate)
-                    setterAction = m.addAction('Set')
-                    setNodeTemplate['type'] = 'setVar'
-                    setterAction.triggered.connect(lambda: self.parent().createNode(setNodeTemplate))
-                    m.exec_(QtGui.QCursor.pos(), None)
-                if modifiers == QtCore.Qt.ControlModifier:
-                    nodeTemplate['type'] = 'getVar'
-                    # node uid should be unique, different from var
-                    nodeTemplate['uuid'] = str(uuid.uuid4())
-                    nodeTemplate['varUid'] = varData['uuid']
-                    nodeTemplate['meta']['label'] = varData['name']
-                    self.parent().createNode(nodeTemplate)
-                    return
-                if modifiers == QtCore.Qt.AltModifier:
-                    nodeTemplate['type'] = 'setVar'
-                    nodeTemplate['uuid'] = str(uuid.uuid4())
-                    nodeTemplate['varUid'] = varData['uuid']
-                    nodeTemplate['meta']['label'] = varData['name']
-                    self.parent().createNode(nodeTemplate)
-                    return
-            else:
-                packageName = jsonData["package"]
-                nodeType = jsonData["type"]
-                libName = jsonData['lib']
-                name = nodeType
-                dropItem = self.parent().nodeFromInstance(self.itemAt(event.scenePos(), QtGui.QTransform()))
-                if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
-                    nodeTemplate = NodeBase.jsonTemplate()
-                    nodeTemplate['package'] = packageName
-                    nodeTemplate['lib'] = libName
-                    nodeTemplate['type'] = nodeType
-                    nodeTemplate['name'] = name
-                    nodeTemplate['x'] = x
-                    nodeTemplate['y'] = y
-                    nodeTemplate['meta']['label'] = nodeType
-                    nodeTemplate['uuid'] = str(uuid.uuid4())
-                    if self.tempnode:
-                        self.tempnode.updateOwningCommentNode()
-                        self.tempnode.isTemp = False
-                        self.tempnode.update()
-                        node = self.tempnode
-                        self.tempnode = None
-                        for it in self.items(event.scenePos()):
-                            if isinstance(it, UIPinBase):
-                                dropItem = it
-                                break
-                            elif isinstance(it, UIConnection):
-                                dropItem = it
-                                break
-                        node.eventDropOnCanvas()
-                        EditorHistory().saveState("Create node {}".format(node.name), modify=True)
-                    else:
-                        node = self.parent().createNode(nodeTemplate)
-
-                    nodeInputs = node.namePinInputsMap
-                    nodeOutputs = node.namePinOutputsMap
-
-                    if isinstance(dropItem, UIPinBase):
-                        node.setPos(x - node.boundingRect().width(), y)
-                        for inp in nodeInputs.values():
-                            if canConnectPins(dropItem._rawPin, inp._rawPin):
-                                if dropItem.isExec():
-                                    dropItem._rawPin.disconnectAll()
-                                self.parent().connectPins(dropItem, inp)
-                                node.setPos(x + node.boundingRect().width(), y)
-                                break
-                        for out in nodeOutputs.values():
-                            if canConnectPins(out._rawPin, dropItem._rawPin):
-                                self.parent().connectPins(out, dropItem)
-                                node.setPos(x - node.boundingRect().width(), y)
-                                break
-                    if isinstance(dropItem, UIConnection):
-                        for inp in nodeInputs.values():
-                            if canConnectPins(dropItem.source()._rawPin, inp._rawPin):
-                                if dropItem.source().isExec():
-                                    dropItem.source()._rawPin.disconnectAll()
-                                self.parent().connectPins(dropItem.source(), inp)
-                                break
-                        for out in nodeOutputs.values():
-                            if canConnectPins(out._rawPin, dropItem.destination()._rawPin):
-                                self.parent().connectPins(out, dropItem.destination())
-                                break
-        else:
-            super(SceneClass, self).dropEvent(event)
-
-# TODO: remove scene class. Move scene creation to method
 # TODO: clear obsolete and unused members
 # TODO: move canvas interactin code to QGraphicsView subclass and inherit it
 # TODO: Rename this class to BlueprintCanvas
@@ -341,7 +118,7 @@ class Canvas(QGraphicsView):
         self.pyFlowInstance = pyFlowInstance
         # connect with App class signals
         self.pyFlowInstance.newFileExecuted.connect(self.onNewFile)
-        self.setScene(SceneClass(self))
+        self.setScene(self.createScene())
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pressed_item = None
         self.pressedPin = None
@@ -403,6 +180,14 @@ class Canvas(QGraphicsView):
         self.reconnectingWires = set()
         self.currentPressedKey = None
         self.dropCallback = None
+        self.tempnode = None
+        self.hoverItems = []
+
+    def createScene(self):
+        scene = QGraphicsScene(self)
+        scene.setItemIndexMethod(QGraphicsScene.NoIndex)
+        scene.setSceneRect(QtCore.QRectF(0, 0, 10, 10))
+        return scene
 
     def getApp(self):
         return self.pyFlowInstance
@@ -1741,23 +1526,205 @@ class Canvas(QGraphicsView):
                             event.accept()
                             self.dropCallback = partial(spawnPyNodeFromData, data)
                             return
+        elif event.mimeData().hasFormat('text/plain'):
+            scenePos = self.mapToScene(event.pos())
+            event.accept()
+            mime = str(event.mimeData().text())
+            jsonData = json.loads(mime)
+
+            if VARIABLE_TAG in jsonData:
+                return
+            packageName = jsonData["package"]
+            nodeType = jsonData["type"]
+            libName = jsonData["lib"]
+            name = nodeType
+
+            nodeTemplate = NodeBase.jsonTemplate()
+            nodeTemplate['package'] = packageName
+            nodeTemplate['lib'] = libName
+            nodeTemplate['type'] = nodeType
+            nodeTemplate['name'] = name
+            nodeTemplate['x'] = scenePos.x()
+            nodeTemplate['y'] = scenePos.y()
+            nodeTemplate['meta']['label'] = nodeType
+            nodeTemplate['uuid'] = str(uuid.uuid4())
+            try:
+                self.tempnode.isTemp = False
+                self.tempnode = None
+            except Exception as e:
+                pass
+            self.tempnode = self._createNode(nodeTemplate)
+            if jsonData["bPyNode"] or jsonData["bCompoundNode"]:
+                self.tempnode.rebuild()
+            if self.tempnode:
+                self.tempnode.isTemp = True
+            self.hoverItems = []
         super(Canvas, self).dragEnterEvent(event)
 
     def dragMoveEvent(self, event):
         self.mousePos = event.pos()
+        scenePos = self.mapToScene(self.mousePos)
         if self.dropCallback is not None:
             event.accept()
+        elif event.mimeData().hasFormat('text/plain'):
+            event.setDropAction(QtCore.Qt.MoveAction)
+            event.accept()
+            if self.tempnode:
+                self.tempnode.setPos((self.tempnode.w / -2) + scenePos.x(), scenePos.y())
+                mouseRect = QtCore.QRect(QtCore.QPoint(scenePos.x() - 1, scenePos.y() - 1),
+                                         QtCore.QPoint(scenePos.x() + 1, scenePos.y() + 1))
+                hoverItems = self.scene().items(mouseRect)
+                for item in hoverItems:
+                    if isinstance(item, UIConnection):
+                        valid = False
+                        for inp in self.tempnode.UIinputs.values():
+                            if canConnectPins(item.source()._rawPin, inp._rawPin):
+                                valid = True
+                        for out in self.tempnode.UIoutputs.values():
+                            if canConnectPins(out._rawPin, item.destination()._rawPin):
+                                valid = True
+                        if valid:
+                            self.hoverItems.append(item)
+                            item.drawThick()
+                for item in self.hoverItems:
+                    if item not in hoverItems:
+                        self.hoverItems.remove(item)
+                        if isinstance(item, UIConnection):
+                            item.restoreThick()
+                    else:
+                        if isinstance(item, UIConnection):
+                            item.drawThick()
         else:
             super(Canvas, self).dragMoveEvent(event)
 
     def dragLeaveEvent(self, event):
         super(Canvas, self).dragLeaveEvent(event)
         self.dropCallback = None
+        if self.tempnode:
+            self.tempnode._rawNode.kill()
+            self.tempnode = None
 
     def dropEvent(self, event):
         if self.dropCallback is not None:
             self.dropCallback()
             self.dropCallback = None
+        scenePos = self.mapToScene(event.pos())
+        x = scenePos.x()
+        y = scenePos.y()
+
+        if event.mimeData().hasFormat('text/plain'):
+            jsonData = json.loads(event.mimeData().text())
+
+            # try load mime data text as json
+            # in case if it is a variable
+            # if no keyboard modifires create context menu with two actions
+            # for creating getter or setter
+            # if control - create getter, if alt - create setter
+            if VARIABLE_TAG in jsonData:
+                modifiers = event.modifiers()
+                varData = jsonData[VARIABLE_DATA_TAG]
+                nodeTemplate = NodeBase.jsonTemplate()
+                nodeTemplate['name'] = varData['name']
+                nodeTemplate['x'] = x
+                nodeTemplate['y'] = y
+                nodeTemplate['package'] = PYFLOW_BASE_PACKAGE_NAME
+                if modifiers == QtCore.Qt.NoModifier:
+                    nodeTemplate['type'] = 'getVar'
+                    nodeTemplate['meta']['label'] = varData['name']
+                    # node uid should be unique, different from var
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
+
+                    nodeTemplate['varUid'] = varData['uuid']
+                    m = QMenu()
+                    getterAction = m.addAction('Get')
+
+                    def varGetterCreator():
+                        n = self.createNode(nodeTemplate)
+                        n.updateNodeShape()
+                    getterAction.triggered.connect(varGetterCreator)
+
+                    setNodeTemplate = dict(nodeTemplate)
+                    setterAction = m.addAction('Set')
+                    setNodeTemplate['type'] = 'setVar'
+                    setterAction.triggered.connect(lambda: self.createNode(setNodeTemplate))
+                    m.exec_(QtGui.QCursor.pos(), None)
+                if modifiers == QtCore.Qt.ControlModifier:
+                    nodeTemplate['type'] = 'getVar'
+                    # node uid should be unique, different from var
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
+                    nodeTemplate['varUid'] = varData['uuid']
+                    nodeTemplate['meta']['label'] = varData['name']
+                    self.createNode(nodeTemplate)
+                    return
+                if modifiers == QtCore.Qt.AltModifier:
+                    nodeTemplate['type'] = 'setVar'
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
+                    nodeTemplate['varUid'] = varData['uuid']
+                    nodeTemplate['meta']['label'] = varData['name']
+                    self.createNode(nodeTemplate)
+                    return
+            else:
+                packageName = jsonData["package"]
+                nodeType = jsonData["type"]
+                libName = jsonData['lib']
+                name = nodeType
+                dropItem = self.nodeFromInstance(self.itemAt(scenePos.toPoint()))
+                if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
+                    nodeTemplate = NodeBase.jsonTemplate()
+                    nodeTemplate['package'] = packageName
+                    nodeTemplate['lib'] = libName
+                    nodeTemplate['type'] = nodeType
+                    nodeTemplate['name'] = name
+                    nodeTemplate['x'] = x
+                    nodeTemplate['y'] = y
+                    nodeTemplate['meta']['label'] = nodeType
+                    nodeTemplate['uuid'] = str(uuid.uuid4())
+                    if self.tempnode:
+                        self.tempnode.updateOwningCommentNode()
+                        self.tempnode.isTemp = False
+                        self.tempnode.update()
+                        node = self.tempnode
+                        self.tempnode = None
+                        for it in self.items(scenePos.toPoint()):
+                            if isinstance(it, UIPinBase):
+                                dropItem = it
+                                break
+                            elif isinstance(it, UIConnection):
+                                dropItem = it
+                                break
+                        node.eventDropOnCanvas()
+                        EditorHistory().saveState("Create node {}".format(node.name), modify=True)
+                    else:
+                        node = self.createNode(nodeTemplate)
+
+                    nodeInputs = node.namePinInputsMap
+                    nodeOutputs = node.namePinOutputsMap
+
+                    if isinstance(dropItem, UIPinBase):
+                        node.setPos(x - node.boundingRect().width(), y)
+                        for inp in nodeInputs.values():
+                            if canConnectPins(dropItem._rawPin, inp._rawPin):
+                                if dropItem.isExec():
+                                    dropItem._rawPin.disconnectAll()
+                                self.connectPins(dropItem, inp)
+                                node.setPos(x + node.boundingRect().width(), y)
+                                break
+                        for out in nodeOutputs.values():
+                            if canConnectPins(out._rawPin, dropItem._rawPin):
+                                self.connectPins(out, dropItem)
+                                node.setPos(x - node.boundingRect().width(), y)
+                                break
+                    if isinstance(dropItem, UIConnection):
+                        for inp in nodeInputs.values():
+                            if canConnectPins(dropItem.source()._rawPin, inp._rawPin):
+                                if dropItem.source().isExec():
+                                    dropItem.source()._rawPin.disconnectAll()
+                                self.connectPins(dropItem.source(), inp)
+                                break
+                        for out in nodeOutputs.values():
+                            if canConnectPins(out._rawPin, dropItem.destination()._rawPin):
+                                self.connectPins(out, dropItem.destination())
+                                break
         super(Canvas, self).dropEvent(event)
 
     def drawBackground(self, painter, rect):
