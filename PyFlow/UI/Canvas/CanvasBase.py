@@ -137,6 +137,15 @@ class CanvasBase(QGraphicsView):
         else:
             self.zoom(1 - 0.1)
 
+    def pan(self, delta):
+        rect = self.sceneRect()
+        scale = self.currentViewScale()
+        x = -delta.x() / scale
+        y = -delta.y() / scale
+        rect.translate(x, y)
+        self.setSceneRect(rect)
+        self.update()
+
     def resetScale(self):
         self.resetMatrix()
 
@@ -158,3 +167,82 @@ class CanvasBase(QGraphicsView):
 
     def getCanvasLodValueFromCurrentScale(self):
         return self.getLodValueFromScale(editableStyleSheet().LOD_Number[0], self.currentViewScale())
+
+    def drawBackground(self, painter, rect):
+        # TODO: Move to base class
+        super(CanvasBase, self).drawBackground(painter, rect)
+        lod = self.getCanvasLodValueFromCurrentScale()
+        self.boundingRect = rect
+
+        polygon = self.mapToScene(self.viewport().rect())
+
+        painter.fillRect(rect, QtGui.QBrush(editableStyleSheet().CanvasBgColor))
+
+        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
+        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
+
+        if editableStyleSheet().bDrawGrid:
+            if lod < editableStyleSheet().CanvasSwitch[0]:
+                # Draw horizontal fine lines
+                gridLines = []
+                y = float(top)
+                while y < float(rect.bottom()):
+                    gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
+                    y += editableStyleSheet().GridSizeFine[0]
+                painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
+                painter.drawLines(gridLines)
+
+                # Draw vertical fine lines
+                gridLines = []
+                x = float(left)
+                while x < float(rect.right()):
+                    gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
+                    x += editableStyleSheet().GridSizeFine[0]
+                painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColor, 1))
+                painter.drawLines(gridLines)
+
+            # Draw thick grid
+            left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeHuge[0])
+            top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeHuge[0])
+
+            # Draw vertical thick lines
+            gridLines = []
+            painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker, 1.5))
+            x = left
+            while x < rect.right():
+                gridLines.append(QtCore.QLineF(x, rect.top(), x, rect.bottom()))
+                x += editableStyleSheet().GridSizeHuge[0]
+            painter.drawLines(gridLines)
+
+            # Draw horizontal thick lines
+            gridLines = []
+            painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker, 1.5))
+            y = top
+            while y < rect.bottom():
+                gridLines.append(QtCore.QLineF(rect.left(), y, rect.right(), y))
+                y += editableStyleSheet().GridSizeHuge[0]
+            painter.drawLines(gridLines)
+
+        if editableStyleSheet().DrawNumbers[0] >= 1:
+            # draw numbers
+            scale = self.currentViewScale()
+            f = painter.font()
+            f.setPointSize(6 / min(scale, 1))
+            f.setFamily("Consolas")
+            painter.setFont(f)
+            y = float(top)
+
+            while y < float(rect.bottom()):
+                y += editableStyleSheet().GridSizeHuge[0]
+                inty = int(y)
+                if y > top + 30:
+                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
+                    painter.drawText(rect.left(), y - 1.0, str(inty))
+
+            x = float(left)
+            while x < rect.right():
+                x += editableStyleSheet().GridSizeHuge[0]
+                intx = int(x)
+                if x > left + 30:
+                    painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
+                    painter.drawText(x, rect.top() + painter.font().pointSize(), str(intx))
