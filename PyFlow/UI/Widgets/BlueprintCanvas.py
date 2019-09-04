@@ -86,13 +86,10 @@ def getNodeInstance(jsonTemplate, canvas, parentGraph=None):
 class BlueprintCanvas(CanvasBase):
     """UI canvas class
     """
-    _manipulationMode = CanvasManipulationMode.NONE
 
     _realTimeLineInvalidPen = Colors.Red
     _realTimeLineNormalPen = Colors.White
     _realTimeLineValidPen = Colors.Green
-
-    _mouseWheelZoomRate = 0.0005
 
     requestFillProperties = QtCore.Signal(object)
     requestClearProperties = QtCore.Signal()
@@ -111,30 +108,12 @@ class BlueprintCanvas(CanvasBase):
         self.pyFlowInstance = pyFlowInstance
         # connect with App class signals
         self.pyFlowInstance.newFileExecuted.connect(self.onNewFile)
-        self.setScene(self.createScene())
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.pressed_item = None
-        self.released_item = None
         self.pressedPin = None
         self.releasedPin = None
         self.resizing = False
         self.hoverItems = []
         self.hoveredRerutes = []
-        self._isPanning = False
-        self._minimum_scale = 0.2
-        self._maximum_scale = 3.0
-
-        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        # Antialias -- Change to Settings
-        self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.setRenderHint(QtGui.QPainter.TextAntialiasing)
-        ##
-        self.setAcceptDrops(True)
-        self.setAttribute(QtCore.Qt.WA_AlwaysShowToolTips)
-        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-        self.scene().setSceneRect(QtCore.QRectF(0, 0, 10, 10))
-        self.factor = 1
 
         self.realTimeLine = QGraphicsPathItem(None, self.scene())
         self.realTimeLine.name = 'RealTimeLine'
@@ -142,30 +121,19 @@ class BlueprintCanvas(CanvasBase):
         self.realTimeLineNormalPen = QtGui.QPen(self._realTimeLineNormalPen, 2.0, QtCore.Qt.DashLine)
         self.realTimeLineValidPen = QtGui.QPen(self._realTimeLineValidPen, 2.0, QtCore.Qt.SolidLine)
         self.realTimeLine.setPen(self.realTimeLineNormalPen)
-        self.mousePressPose = QtCore.QPointF(0, 0)
-        self.mousePos = QtCore.QPointF(0, 0)
-        self._lastMousePos = QtCore.QPointF(0, 0)
         self._drawRealtimeLine = False
-        self.centerOn(QtCore.QPointF(self.sceneRect().width() / 2, self.sceneRect().height() / 2))
         self._sortcuts_enabled = True
         self.autoPanController = AutoPanController()
 
         self.node_box = NodesBox(self.getApp(), self, bUseDragAndDrop=True)
         self.node_box.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self._UIConnections = {}
-        self.boundingRect = self.rect()
+
         self.installEventFilter(self)
         self.reconnectingWires = set()
         self.currentPressedKey = None
         self.dropCallback = None
         self.tempnode = None
-        self.hoverItems = []
-
-    def createScene(self):
-        scene = QGraphicsScene(self)
-        scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-        scene.setSceneRect(QtCore.QRectF(0, 0, 10, 10))
-        return scene
 
     def getApp(self):
         return self.pyFlowInstance
@@ -202,27 +170,27 @@ class BlueprintCanvas(CanvasBase):
         uiNode.setSelected(True)
         self.frameSelectedNodes()
 
-    @property
-    def manipulationMode(self):
-        # TODO: Move to base class
-        return self._manipulationMode
+    # @property
+    # def manipulationMode(self):
+    #     # TODO: Move to base class
+    #     return self._manipulationMode
 
-    @manipulationMode.setter
-    def manipulationMode(self, value):
-        # TODO: Move to base class
-        self._manipulationMode = value
-        if value == CanvasManipulationMode.NONE:
-            pass
-        elif value == CanvasManipulationMode.SELECT:
-            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
-        elif value == CanvasManipulationMode.PAN:
-            self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
-        elif value == CanvasManipulationMode.MOVE:
-            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
-        elif value == CanvasManipulationMode.ZOOM:
-            self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
-        elif value == CanvasManipulationMode.COPY:
-            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+    # @manipulationMode.setter
+    # def manipulationMode(self, value):
+    #     # TODO: Move to base class
+    #     self._manipulationMode = value
+    #     if value == CanvasManipulationMode.NONE:
+    #         pass
+    #     elif value == CanvasManipulationMode.SELECT:
+    #         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+    #     elif value == CanvasManipulationMode.PAN:
+    #         self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
+    #     elif value == CanvasManipulationMode.MOVE:
+    #         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+    #     elif value == CanvasManipulationMode.ZOOM:
+    #         self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
+    #     elif value == CanvasManipulationMode.COPY:
+    #         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
     def setSelectedNodesCollapsed(self, collapsed=True):
         for node in self.selectedNodes():
@@ -474,6 +442,8 @@ class BlueprintCanvas(CanvasBase):
         return error < tolerance
 
     def frameSelectedNodes(self):
+        r = self.getItemsRect(UINodeBase, False)
+        print(r)
         self.frameRect(self.getNodesRect(True))
         self.frameRect(self.getNodesRect(True))
 
@@ -485,35 +455,7 @@ class BlueprintCanvas(CanvasBase):
                 self.frameRect(self.getNodesRect())
 
     def getNodesRect(self, selected=False, activeGraphOnly=True):
-        # TODO: Move to base class and rename to `GetItemsRect(class, bSelected)`
-        rectangles = []
-        if selected:
-            for n in [n for n in self.getAllNodes() if n.isSelected()]:
-                if activeGraphOnly:
-                    if n._rawNode.graph() != self.graphManager.activeGraph():
-                        continue
-                n_rect = QtCore.QRectF(n.scenePos(), QtCore.QPointF(n.scenePos().x() + float(n.w), n.scenePos().y() + float(n.h)))
-                rectangles.append([n_rect.x(), n_rect.y(), n_rect.bottomRight().x(), n_rect.bottomRight().y()])
-        else:
-            for n in self.getAllNodes():
-                if activeGraphOnly:
-                    if n._rawNode.graph() != self.graphManager.activeGraph():
-                        continue
-                n_rect = QtCore.QRectF(n.scenePos(), QtCore.QPointF(n.scenePos().x() + float(n.w), n.scenePos().y() + float(n.h)))
-                rectangles.append([n_rect.x(), n_rect.y(), n_rect.bottomRight().x(), n_rect.bottomRight().y()])
-
-        arr1 = [i[0] for i in rectangles]
-        arr2 = [i[2] for i in rectangles]
-        arr3 = [i[1] for i in rectangles]
-        arr4 = [i[3] for i in rectangles]
-        if any([len(arr1) == 0, len(arr2) == 0, len(arr3) == 0, len(arr4) == 0]):
-            return None
-        min_x = min(arr1)
-        max_x = max(arr2)
-        min_y = min(arr3)
-        max_y = max(arr4)
-
-        return QtCore.QRect(QtCore.QPoint(min_x, min_y), QtCore.QPoint(max_x, max_y))
+        return self.getItemsRect(cls=UINodeBase, bSelectedOnly=selected, bVisibleOnly=activeGraphOnly)
 
     def selectedNodes(self):
         allNodes = self.getAllNodes()
@@ -550,11 +492,8 @@ class BlueprintCanvas(CanvasBase):
                 # create comment node
                 rect = self.getNodesRect(True)
                 if rect:
-                    rect.setTop(rect.top() - 30)
-                    rect.setLeft(rect.left() - 30)
-
-                    rect.setRight(rect.right() + 100)
-                    rect.setBottom(rect.bottom() + 30)
+                    margin = QtCore.QMargins(30, 30, 30, 10)
+                    rect += margin
 
                 x = 0
                 y = 0
@@ -1437,16 +1376,6 @@ class BlueprintCanvas(CanvasBase):
         if isinstance(obj, IPropertiesViewSupport):
             self.requestFillProperties.emit(obj.createPropertiesWidget)
 
-    def wheelEvent(self, event):
-        # TODO: Move to base class
-        (xfo, invRes) = self.transform().inverted()
-        topLeft = xfo.map(self.rect().topLeft())
-        bottomRight = xfo.map(self.rect().bottomRight())
-        center = (topLeft + bottomRight) * 0.5
-        zoomFactor = 1.0 + event.delta() * self._mouseWheelZoomRate
-
-        self.zoom(zoomFactor)
-
     def stepToCompound(self, compoundNodeName):
         self.graphManager.selectGraphByName(compoundNodeName)
 
@@ -1680,11 +1609,10 @@ class BlueprintCanvas(CanvasBase):
 
         painter.fillRect(rect, QtGui.QBrush(editableStyleSheet().CanvasBgColor))
 
+        left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
+        top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
+
         if editableStyleSheet().bDrawGrid:
-
-            left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
-            top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
-
             if lod < editableStyleSheet().CanvasSwitch[0]:
                 # Draw horizontal fine lines
                 gridLines = []
@@ -1736,17 +1664,19 @@ class BlueprintCanvas(CanvasBase):
             y = float(top)
 
             while y < float(rect.bottom()):
-                y += editableStyleSheet().GridSizeFine[0]
-                if abs(y) % 100 == 0 and y > rect.top() + 30:
+                y += editableStyleSheet().GridSizeHuge[0]
+                inty = int(y)
+                if y > top + 30:
                     painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
-                    painter.drawText(rect.left(), y - 1.0, str(y))
+                    painter.drawText(rect.left(), y - 1.0, str(inty))
 
             x = float(left)
             while x < rect.right():
                 x += editableStyleSheet().GridSizeHuge[0]
-                if abs(x) % 100 == 0 and x > rect.left() + 30:
+                intx = int(x)
+                if x > left + 30:
                     painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
-                    painter.drawText(x, rect.top() + painter.font().pointSize(), str(x))
+                    painter.drawText(x, rect.top() + painter.font().pointSize(), str(intx))
 
     def _createNode(self, jsonTemplate):
         # Check if this node is variable get/set. Variables created in child graphs are not visible to parent ones
@@ -1959,16 +1889,6 @@ class BlueprintCanvas(CanvasBase):
     def getCanvasLodValueFromCurrentScale(self):
         # TODO: Move to base class
         return self.getLodValueFromScale(editableStyleSheet().LOD_Number[0], self.currentViewScale())
-
-    def zoom(self, scale_factor):
-        # TODO: Move to base class
-        self.factor = self.transform().m22()
-        futureScale = self.factor * scale_factor
-        if futureScale <= self._minimum_scale:
-            scale_factor = (self._minimum_scale) / self.factor
-        if futureScale >= self._maximum_scale:
-            scale_factor = (self._maximum_scale - 0.1) / self.factor
-        self.scale(scale_factor, scale_factor)
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_Tab:
