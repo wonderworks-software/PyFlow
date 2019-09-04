@@ -163,13 +163,6 @@ class BlueprintCanvas(CanvasBase):
                 node.updateNodeShape()
         QtCore.QTimer.singleShot(100, nodeShapeUpdater)
 
-    def jumpToNode(self, uiNode):
-        # TODO: Move to base class and rename to `JumpToItem`
-        self.graphManager.selectGraph(uiNode.graph())
-        self.clearSelection()
-        uiNode.setSelected(True)
-        self.frameSelectedNodes()
-
     def setSelectedNodesCollapsed(self, collapsed=True):
         for node in self.selectedNodes():
             node.collapsed = collapsed

@@ -55,7 +55,7 @@ class SearchResultsTool(DockTool):
         for node in uiNodesList:
             locationString = ">".join(node.location())
             btn = QPushButton(locationString)
-            btn.clicked.connect(lambda checked=False, n=node: self.pyFlowInstance.getCanvas().jumpToNode(n))
+            btn.clicked.connect(lambda checked=False, n=node: self.pyFlowInstance.getCanvas().frameItems([n]))
             category.addWidget(node.getName(), btn)
         self.content.addWidget(category)
 

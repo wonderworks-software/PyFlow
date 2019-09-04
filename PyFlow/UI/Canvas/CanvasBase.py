@@ -63,8 +63,11 @@ class CanvasBase(QGraphicsView):
 
         return result
 
-    def frameItems(self, item):
-        pass
+    def frameItems(self, items):
+        rect = QtCore.QRect()
+        for i in items:
+            rect |= i.sceneBoundingRect().toRect()
+        self.frameRect(rect)
 
     @property
     def manipulationMode(self):
