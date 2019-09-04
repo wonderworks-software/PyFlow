@@ -3,6 +3,7 @@ from Qt import QtGui
 from Qt.QtWidgets import *
 
 from PyFlow.UI.Canvas.UICommon import *
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 
 
 class CanvasBase(QGraphicsView):
@@ -62,7 +63,7 @@ class CanvasBase(QGraphicsView):
 
         return result
 
-    def jumpToItem(self, item):
+    def frameItems(self, item):
         pass
 
     @property
@@ -103,3 +104,54 @@ class CanvasBase(QGraphicsView):
         if futureScale >= self._maximum_scale:
             scale_factor = (self._maximum_scale - 0.1) / self.factor
         self.scale(scale_factor, scale_factor)
+
+    def frameRect(self, rect):
+        if rect is None:
+            return
+        windowRect = self.mapToScene(self.rect()).boundingRect()
+
+        # pan to center of window
+        delta = windowRect.center() - rect.center()
+        delta *= self.currentViewScale()
+        self.pan(delta)
+
+        # zoom to fit content
+        ws = windowRect.size()
+        rect += QtCore.QMargins(40, 40, 40, 40)
+        rs = rect.size()
+        widthRef = ws.width()
+        heightRef = ws.height()
+        sx = widthRef / rect.width()
+        sy = heightRef / rect.height()
+        scale = sx if sy > sx else sy
+        self.zoom(scale)
+
+        return scale
+
+    def zoomDelta(self, direction):
+        if direction:
+            self.zoom(1 + 0.1)
+        else:
+            self.zoom(1 - 0.1)
+
+    def resetScale(self):
+        self.resetMatrix()
+
+    def viewMinimumScale(self):
+        return self._minimum_scale
+
+    def viewMaximumScale(self):
+        return self._maximum_scale
+
+    def currentViewScale(self):
+        return self.transform().m22()
+
+    def getLodValueFromScale(self, numLods=5, scale=1.0):
+        lod = lerp(numLods, 1, GetRangePct(self.viewMinimumScale(), self.viewMaximumScale(), scale))
+        return int(round(lod))
+
+    def getLodValueFromCurrentScale(self, numLods=5):
+        return self.getLodValueFromScale(numLods, self.currentViewScale())
+
+    def getCanvasLodValueFromCurrentScale(self):
+        return self.getLodValueFromScale(editableStyleSheet().LOD_Number[0], self.currentViewScale())

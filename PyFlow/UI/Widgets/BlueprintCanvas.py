@@ -170,28 +170,6 @@ class BlueprintCanvas(CanvasBase):
         uiNode.setSelected(True)
         self.frameSelectedNodes()
 
-    # @property
-    # def manipulationMode(self):
-    #     # TODO: Move to base class
-    #     return self._manipulationMode
-
-    # @manipulationMode.setter
-    # def manipulationMode(self, value):
-    #     # TODO: Move to base class
-    #     self._manipulationMode = value
-    #     if value == CanvasManipulationMode.NONE:
-    #         pass
-    #     elif value == CanvasManipulationMode.SELECT:
-    #         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
-    #     elif value == CanvasManipulationMode.PAN:
-    #         self.viewport().setCursor(QtCore.Qt.OpenHandCursor)
-    #     elif value == CanvasManipulationMode.MOVE:
-    #         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
-    #     elif value == CanvasManipulationMode.ZOOM:
-    #         self.viewport().setCursor(QtCore.Qt.SizeHorCursor)
-    #     elif value == CanvasManipulationMode.COPY:
-    #         self.viewport().setCursor(QtCore.Qt.ArrowCursor)
-
     def setSelectedNodesCollapsed(self, collapsed=True):
         for node in self.selectedNodes():
             node.collapsed = collapsed
@@ -410,30 +388,6 @@ class BlueprintCanvas(CanvasBase):
             if Pin:
                 return Pin
 
-    def frameRect(self, nodesRect):
-        # TODO: Move to base class
-        if nodesRect is None:
-            return
-        windowRect = self.mapToScene(self.rect()).boundingRect()
-
-        # pan to center of window
-        delta = windowRect.center() - nodesRect.center()
-        delta *= self.currentViewScale()
-        self.pan(delta)
-
-        # zoom to fit content
-        ws = windowRect.size()
-        nodesRect += QtCore.QMargins(0, 20, 150, 20)
-        rs = nodesRect.size()
-        widthRef = ws.width()
-        heightRef = ws.height()
-        sx = widthRef / nodesRect.width()
-        sy = heightRef / nodesRect.height()
-        scale = sx if sy > sx else sy
-        self.zoom(scale)
-
-        return scale
-
     def ensureNodesRectAlmostEqualWindowRect(self, tolerance=10.0):
         windowRect = self.mapToScene(self.rect()).boundingRect()
         nodesRect = self.getNodesRect()
@@ -442,17 +396,13 @@ class BlueprintCanvas(CanvasBase):
         return error < tolerance
 
     def frameSelectedNodes(self):
-        r = self.getItemsRect(UINodeBase, False)
-        print(r)
-        self.frameRect(self.getNodesRect(True))
         self.frameRect(self.getNodesRect(True))
 
     def frameAllNodes(self):
         rect = self.getNodesRect()
-        if rect is not None:
-            self.frameRect(rect)
-            if not self.ensureNodesRectAlmostEqualWindowRect():
-                self.frameRect(self.getNodesRect())
+        self.frameRect(rect)
+        if not self.ensureNodesRectAlmostEqualWindowRect():
+            self.frameRect(self.getNodesRect())
 
     def getNodesRect(self, selected=False, activeGraphOnly=True):
         return self.getItemsRect(cls=UINodeBase, bSelectedOnly=selected, bVisibleOnly=activeGraphOnly)
@@ -491,9 +441,9 @@ class BlueprintCanvas(CanvasBase):
             if all([event.key() == QtCore.Qt.Key_C, modifiers == QtCore.Qt.NoModifier]):
                 # create comment node
                 rect = self.getNodesRect(True)
-                if rect:
-                    margin = QtCore.QMargins(30, 30, 30, 10)
-                    rect += margin
+
+                margin = QtCore.QMargins(30, 30, 30, 10)
+                rect += margin
 
                 x = 0
                 y = 0
@@ -1854,41 +1804,7 @@ class BlueprintCanvas(CanvasBase):
         connection.prepareGeometryChange()
         self.scene().removeItem(connection)
 
-    def zoomDelta(self, direction):
-        # TODO: Move to base class
-        if direction:
-            self.zoom(1 + 0.1)
-        else:
-            self.zoom(1 - 0.1)
-
-    def resetScale(self):
-        # TODO: Move to base class
-        self.resetMatrix()
-
-    def viewMinimumScale(self):
-        # TODO: Move to base class
-        return self._minimum_scale
-
-    def viewMaximumScale(self):
-        # TODO: Move to base class
-        return self._maximum_scale
-
-    def currentViewScale(self):
-        # TODO: Move to base class
-        return self.transform().m22()
-
-    def getLodValueFromScale(self, numLods=5, scale=1.0):
-        # TODO: Move to base class
-        lod = lerp(numLods, 1, GetRangePct(self.viewMinimumScale(), self.viewMaximumScale(), scale))
-        return int(round(lod))
-
-    def getLodValueFromCurrentScale(self, numLods=5):
-        # TODO: Move to base class
-        return self.getLodValueFromScale(numLods, self.currentViewScale())
-
-    def getCanvasLodValueFromCurrentScale(self):
-        # TODO: Move to base class
-        return self.getLodValueFromScale(editableStyleSheet().LOD_Number[0], self.currentViewScale())
+    
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_Tab:
