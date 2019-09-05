@@ -57,7 +57,7 @@ class ThemePreferences(CategoryWidgetBase):
         connections = CollapsibleFormWidget(headName="Connections")
         lods = CollapsibleFormWidget(headName="LODS")
         lodMax = None
-        lodWidgets=[]
+        lodWidgets = []
         options = inspect.getmembers(editableStyleSheet())
         for name, obj in options:
             if isinstance(obj, QtGui.QColor):
@@ -84,8 +84,8 @@ class ThemePreferences(CategoryWidgetBase):
                         inp.addItem(i.name)
                     inp.setCurrentIndex(obj[0])
                     inp.currentIndexChanged.connect(lambda value, name=name, update=False: editableStyleSheet().setColor(name, value, update))
-                elif name in ["LOD_Number","NodeSwitch","ConnectionSwitch","PinSwitch","CanvasSwitch"]:
-                    inp = pyf_Slider(self,type="int")
+                elif name in ["LOD_Number", "NodeSwitch", "ConnectionSwitch", "PinSwitch", "CanvasSwitch"]:
+                    inp = pyf_Slider(self, type="int")
                     inp.setValue(obj[0])
                     if name != "LOD_Number":
                         inp.setMinimum(0)
@@ -100,10 +100,10 @@ class ThemePreferences(CategoryWidgetBase):
                     connections.addWidget(name, inp)
                 elif name == "SetAppStyleSheet":
                     general.insertWidget(0, name, inp)
-                elif name in ["NodeSwitch","ConnectionSwitch","PinSwitch","CanvasSwitch"]:
-                    lods.addWidget(name,inp)
+                elif name in ["NodeSwitch", "ConnectionSwitch", "PinSwitch", "CanvasSwitch"]:
+                    lods.addWidget(name, inp)
                 elif name == "LOD_Number":
-                    lods.insertWidget(0,name,inp)
+                    lods.insertWidget(0, name, inp)
                 else:
                     canvas.addWidget(name, inp)
 

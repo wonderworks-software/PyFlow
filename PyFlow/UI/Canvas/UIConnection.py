@@ -313,7 +313,7 @@ class UIConnection(QGraphicsPathItem):
 
         self.setPen(self.pen)
         p1, p2 = self.getEndPoints()
-        if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit,ConnectionTypes.ComplexCircuit]:
+        if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit, ConnectionTypes.ComplexCircuit]:
             sameSide = 0
             offset = 15
             roundnes = editableStyleSheet().ConnectionRoundness[0]
@@ -328,11 +328,11 @@ class UIConnection(QGraphicsPathItem):
                 if xDistance < 0:
                     sameSide = -1
                     p1, p2 = self.getEndPoints()
-            self.mPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, sameSide,lod,editableStyleSheet().ConnectionMode[0]==ConnectionTypes.ComplexCircuit)
+            self.mPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, sameSide, lod, editableStyleSheet().ConnectionMode[0]==ConnectionTypes.ComplexCircuit)
 
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
-            self.mPath = ConnectionPainter.Cubic(p1, p2, 150,lod)
+            self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
 
         self.setPath(self.mPath)
-        
+
         super(UIConnection, self).paint(painter, option, widget)

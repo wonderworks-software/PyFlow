@@ -595,9 +595,9 @@ class ConnectionPainter(object):
                 path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
                 path.append(p2)
             else:
-                x = max(p1.x()+offset1 ,p2.x() + offset2*1.5)
+                x = max(p1.x() + offset1, p2.x() + offset2 * 1.5)
                 if sameSide == 1:
-                    x = min(p1.x()+offset1 ,p2.x() + offset2*1.5)
+                    x = min(p1.x() + offset1, p2.x() + offset2 * 1.5)
                 path.append(QtCore.QPoint(x, p1.y()))
                 path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
                 path.append(p2)
@@ -610,11 +610,11 @@ class ConnectionPainter(object):
 
         if complexLine:
             if xDistance > 0:
-                path = ConnectionPainter.chanferPath(path[:-1],offset)
+                path = ConnectionPainter.chanferPath(path[:-1], offset)
                 path.append(p2)
             else:
                 path.reverse()
-                path = ConnectionPainter.chanferPath(path[:-1],offset)
+                path = ConnectionPainter.chanferPath(path[:-1], offset)
                 path.append(p1)
 
         if lod >= SWITCH_LOD:
@@ -622,7 +622,6 @@ class ConnectionPainter(object):
         else:
             mPath = ConnectionPainter.roundCornersPath(path, roundnes)
         return mPath
-
 
     @staticmethod
     def Cubic(p1, p2, defOffset=150, lod=0):
