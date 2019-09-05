@@ -113,7 +113,7 @@ class BlueprintCanvas(CanvasBase):
         self.releasedPin = None
         self.resizing = False
         self.hoverItems = []
-        self.hoveredRerutes = []
+        self.hoveredReroutes = []
 
         self.realTimeLine = QGraphicsPathItem(None, self.scene())
         self.realTimeLine.name = 'RealTimeLine'
@@ -960,29 +960,29 @@ class BlueprintCanvas(CanvasBase):
                             node.setSelected(not node.isSelected())
                         if modifiers == QtCore.Qt.ShiftModifier:
                             node.setSelected(True)
-                    if currentInputAction in InputManager()["Canvas.DragNodes"]:
+                    if currentInputAction in InputManager()["Canvas.DragNodes"] and isinstance(self.pressed_item, UINodeBase):
                         self.manipulationMode = CanvasManipulationMode.MOVE
                         if self.pressed_item.objectName() == "MouseLocked":
                             super(BlueprintCanvas, self).mousePressEvent(event)
                     if currentInputAction in InputManager()["Canvas.DragCopyNodes"]:
                         self.manipulationMode = CanvasManipulationMode.COPY
 
-    def updateRerutes(self, event, showPins=False):
+    def updateReroutes(self, event, showPins=False):
         tolerance = 9 * self.currentViewScale()
         mouseRect = QtCore.QRect(QtCore.QPoint(event.pos().x() - tolerance, event.pos().y() - tolerance),
                                  QtCore.QPoint(event.pos().x() + tolerance, event.pos().y() + tolerance))
         hoverItems = self.items(mouseRect)
-        self.hoveredRerutes += [node for node in hoverItems if isinstance(node, UINodeBase) and node.isReroute()]
-        for node in self.hoveredRerutes:
+        self.hoveredReroutes += [node for node in hoverItems if isinstance(node, UINodeBase) and node.isReroute()]
+        for node in self.hoveredReroutes:
             if showPins:
                 if node in hoverItems:
                     node.showPins()
                 else:
                     node.hidePins()
-                    self.hoveredRerutes.remove(node)
+                    self.hoveredReroutes.remove(node)
             else:
                 node.hidePins()
-                self.hoveredRerutes.remove(node)
+                self.hoveredReroutes.remove(node)
 
     def mouseMoveEvent(self, event):
         # TODO: Move navigation part to base class
@@ -990,7 +990,6 @@ class BlueprintCanvas(CanvasBase):
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         modifiers = event.modifiers()
         node = self.nodeFromInstance(self.itemAt(event.pos()))
-        self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         if self.itemAt(event.pos()) and isinstance(node, UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
             if resizeOpts["resize"] or node.bResize:
@@ -1010,7 +1009,7 @@ class BlueprintCanvas(CanvasBase):
             if self.realTimeLine not in self.scene().items():
                 self.scene().addItem(self.realTimeLine)
 
-            self.updateRerutes(event, True)
+            self.updateReroutes(event, True)
 
             p1 = self.pressed_item.scenePos() + self.pressed_item.pinCenter()
             p2 = self.mapToScene(self.mousePos)
@@ -1204,7 +1203,6 @@ class BlueprintCanvas(CanvasBase):
         self.mouseReleasePos = event.pos()
         self.released_item = self.itemAt(event.pos())
         self.releasedPin = self.findPinNearPosition(event.pos())
-        self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
         if self.manipulationMode == CanvasManipulationMode.MOVE and len(self.selectedNodes()) > 0:
             EditorHistory().saveState("Move nodes", modify=True)
@@ -1299,7 +1297,7 @@ class BlueprintCanvas(CanvasBase):
         elif event.button() == QtCore.Qt.LeftButton:
             self.requestClearProperties.emit()
         self.resizing = False
-        self.updateRerutes(event, False)
+        self.updateReroutes(event, False)
         self.validateCommentNodesOwnership(self.graphManager.activeGraph(), False)
 
     def removeItemByName(self, name):

@@ -77,7 +77,7 @@ class CanvasBase(QGraphicsView):
     def manipulationMode(self, value):
         self._manipulationMode = value
         if value == CanvasManipulationMode.NONE:
-            pass
+            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         elif value == CanvasManipulationMode.SELECT:
             self.viewport().setCursor(QtCore.Qt.ArrowCursor)
         elif value == CanvasManipulationMode.PAN:
