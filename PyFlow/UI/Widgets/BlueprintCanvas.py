@@ -964,6 +964,12 @@ class BlueprintCanvas(CanvasBase):
                         self.manipulationMode = CanvasManipulationMode.MOVE
                         if self.pressed_item.objectName() == "MouseLocked":
                             super(BlueprintCanvas, self).mousePressEvent(event)
+                    elif currentInputAction in InputManager()["Canvas.DragNodes"] and isinstance(self.pressed_item.topLevelItem(), UINodeBase):
+                        isComment = self.pressed_item.topLevelItem().isCommentNode
+                        if isComment:
+                            self.manipulationMode = CanvasManipulationMode.MOVE
+                            if self.pressed_item.objectName() == "MouseLocked":
+                                super(BlueprintCanvas, self).mousePressEvent(event)
                     if currentInputAction in InputManager()["Canvas.DragCopyNodes"]:
                         self.manipulationMode = CanvasManipulationMode.COPY
 
@@ -989,8 +995,9 @@ class BlueprintCanvas(CanvasBase):
         self.mousePos = event.pos()
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         modifiers = event.modifiers()
-        node = self.nodeFromInstance(self.itemAt(event.pos()))
-        if self.itemAt(event.pos()) and isinstance(node, UINodeBase) and node.resizable:
+        itemUnderMouse = self.itemAt(event.pos())
+        node = self.nodeFromInstance(itemUnderMouse)
+        if itemUnderMouse and isinstance(node, UINodeBase) and node.resizable:
             resizeOpts = node.shouldResize(self.mapToScene(event.pos()))
             if resizeOpts["resize"] or node.bResize:
                 if resizeOpts["direction"] in [(1, 0), (-1, 0)]:
@@ -1001,6 +1008,10 @@ class BlueprintCanvas(CanvasBase):
                     self.viewport().setCursor(QtCore.Qt.SizeFDiagCursor)
                 elif resizeOpts["direction"] in [(-1, 1), (1, -1)]:
                     self.viewport().setCursor(QtCore.Qt.SizeBDiagCursor)
+            elif not self.resizing:
+                self.viewport().setCursor(QtCore.Qt.ArrowCursor)
+        elif itemUnderMouse is None and not self.resizing:
+            self.viewport().setCursor(QtCore.Qt.ArrowCursor)
 
         if self._drawRealtimeLine:
             if isinstance(self.pressed_item, PinBase):
@@ -1705,8 +1716,6 @@ class BlueprintCanvas(CanvasBase):
         connection.destination().uiConnectionList.remove(connection)
         connection.prepareGeometryChange()
         self.scene().removeItem(connection)
-
-    
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.KeyPress and event.key() == QtCore.Qt.Key_Tab:
