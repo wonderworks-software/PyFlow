@@ -181,7 +181,7 @@ class CanvasBase(QGraphicsView):
         left = int(rect.left()) - (int(rect.left()) % editableStyleSheet().GridSizeFine[0])
         top = int(rect.top()) - (int(rect.top()) % editableStyleSheet().GridSizeFine[0])
 
-        if editableStyleSheet().bDrawGrid:
+        if editableStyleSheet().DrawGrid[0] >= 1:
             if lod < editableStyleSheet().CanvasSwitch[0]:
                 # Draw horizontal fine lines
                 gridLines = []

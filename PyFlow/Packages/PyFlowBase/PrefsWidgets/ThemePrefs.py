@@ -42,8 +42,6 @@ class ThemePreferences(CategoryWidgetBase):
         self.layout.setSpacing(2)
         self.setWidget(self.content)
         self.currTheme = None
-        self.cbDrawGrid = QCheckBox()
-        self.cbDrawGrid.stateChanged.connect(lambda state: editableStyleSheet().setDrawGrid(bool(state)))
 
     def onShow(self, settings):
         clearLayout(self.layout)
@@ -74,7 +72,7 @@ class ThemePreferences(CategoryWidgetBase):
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
                     inp.valueChanged.connect(lambda color, name=name, update=False: editableStyleSheet().setColor(name, color, update))
-                elif name in ["DrawNumbers", "SetAppStyleSheet"]:
+                elif name in ["DrawNumbers", "SetAppStyleSheet","DrawGrid"]:
                     inp = QCheckBox()
                     inp.setChecked(obj[0])
                     inp.stateChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
@@ -109,9 +107,6 @@ class ThemePreferences(CategoryWidgetBase):
 
         for lod in lodWidgets:
             lodMax.valueChanged.connect(lod.setMaximum)
-
-        canvas.addWidget("DrawGrid", self.cbDrawGrid)
-        self.cbDrawGrid.setChecked(QtCore.Qt.Checked if editableStyleSheet().bDrawGrid else QtCore.Qt.Uncecked)
 
         self.selector = QComboBox()
         for name in editableStyleSheet().presets.keys():

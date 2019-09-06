@@ -79,7 +79,7 @@ class editableStyleSheet():
         self.CanvasBgColor = QtGui.QColor(35, 35, 35)
         self.CanvasGridColor = QtGui.QColor(20, 20, 20, 100)
         self.CanvasGridColorDarker = QtGui.QColor(20, 20, 20)
-        self.bDrawGrid = True
+        self.DrawGrid = [1]
         self.GridSizeFine = [10]
         self.GridSizeHuge = [100]
         self.DrawNumbers = [0]
@@ -106,10 +106,6 @@ class editableStyleSheet():
                     self.loadFromData(self.presets[list(self.presets.keys())[0]])
         except:
             pass
-
-    def setDrawGrid(self, bDraw):
-        self.bDrawGrid = bDraw
-        self.updateApp()
 
     def storeDeffaults(self):
         for name, obj in inspect.getmembers(self):
