@@ -953,6 +953,8 @@ class BlueprintCanvas(CanvasBase):
                                 for n in node.getChainedNodes():
                                     n.setSelected(True)
                                 snode.setSelected(True)
+                        self.manipulationMode = CanvasManipulationMode.MOVE
+                        return
                     else:
                         if modifiers in [QtCore.Qt.NoModifier, QtCore.Qt.AltModifier]:
                             super(BlueprintCanvas, self).mousePressEvent(event)
@@ -1142,6 +1144,7 @@ class BlueprintCanvas(CanvasBase):
                     elif wire.isSelected() and not QtWidgets.QGraphicsWidget.collidesWithItem(self._selectionRect, wire):
                         wire.setSelected(False)
         elif self.manipulationMode == CanvasManipulationMode.MOVE:
+            # TODO: do not change object names. Rewrite with flag e.g. `bMovementLocked`
             if self.pressed_item.objectName() == "MouseLocked":
                 super(BlueprintCanvas, self).mouseMoveEvent(event)
             else:
