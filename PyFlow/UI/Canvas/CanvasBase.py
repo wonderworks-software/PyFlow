@@ -99,7 +99,6 @@ class CanvasBase(QGraphicsView):
         self.zoom(zoomFactor)
 
     def zoom(self, scale_factor):
-        # TODO: Move to base class
         self.factor = self.transform().m22()
         futureScale = self.factor * scale_factor
         if futureScale <= self._minimum_scale:
@@ -169,7 +168,6 @@ class CanvasBase(QGraphicsView):
         return self.getLodValueFromScale(editableStyleSheet().LOD_Number[0], self.currentViewScale())
 
     def drawBackground(self, painter, rect):
-        # TODO: Move to base class
         super(CanvasBase, self).drawBackground(painter, rect)
         lod = self.getCanvasLodValueFromCurrentScale()
         self.boundingRect = rect
