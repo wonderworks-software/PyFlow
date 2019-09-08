@@ -1325,6 +1325,7 @@ class BlueprintCanvas(CanvasBase):
         self.graphManager.selectGraphByName(compoundNodeName)
 
     def dragEnterEvent(self, event):
+        super(BlueprintCanvas, self).dragEnterEvent(event)
         if event.mimeData().hasUrls():
             urls = event.mimeData().urls()
             if len(urls) == 1:
@@ -1393,7 +1394,7 @@ class BlueprintCanvas(CanvasBase):
             if self.tempnode:
                 self.tempnode.isTemp = True
             self.hoverItems = []
-        super(BlueprintCanvas, self).dragEnterEvent(event)
+        
 
     def dragMoveEvent(self, event):
         self.mousePos = event.pos()
