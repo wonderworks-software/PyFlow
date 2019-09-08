@@ -34,12 +34,32 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
         if not bOwningNodeCallable:
             return pin.currentData()
 
-        order = DefaultEvaluationEngine_Impl.getEvaluationOrder(pin.owningNode())
+        order = DefaultEvaluationEngine_Impl.getEvaluationOrderIterative(pin.owningNode())
         [node.processNode() for node in order]
 
         if not bOwningNodeCallable:
             pin.owningNode().processNode()
         return pin.currentData()
+
+    @staticmethod
+    def getEvaluationOrderIterative(node):
+        visited = set()
+        stack = [node]
+        order = []
+        while len(stack):
+            node = stack[-1]
+            stack.pop()
+
+            if node not in visited:
+                order.insert(0, node)
+                visited.add(node)
+
+            lhsNodes = DefaultEvaluationEngine_Impl().getNextLayerNodes(node)
+            for n in lhsNodes:
+                if n not in visited:
+                    stack.append(n)
+        order.pop()
+        return order
 
     @staticmethod
     def getEvaluationOrder(node):
@@ -91,9 +111,6 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
 class EvaluationEngine(object):
     def __init__(self):
         self._impl = DefaultEvaluationEngine_Impl()
-
-    def getEvaluationOrder(self, node):
-        return self._impl.getEvaluationOrder(node)
 
     def getPinData(self, pin):
         return self._impl.getPinData(pin)
