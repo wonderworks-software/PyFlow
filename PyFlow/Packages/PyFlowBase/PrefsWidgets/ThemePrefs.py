@@ -71,6 +71,8 @@ class ThemePreferences(CategoryWidgetBase):
                 if name in ["GridSizeFine", "GridSizeHuge", "ConnectionRoundness"]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
+                    inp.setMinimum(0)
+                    inp.setMaximum(1000.0)
                     inp.valueChanged.connect(lambda color, name=name, update=False: editableStyleSheet().setColor(name, color, update))
                 elif name in ["DrawNumbers", "SetAppStyleSheet","DrawGrid"]:
                     inp = QCheckBox()

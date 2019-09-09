@@ -555,8 +555,10 @@ class ConnectionPainter(object):
             fDist = nextPoint - currPoint
             bDist = currPoint - prevPoint
 
-            n = currPoint + fDist.normalized() * roundnes
-            p = currPoint - bDist.normalized() * roundnes
+            xRoundnes = min(min(roundnes,fDist.length()/2.0),bDist.length()/2.0)
+
+            n = currPoint + fDist.normalized() * xRoundnes
+            p = currPoint - bDist.normalized() * xRoundnes
             if i == 0 and not closed:
                 mPath.moveTo(point)
             elif i == 0 and closed:
@@ -568,39 +570,35 @@ class ConnectionPainter(object):
             elif i == len(path) - 1 and not closed:
                 mPath.lineTo(point)
             if i == len(path) - 1 and closed:
-                n = nextPoint - fDist.normalized() * roundnes
+                n = nextPoint - fDist.normalized() * xRoundnes
                 mPath.lineTo(QtCore.QPoint(n.x(), n.y()))
 
         return mPath
 
     @staticmethod
-    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False):
+    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset=0, hOffset=0):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         offset1 = offset
         offset2 = -offset
         if sameSide == 1:
             offset2 = offset
+            hOffset = -hOffset
         elif sameSide == -1:
             offset1 = -offset
 
-        xDistance = (p2.x() + offset2 + roundnes) - (p1.x() + offset1 - roundnes)
+        xDistance = (p2.x() + offset2 ) - (p1.x() + offset1)
         yDistance = p1.y() - p2.y()
-        midPointY = p2.y() + ((p1.y() - p2.y()) / 2)
+        midPointY = p2.y() + ((p1.y() - p2.y()) / 2.0)+vOffset
 
         path = []
         path.append(p1)
         if xDistance > 0 or sameSide == -1:
-            if abs(yDistance) > roundnes * 2:
-                path.append(QtCore.QPoint(p2.x() + offset2, p1.y()))
-                path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
-                path.append(p2)
-            else:
-                x = max(p1.x() + offset1, p2.x() + offset2 * 1.5)
-                if sameSide == 1:
-                    x = min(p1.x() + offset1, p2.x() + offset2 * 1.5)
-                path.append(QtCore.QPoint(x, p1.y()))
-                path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
-                path.append(p2)
+            if vOffset != 0:
+                path.append(QtCore.QPoint(p1.x() + offset1, p1.y()))
+                path.append(QtCore.QPoint(p1.x() + offset1, p1.y()+vOffset))
+            path.append(QtCore.QPoint(p2.x() + offset2+hOffset, p1.y()+vOffset))
+            path.append(QtCore.QPoint(p2.x() + offset2+hOffset, p2.y()))
+            path.append(p2)
         else:
             path.append(QtCore.QPoint(p1.x() + offset1, p1.y()))
             path.append(QtCore.QPoint(p1.x() + offset1, midPointY))

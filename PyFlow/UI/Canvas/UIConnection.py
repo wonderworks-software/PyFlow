@@ -83,7 +83,9 @@ class UIConnection(QGraphicsPathItem):
         self.destination().uiConnectionList.append(self)
         self.source().pinConnected(self.destination())
         self.destination().pinConnected(self.source())
-
+        self.hOffset = 0.0
+        self.vOffset = 0.0
+        self.ofsetting = 0
         if self.source().isExec():
             self.bubble = QGraphicsEllipseItem(-2.5, -2.5, 5, 5, self)
             self.bubble.setBrush(self.color)
@@ -261,16 +263,44 @@ class UIConnection(QGraphicsPathItem):
             p2 = self.destinationPositionOverride()
         return p1, p2
 
+    def percentageByPoint(self, point, precision=0.5, width=20.0):
+        percentage = -1.0
+        stroker = QtGui.QPainterPathStroker()
+        stroker.setWidth(width)
+        strokepath = stroker.createStroke(self.mPath) 
+        if strokepath.contains(point):
+            t = 0.0
+            d = []
+            while t <=100.0: 
+                d.append(QtGui.QVector2D(point - self.mPath.pointAtPercent(t/100)).length())
+                t += precision
+            percentage = d.index(min(d))*precision
+        return percentage
+
     def mousePressEvent(self, event):
         super(UIConnection, self).mousePressEvent(event)
+        t = self.percentageByPoint(event.scenePos())
+        self.prevPos = event.pos()
+        if abs(self.mPath.slopeAtPercent(t*0.01))<1:
+            self.ofsetting = 1
+        else:
+            self.ofsetting = 2
         event.accept()
 
     def mouseReleaseEvent(self, event):
         super(UIConnection, self).mouseReleaseEvent(event)
+        self.ofsetting = 0
         event.accept()
 
     def mouseMoveEvent(self, event):
         super(UIConnection, self).mouseMoveEvent(event)
+        delta = self.prevPos-event.pos()
+        delta /= self.canvasRef().currentViewScale()
+        if self.ofsetting == 1:
+            self.vOffset -= float(delta.y())
+        elif self.ofsetting == 2:
+            self.hOffset -= float(delta.x())
+        self.prevPos = event.pos()
         event.accept()
 
     def hoverLeaveEvent(self, event):
@@ -315,7 +345,7 @@ class UIConnection(QGraphicsPathItem):
         p1, p2 = self.getEndPoints()
         if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit, ConnectionTypes.ComplexCircuit]:
             sameSide = 0
-            offset = 15
+            offset = 20.0
             roundnes = editableStyleSheet().ConnectionRoundness[0]
             if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
                 xDistance = p2.x() - p1.x()
@@ -328,7 +358,7 @@ class UIConnection(QGraphicsPathItem):
                 if xDistance < 0:
                     sameSide = -1
                     p1, p2 = self.getEndPoints()
-            self.mPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, sameSide, lod, editableStyleSheet().ConnectionMode[0]==ConnectionTypes.ComplexCircuit)
+            self.mPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, sameSide, lod, editableStyleSheet().ConnectionMode[0]==ConnectionTypes.ComplexCircuit,self.vOffset,self.hOffset)
 
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
             self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
