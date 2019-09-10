@@ -303,7 +303,6 @@ class UIConnection(QGraphicsPathItem):
     def mouseMoveEvent(self, event):
         super(UIConnection, self).mouseMoveEvent(event)
         delta = self.prevPos-event.pos()
-        delta /= self.canvasRef().currentViewScale()
         if self.ofsetting == 1:
             self.vOffset -= float(delta.y())
         elif self.ofsetting == 2:
