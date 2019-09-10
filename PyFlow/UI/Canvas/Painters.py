@@ -576,7 +576,7 @@ class ConnectionPainter(object):
         return mPath
 
     @staticmethod
-    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset=0, hOffset=0):
+    def BasicCircuit(connection, p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset=0, hOffset=0):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         offset1 = offset
         offset2 = -offset
@@ -589,15 +589,25 @@ class ConnectionPainter(object):
         xDistance = (p2.x() + offset2 ) - (p1.x() + offset1)
         yDistance = p1.y() - p2.y()
         midPointY = p2.y() + ((p1.y() - p2.y()) / 2.0)+vOffset
+        nVOffset = vOffset
 
+        if connection.snapVToSecond:
+            nVOffset = p2.y() - p1.y()
+        elif connection.snapVToFirst:
+            nVOffset = 0
         path = []
         path.append(p1)
         if xDistance > 0 or sameSide == -1:
-            if vOffset != 0:
+            if connection.snapVToSecond:
+                offset1 += hOffset
+            else:
+                offset2 += hOffset            
+            if abs(vOffset) > 0:
                 path.append(QtCore.QPoint(p1.x() + offset1, p1.y()))
-                path.append(QtCore.QPoint(p1.x() + offset1, p1.y()+vOffset))
-            path.append(QtCore.QPoint(p2.x() + offset2+hOffset, p1.y()+vOffset))
-            path.append(QtCore.QPoint(p2.x() + offset2+hOffset, p2.y()))
+                path.append(QtCore.QPoint(p1.x() + offset1, p1.y()+nVOffset))
+             
+            path.append(QtCore.QPoint(p2.x() + offset2, p1.y()+nVOffset))
+            path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
             path.append(p2)
         else:
             path.append(QtCore.QPoint(p1.x() + offset1, p1.y()))

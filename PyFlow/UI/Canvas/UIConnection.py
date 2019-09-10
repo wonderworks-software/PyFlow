@@ -86,6 +86,8 @@ class UIConnection(QGraphicsPathItem):
         self.hOffset = 0.0
         self.vOffset = 0.0
         self.ofsetting = 0
+        self.snapVToFirst = False
+        self.snapVToSecond = False
         if self.source().isExec():
             self.bubble = QGraphicsEllipseItem(-2.5, -2.5, 5, 5, self)
             self.bubble.setBrush(self.color)
@@ -269,6 +271,20 @@ class UIConnection(QGraphicsPathItem):
         p2 = self.drawDestination.scenePos() + self.drawDestination.pinCenter()
         if self.destinationPositionOverride is not None:
             p2 = self.destinationPositionOverride()
+
+        if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit, ConnectionTypes.ComplexCircuit]:
+            self.sameSide = 0
+            p1n, p2n = p1,p2 
+            xDistance = p2.x() - p1.x()
+            if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
+                if xDistance < 0:
+                    p2n, p1n = p1,p2
+                    self.sameSide = 1
+            if self.source().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
+                if xDistance < 0:
+                    p1n, p2n = p1,p2
+                    self.sameSide = -1
+            p1, p2 = p1n,p2n            
         return p1, p2
 
     def percentageByPoint(self, point, precision=0.5, width=20.0):
@@ -298,16 +314,30 @@ class UIConnection(QGraphicsPathItem):
     def mouseReleaseEvent(self, event):
         super(UIConnection, self).mouseReleaseEvent(event)
         self.ofsetting = 0
+
+
         event.accept()
 
     def mouseMoveEvent(self, event):
         super(UIConnection, self).mouseMoveEvent(event)
         delta = self.prevPos-event.pos()
+
+        p1, p2 = self.getEndPoints()
+        yDistance = p1.y() - p2.y()
+        self.snapVToFirst = False
+        self.snapVToSecond = False
         if self.ofsetting == 1:
-            self.vOffset -= float(delta.y())
-        elif self.ofsetting == 2:
+            self.vOffset -= float(delta.y()) 
+            if abs(self.vOffset) <= 3:
+                self.snapVToFirst = True
+            if p1.y()+self.vOffset > p2.y()-3 and p1.y()+self.vOffset < p2.y()+3:
+                self.snapVToSecond = True
+                           
+
+        if self.ofsetting == 2:
             self.hOffset -= float(delta.x())
         self.prevPos = event.pos()
+
         event.accept()
 
     def hoverLeaveEvent(self, event):
@@ -342,6 +372,7 @@ class UIConnection(QGraphicsPathItem):
     def kill(self):
         self.canvasRef().removeConnection(self)
 
+    
     def paint(self, painter, option, widget):
 
         option.state &= ~QStyle.State_Selected
@@ -352,27 +383,17 @@ class UIConnection(QGraphicsPathItem):
         p1, p2 = self.getEndPoints()
         roundnes = editableStyleSheet().ConnectionRoundness[0]
         offset = editableStyleSheet().ConnectionOffset[0]
+
         if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit, ConnectionTypes.ComplexCircuit]:
-            sameSide = 0
-            if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
-                xDistance = p2.x() - p1.x()
-                if xDistance < 0:
-                    p2, p1 = self.getEndPoints()
-                    sameSide = 1
-            if self.source().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
-                p11, p22 = self.getEndPoints()
-                xDistance = p22.x() - p11.x()
-                if xDistance < 0:
-                    sameSide = -1
-                    p1, p2 = self.getEndPoints()
-            self.mPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, sameSide, lod, editableStyleSheet().ConnectionMode[0]==ConnectionTypes.ComplexCircuit,self.vOffset,self.hOffset)
+            self.mPath = ConnectionPainter.BasicCircuit(self, p1, p2, offset, roundnes, self.sameSide, lod, editableStyleSheet().ConnectionMode[0]==ConnectionTypes.ComplexCircuit,self.vOffset,self.hOffset)
 
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
             self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
 
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Linear:
             self.mPath = ConnectionPainter.Linear(p1, p2, offset,roundnes,lod)
-
+        if self.snapVToSecond and self.ofsetting == 0:
+            self.vOffset = p2.y() - p1.y()
         self.setPath(self.mPath)
 
         super(UIConnection, self).paint(painter, option, widget)
