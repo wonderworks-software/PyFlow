@@ -223,13 +223,21 @@ class UIConnection(QGraphicsPathItem):
         connection = graph.connectPinsInternal(srcPin, dstPin)
         assert(connection is not None)
         connection.uid = UUID(data['uuid'])
+        vOffset = data['vOffset'] 
+        if vOffset is not None:
+            self.vOffset = float(vOffset)
+        hOffset = data['hOffset'] 
+        if hOffset is not None:
+            self.hOffset = float(hOffset)
 
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
                   'sourceName': self.source()._rawPin.getFullName(),
                   'destinationName': self.destination()._rawPin.getFullName(),
-                  'uuid': str(self.uid)
+                  'uuid': str(self.uid),
+                  'vOffset':str(self.vOffset),
+                  'hOffset':str(self.hOffset)
                   }
         return script
 
