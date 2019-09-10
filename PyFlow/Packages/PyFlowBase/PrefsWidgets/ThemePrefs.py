@@ -68,7 +68,7 @@ class ThemePreferences(CategoryWidgetBase):
                 elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
                     canvas.addWidget(name, inp)
             elif isinstance(obj, list):
-                if name in ["GridSizeFine", "GridSizeHuge", "ConnectionRoundness"]:
+                if name in ["GridSizeFine", "GridSizeHuge", "ConnectionRoundness","ConnectionOffset"]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
                     inp.setMinimum(0)
@@ -96,7 +96,7 @@ class ThemePreferences(CategoryWidgetBase):
                         inp.setMinimum(0)
                     inp.valueChanged.connect(lambda color, name=name, update=False: editableStyleSheet().setColor(name, color, update))
 
-                if name in ["ConnectionMode", "ConnectionRoundness"]:
+                if name in ["ConnectionMode", "ConnectionRoundness","ConnectionOffset"]:
                     connections.addWidget(name, inp)
                 elif name == "SetAppStyleSheet":
                     general.insertWidget(0, name, inp)

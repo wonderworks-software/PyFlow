@@ -350,10 +350,10 @@ class UIConnection(QGraphicsPathItem):
 
         self.setPen(self.pen)
         p1, p2 = self.getEndPoints()
+        roundnes = editableStyleSheet().ConnectionRoundness[0]
+        offset = editableStyleSheet().ConnectionOffset[0]
         if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit, ConnectionTypes.ComplexCircuit]:
             sameSide = 0
-            offset = 20.0
-            roundnes = editableStyleSheet().ConnectionRoundness[0]
             if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
                 xDistance = p2.x() - p1.x()
                 if xDistance < 0:
@@ -369,6 +369,9 @@ class UIConnection(QGraphicsPathItem):
 
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
             self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
+
+        elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Linear:
+            self.mPath = ConnectionPainter.Linear(p1, p2, offset,roundnes,lod)
 
         self.setPath(self.mPath)
 

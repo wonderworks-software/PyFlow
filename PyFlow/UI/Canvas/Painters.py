@@ -648,3 +648,17 @@ class ConnectionPainter(object):
             mPath.cubicTo(cp1, cp2, p2)
 
         return mPath
+
+    @staticmethod
+    def Linear(p1, p2, defOffset=150,roundnes=5, lod=0):
+        SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
+
+        cp1 = QtCore.QPoint(p1.x() + defOffset, p1.y())
+        cp2 = QtCore.QPoint(p2.x() - defOffset, p2.y())
+            
+        if lod >= SWITCH_LOD:
+            mPath = ConnectionPainter.linearPath([p1, cp1, cp2, p2])
+        else:
+            mPath = ConnectionPainter.roundCornersPath([p1, cp1, cp2, p2],roundnes)
+
+        return mPath

@@ -38,6 +38,7 @@ class ConnectionTypes(IntEnum):
     Cubic = 0
     Circuit = 1
     ComplexCircuit = 2
+    Linear = 3
 
 class Colors:
     AbsoluteBlack = QtGui.QColor(0, 0, 0, 255)
@@ -93,6 +94,7 @@ class editableStyleSheet():
 
         self.ConnectionMode = [ConnectionTypes.Circuit]
         self.ConnectionRoundness = [5]
+        self.ConnectionOffset = [20]
 
         self.storeDeffaults()
         self.presets = {}
