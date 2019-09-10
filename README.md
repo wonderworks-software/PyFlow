@@ -6,7 +6,7 @@
 
 ## State
 
-All base structure of program implemented, such things as packages discovery,
+Base structure of program implemented, such things as packages discovery,
 input customization, exporters, base classes for entities and tools.
 
 You can completely remove nodes and tools that ships by default 
@@ -16,8 +16,8 @@ You can evaluate programs without running user interface.
 
 We have simple CLI interface and setup.py script.
 
-We expectedly faced problems with our runtime evaluation model,
-it is good for certain types of tasks even it is slow. Also, complicated flow
+Expectedly, we faced problems with our runtime execution model,
+it is good for certain types of tasks despite it is slow. Also, complicated flow
 control requires cycles handling.
 
 For example current for loop node implementation
@@ -26,7 +26,7 @@ more logic to loop processing, but we don't know exactly how to make it efficien
 
 ## Road map
 
-We will stay general purpose, adding new types of graphs (undirected graphs, trees)
+We will add new types of graphs (undirected graphs, trees)
 and algorithms to work with those structures.
 
 Code generation is probably the future of PyFlow.
