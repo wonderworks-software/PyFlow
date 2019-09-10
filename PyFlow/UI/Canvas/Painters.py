@@ -506,10 +506,7 @@ class ConnectionPainter(object):
             fDist = nextPoint - currPoint
             bDist = currPoint - prevPoint
 
-            if not closed and i == len(path)-2:
-                maxLen = max(0,min(fDist.length(),bDist.length()- offset) )
-            else:
-                maxLen = max(0,min(fDist.length(),bDist.length())- offset )
+            maxLen = max(0,min(fDist.length()/2,(bDist.length())/2) )
 
             dot = fDist.x()*bDist.x() + fDist.y()*bDist.y()      # dot product
             det = fDist.x()*bDist.y() - fDist.y()*bDist.x()      # determinant
@@ -521,16 +518,16 @@ class ConnectionPainter(object):
                 if i == 0 and not closed:
                     mPath.append(point)
                 elif i == 0 and closed:
-                    mPath.append(QtCore.QPoint(p.x(), p.y()))
-                    mPath.append(QtCore.QPoint(n.x(), n.y()))
+                    mPath.append(QtCore.QPointF(p.x(), p.y()))
+                    mPath.append(QtCore.QPointF(n.x(), n.y()))
                 elif i != len(path) - 1 or closed:
-                    mPath.append(QtCore.QPoint(p.x(), p.y()))
-                    mPath.append(QtCore.QPoint(n.x(), n.y()))
+                    mPath.append(QtCore.QPointF(p.x(), p.y()))
+                    mPath.append(QtCore.QPointF(n.x(), n.y()))
                 elif i == len(path) - 1 and not closed:
                     mPath.append(point)
                 if i == len(path) - 1 and closed:
                     n = nextPoint - fDist.normalized() * maxLen
-                    mPath.append(QtCore.QPoint(n.x(), n.y()))
+                    mPath.append(QtCore.QPointF(n.x(), n.y()))
             else:
                 mPath.append(point)
 
@@ -562,74 +559,73 @@ class ConnectionPainter(object):
             if i == 0 and not closed:
                 mPath.moveTo(point)
             elif i == 0 and closed:
-                mPath.moveTo(QtCore.QPoint(p.x(), p.y()))
-                mPath.quadTo(point, QtCore.QPoint(n.x(), n.y()))
+                mPath.moveTo(QtCore.QPointF(p.x(), p.y()))
+                mPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
             elif i != len(path) - 1 or closed:
-                mPath.lineTo(QtCore.QPoint(p.x(), p.y()))
-                mPath.quadTo(point, QtCore.QPoint(n.x(), n.y()))
+                mPath.lineTo(QtCore.QPointF(p.x(), p.y()))
+                mPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
             elif i == len(path) - 1 and not closed:
                 mPath.lineTo(point)
             if i == len(path) - 1 and closed:
                 n = nextPoint - fDist.normalized() * xRoundnes
-                mPath.lineTo(QtCore.QPoint(n.x(), n.y()))
+                mPath.lineTo(QtCore.QPointF(n.x(), n.y()))
 
         return mPath
 
     @staticmethod
-    def BasicCircuit(connection, p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset=0, hOffset=0):
+    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset1=0, hOffset1=0,vOffset2=0, hOffset2=0,snapVToFirst=False,snapVToSecond=False):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         offset1 = offset
         offset2 = -offset
         if sameSide == 1:
             offset2 = offset
-            hOffset = -hOffset
         elif sameSide == -1:
             offset1 = -offset
 
         xDistance = (p2.x() + offset2 ) - (p1.x() + offset1)
-        yDistance = p1.y() - p2.y()
-        midPointY = p2.y() + ((p1.y() - p2.y()) / 2.0)+vOffset
-        nVOffset = vOffset
+        midPointY = p2.y() + ((p1.y() - p2.y()) / 2.0)+vOffset2
 
-        if connection.snapVToSecond:
-            nVOffset = p2.y() - p1.y()
-        elif connection.snapVToFirst:
-            nVOffset = 0
         path = []
         path.append(p1)
         if xDistance > 0 or sameSide == -1:
-            if connection.snapVToSecond:
-                offset1 += hOffset
-            else:
-                offset2 += hOffset            
-            if abs(vOffset) > 0:
-                path.append(QtCore.QPoint(p1.x() + offset1, p1.y()))
-                path.append(QtCore.QPoint(p1.x() + offset1, p1.y()+nVOffset))
+            if snapVToSecond:
+                vOffset1 = p2.y() - p1.y()
+            elif snapVToFirst:
+                vOffset1 = 0 
+
+            if not snapVToFirst:
+                offset1 += hOffset1
+            if not snapVToSecond:
+                offset2 += hOffset2
+
+            if abs(vOffset1) > 0:
+                path.append(QtCore.QPointF(p1.x() + offset1, p1.y()))
+                path.append(QtCore.QPointF(p1.x() + offset1, p1.y()+vOffset1))
              
-            path.append(QtCore.QPoint(p2.x() + offset2, p1.y()+nVOffset))
-            path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
+            path.append(QtCore.QPointF(p2.x() + offset2, p1.y()+vOffset1))
+            path.append(QtCore.QPointF(p2.x() + offset2, p2.y()))
             path.append(p2)
         else:
-            path.append(QtCore.QPoint(p1.x() + offset1, p1.y()))
-            path.append(QtCore.QPoint(p1.x() + offset1, midPointY))
-            path.append(QtCore.QPoint(p2.x() + offset2, midPointY))
-            path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
+            path.append(QtCore.QPointF(p1.x() + offset1, p1.y()))
+            path.append(QtCore.QPointF(p1.x() + offset1, midPointY))
+            path.append(QtCore.QPointF(p2.x() + offset2, midPointY))
+            path.append(QtCore.QPointF(p2.x() + offset2, p2.y()))
             path.append(p2)
 
         if complexLine:
             if xDistance > 0:
-                path = ConnectionPainter.chanferPath(path[:-1], offset)
-                path.append(p2)
+                path = ConnectionPainter.chanferPath(path, offset)
+                #path.append(p2)
             else:
-                path.reverse()
-                path = ConnectionPainter.chanferPath(path[:-1], offset)
-                path.append(p1)
+                #path.reverse()
+                path = ConnectionPainter.chanferPath(path, offset)
+                #path.append(p1)
 
         if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath(path)
         else:
             mPath = ConnectionPainter.roundCornersPath(path, roundnes)
-        return mPath
+        return mPath,path
 
     @staticmethod
     def Cubic(p1, p2, defOffset=150, lod=0):
@@ -647,11 +643,11 @@ class ConnectionPainter(object):
         if lod >= SWITCH_LOD:
             offset = 20
         if xDistance < 0:
-            cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
-            cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+            cp1 = QtCore.QPointF(p1.x() + offset, p1.y())
+            cp2 = QtCore.QPointF(p2.x() - offset, p2.y())
         else:
-            cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
-            cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
+            cp2 = QtCore.QPointF(p2.x() - offset, p2.y())
+            cp1 = QtCore.QPointF(p1.x() + offset, p1.y())
         if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath([p1, cp1, cp2, p2])
         else:
@@ -663,8 +659,8 @@ class ConnectionPainter(object):
     def Linear(p1, p2, defOffset=150,roundnes=5, lod=0):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
 
-        cp1 = QtCore.QPoint(p1.x() + defOffset, p1.y())
-        cp2 = QtCore.QPoint(p2.x() - defOffset, p2.y())
+        cp1 = QtCore.QPointF(p1.x() + defOffset, p1.y())
+        cp2 = QtCore.QPointF(p2.x() - defOffset, p2.y())
             
         if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath([p1, cp1, cp2, p2])
