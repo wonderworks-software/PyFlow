@@ -95,6 +95,7 @@ class UIConnection(QGraphicsPathItem):
         self.pressedSegment = -1
         self.sShape = False
         self.sameSide = 0
+        self.hoverSegment = -1
         if self.source().isExec():
             self.bubble = QGraphicsEllipseItem(-2.5, -2.5, 5, 5, self)
             self.bubble.setBrush(self.color)
@@ -278,6 +279,37 @@ class UIConnection(QGraphicsPathItem):
         self.drawThick()
         self.update()
 
+    def hoverLeaveEvent(self, event):
+        super(UIConnection, self).hoverLeaveEvent(event)
+        self.hoverSegment = -1
+        self.restoreThick()
+        self.update()
+
+    def hoverMoveEvent(self,event):
+        if self.ofsetting == 0:
+            self.hoverSegment = -1
+            if self.linPath is not None:
+                tempPath = ConnectionPainter.linearPath(self.linPath)
+                t = self.percentageByPoint(event.scenePos(),tempPath)
+                segments = []
+                for i,pos in enumerate(self.linPath[:-1]):
+                    t1 = self.percentageByPoint(pos,tempPath)
+                    t2 = self.percentageByPoint(self.linPath[i+1],tempPath)
+                    segments.append([t1,t2])
+                for i,seg in enumerate(segments):
+                    if t > seg[0] and t < seg[1]:
+                        if not self.sShape:
+                            valid = []
+                            if self.snapVToFirst:
+                                valid = [0,1]
+                            elif self.snapVToSecond:
+                                valid = [1,2]
+                            else:
+                                valid = [1,2,3]
+                            if i in valid:
+                                self.hoverSegment = i
+                            else:
+                                self.hoverSegment = -1
     def getEndPoints(self):
         p1 = self.drawSource.scenePos() + self.drawSource.pinCenter()
         if self.sourcePositionOverride is not None:
@@ -336,8 +368,18 @@ class UIConnection(QGraphicsPathItem):
                 segments.append([t1,t2])
             for i,seg in enumerate(segments):
                 if t > seg[0] and t < seg[1]:
-                    self.pressedSegment = i
-
+                    if not self.sShape:
+                        valid = []
+                        if self.snapVToFirst:
+                            valid = [0,1]
+                        elif self.snapVToSecond:
+                            valid = [1,2]
+                        else:
+                            valid = [1,2,3]
+                        if i in valid:
+                            self.pressedSegment = i
+                        else:
+                            self.pressedSegment = -1
         p1, p2 = self.getEndPoints()
         offset1 = editableStyleSheet().ConnectionOffset[0]
         offset2 = -offset1
@@ -365,9 +407,15 @@ class UIConnection(QGraphicsPathItem):
                 if self.ofsetting == 1:
                     doIt = True
                     if self.snapVToFirst and  self.pressedSegment != 0:
-                        doIt = False                        
+                        doIt = False    
+                        self.pressedSegment = -1                    
                     elif self.snapVToSecond and  self.pressedSegment != 2:
                         doIt = False
+                        self.pressedSegment = -1
+                    elif not self.snapVToFirst and not self.snapVToSecond:
+                        if self.pressedSegment != 2:
+                            doIt = False
+                            self.pressedSegment = -1
 
                     if doIt :
                         self.vOffset1 -= float(delta.y()) 
@@ -381,6 +429,8 @@ class UIConnection(QGraphicsPathItem):
                             self.pressedSegment = 2
                         else:
                             self.snapVToSecond = False
+                        if not self.snapVToFirst and self.pressedSegment == 0:
+                            self.pressedSegment = 2
 
                 if self.ofsetting == 2:
                     if self.snapVToFirst:
@@ -394,16 +444,13 @@ class UIConnection(QGraphicsPathItem):
                             self.hOffset2 -= float(delta.x())
             else:
                 if self.ofsetting == 1:
-                    self.vOffset2 -= float(delta.y())                
+                    self.vOffset2 -= float(delta.y())
 
             self.prevPos = event.pos()
-
+            
         event.accept()
 
-    def hoverLeaveEvent(self, event):
-        super(UIConnection, self).hoverLeaveEvent(event)
-        self.restoreThick()
-        self.update()
+
 
     def source_port_name(self):
         return self.source().getFullName()
@@ -459,3 +506,17 @@ class UIConnection(QGraphicsPathItem):
         self.setPath(self.mPath)
 
         super(UIConnection, self).paint(painter, option, widget)
+
+        if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit, ConnectionTypes.ComplexCircuit]:
+            if self.hoverSegment != -1 and self.linPath and self.pressedSegment == -1:
+                pen = QtGui.QPen()
+                pen.setWidthF(self.thickness + (self.thickness / 1.5))
+                pen.setColor(editableStyleSheet().MainColor)
+                painter.setPen(pen)
+                painter.drawLine(self.linPath[self.hoverSegment],self.linPath[self.hoverSegment+1])
+            if self.pressedSegment != -1 and self.linPath:
+                pen = QtGui.QPen()
+                pen.setWidthF(self.thickness + (self.thickness / 1.5))
+                pen.setColor(editableStyleSheet().MainColor)
+                painter.setPen(pen)
+                painter.drawLine(self.linPath[self.pressedSegment],self.linPath[self.pressedSegment+1])
