@@ -573,7 +573,7 @@ class ConnectionPainter(object):
         return mPath
 
     @staticmethod
-    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset1=0, hOffset1=0,vOffset2=0, hOffset2=0,snapVToFirst=False,snapVToSecond=False):
+    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset=0, hOffsetL=0,vOffsetSShape=0, hOffsetR=0,hOffsetRSShape=0,hOffsetLSShape=0,snapVToFirst=False,snapVToSecond=False):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         offset1 = offset
         offset2 = -offset
@@ -583,29 +583,31 @@ class ConnectionPainter(object):
             offset1 = -offset
 
         xDistance = (p2.x() + offset2 ) - (p1.x() + offset1)
-        midPointY = p2.y() + ((p1.y() - p2.y()) / 2.0)+vOffset2
+        midPointY = p2.y() + ((p1.y() - p2.y()) / 2.0)+vOffsetSShape
 
         path = []
         path.append(p1)
         if xDistance > 0 or sameSide == -1:
             if snapVToSecond:
-                vOffset1 = p2.y() - p1.y()
+                vOffset = p2.y() - p1.y()
             elif snapVToFirst:
-                vOffset1 = 0 
+                vOffset = 0 
 
             if not snapVToFirst:
-                offset1 += hOffset1
+                offset1 += hOffsetL
             if not snapVToSecond:
-                offset2 += hOffset2
+                offset2 += hOffsetR
 
-            if abs(vOffset1) > 0:
+            if abs(vOffset) > 0:
                 path.append(QtCore.QPointF(p1.x() + offset1, p1.y()))
-                path.append(QtCore.QPointF(p1.x() + offset1, p1.y()+vOffset1))
+                path.append(QtCore.QPointF(p1.x() + offset1, p1.y()+vOffset))
              
-            path.append(QtCore.QPointF(p2.x() + offset2, p1.y()+vOffset1))
+            path.append(QtCore.QPointF(p2.x() + offset2, p1.y()+vOffset))
             path.append(QtCore.QPointF(p2.x() + offset2, p2.y()))
             path.append(p2)
         else:
+            offset1 += hOffsetRSShape
+            offset2 += hOffsetLSShape            
             path.append(QtCore.QPointF(p1.x() + offset1, p1.y()))
             path.append(QtCore.QPointF(p1.x() + offset1, midPointY))
             path.append(QtCore.QPointF(p2.x() + offset2, midPointY))

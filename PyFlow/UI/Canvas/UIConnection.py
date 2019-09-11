@@ -85,10 +85,12 @@ class UIConnection(QGraphicsPathItem):
         self.destination().pinConnected(self.source())
         self.prevPos = None
         self.linPath = None
-        self.hOffset1 = 0.0
-        self.hOffset2 = 0.0
-        self.vOffset1 = 0.0
-        self.vOffset2 = 0.0
+        self.hOffsetL = 0.0
+        self.hOffsetR = 0.0
+        self.hOffsetLSShape = 0.0
+        self.hOffsetRSShape = 0.0
+        self.vOffset = 0.0
+        self.vOffsetSShape = 0.0
         self.ofsetting = 0
         self.snapVToFirst = True
         self.snapVToSecond = False
@@ -233,18 +235,18 @@ class UIConnection(QGraphicsPathItem):
         connection = graph.connectPinsInternal(srcPin, dstPin)
         assert(connection is not None)
         connection.uid = UUID(data['uuid'])
-        vOffset1 = data['vOffset1'] 
-        if vOffset1 is not None:
-            self.vOffset1 = float(vOffset1)
-        hOffset1 = data['hOffset1'] 
-        if hOffset1 is not None:
-            self.hOffset1 = float(hOffset1)
-        vOffset2 = data['vOffset2'] 
-        if vOffset2 is not None:
-            self.vOffset2 = float(vOffset2)
-        hOffset2 = data['hOffset2'] 
-        if hOffset2 is not None:
-            self.hOffset2 = float(hOffset2)
+        vOffset = data['vOffset'] 
+        if vOffset is not None:
+            self.vOffset = float(vOffset)
+        hOffsetL = data['hOffsetL'] 
+        if hOffsetL is not None:
+            self.hOffsetL = float(hOffsetL)
+        vOffsetSShape = data['vOffsetSShape'] 
+        if vOffsetSShape is not None:
+            self.vOffsetSShape = float(vOffsetSShape)
+        hOffsetR = data['hOffsetR'] 
+        if hOffsetR is not None:
+            self.hOffsetR = float(hOffsetR)
 
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
@@ -252,10 +254,10 @@ class UIConnection(QGraphicsPathItem):
                   'sourceName': self.source()._rawPin.getFullName(),
                   'destinationName': self.destination()._rawPin.getFullName(),
                   'uuid': str(self.uid),
-                  'vOffset1':str(self.vOffset1),
-                  'hOffset1':str(self.hOffset1),
-                  'vOffset2':str(self.vOffset2),
-                  'hOffset2':str(self.hOffset2)                  
+                  'vOffset':str(self.vOffset),
+                  'hOffsetL':str(self.hOffsetL),
+                  'vOffsetSShape':str(self.vOffsetSShape),
+                  'hOffsetR':str(self.hOffsetR)                  
                   }
         return script
 
@@ -298,18 +300,20 @@ class UIConnection(QGraphicsPathItem):
                     segments.append([t1,t2])
                 for i,seg in enumerate(segments):
                     if t > seg[0] and t < seg[1]:
+                        valid = []
                         if not self.sShape:
-                            valid = []
                             if self.snapVToFirst:
                                 valid = [0,1]
                             elif self.snapVToSecond:
                                 valid = [1,2]
                             else:
                                 valid = [1,2,3]
-                            if i in valid:
-                                self.hoverSegment = i
-                            else:
-                                self.hoverSegment = -1
+                        else:
+                            valid = [1,2,3]
+                        if i in valid:
+                            self.hoverSegment = i
+                        else:
+                            self.hoverSegment = -1                            
     def getEndPoints(self):
         p1 = self.drawSource.scenePos() + self.drawSource.pinCenter()
         if self.sourcePositionOverride is not None:
@@ -368,18 +372,20 @@ class UIConnection(QGraphicsPathItem):
                 segments.append([t1,t2])
             for i,seg in enumerate(segments):
                 if t > seg[0] and t < seg[1]:
+                    valid = []
                     if not self.sShape:
-                        valid = []
                         if self.snapVToFirst:
                             valid = [0,1]
                         elif self.snapVToSecond:
                             valid = [1,2]
                         else:
                             valid = [1,2,3]
-                        if i in valid:
-                            self.pressedSegment = i
-                        else:
-                            self.pressedSegment = -1
+                    else:
+                        valid = [1,2,3]
+                    if i in valid:
+                        self.pressedSegment = i
+                    else:
+                        self.pressedSegment = -1
         p1, p2 = self.getEndPoints()
         offset1 = editableStyleSheet().ConnectionOffset[0]
         offset2 = -offset1
@@ -416,15 +422,14 @@ class UIConnection(QGraphicsPathItem):
                         if self.pressedSegment != 2:
                             doIt = False
                             self.pressedSegment = -1
-
                     if doIt :
-                        self.vOffset1 -= float(delta.y()) 
-                        if abs(self.vOffset1) <= 3:
+                        self.vOffset -= float(delta.y()) 
+                        if abs(self.vOffset) <= 3:
                             self.snapVToFirst = True
                             self.pressedSegment = 0
                         else:
                             self.snapVToFirst = False
-                        if p1.y()+self.vOffset1 > p2.y()-3 and p1.y()+self.vOffset1 < p2.y()+3:
+                        if p1.y()+self.vOffset > p2.y()-3 and p1.y()+self.vOffset < p2.y()+3:
                             self.snapVToSecond = True
                             self.pressedSegment = 2
                         else:
@@ -434,17 +439,22 @@ class UIConnection(QGraphicsPathItem):
 
                 if self.ofsetting == 2:
                     if self.snapVToFirst:
-                        self.hOffset2 -= float(delta.x())
+                        self.hOffsetR -= float(delta.x())
                     elif self.snapVToSecond:
-                        self.hOffset1 -= float(delta.x())
+                        self.hOffsetL -= float(delta.x())
                     else:
                         if self.pressedSegment == 1:
-                            self.hOffset1 -= float(delta.x())
+                            self.hOffsetL -= float(delta.x())
                         elif self.pressedSegment == 3:
-                            self.hOffset2 -= float(delta.x())
+                            self.hOffsetR -= float(delta.x())
             else:
-                if self.ofsetting == 1:
-                    self.vOffset2 -= float(delta.y())
+                if self.ofsetting == 1 and self.pressedSegment == 2:
+                    self.vOffsetSShape -= float(delta.y())
+                elif self.ofsetting == 2:
+                    if self.pressedSegment == 1:
+                        self.hOffsetRSShape -= float(delta.x())
+                    elif self.pressedSegment == 3:
+                        self.hOffsetLSShape -= float(delta.x())
 
             self.prevPos = event.pos()
             
@@ -490,11 +500,18 @@ class UIConnection(QGraphicsPathItem):
         p1, p2 = self.getEndPoints()
         roundnes = editableStyleSheet().ConnectionRoundness[0]
         offset = editableStyleSheet().ConnectionOffset[0]
-
+        offset1 = offset
+        offset2 = -offset1
+        if self.sameSide == 1:
+            offset2 = offset1
+        elif self.sameSide == -1:
+            offset1 = offset2        
+        xDistance = (p2.x() + offset2 ) - (p1.x() + offset1)
+        self.sShape = xDistance < 0
         if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit, ConnectionTypes.ComplexCircuit]:
             comlex = editableStyleSheet().ConnectionMode[0]==ConnectionTypes.ComplexCircuit
             self.mPath,self.linPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, self.sameSide, lod, comlex,
-                                                        self.vOffset1, self.hOffset1,self.vOffset2, self.hOffset2,self.snapVToFirst,self.snapVToSecond)
+                                                        self.vOffset, self.hOffsetL,self.vOffsetSShape, self.hOffsetR,self.hOffsetRSShape,self.hOffsetLSShape,self.snapVToFirst,self.snapVToSecond)
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
             self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
             self.linPath = None
@@ -502,7 +519,7 @@ class UIConnection(QGraphicsPathItem):
             self.mPath = ConnectionPainter.Linear(p1, p2, offset,roundnes,lod)
             self.linPath = None
         if self.snapVToSecond and self.ofsetting == 0:
-            self.vOffset1 = p2.y() - p1.y()
+            self.vOffset = p2.y() - p1.y()
         self.setPath(self.mPath)
 
         super(UIConnection, self).paint(painter, option, widget)
@@ -513,10 +530,50 @@ class UIConnection(QGraphicsPathItem):
                 pen.setWidthF(self.thickness + (self.thickness / 1.5))
                 pen.setColor(editableStyleSheet().MainColor)
                 painter.setPen(pen)
-                painter.drawLine(self.linPath[self.hoverSegment],self.linPath[self.hoverSegment+1])
+                tempPath = QtGui.QPainterPath()
+                tempPath.moveTo(self.linPath[self.hoverSegment])
+                tempPath.lineTo(self.linPath[self.hoverSegment+1])
+                stroker = QtGui.QPainterPathStroker()
+                stroker.setWidth(30)
+                strokepath = stroker.createStroke(tempPath)       
+                path = self.mPath.intersected(strokepath)
+                tempPath2 = QtGui.QPainterPath()
+                moved = False
+                for i in range(path.elementCount()-1):
+                    p = path.elementAt(i)
+                    tolerance = 10
+                    rect = QtCore.QRect(QtCore.QPoint(p.x - tolerance, p.y - tolerance),
+                                        QtCore.QPoint(p.x + tolerance, p.y + tolerance))
+                    if tempPath.intersects(rect):
+                        if not moved:
+                            tempPath2.moveTo(p)
+                            moved = True
+                        else:
+                            tempPath2.lineTo(p)
+                painter.drawPath(tempPath2)
             if self.pressedSegment != -1 and self.linPath:
                 pen = QtGui.QPen()
                 pen.setWidthF(self.thickness + (self.thickness / 1.5))
                 pen.setColor(editableStyleSheet().MainColor)
                 painter.setPen(pen)
-                painter.drawLine(self.linPath[self.pressedSegment],self.linPath[self.pressedSegment+1])
+                tempPath = QtGui.QPainterPath()
+                tempPath.moveTo(self.linPath[self.pressedSegment])
+                tempPath.lineTo(self.linPath[self.pressedSegment+1])
+                stroker = QtGui.QPainterPathStroker()
+                stroker.setWidth(30)
+                strokepath = stroker.createStroke(tempPath)       
+                path = self.mPath.intersected(strokepath)
+                tempPath2 = QtGui.QPainterPath()
+                moved = False
+                for i in range(path.elementCount()-1):
+                    p = path.elementAt(i)
+                    tolerance = 10
+                    rect = QtCore.QRect(QtCore.QPoint(p.x - tolerance, p.y - tolerance),
+                                        QtCore.QPoint(p.x + tolerance, p.y + tolerance))
+                    if tempPath.intersects(rect):
+                        if not moved:
+                            tempPath2.moveTo(p)
+                            moved = True
+                        else:
+                            tempPath2.lineTo(p)
+                painter.drawPath(tempPath2)
