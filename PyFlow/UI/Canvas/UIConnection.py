@@ -83,6 +83,7 @@ class UIConnection(QGraphicsPathItem):
         self.destination().uiConnectionList.append(self)
         self.source().pinConnected(self.destination())
         self.destination().pinConnected(self.source())
+        self.prevPos = None
         self.linPath = None
         self.hOffset1 = 0.0
         self.hOffset2 = 0.0
@@ -92,6 +93,8 @@ class UIConnection(QGraphicsPathItem):
         self.snapVToFirst = True
         self.snapVToSecond = False
         self.pressedSegment = -1
+        self.sShape = False
+        self.sameSide = 0
         if self.source().isExec():
             self.bubble = QGraphicsEllipseItem(-2.5, -2.5, 5, 5, self)
             self.bubble.setBrush(self.color)
@@ -241,6 +244,7 @@ class UIConnection(QGraphicsPathItem):
         hOffset2 = data['hOffset2'] 
         if hOffset2 is not None:
             self.hOffset2 = float(hOffset2)
+
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
@@ -354,44 +358,45 @@ class UIConnection(QGraphicsPathItem):
 
     def mouseMoveEvent(self, event):
         super(UIConnection, self).mouseMoveEvent(event)
-        delta = self.prevPos-event.pos()
-        p1, p2 = self.getEndPoints()
-        if not self.sShape:
-            if self.ofsetting == 1:
-                doIt = True
-                if self.snapVToFirst and  self.pressedSegment != 0:
-                    doIt = False                        
-                elif self.snapVToSecond and  self.pressedSegment != 2:
-                    doIt = False
+        if self.prevPos is not None:
+            delta = self.prevPos-event.pos()
+            p1, p2 = self.getEndPoints()
+            if not self.sShape:
+                if self.ofsetting == 1:
+                    doIt = True
+                    if self.snapVToFirst and  self.pressedSegment != 0:
+                        doIt = False                        
+                    elif self.snapVToSecond and  self.pressedSegment != 2:
+                        doIt = False
 
-                if doIt :
-                    self.vOffset1 -= float(delta.y()) 
-                    if abs(self.vOffset1) <= 3:
-                        self.snapVToFirst = True
-                        self.pressedSegment = 0
-                    else:
-                        self.snapVToFirst = False
-                    if p1.y()+self.vOffset1 > p2.y()-3 and p1.y()+self.vOffset1 < p2.y()+3:
-                        self.snapVToSecond = True
-                        self.pressedSegment = 2
-                    else:
-                        self.snapVToSecond = False
+                    if doIt :
+                        self.vOffset1 -= float(delta.y()) 
+                        if abs(self.vOffset1) <= 3:
+                            self.snapVToFirst = True
+                            self.pressedSegment = 0
+                        else:
+                            self.snapVToFirst = False
+                        if p1.y()+self.vOffset1 > p2.y()-3 and p1.y()+self.vOffset1 < p2.y()+3:
+                            self.snapVToSecond = True
+                            self.pressedSegment = 2
+                        else:
+                            self.snapVToSecond = False
 
-            if self.ofsetting == 2:
-                if self.snapVToFirst:
-                    self.hOffset2 -= float(delta.x())
-                elif self.snapVToSecond:
-                    self.hOffset1 -= float(delta.x())
-                else:
-                    if self.pressedSegment == 1:
-                        self.hOffset1 -= float(delta.x())
-                    elif self.pressedSegment == 3:
+                if self.ofsetting == 2:
+                    if self.snapVToFirst:
                         self.hOffset2 -= float(delta.x())
-        else:
-            if self.ofsetting == 1:
-                self.vOffset2 -= float(delta.y())                
+                    elif self.snapVToSecond:
+                        self.hOffset1 -= float(delta.x())
+                    else:
+                        if self.pressedSegment == 1:
+                            self.hOffset1 -= float(delta.x())
+                        elif self.pressedSegment == 3:
+                            self.hOffset2 -= float(delta.x())
+            else:
+                if self.ofsetting == 1:
+                    self.vOffset2 -= float(delta.y())                
 
-        self.prevPos = event.pos()
+            self.prevPos = event.pos()
 
         event.accept()
 
