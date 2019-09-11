@@ -235,29 +235,46 @@ class UIConnection(QGraphicsPathItem):
         connection = graph.connectPinsInternal(srcPin, dstPin)
         assert(connection is not None)
         connection.uid = UUID(data['uuid'])
-        vOffset = data['vOffset'] 
-        if vOffset is not None:
-            self.vOffset = float(vOffset)
+
         hOffsetL = data['hOffsetL'] 
         if hOffsetL is not None:
             self.hOffsetL = float(hOffsetL)
+        hOffsetR = data['hOffsetR'] 
+        if hOffsetR is not None:
+            self.hOffsetR = float(hOffsetR)   
+        hOffsetLSShape = data['hOffsetLSShape'] 
+        if hOffsetLSShape is not None:
+            self.hOffsetLSShape = float(hOffsetLSShape)
+        hOffsetRSShape = data['hOffsetR'] 
+        if hOffsetRSShape is not None:
+            self.hOffsetRSShape = float(hOffsetRSShape)              
+        vOffset = data['vOffset'] 
+        if vOffset is not None:
+            self.vOffset = float(vOffset)
         vOffsetSShape = data['vOffsetSShape'] 
         if vOffsetSShape is not None:
             self.vOffsetSShape = float(vOffsetSShape)
-        hOffsetR = data['hOffsetR'] 
-        if hOffsetR is not None:
-            self.hOffsetR = float(hOffsetR)
-
+        snapVToFirst = data['snapVToFirst'] 
+        if snapVToFirst is not None:
+            self.snapVToFirst = bool(snapVToFirst)
+        snapVToSecond = data['snapVToSecond'] 
+        if snapVToSecond is not None:
+            self.snapVToSecond = bool(snapVToSecond)
+            
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
                   'sourceName': self.source()._rawPin.getFullName(),
                   'destinationName': self.destination()._rawPin.getFullName(),
                   'uuid': str(self.uid),
-                  'vOffset':str(self.vOffset),
-                  'hOffsetL':str(self.hOffsetL),
-                  'vOffsetSShape':str(self.vOffsetSShape),
-                  'hOffsetR':str(self.hOffsetR)                  
+                  'hOffsetL': str(self.hOffsetL),
+                  'hOffsetR': str(self.hOffsetR),
+                  'hOffsetLSShape': str(self.hOffsetLSShape),
+                  'hOffsetRSShape': str(self.hOffsetRSShape),
+                  'vOffset': str(self.vOffset),
+                  'vOffsetSShape': str(self.vOffsetSShape),
+                  'snapVToFirst': str(self.snapVToFirst),
+                  'snapVToSecond': str(self.snapVToSecond),                
                   }
         return script
 
