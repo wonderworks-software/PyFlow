@@ -360,13 +360,13 @@ class UIConnection(QGraphicsPathItem):
         stroker = QtGui.QPainterPathStroker()
         stroker.setWidth(width)
         strokepath = stroker.createStroke(path) 
-        if strokepath.contains(point):
-            t = 0.0
-            d = []
-            while t <=100.0: 
-                d.append(QtGui.QVector2D(point - path.pointAtPercent(t/100)).length())
-                t += precision
-            percentage = d.index(min(d))*precision
+        #if strokepath.contains(point):
+        t = 0.0
+        d = []
+        while t <=100.0: 
+            d.append(QtGui.QVector2D(point - path.pointAtPercent(t/100)).length())
+            t += precision
+        percentage = d.index(min(d))*precision
         return percentage
 
     def mousePressEvent(self, event):
@@ -526,8 +526,10 @@ class UIConnection(QGraphicsPathItem):
         xDistance = (p2.x() + offset2 ) - (p1.x() + offset1)
         self.sShape = xDistance < 0
         if editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Circuit:
-            self.mPath,self.linPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, self.sameSide, lod, False,
-                                                        self.vOffset, self.hOffsetL,self.vOffsetSShape, self.hOffsetR,self.hOffsetRSShape,self.hOffsetLSShape,self.snapVToFirst,self.snapVToSecond)
+            seg = self.hoverSegment if self.hoverSegment != -1 and self.linPath and self.pressedSegment == -1 else self.pressedSegment
+            self.mPath,self.linPath,sectionPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, self.sameSide, lod, False,
+                                                        self.vOffset, self.hOffsetL,self.vOffsetSShape, self.hOffsetR,self.hOffsetRSShape,self.hOffsetLSShape,self.snapVToFirst,self.snapVToSecond,seg)
+ 
         if editableStyleSheet().ConnectionMode[0] == ConnectionTypes.ComplexCircuit:
             self.mPath,self.linPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, self.sameSide, lod, True)            
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
@@ -541,55 +543,11 @@ class UIConnection(QGraphicsPathItem):
         self.setPath(self.mPath)
 
         super(UIConnection, self).paint(painter, option, widget)
-
-        if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit]:
-            if self.hoverSegment != -1 and self.linPath and self.pressedSegment == -1:
-                pen = QtGui.QPen()
-                pen.setColor(editableStyleSheet().MainColor)
-                pen.setWidthF(self.thickness + (self.thickness / 1.5)) 
-                painter.setPen(pen)
-
-                lstart = self.percentageByPoint(self.linPath[self.hoverSegment],self.mPath,width=500)*0.01
-                lend = self.percentageByPoint(self.linPath[self.hoverSegment+1],self.mPath,width=500)*0.01
-
-                #painter.drawEllipse(self.mPath.pointAtPercent(clamp(lstart,0.0,1.0)),5,5)
-                #painter.drawEllipse(self.mPath.pointAtPercent(clamp(lend,0.0,1.0)),5,5)
-
-                curve = []
-                simplified = self.mPath.simplified()
-                simplified.setFillRule(self.mPath.fillRule())
-                for i in range(simplified.elementCount()):
-                    e = simplified.elementAt(i)
-                    if QtGui.QVector2D(e.x,e.y) not in curve:
-                        curve.append(QtGui.QVector2D(e.x,e.y))
-                trimedCurve = trimCurve(curve,lstart,lend)
-                trimedPath = [QtCore.QPointF(x.x(),x.y()) for x in trimedCurve]
-                trimedPath.insert(0,self.mPath.pointAtPercent(clamp(lstart,0.0,1.0)))
-                trimedPath.append(self.mPath.pointAtPercent(clamp(lend,0.0,1.0)))
-                path = ConnectionPainter.linearPath(trimedPath)
-                painter.drawPath(path)                
-
-
-            if self.pressedSegment != -1 and self.linPath:
-                lstart = self.percentageByPoint(self.linPath[self.pressedSegment],self.mPath,width=500)*0.01
-                lend = self.percentageByPoint(self.linPath[self.pressedSegment+1],self.mPath,width=500)*0.01
-                pen = QtGui.QPen()
-                pen.setColor(editableStyleSheet().MainColor)
-                pen.setWidthF(self.thickness + (self.thickness / 1.5))   
-                painter.setPen(pen) 
-                curve = []
-                simplified = self.mPath.simplified()
-                simplified.setFillRule(self.mPath.fillRule())
-                for i in range(simplified.elementCount()):
-                    e = simplified.elementAt(i)
-                    if QtGui.QVector2D(e.x,e.y) not in curve:
-                        curve.append(QtGui.QVector2D(e.x,e.y))
-                trimedCurve = trimCurve(curve,lstart,lend)
-                trimedPath = [QtCore.QPointF(x.x(),x.y()) for x in trimedCurve]
-                trimedPath.insert(0,self.mPath.pointAtPercent(clamp(lstart,0.0,1.0)))
-                trimedPath.append(self.mPath.pointAtPercent(clamp(lend,0.0,1.0)))
-                path = ConnectionPainter.linearPath(trimedPath)
-                painter.drawPath(path)   
+        pen = QtGui.QPen()
+        pen.setColor(editableStyleSheet().MainColor)
+        pen.setWidthF(self.thickness + (self.thickness / 1.5)) 
+        painter.setPen(pen)            
+        painter.drawPath(sectionPath)         
 
 def getCurveLengths(curve):
     totalLength = 0
@@ -601,16 +559,6 @@ def getCurveLengths(curve):
             totalLength += (point - curve[i-1]).length()
             segmentLengths.append(totalLength)
     return  totalLength,segmentLengths
-
-def linearInterpolate(curve,u):
-    totalLength,segmentLengths = getCurveLengths(curve)
-    desiredLength = totalLength*u
-    subtracted = [ abs(desiredLength - l) for l in segmentLengths]
-    minLength = min(subtracted)
-    minPoint = subtracted.index(minLength)
-    nextPoint = minPoint - 1 if desiredLength - segmentLengths[minPoint] < 0 else minPoint + 1
-    newU = (desiredLength - segmentLengths[minPoint]) /  (segmentLengths[nextPoint] - segmentLengths[minPoint])
-    return ((curve[nextPoint] - curve[minPoint]) * newU) + curve[minPoint]
 
 def trimCurve(curve,minU,maxU):
     totalLength,segmentLengths = getCurveLengths(curve)

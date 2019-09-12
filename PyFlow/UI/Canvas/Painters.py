@@ -534,9 +534,9 @@ class ConnectionPainter(object):
         return mPath
 
     @staticmethod
-    def roundCornersPath(path, roundnes, closed=False):
+    def roundCornersPath(path, roundnes, closed=False,highlitedSegment=-1):
         mPath = QtGui.QPainterPath()
-
+        highlitedSegmentPath = QtGui.QPainterPath()
         for i, point in enumerate(path):
             prevPoint = nextPoint = QtGui.QVector2D(point)
             currPoint = QtGui.QVector2D(point)
@@ -569,11 +569,29 @@ class ConnectionPainter(object):
             if i == len(path) - 1 and closed:
                 n = nextPoint - fDist.normalized() * xRoundnes
                 mPath.lineTo(QtCore.QPointF(n.x(), n.y()))
+       
+            if i == highlitedSegment:
+                if i != 0:
+                    highlitedSegmentPath.moveTo(QtCore.QPointF(p.x(), p.y()))
+                    highlitedSegmentPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
+                else:
+                    highlitedSegmentPath.moveTo(point)
+                currPoint =  QtGui.QVector2D(path[i + 1])
+                nextPoint = QtGui.QVector2D(path[i + 2])
+                prevPoint = QtGui.QVector2D(point.x(),point.y())
+                fDist = nextPoint - currPoint
+                bDist = currPoint - prevPoint
+                xRoundnes = min(min(roundnes,fDist.length()/2.0),bDist.length()/2.0)
 
-        return mPath
+                n = currPoint + fDist.normalized() * xRoundnes/2
+                p = currPoint - bDist.normalized() * xRoundnes/2                 
+                highlitedSegmentPath.lineTo(QtCore.QPointF(p.x(), p.y()))
+                highlitedSegmentPath.quadTo(QtCore.QPointF(currPoint.x(), currPoint.y()), QtCore.QPointF(n.x(), n.y()))              
+
+        return mPath,highlitedSegmentPath
 
     @staticmethod
-    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset=0, hOffsetL=0,vOffsetSShape=0, hOffsetR=0,hOffsetRSShape=0,hOffsetLSShape=0,snapVToFirst=False,snapVToSecond=False):
+    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset=0, hOffsetL=0,vOffsetSShape=0, hOffsetR=0,hOffsetRSShape=0,hOffsetLSShape=0,snapVToFirst=False,snapVToSecond=False,highlitedSegment = -1):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         offset1 = offset
         offset2 = -offset
@@ -615,19 +633,13 @@ class ConnectionPainter(object):
             path.append(p2)
 
         if complexLine:
-            if xDistance > 0:
-                path = ConnectionPainter.chanferPath(path, offset)
-                #path.append(p2)
-            else:
-                #path.reverse()
-                path = ConnectionPainter.chanferPath(path, offset)
-                #path.append(p1)
+            path = ConnectionPainter.chanferPath(path, offset)
 
         if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath(path)
         else:
-            mPath = ConnectionPainter.roundCornersPath(path, roundnes)
-        return mPath,path
+            mPath,section = ConnectionPainter.roundCornersPath(path, roundnes,highlitedSegment=highlitedSegment)
+        return mPath,path,section
 
     @staticmethod
     def Cubic(p1, p2, defOffset=150, lod=0):

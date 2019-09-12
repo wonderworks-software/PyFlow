@@ -81,4 +81,4 @@ class IConvexHullBackDrop(object):
             path = []
             for i in self.convex_hull:
                 path.append(QtCore.QPointF(i[0], i[1]))
-            self.poly = ConnectionPainter.roundCornersPath(path,6,True)
+            self.poly,none = ConnectionPainter.roundCornersPath(path,6,True)
