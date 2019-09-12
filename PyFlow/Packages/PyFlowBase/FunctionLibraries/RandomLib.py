@@ -29,7 +29,7 @@ class RandomLib(FunctionLibraryBase):
         super(RandomLib, self).__init__(packageName)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, meta={NodeMeta.CATEGORY: 'Math|random', NodeMeta.KEYWORDS: [], "CacheEnabled": False})
+    @IMPLEMENT_NODE(returns=None, meta={NodeMeta.CATEGORY: 'Math|random', NodeMeta.KEYWORDS: [], NodeMeta.CACHE_ENABLED: False})
     # Return a random integer N such that a <= N <= b
     def randint(start=('IntPin', 0), end=('IntPin', 10), Result=(REF, ('IntPin', 0))):
         """Return a random integer N such that a <= N <= b."""
