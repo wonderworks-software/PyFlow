@@ -59,11 +59,11 @@ Arguments
 Examples:
 ::
 
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'GenericTypes', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={NodeMeta.CATEGORY: 'GenericTypes', NodeMeta.KEYWORDS: []})
     def makeInt(i=('IntPin', 0)):
         return i
 
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {"enabledOptions": PinOptions.AlwaysPushDirty}))
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {PinSpecifires.ENABLED_OPTIONS: PinOptions.AlwaysPushDirty}))
     def clock():
         return time.clock()
 
@@ -75,13 +75,13 @@ Examples:
 
         Following key-value pairs allowed:
 
-        >>> ("supportedDataTypes" : list)
-        >>> ("constraint": None)
-        >>> ("structConstraint": None)
-        >>> ("enabledOptions": None)
-        >>> ("disabledOptions": None)
-        >>> ("inputWidgetVariant": "DefaultWidget")
-        >>> ("ValueList": [str])
+        >>> (PinSpecifires.SUPPORTED_DATA_TYPES : list)
+        >>> (PinSpecifires.CONSTRAINT: None)
+        >>> (PinSpecifires.STRUCT_CONSTRAINT: None)
+        >>> (PinSpecifires.ENABLED_OPTIONS: None)
+        >>> (PinSpecifires.DISABLED_OPTIONS: None)
+        >>> (PinSpecifires.INPUT_WIDGET_VARIANT: "DefaultWidget")
+        >>> (PinSpecifires.VALUE_LIST: [str])
 
         "Value list is specific for string pins. If Specified - enum input widget will be created for this pin."
 
@@ -106,7 +106,7 @@ from PyFlow.Core.Common import *
 empty = {}
 
 
-def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
+def IMPLEMENT_NODE(func=None, returns=empty, meta={NodeMeta.CATEGORY: 'Default', NodeMeta.KEYWORDS: []}, nodeType=NodeTypes.Pure):
     def wrapper(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
         func.__annotations__['nodeType'] = nodeType

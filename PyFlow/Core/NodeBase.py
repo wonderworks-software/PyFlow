@@ -753,18 +753,18 @@ class NodeBase(INode):
             if len(foo.__annotations__['return']) == 3:
                 returnAnnotationDict = foo.__annotations__['return'][2]
 
-                if "supportedDataTypes" in returnAnnotationDict:
-                    retAnyOpts = returnAnnotationDict["supportedDataTypes"]
-                if "constraint" in returnAnnotationDict:
-                    retConstraint = returnAnnotationDict["constraint"]
-                if "structConstraint" in returnAnnotationDict:
-                    retStructConstraint = returnAnnotationDict["structConstraint"]
-                if "enabledOptions" in returnAnnotationDict:
-                    returnPinOptionsToEnable = returnAnnotationDict["enabledOptions"]
-                if "disabledOptions" in returnAnnotationDict:
-                    returnPinOptionsToDisable = returnAnnotationDict["disabledOptions"]
-                if "inputWidgetVariant" in returnAnnotationDict:
-                    returnWidgetVariant = returnAnnotationDict["inputWidgetVariant"]
+                if PinSpecifires.SUPPORTED_DATA_TYPES in returnAnnotationDict:
+                    retAnyOpts = returnAnnotationDict[PinSpecifires.SUPPORTED_DATA_TYPES]
+                if PinSpecifires.CONSTRAINT in returnAnnotationDict:
+                    retConstraint = returnAnnotationDict[PinSpecifires.CONSTRAINT]
+                if PinSpecifires.STRUCT_CONSTRAINT in returnAnnotationDict:
+                    retStructConstraint = returnAnnotationDict[PinSpecifires.STRUCT_CONSTRAINT]
+                if PinSpecifires.ENABLED_OPTIONS in returnAnnotationDict:
+                    returnPinOptionsToEnable = returnAnnotationDict[PinSpecifires.ENABLED_OPTIONS]
+                if PinSpecifires.DISABLED_OPTIONS in returnAnnotationDict:
+                    returnPinOptionsToDisable = returnAnnotationDict[PinSpecifires.DISABLED_OPTIONS]
+                if PinSpecifires.INPUT_WIDGET_VARIANT in returnAnnotationDict:
+                    returnWidgetVariant = returnAnnotationDict[PinSpecifires.INPUT_WIDGET_VARIANT]
 
         nodeType = foo.__annotations__['nodeType']
         _packageName = foo.__annotations__['packageName']
@@ -777,11 +777,11 @@ class NodeBase(INode):
 
         @staticmethod
         def category():
-            return meta['Category']
+            return meta[NodeMeta.CATEGORY]
 
         @staticmethod
         def keywords():
-            return meta['Keywords']
+            return meta[NodeMeta.KEYWORDS]
 
         def constructor(self, name, **kwargs):
             NodeBase.__init__(self, name, **kwargs)
@@ -869,18 +869,18 @@ class NodeBase(INode):
                     pinDict = pinDescriptionTuple[1][2]
 
                 if pinDict is not None:
-                    if "supportedDataTypes" in pinDict:
-                        anyOpts = pinDict["supportedDataTypes"]
-                    if "constraint" in pinDict:
-                        constraint = pinDict["constraint"]
-                    if "structConstraint" in pinDict:
-                        structConstraint = pinDict["structConstraint"]
-                    if "enabledOptions" in pinDict:
-                        pinOptionsToEnable = pinDict["enabledOptions"]
-                    if "disabledOptions" in pinDict:
-                        pinOptionsToDisable = pinDict["disabledOptions"]
-                    if "inputWidgetVariant" in pinDict:
-                        inputWidgetVariant = pinDict["inputWidgetVariant"]
+                    if PinSpecifires.SUPPORTED_DATA_TYPES in pinDict:
+                        anyOpts = pinDict[PinSpecifires.SUPPORTED_DATA_TYPES]
+                    if PinSpecifires.CONSTRAINT in pinDict:
+                        constraint = pinDict[PinSpecifires.CONSTRAINT]
+                    if PinSpecifires.STRUCT_CONSTRAINT in pinDict:
+                        structConstraint = pinDict[PinSpecifires.STRUCT_CONSTRAINT]
+                    if PinSpecifires.ENABLED_OPTIONS in pinDict:
+                        pinOptionsToEnable = pinDict[PinSpecifires.ENABLED_OPTIONS]
+                    if PinSpecifires.DISABLED_OPTIONS in pinDict:
+                        pinOptionsToDisable = pinDict[PinSpecifires.DISABLED_OPTIONS]
+                    if PinSpecifires.INPUT_WIDGET_VARIANT in pinDict:
+                        inputWidgetVariant = pinDict[PinSpecifires.INPUT_WIDGET_VARIANT]
 
                 outRef = raw_inst.createOutputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
                 outRef.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
@@ -907,18 +907,18 @@ class NodeBase(INode):
                     pinDict = pinDescriptionTuple[2]
 
                 if pinDict is not None:
-                    if "supportedDataTypes" in pinDict:
-                        anyOpts = pinDict["supportedDataTypes"]
-                    if "constraint" in pinDict:
-                        constraint = pinDict["constraint"]
-                    if "structConstraint" in pinDict:
-                        structConstraint = pinDict["structConstraint"]
-                    if "enabledOptions" in pinDict:
-                        pinOptionsToEnable = pinDict["enabledOptions"]
-                    if "disabledOptions" in pinDict:
-                        pinOptionsToDisable = pinDict["disabledOptions"]
-                    if "inputWidgetVariant" in pinDict:
-                        inputWidgetVariant = pinDict["inputWidgetVariant"]
+                    if PinSpecifires.SUPPORTED_DATA_TYPES in pinDict:
+                        anyOpts = pinDict[PinSpecifires.SUPPORTED_DATA_TYPES]
+                    if PinSpecifires.CONSTRAINT in pinDict:
+                        constraint = pinDict[PinSpecifires.CONSTRAINT]
+                    if PinSpecifires.STRUCT_CONSTRAINT in pinDict:
+                        structConstraint = pinDict[PinSpecifires.STRUCT_CONSTRAINT]
+                    if PinSpecifires.ENABLED_OPTIONS in pinDict:
+                        pinOptionsToEnable = pinDict[PinSpecifires.ENABLED_OPTIONS]
+                    if PinSpecifires.DISABLED_OPTIONS in pinDict:
+                        pinOptionsToDisable = pinDict[PinSpecifires.DISABLED_OPTIONS]
+                    if PinSpecifires.INPUT_WIDGET_VARIANT in pinDict:
+                        inputWidgetVariant = pinDict[PinSpecifires.INPUT_WIDGET_VARIANT]
 
                 inp = raw_inst.createInputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
                 inp.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None

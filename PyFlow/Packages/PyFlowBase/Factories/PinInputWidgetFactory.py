@@ -171,8 +171,8 @@ class EnumInputWIdget(InputWidgetSingle):
     def __init__(self, parent=None, **kwds):
         super(EnumInputWIdget, self).__init__(parent=parent, **kwds)
         values = []
-        if "ValueList" in kwds["pinAnnotations"]:
-            values = kwds["pinAnnotations"]["ValueList"]
+        if PinSpecifires.VALUE_LIST in kwds["pinAnnotations"]:
+            values = kwds["pinAnnotations"][PinSpecifires.VALUE_LIST]
         self.enumBox = EnumComboBox(values)
         self.enumBox.setEditable(False)
         if "editable" in kwds["pinAnnotations"]:
