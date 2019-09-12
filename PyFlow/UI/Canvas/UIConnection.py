@@ -544,36 +544,79 @@ class UIConnection(QGraphicsPathItem):
 
         if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit]:
             if self.hoverSegment != -1 and self.linPath and self.pressedSegment == -1:
-                painter.setViewTransformEnabled(False)
-                linPath = ConnectionPainter.linearPath(self.linPath)
-                lstart = self.percentageByPoint(self.linPath[self.hoverSegment],self.mPath,width=500)*0.01
-                lend = self.percentageByPoint(self.linPath[self.hoverSegment+1],self.mPath,width=500)*0.01
                 pen = QtGui.QPen()
                 pen.setColor(editableStyleSheet().MainColor)
+                pen.setWidthF(self.thickness + (self.thickness / 1.5)) 
                 painter.setPen(pen)
-                pen.setWidthF(self.thickness + (self.thickness / 1.5))    
-                dash = []
-                dash.append(0)
-                dash.append((lstart*self.mPath.length())/pen.widthF())
-                dash.append(((lend-lstart)*self.mPath.length())/pen.widthF())
-                dash.append(((1.0-lend)*self.mPath.length())/pen.widthF())
-                pen.setDashPattern(dash)    
-                painter.setPen(pen)
-                painter.drawPath(self.mPath)
-                print painter.transform()
+
+                lstart = self.percentageByPoint(self.linPath[self.hoverSegment],self.mPath,width=500)*0.01
+                lend = self.percentageByPoint(self.linPath[self.hoverSegment+1],self.mPath,width=500)*0.01
+
+                #painter.drawEllipse(self.mPath.pointAtPercent(clamp(lstart,0.0,1.0)),5,5)
+                #painter.drawEllipse(self.mPath.pointAtPercent(clamp(lend,0.0,1.0)),5,5)
+
+                curve = []
+                simplified = self.mPath.simplified()
+                simplified.setFillRule(self.mPath.fillRule())
+                for i in range(simplified.elementCount()):
+                    e = simplified.elementAt(i)
+                    if QtGui.QVector2D(e.x,e.y) not in curve:
+                        curve.append(QtGui.QVector2D(e.x,e.y))
+                trimedCurve = trimCurve(curve,lstart,lend)
+                trimedPath = [QtCore.QPointF(x.x(),x.y()) for x in trimedCurve]
+                trimedPath.insert(0,self.mPath.pointAtPercent(clamp(lstart,0.0,1.0)))
+                trimedPath.append(self.mPath.pointAtPercent(clamp(lend,0.0,1.0)))
+                path = ConnectionPainter.linearPath(trimedPath)
+                painter.drawPath(path)                
+
+
             if self.pressedSegment != -1 and self.linPath:
-                linPath = ConnectionPainter.linearPath(self.linPath)
                 lstart = self.percentageByPoint(self.linPath[self.pressedSegment],self.mPath,width=500)*0.01
                 lend = self.percentageByPoint(self.linPath[self.pressedSegment+1],self.mPath,width=500)*0.01
                 pen = QtGui.QPen()
                 pen.setColor(editableStyleSheet().MainColor)
-                painter.setPen(pen)
-                pen.setWidthF(self.thickness + (self.thickness / 1.5))    
-                dash = []
-                dash.append(0)
-                dash.append((lstart*self.mPath.length())/pen.widthF())
-                dash.append(((lend-lstart)*self.mPath.length())/pen.widthF())
-                dash.append(((1.0-lend)*self.mPath.length())/pen.widthF())
-                pen.setDashPattern(dash)    
-                painter.setPen(pen)
-                painter.drawPath(self.mPath)
+                pen.setWidthF(self.thickness + (self.thickness / 1.5))   
+                painter.setPen(pen) 
+                curve = []
+                simplified = self.mPath.simplified()
+                simplified.setFillRule(self.mPath.fillRule())
+                for i in range(simplified.elementCount()):
+                    e = simplified.elementAt(i)
+                    if QtGui.QVector2D(e.x,e.y) not in curve:
+                        curve.append(QtGui.QVector2D(e.x,e.y))
+                trimedCurve = trimCurve(curve,lstart,lend)
+                trimedPath = [QtCore.QPointF(x.x(),x.y()) for x in trimedCurve]
+                trimedPath.insert(0,self.mPath.pointAtPercent(clamp(lstart,0.0,1.0)))
+                trimedPath.append(self.mPath.pointAtPercent(clamp(lend,0.0,1.0)))
+                path = ConnectionPainter.linearPath(trimedPath)
+                painter.drawPath(path)   
+
+def getCurveLengths(curve):
+    totalLength = 0
+    segmentLengths = []
+    for i, point in enumerate(curve):
+        if i == 0:
+            segmentLengths.append(0)
+        else:
+            totalLength += (point - curve[i-1]).length()
+            segmentLengths.append(totalLength)
+    return  totalLength,segmentLengths
+
+def linearInterpolate(curve,u):
+    totalLength,segmentLengths = getCurveLengths(curve)
+    desiredLength = totalLength*u
+    subtracted = [ abs(desiredLength - l) for l in segmentLengths]
+    minLength = min(subtracted)
+    minPoint = subtracted.index(minLength)
+    nextPoint = minPoint - 1 if desiredLength - segmentLengths[minPoint] < 0 else minPoint + 1
+    newU = (desiredLength - segmentLengths[minPoint]) /  (segmentLengths[nextPoint] - segmentLengths[minPoint])
+    return ((curve[nextPoint] - curve[minPoint]) * newU) + curve[minPoint]
+
+def trimCurve(curve,minU,maxU):
+    totalLength,segmentLengths = getCurveLengths(curve)
+    us = [ l/totalLength for l in segmentLengths]
+    newCurve = []
+    for i,u in enumerate(us):
+        if u > minU and u < maxU:
+            newCurve.append(curve[i])
+    return newCurve 
