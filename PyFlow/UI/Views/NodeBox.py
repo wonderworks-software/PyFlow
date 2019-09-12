@@ -186,8 +186,8 @@ class NodeBoxTreeWidget(QTreeWidget):
                         fooInpTypes.add(dType[0])
                         fooInpStructs.add(findStructFromValue(dType[1]))
 
-                    nodeCategoryPath = "{0}|{1}".format(package_name, foo.__annotations__['meta']['Category'])
-                    keywords = foo.__annotations__['meta']['Keywords']
+                    nodeCategoryPath = "{0}|{1}".format(package_name, foo.__annotations__['meta'][NodeMeta.CATEGORY])
+                    keywords = foo.__annotations__['meta'][NodeMeta.KEYWORDS]
                     checkString = name + nodeCategoryPath + ''.join(keywords)
                     if pattern.lower() in checkString.lower():
                         # create all nodes items if clicked on canvas

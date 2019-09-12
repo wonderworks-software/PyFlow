@@ -109,7 +109,7 @@ class ArrayLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {PinSpecifires.CONSTRAINT: '1'}), meta={NodeMeta.CATEGORY: 'Array', NodeMeta.KEYWORDS: []})
-    def arraySum(Value=('AnyPin', [], {PinSpecifires.CONSTRAINT: '1', "supportedDataTypes": ["FloatPin", "IntPin"]})):
+    def arraySum(Value=('AnyPin', [], {PinSpecifires.CONSTRAINT: '1', PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"]})):
         """Python **sum()** function."""
         return sum(Value)
 

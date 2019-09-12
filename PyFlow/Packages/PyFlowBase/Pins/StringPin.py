@@ -30,10 +30,10 @@ class StringPin(PinBase):
 
     def getInputWidgetVariant(self):
         if self.annotationDescriptionDict is not None:
-            if "ValueList" in self.annotationDescriptionDict:
+            if PinSpecifires.VALUE_LIST in self.annotationDescriptionDict:
                 return "EnumWidget"
-            if "inputWidgetVariant" in self.annotationDescriptionDict:
-                return self.annotationDescriptionDict["inputWidgetVariant"]
+            if PinSpecifires.INPUT_WIDGET_VARIANT in self.annotationDescriptionDict:
+                return self.annotationDescriptionDict[PinSpecifires.INPUT_WIDGET_VARIANT]
         return self._inputWidgetVariant
 
     @staticmethod

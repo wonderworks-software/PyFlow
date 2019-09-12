@@ -837,6 +837,8 @@ class PinSpecifires:
     ENABLED_OPTIONS = "enabledOptions"
     DISABLED_OPTIONS = "disabledOptions"
     INPUT_WIDGET_VARIANT = "inputWidgetVariant"
+    DESCRIPTION = "Description"
+    VALUE_LIST = "ValueList"
 
 
 class NodeMeta:
