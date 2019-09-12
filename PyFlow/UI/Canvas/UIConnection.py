@@ -531,7 +531,7 @@ class UIConnection(QGraphicsPathItem):
                                                         self.vOffset, self.hOffsetL,self.vOffsetSShape, self.hOffsetR,self.hOffsetRSShape,self.hOffsetLSShape,self.snapVToFirst,self.snapVToSecond,seg)
  
         if editableStyleSheet().ConnectionMode[0] == ConnectionTypes.ComplexCircuit:
-            self.mPath,self.linPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, self.sameSide, lod, True)            
+            self.mPath,self.linPath,sectionPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, self.sameSide, lod, True)            
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
             self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
             self.linPath = None
