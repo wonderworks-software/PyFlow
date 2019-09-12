@@ -260,7 +260,7 @@ class UIConnection(QGraphicsPathItem):
         snapVToSecond = data['snapVToSecond'] 
         if snapVToSecond is not None:
             self.snapVToSecond = bool(snapVToSecond)
-            
+
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
@@ -544,54 +544,36 @@ class UIConnection(QGraphicsPathItem):
 
         if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit]:
             if self.hoverSegment != -1 and self.linPath and self.pressedSegment == -1:
+                painter.setViewTransformEnabled(False)
+                linPath = ConnectionPainter.linearPath(self.linPath)
+                lstart = self.percentageByPoint(self.linPath[self.hoverSegment],self.mPath,width=500)*0.01
+                lend = self.percentageByPoint(self.linPath[self.hoverSegment+1],self.mPath,width=500)*0.01
                 pen = QtGui.QPen()
-                pen.setWidthF(self.thickness + (self.thickness / 1.5))
                 pen.setColor(editableStyleSheet().MainColor)
                 painter.setPen(pen)
-                tempPath = QtGui.QPainterPath()
-                tempPath.moveTo(self.linPath[self.hoverSegment])
-                tempPath.lineTo(self.linPath[self.hoverSegment+1])
-                stroker = QtGui.QPainterPathStroker()
-                stroker.setWidth(30)
-                strokepath = stroker.createStroke(tempPath)       
-                path = self.mPath.intersected(strokepath)
-                tempPath2 = QtGui.QPainterPath()
-                moved = False
-                for i in range(path.elementCount()-1):
-                    p = path.elementAt(i)
-                    tolerance = 10
-                    rect = QtCore.QRect(QtCore.QPoint(p.x - tolerance, p.y - tolerance),
-                                        QtCore.QPoint(p.x + tolerance, p.y + tolerance))
-                    if tempPath.intersects(rect):
-                        if not moved:
-                            tempPath2.moveTo(p)
-                            moved = True
-                        else:
-                            tempPath2.lineTo(p)
-                painter.drawPath(tempPath2)
+                pen.setWidthF(self.thickness + (self.thickness / 1.5))    
+                dash = []
+                dash.append(0)
+                dash.append((lstart*self.mPath.length())/pen.widthF())
+                dash.append(((lend-lstart)*self.mPath.length())/pen.widthF())
+                dash.append(((1.0-lend)*self.mPath.length())/pen.widthF())
+                pen.setDashPattern(dash)    
+                painter.setPen(pen)
+                painter.drawPath(self.mPath)
+                print painter.transform()
             if self.pressedSegment != -1 and self.linPath:
+                linPath = ConnectionPainter.linearPath(self.linPath)
+                lstart = self.percentageByPoint(self.linPath[self.pressedSegment],self.mPath,width=500)*0.01
+                lend = self.percentageByPoint(self.linPath[self.pressedSegment+1],self.mPath,width=500)*0.01
                 pen = QtGui.QPen()
-                pen.setWidthF(self.thickness + (self.thickness / 1.5))
                 pen.setColor(editableStyleSheet().MainColor)
                 painter.setPen(pen)
-                tempPath = QtGui.QPainterPath()
-                tempPath.moveTo(self.linPath[self.pressedSegment])
-                tempPath.lineTo(self.linPath[self.pressedSegment+1])
-                stroker = QtGui.QPainterPathStroker()
-                stroker.setWidth(30)
-                strokepath = stroker.createStroke(tempPath)       
-                path = self.mPath.intersected(strokepath)
-                tempPath2 = QtGui.QPainterPath()
-                moved = False
-                for i in range(path.elementCount()-1):
-                    p = path.elementAt(i)
-                    tolerance = 10
-                    rect = QtCore.QRect(QtCore.QPoint(p.x - tolerance, p.y - tolerance),
-                                        QtCore.QPoint(p.x + tolerance, p.y + tolerance))
-                    if tempPath.intersects(rect):
-                        if not moved:
-                            tempPath2.moveTo(p)
-                            moved = True
-                        else:
-                            tempPath2.lineTo(p)
-                painter.drawPath(tempPath2)
+                pen.setWidthF(self.thickness + (self.thickness / 1.5))    
+                dash = []
+                dash.append(0)
+                dash.append((lstart*self.mPath.length())/pen.widthF())
+                dash.append(((lend-lstart)*self.mPath.length())/pen.widthF())
+                dash.append(((1.0-lend)*self.mPath.length())/pen.widthF())
+                pen.setDashPattern(dash)    
+                painter.setPen(pen)
+                painter.drawPath(self.mPath)
