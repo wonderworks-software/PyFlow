@@ -560,10 +560,12 @@ class ConnectionPainter(object):
                 mPath.moveTo(point)
             elif i == 0 and closed:
                 mPath.moveTo(QtCore.QPointF(p.x(), p.y()))
-                mPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
+                mPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))              
+
             elif i != len(path) - 1 or closed:
                 mPath.lineTo(QtCore.QPointF(p.x(), p.y()))
                 mPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
+
             elif i == len(path) - 1 and not closed:
                 mPath.lineTo(point)
             if i == len(path) - 1 and closed:
@@ -583,8 +585,8 @@ class ConnectionPainter(object):
                 bDist = currPoint - prevPoint
                 xRoundnes = min(min(roundnes,fDist.length()/2.0),bDist.length()/2.0)
 
-                n = currPoint + fDist.normalized() * xRoundnes/2
-                p = currPoint - bDist.normalized() * xRoundnes/2                 
+                n = currPoint + fDist.normalized() * xRoundnes
+                p = currPoint - bDist.normalized() * xRoundnes                 
                 highlitedSegmentPath.lineTo(QtCore.QPointF(p.x(), p.y()))
                 highlitedSegmentPath.quadTo(QtCore.QPointF(currPoint.x(), currPoint.y()), QtCore.QPointF(n.x(), n.y()))              
 

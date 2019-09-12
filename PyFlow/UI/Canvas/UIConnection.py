@@ -547,24 +547,4 @@ class UIConnection(QGraphicsPathItem):
         pen.setColor(editableStyleSheet().MainColor)
         pen.setWidthF(self.thickness + (self.thickness / 1.5)) 
         painter.setPen(pen)            
-        painter.drawPath(sectionPath)         
-
-def getCurveLengths(curve):
-    totalLength = 0
-    segmentLengths = []
-    for i, point in enumerate(curve):
-        if i == 0:
-            segmentLengths.append(0)
-        else:
-            totalLength += (point - curve[i-1]).length()
-            segmentLengths.append(totalLength)
-    return  totalLength,segmentLengths
-
-def trimCurve(curve,minU,maxU):
-    totalLength,segmentLengths = getCurveLengths(curve)
-    us = [ l/totalLength for l in segmentLengths]
-    newCurve = []
-    for i,u in enumerate(us):
-        if u > minU and u < maxU:
-            newCurve.append(curve[i])
-    return newCurve 
+        painter.drawPath(sectionPath)           
