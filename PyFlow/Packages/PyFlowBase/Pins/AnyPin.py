@@ -144,10 +144,10 @@ class AnyPin(PinBase):
                 break
 
     def updateError(self, traversed=[], updateNeis=False):
-        """Check is Pin dataType is "AnyPin" and if it is, checks if it can change Type on conection, and if it can, marked as error.
+        """Check is Pin dataType is "AnyPin" and if it is, checks if it can change Type on connection, and if it can, marked as error.
         Is a iterative Function that traverses connected and constrained Pins
 
-        :param traversed: Current Iterated neighbours, defaults to []
+        :param traversed: Current Iterated neighbors, defaults to []
         :type traversed: list, optional
         :param updateNeis: Try to update Constrained Pins parents error display, it can be slow so use carefully, defaults to False
         :type updateNeis: bool, optional
@@ -230,7 +230,7 @@ class AnyPin(PinBase):
         """Function called before real connection but after :py:func:`PyFlow.Core.Common.canConnectPins` returns True
 
         We traverse connected and constrained Pins here to search if we can change Pin dataType, and if we can we traverse again
-        changing all the necesary datatypes in connected Graph Pins.
+        changing all the necessary datatypes in connected Graph Pins.
 
         :param other: Pin that will be connected to this Pin.
         :type other: :py:class:`PyFlow.Core.PinBase.PinBase`
@@ -245,7 +245,7 @@ class AnyPin(PinBase):
 
         We update error here and checkFor errors in owning Node
 
-        :param other: Pin that has been disconected to this Pin.
+        :param other: Pin that has been disconnected to this Pin.
         :type other: :py:class:`PyFlow.Core.PinBase.PinBase`
         """
         super(AnyPin, self).pinDisconnected(other)
@@ -296,13 +296,13 @@ class AnyPin(PinBase):
                             pin.supportedDataTypes = lambda: pin._supportedDataTypes
 
     def checkFree(self, checked=[], selfCheck=True):
-        """Recursive Function to find if all connected Pins are of type :py:class:`AnyPin` and canChange On conection,
+        """Recursive Function to find if all connected Pins are of type :py:class:`AnyPin` and canChange On connection,
         so basically it checks if a Pin is free to change its dataType to another one
 
         :param checked: Already visited Pins, defaults to []
         :type checked: list, optional
-        :param selfCheck: Define if check Pin itself or no, this is useful when trying to override a conection that is in fact
-                        the only conection that make hole graphed nodes not be able to change Type, defaults to True
+        :param selfCheck: Define if check Pin itself or no, this is useful when trying to override a connection that is in fact
+                        the only connection that make hole graphed nodes not be able to change Type, defaults to True
         :type selfCheck: bool, optional
         :returns: True if Pin can change current dataType
         :rtype: bool
@@ -339,12 +339,12 @@ class AnyPin(PinBase):
         :type checked: list, optional
         :param dataTypes: Intersected dataTypes, defaults to []
         :type dataTypes: list, optional
-        :param selfCheck: Define if check Pin itself or no, this is useful when trying to override a conection that is in fact
-                        the only conection that make hole graphed nodes not be able to change Type, defaults to True
+        :param selfCheck: Define if check Pin itself or no, this is useful when trying to override a connection that is in fact
+                        the only connection that make hole graphed nodes not be able to change Type, defaults to True
         :type selfCheck: bool, optional
         :param defaults: Define if we are intersecting current allowedDataTypes, or default (as in definition of node) allowedDataTypes, defaults to False
         :type defaults: bool, optional
-        :returns: List contatining all the intersected dataTypes
+        :returns: List containing all the intersected dataTypes
         :rtype: list
         """
         if not self.optionEnabled(PinOptions.ChangeTypeOnConnection) and self.activeDataType == "AnyPin":
@@ -378,7 +378,7 @@ class AnyPin(PinBase):
 
         :param dataType: New DataType we want the pin to became
         :type dataType: string
-        :param initializing:  If initializing AnyPin can have same strenght as other types, if not, "AnyPin" Pin will always be weaker than other dataType, if, defaults to False
+        :param initializing:  If initializing AnyPin can have same strength as other types, if not, "AnyPin" Pin will always be weaker than other dataType, if, defaults to False
         :type initializing: bool, optional
         :returns: True if it can change to the asked dataType
         :rtype: bool
@@ -398,7 +398,7 @@ class AnyPin(PinBase):
 
         :param dataType: New DataType
         :type dataType: string
-        :returns: True if succes setting dataType
+        :returns: True if success setting dataType
         :rtype: bool
         """
         if self.activeDataType == dataType:

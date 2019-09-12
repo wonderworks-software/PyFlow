@@ -179,23 +179,23 @@ class BlueprintCanvas(CanvasBase):
                 wires.extend(pin.uiConnectionList)
 
         inputPins = list()
-        inputConectionList = dict()
+        inputConnectionList = dict()
         outputPins = list()
-        outputConectionList = dict()
+        outputConnectionList = dict()
         for wire in wires:
             if wire.source().owningNode().isSelected() and not wire.destination().owningNode().isSelected():
                 if wire.destination() not in outputPins:
                     outputPins.append(wire.destination())
-                    outputConectionList[wire.destination()] = [[wire.source().owningNode().name, wire.source().name]]
+                    outputConnectionList[wire.destination()] = [[wire.source().owningNode().name, wire.source().name]]
                 else:
-                    outputConectionList[wire.destination()].append([wire.source().owningNode().name, wire.source().name])
+                    outputConnectionList[wire.destination()].append([wire.source().owningNode().name, wire.source().name])
 
             if not wire.source().owningNode().isSelected() and wire.destination().owningNode().isSelected():
                 if wire.source() not in inputPins:
                     inputPins.append(wire.source())
-                    inputConectionList[wire.source()] = [[wire.destination().owningNode().name, wire.destination().name]]
+                    inputConnectionList[wire.source()] = [[wire.destination().owningNode().name, wire.destination().name]]
                 else:
-                    inputConectionList[wire.source()].append([wire.destination().owningNode().name, wire.destination().name])
+                    inputConnectionList[wire.source()].append([wire.destination().owningNode().name, wire.destination().name])
 
         nodes = self.copyNodes(toClipBoard=False)
         for node in selectedNodes:
@@ -233,7 +233,7 @@ class BlueprintCanvas(CanvasBase):
                 newPinName = self.graphManager.getUniqName(o.owningNode().name)
                 newPin = graphInputs.onAddOutPin(newPinName, o.dataType)
                 newInputPins[o] = newPin
-                for n in inputConectionList[o]:
+                for n in inputConnectionList[o]:
                     node = self.findNode(n[0])
                     self.connectPinsInternal(newPin, node.getPinSG(n[1]))
 
@@ -252,7 +252,7 @@ class BlueprintCanvas(CanvasBase):
                 newPinName = self.graphManager.getUniqName(i.owningNode().name)
                 newPin = graphOutputs.onAddInPin(newPinName, i.dataType)
                 newOutputPins[i] = newPin
-                for n in outputConectionList[i]:
+                for n in outputConnectionList[i]:
                     node = self.findNode(n[0])
                     self.connectPinsInternal(newPin, node.getPinSG(n[1]))
 
@@ -725,16 +725,16 @@ class BlueprintCanvas(CanvasBase):
         else:
             return None
 
-    def getReruteNode(self, pos, connection=None):
+    def getRerouteNode(self, pos, connection=None):
         nodeClassName = "reroute"
         if connection and connection.drawSource._rawPin.isExec() and connection.drawDestination._rawPin.isExec():
             nodeClassName = "rerouteExecs"
         else:
             if self.pressedPin and self.pressedPin.isExec():
                 nodeClassName = "rerouteExecs"
-        reruteNode = self.spawnNode(nodeClassName, self.mapToScene(pos).x(), self.mapToScene(pos).y())
-        reruteNode.translate(-reruteNode.boundingRect().center().x(), -5)
-        return reruteNode
+        rerouteNode = self.spawnNode(nodeClassName, self.mapToScene(pos).x(), self.mapToScene(pos).y())
+        rerouteNode.translate(-rerouteNode.boundingRect().center().x(), -5)
+        return rerouteNode
 
     def getInputNode(self):
         nodeTemplate = NodeBase.jsonTemplate()
@@ -858,8 +858,8 @@ class BlueprintCanvas(CanvasBase):
             if not self.resizing:
                 if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.NoModifier and event.button() == QtCore.Qt.LeftButton:
                     closestPin = self.findPinNearPosition(event.pos(), 20)
-                    percetn = self.pressed_item.percentageByPoint( self.mapToScene(event.pos()),self.pressed_item.mPath)
-                    if percetn != -1.0 and (percetn >= 95 or percetn <= 5) and closestPin is not None:
+                    percent = self.pressed_item.percentageByPoint(self.mapToScene(event.pos()), self.pressed_item.mPath)
+                    if percent != -1.0 and (percent >= 95 or percent <= 5) and closestPin is not None:
                         if closestPin.direction == PinDirection.Input:
                             self.pressed_item.destinationPositionOverride = lambda: self.mapToScene(self.mousePos)
                         elif closestPin.direction == PinDirection.Output:
@@ -911,26 +911,26 @@ class BlueprintCanvas(CanvasBase):
                     self._drawRealtimeLine = False
             else:
                 if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.AltModifier:
-                    reruteNode = self.getReruteNode(event.pos(), self.pressed_item)
+                    rerouteNode = self.getRerouteNode(event.pos(), self.pressed_item)
                     self.clearSelection()
-                    reruteNode.setSelected(True)
-                    for inp in reruteNode.UIinputs.values():
+                    rerouteNode.setSelected(True)
+                    for inp in rerouteNode.UIinputs.values():
                         if canConnectPins(self.pressed_item.source()._rawPin, inp._rawPin):
                             drawPin = self.pressed_item.drawSource
                             if self.pressed_item.source().isExec():
                                 self.pressed_item.kill()
                             self.connectPins(self.pressed_item.source(), inp)
-                            for conection in inp.connections:
-                                conection.drawSource = drawPin
+                            for connection in inp.connections:
+                                connection.drawSource = drawPin
                             break
-                    for out in reruteNode.UIoutputs.values():
+                    for out in rerouteNode.UIoutputs.values():
                         drawPin = self.pressed_item.drawDestination
                         if canConnectPins(out._rawPin, self.pressed_item.destination()._rawPin):
                             self.connectPins(out, self.pressed_item.destination())
-                            for conection in out.connections:
-                                conection.drawDestination = drawPin
+                            for connection in out.connections:
+                                connection.drawDestination = drawPin
                             break
-                    self.pressed_item = reruteNode
+                    self.pressed_item = rerouteNode
                     self.manipulationMode = CanvasManipulationMode.MOVE
                 else:
                     if isinstance(self.pressed_item, UINodeBase) and node.isCommentNode:
@@ -1054,18 +1054,18 @@ class BlueprintCanvas(CanvasBase):
                 self._drawRealtimeLine = False
                 if self.realTimeLine in self.scene().items():
                     self.removeItemByName('RealTimeLine')
-                reruteNode = self.getReruteNode(event.pos())
+                rerouteNode = self.getRerouteNode(event.pos())
                 self.clearSelection()
-                reruteNode.setSelected(True)
-                for inp in reruteNode.UIinputs.values():
+                rerouteNode.setSelected(True)
+                for inp in rerouteNode.UIinputs.values():
                     if canConnectPins(self.pressed_item._rawPin, inp._rawPin):
                         self.connectPins(self.pressed_item, inp)
                         break
-                for out in reruteNode.UIoutputs.values():
+                for out in rerouteNode.UIoutputs.values():
                     if canConnectPins(self.pressed_item._rawPin, out._rawPin):
                         self.connectPins(self.pressed_item, out)
                         break
-                self.pressed_item = reruteNode
+                self.pressed_item = rerouteNode
                 self.manipulationMode = CanvasManipulationMode.MOVE
         if self.manipulationMode == CanvasManipulationMode.SELECT:
             dragPoint = self.mapToScene(event.pos())
@@ -1395,7 +1395,6 @@ class BlueprintCanvas(CanvasBase):
             if self.tempnode:
                 self.tempnode.isTemp = True
             self.hoverItems = []
-        
 
     def dragMoveEvent(self, event):
         self.mousePos = event.pos()

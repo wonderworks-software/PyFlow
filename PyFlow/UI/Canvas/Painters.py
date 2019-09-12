@@ -477,7 +477,7 @@ class PinPainter(object):
                 painter.setBrush(QtGui.QColor(128, 128, 128, 30))
                 painter.drawRoundedRect(frame, 3, 3)
 
-# Determines how to paint a conection:
+# Determines how to paint a connection:
 class ConnectionPainter(object):
 
     @staticmethod
@@ -506,10 +506,10 @@ class ConnectionPainter(object):
             fDist = nextPoint - currPoint
             bDist = currPoint - prevPoint
 
-            maxLen = max(0,min(fDist.length()/2,(bDist.length())/2) )
+            maxLen = max(0, min(fDist.length() / 2, (bDist.length()) / 2))
 
-            dot = fDist.x()*bDist.x() + fDist.y()*bDist.y()      # dot product
-            det = fDist.x()*bDist.y() - fDist.y()*bDist.x()      # determinant
+            dot = fDist.x() * bDist.x() + fDist.y() * bDist.y()      # dot product
+            det = fDist.x() * bDist.y() - fDist.y() * bDist.x()      # determinant
             angle = degrees(atan2(det, dot))  # atan2(y, x) or atan2(sin, cos)
 
             if abs(angle) > 45:
@@ -534,9 +534,9 @@ class ConnectionPainter(object):
         return mPath
 
     @staticmethod
-    def roundCornersPath(path, roundnes, closed=False,highlitedSegment=-1):
+    def roundCornersPath(path, roundness, closed=False, highlightedSegment=-1):
         mPath = QtGui.QPainterPath()
-        highlitedSegmentPath = QtGui.QPainterPath()
+        highlightedSegmentPath = QtGui.QPainterPath()
         for i, point in enumerate(path):
             prevPoint = nextPoint = QtGui.QVector2D(point)
             currPoint = QtGui.QVector2D(point)
@@ -552,7 +552,7 @@ class ConnectionPainter(object):
             fDist = nextPoint - currPoint
             bDist = currPoint - prevPoint
 
-            xRoundnes = min(min(roundnes,fDist.length()/2.0),bDist.length()/2.0)
+            xRoundnes = min(min(roundness, fDist.length() / 2.0), bDist.length() / 2.0)
 
             n = currPoint + fDist.normalized() * xRoundnes
             p = currPoint - bDist.normalized() * xRoundnes
@@ -560,7 +560,7 @@ class ConnectionPainter(object):
                 mPath.moveTo(point)
             elif i == 0 and closed:
                 mPath.moveTo(QtCore.QPointF(p.x(), p.y()))
-                mPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))              
+                mPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
 
             elif i != len(path) - 1 or closed:
                 mPath.lineTo(QtCore.QPointF(p.x(), p.y()))
@@ -571,29 +571,43 @@ class ConnectionPainter(object):
             if i == len(path) - 1 and closed:
                 n = nextPoint - fDist.normalized() * xRoundnes
                 mPath.lineTo(QtCore.QPointF(n.x(), n.y()))
-       
-            if i == highlitedSegment:
+
+            if i == highlightedSegment:
                 if i != 0:
-                    highlitedSegmentPath.moveTo(QtCore.QPointF(p.x(), p.y()))
-                    highlitedSegmentPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
+                    highlightedSegmentPath.moveTo(QtCore.QPointF(p.x(), p.y()))
+                    highlightedSegmentPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
                 else:
-                    highlitedSegmentPath.moveTo(point)
-                currPoint =  QtGui.QVector2D(path[i + 1])
+                    highlightedSegmentPath.moveTo(point)
+                currPoint = QtGui.QVector2D(path[i + 1])
                 nextPoint = QtGui.QVector2D(path[i + 2])
-                prevPoint = QtGui.QVector2D(point.x(),point.y())
+                prevPoint = QtGui.QVector2D(point.x(), point.y())
                 fDist = nextPoint - currPoint
                 bDist = currPoint - prevPoint
-                xRoundnes = min(min(roundnes,fDist.length()/2.0),bDist.length()/2.0)
+                xRoundnes = min(min(roundness, fDist.length() / 2.0), bDist.length() / 2.0)
 
                 n = currPoint + fDist.normalized() * xRoundnes
-                p = currPoint - bDist.normalized() * xRoundnes                 
-                highlitedSegmentPath.lineTo(QtCore.QPointF(p.x(), p.y()))
-                highlitedSegmentPath.quadTo(QtCore.QPointF(currPoint.x(), currPoint.y()), QtCore.QPointF(n.x(), n.y()))              
+                p = currPoint - bDist.normalized() * xRoundnes
+                highlightedSegmentPath.lineTo(QtCore.QPointF(p.x(), p.y()))
+                highlightedSegmentPath.quadTo(QtCore.QPointF(currPoint.x(), currPoint.y()), QtCore.QPointF(n.x(), n.y()))
 
-        return mPath,highlitedSegmentPath
+        return mPath, highlightedSegmentPath
 
     @staticmethod
-    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, complexLine=False, vOffset=0, hOffsetL=0,vOffsetSShape=0, hOffsetR=0,hOffsetRSShape=0,hOffsetLSShape=0,snapVToFirst=False,snapVToSecond=False,highlitedSegment = -1):
+    def BasicCircuit(p1, p2,
+                     offset=20,
+                     roundness=5,
+                     sameSide=0,
+                     lod=0,
+                     complexLine=False,
+                     vOffset=0,
+                     hOffsetL=0,
+                     vOffsetSShape=0,
+                     hOffsetR=0,
+                     hOffsetRSShape=0,
+                     hOffsetLSShape=0,
+                     snapVToFirst=False,
+                     snapVToSecond=False,
+                     highlightedSegment=-1):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         offset1 = offset
         offset2 = -offset
@@ -602,8 +616,8 @@ class ConnectionPainter(object):
         elif sameSide == -1:
             offset1 = -offset
 
-        xDistance = (p2.x() + offset2 ) - (p1.x() + offset1)
-        midPointY = p2.y() + ((p1.y() - p2.y()) / 2.0)+vOffsetSShape
+        xDistance = (p2.x() + offset2) - (p1.x() + offset1)
+        midPointY = p2.y() + ((p1.y() - p2.y()) / 2.0) + vOffsetSShape
 
         path = []
         path.append(p1)
@@ -611,7 +625,7 @@ class ConnectionPainter(object):
             if snapVToSecond:
                 vOffset = p2.y() - p1.y()
             elif snapVToFirst:
-                vOffset = 0 
+                vOffset = 0
 
             if not snapVToFirst:
                 offset1 += hOffsetL
@@ -620,14 +634,14 @@ class ConnectionPainter(object):
 
             if abs(vOffset) > 0:
                 path.append(QtCore.QPointF(p1.x() + offset1, p1.y()))
-                path.append(QtCore.QPointF(p1.x() + offset1, p1.y()+vOffset))
-             
-            path.append(QtCore.QPointF(p2.x() + offset2, p1.y()+vOffset))
+                path.append(QtCore.QPointF(p1.x() + offset1, p1.y() + vOffset))
+
+            path.append(QtCore.QPointF(p2.x() + offset2, p1.y() + vOffset))
             path.append(QtCore.QPointF(p2.x() + offset2, p2.y()))
             path.append(p2)
         else:
             offset1 += hOffsetRSShape
-            offset2 += hOffsetLSShape            
+            offset2 += hOffsetLSShape
             path.append(QtCore.QPointF(p1.x() + offset1, p1.y()))
             path.append(QtCore.QPointF(p1.x() + offset1, midPointY))
             path.append(QtCore.QPointF(p2.x() + offset2, midPointY))
@@ -637,11 +651,12 @@ class ConnectionPainter(object):
         if complexLine:
             path = ConnectionPainter.chanferPath(path, offset)
 
+        section = None
         if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath(path)
         else:
-            mPath,section = ConnectionPainter.roundCornersPath(path, roundnes,highlitedSegment=highlitedSegment)
-        return mPath,path,section
+            mPath, section = ConnectionPainter.roundCornersPath(path, roundness, highlightedSegment=highlightedSegment)
+        return mPath, path, section
 
     @staticmethod
     def Cubic(p1, p2, defOffset=150, lod=0):
@@ -672,15 +687,15 @@ class ConnectionPainter(object):
         return mPath
 
     @staticmethod
-    def Linear(p1, p2, defOffset=150,roundnes=5, lod=0):
+    def Linear(p1, p2, defOffset=150, roundness=5, lod=0):
         SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
 
         cp1 = QtCore.QPointF(p1.x() + defOffset, p1.y())
         cp2 = QtCore.QPointF(p2.x() - defOffset, p2.y())
-            
+
         if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath([p1, cp1, cp2, p2])
         else:
-            mPath = ConnectionPainter.roundCornersPath([p1, cp1, cp2, p2],roundnes)
+            mPath = ConnectionPainter.roundCornersPath([p1, cp1, cp2, p2], roundness)
 
         return mPath
