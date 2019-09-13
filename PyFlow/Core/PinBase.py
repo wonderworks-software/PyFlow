@@ -103,6 +103,7 @@ class PinBase(IPin):
 
         # gui class weak ref
         self._wrapper = None
+        self.__wrapperJsonData = None
         self.annotationDescriptionDict = None
         self._inputWidgetVariant = "DefaultWidget"
 
@@ -143,6 +144,16 @@ class PinBase(IPin):
             self.pinIndex = len(self.owningNode().orderedOutputs)
 
         self.description = "{} instance".format(self.dataType)
+
+    @property
+    def wrapperJsonData(self):
+        try:
+            dt = self.__wrapperJsonData.copy()
+            self.__wrapperJsonData.clear()
+            self.__wrapperJsonData = None
+            return dt
+        except:
+            return None
 
     def getInputWidgetVariant(self):
         return self._inputWidgetVariant
@@ -387,6 +398,9 @@ class PinBase(IPin):
             self.setDirty()
         else:
             self.setClean()
+
+        if "wrapper" in jsonData:
+            self.__wrapperJsonData = jsonData["wrapper"]
 
     def serialize(self):
         """Serializes itself to json

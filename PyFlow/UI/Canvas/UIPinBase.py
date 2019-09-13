@@ -116,6 +116,10 @@ class UIPinBase(QGraphicsWidget):
         if self._rawPin is not None:
             self.setToolTip(self._rawPin.description)
 
+    @property
+    def wrapperJsonData(self):
+        return self._rawPin.wrapperJsonData
+
     def onCopyPathToClipboard(self):
         QApplication.clipboard().clear()
         QApplication.clipboard().setText(self.path())
@@ -373,6 +377,10 @@ class UIPinBase(QGraphicsWidget):
         data = {}
         data['bLabelHidden'] = self.bLabelHidden
         data['displayName'] = self.displayName()
+        wiresData = []
+        for wire in self.uiConnectionList:
+            wiresData.append(wire.serialize())
+        data["wires"] = wiresData
         return data
 
     def serialize(self):

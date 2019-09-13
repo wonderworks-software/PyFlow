@@ -1685,6 +1685,12 @@ class BlueprintCanvas(CanvasBase):
         uiConnection = UIConnection(srcUiPin, dstUiPin, self)
         self.scene().addItem(uiConnection)
         self.connections[uiConnection.uid] = uiConnection
+        # restore wire data
+        wiresData = srcUiPin.wrapperJsonData["wires"]
+        for wireData in wiresData:
+            if str(srcUiPin.uid) == wireData["sourceUUID"] and str(dstUiPin.uid) == wireData["destinationUUID"]:
+                uiConnection.applyJsonData(wireData)
+                break
         return uiConnection
 
     def connectPinsInternal(self, src, dst):

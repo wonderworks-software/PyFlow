@@ -223,19 +223,7 @@ class UIConnection(QGraphicsPathItem):
             self.canvasRef().connections[value] = self.canvasRef().connections.pop(self._uid)
             self._uid = value
 
-    @staticmethod
-    def deserialize(data, graph):
-        srcUUID = UUID(data['sourceUUID'])
-        dstUUID = UUID(data['destinationUUID'])
-        # if srcUUID in graph.pins and dstUUID in graph.pins:
-        srcPin = graph.findPinByUid(srcUUID)
-        assert(srcPin is not None)
-        dstPin = graph.findPinByUid(dstUUID)
-        assert(dstPin is not None)
-        connection = graph.connectPinsInternal(srcPin, dstPin)
-        assert(connection is not None)
-        connection.uid = UUID(data['uuid'])
-
+    def applyJsonData(self, data):
         hOffsetL = data['hOffsetL']
         if hOffsetL is not None:
             self.hOffsetL = float(hOffsetL)
