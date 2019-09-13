@@ -94,10 +94,10 @@ class UIConnection(QGraphicsPathItem):
         self.offsetting = 0
         self.snapVToFirst = True
         self.snapVToSecond = False
-        self.pressedSegment = -1
         self.sShape = False
         self.sameSide = 0
         self.hoverSegment = -1
+        self.pressedSegment = -1
         if self.source().isExec():
             self.bubble = QGraphicsEllipseItem(-2.5, -2.5, 5, 5, self)
             self.bubble.setBrush(self.color)
@@ -233,7 +233,7 @@ class UIConnection(QGraphicsPathItem):
         hOffsetLSShape = data['hOffsetLSShape']
         if hOffsetLSShape is not None:
             self.hOffsetLSShape = float(hOffsetLSShape)
-        hOffsetRSShape = data['hOffsetR']
+        hOffsetRSShape = data['hOffsetRSShape']
         if hOffsetRSShape is not None:
             self.hOffsetRSShape = float(hOffsetRSShape)
         vOffset = data['vOffset']
@@ -248,6 +248,8 @@ class UIConnection(QGraphicsPathItem):
         snapVToSecond = data['snapVToSecond']
         if snapVToSecond is not None:
             self.snapVToSecond = bool(snapVToSecond)
+            
+        self.getEndPoints()
 
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
@@ -264,6 +266,7 @@ class UIConnection(QGraphicsPathItem):
                   'snapVToFirst': str(self.snapVToFirst),
                   'snapVToSecond': str(self.snapVToSecond),
                   }
+
         return script
 
     def __str__(self):
@@ -513,7 +516,7 @@ class UIConnection(QGraphicsPathItem):
         if editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Circuit:
             seg = self.hoverSegment if self.hoverSegment != -1 and self.linPath and self.pressedSegment == -1 else self.pressedSegment
             self.mPath, self.linPath, sectionPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundness, self.sameSide, lod, False, self.vOffset, self.hOffsetL, self.vOffsetSShape, self.hOffsetR, self.hOffsetRSShape, self.hOffsetLSShape, self.snapVToFirst, self.snapVToSecond, seg)
-        if editableStyleSheet().ConnectionMode[0] == ConnectionTypes.ComplexCircuit:
+        elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.ComplexCircuit:
             self.mPath, self.linPath, sectionPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundness, self.sameSide, lod, True)
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
             self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
