@@ -248,7 +248,7 @@ class UIConnection(QGraphicsPathItem):
         snapVToSecond = data['snapVToSecond']
         if snapVToSecond is not None:
             self.snapVToSecond = bool(snapVToSecond)
-            
+
         self.getEndPoints()
 
     def serialize(self):
@@ -263,8 +263,8 @@ class UIConnection(QGraphicsPathItem):
                   'hOffsetRSShape': str(self.hOffsetRSShape),
                   'vOffset': str(self.vOffset),
                   'vOffsetSShape': str(self.vOffsetSShape),
-                  'snapVToFirst': str(self.snapVToFirst),
-                  'snapVToSecond': str(self.snapVToSecond),
+                  'snapVToFirst': int(self.snapVToFirst),
+                  'snapVToSecond': int(self.snapVToSecond),
                   }
 
         return script
@@ -420,6 +420,7 @@ class UIConnection(QGraphicsPathItem):
             if not self.sShape:
                 if self.offsetting == 1:
                     doIt = True
+                    print self.snapVToFirst,self.pressedSegment
                     if self.snapVToFirst and self.pressedSegment != 0:
                         doIt = False
                         self.pressedSegment = -1
