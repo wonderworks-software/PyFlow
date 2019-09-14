@@ -857,8 +857,7 @@ class BlueprintCanvas(CanvasBase):
             if not self.resizing:
                 if isinstance(self.pressed_item, UIConnection) and modifiers == QtCore.Qt.NoModifier and event.button() == QtCore.Qt.LeftButton:
                     closestPin = self.findPinNearPosition(event.pos(), 20)
-                    percent = self.pressed_item.percentageByPoint(self.mapToScene(event.pos()), self.pressed_item.mPath)
-                    if percent != -1.0 and (percent >= 95 or percent <= 5) and closestPin is not None:
+                    if closestPin is not None:
                         if closestPin.direction == PinDirection.Input:
                             self.pressed_item.destinationPositionOverride = lambda: self.mapToScene(self.mousePos)
                         elif closestPin.direction == PinDirection.Output:
