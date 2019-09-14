@@ -420,7 +420,6 @@ class UIConnection(QGraphicsPathItem):
             if not self.sShape:
                 if self.offsetting == 1:
                     doIt = True
-                    print self.snapVToFirst,self.pressedSegment
                     if self.snapVToFirst and self.pressedSegment != 0:
                         doIt = False
                         self.pressedSegment = -1
