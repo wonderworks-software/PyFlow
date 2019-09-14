@@ -377,11 +377,15 @@ class UIPinBase(QGraphicsWidget):
         data = {}
         data['bLabelHidden'] = self.bLabelHidden
         data['displayName'] = self.displayName()
-        wiresData = []
+        wiresData = {}
         for wire in self.uiConnectionList:
-            wiresData.append(wire.serialize())
+            wiresData[wire.destination().pinIndex] = wire.serialize()
         data["wires"] = wiresData
         return data
+
+    @property
+    def pinIndex(self):
+        return self._rawPin.pinIndex
 
     def serialize(self):
         return self._rawPin.serialize()

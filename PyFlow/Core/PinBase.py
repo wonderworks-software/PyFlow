@@ -149,8 +149,6 @@ class PinBase(IPin):
     def wrapperJsonData(self):
         try:
             dt = self.__wrapperJsonData.copy()
-            self.__wrapperJsonData.clear()
-            self.__wrapperJsonData = None
             return dt
         except:
             return None
