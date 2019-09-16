@@ -30,7 +30,7 @@ class FloatLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={NodeMeta.CATEGORY: 'Math|Float', NodeMeta.KEYWORDS: ['lerp']})
     ## Linear interpolate
-    def lerpf(a=('FloatPin', 0.0), b=('FloatPin', 0.0), alpha=('FloatPin', 0.0)):
+    def lerpf(a=('FloatPin', 0.0), b=('FloatPin', 0.0), alpha=('FloatPin', 0.0, {PinSpecifires.VALUE_RANGE: (0.0, 1.0)})):
         '''
         Linear interpolate
         '''

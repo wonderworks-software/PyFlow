@@ -61,7 +61,7 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={NodeMeta.CATEGORY: 'GenericTypes', NodeMeta.KEYWORDS: []})
-    def makeFloat(f=('FloatPin', 0.0)):
+    def makeFloat(f=('FloatPin', 0.0, {PinSpecifires.VALUE_RANGE: (-500.0, 500.0)})):
         '''Make floating point number.'''
         return f
 

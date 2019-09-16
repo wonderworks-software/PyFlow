@@ -851,6 +851,7 @@ class PinSpecifires:
     INPUT_WIDGET_VARIANT = "inputWidgetVariant"
     DESCRIPTION = "Description"
     VALUE_LIST = "ValueList"
+    VALUE_RANGE = "ValueRange"
 
 
 class NodeMeta:
