@@ -166,10 +166,10 @@ class StringInputWidget(InputWidgetSingle):
         self.le.setText(str(val))
 
 
-class EnumInputWIdget(InputWidgetSingle):
-    """docstring for EnumInputWIdget."""
+class EnumInputWidget(InputWidgetSingle):
+    """docstring for EnumInputWidget."""
     def __init__(self, parent=None, **kwds):
-        super(EnumInputWIdget, self).__init__(parent=parent, **kwds)
+        super(EnumInputWidget, self).__init__(parent=parent, **kwds)
         values = []
         if PinSpecifires.VALUE_LIST in kwds["pinAnnotations"]:
             values = kwds["pinAnnotations"][PinSpecifires.VALUE_LIST]
@@ -296,7 +296,7 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
         elif widgetVariant == "PathWidget":
             return PathInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "EnumWidget":
-            return EnumInputWIdget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "ObjectPathWIdget":
             return ObjectPathWIdget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'BoolPin':

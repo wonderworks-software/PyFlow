@@ -308,7 +308,7 @@ class doubleSlider(slider):
         self.valueChanged.connect(self.emitDoubleValueChanged)
 
     def setDecimals(self, decimals):
-        self._multi = clamp(10 ** decimals, 1, 323)
+        self._multi = 10 ** decimals
 
     def emitDoubleValueChanged(self):
         value = float(super(doubleSlider, self).value()) / self._multi
@@ -450,22 +450,17 @@ class pyf_Slider(QtWidgets.QWidget):
         self.sld.setMinimumHeight(h)
         self.input.setMaximumHeight(h)
         self.input.setMinimumHeight(h)
-        self.stypeSheetType = style
-        if self.stypeSheetType == 0:
+        self.styleSheetType = style
+        if self.styleSheetType == 0:
             self.layout().setSpacing(0)
-            self.sld.setStyleSheet(editableStyleSheet(
-            ).getSliderStyleSheet("sliderStyleSheetA"))
-        elif self.stypeSheetType == 1:
-            self.sld.setStyleSheet(editableStyleSheet(
-            ).getSliderStyleSheet("sliderStyleSheetB"))
+            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
+        elif self.styleSheetType == 1:
+            self.sld.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetB"))
         if self.type == "int":
-            self.sld.valueChanged.connect(
-                lambda: self.setValue(self.sld.value()))
+            self.sld.valueChanged.connect(lambda: self.setValue(self.sld.value()))
         else:
-            self.sld.doubleValueChanged.connect(
-                lambda: self.setValue(self.sld.value()))
-        self.input.editingFinished.connect(
-            lambda: self.setValue(self.input.value()))
+            self.sld.doubleValueChanged.connect(lambda: self.setValue(self.sld.value()))
+        self.input.editingFinished.connect(lambda: self.setValue(self.input.value()))
         self._value = 0.0
         self._dispMin = 0.0
         self._dispMax = 1.0
@@ -476,11 +471,11 @@ class pyf_Slider(QtWidgets.QWidget):
         self.setValue(0.5)
 
     def update(self):
-        if self.stypeSheetType == 0:
+        if self.styleSheetType == 0:
             self.layout().setSpacing(0)
             self.sld.setStyleSheet(editableStyleSheet(
             ).getSliderStyleSheet("sliderStyleSheetA"))
-        elif self.stypeSheetType == 1:
+        elif self.styleSheetType == 1:
             self.sld.setStyleSheet(editableStyleSheet(
             ).getSliderStyleSheet("sliderStyleSheetB"))
         super(pyf_Slider, self).update()
@@ -506,11 +501,9 @@ class pyf_Slider(QtWidgets.QWidget):
     def setValue(self, value):
         if value >= self.minimum and value <= self.maximum:
             if value > self._dispMax:
-                self.setDisplayMaximum(
-                    min(self.maximum, value * 2))
+                self.setDisplayMaximum(min(self.maximum, value * 2))
             if value < self._dispMin:
-                self.setDisplayMinimun(
-                    max(self.minimum, value * 2))
+                self.setDisplayMinimun(max(self.minimum, value * 2))
             self.sld.setValue(value)
             self._value = self.sld.value()
             self.input.setValue(self.value())
