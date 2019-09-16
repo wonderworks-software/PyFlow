@@ -297,7 +297,7 @@ class editableStyleSheet():
             border: 2.25px solid %s;
          }
         """ % "rgba%s" % str(self.MainColor.getRgb()),
-            "dragerstyleSheet": """
+            "draggerstyleSheet": """
         QGroupBox{
             border: 0.5 solid darkgrey;
             background : black;
@@ -309,7 +309,7 @@ class editableStyleSheet():
             color: white;
         }
         """,
-            "dragerstyleSheetHover": """
+            "draggerstyleSheetHover": """
         QGroupBox{
             border: 0.5 solid darkgrey;
             background : %s;

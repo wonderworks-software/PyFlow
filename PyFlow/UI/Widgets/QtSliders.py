@@ -60,7 +60,7 @@ class inputDragger(QtWidgets.QWidget):
         self.frame.layout().addWidget(self.valueLabel)
         self.layout().addWidget(self.frame)
         self.setStyleSheet(editableStyleSheet(
-        ).getSliderStyleSheet("dragerstyleSheet"))
+        ).getSliderStyleSheet("draggerstyleSheet"))
         self.size = 35
         self.setMinimumHeight(self.size)
         self.setMinimumWidth(self.size)
@@ -85,18 +85,18 @@ class inputDragger(QtWidgets.QWidget):
             self._value = 0
             self.startDragpos = self.mapToGlobal(event.pos())
             self.setStyleSheet(editableStyleSheet(
-            ).getSliderStyleSheet("dragerstyleSheetHover"))
+            ).getSliderStyleSheet("draggerstyleSheetHover"))
             self.parent.activeDrag = self
             for drag in self.parent.drags:
                 if drag != self:
                     drag.setStyleSheet(editableStyleSheet(
-                    ).getSliderStyleSheet("dragerstyleSheet"))
+                    ).getSliderStyleSheet("draggerstyleSheet"))
         if event.type() == QtCore.QEvent.HoverLeave:
             self._value = 0
             self.startDragpos = self.mapToGlobal(event.pos())
             if event.pos().y() > self.height() or event.pos().y() < 0:
                 self.setStyleSheet(editableStyleSheet(
-                ).getSliderStyleSheet("dragerstyleSheet"))
+                ).getSliderStyleSheet("draggerstyleSheet"))
 
         return False
 
@@ -148,7 +148,7 @@ class draggers(QtWidgets.QWidget):
         if event.type() == QtCore.QEvent.MouseMove:
             if self.activeDrag:
                 self.activeDrag.setStyleSheet(
-                    editableStyleSheet().getSliderStyleSheet("dragerstyleSheetHover"))
+                    editableStyleSheet().getSliderStyleSheet("draggerstyleSheetHover"))
                 deltaX = self.activeDrag.mapToGlobal(
                     event.pos()).x() - self.activeDrag.startDragpos.x()
                 if event.pos().x() > self.activeDrag.width() or event.pos().x() < 0:
@@ -217,11 +217,9 @@ class slider(QtWidgets.QSlider):
             dragger = draggers(self, self.isFloat, startValue=self.value())
             dragger.show()
             if self.isFloat:
-                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
-                ) - dragger.width() / 2, event.pos().y() - dragger.height() / 2)))
+                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - dragger.width() / 2, event.pos().y() - dragger.height() / 2)))
             else:
-                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
-                ) - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))
+                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))
 
         elif event.button() == self.LeftButton and event.modifiers() not in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
             butts = QtCore.Qt.MouseButtons(self.MidButton)
@@ -235,7 +233,6 @@ class slider(QtWidgets.QSlider):
             st_slider.initFrom(self)
             st_slider.orientation = self.orientation()
             available = self.style().pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, st_slider, self)
-            # FIXME: self._min_value and self._max_value undefined
             xloc = QtWidgets.QStyle.sliderPositionFromValue(self._min_value, self._max_value, super(slider, self).value(), available)
             butts = QtCore.Qt.MouseButtons(self.MidButton)
             newPos = QtCore.QPointF()
@@ -300,7 +297,7 @@ class doubleSlider(slider):
     """
     doubleValueChanged = QtCore.Signal(float)
 
-    def __init__(self,parent=None, decimals=4, *args, **kwargs):
+    def __init__(self, parent=None, decimals=4, *args, **kwargs):
         """
         :param decimals: Number of decimal zeros, defaults to 4
         :type decimals: int, optional
@@ -311,7 +308,7 @@ class doubleSlider(slider):
         self.valueChanged.connect(self.emitDoubleValueChanged)
 
     def setDecimals(self, decimals):
-        self._multi = 10 ** decimals
+        self._multi = clamp(10 ** decimals, 1, 323)
 
     def emitDoubleValueChanged(self):
         value = float(super(doubleSlider, self).value()) / self._multi
@@ -408,7 +405,7 @@ class pyf_Slider(QtWidgets.QWidget):
     """Custom Slider that encapsulates a :obj:`slider` or a :obj:`doubleSlider` and a :obj:`valueBox` linked together
 
     Signals:
-        :valueChanged: Signal emited when slider or valueBox value changes, int/float
+        :valueChanged: Signal emitted when slider or valueBox value changes, int/float
     """
     valueChanged = QtCore.Signal(object)
 
@@ -531,7 +528,7 @@ class pyf_Slider(QtWidgets.QWidget):
     def setRange(self, min, max):
         """Sets the range for the input value, real max and min range
 
-        :param min: Mininum Value
+        :param min: Minimum Value
         :type min: float/int
         :param max: Maximum Value
         :type max: float/int
@@ -540,7 +537,7 @@ class pyf_Slider(QtWidgets.QWidget):
         self.setMaximum(max)
 
     def setDisplayMinimun(self, value):
-        """Sets the Minimum value for display options, real min value dont touched, if current value is less than this display value,Widget automatically recalculates minDisplay
+        """Sets the Minimum value for display options, real min value don't touched, if current value is less than this display value,Widget automatically recalculates minDisplay
 
         :param value: New Display MinValue
         :type value: float/int
@@ -549,7 +546,7 @@ class pyf_Slider(QtWidgets.QWidget):
         self.sld.setMinimum(value)
 
     def setDisplayMaximum(self, value):
-        """Sets the Maximum value for display options, real max value dont touched, if current value is bigger than this display value,Widget automatically recalculates maxDisplay
+        """Sets the Maximum value for display options, real max value don't touched, if current value is bigger than this display value,Widget automatically recalculates maxDisplay
 
         :param value: New Display MaxValue
         :type value: float/int
@@ -734,10 +731,10 @@ class pyf_GradientSlider(doubleSlider):
 
 
 class pyf_ColorSlider(QtWidgets.QWidget):
-    """Custom Slider to choose a color by components. It encapsulates abunch of :obj:`valueBox` and :obj:`pyf_GradientSlider`
+    """Custom Slider to choose a color by components. It encapsulates a bunch of :obj:`valueBox` and :obj:`pyf_GradientSlider`
 
     Signals:
-        :valueChanged: Singnal emited when any of the sliders/valueBoxes changes
+        :valueChanged: Signal emitted when any of the sliders/valueBoxes changes
     """
     valueChanged = QtCore.Signal(list)
 
@@ -1156,12 +1153,12 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
     """Ui Ramp/Curve Editor that encapsulates a :obj:`PyFlow.Core.structs.splineRamp` to edit it
 
     Signals:
-        :tickClicked: Signal emited when a UiTick element clicked, emits UiTick
-        :valueClicked: Signal emited when a UiTick element clicked, emits (u,v)
-        :tickAdded: Signal emited when a UiTick element added
-        :tickChanged: Signal emited when a UiTick element cahnges values
-        :tickMoved: Signal emited when a UiTick element moved
-        :tickRemoved: Signal emited when a UiTick element deleted
+        :tickClicked: Signal emitted when a UiTick element clicked, emits UiTick
+        :valueClicked: Signal emitted when a UiTick element clicked, emits (u,v)
+        :tickAdded: Signal emitted when a UiTick element added
+        :tickChanged: Signal emitted when a UiTick element cahnges values
+        :tickMoved: Signal emitted when a UiTick element moved
+        :tickRemoved: Signal emitted when a UiTick element deleted
     """
     tickClicked = QtCore.Signal(object)
     tickAdded = QtCore.Signal(object)
@@ -1456,13 +1453,13 @@ class pyf_RampColor(pyf_RampSpline):
     """Similar to the :obj:`pyf_RampSpline` to create editable gradients with interpolation support
 
     Signals:
-        :tickClicked: Signal emited when a UiTick element clicked, emits UiTick
-        :valueClicked: Signal emited when a UiTick element clicked, emits (u,v)
-        :colorClicked: Signal emited when a UiTick element clicked. emits [float,float,float] in range 0-1
-        :tickAdded: Signal emited when a UiTick element added
-        :tickChanged: Signal emited when a UiTick element cahnges values
-        :tickMoved: Signal emited when a UiTick element moved
-        :tickRemoved: Signal emited when a UiTick element deleted
+        :tickClicked: Signal emitted when a UiTick element clicked, emits UiTick
+        :valueClicked: Signal emitted when a UiTick element clicked, emits (u,v)
+        :colorClicked: Signal emitted when a UiTick element clicked. emits [float,float,float] in range 0-1
+        :tickAdded: Signal emitted when a UiTick element added
+        :tickChanged: Signal emitted when a UiTick element cahnges values
+        :tickMoved: Signal emitted when a UiTick element moved
+        :tickRemoved: Signal emitted when a UiTick element deleted
 
     Extends:
         :obj: `pyf_RampSpline`
