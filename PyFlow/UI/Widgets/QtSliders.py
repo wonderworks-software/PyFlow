@@ -23,22 +23,22 @@ from PyFlow.Core.Common import clamp, INT_RANGE_MIN, INT_RANGE_MAX
 from PyFlow.Core import structs
 
 
-class inputDrager(QtWidgets.QWidget):
+class inputDragger(QtWidgets.QWidget):
     """Custom Widget to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
 
     Signals:
-        :valueChanged: Signal Emited when value has change (float)
+        :valueChanged: Signal Emitted when value has change (float)
     """
     valueChanged = QtCore.Signal(float)
 
-    def __init__(self, parent, factor, *args, **kargs):
+    def __init__(self, parent, factor, *args, **kwargs):
         """
         :param parent: parent Widget
         :type parent: QtWidget
         :param factor: amount to increment the value
         :type factor: float/int
         """
-        super(inputDrager, self).__init__(*args, **kargs)
+        super(inputDragger, self).__init__(*args, **kwargs)
         self.parent = parent
         self.setLayout(QtWidgets.QVBoxLayout())
         self.frame = QtWidgets.QGroupBox()
@@ -104,7 +104,7 @@ class inputDrager(QtWidgets.QWidget):
 class draggers(QtWidgets.QWidget):
     """PopUp Draggers Houdini Style
 
-    Custom Widget that holds a bunch of :obj:`inputDrager` to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
+    Custom Widget that holds a bunch of :obj:`inputDragger` to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
     """
     def __init__(self, parent=None, isFloat=True, startValue=0.0):
         super(draggers, self).__init__(parent)
@@ -120,11 +120,11 @@ class draggers(QtWidgets.QWidget):
         self.activeDrag = None
         self.drags = []
         self.dragsPos = []
-        lista = [100.0, 10.0, 1.0, 0.1, 0.01, 0.001, 0.0001]
+        steps = [100.0, 10.0, 1.0, 0.1, 0.01, 0.001, 0.0001]
         if not isFloat:
-            lista = [100, 10, 1]
-        for i in lista:
-            drag = inputDrager(self, i)
+            steps = [100, 10, 1]
+        for i in steps:
+            drag = inputDragger(self, i)
             drag.valueChanged.connect(self.setValue)
             self.drags.append(drag)
             self.layout().addWidget(drag)
@@ -132,10 +132,10 @@ class draggers(QtWidgets.QWidget):
 
     def setValue(self, value):
         self._value = value
-        if isinstance(self.parent(),slider) and self.parent().parent() != None:
+        if isinstance(self.parent(), slider) and self.parent().parent() is not None:
             self.parent().parent().setValue(self._startValue + self._value)
         else:
-            self.parent().setValue(self._startValue + self._value)        
+            self.parent().setValue(self._startValue + self._value)
         self.parent().editingFinished.emit()
 
     def show(self):
@@ -181,7 +181,7 @@ class draggers(QtWidgets.QWidget):
 class slider(QtWidgets.QSlider):
     """Customized Int QSlider
 
-    Reimplements QSlider adding a few enhacements
+    Re implements QSlider adding a few enhancements
 
     Modifiers:
         :Left/Mid:  Click to move handle
@@ -194,8 +194,8 @@ class slider(QtWidgets.QSlider):
     """
     editingFinished = QtCore.Signal()
 
-    def __init__(self, parent=None,*args, **kargs):
-        super(slider, self).__init__(parent,**kargs)
+    def __init__(self, parent=None, *args, **kwargs):
+        super(slider, self).__init__(parent, **kwargs)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setOrientation(QtCore.Qt.Horizontal)
         self.isFloat = False
@@ -221,7 +221,7 @@ class slider(QtWidgets.QSlider):
                 ) - dragger.width() / 2, event.pos().y() - dragger.height() / 2)))
             else:
                 dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x(
-                ) - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))            
+                ) - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))
 
         elif event.button() == self.LeftButton and event.modifiers() not in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
             butts = QtCore.Qt.MouseButtons(self.MidButton)
@@ -291,21 +291,21 @@ class slider(QtWidgets.QSlider):
 class doubleSlider(slider):
     """Customized Float QSlider
 
-    Float Qslider implementation
+    Float slider implementation
 
     Signals:
-        :doubleValueChanged: Emited when value has change (float)
+        :doubleValueChanged: Emitted when value has change (float)
     Extends:
         :obj:`slider`
     """
     doubleValueChanged = QtCore.Signal(float)
 
-    def __init__(self,parent=None, decimals=4, *args, **kargs):
+    def __init__(self,parent=None, decimals=4, *args, **kwargs):
         """
         :param decimals: Number of decimal zeros, defaults to 4
         :type decimals: int, optional
         """
-        super(doubleSlider, self).__init__(*args, **kargs)
+        super(doubleSlider, self).__init__(*args, **kwargs)
         self._multi = 10 ** decimals
         self.isFloat = True
         self.valueChanged.connect(self.emitDoubleValueChanged)
@@ -347,25 +347,25 @@ class doubleSlider(slider):
 class valueBox(QtWidgets.QDoubleSpinBox):
     """Custom QDoubleSpinBox
 
-    Custom SpinBox with Houdini Style draggers, :obj:`draggers`. Middle Click to dislplay a bunch of draggers to change value by adding different delta values
+    Custom SpinBox with Houdini Style draggers, :obj:`draggers`. Middle Click to display a bunch of draggers to change value by adding different delta values
 
     Extends:
         QtWidgets.QDoubleSpinBox
     """
-    def __init__(self, type="float", buttons=False, decimals=4, *args, **kargs):
+    def __init__(self, type="float", buttons=False, decimals=4, *args, **kwargs):
         """
         :param type: Choose if create a float or int spinBox, defaults to "float"
         :type type: str, optional
-        :param buttons: Show or hidde right up/Down Buttons, defaults to False
+        :param buttons: Show or hidden right up/Down Buttons, defaults to False
         :type buttons: bool, optional
         :param decimals: Number of decimals if type is "float", defaults to 4
         :type decimals: int, optional
         :param *args: [description]
         :type *args: [type]
-        :param **kargs: [description]
-        :type **kargs: [type]
+        :param **kwargs: [description]
+        :type **kwargs: [type]
         """
-        super(valueBox, self).__init__(*args, **kargs)
+        super(valueBox, self).__init__(*args, **kwargs)
         self.isFloat = type == "float"
         if not self.isFloat:
             self.setDecimals(0)
