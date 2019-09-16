@@ -128,7 +128,11 @@ class IntInputWidget(InputWidgetSingle):
 
     def __init__(self, parent=None, **kwds):
         super(IntInputWidget, self).__init__(parent=parent, **kwds)
-        self.sb = pyf_Slider(self, "int", style=1)
+        valueRange = (INT_RANGE_MIN, INT_RANGE_MAX)
+        if "pinAnnotations" in kwds:
+            if "ValueRange" in kwds["pinAnnotations"]:
+                valueRange = kwds["pinAnnotations"]["ValueRange"]
+        self.sb = pyf_Slider(self, "int", style=1, sliderRange=valueRange)
         _configIntSpinBox(self.sb)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
@@ -279,10 +283,10 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
                 return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'IntPin':
-        if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-        elif widgetVariant == "IntInputWidgetSimple":
-            return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+        if kwds is not None and "pinAnnotations" in kwds:
+            if kwds["pinAnnotations"] is not None and "ValueRange" in kwds["pinAnnotations"]:
+                return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+        return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'StringPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
             return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)

@@ -426,7 +426,7 @@ class pyf_Slider(QtWidgets.QWidget):
             self.sld.setSingleStep(1)
             self.sld.setRange(0, 1000)
             self.input.setSingleStep(0.025)
-            self.input.setRange(sliderRange[0], sliderRange[1])
+        self.input.setRange(sliderRange[0], sliderRange[1])
 
         self.layout().setContentsMargins(10, 0, 0, 0)
         self.input.setContentsMargins(0, 0, 0, 0)

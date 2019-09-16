@@ -64,7 +64,7 @@ class FloatLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={NodeMeta.CATEGORY: 'Math|Float', NodeMeta.KEYWORDS: []})
-    def roundf(Value=('FloatPin', 0.0), Digits=('IntPin', 0)):
+    def roundf(Value=('FloatPin', 0.0), Digits=('IntPin', 0, {PinSpecifires.VALUE_RANGE: (0, 323)})):
         '''
         Round a number to a given precision in decimal digits.
         '''
