@@ -297,9 +297,9 @@ class doubleSlider(slider):
     """
     doubleValueChanged = QtCore.Signal(float)
 
-    def __init__(self, parent=None, decimals=4, *args, **kwargs):
+    def __init__(self, parent=None, decimals=3, *args, **kwargs):
         """
-        :param decimals: Number of decimal zeros, defaults to 4
+        :param decimals: Number of decimal zeros, defaults to 3
         :type decimals: int, optional
         """
         super(doubleSlider, self).__init__(*args, **kwargs)
@@ -338,7 +338,8 @@ class doubleSlider(slider):
         return float(super(doubleSlider, self).singleStep()) / self._multi
 
     def setValue(self, value):
-        super(doubleSlider, self).setValue(int(value * self._multi))
+        val = clamp(int(value * self._multi), INT_RANGE_MIN, INT_RANGE_MAX)
+        super(doubleSlider, self).setValue(val)
 
 
 class valueBox(QtWidgets.QDoubleSpinBox):
@@ -349,13 +350,13 @@ class valueBox(QtWidgets.QDoubleSpinBox):
     Extends:
         QtWidgets.QDoubleSpinBox
     """
-    def __init__(self, type="float", buttons=False, decimals=4, *args, **kwargs):
+    def __init__(self, type="float", buttons=False, decimals=3, *args, **kwargs):
         """
         :param type: Choose if create a float or int spinBox, defaults to "float"
         :type type: str, optional
         :param buttons: Show or hidden right up/Down Buttons, defaults to False
         :type buttons: bool, optional
-        :param decimals: Number of decimals if type is "float", defaults to 4
+        :param decimals: Number of decimals if type is "float", defaults to 3
         :type decimals: int, optional
         :param *args: [description]
         :type *args: [type]
@@ -370,8 +371,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
             self.setDecimals(decimals)
         if not buttons:
             self.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
-        self.setStyleSheet(editableStyleSheet(
-        ).getSliderStyleSheet("sliderStyleSheetA"))
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
         self.lineEdit().installEventFilter(self)
         self.installEventFilter(self)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -396,8 +396,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         return False
 
     def update(self):
-        self.setStyleSheet(editableStyleSheet(
-        ).getSliderStyleSheet("sliderStyleSheetA"))
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetA"))
         super(valueBox, self).update()
 
 
