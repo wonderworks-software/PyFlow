@@ -107,8 +107,7 @@ class MathAbstractLib(FunctionLibraryBase):
                         OutRangeB=("FloatPin", 0.0)):
         """Returns Value mapped from one range into another where the Value is clamped to the Input Range.\
              (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)"""
-        ClampedPct = clamp(GetRangePct(InRangeA, InRangeB, Value), 0.0, 1.0)
-        return lerp(OutRangeA, OutRangeB, ClampedPct)
+        return mapRangeClamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0), meta={NodeMeta.CATEGORY: 'Math|Basic', NodeMeta.KEYWORDS: []})
@@ -119,7 +118,7 @@ class MathAbstractLib(FunctionLibraryBase):
                           OutRangeB=("FloatPin", 0.0)):
         """Returns Value mapped from one range into another where the Value is clamped to the Input Range.\
              (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)"""
-        return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))
+        return mapRangeUnclamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB)
 
     @staticmethod
     @IMPLEMENT_NODE(returns=("FloatPin", 0.0), meta={NodeMeta.CATEGORY: 'Math|Basic', NodeMeta.KEYWORDS: ['clamp']})

@@ -80,6 +80,18 @@ def GetRangePct(MinValue, MaxValue, Value):
     """
     return (Value - MinValue) / (MaxValue - MinValue)
 
+def mapRangeClamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
+    """Returns Value mapped from one range into another where the Value is clamped to the Input Range.
+    (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)
+    """
+
+    ClampedPct = clamp(GetRangePct(InRangeA, InRangeB, Value), 0.0, 1.0)
+    return lerp(OutRangeA, OutRangeB, ClampedPct)
+
+def mapRangeUnclamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
+    """Returns Value mapped from one range into another where the Value is clamped to the Input Range.
+    (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)"""
+    return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))
 
 def sign(x):
     """Returns sign of x. -1 if x is negative, 1 if positive and zero if 0.
