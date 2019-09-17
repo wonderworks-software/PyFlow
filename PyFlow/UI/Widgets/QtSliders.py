@@ -253,7 +253,7 @@ class slider(QtWidgets.QSlider):
 class DoubleSlider(slider):
     doubleValueChanged = QtCore.Signal(float)
 
-    def __init__(self, parent=None, sliderRange=(-100.0, 100.0), defaultValue=0.0, dencity=10000):
+    def __init__(self, parent=None, sliderRange=(-100.0, 100.0), defaultValue=0.0, dencity=1000):
         super(DoubleSlider, self).__init__(parent)
         self.isFloat = True
         self._dencity = abs(dencity)
@@ -266,7 +266,19 @@ class DoubleSlider(slider):
         # set out range
         self.sliderRange = sliderRange
         self.valueChanged.connect(self.onInternalValueChanged)
+        self.valueIncremented.connect(self.onValueIncremented)
         self.setMappedValue(defaultValue, True)
+
+    def onValueIncremented(self, step):
+        # TODO: since internal slider value is int, clamp step to 1
+        # Need to add argument to customize steps, and just not draw steps less than 1.0
+        sign = 1
+        sign = math.copysign(sign, step)
+        if abs(step) < 1.0:
+            step = sign
+        unMappedStep = self.value()
+        newUnmappedValue = unMappedStep + step
+        self.setValue(newUnmappedValue)
 
     def mappedValue(self):
         return self.mapValue(self.value())
@@ -1557,10 +1569,10 @@ class testWidg(QtWidgets.QWidget):
         super(testWidg, self).__init__(parent)
 
         self.setLayout(QtWidgets.QVBoxLayout())
-        # self.layout().addWidget(pyf_Slider(self, style=0))
-        # self.layout().addWidget(pyf_Slider(self, type="int", style=1))
+        self.layout().addWidget(pyf_Slider(self, style=0))
+        self.layout().addWidget(pyf_Slider(self, type="int", style=1))
         self.layout().addWidget(pyf_HueSlider(self))
-        # self.layout().addWidget(pyf_GradientSlider(self))
+        self.layout().addWidget(pyf_GradientSlider(self))
         self.layout().addWidget(valueBox(type="int"))
         self.layout().addWidget(valueBox(type="float", buttons=True))
         tim = pyf_timeline(self)
@@ -1588,7 +1600,8 @@ if __name__ == '__main__':
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
-
+    app.setStyle(QtWidgets.QStyleFactory.create("plastique"))
+    app.setStyleSheet(editableStyleSheet().getStyleSheet())
     ex = testWidg()
     ex.show()
     sys.exit(app.exec_())
