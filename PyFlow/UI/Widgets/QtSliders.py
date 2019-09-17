@@ -566,16 +566,13 @@ class pyf_HueSlider(DoubleSlider):
         :param parent: Parent QtWidget
         :type parent: QtWidgets.QWidget
         """
-        super(pyf_HueSlider, self).__init__(parent=parent, *args)
+        super(pyf_HueSlider, self).__init__(parent=parent, sliderRange=(0.0, 1.0), *args)
         self.parent = parent
         self.color = QtGui.QColor()
         self.color.setHslF(0, 1, 0.5, 1)
         self.defColor = self.color.name()
-        self.setStyleSheet(editableStyleSheet(
-        ).getSliderStyleSheet("sliderStyleSheetC"))
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetC"))
         self.light = 0.5
-        self.setMinimum(0.0)
-        self.setMaximum(1.0)
 
     def setColor(self, color):
         """Sets the current start color where hue will be calculated from
@@ -584,15 +581,14 @@ class pyf_HueSlider(DoubleSlider):
         :type color: [float,float,float]
         """
         if isinstance(color, list) and len(color) == 3:
-            self.color = QtGui.QColor(
-                color[0] * 255.0, color[1] * 255.0, color[2] * 255.0)
+            self.color = QtGui.QColor(color[0] * 255.0, color[1] * 255.0, color[2] * 255.0)
             self.defColor = self.color.name()
             self.update()
 
     def setLightness(self, light):
-        """Sets the ligtness of the current slider that will be user for Hue calculations
+        """Sets the lightness of the current slider that will be user for Hue calculations
 
-        :param light: lighness value
+        :param light: lightness value
         :type light: float
         """
         self.light = light
@@ -603,7 +599,7 @@ class pyf_HueSlider(DoubleSlider):
         :returns:  Float list in range 0-1 representing rgb colors
         :rtype: [float,float,float]
         """
-        return self.getHue(self.value())
+        return self.getHue(self.mappedValue())
 
     def getHue(self, hue):
         """Compute hue based on input value in range 0-1
@@ -634,8 +630,7 @@ class pyf_HueSlider(DoubleSlider):
         gradient = QtGui.QLinearGradient(0, 0, w, h)
         for i in range(11):
             hue = self.getHue(i * 0.1)
-            gradient.setColorAt(
-                i * 0.1, QtGui.QColor(hue[0] * 255, hue[1] * 255, hue[2] * 255))
+            gradient.setColorAt(i * 0.1, QtGui.QColor(hue[0] * 255, hue[1] * 255, hue[2] * 255))
 
         qp.setBrush(QtGui.QBrush(gradient))
 
@@ -1558,14 +1553,14 @@ class pyf_RampColor(pyf_RampSpline):
 
 class testWidg(QtWidgets.QWidget):
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         super(testWidg, self).__init__(parent)
 
         self.setLayout(QtWidgets.QVBoxLayout())
-        self.layout().addWidget(pyf_Slider(self, style=0))
-        self.layout().addWidget(pyf_Slider(self, type="int", style=1))
+        # self.layout().addWidget(pyf_Slider(self, style=0))
+        # self.layout().addWidget(pyf_Slider(self, type="int", style=1))
         self.layout().addWidget(pyf_HueSlider(self))
-        self.layout().addWidget(pyf_GradientSlider(self))
+        # self.layout().addWidget(pyf_GradientSlider(self))
         self.layout().addWidget(valueBox(type="int"))
         self.layout().addWidget(valueBox(type="float", buttons=True))
         tim = pyf_timeline(self)
@@ -1594,6 +1589,6 @@ if __name__ == '__main__':
 
     app = QtWidgets.QApplication(sys.argv)
 
-    ex = DoubleSlider()
+    ex = testWidg()
     ex.show()
     sys.exit(app.exec_())
