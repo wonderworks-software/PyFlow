@@ -43,7 +43,6 @@ class inputDragger(QtWidgets.QWidget):
         self.frame = QtWidgets.QGroupBox()
         self.frame.setLayout(QtWidgets.QVBoxLayout())
         self.label = QtWidgets.QLabel("+" + str(factor))
-        self.valueLabel = QtWidgets.QLabel("0")
         self.frame.setContentsMargins(0, 0, 0, 0)
         self.frame.layout().setContentsMargins(0, 0, 0, 0)
         self.frame.layout().setSpacing(0)
@@ -52,11 +51,8 @@ class inputDragger(QtWidgets.QWidget):
         font = self.label.font()
         font.setPointSize(7)
         self.label.setFont(font)
-        self.valueLabel.setFont(font)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.valueLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.frame.layout().addWidget(self.label)
-        self.frame.layout().addWidget(self.valueLabel)
         self.layout().addWidget(self.frame)
         self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("draggerstyleSheet"))
         self.size = 35
@@ -64,28 +60,19 @@ class inputDragger(QtWidgets.QWidget):
         self.setMinimumWidth(self.size)
         self.setMaximumHeight(self.size)
         self.setMaximumWidth(self.size)
-        self._value = 0
-        self._startValue = 0
         self._factor = factor
         self.setAttribute(QtCore.Qt.WA_Hover)
         self.installEventFilter(self)
         self.label.installEventFilter(self)
-        self.valueLabel.installEventFilter(self)
 
     def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress:
-            self._value = 0
-            self.valueLabel.setText(str(self._value))
-            self._startValue = self.parent._value
         if event.type() == QtCore.QEvent.HoverEnter:
-            self._value = 0
             self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("draggerstyleSheetHover"))
             self.parent.activeDrag = self
             for drag in self.parent.drags:
                 if drag != self:
                     drag.setStyleSheet(editableStyleSheet().getSliderStyleSheet("draggerstyleSheet"))
         if event.type() == QtCore.QEvent.HoverLeave:
-            self._value = 0
             if event.pos().y() > self.height() or event.pos().y() < 0:
                 self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("draggerstyleSheet"))
 
@@ -101,23 +88,20 @@ class draggers(QtWidgets.QWidget):
     Custom Widget that holds a bunch of :obj:`inputDragger` to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
     """
 
-    def __init__(self, parent=None, isFloat=True, startValue=0.0):
+    increment = QtCore.Signal(object)
+
+    def __init__(self, parent=None, isFloat=True, displayValueGetter=lambda: None):
         super(draggers, self).__init__(parent)
-        if not isFloat:
-            startValue = int(startValue)
+        self.displayValueGetter = displayValueGetter
         self.initialPos = None
-        self.initValue = startValue
-        self._value = 0
-        self._startValue = 0
         self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.setWindowFlags(QtCore.Qt.Popup)
         self.activeDrag = None
-        self.drags = []
-        self.dragsPos = []
         self.lastDeltaX = 0
-        steps = [100.0, 10.0, 1.0, 0.1, 0.01, 0.001, 0.0001]
+        self.drags = []
+        steps = [100.0, 10.0, 1.0, 0.1, 0.01, 0.001]
         if not isFloat:
             steps = [100, 10, 1]
         for i in steps:
@@ -126,19 +110,9 @@ class draggers(QtWidgets.QWidget):
             self.layout().addWidget(drag)
         self.installEventFilter(self)
 
-    def incrementValue(self, value):
-        if isinstance(self.parent(), slider) and self.parent().parent() is not None:
-            self.parent().parent().incrementValue(value)
-        if isinstance(self.parent(), valueBox) and self.parent().parent() is not None:
-            val = self.parent().value()
-            self.parent().setValue(val + value)
-        self.parent().editingFinished.emit()
-
-    def show(self):
-        self._startValue = self.parent().value()
-        super(draggers, self).show()
+    def updateDisplayValue(self, val):
         for drag in self.drags:
-            self.dragsPos.append(drag.pos())
+            drag.valueLabel.setText(str(val))
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseMove:
@@ -154,18 +128,16 @@ class draggers(QtWidgets.QWidget):
                     v = self._changeDirection * self.activeDrag._factor
 
                     if modifiers == QtCore.Qt.NoModifier and deltaX % 4 == 0:
-                        self.incrementValue(v)
+                        self.increment.emit(v)
                     if modifiers in [QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier] and deltaX % 8 == 0:
-                        self.incrementValue(v)
+                        self.increment.emit(v)
                     if modifiers == QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier and deltaX % 32 == 0:
-                        self.incrementValue(v)
+                        self.increment.emit(v)
 
-                    self.activeDrag.valueLabel.setText(str(v))
                 self.lastDeltaX = deltaX
 
         if event.type() == QtCore.QEvent.MouseButtonRelease:
             self.hide()
-            self.parent().editingFinished.emit()
             self.lastDeltaX = 0
             del(self)
         return False
@@ -186,6 +158,7 @@ class slider(QtWidgets.QSlider):
         QtWidgets.QSlider
     """
     editingFinished = QtCore.Signal()
+    valueIncremented = QtCore.Signal(object)
 
     def __init__(self, parent=None, *args, **kwargs):
         super(slider, self).__init__(parent, **kwargs)
@@ -199,6 +172,7 @@ class slider(QtWidgets.QSlider):
         self.realStartDragpos = QtCore.QPointF()
         self.LeftButton = QtCore.Qt.LeftButton
         self.MidButton = QtCore.Qt.MidButton
+        self.draggers = None
         if SessionDescriptor().software == "maya":
             self.LeftButton = QtCore.Qt.MidButton
             self.MidButton = QtCore.Qt.LeftButton
@@ -207,12 +181,14 @@ class slider(QtWidgets.QSlider):
         self.prevValue = self.value()
         self.startDragpos = event.pos()
         if event.button() == QtCore.Qt.MidButton:
-            dragger = draggers(self, self.isFloat, startValue=self.value())
-            dragger.show()
+            if self.draggers is None:
+                self.draggers = draggers(self, self.isFloat, displayValueGetter=lambda: 0)
+                self.draggers.increment.connect(self.valueIncremented.emit)
+            self.draggers.show()
             if self.isFloat:
-                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - dragger.width() / 2, event.pos().y() - dragger.height() / 2)))
+                self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - self.draggers.width() / 2, event.pos().y() - self.draggers.height() / 2)))
             else:
-                dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))
+                self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - self.draggers.width() / 2, event.pos().y() - (self.draggers.height() - self.draggers.height() / 6))))
 
         elif event.button() == self.LeftButton and event.modifiers() not in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
             butts = QtCore.Qt.MouseButtons(self.MidButton)
@@ -343,6 +319,8 @@ class valueBox(QtWidgets.QDoubleSpinBox):
     Extends:
         QtWidgets.QDoubleSpinBox
     """
+    valueIncremented = QtCore.Signal(object)
+
     def __init__(self, type="float", buttons=False, decimals=3, *args, **kwargs):
         """
         :param type: Choose if create a float or int spinBox, defaults to "float"
@@ -368,6 +346,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         self.lineEdit().installEventFilter(self)
         self.installEventFilter(self)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.draggers = None
 
     def wheelEvent(self, event):
         if not self.hasFocus():
@@ -375,15 +354,22 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         else:
             super(valueBox, self).wheelEvent(event)
 
+    def onValueIncremented(self, step):
+        self.valueIncremented.emit(step)
+        val = self.value() + step
+        self.setValue(val)
+
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             if event.button() == QtCore.Qt.MiddleButton:
-                dragger = draggers(self, self.isFloat, startValue=self.value())
-                dragger.show()
+                if self.draggers is None:
+                    self.draggers = draggers(self, self.isFloat, displayValueGetter=lambda: 0)
+                    self.draggers.increment.connect(self.onValueIncremented)
+                self.draggers.show()
                 if self.isFloat:
-                    dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - dragger.width() / 2, event.pos().y() - dragger.height() / 2)))
+                    self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - self.draggers.width() / 2, event.pos().y() - self.draggers.height() / 2)))
                 else:
-                    dragger.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - dragger.width() / 2, event.pos().y() - (dragger.height() - dragger.height() / 6))))
+                    self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - self.draggers.width() / 2, event.pos().y() - (self.draggers.height() - self.draggers.height() / 6))))
         return False
 
     def update(self):
@@ -417,8 +403,10 @@ class pyf_Slider(QtWidgets.QWidget):
         self.setLayout(QtWidgets.QHBoxLayout())
         self.input = valueBox(type=type)
         self.input.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        self.input.valueIncremented.connect(self.incrementValue)
         self.type = type
         self.sld = slider(self)
+        self.sld.valueIncremented.connect(self.incrementValue)
         if self.type == "float":
             self.sld.isFloat = True
             self.sld.setMinimum(0)
@@ -500,7 +488,6 @@ class pyf_Slider(QtWidgets.QWidget):
 
     def incrementValue(self, delta):
         if delta == 0.0:
-            print(f"delta is zero {time.clock()}")
             return
         old = self.input.value()
         new = old + delta

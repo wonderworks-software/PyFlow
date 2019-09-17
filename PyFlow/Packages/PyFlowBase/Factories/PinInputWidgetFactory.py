@@ -133,7 +133,6 @@ class IntInputWidget(InputWidgetSingle):
             if "ValueRange" in kwds["pinAnnotations"]:
                 valueRange = kwds["pinAnnotations"]["ValueRange"]
         self.sb = pyf_Slider(self, "int", style=1, sliderRange=valueRange)
-        _configIntSpinBox(self.sb)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 
