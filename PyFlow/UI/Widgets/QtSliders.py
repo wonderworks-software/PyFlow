@@ -317,7 +317,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
     """
     valueIncremented = QtCore.Signal(object)
 
-    def __init__(self, type="float", buttons=False, decimals=3, *args, **kwargs):
+    def __init__(self, type="float", buttons=False, decimals=3, draggerSteps=[100.0, 10.0, 1.0, 0.1, 0.01, 0.001], *args, **kwargs):
         """
         :param type: Choose if create a float or int spinBox, defaults to "float"
         :type type: str, optional
@@ -331,6 +331,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         :type **kwargs: [type]
         """
         super(valueBox, self).__init__(*args, **kwargs)
+        self.draggerSteps = copy(draggerSteps)
         self.isFloat = type == "float"
         if not self.isFloat:
             self.setDecimals(0)
@@ -359,7 +360,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             if event.button() == QtCore.Qt.MiddleButton:
                 if self.draggers is None:
-                    self.draggers = draggers(self, self.isFloat)
+                    self.draggers = draggers(self, self.isFloat, draggerSteps=self.draggerSteps)
                     self.draggers.increment.connect(self.onValueIncremented)
                 self.draggers.show()
                 if self.isFloat:
