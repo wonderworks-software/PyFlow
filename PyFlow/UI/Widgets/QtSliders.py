@@ -403,6 +403,7 @@ class pyf_Slider(QtWidgets.QWidget):
         self.type = type
         self.sld = slider(self)
         self.sld.valueIncremented.connect(self.incrementValue)
+        # TODO: Use DoubleSlider here instead of setting up base slider
         if self.type == "float":
             self.sld.isFloat = True
             self.sld.setMinimum(0)
