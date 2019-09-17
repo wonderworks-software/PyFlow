@@ -21,6 +21,7 @@ from PyFlow.UI.Canvas.Painters import NodePainter
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
 from PyFlow.UI.Widgets.QtSliders import pyf_RampColor, pyf_ColorSlider
 
+
 class UIColorRamp(UINodeBase):
     def __init__(self, raw_node):
         super(UIColorRamp, self).__init__(raw_node)
@@ -48,8 +49,8 @@ class UIColorRamp(UINodeBase):
             if colorW() is not None:
                 try:
                     colorW().setColor(color)
-                except:
-                    print(colorW())
+                except Exception as e:
+                    print(colorW(), e)
 
     def rampColorChanged(self, color):
         for ramp in self.ramps:
@@ -57,6 +58,8 @@ class UIColorRamp(UINodeBase):
                 ramp().setColor(color)
 
     def createInputWidgets(self, inputsCategory, inGroup=None, pins=True):
+        self.ramps.clear()
+        self.colors.clear()
         preIndex = inputsCategory.Layout.count()
         if pins:
             super(UIColorRamp, self).createInputWidgets(inputsCategory, inGroup)
@@ -64,7 +67,7 @@ class UIColorRamp(UINodeBase):
             if not self._rawNode.input.isArray():
                 inputVal.setMinimum(0.0)
                 inputVal.setMaximum(1.0)
-        ramp = pyf_RampColor(self._rawNode.ramp, bezier=self._rawNode._curveTypes[self._rawNode._curveType] == "bezier")
+        ramp = pyf_RampColor(self._rawNode.ramp, bezier=self._rawNode._curveTypes[self._rawNode._curveType] == "bezier", parent=inputsCategory)
         ramp.tickClicked.connect(self.rampChanged)
         ramp.tickAdded.connect(self.rampChanged)
         ramp.tickRemoved.connect(self.rampChanged)
@@ -76,7 +79,7 @@ class UIColorRamp(UINodeBase):
         self.selectors.append(selectorRef)
         for i in self._rawNode._curveTypes:
             selector.addItem(i)
-        colorChanger = pyf_ColorSlider(type="int")
+        colorChanger = pyf_ColorSlider(type="int", parent=inputsCategory)
         colorRef = weakref.ref(colorChanger)
         self.colors.append(colorRef)
         colorChanger.valueChanged.connect(ramp.setColor)
@@ -84,6 +87,6 @@ class UIColorRamp(UINodeBase):
 
         selector.setCurrentIndex(self._rawNode._curveType)
         selector.activated.connect(self.changeCurveType)
-        inputsCategory.insertWidget(preIndex, "CurveType", selector,group=inGroup)
-        inputsCategory.insertWidget(preIndex+1, "Ramp", ramp,group=inGroup)
-        inputsCategory.insertWidget(preIndex+1, "Selected Color", colorChanger,group=inGroup)
+        inputsCategory.insertWidget(preIndex, "CurveType", selector, group=inGroup)
+        inputsCategory.insertWidget(preIndex + 1, "Ramp", ramp, group=inGroup)
+        inputsCategory.insertWidget(preIndex + 1, "Selected Color", colorChanger, group=inGroup)

@@ -110,10 +110,6 @@ class draggers(QtWidgets.QWidget):
             self.layout().addWidget(drag)
         self.installEventFilter(self)
 
-    def updateDisplayValue(self, val):
-        for drag in self.drags:
-            drag.valueLabel.setText(str(val))
-
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseMove:
             if self.activeDrag:
@@ -1530,8 +1526,6 @@ class pyf_RampColor(pyf_RampSpline):
                 del self.pressed_item
                 self.pressed_item = None
                 self.tickRemoved.emit()
-        elif event.button() == QtCore.Qt.MidButton:
-            print(self.evaluateAt(self.mapToScene(event.pos()).x() / self.frameSize().width()))
         else:
             if not self.pressed_item:
                 color = self.evaluateAt(self.mapToScene(
