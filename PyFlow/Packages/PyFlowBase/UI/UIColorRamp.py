@@ -47,10 +47,7 @@ class UIColorRamp(UINodeBase):
     def colorClicked(self, color):
         for colorW in self.colors:
             if colorW() is not None:
-                try:
-                    colorW().setColor(color)
-                except Exception as e:
-                    print(colorW(), e)
+                colorW().setColor(color)
 
     def rampColorChanged(self, color):
         for ramp in self.ramps:

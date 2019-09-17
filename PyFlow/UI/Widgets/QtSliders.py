@@ -676,8 +676,7 @@ class pyf_GradientSlider(doubleSlider):
         self.color2 = QtGui.QColor(color2[0], color2[1], color2[2])
         self.setMinimum(0.0)
         self.setMaximum(1.0)
-        self.setStyleSheet(editableStyleSheet(
-        ).getSliderStyleSheet("sliderStyleSheetC"))
+        self.setStyleSheet(editableStyleSheet().getSliderStyleSheet("sliderStyleSheetC"))
 
     def getColor(self):
         """Computes the current Color
@@ -760,22 +759,14 @@ class pyf_ColorSlider(QtWidgets.QWidget):
         if self.type == "int":
             self.div = 255.0
 
-        self.RBox.editingFinished.connect(
-            lambda: self.R.setValue(float(self.RBox.value()) / self.div))
-        self.R.doubleValueChanged.connect(
-            lambda: self.RBox.setValue(self.R.value() * self.div))
-        self.GBox.editingFinished.connect(
-            lambda: self.G.setValue(float(self.GBox.value()) / self.div))
-        self.G.doubleValueChanged.connect(
-            lambda: self.GBox.setValue(self.G.value() * self.div))
-        self.BBox.editingFinished.connect(
-            lambda: self.B.setValue(float(self.BBox.value()) / self.div))
-        self.B.doubleValueChanged.connect(
-            lambda: self.BBox.setValue(self.B.value() * self.div))
-        self.ABox.editingFinished.connect(
-            lambda: self.A.setValue(float(self.ABox.value()) / self.div))
-        self.A.doubleValueChanged.connect(
-            lambda: self.ABox.setValue(self.A.value() * self.div))
+        self.RBox.valueChanged.connect(lambda: self.R.setValue(float(self.RBox.value()) / self.div))
+        self.R.doubleValueChanged.connect(lambda: self.RBox.setValue(self.R.value() * self.div))
+        self.GBox.valueChanged.connect(lambda: self.G.setValue(float(self.GBox.value()) / self.div))
+        self.G.doubleValueChanged.connect(lambda: self.GBox.setValue(self.G.value() * self.div))
+        self.BBox.valueChanged.connect(lambda: self.B.setValue(float(self.BBox.value()) / self.div))
+        self.B.doubleValueChanged.connect(lambda: self.BBox.setValue(self.B.value() * self.div))
+        self.ABox.valueChanged.connect(lambda: self.A.setValue(float(self.ABox.value()) / self.div))
+        self.A.doubleValueChanged.connect(lambda: self.ABox.setValue(self.A.value() * self.div))
 
         rLay = QtWidgets.QHBoxLayout()
         rLay.addWidget(self.RBox)
