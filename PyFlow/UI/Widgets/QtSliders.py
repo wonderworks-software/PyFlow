@@ -13,6 +13,7 @@
 ## limitations under the License.
 
 
+from copy import copy
 import sys
 import struct
 from Qt import QtGui, QtCore, QtWidgets
@@ -90,7 +91,7 @@ class draggers(QtWidgets.QWidget):
 
     increment = QtCore.Signal(object)
 
-    def __init__(self, parent=None, isFloat=True):
+    def __init__(self, parent=None, isFloat=True, draggerSteps=[100.0, 10.0, 1.0, 0.1, 0.01, 0.001]):
         super(draggers, self).__init__(parent)
         self.initialPos = None
         self.setLayout(QtWidgets.QVBoxLayout())
@@ -100,9 +101,10 @@ class draggers(QtWidgets.QWidget):
         self.activeDrag = None
         self.lastDeltaX = 0
         self.drags = []
-        steps = [100.0, 10.0, 1.0, 0.1, 0.01, 0.001]
+        steps = copy(draggerSteps)
         if not isFloat:
-            steps = [100, 10, 1]
+            # if int, cut steps less than 1.0
+            steps = list(filter(lambda x: abs(x) >= 1.0, steps))
         for i in steps:
             drag = inputDragger(self, i)
             self.drags.append(drag)
@@ -156,10 +158,11 @@ class slider(QtWidgets.QSlider):
     valueIncremented = QtCore.Signal(object)
     floatValueChanged = QtCore.Signal(object)
 
-    def __init__(self, parent=None, *args, **kwargs):
+    def __init__(self, parent=None, draggerSteps=[100.0, 10.0, 1.0, 0.1, 0.01, 0.001], *args, **kwargs):
         super(slider, self).__init__(parent, **kwargs)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setOrientation(QtCore.Qt.Horizontal)
+        self.draggerSteps = draggerSteps
         self.isFloat = False
         self.deltaValue = 0
         self._min_value = 0
@@ -178,7 +181,7 @@ class slider(QtWidgets.QSlider):
         self.startDragpos = event.pos()
         if event.button() == QtCore.Qt.MidButton:
             if self.draggers is None:
-                self.draggers = draggers(self, self.isFloat)
+                self.draggers = draggers(self, self.isFloat, draggerSteps=self.draggerSteps)
                 self.draggers.increment.connect(self.valueIncremented.emit)
             self.draggers.show()
             if self.isFloat:
@@ -253,8 +256,8 @@ class slider(QtWidgets.QSlider):
 class DoubleSlider(slider):
     doubleValueChanged = QtCore.Signal(float)
 
-    def __init__(self, parent=None, sliderRange=(-100.0, 100.0), defaultValue=0.0, dencity=1000):
-        super(DoubleSlider, self).__init__(parent)
+    def __init__(self, parent=None, sliderRange=(-100.0, 100.0), defaultValue=0.0, dencity=1000, draggerSteps=[100.0, 10.0, 1.0, 0.1, 0.01, 0.001]):
+        super(DoubleSlider, self).__init__(parent, draggerSteps=draggerSteps)
         self.isFloat = True
         self._dencity = abs(dencity)
         self.setOrientation(QtCore.Qt.Horizontal)
@@ -270,8 +273,6 @@ class DoubleSlider(slider):
         self.setMappedValue(defaultValue, True)
 
     def onValueIncremented(self, step):
-        # TODO: since internal slider value is int, clamp step to 1
-        # Need to add argument to customize steps, and just not draw steps less than 1.0
         sign = 1
         sign = math.copysign(sign, step)
         if abs(step) < 1.0:
@@ -578,7 +579,7 @@ class pyf_HueSlider(DoubleSlider):
         :param parent: Parent QtWidget
         :type parent: QtWidgets.QWidget
         """
-        super(pyf_HueSlider, self).__init__(parent=parent, sliderRange=(0.0, 1.0), *args)
+        super(pyf_HueSlider, self).__init__(parent=parent, sliderRange=(0.0, 1.0), draggerSteps=[100.0, 10.0, 1.0], *args)
         self.parent = parent
         self.color = QtGui.QColor()
         self.color.setHslF(0, 1, 0.5, 1)
@@ -664,7 +665,7 @@ class pyf_GradientSlider(DoubleSlider):
         :param color2: End Color in range 0-255, defaults to [255, 255, 255]
         :type color2: [int,int,int], optional
         """
-        super(pyf_GradientSlider, self).__init__(parent=parent, sliderRange=sliderRange, *args)
+        super(pyf_GradientSlider, self).__init__(parent=parent, sliderRange=sliderRange, draggerSteps=[100.0, 10.0, 1.0], *args)
         self.parent = parent
         self.color1 = QtGui.QColor(color1[0], color1[1], color1[2])
         self.color2 = QtGui.QColor(color2[0], color2[1], color2[2])
