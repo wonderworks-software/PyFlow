@@ -338,7 +338,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         :type **kwargs: [type]
         """
         super(valueBox, self).__init__(*args, **kwargs)
-        self.labelFont = QtGui.QFont('Serif', 7, QtGui.QFont.Bold)
+        self.labelFont = QtGui.QFont('Serif', 10, QtGui.QFont.Bold)
         self.labelText = labelText
         self.draggerSteps = copy(draggerSteps)
         self.isFloat = type == "float"
