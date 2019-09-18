@@ -411,7 +411,7 @@ class pyf_Slider(QtWidgets.QWidget):
         self.type = type
 
         if self.type == "float":
-            self.sld = DoubleSlider(self, defaultValue=defaultValue, sliderRange=sliderRange)
+            self.sld = DoubleSlider(self, defaultValue=defaultValue, sliderRange=sliderRange, draggerSteps=draggerSteps)
         if self.type == "int":
             self.sld = slider(self, sliderRange=sliderRange)
             self.sld.valueIncremented.connect(self.incrementValue)

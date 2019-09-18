@@ -852,6 +852,7 @@ class PinSpecifires:
     DESCRIPTION = "Description"
     VALUE_LIST = "ValueList"
     VALUE_RANGE = "ValueRange"
+    DRAGGER_STEPS = "DraggerSteps"
 
 
 class NodeMeta:
