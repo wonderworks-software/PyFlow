@@ -359,7 +359,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         super(valueBox, self).paintEvent(event)
         p = QtGui.QPainter()
         p.begin(self)
-        p.setPen(Colors.Gray)
+        p.setPen(Colors.DarkGray)
         p.setFont(self.labelFont)
         p.drawText(self.rect(), QtCore.Qt.AlignCenter, self.labelText)
         p.end()
