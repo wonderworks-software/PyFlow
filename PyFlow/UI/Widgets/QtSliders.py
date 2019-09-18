@@ -189,9 +189,9 @@ class slider(QtWidgets.QSlider):
                 self.draggers.increment.connect(self.valueIncremented.emit)
             self.draggers.show()
             if self.isFloat:
-                self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - self.draggers.width() / 2, event.pos().y() - self.draggers.height() / 2)))
+                self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - self.draggers.height() / 2)))
             else:
-                self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - self.draggers.width() / 2, event.pos().y() - (self.draggers.height() - self.draggers.height() / 6))))
+                self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - (self.draggers.height() - self.draggers.height() / 6))))
 
         elif event.button() == self.LeftButton and event.modifiers() not in [QtCore.Qt.ControlModifier, QtCore.Qt.ShiftModifier, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier]:
             butts = QtCore.Qt.MouseButtons(self.MidButton)
@@ -371,9 +371,9 @@ class valueBox(QtWidgets.QDoubleSpinBox):
                     self.draggers.increment.connect(self.onValueIncremented)
                 self.draggers.show()
                 if self.isFloat:
-                    self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - self.draggers.width() / 2, event.pos().y() - self.draggers.height() / 2)))
+                    self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - self.draggers.height() / 2)))
                 else:
-                    self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - self.draggers.width() / 2, event.pos().y() - (self.draggers.height() - self.draggers.height() / 6))))
+                    self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - (self.draggers.height() - self.draggers.height() / 6))))
         return False
 
     def update(self):
