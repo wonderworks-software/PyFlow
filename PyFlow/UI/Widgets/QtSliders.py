@@ -351,6 +351,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         self.installEventFilter(self)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.draggers = None
+        self.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
 
     def wheelEvent(self, event):
         if not self.hasFocus():
@@ -373,7 +374,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
                 if self.isFloat:
                     self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - self.draggers.height() / 2)))
                 else:
-                    self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - (self.draggers.height() - self.draggers.height() / 6))))
+                    self.draggers.move(self.mapToGlobal(QtCore.QPoint(event.pos().x() - 1, event.pos().y() - self.draggers.height() + 15)))
         return False
 
     def update(self):
