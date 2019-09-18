@@ -24,6 +24,10 @@ from PyFlow.Core.Common import *
 from PyFlow.Core import structs
 
 
+FLOAT_SLIDER_DRAG_STEPS = [100.0, 10.0, 1.0, 0.1, 0.01, 0.001]
+INT_SLIDER_DRAG_STEPS = [100.0, 10.0, 1.0]
+
+
 class inputDragger(QtWidgets.QWidget):
     """Custom Widget to drag values when midClick over field type input widget, Right Drag increments value, Left Drag decreases Value
 
@@ -91,7 +95,7 @@ class draggers(QtWidgets.QWidget):
 
     increment = QtCore.Signal(object)
 
-    def __init__(self, parent=None, isFloat=True, draggerSteps=[100.0, 10.0, 1.0, 0.1, 0.01, 0.001]):
+    def __init__(self, parent=None, isFloat=True, draggerSteps=FLOAT_SLIDER_DRAG_STEPS):
         super(draggers, self).__init__(parent)
         self.initialPos = None
         self.setLayout(QtWidgets.QVBoxLayout())
@@ -158,15 +162,14 @@ class slider(QtWidgets.QSlider):
     valueIncremented = QtCore.Signal(object)
     floatValueChanged = QtCore.Signal(object)
 
-    def __init__(self, parent=None, draggerSteps=[100.0, 10.0, 1.0, 0.1, 0.01, 0.001], *args, **kwargs):
+    def __init__(self, parent=None, draggerSteps=INT_SLIDER_DRAG_STEPS, sliderRange=[-100, 100], *args, **kwargs):
         super(slider, self).__init__(parent, **kwargs)
+        self.sliderRange = sliderRange
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setOrientation(QtCore.Qt.Horizontal)
         self.draggerSteps = draggerSteps
         self.isFloat = False
         self.deltaValue = 0
-        self._min_value = 0
-        self._max_value = 0
         self.startDragpos = QtCore.QPointF()
         self.realStartDragpos = QtCore.QPointF()
         self.LeftButton = QtCore.Qt.LeftButton
@@ -175,6 +178,7 @@ class slider(QtWidgets.QSlider):
         if SessionDescriptor().software == "maya":
             self.LeftButton = QtCore.Qt.MidButton
             self.MidButton = QtCore.Qt.LeftButton
+        self.setRange(self.sliderRange[0], self.sliderRange[1])
 
     def mousePressEvent(self, event):
         self.prevValue = self.value()
@@ -201,7 +205,7 @@ class slider(QtWidgets.QSlider):
             st_slider.initFrom(self)
             st_slider.orientation = self.orientation()
             available = self.style().pixelMetric(QtWidgets.QStyle.PM_SliderSpaceAvailable, st_slider, self)
-            xloc = QtWidgets.QStyle.sliderPositionFromValue(self._min_value, self._max_value, super(slider, self).value(), available)
+            xloc = QtWidgets.QStyle.sliderPositionFromValue(self.minimum(), self.maximum(), super(slider, self).value(), available)
             butts = QtCore.Qt.MouseButtons(self.MidButton)
             newPos = QtCore.QPointF()
             newPos.setX(xloc)
@@ -213,7 +217,6 @@ class slider(QtWidgets.QSlider):
             super(slider, self).mousePressEvent(nevent)
             self.deltaValue = self.value() - self.prevValue
             self.setValue(self.prevValue)
-
         else:
             super(slider, self).mousePressEvent(event)
 
@@ -256,8 +259,8 @@ class slider(QtWidgets.QSlider):
 class DoubleSlider(slider):
     doubleValueChanged = QtCore.Signal(float)
 
-    def __init__(self, parent=None, sliderRange=(-100.0, 100.0), defaultValue=0.0, dencity=1000, draggerSteps=[100.0, 10.0, 1.0, 0.1, 0.01, 0.001]):
-        super(DoubleSlider, self).__init__(parent, draggerSteps=draggerSteps)
+    def __init__(self, parent=None, sliderRange=(-100.0, 100.0), defaultValue=0.0, dencity=1000000, draggerSteps=FLOAT_SLIDER_DRAG_STEPS):
+        super(DoubleSlider, self).__init__(parent, draggerSteps=draggerSteps, sliderRange=sliderRange)
         self.isFloat = True
         self._dencity = abs(dencity)
         self.setOrientation(QtCore.Qt.Horizontal)
@@ -267,25 +270,27 @@ class DoubleSlider(slider):
         self.setMaximum(self._dencity)
 
         # set out range
-        self.sliderRange = sliderRange
         self.valueChanged.connect(self.onInternalValueChanged)
         self.valueIncremented.connect(self.onValueIncremented)
         self.setMappedValue(defaultValue, True)
 
     def onValueIncremented(self, step):
-        sign = 1
-        sign = math.copysign(sign, step)
-        if abs(step) < 1.0:
-            step = sign
-        unMappedStep = self.value()
-        newUnmappedValue = unMappedStep + step
+        # convert step value to slider internal space
+        sliderInternalRange = (self.minimum(), self.maximum())
+        sliderDistance = max(sliderInternalRange) - min(sliderInternalRange)
+        valueDistance = max(self.sliderRange) - min(self.sliderRange)
+        factor = sliderDistance / valueDistance
+        unMappedStep = step * factor
+
+        currentInternalValue = self.value()
+        newUnmappedValue = currentInternalValue + unMappedStep
         self.setValue(newUnmappedValue)
 
     def mappedValue(self):
         return self.mapValue(self.value())
 
     def setMappedValue(self, value, blockSignals=False):
-        # convert mapped value to slider friendly integer
+        # convert mapped value to slider internal integer
         internalValue = self.unMapValue(value)
 
         if blockSignals:
@@ -297,9 +302,11 @@ class DoubleSlider(slider):
             self.blockSignals(False)
 
     def mapValue(self, inValue):
+        # convert slider int value to slider float range value
         return mapRangeUnclamped(inValue, self.minimum(), self.maximum(), self.sliderRange[0], self.sliderRange[1])
 
     def unMapValue(self, outValue):
+        # convert mapped float value to slider integer
         return int(mapRangeUnclamped(outValue, self.sliderRange[0], self.sliderRange[1], self.minimum(), self.maximum()))
 
     def onInternalValueChanged(self, x):
@@ -317,7 +324,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
     """
     valueIncremented = QtCore.Signal(object)
 
-    def __init__(self, type="float", buttons=False, decimals=3, draggerSteps=[100.0, 10.0, 1.0, 0.1, 0.01, 0.001], *args, **kwargs):
+    def __init__(self, type="float", buttons=False, decimals=3, draggerSteps=FLOAT_SLIDER_DRAG_STEPS, *args, **kwargs):
         """
         :param type: Choose if create a float or int spinBox, defaults to "float"
         :type type: str, optional
@@ -382,7 +389,7 @@ class pyf_Slider(QtWidgets.QWidget):
     """
     valueChanged = QtCore.Signal(object)
 
-    def __init__(self, parent, type="float", style=0, name=None, sliderRange=(-100.0, 100.0), *args):
+    def __init__(self, parent, type="float", style=0, name=None, sliderRange=(-100.0, 100.0), defaultValue=0.0, draggerSteps=FLOAT_SLIDER_DRAG_STEPS, *args):
         """
         :param parent: Parent Widget
         :type parent: QtWidgets.QWidget
@@ -402,16 +409,13 @@ class pyf_Slider(QtWidgets.QWidget):
         self.input.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         self.input.valueIncremented.connect(self.incrementValue)
         self.type = type
-        self.sld = slider(self)
-        self.sld.valueIncremented.connect(self.incrementValue)
-        # TODO: Use DoubleSlider here instead of setting up base slider
+
         if self.type == "float":
-            self.sld.isFloat = True
-            self.sld.setMinimum(0)
-            self.sld.setMaximum(1000)
-            self.sld.setSingleStep(1)
-            self.sld.setRange(0, 1000)
-            self.input.setSingleStep(0.025)
+            self.sld = DoubleSlider(self, defaultValue=defaultValue, sliderRange=sliderRange)
+        if self.type == "int":
+            self.sld = slider(self, sliderRange=sliderRange)
+            self.sld.valueIncremented.connect(self.incrementValue)
+
         self.input.setRange(sliderRange[0], sliderRange[1])
 
         self.layout().setContentsMargins(10, 0, 0, 0)
@@ -581,7 +585,7 @@ class pyf_HueSlider(DoubleSlider):
         :param parent: Parent QtWidget
         :type parent: QtWidgets.QWidget
         """
-        super(pyf_HueSlider, self).__init__(parent=parent, sliderRange=(0.0, 1.0), draggerSteps=[100.0, 10.0, 1.0], *args)
+        super(pyf_HueSlider, self).__init__(parent=parent, sliderRange=(0.0, 1.0), draggerSteps=[0.1, 0.01, 0.001], *args)
         self.parent = parent
         self.color = QtGui.QColor()
         self.color.setHslF(0, 1, 0.5, 1)
@@ -658,7 +662,7 @@ class pyf_GradientSlider(DoubleSlider):
     # Extends:
     #     :obj: `DoubleSlider`
     """
-    def __init__(self, parent, color1=[0, 0, 0], color2=[255, 255, 255], sliderRange=(0.0, 255.0), *args):
+    def __init__(self, parent, color1=[0, 0, 0], color2=[255, 255, 255], sliderRange=(0.0, 255.0), draggerSteps=[5.0, 1.0, 0.25], *args):
         """
         :param parent: Parent QtWidget
         :type parent: QtWidgets.QWidget
@@ -667,7 +671,7 @@ class pyf_GradientSlider(DoubleSlider):
         :param color2: End Color in range 0-255, defaults to [255, 255, 255]
         :type color2: [int,int,int], optional
         """
-        super(pyf_GradientSlider, self).__init__(parent=parent, sliderRange=sliderRange, draggerSteps=[100.0, 10.0, 1.0], *args)
+        super(pyf_GradientSlider, self).__init__(parent=parent, sliderRange=sliderRange, draggerSteps=draggerSteps, *args)
         self.parent = parent
         self.color1 = QtGui.QColor(color1[0], color1[1], color1[2])
         self.color2 = QtGui.QColor(color2[0], color2[1], color2[2])
@@ -749,10 +753,6 @@ class pyf_ColorSlider(QtWidgets.QWidget):
         self.GSlider = pyf_GradientSlider(self, color2=[0, 255, 0])
         self.BSlider = pyf_GradientSlider(self, color2=[0, 0, 255])
         self.ASlider = pyf_GradientSlider(self, color2=[255, 255, 255])
-
-        self.div = 1.0
-        if self.type == "int":
-            self.div = 255.0
 
         self.RBox.valueChanged.connect(lambda x: self.RSlider.setMappedValue(float(x)))
         self.RSlider.doubleValueChanged.connect(lambda x: self.RBox.setValue(x))
