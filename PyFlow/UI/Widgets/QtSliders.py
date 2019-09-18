@@ -19,7 +19,7 @@ import struct
 from Qt import QtGui, QtCore, QtWidgets
 
 from PyFlow.UI.Canvas.UICommon import SessionDescriptor
-from PyFlow.UI.Utils.stylesheet import editableStyleSheet
+from PyFlow.UI.Utils.stylesheet import editableStyleSheet, Colors
 from PyFlow.Core.Common import *
 from PyFlow.Core import structs
 
@@ -324,7 +324,7 @@ class valueBox(QtWidgets.QDoubleSpinBox):
     """
     valueIncremented = QtCore.Signal(object)
 
-    def __init__(self, type="float", buttons=False, decimals=3, draggerSteps=FLOAT_SLIDER_DRAG_STEPS, *args, **kwargs):
+    def __init__(self, labelText="", type="float", buttons=False, decimals=3, draggerSteps=FLOAT_SLIDER_DRAG_STEPS, *args, **kwargs):
         """
         :param type: Choose if create a float or int spinBox, defaults to "float"
         :type type: str, optional
@@ -338,6 +338,8 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         :type **kwargs: [type]
         """
         super(valueBox, self).__init__(*args, **kwargs)
+        self.labelFont = QtGui.QFont('Serif', 7, QtGui.QFont.Bold)
+        self.labelText = labelText
         self.draggerSteps = copy(draggerSteps)
         self.isFloat = type == "float"
         if not self.isFloat:
@@ -352,6 +354,15 @@ class valueBox(QtWidgets.QDoubleSpinBox):
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.draggers = None
         self.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
+
+    def paintEvent(self, event):
+        super(valueBox, self).paintEvent(event)
+        p = QtGui.QPainter()
+        p.begin(self)
+        p.setPen(Colors.Gray)
+        p.setFont(self.labelFont)
+        p.drawText(self.rect(), QtCore.Qt.AlignCenter, self.labelText)
+        p.end()
 
     def wheelEvent(self, event):
         if not self.hasFocus():
