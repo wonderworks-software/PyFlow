@@ -922,6 +922,8 @@ class pyf_timeline(QtWidgets.QSlider):
         w = self.width()
         h = self.height()
         nb = (self.maximum() - self.minimum())
+        if nb == 0:
+            return
         fStep = float(w) / nb
         step = max(1, int(round(fStep)))
 
@@ -997,8 +999,10 @@ class pyf_timeline(QtWidgets.QSlider):
     def wheelEvent(self, event):
         newMin = self.minimum() + (round(120 / event.delta()))
         newMax = self.maximum() - (round(120 / event.delta()))
-        self.setRange(newMin, newMax)
-        self.repaint()
+        distance = newMax - newMin
+        if distance > 0:
+            self.setRange(newMin, newMax)
+            self.repaint()
 
     def eventFilter(self, widget, event):
         if event.type() == QtCore.QEvent.MouseMove:
