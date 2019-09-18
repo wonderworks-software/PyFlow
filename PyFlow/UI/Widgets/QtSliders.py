@@ -461,6 +461,7 @@ class pyf_Slider(QtWidgets.QWidget):
         self.sld.blockSignals(True)
         self.sld.setValue(int(sv))
         self.sld.blockSignals(False)
+        self.valueChanged.emit(x)
 
     def update(self):
         if self.styleSheetType == 0:
