@@ -250,8 +250,10 @@ class PinBase(IPin):
             for i in getConnectedPins(self):
                 connection = {"lhsNodeName": "", "outPinId": 0, "rhsNodeName": "", "inPinId": 0}
                 connection["lhsNodeName"] = self.owningNode().getName()
+                connection["lhsNodeUid"] = str(self.owningNode().uid)
                 connection["outPinId"] = self.pinIndex
                 connection["rhsNodeName"] = i.owningNode().getName()
+                connection["rhsNodeUid"] = str(i.owningNode().uid)
                 connection["inPinId"] = i.pinIndex
                 result.append(connection)
 
@@ -259,8 +261,10 @@ class PinBase(IPin):
             for i in getConnectedPins(self):
                 connection = {"lhsNodeName": "", "outPinId": 0, "rhsNodeName": "", "inPinId": 0}
                 connection["lhsNodeName"] = i.owningNode().getName()
+                connection["lhsNodeUid"] = str(i.owningNode().uid)
                 connection["outPinId"] = i.pinIndex
                 connection["rhsNodeName"] = self.owningNode().getName()
+                connection["rhsNodeUid"] = str(self.owningNode().uid)
                 connection["inPinId"] = self.pinIndex
                 result.append(connection)
         return result

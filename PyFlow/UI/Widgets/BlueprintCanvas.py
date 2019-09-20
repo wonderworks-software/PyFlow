@@ -1686,10 +1686,11 @@ class BlueprintCanvas(CanvasBase):
         # restore wire data
         pinWrapperData = srcUiPin.wrapperJsonData
         if pinWrapperData is not None:
-            wiresData = pinWrapperData["wires"]
-            key = str(dstUiPin.pinIndex)
-            if str(dstUiPin.pinIndex) in wiresData:
-                uiConnection.applyJsonData(wiresData[key])
+            if "wires" in pinWrapperData:
+                wiresData = pinWrapperData["wires"]
+                key = str(dstUiPin.pinIndex)
+                if str(dstUiPin.pinIndex) in wiresData:
+                    uiConnection.applyJsonData(wiresData[key])
         return uiConnection
 
     def connectPinsInternal(self, src, dst):
