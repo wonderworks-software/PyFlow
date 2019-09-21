@@ -5,7 +5,20 @@ Changelog
 
 PyFlow releases use a `semantic versioning <http://semver.org>`_ policy.
 
-v1.1.0 (June 11, 2019)
+v2.0.1 (September 21, 2019)
+-----------------------------------------------------
+
+* LOD settings added to preferences
+* Themes improvements
+* New wire styles
+* Api refactoring
+* App can run without packages
+* Sliders improvements and refactoring
+* Smart create input widgets for int and floats in function library, if range is specified
+
+Bug fixes
+
+v2.0.0 (June 11, 2019)
 -----------------------------------------------------
 
 * Subgraphs added

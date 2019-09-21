@@ -4,13 +4,6 @@ PyFlow.UI.Views package
 Submodules
 ----------
 
-PyFlow.UI.Views.CodeEditor module
----------------------------------
-
-.. automodule:: PyFlow.UI.Views.CodeEditor
-   :members:
-   :show-inheritance:
-
 PyFlow.UI.Views.NodeBox module
 ------------------------------
 

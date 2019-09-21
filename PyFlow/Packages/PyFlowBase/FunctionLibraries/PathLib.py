@@ -1,17 +1,17 @@
-# -*- coding: utf-8 -*-
-# Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+## -*- coding: utf-8 -*-
+## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
 
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
 
-# http://www.apache.org/licenses/LICENSE-2.0
+## http://www.apache.org/licenses/LICENSE-2.0
 
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
 
 
 from PyFlow.Core import(
@@ -34,7 +34,7 @@ class PathLib(FunctionLibraryBase):
     @staticmethod
     @IMPLEMENT_NODE(returns=("StringPin", ""), meta={NodeMeta.CATEGORY: 'Python|OS|Path|Convert', NodeMeta.KEYWORDS: ["file", "folder", "path"]})
     def abspath(path=("StringPin", "", {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})):
-        '''Return a normalized absolutized version of the pathname path. On most platforms, this is equivalent to calling the function normpath()'''
+        '''Return a absolute version of a path. On most platforms, this is equivalent to calling the function normpath()'''
         return osPath.abspath(path)
 
     @staticmethod

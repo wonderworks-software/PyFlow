@@ -11,10 +11,17 @@ PyFlow.UI.Canvas.AutoPanController module
    :members:
    :show-inheritance:
 
-PyFlow.UI.Canvas.Canvas module
-------------------------------
+PyFlow.UI.Canvas.CanvasBase module
+----------------------------------
 
-.. automodule:: PyFlow.UI.Canvas.Canvas
+.. automodule:: PyFlow.UI.Canvas.CanvasBase
+   :members:
+   :show-inheritance:
+
+PyFlow.UI.Canvas.IConvexHullBackDrop module
+-------------------------------------------
+
+.. automodule:: PyFlow.UI.Canvas.IConvexHullBackDrop
    :members:
    :show-inheritance:
 
@@ -71,6 +78,20 @@ PyFlow.UI.Canvas.UIVariable module
 ----------------------------------
 
 .. automodule:: PyFlow.UI.Canvas.UIVariable
+   :members:
+   :show-inheritance:
+
+PyFlow.UI.Canvas.WatchPinValueItem module
+-----------------------------------------
+
+.. automodule:: PyFlow.UI.Canvas.WatchPinValueItem
+   :members:
+   :show-inheritance:
+
+PyFlow.UI.Canvas.loopBackDrop module
+------------------------------------
+
+.. automodule:: PyFlow.UI.Canvas.loopBackDrop
    :members:
    :show-inheritance:
 
