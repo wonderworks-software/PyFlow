@@ -27,6 +27,7 @@ from Qt.QtWidgets import QSizePolicy
 from Qt.QtWidgets import QPushButton
 from Qt.QtWidgets import QInputDialog
 
+from PyFlow import getHashableDataTypes
 from PyFlow.Core.Common import *
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.UI.UIInterfaces import IPropertiesViewSupport
@@ -51,12 +52,11 @@ class TypeWidget(QWidget):
         painter = QtGui.QPainter()
         painter.begin(self)
 
-        keyColor = QtGui.QColor.fromRgb(*self.keyColor)
+        keyColor = QtGui.QColor.fromRgb(*findPinClassByType(self.parent().dataType).color())
 
         structure = self.parent()._rawVariable.structure
-        if structure == PinStructure.Single:
+        if structure == StructureType.Single:
             painter.setRenderHint(QtGui.QPainter.Antialiasing)
-            painter.setBrush(keyColor)
             pen = QtGui.QPen()
             pen.setColor(QtGui.QColor(0, 0, 0, 0))
             painter.setPen(pen)
@@ -64,23 +64,41 @@ class TypeWidget(QWidget):
             rect.setHeight(10)
             rect.setWidth(15)
             rect.moveTop(3)
+            painter.setBrush(keyColor)
             painter.drawRoundedRect(rect, 5, 5)
 
-        if structure == PinStructure.Array:
+        if structure == StructureType.Array:
             gridSize = 3
             size = self.height()
             cellW = size / gridSize
             cellH = size / gridSize
-            pinCenter = QtCore.QPoint(0, 0)
 
             painter.setBrush(QtGui.QBrush(keyColor))
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.2))
-            painter.drawLine(0, 0, self.width(), self.height())
             for row in range(gridSize):
                 for column in range(gridSize):
                     x = row * cellW
                     y = column * cellH
                     painter.drawRect(x, y, cellW, cellH)
+
+        if structure == StructureType.Dict:
+            dictObject = self.parent()._rawVariable.value
+
+            keyColor = QtGui.QColor.fromRgb(*findPinClassByType(dictObject.keyType).color())
+            valueColor = QtGui.QColor.fromRgb(*findPinClassByType(dictObject.valueType).color())
+
+            gridSize = 3
+            size = self.height()
+            cellW = size / gridSize
+            cellH = size / gridSize
+
+            painter.setBrush(QtGui.QBrush(keyColor))
+            painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.2))
+            for row in range(gridSize):
+                painter.setBrush(keyColor)
+                painter.drawRect(0, row * cellH, cellW, cellH)
+                painter.setBrush(valueColor)
+                painter.drawRect(cellW, row * cellH, cellW * 2, cellH)
 
         painter.end()
 
@@ -123,7 +141,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         self._rawVariable.setWrapper(self)
 
     def onStructureChanged(self, name):
-        self._rawVariable.structure = PinStructure[name]
+        self._rawVariable.structure = StructureType[name]
         self.variablesWidget.pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
         EditorHistory().saveState("Change variable struct", modify=True)
         self.widget.update()
@@ -133,6 +151,16 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         self._rawVariable.dataType = dataType
         EditorHistory().saveState("Change variable data type", modify=True)
 
+    def onDictKeyTypeChanged(self, newType):
+        dictObject = self._rawVariable.value
+        dictObject.keyType = newType
+        self.widget.update()
+
+    def onDictValueTypeChanged(self, newType):
+        dictObject = self._rawVariable.value
+        dictObject.valueType = newType
+        self.widget.update()
+
     def createPropertiesWidget(self, propertiesWidget):
         baseCategory = CollapsibleFormWidget(headName="Base")
         # name
@@ -141,25 +169,42 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         baseCategory.addWidget("Name", le_name)
 
         # data type
-        cbTypes = EnumComboBox([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() if pin.__name__ != "AnyPin"])
-        cbTypes.setCurrentIndex(cbTypes.findText(self.dataType))
-        cbTypes.setEditable(False)
-        cbTypes.changeCallback.connect(self.setDataType)
+        if self._rawVariable.structure == StructureType.Dict:
+            dictObject = self._rawVariable.value
+            keyTypeSelector = EnumComboBox(values=getHashableDataTypes())
+            valueTypeSelector = EnumComboBox([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() if pin.__name__ != "AnyPin"])
+
+            keyTypeSelector.setEditable(False)
+            valueTypeSelector.setEditable(False)
+
+            keyTypeSelector.setCurrentIndex(keyTypeSelector.findText(dictObject.keyType))
+            valueTypeSelector.setCurrentIndex(valueTypeSelector.findText(dictObject.valueType))
+
+            keyTypeSelector.changeCallback.connect(self.onDictKeyTypeChanged)
+            valueTypeSelector.changeCallback.connect(self.onDictValueTypeChanged)
+
+            baseCategory.addWidget("Key type", keyTypeSelector)
+            baseCategory.addWidget("Value type", valueTypeSelector)
+        else:
+            cbTypes = EnumComboBox([pin.__name__ for pin in getAllPinClasses() if pin.IsValuePin() if pin.__name__ != "AnyPin"])
+            cbTypes.setCurrentIndex(cbTypes.findText(self.dataType))
+            cbTypes.changeCallback.connect(self.setDataType)
+            cbTypes.setEditable(False)
+            baseCategory.addWidget("Type", cbTypes)
         propertiesWidget.addWidget(baseCategory)
 
         # structure type
-        cbStructure = EnumComboBox([i.name for i in (PinStructure.Single, PinStructure.Array)])
+        cbStructure = EnumComboBox([i.name for i in (StructureType.Single, StructureType.Array)])
         cbStructure.setEditable(False)
         cbStructure.setCurrentIndex(cbStructure.findText(self._rawVariable.structure.name))
         cbStructure.changeCallback.connect(self.onStructureChanged)
         propertiesWidget.addWidget(baseCategory)
-        baseCategory.addWidget("Type", cbTypes)
         baseCategory.addWidget("Structure", cbStructure)
 
         valueCategory = CollapsibleFormWidget(headName="Value")
 
         # current value
-        if self._rawVariable.structure == PinStructure.Single:
+        if self._rawVariable.structure == StructureType.Single:
             if not type(self._rawVariable.value) in {list, set, dict, tuple}:
                 def valSetter(x):
                     self._rawVariable.value = x

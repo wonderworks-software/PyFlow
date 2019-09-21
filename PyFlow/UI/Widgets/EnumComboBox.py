@@ -19,6 +19,7 @@ from Qt.QtWidgets import QComboBox, QCompleter
 
 class EnumComboBox(QComboBox):
     changeCallback = QtCore.Signal(str)
+    textChangedCallback = QtCore.Signal(str)
 
     def __init__(self, values=[], parent=None):
         super(EnumComboBox, self).__init__(parent)
@@ -39,7 +40,6 @@ class EnumComboBox(QComboBox):
         self.setCompleter(self.completer)
 
         self.lineEdit().textEdited[str].connect(self.onTextEdited)
-        self.lineEdit().returnPressed.connect(self.onReturnPressed)
         self.completer.activated.connect(self.setTextIfCompleterIsClicked)
 
         self.model = QtGui.QStandardItemModel()
@@ -49,11 +49,10 @@ class EnumComboBox(QComboBox):
         self.setModel(self.model)
         self.setModelColumn(0)
         self.currentIndexChanged.connect(self.onIndexChanged)
-        self.activated.connect(self.onIndexChanged)
 
     def onTextEdited(self, text):
         self.pFilterModel.setFilterFixedString(text)
-        self.changeCallback.emit(text)
+        self.textChangedCallback.emit(text)
 
     def onReturnPressed(self):
         self.changeCallback.emit(self.currentText())
@@ -92,6 +91,7 @@ if __name__ == "__main__":
         print(string)
 
     w = EnumComboBox(["A", "B", "TEST"])
+    w.setEditable(False)
     w.changeCallback.connect(clb)
 
     w.show()

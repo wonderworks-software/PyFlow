@@ -148,7 +148,7 @@ class NodeBoxTreeWidget(QTreeWidget):
         nodeItem.docString = doc
         return nodeItem
 
-    def refresh(self, pattern='', pinDirection=None, pinStructure=PinStructure.Single):
+    def refresh(self, pattern='', pinDirection=None, pinStructure=StructureType.Single):
         self.clear()
         self.categoryPaths = {}
 
@@ -171,8 +171,8 @@ class NodeBoxTreeWidget(QTreeWidget):
                     if foo.__annotations__['nodeType'] == NodeTypes.Callable:
                         fooInpTypes.add('ExecPin')
                         fooOutTypes.add('ExecPin')
-                        fooInpStructs.add(PinStructure.Single)
-                        fooOutStructs.add(PinStructure.Single)
+                        fooInpStructs.add(StructureType.Single)
+                        fooOutStructs.add(StructureType.Single)
 
                     # consider return type if not None
                     if foo.__annotations__['return'] is not None:
@@ -197,15 +197,15 @@ class NodeBoxTreeWidget(QTreeWidget):
                         else:
                             self.suggestionsEnabled = True
                             if pinDirection == PinDirection.Output:
-                                if pinStructure != PinStructure.Multi:
-                                    hasMultiPins = PinStructure.Multi in fooInpStructs
+                                if pinStructure != StructureType.Multi:
+                                    hasMultiPins = StructureType.Multi in fooInpStructs
                                     if dataType in fooInpTypes and (pinStructure in fooInpStructs or hasMultiPins):
                                         self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                                 elif dataType in fooInpTypes:
                                     self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                             else:
-                                if pinStructure != PinStructure.Multi:
-                                    hasMultiPins = PinStructure.Multi in fooOutStructs
+                                if pinStructure != StructureType.Multi:
+                                    hasMultiPins = StructureType.Multi in fooOutStructs
                                     if dataType in fooOutTypes and (pinStructure in fooOutStructs or hasMultiPins):
                                         self.insertNode(nodeCategoryPath, name, foo.__doc__, libName)
                                 elif dataType in fooOutTypes:
@@ -228,8 +228,8 @@ class NodeBoxTreeWidget(QTreeWidget):
                     # filter by nodes input types
                     hints = node_class.pinTypeHints()
                     if pinDirection == PinDirection.Output:
-                        if pinStructure != PinStructure.Multi:
-                            hasMultiPins = PinStructure.Multi in hints.inputStructs
+                        if pinStructure != StructureType.Multi:
+                            hasMultiPins = StructureType.Multi in hints.inputStructs
                             if dataType in hints.inputTypes and (pinStructure in hints.inputStructs or hasMultiPins):
                                 self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
                         elif dataType in hints.inputTypes:
@@ -237,8 +237,8 @@ class NodeBoxTreeWidget(QTreeWidget):
                     else:
                         # if pressed pin is input pin
                         # filter by nodes output types
-                        if pinStructure != PinStructure.Multi:
-                            hasMultiPins = PinStructure.Multi in hints.outputStructs
+                        if pinStructure != StructureType.Multi:
+                            hasMultiPins = StructureType.Multi in hints.outputStructs
                             if dataType in hints.outputTypes and (pinStructure in hints.outputStructs or hasMultiPins):
                                 self.insertNode(nodeCategoryPath, node_class.__name__, node_class.description())
                         elif dataType in hints.outputTypes:

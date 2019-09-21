@@ -23,8 +23,8 @@ from copy import copy
 class constant(NodeBase):
     def __init__(self, name):
         super(constant, self).__init__(name)
-        self.input = self.createInputPin("in", 'AnyPin', defaultValue=0.0, structure=PinStructure.Multi, constraint="1", structConstraint="1")
-        self.output = self.createOutputPin("out", 'AnyPin', defaultValue=0.0, structure=PinStructure.Multi, constraint="1", structConstraint="1")
+        self.input = self.createInputPin("in", 'AnyPin', defaultValue=0.0, structure=StructureType.Multi, constraint="1", structConstraint="1")
+        self.output = self.createOutputPin("out", 'AnyPin', defaultValue=0.0, structure=StructureType.Multi, constraint="1", structConstraint="1")
         self.input.disableOptions(PinOptions.ChangeTypeOnConnection)
         self.output.disableOptions(PinOptions.ChangeTypeOnConnection)
         pinAffects(self.input, self.output)
@@ -40,8 +40,8 @@ class constant(NodeBase):
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('AnyPin')
         helper.addOutputDataType('AnyPin')
-        helper.addInputStruct(PinStructure.Multi)
-        helper.addOutputStruct(PinStructure.Multi)
+        helper.addInputStruct(StructureType.Multi)
+        helper.addOutputStruct(StructureType.Multi)
         return helper
 
     @staticmethod
@@ -86,8 +86,8 @@ class constant(NodeBase):
         b = self.output.initType(dataType,init)
 
     def selectStructure(self,name):
-        self.input.changeStructure(PinStructure(name),True)
-        self.output.changeStructure(PinStructure(name),True)
+        self.input.changeStructure(StructureType(name),True)
+        self.output.changeStructure(StructureType(name),True)
 
 
     def compute(self, *args, **kwargs):

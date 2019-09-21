@@ -322,7 +322,7 @@ class BlueprintCanvas(CanvasBase):
         """
         return list(self.nodes.values())
 
-    def showNodeBox(self, pinDirection=None, pinStructure=PinStructure.Single):
+    def showNodeBox(self, pinDirection=None, pinStructure=StructureType.Single):
         self.node_box.show()
         self.node_box.move(QtGui.QCursor.pos())
         self.node_box.treeWidget.refresh('', pinDirection, pinStructure)

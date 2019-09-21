@@ -105,7 +105,7 @@ class UIConstantNode(UINodeBase):
                 self._rawNode.pinTypes.index(self.input.dataType))
 
         structSelector = QComboBox()
-        for i in [i.name for i in list(PinStructure)]:
+        for i in [i.name for i in list(StructureType)]:
             structSelector.addItem(i)
         structSelector.inputsCategory = inputsCategory
 

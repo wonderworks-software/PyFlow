@@ -29,7 +29,7 @@ class cliexit(NodeBase):
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('ExecPin')
-        helper.addInputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Single)
         return helper
 
     @staticmethod

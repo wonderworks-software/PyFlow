@@ -770,11 +770,8 @@ class PinOptions(Flag):
     DictElementSupported = auto()  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
 
 
-class PinStructure(IntEnum):
-    """Structure of Pins
-
-    Used for determine Pin Structure Type
-    This represents the data structures a pin can hold.
+class StructureType(IntEnum):
+    """Used to determine structure type for values.
     """
 
     Single = 0  #: Single data structure
@@ -784,18 +781,18 @@ class PinStructure(IntEnum):
 
 
 def findStructFromValue(value):
-    """Finds :class:`~PyFlow.Core.Common.PinStructure` from value
+    """Finds :class:`~PyFlow.Core.Common.StructureType` from value
 
     :param value: input value to find structure.
     :returns: Structure Type for input value
-    :rtype: :class:`~PyFlow.Core.Common.PinStructure`
+    :rtype: :class:`~PyFlow.Core.Common.StructureType`
     """
 
     if isinstance(value, list):
-        return PinStructure.Array
+        return StructureType.Array
     if isinstance(value, dict):
-        return PinStructure.Dict
-    return PinStructure.Single
+        return StructureType.Dict
+    return StructureType.Single
 
 
 class PinSelectionGroup(IntEnum):

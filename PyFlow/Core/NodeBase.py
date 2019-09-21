@@ -474,7 +474,7 @@ class NodeBase(INode):
                     continue
                 pinAffects(i, o)
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
         """Creates input pin
 
         :param pinName: Pin name
@@ -486,7 +486,7 @@ class NodeBase(INode):
         :param foo: Pin callback. used for exec pins
         :type foo: function
         :param structure: Pin structure
-        :type structure: :class:`~PyFlow.Core.Common.PinStructure.Single`
+        :type structure: :class:`~PyFlow.Core.Common.StructureType.Single`
         :param constraint: Pin constraint. Should be any hashable type. We use str
         :type constraint: object
         :param structConstraint: Pin struct constraint. Also should be hashable type
@@ -501,11 +501,11 @@ class NodeBase(INode):
         p.structureType = structure
         p.group = group
 
-        if structure == PinStructure.Array:
+        if structure == StructureType.Array:
             p.initAsArray(True)
-        elif structure == PinStructure.Dict:
+        elif structure == StructureType.Dict:
             p.initAsDict(True)
-        elif structure == PinStructure.Multi:
+        elif structure == StructureType.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
         if foo:
@@ -530,7 +530,7 @@ class NodeBase(INode):
             p.updateStructConstraint(structConstraint)
         return p
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
         """Creates output pin
 
         :param pinName: Pin name
@@ -540,7 +540,7 @@ class NodeBase(INode):
         :param defaultValue: Pin default value
         :type defaultValue: object
         :param structure: Pin structure
-        :type structure: :class:`~PyFlow.Core.Common.PinStructure.Single`
+        :type structure: :class:`~PyFlow.Core.Common.StructureType.Single`
         :param constraint: Pin constraint. Should be any hashable type. We use str
         :type constraint: object
         :param structConstraint: Pin struct constraint. Also should be hashable type
@@ -555,11 +555,11 @@ class NodeBase(INode):
         p.structureType = structure
         p.group = group
 
-        if structure == PinStructure.Array:
+        if structure == StructureType.Array:
             p.initAsArray(True)
-        elif structure == PinStructure.Dict:
+        elif structure == StructureType.Dict:
             p.initAsDict(True)
-        elif structure == PinStructure.Multi:
+        elif structure == StructureType.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
         if defaultValue is not None or dataType == "AnyPin":
@@ -846,9 +846,9 @@ class NodeBase(INode):
             if returnPinOptionsToDisable is not None:
                 p.disableOptions(returnPinOptionsToDisable)
             if not p.isArray() and p.optionEnabled(PinOptions.ArraySupported):
-                p.structureType = PinStructure.Multi
+                p.structureType = StructureType.Multi
             elif p.isArray():
-                p.structureType = PinStructure.Array
+                p.structureType = StructureType.Array
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
@@ -895,9 +895,9 @@ class NodeBase(INode):
                 if pinOptionsToDisable is not None:
                     outRef.disableOptions(pinOptionsToDisable)
                 if not outRef.isArray() and outRef.optionEnabled(PinOptions.ArraySupported):
-                    outRef.structureType = PinStructure.Multi
+                    outRef.structureType = StructureType.Multi
                 elif outRef.isArray():
-                    outRef.structureType = PinStructure.Array
+                    outRef.structureType = StructureType.Array
                 refs.append(outRef)
             else:
                 pinDataType = pinDescriptionTuple[0]
@@ -933,8 +933,8 @@ class NodeBase(INode):
                 if pinOptionsToDisable is not None:
                     inp.disableOptions(pinOptionsToDisable)
                 if not inp.isArray() and inp.optionEnabled(PinOptions.ArraySupported):
-                    inp.structureType = PinStructure.Multi
+                    inp.structureType = StructureType.Multi
                 elif inp.isArray():
-                    inp.structureType = PinStructure.Array
+                    inp.structureType = StructureType.Array
         raw_inst.autoAffectPins()
         return raw_inst

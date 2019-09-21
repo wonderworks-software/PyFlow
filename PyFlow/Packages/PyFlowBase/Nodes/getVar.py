@@ -28,7 +28,10 @@ class getVar(NodeBase):
         super(getVar, self).__init__(name)
         assert(isinstance(var, Variable))
         self._var = var
-        self.out = self.createOutputPin('out', var.dataType)
+        if var.structure == StructureType.Dict:
+            self.out = self.createOutputPin('out', var.value.keyType, structure=StructureType.Dict)
+        else:
+            self.out = self.createOutputPin('out', var.dataType)
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
         self._var.valueChanged.connect(self.onVarValueChanged)
@@ -50,10 +53,13 @@ class getVar(NodeBase):
 
     def updateStructure(self):
         self.out.disconnectAll()
-        if self._var.structure == PinStructure.Single:
+        if self._var.structure == StructureType.Single:
             self.out.setAsArray(False)
-        if self._var.structure == PinStructure.Array:
+        if self._var.structure == StructureType.Array:
             self.out.setAsArray(True)
+        if self._var.structure == StructureType.Dict:
+            self.out.setAsDict(True)
+            # self.out._keyType = self.var.value.keyType
 
     def onVarStructureChanged(self, newStructure):
         self.out.structureType = newStructure

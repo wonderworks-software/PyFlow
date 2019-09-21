@@ -39,8 +39,8 @@ class convertTo(NodeBase):
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('AnyPin')
         helper.addOutputDataType('AnyPin')
-        helper.addInputStruct(PinStructure.Single)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Single)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

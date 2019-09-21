@@ -21,13 +21,13 @@ from PyFlow.Core.Common import *
 class makeArray(NodeBase):
     def __init__(self, name):
         super(makeArray, self).__init__(name)
-        self.arrayData = self.createInputPin('data', 'AnyPin', structure=PinStructure.Array, constraint="1")
+        self.arrayData = self.createInputPin('data', 'AnyPin', structure=StructureType.Array, constraint="1")
         self.arrayData.enableOptions(PinOptions.AllowMultipleConnections)
         self.arrayData.disableOptions(PinOptions.SupportsOnlyArrays)
 
         self.sorted = self.createInputPin('sorted', 'BoolPin')
         self.reversed = self.createInputPin('reversed', 'BoolPin')
-        self.outArray = self.createOutputPin('out', 'AnyPin', structure=PinStructure.Array, constraint="1")
+        self.outArray = self.createOutputPin('out', 'AnyPin', structure=StructureType.Array, constraint="1")
 
         self.result = self.createOutputPin('result', 'BoolPin')
 
@@ -38,10 +38,10 @@ class makeArray(NodeBase):
         helper.addInputDataType('BoolPin')
         helper.addOutputDataType('AnyPin')
         helper.addOutputDataType('BoolPin')
-        helper.addInputStruct(PinStructure.Array)
-        helper.addInputStruct(PinStructure.Single)
-        helper.addOutputStruct(PinStructure.Array)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Array)
+        helper.addInputStruct(StructureType.Single)
+        helper.addOutputStruct(StructureType.Array)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

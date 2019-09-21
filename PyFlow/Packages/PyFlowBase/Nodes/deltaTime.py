@@ -28,7 +28,7 @@ class deltaTime(NodeBase):
     def pinTypeHints():
         helper = NodePinsSuggestionsHelper()
         helper.addOutputDataType('FloatPin')
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

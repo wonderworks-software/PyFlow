@@ -48,7 +48,7 @@ class PinBase(IPin):
         * **onExecute** : Fired when Pin execution gets called
         * **containerTypeChanged** : Fired when Pin Structure Changes
         * **dataBeenSet** : Fired when data changes, sends New Data
-        * **dictChanged** : Fired when current structure changes to :py:const:`PyFlow.Core.Common.PinStructure.Dict`, sends Dict key DataType
+        * **dictChanged** : Fired when current structure changes to :py:const:`PyFlow.Core.Common.StructureType.Dict`, sends Dict key DataType
         * **errorOccurred** : Fired when some error fired, like incorrect dataType set, sends ocurred Error
         * **errorCleared** : Fired when error cleared
 
@@ -114,7 +114,7 @@ class PinBase(IPin):
         # Flags
         self._flags = PinOptions.Storable
         self._origFlags = self._flags
-        self._structure = PinStructure.Single
+        self._structure = StructureType.Single
         self._currStructure = self._structure
         self._isAny = False
         self._isArray = False
@@ -313,9 +313,11 @@ class PinBase(IPin):
 
         self._isArray = bIsArray
         if bIsArray:
+            if self.isDict():
+                self.setAsDict(False)
             # list pins supports only lists by default
             self.enableOptions(PinOptions.SupportsOnlyArrays)
-            self._currStructure = PinStructure.Array
+            self._currStructure = StructureType.Array
             self._isDict = False
         else:
             self._currStructure = self._structure
@@ -334,9 +336,11 @@ class PinBase(IPin):
 
         self._isDict = bIsDict
         if bIsDict:
+            if self.isArray():
+                self.setAsArray(False)
             # list pins supports only lists by default
             self.enableOptions(PinOptions.SupportsOnlyArrays)
-            self._currStructure = PinStructure.Dict
+            self._currStructure = StructureType.Dict
             self._isArray = False
         else:
             self._currStructure = self._structure
@@ -548,7 +552,7 @@ class PinBase(IPin):
                 data = data[1]
             if not self.isArray() and not self.isDict():
                 if isinstance(data, DictElement):
-                   self._data = DictElement(data[0], self.super.processData(data[1]))
+                    self._data = DictElement(data[0], self.super.processData(data[1]))
                 else:
                     self._data = self.super.processData(data)
             elif self.isArray():
@@ -612,7 +616,7 @@ class PinBase(IPin):
     def structureType(self):
         """Returns current structure of this pin
 
-        :rtype: :class:`~PyFlow.Core.Common.PinStructure`
+        :rtype: :class:`~PyFlow.Core.Common.StructureType`
         """
         return self._structure
 
@@ -674,15 +678,15 @@ class PinBase(IPin):
     def getCurrentStructure(self):
         """Returns this pin structure type
 
-        :rtype: :class:`~PyFlow.Core.Common.PinStructure`
+        :rtype: :class:`~PyFlow.Core.Common.StructureType`
         """
-        if self.structureType == PinStructure.Multi:
+        if self.structureType == StructureType.Multi:
             if self._alwaysSingle:
-                return PinStructure.Single
+                return StructureType.Single
             elif self._alwaysList:
-                return PinStructure.Array
+                return StructureType.Array
             elif self._alwaysDict:
-                return PinStructure.Dict
+                return StructureType.Dict
             else:
                 return self.structureType
         else:
@@ -692,7 +696,7 @@ class PinBase(IPin):
         """Changes this pin structure type
 
         :param newStruct: Target structure
-        :type newStruct: :class:`~PyFlow.Core.Common.PinStructure`
+        :type newStruct: :class:`~PyFlow.Core.Common.StructureType`
         :param init: **docs goes here**
         :type init: bool
         """
@@ -716,9 +720,9 @@ class PinBase(IPin):
         """
         if not init and (self._alwaysList or self._alwaysSingle or self._alwaysDict):
             return False
-        if self.structConstraint is None and self.structureType == PinStructure.Multi:
+        if self.structConstraint is None and self.structureType == StructureType.Multi:
             return True
-        elif self.structureType != PinStructure.Multi:
+        elif self.structureType != StructureType.Multi:
             return False
         else:
             con = []
@@ -736,18 +740,18 @@ class PinBase(IPin):
                 def testfree():
                     free = False
                     for pin in getConnectedPins(self):
-                        if pin._structure == PinStructure.Multi:
+                        if pin._structure == StructureType.Multi:
                             free = True
                         else:
                             free = False
                             break
                     return free
-                if any([self._currStructure == PinStructure.Single and newStruct == PinStructure.Array  and not self.optionEnabled(PinOptions.ArraySupported) and self.hasConnections(),
-                        self._currStructure == PinStructure.Single and newStruct == PinStructure.Dict   and not self.optionEnabled(PinOptions.DictSupported)  and self.hasConnections(),
-                        self._currStructure == PinStructure.Array  and newStruct == PinStructure.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
-                        self._currStructure == PinStructure.Dict   and newStruct == PinStructure.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
-                        self._currStructure == PinStructure.Array  and newStruct == PinStructure.Dict   and self.hasConnections(),
-                        self._currStructure == PinStructure.Dict   and newStruct == PinStructure.Array  and self.hasConnections()]):
+                if any([self._currStructure == StructureType.Single and newStruct == StructureType.Array  and not self.optionEnabled(PinOptions.ArraySupported) and self.hasConnections(),
+                        self._currStructure == StructureType.Single and newStruct == StructureType.Dict   and not self.optionEnabled(PinOptions.DictSupported)  and self.hasConnections(),
+                        self._currStructure == StructureType.Array  and newStruct == StructureType.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
+                        self._currStructure == StructureType.Dict   and newStruct == StructureType.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
+                        self._currStructure == StructureType.Array  and newStruct == StructureType.Dict   and self.hasConnections(),
+                        self._currStructure == StructureType.Dict   and newStruct == StructureType.Array  and self.hasConnections()]):
                     free = testfree()
             if free:
                 for port in self.owningNode().structConstraints[self.structConstraint] + con:
@@ -765,29 +769,29 @@ class PinBase(IPin):
         else:
             nodePins = set([self])
         for connectedPin in getConnectedPins(self):
-            if connectedPin.structureType == PinStructure.Multi:
+            if connectedPin.structureType == StructureType.Multi:
                 if connectedPin.canChangeStructure(self._currStructure, init=init):
                     nodePins.add(connectedPin)
         for neighbor in nodePins:
             if neighbor not in traversed:
-                neighbor.setAsArray(newStruct == PinStructure.Array)
-                neighbor.setAsDict(newStruct == PinStructure.Dict)
+                neighbor.setAsArray(newStruct == StructureType.Array)
+                neighbor.setAsDict(newStruct == StructureType.Dict)
                 if connecting:
                     if init:
-                        neighbor._alwaysList = newStruct == PinStructure.Array
-                        neighbor._alwaysSingle = newStruct == PinStructure.Single
-                        neighbor._alwaysDict = newStruct == PinStructure.Dict
+                        neighbor._alwaysList = newStruct == StructureType.Array
+                        neighbor._alwaysSingle = newStruct == StructureType.Single
+                        neighbor._alwaysDict = newStruct == StructureType.Dict
                     neighbor._currStructure = newStruct
                     neighbor.disableOptions(PinOptions.ArraySupported)
                     neighbor.disableOptions(PinOptions.DictSupported)
-                    if newStruct == PinStructure.Array:
+                    if newStruct == StructureType.Array:
                         neighbor.enableOptions(PinOptions.ArraySupported)
-                    elif newStruct == PinStructure.Dict:
+                    elif newStruct == StructureType.Dict:
                         neighbor.enableOptions(PinOptions.DictSupported)   
-                    elif newStruct == PinStructure.Multi:
+                    elif newStruct == StructureType.Multi:
                         neighbor.enableOptions(PinOptions.ArraySupported)
                         neighbor.enableOptions(PinOptions.DictSupported)
-                    elif newStruct == PinStructure.Single:
+                    elif newStruct == StructureType.Single:
                         neighbor.disableOptions(PinOptions.SupportsOnlyArrays)
                 else:
                     neighbor._currStructure = neighbor._structure
