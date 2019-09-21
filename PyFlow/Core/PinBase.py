@@ -720,7 +720,7 @@ class PinBase(IPin):
         """
         if not init and (self._alwaysList or self._alwaysSingle or self._alwaysDict):
             return False
-        if self.structConstraint is None and self.structureType == StructureType.Multi:
+        if self.structConstraint is None or self.structureType == StructureType.Multi:
             return True
         elif self.structureType != StructureType.Multi:
             return False
@@ -746,12 +746,12 @@ class PinBase(IPin):
                             free = False
                             break
                     return free
-                if any([self._currStructure == StructureType.Single and newStruct == StructureType.Array  and not self.optionEnabled(PinOptions.ArraySupported) and self.hasConnections(),
-                        self._currStructure == StructureType.Single and newStruct == StructureType.Dict   and not self.optionEnabled(PinOptions.DictSupported)  and self.hasConnections(),
-                        self._currStructure == StructureType.Array  and newStruct == StructureType.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
-                        self._currStructure == StructureType.Dict   and newStruct == StructureType.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
-                        self._currStructure == StructureType.Array  and newStruct == StructureType.Dict   and self.hasConnections(),
-                        self._currStructure == StructureType.Dict   and newStruct == StructureType.Array  and self.hasConnections()]):
+                if any([self._currStructure == StructureType.Single and newStruct == StructureType.Array and not self.optionEnabled(PinOptions.ArraySupported) and self.hasConnections(),
+                        self._currStructure == StructureType.Single and newStruct == StructureType.Dict and not self.optionEnabled(PinOptions.DictSupported) and self.hasConnections(),
+                        self._currStructure == StructureType.Array and newStruct == StructureType.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
+                        self._currStructure == StructureType.Dict and newStruct == StructureType.Single and self.optionEnabled(PinOptions.SupportsOnlyArrays) and self.hasConnections(),
+                        self._currStructure == StructureType.Array and newStruct == StructureType.Dict and self.hasConnections(),
+                        self._currStructure == StructureType.Dict and newStruct == StructureType.Array and self.hasConnections()]):
                     free = testfree()
             if free:
                 for port in self.owningNode().structConstraints[self.structConstraint] + con:
