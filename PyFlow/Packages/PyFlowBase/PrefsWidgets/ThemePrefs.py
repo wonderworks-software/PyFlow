@@ -59,7 +59,7 @@ class ThemePreferences(CategoryWidgetBase):
         options = inspect.getmembers(editableStyleSheet())
         for name, obj in options:
             if isinstance(obj, QtGui.QColor):
-                inp = pyf_ColorSlider(type="int", alpha=len(list(obj.getRgbF())) == 4, startColor=list(obj.getRgbF()))
+                inp = pyf_ColorSlider(type="int", alpha=len(list(obj.toTuple())) == 4, startColor=list(obj.toTuple()))
                 inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
                 if name in ["TextColor", "MainColor", "TextSelectedColor", "ButtonsColor"]:
                     general.addWidget(name, inp)
@@ -68,7 +68,7 @@ class ThemePreferences(CategoryWidgetBase):
                 elif name in ["CanvasBgColor", "CanvastextColor", "CanvasGridColor", "CanvasGridColorDarker"]:
                     canvas.addWidget(name, inp)
             elif isinstance(obj, list):
-                if name in ["GridSizeFine", "GridSizeHuge", "ConnectionRoundness","ConnectionOffset"]:
+                if name in ["GridSizeFine", "GridSizeHuge", "ConnectionRoundness", "ConnectionOffset"]:
                     inp = pyf_Slider(self)
                     inp.setValue(obj[0])
                     inp.setMinimum(0)

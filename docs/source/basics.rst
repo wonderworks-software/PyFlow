@@ -49,5 +49,12 @@ General
   * **Additional package locations**. This is comma separated string with directories where to search packages.
     For example if you are running the editor inside studio, you can load packages from network location
 
-  * **External etxt editor**. Text editor used for text editing. For now we use it only with python node
+  * **External text editor**. Text editor used for text editing. For now we use it only with python node
   * **History depth**. Defines how many undo steps will be available.
+
+Input
+-----
+
+.. image:: resources/prefs_input.png
+
+**Left mouse click** to start capturing input. To finish capturing and assign key/button, press **Enter**.
