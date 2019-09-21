@@ -220,17 +220,23 @@ class GraphBase(ISerializable):
                     try:
                         lhsNode = self._nodes[uuid.UUID(linkData["lhsNodeUid"])]
                     except:
-                        print("Failed to restore connection")
+                        lhsNode = self.findNode(linkData["lhsNodeName"])
+
+                    try:
+                        lhsPin = lhsNode.orderedOutputs[linkData["outPinId"]]
+                    except:
                         continue
-                    lhsPin = lhsNode.orderedOutputs[linkData["outPinId"]]
 
                     try:
                         rhsNode = self._nodes[uuid.UUID(linkData["rhsNodeUid"])]
                     except:
-                        print("Failed to restore connection")
+                        rhsNode = self.findNode(linkData["rhsNodeName"])
+
+                    try:
+                        rhsPin = rhsNode.orderedInputs[linkData["inPinId"]]
+                    except:
                         continue
 
-                    rhsPin = rhsNode.orderedInputs[linkData["inPinId"]]
                     if not arePinsConnected(lhsPin, rhsPin):
                         connected = connectPins(lhsPin, rhsPin)
                         assert(connected is True), "Failed to restore connection"
