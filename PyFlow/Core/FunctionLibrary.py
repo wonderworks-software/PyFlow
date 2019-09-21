@@ -81,9 +81,15 @@ Examples:
         >>> (PinSpecifires.ENABLED_OPTIONS: None)
         >>> (PinSpecifires.DISABLED_OPTIONS: None)
         >>> (PinSpecifires.INPUT_WIDGET_VARIANT: "DefaultWidget")
+        >>> (PinSpecifires.DESCRIPTION: str)
         >>> (PinSpecifires.VALUE_LIST: [str])
+        >>> (PinSpecifires.VALUE_RANGE: (int|float, int|float))
+        >>> (PinSpecifires.DRAGGER_STEPS: [int|float])
 
-        "Value list is specific for string pins. If Specified - enum input widget will be created for this pin."
+        Value list is specific for string pins. If Specified - enum input widget will be created for this pin.
+        If value range is specified, slider will be created in property view instead of value box.
+        Dragger steps is a list of values which will be used in value dragger (middle mouse button).
+
 
     node meta
         dict that describes different node options and attributes to be considered on generation

@@ -840,6 +840,20 @@ class Direction(IntEnum):
 
 
 class PinSpecifires:
+    """Pin specifires constants
+
+    :var SUPPORTED_DATA_TYPES: To specify supported data types list
+    :var CONSTRAINT: To specify type constraint key
+    :var STRUCT_CONSTRAINT: To specify struct constraint key
+    :var ENABLED_OPTIONS: To enable options
+    :var DISABLED_OPTIONS: To disable options
+    :var INPUT_WIDGET_VARIANT: To specify widget variant string
+    :var DESCRIPTION: To specify description for pin, which will be used as tooltip
+    :var VALUE_LIST: Specific for string pin. If specified, combo box will be created
+    :var VALUE_RANGE: Specific for ints and floats. If specified, slider will be created instead of value box
+    :var DRAGGER_STEPS: To specify custom value dragger steps
+    """
+
     SUPPORTED_DATA_TYPES = "supportedDataTypes"
     CONSTRAINT = "constraint"
     STRUCT_CONSTRAINT = "structConstraint"
@@ -853,6 +867,12 @@ class PinSpecifires:
 
 
 class NodeMeta:
+    """Node meta constants
+
+    :var CATEGORY: To specify category for node. Will be considered by node box
+    :var KEYWORDS: To specify list of additional keywords, used in node box search field
+    :var CACHE_ENABLED: To specify if node is cached or not
+    """
     CATEGORY = "Category"
     KEYWORDS = "Keywords"
     CACHE_ENABLED = "CacheEnabled"
