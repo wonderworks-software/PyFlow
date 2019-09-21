@@ -41,24 +41,46 @@ from PyFlow import getAllPinClasses
 # Colored rounded rect
 # color corresponds to pin data type color
 class TypeWidget(QWidget):
-    def __init__(self, color, parent=None):
-        super(TypeWidget, self).__init__()
-        self.color = color
+    def __init__(self, keyColor, valueColor, parent=None):
+        super(TypeWidget, self).__init__(parent=parent)
+        self.keyColor = keyColor
+        self.valueColor = valueColor
         self.setMinimumWidth(24)
 
     def paintEvent(self, event):
         painter = QtGui.QPainter()
         painter.begin(self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-        painter.setBrush(QtGui.QColor.fromRgb(*self.color))
-        pen = QtGui.QPen()
-        pen.setColor(QtGui.QColor(0, 0, 0, 0))
-        painter.setPen(pen)
-        rect = event.rect()
-        rect.setHeight(10)
-        rect.setWidth(15)
-        rect.moveTop(3)
-        painter.drawRoundedRect(rect, 5, 5)
+
+        keyColor = QtGui.QColor.fromRgb(*self.keyColor)
+
+        structure = self.parent()._rawVariable.structure
+        if structure == PinStructure.Single:
+            painter.setRenderHint(QtGui.QPainter.Antialiasing)
+            painter.setBrush(keyColor)
+            pen = QtGui.QPen()
+            pen.setColor(QtGui.QColor(0, 0, 0, 0))
+            painter.setPen(pen)
+            rect = event.rect()
+            rect.setHeight(10)
+            rect.setWidth(15)
+            rect.moveTop(3)
+            painter.drawRoundedRect(rect, 5, 5)
+
+        if structure == PinStructure.Array:
+            gridSize = 3
+            size = self.height()
+            cellW = size / gridSize
+            cellH = size / gridSize
+            pinCenter = QtCore.QPoint(0, 0)
+
+            painter.setBrush(QtGui.QBrush(keyColor))
+            painter.setPen(QtGui.QPen(QtCore.Qt.black, 0.2))
+            painter.drawLine(0, 0, self.width(), self.height())
+            for row in range(gridSize):
+                for column in range(gridSize):
+                    x = row * cellW
+                    y = column * cellH
+                    painter.drawRect(x, y, cellW, cellH)
 
         painter.end()
 
@@ -104,6 +126,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         self._rawVariable.structure = PinStructure[name]
         self.variablesWidget.pyFlowInstance.onRequestFillProperties(self.createPropertiesWidget)
         EditorHistory().saveState("Change variable struct", modify=True)
+        self.widget.update()
 
     def setDataType(self, dataType):
         self.dataType = dataType
