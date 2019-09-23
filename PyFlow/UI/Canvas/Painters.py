@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from math import atan2, degrees
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import QStyle
@@ -156,8 +156,8 @@ class NodePainter(object):
     def default(node, painter, option, widget):
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), node.geometry().size())
         # use 3 levels of detail
-        lod = node.canvasRef().getLodValueFromCurrentScale(3)
-        SWITCH_LOD = 3
+        lod = node.canvasRef().getCanvasLodValueFromCurrentScale()
+        SWITCH_LOD = editableStyleSheet().NodeSwitch[0]
 
         color = node.color
 
@@ -297,14 +297,16 @@ class PinPainter(object):
 
     @staticmethod
     def asValuePin(pin, painter, option, widget):
-        lod = pin.owningNode().canvasRef().getLodValueFromCurrentScale(3)
+        lod = pin.owningNode().canvasRef().getCanvasLodValueFromCurrentScale()
+        SWITCH_LOD = editableStyleSheet().PinSwitch[0]
+
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
 
         w = frame.width() / 2
         h = frame.height() / 2
         halfPinSize = pin.pinSize / 2
 
-        if lod < 3 and not pin.bLabelHidden:
+        if lod < SWITCH_LOD and not pin.bLabelHidden:
             painter.setFont(pin._font)
             textWidth = QtGui.QFontMetrics(
                 painter.font()).width(pin.displayName())
@@ -340,7 +342,8 @@ class PinPainter(object):
 
     @staticmethod
     def asExecPin(pin, painter, option, widget):
-        lod = pin.owningNode().canvasRef().getLodValueFromCurrentScale(3)
+        lod = pin.owningNode().canvasRef().getCanvasLodValueFromCurrentScale()
+        SWITCH_LOD = editableStyleSheet().PinSwitch[0]
         frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
         w = frame.width() / 2
         h = frame.height() / 2
@@ -348,7 +351,7 @@ class PinPainter(object):
         painter.setFont(pin._font)
         painter.setPen(PinPainter._execPen)
 
-        if lod < 3 and not pin.bLabelHidden:
+        if lod < SWITCH_LOD and not pin.bLabelHidden:
             textWidth = QtGui.QFontMetrics(
                 painter.font()).width(pin.displayName())
             textHeight = QtGui.QFontMetrics(painter.font()).height()
@@ -399,7 +402,8 @@ class PinPainter(object):
 
     @staticmethod
     def asArrayPin(pin, painter, option, widget):
-        lod = pin.owningNode().canvasRef().getLodValueFromCurrentScale(3)
+        lod = pin.owningNode().canvasRef().getCanvasLodValueFromCurrentScale()
+        SWITCH_LOD = editableStyleSheet().PinSwitch[0]
         gridSize = 3
         cellW = pin.pinSize / gridSize
         cellH = pin.pinSize / gridSize
@@ -414,7 +418,7 @@ class PinPainter(object):
                 y = column * cellH + pinCenter.y() - halfPinSize
                 painter.drawRect(x, y, cellW, cellH)
 
-        if lod < 3 and not pin.bLabelHidden:
+        if lod < SWITCH_LOD and not pin.bLabelHidden:
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
@@ -435,7 +439,8 @@ class PinPainter(object):
 
     @staticmethod
     def asDictPin(pin, painter, option, widget):
-        lod = pin.owningNode().canvasRef().getLodValueFromCurrentScale(3)
+        lod = pin.owningNode().canvasRef().getCanvasLodValueFromCurrentScale()
+        SWITCH_LOD = editableStyleSheet().PinSwitch[0]
         cellW = pin.pinSize / 3
         cellH = pin.pinSize / 3
         pinCenter = pin.pinCenter()
@@ -453,7 +458,7 @@ class PinPainter(object):
                 painter.setBrush(QtGui.QBrush(QtGui.QColor(*keyPin.color())))
             painter.drawRect(x, y, cellW, cellH)
 
-        if lod < 3 and not pin.bLabelHidden:
+        if lod < SWITCH_LOD and not pin.bLabelHidden:
             frame = QtCore.QRectF(QtCore.QPointF(0, 0), pin.geometry().size())
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
@@ -472,7 +477,7 @@ class PinPainter(object):
                 painter.setBrush(QtGui.QColor(128, 128, 128, 30))
                 painter.drawRoundedRect(frame, 3, 3)
 
-# Determines how to paint a conection:
+# Determines how to paint a connection:
 class ConnectionPainter(object):
 
     @staticmethod
@@ -484,9 +489,8 @@ class ConnectionPainter(object):
         return mPath
 
     @staticmethod
-    def roundCornersPath(path, roundnes, closed=False):
-        mPath = QtGui.QPainterPath()
-
+    def chanferPath(path, offset, closed=False):
+        mPath = []
         for i, point in enumerate(path):
             prevPoint = nextPoint = QtGui.QVector2D(point)
             currPoint = QtGui.QVector2D(point)
@@ -502,22 +506,109 @@ class ConnectionPainter(object):
             fDist = nextPoint - currPoint
             bDist = currPoint - prevPoint
 
-            n = currPoint + fDist.normalized() * roundnes
-            p = currPoint - bDist.normalized() * roundnes
-            if i == 0 and not closed:
-                mPath.moveTo(point)
-            elif i == 0 and closed:
-                mPath.moveTo(QtCore.QPoint(n.x(), n.y()))
-            elif i != len(path) - 1 or closed:
-                mPath.lineTo(QtCore.QPoint(p.x(), p.y()))
-                mPath.quadTo(point, QtCore.QPoint(n.x(), n.y()))
-            elif i == len(path) - 1 and not closed:
-                mPath.lineTo(point)
+            maxLen = max(0, min(fDist.length() / 2, (bDist.length()) / 2))
+
+            dot = fDist.x() * bDist.x() + fDist.y() * bDist.y()      # dot product
+            det = fDist.x() * bDist.y() - fDist.y() * bDist.x()      # determinant
+            angle = degrees(atan2(det, dot))  # atan2(y, x) or atan2(sin, cos)
+
+            if abs(angle) > 45:
+                n = currPoint + fDist.normalized() * maxLen
+                p = currPoint - bDist.normalized() * maxLen
+                if i == 0 and not closed:
+                    mPath.append(point)
+                elif i == 0 and closed:
+                    mPath.append(QtCore.QPointF(p.x(), p.y()))
+                    mPath.append(QtCore.QPointF(n.x(), n.y()))
+                elif i != len(path) - 1 or closed:
+                    mPath.append(QtCore.QPointF(p.x(), p.y()))
+                    mPath.append(QtCore.QPointF(n.x(), n.y()))
+                elif i == len(path) - 1 and not closed:
+                    mPath.append(point)
+                if i == len(path) - 1 and closed:
+                    n = nextPoint - fDist.normalized() * maxLen
+                    mPath.append(QtCore.QPointF(n.x(), n.y()))
+            else:
+                mPath.append(point)
 
         return mPath
 
     @staticmethod
-    def BasicCircuit(p1, p2, offset=20, roundnes=5, sameSide=0, lod=0, opt=0):
+    def roundCornersPath(path, roundness, closed=False, highlightedSegment=-1):
+        mPath = QtGui.QPainterPath()
+        highlightedSegmentPath = QtGui.QPainterPath()
+        for i, point in enumerate(path):
+            prevPoint = nextPoint = QtGui.QVector2D(point)
+            currPoint = QtGui.QVector2D(point)
+            if i != len(path) - 1:
+                nextPoint = QtGui.QVector2D(path[i + 1])
+            elif closed:
+                nextPoint = QtGui.QVector2D(path[0])
+            if i != 0:
+                prevPoint = QtGui.QVector2D(path[i - 1])
+            elif closed:
+                prevPoint = QtGui.QVector2D(path[-1])
+
+            fDist = nextPoint - currPoint
+            bDist = currPoint - prevPoint
+
+            xRoundnes = min(min(roundness, fDist.length() / 2.0), bDist.length() / 2.0)
+
+            n = currPoint + fDist.normalized() * xRoundnes
+            p = currPoint - bDist.normalized() * xRoundnes
+            if i == 0 and not closed:
+                mPath.moveTo(point)
+            elif i == 0 and closed:
+                mPath.moveTo(QtCore.QPointF(p.x(), p.y()))
+                mPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
+
+            elif i != len(path) - 1 or closed:
+                mPath.lineTo(QtCore.QPointF(p.x(), p.y()))
+                mPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
+
+            elif i == len(path) - 1 and not closed:
+                mPath.lineTo(point)
+            if i == len(path) - 1 and closed:
+                n = nextPoint - fDist.normalized() * xRoundnes
+                mPath.lineTo(QtCore.QPointF(n.x(), n.y()))
+
+            if i == highlightedSegment:
+                if i != 0:
+                    highlightedSegmentPath.moveTo(QtCore.QPointF(p.x(), p.y()))
+                    highlightedSegmentPath.quadTo(point, QtCore.QPointF(n.x(), n.y()))
+                else:
+                    highlightedSegmentPath.moveTo(point)
+                currPoint = QtGui.QVector2D(path[i + 1])
+                nextPoint = QtGui.QVector2D(path[i + 2])
+                prevPoint = QtGui.QVector2D(point.x(), point.y())
+                fDist = nextPoint - currPoint
+                bDist = currPoint - prevPoint
+                xRoundnes = min(min(roundness, fDist.length() / 2.0), bDist.length() / 2.0)
+
+                n = currPoint + fDist.normalized() * xRoundnes
+                p = currPoint - bDist.normalized() * xRoundnes
+                highlightedSegmentPath.lineTo(QtCore.QPointF(p.x(), p.y()))
+                highlightedSegmentPath.quadTo(QtCore.QPointF(currPoint.x(), currPoint.y()), QtCore.QPointF(n.x(), n.y()))
+
+        return mPath, highlightedSegmentPath
+
+    @staticmethod
+    def BasicCircuit(p1, p2,
+                     offset=20,
+                     roundness=5,
+                     sameSide=0,
+                     lod=0,
+                     complexLine=False,
+                     vOffset=0,
+                     hOffsetL=0,
+                     vOffsetSShape=0,
+                     hOffsetR=0,
+                     hOffsetRSShape=0,
+                     hOffsetLSShape=0,
+                     snapVToFirst=False,
+                     snapVToSecond=False,
+                     highlightedSegment=-1):
+        SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         offset1 = offset
         offset2 = -offset
         if sameSide == 1:
@@ -525,34 +616,51 @@ class ConnectionPainter(object):
         elif sameSide == -1:
             offset1 = -offset
 
-        xDistance = (p2.x() + offset2 + roundnes) - (p1.x() + offset1 - roundnes)
-        yDistance = p1.y() - p2.y()
-        midPointY = p2.y() + ((p1.y() - p2.y()) / 2)
+        xDistance = (p2.x() + offset2) - (p1.x() + offset1)
+        midPointY = p2.y() + ((p1.y() - p2.y()) / 2.0) + vOffsetSShape
 
         path = []
         path.append(p1)
         if xDistance > 0 or sameSide == -1:
-            if abs(yDistance) > roundnes * 2:
-                path.append(QtCore.QPoint(p2.x() + offset2, p1.y()))
-                path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
-                path.append(p2)
-            else:
-                path.append(p2)
+            if snapVToSecond:
+                vOffset = p2.y() - p1.y()
+            elif snapVToFirst:
+                vOffset = 0
+
+            if not snapVToFirst:
+                offset1 += hOffsetL
+            if not snapVToSecond:
+                offset2 += hOffsetR
+
+            if abs(vOffset) > 0:
+                path.append(QtCore.QPointF(p1.x() + offset1, p1.y()))
+                path.append(QtCore.QPointF(p1.x() + offset1, p1.y() + vOffset))
+
+            path.append(QtCore.QPointF(p2.x() + offset2, p1.y() + vOffset))
+            path.append(QtCore.QPointF(p2.x() + offset2, p2.y()))
+            path.append(p2)
         else:
-            path.append(QtCore.QPoint(p1.x() + offset1, p1.y()))
-            path.append(QtCore.QPoint(p1.x() + offset1, midPointY))
-            path.append(QtCore.QPoint(p2.x() + offset2, midPointY))
-            path.append(QtCore.QPoint(p2.x() + offset2, p2.y()))
+            offset1 += hOffsetRSShape
+            offset2 += hOffsetLSShape
+            path.append(QtCore.QPointF(p1.x() + offset1, p1.y()))
+            path.append(QtCore.QPointF(p1.x() + offset1, midPointY))
+            path.append(QtCore.QPointF(p2.x() + offset2, midPointY))
+            path.append(QtCore.QPointF(p2.x() + offset2, p2.y()))
             path.append(p2)
 
-        if lod >= 5:
+        if complexLine:
+            path = ConnectionPainter.chanferPath(path, offset)
+
+        section = None
+        if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath(path)
         else:
-            mPath = ConnectionPainter.roundCornersPath(path, roundnes)
-        return mPath
+            mPath, section = ConnectionPainter.roundCornersPath(path, roundness, highlightedSegment=highlightedSegment)
+        return mPath, path, section
 
     @staticmethod
     def Cubic(p1, p2, defOffset=150, lod=0):
+        SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
         mPath = QtGui.QPainterPath()
 
         xDistance = p2.x() - p1.x()
@@ -563,17 +671,31 @@ class ConnectionPainter(object):
         if abs(vDistance) < 20:
             offset = abs(xDistance) * 0.3
         mPath.moveTo(p1)
-        if lod >= 5:
+        if lod >= SWITCH_LOD:
             offset = 20
         if xDistance < 0:
-            cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
-            cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
+            cp1 = QtCore.QPointF(p1.x() + offset, p1.y())
+            cp2 = QtCore.QPointF(p2.x() - offset, p2.y())
         else:
-            cp2 = QtCore.QPoint(p2.x() - offset, p2.y())
-            cp1 = QtCore.QPoint(p1.x() + offset, p1.y())
-        if lod >= 5:
+            cp2 = QtCore.QPointF(p2.x() - offset, p2.y())
+            cp1 = QtCore.QPointF(p1.x() + offset, p1.y())
+        if lod >= SWITCH_LOD:
             mPath = ConnectionPainter.linearPath([p1, cp1, cp2, p2])
         else:
             mPath.cubicTo(cp1, cp2, p2)
+
+        return mPath
+
+    @staticmethod
+    def Linear(p1, p2, defOffset=150, roundness=5, lod=0):
+        SWITCH_LOD = editableStyleSheet().ConnectionSwitch[0]
+
+        cp1 = QtCore.QPointF(p1.x() + defOffset, p1.y())
+        cp2 = QtCore.QPointF(p2.x() - defOffset, p2.y())
+
+        if lod >= SWITCH_LOD:
+            mPath = ConnectionPainter.linearPath([p1, cp1, cp2, p2])
+        else:
+            mPath = ConnectionPainter.roundCornersPath([p1, cp1, cp2, p2], roundness)
 
         return mPath

@@ -38,10 +38,10 @@ class setVar(NodeBase):
     def updateStructure(self):
         self.out.disconnectAll()
         self.inp.disconnectAll()
-        if self.var.structure == PinStructure.Single:
+        if self.var.structure == StructureType.Single:
             self.out.setAsArray(False)
             self.inp.setAsArray(False)
-        if self.var.structure == PinStructure.Array:
+        if self.var.structure == StructureType.Array:
             self.out.setAsArray(True)
             self.inp.setAsArray(True)
 

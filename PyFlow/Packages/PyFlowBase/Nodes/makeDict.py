@@ -25,10 +25,10 @@ class makeDict(NodeBase):
         self.KeyType = self.createInputPin('KeyType', 'AnyPin', defaultValue=str(""), constraint="1", supportedPinDataTypes=getHashableDataTypes())
         self.KeyType.hidden = True
 
-        self.arrayData = self.createInputPin('data', 'AnyPin', structure=PinStructure.Dict, constraint="2")
+        self.arrayData = self.createInputPin('data', 'AnyPin', structure=StructureType.Dict, constraint="2")
         self.arrayData.enableOptions(PinOptions.AllowMultipleConnections | PinOptions.AllowAny | PinOptions.DictElementSupported)
         self.arrayData.disableOptions(PinOptions.SupportsOnlyArrays)
-        self.outArray = self.createOutputPin('out', 'AnyPin', structure=PinStructure.Dict, constraint="2")
+        self.outArray = self.createOutputPin('out', 'AnyPin', structure=StructureType.Dict, constraint="2")
         self.outArray.enableOptions(PinOptions.AllowAny)
         self.result = self.createOutputPin('result', 'BoolPin')
         self.arrayData.onPinDisconnected.connect(self.inPinDisconnected)
@@ -41,9 +41,9 @@ class makeDict(NodeBase):
         helper.addInputDataType('AnyPin')
         helper.addOutputDataType('AnyPin')
         helper.addOutputDataType('BoolPin')
-        helper.addInputStruct(PinStructure.Dict)
-        helper.addOutputStruct(PinStructure.Dict)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Dict)
+        helper.addOutputStruct(StructureType.Dict)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

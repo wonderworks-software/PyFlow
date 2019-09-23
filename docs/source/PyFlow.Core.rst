@@ -53,6 +53,13 @@ PyFlow.Core.NodeBase module
    :members:
    :show-inheritance:
 
+PyFlow.Core.PathsRegistry module
+--------------------------------
+
+.. automodule:: PyFlow.Core.PathsRegistry
+   :members:
+   :show-inheritance:
+
 PyFlow.Core.PinBase module
 --------------------------
 

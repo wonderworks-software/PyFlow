@@ -34,43 +34,47 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
         if not bOwningNodeCallable:
             return pin.currentData()
 
-        compute_order = DefaultEvaluationEngine_Impl.getEvaluationOrder(pin.owningNode())
-        for layerIndex in reversed(list(compute_order.keys())):
-            nodeList = compute_order[layerIndex]
-            # this for loop can be parallel
-            for node in nodeList:
-                node.processNode()
+        order = DefaultEvaluationEngine_Impl.getEvaluationOrderIterative(pin.owningNode())
+        [node.processNode() for node in order]
 
         if not bOwningNodeCallable:
             pin.owningNode().processNode()
         return pin.currentData()
 
     @staticmethod
+    def getEvaluationOrderIterative(node):
+        visited = set()
+        stack = [node]
+        order = []
+        while len(stack):
+            node = stack[-1]
+            stack.pop()
+
+            if node not in visited:
+                order.insert(0, node)
+                visited.add(node)
+
+            lhsNodes = DefaultEvaluationEngine_Impl().getNextLayerNodes(node)
+            for n in lhsNodes:
+                if n not in visited:
+                    stack.append(n)
+        order.pop()
+        return order
+
+    @staticmethod
     def getEvaluationOrder(node):
+        visited = set()
+        order = []
 
-        order = {0: []}
-
-        # include first node only if it is callable
-        if not node.bCallable:
-            order[0].append(node)
-
-        def foo(n):
-            next_layer_nodes = DefaultEvaluationEngine_Impl.getNextLayerNodes(n)
-            layer_idx = max(order.keys()) + 1
-            for n in next_layer_nodes:
-                if layer_idx not in order:
-                    order[layer_idx] = []
-                order[layer_idx].append(n)
-            for i in next_layer_nodes:
-                foo(i)
-        foo(node)
-
-        # make sure no copies of nodes in higher layers (non directional cycles)
-        for i in reversed(sorted([i for i in order.keys()])):
-            for iD in range(i - 1, -1, -1):
-                for check_node in order[i]:
-                    if check_node in order[iD]:
-                        order[iD].remove(check_node)
+        def dfsWalk(n):
+            visited.add(n)
+            nextNodes = DefaultEvaluationEngine_Impl.getNextLayerNodes(n)
+            for lhsNode in nextNodes:
+                if lhsNode not in visited:
+                    dfsWalk(lhsNode)
+            order.append(n)
+        dfsWalk(node)
+        order.pop()
         return order
 
     @staticmethod
@@ -99,8 +103,6 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
             for subgraphInputPin in node.outputs.values():
                 for outPin in subgraphInputPin.affected_by:
                     owningNode = outPin.owningNode()
-                    # if owningNode.isCompoundNode:
-                    #     continue
                     nodes.add(owningNode)
         return nodes
 

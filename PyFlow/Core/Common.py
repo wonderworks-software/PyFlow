@@ -80,6 +80,18 @@ def GetRangePct(MinValue, MaxValue, Value):
     """
     return (Value - MinValue) / (MaxValue - MinValue)
 
+def mapRangeClamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
+    """Returns Value mapped from one range into another where the Value is clamped to the Input Range.
+    (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)
+    """
+
+    ClampedPct = clamp(GetRangePct(InRangeA, InRangeB, Value), 0.0, 1.0)
+    return lerp(OutRangeA, OutRangeB, ClampedPct)
+
+def mapRangeUnclamped(Value, InRangeA, InRangeB, OutRangeA, OutRangeB):
+    """Returns Value mapped from one range into another where the Value is clamped to the Input Range.
+    (e.g. 0.5 normalized from the range 0->1 to 0->50 would result in 25)"""
+    return lerp(OutRangeA, OutRangeB, GetRangePct(InRangeA, InRangeB, Value))
 
 def sign(x):
     """Returns sign of x. -1 if x is negative, 1 if positive and zero if 0.
@@ -213,7 +225,7 @@ def cycleCheck(src, dst):
     :type src: :class:`PyFlow.Core.PinBase`
     :param dst: hand side pin
     :type dst: :class:`PyFlow.Core.PinBase`
-    :returns: True if cycle deteted
+    :returns: True if cycle deleted
     :rtype: bool
     """
     if src.direction == PinDirection.Input:
@@ -334,14 +346,14 @@ def canConnectPins(src, dst):
 
     if src.isArray() and not dst.isArray():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
-        dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
-        if not dst.optionEnabled(PinOptions.ArraySupported) and not (srcCanChangeStruct or dstCanCnahgeStruct):
+        dstCanChangeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
+        if not dst.optionEnabled(PinOptions.ArraySupported) and not (srcCanChangeStruct or dstCanChangeStruct):
             return False
 
     if src.isDict() and not dst.isDict():
         srcCanChangeStruct = src.canChangeStructure(dst._currStructure, [])
-        dstCanCnahgeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
-        if not dst.optionEnabled(PinOptions.DictSupported) and not (srcCanChangeStruct or dstCanCnahgeStruct):
+        dstCanChangeStruct = dst.canChangeStructure(src._currStructure, [], selfCheck=False)
+        if not dst.optionEnabled(PinOptions.DictSupported) and not (srcCanChangeStruct or dstCanChangeStruct):
             return False
 
     if dst.hasConnections():
@@ -410,7 +422,7 @@ def connectPins(src, dst):
     :type src: :py:class:`PyFlow.Core.PinBase.PinBase`
     :param dst: right hand side pin
     :type dst: :py:class:`PyFlow.Core.PinBase.PinBase`
-    :returns: True if connected Succesfully
+    :returns: True if connected Successfully
     :rtype: bool
     """
     if src.direction == PinDirection.Input:
@@ -522,7 +534,7 @@ def disconnectPins(src, dst):
     :type src: :py:class:`~PyFlow.Core.PinBase.PinBase`
     :param dst: right hand side pin
     :type dst: :py:class:`~PyFlow.Core.PinBase.PinBase`
-    :returns: True if disconnection succes
+    :returns: True if disconnection success
     :rtype: bool
     """
     if arePinsConnected(src, dst):
@@ -555,7 +567,7 @@ def push(start_from):
 
 
 def extractDigitsFromEndOfString(string):
-    """Get digist at end of a string
+    """Get digits at end of a string
 
     Example:
 
@@ -574,7 +586,7 @@ def extractDigitsFromEndOfString(string):
 
 
 def removeDigitsFromEndOfString(string):
-    """Delte the numbers at the end of a string
+    """Delete the numbers at the end of a string
 
     Similar to :func:`~PyFlow.Core.Common.extractDigitsFromEndOfString`, but removes digits in the end.
 
@@ -690,20 +702,20 @@ class PFDict(dict):
                 return (self.__class__ == other.__class__ and self.x == other.x)
     """
 
-    def __init__(self, keyType, valueType=None, inpt={}):
+    def __init__(self, keyType, valueType=None, inp={}):
         """
         :param keyType: Key dataType
         :param valueType: value dataType, defaults to None
         :type valueType: optional
-        :param inpt: Construct from another dict, defaults to {}
-        :type inpt: dict, optional
+        :param inp: Construct from another dict, defaults to {}
+        :type inp: dict, optional
         """
-        super(PFDict, self).__init__(inpt)
+        super(PFDict, self).__init__(inp)
         self.keyType = keyType
         self.valueType = valueType
 
     def __setitem__(self, key, item):
-        """Reimplements Python Dict __setitem__ to only allow Typed Keys.
+        """Re implements Python Dict __setitem__ to only allow Typed Keys.
 
         Will throw an Exception if non Valid KeyType
         """
@@ -754,36 +766,33 @@ class PinOptions(Flag):
     Dynamic = auto()  #: Specifies if pin was created dynamically (during program runtime)
     AlwaysPushDirty = auto()  #: Pin will always be seen as dirty (computation needed)
     Storable = auto()  #: Determines if pin data can be stored when pin serialized
-    AllowAny = auto()  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, wich means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
+    AllowAny = auto()  #: Special flag that allow a pin to be :class:`~PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin`, which means non typed without been marked as error. By default a :py:class:`PyFlow.Packages.PyFlowBase.Pins.AnyPin.AnyPin` need to be initialized with some data type, other defined pin. This flag overrides that. Used in lists and non typed nodes
     DictElementSupported = auto()  #: Dicts are constructed with :class:`DictElement` objects. So dict pins will only allow other dicts until this flag enabled. Used in :class:`~PyFlow.Packages.PyFlowBase.Nodes.makeDict` node
 
 
-class PinStructure(IntEnum):
-    """Structure of Pins
-
-    Used for determine Pin Structure Type
-    This represents the data structures a pin can hold.
+class StructureType(IntEnum):
+    """Used to determine structure type for values.
     """
 
     Single = 0  #: Single data structure
     Array = 1  #: Python list structure, represented as arrays -> typed and lists -> non typed
     Dict = 2  #: :py:class:`PFDict` structure, is basically a rey typed python dict
-    Multi = 3  #: This means it can became any of the previous ones on conection/user action
+    Multi = 3  #: This means it can became any of the previous ones on connection/user action
 
 
 def findStructFromValue(value):
-    """Finds :class:`~PyFlow.Core.Common.PinStructure` from value
+    """Finds :class:`~PyFlow.Core.Common.StructureType` from value
 
     :param value: input value to find structure.
     :returns: Structure Type for input value
-    :rtype: :class:`~PyFlow.Core.Common.PinStructure`
+    :rtype: :class:`~PyFlow.Core.Common.StructureType`
     """
 
     if isinstance(value, list):
-        return PinStructure.Array
+        return StructureType.Array
     if isinstance(value, dict):
-        return PinStructure.Dict
-    return PinStructure.Single
+        return StructureType.Dict
+    return StructureType.Single
 
 
 class PinSelectionGroup(IntEnum):
@@ -831,15 +840,39 @@ class Direction(IntEnum):
 
 
 class PinSpecifires:
+    """Pin specifires constants
+
+    :var SUPPORTED_DATA_TYPES: To specify supported data types list
+    :var CONSTRAINT: To specify type constraint key
+    :var STRUCT_CONSTRAINT: To specify struct constraint key
+    :var ENABLED_OPTIONS: To enable options
+    :var DISABLED_OPTIONS: To disable options
+    :var INPUT_WIDGET_VARIANT: To specify widget variant string
+    :var DESCRIPTION: To specify description for pin, which will be used as tooltip
+    :var VALUE_LIST: Specific for string pin. If specified, combo box will be created
+    :var VALUE_RANGE: Specific for ints and floats. If specified, slider will be created instead of value box
+    :var DRAGGER_STEPS: To specify custom value dragger steps
+    """
+
     SUPPORTED_DATA_TYPES = "supportedDataTypes"
     CONSTRAINT = "constraint"
     STRUCT_CONSTRAINT = "structConstraint"
     ENABLED_OPTIONS = "enabledOptions"
     DISABLED_OPTIONS = "disabledOptions"
     INPUT_WIDGET_VARIANT = "inputWidgetVariant"
+    DESCRIPTION = "Description"
+    VALUE_LIST = "ValueList"
+    VALUE_RANGE = "ValueRange"
+    DRAGGER_STEPS = "DraggerSteps"
 
 
 class NodeMeta:
+    """Node meta constants
+
+    :var CATEGORY: To specify category for node. Will be considered by node box
+    :var KEYWORDS: To specify list of additional keywords, used in node box search field
+    :var CACHE_ENABLED: To specify if node is cached or not
+    """
     CATEGORY = "Category"
     KEYWORDS = "Keywords"
     CACHE_ENABLED = "CacheEnabled"

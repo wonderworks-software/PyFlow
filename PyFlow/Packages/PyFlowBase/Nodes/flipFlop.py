@@ -35,8 +35,8 @@ class flipFlop(NodeBase):
         helper.addInputDataType('ExecPin')
         helper.addOutputDataType('ExecPin')
         helper.addOutputDataType('BoolPin')
-        helper.addInputStruct(PinStructure.Single)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Single)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

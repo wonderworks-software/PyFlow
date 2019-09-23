@@ -21,7 +21,7 @@ from PyFlow.Core.Common import *
 class address(NodeBase):
     def __init__(self, name):
         super(address, self).__init__(name)
-        self.obj = self.createInputPin("obj", "AnyPin", structure=PinStructure.Multi)
+        self.obj = self.createInputPin("obj", "AnyPin", structure=StructureType.Multi)
         self.obj.enableOptions(PinOptions.AllowAny)
         self.addr = self.createOutputPin('out', 'StringPin')
 
@@ -30,8 +30,8 @@ class address(NodeBase):
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('AnyPin')
         helper.addOutputDataType('StringPin')
-        helper.addInputStruct(PinStructure.Multi)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Multi)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

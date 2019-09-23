@@ -23,7 +23,7 @@ class forEachLoop(NodeBase):
     def __init__(self, name):
         super(forEachLoop, self).__init__(name)
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.array = self.createInputPin('array', 'AnyPin', structure=PinStructure.Array, constraint="1")
+        self.array = self.createInputPin('array', 'AnyPin', structure=StructureType.Array, constraint="1")
         self.array.enableOptions(PinOptions.AllowAny)
 
         self.loopBody = self.createOutputPin('LoopBody', 'ExecPin')
@@ -39,9 +39,9 @@ class forEachLoop(NodeBase):
         helper.addInputDataType('AnyPin')
         helper.addOutputDataType('ExecPin')
         helper.addOutputDataType('AnyPin')
-        helper.addInputStruct(PinStructure.Single)
-        helper.addInputStruct(PinStructure.Array)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Single)
+        helper.addInputStruct(StructureType.Array)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

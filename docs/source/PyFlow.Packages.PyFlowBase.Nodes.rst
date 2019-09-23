@@ -25,6 +25,13 @@ PyFlow.Packages.PyFlowBase.Nodes.charge module
    :members:
    :show-inheritance:
 
+PyFlow.Packages.PyFlowBase.Nodes.cliexit module
+-----------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.cliexit
+   :members:
+   :show-inheritance:
+
 PyFlow.Packages.PyFlowBase.Nodes.colorRamp module
 -------------------------------------------------
 
@@ -130,6 +137,13 @@ PyFlow.Packages.PyFlowBase.Nodes.forLoop module
    :members:
    :show-inheritance:
 
+PyFlow.Packages.PyFlowBase.Nodes.forLoopBegin module
+----------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.forLoopBegin
+   :members:
+   :show-inheritance:
+
 PyFlow.Packages.PyFlowBase.Nodes.forLoopWithBreak module
 --------------------------------------------------------
 
@@ -155,6 +169,13 @@ PyFlow.Packages.PyFlowBase.Nodes.imageDisplay module
 ----------------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Nodes.imageDisplay
+   :members:
+   :show-inheritance:
+
+PyFlow.Packages.PyFlowBase.Nodes.loopEnd module
+-----------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.loopEnd
    :members:
    :show-inheritance:
 
@@ -274,6 +295,13 @@ PyFlow.Packages.PyFlowBase.Nodes.whileLoop module
 -------------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.Nodes.whileLoop
+   :members:
+   :show-inheritance:
+
+PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin module
+------------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.Nodes.whileLoopBegin
    :members:
    :show-inheritance:
 

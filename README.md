@@ -4,6 +4,48 @@
 
 <p align="center"><img src="PyFlow/UI/resources/PyFlow.png"></p>
 
+## State
+
+Base structure of program implemented, such things as packages discovery,
+input customization, exporters, base classes for entities and tools.
+
+You can completely remove nodes and tools that ships by default 
+and start your own library from scratch.
+
+You can evaluate programs without running user interface.
+
+We have simple CLI interface and setup.py script.
+
+Expectedly, we faced problems with our runtime execution model,
+it is good for certain types of tasks despite it is slow. Also, complicated flow
+control requires cycles handling.
+
+For example current for loop node implementation
+doesn't work well with any kind of `delay` stuff in it's body. Of course it can be solved by adding
+more logic to loop processing, but we don't know exactly how to make it efficient yet.
+
+## Road map
+
+We will add new types of graphs (undirected graphs, trees)
+and algorithms to work with those structures.
+
+Code generation is probably the future of PyFlow.
+
+We are going to implement more building blocks.
+**Functions** - which unlike subgraphs will have single definition and multiple
+entry points across the program.
+**Objects** - very important concept of programming in general, object will have own methods,
+access levels and variables.
+**Events and delegates** - similar to ue4.
+
+Application presets and api for writing own presets. Templates like in any IDE (shader, command line tool, software installer, etc.).
+
+Documentation updates.
+
+User interface improvements and new tools to enhance user experience.
+
+We want to have most python standard library wrapped into a nodes!
+
 ## Installation
 
 ### Manual
@@ -48,11 +90,25 @@ Program is located inside `PATH/TO/PYTHON/Scripts`.
 
     ![collapseToCompound](images/collapseToCompound.gif)
 
+* **Watch what is going on**
+
+    ![collapseToCompound](images/watch.gif)
+
+* **Expose properties from subgraphs**
+
+    *Any node can share it's properties with owning sub graph node*
+
+    ![collapseToCompound](images/exposeProperties.gif)
+
 * **Subgraphs import/export**
 
     *Share subgraphs with others*
 
     ![compoundIO](images/compoundIO.gif)
+
+    *If compound node was exported to some package, it will appear in node box*
+
+    ![compoundIO](images/compoundExport.gif)
 
 * **Python node**
 
@@ -65,6 +121,10 @@ Program is located inside `PATH/TO/PYTHON/Scripts`.
     *Share python nodes with others*
 
     ![pythonNode](images/pythonNodeIO.gif)
+
+    *If python node was exported to some package, it will appear in node box*
+
+    ![pythonNode](images/pyNodeExport.gif)
 
 * **Fast node generation from functions**
 
@@ -130,9 +190,33 @@ Program is located inside `PATH/TO/PYTHON/Scripts`.
 
     *Editor data can be exported/imported to/from arbitrary format*
 
+* **Command line interface**
+
+    ![cmdHelp](images/additionProgram.png)
+
+    *Exported programs can be edited and evaluated from command line without gui*
+
+    ![cmdAddition](images/cmdAddition.png)
+    ![cmdHelp](images/cmdHelp.png)
+
 * **Convenient wires interaction**
 
   ![wiresConnect](images/wiresConnection.gif)
+
+* **Wire styles**
+
+  ![wiresConnect](images/editableWires.gif)
+
+  ![wiresConnect](images/wireTypes.gif)
+
+  ![wiresConnect](images/wireStylesCircuit.png)
+
+* **Node deprecation flag**
+
+    *Tell users to update their programs*
+
+    ![deprecated](images/deprecated.png)
+    ![deprecated](images/experimental.png)
 
 * **Widgets library**
   * Sliders

@@ -22,8 +22,8 @@ import ast
 class stringToArray(NodeBase):
     def __init__(self, name):
         super(stringToArray, self).__init__(name)
-        self.arrayData = self.createInputPin('data', 'StringPin', structure=PinStructure.Single)
-        self.outArray = self.createOutputPin('out', 'AnyPin', structure=PinStructure.Array)
+        self.arrayData = self.createInputPin('data', 'StringPin', structure=StructureType.Single)
+        self.outArray = self.createOutputPin('out', 'AnyPin', structure=StructureType.Array)
         self.result = self.createOutputPin('result', 'BoolPin')
 
     @staticmethod
@@ -32,9 +32,9 @@ class stringToArray(NodeBase):
         helper.addInputDataType('StringPin')
         helper.addOutputDataType('AnyPin')
         helper.addOutputDataType('BoolPin')
-        helper.addInputStruct(PinStructure.Single)
-        helper.addOutputStruct(PinStructure.Array)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Single)
+        helper.addOutputStruct(StructureType.Array)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

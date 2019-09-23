@@ -4,10 +4,10 @@ PyFlow.UI.Widgets package
 Submodules
 ----------
 
-PyFlow.UI.Widgets.CodeEditor\_ui module
----------------------------------------
+PyFlow.UI.Widgets.BlueprintCanvas module
+----------------------------------------
 
-.. automodule:: PyFlow.UI.Widgets.CodeEditor_ui
+.. automodule:: PyFlow.UI.Widgets.BlueprintCanvas
    :members:
    :show-inheritance:
 

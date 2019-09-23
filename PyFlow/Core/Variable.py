@@ -41,7 +41,7 @@ class Variable(IItemBase):
     :var graph: Reference to owning graph
     :vartype graph: :class:`~PyFlow.Core.GraphBase.GraphBase`
     """
-    def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, structure=PinStructure.Single, uid=None):
+    def __init__(self, graph, value, name, dataType, accessLevel=AccessLevel.public, structure=StructureType.Single, uid=None):
         """Constructor
 
         :param graph: Owning graph
@@ -55,7 +55,7 @@ class Variable(IItemBase):
         :param accessLevel: Variable access level
         :type accessLevel: :class:`~PyFlow.Core.Common.AccessLevel`
         :param structure: Variable structure
-        :type structure: :attr:`~PyFlow.Core.Common.PinStructure.Single`
+        :type structure: :attr:`~PyFlow.Core.Common.StructureType.Single`
         :param uid: Variable unique identifier
         :type uid: :class:`~uuid.UUID`
         """
@@ -187,17 +187,19 @@ class Variable(IItemBase):
     def structure(self):
         """Variable structure
 
-        :rtype: :class:`~PyFlow.Core.Common.PinStructure`
+        :rtype: :class:`~PyFlow.Core.Common.StructureType`
         """
         return self._structure
 
     @structure.setter
     def structure(self, value):
-        assert(isinstance(value, PinStructure))
+        assert(isinstance(value, StructureType))
         if value != self._structure:
             self._structure = value
-            if self._structure == PinStructure.Array:
+            if self._structure == StructureType.Array:
                 self.value = list()
+            if self._structure == StructureType.Dict:
+                self.value = PFDict("IntPin", "BoolPin")
             self.structureChanged.send(self._structure)
 
     @property
@@ -222,7 +224,11 @@ class Variable(IItemBase):
             template['value'] = None
         else:
             template['value'] = json.dumps(self.value, cls=pinClass.jsonEncoderClass())
-        template['dataType'] = self.dataType
+        if self.structure == StructureType.Dict:
+            template["dictKeyType"] = self.value.keyType
+            template["dictValueType"] = self.value.valueType
+        else:
+            template['dataType'] = self.dataType
         template['structure'] = self.structure.name
         template['accessLevel'] = self.accessLevel.name
         template['package'] = self._packageName
@@ -233,16 +239,24 @@ class Variable(IItemBase):
     @staticmethod
     def deserialize(graph, jsonData, *args, **kwargs):
         name = jsonData['name']
-        dataType = jsonData['dataType']
 
-        if dataType != "AnyPin":
-            pinClass = findPinClassByType(dataType)
-            value = json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass())
+        dataType = "BoolPin"
+        if jsonData["structure"] == StructureType.Dict.name:
+            keyDataType = jsonData['dictKeyType']
+            valueDataType = jsonData['dictValueType']
+
+            value = PFDict(keyDataType, valueDataType)
         else:
-            value = getPinDefaultValueByType("AnyPin")
+            dataType = jsonData['dataType']
+
+            if dataType != "AnyPin":
+                pinClass = findPinClassByType(dataType)
+                value = json.loads(jsonData['value'], cls=pinClass.jsonDecoderClass())
+            else:
+                value = getPinDefaultValueByType("AnyPin")
 
         accessLevel = AccessLevel[jsonData['accessLevel']]
-        structure = PinStructure[jsonData['structure']]
+        structure = StructureType[jsonData['structure']]
         uid = uuid.UUID(jsonData['uuid'])
         return Variable(graph, value, name, dataType, accessLevel, structure, uid)
 

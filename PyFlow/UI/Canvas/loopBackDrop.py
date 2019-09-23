@@ -42,12 +42,10 @@ class backDrop(QGraphicsWidget):
 
         roundRectPath = QtGui.QPainterPath()
         self.parent.computeHull()
-        if self.parent.poly:
-            path = QtGui.QPainterPath()
-            path.addPolygon(self.parent.poly)
+        if self.parent.poly is not None:
             color = QtGui.QColor(self.parent.headColorOverride)
             color.setAlpha(50)
             pen = QtGui.QPen(self.parent.headColorOverride, 0.5)
             painter.setPen(pen)
-            painter.fillPath(path, color)
-            painter.drawPath(path)
+            painter.fillPath(self.parent.poly, color)
+            painter.drawPath(self.parent.poly)

@@ -37,6 +37,13 @@ PyFlow.Input module
    :members:
    :show-inheritance:
 
+PyFlow.graphUiParser module
+---------------------------
+
+.. automodule:: PyFlow.graphUiParser
+   :members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

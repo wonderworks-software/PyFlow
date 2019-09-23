@@ -18,7 +18,7 @@ from Qt import QtCore
 from PyFlow.UI.Canvas.loopBackDrop import backDrop
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.UI.Utils.ConvexHull import convex_hull
-
+from PyFlow.UI.Canvas.Painters import ConnectionPainter
 
 class IConvexHullBackDrop(object):
     """Convex hull backdrop routines. Used by for loop and while loop nodes"""
@@ -39,7 +39,7 @@ class IConvexHullBackDrop(object):
         loopEndNode = PathsRegistry().getEntity(loopEndNodePath)
 
         if loopEndNode is None:
-            self.poly = QtGui.QPolygonF()
+            self.poly = QtGui.QPainterPath()
             return
         if self.isUnderCollapsedComment():
             p = [self.getTopMostOwningCollapsedComment()]
@@ -54,7 +54,7 @@ class IConvexHullBackDrop(object):
                     p.append(uiLoopEnd)
 
         else:
-            self.poly = QtGui.QPolygonF()
+            self.poly = QtGui.QPainterPath()
             return
 
         p += self.getBetwenLoopNodes(self)
@@ -78,8 +78,7 @@ class IConvexHullBackDrop(object):
 
         if len(path) >= 3:
             self.convex_hull = convex_hull(path)
-            self.poly = QtGui.QPolygonF()
+            path = []
             for i in self.convex_hull:
-                self.poly.append(QtCore.QPointF(i[0], i[1]))
-            self.poly.append(QtCore.QPointF(
-                self.convex_hull[0][0], self.convex_hull[0][1]))
+                path.append(QtCore.QPointF(i[0], i[1]))
+            self.poly,none = ConnectionPainter.roundCornersPath(path,6,True)

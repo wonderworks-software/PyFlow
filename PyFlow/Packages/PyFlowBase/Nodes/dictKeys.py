@@ -21,11 +21,11 @@ from PyFlow.Core.Common import *
 class dictKeys(NodeBase):
     def __init__(self, name):
         super(dictKeys, self).__init__(name)
-        self.dict = self.createInputPin("dict", "AnyPin", structure=PinStructure.Dict)
+        self.dict = self.createInputPin("dict", "AnyPin", structure=StructureType.Dict)
         self.dict.enableOptions(PinOptions.DictSupported)
         self.dict.onPinConnected.connect(self.dictConnected)
         self.dict.dictChanged.connect(self.dictChanged)
-        self.keys = self.createOutputPin("keys", "AnyPin", structure=PinStructure.Array)
+        self.keys = self.createOutputPin("keys", "AnyPin", structure=StructureType.Array)
         self.keys.disableOptions(PinOptions.ChangeTypeOnConnection)
 
     def dictConnected(self, other):
@@ -43,8 +43,8 @@ class dictKeys(NodeBase):
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('AnyPin')
         helper.addOutputDataType('AnyPin')
-        helper.addInputStruct(PinStructure.Dict)
-        helper.addOutputStruct(PinStructure.Array)
+        helper.addInputStruct(StructureType.Dict)
+        helper.addOutputStruct(StructureType.Array)
         return helper
 
     @staticmethod

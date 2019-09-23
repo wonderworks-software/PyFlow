@@ -60,6 +60,13 @@ PyFlow.Packages.PyFlowBase.UI.UIFloatRamp module
    :members:
    :show-inheritance:
 
+PyFlow.Packages.PyFlowBase.UI.UIForLoopBeginNode module
+-------------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIForLoopBeginNode
+   :members:
+   :show-inheritance:
+
 PyFlow.Packages.PyFlowBase.UI.UIGetVarNode module
 -------------------------------------------------
 
@@ -74,6 +81,13 @@ PyFlow.Packages.PyFlowBase.UI.UIGraphNodes module
    :members:
    :show-inheritance:
 
+PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode module
+-------------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode
+   :members:
+   :show-inheritance:
+
 PyFlow.Packages.PyFlowBase.UI.UIMakeDictNode module
 ---------------------------------------------------
 
@@ -85,20 +99,6 @@ PyFlow.Packages.PyFlowBase.UI.UIPythonNode module
 -------------------------------------------------
 
 .. automodule:: PyFlow.Packages.PyFlowBase.UI.UIPythonNode
-   :members:
-   :show-inheritance:
-
-PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode module
-----------------------------------------------------
-
-.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIImageDisplayNode
-   :members:
-   :show-inheritance:
-
-PyFlow.Packages.PyFlowBase.UI.UIRerouteNode module
---------------------------------------------------
-
-.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIRerouteNode
    :members:
    :show-inheritance:
 
@@ -123,6 +123,13 @@ PyFlow.Packages.PyFlowBase.UI.UISetVarNode module
    :members:
    :show-inheritance:
 
+PyFlow.Packages.PyFlowBase.UI.UIStickyNote module
+-------------------------------------------------
+
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIStickyNote
+   :members:
+   :show-inheritance:
+
 PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode module
 ---------------------------------------------------------
 
@@ -130,10 +137,10 @@ PyFlow.Packages.PyFlowBase.UI.UISwitchOnStringNode module
    :members:
    :show-inheritance:
 
-PyFlow.Packages.PyFlowBase.UI.UIStickyNote module
--------------------------------------------------
+PyFlow.Packages.PyFlowBase.UI.UIWhileLoopBeginNode module
+---------------------------------------------------------
 
-.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIStickyNote
+.. automodule:: PyFlow.Packages.PyFlowBase.UI.UIWhileLoopBeginNode
    :members:
    :show-inheritance:
 

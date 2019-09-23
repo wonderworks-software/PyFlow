@@ -59,11 +59,11 @@ Arguments
 Examples:
 ::
 
-    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={'Category': 'GenericTypes', 'Keywords': []})
+    @IMPLEMENT_NODE(returns=('IntPin', 0), meta={NodeMeta.CATEGORY: 'GenericTypes', NodeMeta.KEYWORDS: []})
     def makeInt(i=('IntPin', 0)):
         return i
 
-    @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {"enabledOptions": PinOptions.AlwaysPushDirty}))
+    @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {PinSpecifires.ENABLED_OPTIONS: PinOptions.AlwaysPushDirty}))
     def clock():
         return time.clock()
 
@@ -75,15 +75,21 @@ Examples:
 
         Following key-value pairs allowed:
 
-        >>> ("supportedDataTypes" : list)
-        >>> ("constraint": None)
-        >>> ("structConstraint": None)
-        >>> ("enabledOptions": None)
-        >>> ("disabledOptions": None)
-        >>> ("inputWidgetVariant": "DefaultWidget")
-        >>> ("ValueList": [str])
+        >>> (PinSpecifires.SUPPORTED_DATA_TYPES : list)
+        >>> (PinSpecifires.CONSTRAINT: None)
+        >>> (PinSpecifires.STRUCT_CONSTRAINT: None)
+        >>> (PinSpecifires.ENABLED_OPTIONS: None)
+        >>> (PinSpecifires.DISABLED_OPTIONS: None)
+        >>> (PinSpecifires.INPUT_WIDGET_VARIANT: "DefaultWidget")
+        >>> (PinSpecifires.DESCRIPTION: str)
+        >>> (PinSpecifires.VALUE_LIST: [str])
+        >>> (PinSpecifires.VALUE_RANGE: (int|float, int|float))
+        >>> (PinSpecifires.DRAGGER_STEPS: [int|float])
 
-        "Value list is specific for string pins. If Specified - enum input widget will be created for this pin."
+        Value list is specific for string pins. If Specified - enum input widget will be created for this pin.
+        If value range is specified, slider will be created in property view instead of value box.
+        Dragger steps is a list of values which will be used in value dragger (middle mouse button).
+
 
     node meta
         dict that describes different node options and attributes to be considered on generation
@@ -106,7 +112,7 @@ from PyFlow.Core.Common import *
 empty = {}
 
 
-def IMPLEMENT_NODE(func=None, returns=empty, meta={'Category': 'Default', 'Keywords': []}, nodeType=NodeTypes.Pure):
+def IMPLEMENT_NODE(func=None, returns=empty, meta={NodeMeta.CATEGORY: 'Default', NodeMeta.KEYWORDS: []}, nodeType=NodeTypes.Pure):
     def wrapper(func):
         func.__annotations__ = getattr(func, '__annotations__', {})
         func.__annotations__['nodeType'] = nodeType

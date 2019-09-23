@@ -22,9 +22,9 @@ class colorRamp(NodeBase):
     def __init__(self, name):
         super(colorRamp, self).__init__(name)
         self.bCacheEnabled = False
-        self.input = self.createInputPin('input', 'FloatPin', structure=PinStructure.Multi)
+        self.input = self.createInputPin('input', 'FloatPin', structure=StructureType.Multi)
         self.input.enableOptions(PinOptions.AlwaysPushDirty)
-        self.output = self.createOutputPin('result', 'FloatPin', structure=PinStructure.Array)
+        self.output = self.createOutputPin('result', 'FloatPin', structure=StructureType.Array)
         self.output.enableOptions(PinOptions.AlwaysPushDirty)
         self.ramp = splineRamp()
         self._curveTypes = ["linear", "bezier"]
@@ -35,8 +35,8 @@ class colorRamp(NodeBase):
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('FloatPin')
         helper.addOutputDataType('FloatPin')
-        helper.addInputStruct(PinStructure.Multi)
-        helper.addOutputStruct(PinStructure.Array)
+        helper.addInputStruct(StructureType.Multi)
+        helper.addOutputStruct(StructureType.Array)
         return helper
 
     def serialize(self):

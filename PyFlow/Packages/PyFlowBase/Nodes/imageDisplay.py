@@ -34,7 +34,7 @@ class imageDisplay(NodeBase):
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('ExecPin')
         helper.addInputDataType('StringPin')
-        helper.addInputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Single)
         return helper
 
     @staticmethod

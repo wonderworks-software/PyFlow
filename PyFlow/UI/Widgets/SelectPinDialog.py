@@ -30,6 +30,8 @@ class _FakeCanvas(object):
 
     def getLodValueFromCurrentScale(self, lod):
         return 1
+    def getCanvasLodValueFromCurrentScale(self):
+        return 1
 
 
 class _FakeNode(object):

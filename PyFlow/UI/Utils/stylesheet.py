@@ -37,6 +37,8 @@ THEMES_PATH = os.path.join(os.path.dirname(FILE_DIR), "Themes")
 class ConnectionTypes(IntEnum):
     Cubic = 0
     Circuit = 1
+    ComplexCircuit = 2
+    Linear = 3
 
 class Colors:
     AbsoluteBlack = QtGui.QColor(0, 0, 0, 255)
@@ -78,14 +80,21 @@ class editableStyleSheet():
         self.CanvasBgColor = QtGui.QColor(35, 35, 35)
         self.CanvasGridColor = QtGui.QColor(20, 20, 20, 100)
         self.CanvasGridColorDarker = QtGui.QColor(20, 20, 20)
-        self.bDrawGrid = True
+        self.DrawGrid = [1]
         self.GridSizeFine = [10]
         self.GridSizeHuge = [100]
         self.DrawNumbers = [0]
         self.SetAppStyleSheet = [1]
 
+        self.LOD_Number = [4]
+        self.NodeSwitch = [3]
+        self.ConnectionSwitch = [3]
+        self.PinSwitch = [3]
+        self.CanvasSwitch = [3]
+
         self.ConnectionMode = [ConnectionTypes.Circuit]
         self.ConnectionRoundness = [5]
+        self.ConnectionOffset = [20]
 
         self.storeDeffaults()
         self.presets = {}
@@ -99,10 +108,6 @@ class editableStyleSheet():
                     self.loadFromData(self.presets[list(self.presets.keys())[0]])
         except:
             pass
-
-    def setDrawGrid(self, bDraw):
-        self.bDrawGrid = bDraw
-        self.updateApp()
 
     def storeDeffaults(self):
         for name, obj in inspect.getmembers(self):
@@ -292,7 +297,7 @@ class editableStyleSheet():
             border: 2.25px solid %s;
          }
         """ % "rgba%s" % str(self.MainColor.getRgb()),
-            "dragerstyleSheet": """
+            "draggerstyleSheet": """
         QGroupBox{
             border: 0.5 solid darkgrey;
             background : black;
@@ -304,7 +309,7 @@ class editableStyleSheet():
             color: white;
         }
         """,
-            "dragerstyleSheetHover": """
+            "draggerstyleSheetHover": """
         QGroupBox{
             border: 0.5 solid darkgrey;
             background : %s;

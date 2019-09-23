@@ -23,9 +23,9 @@ class floatRamp(NodeBase):
     def __init__(self, name):
         super(floatRamp, self).__init__(name)
         self.bCacheEnabled = False
-        self.input = self.createInputPin('input', 'FloatPin', structure=PinStructure.Multi, constraint="0", structConstraint="0")
+        self.input = self.createInputPin('input', 'FloatPin', structure=StructureType.Multi, constraint="0", structConstraint="0")
         self.input.enableOptions(PinOptions.AlwaysPushDirty)
-        self.output = self.createOutputPin('result', 'FloatPin', structure=PinStructure.Multi, constraint="0", structConstraint="0")
+        self.output = self.createOutputPin('result', 'FloatPin', structure=StructureType.Multi, constraint="0", structConstraint="0")
         self.output.enableOptions(PinOptions.AlwaysPushDirty)
         self.ramp = splineRamp()
         self._curveTypes = ["linear", "bezier"]
@@ -36,12 +36,12 @@ class floatRamp(NodeBase):
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('FloatPin')
         helper.addOutputDataType('FloatPin')
-        helper.addInputStruct(PinStructure.Single)
-        helper.addOutputStruct(PinStructure.Single)
-        helper.addInputStruct(PinStructure.Multi)
-        helper.addOutputStruct(PinStructure.Multi)
-        helper.addInputStruct(PinStructure.Array)
-        helper.addOutputStruct(PinStructure.Array)
+        helper.addInputStruct(StructureType.Single)
+        helper.addOutputStruct(StructureType.Single)
+        helper.addInputStruct(StructureType.Multi)
+        helper.addOutputStruct(StructureType.Multi)
+        helper.addInputStruct(StructureType.Array)
+        helper.addOutputStruct(StructureType.Array)
         return helper
 
     def serialize(self):      

@@ -83,7 +83,21 @@ class UIConnection(QGraphicsPathItem):
         self.destination().uiConnectionList.append(self)
         self.source().pinConnected(self.destination())
         self.destination().pinConnected(self.source())
-
+        self.prevPos = None
+        self.linPath = None
+        self.hOffsetL = 0.0
+        self.hOffsetR = 0.0
+        self.hOffsetLSShape = 0.0
+        self.hOffsetRSShape = 0.0
+        self.vOffset = 0.0
+        self.vOffsetSShape = 0.0
+        self.offsetting = 0
+        self.snapVToFirst = True
+        self.snapVToSecond = False
+        self.sShape = False
+        self.sameSide = 0
+        self.hoverSegment = -1
+        self.pressedSegment = -1
         if self.source().isExec():
             self.bubble = QGraphicsEllipseItem(-2.5, -2.5, 5, 5, self)
             self.bubble.setBrush(self.color)
@@ -209,26 +223,50 @@ class UIConnection(QGraphicsPathItem):
             self.canvasRef().connections[value] = self.canvasRef().connections.pop(self._uid)
             self._uid = value
 
-    @staticmethod
-    def deserialize(data, graph):
-        srcUUID = UUID(data['sourceUUID'])
-        dstUUID = UUID(data['destinationUUID'])
-        # if srcUUID in graph.pins and dstUUID in graph.pins:
-        srcPin = graph.findPinByUid(srcUUID)
-        assert(srcPin is not None)
-        dstPin = graph.findPinByUid(dstUUID)
-        assert(dstPin is not None)
-        connection = graph.connectPinsInternal(srcPin, dstPin)
-        assert(connection is not None)
-        connection.uid = UUID(data['uuid'])
+    def applyJsonData(self, data):
+        hOffsetL = data['hOffsetL']
+        if hOffsetL is not None:
+            self.hOffsetL = float(hOffsetL)
+        hOffsetR = data['hOffsetR']
+        if hOffsetR is not None:
+            self.hOffsetR = float(hOffsetR)
+        hOffsetLSShape = data['hOffsetLSShape']
+        if hOffsetLSShape is not None:
+            self.hOffsetLSShape = float(hOffsetLSShape)
+        hOffsetRSShape = data['hOffsetRSShape']
+        if hOffsetRSShape is not None:
+            self.hOffsetRSShape = float(hOffsetRSShape)
+        vOffset = data['vOffset']
+        if vOffset is not None:
+            self.vOffset = float(vOffset)
+        vOffsetSShape = data['vOffsetSShape']
+        if vOffsetSShape is not None:
+            self.vOffsetSShape = float(vOffsetSShape)
+        snapVToFirst = data['snapVToFirst']
+        if snapVToFirst is not None:
+            self.snapVToFirst = bool(snapVToFirst)
+        snapVToSecond = data['snapVToSecond']
+        if snapVToSecond is not None:
+            self.snapVToSecond = bool(snapVToSecond)
+
+        self.getEndPoints()
 
     def serialize(self):
         script = {'sourceUUID': str(self.source().uid),
                   'destinationUUID': str(self.destination().uid),
                   'sourceName': self.source()._rawPin.getFullName(),
                   'destinationName': self.destination()._rawPin.getFullName(),
-                  'uuid': str(self.uid)
+                  'uuid': str(self.uid),
+                  'hOffsetL': str(self.hOffsetL),
+                  'hOffsetR': str(self.hOffsetR),
+                  'hOffsetLSShape': str(self.hOffsetLSShape),
+                  'hOffsetRSShape': str(self.hOffsetRSShape),
+                  'vOffset': str(self.vOffset),
+                  'vOffsetSShape': str(self.vOffsetSShape),
+                  'snapVToFirst': int(self.snapVToFirst),
+                  'snapVToSecond': int(self.snapVToSecond),
                   }
+
         return script
 
     def __str__(self):
@@ -251,6 +289,40 @@ class UIConnection(QGraphicsPathItem):
         self.drawThick()
         self.update()
 
+    def hoverLeaveEvent(self, event):
+        super(UIConnection, self).hoverLeaveEvent(event)
+        self.hoverSegment = -1
+        self.restoreThick()
+        self.update()
+
+    def hoverMoveEvent(self, event):
+        if self.offsetting == 0:
+            self.hoverSegment = -1
+            if self.linPath is not None:
+                tempPath = ConnectionPainter.linearPath(self.linPath)
+                t = self.percentageByPoint(event.scenePos(), tempPath)
+                segments = []
+                for i, pos in enumerate(self.linPath[:-1]):
+                    t1 = self.percentageByPoint(pos, tempPath)
+                    t2 = self.percentageByPoint(self.linPath[i + 1], tempPath)
+                    segments.append([t1, t2])
+                for i, seg in enumerate(segments):
+                    if t > seg[0] and t < seg[1]:
+                        valid = []
+                        if not self.sShape:
+                            if self.snapVToFirst:
+                                valid = [0, 1]
+                            elif self.snapVToSecond:
+                                valid = [1, 2]
+                            else:
+                                valid = [1, 2, 3]
+                        else:
+                            valid = [1, 2, 3]
+                        if i in valid:
+                            self.hoverSegment = i
+                        else:
+                            self.hoverSegment = -1
+
     def getEndPoints(self):
         p1 = self.drawSource.scenePos() + self.drawSource.pinCenter()
         if self.sourcePositionOverride is not None:
@@ -259,24 +331,142 @@ class UIConnection(QGraphicsPathItem):
         p2 = self.drawDestination.scenePos() + self.drawDestination.pinCenter()
         if self.destinationPositionOverride is not None:
             p2 = self.destinationPositionOverride()
+
+        if editableStyleSheet().ConnectionMode[0] in [ConnectionTypes.Circuit, ConnectionTypes.ComplexCircuit]:
+            self.sameSide = 0
+            p1n, p2n = p1, p2
+            xDistance = p2.x() - p1.x()
+            if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
+                if xDistance < 0:
+                    p2n, p1n = p1, p2
+                    self.sameSide = 1
+            if self.source().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
+                if xDistance < 0:
+                    p1n, p2n = p1, p2
+                    self.sameSide = -1
+            p1, p2 = p1n, p2n
         return p1, p2
+
+    def percentageByPoint(self, point, path, precision=0.5, width=20.0):
+        percentage = -1.0
+        stroker = QtGui.QPainterPathStroker()
+        stroker.setWidth(width)
+        strokepath = stroker.createStroke(path)
+        t = 0.0
+        d = []
+        while t <= 100.0:
+            d.append(QtGui.QVector2D(point - path.pointAtPercent(t / 100)).length())
+            t += precision
+        percentage = d.index(min(d)) * precision
+        return percentage
 
     def mousePressEvent(self, event):
         super(UIConnection, self).mousePressEvent(event)
+        t = self.percentageByPoint(event.scenePos(), self.mPath)
+        self.prevPos = event.pos()
+
+        if abs(self.mPath.slopeAtPercent(t * 0.01)) < 1:
+            self.offsetting = 1
+        else:
+            self.offsetting = 2
+
+        if self.linPath is not None:
+            tempPath = ConnectionPainter.linearPath(self.linPath)
+            t = self.percentageByPoint(event.scenePos(), tempPath)
+            segments = []
+            for i, pos in enumerate(self.linPath[:-1]):
+                t1 = self.percentageByPoint(pos, tempPath)
+                t2 = self.percentageByPoint(self.linPath[i + 1], tempPath)
+                segments.append([t1, t2])
+            for i, seg in enumerate(segments):
+                if t > seg[0] and t < seg[1]:
+                    valid = []
+                    if not self.sShape:
+                        if self.snapVToFirst:
+                            valid = [0, 1]
+                        elif self.snapVToSecond:
+                            valid = [1, 2]
+                        else:
+                            valid = [1, 2, 3]
+                    else:
+                        valid = [1, 2, 3]
+                    if i in valid:
+                        self.pressedSegment = i
+                    else:
+                        self.pressedSegment = -1
+        p1, p2 = self.getEndPoints()
+        offset1 = editableStyleSheet().ConnectionOffset[0]
+        offset2 = -offset1
+        if self.sameSide == 1:
+            offset2 = offset1
+        elif self.sameSide == -1:
+            offset1 = offset2
+        xDistance = (p2.x() + offset2) - (p1.x() + offset1)
+        self.sShape = xDistance < 0
         event.accept()
 
     def mouseReleaseEvent(self, event):
         super(UIConnection, self).mouseReleaseEvent(event)
+        self.offsetting = 0
+        self.pressedSegment = -1
+
         event.accept()
 
     def mouseMoveEvent(self, event):
         super(UIConnection, self).mouseMoveEvent(event)
-        event.accept()
+        if self.prevPos is not None:
+            delta = self.prevPos - event.pos()
+            p1, p2 = self.getEndPoints()
+            if not self.sShape:
+                if self.offsetting == 1:
+                    doIt = True
+                    if self.snapVToFirst and self.pressedSegment != 0:
+                        doIt = False
+                        self.pressedSegment = -1
+                    elif self.snapVToSecond and self.pressedSegment != 2:
+                        doIt = False
+                        self.pressedSegment = -1
+                    elif not self.snapVToFirst and not self.snapVToSecond:
+                        if self.pressedSegment != 2:
+                            doIt = False
+                            self.pressedSegment = -1
+                    if doIt:
+                        self.vOffset -= float(delta.y())
+                        if abs(self.vOffset) <= 3:
+                            self.snapVToFirst = True
+                            self.pressedSegment = 0
+                        else:
+                            self.snapVToFirst = False
+                        if p1.y() + self.vOffset > p2.y() - 3 and p1.y() + self.vOffset < p2.y() + 3:
+                            self.snapVToSecond = True
+                            self.pressedSegment = 2
+                        else:
+                            self.snapVToSecond = False
+                        if not self.snapVToFirst and self.pressedSegment == 0:
+                            self.pressedSegment = 2
 
-    def hoverLeaveEvent(self, event):
-        super(UIConnection, self).hoverLeaveEvent(event)
-        self.restoreThick()
-        self.update()
+                if self.offsetting == 2:
+                    if self.snapVToFirst:
+                        self.hOffsetR -= float(delta.x())
+                    elif self.snapVToSecond:
+                        self.hOffsetL -= float(delta.x())
+                    else:
+                        if self.pressedSegment == 1:
+                            self.hOffsetL -= float(delta.x())
+                        elif self.pressedSegment == 3:
+                            self.hOffsetR -= float(delta.x())
+            else:
+                if self.offsetting == 1 and self.pressedSegment == 2:
+                    self.vOffsetSShape -= float(delta.y())
+                elif self.offsetting == 2:
+                    if self.pressedSegment == 1:
+                        self.hOffsetRSShape -= float(delta.x())
+                    elif self.pressedSegment == 3:
+                        self.hOffsetLSShape -= float(delta.x())
+
+            self.prevPos = event.pos()
+
+        event.accept()
 
     def source_port_name(self):
         return self.source().getFullName()
@@ -306,33 +496,42 @@ class UIConnection(QGraphicsPathItem):
         self.canvasRef().removeConnection(self)
 
     def paint(self, painter, option, widget):
-
         option.state &= ~QStyle.State_Selected
 
-        lod = self.canvasRef().getLodValueFromCurrentScale(5)
+        lod = self.canvasRef().getCanvasLodValueFromCurrentScale()
 
         self.setPen(self.pen)
         p1, p2 = self.getEndPoints()
+        roundness = editableStyleSheet().ConnectionRoundness[0]
+        offset = editableStyleSheet().ConnectionOffset[0]
+        offset1 = offset
+        offset2 = -offset1
+        if self.sameSide == 1:
+            offset2 = offset1
+        elif self.sameSide == -1:
+            offset1 = offset2
+        xDistance = (p2.x() + offset2) - (p1.x() + offset1)
+        self.sShape = xDistance < 0
+        sectionPath = None
         if editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Circuit:
-            sameSide = 0
-            offset = 20
-            roundnes = editableStyleSheet().ConnectionRoundness[0]
-            if self.destination().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
-                xDistance = p2.x() - p1.x()
-                if xDistance < 0:
-                    p2, p1 = self.getEndPoints()
-                    sameSide = 1
-            if self.source().owningNode()._rawNode.__class__.__name__ in ["reroute", "rerouteExecs"]:
-                p11, p22 = self.getEndPoints()
-                xDistance = p22.x() - p11.x()
-                if xDistance < 0:
-                    sameSide = -1
-                    p1, p2 = self.getEndPoints()
-            self.mPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundnes, sameSide,lod)
-
+            seg = self.hoverSegment if self.hoverSegment != -1 and self.linPath and self.pressedSegment == -1 else self.pressedSegment
+            self.mPath, self.linPath, sectionPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundness, self.sameSide, lod, False, self.vOffset, self.hOffsetL, self.vOffsetSShape, self.hOffsetR, self.hOffsetRSShape, self.hOffsetLSShape, self.snapVToFirst, self.snapVToSecond, seg)
+        elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.ComplexCircuit:
+            self.mPath, self.linPath, sectionPath = ConnectionPainter.BasicCircuit(p1, p2, offset, roundness, self.sameSide, lod, True)
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Cubic:
-            self.mPath = ConnectionPainter.Cubic(p1, p2, 150,lod)
-
+            self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
+            self.linPath = None
+        elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Linear:
+            self.mPath = ConnectionPainter.Linear(p1, p2, offset, roundness, lod)
+            self.linPath = None
+        if self.snapVToSecond and self.offsetting == 0:
+            self.vOffset = p2.y() - p1.y()
         self.setPath(self.mPath)
-        
+
         super(UIConnection, self).paint(painter, option, widget)
+        pen = QtGui.QPen()
+        pen.setColor(editableStyleSheet().MainColor)
+        pen.setWidthF(self.thickness + (self.thickness / 1.5))
+        painter.setPen(pen)
+        if sectionPath:
+            painter.drawPath(sectionPath)

@@ -93,7 +93,6 @@ class InputTextField(QGraphicsTextItem):
         if currentKey == QtCore.Qt.Key_Escape:
             # user rejects action. Restore text before editing
             self.setPlainText(self.textBeforeEditing)
-            self.editingFinished.emit(False)
             self.clearFocus()
             super(InputTextField, self).keyPressEvent(event)
             return
@@ -107,7 +106,7 @@ class InputTextField(QGraphicsTextItem):
                     self.clearFocus()
                 else:
                     event.ignore()
-                    self.editingFinished.emit(True)
+                    # self.editingFinished.emit(True)
                     self.clearFocus()
             else:
                 super(InputTextField, self).keyPressEvent(event)
@@ -655,8 +654,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         :type accepted: :class:`bool`
         """
         if accepted:
+            name = self.nodeNameWidget.getPlainText()
             if self.isNameValidatoinEnabled():
-                name = self.nodeNameWidget.getPlainText().replace(" ", "")
+                name = name.replace(" ", "")
             newName = self.canvasRef().graphManager.getUniqNodeName(name)
             self.setName(newName)
             self.setHeaderHtml(newName)

@@ -27,7 +27,6 @@ from Qt import QtCore
 from PyFlow import GET_PACKAGES
 from PyFlow import GET_PACKAGE_PATH
 from PyFlow.UI.Canvas.UINodeBase import UINodeBase
-from PyFlow.UI.Views.CodeEditor import CodeEditor
 from PyFlow.UI.EditorHistory import EditorHistory
 from PyFlow.ConfigManager import ConfigManager
 
@@ -41,9 +40,9 @@ from PyFlow.Core.Common import *
 def prepareNode(node):
     node.createInputPin(pinName="inExec", dataType="ExecPin", foo=node.processNode)
     node.createOutputPin(pinName="outExec", dataType="ExecPin")
-    node.createInputPin(pinName="a", dataType="IntPin", defaultValue=0, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
-    node.createInputPin(pinName="b", dataType="IntPin", defaultValue=0, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
-    node.createOutputPin(pinName="c", dataType="IntPin", defaultValue=0, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
+    node.createInputPin(pinName="a", dataType="IntPin", defaultValue=0, foo=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
+    node.createInputPin(pinName="b", dataType="IntPin", defaultValue=0, foo=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
+    node.createOutputPin(pinName="c", dataType="IntPin", defaultValue=0, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group="")
 
 
 def compute(node):

@@ -39,7 +39,7 @@ from PyFlow.Core.GraphBase import GraphBase
 from PyFlow.Core.GraphManager import GraphManagerSingleton
 from PyFlow.ConfigManager import ConfigManager
 from PyFlow.UI.Canvas.UICommon import *
-from PyFlow.UI.Canvas.Canvas import CanvasWidget
+from PyFlow.UI.Widgets.BlueprintCanvas import BlueprintCanvasWidget
 from PyFlow.UI.Views.NodeBox import NodesBox
 from PyFlow.UI.Canvas.UINodeBase import getUINodeInstance
 from PyFlow.UI.Tool.Tool import ShelfTool, DockTool
@@ -49,14 +49,15 @@ from PyFlow.UI.Tool import REGISTER_TOOL
 from PyFlow.UI.Utils.stylesheet import editableStyleSheet
 from PyFlow.UI.ContextMenuGenerator import ContextMenuGenerator
 from PyFlow.UI.Widgets.PreferencesWindow import PreferencesWindow
-from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
+try:
+    from PyFlow.Packages.PyFlowBase.Tools.PropertiesTool import PropertiesTool
+except:
+    pass
 from PyFlow.Wizards.PackageWizard import PackageWizard
 from PyFlow import INITIALIZE
 from PyFlow.Input import InputAction, InputActionType
 from PyFlow.Input import InputManager
 from PyFlow.ConfigManager import ConfigManager
-
-from PyFlow.Packages.PyFlowBase.Tools.LoggerTool import LoggerTool
 
 import PyFlow.UI.resources
 
@@ -104,7 +105,7 @@ class PyFlow(QMainWindow):
         self.undoStack = QUndoStack(self)
         self.setContentsMargins(1, 1, 1, 1)
         self.graphManager = GraphManagerSingleton()
-        self.canvasWidget = CanvasWidget(self.graphManager.get(), self)
+        self.canvasWidget = BlueprintCanvasWidget(self.graphManager.get(), self)
         self.canvasWidget.setObjectName("canvasWidget")
         self.setCentralWidget(self.canvasWidget)
         self.setTabPosition(QtCore.Qt.AllDockWidgetAreas, QTabWidget.North)

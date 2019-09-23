@@ -86,7 +86,7 @@ class UIPinBase(QGraphicsWidget):
             self.actionDisconnect.triggered.connect(self._rawPin.disconnectAll)
             self.actionResetValue = self.menu.addAction("Reset value")
             self.actionResetValue.triggered.connect(self.resetToDefault)
-            if self._rawPin._structure == PinStructure.Multi:
+            if self._rawPin._structure == StructureType.Multi:
                 self.menu.addAction("changeStructure").triggered.connect(
                     self.selectStructure)
             self.actionWatchValue = self.menu.addAction("Watch")
@@ -115,6 +115,10 @@ class UIPinBase(QGraphicsWidget):
         # TODO: This is check is for PinGroup. Improve it
         if self._rawPin is not None:
             self.setToolTip(self._rawPin.description)
+
+    @property
+    def wrapperJsonData(self):
+        return self._rawPin.wrapperJsonData
 
     def onCopyPathToClipboard(self):
         QApplication.clipboard().clear()
@@ -373,7 +377,15 @@ class UIPinBase(QGraphicsWidget):
         data = {}
         data['bLabelHidden'] = self.bLabelHidden
         data['displayName'] = self.displayName()
+        wiresData = {}
+        for wire in self.uiConnectionList:
+            wiresData[wire.destination().pinIndex] = wire.serialize()
+        data["wires"] = wiresData
         return data
+
+    @property
+    def pinIndex(self):
+        return self._rawPin.pinIndex
 
     def serialize(self):
         return self._rawPin.serialize()
@@ -453,9 +465,9 @@ class UIPinBase(QGraphicsWidget):
 
     def selectStructure(self):
         item, ok = QInputDialog.getItem(
-            None, "", "", ([i.name for i in list(PinStructure)]), 0, False)
+            None, "", "", ([i.name for i in list(StructureType)]), 0, False)
         if ok and item:
-            self._rawPin.changeStructure(PinStructure[item], True)
+            self._rawPin.changeStructure(StructureType[item], True)
 
 
 class PinGroup(UIPinBase):

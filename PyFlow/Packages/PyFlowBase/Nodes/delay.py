@@ -37,8 +37,8 @@ class delay(NodeBase):
         helper.addInputDataType('ExecPin')
         helper.addInputDataType('FloatPin')
         helper.addOutputDataType('ExecPin')
-        helper.addInputStruct(PinStructure.Single)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Single)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

@@ -14,6 +14,8 @@
 
 
 # Input widgets for pins
+
+from copy import copy
 from Qt import QtCore
 from Qt.QtWidgets import *
 
@@ -21,24 +23,17 @@ from PyFlow.Core.Common import *
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow.UI.Widgets.InputWidgets import *
-from PyFlow.UI.Widgets.QtSliders import pyf_Slider, valueBox
+from PyFlow.UI.Widgets.QtSliders import *
 
 FLOAT_SINGLE_STEP = 0.01
 FLOAT_DECIMALS = 5
-
-
-def _configDoubleSpinBox(sb):
-    sb.setDecimals(FLOAT_DECIMALS)
-    sb.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
-    sb.setSingleStep(FLOAT_SINGLE_STEP)
-    sb.setDisplayMinimun(0)
-    sb.setDisplayMaximum(10)
+FLOAT_DEFAULT_RANGE = (FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
 
 
 def _configIntSpinBox(sb):
     sb.setRange(INT_RANGE_MIN, INT_RANGE_MAX)
-    sb.setDisplayMinimun(0)
-    sb.setDisplayMaximum(10)
+    # sb.setDisplayMinimun(0)
+    # sb.setDisplayMaximum(10)
 
 
 class ExecInputWidget(InputWidgetSingle):
@@ -61,8 +56,7 @@ class FloatInputWidgetSimple(InputWidgetSingle):
 
     def __init__(self, parent=None, **kwds):
         super(FloatInputWidgetSimple, self).__init__(parent=parent, **kwds)
-        self.sb = valueBox("float", True)
-        self.sb.setDecimals(FLOAT_DECIMALS)
+        self.sb = valueBox(type="float", buttons=True)
         self.sb.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
         self.sb.setSingleStep(FLOAT_SINGLE_STEP)
         self.setWidget(self.sb)
@@ -88,10 +82,18 @@ class FloatInputWidget(InputWidgetSingle):
 
     def __init__(self, parent=None, **kwds):
         super(FloatInputWidget, self).__init__(parent=parent, **kwds)
-        self.sb = pyf_Slider(self, "float", style=0)
-        _configDoubleSpinBox(self.sb)
-        self.sb.setDisplayMinimun(0)
-        self.sb.setDisplayMaximum(10)
+        valueRange = (FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
+        if "pinAnnotations" in kwds:
+            if PinSpecifires.VALUE_RANGE in kwds["pinAnnotations"]:
+                valueRange = kwds["pinAnnotations"][PinSpecifires.VALUE_RANGE]
+
+        steps = copy(FLOAT_SLIDER_DRAG_STEPS)
+
+        if "pinAnnotations" in kwds:
+            if PinSpecifires.DRAGGER_STEPS in kwds["pinAnnotations"]:
+                steps = kwds["pinAnnotations"][PinSpecifires.DRAGGER_STEPS]
+
+        self.sb = pyf_Slider(self, "float", style=0, sliderRange=valueRange, draggerSteps=steps)
         self.setWidget(self.sb)
         # when spin box updated call setter function
         self.sb.valueChanged.connect(lambda val: self.dataSetCallback(val))
@@ -116,7 +118,7 @@ class IntInputWidgetSimple(InputWidgetSingle):
 
     def __init__(self, parent=None, **kwds):
         super(IntInputWidgetSimple, self).__init__(parent=parent, **kwds)
-        self.sb = valueBox("int", True)
+        self.sb = valueBox(type="int", buttons=True)
         self.sb.setRange(INT_RANGE_MIN, INT_RANGE_MAX)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
@@ -135,8 +137,11 @@ class IntInputWidget(InputWidgetSingle):
 
     def __init__(self, parent=None, **kwds):
         super(IntInputWidget, self).__init__(parent=parent, **kwds)
-        self.sb = pyf_Slider(self, "int", style=1)
-        _configIntSpinBox(self.sb)
+        valueRange = (INT_RANGE_MIN, INT_RANGE_MAX)
+        if "pinAnnotations" in kwds:
+            if "ValueRange" in kwds["pinAnnotations"]:
+                valueRange = kwds["pinAnnotations"]["ValueRange"]
+        self.sb = pyf_Slider(self, "int", style=1, sliderRange=valueRange)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 
@@ -166,13 +171,13 @@ class StringInputWidget(InputWidgetSingle):
         self.le.setText(str(val))
 
 
-class EnumInputWIdget(InputWidgetSingle):
-    """docstring for EnumInputWIdget."""
+class EnumInputWidget(InputWidgetSingle):
+    """docstring for EnumInputWidget."""
     def __init__(self, parent=None, **kwds):
-        super(EnumInputWIdget, self).__init__(parent=parent, **kwds)
+        super(EnumInputWidget, self).__init__(parent=parent, **kwds)
         values = []
-        if "ValueList" in kwds["pinAnnotations"]:
-            values = kwds["pinAnnotations"]["ValueList"]
+        if PinSpecifires.VALUE_LIST in kwds["pinAnnotations"]:
+            values = kwds["pinAnnotations"][PinSpecifires.VALUE_LIST]
         self.enumBox = EnumComboBox(values)
         self.enumBox.setEditable(False)
         if "editable" in kwds["pinAnnotations"]:
@@ -281,22 +286,22 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
     factory method
     '''
     if dataType == 'FloatPin':
-        if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-        elif widgetVariant == "FloatInputWidgetSimple":
-            return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+        if kwds is not None and "pinAnnotations" in kwds:
+            if kwds["pinAnnotations"] is not None and "ValueRange" in kwds["pinAnnotations"]:
+                return FloatInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+        return FloatInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'IntPin':
-        if widgetVariant == DEFAULT_WIDGET_VARIANT:
-            return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
-        elif widgetVariant == "IntInputWidgetSimple":
-            return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+        if kwds is not None and "pinAnnotations" in kwds:
+            if kwds["pinAnnotations"] is not None and "ValueRange" in kwds["pinAnnotations"]:
+                return IntInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+        return IntInputWidgetSimple(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'StringPin':
         if widgetVariant == DEFAULT_WIDGET_VARIANT:
             return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "PathWidget":
             return PathInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "EnumWidget":
-            return EnumInputWIdget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+            return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "ObjectPathWIdget":
             return ObjectPathWIdget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
     if dataType == 'BoolPin':

@@ -45,8 +45,8 @@ class forLoopBegin(NodeBase):
         helper.addInputDataType('IntPin')
         helper.addOutputDataType('ExecPin')
         helper.addOutputDataType('IntPin')
-        helper.addInputStruct(PinStructure.Single)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Single)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

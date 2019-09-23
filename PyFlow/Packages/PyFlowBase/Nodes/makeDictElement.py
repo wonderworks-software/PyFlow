@@ -23,10 +23,10 @@ class makeDictElement(NodeBase):
     def __init__(self, name):
         super(makeDictElement, self).__init__(name)
         self.bCacheEnabled = False
-        self.key = self.createInputPin('key', 'AnyPin', structure=PinStructure.Single, constraint="1", supportedPinDataTypes=getHashableDataTypes())
-        self.value = self.createInputPin('value', 'AnyPin', structure=PinStructure.Multi, constraint="2")
+        self.key = self.createInputPin('key', 'AnyPin', structure=StructureType.Single, constraint="1", supportedPinDataTypes=getHashableDataTypes())
+        self.value = self.createInputPin('value', 'AnyPin', structure=StructureType.Multi, constraint="2")
         self.value.enableOptions(PinOptions.AllowAny)
-        self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=DictElement(), structure=PinStructure.Single, constraint="2")
+        self.outArray = self.createOutputPin('out', 'AnyPin', defaultValue=DictElement(), structure=StructureType.Single, constraint="2")
         self.outArray.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSupported)
         self.outArray.onPinConnected.connect(self.outPinConnected)
         self.outArray.onPinDisconnected.connect(self.outPinDisConnected)
@@ -38,9 +38,9 @@ class makeDictElement(NodeBase):
         helper = NodePinsSuggestionsHelper()
         helper.addInputDataType('AnyPin')
         helper.addOutputDataType('AnyPin')
-        helper.addInputStruct(PinStructure.Single)
-        helper.addInputStruct(PinStructure.Multi)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Single)
+        helper.addInputStruct(StructureType.Multi)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

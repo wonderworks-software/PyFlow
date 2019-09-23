@@ -26,7 +26,7 @@ class consoleOutput(NodeBase):
     def __init__(self, name):
         super(consoleOutput, self).__init__(name)
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
-        self.entity = self.createInputPin('entity', 'AnyPin', structure=PinStructure.Multi)
+        self.entity = self.createInputPin('entity', 'AnyPin', structure=StructureType.Multi)
         self.entity.enableOptions(PinOptions.AllowAny)
         self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
 
@@ -36,9 +36,9 @@ class consoleOutput(NodeBase):
         helper.addInputDataType('ExecPin')
         helper.addInputDataType('AnyPin')
         helper.addOutputDataType('ExecPin')
-        helper.addInputStruct(PinStructure.Multi)
-        helper.addInputStruct(PinStructure.Single)
-        helper.addOutputStruct(PinStructure.Single)
+        helper.addInputStruct(StructureType.Multi)
+        helper.addInputStruct(StructureType.Single)
+        helper.addOutputStruct(StructureType.Single)
         return helper
 
     @staticmethod

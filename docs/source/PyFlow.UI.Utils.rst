@@ -4,6 +4,13 @@ PyFlow.UI.Utils package
 Submodules
 ----------
 
+PyFlow.UI.Utils.ConvexHull module
+---------------------------------
+
+.. automodule:: PyFlow.UI.Utils.ConvexHull
+   :members:
+   :show-inheritance:
+
 PyFlow.UI.Utils.PythonSyntax module
 -----------------------------------
 

@@ -474,7 +474,7 @@ class NodeBase(INode):
                     continue
                 pinAffects(i, o)
 
-    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
+    def createInputPin(self, pinName, dataType, defaultValue=None, foo=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
         """Creates input pin
 
         :param pinName: Pin name
@@ -486,7 +486,7 @@ class NodeBase(INode):
         :param foo: Pin callback. used for exec pins
         :type foo: function
         :param structure: Pin structure
-        :type structure: :class:`~PyFlow.Core.Common.PinStructure.Single`
+        :type structure: :class:`~PyFlow.Core.Common.StructureType.Single`
         :param constraint: Pin constraint. Should be any hashable type. We use str
         :type constraint: object
         :param structConstraint: Pin struct constraint. Also should be hashable type
@@ -501,11 +501,11 @@ class NodeBase(INode):
         p.structureType = structure
         p.group = group
 
-        if structure == PinStructure.Array:
+        if structure == StructureType.Array:
             p.initAsArray(True)
-        elif structure == PinStructure.Dict:
+        elif structure == StructureType.Dict:
             p.initAsDict(True)
-        elif structure == PinStructure.Multi:
+        elif structure == StructureType.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
         if foo:
@@ -530,7 +530,7 @@ class NodeBase(INode):
             p.updateStructConstraint(structConstraint)
         return p
 
-    def createOutputPin(self, pinName, dataType, defaultValue=None, structure=PinStructure.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
+    def createOutputPin(self, pinName, dataType, defaultValue=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
         """Creates output pin
 
         :param pinName: Pin name
@@ -540,7 +540,7 @@ class NodeBase(INode):
         :param defaultValue: Pin default value
         :type defaultValue: object
         :param structure: Pin structure
-        :type structure: :class:`~PyFlow.Core.Common.PinStructure.Single`
+        :type structure: :class:`~PyFlow.Core.Common.StructureType.Single`
         :param constraint: Pin constraint. Should be any hashable type. We use str
         :type constraint: object
         :param structConstraint: Pin struct constraint. Also should be hashable type
@@ -555,11 +555,11 @@ class NodeBase(INode):
         p.structureType = structure
         p.group = group
 
-        if structure == PinStructure.Array:
+        if structure == StructureType.Array:
             p.initAsArray(True)
-        elif structure == PinStructure.Dict:
+        elif structure == StructureType.Dict:
             p.initAsDict(True)
-        elif structure == PinStructure.Multi:
+        elif structure == StructureType.Multi:
             p.enableOptions(PinOptions.ArraySupported)
 
         if defaultValue is not None or dataType == "AnyPin":
@@ -753,18 +753,18 @@ class NodeBase(INode):
             if len(foo.__annotations__['return']) == 3:
                 returnAnnotationDict = foo.__annotations__['return'][2]
 
-                if "supportedDataTypes" in returnAnnotationDict:
-                    retAnyOpts = returnAnnotationDict["supportedDataTypes"]
-                if "constraint" in returnAnnotationDict:
-                    retConstraint = returnAnnotationDict["constraint"]
-                if "structConstraint" in returnAnnotationDict:
-                    retStructConstraint = returnAnnotationDict["structConstraint"]
-                if "enabledOptions" in returnAnnotationDict:
-                    returnPinOptionsToEnable = returnAnnotationDict["enabledOptions"]
-                if "disabledOptions" in returnAnnotationDict:
-                    returnPinOptionsToDisable = returnAnnotationDict["disabledOptions"]
-                if "inputWidgetVariant" in returnAnnotationDict:
-                    returnWidgetVariant = returnAnnotationDict["inputWidgetVariant"]
+                if PinSpecifires.SUPPORTED_DATA_TYPES in returnAnnotationDict:
+                    retAnyOpts = returnAnnotationDict[PinSpecifires.SUPPORTED_DATA_TYPES]
+                if PinSpecifires.CONSTRAINT in returnAnnotationDict:
+                    retConstraint = returnAnnotationDict[PinSpecifires.CONSTRAINT]
+                if PinSpecifires.STRUCT_CONSTRAINT in returnAnnotationDict:
+                    retStructConstraint = returnAnnotationDict[PinSpecifires.STRUCT_CONSTRAINT]
+                if PinSpecifires.ENABLED_OPTIONS in returnAnnotationDict:
+                    returnPinOptionsToEnable = returnAnnotationDict[PinSpecifires.ENABLED_OPTIONS]
+                if PinSpecifires.DISABLED_OPTIONS in returnAnnotationDict:
+                    returnPinOptionsToDisable = returnAnnotationDict[PinSpecifires.DISABLED_OPTIONS]
+                if PinSpecifires.INPUT_WIDGET_VARIANT in returnAnnotationDict:
+                    returnWidgetVariant = returnAnnotationDict[PinSpecifires.INPUT_WIDGET_VARIANT]
 
         nodeType = foo.__annotations__['nodeType']
         _packageName = foo.__annotations__['packageName']
@@ -777,11 +777,11 @@ class NodeBase(INode):
 
         @staticmethod
         def category():
-            return meta['Category']
+            return meta[NodeMeta.CATEGORY]
 
         @staticmethod
         def keywords():
-            return meta['Keywords']
+            return meta[NodeMeta.KEYWORDS]
 
         def constructor(self, name, **kwargs):
             NodeBase.__init__(self, name, **kwargs)
@@ -846,9 +846,9 @@ class NodeBase(INode):
             if returnPinOptionsToDisable is not None:
                 p.disableOptions(returnPinOptionsToDisable)
             if not p.isArray() and p.optionEnabled(PinOptions.ArraySupported):
-                p.structureType = PinStructure.Multi
+                p.structureType = StructureType.Multi
             elif p.isArray():
-                p.structureType = PinStructure.Array
+                p.structureType = StructureType.Array
 
         # iterate over function arguments and create pins according to data types
         for index in range(len(fooArgNames)):
@@ -869,18 +869,18 @@ class NodeBase(INode):
                     pinDict = pinDescriptionTuple[1][2]
 
                 if pinDict is not None:
-                    if "supportedDataTypes" in pinDict:
-                        anyOpts = pinDict["supportedDataTypes"]
-                    if "constraint" in pinDict:
-                        constraint = pinDict["constraint"]
-                    if "structConstraint" in pinDict:
-                        structConstraint = pinDict["structConstraint"]
-                    if "enabledOptions" in pinDict:
-                        pinOptionsToEnable = pinDict["enabledOptions"]
-                    if "disabledOptions" in pinDict:
-                        pinOptionsToDisable = pinDict["disabledOptions"]
-                    if "inputWidgetVariant" in pinDict:
-                        inputWidgetVariant = pinDict["inputWidgetVariant"]
+                    if PinSpecifires.SUPPORTED_DATA_TYPES in pinDict:
+                        anyOpts = pinDict[PinSpecifires.SUPPORTED_DATA_TYPES]
+                    if PinSpecifires.CONSTRAINT in pinDict:
+                        constraint = pinDict[PinSpecifires.CONSTRAINT]
+                    if PinSpecifires.STRUCT_CONSTRAINT in pinDict:
+                        structConstraint = pinDict[PinSpecifires.STRUCT_CONSTRAINT]
+                    if PinSpecifires.ENABLED_OPTIONS in pinDict:
+                        pinOptionsToEnable = pinDict[PinSpecifires.ENABLED_OPTIONS]
+                    if PinSpecifires.DISABLED_OPTIONS in pinDict:
+                        pinOptionsToDisable = pinDict[PinSpecifires.DISABLED_OPTIONS]
+                    if PinSpecifires.INPUT_WIDGET_VARIANT in pinDict:
+                        inputWidgetVariant = pinDict[PinSpecifires.INPUT_WIDGET_VARIANT]
 
                 outRef = raw_inst.createOutputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
                 outRef.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
@@ -895,9 +895,9 @@ class NodeBase(INode):
                 if pinOptionsToDisable is not None:
                     outRef.disableOptions(pinOptionsToDisable)
                 if not outRef.isArray() and outRef.optionEnabled(PinOptions.ArraySupported):
-                    outRef.structureType = PinStructure.Multi
+                    outRef.structureType = StructureType.Multi
                 elif outRef.isArray():
-                    outRef.structureType = PinStructure.Array
+                    outRef.structureType = StructureType.Array
                 refs.append(outRef)
             else:
                 pinDataType = pinDescriptionTuple[0]
@@ -907,18 +907,18 @@ class NodeBase(INode):
                     pinDict = pinDescriptionTuple[2]
 
                 if pinDict is not None:
-                    if "supportedDataTypes" in pinDict:
-                        anyOpts = pinDict["supportedDataTypes"]
-                    if "constraint" in pinDict:
-                        constraint = pinDict["constraint"]
-                    if "structConstraint" in pinDict:
-                        structConstraint = pinDict["structConstraint"]
-                    if "enabledOptions" in pinDict:
-                        pinOptionsToEnable = pinDict["enabledOptions"]
-                    if "disabledOptions" in pinDict:
-                        pinOptionsToDisable = pinDict["disabledOptions"]
-                    if "inputWidgetVariant" in pinDict:
-                        inputWidgetVariant = pinDict["inputWidgetVariant"]
+                    if PinSpecifires.SUPPORTED_DATA_TYPES in pinDict:
+                        anyOpts = pinDict[PinSpecifires.SUPPORTED_DATA_TYPES]
+                    if PinSpecifires.CONSTRAINT in pinDict:
+                        constraint = pinDict[PinSpecifires.CONSTRAINT]
+                    if PinSpecifires.STRUCT_CONSTRAINT in pinDict:
+                        structConstraint = pinDict[PinSpecifires.STRUCT_CONSTRAINT]
+                    if PinSpecifires.ENABLED_OPTIONS in pinDict:
+                        pinOptionsToEnable = pinDict[PinSpecifires.ENABLED_OPTIONS]
+                    if PinSpecifires.DISABLED_OPTIONS in pinDict:
+                        pinOptionsToDisable = pinDict[PinSpecifires.DISABLED_OPTIONS]
+                    if PinSpecifires.INPUT_WIDGET_VARIANT in pinDict:
+                        inputWidgetVariant = pinDict[PinSpecifires.INPUT_WIDGET_VARIANT]
 
                 inp = raw_inst.createInputPin(argName, pinDataType, supportedPinDataTypes=anyOpts, constraint=constraint, structConstraint=structConstraint)
                 inp.annotationDescriptionDict = copy(pinDict) if pinDict is not None else None
@@ -933,8 +933,8 @@ class NodeBase(INode):
                 if pinOptionsToDisable is not None:
                     inp.disableOptions(pinOptionsToDisable)
                 if not inp.isArray() and inp.optionEnabled(PinOptions.ArraySupported):
-                    inp.structureType = PinStructure.Multi
+                    inp.structureType = StructureType.Multi
                 elif inp.isArray():
-                    inp.structureType = PinStructure.Array
+                    inp.structureType = StructureType.Array
         raw_inst.autoAffectPins()
         return raw_inst
