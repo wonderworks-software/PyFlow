@@ -66,6 +66,12 @@ Latest development version. Contains latest features
 pip install git+https://github.com/wonderworks-software/PyFlow.git@master
 ```
 
+Latest release version
+
+```bash
+pip install git+https://github.com/wonderworks-software/PyFlow.git@release
+```
+
 After package is installed, you can invoke `pyflow.exe` on windows or `pyflow` on unix OS.
 Program is located inside `PATH/TO/PYTHON/Scripts`.
 
