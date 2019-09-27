@@ -18,7 +18,6 @@ import subprocess
 import os
 import uuid
 import logging
-import shlex
 
 from Qt.QtWidgets import QAction
 from Qt.QtWidgets import QFileDialog
@@ -218,5 +217,5 @@ class UIPythonNode(UINodeBase):
             pass
 
         result = UIPythonNode.watcher.fileChanged.connect(self.onFileChanged)
-        self.currentEditorProcess = subprocess.Popen(shlex.split(editCmd))
+        self.currentEditorProcess = subprocess.Popen(editCmd, shell=True)
         self.fileHandle = open(self._filePath, 'r')
