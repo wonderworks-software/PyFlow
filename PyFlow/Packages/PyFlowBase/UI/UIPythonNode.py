@@ -217,5 +217,5 @@ class UIPythonNode(UINodeBase):
             pass
 
         result = UIPythonNode.watcher.fileChanged.connect(self.onFileChanged)
-        self.currentEditorProcess = subprocess.Popen(editCmd)
+        self.currentEditorProcess = subprocess.Popen(editCmd, shell=True)
         self.fileHandle = open(self._filePath, 'r')
