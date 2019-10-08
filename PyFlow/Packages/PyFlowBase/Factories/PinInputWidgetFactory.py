@@ -19,21 +19,13 @@ from copy import copy
 from Qt import QtCore
 from Qt.QtWidgets import *
 
+from PyFlow.Packages.PyFlowBase import PACKAGE_NAME
+from PyFlow import GET_PACKAGES
 from PyFlow.Core.Common import *
 from PyFlow.Core.PathsRegistry import PathsRegistry
 from PyFlow.UI.Widgets.EnumComboBox import EnumComboBox
 from PyFlow.UI.Widgets.InputWidgets import *
 from PyFlow.UI.Widgets.QtSliders import *
-
-FLOAT_SINGLE_STEP = 0.01
-FLOAT_DECIMALS = 5
-FLOAT_DEFAULT_RANGE = (FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
-
-
-def _configIntSpinBox(sb):
-    sb.setRange(INT_RANGE_MIN, INT_RANGE_MAX)
-    # sb.setDisplayMinimun(0)
-    # sb.setDisplayMaximum(10)
 
 
 class ExecInputWidget(InputWidgetSingle):
@@ -58,7 +50,7 @@ class FloatInputWidgetSimple(InputWidgetSingle):
         super(FloatInputWidgetSimple, self).__init__(parent=parent, **kwds)
         self.sb = valueBox(type="float", buttons=True)
         self.sb.setRange(FLOAT_RANGE_MIN, FLOAT_RANGE_MAX)
-        self.sb.setSingleStep(FLOAT_SINGLE_STEP)
+        self.sb.setSingleStep(0.01)
         self.setWidget(self.sb)
         self.sb.valueChanged.connect(self.dataSetCallback)
 
@@ -285,6 +277,21 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
     '''
     factory method
     '''
+
+    # try to find factory in other packages first
+    for pkgName, pkg in GET_PACKAGES().items():
+        # skip self
+        if pkgName == PACKAGE_NAME:
+            continue
+
+        try:
+            widget = pkg.PinsInputWidgetFactory()(dataType, dataSetter, defaultValue, widgetVariant=widgetVariant, **kwds)
+            if widget is not None:
+                return widget
+        except Exception as e:
+            print("Failed to override input widget. Package - {0}".format(pkgName), e)
+            continue
+
     if dataType == 'FloatPin':
         if kwds is not None and "pinAnnotations" in kwds:
             if kwds["pinAnnotations"] is not None and "ValueRange" in kwds["pinAnnotations"]:
