@@ -130,11 +130,14 @@ class NodeBase(INode):
             self.__wrapperJsonData.clear()
             self.__wrapperJsonData = None
             return dt
-        except:
+        except Exception as e:
             return None
 
     def isValid(self):
         return self._lastError is None
+
+    def getLastErrorMessage(self):
+        return self._lastError
 
     def clearError(self):
         self._lastError = None
@@ -674,12 +677,6 @@ class NodeBase(INode):
         for p in list(inputs.values()) + list(outputs.values()):
             if p.name == name:
                 return p
-
-        if uid in inputs:
-            return inputs[uid]
-        if uid in outputs:
-            return outputs[uid]
-        return None
 
     def postCreate(self, jsonTemplate=None):
         """Called after node was added to graph

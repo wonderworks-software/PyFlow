@@ -15,6 +15,7 @@
 
 from types import MethodType
 
+from PyFlow import getPinDefaultValueByType
 from PyFlow.Core.Common import getUniqNameFromList
 from PyFlow.Core.NodeBase import NodeBase
 from PyFlow.Core.PyCodeCompiler import Py3CodeCompiler
@@ -86,10 +87,19 @@ class pythonNode(NodeBase):
 
         for inpJson in jsonTemplate['inputs']:
             pin = self.getPinByName(inpJson["name"])
+            if not pin:
+                pin = self.createInputPin(pinName=inpJson["name"],
+                                          dataType=inpJson["dataType"],
+                                          defaultValue=getPinDefaultValueByType(inpJson["dataType"]),
+                                          foo=self.compute)
             pin.deserialize(inpJson)
 
         for outJson in jsonTemplate['outputs']:
             pin = self.getPinByName(outJson["name"])
+            if not pin:
+                pin = self.createOutputPin(pinName=inpJson["name"],
+                                           dataType=inpJson["dataType"],
+                                           defaultValue=getPinDefaultValueByType(inpJson["dataType"]))
             pin.deserialize(outJson)
 
         self.autoAffectPins()

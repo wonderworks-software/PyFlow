@@ -259,7 +259,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self._rawNode.setWrapper(self)
         self._rawNode.killed.connect(self.kill)
         self._rawNode.tick.connect(self.Tick)
-        self._rawNode.errorOccured.connect(self.onNodeErrorOccured)
+        self._rawNode.errorOccured.connect(self.onNodeErrorOccurred)
         self._rawNode.errorCleared.connect(self.onNodeErrorCleared)
 
         self.custom_widget_data = {}
@@ -409,6 +409,16 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         QApplication.clipboard().clear()
         QApplication.clipboard().setText(self.path())
 
+    def getLastErrorMessage(self):
+        return self._rawNode.getLastErrorMessage()
+
+    def hoverEnterEvent(self, event):
+        super(UINodeBase, self).hoverEnterEvent(event)
+        if not self.isValid():
+            self.setToolTip(self.getLastErrorMessage())
+        else:
+            self.setToolTip(self.description())
+
     def eventDropOnCanvas(self):
         pass
 
@@ -502,7 +512,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         return self._rawNode.isUnderActiveGraph()
 
     def autoAffectPins(self):
-        self._rawNode.autoAffectPins()  
+        self._rawNode.autoAffectPins()
 
     def isCallable(self):
         return self._rawNode.isCallable()
@@ -662,7 +672,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             self.setHeaderHtml(newName)
             self.canvasRef().requestFillProperties.emit(self.createPropertiesWidget)
 
-    def onNodeErrorOccured(self, *args, **kwargs):
+    def onNodeErrorOccurred(self, *args, **kwargs):
         # change node ui to invalid
         errorString = args[0]
         error = {"Node": self._rawNode.name, "Error": errorString}
@@ -900,7 +910,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                         self.groups["input"][groupName].setExpanded(expanded)
                     for groupName, expanded in jsonTemplate["wrapper"]["groups"]["output"].items():
                         self.groups["output"][groupName].setExpanded(expanded)
-                except:
+                except Exception as e:
                     pass
 
         description = self.description()

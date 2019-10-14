@@ -150,7 +150,7 @@ class PinBase(IPin):
         try:
             dt = self.__wrapperJsonData.copy()
             return dt
-        except:
+        except Exception as e:
             return None
 
     def getInputWidgetVariant(self):
@@ -397,7 +397,7 @@ class PinBase(IPin):
 
         try:
             self.setData(json.loads(jsonData['value'], cls=self.jsonDecoderClass()))
-        except:
+        except Exception as e:
             self.setData(self.defaultValue())
 
         if jsonData['bDirty']:
@@ -672,8 +672,9 @@ class PinBase(IPin):
         :type other: :class:`~PyFlow.Core.PinBase.PinBase`
         """
         if other.structureType != self.structureType:
-            self.changeStructure(other._currStructure)
-            self.onPinConnected.send(other)
+            if self.optionEnabled(PinOptions.ChangeTypeOnConnection) or self.structureType == StructureType.Multi:
+                self.changeStructure(other._currStructure)
+                self.onPinConnected.send(other)
 
     def getCurrentStructure(self):
         """Returns this pin structure type

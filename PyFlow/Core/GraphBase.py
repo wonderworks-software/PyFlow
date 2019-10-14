@@ -219,27 +219,30 @@ class GraphBase(ISerializable):
                 for linkData in nodeOutputJson['linkedTo']:
                     try:
                         lhsNode = self._nodes[uuid.UUID(linkData["lhsNodeUid"])]
-                    except:
+                    except Exception as e:
                         lhsNode = self.findNode(linkData["lhsNodeName"])
 
                     try:
                         lhsPin = lhsNode.orderedOutputs[linkData["outPinId"]]
-                    except:
+                    except Exception as e:
                         continue
 
                     try:
                         rhsNode = self._nodes[uuid.UUID(linkData["rhsNodeUid"])]
-                    except:
+                    except Exception as e:
                         rhsNode = self.findNode(linkData["rhsNodeName"])
 
                     try:
                         rhsPin = rhsNode.orderedInputs[linkData["inPinId"]]
-                    except:
+                    except Exception as e:
                         continue
 
                     if not arePinsConnected(lhsPin, rhsPin):
                         connected = connectPins(lhsPin, rhsPin)
-                        assert(connected is True), "Failed to restore connection"
+                        # assert(connected is True), "Failed to restore connection"
+                        if not connected:
+                            print("Failed to restore connection", lhsPin, rhsPin)
+                            connectPins(lhsPin, rhsPin)
 
     def remove(self):
         """Removes this graph as well as child graphs. Deepest graphs will be removed first

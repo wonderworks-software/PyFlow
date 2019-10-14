@@ -797,6 +797,7 @@ class BlueprintCanvas(CanvasBase):
 
                     checked.add(connection)
 
+    # TODO: Rewrite comment stuff, it is SLOW!
     def validateCommentNodesOwnership(self, graph, bExpandComments=True):
         state = self.state
         self.state = CanvasState.COMMENT_OWNERSHIP_VALIDATION
@@ -848,7 +849,8 @@ class BlueprintCanvas(CanvasBase):
             if self.currentPressedKey is not None and event.button() == QtCore.Qt.LeftButton:
                 if self.currentPressedKey == QtCore.Qt.Key_B:
                     spawnPos = self.mapToScene(self.mousePressPose)
-                    self.spawnNode("branch", spawnPos.x(), spawnPos.y())
+                    node = self.spawnNode("branch", spawnPos.x(), spawnPos.y())
+                    node.bCollapsed = False
 
             if isinstance(node, UINodeBase) and (node.isCommentNode or node.resizable):
                 super(BlueprintCanvas, self).mousePressEvent(event)
@@ -1298,13 +1300,11 @@ class BlueprintCanvas(CanvasBase):
         releasedNode = self.nodeFromInstance(self.released_item)
         pressedNode = self.nodeFromInstance(self.pressed_item)
         manhattanLengthTest = (self.mousePressPose - event.pos()).manhattanLength() <= 2
-        if all([event.button() == QtCore.Qt.LeftButton, releasedNode is not None,
-                pressedNode is not None, pressedNode == releasedNode, manhattanLengthTest]):
-
-                # check if clicking on node action button
-                if self.released_item is not None:
-                    if isinstance(self.released_item.parentItem(), NodeActionButtonBase):
-                        return
+        if all([event.button() == QtCore.Qt.LeftButton, releasedNode is not None, pressedNode is not None, pressedNode == releasedNode, manhattanLengthTest]):
+            # check if clicking on node action button
+            if self.released_item is not None:
+                if isinstance(self.released_item.parentItem(), NodeActionButtonBase):
+                    return
 
                 self.tryFillPropertiesView(pressedNode)
         elif event.button() == QtCore.Qt.LeftButton:

@@ -183,6 +183,9 @@ class UICommentNode(UINodeBase):
         containsDstNode = self.sceneBoundingRect().contains(dstOwningNode.sceneBoundingRect())
         return intersectsSrcNode, containsSrcNode, intersectsDstNode, containsDstNode
 
+    def contextMenuEvent(self, event):
+        pass
+
     def aboutToCollapse(self, futureCollapseState):
         if self.canvasRef().state == CanvasState.COMMENT_OWNERSHIP_VALIDATION:
             return
