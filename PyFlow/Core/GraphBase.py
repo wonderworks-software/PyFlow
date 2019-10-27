@@ -257,7 +257,7 @@ class GraphBase(ISerializable):
         """Clears content of this graph as well as child graphs. Deepest graphs will be cleared first
         """
         # graphs should be cleared from leafs to root
-        for childGraph in self.childGraphs:
+        for childGraph in set(self.childGraphs):
             childGraph.clear()
 
         # clear itself
