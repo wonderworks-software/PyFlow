@@ -135,6 +135,11 @@ class UICommentNode(UINodeBase):
         super(UICommentNode, self).mouseReleaseEvent(event)
         if not self.collapsed:
             collidingNodes = self.getCollidedNodes()
+
+            for owningNode in set(self.owningNodes):
+                if owningNode not in collidingNodes:
+                    self.owningNodes.remove(owningNode)
+
             for node in collidingNodes:
                 node.updateOwningCommentNode()
 

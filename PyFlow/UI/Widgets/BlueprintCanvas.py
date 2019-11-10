@@ -803,6 +803,7 @@ class BlueprintCanvas(CanvasBase):
         self.state = CanvasState.COMMENT_OWNERSHIP_VALIDATION
         comments = {}
         defaultNodes = set()
+
         # expand all comment nodes and reset owning nodes info
         for node in graph.getNodesList():
             uiNode = node.getWrapper()
@@ -837,7 +838,6 @@ class BlueprintCanvas(CanvasBase):
         modifiers = event.modifiers()
         self.mousePressPose = event.pos()
         expandComments = False
-        # self.validateCommentNodesOwnership(self.graphManager.activeGraph(), expandComments)
         currentInputAction = InputAction("temp", "temp", InputActionType.Mouse, event.button(), modifiers=modifiers)
         if any([not self.pressed_item,
                 isinstance(self.pressed_item, UIConnection) and modifiers != QtCore.Qt.AltModifier,
@@ -1311,7 +1311,6 @@ class BlueprintCanvas(CanvasBase):
             self.requestClearProperties.emit()
         self.resizing = False
         self.updateReroutes(event, False)
-        # self.validateCommentNodesOwnership(self.graphManager.activeGraph(), False)
 
     def removeItemByName(self, name):
         [self.scene().removeItem(i) for i in self.scene().items() if hasattr(i, 'name') and i.name == name]
