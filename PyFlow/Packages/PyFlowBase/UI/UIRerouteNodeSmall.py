@@ -36,6 +36,9 @@ class UIRerouteNodeSmall(UINodeBase):
         self.drawRect = QtCore.QRectF(0, 0, 10, 10)
         self.hiddenPins = True
 
+        for action in self._menu.actions():
+            action.setVisible(False)
+
     def isReroute(self):
         return True
 

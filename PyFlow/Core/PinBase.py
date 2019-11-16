@@ -40,7 +40,7 @@ class PinBase(IPin):
     :type _packageName: str
 
     Signals:
-        * **serializationHook** : Fired when Serialize Pin called, so Ui wrapers can append data to the serialization
+        * **serializationHook** : Fired when Serialize Pin called, so Ui wrapers can append data to the serialization object
         * **onPinConnected** : Fired when a new connection is made to this Pin, sends other Pin
         * **onPinDisconnected** : Fired when some disconnection is made to this Pin, sends other Pin
         * **nameChanged** : Fired when pin.setName() called, sends New Name

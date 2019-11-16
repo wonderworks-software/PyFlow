@@ -691,7 +691,7 @@ class PFDict(dict):
 
     >>> isinstance(dataType, collections.Hashable)
 
-    To make a Class Hashable some methods should be implemented:
+    To make a class Hashable some methods should be implemented:
 
     Example:
     ::
