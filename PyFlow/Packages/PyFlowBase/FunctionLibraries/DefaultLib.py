@@ -72,6 +72,21 @@ class DefaultLib(FunctionLibraryBase):
         return s
 
     @staticmethod
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: []})
+    def setGlobalVar(name=('StringPin', 'var1'), value=('AnyPin', None, {PinSpecifires.ENABLED_OPTIONS: PinOptions.AllowAny | PinOptions.ArraySupported | PinOptions.DictSupported})):
+        '''Sets value to globals() dict'''
+        globals()[name] = value
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('AnyPin', None, {PinSpecifires.ENABLED_OPTIONS: PinOptions.AllowAny | PinOptions.ArraySupported | PinOptions.DictSupported}), meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: []})
+    def getGlobalVar(name=('StringPin', 'var1')):
+        '''Retrieves value from globals()'''
+        if name in globals():
+            return globals()[name]
+        else:
+            return None
+
+    @staticmethod
     @IMPLEMENT_NODE(returns=('StringPin', ''), meta={NodeMeta.CATEGORY: 'GenericTypes', NodeMeta.KEYWORDS: []})
     def makePath(path=('StringPin', '', {PinSpecifires.INPUT_WIDGET_VARIANT: "PathWidget"})):
         '''Make path.'''
