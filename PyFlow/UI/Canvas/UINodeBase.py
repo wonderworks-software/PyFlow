@@ -1070,7 +1070,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                         if node.__class__.__name__ not in classNameFilters:
                             continue
                     if node._rawNode.graph() != self.canvasRef().graphManager.activeGraph():
-                            continue
+                        continue
                     collidingNodes.add(node)
         return collidingNodes
 
