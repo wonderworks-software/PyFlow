@@ -399,11 +399,15 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.actionToggleCollapse.triggered.connect(self.toggleCollapsed)
         self.actionToggleCollapse.setData(NodeActionButtonInfo(":/nodeCollapse.svg", CollapseNodeActionButton))
         self.actionRefresh = self._menu.addAction("Refresh")
-        self.actionRefresh.triggered.connect(self._rawNode.checkForErrors)
+        self.actionRefresh.triggered.connect(self.onRefresh)
         self.actionToggleExposeWidgetsToCompound = self._menu.addAction("Expose properties")
         self.actionToggleExposeWidgetsToCompound.triggered.connect(self.onToggleExposeProperties)
         self.actionCopyPath = self._menu.addAction("Copy path")
         self.actionCopyPath.triggered.connect(self.onCopyPathToClipboard)
+
+    def onRefresh(self):
+        self._rawNode.compute()
+        self._rawNode.checkForErrors()
 
     def onCopyPathToClipboard(self):
         QApplication.clipboard().clear()
@@ -687,6 +691,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def onNodeErrorCleared(self, *args, **kwargs):
         # restore node ui to clean
         self.setToolTip(rst2html(self.description()))
+        self.update()
 
     def toggleCollapsed(self):
         self.collapsed = not self.collapsed
