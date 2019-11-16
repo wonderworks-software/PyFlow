@@ -26,6 +26,9 @@ from PyFlow.Core.PathsRegistry import PathsRegistry
 from nine import IS_PYTHON2
 
 
+PIN_ALLOWS_ANYTHING = {PinSpecifires.ENABLED_OPTIONS: PinOptions.AllowAny | PinOptions.ArraySupported | PinOptions.DictSupported}
+
+
 class DefaultLib(FunctionLibraryBase):
     """Default library builting stuff, variable types and conversions
     """
@@ -73,12 +76,18 @@ class DefaultLib(FunctionLibraryBase):
 
     @staticmethod
     @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: []})
-    def setGlobalVar(name=('StringPin', 'var1'), value=('AnyPin', None, {PinSpecifires.ENABLED_OPTIONS: PinOptions.AllowAny | PinOptions.ArraySupported | PinOptions.DictSupported})):
+    def setGlobalVar(name=('StringPin', 'var1'), value=('AnyPin', None, PIN_ALLOWS_ANYTHING.copy())):
         '''Sets value to globals() dict'''
         globals()[name] = value
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, {PinSpecifires.ENABLED_OPTIONS: PinOptions.AllowAny | PinOptions.ArraySupported | PinOptions.DictSupported}), meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: []})
+    @IMPLEMENT_NODE(returns=('AnyPin', None, PIN_ALLOWS_ANYTHING.copy()), meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: []})
+    def getAttribute(obj=('AnyPin', None, PIN_ALLOWS_ANYTHING.copy()), name=('StringPin', 'attrName')):
+        '''Returns attribute from object using "getattr(name)"'''
+        return getattr(obj, name)
+
+    @staticmethod
+    @IMPLEMENT_NODE(returns=('AnyPin', None, PIN_ALLOWS_ANYTHING.copy()), meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: []})
     def getGlobalVar(name=('StringPin', 'var1')):
         '''Retrieves value from globals()'''
         if name in globals():

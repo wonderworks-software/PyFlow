@@ -144,7 +144,7 @@ class AnyPin(PinBase):
                 break
 
     def updateError(self, traversed=[], updateNeis=False):
-        """Check is Pin dataType is "AnyPin" and if it is, checks if it can change Type on connection, and if it can, marked as error.
+        """Check if pin dataType is "AnyPin" and if it is, checks if it can change Type on connection, and if it can, marked as error.
         Is a iterative Function that traverses connected and constrained Pins
 
         :param traversed: Current Iterated neighbors, defaults to []
@@ -163,7 +163,8 @@ class AnyPin(PinBase):
         for neighbor in nodePins:
             if neighbor not in traversed:
                 if all([neighbor.activeDataType == "AnyPin",
-                        neighbor.canChangeTypeOnConnection([], neighbor.optionEnabled(PinOptions.ChangeTypeOnConnection), []) or not neighbor.optionEnabled(PinOptions.AllowAny)]):
+                        neighbor.canChangeTypeOnConnection([], neighbor.optionEnabled(PinOptions.ChangeTypeOnConnection), []),
+                        not neighbor.optionEnabled(PinOptions.AllowAny)]):
                     neighbor.setError("AnyPin Not Initialized")
                     neighbor.super = None
                 else:
