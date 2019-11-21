@@ -133,28 +133,30 @@ class UIPinBase(QGraphicsWidget):
             self.watchWidget = WatchItem()
             scene.addItem(self.watchWidget)
             self.watchWidget.setZValue(NodeDefaults().Z_LAYER + 1)
-            self.updateWatchWidgetPosition()
+            self.updateWatchWidget()
             self.updateWatchWidgetValue(self.currentData())
 
     def path(self):
         return self._rawPin.path()
 
-    def updateWatchWidgetPosition(self):
+    def updateWatchWidget(self):
         if self.watchWidget is not None:
             scenePos = self.sceneBoundingRect().bottomLeft() if self.direction == PinDirection.Input else self.sceneBoundingRect().bottomRight()
             self.watchWidget.setPos(scenePos)
+            self.watchWidget.setVisible(self.owningNode().isVisible())
 
     def updateWatchWidgetValue(self, *args, **kwargs):
         if self.watchWidget is not None:
             content = "Value: {0}".format(str(self.currentData()))
+            content += "\nStructure: {0}".format(self._rawPin.structureType.name)
             if self.isAny:
                 content += "\nActive data type: {0}".format(self._rawPin.activeDataType)
                 content += "\nSuper: {0}".format(self._rawPin.super)
             self.watchWidget.setPlainText(content)
-            self.updateWatchWidgetPosition()
+            self.updateWatchWidget()
 
     def heartBeat(self):
-        self.updateWatchWidgetPosition()
+        self.updateWatchWidget()
 
     def getInputWidgetVariant(self):
         return self._rawPin.getInputWidgetVariant()
