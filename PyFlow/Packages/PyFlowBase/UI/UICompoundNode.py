@@ -44,6 +44,8 @@ class UICompoundNode(UINodeBase):
         self.image = RESOURCES_DIR + "/gear.svg"
         self.heartBeatDelay = 1.0
 
+        self.actionStepIn = self._menu.addAction("Step in")
+        self.actionStepIn.triggered.connect(self.stepIn)
         self.actionExport = self._menu.addAction("Export")
         self.actionExport.triggered.connect(self.onExport)
         self.actionExport = self._menu.addAction("Export to package")

@@ -190,9 +190,6 @@ class GraphBase(ISerializable):
         :type jsonData: dict
         """
         self.clear()
-        parentGraphName = jsonData['parentGraphName']
-        parentGraph = self.graphManager.findGraph(parentGraphName)
-        self.parentGraph = parentGraph
         self.name = self.graphManager.getUniqGraphName(jsonData['name'])
         self.category = jsonData['category']
         self.setIsRoot(jsonData['isRoot'])
@@ -225,6 +222,7 @@ class GraphBase(ISerializable):
                     try:
                         lhsPin = lhsNode.orderedOutputs[linkData["outPinId"]]
                     except Exception as e:
+                        print("lhsPin not found {0}".format(str(linkData)))
                         continue
 
                     try:

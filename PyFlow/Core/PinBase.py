@@ -554,7 +554,10 @@ class PinBase(IPin):
                 if isinstance(data, DictElement):
                     self._data = DictElement(data[0], self.super.processData(data[1]))
                 else:
-                    self._data = self.super.processData(data)
+                    if isinstance(data, list):
+                        self._data = data
+                    else:
+                        self._data = self.super.processData(data)
             elif self.isArray():
                 if isinstance(data, list):
                     if self.validateArray(data, self.super.processData):
