@@ -4,6 +4,11 @@ from shiboken2 import wrapInstance
 from PyFlow.App import PyFlow
 from PySide2.QtWidgets import QWidget
 
+try:
+    long  # Python 2
+except NameError:
+    long = int  # Python 3
+
 ptvsd.enable_attach(address=('0.0.0.0', 3000), redirect_output=True)
 
 mayaMainWindowPtr = omui.MQtUtil.mainWindow()
