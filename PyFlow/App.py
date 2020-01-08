@@ -657,6 +657,7 @@ class PyFlow(QMainWindow):
                         # This dock tool data been saved on last shutdown
                         settings.beginGroup(dockToolGroupName)
                         if dockToolGroupName in [t.uniqueName() for t in instance._tools]:
+                            settings.endGroup()
                             continue
                         toolName = dockToolGroupName.split("::")[0]
                         instance.invokeDockToolByName(packageName, toolName, settings)
