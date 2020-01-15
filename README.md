@@ -94,50 +94,50 @@ Program is located inside `PATH/TO/PYTHON/Scripts`.
 
     *Collapse parts of graphs into subgraphs*
 
-    ![collapseToCompound](images/collapseToCompound.gif)
+    ![collapseToCompound](https://i.imgur.com/axtvF2L.gif)
 
 * **Watch what is going on**
 
-    ![collapseToCompound](images/watch.gif)
+    ![collapseToCompound](https://i.imgur.com/vPYz8vh.gif)
 
 * **Expose properties from subgraphs**
 
     *Any node can share it's properties with owning sub graph node*
 
-    ![collapseToCompound](images/exposeProperties.gif)
+    ![collapseToCompound](https://i.imgur.com/7dxUq52.gif)
 
 * **Subgraphs import/export**
 
     *Share subgraphs with others*
 
-    ![compoundIO](images/compoundIO.gif)
+    ![compoundIO](https://i.imgur.com/ss0pvRJ.gif)
 
     *If compound node was exported to some package, it will appear in node box*
 
-    ![compoundIO](images/compoundExport.gif)
+    ![compoundIO](https://i.imgur.com/vfSnRyN.gif)
 
 * **Python node**
 
     *Write whatever code directly into a node*
 
-    ![pythonNode](images/pythonNode.gif)
+    ![pythonNode](https://i.imgur.com/k9eHIZY.gif)
 
 * **Python node import/export**
 
     *Share python nodes with others*
 
-    ![pythonNode](images/pythonNodeIO.gif)
+    ![pythonNode](https://i.imgur.com/SPEkwbX.gif)
 
     *If python node was exported to some package, it will appear in node box*
 
-    ![pythonNode](images/pyNodeExport.gif)
+    ![pythonNode](https://i.imgur.com/DofVLfz.gif)
 
 * **Fast node generation from functions**
 
     *Single decorator to expose node from function*
 
-    ![pythonNode](images/listDirCode.png)
-    ![pythonNode](images/listDirNode.png)
+    ![pythonNode](https://i.imgur.com/3lhthXt.png)
+    ![pythonNode](https://i.imgur.com/9PPFrMP.png)
 
 * **Package loading from arbitrary locations**
 
@@ -146,51 +146,51 @@ Program is located inside `PATH/TO/PYTHON/Scripts`.
 * **Graph commenting**
   * Comment node
 
-    ![commentNode](images/commentNode.gif)
+    ![commentNode](https://i.imgur.com/6DZZlY9.gif)
 
   * Sticky node
 
-    ![stickyNode](images/stickyNode.gif)
+    ![stickyNode](https://i.imgur.com/DFeMiCp.gif)
 
 * **Custom input system**
 
     *If you got used to specific keymap of your software of choice, you can easily remap PyFlow input actions*
 
-    ![input](images/input.gif)
+    ![input](https://i.imgur.com/ViVJNcn.gif)
 
 * **Drop on wire**
 
     *Automatically сonnect the node by dragging it onto the wire*
 
-    ![input](images/dragOnEdge.gif)
+    ![input](https://i.imgur.com/5kuPPJa.gif)
 
 * **Photoshop-like history**
 
     *Easy to use powerful undo system*
 
-    ![history](images/history.gif)
+    ![history](https://i.imgur.com/HmeIoI7.gif)
 
     *By a single line call*
 
-    ![historyApi](images/historyApi.png)
+    ![historyApi](https://i.imgur.com/XlHwAwq.png)
 
 * **Property view**
 
     *Modify node and pins attributes using property panels*
 
-    ![historyApi](images/properties.gif)
+    ![historyApi](https://i.imgur.com/CWLjUwN.gif)
 
 * **Variables**
 
     *Save arbitrary data into a variables*
 
-    ![historyApi](images/variables.gif)
+    ![historyApi](https://i.imgur.com/vij0Xux.gif)
 
 * **Editable shareable themes**
 
     *Create and share themes with others*
 
-    ![historyApi](images/themes.gif)
+    ![historyApi](https://i.imgur.com/NTxhkJI.gif)
 
 * **Data importers/exporters**
 
@@ -198,42 +198,42 @@ Program is located inside `PATH/TO/PYTHON/Scripts`.
 
 * **Command line interface**
 
-    ![cmdHelp](images/additionProgram.png)
+    ![cmdHelp](https://i.imgur.com/Hi02T9a.png)
 
     *Exported programs can be edited and evaluated from command line without gui*
 
-    ![cmdAddition](images/cmdAddition.png)
-    ![cmdHelp](images/cmdHelp.png)
+    ![cmdAddition](https://i.imgur.com/L49OuWa.png)
+    ![cmdHelp](https://i.imgur.com/5IMWaqx.png)
 
 * **Convenient wires interaction**
 
-  ![wiresConnect](images/wiresConnection.gif)
+  ![wiresConnect](https://i.imgur.com/RTrAX2G.gif)
 
 * **Wire styles**
 
-  ![wiresConnect](images/editableWires.gif)
+  ![wiresConnect](https://i.imgur.com/qVqAaL6.gif)
 
-  ![wiresConnect](images/wireTypes.gif)
+  ![wiresConnect](https://i.imgur.com/WKkO2cZ.gif)
 
-  ![wiresConnect](images/wireStylesCircuit.png)
+  ![wiresConnect](https://i.imgur.com/ZIXI09T.png)
 
 * **Node deprecation flag**
 
     *Tell users to update their programs*
 
-    ![deprecated](images/deprecated.png)
-    ![deprecated](images/experimental.png)
+    ![deprecated](https://i.imgur.com/Yjck578.png)
+    ![deprecated](https://i.imgur.com/WZ0yW4X.png)
 
 * **Widgets library**
   * Sliders
 
     *Custom Houdini style sliders, value draggers, ramp widgets*
 
-    ![historyApi](images/sliders.png)
+    ![historyApi](https://i.imgur.com/iL25sxN.png)
 
   * Properties framework
 
-    *Custom widgets for property panels. Collapsible categegories, search field*
+    *Custom widgets for property panels. Collapsible categories, search field*
 
   * Input framework
 
