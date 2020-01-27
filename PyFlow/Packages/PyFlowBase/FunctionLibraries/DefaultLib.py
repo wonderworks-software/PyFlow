@@ -111,10 +111,7 @@ class DefaultLib(FunctionLibraryBase):
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {PinSpecifires.ENABLED_OPTIONS: PinOptions.AlwaysPushDirty}), meta={NodeMeta.CATEGORY: 'Utils', NodeMeta.KEYWORDS: [], NodeMeta.CACHE_ENABLED: False})
     def clock():
         '''Returns the CPU time or real time since the start of the process or since the first call of process_time().'''
-        if IS_PYTHON2:
-            return time.clock()
-        else:
-            return time.process_time()
+        return currentProcessorTime()
 
     @staticmethod
     @IMPLEMENT_NODE(returns=('AnyPin', None, {PinSpecifires.CONSTRAINT: "1", PinSpecifires.ENABLED_OPTIONS: PinOptions.ArraySupported | PinOptions.AllowAny | PinOptions.DictElementSupported}), meta={NodeMeta.CATEGORY: 'DefaultLib', NodeMeta.KEYWORDS: []})

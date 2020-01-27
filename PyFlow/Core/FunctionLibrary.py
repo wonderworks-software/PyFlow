@@ -65,7 +65,7 @@ Examples:
 
     @IMPLEMENT_NODE(returns=('FloatPin', 0.0, {PinSpecifires.ENABLED_OPTIONS: PinOptions.AlwaysPushDirty}))
     def clock():
-        return time.clock()
+        return time.processor_time()
 
 
 .. glossary::
