@@ -808,6 +808,7 @@ class NodeBase(INode):
             for ref in refs:
                 if not ref.isExec():
                     kwds[ref.name] = ref.setData
+            foo.owningNode = self
             result = foo(**kwds)
             if returnType is not None:
                 self.setData(str('out'), result)

@@ -432,7 +432,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
     def setNameValidationEnabled(self, bEnabled=True):
         self.nodeNameWidget.labelItem.validator = None if not bEnabled else NodeNameValidator()
 
-    def isNameValidatoinEnabled(self):
+    def isNameValidationEnabled(self):
         return self.nodeNameWidget.labelItem.validator is not None
 
     def onToggleExposeProperties(self):
@@ -669,7 +669,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         """
         if accepted:
             name = self.nodeNameWidget.getPlainText()
-            if self.isNameValidatoinEnabled():
+            if self.isNameValidationEnabled():
                 name = name.replace(" ", "")
             newName = self.canvasRef().graphManager.getUniqNodeName(name)
             self.setName(newName)
