@@ -30,6 +30,9 @@ class switchOnString(NodeBase):
 
     def addOutPin(self):
         name = self.getUniqPinName("option")
+        return self.addOutPin(name)
+
+    def addOutPin(self, name):
         p = self.createOutputPin(name, 'ExecPin')
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         pinAffects(self.inExecPin, p)
@@ -64,3 +67,14 @@ class switchOnString(NodeBase):
             namePinOutputsMap[string].call(*args, **kwargs)
         else:
             self.defaultPin.call(*args, **kwargs)
+
+    def postCreate(self, jsonTemplate=None):
+        super(switchOnString, self).postCreate(jsonTemplate=jsonTemplate)
+        # recreate dynamically created pins
+        existingPins = self.namePinOutputsMap
+        if jsonTemplate is not None:
+            sortedOutputs = sorted(jsonTemplate["outputs"], key=lambda x: x["pinIndex"])
+            for outPinJson in sortedOutputs:
+                if outPinJson['name'] not in existingPins:
+                    dynOut = self.addOutPin(outPinJson['name'])
+                    dynOut.uid = uuid.UUID(outPinJson['uuid'])
