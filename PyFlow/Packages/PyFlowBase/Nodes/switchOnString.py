@@ -30,9 +30,9 @@ class switchOnString(NodeBase):
 
     def addOutPin(self):
         name = self.getUniqPinName("option")
-        return self.addOutPin(name)
+        return self.addNamedOutPin(name)
 
-    def addOutPin(self, name):
+    def addNamedOutPin(self, name):
         p = self.createOutputPin(name, 'ExecPin')
         p.enableOptions(PinOptions.RenamingEnabled | PinOptions.Dynamic)
         pinAffects(self.inExecPin, p)
@@ -76,5 +76,5 @@ class switchOnString(NodeBase):
             sortedOutputs = sorted(jsonTemplate["outputs"], key=lambda x: x["pinIndex"])
             for outPinJson in sortedOutputs:
                 if outPinJson['name'] not in existingPins:
-                    dynOut = self.addOutPin(outPinJson['name'])
+                    dynOut = self.addNamedOutPin(outPinJson['name'])
                     dynOut.uid = uuid.UUID(outPinJson['uuid'])
