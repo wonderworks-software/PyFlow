@@ -486,8 +486,8 @@ class PyFlow(QMainWindow):
                         tool.show()
                         tool.onShow()
                         # Highlight window
-                        print("highlight", tool.uniqueName())
-                return
+                        #print("highlight", tool.uniqueName())
+                        return tool
         ToolInstance = self.createToolInstanceByClass(packageName, name, DockTool)
         if ToolInstance:
             self.registerToolInstance(ToolInstance)

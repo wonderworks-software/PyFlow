@@ -419,8 +419,8 @@ class PinBase(IPin):
         if not self.dataType == "AnyPin":
             if storable:
                 serializedData = json.dumps(self.currentData(), cls=self.jsonEncoderClass())
-            else:
-                serializedData = json.dumps(self.defaultValue(), cls=self.jsonEncoderClass())
+            #else:
+            #    serializedData = json.dumps(self.defaultValue(), cls=self.jsonEncoderClass())
 
         data = {
             'name': self.name,
