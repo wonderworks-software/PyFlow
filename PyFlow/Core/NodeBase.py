@@ -72,6 +72,7 @@ class NodeBase(INode):
 
         self.killed = Signal()
         self.tick = Signal(float)
+        self.computed = Signal()
         self.errorOccured = Signal(object)
         self.errorCleared = Signal()
 
@@ -411,6 +412,7 @@ class NodeBase(INode):
                 self.checkForErrors()
             except Exception as e:
                 self.setError(e)
+        self.computed.send()
 
     # INode interface
 
