@@ -776,11 +776,14 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         except Exception as e:
             print(e)
             pass
-
+        custCount = 0
         for cust in range(0, self.customLayout.count()):
             out = self.customLayout.itemAt(cust)
-            h += out.minimumHeight()
-        h += self.customLayout.spacing() * self.customLayout.count()
+            if out.isVisible():
+                h += out.minimumHeight()
+                custCount += 1
+        if custCount > 0:
+            h += self.customLayout.spacing() * self.customLayout.count()
 
         if h < self.minHeight:
             h = self.minHeight
