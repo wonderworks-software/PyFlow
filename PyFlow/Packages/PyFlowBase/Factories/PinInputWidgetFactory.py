@@ -232,6 +232,35 @@ class PathInputWidget(InputWidgetSingle):
     def setWidgetValue(self, val):
         self.le.setText(str(val))
 
+class FilePathInputWidget(InputWidgetSingle):
+    """
+    Path input widget
+    """
+
+    def __init__(self, parent=None, **kwds):
+        super(FilePathInputWidget, self).__init__(parent=parent, **kwds)
+        self.content = QWidget()
+        self.content.setContentsMargins(0, 0, 0, 0)
+        self.pathLayout = QHBoxLayout(self.content)
+        self.pathLayout.setContentsMargins(0, 0, 0, 0)
+        self.le = QLineEdit()
+        self.le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+        self.pathLayout.addWidget(self.le)
+        self.pbGetPath = QPushButton("...")
+        self.pbGetPath.clicked.connect(self.getPath)
+        self.pathLayout.addWidget(self.pbGetPath)
+        self.setWidget(self.content)
+        self.le.textChanged.connect(lambda val: self.dataSetCallback(val))
+
+    def getPath(self):
+        directory = QFileDialog.getOpenFileName(None, "Select File", "")[0]
+        self.le.setText(directory)
+
+    def blockWidgetSignals(self, bLocked):
+        self.le.blockSignals(bLocked)
+
+    def setWidgetValue(self, val):
+        self.le.setText(str(val))
 
 class BoolInputWidget(InputWidgetSingle):
     """Boolean data input widget"""
@@ -307,6 +336,8 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
             return StringInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "PathWidget":
             return PathInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
+        elif widgetVariant == "FilePathWidget":
+            return FilePathInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "EnumWidget":
             return EnumInputWidget(dataSetCallback=dataSetter, defaultValue=defaultValue, **kwds)
         elif widgetVariant == "ObjectPathWIdget":
