@@ -21,7 +21,9 @@ QScrollBar::sub-line:horizontal,QScrollBar::add-line:horizontal
 }
 
 QMenu,QToolTip,QTabBar::tab:selected,
-QScrollBar::handle:vertical,QScrollBar::handle:horizontal
+QScrollBar::handle:vertical,QScrollBar::handle:horizontal,
+QHeaderView::section
+
 {
      background-color: %s;          /*Bright Bg Color*/
 }
