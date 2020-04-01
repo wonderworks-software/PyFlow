@@ -1568,10 +1568,6 @@ class BlueprintCanvas(CanvasBase):
                     pin.setData(json.loads(inpJson['value'], cls=pin.jsonDecoderClass()))
                 except:
                     pin.setData(pin.defaultValue())
-                if inpJson['bDirty']:
-                    pin.setDirty()
-                else:
-                    pin.setClean()
 
         for outJson in jsonTemplate['outputs']:
             pin = nodeInstance.getPinSG(outJson['name'], PinSelectionGroup.Outputs)
@@ -1581,10 +1577,6 @@ class BlueprintCanvas(CanvasBase):
                     pin.setData(json.loads(outJson['value'], cls=pin.jsonDecoderClass()))
                 except:
                     pin.setData(pin.defaultValue())
-                if outJson['bDirty']:
-                    pin.setDirty()
-                else:
-                    pin.setClean()
 
         return nodeInstance
 

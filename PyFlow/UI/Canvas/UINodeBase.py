@@ -255,12 +255,17 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.setZValue(NodeDefaults().Z_LAYER)
 
         # Raw Node Definition
+        self.dirty = True
+        self.computing = False
         self._rawNode = raw_node
         self._rawNode.setWrapper(self)
         self._rawNode.killed.connect(self.kill)
         self._rawNode.tick.connect(self.Tick)
         self._rawNode.errorOccured.connect(self.onNodeErrorOccurred)
         self._rawNode.errorCleared.connect(self.onNodeErrorCleared)
+        self._rawNode.setDirty.connect(self.setDirty)
+        self._rawNode.computing.connect(self.setComputing)
+        self._rawNode.computed.connect(self.setClean)
 
         self.custom_widget_data = {}
         self.heartBeatDelay = 0.5
@@ -1081,6 +1086,20 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                         continue
                     collidingNodes.add(node)
         return collidingNodes
+
+    def setDirty(self,*args, **kwargs):
+        self.computing = False
+        self.dirty = True
+        self.update()
+
+    def setComputing(self,*args, **kwargs):
+        self.computing = True
+        self.update()
+
+    def setClean(self,*args, **kwargs):
+        self.computing = False
+        self.dirty = False
+        self.update()
 
     def paint(self, painter, option, widget):
         NodePainter.default(self, painter, option, widget)

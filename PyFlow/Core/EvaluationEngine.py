@@ -42,7 +42,7 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
         return pin.currentData()
 
     @staticmethod
-    def getEvaluationOrderIterative(node):
+    def getEvaluationOrderIterative(node,forward=False):
         visited = set()
         stack = [node]
         order = []
@@ -53,8 +53,10 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
             if node not in visited:
                 order.insert(0, node)
                 visited.add(node)
-
-            lhsNodes = DefaultEvaluationEngine_Impl().getNextLayerNodes(node)
+            if not forward:
+                lhsNodes = DefaultEvaluationEngine_Impl().getNextLayerNodes(node)
+            else:
+                lhsNodes = DefaultEvaluationEngine_Impl().getForwardNextLayerNodes(node)
             for n in lhsNodes:
                 if n not in visited:
                     stack.append(n)
@@ -106,6 +108,34 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
                     nodes.add(owningNode)
         return nodes
 
+    @staticmethod
+    def getForwardNextLayerNodes(node):
+        nodes = set()
+        nodeOutputs = node.outputs
+
+        if not len(nodeOutputs) == 0:
+            for outputPin in nodeOutputs.values():
+                if not len(outputPin.affects) == 0:
+                    # check if it is compound node and dive in
+                    affectedByPins = set()
+                    for pin in outputPin.affects:
+                        if pin.owningNode().isCompoundNode:
+                            innerPin = pin.owningNode().inputsMap[pin]
+                            affectedByPins.add(innerPin)
+                        else:
+                            affectedByPins.add(pin)
+
+                    for inPin in affectedByPins:
+                        inPinNode = inPin.owningNode()
+                        if not inPinNode.bCallable:
+                            nodes.add(inPinNode)
+        elif node.__class__.__name__ == "graphOutputs":
+            # graph inputs node
+            for subgraphInputPin in node.inputs.values():
+                for outPin in subgraphInputPin.affects:
+                    owningNode = outPin.owningNode()
+                    nodes.add(owningNode)
+        return nodes
 
 @SingletonDecorator
 class EvaluationEngine(object):

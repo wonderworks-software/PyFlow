@@ -72,10 +72,13 @@ class NodeBase(INode):
 
         self.killed = Signal()
         self.tick = Signal(float)
+        self.setDirty = Signal()
+        self.computing = Signal()
         self.computed = Signal()
         self.errorOccured = Signal(object)
         self.errorCleared = Signal()
 
+        self.dirty = True
         self._uid = uuid.uuid4() if uid is None else uid
         self.graph = None
         self.name = name
@@ -364,8 +367,8 @@ class NodeBase(INode):
     def setName(self, name):
         self.name = str(name)
 
-    def useCache(self):
-        dirty = not any([pin.dirty for pin in self.inputs.values() if pin.IsValuePin()])
+    def isDirty(self):
+        dirty = any([pin.dirty for pin in self.inputs.values() if pin.IsValuePin()])
         return dirty
 
     def afterCompute(self):
@@ -375,8 +378,9 @@ class NodeBase(INode):
     def processNode(self, *args, **kwargs):
         if not self.isValid():
             return
+        self.computing.send()
         if self.bCacheEnabled:
-            if not self.useCache():
+            if self.isDirty():
                 try:
                     self.compute()
                     self.clearError()
@@ -512,6 +516,8 @@ class NodeBase(INode):
             p.updateConstraint(constraint)
         if structConstraint is not None:
             p.updateStructConstraint(structConstraint)
+        p.dataBeenSet.connect(self.setDirty.send)
+        p.markedAsDirty.connect(self.setDirty.send)
         return p
 
     def createOutputPin(self, pinName, dataType, defaultValue=None, structure=StructureType.Single, constraint=None, structConstraint=None, supportedPinDataTypes=[], group=""):
@@ -700,8 +706,8 @@ class NodeBase(INode):
             self.bCallable = True
 
         # make no sense cache nodes without inputs
-        #if len(self.inputs) == 0:
-        #    self.bCacheEnabled = False
+        if len(self.inputs) == 0:
+            self.bCacheEnabled = False
 
         self.autoAffectPins()
         self.checkForErrors()
@@ -799,15 +805,17 @@ class NodeBase(INode):
         raw_inst.compute = MethodType(compute, raw_inst)
 
         raw_inst._nodeMetaData = meta
-        #if 'CacheEnabled' in meta:
-        #    raw_inst.bCacheEnabled = meta['CacheEnabled']
+        if 'CacheEnabled' in meta:
+            raw_inst.bCacheEnabled = meta['CacheEnabled']
+        else:
+            raw_inst.bCacheEnabled = True
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
             inputExec = raw_inst.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
             outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
             raw_inst.bCallable = True
-            #raw_inst.bCacheEnabled = False
+            raw_inst.bCacheEnabled = False
 
         if returnType is not None:
             p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, supportedPinDataTypes=retAnyOpts, constraint=retConstraint, structConstraint=retStructConstraint)

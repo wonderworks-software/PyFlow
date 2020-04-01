@@ -81,6 +81,7 @@ class PinBase(IPin):
         self.containerTypeChanged = Signal()
         self.dataBeenSet = Signal(object)
         self.dictChanged = Signal(str)
+        self.markedAsDirty =Signal()
 
         self.errorOccured = Signal(object)
         self.errorCleared = Signal()
@@ -400,11 +401,6 @@ class PinBase(IPin):
         except Exception as e:
             self.setData(self.defaultValue())
 
-        if jsonData['bDirty']:
-            self.setDirty()
-        else:
-            self.setClean()
-
         if "wrapper" in jsonData:
             self.__wrapperJsonData = jsonData["wrapper"]
 
@@ -430,7 +426,6 @@ class PinBase(IPin):
             'direction': int(self.direction),
             'value': serializedData,
             'uuid': str(self.uid),
-            'bDirty': self.dirty,
             'linkedTo': list(self.linkedTo),
             'pinIndex': self.pinIndex,
             'options': [i.value for i in PinOptions if self.optionEnabled(i)],
@@ -583,14 +578,17 @@ class PinBase(IPin):
                 push(self)
             self.clearError()
             self.dataBeenSet.send(self)
+            for node in EvaluationEngine()._impl.getEvaluationOrderIterative(self.owningNode(),True):
+                for pin in node.inputs.values():
+                    pin.setDirty()
         except Exception as exc:
             self.setError(exc)
             self.setDirty()
         if self._lastError is not None:
             self.owningNode().setError(self._lastError)
-            wrapper = self.owningNode().getWrapper()
-            if wrapper:
-                wrapper.update()
+        wrapper = self.owningNode().getWrapper()
+        if wrapper:
+            wrapper.update()
 
     def call(self, *args, **kwargs):
         if self.owningNode().isValid():
@@ -1003,6 +1001,7 @@ class PinBase(IPin):
         self.dirty = True
         for i in self.affects:
             i.dirty = True
+        self.markedAsDirty.send()
 
     def hasConnections(self):
         """Return the number of connections this pin has

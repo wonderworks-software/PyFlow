@@ -207,6 +207,9 @@ class NodePainter(object):
             else:
                 painter.fillRect(lr, headColor)
 
+        if not node.isCallable() and node._rawNode.bCacheEnabled:
+            NodePainter.drawState(node, painter, pen, lod, SWITCH_LOD, r)
+
         if not node.isValid():
             pen.setColor(InvalidNodePenColor)
             pen.setStyle(node.optPenErrorType)
@@ -232,6 +235,41 @@ class NodePainter(object):
         NodePainter.drawGroups(node, painter, option, widget)
         NodePainter.drawDeprecated(node, painter, option, widget)
         NodePainter.drawExperimental(node, painter, option, widget)
+
+    @staticmethod
+    def drawState(node, painter, pen, lod, SWITCH_LOD, r):
+        prevWidth = pen.width()  
+        paint = False
+        if node.computing:
+            pen.setColor(Colors.Yellow)
+            pen.setStyle(node.optPenSelectedType)
+            pen.setWidth(prevWidth * 2)
+            paint = True
+        else:        
+            if node.dirty:
+                pen.setColor(Colors.Orange)
+                pen.setStyle(node.optPenSelectedType)
+                pen.setWidth(prevWidth * 2)
+                paint = True
+            else:
+                pen.setColor(Colors.Green)
+                pen.setStyle(node.optPenSelectedType)
+                pen.setWidth(prevWidth * 2)
+                paint = True         
+
+        if paint and node.isValid():
+            painter.setPen(pen)
+            painter.setBrush(QtGui.QColor(0, 0, 0, 0))
+            rect = QtCore.QRectF(r)
+            if lod < SWITCH_LOD:
+                rect.setWidth(rect.width() - pen.width() / 2)
+                rect.setHeight(rect.height() - pen.width() / 2)
+                rect.setX(pen.width() / 2)
+                rect.setY(rect.y() + pen.width() / 2)            
+                painter.drawRoundedRect(rect, node.roundness, node.roundness)
+            else:
+                painter.drawRect(r)    
+        pen.setWidth(prevWidth)
 
     @staticmethod
     def asVariableGetter(node, painter, option, widget):
