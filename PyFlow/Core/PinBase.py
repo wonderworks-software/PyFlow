@@ -547,7 +547,7 @@ class PinBase(IPin):
         if self.super is None:
             return
         try:
-            self.setClean()
+            self.setDirty()
             if isinstance(data, DictElement) and not self.optionEnabled(PinOptions.DictElementSupported):
                 data = data[1]
             if not self.isArray() and not self.isDict():
@@ -578,7 +578,7 @@ class PinBase(IPin):
             if self.direction == PinDirection.Output:
                 for i in self.affects:
                     i.setData(self.currentData())
-                    i.setClean()
+                    #i.setClean()
             if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
                 push(self)
             self.clearError()

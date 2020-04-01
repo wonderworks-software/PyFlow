@@ -66,7 +66,7 @@ class NodeBase(INode):
 
     def __init__(self, name, uid=None):
         super(NodeBase, self).__init__()
-        self.bCacheEnabled = False
+        self.bCacheEnabled = True
         self.cacheMaxSize = 1000
         self.cache = {}
 
@@ -365,33 +365,12 @@ class NodeBase(INode):
         self.name = str(name)
 
     def useCache(self):
-        # if cached results exists - return them without calling compute
-        args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
-
-        # not hashable types will not be cached
-        for arg in args:
-            if not isinstance(arg, collections.Hashable):
-                return False
-
-        if args in self.cache:
-            for outPin, data in self.cache[args].items():
-                outPin.setData(data)
-            return True
+        dirty = not any([pin.dirty for pin in self.inputs.values() if pin.IsValuePin()])
+        return dirty
 
     def afterCompute(self):
-        if len(self.cache) >= self.cacheMaxSize:
-            return
-
-        # cache results
-        args = tuple([pin.currentData() for pin in self.inputs.values() if pin.IsValuePin()])
-        for arg in args:
-            if not isinstance(arg, collections.Hashable):
-                return
-
-        cache = {}
-        for pin in self.outputs.values():
-            cache[pin] = pin.currentData()
-        self.cache[args] = cache
+        for pin in self.inputs.values():
+            pin.setClean()
 
     def processNode(self, *args, **kwargs):
         if not self.isValid():
@@ -721,8 +700,8 @@ class NodeBase(INode):
             self.bCallable = True
 
         # make no sense cache nodes without inputs
-        if len(self.inputs) == 0:
-            self.bCacheEnabled = False
+        #if len(self.inputs) == 0:
+        #    self.bCacheEnabled = False
 
         self.autoAffectPins()
         self.checkForErrors()
@@ -820,15 +799,15 @@ class NodeBase(INode):
         raw_inst.compute = MethodType(compute, raw_inst)
 
         raw_inst._nodeMetaData = meta
-        if 'CacheEnabled' in meta:
-            raw_inst.bCacheEnabled = meta['CacheEnabled']
+        #if 'CacheEnabled' in meta:
+        #    raw_inst.bCacheEnabled = meta['CacheEnabled']
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:
             inputExec = raw_inst.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, raw_inst.compute)
             outExec = raw_inst.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
             raw_inst.bCallable = True
-            raw_inst.bCacheEnabled = False
+            #raw_inst.bCacheEnabled = False
 
         if returnType is not None:
             p = raw_inst.createOutputPin('out', returnType, returnDefaultValue, supportedPinDataTypes=retAnyOpts, constraint=retConstraint, structConstraint=retStructConstraint)
