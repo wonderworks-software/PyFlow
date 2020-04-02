@@ -100,6 +100,7 @@ class NodeBase(INode):
         self._deprecated = False
         self._deprecationMessage = "This node is deprecated"
         self._experimental = False
+        self._computingTime = None
 
     def setDeprecated(self, message):
         self._deprecated = True
@@ -378,8 +379,8 @@ class NodeBase(INode):
 
     def processNode(self, *args, **kwargs):
         start=datetime.now()
-        if not self.isValid():
-            return
+        #if not self.isValid():
+        #    return
         self.computing.send()
         if self.bCacheEnabled:
             if self.isDirty():
@@ -397,7 +398,8 @@ class NodeBase(INode):
                 self.checkForErrors()
             except Exception as e:
                 self.setError(e)
-        print self.getName(), datetime.now()-start
+        delta = (datetime.now()-start)
+        self._computingTime =delta
         self.computed.send()
 
     # INode interface

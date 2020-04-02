@@ -409,6 +409,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self.actionToggleExposeWidgetsToCompound.triggered.connect(self.onToggleExposeProperties)
         self.actionCopyPath = self._menu.addAction("Copy path")
         self.actionCopyPath.triggered.connect(self.onCopyPathToClipboard)
+        self._rawNode.computed.connect(self.onComputed)
 
     def onRefresh(self):
         self._rawNode.compute()
@@ -426,7 +427,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         if not self.isValid():
             self.setToolTip(self.getLastErrorMessage())
         else:
-            self.setToolTip(self.description())
+            self.setToolTip("%s\nComputingTime: %s"%(rst2html(self.description()),self._rawNode._computingTime))
 
     def eventDropOnCanvas(self):
         pass
@@ -695,7 +696,11 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
 
     def onNodeErrorCleared(self, *args, **kwargs):
         # restore node ui to clean
-        self.setToolTip(rst2html(self.description()))
+        self.setToolTip("%s\nComputingTime: %s"%(rst2html(self.description()),self._rawNode._computingTime))
+        self.update()
+
+    def onComputed(self, *args, **kwargs):
+        self.setToolTip("%s\nComputingTime: %s"%(rst2html(self.description()),self._rawNode._computingTime))
         self.update()
 
     def toggleCollapsed(self):
@@ -930,7 +935,9 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         if self.isDeprecated():
             description = self.deprecationMessage()
         if description:
-            self.setToolTip(rst2html(description))
+            self.setToolTip("%s\nComputingTime: %s"%(rst2html(self.description()),self._rawNode._computingTime))
+        else:
+            self.setToolTip("\nComputingTime: %s"%self._rawNode._computingTime)
         if self.resizable:
             w = self.getNodeWidth()
             h = self.getNodeHeight()
