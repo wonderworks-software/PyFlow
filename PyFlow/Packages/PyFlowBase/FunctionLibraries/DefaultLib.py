@@ -75,7 +75,7 @@ class DefaultLib(FunctionLibraryBase):
         return s
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: []})
+    @IMPLEMENT_NODE(returns=None, nodeType=NodeTypes.Callable, meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: [],NodeMeta.CACHE_ENABLED: False})
     def setGlobalVar(name=('StringPin', 'var1'), value=('AnyPin', None, PIN_ALLOWS_ANYTHING.copy())):
         '''Sets value to globals() dict'''
         globals()[name] = value
@@ -87,7 +87,7 @@ class DefaultLib(FunctionLibraryBase):
         return getattr(obj, name)
 
     @staticmethod
-    @IMPLEMENT_NODE(returns=('AnyPin', None, PIN_ALLOWS_ANYTHING.copy()), meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: []})
+    @IMPLEMENT_NODE(returns=('AnyPin', None, PIN_ALLOWS_ANYTHING.copy()), meta={NodeMeta.CATEGORY: 'Common', NodeMeta.KEYWORDS: [],NodeMeta.CACHE_ENABLED: False})
     def getGlobalVar(name=('StringPin', 'var1')):
         '''Retrieves value from globals()'''
         if name in globals():

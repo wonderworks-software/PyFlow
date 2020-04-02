@@ -34,6 +34,7 @@ class setVar(NodeBase):
 
         self._var.dataTypeChanged.connect(self.onVarDataTypeChanged)
         self._var.structureChanged.connect(self.onVarStructureChanged)
+        self.bCacheEnabled = False
 
     def updateStructure(self):
         self.out.disconnectAll()

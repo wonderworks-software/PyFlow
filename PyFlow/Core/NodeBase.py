@@ -34,6 +34,7 @@ from PyFlow.Core.Common import *
 from PyFlow.Core.Interfaces import INode
 from PyFlow import CreateRawPin
 
+from datetime import datetime
 
 class NodePinsSuggestionsHelper(object):
     """Describes node's pins types and structs for inputs and outputs
@@ -376,6 +377,7 @@ class NodeBase(INode):
             pin.setClean()
 
     def processNode(self, *args, **kwargs):
+        start=datetime.now()
         if not self.isValid():
             return
         self.computing.send()
@@ -395,6 +397,7 @@ class NodeBase(INode):
                 self.checkForErrors()
             except Exception as e:
                 self.setError(e)
+        print self.getName(), datetime.now()-start
         self.computed.send()
 
     # INode interface
