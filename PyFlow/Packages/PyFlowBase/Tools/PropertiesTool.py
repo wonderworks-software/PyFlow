@@ -55,7 +55,8 @@ class PropertiesTool(DockTool):
 
     def assignPropertiesWidget(self, propertiesFillDelegate):
         self.fillDelegate = propertiesFillDelegate
-        propertiesFillDelegate(self.propertiesWidget)
+        if not self.propertiesWidget.isLocked():
+            propertiesFillDelegate(self.propertiesWidget)
 
     @staticmethod
     def isSingleton():

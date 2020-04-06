@@ -376,6 +376,8 @@ class NodeBase(INode):
     def afterCompute(self):
         for pin in self.inputs.values():
             pin.setClean()
+        for pin in self.outputs.values():
+            pin.setClean()
 
     def processNode(self, *args, **kwargs):
         start=datetime.now()
