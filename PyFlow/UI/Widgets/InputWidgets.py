@@ -65,9 +65,9 @@ class InputWidgetRaw(QWidget, IInputWidget):
         self.actionReset = self._menu.addAction("ResetValue")
         self.actionReset.triggered.connect(self.onResetValue)
 
-    def setWidgetValueNoSignals(self, value):
+    def setWidgetValueNoSignals(self, pin):
         self.blockWidgetSignals(True)
-        self.setWidgetValue(value)
+        self.setWidgetValue(pin.getData())
         self.blockWidgetSignals(False)
 
     def setWidget(self, widget):

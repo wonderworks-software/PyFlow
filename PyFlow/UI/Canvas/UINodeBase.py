@@ -1357,7 +1357,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
                 w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getInputWidgetVariant(), pinAnnotations=inp._rawPin.annotationDescriptionDict)
                 if w:
                     w.setToolTip(inp.description)
-                    inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
+                    inp._rawPin.dataBeenSet.connect(w.setWidgetValueNoSignals)
                     w.blockWidgetSignals(True)
                     data = inp.currentData()
                     if isinstance(inp.currentData(), DictElement):
@@ -1382,7 +1382,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
             w = createInputWidget(inp.dataType, dataSetter, inp.defaultValue(), inp.getInputWidgetVariant(), pinAnnotations=inp._rawPin.annotationDescriptionDict)
             if w:
                 w.setToolTip(inp.description)
-                inp.dataBeenSet.connect(w.setWidgetValueNoSignals)
+                inp._rawPin.dataBeenSet.connect(w.setWidgetValueNoSignals)
                 w.blockWidgetSignals(True)
                 data = inp.currentData()
                 if isinstance(inp.currentData(), DictElement):
