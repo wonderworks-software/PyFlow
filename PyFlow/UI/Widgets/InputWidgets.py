@@ -67,7 +67,7 @@ class InputWidgetRaw(QWidget, IInputWidget):
 
     def setWidgetValueNoSignals(self, pin):
         self.blockWidgetSignals(True)
-        self.setWidgetValue(pin.getData())
+        self.setWidgetValue(pin.currentData())
         self.blockWidgetSignals(False)
 
     def setWidget(self, widget):
