@@ -390,9 +390,9 @@ class NodeBase(INode):
                     self.compute()
                     self.clearError()
                     self.checkForErrors()
+                    self.afterCompute()
                 except Exception as e:
                     self.setError(e)
-            self.afterCompute()
         else:
             try:
                 self.compute()
