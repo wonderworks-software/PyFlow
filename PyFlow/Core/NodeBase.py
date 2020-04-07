@@ -370,8 +370,9 @@ class NodeBase(INode):
         self.name = str(name)
 
     def isDirty(self):
-        dirty = any([pin.dirty for pin in self.inputs.values() if pin.IsValuePin()])
-        return dirty
+        inpDirty = any([pin.dirty for pin in self.inputs.values() if pin.IsValuePin()])
+        outDirty = any([pin.dirty for pin in self.outputs.values() if pin.IsValuePin()])
+        return inpDirty or outDirty
 
     def afterCompute(self):
         for pin in self.inputs.values():

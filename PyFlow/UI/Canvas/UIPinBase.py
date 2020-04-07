@@ -152,6 +152,7 @@ class UIPinBase(QGraphicsWidget):
             if self.isAny:
                 content += "\nActive data type: {0}".format(self._rawPin.activeDataType)
                 content += "\nSuper: {0}".format(self._rawPin.super)
+            content += "\nDirty: {0}".format(str(self._rawPin.dirty))
             self.watchWidget.setPlainText(content)
             self.updateWatchWidget()
 
