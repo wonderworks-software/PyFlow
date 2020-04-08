@@ -24,7 +24,7 @@ class graphInputs(NodeBase):
     """
     def __init__(self, name):
         super(graphInputs, self).__init__(name)
-        self.bCacheEnabled = False
+        self.bCacheEnabled = True
 
     def getUniqPinName(self, name):
         result = name
@@ -57,10 +57,20 @@ class graphInputs(NodeBase):
             p.enableOptions(PinOptions.AllowAny | PinOptions.DictElementSupported)
         return p
 
+    def isDirty(self):
+        inpDirty = False
+        for o in self.outputs.values():
+            for i in o.affected_by:
+                if i.dirty:
+                    inpDirty = True     
+        outDirty = any([pin.dirty for pin in self.outputs.values() if pin.IsValuePin()])
+        return inpDirty or outDirty
+
     def compute(self, *args, **kwargs):
         for o in self.outputs.values():
             for i in o.affected_by:
                 o.setData(i.getData())
+                o.setClean()
 
     def postCreate(self, jsonTemplate=None):
         super(graphInputs, self).postCreate(jsonTemplate=jsonTemplate)
@@ -79,7 +89,7 @@ class graphOutputs(NodeBase):
     """
     def __init__(self, name):
         super(graphOutputs, self).__init__(name)
-        self.bCacheEnabled = False
+        self.bCacheEnabled = True
 
     def getUniqPinName(self, name):
         result = name
@@ -127,3 +137,4 @@ class graphOutputs(NodeBase):
         for i in self.inputs.values():
             for o in i.affects:
                 o.setData(i.getData())
+                o.setClean()

@@ -714,8 +714,8 @@ class NodeBase(INode):
             self.bCallable = True
 
         # make no sense cache nodes without inputs
-        if len(self.inputs) == 0:
-            self.bCacheEnabled = False
+        #if len(self.inputs) == 0:
+        #    self.bCacheEnabled = False
 
         self.autoAffectPins()
         self.checkForErrors()

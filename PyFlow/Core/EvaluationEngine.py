@@ -106,6 +106,7 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
                 for outPin in subgraphInputPin.affected_by:
                     owningNode = outPin.owningNode()
                     nodes.add(owningNode)
+                    nodes.add(subgraphInputPin.owningNode())
         return nodes
 
     @staticmethod

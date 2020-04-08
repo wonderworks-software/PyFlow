@@ -578,9 +578,6 @@ class PinBase(IPin):
                 push(self)
             self.clearError()
             self.dataBeenSet.send(self)
-            for node in EvaluationEngine()._impl.getEvaluationOrderIterative(self.owningNode(),True):
-                for pin in node.inputs.values():
-                    pin.setDirty()
         except Exception as exc:
             self.setError(exc)
             self.setDirty()

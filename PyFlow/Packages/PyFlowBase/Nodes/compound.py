@@ -38,7 +38,7 @@ class compound(NodeBase):
         self._rawGraphJson = None
         self.__inputsMap = {}
         self.__outputsMap = {}
-        self.bCacheEnabled = False
+        self.bCacheEnabled = True
 
     @property
     def inputsMap(self):
@@ -233,3 +233,4 @@ class compound(NodeBase):
         # put data from inner graph pins to outer compound node output companions
         for outputPin, innerPin in self.__outputsMap.items():
             outputPin.setData(innerPin.getData())
+            outputPin.setClean()
