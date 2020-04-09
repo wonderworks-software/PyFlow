@@ -32,7 +32,6 @@ class convertTo(NodeBase):
         for pinClass in getAllPinClasses():
             if pinClass.IsValuePin():
                 self.pinTypes.append(pinClass.__name__)
-        self.bCacheEnabled = False
 
     @staticmethod
     def pinTypeHints():

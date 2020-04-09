@@ -815,8 +815,6 @@ class NodeBase(INode):
         raw_inst._nodeMetaData = meta
         if 'CacheEnabled' in meta:
             raw_inst.bCacheEnabled = meta['CacheEnabled']
-        else:
-            raw_inst.bCacheEnabled = True
 
         # create execs if callable
         if nodeType == NodeTypes.Callable:

@@ -21,6 +21,7 @@ from PyFlow.Core.Common import *
 class deltaTime(NodeBase):
     def __init__(self, name):
         super(deltaTime, self).__init__(name)
+        self.bCachedEnabled = False
         self._deltaTime = 0.0
         self._out0 = self.createOutputPin('out0', 'FloatPin')
 
