@@ -246,7 +246,7 @@ class NodePainter(object):
             pen.setWidth(prevWidth * 2)
             paint = True
         else:        
-            if node.dirty:
+            if node._rawNode.isDirty():
                 pen.setColor(Colors.Orange)
                 pen.setStyle(node.optPenSelectedType)
                 pen.setWidth(prevWidth * 2)

@@ -412,8 +412,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         self._rawNode.computed.connect(self.onComputed)
 
     def onRefresh(self):
-        self._rawNode.compute()
-        self._rawNode.checkForErrors()
+        self._rawNode.processNode()
 
     def onCopyPathToClipboard(self):
         QApplication.clipboard().clear()

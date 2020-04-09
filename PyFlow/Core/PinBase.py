@@ -573,7 +573,11 @@ class PinBase(IPin):
             if self.direction == PinDirection.Output:
                 for i in self.affects:
                     i.setData(self.currentData())
-                    #i.setClean()
+
+            elif self.direction == PinDirection.Input and self.owningNode().__class__.__name__ == "compound":
+                for i in self.affects:
+                    i.setData(self.currentData())
+            
             if self.direction == PinDirection.Input or self.optionEnabled(PinOptions.AlwaysPushDirty):
                 push(self)
             self.clearError()
