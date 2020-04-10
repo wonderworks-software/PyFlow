@@ -207,7 +207,7 @@ class NodePainter(object):
             else:
                 painter.fillRect(lr, headColor)
 
-        if not node.isCallable() and node._rawNode.bCacheEnabled:
+        if not node.isCallable() and node._rawNode.bCacheEnabled or node._rawNode.__class__.__name__=="graphOutputs":
             NodePainter.drawState(node, painter, pen, lod, SWITCH_LOD, r)
 
         if not node.isValid():
