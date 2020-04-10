@@ -99,6 +99,7 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
                     for outPin in affectedByPins:
                         outPinNode = outPin.owningNode()
                         if not outPinNode.bCallable:
+                            #if node.isDirty():
                             nodes.add(outPinNode)
         elif node.__class__.__name__ == "graphInputs":
             # graph inputs node

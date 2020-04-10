@@ -133,5 +133,6 @@ class graphOutputs(NodeBase):
         for i in self.inputs.values():
             for o in i.affects:
                 compoundNode = o.owningNode()
+                o.setDirty()
         if compoundNode:
             compoundNode.processNode()
