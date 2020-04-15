@@ -990,9 +990,9 @@ class PinBase(IPin):
         """Sets dirty flag to True
         """
         self.dirty = False
-        if self.direction == PinDirection.Output:
-            for i in self.affects:
-                i.dirty = False
+        #if self.direction == PinDirection.Output:
+        #    for i in self.affects:
+        #        i.dirty = False
 
     def setDirty(self):
         """Sets dirty flag to True
