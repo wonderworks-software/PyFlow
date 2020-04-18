@@ -776,7 +776,7 @@ class PinBase(IPin):
                 if connectedPin.canChangeStructure(self._currStructure, init=init):
                     nodePins.add(connectedPin)
         for neighbor in nodePins:
-            if neighbor not in traversed:
+            if neighbor not in traversed and neighbor.structureType == StructureType.Multi:
                 neighbor.setAsArray(newStruct == StructureType.Array)
                 neighbor.setAsDict(newStruct == StructureType.Dict)
                 if connecting:
