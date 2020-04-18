@@ -828,6 +828,7 @@ class NodeBase(INode):
             p.setData(returnDefaultValue)
             p.setDefaultValue(returnDefaultValue)
             p.initAsArray(isinstance(returnDefaultValue, list))
+            p.initAsDict(isinstance(returnDefaultValue, dict))
             p.setInputWidgetVariant(returnWidgetVariant)
             p.annotationDescriptionDict = copy(returnAnnotationDict) if returnAnnotationDict is not None else None
             if p.annotationDescriptionDict is not None and "Description" in p.annotationDescriptionDict:
@@ -878,6 +879,7 @@ class NodeBase(INode):
                 if outRef.annotationDescriptionDict is not None and "Description" in outRef.annotationDescriptionDict:
                     outRef.description = outRef.annotationDescriptionDict["Description"]
                 outRef.initAsArray(isinstance(pinDefaultValue, list))
+                outRef.initAsDict(isinstance(pinDefaultValue, dict))
                 outRef.setDefaultValue(pinDefaultValue)
                 outRef.setData(pinDefaultValue)
                 outRef.setInputWidgetVariant(inputWidgetVariant)
@@ -916,6 +918,7 @@ class NodeBase(INode):
                 if inp.annotationDescriptionDict is not None and "Description" in inp.annotationDescriptionDict:
                     inp.description = inp.annotationDescriptionDict["Description"]
                 inp.initAsArray(isinstance(pinDefaultValue, list))
+                inp.initAsDict(isinstance(pinDefaultValue, dict))
                 inp.setData(pinDefaultValue)
                 inp.setDefaultValue(pinDefaultValue)
                 inp.setInputWidgetVariant(inputWidgetVariant)
