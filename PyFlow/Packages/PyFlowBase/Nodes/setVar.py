@@ -27,9 +27,13 @@ class setVar(NodeBase):
         self.inExec = self.createInputPin(DEFAULT_IN_EXEC_NAME, 'ExecPin', None, self.compute)
         self.outExec = self.createOutputPin(DEFAULT_OUT_EXEC_NAME, 'ExecPin')
         self._var = var
-        self.inp = CreateRawPin("inp", self, self._var.dataType, PinDirection.Input)
+        if var.structure == StructureType.Dict:
+            self.out = self.createOutputPin('out', self._var.value.valueType, structure=self._var.structure, constraint="2")
+            self.inp = self.createInputPin('inp', self._var.value.valueType, structure=self._var.structure, constraint="2")
+        else:
+            self.out = self.createOutputPin('out', self._var.dataType, structure=self._var.structure)
+            self.inp = self.createInputPin('inp', self._var.dataType, structure=self._var.structure)
         self.inp.disableOptions(PinOptions.RenamingEnabled)
-        self.out = CreateRawPin("out", self, self._var.dataType, PinDirection.Output)
         self.out.disableOptions(PinOptions.RenamingEnabled)
 
         self._var.dataTypeChanged.connect(self.onVarDataTypeChanged)
@@ -45,6 +49,9 @@ class setVar(NodeBase):
         if self.var.structure == StructureType.Array:
             self.out.setAsArray(True)
             self.inp.setAsArray(True)
+        if self.var.structure == StructureType.Dict:
+            self.out.setAsDict(True)
+            self.out.updateConnectedDicts([], self.var.value.keyType)
 
     def checkForErrors(self):
         super(setVar, self).checkForErrors()
