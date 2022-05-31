@@ -522,8 +522,7 @@ class UIConnection(QGraphicsPathItem):
             self.mPath = ConnectionPainter.Cubic(p1, p2, 150, lod)
             self.linPath = None
         elif editableStyleSheet().ConnectionMode[0] == ConnectionTypes.Linear:
-            self.mPath = ConnectionPainter.Linear(p1, p2, offset, roundness, lod)
-            self.linPath = None
+            self.mPath, self.linPath = ConnectionPainter.Linear(p1, p2, offset, roundness, lod)
         if self.snapVToSecond and self.offsetting == 0:
             self.vOffset = p2.y() - p1.y()
         self.setPath(self.mPath)
