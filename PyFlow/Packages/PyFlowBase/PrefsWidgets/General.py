@@ -53,7 +53,7 @@ class GeneralPreferences(CategoryWidgetBase):
         commonCategory.addWidget("History depth", self.historyDepth)
 
         self.autoZoom = QCheckBox(self)
-        self.autoZoom.stateChanged.connect(self.setZoom)
+        self.autoZoom.stateChanged.connect(self.setAutoZoom)
         commonCategory.addWidget("Automatic zoom", self.autoZoom)
 
         self.adjAutoZoom = QDoubleSpinBox()
@@ -73,6 +73,11 @@ class GeneralPreferences(CategoryWidgetBase):
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
+
+    def setAutoZoom(self, val):
+        self.adjAutoZoom.setEnabled(val == QtCore.Qt.Checked)
+        self.initialZoom.setEnabled(val != QtCore.Qt.Checked)
+        self.setZoom()
 
     def setZoom(self):
         pyflow = self.parent().parent().parent().parent().parent()
