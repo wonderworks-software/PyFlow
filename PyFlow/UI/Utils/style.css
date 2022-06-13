@@ -5,6 +5,11 @@ QWidget,QToolTip{
     color: %s;                      /*Main Text Color*/
 }
 
+QWidget:disabled
+{
+    color: %s;                      /*Disabled Text Color*/
+}
+
 *::item::alternate,
 QWidget,
 QTabBar::tab:!selected

@@ -74,6 +74,7 @@ class editableStyleSheet():
 
         self.InputFieldColor = QtGui.QColor(32, 32, 32)
         self.TextSelectedColor = QtGui.QColor(255, 255, 255)
+        self.TextDisabledColor = QtGui.QColor(127, 127, 127)
 
         self.ButtonsColor = QtGui.QColor(60, 60, 60)
 
@@ -186,6 +187,7 @@ class editableStyleSheet():
         with open(STYLE_PATH, 'r') as f:
             styleString = f.read()
             return styleString % ("rgba%s" % str(self.TextColor.getRgb()),
+                                  "rgba%s" % str(self.TextDisabledColor.getRgb()),
                                   "rgba%s" % str(self.BgColor.getRgb()),
                                   "rgba%s" % str(self.BgColorDarker.getRgb()),
                                   "rgba%s" % str(self.BgColorBright.getRgb()),

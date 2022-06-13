@@ -61,7 +61,7 @@ class ThemePreferences(CategoryWidgetBase):
             if isinstance(obj, QtGui.QColor):
                 inp = pyf_ColorSlider(type="int", alpha=len(list(obj.toTuple())) == 4, startColor=list(obj.toTuple()))
                 inp.valueChanged.connect(lambda color, name=name, update=True: editableStyleSheet().setColor(name, color, update))
-                if name in ["TextColor", "MainColor", "TextSelectedColor", "ButtonsColor"]:
+                if name in ["TextColor", "MainColor", "TextSelectedColor", "TextDisabledColor", "ButtonsColor"]:
                     general.addWidget(name, inp)
                 elif name in ["InputFieldColor", "BgColor", "BgColorDarker", "BgColorBright", "BorderColor", "LoggerBgColor"]:
                     bg.addWidget(name, inp)
