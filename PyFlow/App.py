@@ -1,4 +1,5 @@
 ## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+## Copyright 2022 Stephan Helma
 
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -107,6 +108,19 @@ class PyFlow(QMainWindow):
         self.graphManager = GraphManagerSingleton()
         self.canvasWidget = BlueprintCanvasWidget(self.graphManager.get(), self)
         self.canvasWidget.setObjectName("canvasWidget")
+        # Set initial zoom
+        if ConfigManager().getPrefsValue("PREFS", "General/AutoZoom"):
+            try:
+                zoom = float(ConfigManager().getPrefsValue("PREFS", "General/AdjAutoZoom"))
+            except:
+                zoom = 1
+            self.canvasWidget.canvas.setAutoZoom(zoom)
+        else:
+            try:
+                zoom = float(ConfigManager().getPrefsValue("PREFS", "General/InitialZoom"))
+            except:
+                zoom = 1
+            self.canvasWidget.canvas.setZoom(zoom)
         self.setCentralWidget(self.canvasWidget)
         self.setTabPosition(QtCore.Qt.AllDockWidgetAreas, QTabWidget.North)
         self.setDockOptions(QMainWindow.AnimatedDocks | QMainWindow.AllowNestedDocks)

@@ -1,3 +1,5 @@
+## Copyright 2022 Stephan Helma
+
 from Qt import QtCore
 from Qt import QtGui
 from Qt.QtWidgets import *
@@ -106,6 +108,18 @@ class CanvasBase(QGraphicsView):
         if futureScale >= self._maximum_scale:
             scale_factor = (self._maximum_scale - 0.1) / self.factor
         self.scale(scale_factor, scale_factor)
+
+    def setZoom(self, zoom):
+        factor = self.transform().m22()
+        if factor and zoom:
+            scale_factor = zoom / factor
+            self.scale(scale_factor, scale_factor)
+
+    def setAutoZoom(self, adj=1):
+        app = QApplication.instance()
+        screen = app.primaryScreen()
+        scale = screen.physicalDotsPerInch() / screen.logicalDotsPerInch()
+        self.setZoom(scale * adj)
 
     def frameRect(self, rect):
         if rect is None:
@@ -244,3 +258,4 @@ class CanvasBase(QGraphicsView):
                 if x > left + 30:
                     painter.setPen(QtGui.QPen(editableStyleSheet().CanvasGridColorDarker.lighter(300)))
                     painter.drawText(x, rect.top() + painter.font().pointSize(), str(intx))
+

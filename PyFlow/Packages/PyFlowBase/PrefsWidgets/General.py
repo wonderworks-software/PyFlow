@@ -1,4 +1,5 @@
 ## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+## Copyright 2022 Stephan Helma
 
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -51,16 +52,46 @@ class GeneralPreferences(CategoryWidgetBase):
         self.historyDepth.editingFinished.connect(setHistoryCapacity)
         commonCategory.addWidget("History depth", self.historyDepth)
 
+        self.autoZoom = QCheckBox(self)
+        self.autoZoom.stateChanged.connect(self.setZoom)
+        commonCategory.addWidget("Automatic zoom", self.autoZoom)
+
+        self.adjAutoZoom = QDoubleSpinBox()
+        self.adjAutoZoom.setMinimum(0)
+        self.adjAutoZoom.setSingleStep(0.1)
+        self.adjAutoZoom.valueChanged.connect(self.setZoom)
+        commonCategory.addWidget("Adjust automatic zoom", self.adjAutoZoom)
+
+        self.initialZoom = QDoubleSpinBox()
+        self.initialZoom.setMinimum(0)
+        self.initialZoom.setSingleStep(0.1)
+        self.initialZoom.valueChanged.connect(self.setZoom)
+        commonCategory.addWidget("Initial zoom factor", self.initialZoom)
+
         self.redirectOutput = QCheckBox(self)
         commonCategory.addWidget("Redirect output", self.redirectOutput)
 
         spacerItem = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacerItem)
 
+    def setZoom(self):
+        pyflow = self.parent().parent().parent().parent().parent()
+        if self.autoZoom.checkState() == QtCore.Qt.Checked:
+            # Auto zoom
+            zoom = self.adjAutoZoom.value()
+            pyflow.canvasWidget.canvas.setAutoZoom(zoom)
+        else:
+            # Manual zoom
+            zoom = self.initialZoom.value()
+            pyflow.canvasWidget.canvas.setZoom(zoom)
+
     def initDefaults(self, settings):
         settings.setValue("EditorCmd", "sublime_text.exe @FILE")
         settings.setValue("TempFilesDir", os.path.expanduser('~/PyFlowTemp'))
         settings.setValue("HistoryDepth", 50)
+        settings.setValue("AutoZoom", True)
+        settings.setValue("AdjAutoZoom", 1)
+        settings.setValue("InitialZoom", 1)
         settings.setValue("RedirectOutput", True)
 
     def serialize(self, settings):
@@ -68,6 +99,9 @@ class GeneralPreferences(CategoryWidgetBase):
         settings.setValue("TempFilesDir", self.tempFilesDir.text())
         settings.setValue("ExtraPackageDirs", self.additionalPackagePaths.text())
         settings.setValue("HistoryDepth", self.historyDepth.value())
+        settings.setValue("AutoZoom", self.autoZoom.checkState() == QtCore.Qt.Checked)
+        settings.setValue("AdjAutoZoom", self.adjAutoZoom.value())
+        settings.setValue("InitialZoom", self.initialZoom.value())
         settings.setValue("RedirectOutput", self.redirectOutput.checkState() == QtCore.Qt.Checked)
 
     def onShow(self, settings):
@@ -81,6 +115,17 @@ class GeneralPreferences(CategoryWidgetBase):
             self.historyDepth.setValue(int(settings.value("HistoryDepth")))
         except:
             pass
+
+        self.autoZoom.setChecked(settings.value("AutoZoom") != "false")
+        try:
+            self.adjAutoZoom.setValue(float(settings.value("AdjAutoZoom")))
+        except:
+            self.adjAutoZoom.setValue(1)
+
+        try:
+            self.initialZoom.setValue(float(settings.value("InitialZoom")))
+        except:
+            self.initialZoom.setValue(1)
 
         try:
             self.redirectOutput.setChecked(settings.value("RedirectOutput") == "true")
