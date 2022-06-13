@@ -47,8 +47,8 @@ class GeneralPreferences(CategoryWidgetBase):
         self.historyDepth = QSpinBox()
         self.historyDepth.setRange(10, 100)
 
-        def setHistoryCapacity():
-            EditorHistory().capacity = self.historyDepth.value()
+        def setHistoryCapacity(val):
+            EditorHistory().capacity = val
         self.historyDepth.editingFinished.connect(setHistoryCapacity)
         commonCategory.addWidget("History depth", self.historyDepth)
 
