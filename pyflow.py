@@ -1,4 +1,5 @@
 ## Copyright 2015-2019 Ilgar Lunin, Pedro Cabrera
+## Copyright 2022 Stephan Helma
 
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -15,10 +16,16 @@
 
 import sys
 from PyFlow.App import PyFlow
+from Qt.QtCore import Qt
 from Qt.QtWidgets import QApplication
 
 
 def main():
+    # Enable general High DPI scaling
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    # Enable High DPI icons
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
     app = QApplication(sys.argv)
 
     instance = PyFlow.instance(software="standalone")
