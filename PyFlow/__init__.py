@@ -21,7 +21,7 @@ __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
 import importlib
 import pkgutil
-import collections
+import collections.abc as collections
 from copy import copy
 import os
 import json

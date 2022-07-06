@@ -689,7 +689,7 @@ class PFDict(dict):
 
     Only defined data types can be used as keys, and only hashable ones as determined by
 
-    >>> isinstance(dataType, collections.Hashable)
+    >>> isinstance(dataType, collections.abc.Hashable)
 
     To make a class Hashable some methods should be implemented:
 
