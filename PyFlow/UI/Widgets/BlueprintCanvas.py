@@ -1222,6 +1222,54 @@ class BlueprintCanvas(CanvasBase):
         if self.manipulationMode == CanvasManipulationMode.MOVE and len(self.selectedNodes()) > 0:
             EditorHistory().saveState("Move nodes", modify=True)
 
+        ##################################################
+        # Drop on wire by R. Scharf-Wildenhain, 2022-07-07
+        ui_node = self.nodeFromInstance(self.pressed_item) # Get ui_node from pressed_item
+        if ui_node:
+            # If pressed_item is instance of UINodeBase
+            connected = False # Flag for existing connections
+            ui_pins = ui_node.UIPins.values()
+            for ui_pin in ui_pins:
+                if len(ui_pin.connections) > 0:
+                    # True, if any pin is connected
+                    connected = True
+
+            if not connected:
+                # Perform drop on wire just with unconnected ui_nodes
+
+                # Create a bounding box around ui_node
+                x = ui_node.pos().x()
+                y = ui_node.pos().y()
+                w = ui_node.size().width()
+                h = ui_node.size().height()
+                bounding_rect = QtCore.QRect(x, y, w, h)
+
+                # Detect intersection between ui_node and wire and connect them if possible
+                intersection_ui_items = self.scene().items(bounding_rect) # Get all ui_items below ui_node
+                for ui_item in intersection_ui_items:
+                    if isinstance(ui_item, UIConnection):
+                        # If ui_item is an instance of UIConnection
+                        old_wire = ui_item
+                        old_source = old_wire.source
+                        old_destination = old_wire.destination
+
+                        # Find input pin for dropped ui_node
+                        ui_inputs = ui_node.UIinputs.values()
+                        for ui_input in ui_inputs:
+                            # Connect first possible input and leave loop
+                            input_connected = self.connectPins(old_wire.source(), ui_input)
+                            if input_connected:
+                                break
+
+                        # Find output pin for dropped ui_node
+                        ui_outputs = ui_node.UIoutputs.values()
+                        for ui_output in ui_outputs:
+                            # Connect first possible output and leave loop
+                            output_connected = self.connectPins(ui_output, old_wire.destination())
+                            if output_connected:
+                                break
+        ##################################################
+            
         if len(self.reconnectingWires) > 0:
             if self.releasedPin is not None:
                 for wire in self.reconnectingWires:
@@ -1697,6 +1745,9 @@ class BlueprintCanvas(CanvasBase):
                 wire = self.connectPinsInternal(src, dst)
                 if wire is not None:
                     EditorHistory().saveState("Connect pins", modify=True)
+                    return True # By R. Scharf-Wildenhain, 2022-07-07
+                else:
+                    return False # By R. Scharf-Wildenhain, 2022-07-07
 
     def removeEdgeCmd(self, connections):
         for wire in list(connections):
