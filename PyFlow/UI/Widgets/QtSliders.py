@@ -1139,7 +1139,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         :tickClicked: Signal emitted when a UiTick element clicked, emits UiTick
         :valueClicked: Signal emitted when a UiTick element clicked, emits (u,v)
         :tickAdded: Signal emitted when a UiTick element added
-        :tickChanged: Signal emitted when a UiTick element cahnges values
+        :tickChanged: Signal emitted when a UiTick element changes values
         :tickMoved: Signal emitted when a UiTick element moved
         :tickRemoved: Signal emitted when a UiTick element deleted
     """
@@ -1248,9 +1248,9 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
     def addItem(self, u=0, v=0, raw_item=None):
         """Adds a new Item to the ramp
 
-        :param u: X postion for the item, defaults to 0
+        :param u: X position for the item, defaults to 0
         :type u: float, optional
-        :param v: Y postion for the item, defaults to 0
+        :param v: Y position for the item, defaults to 0
         :type v: float, optional
         :param raw_item: Existing :obj:`PyFlow.Core.structs.Tick` to link with, if none, one new created , defaults to None
         :type raw_item: :obj:`PyFlow.Core.structs.Tick`, optional
@@ -1265,11 +1265,11 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self.computeDisplayPoints()
 
     def setU(self, u, index=-1):
-        """Sets the X postion for the selected item if no index provided
+        """Sets the X position for the selected item if no index provided
 
         :param u: New x position
         :type u: float
-        :param index: Index of the tick to set the value in, orderer by current X postion, if -1 will try to set value in all selected Ticks, defaults to -1
+        :param index: Index of the tick to set the value in, orderer by current X position, if -1 will try to set value in all selected Ticks, defaults to -1
         :type index: int, optional
         """
         if index in range(0, len(self.items()) - 1):
@@ -1286,11 +1286,11 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
         self.computeDisplayPoints()
 
     def setV(self, v, index=-1):
-        """Sets the Y postion for the selected item if no index provided
+        """Sets the Y position for the selected item if no index provided
 
         :param v: New y position
         :type v: float
-        :param index: Index of the tick to set the value in, orderer by current X postion, if -1 will try to set value in all selected Ticks, defaults to -1
+        :param index: Index of the tick to set the value in, orderer by current X position, if -1 will try to set value in all selected Ticks, defaults to -1
         :type index: int, optional
         """
         if index in range(0, len(self.items()) - 1):
@@ -1309,7 +1309,7 @@ class pyf_RampSpline(QtWidgets.QGraphicsView):
     def evaluateAt(self, value):
         """Computes the result of the interpolation for the guiven U value
 
-        :param value: x postion to evaluate at
+        :param value: x position to evaluate at
         :type value: float
         :returns: modified value by the curve
         :rtype: float
@@ -1440,7 +1440,7 @@ class pyf_RampColor(pyf_RampSpline):
         :valueClicked: Signal emitted when a UiTick element clicked, emits (u,v)
         :colorClicked: Signal emitted when a UiTick element clicked. emits [float,float,float] in range 0-1
         :tickAdded: Signal emitted when a UiTick element added
-        :tickChanged: Signal emitted when a UiTick element cahnges values
+        :tickChanged: Signal emitted when a UiTick element changes values
         :tickMoved: Signal emitted when a UiTick element moved
         :tickRemoved: Signal emitted when a UiTick element deleted
 
@@ -1466,7 +1466,7 @@ class pyf_RampColor(pyf_RampSpline):
     def addItem(self, u=0, v=[0, 0, 0], raw_item=None):
         """Adds a new Item to the ramp
 
-        :param u: X postion for the item, defaults to 0
+        :param u: X position for the item, defaults to 0
         :type u: float, optional
         :param v: color value for the item, defaults to [0,0,0]
         :type v: [float,float,float], optional
@@ -1489,7 +1489,7 @@ class pyf_RampColor(pyf_RampSpline):
 
         :param color: New color
         :type color: [float,float,float]
-        :param index: Index of the tick to set the value in, orderer by current X postion, if -1 will try to set value in all selected Ticks, defaults to -1
+        :param index: Index of the tick to set the value in, orderer by current X position, if -1 will try to set value in all selected Ticks, defaults to -1
         :type index: int, optional
         """
         if index in range(0, len(self.items()) - 1):

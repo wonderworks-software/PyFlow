@@ -190,7 +190,7 @@ class UIPythonNode(UINodeBase):
         tempFilesDir = self.canvasRef().getApp().getTempDirectory()
 
         if self._filePath == "":
-            # if no file assotiated - create one
+            # if no file associated - create one
             uidStr = str(self.uid).replace("-", "")
             self._filePath = os.path.join(tempFilesDir, "{}.py".format(uidStr))
 

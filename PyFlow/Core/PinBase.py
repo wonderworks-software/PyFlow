@@ -49,7 +49,7 @@ class PinBase(IPin):
         * **containerTypeChanged** : Fired when Pin Structure Changes
         * **dataBeenSet** : Fired when data changes, sends New Data
         * **dictChanged** : Fired when current structure changes to :py:const:`PyFlow.Core.Common.StructureType.Dict`, sends Dict key DataType
-        * **errorOccurred** : Fired when some error fired, like incorrect dataType set, sends ocurred Error
+        * **errorOccurred** : Fired when some error fired, like incorrect dataType set, sends occurred Error
         * **errorCleared** : Fired when error cleared
 
     :ivar owningNode: Weak reference to owning node
@@ -214,7 +214,7 @@ class PinBase(IPin):
         return bool(self._flags & option)
 
     def isAny(self):
-        """Wheter this pin of type Any or not
+        """Whether this pin of type Any or not
 
         :rtype: bool
         """

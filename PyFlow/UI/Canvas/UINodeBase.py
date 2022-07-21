@@ -669,7 +669,7 @@ class UINodeBase(QGraphicsWidget, IPropertiesViewSupport, IUINode):
         If user pressed :kbd:`escape` name before editing will be restored. If User pressed :kbd:`enter` or removed focus
         rename action will be accepted and node will be renamed and name will be checked for uniqueness.
 
-        :param accepted: Wheter user accepted editing or not
+        :param accepted: Whether user accepted editing or not
         :type accepted: :class:`bool`
         """
         if accepted:

@@ -63,7 +63,7 @@ class colorRamp(NodeBase):
 
     @staticmethod
     def description():
-        return 'Editable fCurve maped from 0 to 1, click on empty Space to add point, and right Click to delete point'
+        return 'Editable fCurve mapped from 0 to 1, click on empty Space to add point, and right Click to delete point'
 
     def compute(self, *args, **kwargs):
         bezier = self._curveTypes[self._curveType] == "bezier"

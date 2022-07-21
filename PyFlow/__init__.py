@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-"""Common utils working with packags.
+"""Common utils working with packages.
 """
 
 # this line adds extension-packages not installed inside the PyFlow directory
@@ -190,7 +190,7 @@ def INITIALIZE(additionalPackageLocations=[], software=""):
     if "PYFLOW_PACKAGES_PATHS" in os.environ:
         delim = ';'
         pathsString = os.environ["PYFLOW_PACKAGES_PATHS"]
-        # remove delimeters from right
+        # remove delimiters from right
         pathsString = pathsString.rstrip(delim)
         for packagesRoot in pathsString.split(delim):
             if os.path.exists(packagesRoot):

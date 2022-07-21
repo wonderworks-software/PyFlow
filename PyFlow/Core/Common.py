@@ -76,7 +76,7 @@ def GetRangePct(MinValue, MaxValue, Value):
     :param MinValue: Minimum Value
     :param MaxValue: Maximum Value
     :param Value: Input value
-    :returns: The percentage (from 0.0 to 1.0) betwen the two values where input value is
+    :returns: The percentage (from 0.0 to 1.0) between the two values where input value is
     """
     return (Value - MinValue) / (MaxValue - MinValue)
 

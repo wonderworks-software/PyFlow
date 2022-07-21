@@ -30,7 +30,7 @@ PIN_ALLOWS_ANYTHING = {PinSpecifires.ENABLED_OPTIONS: PinOptions.AllowAny | PinO
 
 
 class DefaultLib(FunctionLibraryBase):
-    """Default library builting stuff, variable types and conversions
+    """Default library building stuff, variable types and conversions
     """
 
     def __init__(self, packageName):
