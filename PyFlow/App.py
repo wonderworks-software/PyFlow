@@ -179,7 +179,8 @@ class PyFlow(QMainWindow):
 
     def populateMenu(self):
         fileMenu = self.menuBar.addMenu("File")
-        newFileAction = fileMenu.addAction("New file")
+        #newFileAction = fileMenu.addAction("New file")
+        newFileAction = fileMenu.addAction("New file    ") # Hack: Adjusting width of file menue by R. Scharf-W., 2022-07-25
         newFileAction.setIcon(QtGui.QIcon(":/new_file_icon.png"))
         newFileAction.triggered.connect(self.newFile)
 
