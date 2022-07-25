@@ -995,6 +995,12 @@ class BlueprintCanvas(CanvasBase):
 
     def mouseMoveEvent(self, event):
         # TODO: Move navigation part to base class
+        #####################################
+        # Debugging code by R. Scharf-W
+        # item = self.itemAt(event.pos())
+        # print(item, type(item))
+        # print(isinstance(item, UIConnection))
+        #####################################
         self.mousePos = event.pos()
         mouseDelta = QtCore.QPointF(self.mousePos) - self._lastMousePos
         modifiers = event.modifiers()
@@ -1450,7 +1456,9 @@ class BlueprintCanvas(CanvasBase):
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
             if self.tempnode:
-                self.tempnode.setPos((self.tempnode.w / -2) + scenePos.x(), scenePos.y())
+                # Added 5 px offset to tempnode, to detect drop item by R. Scharf-W., 2022-07-22
+                # self.tempnode.setPos((self.tempnode.w / -2) + scenePos.x(), scenePos.y())
+                self.tempnode.setPos((self.tempnode.w / -2) + scenePos.x() + 5, scenePos.y() + 5)
                 mouseRect = QtCore.QRect(QtCore.QPoint(scenePos.x() - 1, scenePos.y() - 1),
                                          QtCore.QPoint(scenePos.x() + 1, scenePos.y() + 1))
                 hoverItems = self.scene().items(mouseRect)
@@ -1531,8 +1539,18 @@ class BlueprintCanvas(CanvasBase):
                 nodeType = jsonData["type"]
                 libName = jsonData['lib']
                 name = nodeType
-                dropItem = self.nodeFromInstance(self.itemAt(scenePos.toPoint()))
-                if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
+                #######################################################
+                # Drop from nodebox by R. Scharf-Wildenhain, 2022-07-22
+                # dropItem = self.nodeFromInstance(self.itemAt(scenePos.toPoint()))
+                dropNode = self.nodeFromInstance(self.itemAt(event.pos()))
+                dropItem = self.itemAt(event.pos())
+
+                # if not dropItem or (isinstance(dropItem, UINodeBase) and dropItem.isCommentNode or dropItem.isTemp) or isinstance(dropItem, UIPinBase) or isinstance(dropItem, UIConnection):
+                if dropNode or not dropNode or \
+                        (isinstance(dropItem, UINodeBase) and (dropItem.isCommentNode or dropItem.isTemp)) or \
+                        isinstance(dropItem, UIPinBase) or \
+                        isinstance(dropItem, UIConnection):
+                #######################################################
                     nodeTemplate = NodeBase.jsonTemplate()
                     nodeTemplate['package'] = packageName
                     nodeTemplate['lib'] = libName
