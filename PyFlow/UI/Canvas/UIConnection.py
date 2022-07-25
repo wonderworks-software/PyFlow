@@ -64,10 +64,17 @@ class UIConnection(QGraphicsPathItem):
         self.color = self.source().color()
         self.selectedColor = self.color.lighter(150)
 
-        self.thickness = 1
+        #####################################
+        # Adjusting line thickness for modern look by R. Scharf-W., 2022-07-25
+        #self.thickness = 1
+        #self.thicknessMultiplier = 1
+        #if source.isExec():
+            #self.thickness = 2
+        self.thickness = 3
         self.thicknessMultiplier = 1
         if source.isExec():
-            self.thickness = 2
+            self.thickness = 3
+        #####################################
 
         self.pen = QtGui.QPen(self.color, self.thickness, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
 
@@ -200,8 +207,9 @@ class UIConnection(QGraphicsPathItem):
             self.canvasRef().removeConnection(self)
 
         if self.drawSource.isExec() or self.drawDestination.isExec():
-            if self.thickness != 2:
-                self.thickness = 2
+            # Thickness already set in __init()__, by R.Scharf-W., 2022-07-25
+            # self.thickness != 2:
+                #self.thickness = 2
                 self.pen.setWidthF(self.thickness)
 
         if self.isSelected():
