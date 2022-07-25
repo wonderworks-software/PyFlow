@@ -1,0 +1,17 @@
+# Path to PyFlow
+PYFLOW_DIR = "C:\\Users\\Administratorrechte\\AppData\\Roaming\\FreeCAD\\Macro\\PyFlow"
+
+# Append PYFLOW_DIR to python path
+if PYFLOW_DIR not in sys.path:
+	sys.path.append(PYFLOW_DIR)
+
+# Load PyFlow module
+from PyFlow.App import PyFlow
+
+# Get FreeCAD main window
+fcMainWindow = FreeCADGui.getMainWindow()
+
+# Create new PyFlow instance and show
+if PyFlow.appInstance is None:
+	instance = PyFlow.instance(fcMainWindow, software="FreeCAD")
+	instance.show()

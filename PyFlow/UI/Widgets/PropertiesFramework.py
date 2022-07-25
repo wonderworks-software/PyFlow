@@ -62,7 +62,7 @@ class CollapsibleWidget(QtWidgets.QWidget):
         self.mainVLayout.setContentsMargins(2, 2, 2, 2)
         self.mainVLayout.setObjectName("mainVLayout")
         self.mainVLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
-        self.pbHead = HeadButton(self)
+        self.pbHead = HeadButton(self, 50) # Changed from 25 to 50 by R.Scharf-W., 2022-07-25
         self.mainVLayout.addWidget(self.pbHead)
         self.setMinimumHeight(30)
         self.ContentWidget = QtWidgets.QWidget(self)
