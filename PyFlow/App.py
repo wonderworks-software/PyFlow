@@ -504,7 +504,12 @@ class PyFlow(QMainWindow):
 
     def shouldSave(self):
         if self.modified:
-            btn = QMessageBox.warning(self, "Confirm?", "Unsaved data will be lost. Save?", QMessageBox.Yes | QMessageBox.No | QMessageBox.Discard)
+            ###################################
+            # Adjusting button order according to FreeCAD by R. Scharf-W., 2022-07-25
+            #btn = QMessageBox.warning(self, "Confirm?", "Unsaved data will be lost. Save?", QMessageBox.Yes | QMessageBox.No | QMessageBox.Discard)
+            btn = QMessageBox.warning(self, "Confirm?", "Unsaved data will be lost. Save?",
+                                      QMessageBox.Yes | QMessageBox.Discard | QMessageBox.No)
+            ###################################
             if btn == QMessageBox.No:
                 return QMessageBox.No
             else:
