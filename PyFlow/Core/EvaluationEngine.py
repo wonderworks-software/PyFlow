@@ -34,7 +34,11 @@ class DefaultEvaluationEngine_Impl(IEvaluationEngine):
         if not bOwningNodeCallable:
             return pin.currentData()
 
-        order = DefaultEvaluationEngine_Impl.getEvaluationOrderIterative(pin.owningNode())
+        #############################################
+        # Set EvaluationEngine to non-iterative evaluation by R. Scharf-W., 2022-07-25
+        #order = DefaultEvaluationEngine_Impl.getEvaluationOrderIterative(pin.owningNode())
+        order = DefaultEvaluationEngine_Impl.getEvaluationOrder(pin.owningNode())
+        #############################################
         [node.processNode() for node in order]
 
         if not bOwningNodeCallable:
