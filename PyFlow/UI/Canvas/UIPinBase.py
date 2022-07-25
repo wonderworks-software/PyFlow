@@ -96,8 +96,13 @@ class UIPinBase(QGraphicsWidget):
             self.actionCopyPath.triggered.connect(self.onCopyPathToClipboard)
 
         # GUI
-        self._font = QtGui.QFont("Consolas")
-        self._font.setPointSize(6)
+        #####################################
+        # Adjusted pin label font and text size by R. Scharf, 2022-07-25
+        #self._font = QtGui.QFont("Consolas")
+        #self._font.setPointSize(6)
+        self._font = QtGui.QFont("SansSerif")
+        self._font.setPointSize(8)
+        #####################################
         self.pinSize = 6
         self.hovered = False
         self.bLabelHidden = False

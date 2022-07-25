@@ -177,7 +177,8 @@ class NodeName(QGraphicsWidget):
         self.labelItem.editingFinished.connect(self.parentItem().finalizeRename)
 
         self.labelItem.hoverMoveEvent = self.hoverMoveEvent
-        self._font = QtGui.QFont("Consolas")
+        #self._font = QtGui.QFont("Consolas")
+        self._font = QtGui.QFont("SansSerif") # Adjusting font by R. Scharf-W., 2022-07-25
         self._font.setPointSize(6)
         self.labelItem.setFont(self._font)
         self.setGraphicsItem(self.labelItem)
