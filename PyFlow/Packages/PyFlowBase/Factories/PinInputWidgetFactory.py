@@ -292,7 +292,7 @@ def getInputWidget(dataType, dataSetter, defaultValue, widgetVariant=DEFAULT_WID
             if widget is not None:
                 return widget
         except Exception as e:
-            print("Failed to override input widget. Package - {0}".format(pkgName), e)
+            print("Failed to override input widget.{0} Package - {1}".format(dataType,pkgName), e)
             continue
 
     if dataType == 'FloatPin':
