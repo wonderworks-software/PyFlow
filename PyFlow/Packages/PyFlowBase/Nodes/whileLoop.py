@@ -55,7 +55,7 @@ class whileLoop(NodeBase):
 
         if self.bProcess and currentCondition:
             self.loopBody.call()
-            # when started mark dirty to call completed lated
+            # when started mark dirty to call completed later
             if not self._dirty:
                 self._dirty = True
             return
