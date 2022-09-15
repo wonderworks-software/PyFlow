@@ -955,16 +955,16 @@ class pyf_timeline(QtWidgets.QSlider):
             if (r[e] % 5) == 0:
                 s = 4
                 text = r[e]
-                fw = metrics.width(str(text))
+                fw = metrics.horizontalAdvance(str(text))
                 qp.drawText((pos) - fw / 2, h - fh / 3, str(text))
             else:
                 s = 1.5
             qp.drawLine(pos, half + s, pos, half - s)
         pos = self.style().sliderPositionFromValue(self.minimum(), self.maximum(), self.value(), self.width())
-        fw = metrics.width("0")
+        fw = metrics.horizontalAdvance("0")
         qp.setPen(editableStyleSheet().MainColor)
         if self.value() > self.maximum() - (self.maximum() / 2):
-            fw += metrics.width(str(self.value()))
+            fw += metrics.horizontalAdvance(str(self.value()))
             fw *= -1
         qp.drawText((pos) + fw, 0 + fh, str(self.value()))
         if self.hover:
@@ -972,9 +972,9 @@ class pyf_timeline(QtWidgets.QSlider):
                 self.minimum(), self.maximum(), self.hoverPos.x(), self.width())
             if val != self.value():
                 pos = self.style().sliderPositionFromValue(self.minimum(), self.maximum(), val, self.width())
-                fw = metrics.width("0")
+                fw = metrics.horizontalAdvance("0")
                 if val > self.maximum() - (self.maximum() / 2):
-                    fw += metrics.width(str(val))
+                    fw += metrics.horizontalAdvance(str(val))
                     fw *= -1
                 color2 = QtGui.QColor(editableStyleSheet().MainColor)
                 color2.setAlpha(100)

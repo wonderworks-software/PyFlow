@@ -224,7 +224,7 @@ class NodeName(QGraphicsWidget):
         self.update()
 
     def sizeHint(self, which, constraint):
-        w = QtGui.QFontMetrics(self.getFont()).width(self.getPlainText())
+        w = QtGui.QFontMetrics(self.getFont()).horizontalAdvance(self.getPlainText())
         h = self.labelItem.boundingRect().height() + 5
         return QtCore.QSizeF(w, h)
 

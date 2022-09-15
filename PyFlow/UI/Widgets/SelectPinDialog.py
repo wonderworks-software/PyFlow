@@ -77,7 +77,7 @@ class _PinWidget(QtWidgets.QWidget):
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
     def sizeHint(self):
-        textWidth = QtGui.QFontMetrics(self._font).width(self.dataType) + _PIN_SIZE
+        textWidth = QtGui.QFontMetrics(self._font).horizontalAdvance(self.dataType) + _PIN_SIZE
         textHeight = max(QtGui.QFontMetrics(self._font).height(), _PIN_SIZE + 6)
         return QtCore.QSize(textWidth, textHeight)
 

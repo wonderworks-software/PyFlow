@@ -407,7 +407,7 @@ class UIPinBase(QGraphicsWidget):
         height = QtGui.QFontMetrics(self._font).height()
         width = self.pinSize * 2
         if not self.bLabelHidden:
-            width += QtGui.QFontMetrics(self._font).width(self.displayName())
+            width += QtGui.QFontMetrics(self._font).horizontalAdvance(self.displayName())
         return QtCore.QSizeF(width, height)
 
     def shape(self):
@@ -582,7 +582,7 @@ class PinGroup(UIPinBase):
 
     def sizeHint(self, which, constraint):
         height = QtGui.QFontMetrics(self._font).height()
-        width = QtGui.QFontMetrics(self._font).width(self.name) + self.pinSize
+        width = QtGui.QFontMetrics(self._font).horizontalAdvance(self.name) + self.pinSize
         return QtCore.QSizeF(width, height)
 
     def paint(self, painter, option, widget):
@@ -605,11 +605,11 @@ class PinGroup(UIPinBase):
         font.setPixelSize(7)
         painter.setFont(font)
         if not self.expanded:
-            x = QtGui.QFontMetrics(font).width("+")
+            x = QtGui.QFontMetrics(font).horizontalAdvance("+")
             square = square.translated(x / 3, 0.5)
             painter.drawText(square, "+")
         else:
-            x = QtGui.QFontMetrics(font).width("-")
+            x = QtGui.QFontMetrics(font).horizontalAdvance("-")
             square = square.translated(x / 3, 0.5)
             painter.drawText(square, "-")
 

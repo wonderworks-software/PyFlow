@@ -347,7 +347,7 @@ class PinPainter(object):
         if lod < SWITCH_LOD and not pin.bLabelHidden:
             painter.setFont(pin._font)
             textWidth = QtGui.QFontMetrics(
-                painter.font()).width(pin.displayName())
+                painter.font()).horizontalAdvance(pin.displayName())
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
@@ -391,7 +391,7 @@ class PinPainter(object):
 
         if lod < SWITCH_LOD and not pin.bLabelHidden:
             textWidth = QtGui.QFontMetrics(
-                painter.font()).width(pin.displayName())
+                painter.font()).horizontalAdvance(pin.displayName())
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
@@ -461,7 +461,7 @@ class PinPainter(object):
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
             textWidth = QtGui.QFontMetrics(
-                painter.font()).width(pin.displayName())
+                painter.font()).horizontalAdvance(pin.displayName())
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
@@ -501,7 +501,7 @@ class PinPainter(object):
             halfPinSize = pin.pinSize / 2
             painter.setFont(pin._font)
             textWidth = QtGui.QFontMetrics(
-                painter.font()).width(pin.displayName())
+                painter.font()).horizontalAdvance(pin.displayName())
             textHeight = QtGui.QFontMetrics(painter.font()).height()
             x = 1 + pin.pinSize + halfPinSize
             if pin.direction == PinDirection.Output:
