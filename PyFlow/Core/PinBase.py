@@ -555,10 +555,10 @@ class PinBase(IPin):
                         self._data = self.super.processData(data)
             elif self.isArray():
                 if isinstance(data, list):
-                    if self.validateArray(data, self.super.processData):
-                        self._data = data
-                    else:
-                        raise Exception("Some Array Input is not valid Data")
+                    #if self.validateArray(data, self.super.processData):
+                    self._data = data
+                    #else:
+                    #    raise Exception("Some Array Input is not valid Data")
                 else:
                     self._data = [self.super.processData(data)]
             elif self.isDict():
