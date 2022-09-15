@@ -142,7 +142,7 @@ class WizardDialogueBase(QDialog):
         else:
             self.setMessageRst(self.errorMessages[self.stackWidget.currentWidget()])
 
-    def addPageWidget(self, widget, messageRst, errorMessageRst="Somethig is wrong!", validationHook=lambda: True, pageEnterCallback=lambda: None):
+    def addPageWidget(self, widget, messageRst, errorMessageRst="Something is wrong!", validationHook=lambda: True, pageEnterCallback=lambda: None):
         self.stackWidget.addWidget(widget)
         self.messages[widget] = messageRst
         self.pageValidationHooks[widget] = validationHook

@@ -1449,7 +1449,7 @@ class BlueprintCanvas(CanvasBase):
 
             # try load mime data text as json
             # in case if it is a variable
-            # if no keyboard modifires create context menu with two actions
+            # if no keyboard modifiers create context menu with two actions
             # for creating getter or setter
             # if control - create getter, if alt - create setter
 

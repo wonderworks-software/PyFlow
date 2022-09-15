@@ -56,7 +56,7 @@ class ToolBase(object):
     def saveState(self, settings):
         """Called on tool save
 
-        When this method is called, corerct group is already selected.
+        When this method is called, correct group is already selected.
         So you just need to call **setValue** here
 
         .. code-block:: python
@@ -75,7 +75,7 @@ class ToolBase(object):
         """Called when application loaded
 
         Restore any saved state here.
-        Same as **saveState**, settings group already selected, so jsut call **value** method
+        Same as **saveState**, settings group already selected, so just call **value** method
         to access data
 
         .. code-block::

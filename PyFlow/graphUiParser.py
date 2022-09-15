@@ -48,7 +48,7 @@ def run(filePath):
         prop.setLayout(QVBoxLayout())
         prop.setWindowTitle(filePath)
         prop.setWindowIcon(QtGui.QIcon(":/LogoBpApp.png"))
-        # Initalize packages
+        # Initialize packages
         try:
             INITIALIZE()
             man = GraphManagerSingleton().get()
@@ -93,7 +93,7 @@ def run(filePath):
             # If no GraphInput Nodes Exit propgram   
             else:
                 msg.setInformativeText(filePath)
-                msg.setDetailedText("The file doesn't containt graphInputs nodes")
+                msg.setDetailedText("The file doesn't contain graphInputs nodes")
                 msg.setWindowTitle("PyFlow Ui Graph Parser")
                 msg.setStandardButtons(QMessageBox.Ok)
                 msg.show()

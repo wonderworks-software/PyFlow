@@ -140,7 +140,7 @@ class IPin(IItemBase):
         Can be used by gui wrapper class.
 
         :returns: Rgba tuple
-        :rtype: typle(0, 0, 0, 255)
+        :rtype: tuple(0, 0, 0, 255)
         """
         return (255, 0, 0, 255)
 
