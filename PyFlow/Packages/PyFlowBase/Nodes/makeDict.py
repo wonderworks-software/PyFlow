@@ -89,7 +89,7 @@ class makeDict(NodeBase):
                 self.constraints[inp.key.constraint].remove(inp.key)
 
     def compute(self, *args, **kwargs):
-        outArray = PFDict(self.KeyType.dataType)
+        outArray = PFDict(self.KeyType.dataType, self.arrayData.dataType)
         ySortedPins = sorted(self.arrayData.affected_by, key=lambda pin: pin.owningNode().y)
 
         for i in ySortedPins:

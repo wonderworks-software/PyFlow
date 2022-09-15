@@ -194,7 +194,7 @@ class UIVariable(QWidget, IPropertiesViewSupport):
         propertiesWidget.addWidget(baseCategory)
 
         # structure type
-        cbStructure = EnumComboBox([i.name for i in (StructureType.Single, StructureType.Array)])
+        cbStructure = EnumComboBox([i.name for i in (StructureType.Single, StructureType.Array, StructureType.Dict)])
         cbStructure.setEditable(False)
         cbStructure.setCurrentIndex(cbStructure.findText(self._rawVariable.structure.name))
         cbStructure.changeCallback.connect(self.onStructureChanged)

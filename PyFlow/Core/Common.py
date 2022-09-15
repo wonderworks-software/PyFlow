@@ -707,7 +707,7 @@ class PFDict(dict):
                 return (self.__class__ == other.__class__ and self.x == other.x)
     """
 
-    def __init__(self, keyType, valueType=None, inp={}):
+    def __init__(self, keyType, valueType='AnyPin', inp={}):
         """
         :param keyType: Key dataType
         :param valueType: value dataType, defaults to None

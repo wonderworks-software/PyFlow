@@ -29,7 +29,7 @@ class getVar(NodeBase):
         assert(isinstance(var, Variable))
         self._var = var
         if var.structure == StructureType.Dict:
-            self.out = self.createOutputPin('out', var.value.keyType, structure=StructureType.Dict)
+            self.out = self.createOutputPin('out', var.value.valueType, structure=StructureType.Dict, constraint="2")
         else:
             self.out = self.createOutputPin('out', var.dataType)
         self.out.disableOptions(PinOptions.RenamingEnabled)
@@ -59,7 +59,7 @@ class getVar(NodeBase):
             self.out.setAsArray(True)
         if self._var.structure == StructureType.Dict:
             self.out.setAsDict(True)
-            # self.out._keyType = self.var.value.keyType
+            self.out.updateConnectedDicts([], self._var.value.keyType)
 
     def onVarStructureChanged(self, newStructure):
         self.out.structureType = newStructure
