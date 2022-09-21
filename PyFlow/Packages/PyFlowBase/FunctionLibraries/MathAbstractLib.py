@@ -87,6 +87,12 @@ class MathAbstractLib(FunctionLibraryBase):
         return a * b
 
     @staticmethod
+    @IMPLEMENT_NODE(returns=(("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"})), meta={NodeMeta.CATEGORY: 'Math|Basic', NodeMeta.KEYWORDS: ['*', "multiply", "operator"]})
+    def multiply_by_float(a=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1"}), b=("FloatPin", 1.0)):
+        """Operator *****."""
+        return a * b
+
+    @staticmethod
     @IMPLEMENT_NODE(returns=("BoolPin", False), meta={NodeMeta.CATEGORY: 'Math|Basic', NodeMeta.KEYWORDS: ["in", "range"]})
     def inRange(Value=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1", PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"]}),
                 RangeMin=("AnyPin", None, {PinSpecifires.CONSTRAINT: "1", PinSpecifires.SUPPORTED_DATA_TYPES: ["FloatPin", "IntPin"]}),
