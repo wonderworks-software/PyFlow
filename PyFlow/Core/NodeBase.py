@@ -27,7 +27,7 @@ except:
     from inspect import getargspec
 from types import MethodType
 import collections
-
+import traceback
 from PyFlow import getPinDefaultValueByType
 from PyFlow import getRawNodeInstance
 from PyFlow.Core.Common import *
@@ -392,15 +392,15 @@ class NodeBase(INode):
                     self.clearError()
                     self.checkForErrors()
                     self.afterCompute()
-                except Exception as e:
-                    self.setError(e)
+                except Exception as e:                
+                    self.setError(traceback.format_exc() )
         else:
             try:
                 self.compute()
                 self.clearError()
                 self.checkForErrors()
-            except Exception as e:
-                self.setError(e)
+            except Exception as e:               
+                    self.setError(traceback.format_exc() )
         delta = (datetime.now()-start)
         self._computingTime =delta
         self.computed.send()
